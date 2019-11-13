@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ if (!empty($DB['DB'])) {
 	$pageHeader->addStyle(getTriggerSeverityCss($config));
 	$pageHeader->addStyle(getTriggerStatusCss($config));
 
-	// perform Zabbix server check only for standard pages
+	// perform Treegix server check only for standard pages
 	if ($config['server_check_interval'] && !empty($ZBX_SERVER) && !empty($ZBX_SERVER_PORT)) {
 		$scripts[] = 'servercheck.js';
 	}

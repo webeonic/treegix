@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 class CWidgetFieldReference extends CWidgetField {
 
-	// This field name is reserved by Zabbix for this particular use case. See comments below.
+	// This field name is reserved by Treegix for this particular use case. See comments below.
 	const FIELD_NAME = 'reference';
 
 	/**

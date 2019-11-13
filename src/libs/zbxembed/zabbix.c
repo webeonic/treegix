@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,16 +23,16 @@
 #include "zbxembed.h"
 #include "embed.h"
 #include "duktape.h"
-#include "zabbix.h"
+#include "treegix.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: es_zabbix_dtor                                              *
+ * Function: es_treegix_dtor                                              *
  *                                                                            *
- * Purpose: Curlzabbix destructor                                        *
+ * Purpose: Curltreegix destructor                                        *
  *                                                                            *
  ******************************************************************************/
-static duk_ret_t	es_zabbix_dtor(duk_context *ctx)
+static duk_ret_t	es_treegix_dtor(duk_context *ctx)
 {
 	ZBX_UNUSED(ctx);
 	return 0;
@@ -40,58 +40,58 @@ static duk_ret_t	es_zabbix_dtor(duk_context *ctx)
 
 /******************************************************************************
  *                                                                            *
- * Function: es_zabbix_ctor                                              *
+ * Function: es_treegix_ctor                                              *
  *                                                                            *
- * Purpose: Curlzabbix constructor                                       *
+ * Purpose: Curltreegix constructor                                       *
  *                                                                            *
  ******************************************************************************/
-static duk_ret_t	es_zabbix_ctor(duk_context *ctx)
+static duk_ret_t	es_treegix_ctor(duk_context *ctx)
 {
 	if (!duk_is_constructor_call(ctx))
 		return DUK_RET_TYPE_ERROR;
 
 	duk_push_this(ctx);
 
-	duk_push_c_function(ctx, es_zabbix_dtor, 1);
+	duk_push_c_function(ctx, es_treegix_dtor, 1);
 	duk_set_finalizer(ctx, -2);
 	return 0;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: es_zabbix_status                                            *
+ * Function: es_treegix_status                                            *
  *                                                                            *
- * Purpose: Curlzabbix.Status method                                     *
+ * Purpose: Curltreegix.Status method                                     *
  *                                                                            *
  ******************************************************************************/
-static duk_ret_t	es_zabbix_log(duk_context *ctx)
+static duk_ret_t	es_treegix_log(duk_context *ctx)
 {
-	zabbix_log(duk_to_int(ctx, 0), "%s", duk_to_string(ctx, 1));
+	treegix_log(duk_to_int(ctx, 0), "%s", duk_to_string(ctx, 1));
 	return 0;
 }
 
-static const duk_function_list_entry	zabbix_methods[] = {
-	{"Log", es_zabbix_log, 2},
+static const duk_function_list_entry	treegix_methods[] = {
+	{"Log", es_treegix_log, 2},
 	{NULL, NULL, 0}
 };
 
-static int	es_zabbix_create_object(duk_context *ctx)
+static int	es_treegix_create_object(duk_context *ctx)
 {
-	duk_push_c_function(ctx, es_zabbix_ctor, 0);
+	duk_push_c_function(ctx, es_treegix_ctor, 0);
 	duk_push_object(ctx);
 
-	duk_put_function_list(ctx, -1, zabbix_methods);
+	duk_put_function_list(ctx, -1, treegix_methods);
 
 	if (1 != duk_put_prop_string(ctx, -2, "prototype"))
 		return FAIL;
 
 	duk_new(ctx, 0);
-	duk_put_global_string(ctx, "Zabbix");
+	duk_put_global_string(ctx, "Treegix");
 
 	return SUCCEED;
 }
 
-int	zbx_es_init_zabbix(zbx_es_t *es, char **error)
+int	zbx_es_init_treegix(zbx_es_t *es, char **error)
 {
 	if (0 != setjmp(es->env->loc))
 	{
@@ -99,7 +99,7 @@ int	zbx_es_init_zabbix(zbx_es_t *es, char **error)
 		return FAIL;
 	}
 
-	if (FAIL == es_zabbix_create_object(es->env->ctx))
+	if (FAIL == es_treegix_create_object(es->env->ctx))
 	{
 		*error = zbx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
 		duk_pop(es->env->ctx);

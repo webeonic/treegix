@@ -73,7 +73,7 @@ $(RESOURCE_RES): $(RESOURCE_RC) $(RESOURCE_H) $(DESC_H)
 {..\..\..\src\libs\zbxwin32}.c{..\..\..\src\libs\zbxwin32}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\zabbix_agent\logfiles}.c{..\..\..\src\zabbix_agent\logfiles}.o:
+{..\..\..\src\treegix_agent\logfiles}.c{..\..\..\src\treegix_agent\logfiles}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
 {$(PROJECTDIR)}.c{$(PROJECTDIR)}.o:

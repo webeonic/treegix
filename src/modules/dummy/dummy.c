@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 /* the variable keeps timeout setting for item processing */
 static int	item_timeout = 0;
 
-/* module SHOULD define internal functions as static and use a naming pattern different from Zabbix internal */
+/* module SHOULD define internal functions as static and use a naming pattern different from Treegix internal */
 /* symbols (zbx_*) and loadable module API functions (zbx_module_*) to avoid conflicts                       */
 static int	dummy_ping(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	dummy_echo(AGENT_REQUEST *request, AGENT_RESULT *result);
@@ -49,7 +49,7 @@ static ZBX_METRIC keys[] =
  * Purpose: returns version number of the module interface                    *
  *                                                                            *
  * Return value: ZBX_MODULE_API_VERSION - version of module.h module is       *
- *               compiled with, in order to load module successfully Zabbix   *
+ *               compiled with, in order to load module successfully Treegix   *
  *               MUST be compiled with the same version of this header file   *
  *                                                                            *
  ******************************************************************************/
@@ -127,7 +127,7 @@ static int	dummy_echo(AGENT_REQUEST *request, AGENT_RESULT *result)
  *             result - structure that will contain result                    *
  *                                                                            *
  * Return value: SYSINFO_RET_FAIL - function failed, item will be marked      *
- *                                 as not supported by zabbix                 *
+ *                                 as not supported by treegix                 *
  *               SYSINFO_RET_OK - success                                     *
  *                                                                            *
  * Comment: get_rparam(request, N-1) can be used to get a pointer to the Nth  *
@@ -271,7 +271,7 @@ static void	dummy_history_log_cb(const ZBX_HISTORY_LOG *history, int history_num
  *                                                                            *
  * Function: zbx_module_history_write_cbs                                     *
  *                                                                            *
- * Purpose: returns a set of module functions Zabbix will call to export      *
+ * Purpose: returns a set of module functions Treegix will call to export      *
  *          different types of historical data                                *
  *                                                                            *
  * Return value: structure with callback function pointers (can be NULL if    *

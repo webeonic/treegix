@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -128,8 +128,8 @@ static int	match_glob(const char *file, const char *pattern)
  *                                                                            *
  * Function: parse_glob                                                       *
  *                                                                            *
- * Purpose: parse a glob like "/usr/local/etc/zabbix_agentd.conf.d/p*.conf"   *
- *          into "/usr/local/etc/zabbix_agentd.conf.d" and "p*.conf" parts    *
+ * Purpose: parse a glob like "/usr/local/etc/treegix_agentd.conf.d/p*.conf"   *
+ *          into "/usr/local/etc/treegix_agentd.conf.d" and "p*.conf" parts    *
  *                                                                            *
  * Parameters: glob    - [IN] glob as specified in Include directive          *
  *             path    - [OUT] parsed path, either directory or file          *
@@ -429,7 +429,7 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 			zbx_rtrim(parameter, ZBX_CFG_RTRIM_CHARS);
 			zbx_ltrim(value, ZBX_CFG_LTRIM_CHARS);
 
-			zabbix_log(LOG_LEVEL_DEBUG, "cfg: para: [%s] val [%s]", parameter, value);
+			treegix_log(LOG_LEVEL_DEBUG, "cfg: para: [%s] val [%s]", parameter, value);
 
 			if (0 == strcmp(parameter, "Include"))
 			{
@@ -451,7 +451,7 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 
 				param_valid = 1;
 
-				zabbix_log(LOG_LEVEL_DEBUG, "accepted configuration parameter: '%s' = '%s'",
+				treegix_log(LOG_LEVEL_DEBUG, "accepted configuration parameter: '%s' = '%s'",
 						parameter, value);
 
 				switch (cfg[i].type)
@@ -561,7 +561,7 @@ int	check_cfg_feature_int(const char *parameter, int value, const char *feature)
 {
 	if (0 != value)
 	{
-		zbx_error("\"%s\" configuration parameter cannot be used: Zabbix %s was compiled without %s",
+		zbx_error("\"%s\" configuration parameter cannot be used: Treegix %s was compiled without %s",
 				parameter, get_program_type_string(program_type), feature);
 		return FAIL;
 	}
@@ -573,7 +573,7 @@ int	check_cfg_feature_str(const char *parameter, const char *value, const char *
 {
 	if (NULL != value)
 	{
-		zbx_error("\"%s\" configuration parameter cannot be used: Zabbix %s was compiled without %s",
+		zbx_error("\"%s\" configuration parameter cannot be used: Treegix %s was compiled without %s",
 				parameter, get_program_type_string(program_type), feature);
 		return FAIL;
 	}

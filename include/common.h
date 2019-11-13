@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -432,7 +432,7 @@ zbx_graph_yaxis_types_t;
 /* the error message for not supported items when reason is unknown */
 #define ZBX_NOTSUPPORTED_MSG	"Unknown error."
 
-/* Zabbix Agent non-critical error (agents older than 2.0) */
+/* Treegix Agent non-critical error (agents older than 2.0) */
 #define ZBX_ERROR		"ZBX_ERROR"
 
 /* media types */
@@ -1380,7 +1380,7 @@ zbx_token_func_macro_t;
 /* data used by simple (host:key) macros */
 typedef struct
 {
-	/* host name, supporting simple macros as a host name, for example Zabbix server or {HOST.HOST} */
+	/* host name, supporting simple macros as a host name, for example Treegix server or {HOST.HOST} */
 	zbx_strloc_t	host;
 	/* key + parameters, supporting {ITEM.KEYn} macro, for example system.uname or {ITEM.KEY1}  */
 	zbx_strloc_t	key;

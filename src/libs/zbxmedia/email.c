@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -404,7 +404,7 @@ static int	smtp_debug_function(CURL *easyhandle, curl_infotype type, char *data,
 	while (0 < size && ('\r' == data[size - 1] || '\n' == data[size - 1]))
 		size--;
 
-	zabbix_log(LOG_LEVEL_TRACE, "%c %.*s", labels[type], (int)size, data);
+	treegix_log(LOG_LEVEL_TRACE, "%c %.*s", labels[type], (int)size, data);
 out:
 	return 0;
 }
@@ -680,7 +680,7 @@ static int	send_email_curl(const char *smtp_server, unsigned short smtp_port, co
 
 	if (0 >= from_mails->values_num)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() sender's address is not specified", __func__);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() sender's address is not specified", __func__);
 	}
 	else if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_MAIL_FROM,
 			((zbx_mailaddr_t *)from_mails->values[0])->addr)))
@@ -786,7 +786,7 @@ int	send_email(const char *smtp_server, unsigned short smtp_port, const char *sm
 	int			ret = FAIL;
 	zbx_vector_ptr_t	from_mails, to_mails;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() smtp_server:'%s' smtp_port:%hu smtp_security:%d smtp_authentication:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() smtp_server:'%s' smtp_port:%hu smtp_security:%d smtp_authentication:%d",
 			__func__, smtp_server, smtp_port, (int)smtp_security, (int)smtp_authentication);
 
 	*error = '\0';
@@ -823,9 +823,9 @@ clean:
 	zbx_vector_ptr_destroy(&to_mails);
 
 	if ('\0' != *error)
-		zabbix_log(LOG_LEVEL_WARNING, "failed to send email: %s", error);
+		treegix_log(LOG_LEVEL_WARNING, "failed to send email: %s", error);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }

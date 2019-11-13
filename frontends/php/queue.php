@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -46,17 +46,17 @@ $config = getRequest('config', CProfile::get('web.queue.config', 0));
 CProfile::update('web.queue.config', $config, PROFILE_TYPE_INT);
 
 // fetch data
-$zabbixServer = new CZabbixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
+$treegixServer = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
 $queueRequests = [
-	QUEUE_OVERVIEW => CZabbixServer::QUEUE_OVERVIEW,
-	QUEUE_OVERVIEW_BY_PROXY => CZabbixServer::QUEUE_OVERVIEW_BY_PROXY,
-	QUEUE_DETAILS => CZabbixServer::QUEUE_DETAILS
+	QUEUE_OVERVIEW => CTreegixServer::QUEUE_OVERVIEW,
+	QUEUE_OVERVIEW_BY_PROXY => CTreegixServer::QUEUE_OVERVIEW_BY_PROXY,
+	QUEUE_DETAILS => CTreegixServer::QUEUE_DETAILS
 ];
-$queueData = $zabbixServer->getQueue($queueRequests[$config], get_cookie(ZBX_SESSION_NAME), QUEUE_DETAIL_ITEM_COUNT);
+$queueData = $treegixServer->getQueue($queueRequests[$config], get_cookie(ZBX_SESSION_NAME), QUEUE_DETAIL_ITEM_COUNT);
 
 // check for errors error
-if ($zabbixServer->getError()) {
-	error($zabbixServer->getError());
+if ($treegixServer->getError()) {
+	error($treegixServer->getError());
 	show_error_message(_('Cannot display item queue.'));
 
 	require_once dirname(__FILE__).'/include/page_footer.php';
@@ -299,7 +299,7 @@ if ($config == QUEUE_OVERVIEW_BY_PROXY) {
 	$total = _('Total').': '.$table->getNumRows();
 }
 elseif ($config == QUEUE_DETAILS) {
-	$total = _s('Displaying %1$s of %2$s found', $table->getNumRows(), $zabbixServer->getTotalCount());
+	$total = _s('Displaying %1$s of %2$s found', $table->getNumRows(), $treegixServer->getTotalCount());
 }
 else {
 	$total = null;

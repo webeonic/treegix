@@ -1,6 +1,6 @@
 # LIBLDAP_CHECK_CONFIG ([DEFAULT-ACTION])
 # ----------------------------------------------------------
-#    Eugene Grigorjev <eugene@zabbix.com>   Feb-02-2007
+#    Eugene Grigorjev <eugene@treegix.com>   Feb-02-2007
 #
 # Checks for ldap.  DEFAULT-ACTION is the string yes or no to
 # specify whether to default to --with-ldap or --without-ldap.

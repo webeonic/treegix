@@ -1,12 +1,12 @@
 <?php
-// Zabbix GUI configuration file.
+// Treegix GUI configuration file.
 global $DB, $HISTORY;
 
 $DB['TYPE']				= 'MYSQL';
 $DB['SERVER']			= 'localhost';
 $DB['PORT']				= '0';
-$DB['DATABASE']			= 'zabbix';
-$DB['USER']				= 'zabbix';
+$DB['DATABASE']			= 'treegix';
+$DB['USER']				= 'treegix';
 $DB['PASSWORD']			= '';
 // Schema name. Used for IBM DB2 and PostgreSQL.
 $DB['SCHEMA']			= '';

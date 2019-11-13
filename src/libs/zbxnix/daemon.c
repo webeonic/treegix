@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ static void	(*zbx_sigusr_handler)(int flags);
  *                                                                            *
  * Function: common_sigusr_handler                                            *
  *                                                                            *
- * Purpose: common SIGUSR1 handler for Zabbix processes                       *
+ * Purpose: common SIGUSR1 handler for Treegix processes                       *
  *                                                                            *
  ******************************************************************************/
 static void	common_sigusr_handler(int flags)
@@ -57,27 +57,27 @@ static void	common_sigusr_handler(int flags)
 	switch (ZBX_RTC_GET_MSG(flags))
 	{
 		case ZBX_RTC_LOG_LEVEL_INCREASE:
-			if (SUCCEED != zabbix_increase_log_level())
+			if (SUCCEED != treegix_increase_log_level())
 			{
-				zabbix_log(LOG_LEVEL_INFORMATION, "cannot increase log level:"
+				treegix_log(LOG_LEVEL_INFORMATION, "cannot increase log level:"
 						" maximum level has been already set");
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_INFORMATION, "log level has been increased to %s",
-						zabbix_get_log_level_string());
+				treegix_log(LOG_LEVEL_INFORMATION, "log level has been increased to %s",
+						treegix_get_log_level_string());
 			}
 			break;
 		case ZBX_RTC_LOG_LEVEL_DECREASE:
-			if (SUCCEED != zabbix_decrease_log_level())
+			if (SUCCEED != treegix_decrease_log_level())
 			{
-				zabbix_log(LOG_LEVEL_INFORMATION, "cannot decrease log level:"
+				treegix_log(LOG_LEVEL_INFORMATION, "cannot decrease log level:"
 						" minimum level has been already set");
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_INFORMATION, "log level has been decreased to %s",
-						zabbix_get_log_level_string());
+				treegix_log(LOG_LEVEL_INFORMATION, "log level has been decreased to %s",
+						treegix_get_log_level_string());
 			}
 			break;
 		default:
@@ -116,24 +116,24 @@ static void	zbx_signal_process_by_type(int proc_type, int proc_num, int flags)
 
 		if (-1 != sigqueue(threads[i], SIGUSR1, s))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "the signal was redirected to \"%s\" process"
+			treegix_log(LOG_LEVEL_DEBUG, "the signal was redirected to \"%s\" process"
 					" pid:%d", get_process_type_string(process_type), threads[i]);
 		}
 		else
-			zabbix_log(LOG_LEVEL_ERR, "cannot redirect signal: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: %s", zbx_strerror(errno));
 	}
 
 	if (0 == found)
 	{
 		if (0 == proc_num)
 		{
-			zabbix_log(LOG_LEVEL_ERR, "cannot redirect signal:"
+			treegix_log(LOG_LEVEL_ERR, "cannot redirect signal:"
 					" \"%s\" process does not exist",
 					get_process_type_string(proc_type));
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_ERR, "cannot redirect signal:"
+			treegix_log(LOG_LEVEL_ERR, "cannot redirect signal:"
 					" \"%s #%d\" process does not exist",
 					get_process_type_string(proc_type), proc_num);
 		}
@@ -156,16 +156,16 @@ static void	zbx_signal_process_by_pid(int pid, int flags)
 
 		if (-1 != sigqueue(threads[i], SIGUSR1, s))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "the signal was redirected to process pid:%d",
+			treegix_log(LOG_LEVEL_DEBUG, "the signal was redirected to process pid:%d",
 					threads[i]);
 		}
 		else
-			zabbix_log(LOG_LEVEL_ERR, "cannot redirect signal: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: %s", zbx_strerror(errno));
 	}
 
 	if (0 != ZBX_RTC_GET_DATA(flags) && 0 == found)
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot redirect signal: process pid:%d is not a Zabbix child"
+		treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: process pid:%d is not a Treegix child"
 				" process", ZBX_RTC_GET_DATA(flags));
 	}
 }
@@ -191,7 +191,7 @@ static void	user1_signal_handler(int sig, siginfo_t *siginfo, void *context)
 #endif
 	SIG_CHECK_PARAMS(sig, siginfo, context);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "Got signal [signal:%d(%s),sender_pid:%d,sender_uid:%d,value_int:%d(0x%08x)].",
+	treegix_log(LOG_LEVEL_DEBUG, "Got signal [signal:%d(%s),sender_pid:%d,sender_uid:%d,value_int:%d(0x%08x)].",
 			sig, get_signal_name(sig),
 			SIG_CHECKED_FIELD(siginfo, si_pid),
 			SIG_CHECKED_FIELD(siginfo, si_uid),
@@ -208,7 +208,7 @@ static void	user1_signal_handler(int sig, siginfo_t *siginfo, void *context)
 
 	if (NULL == threads)
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot redirect signal: shutdown in progress");
+		treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: shutdown in progress");
 		return;
 	}
 
@@ -217,7 +217,7 @@ static void	user1_signal_handler(int sig, siginfo_t *siginfo, void *context)
 		case ZBX_RTC_CONFIG_CACHE_RELOAD:
 			if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY_PASSIVE))
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "forced reloading of the configuration cache"
+				treegix_log(LOG_LEVEL_WARNING, "forced reloading of the configuration cache"
 						" cannot be performed for a passive proxy");
 				return;
 			}
@@ -249,7 +249,7 @@ static void	pipe_signal_handler(int sig, siginfo_t *siginfo, void *context)
 {
 	SIG_CHECK_PARAMS(sig, siginfo, context);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "Got signal [signal:%d(%s),sender_pid:%d]. Ignoring ...",
+	treegix_log(LOG_LEVEL_DEBUG, "Got signal [signal:%d(%s),sender_pid:%d]. Ignoring ...",
 			sig, get_signal_name(sig),
 			SIG_CHECKED_FIELD(siginfo, si_pid));
 }
@@ -301,7 +301,7 @@ int	daemon_start(int allow_root, const char *user, unsigned int flags)
 	if (0 == allow_root && 0 == getuid())	/* running as root? */
 	{
 		if (NULL == user)
-			user = "zabbix";
+			user = "treegix";
 
 		pwd = getpwnam(user);
 

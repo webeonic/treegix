@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -147,7 +147,7 @@
 #define ZBX_PROTO_VALUE_GET_STATUS_PING		"ping"
 #define ZBX_PROTO_VALUE_GET_STATUS_FULL		"full"
 
-#define ZBX_PROTO_VALUE_ZABBIX_STATS		"zabbix.stats"
+#define ZBX_PROTO_VALUE_ZABBIX_STATS		"treegix.stats"
 #define ZBX_PROTO_VALUE_ZABBIX_STATS_QUEUE	"queue"
 
 #define ZBX_PROTO_VALUE_ZABBIX_ALERT_SEND	"alert.send"

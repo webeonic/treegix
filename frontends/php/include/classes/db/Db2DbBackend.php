@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ class Db2DbBackend extends DbBackend {
 				" AND TABSCHEMA=".$tabSchema));
 
 		if (!$tableExists) {
-			$this->setError(_('The frontend does not match Zabbix database.'));
+			$this->setError(_('The frontend does not match Treegix database.'));
 			return false;
 		}
 

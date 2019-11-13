@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ class CControllerAutoregUpdate extends CController {
 		if (!$ret) {
 			switch ($this->GetValidationError()) {
 				case self::VALIDATION_ERROR:
-					$response = new CControllerResponseRedirect((new CUrl('zabbix.php'))
+					$response = new CControllerResponseRedirect((new CUrl('treegix.php'))
 						->setArgument('action', 'autoreg.edit')
 						->getUrl()
 					);
@@ -61,7 +61,7 @@ class CControllerAutoregUpdate extends CController {
 
 		$result = (bool) API::Autoregistration()->update($autoreg);
 
-		$response = new CControllerResponseRedirect((new CUrl('zabbix.php'))
+		$response = new CControllerResponseRedirect((new CUrl('treegix.php'))
 			->setArgument('action', 'autoreg.edit')
 			->getUrl()
 		);

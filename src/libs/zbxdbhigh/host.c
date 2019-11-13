@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -184,7 +184,7 @@ static int	validate_linked_templates(const zbx_vector_uint64_t *templateids, cha
 	size_t		sql_alloc = 256, sql_offset;
 	int		ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 == templateids->values_num)
 		goto out;
@@ -360,7 +360,7 @@ static int	validate_linked_templates(const zbx_vector_uint64_t *templateids, cha
 
 	zbx_free(sql);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -449,7 +449,7 @@ static int	validate_inventory_links(zbx_uint64_t hostid, const zbx_vector_uint64
 	size_t		sql_alloc = 512, sql_offset;
 	int		ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	sql = (char *)zbx_malloc(sql, sql_alloc);
 
@@ -511,7 +511,7 @@ static int	validate_inventory_links(zbx_uint64_t hostid, const zbx_vector_uint64
 out:
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -543,7 +543,7 @@ static int	validate_httptests(zbx_uint64_t hostid, const zbx_vector_uint64_t *te
 	int		ret = SUCCEED;
 	zbx_uint64_t	t_httptestid, h_httptestid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	sql = (char *)zbx_malloc(sql, sql_alloc);
 
@@ -604,7 +604,7 @@ static int	validate_httptests(zbx_uint64_t hostid, const zbx_vector_uint64_t *te
 
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -615,7 +615,7 @@ static void	DBget_graphitems(const char *sql, ZBX_GRAPH_ITEMS **gitems, size_t *
 	DB_ROW		row;
 	ZBX_GRAPH_ITEMS	*gitem;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	*gitems_num = 0;
 
@@ -642,14 +642,14 @@ static void	DBget_graphitems(const char *sql, ZBX_GRAPH_ITEMS **gitems, size_t *
 		gitem->type = atoi(row[8]);
 		gitem->flags = (unsigned char)atoi(row[9]);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() [" ZBX_FS_SIZE_T "] itemid:" ZBX_FS_UI64 " key:'%s'",
+		treegix_log(LOG_LEVEL_DEBUG, "%s() [" ZBX_FS_SIZE_T "] itemid:" ZBX_FS_UI64 " key:'%s'",
 				__func__, (zbx_fs_size_t)*gitems_num, gitem->itemid, gitem->key);
 
 		(*gitems_num)++;
 	}
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -675,7 +675,7 @@ static int	DBcmp_graphitems(ZBX_GRAPH_ITEMS *gitems1, int gitems1_num,
 {
 	int	res = FAIL, i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (gitems1_num != gitems2_num)
 		goto clean;
@@ -686,7 +686,7 @@ static int	DBcmp_graphitems(ZBX_GRAPH_ITEMS *gitems1, int gitems1_num,
 
 	res = SUCCEED;
 clean:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
 
 	return res;
 }
@@ -722,7 +722,7 @@ static int	validate_host(zbx_uint64_t hostid, zbx_vector_uint64_t *templateids, 
 	zbx_uint64_t	graphid, interfaceids[INTERFACE_TYPE_COUNT];
 	unsigned char	t_flags, h_flags, type;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED != (ret = validate_inventory_links(hostid, templateids, error, max_error_len)))
 		goto out;
@@ -905,7 +905,7 @@ static int	validate_host(zbx_uint64_t hostid, zbx_vector_uint64_t *templateids, 
 	zbx_free(gitems);
 	zbx_free(chd_gitems);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1004,7 +1004,7 @@ static void	DBadd_to_housekeeper(zbx_vector_uint64_t *ids, const char *field, co
 	zbx_uint64_t	housekeeperid;
 	zbx_db_insert_t	db_insert;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, ids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, ids->values_num);
 
 	if (0 == ids->values_num)
 		goto out;
@@ -1022,7 +1022,7 @@ static void	DBadd_to_housekeeper(zbx_vector_uint64_t *ids, const char *field, co
 	zbx_db_insert_execute(&db_insert);
 	zbx_db_insert_clean(&db_insert);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1140,7 +1140,7 @@ static void	DBdelete_triggers_by_itemids(zbx_vector_uint64_t *itemids)
 	size_t			sql_alloc = 0, sql_offset = 0;
 	zbx_vector_uint64_t	triggerids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, itemids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, itemids->values_num);
 
 	if (0 == itemids->values_num)
 		goto out;
@@ -1156,7 +1156,7 @@ static void	DBdelete_triggers_by_itemids(zbx_vector_uint64_t *itemids)
 	zbx_vector_uint64_destroy(&triggerids);
 	zbx_free(sql);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1176,7 +1176,7 @@ void	DBdelete_graphs(zbx_vector_uint64_t *graphids)
 	zbx_uint64_t		resource_type = SCREEN_RESOURCE_GRAPH;
 	const char		*profile_idx =  "web.favorite.graphids";
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, graphids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, graphids->values_num);
 
 	if (0 == graphids->values_num)
 		goto out;
@@ -1222,7 +1222,7 @@ void	DBdelete_graphs(zbx_vector_uint64_t *graphids)
 
 	zbx_free(sql);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1281,7 +1281,7 @@ static void	DBdelete_graphs_by_itemids(zbx_vector_uint64_t *itemids)
 	zbx_vector_uint64_t	graphids;
 	int			index;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, itemids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, itemids->values_num);
 
 	if (0 == itemids->values_num)
 		goto out;
@@ -1323,7 +1323,7 @@ clean:
 	zbx_vector_uint64_destroy(&graphids);
 	zbx_free(sql);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1347,7 +1347,7 @@ void	DBdelete_items(zbx_vector_uint64_t *itemids)
 	const char		*event_tables[] = {"events"};
 	const char		*profile_idx = "web.favorite.graphids";
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, itemids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, itemids->values_num);
 
 	if (0 == itemids->values_num)
 		goto out;
@@ -1415,7 +1415,7 @@ void	DBdelete_items(zbx_vector_uint64_t *itemids)
 
 	zbx_free(sql);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1437,7 +1437,7 @@ static void	DBdelete_httptests(zbx_vector_uint64_t *httptestids)
 	size_t			sql_alloc = 256, sql_offset = 0;
 	zbx_vector_uint64_t	itemids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, httptestids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, httptestids->values_num);
 
 	if (0 == httptestids->values_num)
 		goto out;
@@ -1475,7 +1475,7 @@ static void	DBdelete_httptests(zbx_vector_uint64_t *httptestids)
 	zbx_vector_uint64_destroy(&itemids);
 	zbx_free(sql);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1676,7 +1676,7 @@ static void	DBdelete_template_httptests(zbx_uint64_t hostid, const zbx_vector_ui
 	size_t			sql_alloc = 0, sql_offset = 0;
 	zbx_vector_uint64_t	httptestids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&httptestids);
 
@@ -1697,7 +1697,7 @@ static void	DBdelete_template_httptests(zbx_uint64_t hostid, const zbx_vector_ui
 	zbx_vector_uint64_destroy(&httptestids);
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1720,7 +1720,7 @@ static void	DBdelete_template_graphs(zbx_uint64_t hostid, const zbx_vector_uint6
 	size_t			sql_alloc = 0, sql_offset = 0;
 	zbx_vector_uint64_t	graphids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&graphids);
 
@@ -1741,7 +1741,7 @@ static void	DBdelete_template_graphs(zbx_uint64_t hostid, const zbx_vector_uint6
 	zbx_vector_uint64_destroy(&graphids);
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1764,7 +1764,7 @@ static void	DBdelete_template_triggers(zbx_uint64_t hostid, const zbx_vector_uin
 	size_t			sql_alloc = 0, sql_offset = 0;
 	zbx_vector_uint64_t	triggerids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&triggerids);
 
@@ -1784,7 +1784,7 @@ static void	DBdelete_template_triggers(zbx_uint64_t hostid, const zbx_vector_uin
 	zbx_vector_uint64_destroy(&triggerids);
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1803,7 +1803,7 @@ static void	DBdelete_template_host_prototypes(zbx_uint64_t hostid, zbx_vector_ui
 	size_t			sql_alloc = 0, sql_offset = 0;
 	zbx_vector_uint64_t	host_prototypeids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&host_prototypeids);
 
@@ -1827,7 +1827,7 @@ static void	DBdelete_template_host_prototypes(zbx_uint64_t hostid, zbx_vector_ui
 
 	zbx_vector_uint64_destroy(&host_prototypeids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1850,7 +1850,7 @@ static void	DBdelete_template_items(zbx_uint64_t hostid, const zbx_vector_uint64
 	size_t			sql_alloc = 0, sql_offset = 0;
 	zbx_vector_uint64_t	itemids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&itemids);
 
@@ -1870,7 +1870,7 @@ static void	DBdelete_template_items(zbx_uint64_t hostid, const zbx_vector_uint64
 	zbx_vector_uint64_destroy(&itemids);
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1900,7 +1900,7 @@ static void	DBdelete_template_applications(zbx_uint64_t hostid, const zbx_vector
 	zbx_uint64_t		id;
 	zbx_vector_uint64_t	applicationids, apptemplateids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&applicationids);
 	zbx_vector_uint64_create(&apptemplateids);
@@ -1949,7 +1949,7 @@ static void	DBdelete_template_applications(zbx_uint64_t hostid, const zbx_vector
 	zbx_vector_uint64_destroy(&applicationids);
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1974,7 +1974,7 @@ static void	DBdelete_template_discovered_applications(zbx_uint64_t hostid, const
 	zbx_vector_uint64_t	applicationids, lld_ruleids;
 	int			index;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&applicationids);
 	zbx_vector_uint64_create(&lld_ruleids);
@@ -2053,7 +2053,7 @@ out:
 	zbx_vector_uint64_destroy(&applicationids);
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2232,7 +2232,7 @@ static int	DBcopy_trigger_to_host(zbx_uint64_t *new_triggerid, zbx_uint64_t *cur
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "Missing similar key '%s'"
+				treegix_log(LOG_LEVEL_DEBUG, "Missing similar key '%s'"
 						" for host [" ZBX_FS_UI64 "]",
 						row[4], hostid);
 				res = FAIL;
@@ -2584,7 +2584,7 @@ int	DBdelete_template_elements(zbx_uint64_t hostid, zbx_vector_uint64_t *del_tem
 	zbx_vector_uint64_t	templateids;
 	int			i, index, res = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&templateids);
 
@@ -2642,7 +2642,7 @@ int	DBdelete_template_elements(zbx_uint64_t hostid, zbx_vector_uint64_t *del_tem
 clean:
 	zbx_vector_uint64_destroy(&templateids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
 
 	return res;
 }
@@ -2682,7 +2682,7 @@ static void	DBcopy_template_application_prototypes(zbx_uint64_t hostid, const zb
 	size_t		sql_alloc = 0, sql_offset = 0;
 	zbx_db_insert_t	db_insert;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select ap.application_prototypeid,ap.name,i_t.itemid"
@@ -2724,7 +2724,7 @@ static void	DBcopy_template_application_prototypes(zbx_uint64_t hostid, const zb
 out:
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2747,7 +2747,7 @@ static void	DBcopy_template_item_application_prototypes(zbx_uint64_t hostid, con
 	size_t		sql_alloc = 0, sql_offset = 0;
 	zbx_db_insert_t	db_insert;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select ap.application_prototypeid,i.itemid"
@@ -2794,7 +2794,7 @@ static void	DBcopy_template_item_application_prototypes(zbx_uint64_t hostid, con
 out:
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2817,7 +2817,7 @@ static void	DBcopy_template_applications(zbx_uint64_t hostid, const zbx_vector_u
 	zbx_vector_ptr_t	applications;
 	int			i, j, new_applications = 0, new_application_templates = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&applications);
 
@@ -2929,7 +2929,7 @@ static void	DBcopy_template_applications(zbx_uint64_t hostid, const zbx_vector_u
 	zbx_vector_ptr_destroy(&applications);
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 typedef struct
@@ -3630,7 +3630,7 @@ static int	DBcopy_template_triggers(zbx_uint64_t hostid, const zbx_vector_uint64
 	int			res = SUCCEED;
 	zbx_vector_uint64_t	new_triggerids, cur_triggerids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&new_triggerids);
 	zbx_vector_uint64_create(&cur_triggerids);
@@ -3688,7 +3688,7 @@ static int	DBcopy_template_triggers(zbx_uint64_t hostid, const zbx_vector_uint64
 	zbx_vector_uint64_destroy(&cur_triggerids);
 	zbx_vector_uint64_destroy(&new_triggerids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
 
 	return res;
 }
@@ -3715,7 +3715,7 @@ static zbx_uint64_t	DBget_same_itemid(zbx_uint64_t hostid, zbx_uint64_t titemid)
 	DB_ROW		row;
 	zbx_uint64_t	itemid = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" ZBX_FS_UI64
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" ZBX_FS_UI64
 			" titemid:" ZBX_FS_UI64,
 			__func__, hostid, titemid);
 
@@ -3731,7 +3731,7 @@ static zbx_uint64_t	DBget_same_itemid(zbx_uint64_t hostid, zbx_uint64_t titemid)
 		ZBX_STR2UINT64(itemid, row[0]);
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_UI64, __func__, itemid);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_UI64, __func__, itemid);
 
 	return itemid;
 }
@@ -3769,7 +3769,7 @@ static void	DBcopy_graph_to_host(zbx_uint64_t hostid, zbx_uint64_t graphid,
 	char		*sql = NULL, *name_esc, *color_esc;
 	size_t		sql_alloc = ZBX_KIBIBYTE, sql_offset, i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	sql = (char *)zbx_malloc(sql, sql_alloc * sizeof(char));
 
@@ -3941,7 +3941,7 @@ static void	DBcopy_graph_to_host(zbx_uint64_t hostid, zbx_uint64_t graphid,
 	zbx_free(chd_gitems);
 	zbx_free(sql);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -3966,7 +3966,7 @@ static void	DBcopy_template_graphs(zbx_uint64_t hostid, const zbx_vector_uint64_
 	DB_ROW		row;
 	zbx_uint64_t	graphid, ymin_itemid, ymax_itemid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	sql = (char *)zbx_malloc(sql, sql_alloc);
 
@@ -4013,7 +4013,7 @@ static void	DBcopy_template_graphs(zbx_uint64_t hostid, const zbx_vector_uint64_
 	}
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 typedef struct
@@ -4102,7 +4102,7 @@ static void	DBget_httptests(zbx_uint64_t hostid, const zbx_vector_uint64_t *temp
 	zbx_uint64_t		httptestid, httpstepid, applicationid, itemid;
 	int			i, j, k;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&httptestids);
 	zbx_vector_uint64_create(&applications);
@@ -4509,7 +4509,7 @@ static void	DBget_httptests(zbx_uint64_t hostid, const zbx_vector_uint64_t *temp
 	zbx_vector_uint64_destroy(&applications);
 	zbx_vector_uint64_destroy(&httptestids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4826,7 +4826,7 @@ static void	DBcopy_template_httptests(zbx_uint64_t hostid, const zbx_vector_uint
 {
 	zbx_vector_ptr_t	httptests;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&httptests);
 
@@ -4836,7 +4836,7 @@ static void	DBcopy_template_httptests(zbx_uint64_t hostid, const zbx_vector_uint
 	clean_httptests(&httptests);
 	zbx_vector_ptr_destroy(&httptests);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4858,7 +4858,7 @@ int	DBcopy_template_elements(zbx_uint64_t hostid, zbx_vector_uint64_t *lnk_templ
 	int			i, res = SUCCEED;
 	char			*template_names, err[MAX_STRING_LEN];
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&templateids);
 
@@ -4924,7 +4924,7 @@ int	DBcopy_template_elements(zbx_uint64_t hostid, zbx_vector_uint64_t *lnk_templ
 clean:
 	zbx_vector_uint64_destroy(&templateids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
 
 	return res;
 }
@@ -4945,7 +4945,7 @@ void	DBdelete_hosts(zbx_vector_uint64_t *hostids)
 	size_t			sql_alloc = 0, sql_offset;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED != DBlock_hostids(hostids))
 		goto out;
@@ -5015,7 +5015,7 @@ void	DBdelete_hosts(zbx_vector_uint64_t *hostids)
 
 	zbx_vector_uint64_destroy(&selementids);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -5034,7 +5034,7 @@ void	DBdelete_hosts_with_prototypes(zbx_vector_uint64_t *hostids)
 	char			*sql = NULL;
 	size_t			sql_alloc = 0, sql_offset = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&host_prototypeids);
 
@@ -5054,7 +5054,7 @@ void	DBdelete_hosts_with_prototypes(zbx_vector_uint64_t *hostids)
 
 	DBdelete_hosts(hostids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -5089,7 +5089,7 @@ zbx_uint64_t	DBadd_interface(zbx_uint64_t hostid, unsigned char type, unsigned c
 	unsigned short	db_port;
 	const char	*db_ip, *db_dns;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	result = DBselect(
 			"select interfaceid,useip,ip,dns,port,main"
@@ -5192,7 +5192,7 @@ zbx_uint64_t	DBadd_interface(zbx_uint64_t hostid, unsigned char type, unsigned c
 	zbx_free(dns_esc);
 	zbx_free(ip_esc);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_UI64, __func__, interfaceid);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_UI64, __func__, interfaceid);
 
 	return interfaceid;
 }
@@ -5276,11 +5276,11 @@ static void	DBdelete_groups_validate(zbx_vector_uint64_t *groupids)
 
 		if (ZBX_INTERNAL_GROUP == internal)
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "host group \"%s\" is internal and cannot be deleted", row[2]);
+			treegix_log(LOG_LEVEL_WARNING, "host group \"%s\" is internal and cannot be deleted", row[2]);
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "host group \"%s\" cannot be deleted,"
+			treegix_log(LOG_LEVEL_WARNING, "host group \"%s\" cannot be deleted,"
 					" because some hosts or templates depend on it", row[2]);
 		}
 	}
@@ -5316,7 +5316,7 @@ static void	DBdelete_groups_validate(zbx_vector_uint64_t *groupids)
 				zbx_vector_uint64_remove(groupids, index);
 			}
 
-			zabbix_log(LOG_LEVEL_WARNING, "host group \"%s\" cannot be deleted,"
+			treegix_log(LOG_LEVEL_WARNING, "host group \"%s\" cannot be deleted,"
 					" because it is used by a host prototype", row[1]);
 		}
 		DBfree_result(result);
@@ -5346,7 +5346,7 @@ void	DBdelete_groups(zbx_vector_uint64_t *groupids)
 	zbx_uint64_t		resource_types_update[] = {SCREEN_RESOURCE_HOST_INFO, SCREEN_RESOURCE_TRIGGER_INFO,
 						SCREEN_RESOURCE_HOSTGROUP_TRIGGERS, SCREEN_RESOURCE_HOST_TRIGGERS};
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, groupids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() values_num:%d", __func__, groupids->values_num);
 
 	DBdelete_groups_validate(groupids);
 
@@ -5411,7 +5411,7 @@ void	DBdelete_groups(zbx_vector_uint64_t *groupids)
 
 	zbx_free(sql);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************

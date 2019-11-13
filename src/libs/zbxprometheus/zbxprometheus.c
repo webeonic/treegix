@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -772,7 +772,7 @@ static int	prometheus_filter_init(zbx_prometheus_filter_t *filter, const char *d
 	size_t		pos = 0;
 	zbx_strloc_t	loc;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	memset(filter, 0, sizeof(zbx_prometheus_filter_t));
 	zbx_vector_ptr_create(&filter->labels);
@@ -834,10 +834,10 @@ out:
 	if (FAIL == ret)
 	{
 		prometheus_filter_clear(filter);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() Prometheus pattern error: %s", __func__, *error);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() Prometheus pattern error: %s", __func__, *error);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -1400,7 +1400,7 @@ static int	prometheus_parse_rows(zbx_prometheus_filter_t *filter, const char *da
 	char			*errmsg = NULL;
 	zbx_strloc_t		loc;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	for (pos = 0; '\0' != data[pos]; pos = skip_row(data, pos), row_num++)
 	{
@@ -1455,7 +1455,7 @@ out:
 		zbx_free(errmsg);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s rows:%d hints:%d", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s rows:%d hints:%d", __func__, zbx_result_string(ret),
 			rows->values_num, (NULL == hints ? 0 : hints->num_data));
 	return ret;
 }
@@ -1565,7 +1565,7 @@ int	zbx_prometheus_pattern(const char *data, const char *filter_data, const char
 	int			ret = FAIL;
 	zbx_vector_ptr_t	rows;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (FAIL == prometheus_filter_init(&filter, filter_data, &errmsg))
 	{
@@ -1586,14 +1586,14 @@ int	zbx_prometheus_pattern(const char *data, const char *filter_data, const char
 		goto cleanup;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s(): output:%s", __func__, *value);
+	treegix_log(LOG_LEVEL_DEBUG, "%s(): output:%s", __func__, *value);
 	ret = SUCCEED;
 cleanup:
 	zbx_vector_ptr_clear_ext(&rows, (zbx_clean_func_t)prometheus_row_free);
 	zbx_vector_ptr_destroy(&rows);
 	prometheus_filter_clear(&filter);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 	return ret;
 }
 
@@ -1623,7 +1623,7 @@ int	zbx_prometheus_to_json(const char *data, const char *filter_data, char **val
 	zbx_hashset_iter_t	iter;
 	struct zbx_json		json;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (FAIL == prometheus_filter_init(&filter, filter_data, &errmsg))
 	{
@@ -1677,7 +1677,7 @@ int	zbx_prometheus_to_json(const char *data, const char *filter_data, char **val
 
 	*value = zbx_strdup(NULL, json.buffer);
 	zbx_json_free(&json);
-	zabbix_log(LOG_LEVEL_DEBUG, "%s(): output:%s", __func__, *value);
+	treegix_log(LOG_LEVEL_DEBUG, "%s(): output:%s", __func__, *value);
 	ret = SUCCEED;
 cleanup:
 	zbx_hashset_iter_reset(&hints, &iter);
@@ -1693,7 +1693,7 @@ cleanup:
 	zbx_vector_ptr_destroy(&rows);
 	prometheus_filter_clear(&filter);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 	return ret;
 }
 

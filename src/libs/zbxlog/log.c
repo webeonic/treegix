@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ int			zbx_log_level = LOG_LEVEL_WARNING;
 #endif
 
 #ifndef _WINDOWS
-const char	*zabbix_get_log_level_string(void)
+const char	*treegix_get_log_level_string(void)
 {
 	switch (zbx_log_level)
 	{
@@ -79,7 +79,7 @@ const char	*zabbix_get_log_level_string(void)
 	exit(EXIT_FAILURE);
 }
 
-int	zabbix_increase_log_level(void)
+int	treegix_increase_log_level(void)
 {
 	if (LOG_LEVEL_TRACE == zbx_log_level)
 		return FAIL;
@@ -89,7 +89,7 @@ int	zabbix_increase_log_level(void)
 	return SUCCEED;
 }
 
-int	zabbix_decrease_log_level(void)
+int	treegix_decrease_log_level(void)
 {
 	if (LOG_LEVEL_EMPTY == zbx_log_level)
 		return FAIL;
@@ -276,7 +276,7 @@ void	zbx_handle_log(void)
 	UNLOCK_LOG;
 }
 
-int	zabbix_open_log(int type, int level, const char *filename, char **error)
+int	treegix_open_log(int type, int level, const char *filename, char **error)
 {
 	log_type = type;
 	zbx_log_level = level;
@@ -336,7 +336,7 @@ int	zabbix_open_log(int type, int level, const char *filename, char **error)
 	return SUCCEED;
 }
 
-void	zabbix_close_log(void)
+void	treegix_close_log(void)
 {
 	if (LOG_TYPE_SYSTEM == log_type)
 	{
@@ -353,7 +353,7 @@ void	zabbix_close_log(void)
 	}
 }
 
-void	__zbx_zabbix_log(int level, const char *fmt, ...)
+void	__zbx_treegix_log(int level, const char *fmt, ...)
 {
 	char		message[MAX_BUFFER_LEN];
 	va_list		args;
@@ -566,21 +566,21 @@ int	zbx_validate_log_parameters(ZBX_TASK_EX *task)
 {
 	if (LOG_TYPE_UNDEFINED == CONFIG_LOG_TYPE)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "invalid \"LogType\" configuration parameter: '%s'", CONFIG_LOG_TYPE_STR);
+		treegix_log(LOG_LEVEL_CRIT, "invalid \"LogType\" configuration parameter: '%s'", CONFIG_LOG_TYPE_STR);
 		return FAIL;
 	}
 
 	if (LOG_TYPE_CONSOLE == CONFIG_LOG_TYPE && 0 == (task->flags & ZBX_TASK_FLAG_FOREGROUND) &&
 			ZBX_TASK_START == task->task)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "\"LogType\" \"console\" parameter can only be used with the"
+		treegix_log(LOG_LEVEL_CRIT, "\"LogType\" \"console\" parameter can only be used with the"
 				" -f (--foreground) command line option");
 		return FAIL;
 	}
 
 	if (LOG_TYPE_FILE == CONFIG_LOG_TYPE && (NULL == CONFIG_LOG_FILE || '\0' == *CONFIG_LOG_FILE))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "\"LogType\" \"file\" parameter requires \"LogFile\" parameter to be set");
+		treegix_log(LOG_LEVEL_CRIT, "\"LogType\" \"file\" parameter requires \"LogFile\" parameter to be set");
 		return FAIL;
 	}
 

@@ -1,5 +1,5 @@
-This directory contains a sample module, which extends functionality of Zabbix
+This directory contains a sample module, which extends functionality of Treegix
  Agent. The dummy.c module is well commented, have a look at the sources to
- learn how to create Zabbix modules.
+ learn how to create Treegix modules.
 
 Run 'make' to build it. It should produce dummy.so.

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -1456,7 +1456,7 @@ static void	link_template_dependent_items(zbx_vector_ptr_t *items)
 	int			i, index;
 	zbx_vector_ptr_t	template_index;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&template_index);
 	zbx_vector_ptr_append_array(&template_index, items->values, items->values_num);
@@ -1486,7 +1486,7 @@ static void	link_template_dependent_items(zbx_vector_ptr_t *items)
 
 	zbx_vector_ptr_destroy(&template_index);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1504,7 +1504,7 @@ void	DBcopy_template_items(zbx_uint64_t hostid, const zbx_vector_uint64_t *templ
 	zbx_vector_ptr_t	items, lld_rules;
 	int			new_conditions = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&items);
 	zbx_vector_ptr_create(&lld_rules);
@@ -1533,5 +1533,5 @@ out:
 	zbx_vector_ptr_clear_ext(&items, (zbx_clean_func_t)free_template_item);
 	zbx_vector_ptr_destroy(&items);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }

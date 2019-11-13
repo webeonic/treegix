@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -18,19 +18,19 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 **/
 
-$pageHeader = (new CPageHeader(_('Fatal error, please report to the Zabbix team')))
+$pageHeader = (new CPageHeader(_('Fatal error, please report to the Treegix team')))
 	->addCssFile('assets/styles/'.CHtml::encode($data['theme']).'.css')
 	->display();
 
 $buttons = [
 	(new CButton('back', _('Go to dashboard')))
-		->onClick('javascript: document.location = "zabbix.php?action=dashboard.view"'
+		->onClick('javascript: document.location = "treegix.php?action=dashboard.view"'
 )];
 
 echo '<body lang="'.CWebUser::getLang().'">';
 
 (new CTag('main', true,
-	new CWarning(_('Fatal error, please report to the Zabbix team'), $data['messages'], $buttons)
+	new CWarning(_('Fatal error, please report to the Treegix team'), $data['messages'], $buttons)
 ))->show();
 
 echo '</body>';

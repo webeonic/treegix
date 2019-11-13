@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ $form->addItem([
 	$data['paging'],
 	new CActionButtonList('action', 'valuemapids', [
 		'valuemap.export' => ['name' => _('Export'), 'redirect' =>
-			(new CUrl('zabbix.php'))
+			(new CUrl('treegix.php'))
 				->setArgument('action', 'export.valuemaps.xml')
 				->setArgument('backurl', (new CUrl('adm.valuemapping.php'))
 					->setArgument('page', getPageNumber())

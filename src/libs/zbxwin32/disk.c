@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ zbx_uint64_t	get_cluster_size(const char *path, char **error)
 	/* Here GetFullPathName() is used in multithreaded application. */
 	/* We assume it is safe because: */
 	/*   - only file names with absolute paths are used (i.e. no relative paths) and */
-	/*   - SetCurrentDirectory() is not used in Zabbix agent. */
+	/*   - SetCurrentDirectory() is not used in Treegix agent. */
 
 	if (0 == (path_length = GetFullPathName(wpath, 0, NULL, NULL) + 1))
 	{

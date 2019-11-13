@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@
 class C40ImportConverter extends CConverter {
 
 	public function convert($data) {
-		$data['zabbix_export']['version'] = '4.2';
+		$data['treegix_export']['version'] = '4.2';
 
-		if (array_key_exists('hosts', $data['zabbix_export'])) {
-			$data['zabbix_export']['hosts'] = $this->convertHosts($data['zabbix_export']['hosts']);
+		if (array_key_exists('hosts', $data['treegix_export'])) {
+			$data['treegix_export']['hosts'] = $this->convertHosts($data['treegix_export']['hosts']);
 		}
 
-		if (array_key_exists('templates', $data['zabbix_export'])) {
-			$data['zabbix_export']['templates'] = $this->convertHosts($data['zabbix_export']['templates']);
+		if (array_key_exists('templates', $data['treegix_export'])) {
+			$data['treegix_export']['templates'] = $this->convertHosts($data['treegix_export']['templates']);
 		}
 
 		return $data;

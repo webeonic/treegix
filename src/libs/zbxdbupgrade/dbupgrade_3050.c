@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -558,7 +558,7 @@ static int	DBpatch_3050044(void)
 
 static int	DBpatch_3050045(void)
 {
-	const char	*sql = "update users set url='zabbix.php?action=problem.view' where url like '%tr_status.php%'";
+	const char	*sql = "update users set url='treegix.php?action=problem.view' where url like '%tr_status.php%'";
 
 	if (0 == (program_type & ZBX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
@@ -1497,7 +1497,7 @@ static int	DBpatch_3050122(void)
 
 		if (SUCCEED != zbx_function_param_quote(&parameter_anchored, was_quoted))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "Cannot convert parameter \"%s\" of trigger function"
+			treegix_log(LOG_LEVEL_WARNING, "Cannot convert parameter \"%s\" of trigger function"
 					" logsource (functionid: %s) to regexp during database upgrade. The"
 					" parameter needs to but cannot be quoted after conversion.",
 					row[1], row[0]);
@@ -1517,7 +1517,7 @@ static int	DBpatch_3050122(void)
 
 		if (FUNCTION_PARAM_LEN < (current_len = zbx_strlen_utf8(processed_parameter)))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "Cannot convert parameter \"%s\" of trigger function logsource"
+			treegix_log(LOG_LEVEL_WARNING, "Cannot convert parameter \"%s\" of trigger function logsource"
 					" (functionid: %s) to regexp during database upgrade. The converted"
 					" value is too long for field \"parameter\" - " ZBX_FS_SIZE_T " characters."
 					" Allowed length is %d characters.",

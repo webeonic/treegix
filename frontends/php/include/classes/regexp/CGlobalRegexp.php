@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,9 +20,9 @@
 
 
 /**
- * Class for regular expressions and Zabbix global expressions.
- * Any string that begins with '@' is treated as Zabbix expression.
- * Data from Zabbix expressions is taken from DB, and cached in static variable.
+ * Class for regular expressions and Treegix global expressions.
+ * Any string that begins with '@' is treated as Treegix expression.
+ * Data from Treegix expressions is taken from DB, and cached in static variable.
  *
  * @throws Exception
  */
@@ -31,29 +31,29 @@ class CGlobalRegexp {
 	const ERROR_REGEXP_NOT_EXISTS = 1;
 
 	/**
-	 * Determine if it's Zabbix expression.
+	 * Determine if it's Treegix expression.
 	 *
 	 * @var bool
 	 */
-	protected $isZabbixRegexp;
+	protected $isTreegixRegexp;
 
 	/**
 	 * If we create simple regular expression this contains itself as a string,
-	 * if we create Zabbix expression this contains array of expressions taken from DB.
+	 * if we create Treegix expression this contains array of expressions taken from DB.
 	 *
 	 * @var array|string
 	 */
 	protected $expression;
 
 	/**
-	 * Cache for Zabbix expressions.
+	 * Cache for Treegix expressions.
 	 *
 	 * @var array
 	 */
 	private static $_cachedExpressions = [];
 
 	/**
-	 * Initialize expression, gets data from db for Zabbix expressions.
+	 * Initialize expression, gets data from db for Treegix expressions.
 	 *
 	 * @param string $regExp
 	 *
@@ -61,7 +61,7 @@ class CGlobalRegexp {
 	 */
 	public function __construct($regExp) {
 		if ($regExp[0] == '@') {
-			$this->isZabbixRegexp = true;
+			$this->isTreegixRegexp = true;
 			$regExp = substr($regExp, 1);
 
 			if (!isset(self::$_cachedExpressions[$regExp])) {
@@ -85,7 +85,7 @@ class CGlobalRegexp {
 			$this->expression = self::$_cachedExpressions[$regExp];
 		}
 		else {
-			$this->isZabbixRegexp = false;
+			$this->isTreegixRegexp = false;
 			$this->expression = $regExp;
 		}
 	}
@@ -96,7 +96,7 @@ class CGlobalRegexp {
 	 * @return bool
 	 */
 	public function match($string) {
-		if ($this->isZabbixRegexp) {
+		if ($this->isTreegixRegexp) {
 			$result = true;
 
 			foreach ($this->expression as $expression) {

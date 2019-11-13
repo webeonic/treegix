@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ else {
 
 	foreach ($data['drules'] as $drule) {
 		$table->addRow([
-			new CLink($drule['name'], (new CUrl('zabbix.php'))
+			new CLink($drule['name'], (new CUrl('treegix.php'))
 				->setArgument('action', 'discovery.view')
 				->setArgument('filter_set', 1)
 				->setArgument('filter_druleids', [$drule['druleid']])

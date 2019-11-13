@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include "zbxembed.h"
 #include "embed.h"
 #include "httprequest.h"
-#include "zabbix.h"
+#include "treegix.h"
 
 #include "duktape.h"
 
@@ -49,7 +49,7 @@ static void	es_handle_error(void *udata, const char *msg)
 {
 	zbx_es_env_t	*env = (zbx_es_env_t *)udata;
 
-	zabbix_log(LOG_LEVEL_WARNING, "Cannot process javascript, fatal error: %s", msg);
+	treegix_log(LOG_LEVEL_WARNING, "Cannot process javascript, fatal error: %s", msg);
 
 	env->fatal_error = 1;
 	env->error = zbx_strdup(env->error, msg);
@@ -163,7 +163,7 @@ void	zbx_es_destroy(zbx_es_t *es)
 
 	if (SUCCEED != zbx_es_destroy_env(es, &error))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "Cannot destroy embedded scripting engine environment: %s", error);
+		treegix_log(LOG_LEVEL_WARNING, "Cannot destroy embedded scripting engine environment: %s", error);
 	}
 }
 
@@ -184,7 +184,7 @@ int	zbx_es_init_env(zbx_es_t *es, char **error)
 {
 	volatile int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	es->env = zbx_malloc(NULL, sizeof(zbx_es_env_t));
 	memset(es->env, 0, sizeof(zbx_es_env_t));
@@ -201,8 +201,8 @@ int	zbx_es_init_env(zbx_es_t *es, char **error)
 		goto out;
 	}
 
-	/* initialize Zabbix object */
-	zbx_es_init_zabbix(es, error);
+	/* initialize Treegix object */
+	zbx_es_init_treegix(es, error);
 
 	/* remove Duktape object */
 	duk_push_global_object(es->env->ctx);
@@ -232,7 +232,7 @@ out:
 		zbx_free(es->env);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret),
 			ZBX_NULL2EMPTY_STR(*error));
 
 	return ret;
@@ -255,7 +255,7 @@ int	zbx_es_destroy_env(zbx_es_t *es, char **error)
 {
 	int	ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 != setjmp(es->env->loc))
 	{
@@ -270,7 +270,7 @@ int	zbx_es_destroy_env(zbx_es_t *es, char **error)
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret),
 		ZBX_NULL2EMPTY_STR(*error));
 
 	return ret;
@@ -310,7 +310,7 @@ int	zbx_es_fatal_error(zbx_es_t *es)
 
 	if (ZBX_ES_STACK_LIMIT < duk_get_top(es->env->ctx))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "embedded scripting engine stack exceeded limits,"
+		treegix_log(LOG_LEVEL_WARNING, "embedded scripting engine stack exceeded limits,"
 				" resetting scripting environment");
 		return SUCCEED;
 	}
@@ -345,7 +345,7 @@ int	zbx_es_compile(zbx_es_t *es, const char *script, char **code, int *size, cha
 	char		* volatile func = NULL, *ptr;
 	volatile int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED == zbx_es_fatal_error(es))
 	{
@@ -397,7 +397,7 @@ int	zbx_es_compile(zbx_es_t *es, const char *script, char **code, int *size, cha
 out:
 	zbx_free(func);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), ZBX_NULL2EMPTY_STR(*error));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), ZBX_NULL2EMPTY_STR(*error));
 
 	return ret;
 }
@@ -431,7 +431,7 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 	void		*buffer;
 	volatile int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED == zbx_es_fatal_error(es))
 	{
@@ -486,7 +486,7 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 		else
 			*output = zbx_strdup(NULL, duk_safe_to_string(es->env->ctx, -1));
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() output:'%s'", __func__, ZBX_NULL2EMPTY_STR(*output));
+		treegix_log(LOG_LEVEL_DEBUG, "%s() output:'%s'", __func__, ZBX_NULL2EMPTY_STR(*output));
 		ret = SUCCEED;
 	}
 	else
@@ -495,7 +495,7 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 	duk_pop(es->env->ctx);
 	es->env->rt_error_num = 0;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), ZBX_NULL2EMPTY_STR(*error));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), ZBX_NULL2EMPTY_STR(*error));
 
 	return ret;
 }

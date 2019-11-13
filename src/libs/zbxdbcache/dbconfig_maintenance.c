@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ void	DCsync_maintenances(zbx_dbsync_t *sync)
 	zbx_dc_maintenance_t	*maintenance;
 	int			found, ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -106,7 +106,7 @@ void	DCsync_maintenances(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->maintenances, maintenance);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -151,7 +151,7 @@ void	DCsync_maintenance_tags(zbx_dbsync_t *sync)
 	zbx_vector_ptr_t		maintenances;
 	int				found, ret, index, i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&maintenances);
 
@@ -226,7 +226,7 @@ void	DCsync_maintenance_tags(zbx_dbsync_t *sync)
 
 	zbx_vector_ptr_destroy(&maintenances);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -260,7 +260,7 @@ void	DCsync_maintenance_periods(zbx_dbsync_t *sync)
 	zbx_dc_maintenance_t		*maintenance;
 	int				found, ret, index;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -318,7 +318,7 @@ void	DCsync_maintenance_periods(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->maintenance_periods, period);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -343,7 +343,7 @@ void	DCsync_maintenance_groups(zbx_dbsync_t *sync)
 	int			index, ret;
 	zbx_uint64_t		last_maintenanceid = 0, maintenanceid, groupid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -391,7 +391,7 @@ void	DCsync_maintenance_groups(zbx_dbsync_t *sync)
 		zbx_vector_uint64_remove_noorder(&maintenance->groupids, index);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -417,7 +417,7 @@ void	DCsync_maintenance_hosts(zbx_dbsync_t *sync)
 	int			index, ret, i;
 	zbx_uint64_t		last_maintenanceid, maintenanceid, hostid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&maintenances);
 
@@ -480,7 +480,7 @@ void	DCsync_maintenance_hosts(zbx_dbsync_t *sync)
 
 	zbx_vector_ptr_destroy(&maintenances);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -746,7 +746,7 @@ int	zbx_dc_update_maintenances(void)
 	struct tm			*tm;
 	time_t				now, period_start, period_end, running_since, running_until;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	now = time(NULL);
 	tm = localtime(&now);
@@ -839,7 +839,7 @@ int	zbx_dc_update_maintenances(void)
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() started:%d stopped:%d running:%d", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() started:%d stopped:%d running:%d", __func__,
 			started_num, stopped_num, running_num);
 
 	return ret;
@@ -1083,7 +1083,7 @@ void	zbx_dc_get_host_maintenance_updates(const zbx_vector_uint64_t *maintenancei
 {
 	zbx_vector_ptr_t	maintenances;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&maintenances);
 	zbx_vector_ptr_reserve(&maintenances, 100);
@@ -1100,7 +1100,7 @@ void	zbx_dc_get_host_maintenance_updates(const zbx_vector_uint64_t *maintenancei
 
 	zbx_vector_ptr_destroy(&maintenances);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() updates:%d", __func__, updates->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() updates:%d", __func__, updates->values_num);
 }
 
 /******************************************************************************
@@ -1352,7 +1352,7 @@ int	zbx_dc_get_event_maintenances(zbx_vector_ptr_t *event_queries, const zbx_vec
 	zbx_vector_uint64_t		hostids;
 	zbx_uint64_pair_t		pair;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&maintenances);
 	zbx_vector_ptr_reserve(&maintenances, 100);
@@ -1427,7 +1427,7 @@ unlock:
 	zbx_vector_uint64_destroy(&hostids);
 	zbx_vector_ptr_destroy(&maintenances);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }

@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# Zabbix agent start/stop script.
+# Treegix agent start/stop script.
 #
-# Copyright (C) 2001-2019 Zabbix SIA
+# Copyright (C) 2001-2019 Treegix SIA
 
-NAME=zabbix_agentd
+NAME=treegix_agentd
 DAEMON=/usr/local/sbin/${NAME}
-DESC="Zabbix agent daemon"
+DESC="Treegix agent daemon"
 PID=/tmp/$NAME.pid
 
 test -f $DAEMON || exit 0

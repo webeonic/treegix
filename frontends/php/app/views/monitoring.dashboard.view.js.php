@@ -64,7 +64,7 @@
 	function dashbrdApplyProperties() {
 		var dashboard = jQuery('.dashbrd-grid-container'),
 			form = jQuery('[name=dashboard_properties_form]'),
-			url = new Curl('zabbix.php', false),
+			url = new Curl('treegix.php', false),
 			form_data = {};
 
 		form.trimValues(['#name']);
@@ -106,7 +106,7 @@
 
 	function dashbrdConfirmSharing() {
 		var form = jQuery('[name=dashboard_sharing_form]'),
-			url = new Curl('zabbix.php', false);
+			url = new Curl('treegix.php', false);
 
 		url.setArgument('action', 'dashboard.share.update');
 

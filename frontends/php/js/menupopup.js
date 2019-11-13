@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -144,7 +144,7 @@ function getMenuPopupHost(options, trigger_elmnt) {
 			problems.disabled = true;
 		}
 		else {
-			var url = new Curl('zabbix.php', false);
+			var url = new Curl('treegix.php', false);
 			url.setArgument('action', 'problem.view');
 			url.setArgument('filter_hostids[]', options.hostid);
 			if (typeof options.severity_min !== 'undefined') {
@@ -224,7 +224,7 @@ function getMenuPopupMapElementSubmap(options) {
 			', "' + options.widget_uniqueid + '");', false);
 	}
 	else {
-		submap_url = new Curl('zabbix.php', false);
+		submap_url = new Curl('treegix.php', false);
 		submap_url.setArgument('action', 'map.view');
 		submap_url.setArgument('sysmapid', options.sysmapid);
 		if (typeof options.severity_min !== 'undefined') {
@@ -266,7 +266,7 @@ function getMenuPopupMapElementSubmap(options) {
  */
 function getMenuPopupMapElementGroup(options) {
 	var sections = [],
-		problems_url = new Curl('zabbix.php', false);
+		problems_url = new Curl('treegix.php', false);
 
 	problems_url.setArgument('action', 'problem.view');
 	problems_url.setArgument('filter_groupids[]', options.groupid);
@@ -314,7 +314,7 @@ function getMenuPopupMapElementGroup(options) {
  */
 function getMenuPopupMapElementTrigger(options) {
 	var sections = [],
-		problems_url = new Curl('zabbix.php', false);
+		problems_url = new Curl('treegix.php', false);
 
 	problems_url.setArgument('action', 'problem.view');
 	problems_url.setArgument('filter_triggerids[]', options.triggerids);
@@ -444,7 +444,7 @@ function getMenuPopupRefresh(options, trigger_elmnt) {
 					$obj.closest('.menu-popup').menuPopup('close', trigger_elmnt);
 				}
 				else {
-					var url = new Curl('zabbix.php');
+					var url = new Curl('treegix.php');
 					url.setArgument('action', 'dashboard.widget.rfrate');
 
 					jQuery.ajax({
@@ -511,9 +511,9 @@ function getMenuPopupRefresh(options, trigger_elmnt) {
  * @return array
  */
 function getMenuPopupDashboard(options, trigger_elmnt) {
-	var	url_create = new Curl('zabbix.php', false),
-		url_clone = new Curl('zabbix.php', false),
-		url_delete = new Curl('zabbix.php', false);
+	var	url_create = new Curl('treegix.php', false),
+		url_clone = new Curl('treegix.php', false),
+		url_delete = new Curl('treegix.php', false);
 
 	url_create.setArgument('action', 'dashboard.view');
 	url_create.setArgument('new', '1');
@@ -593,7 +593,7 @@ function getMenuPopupTrigger(options, trigger_elmnt) {
 	};
 
 	if (typeof options.showEvents !== 'undefined' && options.showEvents) {
-		var url = new Curl('zabbix.php', false);
+		var url = new Curl('treegix.php', false);
 		url.setArgument('action', 'problem.view');
 		url.setArgument('filter_triggerids[]', options.triggerid);
 		url.setArgument('filter_set', '1');
@@ -608,7 +608,7 @@ function getMenuPopupTrigger(options, trigger_elmnt) {
 
 	// acknowledge
 	if (typeof options.acknowledge !== 'undefined' && objectSize(options.acknowledge) > 0) {
-		var url = new Curl('zabbix.php', false);
+		var url = new Curl('treegix.php', false);
 
 		url.setArgument('action', 'acknowledge.edit');
 		url.setArgument('eventids[]', options.eventid);

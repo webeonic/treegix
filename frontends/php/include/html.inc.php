@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -534,7 +534,7 @@ function get_header_sysmap_table($sysmapid, $name, $severity_min) {
 			(new CSpan())
 				->addClass(ZBX_STYLE_SELECTED)
 				->addItem(
-					new CLink($name, (new CUrl('zabbix.php'))
+					new CLink($name, (new CUrl('treegix.php'))
 						->setArgument('action', 'map.view')
 						->setArgument('sysmapid', $sysmapid)
 						->setArgument('severity_min', $severity_min)
@@ -554,7 +554,7 @@ function get_header_sysmap_table($sysmapid, $name, $severity_min) {
 
 		foreach ($parent_sysmaps as $parent_sysmap) {
 			$parent_maps->addItem((new CSpan())->addItem(
-				new CLink($parent_sysmap['name'], (new CUrl('zabbix.php'))
+				new CLink($parent_sysmap['name'], (new CUrl('treegix.php'))
 					->setArgument('action', 'map.view')
 					->setArgument('sysmapid', $parent_sysmap['sysmapid'])
 					->setArgument('severity_min', $severity_min)
@@ -759,7 +759,7 @@ function makePageFooter($with_version = true) {
  * @return CComboBox
  */
 function makeAdministrationGeneralMenu($selected) {
-	$autoreg_url = (new CUrl('zabbix.php'))
+	$autoreg_url = (new CUrl('treegix.php'))
 		->setArgument('action', 'autoreg.edit')
 		->getUrl();
 

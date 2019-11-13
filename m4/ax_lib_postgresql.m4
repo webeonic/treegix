@@ -36,7 +36,7 @@
 #
 # LAST MODIFICATION
 #
-#   2017-09-26   modified version detection to detect PostgreSQL 10 (Zabbix)
+#   2017-09-26   modified version detection to detect PostgreSQL 10 (Treegix)
 #   2006-07-16
 #
 # COPYLEFT

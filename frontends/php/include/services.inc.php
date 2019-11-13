@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -206,7 +206,7 @@ function createServiceMonitoringTree(array $services, array $slaData, $period, &
 		];
 
 		$caption = new CLink($service['name'],
-			'zabbix.php?action=report.services'.'&serviceid='.$service['serviceid'].'&period='.$periods[$period]
+			'treegix.php?action=report.services'.'&serviceid='.$service['serviceid'].'&period='.$periods[$period]
 		);
 
 		$trigger = $service['trigger'];
@@ -215,7 +215,7 @@ function createServiceMonitoringTree(array $services, array $slaData, $period, &
 				$caption,
 				' - ',
 				new CLink($trigger['description'],
-					(new CUrl('zabbix.php'))
+					(new CUrl('treegix.php'))
 						->setArgument('action', 'problem.view')
 						->setArgument('filter_triggerids[]', $trigger['triggerid'])
 						->setArgument('filter_set', '1')
@@ -230,7 +230,7 @@ function createServiceMonitoringTree(array $services, array $slaData, $period, &
 				$reason[] = ', ';
 			}
 			$reason[] = new CLink($problemTrigger['description'],
-				(new CUrl('zabbix.php'))
+				(new CUrl('treegix.php'))
 					->setArgument('action', 'problem.view')
 					->setArgument('filter_triggerids[]', $problemTrigger['triggerid'])
 					->setArgument('filter_set', '1')

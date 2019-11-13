@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 
 #if defined(_WINDOWS)
-/* Typical thread is long-running, if necessary, it initializes TLS for itself. Zabbix sender is an exception. If */
+/* Typical thread is long-running, if necessary, it initializes TLS for itself. Treegix sender is an exception. If */
 /* data is sent from a file or in real time then sender's 'main' thread starts the 'send_value' thread for each   */
 /* 250 values to be sent. To avoid TLS initialization on every start of 'send_value' thread we initialize TLS in  */
 /* 'main' thread and use this structure for passing minimum TLS variables into 'send_value' thread. */

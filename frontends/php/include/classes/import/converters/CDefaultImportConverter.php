@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -32,11 +32,11 @@ class CDefaultImportConverter extends CConverter {
 
 	public function convert($data) {
 		foreach ($this->rules['rules'] as $tag => $tag_rules) {
-			if (!array_key_exists($tag, $data['zabbix_export'])) {
+			if (!array_key_exists($tag, $data['treegix_export'])) {
 				continue;
 			}
 
-			$data['zabbix_export'][$tag] = $this->addDefaultValue($data['zabbix_export'][$tag], $tag_rules);
+			$data['treegix_export'][$tag] = $this->addDefaultValue($data['treegix_export'][$tag], $tag_rules);
 		}
 
 		return $data;

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -567,7 +567,7 @@ static int	check_data_uniqueness(const char *table_name, const char *field_name)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "Duplicate data \"%s\" for field \"%s\" is found in table \"%s\"."
+		treegix_log(LOG_LEVEL_CRIT, "Duplicate data \"%s\" for field \"%s\" is found in table \"%s\"."
 				" Remove it manually and restart the process.", row[0], field_name, table_name);
 		ret = FAIL;
 	}
@@ -946,7 +946,7 @@ static int	DBpatch_2030094(void)
 
 		if (2048 < expr_offset && 2048 /* TRIGGER_EXPRESSION_LEN */ < zbx_strlen_utf8(expr))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot convert trigger expression \"%s\":"
+			treegix_log(LOG_LEVEL_WARNING, "cannot convert trigger expression \"%s\":"
 					" resulting expression is too long", row[1]);
 		}
 		else if (0 != strcmp(row[1], expr))
@@ -1187,7 +1187,7 @@ static int	DBpatch_2030095(void)
 				(65535 < params_offset && 65535 /* ITEM_PARAM_LEN */ < zbx_strlen_utf8(params)))
 #endif
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot convert calculated item expression \"%s\": resulting"
+			treegix_log(LOG_LEVEL_WARNING, "cannot convert calculated item expression \"%s\": resulting"
 					" expression is %s", row[1], 0 == params_offset ? "empty" : "too long");
 		}
 		else if ( 0 != strcmp(row[1], params))

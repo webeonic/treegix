@@ -1,4 +1,4 @@
-CREATE OR REPLACE DIRECTORY image_dir AS '/home/zabbix/zabbix/create/output_png'
+CREATE OR REPLACE DIRECTORY image_dir AS '/home/treegix/treegix/create/output_png'
 /
 
 CREATE OR REPLACE PROCEDURE LOAD_IMAGE (IMG_ID IN NUMBER, IMG_TYPE IN NUMBER, IMG_NAME IN VARCHAR2, FILE_NAME IN VARCHAR2)
@@ -198,12 +198,12 @@ BEGIN
 	LOAD_IMAGE(179,1,'Workstation_(48)','png_modern/Workstation_(48).png');
 	LOAD_IMAGE(180,1,'Workstation_(64)','png_modern/Workstation_(64).png');
 	LOAD_IMAGE(181,1,'Workstation_(96)','png_modern/Workstation_(96).png');
-	LOAD_IMAGE(182,1,'Zabbix_server_2D_(128)','png_modern/Zabbix_server_2D_(128).png');
-	LOAD_IMAGE(183,1,'Zabbix_server_2D_(64)','png_modern/Zabbix_server_2D_(64).png');
-	LOAD_IMAGE(184,1,'Zabbix_server_2D_(96)','png_modern/Zabbix_server_2D_(96).png');
-	LOAD_IMAGE(185,1,'Zabbix_server_3D_(128)','png_modern/Zabbix_server_3D_(128).png');
-	LOAD_IMAGE(186,1,'Zabbix_server_3D_(64)','png_modern/Zabbix_server_3D_(64).png');
-	LOAD_IMAGE(187,1,'Zabbix_server_3D_(96)','png_modern/Zabbix_server_3D_(96).png');
+	LOAD_IMAGE(182,1,'Treegix_server_2D_(128)','png_modern/Treegix_server_2D_(128).png');
+	LOAD_IMAGE(183,1,'Treegix_server_2D_(64)','png_modern/Treegix_server_2D_(64).png');
+	LOAD_IMAGE(184,1,'Treegix_server_2D_(96)','png_modern/Treegix_server_2D_(96).png');
+	LOAD_IMAGE(185,1,'Treegix_server_3D_(128)','png_modern/Treegix_server_3D_(128).png');
+	LOAD_IMAGE(186,1,'Treegix_server_3D_(64)','png_modern/Treegix_server_3D_(64).png');
+	LOAD_IMAGE(187,1,'Treegix_server_3D_(96)','png_modern/Treegix_server_3D_(96).png');
 END;
 /
 

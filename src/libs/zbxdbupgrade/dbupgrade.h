@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@ typedef struct
 }
 zbx_dbpatch_t;
 
-#define DBPATCH_VERSION(zabbix_version)			zbx_dbpatches_##zabbix_version
+#define DBPATCH_VERSION(treegix_version)			zbx_dbpatches_##treegix_version
 
-#define DBPATCH_START(zabbix_version)			zbx_dbpatch_t	DBPATCH_VERSION(zabbix_version)[] = {
+#define DBPATCH_START(treegix_version)			zbx_dbpatch_t	DBPATCH_VERSION(treegix_version)[] = {
 #define DBPATCH_END()					{NULL}};
 
 #ifdef HAVE_SQLITE3

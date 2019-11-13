@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ int	tcp_expect(const char *host, unsigned short port, int timeout, const char *r
 
 			if (ZBX_TCP_EXPECT_FAIL == val)
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "TCP expect content error, received [%s]", buf);
+				treegix_log(LOG_LEVEL_DEBUG, "TCP expect content error, received [%s]", buf);
 				break;
 			}
 		}
@@ -78,7 +78,7 @@ int	tcp_expect(const char *host, unsigned short port, int timeout, const char *r
 	zbx_tcp_close(&s);
 out:
 	if (SUCCEED != net)
-		zabbix_log(LOG_LEVEL_DEBUG, "TCP expect network error: %s", zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "TCP expect network error: %s", zbx_socket_strerror());
 
 	return SYSINFO_RET_OK;
 }
@@ -332,7 +332,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 		freeaddrinfo(hres);
 #endif
 	if (NULL == zone_str || '\0' == *zone_str)
-		strscpy(zone, "zabbix.com");
+		strscpy(zone, "treegix.com");
 	else
 		strscpy(zone, zone_str);
 

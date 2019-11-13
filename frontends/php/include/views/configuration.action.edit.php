@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -937,9 +937,9 @@ if (!empty($data['new_operation'])) {
 					(new CRadioButtonList('new_operation[opcommand][execute_on]',
 						(int) $data['new_operation']['opcommand']['execute_on']
 					))
-						->addValue(_('Zabbix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
-						->addValue(_('Zabbix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
-						->addValue(_('Zabbix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
+						->addValue(_('Treegix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
+						->addValue(_('Treegix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
+						->addValue(_('Treegix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
 						->setModern(true)
 				)
 				// ssh
@@ -1719,9 +1719,9 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					(new CRadioButtonList('new_recovery_operation[opcommand][execute_on]',
 						(int) $data['new_recovery_operation']['opcommand']['execute_on']
 					))
-						->addValue(_('Zabbix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
-						->addValue(_('Zabbix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
-						->addValue(_('Zabbix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
+						->addValue(_('Treegix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
+						->addValue(_('Treegix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
+						->addValue(_('Treegix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
 						->setModern(true)
 				);
 
@@ -2189,9 +2189,9 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 					(new CRadioButtonList('new_ack_operation[opcommand][execute_on]',
 						(int) $data['new_ack_operation']['opcommand']['execute_on']
 					))
-						->addValue(_('Zabbix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
-						->addValue(_('Zabbix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
-						->addValue(_('Zabbix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
+						->addValue(_('Treegix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
+						->addValue(_('Treegix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
+						->addValue(_('Treegix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
 						->setModern(true)
 				)
 				->addRow(_('Authentication method'),

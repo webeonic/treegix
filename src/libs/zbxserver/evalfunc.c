@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ static int	get_function_parameter_int(zbx_uint64_t hostid, const char *parameter
 	char	*parameter;
 	int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() parameters:'%s' Nparam:%d", __func__, parameters, Nparam);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() parameters:'%s' Nparam:%d", __func__, parameters, Nparam);
 
 	if (NULL == (parameter = zbx_function_get_param_dyn(parameters, Nparam)))
 		goto out;
@@ -124,11 +124,11 @@ static int	get_function_parameter_int(zbx_uint64_t hostid, const char *parameter
 	}
 
 	if (SUCCEED == ret)
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() type:%s value:%d", __func__, zbx_type_string(*type), *value);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() type:%s value:%d", __func__, zbx_type_string(*type), *value);
 
 	zbx_free(parameter);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -139,7 +139,7 @@ static int	get_function_parameter_uint64(zbx_uint64_t hostid, const char *parame
 	char	*parameter;
 	int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() parameters:'%s' Nparam:%d", __func__, parameters, Nparam);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() parameters:'%s' Nparam:%d", __func__, parameters, Nparam);
 
 	if (NULL == (parameter = zbx_function_get_param_dyn(parameters, Nparam)))
 		goto out;
@@ -152,11 +152,11 @@ static int	get_function_parameter_uint64(zbx_uint64_t hostid, const char *parame
 	}
 
 	if (SUCCEED == ret)
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() value:" ZBX_FS_UI64, __func__, *value);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() value:" ZBX_FS_UI64, __func__, *value);
 
 	zbx_free(parameter);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -167,7 +167,7 @@ static int	get_function_parameter_float(zbx_uint64_t hostid, const char *paramet
 	char	*parameter;
 	int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() parameters:'%s' Nparam:%d", __func__, parameters, Nparam);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() parameters:'%s' Nparam:%d", __func__, parameters, Nparam);
 
 	if (NULL == (parameter = zbx_function_get_param_dyn(parameters, Nparam)))
 		goto out;
@@ -184,11 +184,11 @@ static int	get_function_parameter_float(zbx_uint64_t hostid, const char *paramet
 	}
 
 	if (SUCCEED == ret)
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() value:" ZBX_FS_DBL, __func__, *value);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() value:" ZBX_FS_DBL, __func__, *value);
 clean:
 	zbx_free(parameter);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -197,7 +197,7 @@ static int	get_function_parameter_str(zbx_uint64_t hostid, const char *parameter
 {
 	int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() parameters:'%s' Nparam:%d", __func__, parameters, Nparam);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() parameters:'%s' Nparam:%d", __func__, parameters, Nparam);
 
 	if (NULL == (*value = zbx_function_get_param_dyn(parameters, Nparam)))
 		goto out;
@@ -206,11 +206,11 @@ static int	get_function_parameter_str(zbx_uint64_t hostid, const char *parameter
 			value, MACRO_TYPE_COMMON, NULL, 0);
 
 	if (SUCCEED == ret)
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() value:'%s'", __func__, *value);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() value:'%s'", __func__, *value);
 	else
 		zbx_free(*value);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -236,7 +236,7 @@ static int	evaluate_LOGEVENTID(char *value, DC_ITEM *item, const char *parameter
 	zbx_vector_ptr_t	regexps;
 	zbx_history_record_t	vc_value;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&regexps);
 
@@ -294,7 +294,7 @@ static int	evaluate_LOGEVENTID(char *value, DC_ITEM *item, const char *parameter
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "result for LOGEVENTID is empty");
+		treegix_log(LOG_LEVEL_DEBUG, "result for LOGEVENTID is empty");
 		*error = zbx_strdup(*error, "cannot get values from value cache");
 	}
 out:
@@ -303,7 +303,7 @@ out:
 	zbx_regexp_clean_expressions(&regexps);
 	zbx_vector_ptr_destroy(&regexps);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -329,7 +329,7 @@ static int	evaluate_LOGSOURCE(char *value, DC_ITEM *item, const char *parameters
 	zbx_vector_ptr_t	regexps;
 	zbx_history_record_t	vc_value;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&regexps);
 
@@ -382,7 +382,7 @@ static int	evaluate_LOGSOURCE(char *value, DC_ITEM *item, const char *parameters
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "result for LOGSOURCE is empty");
+		treegix_log(LOG_LEVEL_DEBUG, "result for LOGSOURCE is empty");
 		*error = zbx_strdup(*error, "cannot get values from value cache");
 	}
 out:
@@ -391,7 +391,7 @@ out:
 	zbx_regexp_clean_expressions(&regexps);
 	zbx_vector_ptr_destroy(&regexps);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -413,7 +413,7 @@ static int	evaluate_LOGSEVERITY(char *value, DC_ITEM *item, const zbx_timespec_t
 	int			ret = FAIL;
 	zbx_history_record_t	vc_value;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (ITEM_VALUE_TYPE_LOG != item->value_type)
 	{
@@ -430,11 +430,11 @@ static int	evaluate_LOGSEVERITY(char *value, DC_ITEM *item, const zbx_timespec_t
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "result for LOGSEVERITY is empty");
+		treegix_log(LOG_LEVEL_DEBUG, "result for LOGSEVERITY is empty");
 		*error = zbx_strdup(*error, "cannot get value from value cache");
 	}
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -584,7 +584,7 @@ static int	evaluate_COUNT(char *value, DC_ITEM *item, const char *parameters, co
 	zbx_vector_history_record_t	values;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&regexps);
 	zbx_history_record_vector_create(&values);
@@ -845,7 +845,7 @@ out:
 
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -884,7 +884,7 @@ static int	evaluate_SUM(char *value, DC_ITEM *item, const char *parameters, cons
 	history_value_t			result;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -961,7 +961,7 @@ static int	evaluate_SUM(char *value, DC_ITEM *item, const char *parameters, cons
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -986,7 +986,7 @@ static int	evaluate_AVG(char *value, DC_ITEM *item, const char *parameters, cons
 	zbx_vector_history_record_t	values;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1063,13 +1063,13 @@ static int	evaluate_AVG(char *value, DC_ITEM *item, const char *parameters, cons
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "result for AVG is empty");
+		treegix_log(LOG_LEVEL_DEBUG, "result for AVG is empty");
 		*error = zbx_strdup(*error, "not enough data");
 	}
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1096,7 +1096,7 @@ static int	evaluate_LAST(char *value, DC_ITEM *item, const char *parameters, con
 	zbx_vector_history_record_t	values;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1147,7 +1147,7 @@ static int	evaluate_LAST(char *value, DC_ITEM *item, const char *parameters, con
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1172,7 +1172,7 @@ static int	evaluate_MIN(char *value, DC_ITEM *item, const char *parameters, cons
 	zbx_vector_history_record_t	values;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1255,13 +1255,13 @@ static int	evaluate_MIN(char *value, DC_ITEM *item, const char *parameters, cons
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "result for MIN is empty");
+		treegix_log(LOG_LEVEL_DEBUG, "result for MIN is empty");
 		*error = zbx_strdup(*error, "not enough data");
 	}
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1286,7 +1286,7 @@ static int	evaluate_MAX(char *value, DC_ITEM *item, const char *parameters, cons
 	zbx_vector_history_record_t	values;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1369,13 +1369,13 @@ static int	evaluate_MAX(char *value, DC_ITEM *item, const char *parameters, cons
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "result for MAX is empty");
+		treegix_log(LOG_LEVEL_DEBUG, "result for MAX is empty");
 		*error = zbx_strdup(*error, "not enough data");
 	}
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1418,7 +1418,7 @@ static int	evaluate_PERCENTILE(char *value, DC_ITEM *item, const char *parameter
 	zbx_vector_history_record_t	values;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1495,13 +1495,13 @@ static int	evaluate_PERCENTILE(char *value, DC_ITEM *item, const char *parameter
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "result for PERCENTILE is empty");
+		treegix_log(LOG_LEVEL_DEBUG, "result for PERCENTILE is empty");
 		*error = zbx_strdup(*error, "not enough data");
 	}
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1527,7 +1527,7 @@ static int	evaluate_DELTA(char *value, DC_ITEM *item, const char *parameters, co
 	zbx_vector_history_record_t	values;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1622,13 +1622,13 @@ static int	evaluate_DELTA(char *value, DC_ITEM *item, const char *parameters, co
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "result for DELTA is empty");
+		treegix_log(LOG_LEVEL_DEBUG, "result for DELTA is empty");
 		*error = zbx_strdup(*error, "not enough data");
 	}
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1653,7 +1653,7 @@ static int	evaluate_NODATA(char *value, DC_ITEM *item, const char *parameters, c
 	zbx_vector_history_record_t	values;
 	zbx_timespec_t			ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1701,7 +1701,7 @@ static int	evaluate_NODATA(char *value, DC_ITEM *item, const char *parameters, c
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1724,7 +1724,7 @@ static int	evaluate_ABSCHANGE(char *value, DC_ITEM *item, const zbx_timespec_t *
 	int				ret = FAIL;
 	zbx_vector_history_record_t	values;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1776,7 +1776,7 @@ static int	evaluate_ABSCHANGE(char *value, DC_ITEM *item, const zbx_timespec_t *
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1799,7 +1799,7 @@ static int	evaluate_CHANGE(char *value, DC_ITEM *item, const zbx_timespec_t *ts,
 	int				ret = FAIL;
 	zbx_vector_history_record_t	values;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1848,7 +1848,7 @@ static int	evaluate_CHANGE(char *value, DC_ITEM *item, const zbx_timespec_t *ts,
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1871,7 +1871,7 @@ static int	evaluate_DIFF(char *value, DC_ITEM *item, const zbx_timespec_t *ts, c
 	int				ret = FAIL;
 	zbx_vector_history_record_t	values;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -1917,7 +1917,7 @@ static int	evaluate_DIFF(char *value, DC_ITEM *item, const zbx_timespec_t *ts, c
 out:
 	zbx_history_record_vector_destroy(&values, item->value_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1982,7 +1982,7 @@ static int	evaluate_STR(char *value, DC_ITEM *item, const char *function, const 
 	zbx_vector_ptr_t		regexps;
 	zbx_vector_history_record_t	values;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&regexps);
 	zbx_history_record_vector_create(&values);
@@ -2105,7 +2105,7 @@ out:
 
 	zbx_free(arg1);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2133,7 +2133,7 @@ static int	evaluate_STRLEN(char *value, DC_ITEM *item, const char *parameters, c
 {
 	int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (ITEM_VALUE_TYPE_STR != item->value_type && ITEM_VALUE_TYPE_TEXT != item->value_type &&
 			ITEM_VALUE_TYPE_LOG != item->value_type)
@@ -2148,7 +2148,7 @@ static int	evaluate_STRLEN(char *value, DC_ITEM *item, const char *parameters, c
 		ret = SUCCEED;
 	}
 clean:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2174,7 +2174,7 @@ static int	evaluate_FUZZYTIME(char *value, DC_ITEM *item, const char *parameters
 	zbx_history_record_t	vc_value;
 	zbx_uint64_t		fuzlow, fuzhig;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (ITEM_VALUE_TYPE_FLOAT != item->value_type && ITEM_VALUE_TYPE_UINT64 != item->value_type)
 	{
@@ -2229,7 +2229,7 @@ static int	evaluate_FUZZYTIME(char *value, DC_ITEM *item, const char *parameters
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2262,7 +2262,7 @@ static int	evaluate_BAND(char *value, DC_ITEM *item, const char *parameters, con
 	int		nparams, ret = FAIL;
 	zbx_uint64_t	last_uint64, mask;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (ITEM_VALUE_TYPE_UINT64 != item->value_type)
 	{
@@ -2295,7 +2295,7 @@ static int	evaluate_BAND(char *value, DC_ITEM *item, const char *parameters, con
 
 	zbx_free(last_parameters);
 clean:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2327,7 +2327,7 @@ static int	evaluate_FORECAST(char *value, DC_ITEM *item, const char *parameters,
 	zbx_mode_t			mode;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -2444,7 +2444,7 @@ static int	evaluate_FORECAST(char *value, DC_ITEM *item, const char *parameters,
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "no data available");
+		treegix_log(LOG_LEVEL_DEBUG, "no data available");
 		zbx_snprintf(value, MAX_BUFFER_LEN, ZBX_FS_DBL, ZBX_MATH_ERROR);
 	}
 
@@ -2458,7 +2458,7 @@ out:
 	zbx_free(t);
 	zbx_free(x);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2489,7 +2489,7 @@ static int	evaluate_TIMELEFT(char *value, DC_ITEM *item, const char *parameters,
 	zbx_fit_t			fit;
 	zbx_timespec_t			ts_end = *ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_history_record_vector_create(&values);
 
@@ -2598,7 +2598,7 @@ static int	evaluate_TIMELEFT(char *value, DC_ITEM *item, const char *parameters,
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "no data available");
+		treegix_log(LOG_LEVEL_DEBUG, "no data available");
 		zbx_snprintf(value, MAX_BUFFER_LEN, ZBX_FS_DBL, ZBX_MATH_ERROR);
 	}
 
@@ -2611,7 +2611,7 @@ out:
 	zbx_free(t);
 	zbx_free(x);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2636,7 +2636,7 @@ int	evaluate_function(char *value, DC_ITEM *item, const char *function, const ch
 	int		ret;
 	struct tm	*tm = NULL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() function:'%s:%s.%s(%s)'", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() function:'%s:%s.%s(%s)'", __func__,
 			item->host.host, item->key_orig, function, parameter);
 
 	*value = '\0';
@@ -2775,7 +2775,7 @@ int	evaluate_function(char *value, DC_ITEM *item, const char *function, const ch
 	if (SUCCEED == ret)
 		del_zeros(value);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s value:'%s'", __func__, zbx_result_string(ret), value);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s value:'%s'", __func__, zbx_result_string(ret), value);
 
 	return ret;
 }
@@ -2796,7 +2796,7 @@ static void	add_value_suffix_uptime(char *value, size_t max_len)
 	size_t	offset = 0;
 	int	hours, mins;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 > (secs = round(atof(value))))
 	{
@@ -2823,7 +2823,7 @@ static void	add_value_suffix_uptime(char *value, size_t max_len)
 
 	zbx_snprintf(value + offset, max_len - offset, "%02d:%02d:%02d", hours, mins, (int)secs);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2842,7 +2842,7 @@ static void	add_value_suffix_s(char *value, size_t max_len)
 	size_t	offset = 0;
 	int	n_unit = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	secs = atof(value);
 
@@ -2910,7 +2910,7 @@ static void	add_value_suffix_s(char *value, size_t max_len)
 	if (0 != offset && ' ' == value[--offset])
 		value[offset] = '\0';
 clean:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2929,11 +2929,11 @@ static int	is_blacklisted_unit(const char *unit)
 {
 	int	ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	ret = str_in_list("%,ms,rpm,RPM", unit, ',');
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2955,7 +2955,7 @@ static void	add_value_units_no_kmgt(char *value, size_t max_len, const char *uni
 	char		tmp[64];
 	double		value_double;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 > (value_double = atof(value)))
 	{
@@ -2973,7 +2973,7 @@ static void	add_value_units_no_kmgt(char *value, size_t max_len, const char *uni
 
 	zbx_snprintf(value, max_len, "%s%s %s", minus, tmp, units);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2995,7 +2995,7 @@ static void	add_value_units_with_kmgt(char *value, size_t max_len, const char *u
 	double		base;
 	double		value_double;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 > (value_double = atof(value)))
 	{
@@ -3040,7 +3040,7 @@ static void	add_value_units_with_kmgt(char *value, size_t max_len, const char *u
 
 	zbx_snprintf(value, max_len, "%s%s %s%s", minus, tmp, kmgt, units);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -3060,7 +3060,7 @@ static void	add_value_suffix(char *value, size_t max_len, const char *units, uns
 	struct tm	*local_time;
 	time_t		time;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() value:'%s' units:'%s' value_type:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() value:'%s' units:'%s' value_type:%d",
 			__func__, value, units, (int)value_type);
 
 	switch (value_type)
@@ -3090,7 +3090,7 @@ static void	add_value_suffix(char *value, size_t max_len, const char *units, uns
 			;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() value:'%s'", __func__, value);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() value:'%s'", __func__, value);
 }
 
 /******************************************************************************
@@ -3113,7 +3113,7 @@ static int	replace_value_by_map(char *value, size_t max_len, zbx_uint64_t valuem
 	char		*value_esc, *value_tmp;
 	int		ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() value:'%s' valuemapid:" ZBX_FS_UI64, __func__, value, valuemapid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() value:'%s' valuemapid:" ZBX_FS_UI64, __func__, value, valuemapid);
 
 	if (0 == valuemapid)
 		goto clean;
@@ -3139,7 +3139,7 @@ static int	replace_value_by_map(char *value, size_t max_len, zbx_uint64_t valuem
 	}
 	DBfree_result(result);
 clean:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() value:'%s'", __func__, value);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() value:'%s'", __func__, value);
 
 	return ret;
 }
@@ -3159,7 +3159,7 @@ clean:
 void	zbx_format_value(char *value, size_t max_len, zbx_uint64_t valuemapid,
 		const char *units, unsigned char value_type)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	switch (value_type)
 	{
@@ -3177,7 +3177,7 @@ void	zbx_format_value(char *value, size_t max_len, zbx_uint64_t valuemapid,
 			;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -3208,7 +3208,7 @@ int	evaluate_macro_function(char **result, const char *host, const char *key, co
 	int		ret, errcode;
 	zbx_timespec_t	ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() function:'%s:%s.%s(%s)'", __func__, host, key, function, parameter);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() function:'%s:%s.%s(%s)'", __func__, host, key, function, parameter);
 
 	DCconfig_get_items_by_keys(&item, &host_key, &errcode, 1);
 
@@ -3216,7 +3216,7 @@ int	evaluate_macro_function(char **result, const char *host, const char *key, co
 
 	if (SUCCEED != errcode || SUCCEED != evaluate_function(value, &item, function, parameter, &ts, &error))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot evaluate function \"%s:%s.%s(%s)\": %s", host, key, function,
+		treegix_log(LOG_LEVEL_DEBUG, "cannot evaluate function \"%s:%s.%s(%s)\": %s", host, key, function,
 				parameter, (NULL == error ? "item does not exist" : error));
 		ret = FAIL;
 	}
@@ -3251,7 +3251,7 @@ int	evaluate_macro_function(char **result, const char *host, const char *key, co
 	DCconfig_clean_items(&item, &errcode, 1);
 	zbx_free(error);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s value:'%s'", __func__, zbx_result_string(ret), value);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s value:'%s'", __func__, zbx_result_string(ret), value);
 
 	return ret;
 }

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ class CControllerScriptList extends CController {
 		// sorting & paging
 		order_result($data['scripts'], $sortField, $sortOrder);
 
-		$url = (new CUrl('zabbix.php'))
+		$url = (new CUrl('treegix.php'))
 			->setArgument('action', 'script.list');
 
 		$data['paging'] = getPagingLine($data['scripts'], $sortOrder, $url);

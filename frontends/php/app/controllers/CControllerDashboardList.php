@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ class CControllerDashboardList extends CControllerDashboardAbstract {
 		// sorting & paging
 		order_result($data['dashboards'], $sort_field, $sort_order);
 
-		$url = (new CUrl('zabbix.php'))->setArgument('action', 'dashboard.list');
+		$url = (new CUrl('treegix.php'))->setArgument('action', 'dashboard.list');
 
 		$data['paging'] = getPagingLine($data['dashboards'], $sort_order, $url);
 

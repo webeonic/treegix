@@ -1,15 +1,15 @@
 #!/sbin/runscript
 #
-# Zabbix server start/stop script.
+# Treegix server start/stop script.
 #
 # Written by A. Tophofen
-# Modified for Zabbix 2.0.0
-# May 2012, Zabbix SIA
+# Modified for Treegix 2.0.0
+# May 2012, Treegix SIA
 
-NAME=zabbix_server
+NAME=treegix_server
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin
 DAEMON=/usr/local/sbin/${NAME}
-DESC="Zabbix server"
+DESC="Treegix server"
 PID=/tmp/$NAME.pid
 
 opts="${opts} reload"

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -57,22 +57,22 @@ class CXmlValidator {
 	 */
 	public function validate(array $data, $format) {
 		$rules = ['type' => XML_ARRAY, 'rules' => [
-			'zabbix_export' => ['type' => XML_ARRAY | XML_REQUIRED, 'check_unexpected' => false, 'rules' => [
+			'treegix_export' => ['type' => XML_ARRAY | XML_REQUIRED, 'check_unexpected' => false, 'rules' => [
 				'version' => ['type' => XML_STRING | XML_REQUIRED]
 			]]
 		]];
 
 		$data = (new CXmlValidatorGeneral($rules, $format))->validate($data, '/');
-		$version = $data['zabbix_export']['version'];
+		$version = $data['treegix_export']['version'];
 
 		if (!array_key_exists($version, $this->versionValidators)) {
 			throw new Exception(
-				_s('Invalid tag "%1$s": %2$s.', '/zabbix_export/version', _('unsupported version number'))
+				_s('Invalid tag "%1$s": %2$s.', '/treegix_export/version', _('unsupported version number'))
 			);
 		}
 
-		$data['zabbix_export'] = (new $this->versionValidators[$version]($format))
-			->validate($data['zabbix_export'], '/zabbix_export');
+		$data['treegix_export'] = (new $this->versionValidators[$version]($format))
+			->validate($data['treegix_export'], '/treegix_export');
 
 		return $data;
 	}

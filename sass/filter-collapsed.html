@@ -4,7 +4,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="Author" content="Zabbix SIA">
+	<meta name="Author" content="Treegix SIA">
 	<title>Filter - Collapsed</title>
 	<link rel="icon" href="favicon.ico">
 	<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76-precomposed.png">
@@ -50,14 +50,14 @@
 				</nav>
 				<ul class="top-nav-icons">
 					<li>
-						<form method="get" action="zabbix.php" accept-charset="utf-8" role="search"><input type="hidden" name="action" value="search"><input type="text" id="search" name="search" value="" maxlength="255" autocomplete="off" class="search" aria-label="type here to search"><button type="submit" class="btn-search" title="Search">&nbsp;</button></form>
+						<form method="get" action="treegix.php" accept-charset="utf-8" role="search"><input type="hidden" name="action" value="search"><input type="text" id="search" name="search" value="" maxlength="255" autocomplete="off" class="search" aria-label="type here to search"><button type="submit" class="btn-search" title="Search">&nbsp;</button></form>
 					</li>
 					<li>
 						<ul role="navigation" aria-label="User menu">
-							<li style="padding-left:0"><a class="top-nav-support" target="_blank" title="Zabbix Technical Support" href="">Support</a></li>
-							<li><a class="top-nav-zbbshare" target="_blank" title="Zabbix Share" href="">Share</a></li>
+							<li style="padding-left:0"><a class="top-nav-support" target="_blank" title="Treegix Technical Support" href="">Support</a></li>
+							<li><a class="top-nav-zbbshare" target="_blank" title="Treegix Share" href="">Share</a></li>
 							<li><a class="top-nav-help" target="_blank" title="Help" href="">&nbsp;</a></li>
-							<li><a class="top-nav-profile" title="Admin (Zabbix Administrator)" href="">&nbsp;</a></li>
+							<li><a class="top-nav-profile" title="Admin (Treegix Administrator)" href="">&nbsp;</a></li>
 							<li><a class="top-nav-signout" title="Sign out" onclick="javascript: return redirect('index.php?reconnect=1&amp;sid=7999abf544be51a6', 'post', 'sid', true)" href="">&nbsp;</a></li>
 						</ul>
 					</li>
@@ -87,7 +87,7 @@
 			</div>
 			<div class="cell nowrap">
 				<nav aria-label="Content controls">
-					<form method="get" action="zabbix.php" accept-charset="utf-8">
+					<form method="get" action="treegix.php" accept-charset="utf-8">
 						<input type="hidden" id="action" name="action" value="problem.view"><input type="hidden" id="page" name="page" value="1">
 						<ul><li><button type="button">Export to CSV</button></li><li><button type="button" class="btn-max">&nbsp;</button></li></ul>
 					</form>
@@ -95,7 +95,7 @@
 			</div>
 		</div>
 		<ul class="object-group filter-breadcrumb">
-	<li role="navigation" aria-label="Breadcrumbs"><span><a href="">All hosts</a></span>/<span><a href="">Zabbix server</a></span></li>
+	<li role="navigation" aria-label="Breadcrumbs"><span><a href="">All hosts</a></span>/<span><a href="">Treegix server</a></span></li>
 	<li><span class="green">Enabled</span></li>
 	<li><div class="status-container"><span class="status-red cursor-pointer" data-hintbox="1" data-hintbox-class="red" data-hintbox-static="1">zbx</span><div class="hint-box" style="display: none;">Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused</div><span class="status-grey">snmp</span><span class="status-grey">jmx</span><span class="status-grey">ipmi</span></div></li>
 	<li><ul role="navigation" aria-label="Content menu"><li><span><a href="">Applications</a>&nbsp;<sup>11</sup></span></li><li><span class="selected"><a href="">Items</a>&nbsp;<sup>80</sup></span></li><li><span><a href="">Triggers</a>&nbsp;<sup>57</sup></span></li><li><span><a href="">Graphs</a>&nbsp;<sup>18</sup></span></li><li><span><a href="">Discovery rules</a>&nbsp;<sup>2</sup></span></li><li><span><a href="">Web scenarios</a></span></li></ul></li></ul>
@@ -400,7 +400,7 @@
 			</tr>
 			<tr>
 				<td><input type="checkbox" id="hosts_10084" name="hosts[10084]" value="10084" class="checkbox-radio"><label for="hosts_10084"><span></span></label></td>
-				<td class="nowrap">Proxy 2: <a href="">Zabbix server</a></td>
+				<td class="nowrap">Proxy 2: <a href="">Treegix server</a></td>
 				<td><a href="">Applications</a>&nbsp;<sup>11</sup></td>
 				<td><a href="">Items</a>&nbsp;<sup>88</sup></td>
 				<td><a href="">Triggers</a>&nbsp;<sup>59</sup></td>
@@ -428,6 +428,6 @@
 	<div id="action_buttons" class="action-buttons"><span id="selected_count" class="selected-item-count">2 selected</span><button type="submit" name="action" value="host.massenable" class="btn-alt" disabled confirm="Enable selected hosts?">Enable</button><button type="submit" name="action" value="host.massdisable" class="btn-alt" confirm="Disable selected hosts?">Disable</button><button type="submit" name="action" value="host.export" class="btn-alt">Export</button><button type="submit" name="action" value="host.massupdateform" class="btn-alt">Mass update</button><button type="submit" name="action" value="host.massdelete" class="btn-alt" confirm="Delete selected hosts?">Delete</button></div>
 </form>
 </main>
-<footer role="contentinfo">© 2001–2019, Zabbix SIA</footer>
+<footer role="contentinfo">© 2001–2019, Treegix SIA</footer>
 </body>
 </html>

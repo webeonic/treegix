@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -119,7 +119,7 @@ $tabs->addTab('proxyTab', _('Proxy'), $proxy_form_list);
 $tabs->addTab('encryptionTab', _('Encryption'), $encryption_form_list);
 
 // append buttons to form
-$cancelButton = new CRedirectButton(_('Cancel'), 'zabbix.php?action=proxy.list');
+$cancelButton = new CRedirectButton(_('Cancel'), 'treegix.php?action=proxy.list');
 
 if ($data['proxyid'] == 0) {
 	$tabs->setFooter(makeFormFooter(
@@ -133,7 +133,7 @@ else {
 		[
 			(new CSimpleButton(_('Clone')))->setId('clone'),
 			new CRedirectButton(_('Delete'),
-				'zabbix.php?action=proxy.delete&sid='.$data['sid'].'&proxyids[]='.$data['proxyid'],
+				'treegix.php?action=proxy.delete&sid='.$data['sid'].'&proxyids[]='.$data['proxyid'],
 				_('Delete proxy?')
 			),
 			$cancelButton

@@ -19,7 +19,7 @@
 
 		// clone button, special processing because of list of hosts
 		$('#clone').click(function() {
-			var url = new Curl('zabbix.php?action=proxy.edit');
+			var url = new Curl('treegix.php?action=proxy.edit');
 			url.setArgument('host', $('#host').val());
 			url.setArgument('status', $('input[name=status]:checked').val());
 			url.setArgument('description', $('#description').val());

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include "http.h"
 #include "net.h"
 #include "system.h"
-#include "zabbix_stats.h"
+#include "treegix_stats.h"
 #include "zbxexec.h"
 
 #if !defined(_WINDOWS)
@@ -67,10 +67,10 @@ ZBX_METRIC	parameters_common[] =
 	{"vfs.dir.size",	CF_HAVEPARAMS,	VFS_DIR_SIZE,		VFS_TEST_DIR},
 	{"vfs.dir.count",	CF_HAVEPARAMS,	VFS_DIR_COUNT,		VFS_TEST_DIR},
 
-	{"net.dns",		CF_HAVEPARAMS,	NET_DNS,		",zabbix.com"},
-	{"net.dns.record",	CF_HAVEPARAMS,	NET_DNS_RECORD,		",zabbix.com"},
-	{"net.tcp.dns",		CF_HAVEPARAMS,	NET_DNS,		",zabbix.com"}, /* deprecated */
-	{"net.tcp.dns.query",	CF_HAVEPARAMS,	NET_DNS_RECORD,		",zabbix.com"}, /* deprecated */
+	{"net.dns",		CF_HAVEPARAMS,	NET_DNS,		",treegix.com"},
+	{"net.dns.record",	CF_HAVEPARAMS,	NET_DNS_RECORD,		",treegix.com"},
+	{"net.tcp.dns",		CF_HAVEPARAMS,	NET_DNS,		",treegix.com"}, /* deprecated */
+	{"net.tcp.dns.query",	CF_HAVEPARAMS,	NET_DNS_RECORD,		",treegix.com"}, /* deprecated */
 	{"net.tcp.port",	CF_HAVEPARAMS,	NET_TCP_PORT,		",80"},
 
 	{"system.users.num",	0,		SYSTEM_USERS_NUM,	NULL},
@@ -81,7 +81,7 @@ ZBX_METRIC	parameters_common[] =
 	{"logrt.count",		CF_HAVEPARAMS,	ONLY_ACTIVE,		"logfile"},
 	{"eventlog",		CF_HAVEPARAMS,	ONLY_ACTIVE,		"system"},
 
-	{"zabbix.stats",	CF_HAVEPARAMS,	ZABBIX_STATS,		"127.0.0.1,10051"},
+	{"treegix.stats",	CF_HAVEPARAMS,	ZABBIX_STATS,		"127.0.0.1,10051"},
 
 	{NULL}
 };
@@ -124,7 +124,7 @@ int	EXECUTE_STR(const char *command, AGENT_RESULT *result)
 
 	zbx_rtrim(cmd_result, ZBX_WHITESPACE);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s() command:'%s' len:" ZBX_FS_SIZE_T " cmd_result:'%.20s'",
+	treegix_log(LOG_LEVEL_DEBUG, "%s() command:'%s' len:" ZBX_FS_SIZE_T " cmd_result:'%.20s'",
 			__func__, command, (zbx_fs_size_t)strlen(cmd_result), cmd_result);
 
 	SET_TEXT_RESULT(result, zbx_strdup(NULL, cmd_result));
@@ -143,7 +143,7 @@ int	EXECUTE_DBL(const char *command, AGENT_RESULT *result)
 
 	if (NULL == GET_DBL_RESULT(result))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "Remote command [%s] result is not double", command);
+		treegix_log(LOG_LEVEL_WARNING, "Remote command [%s] result is not double", command);
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid result. Double is expected."));
 		return SYSINFO_RET_FAIL;
 	}
@@ -160,7 +160,7 @@ int	EXECUTE_INT(const char *command, AGENT_RESULT *result)
 
 	if (NULL == GET_UI64_RESULT(result))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "Remote command [%s] result is not unsigned integer", command);
+		treegix_log(LOG_LEVEL_WARNING, "Remote command [%s] result is not unsigned integer", command);
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid result. Unsigned integer is expected."));
 		return SYSINFO_RET_FAIL;
 	}
@@ -190,9 +190,9 @@ static int	SYSTEM_RUN(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	if (1 == CONFIG_LOG_REMOTE_COMMANDS)
-		zabbix_log(LOG_LEVEL_WARNING, "Executing command '%s'", command);
+		treegix_log(LOG_LEVEL_WARNING, "Executing command '%s'", command);
 	else
-		zabbix_log(LOG_LEVEL_DEBUG, "Executing command '%s'", command);
+		treegix_log(LOG_LEVEL_DEBUG, "Executing command '%s'", command);
 
 	if (NULL == flag || '\0' == *flag || 0 == strcmp(flag, "wait"))	/* default parameter */
 	{

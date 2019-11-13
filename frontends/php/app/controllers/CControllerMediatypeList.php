@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -130,7 +130,7 @@ class CControllerMediatypeList extends CController {
 			order_result($data['mediatypes'], $sortField, $sortOrder);
 		}
 
-		$url = (new CUrl('zabbix.php'))
+		$url = (new CUrl('treegix.php'))
 			->setArgument('action', 'mediatype.list');
 
 		$data['paging'] = getPagingLine($data['mediatypes'], $sortOrder, $url);

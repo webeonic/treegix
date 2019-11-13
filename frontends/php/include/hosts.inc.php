@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -986,7 +986,7 @@ function isTemplate($hostId) {
  *           'template' => array(                   <- optional
  *               'value' => 'template-level value'
  *               'templateid' => 10001,
- *               'name' => 'Template OS Linux by Zabbix agent'
+ *               'name' => 'Template OS Linux by Treegix agent'
  *           ),
  *           'global' => array(                     <- optional
  *               'value' => 'global-level value'
@@ -1201,7 +1201,7 @@ function getInheritedMacros(array $hostids) {
  *           'template' => array(                   <- optional
  *               'value' => 'template-level value'
  *               'templateid' => 10001,
- *               'name' => 'Template OS Linux by Zabbix agent'
+ *               'name' => 'Template OS Linux by Treegix agent'
  *           ),
  *           'global' => array(                     <- optional
  *               'value' => 'global-level value'

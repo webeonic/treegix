@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ function getItemFilterForm(&$items) {
 	zbx_subarray_push($fTypeVisibility, -1, 'filter_delay_row');
 
 	$item_types = item_type2str();
-	unset($item_types[ITEM_TYPE_HTTPTEST]); // httptest items are only for internal zabbix logic
+	unset($item_types[ITEM_TYPE_HTTPTEST]); // httptest items are only for internal treegix logic
 
 	$cmbType->addItems($item_types);
 

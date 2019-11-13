@@ -15,9 +15,9 @@ ADD_LFLAGS = /MACHINE:X64
 !ERROR Unsupported CPU architecture: $(CPU)
 !ENDIF
 
-PROJECTNAME = zabbix_sender
+PROJECTNAME = treegix_sender
 PROJECTDIR = ..\..\..\src\$(PROJECTNAME)
-TARGETNAME = zabbix_sender
+TARGETNAME = treegix_sender
 TARGETEXT = exe
 PROGNAME = $(TARGETDIR)\$(TARGETNAME).$(TARGETEXT)
 
@@ -51,7 +51,7 @@ OBJS = \
 	..\..\..\src\libs\zbxalgo\algodefs.o \
 	..\..\..\src\libs\zbxalgo\vector.o \
 	..\..\..\src\libs\zbxregexp\zbxregexp.o \
-	..\..\..\src\zabbix_sender\zabbix_sender.o
+	..\..\..\src\treegix_sender\treegix_sender.o
 
 LIBS = ws2_32.lib psapi.lib pdh.lib Wldap32.lib advapi32.lib uuid.lib Iphlpapi.lib user32.lib
 

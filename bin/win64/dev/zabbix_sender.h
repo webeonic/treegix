@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -28,14 +28,14 @@
 
 typedef struct
 {
-	/* host name, must match the name of target host in Zabbix */
+	/* host name, must match the name of target host in Treegix */
 	char	*host;
 	/* the item key */
 	char	*key;
 	/* the item value */
 	char	*value;
 }
-zabbix_sender_value_t;
+treegix_sender_value_t;
 
 typedef struct
 {
@@ -46,22 +46,22 @@ typedef struct
 	/* time in seconds the server spent processing the sent values */
 	double	time_spent;
 }
-zabbix_sender_info_t;
+treegix_sender_info_t;
 
 /******************************************************************************
  *                                                                            *
- * Function: zabbix_sender_send_values                                        *
+ * Function: treegix_sender_send_values                                        *
  *                                                                            *
- * Purpose: send values to Zabbix server/proxy                                *
+ * Purpose: send values to Treegix server/proxy                                *
  *                                                                            *
- * Parameters: address   - [IN] zabbix server/proxy address                   *
- *             port      - [IN] zabbix server/proxy trapper port              *
+ * Parameters: address   - [IN] treegix server/proxy address                   *
+ *             port      - [IN] treegix server/proxy trapper port              *
  *             source    - [IN] source IP, optional - can be NULL             *
  *             values    - [IN] array of values to send                       *
  *             count     - [IN] number of items in values array               *
  *             result    - [OUT] the server response/error message, optional  *
  *                         If result is specified it must always be freed     *
- *                         afterwards with zabbix_sender_free_result()        *
+ *                         afterwards with treegix_sender_free_result()        *
  *                         function.                                          *
  *                                                                            *
  * Return value: 0 - the values were sent successfully, result contains       *
@@ -69,14 +69,14 @@ zabbix_sender_info_t;
  *               -1 - an error occurred, result contains error message        *
  *                                                                            *
  ******************************************************************************/
-ZBX_API int	zabbix_sender_send_values(const char *address, unsigned short port, const char *source,
-		const zabbix_sender_value_t *values, int count, char **result);
+ZBX_API int	treegix_sender_send_values(const char *address, unsigned short port, const char *source,
+		const treegix_sender_value_t *values, int count, char **result);
 
 /******************************************************************************
  *                                                                            *
- * Function: zabbix_sender_parse_result                                       *
+ * Function: treegix_sender_parse_result                                       *
  *                                                                            *
- * Purpose: parses the result returned from zabbix_sender_send_values()       *
+ * Purpose: parses the result returned from treegix_sender_send_values()       *
  *          function                                                          *
  *                                                                            *
  * Parameters: result   - [IN] result to parse                                *
@@ -93,17 +93,17 @@ ZBX_API int	zabbix_sender_send_values(const char *address, unsigned short port, 
  *           the result info field, then info->total is set to -1.            *
  *                                                                            *
  ******************************************************************************/
-ZBX_API int	zabbix_sender_parse_result(const char *result, int *response, zabbix_sender_info_t *info);
+ZBX_API int	treegix_sender_parse_result(const char *result, int *response, treegix_sender_info_t *info);
 
 /******************************************************************************
  *                                                                            *
- * Function: zabbix_sender_free_result                                        *
+ * Function: treegix_sender_free_result                                        *
  *                                                                            *
- * Purpose: free data allocated by zabbix_sender_send_values() function       *
+ * Purpose: free data allocated by treegix_sender_send_values() function       *
  *                                                                            *
  * Parameters: ptr   - [IN] pointer to the data to free                       *
  *                                                                            *
  ******************************************************************************/
-ZBX_API void	zabbix_sender_free_result(void *ptr);
+ZBX_API void	treegix_sender_free_result(void *ptr);
 
 #endif	/* ZABBIX_SENDER_H */

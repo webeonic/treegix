@@ -1,4 +1,4 @@
-Subdirectory misc/init.d contains examples of Zabbix server and agentd
+Subdirectory misc/init.d contains examples of Treegix server and agentd
 start/stop scripts.
 
 The scripts are not actively maintained and tested, they may be not

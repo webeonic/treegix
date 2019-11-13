@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -377,7 +377,7 @@ int	check_access_passive_proxy(zbx_socket_t *sock, int send_response, const char
 
 	if (FAIL == zbx_tcp_check_allowed_peers(sock, CONFIG_SERVER))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "%s from server \"%s\" is not allowed: %s", req, sock->peer,
+		treegix_log(LOG_LEVEL_WARNING, "%s from server \"%s\" is not allowed: %s", req, sock->peer,
 				zbx_socket_strerror());
 
 		if (ZBX_SEND_RESPONSE == send_response)
@@ -391,7 +391,7 @@ int	check_access_passive_proxy(zbx_socket_t *sock, int send_response, const char
 		msg = zbx_dsprintf(NULL, "%s over connection of type \"%s\" is not allowed", req,
 				zbx_tcp_connection_type_name(sock->connection_type));
 
-		zabbix_log(LOG_LEVEL_WARNING, "%s from server \"%s\" by proxy configuration parameter \"TLSAccept\"",
+		treegix_log(LOG_LEVEL_WARNING, "%s from server \"%s\" by proxy configuration parameter \"TLSAccept\"",
 				msg, sock->peer);
 
 		if (ZBX_SEND_RESPONSE == send_response)
@@ -407,7 +407,7 @@ int	check_access_passive_proxy(zbx_socket_t *sock, int send_response, const char
 		if (SUCCEED == zbx_check_server_issuer_subject(sock, &msg))
 			return SUCCEED;
 
-		zabbix_log(LOG_LEVEL_WARNING, "%s from server \"%s\" is not allowed: %s", req, sock->peer, msg);
+		treegix_log(LOG_LEVEL_WARNING, "%s from server \"%s\" is not allowed: %s", req, sock->peer, msg);
 
 		if (ZBX_SEND_RESPONSE == send_response)
 			zbx_send_proxy_response(sock, FAIL, "certificate issuer or subject mismatch", CONFIG_TIMEOUT);
@@ -420,7 +420,7 @@ int	check_access_passive_proxy(zbx_socket_t *sock, int send_response, const char
 		if (0 != (ZBX_PSK_FOR_PROXY & zbx_tls_get_psk_usage()))
 			return SUCCEED;
 
-		zabbix_log(LOG_LEVEL_WARNING, "%s from server \"%s\" is not allowed: it used PSK which is not"
+		treegix_log(LOG_LEVEL_WARNING, "%s from server \"%s\" is not allowed: it used PSK which is not"
 				" configured for proxy communication with server", req, sock->peer);
 
 		if (ZBX_SEND_RESPONSE == send_response)
@@ -501,7 +501,7 @@ static int	get_proxyconfig_table_items(zbx_uint64_t proxy_hostid, struct zbx_jso
 	zbx_uint64_t		itemid, *pitemid;
 	zbx_hashset_iter_t	iter;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() proxy_hostid:" ZBX_FS_UI64, __func__, proxy_hostid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() proxy_hostid:" ZBX_FS_UI64, __func__, proxy_hostid);
 
 	zbx_hashset_create(&itemids_added, 100, ZBX_DEFAULT_UINT64_HASH_FUNC, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
 	zbx_json_addobject(j, table->table);
@@ -646,7 +646,7 @@ skip_data:
 	zbx_json_close(j);	/* table->table */
 	zbx_hashset_destroy(&itemids_added);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -669,7 +669,7 @@ static int	get_proxyconfig_table_items_ext(const zbx_vector_uint64_t *itemids, s
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() table:%s", __func__, table->table);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() table:%s", __func__, table->table);
 
 	zbx_json_addobject(j, table->table);
 	zbx_json_addarray(j, "fields");
@@ -723,7 +723,7 @@ skip_data:
 	zbx_json_close(j);	/* data */
 	zbx_json_close(j);	/* table->table */
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -744,7 +744,7 @@ static int	get_proxyconfig_table(zbx_uint64_t proxy_hostid, struct zbx_json *j, 
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() proxy_hostid:" ZBX_FS_UI64 " table:'%s'",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() proxy_hostid:" ZBX_FS_UI64 " table:'%s'",
 			__func__, proxy_hostid, table->table);
 
 	zbx_json_addobject(j, table->table);
@@ -843,7 +843,7 @@ skip_data:
 	zbx_json_close(j);	/* data */
 	zbx_json_close(j);	/* table->table */
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -971,7 +971,7 @@ int	get_proxyconfig_data(zbx_uint64_t proxy_hostid, struct zbx_json *j, char **e
 	zbx_vector_uint64_t	hosts, httptests;
 	zbx_vector_uint64_t	itemids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() proxy_hostid:" ZBX_FS_UI64, __func__, proxy_hostid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() proxy_hostid:" ZBX_FS_UI64, __func__, proxy_hostid);
 
 	zbx_vector_uint64_create(&itemids);
 	zbx_vector_uint64_create(&hosts);
@@ -1011,7 +1011,7 @@ out:
 	zbx_vector_uint64_destroy(&hosts);
 	zbx_vector_uint64_destroy(&itemids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1215,7 +1215,7 @@ static int	process_proxyconfig_table(const ZBX_TABLE *table, struct zbx_json_par
 	static zbx_vector_ptr_t	skip_fields, availability_fields;
 	static const ZBX_TABLE	*table_items, *table_hosts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() table:'%s'", __func__, table->table);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() table:'%s'", __func__, table->table);
 
 	/************************************************************************************/
 	/* T1. RECEIVED JSON (jp_obj) DATA FORMAT                                           */
@@ -1814,7 +1814,7 @@ clean2:
 out:
 	zbx_free(buf);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1845,7 +1845,7 @@ void	process_proxyconfig(struct zbx_json_parse *jp_data)
 	zbx_vector_ptr_t	tables_proxy;
 	const ZBX_TABLE		*table;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&tables_proxy);
 
@@ -1921,7 +1921,7 @@ void	process_proxyconfig(struct zbx_json_parse *jp_data)
 
 	if (SUCCEED != (ret = DBend(ret)))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "failed to update local proxy configuration copy: %s",
+		treegix_log(LOG_LEVEL_ERR, "failed to update local proxy configuration copy: %s",
 				(NULL == error ? "database error" : error));
 	}
 	else
@@ -1932,7 +1932,7 @@ void	process_proxyconfig(struct zbx_json_parse *jp_data)
 
 	zbx_free(error);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1949,7 +1949,7 @@ int	get_host_availability_data(struct zbx_json *json, int *ts)
 	zbx_vector_ptr_t		hosts;
 	zbx_host_availability_t		*ha;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&hosts);
 
@@ -1981,7 +1981,7 @@ out:
 	zbx_vector_ptr_clear_ext(&hosts, (zbx_mem_free_func_t)zbx_host_availability_free);
 	zbx_vector_ptr_destroy(&hosts);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2122,7 +2122,7 @@ int	process_host_availability(struct zbx_json_parse *jp, char **error)
 	struct zbx_json_parse	jp_data;
 	int			ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED != (ret = zbx_json_brackets_by_name(jp, ZBX_PROTO_TAG_DATA, &jp_data)))
 	{
@@ -2136,7 +2136,7 @@ int	process_host_availability(struct zbx_json_parse *jp, char **error)
 	ret = process_host_availability_contents(&jp_data, error);
 
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2151,7 +2151,7 @@ static void	proxy_get_lastid(const char *table_name, const char *lastidfield, zb
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() field:'%s.%s'", __func__, table_name, lastidfield);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() field:'%s.%s'", __func__, table_name, lastidfield);
 
 	result = DBselect("select nextid from ids where table_name='%s' and field_name='%s'",
 			table_name, lastidfield);
@@ -2162,7 +2162,7 @@ static void	proxy_get_lastid(const char *table_name, const char *lastidfield, zb
 		ZBX_STR2UINT64(*lastid, row[0]);
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_UI64,	__func__, *lastid);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_UI64,	__func__, *lastid);
 }
 
 /******************************************************************************
@@ -2175,7 +2175,7 @@ static void	proxy_set_lastid(const char *table_name, const char *lastidfield, co
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() [%s.%s:" ZBX_FS_UI64 "]", __func__, table_name, lastidfield, lastid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() [%s.%s:" ZBX_FS_UI64 "]", __func__, table_name, lastidfield, lastid);
 
 	result = DBselect("select 1 from ids where table_name='%s' and field_name='%s'",
 			table_name, lastidfield);
@@ -2192,7 +2192,7 @@ static void	proxy_set_lastid(const char *table_name, const char *lastidfield, co
 	}
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 void	proxy_set_hist_lastid(const zbx_uint64_t lastid)
@@ -2227,7 +2227,7 @@ static void	proxy_get_history_data_simple(struct zbx_json *j, const char *proto_
 	DB_ROW		row;
 	struct timespec	t_sleep = { 0, 100000000L }, t_rem;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() table:'%s'", __func__, ht->table);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() table:'%s'", __func__, ht->table);
 
 	*more = ZBX_PROXY_DATA_DONE;
 
@@ -2252,7 +2252,7 @@ try_again:
 			if (0 < retries--)
 			{
 				DBfree_result(result);
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() " ZBX_FS_UI64 " record(s) missing."
+				treegix_log(LOG_LEVEL_DEBUG, "%s() " ZBX_FS_UI64 " record(s) missing."
 						" Waiting " ZBX_FS_DBL " sec, retrying.",
 						__func__, *lastid - *id - 1,
 						t_sleep.tv_sec + t_sleep.tv_nsec / 1e9);
@@ -2261,7 +2261,7 @@ try_again:
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() " ZBX_FS_UI64 " record(s) missing. No more retries.",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() " ZBX_FS_UI64 " record(s) missing. No more retries.",
 						__func__, *lastid - *id - 1);
 			}
 		}
@@ -2297,7 +2297,7 @@ try_again:
 	if (ZBX_MAX_HRECORDS == *records_num - records_num_last)
 		*more = ZBX_PROXY_DATA_MORE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d lastid:" ZBX_FS_UI64 " more:%d size:" ZBX_FS_SIZE_T,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d lastid:" ZBX_FS_UI64 " more:%d size:" ZBX_FS_SIZE_T,
 			__func__, *records_num - records_num_last, *lastid, *more,
 			(zbx_fs_size_t)j->buffer_offset);
 }
@@ -2353,7 +2353,7 @@ static int	proxy_get_history_data(zbx_uint64_t lastid, zbx_history_data_t **data
 	struct timespec		t_sleep = { 0, 100000000L }, t_rem;
 	zbx_history_data_t	*hd;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() lastid:" ZBX_FS_UI64, __func__, lastid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() lastid:" ZBX_FS_UI64, __func__, lastid);
 
 try_again:
 	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
@@ -2384,7 +2384,7 @@ try_again:
 					break;
 
 				DBfree_result(result);
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() " ZBX_FS_UI64 " record(s) missing."
+				treegix_log(LOG_LEVEL_DEBUG, "%s() " ZBX_FS_UI64 " record(s) missing."
 						" Waiting " ZBX_FS_DBL " sec, retrying.",
 						__func__, id - lastid - 1,
 						t_sleep.tv_sec + t_sleep.tv_nsec / 1e9);
@@ -2393,7 +2393,7 @@ try_again:
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() " ZBX_FS_UI64 " record(s) missing. No more retries.",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() " ZBX_FS_UI64 " record(s) missing. No more retries.",
 						__func__, id - lastid - 1);
 			}
 		}
@@ -2459,7 +2459,7 @@ try_again:
 	if (ZBX_MAX_HRECORDS != data_num && 1 == retries)
 		*more = ZBX_PROXY_DATA_DONE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() data_num:" ZBX_FS_SIZE_T, __func__, data_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() data_num:" ZBX_FS_SIZE_T, __func__, data_num);
 
 	return data_num;
 }
@@ -2572,7 +2572,7 @@ int	proxy_get_hist_data(struct zbx_json *j, zbx_uint64_t *lastid, int *more)
 	zbx_vector_ptr_t	records;
 	DC_ITEM			*dc_items = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&itemids);
 	zbx_vector_ptr_create(&records);
@@ -2647,7 +2647,7 @@ int	proxy_get_hist_data(struct zbx_json *j, zbx_uint64_t *lastid, int *more)
 	zbx_vector_ptr_destroy(&records);
 	zbx_vector_uint64_destroy(&itemids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() lastid:" ZBX_FS_UI64 " records_num:%d size:~" ZBX_FS_SIZE_T " more:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() lastid:" ZBX_FS_UI64 " records_num:%d size:~" ZBX_FS_SIZE_T " more:%d",
 			__func__, *lastid, records_num, j->buffer_offset, *more);
 
 	return records_num;
@@ -2712,7 +2712,7 @@ void	calc_timestamp(const char *line, int *timestamp, const char *format)
 	struct tm	tm;
 	time_t		t;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	hh = mm = ss = yyyy = dd = MM = 0;
 
@@ -2752,7 +2752,7 @@ void	calc_timestamp(const char *line, int *timestamp, const char *format)
 		}
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s() %02d:%02d:%02d %02d/%02d/%04d", __func__, hh, mm, ss, MM, dd, yyyy);
+	treegix_log(LOG_LEVEL_DEBUG, "%s() %02d:%02d:%02d %02d/%02d/%04d", __func__, hh, mm, ss, MM, dd, yyyy);
 
 	/* seconds can be ignored, no ssc here */
 	if (0 != hhc && 0 != mmc && 0 != yyyyc && 0 != ddc && 0 != MMc)
@@ -2769,7 +2769,7 @@ void	calc_timestamp(const char *line, int *timestamp, const char *format)
 			*timestamp = t;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() timestamp:%d", __func__, *timestamp);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() timestamp:%d", __func__, *timestamp);
 }
 
 /******************************************************************************
@@ -2840,7 +2840,7 @@ static int	process_history_data_value(DC_ITEM *item, zbx_agent_value_t *value)
 	if (ITEM_STATE_NOTSUPPORTED == value->state ||
 			(NULL != value->value && 0 == strcmp(value->value, ZBX_NOTSUPPORTED)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "item [%s:%s] error: %s", item->host.host, item->key_orig, value->value);
+		treegix_log(LOG_LEVEL_DEBUG, "item [%s:%s] error: %s", item->host.host, item->key_orig, value->value);
 
 		item->state = ITEM_STATE_NOTSUPPORTED;
 		process_item_value(item, NULL, &value->ts, value->value);
@@ -2923,7 +2923,7 @@ int	process_history_data(DC_ITEM *items, zbx_agent_value_t *values, int *errcode
 	size_t	i;
 	int	processed_num = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	for (i = 0; i < values_num; i++)
 	{
@@ -2947,7 +2947,7 @@ int	process_history_data(DC_ITEM *items, zbx_agent_value_t *values, int *errcode
 	zbx_preprocessor_flush();
 	dc_flush_history();
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() processed:%d", __func__, processed_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() processed:%d", __func__, processed_num);
 
 	return processed_num;
 }
@@ -3015,13 +3015,13 @@ static void	log_client_timediff(int level, struct zbx_json_parse *jp, const zbx_
 				client_timediff.ns -= 1000000000;
 			}
 
-			zabbix_log(level, "%s(): timestamp from json %d seconds and %d nanosecond, "
+			treegix_log(level, "%s(): timestamp from json %d seconds and %d nanosecond, "
 					"delta time from json %d seconds and %d nanosecond",
 					__func__, sec, ns, client_timediff.sec, client_timediff.ns);
 		}
 		else
 		{
-			zabbix_log(level, "%s(): timestamp from json %d seconds, "
+			treegix_log(level, "%s(): timestamp from json %d seconds, "
 				"delta time from json %d seconds", __func__, sec, client_timediff.sec);
 		}
 	}
@@ -3216,7 +3216,7 @@ static int	parse_history_data(struct zbx_json_parse *jp_data, const char **pnext
 	struct zbx_json_parse	jp_row;
 	int			ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	*values_num = 0;
 	*parsed_num = 0;
@@ -3253,7 +3253,7 @@ static int	parse_history_data(struct zbx_json_parse *jp_data, const char **pnext
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s processed:%d/%d", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s processed:%d/%d", __func__, zbx_result_string(ret),
 			*values_num, *parsed_num);
 
 	return ret;
@@ -3283,7 +3283,7 @@ out:
  *                FAIL    - an error occurred                                 *
  *                                                                            *
  * Comments: This function is used to parse the new proxy history data        *
- *           protocol introduced in Zabbix v3.3.                              *
+ *           protocol introduced in Treegix v3.3.                              *
  *                                                                            *
  ******************************************************************************/
 static int	parse_history_data_by_itemids(struct zbx_json_parse *jp_data, const char **pnext,
@@ -3293,7 +3293,7 @@ static int	parse_history_data_by_itemids(struct zbx_json_parse *jp_data, const c
 	struct zbx_json_parse	jp_row;
 	int			ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	*values_num = 0;
 	*parsed_num = 0;
@@ -3330,7 +3330,7 @@ static int	parse_history_data_by_itemids(struct zbx_json_parse *jp_data, const c
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s processed:%d/%d", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s processed:%d/%d", __func__, zbx_result_string(ret),
 			*values_num, *parsed_num);
 
 	return ret;
@@ -3387,7 +3387,7 @@ static int	proxy_item_validator(DC_ITEM *item, zbx_socket_t *sock, void *args, c
  *                FAIL - an error occurred                                    *
  *                                                                            *
  * Comments: This function is used to parse the new proxy history data        *
- *           protocol introduced in Zabbix v3.3.                              *
+ *           protocol introduced in Treegix v3.3.                              *
  *                                                                            *
  ******************************************************************************/
 static int	process_history_data_by_itemids(zbx_socket_t *sock, zbx_client_item_validator_t validator_func,
@@ -3402,7 +3402,7 @@ static int	process_history_data_by_itemids(zbx_socket_t *sock, zbx_client_item_v
 	zbx_agent_value_t	values[ZBX_HISTORY_VALUES_MAX];
 	zbx_timespec_t		unique_shift = {0, 0};
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	items = (DC_ITEM *)zbx_malloc(NULL, sizeof(DC_ITEM) * ZBX_HISTORY_VALUES_MAX);
 	errcodes = (int *)zbx_malloc(NULL, sizeof(int) * ZBX_HISTORY_VALUES_MAX);
@@ -3431,7 +3431,7 @@ static int	process_history_data_by_itemids(zbx_socket_t *sock, zbx_client_item_v
 			{
 				if (NULL != error)
 				{
-					zabbix_log(LOG_LEVEL_WARNING, "%s", error);
+					treegix_log(LOG_LEVEL_WARNING, "%s", error);
 					zbx_free(error);
 				}
 
@@ -3469,7 +3469,7 @@ static int	process_history_data_by_itemids(zbx_socket_t *sock, zbx_client_item_v
 		*info = error;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -3629,7 +3629,7 @@ static int	process_history_data_by_keys(zbx_socket_t *sock, zbx_client_item_vali
 			{
 				if (NULL != error)
 				{
-					zabbix_log(LOG_LEVEL_WARNING, "%s", error);
+					treegix_log(LOG_LEVEL_WARNING, "%s", error);
 					zbx_free(error);
 				}
 
@@ -3704,7 +3704,7 @@ static int	process_client_history_data(zbx_socket_t *sock, struct zbx_json_parse
 	char			tmp[MAX_STRING_LEN];
 	int			version;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	log_client_timediff(LOG_LEVEL_DEBUG, jp, ts);
 
@@ -3761,7 +3761,7 @@ static int	process_client_history_data(zbx_socket_t *sock, struct zbx_json_parse
 out:
 	zbx_free(token);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -3770,7 +3770,7 @@ out:
  *                                                                            *
  * Function: process_agent_history_data                                       *
  *                                                                            *
- * Purpose: process history data received from Zabbix active agent            *
+ * Purpose: process history data received from Treegix active agent            *
  *                                                                            *
  * Parameters: sock         - [IN] the connection socket                      *
  *             jp           - [IN] the JSON with history data                 *
@@ -3793,7 +3793,7 @@ int	process_agent_history_data(zbx_socket_t *sock, struct zbx_json_parse *jp, zb
  *                                                                            *
  * Function: process_sender_history_data                                      *
  *                                                                            *
- * Purpose: process history data received from Zabbix sender                  *
+ * Purpose: process history data received from Treegix sender                  *
  *                                                                            *
  * Parameters: sock         - [IN] the connection socket                      *
  *             jp           - [IN] the JSON with history data                 *
@@ -3846,7 +3846,7 @@ static int	process_services(const zbx_vector_ptr_t *services, const char *ip, zb
 	zbx_vector_ptr_t	services_old;
 	DB_DRULE		drule = {.druleid = druleid, .unique_dcheckid = unique_dcheckid};
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	memset(&dhost, 0, sizeof(dhost));
 
@@ -3858,7 +3858,7 @@ static int	process_services(const zbx_vector_ptr_t *services, const char *ip, zb
 	{
 		service = (zbx_service_t *)services->values[i];
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() druleid:" ZBX_FS_UI64 " dcheckid:" ZBX_FS_UI64 " unique_dcheckid:"
+		treegix_log(LOG_LEVEL_DEBUG, "%s() druleid:" ZBX_FS_UI64 " dcheckid:" ZBX_FS_UI64 " unique_dcheckid:"
 				ZBX_FS_UI64 " time:'%s %s' ip:'%s' dns:'%s' port:%hu status:%d value:'%s'",
 				__func__, drule.druleid, service->dcheckid, drule.unique_dcheckid,
 				zbx_date2str(service->itemtime), zbx_time2str(service->itemtime), ip, service->dns,
@@ -3946,7 +3946,7 @@ static int	process_services(const zbx_vector_ptr_t *services, const char *ip, zb
 
 	if (0 == dcheckids.values_num)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot process host update without services");
+		treegix_log(LOG_LEVEL_DEBUG, "cannot process host update without services");
 		goto fail;
 	}
 
@@ -3955,7 +3955,7 @@ static int	process_services(const zbx_vector_ptr_t *services, const char *ip, zb
 	if (SUCCEED != DBlock_druleid(drule.druleid))
 	{
 		DBrollback();
-		zabbix_log(LOG_LEVEL_DEBUG, "druleid:" ZBX_FS_UI64 " does not exist", drule.druleid);
+		treegix_log(LOG_LEVEL_DEBUG, "druleid:" ZBX_FS_UI64 " does not exist", drule.druleid);
 		goto fail;
 	}
 
@@ -3965,7 +3965,7 @@ static int	process_services(const zbx_vector_ptr_t *services, const char *ip, zb
 	if (SUCCEED != DBlock_ids("dchecks", "dcheckid", &dcheckids))
 	{
 		DBrollback();
-		zabbix_log(LOG_LEVEL_DEBUG, "checks are not available for druleid:" ZBX_FS_UI64, drule.druleid);
+		treegix_log(LOG_LEVEL_DEBUG, "checks are not available for druleid:" ZBX_FS_UI64, drule.druleid);
 		goto fail;
 	}
 
@@ -3975,7 +3975,7 @@ static int	process_services(const zbx_vector_ptr_t *services, const char *ip, zb
 
 		if (FAIL == zbx_vector_uint64_bsearch(&dcheckids, service->dcheckid, ZBX_DEFAULT_UINT64_COMPARE_FUNC))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "dcheckid:" ZBX_FS_UI64 " does not exist", service->dcheckid);
+			treegix_log(LOG_LEVEL_DEBUG, "dcheckid:" ZBX_FS_UI64 " does not exist", service->dcheckid);
 			continue;
 		}
 
@@ -3989,7 +3989,7 @@ static int	process_services(const zbx_vector_ptr_t *services, const char *ip, zb
 
 		if (FAIL == zbx_vector_uint64_bsearch(&dcheckids, service->dcheckid, ZBX_DEFAULT_UINT64_COMPARE_FUNC))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "dcheckid:" ZBX_FS_UI64 " does not exist", service->dcheckid);
+			treegix_log(LOG_LEVEL_DEBUG, "dcheckid:" ZBX_FS_UI64 " does not exist", service->dcheckid);
 			continue;
 		}
 
@@ -4007,7 +4007,7 @@ fail:
 	zbx_vector_ptr_destroy(&services_old);
 	zbx_vector_uint64_destroy(&dcheckids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -4044,7 +4044,7 @@ static int	process_discovery_data_contents(struct zbx_json_parse *jp_data, char 
 	zbx_drule_ip_t		*drule_ip;
 	zbx_service_t		*service;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	value = (char *)zbx_malloc(value, value_alloc);
 
@@ -4078,7 +4078,7 @@ static int	process_discovery_data_contents(struct zbx_json_parse *jp_data, char 
 
 		if (SUCCEED != is_ip(ip))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid IP address", __func__, ip);
+			treegix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid IP address", __func__, ip);
 			continue;
 		}
 
@@ -4088,7 +4088,7 @@ static int	process_discovery_data_contents(struct zbx_json_parse *jp_data, char 
 		}
 		else if (FAIL == is_ushort(tmp, &port))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid port", __func__, tmp);
+			treegix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid port", __func__, tmp);
 			continue;
 		}
 
@@ -4101,7 +4101,7 @@ static int	process_discovery_data_contents(struct zbx_json_parse *jp_data, char 
 		}
 		else if ('\0' != *dns && FAIL == zbx_validate_hostname(dns))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid hostname", __func__, dns);
+			treegix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid hostname", __func__, dns);
 			continue;
 		}
 
@@ -4188,7 +4188,7 @@ json_parse_return:
 	zbx_vector_ptr_clear_ext(&drules, (zbx_clean_func_t)zbx_drule_free);
 	zbx_vector_ptr_destroy(&drules);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -4222,7 +4222,7 @@ static int	process_auto_registration_contents(struct zbx_json_parse *jp_data, zb
 	zbx_vector_ptr_t	autoreg_hosts;
 	zbx_conn_flags_t	flags = ZBX_CONN_DEFAULT;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&autoreg_hosts);
 	host_metadata = (char *)zbx_malloc(host_metadata, host_metadata_alloc);
@@ -4244,7 +4244,7 @@ static int	process_auto_registration_contents(struct zbx_json_parse *jp_data, zb
 
 		if (FAIL == zbx_check_hostname(host, NULL))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid Zabbix host name", __func__, host);
+			treegix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid Treegix host name", __func__, host);
 			continue;
 		}
 
@@ -4269,7 +4269,7 @@ static int	process_auto_registration_contents(struct zbx_json_parse *jp_data, zb
 					break;
 				default:
 					flags = ZBX_CONN_DEFAULT;
-					zabbix_log(LOG_LEVEL_WARNING, "wrong flags value: %d for host \"%s\":",
+					treegix_log(LOG_LEVEL_WARNING, "wrong flags value: %d for host \"%s\":",
 							flags_int, host);
 			}
 		}
@@ -4286,7 +4286,7 @@ static int	process_auto_registration_contents(struct zbx_json_parse *jp_data, zb
 		}
 		else if (SUCCEED != is_ip(ip))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid IP address", __func__, ip);
+			treegix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid IP address", __func__, ip);
 			continue;
 		}
 
@@ -4296,7 +4296,7 @@ static int	process_auto_registration_contents(struct zbx_json_parse *jp_data, zb
 		}
 		else if ('\0' != *dns && FAIL == zbx_validate_hostname(dns))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid hostname", __func__, dns);
+			treegix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid hostname", __func__, dns);
 			continue;
 		}
 
@@ -4306,7 +4306,7 @@ static int	process_auto_registration_contents(struct zbx_json_parse *jp_data, zb
 		}
 		else if (FAIL == is_ushort(tmp, &port))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid port", __func__, tmp);
+			treegix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid port", __func__, tmp);
 			continue;
 		}
 		else if (FAIL == zbx_json_value_by_name(&jp_row, ZBX_PROTO_TAG_TLS_ACCEPTED, tmp, sizeof(tmp)))
@@ -4316,7 +4316,7 @@ static int	process_auto_registration_contents(struct zbx_json_parse *jp_data, zb
 		else if (FAIL == is_uint32(tmp, &connection_type) || (ZBX_TCP_SEC_UNENCRYPTED != connection_type &&
 				ZBX_TCP_SEC_TLS_PSK != connection_type))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid value for \""
+			treegix_log(LOG_LEVEL_WARNING, "%s(): \"%s\" is not a valid value for \""
 					ZBX_PROTO_TAG_TLS_ACCEPTED "\"", __func__, tmp);
 			continue;
 		}
@@ -4339,7 +4339,7 @@ static int	process_auto_registration_contents(struct zbx_json_parse *jp_data, zb
 	if (SUCCEED != ret)
 		*error = zbx_strdup(*error, zbx_json_strerror());
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -4367,7 +4367,7 @@ int	process_auto_registration(struct zbx_json_parse *jp, zbx_uint64_t proxy_host
 	struct zbx_json_parse	jp_data;
 	int			ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	log_client_timediff(LOG_LEVEL_DEBUG, jp, ts);
 
@@ -4379,7 +4379,7 @@ int	process_auto_registration(struct zbx_json_parse *jp, zbx_uint64_t proxy_host
 
 	ret = process_auto_registration_contents(&jp_data, proxy_hostid, error);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -4509,7 +4509,7 @@ int	process_proxy_data(const DC_PROXY *proxy, struct zbx_json_parse *jp, zbx_tim
 	char			*error_step = NULL;
 	size_t			error_alloc = 0, error_offset = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	log_client_timediff(LOG_LEVEL_DEBUG, jp, ts);
 
@@ -4565,7 +4565,7 @@ int	process_proxy_data(const DC_PROXY *proxy, struct zbx_json_parse *jp, zbx_tim
 
 out:
 	zbx_free(error_step);
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -4651,7 +4651,7 @@ void	zbx_update_proxy_data(DC_PROXY *proxy, int version, int lastaccess, int com
 
 	if (0 != (diff.flags & ZBX_FLAGS_PROXY_DIFF_UPDATE_VERSION) && 0 != proxy->version)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "proxy \"%s\" protocol version updated from %d.%d to %d.%d", proxy->host,
+		treegix_log(LOG_LEVEL_DEBUG, "proxy \"%s\" protocol version updated from %d.%d to %d.%d", proxy->host,
 				ZBX_COMPONENT_VERSION_MAJOR(proxy->version),
 				ZBX_COMPONENT_VERSION_MINOR(proxy->version),
 				ZBX_COMPONENT_VERSION_MAJOR(diff.version),
@@ -4724,7 +4724,7 @@ int	zbx_check_protocol_version(DC_PROXY *proxy)
 		{
 			if (1 == print_log)
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "cannot process proxy \"%s\":"
+				treegix_log(LOG_LEVEL_WARNING, "cannot process proxy \"%s\":"
 						" protocol version %d.%d is not supported anymore",
 						proxy->host, ZBX_COMPONENT_VERSION_MAJOR(proxy->version),
 						ZBX_COMPONENT_VERSION_MINOR(proxy->version));
@@ -4735,7 +4735,7 @@ int	zbx_check_protocol_version(DC_PROXY *proxy)
 
 		if (1 == print_log)
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "proxy \"%s\" protocol version %d.%d differs from server version"
+			treegix_log(LOG_LEVEL_WARNING, "proxy \"%s\" protocol version %d.%d differs from server version"
 					" %d.%d", proxy->host, ZBX_COMPONENT_VERSION_MAJOR(proxy->version),
 					ZBX_COMPONENT_VERSION_MINOR(proxy->version),
 					ZABBIX_VERSION_MAJOR, ZABBIX_VERSION_MINOR);
@@ -4744,7 +4744,7 @@ int	zbx_check_protocol_version(DC_PROXY *proxy)
 		if (proxy->version > server_version)
 		{
 			if (1 == print_log)
-				zabbix_log(LOG_LEVEL_WARNING, "cannot accept proxy data");
+				treegix_log(LOG_LEVEL_WARNING, "cannot accept proxy data");
 			ret = FAIL;
 		}
 

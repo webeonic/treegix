@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class CArrayKeysImportConverter extends CConverter {
 	}
 
 	public function convert($data) {
-		$data['zabbix_export'] = $this->normalizeArrayKeys($data['zabbix_export'], $this->rules);
+		$data['treegix_export'] = $this->normalizeArrayKeys($data['treegix_export'], $this->rules);
 
 		return $data;
 	}

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class CControllerMediatypeDelete extends CController {
 
 		$deleted = count($mediatypeids);
 
-		$response = new CControllerResponseRedirect('zabbix.php?action=mediatype.list&uncheck=1');
+		$response = new CControllerResponseRedirect('treegix.php?action=mediatype.list&uncheck=1');
 
 		if ($result) {
 			$response->setMessageOk(_n('Media type deleted', 'Media types deleted', $deleted));

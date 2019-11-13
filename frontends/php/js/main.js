@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -643,7 +643,7 @@ var hintBox = {
  * Add object to the list of favourites.
  */
 function add2favorites(object, objectid) {
-	sendAjaxData('zabbix.php?action=favourite.create', {
+	sendAjaxData('treegix.php?action=favourite.create', {
 		data: {
 			object: object,
 			objectid: objectid
@@ -655,7 +655,7 @@ function add2favorites(object, objectid) {
  * Remove object from the list of favourites. Remove all favourites if objectid==0.
  */
 function rm4favorites(object, objectid) {
-	sendAjaxData('zabbix.php?action=favourite.delete', {
+	sendAjaxData('treegix.php?action=favourite.delete', {
 		data: {
 			object: object,
 			objectid: objectid
@@ -671,7 +671,7 @@ function rm4favorites(object, objectid) {
  * @param {object} 	idx2				An array of IDs
  */
 function updateUserProfile(idx, value_int, idx2) {
-	return sendAjaxData('zabbix.php?action=profile.update', {
+	return sendAjaxData('treegix.php?action=profile.update', {
 		data: {
 			idx: idx,
 			value_int: value_int,

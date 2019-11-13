@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -2121,7 +2121,7 @@
 			}
 		}
 
-		var url = new Curl('zabbix.php');
+		var url = new Curl('treegix.php');
 		url.setArgument('action', 'widget.' + widget['type'] + '.view');
 
 		var ajax_data = {
@@ -2248,7 +2248,7 @@
 
 		// Prepare to call dashboard.widget.check.
 
-		var url = new Curl('zabbix.php');
+		var url = new Curl('treegix.php');
 		url.setArgument('action', 'dashboard.widget.check');
 
 		var ajax_data = {
@@ -2292,7 +2292,7 @@
 			.then(function() {
 				// Prepare to call dashboard.widget.configure.
 
-				var url = new Curl('zabbix.php');
+				var url = new Curl('treegix.php');
 				url.setArgument('action', 'dashboard.widget.configure');
 
 				var ajax_data = {
@@ -2908,7 +2908,7 @@
 	}
 
 	function saveChanges($obj, data) {
-		var	url = new Curl('zabbix.php'),
+		var	url = new Curl('treegix.php'),
 			ajax_widgets = [];
 
 		// Remove previous messages.
@@ -3462,7 +3462,7 @@
 				var	$this = $(this),
 					data = $this.data('dashboardGrid'),
 					current_url = new Curl(),
-					url = new Curl('zabbix.php', false);
+					url = new Curl('treegix.php', false);
 
 				// Don't show warning about existing updates.
 				data['options']['updated'] = false;
@@ -3513,7 +3513,7 @@
 					header = $('.dashbrd-widget-head', data.dialogue['div']),
 					form = $('form', body),
 					widget = data.dialogue['widget'], // Widget currently being edited.
-					url = new Curl('zabbix.php'),
+					url = new Curl('treegix.php'),
 					ajax_data = {},
 					fields;
 

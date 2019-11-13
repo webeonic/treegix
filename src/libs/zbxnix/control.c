@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ static int	parse_log_level_options(const char *opt, size_t len, unsigned int *sc
 				return FAIL;
 			}
 
-			/* convert Zabbix process number (e.g. "2" in "poller,2") */
+			/* convert Treegix process number (e.g. "2" in "poller,2") */
 			if (FAIL == is_ushort(proc_num, &num) || 0 == num)
 			{
 				zbx_error("invalid log level control target: invalid or unsupported process number"

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class CControllerAcknowledgeCreate extends CController {
 		if (!$ret) {
 			switch ($this->GetValidationError()) {
 				case self::VALIDATION_ERROR:
-					$response = new CControllerResponseRedirect('zabbix.php?action=acknowledge.edit');
+					$response = new CControllerResponseRedirect('treegix.php?action=acknowledge.edit');
 					$response->setFormData($this->getInputAll());
 					$response->setMessageError(_('Cannot update event'));
 					$this->setResponse($response);
@@ -121,11 +121,11 @@ class CControllerAcknowledgeCreate extends CController {
 		}
 
 		if ($result) {
-			$response = new CControllerResponseRedirect($this->getInput('backurl', 'zabbix.php?action=problem.view'));
+			$response = new CControllerResponseRedirect($this->getInput('backurl', 'treegix.php?action=problem.view'));
 			$response->setMessageOk(_n('Event updated', 'Events updated', $updated_events_count));
 		}
 		else {
-			$response = new CControllerResponseRedirect('zabbix.php?action=acknowledge.edit');
+			$response = new CControllerResponseRedirect('treegix.php?action=acknowledge.edit');
 			$response->setFormData($this->getInputAll());
 			$response->setMessageError(($data && $data['action'] == ZBX_PROBLEM_UPDATE_NONE)
 				? _('At least one update operation is mandatory')

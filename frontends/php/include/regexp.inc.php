@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -148,7 +148,7 @@ function validateRegexp($expressions) {
 }
 
 /**
- * Rewrite Zabbix regexp expressions.
+ * Rewrite Treegix regexp expressions.
  * If all fields are equal to existing expression, that expression is not touched.
  * Other expressions are removed and new ones created.
  *

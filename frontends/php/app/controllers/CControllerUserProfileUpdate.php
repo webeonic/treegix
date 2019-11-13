@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class CControllerUserProfileUpdate extends CControllerUserUpdateGeneral {
 		if (!$ret) {
 			switch ($error) {
 				case self::VALIDATION_ERROR:
-					$response = new CControllerResponseRedirect('zabbix.php?action=userprofile.edit');
+					$response = new CControllerResponseRedirect('treegix.php?action=userprofile.edit');
 					$response->setFormData($this->getInputAll());
 					$response->setMessageError(_('Cannot update user'));
 					$this->setResponse($response);
@@ -114,7 +114,7 @@ class CControllerUserProfileUpdate extends CControllerUserUpdateGeneral {
 			$response->setMessageOk(_('User updated'));
 		}
 		else {
-			$response = new CControllerResponseRedirect('zabbix.php?action=userprofile.edit');
+			$response = new CControllerResponseRedirect('treegix.php?action=userprofile.edit');
 			$response->setFormData($this->getInputAll());
 			$response->setMessageError(_('Cannot update user'));
 		}

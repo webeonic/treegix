@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ static int	write_gsm(int fd, const char *str, char *error, int max_error_len)
 {
 	int	i, wlen, len, ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() str:'%s'", __func__, str);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() str:'%s'", __func__, str);
 
 	len = strlen(str);
 
@@ -41,7 +41,7 @@ static int	write_gsm(int fd, const char *str, char *error, int max_error_len)
 			if (EAGAIN == errno)
 				continue;
 
-			zabbix_log(LOG_LEVEL_DEBUG, "error writing to GSM modem: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_DEBUG, "error writing to GSM modem: %s", zbx_strerror(errno));
 			if (NULL != error)
 				zbx_snprintf(error, max_error_len, "error writing to GSM modem: %s", zbx_strerror(errno));
 
@@ -50,7 +50,7 @@ static int	write_gsm(int fd, const char *str, char *error, int max_error_len)
 		}
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -61,7 +61,7 @@ static int	check_modem_result(char *buffer, char **ebuf, char **sbuf, const char
 	char	rcv[0xff];
 	int	i, len, ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_strlcpy(rcv, *sbuf, sizeof(rcv));
 
@@ -90,7 +90,7 @@ static int	check_modem_result(char *buffer, char **ebuf, char **sbuf, const char
 	if (FAIL == ret && NULL != error)
 		zbx_snprintf(error, max_error_len, "Expected [%s] received [%s]", expect, rcv);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -104,7 +104,7 @@ static int	read_gsm(int fd, const char *expect, char *error, int max_error_len, 
 	struct timeval  tv;
 	int		i, nbytes, nbytes_total, rc, ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() [%s] [%s] [%s] [%s]", __func__, expect,
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() [%s] [%s] [%s] [%s]", __func__, expect,
 			ebuf != buffer ? buffer : "NULL", ebuf != buffer ? ebuf : "NULL", ebuf != buffer ? sbuf : "NULL");
 
 	if ('\0' != *expect && ebuf != buffer &&
@@ -134,7 +134,7 @@ static int	read_gsm(int fd, const char *expect, char *error, int max_error_len, 
 				if (EINTR == errno)
 					continue;
 
-				zabbix_log(LOG_LEVEL_DEBUG, "error select() for GSM modem: %s", zbx_strerror(errno));
+				treegix_log(LOG_LEVEL_DEBUG, "error select() for GSM modem: %s", zbx_strerror(errno));
 
 				if (NULL != error)
 				{
@@ -149,7 +149,7 @@ static int	read_gsm(int fd, const char *expect, char *error, int max_error_len, 
 			{
 				/* timeout exceeded */
 
-				zabbix_log(LOG_LEVEL_DEBUG, "error during wait for GSM modem");
+				treegix_log(LOG_LEVEL_DEBUG, "error during wait for GSM modem");
 				if (NULL != error)
 					zbx_snprintf(error, max_error_len, "error during wait for GSM modem");
 
@@ -170,7 +170,7 @@ static int	read_gsm(int fd, const char *expect, char *error, int max_error_len, 
 
 			nbytes_total += nbytes;
 
-			zabbix_log(LOG_LEVEL_DEBUG, "Read attempt #%d from GSM modem [%s]", i, ebuf - nbytes);
+			treegix_log(LOG_LEVEL_DEBUG, "Read attempt #%d from GSM modem [%s]", i, ebuf - nbytes);
 		}
 
 		while (0 < nbytes_total)
@@ -186,7 +186,7 @@ static int	read_gsm(int fd, const char *expect, char *error, int max_error_len, 
 check_result:
 	*ebuf = '\0';
 
-	zabbix_log(LOG_LEVEL_DEBUG, "Read from GSM modem [%s]", sbuf);
+	treegix_log(LOG_LEVEL_DEBUG, "Read from GSM modem [%s]", sbuf);
 
 	if ('\0' == *expect) /* empty */
 	{
@@ -197,7 +197,7 @@ check_result:
 
 	ret = check_modem_result(buffer, &ebuf, &sbuf, expect, error, max_error_len);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -235,11 +235,11 @@ int	send_sms(const char *device, const char *number, const char *message, char *
 	struct termios		options, old_options;
 	int			f, ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (-1 == (f = open(device, O_RDWR | O_NOCTTY | O_NDELAY)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "error in open(%s): %s", device, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_DEBUG, "error in open(%s): %s", device, zbx_strerror(errno));
 		if (NULL != error)
 			zbx_snprintf(error, max_error_len, "error in open(%s): %s", device, zbx_strerror(errno));
 		return FAIL;
@@ -300,7 +300,7 @@ int	send_sms(const char *device, const char *number, const char *message, char *
 	tcsetattr(f, TCSANOW, &old_options);
 	close(f);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }

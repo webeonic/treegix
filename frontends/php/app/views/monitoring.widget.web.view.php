@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ $table = (new CTableInfo())
 	->setHeader([[_('Host group'), $sort_div], _('Ok'), _('Failed'), _('Unknown')])
 	->setHeadingColumn(0);
 
-$url = (new CUrl('zabbix.php'))
+$url = (new CUrl('treegix.php'))
 	->setArgument('action', 'web.view')
 	->setArgument('groupid', '')
 	->setArgument('hostid', '0');

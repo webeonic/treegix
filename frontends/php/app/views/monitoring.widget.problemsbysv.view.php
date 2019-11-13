@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 **/
 
 
-$data['backurl'] = (new CUrl('zabbix.php'))
+$data['backurl'] = (new CUrl('treegix.php'))
 	->setArgument('action', 'dashboard.view')
 	->getUrl();
 
@@ -49,7 +49,7 @@ else {
 		? $data['filter']['hide_empty_groups']
 		: 0;
 
-	$groupurl = (new CUrl('zabbix.php'))
+	$groupurl = (new CUrl('treegix.php'))
 		->setArgument('action', 'problem.view')
 		->setArgument('filter_set', 1)
 		->setArgument('filter_show', TRIGGERS_OPTION_RECENT_PROBLEM)

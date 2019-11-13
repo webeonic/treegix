@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -99,14 +99,14 @@ foreach ($data['hosts'] as $hostid => $host) {
 		make_decoration($interface['dns'], $data['search']),
 		new CLink(_('Latest data'), 'latest.php?filter_set=1&hostids[]='.$hostid),
 		new CLink(_('Problems'),
-		(new CUrl('zabbix.php'))
+		(new CUrl('treegix.php'))
 			->setArgument('action', 'problem.view')
 			->setArgument('filter_hostids[]', $hostid)
 			->setArgument('filter_set', '1')
 		),
 		new CLink(_('Graphs'), 'charts.php?'.$link),
 		new CLink(_('Screens'), 'host_screen.php?hostid='.$hostid),
-		new CLink(_('Web'), 'zabbix.php?action=web.view&'.$link),
+		new CLink(_('Web'), 'treegix.php?action=web.view&'.$link),
 		$applications_link,
 		$items_link,
 		$triggers_link,
@@ -160,13 +160,13 @@ foreach ($data['groups'] as $groupid => $group) {
 	$table->addRow([
 		$group['editable'] ? new CLink($caption, 'hostgroups.php?form=update&'.$link) : new CSpan($caption),
 		new CLink(_('Latest data'), 'latest.php?filter_set=1&groupids[]='.$groupid),
-		new CLink(_('Problems'), (new CUrl('zabbix.php'))
+		new CLink(_('Problems'), (new CUrl('treegix.php'))
 			->setArgument('action', 'problem.view')
 			->setArgument('filter_groupids[]', $groupid)
 			->setArgument('filter_set', '1')
 		),
 		new CLink(_('Graphs'), 'charts.php?'.$link),
-		new CLink(_('Web'), 'zabbix.php?action=web.view&'.$link),
+		new CLink(_('Web'), 'treegix.php?action=web.view&'.$link),
 		$hosts_link,
 		$templates_link
 	]);

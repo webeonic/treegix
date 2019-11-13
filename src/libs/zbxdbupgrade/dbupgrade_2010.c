@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -996,7 +996,7 @@ static int	DBpatch_2010101(void)
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "Failed to convert host \"%s\" db monitoring item because"
+			treegix_log(LOG_LEVEL_WARNING, "Failed to convert host \"%s\" db monitoring item because"
 					" %s. See upgrade notes for manual database monitor item conversion.",
 					row[3], error_message);
 		}
@@ -1720,13 +1720,13 @@ static int	DBpatch_2010195(void)
 		if (SUCCEED != replace_key_params_dyn(&key, ZBX_KEY_TYPE_ITEM, DBpatch_2010195_replace_key_param_cb,
 				NULL, error, sizeof(error)))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot convert item key \"%s\": %s", row[1], error);
+			treegix_log(LOG_LEVEL_WARNING, "cannot convert item key \"%s\": %s", row[1], error);
 			continue;
 		}
 
 		if (255 /* ITEM_KEY_LEN */ < zbx_strlen_utf8(key))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot convert item key \"%s\": key is too long", row[1]);
+			treegix_log(LOG_LEVEL_WARNING, "cannot convert item key \"%s\": key is too long", row[1]);
 			continue;
 		}
 

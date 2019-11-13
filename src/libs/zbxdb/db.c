@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -167,7 +167,7 @@ static void	zbx_db_errlog(zbx_err_codes_t zbx_errno, int db_errno, const char *d
 			s = zbx_strdup(NULL, "unknown error");
 	}
 
-	zabbix_log(LOG_LEVEL_ERR, "[Z%04d] %s", (int)zbx_errno, s);
+	treegix_log(LOG_LEVEL_ERR, "[Z%04d] %s", (int)zbx_errno, s);
 
 	zbx_free(s);
 }
@@ -236,7 +236,7 @@ static const char	*zbx_oci_error(sword status, sb4 *err)
  *                                                                            *
  * Purpose: handles Oracle prepare/bind/execute/select operation error        *
  *                                                                            *
- * Parameters: zerrcode   - [IN] the Zabbix errorcode for the failed database *
+ * Parameters: zerrcode   - [IN] the Treegix errorcode for the failed database *
  *                               operation                                    *
  *             oci_error  - [IN] the return code from failed Oracle operation *
  *             sql        - [IN] the failed sql statement (can be NULL)       *
@@ -486,7 +486,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 
 	if (NULL == (conn = mysql_init(NULL)))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot allocate or initialize MYSQL database connection object");
+		treegix_log(LOG_LEVEL_CRIT, "cannot allocate or initialize MYSQL database connection object");
 		exit(EXIT_FAILURE);
 	}
 
@@ -503,11 +503,11 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	/* options on an open connection, so setting it here is safe.		*/
 
 	if (ZBX_DB_OK == ret && 0 != mysql_options(conn, MYSQL_OPT_RECONNECT, &mysql_reconnect))
-		zabbix_log(LOG_LEVEL_WARNING, "Cannot set MySQL reconnect option.");
+		treegix_log(LOG_LEVEL_WARNING, "Cannot set MySQL reconnect option.");
 
 	/* in contrast to "set names utf8" results of this call will survive auto-reconnects */
 	if (ZBX_DB_OK == ret && 0 != mysql_set_character_set(conn, "utf8"))
-		zabbix_log(LOG_LEVEL_WARNING, "cannot set MySQL character set to \"utf8\"");
+		treegix_log(LOG_LEVEL_WARNING, "cannot set MySQL character set to \"utf8\"");
 
 	if (ZBX_DB_OK == ret && 0 != mysql_autocommit(conn, 1))
 	{
@@ -557,7 +557,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 			/* try to find out the id of UTF8 character set */
 			if (0 == (csid = OCINlsCharSetNameToId(oracle.envhp, (const oratext *)"UTF8")))
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "Cannot find out the ID of \"UTF8\" character set."
+				treegix_log(LOG_LEVEL_WARNING, "Cannot find out the ID of \"UTF8\" character set."
 						" Relying on current \"NLS_LANG\" settings.");
 				break;	/* use default environment with character set derived from NLS_LANG */
 			}
@@ -589,7 +589,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 		switch (err)
 		{
 			case OCI_SUCCESS_WITH_INFO:
-				zabbix_log(LOG_LEVEL_WARNING, "%s", zbx_oci_error(err, NULL));
+				treegix_log(LOG_LEVEL_WARNING, "%s", zbx_oci_error(err, NULL));
 				/* break; is not missing here */
 			case OCI_SUCCESS:
 				err = OCIAttrGet((void *)oracle.svchp, OCI_HTYPE_SVCCTX, (void *)&oracle.srvhp,
@@ -665,7 +665,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	DBfree_result(result);
 
 	ZBX_PG_SVERSION = PQserverVersion(conn);
-	zabbix_log(LOG_LEVEL_DEBUG, "PostgreSQL Server version: %d", ZBX_PG_SVERSION);
+	treegix_log(LOG_LEVEL_DEBUG, "PostgreSQL Server version: %d", ZBX_PG_SVERSION);
 
 	/* disable "nonstandard use of \' in a string literal" warning */
 	if (0 < (ret = zbx_db_execute("set escape_string_warning to off")))
@@ -754,8 +754,8 @@ int	zbx_db_init(const char *dbname, const char *const dbschema, char **error)
 
 	if (0 != zbx_stat(dbname, &buf))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "cannot open database file \"%s\": %s", dbname, zbx_strerror(errno));
-		zabbix_log(LOG_LEVEL_WARNING, "creating database ...");
+		treegix_log(LOG_LEVEL_WARNING, "cannot open database file \"%s\": %s", dbname, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_WARNING, "creating database ...");
 
 		if (SQLITE_OK != sqlite3_open(dbname, &conn))
 		{
@@ -813,7 +813,7 @@ void	zbx_db_close(void)
 	{
 		int	i;
 
-		zabbix_log(LOG_LEVEL_WARNING, "cannot process queries: database is closed");
+		treegix_log(LOG_LEVEL_WARNING, "cannot process queries: database is closed");
 
 		for (i = 0; i < oracle.db_results.values_num; i++)
 		{
@@ -885,7 +885,7 @@ int	zbx_db_begin(void)
 
 	if (txn_level > 0)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "ERROR: nested transaction detected. Please report it to Zabbix Team.");
+		treegix_log(LOG_LEVEL_CRIT, "ERROR: nested transaction detected. Please report it to Treegix Team.");
 		assert(0);
 	}
 
@@ -942,8 +942,8 @@ int	zbx_db_commit(void)
 
 	if (0 == txn_level)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "ERROR: commit without transaction."
-				" Please report it to Zabbix Team.");
+		treegix_log(LOG_LEVEL_CRIT, "ERROR: commit without transaction."
+				" Please report it to Treegix Team.");
 		assert(0);
 	}
 
@@ -1003,8 +1003,8 @@ int	zbx_db_rollback(void)
 
 	if (0 == txn_level)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "ERROR: rollback without transaction."
-				" Please report it to Zabbix Team.");
+		treegix_log(LOG_LEVEL_CRIT, "ERROR: rollback without transaction."
+				" Please report it to Treegix Team.");
 		assert(0);
 	}
 
@@ -1097,22 +1097,22 @@ int	zbx_db_statement_prepare(const char *sql)
 	int	ret = ZBX_DB_OK;
 
 	if (0 == txn_level)
-		zabbix_log(LOG_LEVEL_DEBUG, "query without transaction detected");
+		treegix_log(LOG_LEVEL_DEBUG, "query without transaction detected");
 
 	if (ZBX_DB_OK != txn_error)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] within failed transaction", txn_level);
+		treegix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] within failed transaction", txn_level);
 		return ZBX_DB_FAIL;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "query [txnlev:%d] [%s]", txn_level, sql);
+	treegix_log(LOG_LEVEL_DEBUG, "query [txnlev:%d] [%s]", txn_level, sql);
 
 	if (OCI_SUCCESS != (err = zbx_oracle_statement_prepare(sql)))
 		ret = OCI_handle_sql_error(ERR_Z3005, err, sql);
 
 	if (ZBX_DB_FAIL == ret && 0 < txn_level)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "query [%s] failed, setting transaction as failed", sql);
+		treegix_log(LOG_LEVEL_DEBUG, "query [%s] failed, setting transaction as failed", sql);
 		txn_error = ZBX_DB_FAIL;
 	}
 
@@ -1264,7 +1264,7 @@ int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsi
 
 		if (ZBX_DB_FAIL == ret && 0 < txn_level)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "query failed, setting transaction as failed");
+			treegix_log(LOG_LEVEL_DEBUG, "query failed, setting transaction as failed");
 			txn_error = ZBX_DB_FAIL;
 		}
 
@@ -1279,7 +1279,7 @@ int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsi
 
 		if (ZBX_DB_FAIL == ret && 0 < txn_level)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "query failed, setting transaction as failed");
+			treegix_log(LOG_LEVEL_DEBUG, "query failed, setting transaction as failed");
 			txn_error = ZBX_DB_FAIL;
 		}
 
@@ -1305,7 +1305,7 @@ int	zbx_db_statement_execute(int iters)
 
 	if (ZBX_DB_OK != txn_error)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] within failed transaction", txn_level);
+		treegix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] within failed transaction", txn_level);
 		ret = ZBX_DB_FAIL;
 		goto out;
 	}
@@ -1317,11 +1317,11 @@ int	zbx_db_statement_execute(int iters)
 
 	if (ZBX_DB_FAIL == ret && 0 < txn_level)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "query failed, setting transaction as failed");
+		treegix_log(LOG_LEVEL_DEBUG, "query failed, setting transaction as failed");
 		txn_error = ZBX_DB_FAIL;
 	}
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "%s():%d", __func__, ret);
+	treegix_log(LOG_LEVEL_DEBUG, "%s():%d", __func__, ret);
 
 	return ret;
 }
@@ -1365,16 +1365,16 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 	sql = zbx_dvsprintf(sql, fmt, args);
 
 	if (0 == txn_level)
-		zabbix_log(LOG_LEVEL_DEBUG, "query without transaction detected");
+		treegix_log(LOG_LEVEL_DEBUG, "query without transaction detected");
 
 	if (ZBX_DB_OK != txn_error)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] [%s] within failed transaction", txn_level, sql);
+		treegix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] [%s] within failed transaction", txn_level, sql);
 		ret = ZBX_DB_FAIL;
 		goto clean;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "query [txnlev:%d] [%s]", txn_level, sql);
+	treegix_log(LOG_LEVEL_DEBUG, "query [txnlev:%d] [%s]", txn_level, sql);
 
 #if defined(HAVE_IBM_DB2)
 	/* allocate a statement handle */
@@ -1435,7 +1435,7 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 			{
 				if (0 != mysql_field_count(conn))
 				{
-					zabbix_log(LOG_LEVEL_DEBUG, "cannot retrieve result set");
+					treegix_log(LOG_LEVEL_DEBUG, "cannot retrieve result set");
 					break;
 				}
 
@@ -1524,12 +1524,12 @@ lbl_exec:
 	{
 		sec = zbx_time() - sec;
 		if (sec > (double)CONFIG_LOG_SLOW_QUERIES / 1000.0)
-			zabbix_log(LOG_LEVEL_WARNING, "slow query: " ZBX_FS_DBL " sec, \"%s\"", sec, sql);
+			treegix_log(LOG_LEVEL_WARNING, "slow query: " ZBX_FS_DBL " sec, \"%s\"", sec, sql);
 	}
 
 	if (ZBX_DB_FAIL == ret && 0 < txn_level)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "query [%s] failed, setting transaction as failed", sql);
+		treegix_log(LOG_LEVEL_DEBUG, "query [%s] failed, setting transaction as failed", sql);
 		txn_error = ZBX_DB_FAIL;
 	}
 clean:
@@ -1572,11 +1572,11 @@ DB_RESULT	zbx_db_vselect(const char *fmt, va_list args)
 
 	if (ZBX_DB_OK != txn_error)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] [%s] within failed transaction", txn_level, sql);
+		treegix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] [%s] within failed transaction", txn_level, sql);
 		goto clean;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "query [txnlev:%d] [%s]", txn_level, sql);
+	treegix_log(LOG_LEVEL_DEBUG, "query [txnlev:%d] [%s]", txn_level, sql);
 
 #if defined(HAVE_IBM_DB2)
 	result = zbx_malloc(result, sizeof(struct zbx_db_result));
@@ -1869,12 +1869,12 @@ lbl_get_table:
 	{
 		sec = zbx_time() - sec;
 		if (sec > (double)CONFIG_LOG_SLOW_QUERIES / 1000.0)
-			zabbix_log(LOG_LEVEL_WARNING, "slow query: " ZBX_FS_DBL " sec, \"%s\"", sec, sql);
+			treegix_log(LOG_LEVEL_WARNING, "slow query: " ZBX_FS_DBL " sec, \"%s\"", sec, sql);
 	}
 
 	if (NULL == result && 0 < txn_level)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "query [%s] failed, setting transaction as failed", sql);
+		treegix_log(LOG_LEVEL_DEBUG, "query [%s] failed, setting transaction as failed", sql);
 		txn_error = ZBX_DB_FAIL;
 	}
 clean:
@@ -2246,7 +2246,7 @@ static int	IBM_DB2server_status(void)
 	if (SUCCEED != zbx_ibm_db2_success(SQLGetConnectAttr(ibm_db2.hdbc, SQL_ATTR_CONNECTION_DEAD, &server_status,
 			SQL_IS_POINTER, NULL)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "cannot determine IBM DB2 server status, assuming not connected");
+		treegix_log(LOG_LEVEL_WARNING, "cannot determine IBM DB2 server status, assuming not connected");
 	}
 
 	return (SQL_CD_FALSE == server_status ? SQL_CD_TRUE : SQL_CD_FALSE);
@@ -2296,7 +2296,7 @@ static ub4	OCI_DBserver_status(void)
 			(ub4 *)0, OCI_ATTR_SERVER_STATUS, (OCIError *)oracle.errhp);
 
 	if (OCI_SUCCESS != err)
-		zabbix_log(LOG_LEVEL_WARNING, "cannot determine Oracle server status, assuming not connected");
+		treegix_log(LOG_LEVEL_WARNING, "cannot determine Oracle server status, assuming not connected");
 
 	return server_status;
 }

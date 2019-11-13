@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -253,7 +253,7 @@ class CScreenHostTriggers extends CScreenBase {
 
 			// Clock.
 			$clock = new CLink(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']),
-				(new CUrl('zabbix.php'))
+				(new CUrl('treegix.php'))
 					->setArgument('action', 'problem.view')
 					->setArgument('filter_triggerids[]', $trigger['triggerid'])
 					->setArgument('filter_set', '1')
@@ -271,7 +271,7 @@ class CScreenHostTriggers extends CScreenBase {
 				zbx_date2age($problem['clock']),
 				makeInformationList($info_icons),
 				(new CLink($problem['acknowledged'] ? _('Yes') : _('No'),
-					(new CUrl('zabbix.php'))
+					(new CUrl('treegix.php'))
 						->setArgument('action', 'acknowledge.edit')
 						->setArgument('eventids', [$problem['eventid']])
 						->setArgument('backurl', $back_url)

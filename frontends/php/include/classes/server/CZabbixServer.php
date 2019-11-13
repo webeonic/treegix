@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@
 
 
 /**
- * A class for interacting with the Zabbix server.
+ * A class for interacting with the Treegix server.
  *
- * Class CZabbixServer
+ * Class CTreegixServer
  */
-class CZabbixServer {
+class CTreegixServer {
 
 	/**
 	 * Return item queue overview.
@@ -63,14 +63,14 @@ class CZabbixServer {
 	const READ_BYTES_LIMIT = 8192;
 
 	/**
-	 * Zabbix server host name.
+	 * Treegix server host name.
 	 *
 	 * @var string
 	 */
 	protected $host;
 
 	/**
-	 * Zabbix server port number.
+	 * Treegix server port number.
 	 *
 	 * @var string
 	 */
@@ -91,7 +91,7 @@ class CZabbixServer {
 	protected $totalBytesLimit;
 
 	/**
-	 * Zabbix server socket resource.
+	 * Treegix server socket resource.
 	 *
 	 * @var resource
 	 */
@@ -286,7 +286,7 @@ class CZabbixServer {
 	}
 
 	/**
-	 * Returns true if the Zabbix server is running and false otherwise.
+	 * Returns true if the Treegix server is running and false otherwise.
 	 *
 	 * @param $sid
 	 *
@@ -348,7 +348,7 @@ class CZabbixServer {
 		// Send the command.
 		$json = CJs::encodeJson($params);
 		if (fwrite($this->socket, ZBX_TCP_HEADER.pack('V', strlen($json))."\x00\x00\x00\x00".$json) === false) {
-			$this->error = _s('Cannot send command, check connection with Zabbix server "%1$s".', $this->host);
+			$this->error = _s('Cannot send command, check connection with Treegix server "%1$s".', $this->host);
 			return false;
 		}
 
@@ -361,7 +361,7 @@ class CZabbixServer {
 		while (true) {
 			if ((time() - $now) >= $this->timeout) {
 				$this->error = _s(
-					'Connection timeout of %1$s seconds exceeded when connecting to Zabbix server "%2$s".',
+					'Connection timeout of %1$s seconds exceeded when connecting to Treegix server "%2$s".',
 					$this->timeout, $this->host
 				);
 				return false;
@@ -373,7 +373,7 @@ class CZabbixServer {
 
 				if ($expect == self::ZBX_TCP_EXPECT_HEADER) {
 					if (strncmp($response, ZBX_TCP_HEADER, min($response_len, ZBX_TCP_HEADER_LEN)) != 0) {
-						$this->error = _s('Incorrect response received from Zabbix server "%1$s".', $this->host);
+						$this->error = _s('Incorrect response received from Treegix server "%1$s".', $this->host);
 						return false;
 					}
 
@@ -394,7 +394,7 @@ class CZabbixServer {
 
 					if ($this->totalBytesLimit != 0 && $expected_len >= $this->totalBytesLimit) {
 						$this->error = _s(
-							'Size of the response received from Zabbix server "%1$s" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php.',
+							'Size of the response received from Treegix server "%1$s" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php.',
 							$this->host, $this->totalBytesLimit
 						);
 						return false;
@@ -407,7 +407,7 @@ class CZabbixServer {
 			}
 			else {
 				$this->error =
-					_s('Cannot read the response, check connection with the Zabbix server "%1$s".', $this->host);
+					_s('Cannot read the response, check connection with the Treegix server "%1$s".', $this->host);
 				return false;
 			}
 		}
@@ -415,14 +415,14 @@ class CZabbixServer {
 		fclose($this->socket);
 
 		if ($expected_len > $response_len || $response_len > $expected_len) {
-			$this->error = _s('Incorrect response received from Zabbix server "%1$s".', $this->host);
+			$this->error = _s('Incorrect response received from Treegix server "%1$s".', $this->host);
 			return false;
 		}
 
 		$response = CJs::decodeJson(substr($response, ZBX_TCP_HEADER_LEN + ZBX_TCP_DATALEN_LEN));
 
 		if (!$response || !$this->normalizeResponse($response)) {
-			$this->error = _s('Incorrect response received from Zabbix server "%1$s".', $this->host);
+			$this->error = _s('Incorrect response received from Treegix server "%1$s".', $this->host);
 
 			return false;
 		}
@@ -443,7 +443,7 @@ class CZabbixServer {
 	}
 
 	/**
-	 * Opens a socket to the Zabbix server. Returns the socket resource if the connection has been established or
+	 * Opens a socket to the Treegix server. Returns the socket resource if the connection has been established or
 	 * false otherwise.
 	 *
 	 * @return bool|resource
@@ -457,19 +457,19 @@ class CZabbixServer {
 			if (!$socket = @fsockopen($this->host, $this->port, $errorCode, $errorMsg, $this->timeout)) {
 				switch ($errorMsg) {
 					case 'Connection refused':
-						$dErrorMsg = _s("Connection to Zabbix server \"%s\" refused. Possible reasons:\n1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n2. Security environment (for example, SELinux) is blocking the connection;\n3. Zabbix server daemon not running;\n4. Firewall is blocking TCP connection.\n", $this->host);
+						$dErrorMsg = _s("Connection to Treegix server \"%s\" refused. Possible reasons:\n1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n2. Security environment (for example, SELinux) is blocking the connection;\n3. Treegix server daemon not running;\n4. Firewall is blocking TCP connection.\n", $this->host);
 						break;
 
 					case 'No route to host':
-						$dErrorMsg = _s("Zabbix server \"%s\" can not be reached. Possible reasons:\n1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n2. Incorrect network configuration.\n", $this->host);
+						$dErrorMsg = _s("Treegix server \"%s\" can not be reached. Possible reasons:\n1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n2. Incorrect network configuration.\n", $this->host);
 						break;
 
 					case 'Connection timed out':
-						$dErrorMsg = _s("Connection to Zabbix server \"%s\" timed out. Possible reasons:\n1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n2. Firewall is blocking TCP connection.\n", $this->host);
+						$dErrorMsg = _s("Connection to Treegix server \"%s\" timed out. Possible reasons:\n1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n2. Firewall is blocking TCP connection.\n", $this->host);
 						break;
 
 					default:
-						$dErrorMsg = _s("Connection to Zabbix server \"%s\" failed. Possible reasons:\n1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n2. Incorrect DNS server configuration.\n", $this->host);
+						$dErrorMsg = _s("Connection to Treegix server \"%s\" failed. Possible reasons:\n1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n2. Incorrect DNS server configuration.\n", $this->host);
 				}
 
 				$this->error = $dErrorMsg.$errorMsg;
@@ -482,7 +482,7 @@ class CZabbixServer {
 	}
 
 	/**
-	 * Returns true if the response received from the Zabbix server is valid.
+	 * Returns true if the response received from the Treegix server is valid.
 	 *
 	 * @param array $response
 	 *

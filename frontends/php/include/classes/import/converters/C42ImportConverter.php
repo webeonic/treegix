@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -25,18 +25,18 @@
 class C42ImportConverter extends CConverter {
 
 	public function convert($data) {
-		$data['zabbix_export']['version'] = '4.4';
+		$data['treegix_export']['version'] = '4.4';
 
-		if (array_key_exists('hosts', $data['zabbix_export'])) {
-			$data['zabbix_export']['hosts'] = $this->convertInventoryMode($data['zabbix_export']['hosts']);
-			$data['zabbix_export']['hosts'] = $this->convertTlsAccept($data['zabbix_export']['hosts']);
+		if (array_key_exists('hosts', $data['treegix_export'])) {
+			$data['treegix_export']['hosts'] = $this->convertInventoryMode($data['treegix_export']['hosts']);
+			$data['treegix_export']['hosts'] = $this->convertTlsAccept($data['treegix_export']['hosts']);
 		}
 
-		if (array_key_exists('screens', $data['zabbix_export'])) {
-			$data['zabbix_export']['screens'] = $this->convertScreens($data['zabbix_export']['screens']);
+		if (array_key_exists('screens', $data['treegix_export'])) {
+			$data['treegix_export']['screens'] = $this->convertScreens($data['treegix_export']['screens']);
 		}
 
-		$data['zabbix_export'] = $this->convertFormat($data['zabbix_export']);
+		$data['treegix_export'] = $this->convertFormat($data['treegix_export']);
 
 		return $data;
 	}
@@ -131,7 +131,7 @@ class C42ImportConverter extends CConverter {
 	}
 
 	/**
-	 * Update imported data array to format used starting from Zabbix version 4.4.
+	 * Update imported data array to format used starting from Treegix version 4.4.
 	 *
 	 * @param array $data
 	 *

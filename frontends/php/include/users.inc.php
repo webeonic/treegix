@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -51,9 +51,9 @@ function getUserTheme($userData) {
  */
 function user_type2str($userType = null) {
 	$userTypes = [
-		USER_TYPE_ZABBIX_USER => _('Zabbix User'),
-		USER_TYPE_ZABBIX_ADMIN => _('Zabbix Admin'),
-		USER_TYPE_SUPER_ADMIN => _('Zabbix Super Admin')
+		USER_TYPE_ZABBIX_USER => _('Treegix User'),
+		USER_TYPE_ZABBIX_ADMIN => _('Treegix Admin'),
+		USER_TYPE_SUPER_ADMIN => _('Treegix Super Admin')
 	];
 
 	if ($userType === null) {

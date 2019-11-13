@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -113,14 +113,14 @@ fallback:
 		goto finish;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "GetActiveProcessorCount() not supported, fall back to GetNativeSystemInfo()");
+	treegix_log(LOG_LEVEL_DEBUG, "GetActiveProcessorCount() not supported, fall back to GetNativeSystemInfo()");
 
 	GetNativeSystemInfo(&sysInfo);
 	cpu_count = (int)sysInfo.dwNumberOfProcessors;
 finish:
 	zbx_free(buffer);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "logical CPU count %d", cpu_count);
+	treegix_log(LOG_LEVEL_DEBUG, "logical CPU count %d", cpu_count);
 
 	return cpu_count;
 }
@@ -153,13 +153,13 @@ int	get_cpu_group_num_win32(void)
 		int groups = (int)get_act();
 
 		if (0 >= groups)
-			zabbix_log(LOG_LEVEL_WARNING, "GetActiveProcessorGroupCount() failed");
+			treegix_log(LOG_LEVEL_WARNING, "GetActiveProcessorGroupCount() failed");
 		else
 			return groups;
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "GetActiveProcessorGroupCount() not supported, assuming 1");
+		treegix_log(LOG_LEVEL_DEBUG, "GetActiveProcessorGroupCount() not supported, assuming 1");
 	}
 
 	return 1;
@@ -209,7 +209,7 @@ int	get_numa_node_num_win32(void)
 		zbx_free(buffer);
 	}
 finish:
-	zabbix_log(LOG_LEVEL_DEBUG, "NUMA node count %d", numa_node_count);
+	treegix_log(LOG_LEVEL_DEBUG, "NUMA node count %d", numa_node_count);
 
 	return numa_node_count;
 }

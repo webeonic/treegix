@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -528,7 +528,7 @@ ZBX_Notifications.prototype.renderAudio = function() {
  */
 ZBX_Notifications.prototype.fetch = function(resource, params) {
 	return new Promise(function(resolve, reject) {
-		sendAjaxData('zabbix.php?action=' + resource, {
+		sendAjaxData('treegix.php?action=' + resource, {
 			data: params || {},
 			success: resolve,
 			error: reject

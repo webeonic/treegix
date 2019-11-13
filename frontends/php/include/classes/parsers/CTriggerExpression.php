@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class CTriggerExpression {
 	public $error;
 
 	/**
-	 * An array of trigger functions like {Zabbix server:agent.ping.last(0)}
+	 * An array of trigger functions like {Treegix server:agent.ping.last(0)}
 	 * The array isn't unique. Same functions can repeat.
 	 *
 	 * @deprecated  use result tokens instead
@@ -182,15 +182,15 @@ class CTriggerExpression {
 	 *
 	 * Examples:
 	 *   expression:
-	 *     {Zabbix server:agent.ping.last(0)}=1 and {TRIGGER.VALUE}={$TRIGGER.VALUE}
+	 *     {Treegix server:agent.ping.last(0)}=1 and {TRIGGER.VALUE}={$TRIGGER.VALUE}
 	 *   results:
 	 *     $this->isValid : true
 	 *     $this->error : ''
 	 *     $this->expressions : array(
 	 *       0 => array(
-	 *         'expression' => '{Zabbix server:agent.ping.last(0)}',
+	 *         'expression' => '{Treegix server:agent.ping.last(0)}',
 	 *         'pos' => 0,
-	 *         'host' => 'Zabbix server',
+	 *         'host' => 'Treegix server',
 	 *         'item' => 'agent.ping',
 	 *         'function' => 'last(0)',
 	 *         'functionName' => 'last',

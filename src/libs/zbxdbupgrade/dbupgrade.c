@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ zbx_oracle_column_type_t;
  *                                                                            *
  * Purpose: determine whether column type is character or numeric             *
  *                                                                            *
- * Parameters: field_type - [IN] column type in Zabbix definitions            *
+ * Parameters: field_type - [IN] column type in Treegix definitions            *
  *                                                                            *
  * Return value: column type (character/raw, numeric) in Oracle definitions   *
  *                                                                            *
@@ -817,7 +817,7 @@ static void	DBget_version(int *mandatory, int *optional)
 
 	if (-1 == *mandatory)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "Cannot get the database version. Exiting ...");
+		treegix_log(LOG_LEVEL_CRIT, "Cannot get the database version. Exiting ...");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -832,7 +832,7 @@ int	DBcheck_version(void)
 #ifndef HAVE_SQLITE3
 	int			total = 0, current = 0, completed, last_completed = -1, optional_num = 0;
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	required = ZBX_FIRST_DB_VERSION;
 
@@ -854,11 +854,11 @@ int	DBcheck_version(void)
 	if (SUCCEED != DBtable_exists(dbversion_table_name))
 	{
 #ifndef HAVE_SQLITE3
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() \"%s\" does not exist", __func__, dbversion_table_name);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() \"%s\" does not exist", __func__, dbversion_table_name);
 
 		if (SUCCEED != DBfield_exists("config", "server_check_interval"))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "Cannot upgrade database: the database must"
+			treegix_log(LOG_LEVEL_CRIT, "Cannot upgrade database: the database must"
 					" correspond to version 2.0 or later. Exiting ...");
 			goto out;
 		}
@@ -866,11 +866,11 @@ int	DBcheck_version(void)
 		if (SUCCEED != DBcreate_dbversion_table())
 			goto out;
 #else
-		zabbix_log(LOG_LEVEL_CRIT, "The %s does not match Zabbix database."
+		treegix_log(LOG_LEVEL_CRIT, "The %s does not match Treegix database."
 				" Current database version (mandatory/optional): UNKNOWN."
 				" Required mandatory version: %08d.",
 				get_program_type_string(program_type), required);
-		zabbix_log(LOG_LEVEL_CRIT, "Zabbix does not support SQLite3 database upgrade.");
+		treegix_log(LOG_LEVEL_CRIT, "Treegix does not support SQLite3 database upgrade.");
 
 		goto out;
 #endif
@@ -898,20 +898,20 @@ int	DBcheck_version(void)
 	if (required != db_mandatory)
 #endif
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "The %s does not match Zabbix database."
+		treegix_log(LOG_LEVEL_CRIT, "The %s does not match Treegix database."
 				" Current database version (mandatory/optional): %08d/%08d."
 				" Required mandatory version: %08d.",
 				get_program_type_string(program_type), db_mandatory, db_optional, required);
 #ifdef HAVE_SQLITE3
 		if (required > db_mandatory)
-			zabbix_log(LOG_LEVEL_CRIT, "Zabbix does not support SQLite3 database upgrade.");
+			treegix_log(LOG_LEVEL_CRIT, "Treegix does not support SQLite3 database upgrade.");
 #endif
 		goto out;
 	}
 
-	zabbix_log(LOG_LEVEL_INFORMATION, "current database version (mandatory/optional): %08d/%08d",
+	treegix_log(LOG_LEVEL_INFORMATION, "current database version (mandatory/optional): %08d/%08d",
 			db_mandatory, db_optional);
-	zabbix_log(LOG_LEVEL_INFORMATION, "required mandatory version: %08d", required);
+	treegix_log(LOG_LEVEL_INFORMATION, "required mandatory version: %08d", required);
 
 	ret = SUCCEED;
 
@@ -920,9 +920,9 @@ int	DBcheck_version(void)
 		goto out;
 
 	if (0 != optional_num)
-		zabbix_log(LOG_LEVEL_INFORMATION, "optional patches were found");
+		treegix_log(LOG_LEVEL_INFORMATION, "optional patches were found");
 
-	zabbix_log(LOG_LEVEL_WARNING, "starting automatic database upgrade");
+	treegix_log(LOG_LEVEL_WARNING, "starting automatic database upgrade");
 
 	for (dbversion = dbversions; NULL != dbversion->patches; dbversion++)
 	{
@@ -942,7 +942,7 @@ int	DBcheck_version(void)
 			sigaddset(&mask, SIGQUIT);
 
 			if (0 > sigprocmask(SIG_BLOCK, &mask, &orig_mask))
-				zabbix_log(LOG_LEVEL_WARNING, "cannot set sigprocmask to block the user signal");
+				treegix_log(LOG_LEVEL_WARNING, "cannot set sigprocmask to block the user signal");
 
 			DBbegin();
 
@@ -956,7 +956,7 @@ int	DBcheck_version(void)
 			ret = DBend(ret);
 
 			if (0 > sigprocmask(SIG_SETMASK, &orig_mask, NULL))
-				zabbix_log(LOG_LEVEL_WARNING,"cannot restore sigprocmask");
+				treegix_log(LOG_LEVEL_WARNING,"cannot restore sigprocmask");
 
 			if (SUCCEED != ret)
 				break;
@@ -966,7 +966,7 @@ int	DBcheck_version(void)
 
 			if (last_completed != completed)
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "completed %d%% of database upgrade", completed);
+				treegix_log(LOG_LEVEL_WARNING, "completed %d%% of database upgrade", completed);
 				last_completed = completed;
 			}
 		}
@@ -976,15 +976,15 @@ int	DBcheck_version(void)
 	}
 
 	if (SUCCEED == ret)
-		zabbix_log(LOG_LEVEL_WARNING, "database upgrade fully completed");
+		treegix_log(LOG_LEVEL_WARNING, "database upgrade fully completed");
 	else
-		zabbix_log(LOG_LEVEL_CRIT, "database upgrade failed");
+		treegix_log(LOG_LEVEL_CRIT, "database upgrade failed");
 #endif	/* not HAVE_SQLITE3 */
 
 out:
 	DBclose();
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }

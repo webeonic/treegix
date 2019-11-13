@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ $guiTab = (new CFormList())
 			->setAriaRequired()
 			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	)
-	->addRow(_('Show warning if Zabbix server is down'),
+	->addRow(_('Show warning if Treegix server is down'),
 		(new CCheckBox('server_check_interval', SERVER_CHECK_INTERVAL))
 			->setChecked($data['server_check_interval'] == SERVER_CHECK_INTERVAL)
 	);

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 
 static int	DBpatch_2050000(void)
 {
-	const ZBX_FIELD	field = {"agent", "Zabbix", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const ZBX_FIELD	field = {"agent", "Treegix", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
 
 	return DBset_default("httptest", &field);
 }
@@ -59,13 +59,13 @@ static int	DBpatch_2050001(void)
 
 		if (FAIL == quote_key_param(&param, 0))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot convert SNMP discovery OID \"%s\":"
+			treegix_log(LOG_LEVEL_WARNING, "cannot convert SNMP discovery OID \"%s\":"
 					" OID contains invalid character(s)", row[1]);
 			rc = ZBX_DB_OK;
 		}
 		else if (255 < oid_offset && 255 < zbx_strlen_utf8(oid)) /* 255 - ITEM_SNMP_OID_LEN */
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot convert SNMP discovery OID \"%s\":"
+			treegix_log(LOG_LEVEL_WARNING, "cannot convert SNMP discovery OID \"%s\":"
 					" resulting OID is too long", row[1]);
 			rc = ZBX_DB_OK;
 		}
@@ -182,7 +182,7 @@ static int	DBpatch_2050012(void)
 
 		if (SUCCEED != parse_item_key(row[2], &request))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot parse item key \"%s\"", row[2]);
+			treegix_log(LOG_LEVEL_WARNING, "cannot parse item key \"%s\"", row[2]);
 			continue;
 		}
 
@@ -231,7 +231,7 @@ static int	DBpatch_2050012(void)
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot convert item key \"%s\":"
+			treegix_log(LOG_LEVEL_WARNING, "cannot convert item key \"%s\":"
 					" item with converted key \"%s\" already exists on host ID [%s]",
 					row[2], key, row[0]);
 		}
@@ -824,7 +824,7 @@ static int	DBpatch_2050092(void)
 
 		url_offset = 0;
 		zbx_strncpy_alloc(&url, &url_alloc, &url_offset, row[1], start - row[1]);
-		zbx_strcpy_alloc(&url, &url_alloc, &url_offset, "zabbix.php?action=");
+		zbx_strcpy_alloc(&url, &url_alloc, &url_offset, "treegix.php?action=");
 		zbx_strcpy_alloc(&url, &url_alloc, &url_offset, url_map[i + 1]);
 
 		if ('\0' != *end)
@@ -837,7 +837,7 @@ static int	DBpatch_2050092(void)
 		if (url_offset > 255)
 		{
 			*url = '\0';
-			zabbix_log(LOG_LEVEL_WARNING, "Cannot convert URL for user id \"%s\":"
+			treegix_log(LOG_LEVEL_WARNING, "Cannot convert URL for user id \"%s\":"
 					" value is too long. The URL field was reset.", row[0]);
 		}
 

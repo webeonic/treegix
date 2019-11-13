@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -437,7 +437,7 @@ $form->addItem([
 			'host.massenable' => ['name' => _('Enable'), 'confirm' => _('Enable selected hosts?')],
 			'host.massdisable' => ['name' => _('Disable'), 'confirm' => _('Disable selected hosts?')],
 			'host.export' => ['name' => _('Export'), 'redirect' =>
-				(new CUrl('zabbix.php'))
+				(new CUrl('treegix.php'))
 					->setArgument('action', 'export.hosts.xml')
 					->setArgument('backurl', (new CUrl('hosts.php'))
 						->setArgument('groupid', $data['pageFilter']->groupid)

@@ -35,7 +35,7 @@ found_mbedtls="yes",)
 
 AC_DEFUN([LIBMBEDTLS_ACCEPT_VERSION],
 [
-	# Zabbix minimal supported version of libmbedtls:
+	# Treegix minimal supported version of libmbedtls:
 	minimal_mbedtls_version_major=1
 	minimal_mbedtls_version_minor=3
 	minimal_mbedtls_version_patch=9

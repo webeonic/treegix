@@ -33,12 +33,12 @@
 .
 .  hy \\n(HY
 ..
-.TH ZABBIX_SENDER 1 "2019\-07\-10" Zabbix
+.TH ZABBIX_SENDER 1 "2019\-07\-10" Treegix
 .if n .ad l
 .SH NAME
-zabbix_sender \- Zabbix sender utility
+treegix_sender \- Treegix sender utility
 .SH SYNOPSIS
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-z
 .I server
@@ -53,7 +53,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-o
 .I value
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-z
 .I server
@@ -68,7 +68,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-i
 .I input\-file
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-c
 .I config\-file
@@ -85,7 +85,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-o
 .I value
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-c
 .I config\-file
@@ -102,7 +102,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-i
 .I input-file
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-z
 .I server
@@ -131,7 +131,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-o
 .I value
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-z
 .I server
@@ -160,7 +160,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-i
 .I input\-file
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-c
 .I config-file
@@ -191,7 +191,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-o
 .I value
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-c
 .I config-file
@@ -222,7 +222,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-i
 .I input\-file
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-z
 .I server
@@ -243,7 +243,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-o
 .I value
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-z
 .I server
@@ -264,7 +264,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-i
 .I input\-file
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-c
 .I config\-file
@@ -287,7 +287,7 @@ zabbix_sender \- Zabbix sender utility
 .B \-o
 .I value
 .br
-.B zabbix_sender
+.B treegix_sender
 .RB [ \-v ]
 .B \-c
 .I config\-file
@@ -310,38 +310,38 @@ zabbix_sender \- Zabbix sender utility
 .B \-i
 .I input\-file
 .br
-.B zabbix_sender \-h
+.B treegix_sender \-h
 .br
-.B zabbix_sender \-V
+.B treegix_sender \-V
 .SH DESCRIPTION
-.B zabbix_sender
-is a command line utility for sending monitoring data to Zabbix server or proxy.
-On the Zabbix server an item of type \fBZabbix trapper\fR should be created with corresponding key.
+.B treegix_sender
+is a command line utility for sending monitoring data to Treegix server or proxy.
+On the Treegix server an item of type \fBTreegix trapper\fR should be created with corresponding key.
 Note that incoming values will only be accepted from hosts specified in \fBAllowed hosts\fR field for this item.
 .SH OPTIONS
 .IP "\fB\-c\fR, \fB\-\-config\fR \fIconfig\-file\fR"
 Use \fIconfig\-file\fR.
-\fBZabbix sender\fR reads server details from the agentd configuration file.
+\fBTreegix sender\fR reads server details from the agentd configuration file.
 By default
-.B Zabbix sender
+.B Treegix sender
 does not read any configuration file.
 Only parameters \fBHostname\fR, \fBServerActive\fR, \fBSourceIP\fR, \fBTLSConnect\fR, \fBTLSCAFile\fR, \fBTLSCRLFile\fR,
 \fBTLSServerCertIssuer\fR, \fBTLSServerCertSubject\fR, \fBTLSCertFile\fR, \fBTLSKeyFile\fR, \fBTLSPSKIdentity\fR and \fBTLSPSKFile\fR are supported.
 All addresses defined in the agent \fBServerActive\fR configuration parameter are used for sending data.
 If sending of batch data fails to one address, the following batches are not sent to this address.
-.IP "\fB\-z\fR, \fB\-\-zabbix\-server\fR \fIserver\fR"
-Hostname or IP address of Zabbix server.
+.IP "\fB\-z\fR, \fB\-\-treegix\-server\fR \fIserver\fR"
+Hostname or IP address of Treegix server.
 If a host is monitored by a proxy, proxy hostname or IP address should be used instead.
 When used together with \fB\-\-config\fR, overrides the entries of \fBServerActive\fR parameter specified in agentd configuration file.
 .IP "\fB\-p\fR, \fB\-\-port\fR \fIport\fR"
-Specify port number of Zabbix server trapper running on the server.
+Specify port number of Treegix server trapper running on the server.
 Default is 10051.
 When used together with \fB\-\-config\fR, overrides the port entries of \fBServerActive\fR parameter specified in agentd configuration file.
 .IP "\fB\-I\fR, \fB\-\-source\-address\fR \fIIP\-address\fR"
 Specify source IP address.
 When used together with \fB\-\-config\fR, overrides \fBSourceIP\fR parameter specified in agentd configuration file.
 .IP "\fB\-s\fR, \fB\-\-host\fR \fIhost\fR"
-Specify host name the item belongs to (as registered in Zabbix frontend).
+Specify host name the item belongs to (as registered in Treegix frontend).
 Host IP address and DNS name will not work.
 When used together with \fB\-\-config\fR, overrides \fBHostname\fR parameter specified in agentd configuration file.
 .IP "\fB\-k\fR, \fB\-\-key\fR \fIkey\fR"
@@ -353,7 +353,7 @@ Load values from input file.
 Specify \fB\-\fR as \fB<input-file>\fR to read values from standard input.
 Each line of file contains whitespace delimited: \fB<hostname> <key> <value>\fR.
 Each value must be specified on its own line.  Each line must contain 3 whitespace delimited entries:
-\fB<hostname> <key> <value>\fR, where "hostname" is the name of monitored host as registered in Zabbix frontend,
+\fB<hostname> <key> <value>\fR, where "hostname" is the name of monitored host as registered in Treegix frontend,
 "key" is target item key and "value" \- the value to send. Specify \fB-\fR as \fB<hostname>\fR to use hostname from
 agent configuration file or from \fB\-\-host\fR argument.
 
@@ -361,8 +361,8 @@ An example of a line of an input file:
 
 \fB "Linux DB3" db.connections 43\fR
 
-The value type must be correctly set in item configuration of Zabbix frontend.
-Zabbix sender will send up to 250 values in one connection.
+The value type must be correctly set in item configuration of Treegix frontend.
+Treegix sender will send up to 250 values in one connection.
 Contents of the input file must be in the UTF\-8 encoding.
 All values from the input file are sent in a sequential order top\-down.
 Entries must be formatted using the following rules:
@@ -452,62 +452,62 @@ If data was sent, but processing of at least one of the values failed, the exit 
 If data sending failed, the exit status is 1.
 
 .SH "EXAMPLES"
-\fBzabbix_sender \-c /etc/zabbix/zabbix_agentd.conf \-k mysql.queries \-o 342.45\fR
+\fBtreegix_sender \-c /etc/treegix/treegix_agentd.conf \-k mysql.queries \-o 342.45\fR
 .br
 .RS
-Send \fB342.45\fR as the value for \fBmysql.queries\fR item of monitored host. Use monitored host and Zabbix server defined in agent configuration file.
+Send \fB342.45\fR as the value for \fBmysql.queries\fR item of monitored host. Use monitored host and Treegix server defined in agent configuration file.
 .RE
 
-\fBzabbix_sender \-c /etc/zabbix/zabbix_agentd.conf \-s "Monitored Host" \-k mysql.queries \-o 342.45\fR
+\fBtreegix_sender \-c /etc/treegix/treegix_agentd.conf \-s "Monitored Host" \-k mysql.queries \-o 342.45\fR
 .br
 .RS
-Send \fB342.45\fR as the value for \fBmysql.queries\fR item of \fBMonitored Host\fR host using Zabbix server defined in agent configuration file.
+Send \fB342.45\fR as the value for \fBmysql.queries\fR item of \fBMonitored Host\fR host using Treegix server defined in agent configuration file.
 .RE
 
 .br
-\fBzabbix_sender \-z 192.168.1.113 \-i data_values.txt\fR
+\fBtreegix_sender \-z 192.168.1.113 \-i data_values.txt\fR
 .RS
 .br
-Send values from file \fBdata_values.txt\fR to Zabbix server with IP \fB192.168.1.113\fR.
+Send values from file \fBdata_values.txt\fR to Treegix server with IP \fB192.168.1.113\fR.
 Host names and keys are defined in the file.
 .RE
 
 .br
-\fBecho "\- hw.serial.number 1287872261 SQ4321ASDF" | zabbix_sender \-c /usr/local/etc/zabbix_agentd.conf \-T \-i \-\fR
+\fBecho "\- hw.serial.number 1287872261 SQ4321ASDF" | treegix_sender \-c /usr/local/etc/treegix_agentd.conf \-T \-i \-\fR
 .br
 .RS
-Send a timestamped value from the commandline to Zabbix server, specified in the agent configuration file.
+Send a timestamped value from the commandline to Treegix server, specified in the agent configuration file.
 Dash in the input data indicates that hostname also should be used from the same configuration file.
 .RE
 
 .br
-\fBecho '"Zabbix server" trapper.item ""' | zabbix_sender \-z 192.168.1.113 \-p 10000 \-i \-\fR
+\fBecho '"Treegix server" trapper.item ""' | treegix_sender \-z 192.168.1.113 \-p 10000 \-i \-\fR
 .br
 .RS
-Send empty value of an item to the Zabbix server with IP address \fB192.168.1.113\fR on port \fB10000\fR from the commandline.
+Send empty value of an item to the Treegix server with IP address \fB192.168.1.113\fR on port \fB10000\fR from the commandline.
 Empty values must be indicated by empty double quotes.
 .RE
 
-\fBzabbix_sender \-z 192.168.1.113  \-s "Monitored Host" \-k mysql.queries \-o 342.45 \-\-tls\-connect cert \-\-tls\-ca\-file /home/zabbix/zabbix_ca_file \-\-tls\-cert\-file /home/zabbix/zabbix_agentd.crt \-\-tls\-key\-file /home/zabbix/zabbix_agentd.key\fR
+\fBtreegix_sender \-z 192.168.1.113  \-s "Monitored Host" \-k mysql.queries \-o 342.45 \-\-tls\-connect cert \-\-tls\-ca\-file /home/treegix/treegix_ca_file \-\-tls\-cert\-file /home/treegix/treegix_agentd.crt \-\-tls\-key\-file /home/treegix/treegix_agentd.key\fR
 .br
 .RS
 Send \fB342.45\fR as the value for \fBmysql.queries\fR item in \fBMonitored Host\fR host to server with IP \fB192.168.1.113\fR using TLS with certificate.
 .RE
 
-\fBzabbix_sender \-z 192.168.1.113  \-s "Monitored Host" \-k mysql.queries \-o 342.45 \-\-tls\-connect psk \-\-tls\-psk\-identity "PSK ID Zabbix agentd" \-\-tls\-psk\-file /home/zabbix/zabbix_agentd.psk\fR
+\fBtreegix_sender \-z 192.168.1.113  \-s "Monitored Host" \-k mysql.queries \-o 342.45 \-\-tls\-connect psk \-\-tls\-psk\-identity "PSK ID Treegix agentd" \-\-tls\-psk\-file /home/treegix/treegix_agentd.psk\fR
 .br
 .RS
 Send \fB342.45\fR as the value for \fBmysql.queries\fR item in \fBMonitored Host\fR host to server with IP \fB192.168.1.113\fR using TLS with pre-shared key (PSK).
 .RE
 
 .SH "SEE ALSO"
-.UR https://www.zabbix.com/manuals
+.UR https://www.treegix.com/manuals
 Documentation
 .UE
 .PP
-.BR zabbix_agentd (8),
-.BR zabbix_get (8),
-.BR zabbix_proxy (8),
-.BR zabbix_server (8)
+.BR treegix_agentd (8),
+.BR treegix_get (8),
+.BR treegix_proxy (8),
+.BR treegix_server (8)
 .SH AUTHOR
-Alexei Vladishev <alex@zabbix.com>
+Alexei Vladishev <alex@treegix.com>

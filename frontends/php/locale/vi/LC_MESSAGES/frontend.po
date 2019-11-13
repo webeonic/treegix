@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Zabbix 4.2\n"
+"Project-Id-Version: Treegix 4.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-21 14:21+0300\n"
 "PO-Revision-Date: 2019-03-28 07:26+0300\n"
 "Last-Translator: Anonymous Pootle User\n"
-"Language-Team: Zabbix <info@zabbix.com>\n"
+"Language-Team: Treegix <info@treegix.com>\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -824,8 +824,8 @@ msgid "Aggregate"
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:669
-msgid "Aggregate checks do not require any agent running on a host being monitored. Zabbix server collects aggregate information by doing direct database queries. See Zabbix Manual."
-msgstr "Tập hợp các kiểm tra yêu cầu không được bất kỳ agent nào đang chạy trên host thì được theo dõi. Zabbix server thu thập các tập hợp thông tin bằng cách trực tiếp. Xem hướng dẫn Zabbix."
+msgid "Aggregate checks do not require any agent running on a host being monitored. Treegix server collects aggregate information by doing direct database queries. See Treegix Manual."
+msgstr "Tập hợp các kiểm tra yêu cầu không được bất kỳ agent nào đang chạy trên host thì được theo dõi. Treegix server thu thập các tập hợp thông tin bằng cách trực tiếp. Xem hướng dẫn Treegix."
 
 #: include/classes/widgets/CWidgetHelper.php:1078
 msgid "Aggregation function"
@@ -1920,8 +1920,8 @@ msgstr "Không thể tạo ô điều khiển: %1$s."
 
 #: include/classes/api/services/CUser.php:991
 #, c-format
-msgid "Cannot delete Zabbix internal user \"%1$s\", try disabling that user."
-msgstr "Không thể xóa người dùng zabbix nội bộ \"%1$s\", thử vô hiệu hóa người dùng nào đó."
+msgid "Cannot delete Treegix internal user \"%1$s\", try disabling that user."
+msgstr "Không thể xóa người dùng treegix nội bộ \"%1$s\", thử vô hiệu hóa người dùng nào đó."
 
 #: actionconf.php:254
 msgid "Cannot delete action"
@@ -2490,10 +2490,10 @@ msgstr "Không thể đọc JSON: %1$s."
 msgid "Cannot read XML: %1$s."
 msgstr "Không thể đọc XML: %1$s."
 
-#: include/classes/server/CZabbixServer.php:410
+#: include/classes/server/CTreegixServer.php:410
 #, c-format
-msgid "Cannot read the response, check connection with the Zabbix server \"%1$s\"."
-msgstr "Không thể đọc các câu trả lời, kiểm tra kết nối với zabbix server \"%1$s\"."
+msgid "Cannot read the response, check connection with the Treegix server \"%1$s\"."
+msgstr "Không thể đọc các câu trả lời, kiểm tra kết nối với treegix server \"%1$s\"."
 
 #: include/classes/api/services/CUser.php:430
 msgid "Cannot rename guest user."
@@ -2509,10 +2509,10 @@ msgstr "Không thể lưu các quy tắc phát hiện với các kiểm 
 msgid "Cannot save widget \"%1$s\"."
 msgstr "Không thể lưu ô điều khiển \"%1$s\"."
 
-#: include/classes/server/CZabbixServer.php:351
+#: include/classes/server/CTreegixServer.php:351
 #, c-format
-msgid "Cannot send command, check connection with Zabbix server \"%1$s\"."
-msgstr "Không thể gửi lệnh, kiểm tra kết nối đến zabbix server \"%1$s\"."
+msgid "Cannot send command, check connection with Treegix server \"%1$s\"."
+msgstr "Không thể gửi lệnh, kiểm tra kết nối đến treegix server \"%1$s\"."
 
 #: host_discovery.php:309 host_discovery.php:647 items.php:972 items.php:1447
 msgid "Cannot send request"
@@ -2935,8 +2935,8 @@ msgid "Cannot update web scenario"
 msgstr "Không thể cập nhận web scenario"
 
 #: include/views/js/configuration.discovery.edit.js.php:675
-msgid "Cannot validate discovery check: invalid request or connection to Zabbix server failed."
-msgstr "Không thể xác nhận kiểm tra phát hiện: yêu cầu không hợp lệ hoặc kết nối đến máy chủ Zabbix thất bại."
+msgid "Cannot validate discovery check: invalid request or connection to Treegix server failed."
+msgstr "Không thể xác nhận kiểm tra phát hiện: yêu cầu không hợp lệ hoặc kết nối đến máy chủ Treegix thất bại."
 
 #: include/views/administration.general.regularexpressions.edit.php:52
 msgid "Case sensitive"
@@ -3391,8 +3391,8 @@ msgid "Configuration of GUI"
 msgstr "Cấu hình của GUI"
 
 #: include/audit.inc.php:25
-msgid "Configuration of Zabbix"
-msgstr "Cấu hình của Zabbix"
+msgid "Configuration of Treegix"
+msgstr "Cấu hình của Treegix"
 
 #: actionconf.php:27
 msgid "Configuration of actions"
@@ -3550,8 +3550,8 @@ msgid "Confirmation text"
 msgstr "Xác nhận văn bản"
 
 #: include/classes/setup/CSetupWizard.php:383
-msgid "Congratulations! You have successfully installed Zabbix frontend."
-msgstr "Chúc mừng! Bạn đã cài đặt thành công Zabbix frontend."
+msgid "Congratulations! You have successfully installed Treegix frontend."
+msgstr "Chúc mừng! Bạn đã cài đặt thành công Treegix frontend."
 
 #: app/views/administration.proxy.edit.php:43
 #: include/views/configuration.host.edit.php:115
@@ -3573,46 +3573,46 @@ msgstr "Đã kết nối"
 msgid "Connection security"
 msgstr "Bảo mật kết nối"
 
-#: include/classes/server/CZabbixServer.php:364
+#: include/classes/server/CTreegixServer.php:364
 #, c-format
-msgid "Connection timeout of %1$s seconds exceeded when connecting to Zabbix server \"%2$s\"."
-msgstr "Thời gian kết nối của %1$s đã vượt quá khi kết nối đến máy chủ Zabbix \"%2$s\"."
+msgid "Connection timeout of %1$s seconds exceeded when connecting to Treegix server \"%2$s\"."
+msgstr "Thời gian kết nối của %1$s đã vượt quá khi kết nối đến máy chủ Treegix \"%2$s\"."
 
-#: include/classes/server/CZabbixServer.php:472
+#: include/classes/server/CTreegixServer.php:472
 #, c-format
 msgid ""
-"Connection to Zabbix server \"%s\" failed. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Connection to Treegix server \"%s\" failed. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Incorrect DNS server configuration.\n"
 msgstr ""
-"Kết nối đến máy chủ zabbix \"%s\" thất bại. Các lý do có thể là:\n"
-"1. IP/DNS máy chủ không chính xác trong \"zabbix.conf.php\";\n"
+"Kết nối đến máy chủ treegix \"%s\" thất bại. Các lý do có thể là:\n"
+"1. IP/DNS máy chủ không chính xác trong \"treegix.conf.php\";\n"
 "2. Cấu hình máy chủ DNS không chính xác.\n"
 
-#: include/classes/server/CZabbixServer.php:460
+#: include/classes/server/CTreegixServer.php:460
 #, c-format
 msgid ""
-"Connection to Zabbix server \"%s\" refused. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Connection to Treegix server \"%s\" refused. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Security environment (for example, SELinux) is blocking the connection;\n"
-"3. Zabbix server daemon not running;\n"
+"3. Treegix server daemon not running;\n"
 "4. Firewall is blocking TCP connection.\n"
 msgstr ""
-"Kết nối đến máy chủ Zabbix \"%s\" bị từ chối. Các lý do có thể là:\n"
-"1. IP./DNS máy chủ không chính xác trong \"zabbix.conf.php\";\n"
+"Kết nối đến máy chủ Treegix \"%s\" bị từ chối. Các lý do có thể là:\n"
+"1. IP./DNS máy chủ không chính xác trong \"treegix.conf.php\";\n"
 "2. Môi trường bảo mật (ví dụ, SElinux) đang chặn kết nối;\n"
-"3. Trình nền máy chủ zabbix không chạy;\n"
+"3. Trình nền máy chủ treegix không chạy;\n"
 "4. Tường lửa đang chặn kết nối TCP.\n"
 
-#: include/classes/server/CZabbixServer.php:468
+#: include/classes/server/CTreegixServer.php:468
 #, c-format
 msgid ""
-"Connection to Zabbix server \"%s\" timed out. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Connection to Treegix server \"%s\" timed out. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Firewall is blocking TCP connection.\n"
 msgstr ""
-"Kết nối đến máy chủ Zabbix \"%s\" timed out. Các lý do có thể là:\n"
-"1. IP/DNS máy chủ không chính xác trong \"zabbix.conf.php\";\n"
+"Kết nối đến máy chủ Treegix \"%s\" timed out. Các lý do có thể là:\n"
+"1. IP/DNS máy chủ không chính xác trong \"treegix.conf.php\";\n"
 "2. Tường lửa đang chặn kết nối TCP.\n"
 
 #: include/views/configuration.host.massupdate.php:284
@@ -6066,8 +6066,8 @@ msgid "Failure Audit"
 msgstr "Thử nghiệm thất bại"
 
 #: app/views/system.warning.php:21 app/views/system.warning.php:33
-msgid "Fatal error, please report to the Zabbix team"
-msgstr "Lỗi nghiêm trọng, vui lòng báo cáo cho nhóm Zabbix"
+msgid "Fatal error, please report to the Treegix team"
+msgstr "Lỗi nghiêm trọng, vui lòng báo cáo cho nhóm Treegix"
 
 #: include/classes/widgets/CWidgetConfig.php:37
 msgid "Favourite graphs"
@@ -8370,12 +8370,12 @@ msgstr "Biểu thức chính quy \"%1$s\" không chính xác: \"%2$s\""
 msgid "Incorrect resource type provided for screen item."
 msgstr "Kiểu tài nguyên không chính xác được cung cấp cho screen item."
 
-#: include/classes/server/CZabbixServer.php:376
-#: include/classes/server/CZabbixServer.php:418
-#: include/classes/server/CZabbixServer.php:425
+#: include/classes/server/CTreegixServer.php:376
+#: include/classes/server/CTreegixServer.php:418
+#: include/classes/server/CTreegixServer.php:425
 #, c-format
-msgid "Incorrect response received from Zabbix server \"%1$s\"."
-msgstr "Đáp ứng không chính xác nhận được từ máy chủ Zabbix  \"%1$s\"."
+msgid "Incorrect response received from Treegix server \"%1$s\"."
+msgstr "Đáp ứng không chính xác nhận được từ máy chủ Treegix  \"%1$s\"."
 
 #: include/classes/api/services/CScreenItem.php:739
 #, c-format
@@ -11946,8 +11946,8 @@ msgid "Number of items (enabled/disabled/not supported)"
 msgstr "Số lượng item (Kích hoạt/vô hiệu hóa/không hỗ trợ)"
 
 #: include/classes/items/CHelpItems.php:987
-msgid "Number of items in Zabbix database."
-msgstr "Số lượng item trong cơ sở dữ liệu Zabbix."
+msgid "Number of items in Treegix database."
+msgstr "Số lượng item trong cơ sở dữ liệu Treegix."
 
 #: include/classes/items/CHelpItems.php:1007
 msgid "Number of items in proxy history that are not yet sent to the server"
@@ -11960,7 +11960,7 @@ msgstr "Số lượng item trong hàng đợi mà đang bị trễ từ g
 #: include/classes/items/CHelpItems.php:353
 #: include/classes/items/CHelpItems.php:663
 #: include/classes/items/CHelpItems.php:1027
-msgid "Number of items in the queue which are delayed in Zabbix server or proxy by \"from\" till \"to\" seconds, inclusive."
+msgid "Number of items in the queue which are delayed in Treegix server or proxy by \"from\" till \"to\" seconds, inclusive."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:983
@@ -12014,12 +12014,12 @@ msgid "Number of triggers (enabled/disabled [problem/ok])"
 msgstr "Số lượng trigger (Kích hoạt/vô hiệu hóa [Problem/ok]"
 
 #: include/classes/items/CHelpItems.php:1039
-msgid "Number of triggers in Zabbix database."
-msgstr "Số lượng trigger trong cơ sở dữ liệu Zabbix."
+msgid "Number of triggers in Treegix database."
+msgstr "Số lượng trigger trong cơ sở dữ liệu Treegix."
 
 #: include/classes/items/CHelpItems.php:991
-msgid "Number of unsupported items in Zabbix database."
-msgstr "Số lượng item không được hỗ trợ trong cơ sở dữ liệu Zabbix."
+msgid "Number of unsupported items in Treegix database."
+msgstr "Số lượng item không được hỗ trợ trong cơ sở dữ liệu Treegix."
 
 #: include/classes/items/CHelpItems.php:967
 msgid "Number of unsupported items on the host."
@@ -12250,8 +12250,8 @@ msgid "Only Super Admins can update user groups."
 msgstr "Chỉ Siêu Admin mới có thể cập nhật nhóm người dùng."
 
 #: include/classes/api/services/CDRule.php:481
-msgid "Only Zabbix agent, SNMPv1, SNMPv2 and SNMPv3 checks can be made unique."
-msgstr "Chỉ có Zabbix agent, SNMPv1, SNMPv2 và SNMPv3 có thể được tạo thành duy nhất."
+msgid "Only Treegix agent, SNMPv1, SNMPv2 and SNMPv3 checks can be made unique."
+msgstr "Chỉ có Treegix agent, SNMPv1, SNMPv2 và SNMPv3 có thể được tạo thành duy nhất."
 
 #: include/classes/api/services/CMap.php:658
 #: include/classes/api/services/CMap.php:1108
@@ -13024,8 +13024,8 @@ msgid "Please create database manually, and set the configuration parameters for
 msgstr "Vui lòng tạo cơ sở dữ liệu theo cách thủ công và đặt các tham số cấu hình để kết nối với cơ sở dữ liệu này. Nhấn nút \"%1$s\" khi hoàn tất."
 
 #: include/classes/setup/CSetupWizard.php:293
-msgid "Please enter the host name or host IP address and port number of the Zabbix server, as well as the name of the installation (optional)."
-msgstr "Vui lòng nhập tên máy chủ hoặc địa chỉ IP máy chủ và số cổng của máy chủ Zabbix, cũng như tên cài đặt (tùy chọn)."
+msgid "Please enter the host name or host IP address and port number of the Treegix server, as well as the name of the installation (optional)."
+msgstr "Vui lòng nhập tên máy chủ hoặc địa chỉ IP máy chủ và số cổng của máy chủ Treegix, cũng như tên cài đặt (tùy chọn)."
 
 #: jsLoader.php:190
 msgid "Please select two elements"
@@ -13915,8 +13915,8 @@ msgid "Required performance (vps)"
 msgstr "Hiệu năng cần thiết (vps)"
 
 #: include/classes/items/CHelpItems.php:1019
-msgid "Required performance of the Zabbix server, in new values per second expected."
-msgstr "Hiệu năng cần thiết của máy chủ Zabbix, trong các giá trị mới được dự tính trên mỗi giây."
+msgid "Required performance of the Treegix server, in new values per second expected."
+msgstr "Hiệu năng cần thiết của máy chủ Treegix, trong các giá trị mới được dự tính trên mỗi giây."
 
 #: include/blocks.inc.php:659
 msgid "Required server performance, new values per second"
@@ -14072,13 +14072,13 @@ msgid "Returns ICMP ping response time in seconds. Example: 0.02"
 msgstr "Trả về thời gian đáp ứng ICMP ping trong vài giây. Ví dụ: 0.02"
 
 #: include/classes/items/CHelpItems.php:975
-msgid "Returns a JSON array describing the host network interfaces configured in Zabbix. Can be used for LLD."
+msgid "Returns a JSON array describing the host network interfaces configured in Treegix. Can be used for LLD."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:349
 #: include/classes/items/CHelpItems.php:659
 #: include/classes/items/CHelpItems.php:1023
-msgid "Returns a JSON object containing Zabbix server or proxy internal metrics."
+msgid "Returns a JSON object containing Treegix server or proxy internal metrics."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:979
@@ -14090,7 +14090,7 @@ msgid "Returns current maintenance status of the host."
 msgstr "Trả về trạng thái bảo trì hiện tại của máy chủ."
 
 #: include/classes/items/CHelpItems.php:995
-msgid "Returns information associated with Zabbix Java gateway. Valid params are: ping, version."
+msgid "Returns information associated with Treegix Java gateway. Valid params are: ping, version."
 msgstr "Trả về thông tin liên quan đến Zabbiz Java gateway. Các tham số hợp lệ là: ping, version."
 
 #: include/classes/items/CHelpItems.php:679
@@ -15154,8 +15154,8 @@ msgid "Show value"
 msgstr "Hiển thị giá trị"
 
 #: adm.gui.php:46 include/views/administration.general.gui.edit.php:61
-msgid "Show warning if Zabbix server is down"
-msgstr "Hiển thị cảnh báo nếu máy chủ Zabbix không hoạt động"
+msgid "Show warning if Treegix server is down"
+msgstr "Hiển thị cảnh báo nếu máy chủ Treegix không hoạt động"
 
 #: include/views/configuration.graph.edit.php:108
 msgid "Show working time"
@@ -15244,10 +15244,10 @@ msgstr "Site quốc gia / tỉnh"
 msgid "Size"
 msgstr "Kích thước"
 
-#: include/classes/server/CZabbixServer.php:397
+#: include/classes/server/CTreegixServer.php:397
 #, c-format
-msgid "Size of the response received from Zabbix server \"%1$s\" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php."
-msgstr "Kích thước của các đáp ứng nhận được từ máy chủ Zabbix \"%1$s\" vượt quá kích thước cho phép của %2$s byte. Giá trị này có thể được tăng lên trong các hằng số ZBX_SOCKET_BYTES_LIMIT trong include/defines.inc.php."
+msgid "Size of the response received from Treegix server \"%1$s\" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php."
+msgstr "Kích thước của các đáp ứng nhận được từ máy chủ Treegix \"%1$s\" vượt quá kích thước cho phép của %2$s byte. Giá trị này có thể được tăng lên trong các hằng số ZBX_SOCKET_BYTES_LIMIT trong include/defines.inc.php."
 
 #: include/graphs.inc.php:471
 #, c-format
@@ -15426,8 +15426,8 @@ msgid "Starting TLS failed."
 msgstr "TLS Bắt đầu thất bại."
 
 #: include/classes/items/CHelpItems.php:939
-msgid "Startup time of Zabbix server, Unix timestamp."
-msgstr "Thời gian bắt đầu khởi động của của máy chủ Zabbix, Unix timestamp."
+msgid "Startup time of Treegix server, Unix timestamp."
+msgstr "Thời gian bắt đầu khởi động của của máy chủ Treegix, Unix timestamp."
 
 #: include/forms.inc.php:204 include/forms.inc.php:698
 #: include/views/configuration.maintenance.list.php:50
@@ -15689,8 +15689,8 @@ msgid "System default"
 msgstr "Mặc định hệ thống"
 
 #: include/func.inc.php:1920
-msgid "System error occurred. Please contact Zabbix administrator."
-msgstr "Xảy ra lỗi hệ thống. Vui lòng liên hệ với quản trị viên Zabbix."
+msgid "System error occurred. Please contact Treegix administrator."
+msgstr "Xảy ra lỗi hệ thống. Vui lòng liên hệ với quản trị viên Treegix."
 
 #: include/classes/core/CJsonRpc.php:215
 msgid "System error."
@@ -16081,13 +16081,13 @@ msgstr "Ứng dụng không được khám phá nữa và sẽ bị xóa trong l
 #: include/classes/db/MysqlDbBackend.php:35
 #: include/classes/db/OracleDbBackend.php:36
 #: include/classes/db/PostgresqlDbBackend.php:44
-msgid "The frontend does not match Zabbix database."
-msgstr "Giao diện không khớp với cơ sở dữ liệu Zabbix."
+msgid "The frontend does not match Treegix database."
+msgstr "Giao diện không khớp với cơ sở dữ liệu Treegix."
 
 #: include/classes/db/DbBackend.php:48
 #, c-format
-msgid "The frontend does not match Zabbix database. Current database version (mandatory/optional): %d/%d. Required mandatory version: %d. Contact your system administrator."
-msgstr "Giao diện không khớp với cơ sở dữ liệu Zabbix. Phiên bản cơ sở dữ liệu hiện tại (bắt buộc/tùy chọn): %d/%d. Phiên bản bắt buộc yêu cầu: %d. Liên hệ quản trị hệ thống của bạn."
+msgid "The frontend does not match Treegix database. Current database version (mandatory/optional): %d/%d. Required mandatory version: %d. Contact your system administrator."
+msgstr "Giao diện không khớp với cơ sở dữ liệu Treegix. Phiên bản cơ sở dữ liệu hiện tại (bắt buộc/tùy chọn): %d/%d. Phiên bản bắt buộc yêu cầu: %d. Liên hệ quản trị hệ thống của bạn."
 
 #: include/html.inc.php:652
 #, c-format
@@ -16159,7 +16159,7 @@ msgid "This field is automatically populated by item \"%s\"."
 msgstr "Trường này được tự động gắn vào bởi item \"%s\"."
 
 #: app/controllers/CControllerPopupMediatypeTestEdit.php:80
-msgid "This is the test message from Zabbix"
+msgid "This is the test message from Treegix"
 msgstr ""
 
 #: include/func.inc.php:2673 srv_status.php:41
@@ -16254,8 +16254,8 @@ msgid "Time (descending)"
 msgstr "Thời gian (giảm dần)"
 
 #: include/classes/items/CHelpItems.php:999
-msgid "Time a particular Zabbix process or a group of processes (identified by <type> and <mode>) spent in <state> in percentage."
-msgstr "Thời gian một quy trình Zabbix cụ thể hoặc một nhóm các quy trình (được xác định bởi <type> và <mode>) được chi tiêu theo <state> theo tỷ lệ phần trăm."
+msgid "Time a particular Treegix process or a group of processes (identified by <type> and <mode>) spent in <state> in percentage."
+msgstr "Thời gian một quy trình Treegix cụ thể hoặc một nhóm các quy trình (được xác định bởi <type> và <mode>) được chi tiêu theo <state> theo tỷ lệ phần trăm."
 
 #: include/classes/items/CHelpItems.php:1003
 msgid "Time of proxy last access. Name - proxy name. Param - lastaccess. Unix timestamp."
@@ -17227,8 +17227,8 @@ msgid "Uptime"
 msgstr "Thời gian chạy"
 
 #: include/classes/items/CHelpItems.php:1043
-msgid "Uptime of Zabbix server process in seconds."
-msgstr "Thời gian hoạt động của tiến trình máy chủ Zabbix trong vài giây."
+msgid "Uptime of Treegix server process in seconds."
+msgstr "Thời gian hoạt động của tiến trình máy chủ Treegix trong vài giây."
 
 #: include/actions.inc.php:59
 msgid "Uptime/Downtime"
@@ -17906,8 +17906,8 @@ msgstr "Chi tiết"
 
 #: include/classes/items/CHelpItems.php:73
 #: include/classes/items/CHelpItems.php:367
-msgid "Version of Zabbix agent. Returns string"
-msgstr "Phiên bản của Zabbix agent. Trả về kiểu string"
+msgid "Version of Treegix agent. Returns string"
+msgstr "Phiên bản của Treegix agent. Trả về kiểu string"
 
 #: include/classes/widgets/forms/CWidgetFormHostAvail.php:50
 #: include/classes/widgets/forms/CWidgetFormProblemsBySv.php:97
@@ -18455,28 +18455,28 @@ msgid "ZABBIX"
 msgstr "ZABBIX"
 
 #: include/page_header.php:156
-msgid "Zabbix"
-msgstr "Zabbix"
+msgid "Treegix"
+msgstr "Treegix"
 
 #: include/users.inc.php:55
-msgid "Zabbix Admin"
-msgstr "Zabbix Admin"
+msgid "Treegix Admin"
+msgstr "Treegix Admin"
 
 #: app/views/layout.htmlpage.menu.php:58
-msgid "Zabbix Share"
-msgstr "Chia sẻ zabbix"
+msgid "Treegix Share"
+msgstr "Chia sẻ treegix"
 
 #: include/users.inc.php:56
-msgid "Zabbix Super Admin"
-msgstr "Zabbix Super Admin"
+msgid "Treegix Super Admin"
+msgstr "Treegix Super Admin"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Zabbix Technical Support"
-msgstr "Hỗ trợ kỹ thuật zabbix"
+msgid "Treegix Technical Support"
+msgstr "Hỗ trợ kỹ thuật treegix"
 
 #: include/users.inc.php:54
-msgid "Zabbix User"
-msgstr "Zabbix User"
+msgid "Treegix User"
+msgstr "Treegix User"
 
 #: app/views/administration.script.edit.php:50
 #: app/views/monitoring.widget.hostavail.view.php:23
@@ -18487,88 +18487,88 @@ msgstr "Zabbix User"
 #: include/views/configuration.action.edit.php:1722
 #: include/views/configuration.action.edit.php:2192
 #: include/views/js/configuration.discovery.edit.js.php:219
-msgid "Zabbix agent"
-msgstr "Zabbix agent"
+msgid "Treegix agent"
+msgstr "Treegix agent"
 
 #: include/items.inc.php:87
-msgid "Zabbix agent (active)"
-msgstr "Zabbix agent (active)"
+msgid "Treegix agent (active)"
+msgstr "Treegix agent (active)"
 
 #: include/items.inc.php:95
-msgid "Zabbix aggregate"
-msgstr "Zabbix aggregate"
+msgid "Treegix aggregate"
+msgstr "Treegix aggregate"
 
 #: include/validate.inc.php:369
-msgid "Zabbix has received an incorrect request."
-msgstr "Zabbix đã nhận được một yêu cầu không chính xác."
+msgid "Treegix has received an incorrect request."
+msgstr "Treegix đã nhận được một yêu cầu không chính xác."
 
 #: include/items.inc.php:93
-msgid "Zabbix internal"
-msgstr "Zabbix internal"
+msgid "Treegix internal"
+msgstr "Treegix internal"
 
 #: include/perm.inc.php:48
-msgid "Zabbix internal authentication"
-msgstr "Xác thực Zabbix internal"
+msgid "Treegix internal authentication"
+msgstr "Xác thực Treegix internal"
 
 #: app/views/administration.authentication.edit.php:44
-msgid "Zabbix login form"
-msgstr "Mẫu đăng nhập zabbix"
+msgid "Treegix login form"
+msgstr "Mẫu đăng nhập treegix"
 
 #: app/views/administration.script.edit.php:52 include/actions.inc.php:930
 #: include/classes/setup/CSetupWizard.php:320
 #: include/views/configuration.action.edit.php:942
 #: include/views/configuration.action.edit.php:1724
 #: include/views/configuration.action.edit.php:2194
-msgid "Zabbix server"
-msgstr "Máy chủ Zabbix"
+msgid "Treegix server"
+msgstr "Máy chủ Treegix"
 
-#: include/classes/server/CZabbixServer.php:464
+#: include/classes/server/CTreegixServer.php:464
 #, c-format
 msgid ""
-"Zabbix server \"%s\" can not be reached. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Treegix server \"%s\" can not be reached. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Incorrect network configuration.\n"
 msgstr ""
-"Máy chủ Zabbix \"%s\" không thể đạt được. Các lý do có thể là:\n"
-"1.IP/DNS máy chủ không chính xác trong \"zabbix.conf.php\";\n"
+"Máy chủ Treegix \"%s\" không thể đạt được. Các lý do có thể là:\n"
+"1.IP/DNS máy chủ không chính xác trong \"treegix.conf.php\";\n"
 "2. Cấu hình mạng không chính xác.\n"
 
 #: app/views/administration.script.edit.php:51 include/actions.inc.php:925
 #: include/views/configuration.action.edit.php:941
 #: include/views/configuration.action.edit.php:1723
 #: include/views/configuration.action.edit.php:2193
-msgid "Zabbix server (proxy)"
-msgstr "Máy chủ zabbix (proxy)"
+msgid "Treegix server (proxy)"
+msgstr "Máy chủ treegix (proxy)"
 
 #: include/classes/setup/CSetupWizard.php:45
 #: include/classes/setup/CSetupWizard.php:291
-msgid "Zabbix server details"
-msgstr "Chi tiết máy chủ zabbix"
+msgid "Treegix server details"
+msgstr "Chi tiết máy chủ treegix"
 
 #: jsrpc.php:82
-msgid "Zabbix server is not running: the information displayed may not be current."
-msgstr "Máy chủ Zabbix đang không hoạt động: Thông tin được hiển thị có thể không tồn tại."
+msgid "Treegix server is not running: the information displayed may not be current."
+msgstr "Máy chủ Treegix đang không hoạt động: Thông tin được hiển thị có thể không tồn tại."
 
 #: include/blocks.inc.php:617
-msgid "Zabbix server is running"
-msgstr "Máy chủ Zabbix đang hoạt động"
+msgid "Treegix server is running"
+msgstr "Máy chủ Treegix đang hoạt động"
 
 #: include/profiles.inc.php:256
 #, c-format
-msgid "Zabbix server is running check interval \"%1$s\"."
-msgstr "Máy chủ Zabbix đang hoạt động kiểm tra khoảng thời gian \"%1$s\"."
+msgid "Treegix server is running check interval \"%1$s\"."
+msgstr "Máy chủ Treegix đang hoạt động kiểm tra khoảng thời gian \"%1$s\"."
 
 #: include/classes/setup/CSetupWizard.php:322
-msgid "Zabbix server name"
-msgstr "Tên máy chủ Zabbix"
+msgid "Treegix server name"
+msgstr "Tên máy chủ Treegix"
 
 #: include/classes/setup/CSetupWizard.php:321
-msgid "Zabbix server port"
-msgstr "Cổng máy chủ Zabbix"
+msgid "Treegix server port"
+msgstr "Cổng máy chủ Treegix"
 
 #: include/items.inc.php:94
-msgid "Zabbix trapper"
-msgstr "Zabbix trapper"
+msgid "Treegix trapper"
+msgstr "Treegix trapper"
 
 #: include/classes/html/CFilter.php:251
 msgid "Zoom out"
@@ -19081,8 +19081,8 @@ msgid "fourth"
 msgstr "Thứ tư"
 
 #: app/controllers/CControllerPopupTriggerExpr.php:338
-msgid "fuzzytime() - Difference between item value (as timestamp) and Zabbix server timestamp is less than or equal to T seconds (1 - true, 0 - false)"
-msgstr "fuzzytime () - Chênh lệch giữa giá trị item (dưới dạng dấu thời gian) và dấu thời gian của máy chủ Zabbix nhỏ hơn hoặc bằng T giây (1 - đúng, 0 - sai)"
+msgid "fuzzytime() - Difference between item value (as timestamp) and Treegix server timestamp is less than or equal to T seconds (1 - true, 0 - false)"
+msgstr "fuzzytime () - Chênh lệch giữa giá trị item (dưới dạng dấu thời gian) và dấu thời gian của máy chủ Treegix nhỏ hơn hoặc bằng T giây (1 - đúng, 0 - sai)"
 
 #: include/views/configuration.item.edit.php:759
 #: include/views/configuration.item.edit.php:761

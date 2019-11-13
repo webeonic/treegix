@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
  * Creates global database connection.
  *
  * @param string $error returns a message in case of an error
- * @param bool   $debug turns On or Off trace calls when making connections. Suggested debug mode Off during Zabbix setup
+ * @param bool   $debug turns On or Off trace calls when making connections. Suggested debug mode Off during Treegix setup
  *
  * @return bool
  */

@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # REQUIRE: DAEMON
-# PROVIDE: zabbix_agentd
+# PROVIDE: treegix_agentd
 
 . /etc/rc.subr
 
-name="zabbix_agentd"
+name="treegix_agentd"
 rcvar=`set_rcvar`
 command="${prefix:-"/usr/local"}/sbin/${name}"
 

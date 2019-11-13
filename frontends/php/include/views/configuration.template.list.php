@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -279,7 +279,7 @@ $form->addItem([
 	new CActionButtonList('action', 'templates',
 		[
 			'template.export' => ['name' => _('Export'), 'redirect' =>
-				(new CUrl('zabbix.php'))
+				(new CUrl('treegix.php'))
 					->setArgument('action', 'export.templates.xml')
 					->setArgument('backurl', (new CUrl('templates.php'))
 						->setArgument('groupid', $data['pageFilter']->groupid)

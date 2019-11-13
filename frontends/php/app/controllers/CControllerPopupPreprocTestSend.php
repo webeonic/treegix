@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 	protected $use_prev_value;
 
 	/**
-	 * Time suffixes supported by Zabbix server.
+	 * Time suffixes supported by Treegix server.
 	 *
 	 * @var array
 	 */
@@ -143,11 +143,11 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 		foreach ($data['steps'] as &$step) {
 			/**
 			 * Values received from html form may be transformed so we must removed redundant "\r" before sending data
-			 * to Zabbix server.
+			 * to Treegix server.
 			 */
 			$step['params'] = str_replace("\r\n", "\n", $step['params']);
 
-			// Resolve macros in parameter fields before send data to Zabbix server.
+			// Resolve macros in parameter fields before send data to Treegix server.
 			foreach (['params', 'error_handler_params'] as $field) {
 				$matched_macros = (new CMacrosResolverGeneral)->getMacroPositions($step[$field], $macros_types);
 
@@ -177,8 +177,8 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 			]
 		];
 
-		// Send test details to Zabbix server.
-		$server = new CZabbixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
+		// Send test details to Treegix server.
+		$server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
 		$result = $server->testPreprocessingSteps($data, get_cookie('zbx_sessionid'));
 
 		if ($result === false) {

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -25,19 +25,19 @@
 class C30ImportConverter extends CConverter {
 
 	public function convert($data) {
-		$data['zabbix_export']['version'] = '3.2';
+		$data['treegix_export']['version'] = '3.2';
 
-		if (array_key_exists('hosts', $data['zabbix_export'])) {
-			$data['zabbix_export']['hosts'] = $this->convertHosts($data['zabbix_export']['hosts']);
+		if (array_key_exists('hosts', $data['treegix_export'])) {
+			$data['treegix_export']['hosts'] = $this->convertHosts($data['treegix_export']['hosts']);
 		}
-		if (array_key_exists('templates', $data['zabbix_export'])) {
-			$data['zabbix_export']['templates'] = $this->convertHosts($data['zabbix_export']['templates']);
+		if (array_key_exists('templates', $data['treegix_export'])) {
+			$data['treegix_export']['templates'] = $this->convertHosts($data['treegix_export']['templates']);
 		}
-		if (array_key_exists('triggers', $data['zabbix_export'])) {
-			$data['zabbix_export']['triggers'] = $this->convertTriggers($data['zabbix_export']['triggers']);
+		if (array_key_exists('triggers', $data['treegix_export'])) {
+			$data['treegix_export']['triggers'] = $this->convertTriggers($data['treegix_export']['triggers']);
 		}
-		if (array_key_exists('maps', $data['zabbix_export'])) {
-			$data['zabbix_export']['maps'] = $this->convertMaps($data['zabbix_export']['maps']);
+		if (array_key_exists('maps', $data['treegix_export'])) {
+			$data['treegix_export']['maps'] = $this->convertMaps($data['treegix_export']['maps']);
 		}
 
 		return $data;

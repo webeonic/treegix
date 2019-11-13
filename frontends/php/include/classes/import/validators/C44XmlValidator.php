@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 
 /**
- * Validate import data from Zabbix 4.4.x.
+ * Validate import data from Treegix 4.4.x.
  */
 class C44XmlValidator {
 
@@ -765,7 +765,7 @@ class C44XmlValidator {
 							]],
 							'delay' =>					['type' => XML_STRING, 'default' => '1m'],
 							'attempts' =>				['type' => XML_STRING, 'default' => '1'],
-							'agent' =>					['type' => XML_STRING, 'default' => 'Zabbix'],
+							'agent' =>					['type' => XML_STRING, 'default' => 'Treegix'],
 							'http_proxy' =>				['type' => XML_STRING, 'default' => ''],
 							'variables' =>				['type' => XML_INDEXED_ARRAY, 'prefix' => 'variable', 'rules' => [
 								'variable' =>				['type' => XML_ARRAY, 'rules' => [
@@ -1341,7 +1341,7 @@ class C44XmlValidator {
 							]],
 							'delay' =>					['type' => XML_STRING, 'default' => '1m'],
 							'attempts' =>				['type' => XML_STRING, 'default' => '1'],
-							'agent' =>					['type' => XML_STRING, 'default' => 'Zabbix'],
+							'agent' =>					['type' => XML_STRING, 'default' => 'Treegix'],
 							'http_proxy' =>				['type' => XML_STRING, 'default' => ''],
 							'variables' =>				['type' => XML_INDEXED_ARRAY, 'prefix' => 'variable', 'rules' => [
 								'variable' =>				['type' => XML_ARRAY, 'rules' => [

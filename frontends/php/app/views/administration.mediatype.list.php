@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -27,12 +27,12 @@ $widget = (new CWidget())
 	->setTitle(_('Media types'))
 	->setControls((new CTag('nav', true,
 		(new CList())
-			->addItem(new CRedirectButton(_('Create media type'), 'zabbix.php?action=mediatype.edit'))
+			->addItem(new CRedirectButton(_('Create media type'), 'treegix.php?action=mediatype.edit'))
 			->addItem(new CRedirectButton(_('Import'), 'conf.import.php?rules_preset=mediatype'))
 		))
 			->setAttribute('aria-label', _('Content controls'))
 	)
-	->addItem((new CFilter((new CUrl('zabbix.php'))->setArgument('action', 'mediatype.list')))
+	->addItem((new CFilter((new CUrl('treegix.php'))->setArgument('action', 'mediatype.list')))
 		->setProfile($data['profileIdx'])
 		->setActiveTab($data['active_tab'])
 		->addFilterTab(_('Filter'), [
@@ -107,7 +107,7 @@ foreach ($data['mediatypes'] as $mediaType) {
 	$actionColumn = new CCol($actionLinks);
 	$actionColumn->setAttribute('style', 'white-space: normal;');
 
-	$statusLink = 'zabbix.php'.
+	$statusLink = 'treegix.php'.
 		'?action='.($mediaType['status'] == MEDIA_TYPE_STATUS_DISABLED
 			? 'mediatype.enable'
 			: 'mediatype.disable'
@@ -153,9 +153,9 @@ $mediaTypeForm->addItem([
 		'mediatype.enable' => ['name' => _('Enable'), 'confirm' => _('Enable selected media types?')],
 		'mediatype.disable' => ['name' => _('Disable'), 'confirm' => _('Disable selected media types?')],
 		'mediatype.export' => ['name' => _('Export'), 'redirect' =>
-			(new CUrl('zabbix.php'))
+			(new CUrl('treegix.php'))
 				->setArgument('action', 'export.mediatypes.xml')
-				->setArgument('backurl', (new CUrl('zabbix.php'))
+				->setArgument('backurl', (new CUrl('treegix.php'))
 					->setArgument('action', 'mediatype.list')
 					->getUrl())
 				->getUrl()

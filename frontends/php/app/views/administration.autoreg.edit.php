@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ $widget = (new CWidget())
 		(new CForm())
 			->cleanItems()
 			->addItem((new CList())
-				->addItem(makeAdministrationGeneralMenu((new CUrl('zabbix.php'))
+				->addItem(makeAdministrationGeneralMenu((new CUrl('treegix.php'))
 					->setArgument('action', 'autoreg.edit')
 					->getUrl()
 				))
@@ -39,7 +39,7 @@ $widget = (new CWidget())
 $autoreg_form = (new CForm())
 	->setId('autoreg-form')
 	->setName('autoreg-form')
-	->setAction((new CUrl('zabbix.php'))
+	->setAction((new CUrl('treegix.php'))
 		->setArgument('action', 'autoreg.edit')
 		->getUrl()
 	)

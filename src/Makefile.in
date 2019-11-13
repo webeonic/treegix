@@ -389,50 +389,50 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 DIST_SUBDIRS = \
 	libs \
-	zabbix_agent \
-	zabbix_get \
-	zabbix_sender \
-	zabbix_proxy \
-	zabbix_server \
-	zabbix_java
+	treegix_agent \
+	treegix_get \
+	treegix_sender \
+	treegix_proxy \
+	treegix_server \
+	treegix_java
 
 @AGENT2_TRUE@@AGENT_FALSE@@PROXY_FALSE@@SERVER_FALSE@COMMON_SUBDIRS = libs
 @AGENT_FALSE@@PROXY_TRUE@@SERVER_FALSE@COMMON_SUBDIRS = libs
 @AGENT_FALSE@@SERVER_TRUE@COMMON_SUBDIRS = libs
 @AGENT_TRUE@COMMON_SUBDIRS = libs
 @AGENT2_TRUE@@AGENT_FALSE@AGENT_SUBDIRS = \
-@AGENT2_TRUE@@AGENT_FALSE@	zabbix_agent
+@AGENT2_TRUE@@AGENT_FALSE@	treegix_agent
 
 @AGENT_TRUE@AGENT_SUBDIRS = \
-@AGENT_TRUE@	zabbix_agent \
-@AGENT_TRUE@	zabbix_get \
-@AGENT_TRUE@	zabbix_sender
+@AGENT_TRUE@	treegix_agent \
+@AGENT_TRUE@	treegix_get \
+@AGENT_TRUE@	treegix_sender
 
 @SERVER_TRUE@SERVER_SUBDIRS = \
-@SERVER_TRUE@	zabbix_server
+@SERVER_TRUE@	treegix_server
 
 @PROXY_TRUE@@SERVER_FALSE@PROXY_SUBDIRS = \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/dbsyncer \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/dbconfig \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/discoverer \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/httppoller \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/pinger \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/poller \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/trapper \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/selfmon \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/snmptrapper \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/vmware \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/ipmi \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/odbc \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/scripts \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_server/preprocessor \
-@PROXY_TRUE@@SERVER_FALSE@	zabbix_proxy
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/dbsyncer \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/dbconfig \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/discoverer \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/httppoller \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/pinger \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/poller \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/trapper \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/selfmon \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/snmptrapper \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/vmware \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/ipmi \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/odbc \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/scripts \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_server/preprocessor \
+@PROXY_TRUE@@SERVER_FALSE@	treegix_proxy
 
 @PROXY_TRUE@@SERVER_TRUE@PROXY_SUBDIRS = \
-@PROXY_TRUE@@SERVER_TRUE@	zabbix_proxy
+@PROXY_TRUE@@SERVER_TRUE@	treegix_proxy
 
 @JAVA_TRUE@JAVA_SUBDIRS = \
-@JAVA_TRUE@	zabbix_java
+@JAVA_TRUE@	treegix_java
 
 SUBDIRS = \
 	$(COMMON_SUBDIRS) \

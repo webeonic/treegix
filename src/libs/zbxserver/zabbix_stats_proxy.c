@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2018 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2018 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -19,11 +19,11 @@
 
 #include "common.h"
 #include "zbxjson.h"
-#include "zabbix_stats.h"
+#include "treegix_stats.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_zabbix_stats_ext                                         *
+ * Function: zbx_get_treegix_stats_ext                                         *
  *                                                                            *
  * Purpose: get program type (proxy) specific internal statistics             *
  *                                                                            *
@@ -33,7 +33,7 @@
  *           statistics.                                                      *
  *                                                                            *
  ******************************************************************************/
-void	zbx_get_zabbix_stats_ext(struct zbx_json *json)
+void	zbx_get_treegix_stats_ext(struct zbx_json *json)
 {
 	ZBX_UNUSED(json);
 	return;

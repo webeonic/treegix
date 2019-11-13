@@ -23,4 +23,4 @@ libzbxdbhigh_a_SOURCES = \
 	item.c \
 	lld_macro.c
 
-libzbxdbhigh_a_CFLAGS = -I@top_srcdir@/src/zabbix_server/
+libzbxdbhigh_a_CFLAGS = -I@top_srcdir@/src/treegix_server/

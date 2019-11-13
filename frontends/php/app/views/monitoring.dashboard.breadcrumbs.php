@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@
 **/
 
 
-$url_list = (new CUrl('zabbix.php'))->setArgument('action', 'dashboard.list');
+$url_list = (new CUrl('treegix.php'))->setArgument('action', 'dashboard.list');
 
 $breadcrumbs = [
 	(new CSpan())->addItem(new CLink(_('All dashboards'), $url_list->getUrl()))
 ];
 
 if ($data['dashboard']['dashboardid'] != 0) {
-	$url_view = (new CUrl('zabbix.php'))
+	$url_view = (new CUrl('treegix.php'))
 		->setArgument('action', 'dashboard.view')
 		->setArgument('dashboardid', $data['dashboard']['dashboardid']);
 

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -359,13 +359,13 @@ static void	zbx_socket_timeout_set(zbx_socket_t *s, int timeout)
 
 	if (ZBX_PROTO_ERROR == setsockopt(s->socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "setsockopt() failed for SO_RCVTIMEO: %s",
+		treegix_log(LOG_LEVEL_WARNING, "setsockopt() failed for SO_RCVTIMEO: %s",
 				strerror_from_system(zbx_socket_last_error()));
 	}
 
 	if (ZBX_PROTO_ERROR == setsockopt(s->socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&timeout, sizeof(timeout)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "setsockopt() failed for SO_SNDTIMEO: %s",
+		treegix_log(LOG_LEVEL_WARNING, "setsockopt() failed for SO_SNDTIMEO: %s",
 				strerror_from_system(zbx_socket_last_error()));
 	}
 #else
@@ -813,7 +813,7 @@ static ssize_t	zbx_tcp_write(zbx_socket_t *s, const char *buf, size_t len)
  *     says: "The record layer fragments information blocks into TLSPlaintext *
  *     records carrying data in chunks of 2^14 bytes or less.".               *
  *                                                                            *
- *     This function combines sending of Zabbix protocol header (5 bytes),    *
+ *     This function combines sending of Treegix protocol header (5 bytes),    *
  *     data length (8 bytes) and at least part of the message into one block  *
  *     of up to 16384 bytes for efficiency. The same is applied for sending   *
  *     unencrypted messages.                                                  *
@@ -1090,7 +1090,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 			if (0 == no_inherit_wsapi && 0 == SetHandleInformation((HANDLE)s->sockets[s->num_socks],
 					HANDLE_FLAG_INHERIT, 0))
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "SetHandleInformation() failed: %s",
+				treegix_log(LOG_LEVEL_WARNING, "SetHandleInformation() failed: %s",
 						strerror_from_system(GetLastError()));
 			}
 
@@ -1266,7 +1266,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 		if (0 == no_inherit_wsapi && 0 == SetHandleInformation((HANDLE)s->sockets[s->num_socks],
 				HANDLE_FLAG_INHERIT, 0))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "SetHandleInformation() failed: %s",
+			treegix_log(LOG_LEVEL_WARNING, "SetHandleInformation() failed: %s",
 					strerror_from_system(GetLastError()));
 		}
 
@@ -1806,7 +1806,7 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 
 			if (ZBX_MAX_RECV_DATA_SIZE < expected_len)
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "Message size " ZBX_FS_UI64 " from %s exceeds the "
+				treegix_log(LOG_LEVEL_WARNING, "Message size " ZBX_FS_UI64 " from %s exceeds the "
 						"maximum size " ZBX_FS_UI64 " bytes. Message ignored.",
 						(zbx_uint64_t)expected_len, s->peer,
 						(zbx_uint64_t)ZBX_MAX_RECV_DATA_SIZE);
@@ -1817,7 +1817,7 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 			/* compressed protocol stores uncompressed packet size in the reserved data */
 			if (0 != (protocol_version & ZBX_TCP_COMPRESS) && ZBX_MAX_RECV_DATA_SIZE < reserved)
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "Uncompressed message size " ZBX_FS_UI64
+				treegix_log(LOG_LEVEL_WARNING, "Uncompressed message size " ZBX_FS_UI64
 						" from %s exceeds the maximum size " ZBX_FS_UI64
 						" bytes. Message ignored.", (zbx_uint64_t)reserved, s->peer,
 						(zbx_uint64_t)ZBX_MAX_RECV_DATA_SIZE);
@@ -1879,7 +1879,7 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 				s->buffer = out;
 				s->read_bytes = reserved;
 
-				zabbix_log(LOG_LEVEL_TRACE, "%s(): received " ZBX_FS_SIZE_T " bytes with"
+				treegix_log(LOG_LEVEL_TRACE, "%s(): received " ZBX_FS_SIZE_T " bytes with"
 						" compression ratio %.1f", __func__,
 						(zbx_fs_size_t)(buf_stat_bytes + buf_dyn_bytes),
 						(double)reserved / (buf_stat_bytes + buf_dyn_bytes));
@@ -1893,12 +1893,12 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 		{
 			if (buf_stat_bytes + buf_dyn_bytes < expected_len)
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "Message from %s is shorter than expected " ZBX_FS_UI64
+				treegix_log(LOG_LEVEL_WARNING, "Message from %s is shorter than expected " ZBX_FS_UI64
 						" bytes. Message ignored.", s->peer, (zbx_uint64_t)expected_len);
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "Message from %s is longer than expected " ZBX_FS_UI64
+				treegix_log(LOG_LEVEL_WARNING, "Message from %s is longer than expected " ZBX_FS_UI64
 						" bytes. Message ignored.", s->peer, (zbx_uint64_t)expected_len);
 			}
 
@@ -1907,24 +1907,24 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 	}
 	else if (ZBX_TCP_EXPECT_LENGTH == expect)
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "Message from %s is missing data length. Message ignored.", s->peer);
+		treegix_log(LOG_LEVEL_WARNING, "Message from %s is missing data length. Message ignored.", s->peer);
 		nbytes = ZBX_PROTO_ERROR;
 	}
 	else if (ZBX_TCP_EXPECT_VERSION == expect)
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "Message from %s is missing protocol version. Message ignored.",
+		treegix_log(LOG_LEVEL_WARNING, "Message from %s is missing protocol version. Message ignored.",
 				s->peer);
 		nbytes = ZBX_PROTO_ERROR;
 	}
 	else if (ZBX_TCP_EXPECT_VERSION_VALIDATE == expect)
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "Message from %s is using unsupported protocol version \"%d\"."
+		treegix_log(LOG_LEVEL_WARNING, "Message from %s is using unsupported protocol version \"%d\"."
 				" Message ignored.", s->peer, protocol_version);
 		nbytes = ZBX_PROTO_ERROR;
 	}
 	else if (0 != buf_stat_bytes)
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "Message from %s is missing header. Message ignored.", s->peer);
+		treegix_log(LOG_LEVEL_WARNING, "Message from %s is missing header. Message ignored.", s->peer);
 		nbytes = ZBX_PROTO_ERROR;
 	}
 	else
@@ -2002,7 +2002,7 @@ ssize_t	zbx_tcp_recv_raw_ext(zbx_socket_t *s, int timeout)
 
 	if (buf_stat_bytes + buf_dyn_bytes >= expected_len)
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "Message from %s is longer than " ZBX_FS_UI64 " bytes allowed for"
+		treegix_log(LOG_LEVEL_WARNING, "Message from %s is longer than " ZBX_FS_UI64 " bytes allowed for"
 				" plain text. Message ignored.", s->peer, expected_len);
 		nbytes = ZBX_PROTO_ERROR;
 		goto out;
@@ -2407,7 +2407,7 @@ void	zbx_update_resolver_conf(void)
 		mtime = buf.st_mtime;
 
 		if (0 != res_init())
-			zabbix_log(LOG_LEVEL_WARNING, "zbx_update_resolver_conf(): res_init() failed");
+			treegix_log(LOG_LEVEL_WARNING, "zbx_update_resolver_conf(): res_init() failed");
 	}
 
 #undef ZBX_RESOLV_CONF_FILE

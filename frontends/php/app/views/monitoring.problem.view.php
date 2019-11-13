@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -329,7 +329,7 @@ if ($data['action'] == 'problem.view') {
 				->addClass(ZBX_STYLE_TABLE_FORMS_SECOND_COLUMN)
 		]);
 
-	$filter = (new CFilter((new CUrl('zabbix.php'))->setArgument('action', 'problem.view')))
+	$filter = (new CFilter((new CUrl('treegix.php'))->setArgument('action', 'problem.view')))
 		->setProfile($data['profileIdx'])
 		->setActiveTab($data['active_tab'])
 		->addFormItem((new CVar('action', 'problem.view'))->removeId())
@@ -353,7 +353,7 @@ if ($data['action'] == 'problem.view') {
 				->addVar('page', $data['page'])
 				->addItem((new CList())
 					->addItem(new CRedirectButton(_('Export to CSV'),
-						(new CUrl('zabbix.php'))
+						(new CUrl('treegix.php'))
 							->setArgument('action', 'problem.view.csv')
 							->setArgument('page',  $data['page'])
 					))

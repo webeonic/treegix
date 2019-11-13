@@ -216,7 +216,7 @@
 		defPorts[ZBX_SVC.smtp] = <?= CJs::encodeJson(_('SMTP')) ?>;
 		defPorts[ZBX_SVC.ssh] = <?= CJs::encodeJson(_('SSH')) ?>;
 		defPorts[ZBX_SVC.telnet] = <?= CJs::encodeJson(_('Telnet')) ?>;
-		defPorts[ZBX_SVC.agent] = <?= CJs::encodeJson(_('Zabbix agent')) ?>;
+		defPorts[ZBX_SVC.agent] = <?= CJs::encodeJson(_('Treegix agent')) ?>;
 
 		if (typeof svcPort === 'undefined') {
 			return defPorts;
@@ -672,7 +672,7 @@
 					overlayDialogue({
 						'title': <?= CJs::encodeJson(_('Discovery check error')) ?>,
 						'content': jQuery('<span>').text(<?= CJs::encodeJson(
-							_('Cannot validate discovery check: invalid request or connection to Zabbix server failed.')
+							_('Cannot validate discovery check: invalid request or connection to Treegix server failed.')
 						) ?>),
 						'buttons': [
 							{

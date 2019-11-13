@@ -1,15 +1,15 @@
 #!/sbin/runscript
 #
-# Zabbix agent start/stop script.
+# Treegix agent start/stop script.
 #
 # Written by A. Tophofen
-# Modified for Zabbix 2.0.0
-# May 2012, Zabbix SIA
+# Modified for Treegix 2.0.0
+# May 2012, Treegix SIA
 
-NAME=zabbix_agentd
+NAME=treegix_agentd
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin
 DAEMON=/usr/local/sbin/${NAME}
-DESC="Zabbix agent"
+DESC="Treegix agent"
 PID=/tmp/$NAME.pid
 
 opts="${opts} reload"

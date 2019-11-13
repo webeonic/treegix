@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Zabbix
-# Copyright (C) 2001-2019 Zabbix SIA
+# Treegix
+# Copyright (C) 2001-2019 Treegix SIA
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 ZABBIX_SERVER="localhost";
 ZABBIX_PORT="10051";
 
-ZABBIX_SENDER="~zabbix/bin/zabbix_sender";
+ZABBIX_SENDER="~treegix/bin/treegix_sender";
 
 KEY="snmptraps";
 HOST="snmptraps";

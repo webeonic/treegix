@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -466,7 +466,7 @@ elseif (hasRequest('filter_hostid')) {
 		$triggerTable->addRow([
 			$trigger['host_name'],
 			new CLink($trigger['description'],
-				(new CUrl('zabbix.php'))
+				(new CUrl('treegix.php'))
 					->setArgument('action', 'problem.view')
 					->setArgument('filter_triggerids[]', $trigger['triggerid'])
 					->setArgument('filter_set', '1')

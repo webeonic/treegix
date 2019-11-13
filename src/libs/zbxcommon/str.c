@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -28,15 +28,15 @@
 #endif
 
 static const char	copyright_message[] =
-	"Copyright (C) 2019 Zabbix SIA\n"
+	"Copyright (C) 2019 Treegix SIA\n"
 	"License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>.\n"
 	"This is free software: you are free to change and redistribute it according to\n"
 	"the license. There is NO WARRANTY, to the extent permitted by law.";
 
 static const char	help_message_footer[] =
-	"Report bugs to: <https://support.zabbix.com>\n"
-	"Zabbix home page: <http://www.zabbix.com>\n"
-	"Documentation: <https://www.zabbix.com/documentation>";
+	"Report bugs to: <https://support.treegix.com>\n"
+	"Treegix home page: <http://www.treegix.com>\n"
+	"Documentation: <https://www.treegix.com/documentation>";
 
 /******************************************************************************
  *                                                                            *
@@ -48,12 +48,12 @@ static const char	help_message_footer[] =
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  * Comments:  title_message - is global variable which must be initialized    *
- *                            in each zabbix application                      *
+ *                            in each treegix application                      *
  *                                                                            *
  ******************************************************************************/
 void	version(void)
 {
-	printf("%s (Zabbix) %s\n", title_message, ZABBIX_VERSION);
+	printf("%s (Treegix) %s\n", title_message, ZABBIX_VERSION);
 	printf("Revision %s %s, compilation time: %s %s\n\n", ZABBIX_REVISION, ZABBIX_REVDATE, __DATE__, __TIME__);
 	puts(copyright_message);
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
@@ -72,7 +72,7 @@ void	version(void)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  * Comments:  usage_message - is global variable which must be initialized    *
- *                            in each zabbix application                      *
+ *                            in each treegix application                      *
  *                                                                            *
  ******************************************************************************/
 void	usage(void)
@@ -130,7 +130,7 @@ void	usage(void)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  * Comments:  help_message - is global variable which must be initialized     *
- *                            in each zabbix application                      *
+ *                            in each treegix application                      *
  *                                                                            *
  ******************************************************************************/
 void	help(void)
@@ -1182,7 +1182,7 @@ int	cmp_key_id(const char *key_1, const char *key_2)
  *                                                                            *
  * Author: Alexander Vladishev                                                *
  *                                                                            *
- * Comments: used in internals checks zabbix["process",...], process titles   *
+ * Comments: used in internals checks treegix["process",...], process titles   *
  *           and log files                                                    *
  *                                                                            *
  ******************************************************************************/
@@ -1311,7 +1311,7 @@ const char	*zbx_agent_type_string(zbx_item_type_t item_type)
 	switch (item_type)
 	{
 		case ITEM_TYPE_ZABBIX:
-			return "Zabbix agent";
+			return "Treegix agent";
 		case ITEM_TYPE_SNMPv1:
 		case ITEM_TYPE_SNMPv2c:
 		case ITEM_TYPE_SNMPv3:
@@ -1349,7 +1349,7 @@ const char	*zbx_interface_type_string(zbx_interface_type_t type)
 	switch (type)
 	{
 		case INTERFACE_TYPE_AGENT:
-			return "Zabbix agent";
+			return "Treegix agent";
 		case INTERFACE_TYPE_SNMP:
 			return "SNMP";
 		case INTERFACE_TYPE_IPMI:
@@ -1456,7 +1456,7 @@ const char	*zbx_dservice_type_string(zbx_dservice_type_t service)
 		case SVC_TCP:
 			return "TCP";
 		case SVC_AGENT:
-			return "Zabbix agent";
+			return "Treegix agent";
 		case SVC_SNMPv1:
 			return "SNMPv1 agent";
 		case SVC_SNMPv2c:
@@ -1775,7 +1775,7 @@ char	*convert_to_utf8(char *in, size_t in_size, const char *encoding)
 		return utf8_string;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "convert_to_utf8() in_size:%d encoding:'%s' codepage:%u", in_size, encoding,
+	treegix_log(LOG_LEVEL_DEBUG, "convert_to_utf8() in_size:%d encoding:'%s' codepage:%u", in_size, encoding,
 			codepage);
 
 	if (1200 == codepage)		/* Unicode UTF-16, little-endian byte order */

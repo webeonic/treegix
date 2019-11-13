@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ void	zbx_vector_ ## __id ## _remove_noorder(zbx_vector_ ## __id ## _t *vector, i
 {														\
 	if (!(0 <= index && index < vector->values_num))							\
 	{													\
-		zabbix_log(LOG_LEVEL_CRIT, "removing a non-existent element at index %d", index);		\
+		treegix_log(LOG_LEVEL_CRIT, "removing a non-existent element at index %d", index);		\
 		exit(EXIT_FAILURE);										\
 	}													\
 														\
@@ -111,7 +111,7 @@ void	zbx_vector_ ## __id ## _remove(zbx_vector_ ## __id ## _t *vector, int index
 {														\
 	if (!(0 <= index && index < vector->values_num))							\
 	{													\
-		zabbix_log(LOG_LEVEL_CRIT, "removing a non-existent element at index %d", index);		\
+		treegix_log(LOG_LEVEL_CRIT, "removing a non-existent element at index %d", index);		\
 		exit(EXIT_FAILURE);										\
 	}													\
 														\

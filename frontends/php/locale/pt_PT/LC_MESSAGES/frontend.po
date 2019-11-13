@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Zabbix 4.2\n"
+"Project-Id-Version: Treegix 4.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-21 14:21+0300\n"
 "PO-Revision-Date: 2013-10-10 08:35+0300\n"
@@ -841,8 +841,8 @@ msgid "Aggregate"
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:669
-msgid "Aggregate checks do not require any agent running on a host being monitored. Zabbix server collects aggregate information by doing direct database queries. See Zabbix Manual."
-msgstr "As verificações agregadas não exigem nenhum agente em execução num host que está a ser monitorado. O servidor Zabbix recolhe informações agregadas fazendo consultas directas à base de dados. Consulte o Manual do Zabbix."
+msgid "Aggregate checks do not require any agent running on a host being monitored. Treegix server collects aggregate information by doing direct database queries. See Treegix Manual."
+msgstr "As verificações agregadas não exigem nenhum agente em execução num host que está a ser monitorado. O servidor Treegix recolhe informações agregadas fazendo consultas directas à base de dados. Consulte o Manual do Treegix."
 
 #: include/classes/widgets/CWidgetHelper.php:1078
 msgid "Aggregation function"
@@ -1937,8 +1937,8 @@ msgstr "Não foi possível criar o widget: %1$s."
 
 #: include/classes/api/services/CUser.php:991
 #, c-format
-msgid "Cannot delete Zabbix internal user \"%1$s\", try disabling that user."
-msgstr "Não é possível eliminar o utilizador interno do Zabbix \"%1$s\", tente desactivar esse utilizador."
+msgid "Cannot delete Treegix internal user \"%1$s\", try disabling that user."
+msgstr "Não é possível eliminar o utilizador interno do Treegix \"%1$s\", tente desactivar esse utilizador."
 
 #: actionconf.php:254
 msgid "Cannot delete action"
@@ -2533,10 +2533,10 @@ msgstr "Não foi possível ler o JSON: %1$s."
 msgid "Cannot read XML: %1$s."
 msgstr "Não foi possível ler o XML: %1$s."
 
-#: include/classes/server/CZabbixServer.php:410
+#: include/classes/server/CTreegixServer.php:410
 #, c-format
-msgid "Cannot read the response, check connection with the Zabbix server \"%1$s\"."
-msgstr "Não é possível receber a resposta, verifique a comunicação com o servidor Zabbix \"%1$s\"."
+msgid "Cannot read the response, check connection with the Treegix server \"%1$s\"."
+msgstr "Não é possível receber a resposta, verifique a comunicação com o servidor Treegix \"%1$s\"."
 
 #: include/classes/api/services/CUser.php:430
 msgid "Cannot rename guest user."
@@ -2552,10 +2552,10 @@ msgstr "Não é possível guardar as regras de descoberta sem verificações."
 msgid "Cannot save widget \"%1$s\"."
 msgstr "Não foi possível salvar o widget \"%1$s\"."
 
-#: include/classes/server/CZabbixServer.php:351
+#: include/classes/server/CTreegixServer.php:351
 #, c-format
-msgid "Cannot send command, check connection with Zabbix server \"%1$s\"."
-msgstr "Não foi possível enviar o comando, verifique a comunicação com o servidor Zabbix \"%1$s\"."
+msgid "Cannot send command, check connection with Treegix server \"%1$s\"."
+msgstr "Não foi possível enviar o comando, verifique a comunicação com o servidor Treegix \"%1$s\"."
 
 #: host_discovery.php:309 host_discovery.php:647 items.php:972 items.php:1447
 msgid "Cannot send request"
@@ -2983,8 +2983,8 @@ msgid "Cannot update web scenario"
 msgstr "Não foi possível actualizar o cenário web"
 
 #: include/views/js/configuration.discovery.edit.js.php:675
-msgid "Cannot validate discovery check: invalid request or connection to Zabbix server failed."
-msgstr "Não foi possível validar a verificação de descoberta: a requisição foi inválida ou a ligação com o servidor Zabbix falhou."
+msgid "Cannot validate discovery check: invalid request or connection to Treegix server failed."
+msgstr "Não foi possível validar a verificação de descoberta: a requisição foi inválida ou a ligação com o servidor Treegix falhou."
 
 #: include/views/administration.general.regularexpressions.edit.php:52
 msgid "Case sensitive"
@@ -3439,8 +3439,8 @@ msgid "Configuration of GUI"
 msgstr "Configuração de GUI"
 
 #: include/audit.inc.php:25
-msgid "Configuration of Zabbix"
-msgstr "Configuração do Zabbix"
+msgid "Configuration of Treegix"
+msgstr "Configuração do Treegix"
 
 #: actionconf.php:27
 msgid "Configuration of actions"
@@ -3598,8 +3598,8 @@ msgid "Confirmation text"
 msgstr "Texto de confirmação"
 
 #: include/classes/setup/CSetupWizard.php:383
-msgid "Congratulations! You have successfully installed Zabbix frontend."
-msgstr "Parabéns! Instalou com sucesso a interface web do Zabbix."
+msgid "Congratulations! You have successfully installed Treegix frontend."
+msgstr "Parabéns! Instalou com sucesso a interface web do Treegix."
 
 #: app/views/administration.proxy.edit.php:43
 #: include/views/configuration.host.edit.php:115
@@ -3621,46 +3621,46 @@ msgstr ""
 msgid "Connection security"
 msgstr "Segurança de ligação"
 
-#: include/classes/server/CZabbixServer.php:364
+#: include/classes/server/CTreegixServer.php:364
 #, c-format
-msgid "Connection timeout of %1$s seconds exceeded when connecting to Zabbix server \"%2$s\"."
-msgstr "O tempo limite de %1$s segundos foi excedido enquanto se ligava ao servidor Zabbix \"%2$s\"."
+msgid "Connection timeout of %1$s seconds exceeded when connecting to Treegix server \"%2$s\"."
+msgstr "O tempo limite de %1$s segundos foi excedido enquanto se ligava ao servidor Treegix \"%2$s\"."
 
-#: include/classes/server/CZabbixServer.php:472
+#: include/classes/server/CTreegixServer.php:472
 #, c-format
 msgid ""
-"Connection to Zabbix server \"%s\" failed. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Connection to Treegix server \"%s\" failed. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Incorrect DNS server configuration.\n"
 msgstr ""
-"A ligação ao servidor zabbix \"%s\" falhou. Possíveis causas:\n"
-"1. Configuração incorrecta de IP/DNS no ficheiro \"zabbix.conf.php\";\n"
+"A ligação ao servidor treegix \"%s\" falhou. Possíveis causas:\n"
+"1. Configuração incorrecta de IP/DNS no ficheiro \"treegix.conf.php\";\n"
 "2. Configuração incorrecta no servidor de DNS.\n"
 
-#: include/classes/server/CZabbixServer.php:460
+#: include/classes/server/CTreegixServer.php:460
 #, c-format
 msgid ""
-"Connection to Zabbix server \"%s\" refused. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Connection to Treegix server \"%s\" refused. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Security environment (for example, SELinux) is blocking the connection;\n"
-"3. Zabbix server daemon not running;\n"
+"3. Treegix server daemon not running;\n"
 "4. Firewall is blocking TCP connection.\n"
 msgstr ""
-"A ligação ao servidor zabbix \"%s\" foi recusada. Possíveis causas:\n"
-"1. Configuração incorrecta de IP/DNS no ficheiro \"zabbix.conf.php\";\n"
+"A ligação ao servidor treegix \"%s\" foi recusada. Possíveis causas:\n"
+"1. Configuração incorrecta de IP/DNS no ficheiro \"treegix.conf.php\";\n"
 "2. Restrições de segurança estão a bloquear a ligação (por exemplo o SELinux);\n"
-"3. Processo do Zabbix server não está em execução;\n"
+"3. Processo do Treegix server não está em execução;\n"
 "4. Firewall está a bloquear a ligação TCP.\n"
 
-#: include/classes/server/CZabbixServer.php:468
+#: include/classes/server/CTreegixServer.php:468
 #, c-format
 msgid ""
-"Connection to Zabbix server \"%s\" timed out. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Connection to Treegix server \"%s\" timed out. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Firewall is blocking TCP connection.\n"
 msgstr ""
-"A ligação ao servidor zabbix \"%s\" expirou. Possíveis causas:\n"
-"1. Configuração incorrecta de IP/DNS no ficheiro \"zabbix.conf.php\";\n"
+"A ligação ao servidor treegix \"%s\" expirou. Possíveis causas:\n"
+"1. Configuração incorrecta de IP/DNS no ficheiro \"treegix.conf.php\";\n"
 "2. Firewall está a bloquear a ligação TCP.\n"
 
 #: include/views/configuration.host.massupdate.php:284
@@ -6123,8 +6123,8 @@ msgid "Failure Audit"
 msgstr "Auditoria de falhas"
 
 #: app/views/system.warning.php:21 app/views/system.warning.php:33
-msgid "Fatal error, please report to the Zabbix team"
-msgstr "Erro fatal, favor reportar ao time Zabbix"
+msgid "Fatal error, please report to the Treegix team"
+msgstr "Erro fatal, favor reportar ao time Treegix"
 
 #: include/classes/widgets/CWidgetConfig.php:37
 msgid "Favourite graphs"
@@ -8433,12 +8433,12 @@ msgstr "A expressão regular \"%1$s\": \"%2$s\" é inválida"
 msgid "Incorrect resource type provided for screen item."
 msgstr "Tipo de recurso fornecido para o item do ecrã."
 
-#: include/classes/server/CZabbixServer.php:376
-#: include/classes/server/CZabbixServer.php:418
-#: include/classes/server/CZabbixServer.php:425
+#: include/classes/server/CTreegixServer.php:376
+#: include/classes/server/CTreegixServer.php:418
+#: include/classes/server/CTreegixServer.php:425
 #, c-format
-msgid "Incorrect response received from Zabbix server \"%1$s\"."
-msgstr "Foi recebida uma resposta inválida do servidor Zabbix \"%1$s\"."
+msgid "Incorrect response received from Treegix server \"%1$s\"."
+msgstr "Foi recebida uma resposta inválida do servidor Treegix \"%1$s\"."
 
 #: include/classes/api/services/CScreenItem.php:739
 #, c-format
@@ -12026,8 +12026,8 @@ msgid "Number of items (enabled/disabled/not supported)"
 msgstr "Quantidade de itens (activados/desabilitados/não suportados)"
 
 #: include/classes/items/CHelpItems.php:987
-msgid "Number of items in Zabbix database."
-msgstr "Número de itens na base de dados do Zabbix."
+msgid "Number of items in Treegix database."
+msgstr "Número de itens na base de dados do Treegix."
 
 #: include/classes/items/CHelpItems.php:1007
 msgid "Number of items in proxy history that are not yet sent to the server"
@@ -12040,7 +12040,7 @@ msgstr "Número de itens na fila que estão atrasados em segundos."
 #: include/classes/items/CHelpItems.php:353
 #: include/classes/items/CHelpItems.php:663
 #: include/classes/items/CHelpItems.php:1027
-msgid "Number of items in the queue which are delayed in Zabbix server or proxy by \"from\" till \"to\" seconds, inclusive."
+msgid "Number of items in the queue which are delayed in Treegix server or proxy by \"from\" till \"to\" seconds, inclusive."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:983
@@ -12094,12 +12094,12 @@ msgid "Number of triggers (enabled/disabled [problem/ok])"
 msgstr "Quantidade de triggers (activados/desactivados [incidente/ok])"
 
 #: include/classes/items/CHelpItems.php:1039
-msgid "Number of triggers in Zabbix database."
-msgstr "Número de triggers na base de dados Zabbix."
+msgid "Number of triggers in Treegix database."
+msgstr "Número de triggers na base de dados Treegix."
 
 #: include/classes/items/CHelpItems.php:991
-msgid "Number of unsupported items in Zabbix database."
-msgstr "Número de itens não suportados na base de dados Zabbix."
+msgid "Number of unsupported items in Treegix database."
+msgstr "Número de itens não suportados na base de dados Treegix."
 
 #: include/classes/items/CHelpItems.php:967
 msgid "Number of unsupported items on the host."
@@ -12330,8 +12330,8 @@ msgid "Only Super Admins can update user groups."
 msgstr "Apenas super administradores podem actualizar grupos de utilizadores."
 
 #: include/classes/api/services/CDRule.php:481
-msgid "Only Zabbix agent, SNMPv1, SNMPv2 and SNMPv3 checks can be made unique."
-msgstr "Apenas através de verificações com o agente Zabbix, SNMPv1, SNMPv2 e SNMPv3 pode ser feita a verificação de unicidade."
+msgid "Only Treegix agent, SNMPv1, SNMPv2 and SNMPv3 checks can be made unique."
+msgstr "Apenas através de verificações com o agente Treegix, SNMPv1, SNMPv2 e SNMPv3 pode ser feita a verificação de unicidade."
 
 #: include/classes/api/services/CMap.php:658
 #: include/classes/api/services/CMap.php:1108
@@ -13105,8 +13105,8 @@ msgid "Please create database manually, and set the configuration parameters for
 msgstr "Por favor crie a base de dados manualmente e informe os parâmetros de ligação para a base. Pressione o botão \"%1$s\" quando estiver pronto."
 
 #: include/classes/setup/CSetupWizard.php:293
-msgid "Please enter the host name or host IP address and port number of the Zabbix server, as well as the name of the installation (optional)."
-msgstr "Por favor informe o nome ou IP e a porta do servidor Zabbix, assim como um nome para esta instalação (opcional)."
+msgid "Please enter the host name or host IP address and port number of the Treegix server, as well as the name of the installation (optional)."
+msgstr "Por favor informe o nome ou IP e a porta do servidor Treegix, assim como um nome para esta instalação (opcional)."
 
 #: jsLoader.php:190
 msgid "Please select two elements"
@@ -13998,8 +13998,8 @@ msgid "Required performance (vps)"
 msgstr "Performance (vps)"
 
 #: include/classes/items/CHelpItems.php:1019
-msgid "Required performance of the Zabbix server, in new values per second expected."
-msgstr "Performance requerida do servidor Zabbix, em novos valores por segundo."
+msgid "Required performance of the Treegix server, in new values per second expected."
+msgstr "Performance requerida do servidor Treegix, em novos valores por segundo."
 
 #: include/blocks.inc.php:659
 msgid "Required server performance, new values per second"
@@ -14155,13 +14155,13 @@ msgid "Returns ICMP ping response time in seconds. Example: 0.02"
 msgstr "Tempo de resposta do ICMP ping. Exemplo: 0,02"
 
 #: include/classes/items/CHelpItems.php:975
-msgid "Returns a JSON array describing the host network interfaces configured in Zabbix. Can be used for LLD."
+msgid "Returns a JSON array describing the host network interfaces configured in Treegix. Can be used for LLD."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:349
 #: include/classes/items/CHelpItems.php:659
 #: include/classes/items/CHelpItems.php:1023
-msgid "Returns a JSON object containing Zabbix server or proxy internal metrics."
+msgid "Returns a JSON object containing Treegix server or proxy internal metrics."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:979
@@ -14173,8 +14173,8 @@ msgid "Returns current maintenance status of the host."
 msgstr "Retorna o status actual de manutenção do host."
 
 #: include/classes/items/CHelpItems.php:995
-msgid "Returns information associated with Zabbix Java gateway. Valid params are: ping, version."
-msgstr "Retorna a informação associada ao gateway java do Zabbix. Os parâmetros válidos são: ping, version."
+msgid "Returns information associated with Treegix Java gateway. Valid params are: ping, version."
+msgstr "Retorna a informação associada ao gateway java do Treegix. Os parâmetros válidos são: ping, version."
 
 #: include/classes/items/CHelpItems.php:679
 msgid "Returns percentage of lost ICMP ping packets."
@@ -15238,8 +15238,8 @@ msgid "Show value"
 msgstr "Mostrar valor"
 
 #: adm.gui.php:46 include/views/administration.general.gui.edit.php:61
-msgid "Show warning if Zabbix server is down"
-msgstr "Mostrar aviso se o Zabbix Server estiver offline"
+msgid "Show warning if Treegix server is down"
+msgstr "Mostrar aviso se o Treegix Server estiver offline"
 
 #: include/views/configuration.graph.edit.php:108
 msgid "Show working time"
@@ -15328,10 +15328,10 @@ msgstr "Estado / Província"
 msgid "Size"
 msgstr "Tamanho"
 
-#: include/classes/server/CZabbixServer.php:397
+#: include/classes/server/CTreegixServer.php:397
 #, c-format
-msgid "Size of the response received from Zabbix server \"%1$s\" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php."
-msgstr "O tamanho da resposta recebida do servidor Zabbix \"%1$s\" excedeu o tamanho permitido de %2$s bytes. Este valor pode ser modificado modificando a constante ZBX_SOCKET_BYTES_LIMIT em include/defines.inc.php."
+msgid "Size of the response received from Treegix server \"%1$s\" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php."
+msgstr "O tamanho da resposta recebida do servidor Treegix \"%1$s\" excedeu o tamanho permitido de %2$s bytes. Este valor pode ser modificado modificando a constante ZBX_SOCKET_BYTES_LIMIT em include/defines.inc.php."
 
 #: include/graphs.inc.php:471
 #, c-format
@@ -15510,8 +15510,8 @@ msgid "Starting TLS failed."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:939
-msgid "Startup time of Zabbix server, Unix timestamp."
-msgstr "Horário de início do servidor Zabbix, padrão de hora do UNIX."
+msgid "Startup time of Treegix server, Unix timestamp."
+msgstr "Horário de início do servidor Treegix, padrão de hora do UNIX."
 
 #: include/forms.inc.php:204 include/forms.inc.php:698
 #: include/views/configuration.maintenance.list.php:50
@@ -15773,8 +15773,8 @@ msgid "System default"
 msgstr "Por omissão do sistema"
 
 #: include/func.inc.php:1920
-msgid "System error occurred. Please contact Zabbix administrator."
-msgstr "Ocorreu um erro de sistema. Contacte um administrador Zabbix."
+msgid "System error occurred. Please contact Treegix administrator."
+msgstr "Ocorreu um erro de sistema. Contacte um administrador Treegix."
 
 #: include/classes/core/CJsonRpc.php:215
 msgid "System error."
@@ -16165,13 +16165,13 @@ msgstr "A aplicação não será novamente descoberta e será eliminada na próx
 #: include/classes/db/MysqlDbBackend.php:35
 #: include/classes/db/OracleDbBackend.php:36
 #: include/classes/db/PostgresqlDbBackend.php:44
-msgid "The frontend does not match Zabbix database."
-msgstr "A interface web não consegue se conectar à base de dados do Zabbix."
+msgid "The frontend does not match Treegix database."
+msgstr "A interface web não consegue se conectar à base de dados do Treegix."
 
 #: include/classes/db/DbBackend.php:48
 #, c-format
-msgid "The frontend does not match Zabbix database. Current database version (mandatory/optional): %d/%d. Required mandatory version: %d. Contact your system administrator."
-msgstr "A interface web não consegue se conectar à base de dados do Zabbix. Versão do base de dados (obrigatório/opcional) %d/%d. Versão obrigatória: %d. Contate o administrador do seu sistema."
+msgid "The frontend does not match Treegix database. Current database version (mandatory/optional): %d/%d. Required mandatory version: %d. Contact your system administrator."
+msgstr "A interface web não consegue se conectar à base de dados do Treegix. Versão do base de dados (obrigatório/opcional) %d/%d. Versão obrigatória: %d. Contate o administrador do seu sistema."
 
 #: include/html.inc.php:652
 #, c-format
@@ -16245,7 +16245,7 @@ msgid "This field is automatically populated by item \"%s\"."
 msgstr "Este campo é preenchido automaticamente pelo item \"%s\"."
 
 #: app/controllers/CControllerPopupMediatypeTestEdit.php:80
-msgid "This is the test message from Zabbix"
+msgid "This is the test message from Treegix"
 msgstr ""
 
 #: include/func.inc.php:2673 srv_status.php:41
@@ -16340,7 +16340,7 @@ msgid "Time (descending)"
 msgstr "Data e hora (decrescente)"
 
 #: include/classes/items/CHelpItems.php:999
-msgid "Time a particular Zabbix process or a group of processes (identified by <type> and <mode>) spent in <state> in percentage."
+msgid "Time a particular Treegix process or a group of processes (identified by <type> and <mode>) spent in <state> in percentage."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:1003
@@ -17317,8 +17317,8 @@ msgid "Uptime"
 msgstr "Uptime"
 
 #: include/classes/items/CHelpItems.php:1043
-msgid "Uptime of Zabbix server process in seconds."
-msgstr "Tempo em execução em segudos do processo do Zabbix."
+msgid "Uptime of Treegix server process in seconds."
+msgstr "Tempo em execução em segudos do processo do Treegix."
 
 #: include/actions.inc.php:59
 msgid "Uptime/Downtime"
@@ -18001,8 +18001,8 @@ msgstr "Detalhado"
 
 #: include/classes/items/CHelpItems.php:73
 #: include/classes/items/CHelpItems.php:367
-msgid "Version of Zabbix agent. Returns string"
-msgstr "Versão do agente Zabbix. Retorna: texto"
+msgid "Version of Treegix agent. Returns string"
+msgstr "Versão do agente Treegix. Retorna: texto"
 
 #: include/classes/widgets/forms/CWidgetFormHostAvail.php:50
 #: include/classes/widgets/forms/CWidgetFormProblemsBySv.php:97
@@ -18552,28 +18552,28 @@ msgid "ZABBIX"
 msgstr "ZABBIX"
 
 #: include/page_header.php:156
-msgid "Zabbix"
-msgstr "Zabbix"
+msgid "Treegix"
+msgstr "Treegix"
 
 #: include/users.inc.php:55
-msgid "Zabbix Admin"
-msgstr "Zabbix Admin"
+msgid "Treegix Admin"
+msgstr "Treegix Admin"
 
 #: app/views/layout.htmlpage.menu.php:58
-msgid "Zabbix Share"
-msgstr "Zabbix Share"
+msgid "Treegix Share"
+msgstr "Treegix Share"
 
 #: include/users.inc.php:56
-msgid "Zabbix Super Admin"
-msgstr "Zabbix Super Admin"
+msgid "Treegix Super Admin"
+msgstr "Treegix Super Admin"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Zabbix Technical Support"
+msgid "Treegix Technical Support"
 msgstr ""
 
 #: include/users.inc.php:54
-msgid "Zabbix User"
-msgstr "Zabbix User"
+msgid "Treegix User"
+msgstr "Treegix User"
 
 #: app/views/administration.script.edit.php:50
 #: app/views/monitoring.widget.hostavail.view.php:23
@@ -18584,31 +18584,31 @@ msgstr "Zabbix User"
 #: include/views/configuration.action.edit.php:1722
 #: include/views/configuration.action.edit.php:2192
 #: include/views/js/configuration.discovery.edit.js.php:219
-msgid "Zabbix agent"
-msgstr "Agente Zabbix"
+msgid "Treegix agent"
+msgstr "Agente Treegix"
 
 #: include/items.inc.php:87
-msgid "Zabbix agent (active)"
-msgstr "Agente Zabbix (activo)"
+msgid "Treegix agent (active)"
+msgstr "Agente Treegix (activo)"
 
 #: include/items.inc.php:95
-msgid "Zabbix aggregate"
-msgstr "Agregado Zabbix"
+msgid "Treegix aggregate"
+msgstr "Agregado Treegix"
 
 #: include/validate.inc.php:369
-msgid "Zabbix has received an incorrect request."
-msgstr "O Zabbix recebeu um pedido incorrecto."
+msgid "Treegix has received an incorrect request."
+msgstr "O Treegix recebeu um pedido incorrecto."
 
 #: include/items.inc.php:93
-msgid "Zabbix internal"
-msgstr "Zabbix Interno"
+msgid "Treegix internal"
+msgstr "Treegix Interno"
 
 #: include/perm.inc.php:48
-msgid "Zabbix internal authentication"
-msgstr "Autenticação interna do Zabbix"
+msgid "Treegix internal authentication"
+msgstr "Autenticação interna do Treegix"
 
 #: app/views/administration.authentication.edit.php:44
-msgid "Zabbix login form"
+msgid "Treegix login form"
 msgstr ""
 
 #: app/views/administration.script.edit.php:52 include/actions.inc.php:930
@@ -18616,56 +18616,56 @@ msgstr ""
 #: include/views/configuration.action.edit.php:942
 #: include/views/configuration.action.edit.php:1724
 #: include/views/configuration.action.edit.php:2194
-msgid "Zabbix server"
-msgstr "Servidor Zabbix"
+msgid "Treegix server"
+msgstr "Servidor Treegix"
 
-#: include/classes/server/CZabbixServer.php:464
+#: include/classes/server/CTreegixServer.php:464
 #, c-format
 msgid ""
-"Zabbix server \"%s\" can not be reached. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Treegix server \"%s\" can not be reached. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Incorrect network configuration.\n"
 msgstr ""
-"Não foi possível ligar ao Zabbix Server \"%s\". Possíveis causas:\n"
-"1. IP/DNS do servidor incorrectos no ficheiro \"zabbix.conf.php\";\n"
+"Não foi possível ligar ao Treegix Server \"%s\". Possíveis causas:\n"
+"1. IP/DNS do servidor incorrectos no ficheiro \"treegix.conf.php\";\n"
 "2. Configuração de rede incorrecta.\n"
 
 #: app/views/administration.script.edit.php:51 include/actions.inc.php:925
 #: include/views/configuration.action.edit.php:941
 #: include/views/configuration.action.edit.php:1723
 #: include/views/configuration.action.edit.php:2193
-msgid "Zabbix server (proxy)"
-msgstr "Servidor Zabbix (proxy)"
+msgid "Treegix server (proxy)"
+msgstr "Servidor Treegix (proxy)"
 
 #: include/classes/setup/CSetupWizard.php:45
 #: include/classes/setup/CSetupWizard.php:291
-msgid "Zabbix server details"
-msgstr "Detalhes do servidor Zabbix"
+msgid "Treegix server details"
+msgstr "Detalhes do servidor Treegix"
 
 #: jsrpc.php:82
-msgid "Zabbix server is not running: the information displayed may not be current."
-msgstr "O servidor Zabbix não está em execução: a informação mostrada poderá não estar actualizada."
+msgid "Treegix server is not running: the information displayed may not be current."
+msgstr "O servidor Treegix não está em execução: a informação mostrada poderá não estar actualizada."
 
 #: include/blocks.inc.php:617
-msgid "Zabbix server is running"
-msgstr "O servidor Zabbix está em execução"
+msgid "Treegix server is running"
+msgstr "O servidor Treegix está em execução"
 
 #: include/profiles.inc.php:256
 #, c-format
-msgid "Zabbix server is running check interval \"%1$s\"."
-msgstr "O servidor Zabbix está em execução com um intervalo de verificação de \"%1$s\"."
+msgid "Treegix server is running check interval \"%1$s\"."
+msgstr "O servidor Treegix está em execução com um intervalo de verificação de \"%1$s\"."
 
 #: include/classes/setup/CSetupWizard.php:322
-msgid "Zabbix server name"
-msgstr "Nome do servidor Zabbix"
+msgid "Treegix server name"
+msgstr "Nome do servidor Treegix"
 
 #: include/classes/setup/CSetupWizard.php:321
-msgid "Zabbix server port"
-msgstr "Porto do servidor Zabbix"
+msgid "Treegix server port"
+msgstr "Porto do servidor Treegix"
 
 #: include/items.inc.php:94
-msgid "Zabbix trapper"
-msgstr "Trapper Zabbix"
+msgid "Treegix trapper"
+msgstr "Trapper Treegix"
 
 #: include/classes/html/CFilter.php:251
 msgid "Zoom out"
@@ -19178,7 +19178,7 @@ msgid "fourth"
 msgstr ""
 
 #: app/controllers/CControllerPopupTriggerExpr.php:338
-msgid "fuzzytime() - Difference between item value (as timestamp) and Zabbix server timestamp is less than or equal to T seconds (1 - true, 0 - false)"
+msgid "fuzzytime() - Difference between item value (as timestamp) and Treegix server timestamp is less than or equal to T seconds (1 - true, 0 - false)"
 msgstr ""
 
 #: include/views/configuration.item.edit.php:759

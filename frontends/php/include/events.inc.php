@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ function get_events_unacknowledged($db_element, $value_trigger = null, $value_ev
  * @return CTableInfo
  */
 function make_event_details($event, $backurl) {
-	$event_update_url = (new CUrl('zabbix.php'))
+	$event_update_url = (new CUrl('treegix.php'))
 		->setArgument('action', 'acknowledge.edit')
 		->setArgument('eventids', [$event['eventid']])
 		->setArgument('backurl', $backurl)
@@ -364,7 +364,7 @@ function make_small_eventlist($startEvent, $backurl) {
 		addTriggerValueStyle($cell_status, $value, $value_clock, $event['acknowledged'] == EVENT_ACKNOWLEDGED);
 
 		// Create link to Problem update page.
-		$problem_update_url = (new CUrl('zabbix.php'))
+		$problem_update_url = (new CUrl('treegix.php'))
 			->setArgument('action', 'acknowledge.edit')
 			->setArgument('eventids', [$event['eventid']])
 			->setArgument('backurl', $backurl)
@@ -600,7 +600,7 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 			}
 
 			// Create acknowledge link.
-			$problem_update_url = (new CUrl('zabbix.php'))
+			$problem_update_url = (new CUrl('treegix.php'))
 				->setArgument('action', 'acknowledge.edit')
 				->setArgument('eventids', [$problem['eventid']])
 				->setArgument('backurl', $backurl)

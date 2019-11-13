@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ $widget = (new CWidget())
 	->setControls((new CTag('nav', true,
 		(new CList())
 			->addItem(new CRedirectButton(_('Create dashboard'),
-				(new CUrl('zabbix.php'))
+				(new CUrl('treegix.php'))
 					->setArgument('action', 'dashboard.view')
 					->setArgument('new', '1')
 					->getUrl()
@@ -53,7 +53,7 @@ $table = (new CTableInfo())
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'])
 	]);
 
-$url = (new CUrl('zabbix.php'))
+$url = (new CUrl('treegix.php'))
 	->setArgument('action', 'dashboard.view')
 	->setArgument('dashboardid', '');
 

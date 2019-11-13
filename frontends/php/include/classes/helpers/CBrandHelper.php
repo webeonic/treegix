@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 
 /**
- * A class for Zabbix re-branding.
+ * A class for Treegix re-branding.
  */
 class CBrandHelper {
 
@@ -81,7 +81,7 @@ class CBrandHelper {
 	 * @return string
 	 */
 	public static function getHelpUrl() {
-		return self::getValue('BRAND_HELP_URL', 'https://www.zabbix.com/documentation/'.
+		return self::getValue('BRAND_HELP_URL', 'https://www.treegix.com/documentation/'.
 			(preg_match('/^\d+\.\d+/', ZABBIX_VERSION, $version) ? $version[0].'/' : '')
 		);
 	}
@@ -109,9 +109,9 @@ class CBrandHelper {
 		$footer = self::getValue(
 			'BRAND_FOOTER',
 			[
-				$with_version ? 'Zabbix '.ZABBIX_VERSION.'. ' : null,
+				$with_version ? 'Treegix '.ZABBIX_VERSION.'. ' : null,
 				'&copy; '.ZABBIX_COPYRIGHT_FROM.'&ndash;'.ZABBIX_COPYRIGHT_TO.', ',
-				(new CLink('Zabbix SIA', 'http://www.zabbix.com/'))
+				(new CLink('Treegix SIA', 'http://www.treegix.com/'))
 					->addClass(ZBX_STYLE_GREY)
 					->addClass(ZBX_STYLE_LINK_ALT)
 					->setAttribute('target', '_blank')

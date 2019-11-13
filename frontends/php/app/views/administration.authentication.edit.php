@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ $http_tab = (new CFormList('list_http'))
 	)
 	->addRow(new CLabel(_('Default login form'), 'http_login_form'),
 		(new CComboBox('http_login_form', $data['http_login_form'], null, [
-			ZBX_AUTH_FORM_ZABBIX => _('Zabbix login form'),
+			ZBX_AUTH_FORM_ZABBIX => _('Treegix login form'),
 			ZBX_AUTH_FORM_HTTP => _('HTTP login form')
 		]))->setEnabled($data['http_auth_enabled'] == ZBX_AUTH_HTTP_ENABLED)
 	)

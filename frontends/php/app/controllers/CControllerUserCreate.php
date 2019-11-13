@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class CControllerUserCreate extends CControllerUserUpdateGeneral {
 		if (!$ret) {
 			switch ($error) {
 				case self::VALIDATION_ERROR:
-					$response = new CControllerResponseRedirect('zabbix.php?action=user.edit');
+					$response = new CControllerResponseRedirect('treegix.php?action=user.edit');
 					$response->setFormData($this->getInputAll());
 					$response->setMessageError(_('Cannot add user'));
 					$this->setResponse($response);
@@ -102,11 +102,11 @@ class CControllerUserCreate extends CControllerUserUpdateGeneral {
 		$result = (bool) API::User()->create($user);
 
 		if ($result) {
-			$response = new CControllerResponseRedirect('zabbix.php?action=user.list&uncheck=1');
+			$response = new CControllerResponseRedirect('treegix.php?action=user.list&uncheck=1');
 			$response->setMessageOk(_('User added'));
 		}
 		else {
-			$response = new CControllerResponseRedirect('zabbix.php?action=user.edit');
+			$response = new CControllerResponseRedirect('treegix.php?action=user.edit');
 			$response->setFormData($this->getInputAll());
 			$response->setMessageError(_('Cannot add user'));
 		}

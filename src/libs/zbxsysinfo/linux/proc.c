@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -1148,12 +1148,12 @@ void	zbx_proc_get_process_stats(zbx_procstat_util_t *procs, int procs_num)
 {
 	int	i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s() procs_num:%d", __func__, procs_num);
+	treegix_log(LOG_LEVEL_TRACE, "In %s() procs_num:%d", __func__, procs_num);
 
 	for (i = 0; i < procs_num; i++)
 		procs[i].error = proc_read_cpu_util(&procs[i]);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1251,7 +1251,7 @@ int	zbx_proc_get_processes(zbx_vector_ptr_t *processes, unsigned int flags)
 	int			ret = FAIL, pid;
 	zbx_sysinfo_proc_t	*proc;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	if (NULL == (dir = opendir("/proc")))
 		goto out;
@@ -1272,7 +1272,7 @@ int	zbx_proc_get_processes(zbx_vector_ptr_t *processes, unsigned int flags)
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s(): %s, processes:%d", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_TRACE, "End of %s(): %s, processes:%d", __func__, zbx_result_string(ret),
 			processes->values_num);
 
 	return ret;
@@ -1316,7 +1316,7 @@ void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *p
 	int			i;
 	zbx_sysinfo_proc_t	*proc;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s() procname:%s username:%s cmdline:%s flags:" ZBX_FS_UI64, __func__,
+	treegix_log(LOG_LEVEL_TRACE, "In %s() procname:%s username:%s cmdline:%s flags:" ZBX_FS_UI64, __func__,
 			ZBX_NULL2EMPTY_STR(procname), ZBX_NULL2EMPTY_STR(username), ZBX_NULL2EMPTY_STR(cmdline), flags);
 
 	if (NULL != username)
@@ -1344,7 +1344,7 @@ void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *p
 		zbx_vector_uint64_append(pids, (zbx_uint64_t)proc->pid);
 	}
 out:
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)

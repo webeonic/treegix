@@ -1,6 +1,6 @@
 /*
- ** Zabbix
- ** Copyright (C) 2001-2019 Zabbix SIA
+ ** Treegix
+ ** Copyright (C) 2001-2019 Treegix SIA
  **
  ** This program is free software; you can redistribute it and/or modify
  ** it under the terms of the GNU General Public License as published by
@@ -31,14 +31,14 @@ jQuery(function($) {
 		warning: false,
 
 		/**
-		 * Sends ajax request to get Zabbix server availability and message to show if server is not available.
+		 * Sends ajax request to get Treegix server availability and message to show if server is not available.
 		 *
 		 * @param nocache add 'nocache' parameter to get result not from cache
 		 */
 		check: function(nocache) {
 			var params = nocache ? {nocache: true} : {};
 			new RPC.Call({
-				'method': 'zabbix.status',
+				'method': 'treegix.status',
 				'params': params,
 				'onSuccess': $.proxy(this.onSuccess, this)
 			});

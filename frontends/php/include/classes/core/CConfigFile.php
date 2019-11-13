@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ class CConfigFile {
 	const CONFIG_NOT_FOUND = 1;
 	const CONFIG_ERROR = 2;
 
-	const CONFIG_FILE_PATH = '/conf/zabbix.conf.php';
+	const CONFIG_FILE_PATH = '/conf/treegix.conf.php';
 
 	private static $supported_db_types = [
 		ZBX_DB_DB2 => true,
@@ -167,7 +167,7 @@ class CConfigFile {
 	public function getString() {
 		return
 '<?php
-// Zabbix GUI configuration file.
+// Treegix GUI configuration file.
 global $DB;
 
 $DB[\'TYPE\']     = \''.addcslashes($this->config['DB']['TYPE'], "'\\").'\';

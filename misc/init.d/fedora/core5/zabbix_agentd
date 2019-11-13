@@ -1,24 +1,24 @@
 #!/bin/bash
 #
-#       /etc/rc.d/init.d/zabbix_agentd
+#       /etc/rc.d/init.d/treegix_agentd
 #
-# Starts the zabbix_agentd daemon
+# Starts the treegix_agentd daemon
 #
 # chkconfig: - 95 5
-# description: Zabbix Monitoring Agent
-# processname: zabbix_agentd
-# pidfile: /tmp/zabbix_agentd.pid
+# description: Treegix Monitoring Agent
+# processname: treegix_agentd
+# pidfile: /tmp/treegix_agentd.pid
 
-# Modified for Zabbix 2.0.0
-# May 2012, Zabbix SIA
+# Modified for Treegix 2.0.0
+# May 2012, Treegix SIA
 
 # Source function library.
 
 . /etc/init.d/functions
 
 RETVAL=0
-prog="Zabbix Agent"
-ZABBIX_BIN="/usr/local/sbin/zabbix_agentd"
+prog="Treegix Agent"
+ZABBIX_BIN="/usr/local/sbin/treegix_agentd"
 
 if [ ! -x ${ZABBIX_BIN} ] ; then
         echo -n "${ZABBIX_BIN} not installed! "
@@ -30,7 +30,7 @@ start() {
         echo -n $"Starting $prog: "
         daemon $ZABBIX_BIN
         RETVAL=$?
-        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/zabbix_agentd
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/treegix_agentd
         echo
 }
 
@@ -38,7 +38,7 @@ stop() {
         echo -n $"Stopping $prog: "
         killproc $ZABBIX_BIN
         RETVAL=$?
-        [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/zabbix_agentd
+        [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/treegix_agentd
         echo
 }
 
@@ -56,7 +56,7 @@ case "$1" in
         RETVAL=$?
         ;;
   condrestart)
-        if [ -f /var/lock/subsys/zabbix_agentd ]; then
+        if [ -f /var/lock/subsys/treegix_agentd ]; then
             stop
             start
         fi

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -139,7 +139,7 @@ foreach ($this->data['usergroups'] as $usrgrp) {
 				$users[] = ', ';
 			}
 
-			$users[] = (new CLink(getUserFullname($user), 'zabbix.php?action=user.edit&userid='.$user['userid']))
+			$users[] = (new CLink(getUserFullname($user), 'treegix.php?action=user.edit&userid='.$user['userid']))
 					->addClass(ZBX_STYLE_LINK_ALT)
 					->addClass($user['gui_access'] == GROUP_GUI_ACCESS_DISABLED || $user['users_status'] == GROUP_STATUS_DISABLED
 						? ZBX_STYLE_RED
@@ -152,7 +152,7 @@ foreach ($this->data['usergroups'] as $usrgrp) {
 	$userGroupTable->addRow([
 		new CCheckBox('group_groupid['.$userGroupId.']', $userGroupId),
 		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
-		[new CLink(_('Users'), 'zabbix.php?action=user.list&filter_usrgrpid='.$userGroupId),
+		[new CLink(_('Users'), 'treegix.php?action=user.list&filter_usrgrpid='.$userGroupId),
 			CViewHelper::showNum(count($usrgrp['users']))
 		],
 		$users,

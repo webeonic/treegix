@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -468,8 +468,8 @@ void	*zbx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_
 	/* old pointer must be NULL */
 	if (NULL != old)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_calloc: allocating already allocated memory. "
-				"Please report this to Zabbix developers.",
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_calloc: allocating already allocated memory. "
+				"Please report this to Treegix developers.",
 				filename, line);
 	}
 
@@ -482,7 +482,7 @@ void	*zbx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_
 	if (NULL != ptr)
 		return ptr;
 
-	zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_calloc: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_calloc: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
 			filename, line, (zbx_fs_size_t)size);
 
 	exit(EXIT_FAILURE);
@@ -507,8 +507,8 @@ void	*zbx_malloc2(const char *filename, int line, void *old, size_t size)
 	/* old pointer must be NULL */
 	if (NULL != old)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_malloc: allocating already allocated memory. "
-				"Please report this to Zabbix developers.",
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_malloc: allocating already allocated memory. "
+				"Please report this to Treegix developers.",
 				filename, line);
 	}
 
@@ -521,7 +521,7 @@ void	*zbx_malloc2(const char *filename, int line, void *old, size_t size)
 	if (NULL != ptr)
 		return ptr;
 
-	zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_malloc: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_malloc: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
 			filename, line, (zbx_fs_size_t)size);
 
 	exit(EXIT_FAILURE);
@@ -553,7 +553,7 @@ void	*zbx_realloc2(const char *filename, int line, void *old, size_t size)
 	if (NULL != ptr)
 		return ptr;
 
-	zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_realloc: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_realloc: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
 			filename, line, (zbx_fs_size_t)size);
 
 	exit(EXIT_FAILURE);
@@ -572,7 +572,7 @@ char	*zbx_strdup2(const char *filename, int line, char *old, const char *str)
 	if (NULL != ptr)
 		return ptr;
 
-	zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_strdup: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_strdup: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
 			filename, line, (zbx_fs_size_t)(strlen(str) + 1));
 
 	exit(EXIT_FAILURE);
@@ -620,7 +620,7 @@ void	zbx_setproctitle(const char *fmt, ...)
 	zbx_vsnprintf(title, sizeof(title), fmt, args);
 	va_end(args);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s() title:'%s'", __func__, title);
+	treegix_log(LOG_LEVEL_DEBUG, "%s() title:'%s'", __func__, title);
 #endif
 
 #if defined(HAVE_FUNCTION_SETPROCTITLE)
@@ -2309,7 +2309,7 @@ int	is_ip4(const char *ip)
 	const char	*p = ip;
 	int		digits = 0, dots = 0, res = FAIL, octet = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s'", __func__, ip);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s'", __func__, ip);
 
 	while ('\0' != *p)
 	{
@@ -2338,7 +2338,7 @@ int	is_ip4(const char *ip)
 	if (3 == dots && 1 <= digits && 3 >= digits && 255 >= octet)
 		res = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
 
 	return res;
 }
@@ -2362,7 +2362,7 @@ int	is_ip6(const char *ip)
 	const char	*p = ip, *last_colon;
 	int		xdigits = 0, only_xdigits = 0, colons = 0, dbl_colons = 0, res;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s'", __func__, ip);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s'", __func__, ip);
 
 	while ('\0' != *p)
 	{
@@ -2404,7 +2404,7 @@ int	is_ip6(const char *ip)
 	else
 		res = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
 
 	return res;
 }
@@ -2520,7 +2520,7 @@ int	ip_in_list(const char *list, const char *ip)
 	const char	*ptr;
 	int		ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() list:'%s' ip:'%s'", __func__, list, ip);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() list:'%s' ip:'%s'", __func__, list, ip);
 
 	if (SUCCEED != iprange_parse(&iprange, ip))
 		goto out;
@@ -2553,7 +2553,7 @@ int	ip_in_list(const char *list, const char *ip)
 
 	zbx_free(address);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2577,7 +2577,7 @@ int	int_in_list(char *list, int value)
 	char	*start = NULL, *end = NULL, c = '\0';
 	int	i1, i2, ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() list:'%s' value:%d", __func__, list, value);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() list:'%s' value:%d", __func__, list, value);
 
 	for (start = list; '\0' != *start;)
 	{
@@ -2616,7 +2616,7 @@ int	int_in_list(char *list, int value)
 	if (NULL != end)
 		*end = c;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -3535,7 +3535,7 @@ unsigned char	get_interface_type_by_item_type(unsigned char type)
  *                                                                            *
  * Function: calculate_sleeptime                                              *
  *                                                                            *
- * Purpose: calculate sleep time for Zabbix processes                         *
+ * Purpose: calculate sleep time for Treegix processes                         *
  *                                                                            *
  * Parameters: nextcheck     - [IN] next check or -1 (FAIL) if nothing to do  *
  *             max_sleeptime - [IN] maximum sleep time, in seconds            *

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -26,4 +26,4 @@
 //$ZBX_GUI_ACCESS_IP_RANGE = array('127.0.0.1');
 
 // MSG shown on Warning screen!
-//$_REQUEST['warning_msg'] = 'Zabbix is under maintenance.';
+//$_REQUEST['warning_msg'] = 'Treegix is under maintenance.';

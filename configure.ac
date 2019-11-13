@@ -1,6 +1,6 @@
 dnl
-dnl Zabbix
-dnl Copyright (C) 2001-2019 Zabbix SIA
+dnl Treegix
+dnl Copyright (C) 2001-2019 Treegix SIA
 dnl
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Zabbix],[4.4.1])
-AC_CONFIG_SRCDIR(src/zabbix_server/server.c)
+AC_INIT([Treegix],[4.4.1])
+AC_CONFIG_SRCDIR(src/treegix_server/server.c)
 AM_INIT_AUTOMAKE([subdir-objects  filename-length-max=99])
 
 AC_MSG_NOTICE([Configuring $PACKAGE_NAME $PACKAGE_VERSION])
@@ -703,7 +703,7 @@ AC_TRY_LINK(
 #include <grp.h>
 ],
 [
-	char	*user = "zabbix";
+	char	*user = "treegix";
 	initgroups(user, 0);
 ],
 AC_DEFINE(HAVE_FUNCTION_INITGROUPS,1,[Define to 1 if function 'initgroups' exists.])
@@ -1241,7 +1241,7 @@ AC_ARG_ENABLE(static,[  --enable-static         Build statically linked binaries
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-static]) ;;
 esac])
 
-AC_ARG_ENABLE(server,[  --enable-server         Turn on build of Zabbix server],
+AC_ARG_ENABLE(server,[  --enable-server         Turn on build of Treegix server],
 [case "${enableval}" in
   yes) server=yes ;;
   no)  server=no ;;
@@ -1250,7 +1250,7 @@ esac],
 [server=no])
 AM_CONDITIONAL(SERVER, test "x$server" = "xyes")
 
-AC_ARG_ENABLE(proxy,[  --enable-proxy          Turn on build of Zabbix proxy],
+AC_ARG_ENABLE(proxy,[  --enable-proxy          Turn on build of Treegix proxy],
 [case "${enableval}" in
   yes) proxy=yes ;;
   no)  proxy=no ;;
@@ -1259,7 +1259,7 @@ esac],
 [proxy=no])
 AM_CONDITIONAL(PROXY, test "x$proxy" = "xyes")
 
-AC_ARG_ENABLE(agent,[  --enable-agent          Turn on build of Zabbix agent and client utilities],
+AC_ARG_ENABLE(agent,[  --enable-agent          Turn on build of Treegix agent and client utilities],
 [case "${enableval}" in
   yes) agent=yes ;;
   no)  agent=no ;;
@@ -1268,7 +1268,7 @@ esac],
 [agent=no])
 AM_CONDITIONAL(AGENT, test "x$agent" = "xyes")
 
-AC_ARG_ENABLE(agent2,[  --enable-agent2         Turn on build of Zabbix agent 2],
+AC_ARG_ENABLE(agent2,[  --enable-agent2         Turn on build of Treegix agent 2],
 [case "${enableval}" in
   yes) agent2=yes ;;
   no)  agent2=no ;;
@@ -1277,7 +1277,7 @@ esac],
 [agent2=no])
 AM_CONDITIONAL(AGENT2, test "x$agent2" = "xyes")
 
-AC_ARG_ENABLE(java,[  --enable-java           Turn on build of Zabbix Java gateway],
+AC_ARG_ENABLE(java,[  --enable-java           Turn on build of Treegix Java gateway],
 [case "${enableval}" in
   yes) java=yes ;;
   no)  java=no ;;
@@ -1395,7 +1395,7 @@ if test "x$server" = "xyes" || test "x$proxy" = "xyes"; then
 	AX_LIB_SQLITE3()
 	if test "x$want_sqlite3" = "xyes"; then
 		if test "x$server" = "xyes"; then
-			AC_MSG_ERROR([SQLite is not supported as a main Zabbix database backend.])
+			AC_MSG_ERROR([SQLite is not supported as a main Treegix database backend.])
 		fi
 
 		if test "x$have_db" != "xno"; then
@@ -1427,10 +1427,10 @@ if test "x$server" = "xyes" || test "x$proxy" = "xyes"; then
 		fi
 	fi
 
-	AC_MSG_CHECKING(for Zabbix server/proxy database selection)
+	AC_MSG_CHECKING(for Treegix server/proxy database selection)
 	if test "x$have_db" = "xno"; then
 		AC_MSG_RESULT(error)
-		AC_MSG_ERROR([No database selected for Zabbix server/proxy. Use --with-ibm-db2 or --with-mysql or --with-oracle or --with-postgresql or --with-sqlite3.])
+		AC_MSG_ERROR([No database selected for Treegix server/proxy. Use --with-ibm-db2 or --with-mysql or --with-oracle or --with-postgresql or --with-sqlite3.])
 	else
 		AC_MSG_RESULT(ok)
 	fi
@@ -1545,7 +1545,7 @@ if test "x$server" = "xyes" || test "x$proxy" = "xyes"; then
 
 	AC_SUBST(OPENIPMI_CFLAGS)
 
-	dnl Check for zlib, used by Zabbix server-proxy communications
+	dnl Check for zlib, used by Treegix server-proxy communications
 	ZLIB_CHECK_CONFIG([no])
 	if test "x$found_zlib" != "xyes"; then
 		AC_MSG_ERROR([Unable to use zlib (zlib check failed)])
@@ -1578,7 +1578,7 @@ SENDER_LIBS="$SENDER_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
 AM_CONDITIONAL(HAVE_IPMI, [test "x$have_ipmi" = "xyes"])
 AM_CONDITIONAL(HAVE_LIBXML2, test "x$have_libxml2" = "xyes")
 
-dnl Check if Zabbix internal IPC services are used
+dnl Check if Treegix internal IPC services are used
 have_ipcservice="no"
 if test "x$have_ipmi" = "xyes"; then
 	have_ipcservice="yes"
@@ -1594,9 +1594,9 @@ fi
 
 AM_CONDITIONAL(PROXY_IPCSERVICE, [test "x$have_ipmi" = "xyes"])
 
-dnl Check for libevent, used by Zabbix IPC services
+dnl Check for libevent, used by Treegix IPC services
 if test "x$have_ipcservice" = "xyes"; then
-	AC_DEFINE([HAVE_IPCSERVICE], 1, [Define to 1 if Zabbix IPC services are used])
+	AC_DEFINE([HAVE_IPCSERVICE], 1, [Define to 1 if Treegix IPC services are used])
 
 	LIBEVENT_CHECK_CONFIG([no])
 	if test "x$found_libevent" != "xyes"; then
@@ -1745,7 +1745,7 @@ dnl Starting from 2.0 agent can do web monitoring
 AGENT_LDFLAGS="$AGENT_LDFLAGS $LIBCURL_LDFLAGS"
 AGENT_LIBS="$AGENT_LIBS $LIBCURL_LIBS"
 
-dnl Check for libpcre, used by Zabbix for regular expressions
+dnl Check for libpcre, used by Treegix for regular expressions
 if test "x$server" = "xyes" || test "x$proxy" = "xyes" || test "x$agent" = "xyes" || test "x$agent2" = "xyes"; then
 	LIBPCRE_CHECK_CONFIG([no])
 	if test "x$found_libpcre" != "xyes"; then
@@ -1777,16 +1777,16 @@ AC_SUBST(ICONV_CFLAGS)
 RANLIB="ranlib"
 AC_SUBST(RANLIB)
 
-SERVER_CONFIG_FILE="${sysconfdir}/zabbix_server.conf"
-PROXY_CONFIG_FILE="${sysconfdir}/zabbix_proxy.conf"
-AGENT_CONFIG_FILE="${sysconfdir}/zabbix_agentd.conf"
-AGENT2_CONFIG_FILE="${sysconfdir}/zabbix_agent2.conf"
+SERVER_CONFIG_FILE="${sysconfdir}/treegix_server.conf"
+PROXY_CONFIG_FILE="${sysconfdir}/treegix_proxy.conf"
+AGENT_CONFIG_FILE="${sysconfdir}/treegix_agentd.conf"
+AGENT2_CONFIG_FILE="${sysconfdir}/treegix_agent2.conf"
 
-EXTERNAL_SCRIPTS_PATH="${datadir}/zabbix/externalscripts"
-ALERT_SCRIPTS_PATH="${datadir}/zabbix/alertscripts"
+EXTERNAL_SCRIPTS_PATH="${datadir}/treegix/externalscripts"
+ALERT_SCRIPTS_PATH="${datadir}/treegix/alertscripts"
 
-CURL_SSL_CERT_LOCATION="${datadir}/zabbix/ssl/certs"
-CURL_SSL_KEY_LOCATION="${datadir}/zabbix/ssl/keys"
+CURL_SSL_CERT_LOCATION="${datadir}/treegix/ssl/certs"
+CURL_SSL_KEY_LOCATION="${datadir}/treegix/ssl/keys"
 
 LOAD_MODULE_PATH="${libdir}/modules"
 
@@ -1800,7 +1800,7 @@ AC_SUBST(AGENT_LDFLAGS)
 AC_SUBST(AGENT_LIBS)
 
 CGO_LDFLAGS="-Wl,--start-group \
-	\${abs_top_builddir}/src/zabbix_agent/logfiles/libzbxlogfiles.a \
+	\${abs_top_builddir}/src/treegix_agent/logfiles/libzbxlogfiles.a \
 	\${abs_top_builddir}/src/libs/zbxcomms/libzbxcomms.a \
 	\${abs_top_builddir}/src/libs/zbxcommon/libzbxcommon.a \
 	\${abs_top_builddir}/src/libs/zbxcrypto/libzbxcrypto.a \
@@ -1844,7 +1844,7 @@ AC_SUBST(LOAD_MODULE_PATH)
 GOBIN=${sbindir}
 GOPATH=$ac_abs_confdir/go
 GOCMD=go
-GOWORKDIR=$ac_abs_confdir/go/src/zabbix
+GOWORKDIR=$ac_abs_confdir/go/src/treegix
 
 export GOBIN=${GOBIN}
 AC_SUBST(GOBIN)
@@ -1937,87 +1937,87 @@ AC_OUTPUT([
 	src/libs/zbxcompress/Makefile
 	src/libs/zbxembed/Makefile
 	src/libs/zbxprometheus/Makefile
-	src/zabbix_agent/Makefile
-	src/zabbix_agent/logfiles/Makefile
-	src/zabbix_get/Makefile
-	src/zabbix_sender/Makefile
-	src/zabbix_server/Makefile
-	src/zabbix_server/alerter/Makefile
-	src/zabbix_server/dbsyncer/Makefile
-	src/zabbix_server/dbconfig/Makefile
-	src/zabbix_server/discoverer/Makefile
-	src/zabbix_server/housekeeper/Makefile
-	src/zabbix_server/httppoller/Makefile
-	src/zabbix_server/pinger/Makefile
-	src/zabbix_server/poller/Makefile
-	src/zabbix_server/snmptrapper/Makefile
-	src/zabbix_server/timer/Makefile
-	src/zabbix_server/trapper/Makefile
-	src/zabbix_server/escalator/Makefile
-	src/zabbix_server/proxypoller/Makefile
-	src/zabbix_server/selfmon/Makefile
-	src/zabbix_server/vmware/Makefile
-	src/zabbix_server/taskmanager/Makefile
-	src/zabbix_server/ipmi/Makefile
-	src/zabbix_server/odbc/Makefile
-	src/zabbix_server/scripts/Makefile
-	src/zabbix_server/preprocessor/Makefile
-	src/zabbix_server/lld/Makefile
-	src/zabbix_proxy/Makefile
-	src/zabbix_proxy/heart/Makefile
-	src/zabbix_proxy/housekeeper/Makefile
-	src/zabbix_proxy/proxyconfig/Makefile
-	src/zabbix_proxy/datasender/Makefile
-	src/zabbix_proxy/taskmanager/Makefile
-	src/zabbix_java/Makefile
+	src/treegix_agent/Makefile
+	src/treegix_agent/logfiles/Makefile
+	src/treegix_get/Makefile
+	src/treegix_sender/Makefile
+	src/treegix_server/Makefile
+	src/treegix_server/alerter/Makefile
+	src/treegix_server/dbsyncer/Makefile
+	src/treegix_server/dbconfig/Makefile
+	src/treegix_server/discoverer/Makefile
+	src/treegix_server/housekeeper/Makefile
+	src/treegix_server/httppoller/Makefile
+	src/treegix_server/pinger/Makefile
+	src/treegix_server/poller/Makefile
+	src/treegix_server/snmptrapper/Makefile
+	src/treegix_server/timer/Makefile
+	src/treegix_server/trapper/Makefile
+	src/treegix_server/escalator/Makefile
+	src/treegix_server/proxypoller/Makefile
+	src/treegix_server/selfmon/Makefile
+	src/treegix_server/vmware/Makefile
+	src/treegix_server/taskmanager/Makefile
+	src/treegix_server/ipmi/Makefile
+	src/treegix_server/odbc/Makefile
+	src/treegix_server/scripts/Makefile
+	src/treegix_server/preprocessor/Makefile
+	src/treegix_server/lld/Makefile
+	src/treegix_proxy/Makefile
+	src/treegix_proxy/heart/Makefile
+	src/treegix_proxy/housekeeper/Makefile
+	src/treegix_proxy/proxyconfig/Makefile
+	src/treegix_proxy/datasender/Makefile
+	src/treegix_proxy/taskmanager/Makefile
+	src/treegix_java/Makefile
 	man/Makefile
 	go/Makefile
 	go/src/Makefile
-	go/src/zabbix/Makefile
-	go/src/zabbix/cmd/Makefile
-	go/src/zabbix/cmd/zabbix_agent2/Makefile
-	go/src/zabbix/cmd/mock_server/Makefile
-	go/src/zabbix/pkg/Makefile
-	go/src/zabbix/pkg/conf/Makefile
-	go/src/zabbix/pkg/glexpr/Makefile
-	go/src/zabbix/pkg/itemutil/Makefile
-	go/src/zabbix/pkg/log/Makefile
-	go/src/zabbix/pkg/plugin/Makefile
-	go/src/zabbix/pkg/std/Makefile
-	go/src/zabbix/pkg/tls/Makefile
-	go/src/zabbix/pkg/version/Makefile
-	go/src/zabbix/pkg/watch/Makefile
-	go/src/zabbix/pkg/zbxcomms/Makefile
-	go/src/zabbix/pkg/zbxlib/Makefile
-	go/src/zabbix/pkg/zbxcmd/Makefile
-	go/src/zabbix/internal/Makefile
-	go/src/zabbix/internal/agent/Makefile
-	go/src/zabbix/internal/agent/remotecontrol/Makefile
-	go/src/zabbix/internal/agent/resultcache/Makefile
-	go/src/zabbix/internal/agent/scheduler/Makefile
-	go/src/zabbix/internal/agent/serverconnector/Makefile
-	go/src/zabbix/internal/agent/serverlistener/Makefile
-	go/src/zabbix/internal/agent/statuslistener/Makefile
-	go/src/zabbix/internal/monitor/Makefile
-	go/src/zabbix/plugins/Makefile
-	go/src/zabbix/plugins/log/Makefile
-	go/src/zabbix/plugins/system/Makefile
-	go/src/zabbix/plugins/system/cpucollector/Makefile
-	go/src/zabbix/plugins/system/uptime/Makefile
-	go/src/zabbix/plugins/system/uname/Makefile
-	go/src/zabbix/plugins/systemd/Makefile
-	go/src/zabbix/plugins/systemrun/Makefile
-	go/src/zabbix/plugins/kernel/Makefile
-	go/src/zabbix/plugins/proc/Makefile
-	go/src/zabbix/plugins/vfs/Makefile
-	go/src/zabbix/plugins/vfs/dev/Makefile
-	go/src/zabbix/plugins/vfs/file/Makefile
-	go/src/zabbix/plugins/zabbix/Makefile
-	go/src/zabbix/plugins/zabbix/stats/Makefile
-	go/src/zabbix/plugins/zabbix/sync/Makefile
-	go/src/zabbix/plugins/zabbix/async/Makefile
-	go/src/zabbix/plugins/net/Makefile
-	go/src/zabbix/plugins/net/netif/Makefile
+	go/src/treegix/Makefile
+	go/src/treegix/cmd/Makefile
+	go/src/treegix/cmd/treegix_agent2/Makefile
+	go/src/treegix/cmd/mock_server/Makefile
+	go/src/treegix/pkg/Makefile
+	go/src/treegix/pkg/conf/Makefile
+	go/src/treegix/pkg/glexpr/Makefile
+	go/src/treegix/pkg/itemutil/Makefile
+	go/src/treegix/pkg/log/Makefile
+	go/src/treegix/pkg/plugin/Makefile
+	go/src/treegix/pkg/std/Makefile
+	go/src/treegix/pkg/tls/Makefile
+	go/src/treegix/pkg/version/Makefile
+	go/src/treegix/pkg/watch/Makefile
+	go/src/treegix/pkg/zbxcomms/Makefile
+	go/src/treegix/pkg/zbxlib/Makefile
+	go/src/treegix/pkg/zbxcmd/Makefile
+	go/src/treegix/internal/Makefile
+	go/src/treegix/internal/agent/Makefile
+	go/src/treegix/internal/agent/remotecontrol/Makefile
+	go/src/treegix/internal/agent/resultcache/Makefile
+	go/src/treegix/internal/agent/scheduler/Makefile
+	go/src/treegix/internal/agent/serverconnector/Makefile
+	go/src/treegix/internal/agent/serverlistener/Makefile
+	go/src/treegix/internal/agent/statuslistener/Makefile
+	go/src/treegix/internal/monitor/Makefile
+	go/src/treegix/plugins/Makefile
+	go/src/treegix/plugins/log/Makefile
+	go/src/treegix/plugins/system/Makefile
+	go/src/treegix/plugins/system/cpucollector/Makefile
+	go/src/treegix/plugins/system/uptime/Makefile
+	go/src/treegix/plugins/system/uname/Makefile
+	go/src/treegix/plugins/systemd/Makefile
+	go/src/treegix/plugins/systemrun/Makefile
+	go/src/treegix/plugins/kernel/Makefile
+	go/src/treegix/plugins/proc/Makefile
+	go/src/treegix/plugins/vfs/Makefile
+	go/src/treegix/plugins/vfs/dev/Makefile
+	go/src/treegix/plugins/vfs/file/Makefile
+	go/src/treegix/plugins/treegix/Makefile
+	go/src/treegix/plugins/treegix/stats/Makefile
+	go/src/treegix/plugins/treegix/sync/Makefile
+	go/src/treegix/plugins/treegix/async/Makefile
+	go/src/treegix/plugins/net/Makefile
+	go/src/treegix/plugins/net/netif/Makefile
 	])
 
 dnl The following variables use autoconf variables such as
@@ -2198,7 +2198,7 @@ echo
 echo "***********************************************************"
 echo "*            Now run '${am_make} install'                       *"
 echo "*                                                         *"
-echo "*            Thank you for using Zabbix!                  *"
-echo "*              <http://www.zabbix.com>                    *"
+echo "*            Thank you for using Treegix!                  *"
+echo "*              <http://www.treegix.com>                    *"
 echo "***********************************************************"
 echo

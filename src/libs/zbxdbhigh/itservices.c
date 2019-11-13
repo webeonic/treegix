@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -237,7 +237,7 @@ static void	its_itservices_load_children(zbx_itservices_t *itservices)
 	zbx_vector_uint64_t	serviceids;
 	zbx_hashset_iter_t	iter;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&serviceids);
 
@@ -288,7 +288,7 @@ static void	its_itservices_load_children(zbx_itservices_t *itservices)
 
 	zbx_vector_uint64_destroy(&serviceids);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -312,7 +312,7 @@ static void	its_itservices_load_parents(zbx_itservices_t *itservices, zbx_vector
 	zbx_itservice_t	*parent, *itservice;
 	zbx_uint64_t	parentid, serviceid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_sort(serviceids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
 	zbx_vector_uint64_uniq(serviceids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
@@ -359,7 +359,7 @@ static void	its_itservices_load_parents(zbx_itservices_t *itservices, zbx_vector
 	if (0 != serviceids->values_num)
 		its_itservices_load_parents(itservices, serviceids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -383,7 +383,7 @@ static void	its_load_services_by_triggerids(zbx_itservices_t *itservices, const 
 	size_t			sql_alloc = 0, sql_offset = 0;
 	zbx_vector_uint64_t	serviceids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&serviceids);
 
@@ -416,7 +416,7 @@ static void	its_load_services_by_triggerids(zbx_itservices_t *itservices, const 
 
 	zbx_vector_uint64_destroy(&serviceids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -464,7 +464,7 @@ static void	its_itservice_update_status(zbx_itservice_t *itservice, int clock, z
 		case SERVICE_ALGORITHM_NONE:
 			goto out;
 		default:
-			zabbix_log(LOG_LEVEL_ERR, "unknown calculation algorithm of service status [%d]",
+			treegix_log(LOG_LEVEL_ERR, "unknown calculation algorithm of service status [%d]",
 					itservice->algorithm);
 			goto out;
 	}
@@ -624,7 +624,7 @@ static int	its_flush_updates(const zbx_vector_ptr_t *updates)
 	zbx_itservice_index_t		*index;
 	zbx_vector_uint64_t		triggerids;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	its_itservices_init(&itservices);
 
@@ -691,7 +691,7 @@ static int	its_flush_updates(const zbx_vector_ptr_t *updates)
 out:
 	its_itservices_clean(&itservices);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -717,7 +717,7 @@ int	DBupdate_itservices(const zbx_vector_ptr_t *trigger_diff)
 	int				i;
 	const zbx_trigger_diff_t	*diff;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&updates);
 
@@ -751,7 +751,7 @@ int	DBupdate_itservices(const zbx_vector_ptr_t *trigger_diff)
 
 	zbx_vector_ptr_destroy(&updates);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }

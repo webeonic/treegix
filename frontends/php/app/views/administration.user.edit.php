@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -445,19 +445,19 @@ if ($data['action'] === 'user.edit') {
 			(new CSubmitButton(_('Update'), 'action', 'user.update'))->setId('update'),
 			[
 				(new CRedirectButton(_('Delete'),
-					'zabbix.php?action=user.delete&sid='.$data['sid'].'&userids[]='.$data['userid'],
+					'treegix.php?action=user.delete&sid='.$data['sid'].'&userids[]='.$data['userid'],
 					_('Delete selected user?')
 				))
 					->setEnabled(bccomp(CWebUser::$data['userid'], $data['userid']) != 0)
 					->setId('delete'),
-				(new CRedirectButton(_('Cancel'), 'zabbix.php?action=user.list'))->setId('cancel')
+				(new CRedirectButton(_('Cancel'), 'treegix.php?action=user.list'))->setId('cancel')
 			]
 		));
 	}
 	else {
 		$tabs->setFooter(makeFormFooter(
 			(new CSubmitButton(_('Add'), 'action', 'user.create'))->setId('add'),
-			[(new CRedirectButton(_('Cancel'), 'zabbix.php?action=user.list'))->setId('cancel')]
+			[(new CRedirectButton(_('Cancel'), 'treegix.php?action=user.list'))->setId('cancel')]
 		));
 	}
 }

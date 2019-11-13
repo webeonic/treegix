@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Zabbix
-# Copyright (C) 2001-2019 Zabbix SIA
+# Treegix
+# Copyright (C) 2001-2019 Treegix SIA
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Start/Stop the Zabbix server daemon.
+# Start/Stop the Treegix server daemon.
 # Place a startup script in /sbin/init.d, and link to it from /sbin/rc[023].d 
 
-SERVICE="Zabbix server"
-DAEMON=/usr/local/sbin/zabbix_server
-PIDFILE=/tmp/zabbix_server.pid
+SERVICE="Treegix server"
+DAEMON=/usr/local/sbin/treegix_server
+PIDFILE=/tmp/treegix_server.pid
 
 case $1 in
   'start')

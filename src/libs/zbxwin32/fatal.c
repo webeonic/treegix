@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -37,15 +37,15 @@ extern const char	*progname;
 
 static void	print_register(const char *name, unsigned __int64 value)
 {
-	zabbix_log(LOG_LEVEL_CRIT, "%-7s = %16I64x = %20I64u = %20I64d", name, value, value, value);
+	treegix_log(LOG_LEVEL_CRIT, "%-7s = %16I64x = %20I64u = %20I64d", name, value, value, value);
 }
 
 static void	print_fatal_info(CONTEXT *pctx)
 {
-	zabbix_log(LOG_LEVEL_CRIT, "====== Fatal information: ======");
+	treegix_log(LOG_LEVEL_CRIT, "====== Fatal information: ======");
 
-	zabbix_log(LOG_LEVEL_CRIT, "Program counter: 0x%08lx", pctx->Rip);
-	zabbix_log(LOG_LEVEL_CRIT, "=== Registers: ===");
+	treegix_log(LOG_LEVEL_CRIT, "Program counter: 0x%08lx", pctx->Rip);
+	treegix_log(LOG_LEVEL_CRIT, "=== Registers: ===");
 
 	print_register("r8", pctx->R8);
 	print_register("r9", pctx->R9);
@@ -76,15 +76,15 @@ static void	print_fatal_info(CONTEXT *pctx)
 
 static void	print_register(const char *name, unsigned __int32 value)
 {
-	zabbix_log(LOG_LEVEL_CRIT, "%-7s = %16lx = %20lu = %20ld", name, value, value, value);
+	treegix_log(LOG_LEVEL_CRIT, "%-7s = %16lx = %20lu = %20ld", name, value, value, value);
 }
 
 static void	print_fatal_info(CONTEXT *pctx)
 {
-	zabbix_log(LOG_LEVEL_CRIT, "====== Fatal information: ======");
+	treegix_log(LOG_LEVEL_CRIT, "====== Fatal information: ======");
 
-	zabbix_log(LOG_LEVEL_CRIT, "Program counter: 0x%04x", pctx->Eip);
-	zabbix_log(LOG_LEVEL_CRIT, "=== Registers: ===");
+	treegix_log(LOG_LEVEL_CRIT, "Program counter: 0x%04x", pctx->Eip);
+	treegix_log(LOG_LEVEL_CRIT, "=== Registers: ===");
 
 	print_register("edi", pctx->Edi);
 	print_register("esi", pctx->Esi);
@@ -127,7 +127,7 @@ static void	print_backtrace(CONTEXT *pctx)
 
 	ctx = *pctx;
 
-	zabbix_log(LOG_LEVEL_CRIT, "=== Backtrace: ===");
+	treegix_log(LOG_LEVEL_CRIT, "=== Backtrace: ===");
 
 	memset(&s, 0, sizeof(s));
 
@@ -217,7 +217,7 @@ static void	print_backtrace(CONTEXT *pctx)
 			zbx_chrcpy_alloc(&frame, &frame_alloc, &frame_offset, ')');
 		}
 
-		zabbix_log(LOG_LEVEL_CRIT, "%s [0x%lx]", frame, s.AddrPC.Offset);
+		treegix_log(LOG_LEVEL_CRIT, "%s [0x%lx]", frame, s.AddrPC.Offset);
 
 		if (0 == s.AddrReturn.Offset)
 			break;
@@ -233,13 +233,13 @@ static void	print_backtrace(CONTEXT *pctx)
 
 int	zbx_win_exception_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep)
 {
-	zabbix_log(LOG_LEVEL_CRIT, "Unhandled exception %x detected at 0x%p. Crashing ...", code,
+	treegix_log(LOG_LEVEL_CRIT, "Unhandled exception %x detected at 0x%p. Crashing ...", code,
 			ep->ExceptionRecord->ExceptionAddress);
 
 	print_fatal_info(ep->ContextRecord);
 	print_backtrace(ep->ContextRecord);
 
-	zabbix_log(LOG_LEVEL_CRIT, "================================");
+	treegix_log(LOG_LEVEL_CRIT, "================================");
 
 	return EXCEPTION_CONTINUE_SEARCH;
 }

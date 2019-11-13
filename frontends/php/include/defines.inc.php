@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ define('ZABBIX_COPYRIGHT_TO',	'2019');
 define('ZBX_LOGIN_ATTEMPTS',	5);
 define('ZBX_LOGIN_BLOCK',		30); // sec
 
-define('ZBX_SESSION_NAME', 'zbx_sessionid'); // Session cookie name for Zabbix front-end.
+define('ZBX_SESSION_NAME', 'zbx_sessionid'); // Session cookie name for Treegix front-end.
 
 define('ZBX_KIBIBYTE',	'1024');
 define('ZBX_MEBIBYTE',	'1048576');
@@ -500,7 +500,7 @@ define('ITEM_STATUS_ACTIVE',		0);
 define('ITEM_STATUS_DISABLED',		1);
 
 /**
- * Starting from Zabbix 2.2 items could not have ITEM_STATUS_NOTSUPPORTED status
+ * Starting from Treegix 2.2 items could not have ITEM_STATUS_NOTSUPPORTED status
  * this constant is left for importing data from versions 1.8 and 2.0.
  */
 define('ITEM_STATUS_NOTSUPPORTED',	3);
@@ -719,7 +719,7 @@ define('SCREEN_RESOURCE_HOST_INFO',		4);
 define('SCREEN_RESOURCE_TRIGGER_INFO',		5);
 define('SCREEN_RESOURCE_SERVER_INFO',		6);
 define('SCREEN_RESOURCE_CLOCK',				7);
-define('SCREEN_RESOURCE_SCREEN',			8); // Not supported since Zabbix 4.4.
+define('SCREEN_RESOURCE_SCREEN',			8); // Not supported since Treegix 4.4.
 define('SCREEN_RESOURCE_TRIGGER_OVERVIEW',	9);
 define('SCREEN_RESOURCE_DATA_OVERVIEW',		10);
 define('SCREEN_RESOURCE_URL',				11);
@@ -874,7 +874,7 @@ define('PERM_NONE',			-1);
 define('PARAM_TYPE_TIME',		0);
 define('PARAM_TYPE_COUNTS',		1);
 
-define('ZBX_DEFAULT_AGENT', 'Zabbix');
+define('ZBX_DEFAULT_AGENT', 'Treegix');
 define('ZBX_AGENT_OTHER', -1);
 
 define('HTTPTEST_AUTH_NONE',		0);
@@ -1454,7 +1454,7 @@ define('THEME_DEFAULT', 'default');
 // the default theme
 define('ZBX_DEFAULT_THEME', 'blue-theme');
 
-define('ZBX_DEFAULT_URL', 'zabbix.php?action=dashboard.view');
+define('ZBX_DEFAULT_URL', 'treegix.php?action=dashboard.view');
 
 // date format context, usable for translators
 define('DATE_FORMAT_CONTEXT', 'Date format (see http://php.net/date)');

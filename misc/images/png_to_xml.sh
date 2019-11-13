@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# A script to generate Zabbix map XML from PNG images
+# A script to generate Treegix map XML from PNG images
 # depends on base64
 
 echo "Generating XML"
@@ -9,7 +9,7 @@ imagedir="$1"
 outputfile="$2"
 
 echo '<?xml version="1.0" encoding="UTF-8"?>
-<zabbix_export version="1.0" date="'$(date "+%d.%m.%y")'" time="'$(date "+%H.%M")'">
+<treegix_export version="1.0" date="'$(date "+%d.%m.%y")'" time="'$(date "+%H.%M")'">
   <images>' > "$outputfile"
 
 imagecount=$(ls $imagedir/*.png | wc -l)
@@ -27,4 +27,4 @@ echo
 echo '  </images>
   <sysmaps>
   </sysmaps>
-</zabbix_export>' >> "$outputfile"
+</treegix_export>' >> "$outputfile"

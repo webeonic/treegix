@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ class CControllerMediatypeUpdate extends CController {
 		if (!$ret) {
 			switch ($error) {
 				case self::VALIDATION_ERROR:
-					$response = new CControllerResponseRedirect('zabbix.php?action=mediatype.edit');
+					$response = new CControllerResponseRedirect('treegix.php?action=mediatype.edit');
 					$response->setFormData($this->getInputAll());
 					$response->setMessageError(_('Cannot update media type'));
 					$this->setResponse($response);
@@ -163,11 +163,11 @@ class CControllerMediatypeUpdate extends CController {
 		$result = API::Mediatype()->update($mediatype);
 
 		if ($result) {
-			$response = new CControllerResponseRedirect('zabbix.php?action=mediatype.list&uncheck=1');
+			$response = new CControllerResponseRedirect('treegix.php?action=mediatype.list&uncheck=1');
 			$response->setMessageOk(_('Media type updated'));
 		}
 		else {
-			$response = new CControllerResponseRedirect('zabbix.php?action=mediatype.edit');
+			$response = new CControllerResponseRedirect('treegix.php?action=mediatype.edit');
 			$response->setFormData($this->getInputAll());
 			$response->setMessageError(_('Cannot update media type'));
 		}

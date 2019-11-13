@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -118,7 +118,7 @@ class CControllerMediatypeEdit extends CController {
 			'smtp_server' => 'mail.example.com',
 			'smtp_port' => $db_defaults['smtp_port'],
 			'smtp_helo' => 'example.com',
-			'smtp_email' => 'zabbix@example.com',
+			'smtp_email' => 'treegix@example.com',
 			'smtp_security' => $db_defaults['smtp_security'],
 			'smtp_verify_peer' => $db_defaults['smtp_verify_peer'],
 			'smtp_verify_host' => $db_defaults['smtp_verify_host'],

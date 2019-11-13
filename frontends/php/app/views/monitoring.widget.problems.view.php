@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 // indicator of sort field
 $sort_div = (new CSpan())->addClass(($data['sortorder'] === ZBX_SORT_DOWN) ? ZBX_STYLE_ARROW_DOWN : ZBX_STYLE_ARROW_UP);
 
-$backurl = (new CUrl('zabbix.php'))
+$backurl = (new CUrl('treegix.php'))
 	->setArgument('action', 'dashboard.view')
 	->getUrl();
 
@@ -243,7 +243,7 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 	}
 
 	// Create acknowledge url.
-	$problem_update_url = (new CUrl('zabbix.php'))
+	$problem_update_url = (new CUrl('treegix.php'))
 		->setArgument('action', 'acknowledge.edit')
 		->setArgument('eventids', [$problem['eventid']])
 		->setArgument('backurl', $backurl)

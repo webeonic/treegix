@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -674,7 +674,7 @@ int	evaluate(double *value, const char *expression, char *error, size_t max_erro
 	int	unknown_idx = -13;	/* index of message in 'unknown_msgs' vector, set to invalid value */
 					/* to catch errors */
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() expression:'%s'", __func__, expression);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() expression:'%s'", __func__, expression);
 
 	ptr = expression;
 	level = 0;
@@ -698,10 +698,10 @@ int	evaluate(double *value, const char *expression, char *error, size_t max_erro
 			if (0 > unknown_idx)
 			{
 				THIS_SHOULD_NEVER_HAPPEN;
-				zabbix_log(LOG_LEVEL_WARNING, "%s() internal error: " ZBX_UNKNOWN_STR " index:%d"
+				treegix_log(LOG_LEVEL_WARNING, "%s() internal error: " ZBX_UNKNOWN_STR " index:%d"
 						" expression:'%s'", __func__, unknown_idx, expression);
 				zbx_snprintf(error, max_error_len, "Internal error: " ZBX_UNKNOWN_STR " index %d."
-						" Please report this to Zabbix developers.", unknown_idx);
+						" Please report this to Treegix developers.", unknown_idx);
 			}
 			else if (unknown_msgs->values_num > unknown_idx)
 			{
@@ -727,11 +727,11 @@ int	evaluate(double *value, const char *expression, char *error, size_t max_erro
 
 	if (ZBX_INFINITY == *value)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "End of %s() error:'%s'", __func__, error);
+		treegix_log(LOG_LEVEL_DEBUG, "End of %s() error:'%s'", __func__, error);
 		return FAIL;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() value:" ZBX_FS_DBL, __func__, *value);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() value:" ZBX_FS_DBL, __func__, *value);
 
 	return SUCCEED;
 }

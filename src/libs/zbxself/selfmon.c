@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -226,7 +226,7 @@ int	init_selfmon_collector(char **error)
 	unsigned char	proc_type;
 	int		proc_num, process_forks, ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	sz_total = sz = sizeof(zbx_selfmon_collector_t);
 	sz_total += sz_array = sizeof(zbx_stat_process_t *) * ZBX_PROCESS_TYPE_COUNT;
@@ -234,7 +234,7 @@ int	init_selfmon_collector(char **error)
 	for (proc_type = 0; ZBX_PROCESS_TYPE_COUNT > proc_type; proc_type++)
 		sz_total += sz_process[proc_type] = sizeof(zbx_stat_process_t) * get_process_type_forks(proc_type);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s() size:" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)sz_total);
+	treegix_log(LOG_LEVEL_DEBUG, "%s() size:" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)sz_total);
 
 	if (SUCCEED != zbx_mutex_create(&sm_lock, ZBX_MUTEX_SELFMON, error))
 	{
@@ -279,7 +279,7 @@ int	init_selfmon_collector(char **error)
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() collector:%p", __func__, (void *)collector);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() collector:%p", __func__, (void *)collector);
 
 	return ret;
 }
@@ -295,7 +295,7 @@ out:
  ******************************************************************************/
 void	free_selfmon_collector(void)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() collector:%p", __func__, (void *)collector);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() collector:%p", __func__, (void *)collector);
 
 	if (NULL == collector)
 		return;
@@ -306,7 +306,7 @@ void	free_selfmon_collector(void)
 
 	if (-1 == shmctl(shm_id, IPC_RMID, 0))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "cannot remove shared memory for self-monitoring collector: %s",
+		treegix_log(LOG_LEVEL_WARNING, "cannot remove shared memory for self-monitoring collector: %s",
 				zbx_strerror(errno));
 	}
 
@@ -314,7 +314,7 @@ void	free_selfmon_collector(void)
 
 	zbx_mutex_destroy(&sm_lock);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -389,7 +389,7 @@ void	collect_selfmon_stats(void)
 	unsigned char		proc_type, i;
 	int			proc_num, process_forks, index, last;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (MAX_HISTORY <= (index = collector->first + collector->count))
 		index -= MAX_HISTORY;
@@ -441,7 +441,7 @@ void	collect_selfmon_stats(void)
 
 	UNLOCK_SM;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -468,7 +468,7 @@ void	get_selfmon_stats(unsigned char proc_type, unsigned char aggr_func, int pro
 	unsigned char	s;
 	int		process_forks, current;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	process_forks = get_process_type_forks(proc_type);
 
@@ -536,7 +536,7 @@ unlock:
 
 	*value = (0 == total ? 0 : 100. * (double)counter / (double)total);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -554,7 +554,7 @@ int	zbx_get_all_process_stats(zbx_process_info_t *stats)
 	int		current, ret = FAIL;
 	unsigned char	proc_type;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	LOCK_SM;
 
@@ -632,7 +632,7 @@ int	zbx_get_all_process_stats(zbx_process_info_t *stats)
 unlock:
 	UNLOCK_SM;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }

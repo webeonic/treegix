@@ -33,36 +33,36 @@
 .
 .  hy \\n(HY
 ..
-.TH ZABBIX_AGENT2 8 "2019\-01\-29" Zabbix
+.TH ZABBIX_AGENT2 8 "2019\-01\-29" Treegix
 .SH NAME
-zabbix_agent2 \- Zabbix agent 2
+treegix_agent2 \- Treegix agent 2
 .SH SYNOPSIS
-.B zabbix_agent2
+.B treegix_agent2
 .RB [ \-c
 .IR config\-file ]
 .br
-.B zabbix_agent2
+.B treegix_agent2
 .RB [ \-c
 .IR config\-file ]
 .B \-p
 .br
-.B zabbix_agent2
+.B treegix_agent2
 .RB [ \-c
 .IR config\-file ]
 .B \-t
 .I item\-key
 .br
-.B zabbix_agent2
+.B treegix_agent2
 .RB [ \-c
 .IR config\-file ]
 .B \-R
 .I runtime\-option
 .br
-.B zabbix_agent2 \-h
+.B treegix_agent2 \-h
 .br
-.B zabbix_agent2 \-V
+.B treegix_agent2 \-V
 .SH DESCRIPTION
-.B zabbix_agent2
+.B treegix_agent2
 is an application for monitoring parameters of various services. 
 .SH OPTIONS
 .IP "\fB\-c\fR, \fB\-\-config\fR \fIconfig\-file\fR"
@@ -104,7 +104,7 @@ For each item either generic defaults are used, or specific defaults for testing
 These defaults are listed in square brackets as item key parameters.
 Returned values are enclosed in square brackets and prefixed with the type of the returned value, separated by a pipe character.
 For user parameters type is always \fBt\fR, as the agent can not determine all possible return values.
-Items, displayed as working, are not guaranteed to work from the Zabbix server or zabbix_get when querying a running agent daemon as permissions or environment may be different.
+Items, displayed as working, are not guaranteed to work from the Treegix server or treegix_get when querying a running agent daemon as permissions or environment may be different.
 Returned value types are:
 .RS 4
 .TP 4
@@ -144,17 +144,17 @@ Display this help and exit.
 Output version information and exit.
 .SH FILES
 .TP
-.I /usr/local/etc/zabbix_agent2.conf
-Default location of Zabbix agent 2 configuration file (if not modified during compile time).
+.I /usr/local/etc/treegix_agent2.conf
+Default location of Treegix agent 2 configuration file (if not modified during compile time).
 .SH "SEE ALSO"
-.UR https://www.zabbix.com/manuals
+.UR https://www.treegix.com/manuals
 Documentation
 .UE
 .PP
-.BR zabbix_agent (8),
-.BR zabbix_get (8),
-.BR zabbix_proxy (8),
-.BR zabbix_sender (8),
-.BR zabbix_server (8)
+.BR treegix_agent (8),
+.BR treegix_get (8),
+.BR treegix_proxy (8),
+.BR treegix_sender (8),
+.BR treegix_server (8)
 .SH AUTHOR
-Zabbix LLC
+Treegix LLC

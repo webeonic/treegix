@@ -1,7 +1,7 @@
 <?php
 /*
- ** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+ ** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -247,10 +247,10 @@ class CArrayHelper {
 	 *
 	 * Example 2:
 	 * $data = array(
-	 *     array('host' => 'Zabbix server', 'name' => 'CPU load'),
-	 * 	   array('host' => 'Zabbix server', 'name' => 'Free memory'),
+	 *     array('host' => 'Treegix server', 'name' => 'CPU load'),
+	 * 	   array('host' => 'Treegix server', 'name' => 'Free memory'),
 	 * 	   array('host' => 'Linux server', 'name' => 'CPU load'),
-	 * 	   array('host' => 'Zabbix server', 'name' => 'CPU load')
+	 * 	   array('host' => 'Treegix server', 'name' => 'CPU load')
 	 * );
 	 * var_dump(CArrayHelper::findDuplicate($data, 'name', 'host')); // returns array with index 3
 	 *

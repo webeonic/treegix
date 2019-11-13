@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,6 +20,6 @@
 #ifndef ZABBIX_ZABBIX_H
 #define ZABBIX_ZABBIX_H
 
-int	zbx_es_init_zabbix(zbx_es_t *es, char **error);
+int	zbx_es_init_treegix(zbx_es_t *es, char **error);
 
 #endif

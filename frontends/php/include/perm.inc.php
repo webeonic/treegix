@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ function permission2str($permission) {
  */
 function authentication2str($type) {
 	$authentications = [
-		ZBX_AUTH_INTERNAL => _('Zabbix internal authentication'),
+		ZBX_AUTH_INTERNAL => _('Treegix internal authentication'),
 		ZBX_AUTH_LDAP => _('LDAP authentication')
 	];
 

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ static int	zbx_read_from_pipe(HANDLE hRead, char **buf, size_t *buf_size, size_t
 
 		if (MAX_EXECUTE_OUTPUT_LEN <= *offset + in_buf_size)
 		{
-			zabbix_log(LOG_LEVEL_ERR, "command output exceeded limit of %d KB",
+			treegix_log(LOG_LEVEL_ERR, "command output exceeded limit of %d KB",
 					MAX_EXECUTE_OUTPUT_LEN / ZBX_KIBIBYTE);
 			return FAIL;
 		}
@@ -96,7 +96,7 @@ static int	zbx_read_from_pipe(HANDLE hRead, char **buf, size_t *buf_size, size_t
 		{
 			if (0 == ReadFile(hRead, tmp_buf, sizeof(tmp_buf) - 1, &read_bytes, NULL))
 			{
-				zabbix_log(LOG_LEVEL_ERR, "cannot read command output: %s",
+				treegix_log(LOG_LEVEL_ERR, "cannot read command output: %s",
 						strerror_from_system(GetLastError()));
 				return FAIL;
 			}
@@ -140,7 +140,7 @@ static int	zbx_popen(pid_t *pid, const char *command)
 {
 	int	fd[2], stdout_orig, stderr_orig;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() command:'%s'", __func__, command);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() command:'%s'", __func__, command);
 
 	if (-1 == pipe(fd))
 		return -1;
@@ -156,7 +156,7 @@ static int	zbx_popen(pid_t *pid, const char *command)
 	{
 		close(fd[1]);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, fd[0]);
+		treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, fd[0]);
 
 		return fd[0];
 	}
@@ -168,11 +168,11 @@ static int	zbx_popen(pid_t *pid, const char *command)
 	/* set the child as the process group leader, otherwise orphans may be left after timeout */
 	if (-1 == setpgid(0, 0))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "%s(): failed to create a process group: %s", __func__, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_ERR, "%s(): failed to create a process group: %s", __func__, zbx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s(): executing script", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "%s(): executing script", __func__);
 
 	/* preserve stdout and stderr to restore them in case execl() fails */
 
@@ -197,7 +197,7 @@ static int	zbx_popen(pid_t *pid, const char *command)
 	close(stderr_orig);
 
 	/* this message may end up in stdout or stderr, that's why we needed to save and restore them */
-	zabbix_log(LOG_LEVEL_WARNING, "execl() failed for [%s]: %s", command, zbx_strerror(errno));
+	treegix_log(LOG_LEVEL_WARNING, "execl() failed for [%s]: %s", command, zbx_strerror(errno));
 
 	/* execl() returns only when an error occurs, let parent process know about it */
 	exit(EXIT_FAILURE);
@@ -222,7 +222,7 @@ static int	zbx_waitpid(pid_t pid, int *status)
 {
 	int	rc, result;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	do
 	{
@@ -240,19 +240,19 @@ retry:
 		if (-1 == (rc = waitpid(pid, &result, WUNTRACED)))
 		{
 #endif
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() waitpid failure: %s", __func__, zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_DEBUG, "%s() waitpid failure: %s", __func__, zbx_strerror(errno));
 			goto exit;
 		}
 
 		if (WIFEXITED(result))
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() exited, status:%d", __func__, WEXITSTATUS(result));
+			treegix_log(LOG_LEVEL_DEBUG, "%s() exited, status:%d", __func__, WEXITSTATUS(result));
 		else if (WIFSIGNALED(result))
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() killed by signal %d", __func__, WTERMSIG(result));
+			treegix_log(LOG_LEVEL_DEBUG, "%s() killed by signal %d", __func__, WTERMSIG(result));
 		else if (WIFSTOPPED(result))
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() stopped by signal %d", __func__, WSTOPSIG(result));
+			treegix_log(LOG_LEVEL_DEBUG, "%s() stopped by signal %d", __func__, WSTOPSIG(result));
 #ifdef WIFCONTINUED
 		else if (WIFCONTINUED(result))
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() continued", __func__);
+			treegix_log(LOG_LEVEL_DEBUG, "%s() continued", __func__);
 #endif
 	}
 	while (!WIFEXITED(result) && !WIFSIGNALED(result));
@@ -260,7 +260,7 @@ exit:
 	if (NULL != status)
 		*status = result;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, rc);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, rc);
 
 	return rc;
 }
@@ -365,7 +365,7 @@ int	zbx_execute(const char *command, char **output, char *error, size_t max_erro
 				cmd, strerror_from_system(GetLastError()));
 		if (0 == TerminateProcess(pi.hProcess, 0))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "failed to terminate [%s]: %s",
+			treegix_log(LOG_LEVEL_ERR, "failed to terminate [%s]: %s",
 					cmd, strerror_from_system(GetLastError()));
 		}
 	}
@@ -421,7 +421,7 @@ close:
 	{
 		/* terminate the child process and its children */
 		if (0 == TerminateJobObject(job, 0))
-			zabbix_log(LOG_LEVEL_ERR, "failed to terminate job [%s]: %s", cmd, strerror_from_system(GetLastError()));
+			treegix_log(LOG_LEVEL_ERR, "failed to terminate job [%s]: %s", cmd, strerror_from_system(GetLastError()));
 		CloseHandle(job);
 	}
 
@@ -460,13 +460,13 @@ close:
 
 			/* kill the whole process group, pid must be the leader */
 			if (-1 == kill(-pid, SIGTERM))
-				zabbix_log(LOG_LEVEL_ERR, "failed to kill [%s]: %s", command, zbx_strerror(errno));
+				treegix_log(LOG_LEVEL_ERR, "failed to kill [%s]: %s", command, zbx_strerror(errno));
 
 			zbx_waitpid(pid, NULL);
 		}
 		else if (MAX_EXECUTE_OUTPUT_LEN <= offset + rc)
 		{
-			zabbix_log(LOG_LEVEL_ERR, "command output exceeded limit of %d KB",
+			treegix_log(LOG_LEVEL_ERR, "command output exceeded limit of %d KB",
 					MAX_EXECUTE_OUTPUT_LEN / ZBX_KIBIBYTE);
 		}
 		else if (0 == WIFEXITED(status) || (ZBX_EXIT_CODE_CHECKS_ENABLED == flag && 0 != WEXITSTATUS(status)))
@@ -503,7 +503,7 @@ close:
 		zbx_strlcpy(error, "Timeout while executing a shell script.", max_error_len);
 
 	if ('\0' != *error)
-		zabbix_log(LOG_LEVEL_WARNING, "Failed to execute command \"%s\": %s", command, error);
+		treegix_log(LOG_LEVEL_WARNING, "Failed to execute command \"%s\": %s", command, error);
 
 	if (SUCCEED != ret || NULL == output)
 		zbx_free(buffer);
@@ -542,7 +542,7 @@ int	zbx_execute_nowait(const char *command)
 	si.cb = sizeof(si);
 	GetStartupInfo(&si);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s(): executing [%s]", __func__, full_command);
+	treegix_log(LOG_LEVEL_DEBUG, "%s(): executing [%s]", __func__, full_command);
 
 	if (0 == CreateProcess(
 		NULL,		/* no module name (use command line) */
@@ -556,7 +556,7 @@ int	zbx_execute_nowait(const char *command)
 		&si,		/* startup information */
 		&pi))		/* process information stored upon return */
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "failed to create process for [%s]: %s",
+		treegix_log(LOG_LEVEL_WARNING, "failed to create process for [%s]: %s",
 				full_command, strerror_from_system(GetLastError()));
 		return FAIL;
 	}
@@ -575,7 +575,7 @@ int	zbx_execute_nowait(const char *command)
 	/* use a double fork for running the command in background */
 	if (-1 == (pid = zbx_fork()))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "first fork() failed for executing [%s]: %s",
+		treegix_log(LOG_LEVEL_WARNING, "first fork() failed for executing [%s]: %s",
 				command, zbx_strerror(errno));
 		return FAIL;
 	}
@@ -593,7 +593,7 @@ int	zbx_execute_nowait(const char *command)
 	switch (pid)
 	{
 		case -1:
-			zabbix_log(LOG_LEVEL_WARNING, "second fork() failed for executing [%s]: %s",
+			treegix_log(LOG_LEVEL_WARNING, "second fork() failed for executing [%s]: %s",
 					command, zbx_strerror(errno));
 			break;
 		case 0:
@@ -607,7 +607,7 @@ int	zbx_execute_nowait(const char *command)
 			execl("/bin/sh", "sh", "-c", command, NULL);
 
 			/* execl() returns only when an error occurs */
-			zabbix_log(LOG_LEVEL_WARNING, "execl() failed for [%s]: %s", command, zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_WARNING, "execl() failed for [%s]: %s", command, zbx_strerror(errno));
 			break;
 		default:
 			/* this is the child process, exit to complete the double fork */

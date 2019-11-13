@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ $fields = [
 		_('Max count of elements to show inside table cell')
 	],
 	'server_check_interval'		=> [T_ZBX_INT, O_OPT, null, IN(SERVER_CHECK_INTERVAL), null,
-		_('Show warning if Zabbix server is down')
+		_('Show warning if Treegix server is down')
 	],
 	// actions
 	'update'					=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT, null, null],

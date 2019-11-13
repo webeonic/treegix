@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -1791,7 +1791,7 @@ function access_deny($mode = ACCESS_DENY_OBJECT) {
 					->onClick('javascript: document.location = "index.php?request='.$url.'";');
 			}
 			$data['buttons'][] = (new CButton('back', _('Go to dashboard')))
-				->onClick('javascript: document.location = "zabbix.php?action=dashboard.view"');
+				->onClick('javascript: document.location = "treegix.php?action=dashboard.view"');
 		}
 		// if the user is not logged in - offer to login
 		else {
@@ -1917,7 +1917,7 @@ function filter_messages(array $messages = []) {
 		foreach ($messages as $message) {
 			if (array_key_exists('src', $message) && ($message['src'] === 'sql' || $message['src'] === 'php')) {
 				if (!$generic_exists) {
-					$message['message'] = _('System error occurred. Please contact Zabbix administrator.');
+					$message['message'] = _('System error occurred. Please contact Treegix administrator.');
 					$filtered_messages[] = $message;
 					$generic_exists = true;
 				}
@@ -2169,14 +2169,14 @@ function get_status() {
 		'has_status' => false
 	];
 
-	$server = new CZabbixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
+	$server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
 	$status['is_running'] = $server->isRunning(get_cookie(ZBX_SESSION_NAME));
 
 	if ($status['is_running'] === false) {
 		return $status;
 	}
 
-	$server = new CZabbixServer($ZBX_SERVER, $ZBX_SERVER_PORT, 15, ZBX_SOCKET_BYTES_LIMIT);
+	$server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, 15, ZBX_SOCKET_BYTES_LIMIT);
 	$server_status = $server->getStatus(get_cookie(ZBX_SESSION_NAME));
 	$status['has_status'] = (bool) $server_status;
 

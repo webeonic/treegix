@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ function discovery_check_type2str($type = null) {
 		SVC_NNTP => _('NNTP'),
 		SVC_IMAP => _('IMAP'),
 		SVC_TCP => _('TCP'),
-		SVC_AGENT => _('Zabbix agent'),
+		SVC_AGENT => _('Treegix agent'),
 		SVC_SNMPv1 => _('SNMPv1 agent'),
 		SVC_SNMPv2c => _('SNMPv2 agent'),
 		SVC_SNMPv3 => _('SNMPv3 agent'),

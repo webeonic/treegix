@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -177,8 +177,8 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 
 	if (NULL == collector)
 	{
-		/* CPU statistics collector and (optionally) disk statistics collector is started only when Zabbix */
-		/* agentd is running as a daemon. When Zabbix agent or agentd is started with "-p" or "-t" parameter */
+		/* CPU statistics collector and (optionally) disk statistics collector is started only when Treegix */
+		/* agentd is running as a daemon. When Treegix agent or agentd is started with "-p" or "-t" parameter */
 		/* the collectors are not available and keys "vfs.dev.read", "vfs.dev.write" with some parameters */
 		/* (e.g. sps, ops) are not supported. */
 

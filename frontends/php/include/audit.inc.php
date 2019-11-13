@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 function audit_resource2str($resource_type = null) {
 	$resources = [
 		AUDIT_RESOURCE_USER => _('User'),
-		AUDIT_RESOURCE_ZABBIX_CONFIG => _('Configuration of Zabbix'),
+		AUDIT_RESOURCE_ZABBIX_CONFIG => _('Configuration of Treegix'),
 		AUDIT_RESOURCE_MEDIA_TYPE => _('Media type'),
 		AUDIT_RESOURCE_HOST => _('Host'),
 		AUDIT_RESOURCE_HOST_PROTOTYPE => _('Host prototype'),

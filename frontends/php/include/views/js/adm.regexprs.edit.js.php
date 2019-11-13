@@ -53,7 +53,7 @@
 		 * Object to manage expression related GUI elements.
 		 * @type {Object}
 		 */
-		window.zabbixRegExp = {
+		window.treegixRegExp = {
 
 			/**
 			 * Template for expression row of testing results table.
@@ -182,7 +182,7 @@
 
 	jQuery(function($) {
 		$('#testExpression, #tab_test').click(function() {
-			zabbixRegExp.testExpressions($('#test_string').val());
+			treegixRegExp.testExpressions($('#test_string').val());
 		});
 
 		// on clone we remove regexpid hidden field and also expressionid from expressions

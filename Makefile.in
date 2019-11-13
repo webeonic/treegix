@@ -462,7 +462,7 @@ EXTRA_DIST = \
 @ZBXCMOCKA_TRUE@	-Wl,--wrap=connect
 
 @ZBXCMOCKA_TRUE@WRAP_LOG = \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=__zbx_zabbix_log
+@ZBXCMOCKA_TRUE@	-Wl,--wrap=__zbx_treegix_log
 
 @ZBXCMOCKA_TRUE@COMMON_WRAP_FUNCS = \
 @ZBXCMOCKA_TRUE@	$(WRAP_DB_FUNCS) \
@@ -973,22 +973,22 @@ dist-hook:
 	type_num=`(test -z $$type_num && echo "0") || echo "$$type_num"`; \
 	type_count=`cat $(top_distdir)/include/version.h|sed -n -e '/ZABBIX_VERSION_RC/s/.*"[a-z]*\([0-9]*\)"/\1/p'`; \
 	type_count=`printf '%02d' $$type_count`; \
-	zabbix_revision=`git rev-parse --short HEAD`; \
+	treegix_revision=`git rev-parse --short HEAD`; \
 	cat $(top_distdir)/include/version.h|sed "s/{ZABBIX_RC_NUM}/$$branch$$type_num$$type_count/g"| \
-	sed "s/{ZABBIX_REVISION}/$$zabbix_revision/g" > $(top_distdir)/include/version.h.new; \
+	sed "s/{ZABBIX_REVISION}/$$treegix_revision/g" > $(top_distdir)/include/version.h.new; \
 	mv $(top_distdir)/include/version.h.new $(top_distdir)/include/version.h; \
-	cat $(top_distdir)/src/zabbix_java/src/com/zabbix/gateway/GeneralInformation.java|sed "s/{ZABBIX_REVISION}/$$zabbix_revision/g" > \
-		$(top_distdir)/src/zabbix_java/src/com/zabbix/gateway/GeneralInformation.java.new; \
-	mv $(top_distdir)/src/zabbix_java/src/com/zabbix/gateway/GeneralInformation.java.new \
-		$(top_distdir)/src/zabbix_java/src/com/zabbix/gateway/GeneralInformation.java; \
-	cat $(top_distdir)/go/src/zabbix/pkg/version/version.go|sed "s/{ZABBIX_RC_NUM}/$$branch$$type_num$$type_count/g"| \
-	sed "s/{ZABBIX_REVISION}/$$zabbix_revision/g" > $(top_distdir)/go/src/zabbix/pkg/version/version.go.new; \
-	mv $(top_distdir)/go/src/zabbix/pkg/version/version.go.new $(top_distdir)/go/src/zabbix/pkg/version/version.go
+	cat $(top_distdir)/src/treegix_java/src/com/treegix/gateway/GeneralInformation.java|sed "s/{ZABBIX_REVISION}/$$treegix_revision/g" > \
+		$(top_distdir)/src/treegix_java/src/com/treegix/gateway/GeneralInformation.java.new; \
+	mv $(top_distdir)/src/treegix_java/src/com/treegix/gateway/GeneralInformation.java.new \
+		$(top_distdir)/src/treegix_java/src/com/treegix/gateway/GeneralInformation.java; \
+	cat $(top_distdir)/go/src/treegix/pkg/version/version.go|sed "s/{ZABBIX_RC_NUM}/$$branch$$type_num$$type_count/g"| \
+	sed "s/{ZABBIX_REVISION}/$$treegix_revision/g" > $(top_distdir)/go/src/treegix/pkg/version/version.go.new; \
+	mv $(top_distdir)/go/src/treegix/pkg/version/version.go.new $(top_distdir)/go/src/treegix/pkg/version/version.go
 
 	rm -rf `find $(top_distdir) -name ".gitignore" -o -name ".gitattributes"`
 	rm -f $(top_distdir)/include/config.h
 	rm -f $(top_distdir)/include/config.h.in~
-	rm -f $(top_distdir)/frontends/php/conf/zabbix.conf.php
+	rm -f $(top_distdir)/frontends/php/conf/treegix.conf.php
 	rm -rf $(top_distdir)/frontends/php/tests
 	rm -rf $(top_distdir)/sass/img_source
 

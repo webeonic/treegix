@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class ZBase {
 	protected $rootDir;
 
 	/**
-	 * @var array of config data from zabbix config file
+	 * @var array of config data from treegix config file
 	 */
 	protected $config = [];
 
@@ -290,7 +290,7 @@ class ZBase {
 	}
 
 	/**
-	 * Load zabbix config file.
+	 * Load treegix config file.
 	 */
 	protected function loadConfigFile() {
 		$configFile = $this->getRootDir().CConfigFile::CONFIG_FILE_PATH;
@@ -347,7 +347,7 @@ class ZBase {
 			setlocale(LC_CTYPE, $defaultLocales);
 
 			if (!$locale_found && $user_data['lang'] != 'en_GB' && $user_data['lang'] != 'en_gb') {
-				error('Locale for language "'.$user_data['lang'].'" is not found on the web server. Tried to set: '.implode(', ', $locales).'. Unable to translate Zabbix interface.');
+				error('Locale for language "'.$user_data['lang'].'" is not found on the web server. Tried to set: '.implode(', ', $locales).'. Unable to translate Treegix interface.');
 			}
 			bindtextdomain('frontend', 'locale');
 			bind_textdomain_codeset('frontend', 'UTF-8');
@@ -450,7 +450,7 @@ class ZBase {
 			}
 			CSession::setValue('messages', $response->getMessages());
 
-			redirect('zabbix.php?action=system.warning');
+			redirect('treegix.php?action=system.warning');
 		}
 	}
 

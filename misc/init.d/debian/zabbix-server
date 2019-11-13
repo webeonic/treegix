@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# Zabbix daemon start/stop script.
+# Treegix daemon start/stop script.
 #
-# Copyright (C) 2001-2019 Zabbix SIA
+# Copyright (C) 2001-2019 Treegix SIA
 
-NAME=zabbix_server
+NAME=treegix_server
 DAEMON=/usr/local/sbin/${NAME}
-DESC="Zabbix server daemon"
+DESC="Treegix server daemon"
 PID=/tmp/$NAME.pid
 
 test -f $DAEMON || exit 0

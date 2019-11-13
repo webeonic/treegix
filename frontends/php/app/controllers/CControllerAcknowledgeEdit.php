@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class CControllerAcknowledgeEdit extends CController {
 		$ret = $this->validateInput($fields);
 
 		if ($ret) {
-			$backurl = $this->getInput('backurl', 'zabbix.php?action=problem.view');
+			$backurl = $this->getInput('backurl', 'treegix.php?action=problem.view');
 
 			switch (parse_url($backurl, PHP_URL_PATH)) {
 				case 'overview.php':
@@ -51,7 +51,7 @@ class CControllerAcknowledgeEdit extends CController {
 				case 'screens.php':
 				case 'slides.php':
 				case 'tr_events.php':
-				case 'zabbix.php':
+				case 'treegix.php':
 					break;
 
 				default:
@@ -83,7 +83,7 @@ class CControllerAcknowledgeEdit extends CController {
 			'eventids' => $this->getInput('eventids'),
 			'message' => $this->getInput('message', ''),
 			'scope' => (int) $this->getInput('scope', ZBX_ACKNOWLEDGE_SELECTED),
-			'backurl' => $this->getInput('backurl', 'zabbix.php?action=problem.view'),
+			'backurl' => $this->getInput('backurl', 'treegix.php?action=problem.view'),
 			'change_severity' => $this->getInput('change_severity', ZBX_PROBLEM_UPDATE_NONE),
 			'severity' => $this->hasInput('severity') ? (int) $this->getInput('severity') : null,
 			'acknowledge_problem' => $this->getInput('acknowledge_problem', ZBX_PROBLEM_UPDATE_NONE),

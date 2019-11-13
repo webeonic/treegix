@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ PDH_STATUS	zbx_PdhMakeCounterPath(const char *function, PDH_COUNTER_PATH_ELEMENT
 		object = zbx_unicode_to_utf8(cpe->szObjectName);
 		counter = zbx_unicode_to_utf8(cpe->szCounterName);
 
-		zabbix_log(LOG_LEVEL_ERR, "%s(): cannot make counterpath for \"\\%s\\%s\": %s",
+		treegix_log(LOG_LEVEL_ERR, "%s(): cannot make counterpath for \"\\%s\\%s\": %s",
 				function, object, counter, strerror_from_module(pdh_status, L"PDH.DLL"));
 
 		zbx_free(counter);
@@ -78,7 +78,7 @@ PDH_STATUS	zbx_PdhOpenQuery(const char *function, PDH_HQUERY query)
 
 	if (ERROR_SUCCESS != (pdh_status = PdhOpenQuery(NULL, 0, query)))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "%s(): call to PdhOpenQuery() failed: %s",
+		treegix_log(LOG_LEVEL_ERR, "%s(): call to PdhOpenQuery() failed: %s",
 				function, strerror_from_module(pdh_status, L"PDH.DLL"));
 	}
 
@@ -114,7 +114,7 @@ PDH_STATUS	zbx_PdhAddCounter(const char *function, zbx_perf_counter_data_t *coun
 		if (NULL == (add_eng_counter = (ADD_ENG_COUNTER)GetProcAddress(GetModuleHandle(L"PDH.DLL"),
 				"PdhAddEnglishCounterW")))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "PdhAddEnglishCounter() is not available, "
+			treegix_log(LOG_LEVEL_WARNING, "PdhAddEnglishCounter() is not available, "
 					"perf_counter_en[] is not supported");
 		}
 
@@ -149,14 +149,14 @@ PDH_STATUS	zbx_PdhAddCounter(const char *function, zbx_perf_counter_data_t *coun
 		if (NULL != counter)
 			counter->status = PERF_COUNTER_INITIALIZED;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s(): PerfCounter '%s' successfully added", function, counterpath);
+		treegix_log(LOG_LEVEL_DEBUG, "%s(): PerfCounter '%s' successfully added", function, counterpath);
 	}
 	else
 	{
 		if (NULL != counter)
 			counter->status = PERF_COUNTER_NOTSUPPORTED;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s(): unable to add PerfCounter '%s': %s",
+		treegix_log(LOG_LEVEL_DEBUG, "%s(): unable to add PerfCounter '%s': %s",
 				function, counterpath, strerror_from_module(pdh_status, L"PDH.DLL"));
 	}
 
@@ -171,7 +171,7 @@ PDH_STATUS	zbx_PdhCollectQueryData(const char *function, const char *counterpath
 
 	if (ERROR_SUCCESS != (pdh_status = PdhCollectQueryData(query)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s(): cannot collect data '%s': %s",
+		treegix_log(LOG_LEVEL_DEBUG, "%s(): cannot collect data '%s': %s",
 				function, counterpath, strerror_from_module(pdh_status, L"PDH.DLL"));
 	}
 
@@ -188,7 +188,7 @@ PDH_STATUS	zbx_PdhGetRawCounterValue(const char *function, const char *counterpa
 		if (ERROR_SUCCESS == pdh_status)
 			pdh_status = value->CStatus;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s(): cannot get counter value '%s': %s",
+		treegix_log(LOG_LEVEL_DEBUG, "%s(): cannot get counter value '%s': %s",
 				function, counterpath, strerror_from_module(pdh_status, L"PDH.DLL"));
 	}
 
@@ -245,7 +245,7 @@ PDH_STATUS	calculate_counter_value(const char *function, const char *counterpath
 		if (ERROR_SUCCESS == pdh_status)
 			pdh_status = counterValue.CStatus;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s(): cannot calculate counter value '%s': %s",
+		treegix_log(LOG_LEVEL_DEBUG, "%s(): cannot calculate counter value '%s': %s",
 				function, counterpath, strerror_from_module(pdh_status, L"PDH.DLL"));
 	}
 	else
@@ -318,12 +318,12 @@ static wchar_t	*get_all_counter_eng_names(wchar_t *reg_value_name)
 	/* this registry key guaranteed to hold english counter texts even in localized Win versions */
 	static HKEY reg_key = HKEY_PERFORMANCE_TEXT;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	/* query the size of the text data for further buffer allocation */
 	if (ERROR_SUCCESS != (status = RegQueryValueEx(reg_key, reg_value_name, NULL, NULL, NULL, &buffer_size)))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "RegQueryValueEx() failed at getting buffer size, 0x%lx",
+		treegix_log(LOG_LEVEL_ERR, "RegQueryValueEx() failed at getting buffer size, 0x%lx",
 				(unsigned long)status);
 		goto finish;
 	}
@@ -333,12 +333,12 @@ static wchar_t	*get_all_counter_eng_names(wchar_t *reg_value_name)
 	if (ERROR_SUCCESS != (status = RegQueryValueEx(reg_key, reg_value_name, NULL, NULL, (LPBYTE)buffer,
 			&buffer_size)))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "RegQueryValueEx() failed with 0x%lx", (unsigned long)status);
+		treegix_log(LOG_LEVEL_ERR, "RegQueryValueEx() failed with 0x%lx", (unsigned long)status);
 		zbx_free(buffer);
 		goto finish;
 	}
 finish:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return buffer;
 }
@@ -362,7 +362,7 @@ int	init_builtin_counter_indexes(void)
 	int 		ret = FAIL, i;
 	wchar_t 	*counter_text, *saved_ptr;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	/* Get buffer holding a list of performance counter indexes and English counter names. */
 	/* L"Counter" stores names, L"Help" stores descriptions ("Help" is not used).          */
@@ -391,7 +391,7 @@ int	init_builtin_counter_indexes(void)
 	ret = SUCCEED;
 	zbx_free(saved_ptr);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -402,7 +402,7 @@ wchar_t	*get_counter_name(DWORD pdhIndex)
 	DWORD			dwSize;
 	PDH_STATUS		pdh_status;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() pdhIndex:%u", __func__, pdhIndex);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() pdhIndex:%u", __func__, pdhIndex);
 
 	counterName = PerfCounterList;
 	while (NULL != counterName)
@@ -425,15 +425,15 @@ wchar_t	*get_counter_name(DWORD pdhIndex)
 			PerfCounterList = counterName;
 		else
 		{
-			zabbix_log(LOG_LEVEL_ERR, "PdhLookupPerfNameByIndex() failed: %s",
+			treegix_log(LOG_LEVEL_ERR, "PdhLookupPerfNameByIndex() failed: %s",
 					strerror_from_module(pdh_status, L"PDH.DLL"));
 			zbx_free(counterName);
-			zabbix_log(LOG_LEVEL_DEBUG, "End of %s():FAIL", __func__);
+			treegix_log(LOG_LEVEL_DEBUG, "End of %s():FAIL", __func__);
 			return L"UnknownPerformanceCounter";
 		}
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED", __func__);
 
 	return counterName->name;
 }
@@ -455,14 +455,14 @@ int	check_counter_path(char *counterPath, int convert_from_numeric)
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot get required buffer size for counter path '%s': %s",
+		treegix_log(LOG_LEVEL_ERR, "cannot get required buffer size for counter path '%s': %s",
 				counterPath, strerror_from_module(status, L"PDH.DLL"));
 		goto clean;
 	}
 
 	if (ERROR_SUCCESS != (status = PdhParseCounterPath(wcounterPath, cpe, &dwSize, 0)))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot parse counter path '%s': %s",
+		treegix_log(LOG_LEVEL_ERR, "cannot parse counter path '%s': %s",
 				counterPath, strerror_from_module(status, L"PDH.DLL"));
 		goto clean;
 	}
@@ -482,7 +482,7 @@ int	check_counter_path(char *counterPath, int convert_from_numeric)
 			if (ERROR_SUCCESS != zbx_PdhMakeCounterPath(__func__, cpe, counterPath))
 				goto clean;
 
-			zabbix_log(LOG_LEVEL_DEBUG, "counter path converted to '%s'", counterPath);
+			treegix_log(LOG_LEVEL_DEBUG, "counter path converted to '%s'", counterPath);
 		}
 	}
 

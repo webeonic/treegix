@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -283,13 +283,13 @@ static void	*__mem_malloc(zbx_mem_info_t *info, zbx_uint64_t size)
 		{
 			if (NULL == chunk)
 			{
-				zabbix_log(LOG_LEVEL_CRIT, "__mem_malloc: skipped %d asked " ZBX_FS_UI64 " skip_min "
+				treegix_log(LOG_LEVEL_CRIT, "__mem_malloc: skipped %d asked " ZBX_FS_UI64 " skip_min "
 						ZBX_FS_UI64 " skip_max " ZBX_FS_UI64,
 						counter, size, skip_min, skip_max);
 			}
 			else if (counter >= 100)
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "__mem_malloc: skipped %d asked " ZBX_FS_UI64 " skip_min "
+				treegix_log(LOG_LEVEL_DEBUG, "__mem_malloc: skipped %d asked " ZBX_FS_UI64 " skip_min "
 						ZBX_FS_UI64 " skip_max " ZBX_FS_UI64 " size " ZBX_FS_UI64, counter,
 						size, skip_min, skip_max, CHUNK_SIZE(chunk));
 			}
@@ -547,7 +547,7 @@ int	zbx_mem_create(zbx_mem_info_t **info, zbx_uint64_t size, const char *descr, 
 	descr = ZBX_NULL2STR(descr);
 	param = ZBX_NULL2STR(param);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() param:'%s' size:" ZBX_FS_SIZE_T, __func__, param, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() param:'%s' size:" ZBX_FS_SIZE_T, __func__, param, (zbx_fs_size_t)size);
 
 	/* allocate shared memory */
 
@@ -625,12 +625,12 @@ int	zbx_mem_create(zbx_mem_info_t **info, zbx_uint64_t size, const char *descr, 
 	(*info)->used_size = 0;
 	(*info)->free_size = (*info)->total_size;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "valid user addresses: [%p, %p] total size: " ZBX_FS_SIZE_T,
+	treegix_log(LOG_LEVEL_DEBUG, "valid user addresses: [%p, %p] total size: " ZBX_FS_SIZE_T,
 			(void *)((char *)(*info)->lo_bound + MEM_SIZE_FIELD),
 			(void *)((char *)(*info)->hi_bound - MEM_SIZE_FIELD),
 			(zbx_fs_size_t)(*info)->total_size);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -641,14 +641,14 @@ void	*__zbx_mem_malloc(const char *file, int line, zbx_mem_info_t *info, const v
 
 	if (NULL != old)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): allocating already allocated memory",
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): allocating already allocated memory",
 				file, line, __func__);
 		exit(EXIT_FAILURE);
 	}
 
 	if (0 == size || size > MEM_MAX_SIZE)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): asking for a bad number of bytes (" ZBX_FS_SIZE_T
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): asking for a bad number of bytes (" ZBX_FS_SIZE_T
 				")", file, line, __func__, (zbx_fs_size_t)size);
 		exit(EXIT_FAILURE);
 	}
@@ -660,9 +660,9 @@ void	*__zbx_mem_malloc(const char *file, int line, zbx_mem_info_t *info, const v
 		if (1 == info->allow_oom)
 			return NULL;
 
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): out of memory (requested " ZBX_FS_SIZE_T " bytes)",
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): out of memory (requested " ZBX_FS_SIZE_T " bytes)",
 				file, line, __func__, (zbx_fs_size_t)size);
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): please increase %s configuration parameter",
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): please increase %s configuration parameter",
 				file, line, __func__, info->mem_param);
 		zbx_mem_dump_stats(LOG_LEVEL_CRIT, info);
 		zbx_backtrace();
@@ -678,7 +678,7 @@ void	*__zbx_mem_realloc(const char *file, int line, zbx_mem_info_t *info, void *
 
 	if (0 == size || size > MEM_MAX_SIZE)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): asking for a bad number of bytes (" ZBX_FS_SIZE_T
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): asking for a bad number of bytes (" ZBX_FS_SIZE_T
 				")", file, line, __func__, (zbx_fs_size_t)size);
 		exit(EXIT_FAILURE);
 	}
@@ -693,9 +693,9 @@ void	*__zbx_mem_realloc(const char *file, int line, zbx_mem_info_t *info, void *
 		if (1 == info->allow_oom)
 			return NULL;
 
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): out of memory (requested " ZBX_FS_SIZE_T " bytes)",
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): out of memory (requested " ZBX_FS_SIZE_T " bytes)",
 				file, line, __func__, (zbx_fs_size_t)size);
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): please increase %s configuration parameter",
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): please increase %s configuration parameter",
 				file, line, __func__, info->mem_param);
 		zbx_mem_dump_stats(LOG_LEVEL_CRIT, info);
 		zbx_backtrace();
@@ -709,7 +709,7 @@ void	__zbx_mem_free(const char *file, int line, zbx_mem_info_t *info, void *ptr)
 {
 	if (NULL == ptr)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): freeing a NULL pointer", file, line, __func__);
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): freeing a NULL pointer", file, line, __func__);
 		exit(EXIT_FAILURE);
 	}
 
@@ -720,7 +720,7 @@ void	zbx_mem_clear(zbx_mem_info_t *info)
 {
 	int	index;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	memset(info->buckets, 0, MEM_BUCKET_COUNT * ZBX_PTR_SIZE);
 	index = mem_bucket_by_size(info->total_size);
@@ -731,7 +731,7 @@ void	zbx_mem_clear(zbx_mem_info_t *info)
 	info->used_size = 0;
 	info->free_size = info->total_size;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 void	zbx_mem_dump_stats(int level, zbx_mem_info_t *info)
@@ -741,7 +741,7 @@ void	zbx_mem_dump_stats(int level, zbx_mem_info_t *info)
 	zbx_uint64_t	counter, total, total_free = 0;
 	zbx_uint64_t	min_size = __UINT64_C(0xffffffffffffffff), max_size = __UINT64_C(0);
 
-	zabbix_log(level, "=== memory statistics for %s ===", info->mem_descr);
+	treegix_log(level, "=== memory statistics for %s ===", info->mem_descr);
 
 	for (index = 0; index < MEM_BUCKET_COUNT; index++)
 	{
@@ -759,31 +759,31 @@ void	zbx_mem_dump_stats(int level, zbx_mem_info_t *info)
 		if (counter > 0)
 		{
 			total_free += counter;
-			zabbix_log(level, "free chunks of size %2s %3d bytes: %8llu",
+			treegix_log(level, "free chunks of size %2s %3d bytes: %8llu",
 					index == MEM_BUCKET_COUNT - 1 ? ">=" : "",
 					MEM_MIN_BUCKET_SIZE + 8 * index, (unsigned long long)counter);
 		}
 	}
 
-	zabbix_log(level, "min chunk size: %10llu bytes", (unsigned long long)min_size);
-	zabbix_log(level, "max chunk size: %10llu bytes", (unsigned long long)max_size);
+	treegix_log(level, "min chunk size: %10llu bytes", (unsigned long long)min_size);
+	treegix_log(level, "max chunk size: %10llu bytes", (unsigned long long)max_size);
 
 	total = (info->total_size - info->used_size - info->free_size) / (2 * MEM_SIZE_FIELD) + 1;
-	zabbix_log(level, "memory of total size %llu bytes fragmented into %llu chunks",
+	treegix_log(level, "memory of total size %llu bytes fragmented into %llu chunks",
 			(unsigned long long)info->total_size, (unsigned long long)total);
-	zabbix_log(level, "of those, %10llu bytes are in %8llu free chunks",
+	treegix_log(level, "of those, %10llu bytes are in %8llu free chunks",
 			(unsigned long long)info->free_size, (unsigned long long)total_free);
-	zabbix_log(level, "of those, %10llu bytes are in %8llu used chunks",
+	treegix_log(level, "of those, %10llu bytes are in %8llu used chunks",
 			(unsigned long long)info->used_size, (unsigned long long)(total - total_free));
 
-	zabbix_log(level, "================================");
+	treegix_log(level, "================================");
 }
 
 size_t	zbx_mem_required_size(int chunks_num, const char *descr, const char *param)
 {
 	size_t	size = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() size:" ZBX_FS_SIZE_T " chunks_num:%d descr:'%s' param:'%s'",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() size:" ZBX_FS_SIZE_T " chunks_num:%d descr:'%s' param:'%s'",
 			__func__, (zbx_fs_size_t)size, chunks_num, descr, param);
 
 	/* shared memory of what size should we allocate so that there is a guarantee */
@@ -802,7 +802,7 @@ size_t	zbx_mem_required_size(int chunks_num, const char *descr, const char *para
 	size += (chunks_num - 1) * MEM_SIZE_FIELD * 2;	/* each additional chunk requires 16 bytes of overhead */
 	size += chunks_num * (MEM_MIN_ALLOC - 1);	/* each chunk has size of at least MEM_MIN_ALLOC bytes */
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() size:" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() size:" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)size);
 
 	return size;
 }

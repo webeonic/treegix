@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -555,7 +555,7 @@ int	zbx_dbsync_compare_autoreg_psk(zbx_dbsync_t *sync)
 			dbsync_add_row(sync, 0, ZBX_DBSYNC_ROW_REMOVE, NULL);
 
 	if (1 == num_records && NULL != (dbrow = DBfetch(result)))
-		zabbix_log(LOG_LEVEL_ERR, "table 'config_autoreg_tls' has multiple records");
+		treegix_log(LOG_LEVEL_ERR, "table 'config_autoreg_tls' has multiple records");
 
 	DBfree_result(result);
 

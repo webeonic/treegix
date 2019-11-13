@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class CControllerScriptUpdate extends CController {
 		if (!$ret) {
 			switch ($this->GetValidationError()) {
 				case self::VALIDATION_ERROR:
-					$response = new CControllerResponseRedirect('zabbix.php?action=script.edit');
+					$response = new CControllerResponseRedirect('treegix.php?action=script.edit');
 					$response->setFormData($this->getInputAll());
 					$response->setMessageError(_('Cannot update script'));
 					$this->setResponse($response);
@@ -92,11 +92,11 @@ class CControllerScriptUpdate extends CController {
 		$result = (bool) API::Script()->update($script);
 
 		if ($result) {
-			$response = new CControllerResponseRedirect('zabbix.php?action=script.list&uncheck=1');
+			$response = new CControllerResponseRedirect('treegix.php?action=script.list&uncheck=1');
 			$response->setMessageOk(_('Script updated'));
 		}
 		else {
-			$response = new CControllerResponseRedirect('zabbix.php?action=script.edit&scriptid='.$this->getInput('scriptid'));
+			$response = new CControllerResponseRedirect('treegix.php?action=script.edit&scriptid='.$this->getInput('scriptid'));
 			$response->setFormData($this->getInputAll());
 			$response->setMessageError(_('Cannot update script'));
 		}

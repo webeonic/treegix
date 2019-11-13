@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ else {
 }
 
 if (is_array($data) && array_key_exists('method', $data)
-		&& in_array($data['method'], ['message.settings', 'message.get', 'zabbix.status'])) {
+		&& in_array($data['method'], ['message.settings', 'message.get', 'treegix.status'])) {
 	CWebUser::disableSessionExtension();
 }
 
@@ -66,12 +66,12 @@ switch ($data['method']) {
 		]);
 		break;
 
-	case 'zabbix.status':
+	case 'treegix.status':
 		CSession::start();
 		if (!CSession::keyExists('serverCheckResult')
 				|| (CSession::getValue('serverCheckTime') + SERVER_CHECK_INTERVAL) <= time()) {
-			$zabbixServer = new CZabbixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, 0);
-			CSession::setValue('serverCheckResult', $zabbixServer->isRunning(CWebUser::getSessionCookie()));
+			$treegixServer = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, 0);
+			CSession::setValue('serverCheckResult', $treegixServer->isRunning(CWebUser::getSessionCookie()));
 			CSession::setValue('serverCheckTime', time());
 		}
 
@@ -79,7 +79,7 @@ switch ($data['method']) {
 			'result' => (bool) CSession::getValue('serverCheckResult'),
 			'message' => CSession::getValue('serverCheckResult')
 				? ''
-				: _('Zabbix server is not running: the information displayed may not be current.')
+				: _('Treegix server is not running: the information displayed may not be current.')
 		];
 		break;
 

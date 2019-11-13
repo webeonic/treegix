@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ class CControllerProxyCreate extends CController {
 		if (!$ret) {
 			switch ($this->GetValidationError()) {
 				case self::VALIDATION_ERROR:
-					$response = new CControllerResponseRedirect('zabbix.php?action=proxy.edit');
+					$response = new CControllerResponseRedirect('treegix.php?action=proxy.edit');
 					$response->setFormData($this->getInputAll());
 					$response->setMessageError(_('Cannot add proxy'));
 					$this->setResponse($response);
@@ -97,11 +97,11 @@ class CControllerProxyCreate extends CController {
 		$result = DBend($result);
 
 		if ($result) {
-			$response = new CControllerResponseRedirect('zabbix.php?action=proxy.list&uncheck=1');
+			$response = new CControllerResponseRedirect('treegix.php?action=proxy.list&uncheck=1');
 			$response->setMessageOk(_('Proxy added'));
 		}
 		else {
-			$response = new CControllerResponseRedirect('zabbix.php?action=proxy.edit');
+			$response = new CControllerResponseRedirect('treegix.php?action=proxy.edit');
 			$response->setFormData($this->getInputAll());
 			$response->setMessageError(_('Cannot add proxy'));
 		}

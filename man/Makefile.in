@@ -360,19 +360,19 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@AGENT_TRUE@agent_MANS = zabbix_agentd.man
-@AGENT_TRUE@client_MANS = zabbix_get.man zabbix_sender.man
-@PROXY_TRUE@proxy_MANS = zabbix_proxy.man
-@SERVER_TRUE@server_MANS = zabbix_server.man
+@AGENT_TRUE@agent_MANS = treegix_agentd.man
+@AGENT_TRUE@client_MANS = treegix_get.man treegix_sender.man
+@PROXY_TRUE@proxy_MANS = treegix_proxy.man
+@SERVER_TRUE@server_MANS = treegix_server.man
 man1_MANS = $(client_MANS)
 man8_MANS = $(agent_MANS) $(proxy_MANS) $(server_MANS)
 EXTRA_DIST = \
-	zabbix_agentd.man \
-	zabbix_agent2.man \
-	zabbix_get.man \
-	zabbix_sender.man \
-	zabbix_proxy.man \
-	zabbix_server.man
+	treegix_agentd.man \
+	treegix_agent2.man \
+	treegix_get.man \
+	treegix_sender.man \
+	treegix_proxy.man \
+	treegix_server.man
 
 all: all-am
 

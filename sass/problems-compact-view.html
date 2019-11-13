@@ -4,7 +4,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="Author" content="Zabbix SIA">
+	<meta name="Author" content="Treegix SIA">
 	<title>Problems - Compact view</title>
 	<link rel="icon" href="favicon.ico">
 	<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76-precomposed.png">
@@ -51,14 +51,14 @@
 				</nav>
 				<ul class="top-nav-icons">
 					<li>
-						<form method="get" action="zabbix.php" accept-charset="utf-8" role="search"><input type="hidden" name="action" value="search"><input type="text" id="search" name="search" value="" maxlength="255" autocomplete="off" class="search" aria-label="type here to search"><button type="submit" class="btn-search" title="Search">&nbsp;</button></form>
+						<form method="get" action="treegix.php" accept-charset="utf-8" role="search"><input type="hidden" name="action" value="search"><input type="text" id="search" name="search" value="" maxlength="255" autocomplete="off" class="search" aria-label="type here to search"><button type="submit" class="btn-search" title="Search">&nbsp;</button></form>
 					</li>
 					<li>
 						<ul role="navigation" aria-label="User menu">
-							<li style="padding-left:0"><a class="top-nav-support" target="_blank" title="Zabbix Technical Support" href="">Support</a></li>
-							<li><a class="top-nav-zbbshare" target="_blank" title="Zabbix Share" href="">Share</a></li>
+							<li style="padding-left:0"><a class="top-nav-support" target="_blank" title="Treegix Technical Support" href="">Support</a></li>
+							<li><a class="top-nav-zbbshare" target="_blank" title="Treegix Share" href="">Share</a></li>
 							<li><a class="top-nav-help" target="_blank" title="Help" href="">&nbsp;</a></li>
-							<li><a class="top-nav-profile" title="Admin (Zabbix Administrator)" href="">&nbsp;</a></li>
+							<li><a class="top-nav-profile" title="Admin (Treegix Administrator)" href="">&nbsp;</a></li>
 							<li><a class="top-nav-signout" title="Sign out">&nbsp;</a></li>
 						</ul>
 					</li>
@@ -82,7 +82,7 @@
 					<li><a tabindex="0" href="#">Hosts</a></li>
 				</ul>
 				<ul class="top-subnav" id="sub_reports" style="display: none;">
-					<li><a tabindex="0" href="#">Status of Zabbix</a></li>
+					<li><a tabindex="0" href="#">Status of Treegix</a></li>
 					<li><a tabindex="0" href="#">Availability report</a></li>
 					<li><a tabindex="0" href="#">Triggers top 100</a></li>
 					<li><a tabindex="0" href="#">Audit</a></li>
@@ -120,9 +120,9 @@
 			</div>
 			<div class="cell nowrap">
 				<nav aria-label="Content controls">
-					<form method="get" action="zabbix.php" accept-charset="utf-8">
+					<form method="get" action="treegix.php" accept-charset="utf-8">
 						<input type="hidden" id="action" name="action" value="problem.view"><input type="hidden" id="page" name="page" value="1">
-						<ul><li><button type="button" data-url="zabbix.php?action=problem.view.csv&amp;page=1">Export to CSV</button></li><li><button type="button" data-url="zabbix.php?action=problem.view&amp;page=1&amp;from=2016-05-27+16%3A43%3A17&amp;to=2018-05-28+16%3A43%3A16&amp;filter_show=2&amp;filter_groupids%5B0%5D=4&amp;filter_application=&amp;filter_name=&amp;filter_severity=0&amp;filter_inventory%5B0%5D%5Bfield%5D=type&amp;filter_inventory%5B0%5D%5Bvalue%5D=&amp;filter_evaltype=0&amp;filter_tags%5B0%5D%5Btag%5D=&amp;filter_tags%5B0%5D%5Boperator%5D=0&amp;filter_tags%5B0%5D%5Bvalue%5D=&amp;filter_show_tags=3&amp;filter_maintenance=1&amp;filter_compact_view=1&amp;filter_set=1&amp;fullscreen=1" title="Fullscreen" class="btn-max">&nbsp;</button></li></ul>
+						<ul><li><button type="button" data-url="treegix.php?action=problem.view.csv&amp;page=1">Export to CSV</button></li><li><button type="button" data-url="treegix.php?action=problem.view&amp;page=1&amp;from=2016-05-27+16%3A43%3A17&amp;to=2018-05-28+16%3A43%3A16&amp;filter_show=2&amp;filter_groupids%5B0%5D=4&amp;filter_application=&amp;filter_name=&amp;filter_severity=0&amp;filter_inventory%5B0%5D%5Bfield%5D=type&amp;filter_inventory%5B0%5D%5Bvalue%5D=&amp;filter_evaltype=0&amp;filter_tags%5B0%5D%5Btag%5D=&amp;filter_tags%5B0%5D%5Boperator%5D=0&amp;filter_tags%5B0%5D%5Bvalue%5D=&amp;filter_show_tags=3&amp;filter_maintenance=1&amp;filter_compact_view=1&amp;filter_set=1&amp;fullscreen=1" title="Fullscreen" class="btn-max">&nbsp;</button></li></ul>
 					</form>
 				</nav>
 			</div>
@@ -137,7 +137,7 @@
 			</ul>
 			<form method="GET">
 			<div class="filter-container" id="filter-space" style="">
-				<form method="get" action="zabbix.php" accept-charset="utf-8" name="zbx_filter" id="id">
+				<form method="get" action="treegix.php" accept-charset="utf-8" name="zbx_filter" id="id">
 					<input type="hidden" id="action" name="action" value="problem.view"><input type="hidden" id="page" name="page" value="1">
 					<div class="table filter-forms">
 						<div class="row">
@@ -155,11 +155,11 @@
 											<div class="multiselect-control">
 												<div class="multiselect" id="filter_groupids_" style="width: 300px;">
 													<div class="selected">
-														<ul class="multiselect-list"><li data-id="4"><span class="subfilter-enabled"><span>Zabbix servers</span><span class="subfilter-disable-btn"></span></span></li></ul>
+														<ul class="multiselect-list"><li data-id="4"><span class="subfilter-enabled"><span>Treegix servers</span><span class="subfilter-disable-btn"></span></span></li></ul>
 													</div>
 													<input class="input" type="text" placeholder="type here to search">
 													<div class="available" style="display: none;"></div>
-													<input type="hidden" name="filter_groupids[]" value="4" data-name="Zabbix servers" data-prefix="">
+													<input type="hidden" name="filter_groupids[]" value="4" data-name="Treegix servers" data-prefix="">
 												</div>
 												<div class="multiselect-button"><button type="button" class="btn-grey">Select</button></div>
 											</div>
@@ -385,8 +385,8 @@
 			</div>
 		</div>
 		<div class="flickerfreescreen" data-timestamp="1523277207" id="flickerfreescreen_problem">
-			<form method="get" action="zabbix.php" accept-charset="utf-8" name="problem">
-				<input type="hidden" id="backurl" name="backurl" value="zabbix.php?action=problem.view&amp;uncheck=1">
+			<form method="get" action="treegix.php" accept-charset="utf-8" name="problem">
+				<input type="hidden" id="backurl" name="backurl" value="treegix.php?action=problem.view&amp;uncheck=1">
 				<table class="list-table compact-view overflow-ellipsis" id="t5acb608e183f4">
 	<thead>
 		<tr>
@@ -412,7 +412,7 @@
 			<td></td>
 			<td><span class="problem-ack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a title="Zabbix server name for testing of elipsis and what not." class="link-action">Zabbix server name for testing of elipsis and what not.</a></td>
+			<td><a title="Treegix server name for testing of elipsis and what not." class="link-action">Treegix server name for testing of elipsis and what not.</a></td>
 			<td><a title="ValueItemTrigger60 long name for elipsis testing and what not. Going on and on and on and on and on... oh well! :) Can't get enough of those goooodies :)" class="link-action">ValueItemTrigger60 long name for elipsis testing and what not. Going on and on and on and on and on... oh well! :) Can't get enough of those goooodies :)</a></td>
 			<td>5m 2d 23h</td>
 			<td><a data-hintbox="1" class="link-alt green" href="#">Yes</a>&nbsp;<sup>2</sup></td>
@@ -439,7 +439,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:09</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -465,7 +465,7 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger55</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -492,7 +492,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:09</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -516,7 +516,7 @@
 			<td></td>
 			<td><span class="problem-ack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger50</a></td>
 			<td>5m 2d 23h</td>
 			<td>
@@ -534,7 +534,7 @@
 						<tbody>
 							<tr>
 								<td>2017-12-05 14:13:07</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td>fdghfdgh</td>
 								<td></td>
 							</tr>
@@ -566,7 +566,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:06</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -590,7 +590,7 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger45</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -617,7 +617,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:06</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -642,7 +642,7 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger45</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -669,7 +669,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:06</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -693,7 +693,7 @@
 			<td></td>
 			<td><span class="ok-unack-fg">RESOLVED</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger45</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -720,7 +720,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:06</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -744,7 +744,7 @@
 			<td></td>
 			<td><span class="ok-unack-fg">RESOLVED</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger40</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -771,7 +771,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:06</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -795,7 +795,7 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a title="ValueItemTrigger35 long name for elipsis testing and what not. Going on and on and on and on and on... oh well! :) Can't get enough of those goooodies :)" class="link-action" role="button" href="#">ValueItemTrigger35 with lorem ipsum description of problem tat needs to be shortened.</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -822,7 +822,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:03</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -848,7 +848,7 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger30</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -875,7 +875,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:03</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -899,7 +899,7 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger25</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -926,7 +926,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:03</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -950,7 +950,7 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger20</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -977,7 +977,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:00</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -1001,7 +1001,7 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td><a class="link-action" role="button" href="#">ValueItemTrigger15</a></td>
 			<td>5m 2d 23h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
@@ -1028,7 +1028,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:00</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -1052,7 +1052,7 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
 			<td>
 				<span class="icon-depend-down cursor-pointer" data-hintbox="1" data-hintbox-static="1"></span>
 				<div class="hint-box" style="display: none;">
@@ -1099,7 +1099,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 15:40:00</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -1123,8 +1123,8 @@
 			<td></td>
 			<td><span class="problem-unack-fg">PROBLEM</span></td>
 			<td></td>
-			<td><a class="link-action" role="button" href="#">Zabbix server</a></td>
-			<td><a class="link-action" role="button" href="#">Zabbix agent on Zabbix server is unreachable for 5 minutes</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix server</a></td>
+			<td><a class="link-action" role="button" href="#">Treegix agent on Treegix server is unreachable for 5 minutes</a></td>
 			<td>5m 3d 3h</td>
 			<td><a class="link-alt red" href="#">No</a></td>
 			<td class="nowrap">
@@ -1150,7 +1150,7 @@
 							<tr>
 								<td>1</td>
 								<td>2017-11-07 11:45:03</td>
-								<td>Admin (Zabbix Administrator)</td>
+								<td>Admin (Treegix Administrator)</td>
 								<td></td>
 								<td><span class="red">Failed</span></td>
 								<td>
@@ -1178,7 +1178,7 @@
 			</form>
 		</div>
 	</main>
-<footer role="contentinfo">© 2001–2019, Zabbix SIA</footer>
+<footer role="contentinfo">© 2001–2019, Treegix SIA</footer>
 	<div id="zbx_messages" class="overlay-dialogue notif ui-draggable" style="right: 0px; top: 126px; display: none;">
 		<button title="Clear" class="overlay-close-btn"></button>
 		<div class="dashbrd-widget-head cursor-move">

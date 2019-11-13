@@ -120,7 +120,7 @@ am__v_AR_1 =
 libzbxembed_a_AR = $(AR) $(ARFLAGS)
 libzbxembed_a_LIBADD =
 am_libzbxembed_a_OBJECTS = embed.$(OBJEXT) httprequest.$(OBJEXT) \
-	zabbix.$(OBJEXT) duktape.$(OBJEXT)
+	treegix.$(OBJEXT) duktape.$(OBJEXT)
 libzbxembed_a_OBJECTS = $(am_libzbxembed_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -379,7 +379,7 @@ noinst_LIBRARIES = libzbxembed.a
 libzbxembed_a_SOURCES = \
 	embed.c embed.h \
 	httprequest.c httprequest.h \
-	zabbix.c zabbix.h \
+	treegix.c treegix.h \
 	duktape.c duktape.h \
 	duk_config.h
 
@@ -434,7 +434,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/duktape.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/embed.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/httprequest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/zabbix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/treegix.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

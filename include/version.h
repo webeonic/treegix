@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #define ZBX_STR2(str)	#str
 #define ZBX_STR(str)	ZBX_STR2(str)
 
-#define APPLICATION_NAME	"Zabbix Agent"
+#define APPLICATION_NAME	"Treegix Agent"
 #define ZABBIX_REVDATE		"28 October 2019"
 #define ZABBIX_VERSION_MAJOR	4
 #define ZABBIX_VERSION_MINOR	4

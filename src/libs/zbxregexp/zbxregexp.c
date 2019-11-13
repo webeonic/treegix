@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -258,7 +258,7 @@ static int	regexp_exec(const char *string, const zbx_regexp_t *regexp, int flags
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "%s() failed with error %d", __func__, r);
+		treegix_log(LOG_LEVEL_WARNING, "%s() failed with error %d", __func__, r);
 		result = FAIL;
 	}
 

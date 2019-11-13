@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -48,14 +48,14 @@ void	add_alias(const char *name, const char *value)
 			alias->next = aliasList;
 			aliasList = alias;
 
-			zabbix_log(LOG_LEVEL_DEBUG, "Alias added: \"%s\" -> \"%s\"", name, value);
+			treegix_log(LOG_LEVEL_DEBUG, "Alias added: \"%s\" -> \"%s\"", name, value);
 			break;
 		}
 
 		/* treat duplicate Alias as error */
 		if (0 == strcmp(alias->name, name))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "failed to add Alias \"%s\": duplicate name", name);
+			treegix_log(LOG_LEVEL_CRIT, "failed to add Alias \"%s\": duplicate name", name);
 			exit(EXIT_FAILURE);
 		}
 	}

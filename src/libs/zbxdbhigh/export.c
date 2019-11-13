@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ void	zbx_history_export_init(const char *process_name, int process_num)
 
 	if (NULL == (history_file = fopen(history_file_name, "a")))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot open export file '%s': %s", history_file_name,
+		treegix_log(LOG_LEVEL_CRIT, "cannot open export file '%s': %s", history_file_name,
 				zbx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
@@ -93,7 +93,7 @@ void	zbx_history_export_init(const char *process_name, int process_num)
 
 	if (NULL == (trends_file = fopen(trends_file_name, "a")))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot open export file '%s': %s", trends_file_name,
+		treegix_log(LOG_LEVEL_CRIT, "cannot open export file '%s': %s", trends_file_name,
 				zbx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
@@ -105,7 +105,7 @@ void	zbx_problems_export_init(const char *process_name, int process_num)
 
 	if (NULL == (problems_file = fopen(problems_file_name, "a")))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot open export file '%s': %s", problems_file_name,
+		treegix_log(LOG_LEVEL_CRIT, "cannot open export file '%s': %s", problems_file_name,
 				zbx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
@@ -126,14 +126,14 @@ static	void	file_write(const char *buf, size_t count, FILE **file, const char *n
 
 		while (0 != rename(name, filename_old))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "cannot rename export file '%s': %s: retrying in %d seconds",
+			treegix_log(LOG_LEVEL_ERR, "cannot rename export file '%s': %s: retrying in %d seconds",
 					name, zbx_strerror(errno), ZBX_EXPORT_WAIT_FAIL);
 			sleep(ZBX_EXPORT_WAIT_FAIL);
 		}
 
 		while (NULL == (*file = fopen(name, "a")))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "cannot open export file '%s': %s: retrying in %d seconds",
+			treegix_log(LOG_LEVEL_ERR, "cannot open export file '%s': %s: retrying in %d seconds",
 					name, zbx_strerror(errno), ZBX_EXPORT_WAIT_FAIL);
 			sleep(ZBX_EXPORT_WAIT_FAIL);
 		}
@@ -143,7 +143,7 @@ static	void	file_write(const char *buf, size_t count, FILE **file, const char *n
 	{
 		if (count != (ret = (fwrite(buf, 1, count, *file))))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "cannot write to export file '%s': %s: retrying in %d seconds",
+			treegix_log(LOG_LEVEL_ERR, "cannot write to export file '%s': %s: retrying in %d seconds",
 					name, zbx_strerror(errno), ZBX_EXPORT_WAIT_FAIL);
 			sleep(ZBX_EXPORT_WAIT_FAIL);
 		}
@@ -154,7 +154,7 @@ static	void	file_write(const char *buf, size_t count, FILE **file, const char *n
 
 	while ('\n' != fputc('\n', *file))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot write to export file '%s': %s: retrying in %d seconds",
+		treegix_log(LOG_LEVEL_ERR, "cannot write to export file '%s': %s: retrying in %d seconds",
 				name, zbx_strerror(errno), ZBX_EXPORT_WAIT_FAIL);
 		sleep(ZBX_EXPORT_WAIT_FAIL);
 	}
@@ -179,7 +179,7 @@ void	zbx_problems_export_flush(void)
 {
 	if (0 != fflush(problems_file))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "cannot flush export file '%s': %s", problems_file_name,
+		treegix_log(LOG_LEVEL_WARNING, "cannot flush export file '%s': %s", problems_file_name,
 				zbx_strerror(errno));
 	}
 }
@@ -188,7 +188,7 @@ void	zbx_history_export_flush(void)
 {
 	if (0 != fflush(history_file))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot flush export file '%s': %s", history_file_name,
+		treegix_log(LOG_LEVEL_ERR, "cannot flush export file '%s': %s", history_file_name,
 				zbx_strerror(errno));
 	}
 }
@@ -197,7 +197,7 @@ void	zbx_trends_export_flush(void)
 {
 	if (0 != fflush(trends_file))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot flush export file '%s': %s", trends_file_name,
+		treegix_log(LOG_LEVEL_ERR, "cannot flush export file '%s': %s", trends_file_name,
 				zbx_strerror(errno));
 	}
 }

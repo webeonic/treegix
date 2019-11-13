@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ static FARPROC	GetProcAddressAndLog(HMODULE hModule, const char *procName)
 	FARPROC	ptr;
 
 	if (NULL == (ptr = GetProcAddress(hModule, procName)))
-		zabbix_log(LOG_LEVEL_DEBUG, "unable to resolve symbol '%s'", procName);
+		treegix_log(LOG_LEVEL_DEBUG, "unable to resolve symbol '%s'", procName);
 
 	return ptr;
 }
@@ -45,7 +45,7 @@ void	import_symbols(void)
 	if (NULL != (hModule = GetModuleHandle(TEXT("USER32.DLL"))))
 		zbx_GetGuiResources = (DWORD (__stdcall *)(HANDLE, DWORD))GetProcAddressAndLog(hModule, "GetGuiResources");
 	else
-		zabbix_log(LOG_LEVEL_DEBUG, "unable to get handle to USER32.DLL");
+		treegix_log(LOG_LEVEL_DEBUG, "unable to get handle to USER32.DLL");
 
 	if (NULL != (hModule = GetModuleHandle(TEXT("KERNEL32.DLL"))))
 	{
@@ -55,10 +55,10 @@ void	import_symbols(void)
 				DWORD))GetProcAddressAndLog(hModule, "GetFileInformationByHandleEx");
 	}
 	else
-		zabbix_log(LOG_LEVEL_DEBUG, "unable to get handle to KERNEL32.DLL");
+		treegix_log(LOG_LEVEL_DEBUG, "unable to get handle to KERNEL32.DLL");
 
 	if (NULL != (hModule = GetModuleHandle(TEXT("PSAPI.DLL"))))
 		zbx_GetPerformanceInfo = (BOOL (__stdcall *)(PPERFORMANCE_INFORMATION, DWORD))GetProcAddressAndLog(hModule, "GetPerformanceInfo");
 	else
-		zabbix_log(LOG_LEVEL_DEBUG, "unable to get handle to PSAPI.DLL");
+		treegix_log(LOG_LEVEL_DEBUG, "unable to get handle to PSAPI.DLL");
 }

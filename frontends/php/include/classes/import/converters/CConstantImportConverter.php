@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -31,13 +31,13 @@ class CConstantImportConverter extends CConverter {
 	}
 
 	public function convert($data) {
-		$data['zabbix_export'] = $this->replaceConstant($data['zabbix_export'], $this->rules);
+		$data['treegix_export'] = $this->replaceConstant($data['treegix_export'], $this->rules);
 
 		return $data;
 	}
 
 	/**
-	 * Convert human readable import constants to values Zabbix API can work with.
+	 * Convert human readable import constants to values Treegix API can work with.
 	 *
 	 * @param mixed  $data   Import data.
 	 * @param array  $rules  XML rules.

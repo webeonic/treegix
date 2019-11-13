@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ int	zbx_dshm_create(zbx_dshm_t *shm, size_t shm_size, zbx_mutex_name_t mutex,
 {
 	int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() size:" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)shm_size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() size:" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)shm_size);
 
 	if (SUCCEED != zbx_mutex_create(&shm->lock, mutex, errmsg))
 		goto out;
@@ -69,7 +69,7 @@ int	zbx_dshm_create(zbx_dshm_t *shm, size_t shm_size, zbx_mutex_name_t mutex,
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s shmid:%d", __func__, zbx_result_string(ret), shm->shmid);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s shmid:%d", __func__, zbx_result_string(ret), shm->shmid);
 
 	return ret;
 }
@@ -93,7 +93,7 @@ int	zbx_dshm_destroy(zbx_dshm_t *shm, char **errmsg)
 {
 	int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() shmid:%d", __func__, shm->shmid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() shmid:%d", __func__, shm->shmid);
 
 	zbx_mutex_destroy(&shm->lock);
 
@@ -109,7 +109,7 @@ int	zbx_dshm_destroy(zbx_dshm_t *shm, char **errmsg)
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -160,7 +160,7 @@ int	zbx_dshm_validate_ref(const zbx_dshm_t *shm, zbx_dshm_ref_t *shm_ref, char *
 {
 	int	ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s() shmid:%d refid:%d", __func__, shm->shmid, shm_ref->shmid);
+	treegix_log(LOG_LEVEL_TRACE, "In %s() shmid:%d refid:%d", __func__, shm->shmid, shm_ref->shmid);
 
 	if (shm->shmid != shm_ref->shmid)
 	{
@@ -187,7 +187,7 @@ int	zbx_dshm_validate_ref(const zbx_dshm_t *shm, zbx_dshm_ref_t *shm_ref, char *
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_TRACE, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -218,7 +218,7 @@ int	zbx_dshm_realloc(zbx_dshm_t *shm, size_t size, char **errmsg)
 	void	*addr, *addr_old = NULL;
 	size_t	shm_size;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() shmid:%d size:" ZBX_FS_SIZE_T, __func__, shm->shmid, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() shmid:%d size:" ZBX_FS_SIZE_T, __func__, shm->shmid, (zbx_fs_size_t)size);
 
 	shm_size = ZBX_SIZE_T_ALIGN8(size);
 
@@ -265,7 +265,7 @@ int	zbx_dshm_realloc(zbx_dshm_t *shm, size_t size, char **errmsg)
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s shmid:%d", __func__, zbx_result_string(ret), shm->shmid);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s shmid:%d", __func__, zbx_result_string(ret), shm->shmid);
 
 	return ret;
 }

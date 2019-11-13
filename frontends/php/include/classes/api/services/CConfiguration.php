@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ class CConfiguration extends CApiService {
 		$data = (new CXmlValidator)->validate($data, $params['format']);
 
 		foreach (['1.0', '2.0', '3.0', '3.2', '3.4', '4.0', '4.2'] as $version) {
-			if ($data['zabbix_export']['version'] !== $version) {
+			if ($data['treegix_export']['version'] !== $version) {
 				continue;
 			}
 
@@ -170,7 +170,7 @@ class CConfiguration extends CApiService {
 			->getObject(ZABBIX_EXPORT_VERSION)
 			->getSchema();
 
-		// Convert human readable import constants to values Zabbix API can work with.
+		// Convert human readable import constants to values Treegix API can work with.
 		$data = (new CConstantImportConverter($schema))->convert($data);
 
 		// Add default values in place of missed tags.

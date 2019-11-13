@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 $user_navigation = (new CList())
 	->addClass(ZBX_STYLE_TOP_NAV_ICONS)
 	->addItem(
-		(new CForm('get', 'zabbix.php'))
+		(new CForm('get', 'treegix.php'))
 			->cleanItems()
 			->addItem([
 				(new CVar('action', 'search'))->removeId(),
@@ -46,16 +46,16 @@ $user_menu = (new CList())
 			(new CLink(_('Support'), $data['support_url']))
 				->addClass(ZBX_STYLE_TOP_NAV_SUPPORT)
 				->setAttribute('target', '_blank')
-				->setTitle(_('Zabbix Technical Support'))
+				->setTitle(_('Treegix Technical Support'))
 		))->addStyle('padding-left:0')
 	)
 	->addItem(CBrandHelper::isRebranded()
 		? null
 		: (new CListItem(
-			(new CLink('Share', 'https://share.zabbix.com/'))
+			(new CLink('Share', 'https://share.treegix.com/'))
 				->addClass(ZBX_STYLE_TOP_NAV_ZBBSHARE)
 				->setAttribute('target', '_blank')
-				->setTitle(_('Zabbix Share'))
+				->setTitle(_('Treegix Share'))
 		))
 	)
 	->addItem((new CLink(SPACE, CBrandHelper::getHelpUrl()))
@@ -66,7 +66,7 @@ $user_menu = (new CList())
 
 if (!$data['user']['is_guest']) {
 	$user_menu->addItem(
-		(new CLink(SPACE, 'zabbix.php?action=userprofile.edit'))
+		(new CLink(SPACE, 'treegix.php?action=userprofile.edit'))
 			->addClass(ZBX_STYLE_TOP_NAV_PROFILE)
 			->setTitle(getUserFullname($data['user']))
 	);
@@ -88,7 +88,7 @@ $top_menu = (new CDiv())
 			(new CDiv())
 				->addClass(ZBX_STYLE_LOGO)
 				->addStyle(CBrandHelper::getLogoStyle()),
-			'zabbix.php?action=dashboard.view'
+			'treegix.php?action=dashboard.view'
 		))
 			->addClass(ZBX_STYLE_HEADER_LOGO)
 	)

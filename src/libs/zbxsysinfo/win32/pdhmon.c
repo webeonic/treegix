@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ int	USER_PERF_COUNTER(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char	*counter, *error = NULL;
 	double	value;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (1 != request->nparam)
 	{
@@ -53,7 +53,7 @@ int	USER_PERF_COUNTER(AGENT_REQUEST *request, AGENT_RESULT *result)
 	SET_DBL_RESULT(result, value);
 	ret = SYSINFO_RET_OK;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -65,7 +65,7 @@ static int perf_counter_ex(const char *function, AGENT_REQUEST *request, AGENT_R
 	int	interval, ret = SYSINFO_RET_FAIL;
 	double	value;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", function);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", function);
 
 	if (2 < request->nparam)
 	{
@@ -115,7 +115,7 @@ static int perf_counter_ex(const char *function, AGENT_REQUEST *request, AGENT_R
 	ret = SYSINFO_RET_OK;
 	SET_DBL_RESULT(result, value);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", function, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", function, zbx_result_string(ret));
 
 	return ret;
 }

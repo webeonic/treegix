@@ -36,7 +36,7 @@ found_ssh2="yes",)
 
 AC_DEFUN([LIBSSH2_ACCEPT_VERSION],
 [
-	# Zabbix minimal major supported version of libssh2:
+	# Treegix minimal major supported version of libssh2:
 	minimal_libssh2_major_version=1
 
 	# get the major version

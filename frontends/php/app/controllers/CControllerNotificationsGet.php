@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -165,13 +165,13 @@ class CControllerNotificationsGet extends CController {
 			foreach ($problems_by_triggerid as $triggerid => $notification_eventids) {
 				$trigger = $triggers[$triggerid];
 
-				$url_problems = (new CUrl('zabbix.php'))
+				$url_problems = (new CUrl('treegix.php'))
 					->setArgument('action', 'problem.view')
 					->setArgument('filter_hostids[]', $trigger['hosts'][0]['hostid'])
 					->setArgument('filter_set', '1')
 					->getUrl();
 
-				$url_events = (new CUrl('zabbix.php'))
+				$url_events = (new CUrl('treegix.php'))
 					->setArgument('action', 'problem.view')
 					->setArgument('filter_triggerids[]', $triggerid)
 					->setArgument('filter_set', '1')

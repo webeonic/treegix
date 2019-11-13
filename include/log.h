@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -61,26 +61,26 @@ zbx_err_codes_t;
 
 #ifdef HAVE___VA_ARGS__
 #	define ZBX_ZABBIX_LOG_CHECK
-#	define zabbix_log(level, ...)									\
+#	define treegix_log(level, ...)									\
 													\
 	do												\
 	{												\
 		if (SUCCEED == ZBX_CHECK_LOG_LEVEL(level))						\
-			__zbx_zabbix_log(level, __VA_ARGS__);						\
+			__zbx_treegix_log(level, __VA_ARGS__);						\
 	}												\
 	while (0)
 #else
-#	define zabbix_log __zbx_zabbix_log
+#	define treegix_log __zbx_treegix_log
 #endif
 
-int		zabbix_open_log(int type, int level, const char *filename, char **error);
-void		__zbx_zabbix_log(int level, const char *fmt, ...) __zbx_attr_format_printf(2, 3);
-void		zabbix_close_log(void);
+int		treegix_open_log(int type, int level, const char *filename, char **error);
+void		__zbx_treegix_log(int level, const char *fmt, ...) __zbx_attr_format_printf(2, 3);
+void		treegix_close_log(void);
 
 #ifndef _WINDOWS
-int		zabbix_increase_log_level(void);
-int		zabbix_decrease_log_level(void);
-const char	*zabbix_get_log_level_string(void);
+int		treegix_increase_log_level(void);
+int		treegix_decrease_log_level(void);
+const char	*treegix_get_log_level_string(void);
 #endif
 
 char		*zbx_strerror(int errnum);

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -445,7 +445,7 @@ function PopUp(action, options, dialogueid, trigger_elmnt) {
 		'dialogueid': (typeof dialogueid === 'undefined' || !dialogueid) ? getOverlayDialogueId() : dialogueid
 	};
 
-	var url = new Curl('zabbix.php');
+	var url = new Curl('treegix.php');
 	url.setArgument('action', action);
 
 	jQuery.ajax({

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ static int	zbx_inverse_matrix(zbx_matrix_t *m, zbx_matrix_t *r)
 
 		if (0.0 == ZBX_MATRIX_EL(m, 0, 0))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "matrix is singular");
+			treegix_log(LOG_LEVEL_DEBUG, "matrix is singular");
 			res = FAIL;
 			goto out;
 		}
@@ -186,7 +186,7 @@ static int	zbx_inverse_matrix(zbx_matrix_t *m, zbx_matrix_t *r)
 		if (0.0 == (det = ZBX_MATRIX_EL(m, 0, 0) * ZBX_MATRIX_EL(m, 1, 1) -
 				ZBX_MATRIX_EL(m, 0, 1) * ZBX_MATRIX_EL(m, 1, 0)))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "matrix is singular");
+			treegix_log(LOG_LEVEL_DEBUG, "matrix is singular");
 			res = FAIL;
 			goto out;
 		}
@@ -223,7 +223,7 @@ static int	zbx_inverse_matrix(zbx_matrix_t *m, zbx_matrix_t *r)
 
 		if (0.0 == pivot)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "matrix is singular");
+			treegix_log(LOG_LEVEL_DEBUG, "matrix is singular");
 			res = FAIL;
 			goto out;
 		}
@@ -356,7 +356,7 @@ static int	zbx_fill_dependent(double *x, int n, zbx_fit_t fit, zbx_matrix_t *m)
 		{
 			if (0.0 >= x[i])
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "data contains negative or zero values");
+				treegix_log(LOG_LEVEL_DEBUG, "data contains negative or zero values");
 				return FAIL;
 			}
 
@@ -698,7 +698,7 @@ while(0)
 
 	if (0 == roots_ok)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "polynomial root finding problem is ill-defined");
+		treegix_log(LOG_LEVEL_DEBUG, "polynomial root finding problem is ill-defined");
 		res = FAIL;
 	}
 	else
@@ -942,7 +942,7 @@ static void	zbx_log_expression(double now, zbx_fit_t fit, int k, zbx_matrix_t *c
 	/* x is item value, t is time in seconds counted from now */
 	if (FIT_LINEAR == fit)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = (" ZBX_FS_DBL ") + (" ZBX_FS_DBL ") * (" ZBX_FS_DBL " + t)",
+		treegix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = (" ZBX_FS_DBL ") + (" ZBX_FS_DBL ") * (" ZBX_FS_DBL " + t)",
 				ZBX_MATRIX_EL(coeffs, 0, 0), ZBX_MATRIX_EL(coeffs, 1, 0), now);
 	}
 	else if (FIT_POLYNOMIAL == fit)
@@ -959,23 +959,23 @@ static void	zbx_log_expression(double now, zbx_fit_t fit, int k, zbx_matrix_t *c
 				zbx_snprintf_alloc(&polynomial, &alloc, &offset, " + ");
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = %s", polynomial);
+		treegix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = %s", polynomial);
 
 		zbx_free(polynomial);
 	}
 	else if (FIT_EXPONENTIAL == fit)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = (" ZBX_FS_DBL ") * exp( (" ZBX_FS_DBL ") * (" ZBX_FS_DBL " + t) )",
+		treegix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = (" ZBX_FS_DBL ") * exp( (" ZBX_FS_DBL ") * (" ZBX_FS_DBL " + t) )",
 				exp(ZBX_MATRIX_EL(coeffs, 0, 0)), ZBX_MATRIX_EL(coeffs, 1, 0), now);
 	}
 	else if (FIT_LOGARITHMIC == fit)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = (" ZBX_FS_DBL ") + (" ZBX_FS_DBL ") * log(" ZBX_FS_DBL " + t)",
+		treegix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = (" ZBX_FS_DBL ") + (" ZBX_FS_DBL ") * log(" ZBX_FS_DBL " + t)",
 				ZBX_MATRIX_EL(coeffs, 0, 0), ZBX_MATRIX_EL(coeffs, 1, 0), now);
 	}
 	else if (FIT_POWER == fit)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = (" ZBX_FS_DBL ") * (" ZBX_FS_DBL " + t) ^ (" ZBX_FS_DBL ")",
+		treegix_log(LOG_LEVEL_DEBUG, "fitted expression is: x = (" ZBX_FS_DBL ") * (" ZBX_FS_DBL " + t) ^ (" ZBX_FS_DBL ")",
 				exp(ZBX_MATRIX_EL(coeffs, 0, 0)), now, ZBX_MATRIX_EL(coeffs, 1, 0));
 	}
 	else
@@ -1127,7 +1127,7 @@ out:
 	}
 	else if (ZBX_IS_NAN(result))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "numerical error");
+		treegix_log(LOG_LEVEL_DEBUG, "numerical error");
 		result = ZBX_MATH_ERROR;
 	}
 	else if (DB_INFINITY < result)
@@ -1202,7 +1202,7 @@ out:
 	}
 	else if (ZBX_IS_NAN(result))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "numerical error");
+		treegix_log(LOG_LEVEL_DEBUG, "numerical error");
 		result = ZBX_MATH_ERROR;
 	}
 	else if (0.0 > result || DB_INFINITY < result)

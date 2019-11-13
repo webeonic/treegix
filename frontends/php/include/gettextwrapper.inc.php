@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -109,8 +109,8 @@ function _s($string) {
  * Supports unlimited parameters; placeholders must be defined as %1$s, %2$s etc.
  *
  * Examples:
- * _n('%2$s item on host %1$s', '%2$s items on host %1$s', 'Zabbix server', 1) // 1 item on host Zabbix server
- * _n('%2$s item on host %1$s', '%2$s items on host %1$s', 'Zabbix server', 2) // 2 items on host Zabbix server
+ * _n('%2$s item on host %1$s', '%2$s items on host %1$s', 'Treegix server', 1) // 1 item on host Treegix server
+ * _n('%2$s item on host %1$s', '%2$s items on host %1$s', 'Treegix server', 2) // 2 items on host Treegix server
  *
  * @param string $string1		singular string
  * @param string $string2		plural string

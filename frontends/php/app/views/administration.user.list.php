@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -39,11 +39,11 @@ $widget = (new CWidget())
 			),
 			(new CTag('nav', true,
 				(new CList())
-					->addItem(new CRedirectButton(_('Create user'), 'zabbix.php?action=user.edit'))
+					->addItem(new CRedirectButton(_('Create user'), 'treegix.php?action=user.edit'))
 				))->setAttribute('aria-label', _('Content controls'))
 		]))
 	)
-	->addItem((new CFilter((new CUrl('zabbix.php'))->setArgument('action', 'user.list')))
+	->addItem((new CFilter((new CUrl('treegix.php'))->setArgument('action', 'user.list')))
 		->setProfile($data['profileIdx'])
 		->setActiveTab($data['active_tab'])
 		->addFilterTab(_('Filter'), [
@@ -116,7 +116,7 @@ foreach ($data['users'] as $user) {
 	}
 
 	$blocked = ($user['attempt_failed'] >= ZBX_LOGIN_ATTEMPTS)
-		? (new CLink(_('Blocked'), 'zabbix.php?action=user.unblock&userids[]='.$userid))
+		? (new CLink(_('Blocked'), 'treegix.php?action=user.unblock&userids[]='.$userid))
 			->addClass(ZBX_STYLE_LINK_ACTION)
 			->addClass(ZBX_STYLE_RED)
 			->addSID()
@@ -167,7 +167,7 @@ foreach ($data['users'] as $user) {
 			$gui_access_style = ZBX_STYLE_GREEN;
 	}
 
-	$alias = new CLink($user['alias'], (new CUrl('zabbix.php'))
+	$alias = new CLink($user['alias'], (new CUrl('treegix.php'))
 		->setArgument('action', 'user.edit')
 		->setArgument('userid', $userid)
 	);

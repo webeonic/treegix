@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -449,11 +449,11 @@ static int	tm_save_tasks(zbx_tm_task_t **tasks, int tasks_num)
  ******************************************************************************/
 void	zbx_tm_save_tasks(zbx_vector_ptr_t *tasks)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() tasks_num:%d", __func__, tasks->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() tasks_num:%d", __func__, tasks->values_num);
 
 	tm_save_tasks((zbx_tm_task_t **)tasks->values, tasks->values_num);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -472,11 +472,11 @@ int	zbx_tm_save_task(zbx_tm_task_t *task)
 {
 	int	ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	ret = tm_save_tasks(&task, 1);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -498,7 +498,7 @@ void	zbx_tm_update_task_status(zbx_vector_ptr_t *tasks, int status)
 	char			*sql = NULL;
 	size_t			sql_alloc = 0, sql_offset = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&taskids);
 
@@ -517,7 +517,7 @@ void	zbx_tm_update_task_status(zbx_vector_ptr_t *tasks, int status)
 
 	zbx_vector_uint64_destroy(&taskids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -852,7 +852,7 @@ void	zbx_tm_json_deserialize_tasks(const struct zbx_json_parse *jp, zbx_vector_p
 
 		if (SUCCEED != zbx_json_brackets_open(pnext, &jp_task))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "Cannot deserialize task record: %s", jp->start);
+			treegix_log(LOG_LEVEL_DEBUG, "Cannot deserialize task record: %s", jp->start);
 			continue;
 		}
 
@@ -860,7 +860,7 @@ void	zbx_tm_json_deserialize_tasks(const struct zbx_json_parse *jp, zbx_vector_p
 
 		if (NULL == task)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "Cannot deserialize task at: %s", jp_task.start);
+			treegix_log(LOG_LEVEL_DEBUG, "Cannot deserialize task at: %s", jp_task.start);
 			continue;
 		}
 
@@ -882,7 +882,7 @@ void	zbx_tm_json_deserialize_tasks(const struct zbx_json_parse *jp, zbx_vector_p
 
 		if (NULL == task->data)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "Cannot deserialize task data at: %s", jp_task.start);
+			treegix_log(LOG_LEVEL_DEBUG, "Cannot deserialize task data at: %s", jp_task.start);
 			zbx_tm_task_free(task);
 			continue;
 		}

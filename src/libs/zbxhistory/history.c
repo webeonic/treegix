@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ int	zbx_history_add_values(const zbx_vector_ptr_t *history)
 {
 	int	i, flags = 0, ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	for (i = 0; i < ITEM_VALUE_TYPE_MAX; i++)
 	{
@@ -120,7 +120,7 @@ int	zbx_history_add_values(const zbx_vector_ptr_t *history)
 			ret = writer->flush(writer);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -151,7 +151,7 @@ int	zbx_history_get_values(zbx_uint64_t itemid, int value_type, int start, int c
 	int			ret, pos;
 	zbx_history_iface_t	*writer = &history_ifaces[value_type];
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" ZBX_FS_UI64 " value_type:%d start:%d count:%d end:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" ZBX_FS_UI64 " value_type:%d start:%d count:%d end:%d",
 			__func__, itemid, value_type, start, count, end);
 
 	pos = values->values_num;
@@ -167,11 +167,11 @@ int	zbx_history_get_values(zbx_uint64_t itemid, int value_type, int start, int c
 			zbx_history_record_t	*h = &values->values[i];
 
 			zbx_history_value2str(buffer, sizeof(buffer), &h->value, value_type);
-			zabbix_log(LOG_LEVEL_TRACE, "  %d.%09d %s", h->timestamp.sec, h->timestamp.ns, buffer);
+			treegix_log(LOG_LEVEL_TRACE, "  %d.%09d %s", h->timestamp.sec, h->timestamp.ns, buffer);
 		}
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s values:%d", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s values:%d", __func__, zbx_result_string(ret),
 			values->values_num - pos);
 
 	return ret;

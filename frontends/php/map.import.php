@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ $data = [
 ];
 
 if (!CHtmlUrlValidator::validate($data['backurl'], ['allow_user_macro' => false, 'validate_uri_schemes' => true])) {
-	$data['backurl'] = 'zabbix.php?action=dashboard.view';
+	$data['backurl'] = 'treegix.php?action=dashboard.view';
 }
 
 // rules presets
@@ -120,7 +120,7 @@ if (hasRequest('rules_preset') && !hasRequest('rules')) {
 		case 'mediatype':
 			$data['rules']['mediaTypes'] = ['updateExisting' => false, 'createMissing' => true];
 
-			$data['backurl'] = 'zabbix.php?action=mediatype.list';
+			$data['backurl'] = 'treegix.php?action=mediatype.list';
 			break;
 
 		case 'screen':

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -279,7 +279,7 @@ ZBX_NotificationsAudio.prototype.handleOnloadeddata = function() {
 		if (error.name === 'NotAllowedError' && this.audio.paused) {
 			console.warn(error.message);
 			console.warn(
-				'Zabbix was not able to play audio due to "Autoplay policy". Please see manual for more information.'
+				'Treegix was not able to play audio due to "Autoplay policy". Please see manual for more information.'
 			);
 		}
 	}.bind(this));

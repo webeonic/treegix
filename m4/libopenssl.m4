@@ -54,7 +54,7 @@ found_openssl_with_psk="yes",)
 
 AC_DEFUN([LIBOPENSSL_ACCEPT_VERSION],
 [
-	# Zabbix minimal supported version of OpenSSL.
+	# Treegix minimal supported version of OpenSSL.
 	# Version numbering scheme is described in /usr/include/openssl/opensslv.h. Specify version number without the
 	# last byte (status). E.g., version 1.0.1 is 0x1000100f, but without the last byte it is 0x1000100.
 	minimal_openssl_version=0x1000100

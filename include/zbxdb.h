@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #ifndef ZBX_MAX_OVERFLOW_SQL_SIZE
 #	ifdef HAVE_ORACLE
 		/* Do not use "overflowing" (multi-statement) queries for Oracle. */
-		/* Zabbix benefits from cursor_sharing=force Oracle parameter */
+		/* Treegix benefits from cursor_sharing=force Oracle parameter */
 		/* which doesn't apply to PL/SQL blocks. */
 #		define ZBX_MAX_OVERFLOW_SQL_SIZE	0
 #	else

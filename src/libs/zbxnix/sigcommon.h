@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -28,8 +28,8 @@ extern int	sig_parent_pid;
 
 #define SIG_CHECK_PARAMS(sig, siginfo, context)											\
 		if (NULL == siginfo)												\
-			zabbix_log(LOG_LEVEL_DEBUG, "received [signal:%d(%s)] with NULL siginfo", sig, get_signal_name(sig));	\
+			treegix_log(LOG_LEVEL_DEBUG, "received [signal:%d(%s)] with NULL siginfo", sig, get_signal_name(sig));	\
 		if (NULL == context)												\
-			zabbix_log(LOG_LEVEL_DEBUG, "received [signal:%d(%s)] with NULL context", sig, get_signal_name(sig))
+			treegix_log(LOG_LEVEL_DEBUG, "received [signal:%d(%s)] with NULL context", sig, get_signal_name(sig))
 
 #endif	/* ZABBIX_SIGCOMMON_H */

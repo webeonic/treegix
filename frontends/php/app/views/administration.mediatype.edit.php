@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -306,7 +306,7 @@ $mediaOptionsForm = (new CFormList('options'))
 $tabs->addTab('optionsTab', _('Options'), $mediaOptionsForm);
 
 // append buttons to form
-$cancelButton = (new CRedirectButton(_('Cancel'), 'zabbix.php?action=mediatype.list'))->setId('cancel');
+$cancelButton = (new CRedirectButton(_('Cancel'), 'treegix.php?action=mediatype.list'))->setId('cancel');
 
 if ($data['mediatypeid'] == 0) {
 	$addButton = (new CSubmitButton(_('Add'), 'action', 'mediatype.create'))->setId('add');
@@ -320,7 +320,7 @@ else {
 	$updateButton = (new CSubmitButton(_('Update'), 'action', 'mediatype.update'))->setId('update');
 	$cloneButton = (new CSimpleButton(_('Clone')))->setId('clone');
 	$deleteButton = (new CRedirectButton(_('Delete'),
-		'zabbix.php?action=mediatype.delete&sid='.$data['sid'].'&mediatypeids[]='.$data['mediatypeid'],
+		'treegix.php?action=mediatype.delete&sid='.$data['sid'].'&mediatypeids[]='.$data['mediatypeid'],
 		_('Delete media type?')
 	))
 		->setId('delete');

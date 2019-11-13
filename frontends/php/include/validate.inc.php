@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -366,7 +366,7 @@ function check_field(&$fields, &$field, $checks) {
 
 function invalid_url($msg = null) {
 	if (empty($msg)) {
-		$msg = _('Zabbix has received an incorrect request.');
+		$msg = _('Treegix has received an incorrect request.');
 	}
 
 	// required global parameters for correct including page_header.php

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 ** @author Matt Knapp <mdknapp[at]gmail[dot]com>
 ** @author Brett Stimmerman <brettstimmerman[at]gmail[dot]com>
 ** @author Clay Loveless <clay@killersoft.com>
-** @modified by Artem Suharev <aly@zabbix.com>
+** @modified by Artem Suharev <aly@treegix.com>
 **
 ** @license http://opensource.org/licenses/bsd-license.php BSD
 **/

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class CControllerProxyUpdate extends CController {
 		if (!$ret) {
 			switch ($this->GetValidationError()) {
 				case self::VALIDATION_ERROR:
-					$response = new CControllerResponseRedirect('zabbix.php?action=proxy.edit');
+					$response = new CControllerResponseRedirect('treegix.php?action=proxy.edit');
 					$response->setFormData($this->getInputAll());
 					$response->setMessageError(_('Cannot update proxy'));
 					$this->setResponse($response);
@@ -107,12 +107,12 @@ class CControllerProxyUpdate extends CController {
 		$result = DBend($result);
 
 		if ($result) {
-			$response = new CControllerResponseRedirect('zabbix.php?action=proxy.list&uncheck=1');
+			$response = new CControllerResponseRedirect('treegix.php?action=proxy.list&uncheck=1');
 			$response->setMessageOk(_('Proxy updated'));
 		}
 		else {
 			$response = new CControllerResponseRedirect(
-				'zabbix.php?action=proxy.edit&proxyid='.$this->getInput('proxyid')
+				'treegix.php?action=proxy.edit&proxyid='.$this->getInput('proxyid')
 			);
 			$response->setFormData($this->getInputAll());
 			$response->setMessageError(_('Cannot update proxy'));

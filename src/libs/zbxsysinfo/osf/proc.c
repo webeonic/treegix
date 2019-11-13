@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if (-1 == ioctl(proc, PIOCPSINFO, &psinfo))
 				goto lbl_skip_procces;
 
-			/* Self process information. It leads to incorrect results for proc.mem[zabbix_agentd]. */
+			/* Self process information. It leads to incorrect results for proc.mem[treegix_agentd]. */
 			if (psinfo.pr_pid == curr_pid)
 				goto lbl_skip_procces;
 
@@ -220,7 +220,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if (-1 == ioctl(proc, PIOCPSINFO, &psinfo))
 				goto lbl_skip_procces;
 
-			/* Self process information. It leads to incorrect results for proc.num[zabbix_agentd]. */
+			/* Self process information. It leads to incorrect results for proc.num[treegix_agentd]. */
 			if (psinfo.pr_pid == curr_pid)
 				goto lbl_skip_procces;
 

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -173,7 +173,7 @@ void	init_metrics(void)
 	{
 		if (SUCCEED != add_metric(&parameters_agent[i], error, sizeof(error)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
+			treegix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -184,7 +184,7 @@ void	init_metrics(void)
 	{
 		if (SUCCEED != add_metric(&parameters_common[i], error, sizeof(error)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
+			treegix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -195,7 +195,7 @@ void	init_metrics(void)
 	{
 		if (SUCCEED != add_metric(&parameters_specific[i], error, sizeof(error)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
+			treegix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -206,7 +206,7 @@ void	init_metrics(void)
 	{
 		if (SUCCEED != add_metric(&parameters_simple[i], error, sizeof(error)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
+			treegix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -215,7 +215,7 @@ void	init_metrics(void)
 #ifdef WITH_HOSTNAME_METRIC
 	if (SUCCEED != add_metric(&parameter_hostname, error, sizeof(error)))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
+		treegix_log(LOG_LEVEL_CRIT, "cannot add item key: %s", error);
 		exit(EXIT_FAILURE);
 	}
 #endif
@@ -1236,7 +1236,7 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 	char	buffer[MAX_STRING_LEN], *data;
 	size_t	data_alloc = MAX_STRING_LEN, data_offset = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() key:'%s'", __func__, request->key);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() key:'%s'", __func__, request->key);
 
 	if (-1 == pipe(fds))
 	{
@@ -1258,7 +1258,7 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 
 	if (0 == pid)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "executing in data process for key:'%s'", request->key);
+		treegix_log(LOG_LEVEL_DEBUG, "executing in data process for key:'%s'", request->key);
 
 		zbx_set_metric_thread_signal_handler();
 
@@ -1320,7 +1320,7 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 	{
 		if (EINTR != errno)
 		{
-			zabbix_log(LOG_LEVEL_ERR, "failed to wait on child processes: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_ERR, "failed to wait on child processes: %s", zbx_strerror(errno));
 			ret = SYSINFO_RET_FAIL;
 			break;
 		}
@@ -1347,7 +1347,7 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 
 	zbx_free(data);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s '%s'", __func__, zbx_sysinfo_ret_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s '%s'", __func__, zbx_sysinfo_ret_string(ret),
 			ISSET_MSG(result) ? result->msg : "");
 	return ret;
 }
@@ -1376,7 +1376,7 @@ ZBX_THREAD_ENTRY(agent_metric_thread, data)
 	zbx_metric_thread_args_t	*args = (zbx_metric_thread_args_t *)((zbx_thread_args_t *)data)->args;
 	mutex_flag = args->mutex_flag;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "executing in data thread for key:'%s'", args->request->key);
+	treegix_log(LOG_LEVEL_DEBUG, "executing in data thread for key:'%s'", args->request->key);
 
 	if (SYSINFO_RET_FAIL == (args->agent_ret = args->func(args->request, args->result, args->timeout_event)))
 	{
@@ -1411,7 +1411,7 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 	DWORD				rc;
 	BOOL				terminate_thread = FALSE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() key:'%s'", __func__, request->key);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() key:'%s'", __func__, request->key);
 
 	if (NULL == (metric_args.timeout_event = CreateEvent(NULL, TRUE, FALSE, NULL)))
 	{
@@ -1449,7 +1449,7 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 
 		if (FALSE == SetEvent(metric_args.timeout_event))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "SetEvent() failed: %s", strerror_from_system(GetLastError()));
+			treegix_log(LOG_LEVEL_ERR, "SetEvent() failed: %s", strerror_from_system(GetLastError()));
 			terminate_thread = TRUE;
 		}
 		else
@@ -1458,13 +1458,13 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 
 			if (WAIT_FAILED == timeout_rc)
 			{
-				zabbix_log(LOG_LEVEL_ERR, "Waiting for data failed: %s",
+				treegix_log(LOG_LEVEL_ERR, "Waiting for data failed: %s",
 						strerror_from_system(GetLastError()));
 				terminate_thread = TRUE;
 			}
 			else if (WAIT_TIMEOUT == timeout_rc)
 			{
-				zabbix_log(LOG_LEVEL_ERR, "Stuck data thread");
+				treegix_log(LOG_LEVEL_ERR, "Stuck data thread");
 				terminate_thread = TRUE;
 			}
 			/* timeout_rc must be WAIT_OBJECT_0 (signaled) */
@@ -1475,13 +1475,13 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 	{
 		if (FALSE != TerminateThread(thread, 0))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "%s(): TerminateThread() for %s[%s%s] succeeded", __func__,
+			treegix_log(LOG_LEVEL_ERR, "%s(): TerminateThread() for %s[%s%s] succeeded", __func__,
 					request->key, (0 < request->nparam) ? request->params[0] : "",
 					(1 < request->nparam) ? ",..." : "");
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_ERR, "%s(): TerminateThread() for %s[%s%s] failed: %s", __func__,
+			treegix_log(LOG_LEVEL_ERR, "%s(): TerminateThread() for %s[%s%s] failed: %s", __func__,
 					request->key, (0 < request->nparam) ? request->params[0] : "",
 					(1 < request->nparam) ? ",..." : "",
 					strerror_from_system(GetLastError()));
@@ -1491,7 +1491,7 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 	CloseHandle(thread);
 	CloseHandle(metric_args.timeout_event);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s '%s'", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s '%s'", __func__,
 			zbx_sysinfo_ret_string(metric_args.agent_ret), ISSET_MSG(result) ? result->msg : "");
 
 	return WAIT_OBJECT_0 == rc ? metric_args.agent_ret : SYSINFO_RET_FAIL;

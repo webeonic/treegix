@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -82,17 +82,17 @@ static int	unpack_ntp(ntp_data *data, const unsigned char *request, const unsign
 	int	i, ret = FAIL;
 	double	d;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NTP_PACKET_SIZE != length)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "invalid response size: %d", length);
+		treegix_log(LOG_LEVEL_DEBUG, "invalid response size: %d", length);
 		goto out;
 	}
 
 	if (0 != memcmp(response + NTP_OFFSET_ORIGINATE, request + NTP_OFFSET_TRANSMIT, 8))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "originate timestamp in the response does not match"
+		treegix_log(LOG_LEVEL_DEBUG, "originate timestamp in the response does not match"
 				" transmit timestamp in the request: 0x%04x%04x 0x%04x%04x",
 				*(const unsigned int *)&response[NTP_OFFSET_ORIGINATE],
 				*(const unsigned int *)&response[NTP_OFFSET_ORIGINATE + 4],
@@ -105,7 +105,7 @@ static int	unpack_ntp(ntp_data *data, const unsigned char *request, const unsign
 
 	if (NTP_VERSION != data->version)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "invalid NTP version in the response: %d", (int)data->version);
+		treegix_log(LOG_LEVEL_DEBUG, "invalid NTP version in the response: %d", (int)data->version);
 		goto out;
 	}
 
@@ -113,13 +113,13 @@ static int	unpack_ntp(ntp_data *data, const unsigned char *request, const unsign
 
 	if (NTP_MODE_SERVER != data->mode)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "invalid mode in the response: %d", (int)data->mode);
+		treegix_log(LOG_LEVEL_DEBUG, "invalid mode in the response: %d", (int)data->mode);
 		goto out;
 	}
 
 	if (15 < response[1])
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "invalid stratum in the response: %d", (int)response[1]);
+		treegix_log(LOG_LEVEL_DEBUG, "invalid stratum in the response: %d", (int)response[1]);
 		goto out;
 	}
 
@@ -130,13 +130,13 @@ static int	unpack_ntp(ntp_data *data, const unsigned char *request, const unsign
 
 	if (0 == data->transmit)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "invalid transmit timestamp in the response: " ZBX_FS_DBL, data->transmit);
+		treegix_log(LOG_LEVEL_DEBUG, "invalid transmit timestamp in the response: " ZBX_FS_DBL, data->transmit);
 		goto out;
 	}
 
 	ret = SUCCEED;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -169,7 +169,7 @@ int	check_ntp(char *host, unsigned short port, int timeout, int *value_int)
 	}
 
 	if (FAIL == ret)
-		zabbix_log(LOG_LEVEL_DEBUG, "NTP check error: %s", zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "NTP check error: %s", zbx_socket_strerror());
 
 	return SYSINFO_RET_OK;
 }

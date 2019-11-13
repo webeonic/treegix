@@ -33,7 +33,7 @@ found_gnutls="yes",)
 
 AC_DEFUN([LIBGNUTLS_ACCEPT_VERSION],
 [
-	# Zabbix minimal supported version of libgnutls:
+	# Treegix minimal supported version of libgnutls:
 	minimal_gnutls_version_major=3
 	minimal_gnutls_version_minor=1
 	minimal_gnutls_version_patch=18

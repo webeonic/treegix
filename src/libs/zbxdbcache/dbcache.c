@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -347,7 +347,7 @@ static void	DCupdate_trends(zbx_vector_uint64_pair_t *trends_diff)
 {
 	int	i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	LOCK_TRENDS;
 
@@ -361,7 +361,7 @@ static void	DCupdate_trends(zbx_vector_uint64_pair_t *trends_diff)
 
 	UNLOCK_TRENDS;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -639,7 +639,7 @@ static void	DBflush_trends(ZBX_DC_TREND *trends, int *trends_num, zbx_vector_uin
 	ZBX_DC_TREND	*trend = NULL;
 	const char	*table_name;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() trends_num:%d", __func__, *trends_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() trends_num:%d", __func__, *trends_num);
 
 	clock = trends[0].clock;
 	value_type = trends[0].value_type;
@@ -743,7 +743,7 @@ static void	DBflush_trends(ZBX_DC_TREND *trends, int *trends_num, zbx_vector_uin
 	}
 	*trends_num = num;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -841,7 +841,7 @@ static void	DCmass_update_trends(const ZBX_DC_HISTORY *history, int history_num,
 	zbx_timespec_t	ts;
 	int		trends_alloc = 0, i, hour, seconds;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_timespec(&ts);
 	seconds = ts.sec % SEC_PER_HOUR;
@@ -882,7 +882,7 @@ static void	DCmass_update_trends(const ZBX_DC_HISTORY *history, int history_num,
 
 	UNLOCK_TRENDS;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1307,7 +1307,7 @@ static void	DCexport_history_and_trends(const ZBX_DC_HISTORY *history, int histo
 	DC_ITEM			*item;
 	zbx_item_info_t		item_info;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d trends_num:%d", __func__, history_num, trends_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d trends_num:%d", __func__, history_num, trends_num);
 
 	zbx_vector_uint64_create(&hostids);
 	zbx_vector_uint64_create(&item_info_ids);
@@ -1399,7 +1399,7 @@ clean:
 	zbx_vector_uint64_destroy(&item_info_ids);
 	zbx_vector_uint64_destroy(&hostids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1418,7 +1418,7 @@ static void	DCexport_all_trends(const ZBX_DC_TREND *trends, int trends_num)
 	zbx_vector_uint64_t	itemids;
 	int			*errcodes, i, num;
 
-	zabbix_log(LOG_LEVEL_WARNING, "exporting trend data...");
+	treegix_log(LOG_LEVEL_WARNING, "exporting trend data...");
 
 	while (0 < trends_num)
 	{
@@ -1448,7 +1448,7 @@ static void	DCexport_all_trends(const ZBX_DC_TREND *trends, int trends_num)
 		trends_num -= num;
 	}
 
-	zabbix_log(LOG_LEVEL_WARNING, "exporting trend data done");
+	treegix_log(LOG_LEVEL_WARNING, "exporting trend data done");
 }
 
 /******************************************************************************
@@ -1466,9 +1466,9 @@ static void	DCsync_trends(void)
 	ZBX_DC_TREND		*trends = NULL, *trend;
 	int			trends_alloc = 0, trends_num = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() trends_num:%d", __func__, cache->trends_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() trends_num:%d", __func__, cache->trends_num);
 
-	zabbix_log(LOG_LEVEL_WARNING, "syncing trend data...");
+	treegix_log(LOG_LEVEL_WARNING, "syncing trend data...");
 
 	LOCK_TRENDS;
 
@@ -1494,9 +1494,9 @@ static void	DCsync_trends(void)
 
 	zbx_free(trends);
 
-	zabbix_log(LOG_LEVEL_WARNING, "syncing trend data done");
+	treegix_log(LOG_LEVEL_WARNING, "syncing trend data done");
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -1522,7 +1522,7 @@ static void	recalculate_triggers(const ZBX_DC_HISTORY *history, int history_num,
 	zbx_vector_ptr_t	trigger_order;
 	zbx_vector_ptr_t	trigger_items;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 != history_num)
 	{
@@ -1581,7 +1581,7 @@ out:
 	zbx_free(timespecs);
 	zbx_free(itemids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCinventory_value_add(zbx_vector_ptr_t *inventory_values, const DC_ITEM *item, ZBX_DC_HISTORY *h)
@@ -1896,7 +1896,7 @@ static zbx_item_diff_t	*calculate_item_update(const DC_ITEM *item, const ZBX_DC_
 
 		if (ITEM_STATE_NOTSUPPORTED == h->state)
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "item \"%s:%s\" became not supported: %s",
+			treegix_log(LOG_LEVEL_WARNING, "item \"%s:%s\" became not supported: %s",
 					item->host.host, item->key_orig, h->value.str);
 
 			zbx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_ITEM, item->itemid, &h->ts, h->state, NULL,
@@ -1907,7 +1907,7 @@ static zbx_item_diff_t	*calculate_item_update(const DC_ITEM *item, const ZBX_DC_
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "item \"%s:%s\" became supported",
+			treegix_log(LOG_LEVEL_WARNING, "item \"%s:%s\" became supported",
 					item->host.host, item->key_orig);
 
 			/* we know it's EVENT_OBJECT_ITEM because LLDRULE that becomes */
@@ -1920,7 +1920,7 @@ static zbx_item_diff_t	*calculate_item_update(const DC_ITEM *item, const ZBX_DC_
 	}
 	else if (ITEM_STATE_NOTSUPPORTED == h->state && 0 != strcmp(item->error, h->value.err))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "error reason for \"%s:%s\" changed: %s", item->host.host,
+		treegix_log(LOG_LEVEL_WARNING, "error reason for \"%s:%s\" changed: %s", item->host.host,
 				item->key_orig, h->value.err);
 
 		item_error = h->value.err;
@@ -1964,7 +1964,7 @@ static void	DBmass_update_items(const zbx_vector_ptr_t *item_diff, const zbx_vec
 	size_t	sql_offset = 0;
 	int	i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	for (i = 0; i < item_diff->values_num; i++)
 	{
@@ -1993,7 +1993,7 @@ static void	DBmass_update_items(const zbx_vector_ptr_t *item_diff, const zbx_vec
 		DCconfig_update_inventory_values(inventory_values);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2015,7 +2015,7 @@ static void	DCmass_proxy_update_items(ZBX_DC_HISTORY *history, int history_num)
 	zbx_vector_ptr_t	item_diff;
 	zbx_item_diff_t		*diffs;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&item_diff);
 	zbx_vector_ptr_reserve(&item_diff, history_num);
@@ -2070,7 +2070,7 @@ static void	DCmass_proxy_update_items(ZBX_DC_HISTORY *history, int history_num)
 	zbx_vector_ptr_destroy(&item_diff);
 	zbx_free(diffs);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2088,7 +2088,7 @@ static int	DBmass_add_history(ZBX_DC_HISTORY *history, int history_num)
 	int			i, ret = SUCCEED;
 	zbx_vector_ptr_t	history_values;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&history_values);
 	zbx_vector_ptr_reserve(&history_values, history_num);
@@ -2108,7 +2108,7 @@ static int	DBmass_add_history(ZBX_DC_HISTORY *history, int history_num)
 
 	zbx_vector_ptr_destroy(&history_values);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -2363,7 +2363,7 @@ static void	DCmass_proxy_add_history(ZBX_DC_HISTORY *history, int history_num)
 {
 	int	i, h_num = 0, h_meta_num = 0, hlog_num = 0, notsupported_num = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	for (i = 0; i < history_num; i++)
 	{
@@ -2409,7 +2409,7 @@ static void	DCmass_proxy_add_history(ZBX_DC_HISTORY *history, int history_num)
 	if (0 != notsupported_num)
 		dc_add_proxy_history_notsupported(history, history_num);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2436,7 +2436,7 @@ static void	DCmass_prepare_history(ZBX_DC_HISTORY *history, const zbx_vector_uin
 {
 	int	i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d", __func__, history_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d", __func__, history_num);
 
 	for (i = 0; i < history_num; i++)
 	{
@@ -2484,7 +2484,7 @@ static void	DCmass_prepare_history(ZBX_DC_HISTORY *history, const zbx_vector_uin
 
 	zbx_vector_ptr_sort(inventory_values, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2602,75 +2602,75 @@ static void	DCmodule_sync_history(int history_float_num, int history_integer_num
 	{
 		int	i;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "syncing float history data with modules...");
+		treegix_log(LOG_LEVEL_DEBUG, "syncing float history data with modules...");
 
 		for (i = 0; NULL != history_float_cbs[i].module; i++)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_float_cbs[i].module->name);
+			treegix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_float_cbs[i].module->name);
 			history_float_cbs[i].history_float_cb(history_float, history_float_num);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "synced %d float values with modules", history_float_num);
+		treegix_log(LOG_LEVEL_DEBUG, "synced %d float values with modules", history_float_num);
 	}
 
 	if (0 != history_integer_num)
 	{
 		int	i;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "syncing integer history data with modules...");
+		treegix_log(LOG_LEVEL_DEBUG, "syncing integer history data with modules...");
 
 		for (i = 0; NULL != history_integer_cbs[i].module; i++)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_integer_cbs[i].module->name);
+			treegix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_integer_cbs[i].module->name);
 			history_integer_cbs[i].history_integer_cb(history_integer, history_integer_num);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "synced %d integer values with modules", history_integer_num);
+		treegix_log(LOG_LEVEL_DEBUG, "synced %d integer values with modules", history_integer_num);
 	}
 
 	if (0 != history_string_num)
 	{
 		int	i;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "syncing string history data with modules...");
+		treegix_log(LOG_LEVEL_DEBUG, "syncing string history data with modules...");
 
 		for (i = 0; NULL != history_string_cbs[i].module; i++)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_string_cbs[i].module->name);
+			treegix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_string_cbs[i].module->name);
 			history_string_cbs[i].history_string_cb(history_string, history_string_num);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "synced %d string values with modules", history_string_num);
+		treegix_log(LOG_LEVEL_DEBUG, "synced %d string values with modules", history_string_num);
 	}
 
 	if (0 != history_text_num)
 	{
 		int	i;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "syncing text history data with modules...");
+		treegix_log(LOG_LEVEL_DEBUG, "syncing text history data with modules...");
 
 		for (i = 0; NULL != history_text_cbs[i].module; i++)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_text_cbs[i].module->name);
+			treegix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_text_cbs[i].module->name);
 			history_text_cbs[i].history_text_cb(history_text, history_text_num);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "synced %d text values with modules", history_text_num);
+		treegix_log(LOG_LEVEL_DEBUG, "synced %d text values with modules", history_text_num);
 	}
 
 	if (0 != history_log_num)
 	{
 		int	i;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "syncing log history data with modules...");
+		treegix_log(LOG_LEVEL_DEBUG, "syncing log history data with modules...");
 
 		for (i = 0; NULL != history_log_cbs[i].module; i++)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_log_cbs[i].module->name);
+			treegix_log(LOG_LEVEL_DEBUG, "... module \"%s\"", history_log_cbs[i].module->name);
 			history_log_cbs[i].history_log_cb(history_log, history_log_num);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "synced %d log values with modules", history_log_num);
+		treegix_log(LOG_LEVEL_DEBUG, "synced %d log values with modules", history_log_num);
 	}
 }
 
@@ -3041,7 +3041,7 @@ static void	sync_history_cache_full(void)
 	zbx_hc_item_t		*item;
 	zbx_binary_heap_t	tmp_history_queue;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d", __func__, cache->history_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d", __func__, cache->history_num);
 
 	/* History index cache might be full without any space left for queueing items from history index to  */
 	/* history queue. The solution: replace the shared-memory history queue with heap-allocated one. Add  */
@@ -3080,7 +3080,7 @@ static void	sync_history_cache_full(void)
 
 	if (0 != hc_queue_get_size())
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "syncing history data...");
+		treegix_log(LOG_LEVEL_WARNING, "syncing history data...");
 
 		do
 		{
@@ -3089,18 +3089,18 @@ static void	sync_history_cache_full(void)
 			else
 				sync_proxy_history(&values_num, &more);
 
-			zabbix_log(LOG_LEVEL_WARNING, "syncing history data... " ZBX_FS_DBL "%%",
+			treegix_log(LOG_LEVEL_WARNING, "syncing history data... " ZBX_FS_DBL "%%",
 					(double)values_num / (cache->history_num + values_num) * 100);
 		}
 		while (0 != hc_queue_get_size());
 
-		zabbix_log(LOG_LEVEL_WARNING, "syncing history data done");
+		treegix_log(LOG_LEVEL_WARNING, "syncing history data done");
 	}
 
 	zbx_binary_heap_destroy(&cache->history_queue);
 	cache->history_queue = tmp_history_queue;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -3145,13 +3145,13 @@ void	zbx_log_sync_history_cache_progress(void)
 	UNLOCK_CACHE;
 
 	if (0 == ts_last)
-		zabbix_log(LOG_LEVEL_WARNING, "syncing history data in progress... ");
+		treegix_log(LOG_LEVEL_WARNING, "syncing history data in progress... ");
 
 	if (-1.0 != pcnt)
-		zabbix_log(LOG_LEVEL_WARNING, "syncing history data... " ZBX_FS_DBL "%%", pcnt);
+		treegix_log(LOG_LEVEL_WARNING, "syncing history data... " ZBX_FS_DBL "%%", pcnt);
 
 	if (INT_MAX == ts_next)
-		zabbix_log(LOG_LEVEL_WARNING, "syncing history data done");
+		treegix_log(LOG_LEVEL_WARNING, "syncing history data done");
 }
 
 /******************************************************************************
@@ -3168,7 +3168,7 @@ void	zbx_log_sync_history_cache_progress(void)
  ******************************************************************************/
 void	zbx_sync_history_cache(int *values_num, int *triggers_num, int *more)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d", __func__, cache->history_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d", __func__, cache->history_num);
 
 	*values_num = 0;
 	*triggers_num = 0;
@@ -3905,7 +3905,7 @@ static void	hc_add_item_values(dc_item_value_t *values, int values_num)
 		{
 			UNLOCK_CACHE;
 
-			zabbix_log(LOG_LEVEL_DEBUG, "History cache is full. Sleeping for 1 second.");
+			treegix_log(LOG_LEVEL_DEBUG, "History cache is full. Sleeping for 1 second.");
 			sleep(1);
 
 			LOCK_CACHE;
@@ -4118,7 +4118,7 @@ static int	init_trend_cache(char **error)
 	size_t	sz;
 	int	ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED != (ret = zbx_mutex_create(&trends_lock, ZBX_MUTEX_TRENDS, error)))
 		goto out;
@@ -4145,7 +4145,7 @@ static int	init_trend_cache(char **error)
 
 #undef INIT_HASHSET_SIZE
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -4163,7 +4163,7 @@ int	init_database_cache(char **error)
 {
 	int	ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED != (ret = zbx_mutex_create(&cache_lock, ZBX_MUTEX_CACHE, error)))
 		goto out;
@@ -4208,7 +4208,7 @@ int	init_database_cache(char **error)
 	if (NULL == sql)
 		sql = (char *)zbx_malloc(sql, sql_alloc);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -4224,13 +4224,13 @@ out:
  ******************************************************************************/
 static void	DCsync_all(void)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In DCsync_all()");
+	treegix_log(LOG_LEVEL_DEBUG, "In DCsync_all()");
 
 	sync_history_cache_full();
 	if (0 != (program_type & ZBX_PROGRAM_TYPE_SERVER))
 		DCsync_trends();
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of DCsync_all()");
+	treegix_log(LOG_LEVEL_DEBUG, "End of DCsync_all()");
 }
 
 /******************************************************************************
@@ -4244,7 +4244,7 @@ static void	DCsync_all(void)
  ******************************************************************************/
 void	free_database_cache(void)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	DCsync_all();
 
@@ -4256,7 +4256,7 @@ void	free_database_cache(void)
 	if (0 != (program_type & ZBX_PROGRAM_TYPE_SERVER))
 		zbx_mutex_destroy(&trends_lock);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4277,7 +4277,7 @@ zbx_uint64_t	DCget_nextid(const char *table_name, int num)
 	ZBX_DC_ID	*id;
 	zbx_uint64_t	min = 0, max = ZBX_DB_MAX_ID, nextid, lastid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() table:'%s' num:%d", __func__, table_name, num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() table:'%s' num:%d", __func__, table_name, num);
 
 	LOCK_CACHE_IDS;
 
@@ -4295,7 +4295,7 @@ zbx_uint64_t	DCget_nextid(const char *table_name, int num)
 
 			UNLOCK_CACHE_IDS;
 
-			zabbix_log(LOG_LEVEL_DEBUG, "End of %s() table:'%s' [" ZBX_FS_UI64 ":" ZBX_FS_UI64 "]",
+			treegix_log(LOG_LEVEL_DEBUG, "End of %s() table:'%s' [" ZBX_FS_UI64 ":" ZBX_FS_UI64 "]",
 					__func__, table_name, nextid, lastid);
 
 			return nextid;
@@ -4304,7 +4304,7 @@ zbx_uint64_t	DCget_nextid(const char *table_name, int num)
 
 	if (i == ZBX_IDS_SIZE)
 	{
-		zabbix_log(LOG_LEVEL_ERR, "insufficient shared memory for ids");
+		treegix_log(LOG_LEVEL_ERR, "insufficient shared memory for ids");
 		exit(EXIT_FAILURE);
 	}
 
@@ -4333,7 +4333,7 @@ zbx_uint64_t	DCget_nextid(const char *table_name, int num)
 
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() table:'%s' [" ZBX_FS_UI64 ":" ZBX_FS_UI64 "]",
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() table:'%s' [" ZBX_FS_UI64 ":" ZBX_FS_UI64 "]",
 			__func__, table_name, nextid, lastid);
 
 	return nextid;
@@ -4354,7 +4354,7 @@ void	DCupdate_hosts_availability(void)
 	size_t			sql_buf_alloc = 0, sql_buf_offset = 0;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&hosts);
 
@@ -4388,5 +4388,5 @@ out:
 	zbx_vector_ptr_clear_ext(&hosts, (zbx_mem_free_func_t)zbx_host_availability_free);
 	zbx_vector_ptr_destroy(&hosts);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }

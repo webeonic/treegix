@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ int	SYSTEM_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 		/* cannot use the constant in a precompiled Windows agent, which is expected to work on any system. */
 		if (0 == GetComputerName(computerName, &dwSize))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "GetComputerName() failed: %s", strerror_from_system(GetLastError()));
+			treegix_log(LOG_LEVEL_ERR, "GetComputerName() failed: %s", strerror_from_system(GetLastError()));
 			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain computer name: %s",
 					strerror_from_system(GetLastError())));
 			return SYSINFO_RET_FAIL;
@@ -68,7 +68,7 @@ int	SYSTEM_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		if (SUCCEED != gethostname(buffer, sizeof(buffer)))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "gethostname() failed: %s", strerror_from_system(WSAGetLastError()));
+			treegix_log(LOG_LEVEL_ERR, "gethostname() failed: %s", strerror_from_system(WSAGetLastError()));
 			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain host name: %s",
 					strerror_from_system(WSAGetLastError())));
 			return SYSINFO_RET_FAIL;

@@ -102,7 +102,7 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if Zabbix IPC services are used */
+/* Define to 1 if Treegix IPC services are used */
 #undef HAVE_IPCSERVICE
 
 /* Define to 1 if IPv6 should be enabled. */

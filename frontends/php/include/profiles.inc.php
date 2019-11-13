@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -253,7 +253,7 @@ function update_config($config) {
 			$msg[] = _s('Max count of elements to show inside table cell "%1$s".', $config['max_in_table']);
 		}
 		if (array_key_exists('server_check_interval', $config)) {
-			$msg[] = _s('Zabbix server is running check interval "%1$s".', $config['server_check_interval']);
+			$msg[] = _s('Treegix server is running check interval "%1$s".', $config['server_check_interval']);
 		}
 		if (array_key_exists('refresh_unsupported', $config)) {
 			$msg[] = _s('Refresh unsupported items "%1$s".', $config['refresh_unsupported']);

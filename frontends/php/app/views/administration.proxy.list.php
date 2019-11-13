@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -27,11 +27,11 @@ $widget = (new CWidget())
 	->setTitle(_('Proxies'))
 	->setControls((new CTag('nav', true,
 		(new CList())
-			->addItem(new CRedirectButton(_('Create proxy'), 'zabbix.php?action=proxy.edit'))
+			->addItem(new CRedirectButton(_('Create proxy'), 'treegix.php?action=proxy.edit'))
 		))
 			->setAttribute('aria-label', _('Content controls'))
 	)
-	->addItem((new CFilter((new CUrl('zabbix.php'))->setArgument('action', 'proxy.list')))
+	->addItem((new CFilter((new CUrl('treegix.php'))->setArgument('action', 'proxy.list')))
 		->setProfile($data['profileIdx'])
 		->setActiveTab($data['active_tab'])
 		->addFilterTab(_('Filter'), [
@@ -101,7 +101,7 @@ foreach ($data['proxies'] as $proxy) {
 		$hosts[] = (new CLink($host['name'], 'hosts.php?form=update&hostid='.$host['hostid']))->addClass($style);
 	}
 
-	$name = new CLink($proxy['host'], 'zabbix.php?action=proxy.edit&proxyid='.$proxy['proxyid']);
+	$name = new CLink($proxy['host'], 'treegix.php?action=proxy.edit&proxyid='.$proxy['proxyid']);
 
 	// encryption
 	$in_encryption = '';

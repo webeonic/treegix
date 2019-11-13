@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -127,7 +127,7 @@ class CControllerUserList extends CController {
 
 		CArrayHelper::sort($data['users'], [['field' => $sortfield, 'order' => $sortorder]]);
 
-		$url = (new CUrl('zabbix.php'))->setArgument('action', 'user.list');
+		$url = (new CUrl('treegix.php'))->setArgument('action', 'user.list');
 
 		$data['paging'] = getPagingLine($data['users'], $sortorder, $url);
 

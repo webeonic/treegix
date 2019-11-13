@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -21,19 +21,19 @@
 #include <stdlib.h>
 #include <winsock.h>
 
-#include "zabbix_sender.h"
+#include "treegix_sender.h"
 
 /*
- * This is a simple Zabbix sender utility implemented with
- * Zabbix sender dynamic link library to illustrate the
+ * This is a simple Treegix sender utility implemented with
+ * Treegix sender dynamic link library to illustrate the
  * library usage.
  *
- * See zabbix_sender.h header file for API specifications.
+ * See treegix_sender.h header file for API specifications.
  *
  * This utility can be built in Microsoft Windows 32 bit build
  * environment with the following command: nmake /f Makefile
  *
- * To run this utility ensure that zabbix_sender.dll is
+ * To run this utility ensure that treegix_sender.dll is
  * available (either in current directory or in windows/system
  * directories or in a directory defined in PATH variable)
  */
@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
 	if (5 == argc)
 	{
 		char			*result = NULL;
-		zabbix_sender_info_t	info;
-		zabbix_sender_value_t	value = {argv[2], argv[3], argv[4]};
+		treegix_sender_info_t	info;
+		treegix_sender_value_t	value = {argv[2], argv[3], argv[4]};
 		int			response;
 		WSADATA			sockInfo;
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 		}
 
 		/* send one value to the argv[1] IP address and the default trapper port 10051 */
-		if (-1 == zabbix_sender_send_values(argv[1], 10051, NULL, &value, 1, &result))
+		if (-1 == treegix_sender_send_values(argv[1], 10051, NULL, &value, 1, &result))
 		{
 			printf("sending failed: %s\n", result);
 		}
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 			printf("sending succeeded:\n");
 
 			/* parse the server response */
-			if (0 == zabbix_sender_parse_result(result, &response, &info))
+			if (0 == treegix_sender_parse_result(result, &response, &info))
 			{
 				printf("  response: %s\n", 0 == response ? "success" : "failed");
 				printf("  info from server: \"processed: %d; failed: %d; total: %d; seconds spent: %lf\"\n",
@@ -75,15 +75,15 @@ int main(int argc, char *argv[])
 		}
 
 		/* free the server response */
-		zabbix_sender_free_result(result);
+		treegix_sender_free_result(result);
 		while (0 == WSACleanup());
 	}
 	else
 	{
-		printf("Simple zabbix_sender implementation with zabbix_sender library\n\n");
+		printf("Simple treegix_sender implementation with treegix_sender library\n\n");
 		printf("usage: %s <server> <hostname> <key> <value>\n\n", argv[0]);
 		printf("Options:\n");
-		printf("  <server>    Hostname or IP address of Zabbix server\n");
+		printf("  <server>    Hostname or IP address of Treegix server\n");
 		printf("  <hostname>  Host name\n");
 		printf("  <key>       Item key\n");
 		printf("  <value>     Item value\n");

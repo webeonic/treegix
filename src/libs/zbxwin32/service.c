@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ static void	parent_signal_handler(int sig)
 		case SIGINT:
 		case SIGTERM:
 			ZBX_DO_EXIT();
-			zabbix_log(LOG_LEVEL_INFORMATION, "Got signal. Exiting ...");
+			treegix_log(LOG_LEVEL_INFORMATION, "Got signal. Exiting ...");
 			zbx_on_exit(SUCCEED);
 			break;
 	}
@@ -133,7 +133,7 @@ void	service_start(int flags)
 	if (0 == ret)
 	{
 		if (ERROR_FAILED_SERVICE_CONTROLLER_CONNECT == GetLastError())
-			zbx_error("use foreground option to run Zabbix agent as console application");
+			zbx_error("use foreground option to run Treegix agent as console application");
 		else
 			zbx_error("StartServiceCtrlDispatcher() failed: %s", strerror_from_system(GetLastError()));
 	}
@@ -230,7 +230,7 @@ static int	svc_install_event_source(const char *path)
 	return SUCCEED;
 }
 
-int	ZabbixCreateService(const char *path, int multiple_agents)
+int	TreegixCreateService(const char *path, int multiple_agents)
 {
 	SC_HANDLE		mgr, service;
 	SERVICE_DESCRIPTION	sd;
@@ -304,7 +304,7 @@ static int	svc_RemoveEventSource()
 	return SUCCEED;
 }
 
-int	ZabbixRemoveService(void)
+int	TreegixRemoveService(void)
 {
 	SC_HANDLE	mgr, service;
 	int		ret = FAIL;
@@ -336,7 +336,7 @@ int	ZabbixRemoveService(void)
 	return ret;
 }
 
-int	ZabbixStartService(void)
+int	TreegixStartService(void)
 {
 	SC_HANDLE	mgr, service;
 	int		ret = FAIL;
@@ -365,7 +365,7 @@ int	ZabbixStartService(void)
 	return ret;
 }
 
-int	ZabbixStopService(void)
+int	TreegixStopService(void)
 {
 	SC_HANDLE	mgr, service;
 	SERVICE_STATUS	status;

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -240,61 +240,61 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 	else
 		zbx_snprintf(full_name, sizeof(full_name), "%s", name);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "loading module \"%s\"", full_name);
+	treegix_log(LOG_LEVEL_DEBUG, "loading module \"%s\"", full_name);
 
 	if (NULL == (lib = dlopen(full_name, RTLD_NOW)))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot load module \"%s\": %s", name, dlerror());
+		treegix_log(LOG_LEVEL_CRIT, "cannot load module \"%s\": %s", name, dlerror());
 		return FAIL;
 	}
 
 	module_tmp.lib = lib;
 	if (FAIL != zbx_vector_ptr_search(&modules, &module_tmp, zbx_module_compare_func))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "module \"%s\" has already beed loaded", name);
+		treegix_log(LOG_LEVEL_DEBUG, "module \"%s\" has already beed loaded", name);
 		return SUCCEED;
 	}
 
 	if (NULL == (func_version = (int (*)(void))dlsym(lib, ZBX_MODULE_FUNC_API_VERSION)))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot find \"" ZBX_MODULE_FUNC_API_VERSION "()\""
+		treegix_log(LOG_LEVEL_CRIT, "cannot find \"" ZBX_MODULE_FUNC_API_VERSION "()\""
 				" function in module \"%s\": %s", name, dlerror());
 		goto fail;
 	}
 
 	if (ZBX_MODULE_API_VERSION != (version = func_version()))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "unsupported module \"%s\" version: %d", name, version);
+		treegix_log(LOG_LEVEL_CRIT, "unsupported module \"%s\" version: %d", name, version);
 		goto fail;
 	}
 
 	if (NULL == (func_init = (int (*)(void))dlsym(lib, ZBX_MODULE_FUNC_INIT)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_INIT "()\""
+		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_INIT "()\""
 				" function in module \"%s\": %s", name, dlerror());
 	}
 	else if (ZBX_MODULE_OK != func_init())
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot initialize module \"%s\"", name);
+		treegix_log(LOG_LEVEL_CRIT, "cannot initialize module \"%s\"", name);
 		goto fail;
 	}
 
 	if (NULL == (func_list = (ZBX_METRIC *(*)(void))dlsym(lib, ZBX_MODULE_FUNC_ITEM_LIST)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_ITEM_LIST "()\""
+		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_ITEM_LIST "()\""
 				" function in module \"%s\": %s", name, dlerror());
 	}
 	else
 	{
 		if (SUCCEED != zbx_register_module_items(func_list(), error, sizeof(error)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "cannot load module \"%s\": %s", name, error);
+			treegix_log(LOG_LEVEL_CRIT, "cannot load module \"%s\": %s", name, error);
 			goto fail;
 		}
 
 		if (NULL == (func_timeout = (void (*)(int))dlsym(lib, ZBX_MODULE_FUNC_ITEM_TIMEOUT)))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_ITEM_TIMEOUT "()\""
+			treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_ITEM_TIMEOUT "()\""
 					" function in module \"%s\": %s", name, dlerror());
 		}
 		else
@@ -307,7 +307,7 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 	if (NULL == (func_history_write_cbs = (ZBX_HISTORY_WRITE_CBS (*)(void))dlsym(lib,
 			ZBX_MODULE_FUNC_HISTORY_WRITE_CBS)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_HISTORY_WRITE_CBS "()\""
+		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_HISTORY_WRITE_CBS "()\""
 				" function in module \"%s\": %s", name, dlerror());
 	}
 	else
@@ -340,7 +340,7 @@ int	zbx_load_modules(const char *path, char **file_names, int timeout, int verbo
 	char	**file_name;
 	int	ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&modules);
 
@@ -367,11 +367,11 @@ int	zbx_load_modules(const char *path, char **file_names, int timeout, int verbo
 			buffer = zbx_strdcat(buffer, ((zbx_module_t *)modules.values[i++])->name);
 		}
 
-		zabbix_log(LOG_LEVEL_WARNING, "loaded modules: %s", buffer);
+		treegix_log(LOG_LEVEL_WARNING, "loaded modules: %s", buffer);
 		zbx_free(buffer);
 	}
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -390,11 +390,11 @@ static void	zbx_unload_module(void *data)
 
 	if (NULL == (func_uninit = (int (*)(void))dlsym(module->lib, ZBX_MODULE_FUNC_UNINIT)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_UNINIT "()\""
+		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_UNINIT "()\""
 				" function in module \"%s\": %s", module->name, dlerror());
 	}
 	else if (ZBX_MODULE_OK != func_uninit())
-		zabbix_log(LOG_LEVEL_WARNING, "uninitialization of module \"%s\" failed", module->name);
+		treegix_log(LOG_LEVEL_WARNING, "uninitialization of module \"%s\" failed", module->name);
 
 	dlclose(module->lib);
 	zbx_free(module->name);
@@ -411,7 +411,7 @@ static void	zbx_unload_module(void *data)
  ******************************************************************************/
 void	zbx_unload_modules(void)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_free(history_float_cbs);
 	zbx_free(history_integer_cbs);
@@ -422,5 +422,5 @@ void	zbx_unload_modules(void)
 	zbx_vector_ptr_clear_ext(&modules, zbx_unload_module);
 	zbx_vector_ptr_destroy(&modules);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }

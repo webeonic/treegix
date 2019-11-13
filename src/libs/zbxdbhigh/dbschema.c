@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -303,7 +303,7 @@ const ZBX_TABLE	tables[] = {
 		{"nextcheck",	"0",	NULL,	NULL,	0,	ZBX_TYPE_INT,	ZBX_NOTNULL,	0},
 		{"delay",	"1m",	NULL,	NULL,	255,	ZBX_TYPE_CHAR,	ZBX_NOTNULL | ZBX_PROXY,	0},
 		{"status",	"0",	NULL,	NULL,	0,	ZBX_TYPE_INT,	ZBX_NOTNULL,	0},
-		{"agent",	"Zabbix",	NULL,	NULL,	255,	ZBX_TYPE_CHAR,	ZBX_NOTNULL | ZBX_PROXY,	0},
+		{"agent",	"Treegix",	NULL,	NULL,	255,	ZBX_TYPE_CHAR,	ZBX_NOTNULL | ZBX_PROXY,	0},
 		{"authentication",	"0",	NULL,	NULL,	0,	ZBX_TYPE_INT,	ZBX_NOTNULL | ZBX_PROXY,	0},
 		{"http_user",	"",	NULL,	NULL,	64,	ZBX_TYPE_CHAR,	ZBX_NOTNULL | ZBX_PROXY,	0},
 		{"http_password",	"",	NULL,	NULL,	64,	ZBX_TYPE_CHAR,	ZBX_NOTNULL | ZBX_PROXY,	0},
@@ -2342,7 +2342,7 @@ applicationid bigint  NULL REFERENCES applications (applicationid),\n\
 nextcheck integer DEFAULT '0' NOT NULL,\n\
 delay varchar(255) DEFAULT '1m' NOT NULL,\n\
 status integer DEFAULT '0' NOT NULL,\n\
-agent varchar(255) DEFAULT 'Zabbix' NOT NULL,\n\
+agent varchar(255) DEFAULT 'Treegix' NOT NULL,\n\
 authentication integer DEFAULT '0' NOT NULL,\n\
 http_user varchar(64) DEFAULT '' NOT NULL,\n\
 http_password varchar(64) DEFAULT '' NOT NULL,\n\

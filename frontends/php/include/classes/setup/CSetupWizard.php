@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class CSetupWizard extends CForm {
 				'fnc' => 'stage2'
 			],
 			3 => [
-				'title' => _('Zabbix server details'),
+				'title' => _('Treegix server details'),
 				'fnc' => 'stage3'
 			],
 			4 => [
@@ -154,7 +154,7 @@ class CSetupWizard extends CForm {
 
 	function stage0() {
 		preg_match('/^\d+\.\d+/', ZABBIX_VERSION, $version);
-		$setup_title = (new CDiv([new CSpan(_('Welcome to')), 'Zabbix '.$version[0]]))->addClass(ZBX_STYLE_SETUP_TITLE);
+		$setup_title = (new CDiv([new CSpan(_('Welcome to')), 'Treegix '.$version[0]]))->addClass(ZBX_STYLE_SETUP_TITLE);
 
 		return (new CDiv($setup_title))->addClass(ZBX_STYLE_SETUP_RIGHT_BODY);
 	}
@@ -232,7 +232,7 @@ class CSetupWizard extends CForm {
 		]);
 
 		$table->addRow(_('Database name'),
-			(new CTextBox('database', $this->getConfig('DB_DATABASE', 'zabbix')))
+			(new CTextBox('database', $this->getConfig('DB_DATABASE', 'treegix')))
 				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
 		);
 
@@ -243,7 +243,7 @@ class CSetupWizard extends CForm {
 		}
 
 		$table->addRow(_('User'),
-			(new CTextBox('user', $this->getConfig('DB_USER', 'zabbix')))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			(new CTextBox('user', $this->getConfig('DB_USER', 'treegix')))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
 		);
 		$table->addRow(_('Password'),
 			(new CPassBox('password', $this->getConfig('DB_PASSWORD')))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
@@ -288,9 +288,9 @@ class CSetupWizard extends CForm {
 		);
 
 		return [
-			new CTag('h1', true, _('Zabbix server details')),
+			new CTag('h1', true, _('Treegix server details')),
 			(new CDiv([
-				new CTag('p', true, _('Please enter the host name or host IP address and port number of the Zabbix server, as well as the name of the installation (optional).')),
+				new CTag('p', true, _('Please enter the host name or host IP address and port number of the Treegix server, as well as the name of the installation (optional).')),
 				$table
 			]))->addClass(ZBX_STYLE_SETUP_RIGHT_BODY)
 		];
@@ -317,9 +317,9 @@ class CSetupWizard extends CForm {
 
 		$table->addRow(null, null);
 
-		$table->addRow((new CSpan(_('Zabbix server')))->addClass(ZBX_STYLE_GREY), $this->getConfig('ZBX_SERVER'));
-		$table->addRow((new CSpan(_('Zabbix server port')))->addClass(ZBX_STYLE_GREY), $this->getConfig('ZBX_SERVER_PORT'));
-		$table->addRow((new CSpan(_('Zabbix server name')))->addClass(ZBX_STYLE_GREY), $this->getConfig('ZBX_SERVER_NAME'));
+		$table->addRow((new CSpan(_('Treegix server')))->addClass(ZBX_STYLE_GREY), $this->getConfig('ZBX_SERVER'));
+		$table->addRow((new CSpan(_('Treegix server port')))->addClass(ZBX_STYLE_GREY), $this->getConfig('ZBX_SERVER_PORT'));
+		$table->addRow((new CSpan(_('Treegix server name')))->addClass(ZBX_STYLE_GREY), $this->getConfig('ZBX_SERVER_NAME'));
 
 		return [
 			new CTag('h1', true, _('Pre-installation summary')),
@@ -380,7 +380,7 @@ class CSetupWizard extends CForm {
 
 			$message_box = null;
 			$message = [
-				(new CTag('h1', true, _('Congratulations! You have successfully installed Zabbix frontend.')))
+				(new CTag('h1', true, _('Congratulations! You have successfully installed Treegix frontend.')))
 					->addClass(ZBX_STYLE_GREEN),
 				new CTag('p', true, _s('Configuration file "%1$s" created.', $config_file_name))
 			];
@@ -406,7 +406,7 @@ class CSetupWizard extends CForm {
 
 		$DB['SERVER'] = $this->getConfig('DB_SERVER', 'localhost');
 		$DB['PORT'] = $this->getConfig('DB_PORT', '0');
-		$DB['DATABASE'] = $this->getConfig('DB_DATABASE', 'zabbix');
+		$DB['DATABASE'] = $this->getConfig('DB_DATABASE', 'treegix');
 		$DB['USER'] = $this->getConfig('DB_USER', 'root');
 		$DB['PASSWORD'] = $this->getConfig('DB_PASSWORD', '');
 		$DB['SCHEMA'] = $this->getConfig('DB_SCHEMA', '');
@@ -430,8 +430,8 @@ class CSetupWizard extends CForm {
 			}
 
 			if ($result) {
-				$result = DBexecute('CREATE TABLE zabbix_installation_test (test_row INTEGER)');
-				$result &= DBexecute('DROP TABLE zabbix_installation_test');
+				$result = DBexecute('CREATE TABLE treegix_installation_test (test_row INTEGER)');
+				$result &= DBexecute('DROP TABLE treegix_installation_test');
 			}
 		}
 
@@ -468,7 +468,7 @@ class CSetupWizard extends CForm {
 			$this->setConfig('DB_TYPE', getRequest('type', $this->getConfig('DB_TYPE')));
 			$this->setConfig('DB_SERVER', getRequest('server', $this->getConfig('DB_SERVER', 'localhost')));
 			$this->setConfig('DB_PORT', getRequest('port', $this->getConfig('DB_PORT', '0')));
-			$this->setConfig('DB_DATABASE', getRequest('database', $this->getConfig('DB_DATABASE', 'zabbix')));
+			$this->setConfig('DB_DATABASE', getRequest('database', $this->getConfig('DB_DATABASE', 'treegix')));
 			$this->setConfig('DB_USER', getRequest('user', $this->getConfig('DB_USER', 'root')));
 			$this->setConfig('DB_PASSWORD', getRequest('password', $this->getConfig('DB_PASSWORD', '')));
 			$this->setConfig('DB_SCHEMA', getRequest('schema', $this->getConfig('DB_SCHEMA', '')));
@@ -499,7 +499,7 @@ class CSetupWizard extends CForm {
 		}
 		elseif ($this->getStep() == 5) {
 			if (hasRequest('save_config')) {
-				// make zabbix.conf.php downloadable
+				// make treegix.conf.php downloadable
 				header('Content-Type: application/x-httpd-php');
 				header('Content-Disposition: attachment; filename="'.basename(CConfigFile::CONFIG_FILE_PATH).'"');
 				$config = new CConfigFile(Z::getInstance()->getRootDir().CConfigFile::CONFIG_FILE_PATH);

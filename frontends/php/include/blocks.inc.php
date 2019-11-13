@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -344,7 +344,7 @@ function makeSystemStatus(array $filter, array $data, array $config, $backurl) {
 		->setHeader($header)
 		->setHeadingColumn(0);
 
-	$url_group = (new CUrl('zabbix.php'))
+	$url_group = (new CUrl('treegix.php'))
 		->setArgument('action', 'problem.view')
 		->setArgument('filter_set', 1)
 		->setArgument('filter_show', TRIGGERS_OPTION_RECENT_PROBLEM)
@@ -614,7 +614,7 @@ function make_status_of_zbx() {
 	$status = get_status();
 
 	$table->addRow([
-		_('Zabbix server is running'),
+		_('Treegix server is running'),
 		(new CSpan($status['is_running'] ? _('Yes') : _('No')))
 			->addClass($status['is_running'] ? ZBX_STYLE_GREEN : ZBX_STYLE_RED),
 		$server_details
@@ -834,7 +834,7 @@ function makeProblemsPopup(array $problems, array $triggers, $backurl, array $ac
 		}
 
 		// ack
-		$problem_update_url = (new CUrl('zabbix.php'))
+		$problem_update_url = (new CUrl('treegix.php'))
 			->setArgument('action', 'acknowledge.edit')
 			->setArgument('eventids', [$problem['eventid']])
 			->setArgument('backurl', $backurl)

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ static void	discovery_separate_host(const DB_DRULE *drule, DB_DHOST *dhost, cons
 	char		*ip_esc, *sql = NULL;
 	zbx_uint64_t	dhostid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s'", __func__, ip);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s'", __func__, ip);
 
 	ip_esc = DBdyn_escape_field("dservices", "ip", ip);
 
@@ -119,7 +119,7 @@ static void	discovery_separate_host(const DB_DRULE *drule, DB_DHOST *dhost, cons
 	zbx_free(sql);
 	zbx_free(ip_esc);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -138,7 +138,7 @@ static void	discovery_register_host(const DB_DRULE *drule, zbx_uint64_t dcheckid
 	DB_ROW		row;
 	int		match_value = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s' status:%d value:'%s'", __func__, ip, status, value);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s' status:%d value:'%s'", __func__, ip, status, value);
 
 	if (drule->unique_dcheckid == dcheckid)
 	{
@@ -165,7 +165,7 @@ static void	discovery_register_host(const DB_DRULE *drule, zbx_uint64_t dcheckid
 	{
 		if (DOBJECT_STATUS_UP == status)	/* add host only if service is up */
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "new host discovered at %s", ip);
+			treegix_log(LOG_LEVEL_DEBUG, "new host discovered at %s", ip);
 
 			dhost->dhostid = DBget_maxid("dhosts");
 			dhost->status = DOBJECT_STATUS_DOWN;
@@ -179,7 +179,7 @@ static void	discovery_register_host(const DB_DRULE *drule, zbx_uint64_t dcheckid
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "host at %s is already in database", ip);
+		treegix_log(LOG_LEVEL_DEBUG, "host at %s is already in database", ip);
 
 		ZBX_STR2UINT64(dhost->dhostid, row[0]);
 		dhost->status = atoi(row[1]);
@@ -191,7 +191,7 @@ static void	discovery_register_host(const DB_DRULE *drule, zbx_uint64_t dcheckid
 	}
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -212,7 +212,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 
 	zbx_uint64_t	dhostid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s' port:%d", __func__, ip, port);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s' port:%d", __func__, ip, port);
 
 	ip_esc = DBdyn_escape_field("dservices", "ip", ip);
 
@@ -228,7 +228,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 	{
 		if (DOBJECT_STATUS_UP == status)	/* add host only if service is up */
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "new service discovered on port %d", port);
+			treegix_log(LOG_LEVEL_DEBUG, "new service discovered on port %d", port);
 
 			dservice->dserviceid = DBget_maxid("dservices");
 			dservice->status = DOBJECT_STATUS_DOWN;
@@ -246,7 +246,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "service is already in database");
+		treegix_log(LOG_LEVEL_DEBUG, "service is already in database");
 
 		ZBX_STR2UINT64(dservice->dserviceid, row[0]);
 		ZBX_STR2UINT64(dhostid, row[1]);
@@ -283,7 +283,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 
 	zbx_free(ip_esc);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -349,7 +349,7 @@ static void	discovery_update_service_status(DB_DHOST *dhost, const DB_DSERVICE *
 {
 	zbx_timespec_t	ts;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	ts.sec = now;
 	ts.ns = 0;
@@ -395,7 +395,7 @@ static void	discovery_update_service_status(DB_DHOST *dhost, const DB_DSERVICE *
 	zbx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DSERVICE, dservice->dserviceid, &ts, service_status,
 			NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL, NULL);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -454,7 +454,7 @@ static void	discovery_update_host_status(DB_DHOST *dhost, int status, int now)
  ******************************************************************************/
 void	discovery_update_host(DB_DHOST *dhost, int status, int now)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 != dhost->dhostid)
 		discovery_update_host_status(dhost, status, now);
@@ -462,7 +462,7 @@ void	discovery_update_host(DB_DHOST *dhost, int status, int now)
 	zbx_process_events(NULL, NULL);
 	zbx_clean_events();
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -479,7 +479,7 @@ void	discovery_update_service(const DB_DRULE *drule, zbx_uint64_t dcheckid, DB_D
 {
 	DB_DSERVICE	dservice;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s' dns:'%s' port:%d status:%d value:'%s'",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s' dns:'%s' port:%d status:%d value:'%s'",
 			__func__, ip, dns, port, status, value);
 
 	memset(&dservice, 0, sizeof(dservice));
@@ -498,5 +498,5 @@ void	discovery_update_service(const DB_DRULE *drule, zbx_uint64_t dcheckid, DB_D
 
 	zbx_free(dservice.value);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }

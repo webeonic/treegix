@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -30,10 +30,10 @@ extern ZBX_THREAD_HANDLE	*threads;
 
 void	service_start(int flags);
 
-int	ZabbixCreateService(const char *path, int multiple_agents);
-int	ZabbixRemoveService(void);
-int	ZabbixStartService(void);
-int	ZabbixStopService(void);
+int	TreegixCreateService(const char *path, int multiple_agents);
+int	TreegixRemoveService(void);
+int	TreegixStartService(void);
+int	TreegixStopService(void);
 
 void	set_parent_signal_handler(void);
 

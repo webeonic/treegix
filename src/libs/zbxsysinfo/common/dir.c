@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -454,11 +454,11 @@ static BOOL	has_timed_out(HANDLE timeout_event)
 		case WAIT_TIMEOUT:
 			return FALSE;
 		case WAIT_FAILED:
-			zabbix_log(LOG_LEVEL_CRIT, "WaitForSingleObject() returned WAIT_FAILED: %s",
+			treegix_log(LOG_LEVEL_CRIT, "WaitForSingleObject() returned WAIT_FAILED: %s",
 					strerror_from_system(GetLastError()));
 			return TRUE;
 		default:
-			zabbix_log(LOG_LEVEL_CRIT, "WaitForSingleObject() returned 0x%x", (unsigned int)rc);
+			treegix_log(LOG_LEVEL_CRIT, "WaitForSingleObject() returned 0x%x", (unsigned int)rc);
 			THIS_SHOULD_NEVER_HAPPEN;
 			return TRUE;
 	}
@@ -504,7 +504,7 @@ static int	link_processed(DWORD attrib, wchar_t *wpath, zbx_vector_ptr_t *descri
 
 	if (FAIL == get_file_info_by_handle(wpath, &link_info, &error))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot get file information '%s': %s", __func__, path, error);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot get file information '%s': %s", __func__, path, error);
 		zbx_free(error);
 		return SUCCEED;
 	}
@@ -579,7 +579,7 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 
 			if (0 < item->depth)
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot convert directory name to UTF-16: '%s'",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot convert directory name to UTF-16: '%s'",
 						__func__, item->path);
 				goto skip;
 			}
@@ -598,7 +598,7 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 		{
 			if (0 < item->depth)
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
 						__func__, item->path, zbx_strerror(errno));
 				goto skip;
 			}
@@ -683,7 +683,7 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 
 		if (0 == FindClose(handle))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot close directory listing '%s': %s", __func__,
+			treegix_log(LOG_LEVEL_DEBUG, "%s() cannot close directory listing '%s': %s", __func__,
 					item->path, zbx_strerror(errno));
 		}
 skip:
@@ -759,7 +759,7 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 < item->depth)	/* unreadable subdirectory - skip */
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
 						__func__, item->path, zbx_strerror(errno));
 				goto skip;
 			}
@@ -832,7 +832,7 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot process directory entry '%s': %s",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot process directory entry '%s': %s",
 						__func__, path, zbx_strerror(errno));
 				zbx_free(path);
 			}
@@ -924,7 +924,7 @@ static int	vfs_dir_count(const AGENT_REQUEST *request, AGENT_RESULT *result, HAN
 
 			if (0 < item->depth)
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot convert directory name to UTF-16: '%s'",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot convert directory name to UTF-16: '%s'",
 						__func__, item->path);
 				goto skip;
 			}
@@ -943,7 +943,7 @@ static int	vfs_dir_count(const AGENT_REQUEST *request, AGENT_RESULT *result, HAN
 		{
 			if (0 < item->depth)
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
 						__func__, item->path, zbx_strerror(errno));
 				goto skip;
 			}
@@ -1028,7 +1028,7 @@ free_path:
 
 		if (0 == FindClose(handle))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot close directory listing '%s': %s", __func__,
+			treegix_log(LOG_LEVEL_DEBUG, "%s() cannot close directory listing '%s': %s", __func__,
 					item->path, zbx_strerror(errno));
 		}
 skip:
@@ -1095,7 +1095,7 @@ static int	vfs_dir_count(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 < item->depth)	/* unreadable subdirectory - skip */
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
 						__func__, item->path, zbx_strerror(errno));
 				goto skip;
 			}
@@ -1152,7 +1152,7 @@ static int	vfs_dir_count(AGENT_REQUEST *request, AGENT_RESULT *result)
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot process directory entry '%s': %s",
+				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot process directory entry '%s': %s",
 						__func__, path, zbx_strerror(errno));
 				zbx_free(path);
 			}

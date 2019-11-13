@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ extern "C" int	zbx_co_initialize()
 
 		if (FAILED(hres))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "cannot initialized COM library");
+			treegix_log(LOG_LEVEL_DEBUG, "cannot initialized COM library");
 			return FAIL;
 		}
 
@@ -94,7 +94,7 @@ extern "C" int	zbx_co_initialize()
 
 		if (FAILED(hres) && RPC_E_TOO_LATE != hres)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "cannot set default security levels for COM library");
+			treegix_log(LOG_LEVEL_DEBUG, "cannot set default security levels for COM library");
 			CoUninitialize();
 			return FAIL;
 		}
@@ -380,13 +380,13 @@ extern "C" void	zbx_wmi_get(const char *wmi_namespace, const char *wmi_query, ch
 
 	if (SUCCEED != zbx_co_initialize())
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot initialize COM library for querying WMI");
+		treegix_log(LOG_LEVEL_DEBUG, "cannot initialize COM library for querying WMI");
 		goto out;
 	}
 
 	if (SYSINFO_RET_FAIL == zbx_wmi_get_variant(wmi_namespace, wmi_query, parse_first_first, &wmi_values, &error))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, error);
+		treegix_log(LOG_LEVEL_DEBUG, error);
 		goto out;
 	}
 
@@ -395,7 +395,7 @@ extern "C" void	zbx_wmi_get(const char *wmi_namespace, const char *wmi_query, ch
 
 	if (FAILED(hres))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot convert WMI result of type %d to VT_BSTR", V_VT(vtProp));
+		treegix_log(LOG_LEVEL_DEBUG, "cannot convert WMI result of type %d to VT_BSTR", V_VT(vtProp));
 		goto out;
 	}
 

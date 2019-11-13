@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -47,9 +47,9 @@ $scriptFormList = (new CFormList())
 	)
 	->addRow((new CLabel(_('Execute on'), 'execute_on')),
 		(new CRadioButtonList('execute_on', (int) $data['execute_on']))
-			->addValue(_('Zabbix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
-			->addValue(_('Zabbix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
-			->addValue(_('Zabbix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
+			->addValue(_('Treegix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
+			->addValue(_('Treegix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
+			->addValue(_('Treegix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
 			->setModern(true)
 	)
 	->addRow((new CLabel(_('Commands'), 'command'))->setAsteriskMark(),
@@ -115,7 +115,7 @@ $scriptFormList->addRow(new CLabel(_('Confirmation text'), 'confirmation'), [
 $scriptView = (new CTabView())->addTab('scripts', _('Script'), $scriptFormList);
 
 // footer
-$cancelButton = (new CRedirectButton(_('Cancel'), 'zabbix.php?action=script.list'))->setId('cancel');
+$cancelButton = (new CRedirectButton(_('Cancel'), 'treegix.php?action=script.list'))->setId('cancel');
 
 if ($data['scriptid'] == 0) {
 	$addButton = (new CSubmitButton(_('Add'), 'action', 'script.create'))->setId('add');
@@ -129,7 +129,7 @@ else {
 	$updateButton = (new CSubmitButton(_('Update'), 'action', 'script.update'))->setId('update');
 	$cloneButton = (new CSimpleButton(_('Clone')))->setId('clone');
 	$deleteButton = (new CRedirectButton(_('Delete'),
-		'zabbix.php?action=script.delete&sid='.$data['sid'].'&scriptids[]='.$data['scriptid'],
+		'treegix.php?action=script.delete&sid='.$data['sid'].'&scriptids[]='.$data['scriptid'],
 		_('Delete script?')
 	))
 		->setId('delete');

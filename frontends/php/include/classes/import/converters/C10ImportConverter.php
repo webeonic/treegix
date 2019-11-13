@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ class C10ImportConverter extends CConverter {
 	}
 
 	public function convert($value) {
-		$content = $value['zabbix_export'];
+		$content = $value['treegix_export'];
 
 		$content['version'] = '2.0';
 		$content = $this->convertTime($content);
@@ -62,7 +62,7 @@ class C10ImportConverter extends CConverter {
 		$content = $this->filterDuplicateTriggers($content);
 		$content = $this->filterDuplicateGraphs($content);
 
-		$value['zabbix_export'] = $content;
+		$value['treegix_export'] = $content;
 
 		return $value;
 	}

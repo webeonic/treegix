@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ class OracleDbBackend extends DbBackend {
 		$tableExists = DBfetch(DBselect("SELECT table_name FROM user_tables WHERE table_name='DBVERSION'"));
 
 		if (!$tableExists) {
-			$this->setError(_('The frontend does not match Zabbix database.'));
+			$this->setError(_('The frontend does not match Treegix database.'));
 			return false;
 		}
 

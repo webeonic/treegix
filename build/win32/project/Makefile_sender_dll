@@ -15,9 +15,9 @@ ADD_LFLAGS = /MACHINE:X64
 !ERROR Unsupported CPU architecture: $(CPU)
 !ENDIF
 
-PROJECTNAME = zabbix_sender
+PROJECTNAME = treegix_sender
 PROJECTDIR = ..\..\..\src\$(PROJECTNAME)
-TARGETNAME = zabbix_sender
+TARGETNAME = treegix_sender
 TARGETEXT = dll
 PROGNAME = $(TARGETDIR)\$(TARGETNAME).$(TARGETEXT)
 ADD_CFLAGS = $(ADD_CFLAGS) /D NDEBUG /D ZBX_EXPORT /Fd$(TARGETNAME).$(TARGETEXT).pdb
@@ -57,29 +57,29 @@ OBJS = \
 	..\..\..\src\libs\zbxalgo\algodefs.o \
 	..\..\..\src\libs\zbxalgo\vector.o \
 	..\..\..\src\libs\zbxregexp\zbxregexp.o \
-	..\..\..\src\zabbix_sender\win32\zabbix_sender.o
+	..\..\..\src\treegix_sender\win32\treegix_sender.o
 
 LIBS = ws2_32.lib psapi.lib pdh.lib Wldap32.lib advapi32.lib uuid.lib Iphlpapi.lib
 
 !INCLUDE Makefile_pcre.inc
 !INCLUDE Makefile_targets.inc
 
-# zabbix_sender dynamic link library support
+# treegix_sender dynamic link library support
 {$(PROJECTDIR)/win32}.c{$(PROJECTDIR)/win32}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-$(TARGETDIR)\zabbix_sender.h: $(PROJECTDIR)\win32\zabbix_sender.h
-	@copy /Y $(PROJECTDIR)\win32\zabbix_sender.h $(TARGETDIR)\
+$(TARGETDIR)\treegix_sender.h: $(PROJECTDIR)\win32\treegix_sender.h
+	@copy /Y $(PROJECTDIR)\win32\treegix_sender.h $(TARGETDIR)\
 	
 pre-build:
 !IF "$(TLS)" != ""
-	@echo Cannot build zabbix_sender.dll with TLS support.
+	@echo Cannot build treegix_sender.dll with TLS support.
 	@exit /b 9
 !ENDIF
 
-post-build: $(TARGETDIR)\zabbix_sender.h
-	@del /Q $(TARGETDIR)\zabbix_sender.exp 2>NUL
+post-build: $(TARGETDIR)\treegix_sender.h
+	@del /Q $(TARGETDIR)\treegix_sender.exp 2>NUL
 
 post-clean:
-	@del /Q $(TARGETDIR)\zabbix_sender.h 2>NUL
-	@del /Q $(TARGETDIR)\zabbix_sender.lib 2>NUL
+	@del /Q $(TARGETDIR)\treegix_sender.h 2>NUL
+	@del /Q $(TARGETDIR)\treegix_sender.lib 2>NUL

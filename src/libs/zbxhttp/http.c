@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char
 		char	*file_name;
 
 		file_name = zbx_dsprintf(NULL, "%s/%s", CONFIG_SSL_CERT_LOCATION, ssl_cert_file);
-		zabbix_log(LOG_LEVEL_DEBUG, "using SSL certificate file: '%s'", file_name);
+		treegix_log(LOG_LEVEL_DEBUG, "using SSL certificate file: '%s'", file_name);
 
 		err = curl_easy_setopt(easyhandle, CURLOPT_SSLCERT, file_name);
 		zbx_free(file_name);
@@ -98,7 +98,7 @@ int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char
 		char	*file_name;
 
 		file_name = zbx_dsprintf(NULL, "%s/%s", CONFIG_SSL_KEY_LOCATION, ssl_key_file);
-		zabbix_log(LOG_LEVEL_DEBUG, "using SSL private key file: '%s'", file_name);
+		treegix_log(LOG_LEVEL_DEBUG, "using SSL private key file: '%s'", file_name);
 
 		err = curl_easy_setopt(easyhandle, CURLOPT_SSLKEY, file_name);
 		zbx_free(file_name);
@@ -140,7 +140,7 @@ int	zbx_http_prepare_auth(CURL *easyhandle, unsigned char authtype, const char *
 		char		auth[MAX_STRING_LEN];
 		CURLcode	err;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "setting HTTPAUTH [%d]", authtype);
+		treegix_log(LOG_LEVEL_DEBUG, "setting HTTPAUTH [%d]", authtype);
 
 		switch (authtype)
 		{

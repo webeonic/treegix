@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2018 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2018 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -22,23 +22,23 @@
 #include "dbcache.h"
 #include "zbxself.h"
 #include "valuecache.h"
-#include "../../zabbix_server/vmware/vmware.h"
+#include "../../treegix_server/vmware/vmware.h"
 #include "preproc.h"
 
-#include "zabbix_stats.h"
+#include "treegix_stats.h"
 
 extern unsigned char	program_type;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_send_zabbix_stats                                            *
+ * Function: zbx_send_treegix_stats                                            *
  *                                                                            *
- * Purpose: collects all metrics required for Zabbix stats request            *
+ * Purpose: collects all metrics required for Treegix stats request            *
  *                                                                            *
  * Parameters: json - [OUT] the json data                                     *
  *                                                                            *
  ******************************************************************************/
-void	zbx_get_zabbix_stats(struct zbx_json *json)
+void	zbx_get_treegix_stats(struct zbx_json *json)
 {
 	zbx_config_cache_info_t	count_stats;
 	zbx_vmware_stats_t	vmware_stats;
@@ -48,30 +48,30 @@ void	zbx_get_zabbix_stats(struct zbx_json *json)
 
 	DCget_count_stats_all(&count_stats);
 
-	/* zabbix[boottime] */
+	/* treegix[boottime] */
 	zbx_json_adduint64(json, "boottime", CONFIG_SERVER_STARTUP_TIME);
 
-	/* zabbix[uptime] */
+	/* treegix[uptime] */
 	zbx_json_adduint64(json, "uptime", time(NULL) - CONFIG_SERVER_STARTUP_TIME);
 
-	/* zabbix[hosts] */
+	/* treegix[hosts] */
 	zbx_json_adduint64(json, "hosts", count_stats.hosts);
 
-	/* zabbix[items] */
+	/* treegix[items] */
 	zbx_json_adduint64(json, "items", count_stats.items);
 
-	/* zabbix[item_unsupported] */
+	/* treegix[item_unsupported] */
 	zbx_json_adduint64(json, "item_unsupported", count_stats.items_unsupported);
 
-	/* zabbix[requiredperformance] */
+	/* treegix[requiredperformance] */
 	zbx_json_addfloat(json, "requiredperformance", count_stats.requiredperformance);
 
-	/* zabbix[preprocessing_queue] */
+	/* treegix[preprocessing_queue] */
 	zbx_json_adduint64(json, "preprocessing_queue", zbx_preprocessor_get_queue_size());
 
-	zbx_get_zabbix_stats_ext(json);
+	zbx_get_treegix_stats_ext(json);
 
-	/* zabbix[rcache,<cache>,<mode>] */
+	/* treegix[rcache,<cache>,<mode>] */
 	zbx_json_addobject(json, "rcache");
 	zbx_json_adduint64(json, "total", *(zbx_uint64_t *)DCconfig_get_stats(ZBX_CONFSTATS_BUFFER_TOTAL));
 	zbx_json_adduint64(json, "free", *(zbx_uint64_t *)DCconfig_get_stats(ZBX_CONFSTATS_BUFFER_FREE));
@@ -80,7 +80,7 @@ void	zbx_get_zabbix_stats(struct zbx_json *json)
 	zbx_json_addfloat(json, "pused", *(double *)DCconfig_get_stats(ZBX_CONFSTATS_BUFFER_PUSED));
 	zbx_json_close(json);
 
-	/* zabbix[wcache,<cache>,<mode>] */
+	/* treegix[wcache,<cache>,<mode>] */
 	DCget_stats_all(&wcache_info);
 	zbx_json_addobject(json, "wcache");
 
@@ -126,7 +126,7 @@ void	zbx_get_zabbix_stats(struct zbx_json *json)
 
 	zbx_json_close(json);
 
-	/* zabbix[vmware,buffer,<mode>] */
+	/* treegix[vmware,buffer,<mode>] */
 	if (SUCCEED == zbx_vmware_get_statistics(&vmware_stats))
 	{
 		zbx_json_addobject(json, "vmware");
@@ -139,7 +139,7 @@ void	zbx_get_zabbix_stats(struct zbx_json *json)
 		zbx_json_close(json);
 	}
 
-	/* zabbix[process,<type>,<mode>,<state>] */
+	/* treegix[process,<type>,<mode>,<state>] */
 	zbx_json_addobject(json, "process");
 
 	if (SUCCEED == zbx_get_all_process_stats(process_stats))

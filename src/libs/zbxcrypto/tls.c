@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -82,11 +82,11 @@ static void	zbx_openssl_thread_setup(void)
 
 	if (NULL == (crypto_mutexes = zbx_malloc(crypto_mutexes, num_locks * sizeof(zbx_mutex_t))))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot allocate mutexes for OpenSSL library");
+		treegix_log(LOG_LEVEL_CRIT, "cannot allocate mutexes for OpenSSL library");
 		exit(EXIT_FAILURE);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s() creating %d mutexes", __func__, num_locks);
+	treegix_log(LOG_LEVEL_DEBUG, "%s() creating %d mutexes", __func__, num_locks);
 
 	for (i = 0; i < num_locks; i++)
 	{
@@ -94,7 +94,7 @@ static void	zbx_openssl_thread_setup(void)
 
 		if (SUCCEED != zbx_mutex_create(crypto_mutexes + i, NULL, &error))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "cannot create mutex #%d for OpenSSL library: %s", i, error);
+			treegix_log(LOG_LEVEL_CRIT, "cannot create mutex #%d for OpenSSL library: %s", i, error);
 			zbx_free(error);
 			exit(EXIT_FAILURE);
 		}
@@ -297,7 +297,7 @@ static void	zbx_make_personalization_string(unsigned char pers[64])
  *                                                                            *
  * Function: polarssl_debug_cb                                                *
  *                                                                            *
- * Purpose: write a PolarSSL debug message into Zabbix log                    *
+ * Purpose: write a PolarSSL debug message into Treegix log                    *
  *                                                                            *
  * Comments:                                                                  *
  *     Parameter 'tls_ctx' is not used but cannot be removed because this is  *
@@ -313,14 +313,14 @@ static void	polarssl_debug_cb(void *tls_ctx, int level, const char *str)
 	/* remove '\n' from the end of debug message */
 	zbx_strlcpy(msg, str, sizeof(msg));
 	zbx_rtrim(msg, "\n");
-	zabbix_log(LOG_LEVEL_TRACE, "PolarSSL debug: level=%d \"%s\"", level, msg);
+	treegix_log(LOG_LEVEL_TRACE, "PolarSSL debug: level=%d \"%s\"", level, msg);
 }
 #elif defined(HAVE_GNUTLS)
 /******************************************************************************
  *                                                                            *
  * Function: zbx_gnutls_debug_cb                                              *
  *                                                                            *
- * Purpose: write a GnuTLS debug message into Zabbix log                      *
+ * Purpose: write a GnuTLS debug message into Treegix log                      *
  *                                                                            *
  * Comments:                                                                  *
  *     This is a callback function, its arguments are defined in GnuTLS.      *
@@ -333,14 +333,14 @@ static void	zbx_gnutls_debug_cb(int level, const char *str)
 	/* remove '\n' from the end of debug message */
 	zbx_strlcpy(msg, str, sizeof(msg));
 	zbx_rtrim(msg, "\n");
-	zabbix_log(LOG_LEVEL_TRACE, "GnuTLS debug: level=%d \"%s\"", level, msg);
+	treegix_log(LOG_LEVEL_TRACE, "GnuTLS debug: level=%d \"%s\"", level, msg);
 }
 
 /******************************************************************************
  *                                                                            *
  * Function: zbx_gnutls_audit_cb                                              *
  *                                                                            *
- * Purpose: write a GnuTLS audit message into Zabbix log                      *
+ * Purpose: write a GnuTLS audit message into Treegix log                      *
  *                                                                            *
  * Comments:                                                                  *
  *     This is a callback function, its arguments are defined in GnuTLS.      *
@@ -356,7 +356,7 @@ static void	zbx_gnutls_audit_cb(gnutls_session_t session, const char *str)
 	zbx_strlcpy(msg, str, sizeof(msg));
 	zbx_rtrim(msg, "\n");
 
-	zabbix_log(LOG_LEVEL_WARNING, "GnuTLS audit: \"%s\"", msg);
+	treegix_log(LOG_LEVEL_WARNING, "GnuTLS audit: \"%s\"", msg);
 }
 #endif	/* defined(HAVE_GNUTLS) */
 
@@ -373,14 +373,14 @@ static void	zbx_gnutls_audit_cb(gnutls_session_t session, const char *str)
  ******************************************************************************/
 static void	zbx_openssl_info_cb(const SSL *ssl, int where, int ret)
 {
-	/* There was an idea of using SSL_CB_LOOP and SSL_state_string_long() to write state changes into Zabbix log */
+	/* There was an idea of using SSL_CB_LOOP and SSL_state_string_long() to write state changes into Treegix log */
 	/* if logging level is LOG_LEVEL_TRACE. Unfortunately if OpenSSL for security is compiled without SSLv3 */
 	/* (i.e. OPENSSL_NO_SSL3 is defined) then SSL_state_string_long() does not provide descriptions of many */
 	/* states anymore. The idea was dropped but the code is here for debugging hard problems. */
 #if 0
 	if (0 != (where & SSL_CB_LOOP))
 	{
-		zabbix_log(LOG_LEVEL_TRACE, "OpenSSL debug: state=0x%x \"%s\"", (unsigned int)SSL_state(ssl),
+		treegix_log(LOG_LEVEL_TRACE, "OpenSSL debug: state=0x%x \"%s\"", (unsigned int)SSL_state(ssl),
 				SSL_state_string_long(ssl));
 	}
 #else
@@ -625,18 +625,18 @@ static void	zbx_tls_parameter_not_empty(char **param)
 
 		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "configuration parameter \"%s\" or \"%s\" is defined but empty",
+			treegix_log(LOG_LEVEL_CRIT, "configuration parameter \"%s\" or \"%s\" is defined but empty",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param));
 		}
 		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "configuration parameter \"%s\" is defined but empty",
+			treegix_log(LOG_LEVEL_CRIT, "configuration parameter \"%s\" is defined but empty",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param));
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "configuration parameter \"%s\" is defined but empty",
+			treegix_log(LOG_LEVEL_CRIT, "configuration parameter \"%s\" is defined but empty",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param));
 		}
 
@@ -669,18 +669,18 @@ static void	zbx_tls_validation_error(int type, char **param1, char **param2)
 	{
 		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "invalid value of \"%s\" or \"%s\" parameter",
+			treegix_log(LOG_LEVEL_CRIT, "invalid value of \"%s\" or \"%s\" parameter",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
 		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "invalid value of \"%s\" parameter",
+			treegix_log(LOG_LEVEL_CRIT, "invalid value of \"%s\" parameter",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "invalid value of \"%s\" parameter",
+			treegix_log(LOG_LEVEL_CRIT, "invalid value of \"%s\" parameter",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1));
 		}
 	}
@@ -688,7 +688,7 @@ static void	zbx_tls_validation_error(int type, char **param1, char **param2)
 	{
 		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "parameter \"%s\" or \"%s\" is defined,"
+			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" or \"%s\" is defined,"
 					" but neither \"%s\" nor \"%s\" is defined",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1),
@@ -697,13 +697,13 @@ static void	zbx_tls_validation_error(int type, char **param1, char **param2)
 		}
 		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "parameter \"%s\" is defined, but \"%s\" is not defined",
+			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" is defined, but \"%s\" is not defined",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param2));
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "parameter \"%s\" is defined, but \"%s\" is not defined",
+			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" is defined, but \"%s\" is not defined",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param2));
 		}
@@ -712,7 +712,7 @@ static void	zbx_tls_validation_error(int type, char **param1, char **param2)
 	{
 		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "parameter \"%s\" or \"%s\" value requires \"%s\" or \"%s\","
+			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" or \"%s\" value requires \"%s\" or \"%s\","
 					" but neither of them is defined",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1),
@@ -721,13 +721,13 @@ static void	zbx_tls_validation_error(int type, char **param1, char **param2)
 		}
 		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value requires \"%s\", but it is not defined",
+			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value requires \"%s\", but it is not defined",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param2));
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value requires \"%s\", but it is not defined",
+			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value requires \"%s\", but it is not defined",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param2));
 		}
@@ -736,18 +736,18 @@ static void	zbx_tls_validation_error(int type, char **param1, char **param2)
 	{
 		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "parameter \"%s\" or \"%s\" value is not a valid UTF-8 string",
+			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" or \"%s\" value is not a valid UTF-8 string",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
 		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value is not a valid UTF-8 string",
+			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value is not a valid UTF-8 string",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value is not a valid UTF-8 string",
+			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value is not a valid UTF-8 string",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1));
 		}
 	}
@@ -755,20 +755,20 @@ static void	zbx_tls_validation_error(int type, char **param1, char **param2)
 	{
 		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "value of parameter \"%s\" or \"%s\" requires support of encrypted"
+			treegix_log(LOG_LEVEL_CRIT, "value of parameter \"%s\" or \"%s\" requires support of encrypted"
 					" connection with PSK but support for PSK was not compiled in",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
 		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "value of parameter \"%s\" requires support of encrypted"
+			treegix_log(LOG_LEVEL_CRIT, "value of parameter \"%s\" requires support of encrypted"
 					" connection with PSK but support for PSK was not compiled in",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "value of parameter \"%s\" requires support of encrypted"
+			treegix_log(LOG_LEVEL_CRIT, "value of parameter \"%s\" requires support of encrypted"
 					" connection with PSK but support for PSK was not compiled in",
 					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1));
 		}
@@ -797,7 +797,7 @@ static void	zbx_tls_validation_error(int type, char **param1, char **param2)
  *           CONFIG_TLS_PSK_FILE - are defined and not empty or none of them, *
  *           (if CONFIG_TLS_PSK_IDENTITY is defined it must be a valid UTF-8  *
  *           string),                                                         *
- *         - in active agent, active proxy, zabbix_get, and zabbix_sender the *
+ *         - in active agent, active proxy, treegix_get, and treegix_sender the *
  *           certificate and PSK parameters must match the value of           *
  *           CONFIG_TLS_CONNECT parameter,                                    *
  *         - in passive agent and passive proxy the certificate and PSK       *
@@ -817,8 +817,8 @@ void	zbx_tls_validate_config(void)
 	zbx_tls_parameter_not_empty(&CONFIG_TLS_PSK_IDENTITY);
 	zbx_tls_parameter_not_empty(&CONFIG_TLS_PSK_FILE);
 
-	/* parse and validate 'TLSConnect' parameter (in zabbix_proxy.conf, zabbix_agentd.conf) and '--tls-connect' */
-	/* parameter (in zabbix_get and zabbix_sender) */
+	/* parse and validate 'TLSConnect' parameter (in treegix_proxy.conf, treegix_agentd.conf) and '--tls-connect' */
+	/* parameter (in treegix_get and treegix_sender) */
 
 	if (NULL != CONFIG_TLS_CONNECT)
 	{
@@ -838,7 +838,7 @@ void	zbx_tls_validate_config(void)
 			zbx_tls_validation_error(ZBX_TLS_VALIDATION_INVALID, &CONFIG_TLS_CONNECT, NULL);
 	}
 
-	/* parse and validate 'TLSAccept' parameter (in zabbix_proxy.conf, zabbix_agentd.conf) */
+	/* parse and validate 'TLSAccept' parameter (in treegix_proxy.conf, treegix_agentd.conf) */
 
 	if (NULL != CONFIG_TLS_ACCEPT)
 	{
@@ -933,7 +933,7 @@ void	zbx_tls_validate_config(void)
 	if (NULL != CONFIG_TLS_PSK_IDENTITY && SUCCEED != zbx_is_utf8(CONFIG_TLS_PSK_IDENTITY))
 		zbx_tls_validation_error(ZBX_TLS_VALIDATION_UTF8, &CONFIG_TLS_PSK_IDENTITY, NULL);
 
-	/* active agentd, active proxy, zabbix_get, and zabbix_sender specific validation */
+	/* active agentd, active proxy, treegix_get, and treegix_sender specific validation */
 
 	if ((0 != (program_type & ZBX_PROGRAM_TYPE_AGENTD) && 0 != CONFIG_ACTIVE_FORKS) ||
 			(0 != (program_type & (ZBX_PROGRAM_TYPE_PROXY_ACTIVE | ZBX_PROGRAM_TYPE_GET |
@@ -1220,7 +1220,7 @@ static int	zbx_psk_hex2bin(const unsigned char *p_hex, unsigned char *buf, int b
 
 static void	zbx_psk_warn_misconfig(const char *psk_identity)
 {
-	zabbix_log(LOG_LEVEL_WARNING, "same PSK identity \"%s\" but different PSK values used in proxy configuration"
+	treegix_log(LOG_LEVEL_WARNING, "same PSK identity \"%s\" but different PSK values used in proxy configuration"
 			" file, for host or for autoregistration; autoregistration will not be allowed", psk_identity);
 }
 
@@ -1260,7 +1260,7 @@ static int	zbx_psk_cb(void *par, ssl_context *tls_ctx, const unsigned char *psk_
 	ZBX_UNUSED(par);
 
 	/* special print: psk_identity is not '\0'-terminated */
-	zabbix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%.*s\"", __func__, (int)psk_identity_len,
+	treegix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%.*s\"", __func__, (int)psk_identity_len,
 			psk_identity);
 
 	psk_usage = 0;
@@ -1281,7 +1281,7 @@ static int	zbx_psk_cb(void *par, ssl_context *tls_ctx, const unsigned char *psk_
 		if (0 >= (psk_bin_len = zbx_psk_hex2bin(tls_psk_hex, psk_buf, sizeof(psk_buf))))
 		{
 			/* this should have been prevented by validation in frontend or API */
-			zabbix_log(LOG_LEVEL_WARNING, "cannot convert PSK to binary form for PSK identity"
+			treegix_log(LOG_LEVEL_WARNING, "cannot convert PSK to binary form for PSK identity"
 					" \"%.*s\"", (int)psk_identity_len, psk_identity);
 			return -1;
 		}
@@ -1311,7 +1311,7 @@ static int	zbx_psk_cb(void *par, ssl_context *tls_ctx, const unsigned char *psk_
 
 	if (0 == psk_len)
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%.*s\"",
+		treegix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%.*s\"",
 				(int)psk_identity_len, psk_identity);
 		return -1;
 	}
@@ -1324,7 +1324,7 @@ static int	zbx_psk_cb(void *par, ssl_context *tls_ctx, const unsigned char *psk_
 			return 0;
 
 		zbx_tls_error_msg(res, "", &err_msg);
-		zabbix_log(LOG_LEVEL_WARNING, "cannot set PSK for PSK identity \"%.*s\": %s", (int)psk_identity_len,
+		treegix_log(LOG_LEVEL_WARNING, "cannot set PSK for PSK identity \"%.*s\": %s", (int)psk_identity_len,
 				psk_identity, err_msg);
 		zbx_free(err_msg);
 	}
@@ -1363,7 +1363,7 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 
 	ZBX_UNUSED(session);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%s\"", __func__, psk_identity);
+	treegix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%s\"", __func__, psk_identity);
 
 	psk_usage = 0;
 
@@ -1376,7 +1376,7 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 			if (0 >= (psk_bin_len = zbx_psk_hex2bin(tls_psk_hex, psk_buf, sizeof(psk_buf))))
 			{
 				/* this should have been prevented by validation in frontend or API */
-				zabbix_log(LOG_LEVEL_WARNING, "cannot convert PSK to binary form for PSK identity"
+				treegix_log(LOG_LEVEL_WARNING, "cannot convert PSK to binary form for PSK identity"
 						" \"%s\"", psk_identity);
 				return -1;	/* fail */
 			}
@@ -1405,7 +1405,7 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 
 		if (0 == psk_len)
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%s\"", psk_identity);
+			treegix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%s\"", psk_identity);
 			return -1;	/* fail */
 		}
 	}
@@ -1420,7 +1420,7 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%s\", available PSK"
+				treegix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%s\", available PSK"
 						" identity \"%s\"", psk_identity, my_psk_identity);
 				return -1;	/* fail */
 			}
@@ -1431,7 +1431,7 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 	{
 		if (NULL == (key->data = gnutls_malloc(psk_len)))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot allocate " ZBX_FS_SIZE_T " bytes of memory for PSK with"
+			treegix_log(LOG_LEVEL_WARNING, "cannot allocate " ZBX_FS_SIZE_T " bytes of memory for PSK with"
 					" identity \"%s\"", (zbx_fs_size_t)psk_len, psk_identity);
 			return -1;	/* fail */
 		}
@@ -1479,18 +1479,18 @@ static unsigned int	zbx_psk_client_cb(SSL *ssl, const char *hint, char *identity
 	ZBX_UNUSED(ssl);
 	ZBX_UNUSED(hint);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%s\"", __func__, psk_identity_for_cb);
+	treegix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%s\"", __func__, psk_identity_for_cb);
 
 	if (max_identity_len < psk_identity_len_for_cb + 1)	/* 1 byte for terminating '\0' */
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "requested PSK identity \"%s\" does not fit into %u-byte buffer",
+		treegix_log(LOG_LEVEL_WARNING, "requested PSK identity \"%s\" does not fit into %u-byte buffer",
 				psk_identity_for_cb, max_identity_len);
 		return 0;
 	}
 
 	if (max_psk_len < psk_len_for_cb)
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "PSK associated with PSK identity \"%s\" does not fit into %u-byte"
+		treegix_log(LOG_LEVEL_WARNING, "PSK associated with PSK identity \"%s\" does not fit into %u-byte"
 				" buffer", psk_identity_for_cb, max_psk_len);
 		return 0;
 	}
@@ -1533,7 +1533,7 @@ static unsigned int	zbx_psk_server_cb(SSL *ssl, const char *identity, unsigned c
 
 	ZBX_UNUSED(ssl);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%s\"", __func__, identity);
+	treegix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%s\"", __func__, identity);
 
 	incoming_connection_has_psk = 1;
 	psk_usage = 0;
@@ -1547,7 +1547,7 @@ static unsigned int	zbx_psk_server_cb(SSL *ssl, const char *identity, unsigned c
 			if (0 >= (psk_bin_len = zbx_psk_hex2bin(tls_psk_hex, psk_buf, sizeof(psk_buf))))
 			{
 				/* this should have been prevented by validation in frontend or API */
-				zabbix_log(LOG_LEVEL_WARNING, "cannot convert PSK to binary form for PSK identity"
+				treegix_log(LOG_LEVEL_WARNING, "cannot convert PSK to binary form for PSK identity"
 						" \"%s\"", identity);
 				goto fail;
 			}
@@ -1576,7 +1576,7 @@ static unsigned int	zbx_psk_server_cb(SSL *ssl, const char *identity, unsigned c
 
 		if (0 == psk_len)
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%s\"", identity);
+			treegix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%s\"", identity);
 			goto fail;
 		}
 	}
@@ -1591,7 +1591,7 @@ static unsigned int	zbx_psk_server_cb(SSL *ssl, const char *identity, unsigned c
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%s\", available PSK"
+				treegix_log(LOG_LEVEL_WARNING, "cannot find requested PSK identity \"%s\", available PSK"
 						" identity \"%s\"", identity, my_psk_identity);
 				goto fail;
 			}
@@ -1602,7 +1602,7 @@ static unsigned int	zbx_psk_server_cb(SSL *ssl, const char *identity, unsigned c
 	{
 		if ((size_t)max_psk_len < psk_len)
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "PSK associated with PSK identity \"%s\" does not fit into"
+			treegix_log(LOG_LEVEL_WARNING, "PSK associated with PSK identity \"%s\" does not fit into"
 					" %u-byte buffer", identity, max_psk_len);
 			goto fail;
 		}
@@ -1629,7 +1629,7 @@ static void	zbx_check_psk_identity_len(size_t psk_identity_len)
 {
 	if (HOST_TLS_PSK_IDENTITY_LEN < psk_identity_len)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "PSK identity length " ZBX_FS_SIZE_T " exceeds the maximum length of %d"
+		treegix_log(LOG_LEVEL_CRIT, "PSK identity length " ZBX_FS_SIZE_T " exceeds the maximum length of %d"
 				" bytes.", (zbx_fs_size_t)psk_identity_len, HOST_TLS_PSK_IDENTITY_LEN);
 		zbx_tls_free();
 		exit(EXIT_FAILURE);
@@ -1666,13 +1666,13 @@ static void	zbx_read_psk_file(void)
 
 	if (NULL == (f = fopen(CONFIG_TLS_PSK_FILE, "r")))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot open file \"%s\": %s", CONFIG_TLS_PSK_FILE, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_CRIT, "cannot open file \"%s\": %s", CONFIG_TLS_PSK_FILE, zbx_strerror(errno));
 		goto out;
 	}
 
 	if (NULL == fgets(buf, (int)sizeof(buf), f))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot read from file \"%s\" or file empty", CONFIG_TLS_PSK_FILE);
+		treegix_log(LOG_LEVEL_CRIT, "cannot read from file \"%s\" or file empty", CONFIG_TLS_PSK_FILE);
 		goto out;
 	}
 
@@ -1680,27 +1680,27 @@ static void	zbx_read_psk_file(void)
 
 	if (0 == (len = strlen(buf)))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "file \"%s\" is empty", CONFIG_TLS_PSK_FILE);
+		treegix_log(LOG_LEVEL_CRIT, "file \"%s\" is empty", CONFIG_TLS_PSK_FILE);
 		goto out;
 	}
 
 	if (HOST_TLS_PSK_LEN_MIN > len)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "PSK in file \"%s\" is too short. Minimum is %d hex-digits",
+		treegix_log(LOG_LEVEL_CRIT, "PSK in file \"%s\" is too short. Minimum is %d hex-digits",
 				CONFIG_TLS_PSK_FILE, HOST_TLS_PSK_LEN_MIN);
 		goto out;
 	}
 
 	if (HOST_TLS_PSK_LEN < len)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "PSK in file \"%s\" is too long. Maximum is %d hex-digits",
+		treegix_log(LOG_LEVEL_CRIT, "PSK in file \"%s\" is too long. Maximum is %d hex-digits",
 				CONFIG_TLS_PSK_FILE, HOST_TLS_PSK_LEN);
 		goto out;
 	}
 
 	if (0 >= (len_bin = zbx_psk_hex2bin((unsigned char *)buf, (unsigned char *)buf_bin, sizeof(buf_bin))))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "invalid PSK in file \"%s\"", CONFIG_TLS_PSK_FILE);
+		treegix_log(LOG_LEVEL_CRIT, "invalid PSK in file \"%s\"", CONFIG_TLS_PSK_FILE);
 		goto out;
 	}
 
@@ -1712,7 +1712,7 @@ static void	zbx_read_psk_file(void)
 out:
 	if (NULL != f && 0 != fclose(f))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot close file \"%s\": %s", CONFIG_TLS_PSK_FILE, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_CRIT, "cannot close file \"%s\": %s", CONFIG_TLS_PSK_FILE, zbx_strerror(errno));
 		ret = FAIL;
 	}
 
@@ -1728,7 +1728,7 @@ out:
  *                                                                            *
  * Function: zbx_log_ciphersuites                                             *
  *                                                                            *
- * Purpose: write names of enabled mbed TLS ciphersuites into Zabbix log for  *
+ * Purpose: write names of enabled mbed TLS ciphersuites into Treegix log for  *
  *          debugging                                                         *
  *                                                                            *
  * Parameters:                                                                *
@@ -1750,7 +1750,7 @@ static void	zbx_log_ciphersuites(const char *title1, const char *title2, const i
 		for (p = cipher_ids; 0 != *p; p++)
 			zbx_snprintf_alloc(&msg, &msg_alloc, &msg_offset, " %s", ssl_get_ciphersuite_name(*p));
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s", msg);
+		treegix_log(LOG_LEVEL_DEBUG, "%s", msg);
 		zbx_free(msg);
 	}
 }
@@ -1759,7 +1759,7 @@ static void	zbx_log_ciphersuites(const char *title1, const char *title2, const i
  *                                                                            *
  * Function: zbx_log_ciphersuites                                             *
  *                                                                            *
- * Purpose: write names of enabled GnuTLS ciphersuites into Zabbix log for    *
+ * Purpose: write names of enabled GnuTLS ciphersuites into Treegix log for    *
  *          debugging                                                         *
  *                                                                            *
  * Parameters:                                                                *
@@ -1796,7 +1796,7 @@ static void	zbx_log_ciphersuites(const char *title1, const char *title2, gnutls_
 			/* (see "man gnutls_priority_get_cipher_suite_index") */
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s", msg);
+		treegix_log(LOG_LEVEL_DEBUG, "%s", msg);
 		zbx_free(msg);
 	}
 }
@@ -1805,7 +1805,7 @@ static void	zbx_log_ciphersuites(const char *title1, const char *title2, gnutls_
  *                                                                            *
  * Function: zbx_log_ciphersuites                                             *
  *                                                                            *
- * Purpose: write names of enabled OpenSSL ciphersuites into Zabbix log for   *
+ * Purpose: write names of enabled OpenSSL ciphersuites into Treegix log for   *
  *          debugging                                                         *
  *                                                                            *
  * Parameters:                                                                *
@@ -1834,7 +1834,7 @@ static void	zbx_log_ciphersuites(const char *title1, const char *title2, SSL_CTX
 					SSL_CIPHER_get_name(sk_SSL_CIPHER_value(cipher_list, i)));
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s", msg);
+		treegix_log(LOG_LEVEL_DEBUG, "%s", msg);
 		zbx_free(msg);
 	}
 }
@@ -2367,7 +2367,7 @@ static gnutls_x509_crt_t	zbx_get_peer_cert(const gnutls_session_t session, char 
  *                                                                            *
  * Function: zbx_log_peer_cert                                                *
  *                                                                            *
- * Purpose: write peer certificate information into Zabbix log for debugging  *
+ * Purpose: write peer certificate information into Treegix log for debugging  *
  *                                                                            *
  * Parameters:                                                                *
  *     function_name - [IN] caller function name                              *
@@ -2394,38 +2394,38 @@ static void	zbx_log_peer_cert(const char *function_name, const zbx_tls_context_t
 #if defined(HAVE_POLARSSL)
 	if (NULL == (cert = ssl_get_peer_cert(tls_ctx->ctx)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate", function_name);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate", function_name);
 	}
 	else if (SUCCEED != zbx_x509_dn_gets(&cert->issuer, issuer, sizeof(issuer), &error))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate issuer: %s", function_name, error);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate issuer: %s", function_name, error);
 	}
 	else if (SUCCEED != zbx_x509_dn_gets(&cert->subject, subject, sizeof(subject), &error))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate subject: %s", function_name, error);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate subject: %s", function_name, error);
 	}
 	else if (0 > x509_serial_gets(serial, sizeof(serial), &cert->serial))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate serial", function_name);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate serial", function_name);
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() peer certificate issuer:\"%s\" subject:\"%s\" serial:\"%s\"",
+		treegix_log(LOG_LEVEL_DEBUG, "%s() peer certificate issuer:\"%s\" subject:\"%s\" serial:\"%s\"",
 				function_name, issuer, subject, serial);
 	}
 #elif defined(HAVE_GNUTLS)
 	if (NULL == (cert = zbx_get_peer_cert(tls_ctx->ctx, &error)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s(): cannot obtain peer certificate: %s", function_name, error);
+		treegix_log(LOG_LEVEL_DEBUG, "%s(): cannot obtain peer certificate: %s", function_name, error);
 	}
 	else if (GNUTLS_E_SUCCESS != (res = gnutls_x509_crt_print(cert, GNUTLS_CRT_PRINT_ONELINE, &cert_print)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s(): gnutls_x509_crt_print() failed: %d %s", function_name, res,
+		treegix_log(LOG_LEVEL_DEBUG, "%s(): gnutls_x509_crt_print() failed: %d %s", function_name, res,
 				gnutls_strerror(res));
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s(): peer certificate: %s", function_name, cert_print.data);
+		treegix_log(LOG_LEVEL_DEBUG, "%s(): peer certificate: %s", function_name, cert_print.data);
 		gnutls_free(cert_print.data);
 	}
 
@@ -2434,19 +2434,19 @@ static void	zbx_log_peer_cert(const char *function_name, const zbx_tls_context_t
 #elif defined(HAVE_OPENSSL)
 	if (NULL == (cert = SSL_get_peer_certificate(tls_ctx->ctx)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate", function_name);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate", function_name);
 	}
 	else if (SUCCEED != zbx_x509_dn_gets(X509_get_issuer_name(cert), issuer, sizeof(issuer), &error))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate issuer: %s", function_name, error);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate issuer: %s", function_name, error);
 	}
 	else if (SUCCEED != zbx_x509_dn_gets(X509_get_subject_name(cert), subject, sizeof(subject), &error))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate subject: %s", function_name, error);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot obtain peer certificate subject: %s", function_name, error);
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() peer certificate issuer:\"%s\" subject:\"%s\"",
+		treegix_log(LOG_LEVEL_DEBUG, "%s() peer certificate issuer:\"%s\" subject:\"%s\"",
 				function_name, issuer, subject);
 	}
 
@@ -2703,27 +2703,27 @@ int	zbx_check_server_issuer_subject(zbx_socket_t *sock, char **error)
 static void	zbx_tls_library_init(void)
 {
 #if defined(HAVE_POLARSSL)
-	zabbix_log(LOG_LEVEL_DEBUG, "mbed TLS library (version %s)", POLARSSL_VERSION_STRING_FULL);
+	treegix_log(LOG_LEVEL_DEBUG, "mbed TLS library (version %s)", POLARSSL_VERSION_STRING_FULL);
 #elif defined(HAVE_GNUTLS)
 	if (GNUTLS_E_SUCCESS != gnutls_global_init())
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot initialize GnuTLS library");
+		treegix_log(LOG_LEVEL_CRIT, "cannot initialize GnuTLS library");
 		exit(EXIT_FAILURE);
 	}
 
 	init_done = 1;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "GnuTLS library (version %s) initialized", gnutls_check_version(NULL));
+	treegix_log(LOG_LEVEL_DEBUG, "GnuTLS library (version %s) initialized", gnutls_check_version(NULL));
 #elif defined(HAVE_OPENSSL)
 	if (1 != zbx_openssl_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot initialize OpenSSL library");
+		treegix_log(LOG_LEVEL_CRIT, "cannot initialize OpenSSL library");
 		exit(EXIT_FAILURE);
 	}
 
 	init_done = 1;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "OpenSSL library (version %s) initialized", OpenSSL_version(OPENSSL_VERSION));
+	treegix_log(LOG_LEVEL_DEBUG, "OpenSSL library (version %s) initialized", OpenSSL_version(OPENSSL_VERSION));
 #endif
 }
 
@@ -2781,7 +2781,7 @@ void	zbx_tls_init_child(void)
 #ifndef _WINDOWS
 	sigset_t	mask, orig_mask;
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 #ifndef _WINDOWS
 	/* Invalid TLS parameters will cause exit. Once one process exits the parent process will send SIGHUP to */
@@ -2796,7 +2796,7 @@ void	zbx_tls_init_child(void)
 
 	zbx_tls_library_init();		/* on Unix initialize crypto libraries in child processes */
 #endif
-	/* 'TLSCAFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSCAFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf). */
 	if (NULL != CONFIG_TLS_CA_FILE)
 	{
 		ca_cert = zbx_malloc(ca_cert, sizeof(x509_crt));
@@ -2807,13 +2807,13 @@ void	zbx_tls_init_child(void)
 			if (0 > res)
 			{
 				zbx_tls_error_msg(res, "", &err_msg);
-				zabbix_log(LOG_LEVEL_CRIT, "cannot parse CA certificate(s) in file \"%s\": %s",
+				treegix_log(LOG_LEVEL_CRIT, "cannot parse CA certificate(s) in file \"%s\": %s",
 						CONFIG_TLS_CA_FILE, err_msg);
 				zbx_free(err_msg);
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_CRIT, "cannot parse %d CA certificate(s) in file \"%s\"", res,
+				treegix_log(LOG_LEVEL_CRIT, "cannot parse %d CA certificate(s) in file \"%s\"", res,
 						CONFIG_TLS_CA_FILE);
 			}
 
@@ -2821,11 +2821,11 @@ void	zbx_tls_init_child(void)
 			exit(EXIT_FAILURE);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded CA certificate(s) from file \"%s\"", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded CA certificate(s) from file \"%s\"", __func__,
 				CONFIG_TLS_CA_FILE);
 	}
 
-	/* 'TLSCRLFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSCRLFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load CRL (certificate revocation list) file. */
 	if (NULL != CONFIG_TLS_CRL_FILE)
 	{
@@ -2835,18 +2835,18 @@ void	zbx_tls_init_child(void)
 		if (0 != (res = x509_crl_parse_file(crl, CONFIG_TLS_CRL_FILE)))
 		{
 			zbx_tls_error_msg(res, "", &err_msg);
-			zabbix_log(LOG_LEVEL_CRIT, "cannot parse CRL file \"%s\": %s", CONFIG_TLS_CRL_FILE, err_msg);
+			treegix_log(LOG_LEVEL_CRIT, "cannot parse CRL file \"%s\": %s", CONFIG_TLS_CRL_FILE, err_msg);
 			zbx_free(err_msg);
 
 			zbx_tls_free();
 			exit(EXIT_FAILURE);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded CRL(s) from file \"%s\"", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded CRL(s) from file \"%s\"", __func__,
 				CONFIG_TLS_CRL_FILE);
 	}
 
-	/* 'TLSCertFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSCertFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load certificate. */
 	if (NULL != CONFIG_TLS_CERT_FILE)
 	{
@@ -2858,13 +2858,13 @@ void	zbx_tls_init_child(void)
 			if (0 > res)
 			{
 				zbx_tls_error_msg(res, "", &err_msg);
-				zabbix_log(LOG_LEVEL_CRIT, "cannot parse certificate(s) in file \"%s\": %s",
+				treegix_log(LOG_LEVEL_CRIT, "cannot parse certificate(s) in file \"%s\": %s",
 						CONFIG_TLS_CERT_FILE, err_msg);
 				zbx_free(err_msg);
 			}
 			else
 			{
-				zabbix_log(LOG_LEVEL_CRIT, "cannot parse %d certificate(s) in file \"%s\"", res,
+				treegix_log(LOG_LEVEL_CRIT, "cannot parse %d certificate(s) in file \"%s\"", res,
 						CONFIG_TLS_CERT_FILE);
 			}
 
@@ -2872,10 +2872,10 @@ void	zbx_tls_init_child(void)
 			exit(EXIT_FAILURE);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded certificate from file \"%s\"", __func__, CONFIG_TLS_CERT_FILE);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded certificate from file \"%s\"", __func__, CONFIG_TLS_CERT_FILE);
 	}
 
-	/* 'TLSKeyFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSKeyFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load private key. */
 	if (NULL != CONFIG_TLS_KEY_FILE)
 	{
@@ -2887,27 +2887,27 @@ void	zbx_tls_init_child(void)
 		if (0 != (res = pk_parse_keyfile(my_priv_key, CONFIG_TLS_KEY_FILE, "")))
 		{
 			zbx_tls_error_msg(res, "", &err_msg);
-			zabbix_log(LOG_LEVEL_CRIT, "cannot parse the private key in file \"%s\": %s",
+			treegix_log(LOG_LEVEL_CRIT, "cannot parse the private key in file \"%s\": %s",
 					CONFIG_TLS_KEY_FILE, err_msg);
 			zbx_free(err_msg);
 			zbx_tls_free();
 			exit(EXIT_FAILURE);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded " ZBX_FS_SIZE_T "-bit %s private key from file \"%s\"",
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded " ZBX_FS_SIZE_T "-bit %s private key from file \"%s\"",
 				__func__, (zbx_fs_size_t)pk_get_size(my_priv_key), pk_get_name(my_priv_key),
 				CONFIG_TLS_KEY_FILE);
 	}
 
-	/* 'TLSPSKFile' parameter (in zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSPSKFile' parameter (in treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load pre-shared key. */
 	if (NULL != CONFIG_TLS_PSK_FILE)
 	{
 		zbx_read_psk_file();
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK from file \"%s\"", __func__, CONFIG_TLS_PSK_FILE);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK from file \"%s\"", __func__, CONFIG_TLS_PSK_FILE);
 	}
 
-	/* 'TLSPSKIdentity' parameter (in zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSPSKIdentity' parameter (in treegix_proxy.conf, treegix_agentd.conf). */
 	/* Configure identity to be used with the pre-shared key. */
 	if (NULL != CONFIG_TLS_PSK_IDENTITY)
 	{
@@ -2916,7 +2916,7 @@ void	zbx_tls_init_child(void)
 
 		zbx_check_psk_identity_len(my_psk_identity_len);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK identity \"%s\"", __func__, CONFIG_TLS_PSK_IDENTITY);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK identity \"%s\"", __func__, CONFIG_TLS_PSK_IDENTITY);
 	}
 
 	/* Certificate always comes from configuration file. Set up ciphersuites. */
@@ -2956,7 +2956,7 @@ void	zbx_tls_init_child(void)
 	{
 		zbx_guaranteed_memset(pers, 0, sizeof(pers));
 		zbx_tls_error_msg(res, "", &err_msg);
-		zabbix_log(LOG_LEVEL_CRIT, "cannot initialize random number generator: %s", err_msg);
+		treegix_log(LOG_LEVEL_CRIT, "cannot initialize random number generator: %s", err_msg);
 		zbx_free(err_msg);
 		zbx_tls_free();
 		exit(EXIT_FAILURE);
@@ -2967,7 +2967,7 @@ void	zbx_tls_init_child(void)
 #ifndef _WINDOWS
 	sigprocmask(SIG_SETMASK, &orig_mask, NULL);
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 #elif defined(HAVE_GNUTLS)
 void	zbx_tls_init_child(void)
@@ -2976,7 +2976,7 @@ void	zbx_tls_init_child(void)
 #ifndef _WINDOWS
 	sigset_t	mask, orig_mask;
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 #ifndef _WINDOWS
 	/* Invalid TLS parameters will cause exit. Once one process exits the parent process will send SIGHUP to */
@@ -2997,66 +2997,66 @@ void	zbx_tls_init_child(void)
 	{
 		if (GNUTLS_E_SUCCESS != (res = gnutls_certificate_allocate_credentials(&my_cert_creds)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "gnutls_certificate_allocate_credentials() failed: %d: %s", res,
+			treegix_log(LOG_LEVEL_CRIT, "gnutls_certificate_allocate_credentials() failed: %d: %s", res,
 					gnutls_strerror(res));
 			zbx_tls_free();
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	/* 'TLSCAFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf) */
+	/* 'TLSCAFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf) */
 	if (NULL != CONFIG_TLS_CA_FILE)
 	{
 		if (0 < (res = gnutls_certificate_set_x509_trust_file(my_cert_creds, CONFIG_TLS_CA_FILE,
 				GNUTLS_X509_FMT_PEM)))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded %d CA certificate(s) from file \"%s\"",
+			treegix_log(LOG_LEVEL_DEBUG, "%s() loaded %d CA certificate(s) from file \"%s\"",
 					__func__, res, CONFIG_TLS_CA_FILE);
 		}
 		else if (0 == res)
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "no CA certificate(s) in file \"%s\"", CONFIG_TLS_CA_FILE);
+			treegix_log(LOG_LEVEL_WARNING, "no CA certificate(s) in file \"%s\"", CONFIG_TLS_CA_FILE);
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "cannot parse CA certificate(s) in file \"%s\": %d: %s",
+			treegix_log(LOG_LEVEL_CRIT, "cannot parse CA certificate(s) in file \"%s\": %d: %s",
 				CONFIG_TLS_CA_FILE, res, gnutls_strerror(res));
 			zbx_tls_free();
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	/* 'TLSCRLFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSCRLFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load CRL (certificate revocation list) file. */
 	if (NULL != CONFIG_TLS_CRL_FILE)
 	{
 		if (0 < (res = gnutls_certificate_set_x509_crl_file(my_cert_creds, CONFIG_TLS_CRL_FILE,
 				GNUTLS_X509_FMT_PEM)))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded %d CRL(s) from file \"%s\"", __func__, res,
+			treegix_log(LOG_LEVEL_DEBUG, "%s() loaded %d CRL(s) from file \"%s\"", __func__, res,
 					CONFIG_TLS_CRL_FILE);
 		}
 		else if (0 == res)
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "no CRL(s) in file \"%s\"", CONFIG_TLS_CRL_FILE);
+			treegix_log(LOG_LEVEL_WARNING, "no CRL(s) in file \"%s\"", CONFIG_TLS_CRL_FILE);
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "cannot parse CRL file \"%s\": %d: %s", CONFIG_TLS_CRL_FILE, res,
+			treegix_log(LOG_LEVEL_CRIT, "cannot parse CRL file \"%s\": %d: %s", CONFIG_TLS_CRL_FILE, res,
 					gnutls_strerror(res));
 			zbx_tls_free();
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	/* 'TLSCertFile' and 'TLSKeyFile' parameters (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSCertFile' and 'TLSKeyFile' parameters (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load certificate and private key. */
 	if (NULL != CONFIG_TLS_CERT_FILE)
 	{
 		if (GNUTLS_E_SUCCESS != (res = gnutls_certificate_set_x509_key_file(my_cert_creds, CONFIG_TLS_CERT_FILE,
 				CONFIG_TLS_KEY_FILE, GNUTLS_X509_FMT_PEM)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "cannot load certificate or private key from file \"%s\" or \"%s\":"
+			treegix_log(LOG_LEVEL_CRIT, "cannot load certificate or private key from file \"%s\" or \"%s\":"
 					" %d: %s", CONFIG_TLS_CERT_FILE, CONFIG_TLS_KEY_FILE, res,
 					gnutls_strerror(res));
 			zbx_tls_free();
@@ -3064,14 +3064,14 @@ void	zbx_tls_init_child(void)
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded certificate from file \"%s\"", __func__,
+			treegix_log(LOG_LEVEL_DEBUG, "%s() loaded certificate from file \"%s\"", __func__,
 					CONFIG_TLS_CERT_FILE);
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded private key from file \"%s\"", __func__,
+			treegix_log(LOG_LEVEL_DEBUG, "%s() loaded private key from file \"%s\"", __func__,
 					CONFIG_TLS_KEY_FILE);
 		}
 	}
 
-	/* 'TLSPSKIdentity' and 'TLSPSKFile' parameters (in zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSPSKIdentity' and 'TLSPSKFile' parameters (in treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load pre-shared key and identity to be used with the pre-shared key. */
 	if (NULL != CONFIG_TLS_PSK_FILE)
 	{
@@ -3095,7 +3095,7 @@ void	zbx_tls_init_child(void)
 		{
 			if (GNUTLS_E_SUCCESS != (res = gnutls_psk_allocate_client_credentials(&my_psk_client_creds)))
 			{
-				zabbix_log(LOG_LEVEL_CRIT, "gnutls_psk_allocate_client_credentials() failed: %d: %s",
+				treegix_log(LOG_LEVEL_CRIT, "gnutls_psk_allocate_client_credentials() failed: %d: %s",
 						res, gnutls_strerror(res));
 				zbx_tls_free();
 				exit(EXIT_FAILURE);
@@ -3105,7 +3105,7 @@ void	zbx_tls_init_child(void)
 			if (GNUTLS_E_SUCCESS != (res = gnutls_psk_set_client_credentials(my_psk_client_creds,
 					my_psk_identity, &key, GNUTLS_PSK_KEY_RAW)))
 			{
-				zabbix_log(LOG_LEVEL_CRIT, "gnutls_psk_set_client_credentials() failed: %d: %s", res,
+				treegix_log(LOG_LEVEL_CRIT, "gnutls_psk_set_client_credentials() failed: %d: %s", res,
 						gnutls_strerror(res));
 				zbx_tls_free();
 				exit(EXIT_FAILURE);
@@ -3116,7 +3116,7 @@ void	zbx_tls_init_child(void)
 		{
 			if (0 != (res = gnutls_psk_allocate_server_credentials(&my_psk_server_creds)))
 			{
-				zabbix_log(LOG_LEVEL_CRIT, "gnutls_psk_allocate_server_credentials() failed: %d: %s",
+				treegix_log(LOG_LEVEL_CRIT, "gnutls_psk_allocate_server_credentials() failed: %d: %s",
 						res, gnutls_strerror(res));
 				zbx_tls_free();
 				exit(EXIT_FAILURE);
@@ -3129,8 +3129,8 @@ void	zbx_tls_init_child(void)
 			gnutls_psk_set_server_credentials_function(my_psk_server_creds, zbx_psk_cb);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK identity \"%s\"", __func__, CONFIG_TLS_PSK_IDENTITY);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK from file \"%s\"", __func__, CONFIG_TLS_PSK_FILE);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK identity \"%s\"", __func__, CONFIG_TLS_PSK_IDENTITY);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK from file \"%s\"", __func__, CONFIG_TLS_PSK_FILE);
 	}
 
 	/* Certificate always comes from configuration file. Set up ciphersuites. */
@@ -3141,7 +3141,7 @@ void	zbx_tls_init_child(void)
 				"+RSA:+AES-128-GCM:+AES-128-CBC:+AEAD:+SHA256:+SHA1:+CURVE-ALL:+COMP-NULL:+SIGN-ALL:"
 				"+CTYPE-X.509", NULL)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "gnutls_priority_init() for 'ciphersuites_cert' failed: %d: %s",
+			treegix_log(LOG_LEVEL_CRIT, "gnutls_priority_init() for 'ciphersuites_cert' failed: %d: %s",
 					res, gnutls_strerror(res));
 			zbx_tls_free();
 			exit(EXIT_FAILURE);
@@ -3160,7 +3160,7 @@ void	zbx_tls_init_child(void)
 				"+PSK:+AES-128-GCM:+AES-128-CBC:+AEAD:+SHA256:+SHA1:+CURVE-ALL:+COMP-NULL:+SIGN-ALL",
 				NULL)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "gnutls_priority_init() for 'ciphersuites_psk' failed: %d: %s",
+			treegix_log(LOG_LEVEL_CRIT, "gnutls_priority_init() for 'ciphersuites_psk' failed: %d: %s",
 					res, gnutls_strerror(res));
 			zbx_tls_free();
 			exit(EXIT_FAILURE);
@@ -3179,7 +3179,7 @@ void	zbx_tls_init_child(void)
 				"+RSA:+ECDHE-PSK:+PSK:+AES-128-GCM:+AES-128-CBC:+AEAD:+SHA256:+SHA1:+CURVE-ALL:"
 				"+COMP-NULL:+SIGN-ALL:+CTYPE-X.509", NULL)))
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "gnutls_priority_init() for 'ciphersuites_all' failed: %d: %s",
+			treegix_log(LOG_LEVEL_CRIT, "gnutls_priority_init() for 'ciphersuites_all' failed: %d: %s",
 					res, gnutls_strerror(res));
 			zbx_tls_free();
 			exit(EXIT_FAILURE);
@@ -3191,7 +3191,7 @@ void	zbx_tls_init_child(void)
 #ifndef _WINDOWS
 	sigprocmask(SIG_SETMASK, &orig_mask, NULL);
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 #elif defined(HAVE_OPENSSL)
 static const char	*zbx_ctx_name(SSL_CTX *param)
@@ -3221,7 +3221,7 @@ static int	zbx_set_ecdhe_parameters(SSL_CTX *ctx)
 
 	if (NULL == (ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "%s() EC_KEY_new_by_curve_name() failed. %s %s",
+		treegix_log(LOG_LEVEL_WARNING, "%s() EC_KEY_new_by_curve_name() failed. %s %s",
 				__func__, msg, zbx_ctx_name(ctx));
 		return FAIL;
 	}
@@ -3230,7 +3230,7 @@ static int	zbx_set_ecdhe_parameters(SSL_CTX *ctx)
 
 	if (1 != (res = SSL_CTX_set_tmp_ecdh(ctx, ecdh)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "%s() SSL_CTX_set_tmp_ecdh() returned %ld. %s %s",
+		treegix_log(LOG_LEVEL_WARNING, "%s() SSL_CTX_set_tmp_ecdh() returned %ld. %s %s",
 				__func__, res, msg, zbx_ctx_name(ctx));
 		ret = FAIL;
 	}
@@ -3265,7 +3265,7 @@ void	zbx_tls_init_child(void)
 #ifndef _WINDOWS
 	sigset_t	mask, orig_mask;
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 #ifndef _WINDOWS
 	/* Invalid TLS parameters will cause exit. Once one process exits the parent process will send SIGHUP to */
@@ -3282,7 +3282,7 @@ void	zbx_tls_init_child(void)
 #endif
 	if (1 != RAND_status())		/* protect against not properly seeded PRNG */
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "cannot initialize PRNG");
+		treegix_log(LOG_LEVEL_CRIT, "cannot initialize PRNG");
 		zbx_tls_free();
 		exit(EXIT_FAILURE);
 	}
@@ -3326,7 +3326,7 @@ void	zbx_tls_init_child(void)
 			goto out_method;
 	}
 #endif
-	/* 'TLSCAFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf) */
+	/* 'TLSCAFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf) */
 	if (NULL != CONFIG_TLS_CA_FILE)
 	{
 #if defined(HAVE_OPENSSL_WITH_PSK)
@@ -3342,7 +3342,7 @@ void	zbx_tls_init_child(void)
 			goto out;
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded CA certificate(s) from file \"%s\"", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded CA certificate(s) from file \"%s\"", __func__,
 				CONFIG_TLS_CA_FILE);
 
 		/* It is possible to limit the length of certificate chain being verified. For example: */
@@ -3357,7 +3357,7 @@ void	zbx_tls_init_child(void)
 #endif
 	}
 
-	/* 'TLSCRLFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSCRLFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load CRL (certificate revocation list) file. */
 	if (NULL != CONFIG_TLS_CRL_FILE)
 	{
@@ -3428,11 +3428,11 @@ void	zbx_tls_init_child(void)
 			}
 		}
 #endif
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded %d CRL(s) from file \"%s\"", __func__, count_cert,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded %d CRL(s) from file \"%s\"", __func__, count_cert,
 				CONFIG_TLS_CRL_FILE);
 	}
 
-	/* 'TLSCertFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSCertFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load certificate. */
 	if (NULL != CONFIG_TLS_CERT_FILE)
 	{
@@ -3448,11 +3448,11 @@ void	zbx_tls_init_child(void)
 			goto out;
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded certificate(s) from file \"%s\"", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded certificate(s) from file \"%s\"", __func__,
 				CONFIG_TLS_CERT_FILE);
 	}
 
-	/* 'TLSKeyFile' parameter (in zabbix_server.conf, zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSKeyFile' parameter (in treegix_server.conf, treegix_proxy.conf, treegix_agentd.conf). */
 	/* Load private key. */
 	if (NULL != CONFIG_TLS_KEY_FILE)
 	{
@@ -3469,7 +3469,7 @@ void	zbx_tls_init_child(void)
 			goto out;
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded private key from file \"%s\"", __func__, CONFIG_TLS_KEY_FILE);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded private key from file \"%s\"", __func__, CONFIG_TLS_KEY_FILE);
 
 		if (1 != SSL_CTX_check_private_key(ctx_cert))
 		{
@@ -3479,7 +3479,7 @@ void	zbx_tls_init_child(void)
 		}
 	}
 
-	/* 'TLSPSKIdentity' and 'TLSPSKFile' parameters (in zabbix_proxy.conf, zabbix_agentd.conf). */
+	/* 'TLSPSKIdentity' and 'TLSPSKFile' parameters (in treegix_proxy.conf, treegix_agentd.conf). */
 	/*  Load pre-shared key and identity to be used with the pre-shared key. */
 	if (NULL != CONFIG_TLS_PSK_FILE)
 	{
@@ -3488,11 +3488,11 @@ void	zbx_tls_init_child(void)
 
 		zbx_check_psk_identity_len(my_psk_identity_len);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK identity \"%s\"", __func__, CONFIG_TLS_PSK_IDENTITY);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK identity \"%s\"", __func__, CONFIG_TLS_PSK_IDENTITY);
 
 		zbx_read_psk_file();
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK from file \"%s\"", __func__, CONFIG_TLS_PSK_FILE);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded PSK from file \"%s\"", __func__, CONFIG_TLS_PSK_FILE);
 	}
 #if defined(HAVE_OPENSSL_WITH_PSK)
 	/* set up PSK global variables for client callback if PSK comes only from configuration file or command line */
@@ -3614,7 +3614,7 @@ void	zbx_tls_init_child(void)
 #ifndef _WINDOWS
 	sigprocmask(SIG_SETMASK, &orig_mask, NULL);
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return;
 
@@ -3625,7 +3625,7 @@ out:
 #if defined(HAVE_OPENSSL_WITH_PSK)
 out1:
 #endif
-	zabbix_log(LOG_LEVEL_CRIT, "%s", error);
+	treegix_log(LOG_LEVEL_CRIT, "%s", error);
 	zbx_free(error);
 	zbx_tls_free();
 	exit(EXIT_FAILURE);
@@ -3807,7 +3807,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 #endif
 	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "In %s(): issuer:\"%s\" subject:\"%s\"", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): issuer:\"%s\" subject:\"%s\"", __func__,
 				ZBX_NULL2EMPTY_STR(tls_arg1), ZBX_NULL2EMPTY_STR(tls_arg2));
 
 		if (NULL == ciphersuites_cert)
@@ -3819,7 +3819,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 	}
 	else if (ZBX_TCP_SEC_TLS_PSK == tls_connect)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, ZBX_NULL2EMPTY_STR(tls_arg1));
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, ZBX_NULL2EMPTY_STR(tls_arg1));
 
 		if (NULL == ciphersuites_psk)
 		{
@@ -3863,7 +3863,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 		/* passed as the 1st parameter to our callback function and will be ignored there. */
 		ssl_set_dbg(s->tls_ctx->ctx, polarssl_debug_cb, NULL);
 
-		/* For Zabbix LOG_LEVEL_TRACE, PolarSSL debug level 3 seems the best. Recompile with 4 (apparently */
+		/* For Treegix LOG_LEVEL_TRACE, PolarSSL debug level 3 seems the best. Recompile with 4 (apparently */
 		/* the highest PolarSSL debug level) to dump also network raw bytes. */
 		debug_set_threshold(3);
 	}
@@ -3984,13 +3984,13 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 	else	/* pre-shared key */
 	{
 		/* special print: s->tls_ctx->ctx->psk_identity is not '\0'-terminated */
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() PSK identity: \"%.*s\"", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() PSK identity: \"%.*s\"", __func__,
 				(int)s->tls_ctx->ctx->psk_identity_len, s->tls_ctx->ctx->psk_identity);
 	}
 
 	s->connection_type = tls_connect;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s)", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s)", __func__,
 			ssl_get_version(s->tls_ctx->ctx), ssl_get_ciphersuite(s->tls_ctx->ctx));
 
 	return SUCCEED;
@@ -4000,7 +4000,7 @@ out:	/* an error occurred */
 	zbx_free(s->tls_ctx->ctx);
 	zbx_free(s->tls_ctx);
 out1:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
 			ZBX_NULL2EMPTY_STR(*error));
 	return ret;
 }
@@ -4015,12 +4015,12 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 
 	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "In %s(): issuer:\"%s\" subject:\"%s\"", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): issuer:\"%s\" subject:\"%s\"", __func__,
 				ZBX_NULL2EMPTY_STR(tls_arg1), ZBX_NULL2EMPTY_STR(tls_arg2));
 	}
 	else if (ZBX_TCP_SEC_TLS_PSK == tls_connect)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, ZBX_NULL2EMPTY_STR(tls_arg1));
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, ZBX_NULL2EMPTY_STR(tls_arg1));
 	}
 	else
 	{
@@ -4146,14 +4146,14 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 		/* set our own debug callback function */
 		gnutls_global_set_log_function(zbx_gnutls_debug_cb);
 
-		/* for Zabbix LOG_LEVEL_TRACE, GnuTLS debug level 4 seems the best */
+		/* for Treegix LOG_LEVEL_TRACE, GnuTLS debug level 4 seems the best */
 		/* (the highest GnuTLS debug level is 9) */
 		gnutls_global_set_log_level(4);
 	}
 	else
 		gnutls_global_set_log_level(0);		/* restore default log level */
 
-	/* set our own callback function to log issues into Zabbix log */
+	/* set our own callback function to log issues into Treegix log */
 	gnutls_global_set_audit_log_function(zbx_gnutls_audit_cb);
 
 	gnutls_transport_set_int(s->tls_ctx->ctx, ZBX_SOCKET_TO_INT(s->socket));
@@ -4193,7 +4193,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 
 			if (GNUTLS_E_WARNING_ALERT_RECEIVED == res)
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "%s() gnutls_handshake() received a warning alert: %d %s",
+				treegix_log(LOG_LEVEL_WARNING, "%s() gnutls_handshake() received a warning alert: %d %s",
 						__func__, alert, msg);
 				continue;
 			}
@@ -4213,7 +4213,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 
 			if (SUCCEED == ZBX_CHECK_LOG_LEVEL(level))
 			{
-				zabbix_log(level, "%s() gnutls_handshake() returned: %d %s",
+				treegix_log(level, "%s() gnutls_handshake() returned: %d %s",
 						__func__, res, gnutls_strerror(res));
 			}
 
@@ -4248,7 +4248,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 
 	s->connection_type = tls_connect;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s-%s-%s-" ZBX_FS_SIZE_T ")", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s-%s-%s-" ZBX_FS_SIZE_T ")", __func__,
 			gnutls_protocol_get_name(gnutls_protocol_get_version(s->tls_ctx->ctx)),
 			gnutls_kx_get_name(gnutls_kx_get(s->tls_ctx->ctx)),
 			gnutls_cipher_get_name(gnutls_cipher_get(s->tls_ctx->ctx)),
@@ -4269,7 +4269,7 @@ out:	/* an error occurred */
 
 	zbx_free(s->tls_ctx);
 out1:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
 			ZBX_NULL2EMPTY_STR(*error));
 	return ret;
 }
@@ -4291,7 +4291,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 
 	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "In %s(): issuer:\"%s\" subject:\"%s\"", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): issuer:\"%s\" subject:\"%s\"", __func__,
 				ZBX_NULL2EMPTY_STR(tls_arg1), ZBX_NULL2EMPTY_STR(tls_arg2));
 
 		if (NULL == ctx_cert)
@@ -4310,7 +4310,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 	}
 	else if (ZBX_TCP_SEC_TLS_PSK == tls_connect)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, ZBX_NULL2EMPTY_STR(tls_arg1));
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, ZBX_NULL2EMPTY_STR(tls_arg1));
 
 #if defined(HAVE_OPENSSL_WITH_PSK)
 		if (NULL == ctx_psk)
@@ -4496,7 +4496,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 
 	s->connection_type = tls_connect;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s)", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s)", __func__,
 			SSL_get_version(s->tls_ctx->ctx), SSL_get_cipher(s->tls_ctx->ctx));
 
 	return SUCCEED;
@@ -4507,7 +4507,7 @@ out:	/* an error occurred */
 
 	zbx_free(s->tls_ctx);
 out1:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
 			ZBX_NULL2EMPTY_STR(*error));
 	return ret;
 }
@@ -4539,7 +4539,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 #if defined(_WINDOWS)
 	double			sec;
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	/* set up TLS context */
 
@@ -4570,7 +4570,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		/* passed as the 1st parameter to our callback function and will be ignored there. */
 		ssl_set_dbg(s->tls_ctx->ctx, polarssl_debug_cb, NULL);
 
-		/* For Zabbix LOG_LEVEL_TRACE, PolarSSL debug level 3 seems the best. Recompile with 4 (apparently */
+		/* For Treegix LOG_LEVEL_TRACE, PolarSSL debug level 3 seems the best. Recompile with 4 (apparently */
 		/* the highest PolarSSL debug level) to dump also network raw bytes. */
 		debug_set_threshold(3);
 	}
@@ -4693,7 +4693,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		s->connection_type = ZBX_TCP_SEC_TLS_PSK;
 
 		/* special print: s->tls_ctx->ctx->psk_identity is not '\0'-terminated */
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() PSK identity: \"%.*s\"", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() PSK identity: \"%.*s\"", __func__,
 				(int)s->tls_ctx->ctx->psk_identity_len, s->tls_ctx->ctx->psk_identity);
 	}
 	else
@@ -4708,7 +4708,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		/* Issuer and Subject will be verified later, after receiving sender type and host name */
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s)", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s)", __func__,
 			ssl_get_version(s->tls_ctx->ctx), ssl_get_ciphersuite(s->tls_ctx->ctx));
 
 	return SUCCEED;
@@ -4718,7 +4718,7 @@ out:	/* an error occurred */
 	zbx_free(s->tls_ctx->ctx);
 	zbx_free(s->tls_ctx);
 out1:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
 			ZBX_NULL2EMPTY_STR(*error));
 	return ret;
 }
@@ -4730,7 +4730,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 #if defined(_WINDOWS)
 	double				sec;
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	/* set up TLS context */
 
@@ -4849,14 +4849,14 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		/* set our own debug callback function */
 		gnutls_global_set_log_function(zbx_gnutls_debug_cb);
 
-		/* for Zabbix LOG_LEVEL_TRACE, GnuTLS debug level 4 seems the best */
+		/* for Treegix LOG_LEVEL_TRACE, GnuTLS debug level 4 seems the best */
 		/* (the highest GnuTLS debug level is 9) */
 		gnutls_global_set_log_level(4);
 	}
 	else
 		gnutls_global_set_log_level(0);		/* restore default log level */
 
-	/* set our own callback function to log issues into Zabbix log */
+	/* set our own callback function to log issues into Treegix log */
 	gnutls_global_set_audit_log_function(zbx_gnutls_audit_cb);
 
 	gnutls_transport_set_int(s->tls_ctx->ctx, ZBX_SOCKET_TO_INT(s->socket));
@@ -4897,7 +4897,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 
 			if (GNUTLS_E_WARNING_ALERT_RECEIVED == res)
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "%s() gnutls_handshake() received a warning alert: %d %s",
+				treegix_log(LOG_LEVEL_WARNING, "%s() gnutls_handshake() received a warning alert: %d %s",
 						__func__, alert, msg);
 				continue;
 			}
@@ -4917,7 +4917,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		}
 		else
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "%s() gnutls_handshake() returned: %d %s",
+			treegix_log(LOG_LEVEL_WARNING, "%s() gnutls_handshake() returned: %d %s",
 					__func__, res, gnutls_strerror(res));
 
 			if (0 != gnutls_error_is_fatal(res))
@@ -4957,7 +4957,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 
 			if (NULL != (psk_identity = gnutls_psk_server_get_username(s->tls_ctx->ctx)))
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s() PSK identity: \"%s\"", __func__, psk_identity);
+				treegix_log(LOG_LEVEL_DEBUG, "%s() PSK identity: \"%s\"", __func__, psk_identity);
 			}
 		}
 	}
@@ -4968,7 +4968,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		return FAIL;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s-%s-%s-" ZBX_FS_SIZE_T ")", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s-%s-%s-" ZBX_FS_SIZE_T ")", __func__,
 			gnutls_protocol_get_name(gnutls_protocol_get_version(s->tls_ctx->ctx)),
 			gnutls_kx_get_name(gnutls_kx_get(s->tls_ctx->ctx)),
 			gnutls_cipher_get_name(gnutls_cipher_get(s->tls_ctx->ctx)),
@@ -4989,7 +4989,7 @@ out:	/* an error occurred */
 
 	zbx_free(s->tls_ctx);
 out1:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
 			ZBX_NULL2EMPTY_STR(*error));
 	return ret;
 }
@@ -5006,7 +5006,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 #if OPENSSL_VERSION_NUMBER >= 0x1010100fL	/* OpenSSL 1.1.1 or newer, or LibreSSL */
 	const unsigned char	session_id_context[] = {'Z', 'b', 'x'};
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	s->tls_ctx = zbx_malloc(s->tls_ctx, sizeof(zbx_tls_context_t));
 	s->tls_ctx->ctx = NULL;
@@ -5219,7 +5219,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		return FAIL;
 	}
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s)", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s)", __func__,
 			SSL_get_version(s->tls_ctx->ctx), cipher_name);
 
 	return SUCCEED;
@@ -5230,7 +5230,7 @@ out:	/* an error occurred */
 
 	zbx_free(s->tls_ctx);
 out1:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
 			ZBX_NULL2EMPTY_STR(*error));
 	return ret;
 }
@@ -5461,7 +5461,7 @@ void	zbx_tls_close(zbx_socket_t *s)
 
 			if (POLARSSL_ERR_NET_WANT_READ != res && POLARSSL_ERR_NET_WANT_WRITE != res)
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "ssl_close_notify() with %s returned error code: %d",
+				treegix_log(LOG_LEVEL_WARNING, "ssl_close_notify() with %s returned error code: %d",
 						s->peer, res);
 				break;
 			}
@@ -5492,7 +5492,7 @@ void	zbx_tls_close(zbx_socket_t *s)
 			if (GNUTLS_E_INTERRUPTED == res || GNUTLS_E_AGAIN == res)
 				continue;
 
-			zabbix_log(LOG_LEVEL_WARNING, "gnutls_bye() with %s returned error code: %d %s",
+			treegix_log(LOG_LEVEL_WARNING, "gnutls_bye() with %s returned error code: %d %s",
 					s->peer, res, gnutls_strerror(res));
 
 			if (0 != gnutls_error_is_fatal(res))
@@ -5523,7 +5523,7 @@ void	zbx_tls_close(zbx_socket_t *s)
 
 			result_code = SSL_get_error(s->tls_ctx->ctx, res);
 			zbx_tls_error_msg(&error, &error_alloc, &error_offset);
-			zabbix_log(LOG_LEVEL_WARNING, "SSL_shutdown() with %s set result code to %d:%s%s",
+			treegix_log(LOG_LEVEL_WARNING, "SSL_shutdown() with %s set result code to %d:%s%s",
 					s->peer, result_code, ZBX_NULL2EMPTY_STR(error), info_buf);
 			zbx_free(error);
 		}
@@ -5558,20 +5558,20 @@ int	zbx_tls_get_attr_cert(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
 #if defined(HAVE_POLARSSL)
 	if (NULL == (peer_cert = ssl_get_peer_cert(s->tls_ctx->ctx)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "no peer certificate, ssl_get_peer_cert() returned NULL");
+		treegix_log(LOG_LEVEL_WARNING, "no peer certificate, ssl_get_peer_cert() returned NULL");
 		return FAIL;
 	}
 
 	if (SUCCEED != zbx_x509_dn_gets(&peer_cert->issuer, attr->issuer, sizeof(attr->issuer), &error))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "error while getting issuer name: \"%s\"", error);
+		treegix_log(LOG_LEVEL_WARNING, "error while getting issuer name: \"%s\"", error);
 		zbx_free(error);
 		return FAIL;
 	}
 
 	if (SUCCEED != zbx_x509_dn_gets(&peer_cert->subject, attr->subject, sizeof(attr->subject), &error))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "error while getting subject name: \"%s\"", error);
+		treegix_log(LOG_LEVEL_WARNING, "error while getting subject name: \"%s\"", error);
 		zbx_free(error);
 		return FAIL;
 	}
@@ -5580,14 +5580,14 @@ int	zbx_tls_get_attr_cert(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
 	/* and subject - but we prepare for it */
 	if (NULL == (peer_cert = zbx_get_peer_cert(s->tls_ctx->ctx, &error)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "cannot get peer certificate: %s", error);
+		treegix_log(LOG_LEVEL_WARNING, "cannot get peer certificate: %s", error);
 		zbx_free(error);
 		return FAIL;
 	}
 
 	if (0 != (res = gnutls_x509_crt_get_issuer(peer_cert, &dn)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "gnutls_x509_crt_get_issuer() failed: %d %s", res,
+		treegix_log(LOG_LEVEL_WARNING, "gnutls_x509_crt_get_issuer() failed: %d %s", res,
 				gnutls_strerror(res));
 		gnutls_x509_crt_deinit(peer_cert);
 		return FAIL;
@@ -5595,7 +5595,7 @@ int	zbx_tls_get_attr_cert(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
 
 	if (SUCCEED != zbx_x509_dn_gets(dn, attr->issuer, sizeof(attr->issuer), &error))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "zbx_x509_dn_gets() failed: %s", error);
+		treegix_log(LOG_LEVEL_WARNING, "zbx_x509_dn_gets() failed: %s", error);
 		zbx_free(error);
 		gnutls_x509_crt_deinit(peer_cert);
 		return FAIL;
@@ -5603,7 +5603,7 @@ int	zbx_tls_get_attr_cert(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
 
 	if (0 != (res = gnutls_x509_crt_get_subject(peer_cert, &dn)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "gnutls_x509_crt_get_subject() failed: %d %s", res,
+		treegix_log(LOG_LEVEL_WARNING, "gnutls_x509_crt_get_subject() failed: %d %s", res,
 				gnutls_strerror(res));
 		gnutls_x509_crt_deinit(peer_cert);
 		return FAIL;
@@ -5611,7 +5611,7 @@ int	zbx_tls_get_attr_cert(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
 
 	if (SUCCEED != zbx_x509_dn_gets(dn, attr->subject, sizeof(attr->subject), &error))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "zbx_x509_dn_gets() failed: %s", error);
+		treegix_log(LOG_LEVEL_WARNING, "zbx_x509_dn_gets() failed: %s", error);
 		zbx_free(error);
 		gnutls_x509_crt_deinit(peer_cert);
 		return FAIL;
@@ -5621,13 +5621,13 @@ int	zbx_tls_get_attr_cert(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
 #elif defined(HAVE_OPENSSL)
 	if (NULL == (peer_cert = SSL_get_peer_certificate(s->tls_ctx->ctx)))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "no peer certificate, SSL_get_peer_certificate() returned NULL");
+		treegix_log(LOG_LEVEL_WARNING, "no peer certificate, SSL_get_peer_certificate() returned NULL");
 		return FAIL;
 	}
 
 	if (SUCCEED != zbx_x509_dn_gets(X509_get_issuer_name(peer_cert), attr->issuer, sizeof(attr->issuer), &error))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "error while getting issuer name: \"%s\"", error);
+		treegix_log(LOG_LEVEL_WARNING, "error while getting issuer name: \"%s\"", error);
 		zbx_free(error);
 		X509_free(peer_cert);
 		return FAIL;
@@ -5635,7 +5635,7 @@ int	zbx_tls_get_attr_cert(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
 
 	if (SUCCEED != zbx_x509_dn_gets(X509_get_subject_name(peer_cert), attr->subject, sizeof(attr->subject), &error))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "error while getting subject name: \"%s\"", error);
+		treegix_log(LOG_LEVEL_WARNING, "error while getting subject name: \"%s\"", error);
 		zbx_free(error);
 		X509_free(peer_cert);
 		return FAIL;
@@ -5657,7 +5657,7 @@ int	zbx_tls_get_attr_cert(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
  *     This function can be used only on server-side of TLS connection.       *
  *     GnuTLS makes it asymmetric - see documentation for                     *
  *     gnutls_psk_server_get_username() and gnutls_psk_client_get_hint()      *
- *     (the latter function is not used in Zabbix).                           *
+ *     (the latter function is not used in Treegix).                           *
  *     Implementation for OpenSSL is server-side only, too.                   *
  *                                                                            *
  ******************************************************************************/
@@ -5700,7 +5700,7 @@ int	zbx_tls_get_attr_psk(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
  *                                                                            *
  * Purpose: pass some TLS variables from one thread to other                  *
  *                                                                            *
- * Comments: used in Zabbix sender on MS Windows                              *
+ * Comments: used in Treegix sender on MS Windows                              *
  *                                                                            *
  ******************************************************************************/
 void	zbx_tls_pass_vars(ZBX_THREAD_SENDVAL_TLS_ARGS *args)
@@ -5741,7 +5741,7 @@ void	zbx_tls_pass_vars(ZBX_THREAD_SENDVAL_TLS_ARGS *args)
  *                                                                            *
  * Purpose: pass some TLS variables from one thread to other                  *
  *                                                                            *
- * Comments: used in Zabbix sender on MS Windows                              *
+ * Comments: used in Treegix sender on MS Windows                              *
  *                                                                            *
  ******************************************************************************/
 void	zbx_tls_take_vars(ZBX_THREAD_SENDVAL_TLS_ARGS *args)

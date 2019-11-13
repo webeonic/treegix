@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -83,16 +83,16 @@ function get_item_logtype_style($logtype) {
  */
 function item_type2str($type = null) {
 	$types = [
-		ITEM_TYPE_ZABBIX => _('Zabbix agent'),
-		ITEM_TYPE_ZABBIX_ACTIVE => _('Zabbix agent (active)'),
+		ITEM_TYPE_ZABBIX => _('Treegix agent'),
+		ITEM_TYPE_ZABBIX_ACTIVE => _('Treegix agent (active)'),
 		ITEM_TYPE_SIMPLE => _('Simple check'),
 		ITEM_TYPE_SNMPV1 => _('SNMPv1 agent'),
 		ITEM_TYPE_SNMPV2C => _('SNMPv2 agent'),
 		ITEM_TYPE_SNMPV3 => _('SNMPv3 agent'),
 		ITEM_TYPE_SNMPTRAP => _('SNMP trap'),
-		ITEM_TYPE_INTERNAL => _('Zabbix internal'),
-		ITEM_TYPE_TRAPPER => _('Zabbix trapper'),
-		ITEM_TYPE_AGGREGATE => _('Zabbix aggregate'),
+		ITEM_TYPE_INTERNAL => _('Treegix internal'),
+		ITEM_TYPE_TRAPPER => _('Treegix trapper'),
+		ITEM_TYPE_AGGREGATE => _('Treegix aggregate'),
 		ITEM_TYPE_EXTERNAL => _('External check'),
 		ITEM_TYPE_DB_MONITOR => _('Database monitor'),
 		ITEM_TYPE_HTTPAGENT => _('HTTP agent'),

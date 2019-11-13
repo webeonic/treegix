@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ $table = (new CTableInfo())
 	])
 	->setHeadingColumn(0);
 
-$url_group = (new CUrl('zabbix.php'))
+$url_group = (new CUrl('treegix.php'))
 	->setArgument('action', 'problem.view')
 	->setArgument('filter_set', 1)
 	->setArgument('filter_show', TRIGGERS_OPTION_RECENT_PROBLEM)
@@ -42,7 +42,7 @@ $url_group = (new CUrl('zabbix.php'))
 		? ZBX_PROBLEM_SUPPRESSED_TRUE
 		: null
 	);
-$url_host = (new CUrl('zabbix.php'))
+$url_host = (new CUrl('treegix.php'))
 	->setArgument('action', 'problem.view')
 	->setArgument('filter_set', 1)
 	->setArgument('filter_show', TRIGGERS_OPTION_RECENT_PROBLEM)

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2018 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2018 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@
 #include "zbxlld.h"
 #include "log.h"
 
-#include "zabbix_stats.h"
+#include "treegix_stats.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_zabbix_stats_ext                                         *
+ * Function: zbx_get_treegix_stats_ext                                         *
  *                                                                            *
  * Purpose: get program type (server) specific internal statistics            *
  *                                                                            *
@@ -39,27 +39,27 @@
  *           statistics.                                                      *
  *                                                                            *
  ******************************************************************************/
-void	zbx_get_zabbix_stats_ext(struct zbx_json *json)
+void	zbx_get_treegix_stats_ext(struct zbx_json *json)
 {
 	zbx_vc_stats_t	vc_stats;
 	zbx_uint64_t	queue_size;
 	char		*error = NULL;
 
-	/* zabbix[lld_queue] */
+	/* treegix[lld_queue] */
 	if (SUCCEED == zbx_lld_get_queue_size(&queue_size, &error))
 	{
 		zbx_json_adduint64(json, "lld_queue", queue_size);
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "cannot get LLD queue size: %s", error);
+		treegix_log(LOG_LEVEL_WARNING, "cannot get LLD queue size: %s", error);
 		zbx_free(error);
 	}
 
-	/* zabbix[triggers] */
+	/* treegix[triggers] */
 	zbx_json_adduint64(json, "triggers", DCget_trigger_count());
 
-	/* zabbix[vcache,...] */
+	/* treegix[vcache,...] */
 	if (SUCCEED == zbx_vc_get_statistics(&vc_stats))
 	{
 		zbx_json_addobject(json, "vcache");

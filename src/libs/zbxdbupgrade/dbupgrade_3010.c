@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -307,7 +307,7 @@ static int	DBpatch_3010021_update_event_recovery(zbx_hashset_t *events, zbx_uint
 
 			if (ZBX_OPEN_EVENT_WARNING_NUM == object_events->eventids.values_num)
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "too many open problem events by event source:%d,"
+				treegix_log(LOG_LEVEL_WARNING, "too many open problem events by event source:%d,"
 						" object:%d and objectid:" ZBX_FS_UI64, object_events->source,
 						object_events->object, object_events->objectid);
 			}
@@ -596,14 +596,14 @@ static int	DBpatch_3010024(void)
 		if (ZBX_3010024_ACTION_DISABLE == ret)
 		{
 			zbx_vector_uint64_append(&actionids_disable, actionid);
-			zabbix_log(LOG_LEVEL_WARNING, "Action \"%s\" will be disabled during database upgrade:"
+			treegix_log(LOG_LEVEL_WARNING, "Action \"%s\" will be disabled during database upgrade:"
 					" conditions might have matched success event which is not supported anymore.",
 					row[1]);
 		}
 		else if (ZBX_3010024_ACTION_CONVERT == ret)
 		{
 			zbx_vector_uint64_append(&actionids_convert, actionid);
-			zabbix_log(LOG_LEVEL_WARNING, "Action \"%s\" operations will be converted to recovery"
+			treegix_log(LOG_LEVEL_WARNING, "Action \"%s\" operations will be converted to recovery"
 					" operations during database upgrade.", row[1]);
 		}
 	}
@@ -747,7 +747,7 @@ static void	DBpatch_3010026_get_conditionids(zbx_uint64_t actionid, const char *
 					values[value]);
 		}
 
-		zabbix_log(LOG_LEVEL_WARNING, "Action \"%s\" condition \"%s\" will be removed during database upgrade:"
+		treegix_log(LOG_LEVEL_WARNING, "Action \"%s\" condition \"%s\" will be removed during database upgrade:"
 				" this type of condition is not supported anymore", name, condition);
 
 		condition_offset = 0;
@@ -1127,7 +1127,7 @@ static int	DBpatch_3010026(void)
 			ZBX_STR2UINT64(actionid, row[0]);
 			zbx_vector_uint64_append(&actionids, actionid);
 
-			zabbix_log(LOG_LEVEL_WARNING, "Action \"%s\" type of calculation will be changed to And/Or"
+			treegix_log(LOG_LEVEL_WARNING, "Action \"%s\" type of calculation will be changed to And/Or"
 					" during database upgrade: no action conditions found", row[1]);
 		}
 	}

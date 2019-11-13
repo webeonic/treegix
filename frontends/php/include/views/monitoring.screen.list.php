@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ $buttons = [];
 
 if (!$data['templateid']) {
 	$buttons['screen.export'] = ['name' => _('Export'), 'redirect' =>
-		(new CUrl('zabbix.php'))
+		(new CUrl('treegix.php'))
 			->setArgument('action', 'export.screens.xml')
 			->setArgument('backurl', (new CUrl('screenconf.php'))
 				->setArgument('page', getPageNumber())

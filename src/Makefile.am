@@ -2,12 +2,12 @@
 
 DIST_SUBDIRS = \
 	libs \
-	zabbix_agent \
-	zabbix_get \
-	zabbix_sender \
-	zabbix_proxy \
-	zabbix_server \
-	zabbix_java
+	treegix_agent \
+	treegix_get \
+	treegix_sender \
+	treegix_proxy \
+	treegix_server \
+	treegix_java
 
 if AGENT
 COMMON_SUBDIRS = libs
@@ -27,50 +27,50 @@ endif
 
 if AGENT
 AGENT_SUBDIRS = \
-	zabbix_agent \
-	zabbix_get \
-	zabbix_sender
+	treegix_agent \
+	treegix_get \
+	treegix_sender
 else
 if AGENT2
 AGENT_SUBDIRS = \
-	zabbix_agent
+	treegix_agent
 endif
 endif
 
 if SERVER
 SERVER_SUBDIRS = \
-	zabbix_server
+	treegix_server
 endif
 
 if PROXY
 if SERVER
 PROXY_SUBDIRS = \
-	zabbix_proxy
+	treegix_proxy
 else
 
 PROXY_SUBDIRS = \
-	zabbix_server/dbsyncer \
-	zabbix_server/dbconfig \
-	zabbix_server/discoverer \
-	zabbix_server/httppoller \
-	zabbix_server/pinger \
-	zabbix_server/poller \
-	zabbix_server/trapper \
-	zabbix_server/selfmon \
-	zabbix_server/snmptrapper \
-	zabbix_server/vmware \
-	zabbix_server/ipmi \
-	zabbix_server/odbc \
-	zabbix_server/scripts \
-	zabbix_server/preprocessor \
-	zabbix_proxy
+	treegix_server/dbsyncer \
+	treegix_server/dbconfig \
+	treegix_server/discoverer \
+	treegix_server/httppoller \
+	treegix_server/pinger \
+	treegix_server/poller \
+	treegix_server/trapper \
+	treegix_server/selfmon \
+	treegix_server/snmptrapper \
+	treegix_server/vmware \
+	treegix_server/ipmi \
+	treegix_server/odbc \
+	treegix_server/scripts \
+	treegix_server/preprocessor \
+	treegix_proxy
 	
 endif
 endif
 
 if JAVA
 JAVA_SUBDIRS = \
-	zabbix_java
+	treegix_java
 endif
 
 SUBDIRS = \

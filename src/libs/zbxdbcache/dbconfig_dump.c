@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -29,45 +29,45 @@ static void	DCdump_config(void)
 {
 	int	i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	if (NULL == config->config)
 		goto out;
 
-	zabbix_log(LOG_LEVEL_TRACE, "refresh_unsupported:%d", config->config->refresh_unsupported);
-	zabbix_log(LOG_LEVEL_TRACE, "discovery_groupid:" ZBX_FS_UI64, config->config->discovery_groupid);
-	zabbix_log(LOG_LEVEL_TRACE, "snmptrap_logging:%hhu", config->config->snmptrap_logging);
-	zabbix_log(LOG_LEVEL_TRACE, "default_inventory_mode:%d", config->config->default_inventory_mode);
-	zabbix_log(LOG_LEVEL_TRACE, "db_extension: %s", config->config->db_extension);
-	zabbix_log(LOG_LEVEL_TRACE, "autoreg_tls_accept:%hhu", config->config->autoreg_tls_accept);
+	treegix_log(LOG_LEVEL_TRACE, "refresh_unsupported:%d", config->config->refresh_unsupported);
+	treegix_log(LOG_LEVEL_TRACE, "discovery_groupid:" ZBX_FS_UI64, config->config->discovery_groupid);
+	treegix_log(LOG_LEVEL_TRACE, "snmptrap_logging:%hhu", config->config->snmptrap_logging);
+	treegix_log(LOG_LEVEL_TRACE, "default_inventory_mode:%d", config->config->default_inventory_mode);
+	treegix_log(LOG_LEVEL_TRACE, "db_extension: %s", config->config->db_extension);
+	treegix_log(LOG_LEVEL_TRACE, "autoreg_tls_accept:%hhu", config->config->autoreg_tls_accept);
 
-	zabbix_log(LOG_LEVEL_TRACE, "severity names:");
+	treegix_log(LOG_LEVEL_TRACE, "severity names:");
 	for (i = 0; TRIGGER_SEVERITY_COUNT > i; i++)
-		zabbix_log(LOG_LEVEL_TRACE, "  %s", config->config->severity_name[i]);
+		treegix_log(LOG_LEVEL_TRACE, "  %s", config->config->severity_name[i]);
 
-	zabbix_log(LOG_LEVEL_TRACE, "housekeeping:");
-	zabbix_log(LOG_LEVEL_TRACE, "  events, mode:%u period:[trigger:%d internal:%d autoreg:%d discovery:%d]",
+	treegix_log(LOG_LEVEL_TRACE, "housekeeping:");
+	treegix_log(LOG_LEVEL_TRACE, "  events, mode:%u period:[trigger:%d internal:%d autoreg:%d discovery:%d]",
 			config->config->hk.events_mode, config->config->hk.events_trigger,
 			config->config->hk.events_internal, config->config->hk.events_autoreg,
 			config->config->hk.events_discovery);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  audit, mode:%u period:%d", config->config->hk.audit_mode,
+	treegix_log(LOG_LEVEL_TRACE, "  audit, mode:%u period:%d", config->config->hk.audit_mode,
 			config->config->hk.audit);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  it services, mode:%u period:%d", config->config->hk.services_mode,
+	treegix_log(LOG_LEVEL_TRACE, "  it services, mode:%u period:%d", config->config->hk.services_mode,
 			config->config->hk.services);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  user sessions, mode:%u period:%d", config->config->hk.sessions_mode,
+	treegix_log(LOG_LEVEL_TRACE, "  user sessions, mode:%u period:%d", config->config->hk.sessions_mode,
 			config->config->hk.sessions);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  history, mode:%u global:%u period:%d", config->config->hk.history_mode,
+	treegix_log(LOG_LEVEL_TRACE, "  history, mode:%u global:%u period:%d", config->config->hk.history_mode,
 			config->config->hk.history_global, config->config->hk.history);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  trends, mode:%u global:%u period:%d", config->config->hk.trends_mode,
+	treegix_log(LOG_LEVEL_TRACE, "  trends, mode:%u global:%u period:%d", config->config->hk.trends_mode,
 			config->config->hk.trends_global, config->config->hk.trends);
 
 out:
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_hosts(void)
@@ -77,7 +77,7 @@ static void	DCdump_hosts(void)
 	zbx_vector_ptr_t	index;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->hosts, &iter);
@@ -92,41 +92,41 @@ static void	DCdump_hosts(void)
 		int	j;
 
 		host = (ZBX_DC_HOST *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64 " host:'%s' name:'%s' status:%u", host->hostid,
+		treegix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64 " host:'%s' name:'%s' status:%u", host->hostid,
 				host->host, host->name, host->status);
 
-		zabbix_log(LOG_LEVEL_TRACE, "  proxy_hostid:" ZBX_FS_UI64, host->proxy_hostid);
-		zabbix_log(LOG_LEVEL_TRACE, "  data_expected_from:%d", host->data_expected_from);
+		treegix_log(LOG_LEVEL_TRACE, "  proxy_hostid:" ZBX_FS_UI64, host->proxy_hostid);
+		treegix_log(LOG_LEVEL_TRACE, "  data_expected_from:%d", host->data_expected_from);
 
-		zabbix_log(LOG_LEVEL_TRACE, "  zabbix:[available:%u, errors_from:%d disable_until:%d error:'%s']",
+		treegix_log(LOG_LEVEL_TRACE, "  treegix:[available:%u, errors_from:%d disable_until:%d error:'%s']",
 				host->available, host->errors_from, host->disable_until, host->error);
-		zabbix_log(LOG_LEVEL_TRACE, "  snmp:[available:%u, errors_from:%d disable_until:%d error:'%s']",
+		treegix_log(LOG_LEVEL_TRACE, "  snmp:[available:%u, errors_from:%d disable_until:%d error:'%s']",
 				host->snmp_available, host->snmp_errors_from, host->snmp_disable_until,
 				host->snmp_error);
-		zabbix_log(LOG_LEVEL_TRACE, "  ipmi:[available:%u, errors_from:%d disable_until:%d error:'%s']",
+		treegix_log(LOG_LEVEL_TRACE, "  ipmi:[available:%u, errors_from:%d disable_until:%d error:'%s']",
 				host->ipmi_available, host->ipmi_errors_from, host->ipmi_disable_until,
 				host->ipmi_error);
-		zabbix_log(LOG_LEVEL_TRACE, "  jmx:[available:%u, errors_from:%d disable_until:%d error:'%s']",
+		treegix_log(LOG_LEVEL_TRACE, "  jmx:[available:%u, errors_from:%d disable_until:%d error:'%s']",
 				host->jmx_available, host->jmx_errors_from, host->jmx_disable_until, host->jmx_error);
 
 		/* timestamp of last availability status (available/error) field change on any interface */
-		zabbix_log(LOG_LEVEL_TRACE, "  availability_ts:%d", host->availability_ts);
+		treegix_log(LOG_LEVEL_TRACE, "  availability_ts:%d", host->availability_ts);
 
-		zabbix_log(LOG_LEVEL_TRACE, "  maintenanceid:" ZBX_FS_UI64 " maintenance_status:%u maintenance_type:%u"
+		treegix_log(LOG_LEVEL_TRACE, "  maintenanceid:" ZBX_FS_UI64 " maintenance_status:%u maintenance_type:%u"
 				" maintenance_from:%d", host->maintenanceid, host->maintenance_status,
 				host->maintenance_type, host->maintenance_from);
 
-		zabbix_log(LOG_LEVEL_TRACE, "  number of items: zabbix:%d snmp:%d ipmi:%d jmx:%d", host->items_num,
+		treegix_log(LOG_LEVEL_TRACE, "  number of items: treegix:%d snmp:%d ipmi:%d jmx:%d", host->items_num,
 				host->snmp_items_num, host->ipmi_items_num, host->jmx_items_num);
 
 		/* 'tls_connect' and 'tls_accept' must be respected even if encryption support is not compiled in */
-		zabbix_log(LOG_LEVEL_TRACE, "  tls:[connect:%u accept:%u]", host->tls_connect, host->tls_accept);
+		treegix_log(LOG_LEVEL_TRACE, "  tls:[connect:%u accept:%u]", host->tls_connect, host->tls_accept);
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		zabbix_log(LOG_LEVEL_TRACE, "  tls:[issuer:'%s' subject:'%s']", host->tls_issuer, host->tls_subject);
+		treegix_log(LOG_LEVEL_TRACE, "  tls:[issuer:'%s' subject:'%s']", host->tls_issuer, host->tls_subject);
 
 		if (NULL != host->tls_dc_psk)
 		{
-			zabbix_log(LOG_LEVEL_TRACE, "  tls:[psk_identity:'%s' psk:'%s' dc_psk:%u]",
+			treegix_log(LOG_LEVEL_TRACE, "  tls:[psk_identity:'%s' psk:'%s' dc_psk:%u]",
 					host->tls_dc_psk->tls_psk_identity, host->tls_dc_psk->tls_psk,
 					host->tls_dc_psk->refcount);
 		}
@@ -135,13 +135,13 @@ static void	DCdump_hosts(void)
 		{
 			ZBX_DC_INTERFACE	*interface = (ZBX_DC_INTERFACE *)host->interfaces_v.values[j];
 
-			zabbix_log(LOG_LEVEL_TRACE, "  interfaceid:" ZBX_FS_UI64, interface->interfaceid);
+			treegix_log(LOG_LEVEL_TRACE, "  interfaceid:" ZBX_FS_UI64, interface->interfaceid);
 		}
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_host_tags(void)
@@ -152,7 +152,7 @@ static void	DCdump_host_tags(void)
 	zbx_vector_ptr_t	index;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->host_tags_index, &iter);
@@ -167,18 +167,18 @@ static void	DCdump_host_tags(void)
 		int	j;
 
 		host_tag_index = (zbx_dc_host_tag_index_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64,  host_tag_index->hostid);
+		treegix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64,  host_tag_index->hostid);
 
 		for (j = 0; j < host_tag_index->tags.values_num; j++)
 		{
 			host_tag = (zbx_dc_host_tag_t *)host_tag_index->tags.values[j];
-			zabbix_log(LOG_LEVEL_TRACE, "  '%s':'%s'", host_tag->tag, host_tag->value);
+			treegix_log(LOG_LEVEL_TRACE, "  '%s':'%s'", host_tag->tag, host_tag->value);
 		}
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_proxies(void)
@@ -188,7 +188,7 @@ static void	DCdump_proxies(void)
 	zbx_vector_ptr_t	index;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->proxies, &iter);
@@ -201,15 +201,15 @@ static void	DCdump_proxies(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		proxy = (ZBX_DC_PROXY *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64 " location:%u", proxy->hostid, proxy->location);
-		zabbix_log(LOG_LEVEL_TRACE, "  proxy_address:'%s'", proxy->proxy_address);
-		zabbix_log(LOG_LEVEL_TRACE, "  compress:%d", proxy->auto_compress);
+		treegix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64 " location:%u", proxy->hostid, proxy->location);
+		treegix_log(LOG_LEVEL_TRACE, "  proxy_address:'%s'", proxy->proxy_address);
+		treegix_log(LOG_LEVEL_TRACE, "  compress:%d", proxy->auto_compress);
 
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_ipmihosts(void)
@@ -219,7 +219,7 @@ static void	DCdump_ipmihosts(void)
 	zbx_vector_ptr_t	index;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->ipmihosts, &iter);
@@ -232,14 +232,14 @@ static void	DCdump_ipmihosts(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		ipmihost = (ZBX_DC_IPMIHOST *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64 " ipmi:[username:'%s' password:'%s' authtype:%d"
+		treegix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64 " ipmi:[username:'%s' password:'%s' authtype:%d"
 				" privilege:%u]", ipmihost->hostid, ipmihost->ipmi_username, ipmihost->ipmi_password,
 				ipmihost->ipmi_authtype, ipmihost->ipmi_privilege);
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_host_inventories(void)
@@ -249,7 +249,7 @@ static void	DCdump_host_inventories(void)
 	zbx_vector_ptr_t	index;
 	int			i, j;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->host_inventories, &iter);
@@ -262,19 +262,19 @@ static void	DCdump_host_inventories(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		host_inventory = (ZBX_DC_HOST_INVENTORY *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64 " inventory_mode:%u", host_inventory->hostid,
+		treegix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64 " inventory_mode:%u", host_inventory->hostid,
 				host_inventory->inventory_mode);
 
 		for (j = 0; j < HOST_INVENTORY_FIELD_COUNT; j++)
 		{
-			zabbix_log(LOG_LEVEL_TRACE, "  %s: '%s'", DBget_inventory_field(j + 1),
+			treegix_log(LOG_LEVEL_TRACE, "  %s: '%s'", DBget_inventory_field(j + 1),
 					host_inventory->values[j]);
 		}
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "  End of %s()", __func__);
 }
 
 static void	DCdump_htmpls(void)
@@ -284,7 +284,7 @@ static void	DCdump_htmpls(void)
 	zbx_vector_ptr_t	index;
 	int			i, j;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->htmpls, &iter);
@@ -298,15 +298,15 @@ static void	DCdump_htmpls(void)
 	{
 		htmpl = (ZBX_DC_HTMPL *)index.values[i];
 
-		zabbix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64, htmpl->hostid);
+		treegix_log(LOG_LEVEL_TRACE, "hostid:" ZBX_FS_UI64, htmpl->hostid);
 
 		for (j = 0; j < htmpl->templateids.values_num; j++)
-			zabbix_log(LOG_LEVEL_TRACE, "  templateid:" ZBX_FS_UI64, htmpl->templateids.values[j]);
+			treegix_log(LOG_LEVEL_TRACE, "  templateid:" ZBX_FS_UI64, htmpl->templateids.values[j]);
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_gmacros(void)
@@ -316,7 +316,7 @@ static void	DCdump_gmacros(void)
 	zbx_vector_ptr_t	index;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->gmacros, &iter);
@@ -329,14 +329,14 @@ static void	DCdump_gmacros(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		gmacro = (ZBX_DC_GMACRO *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "globalmacroid:" ZBX_FS_UI64 " macro:'%s' value:'%s' context:'%s'",
+		treegix_log(LOG_LEVEL_TRACE, "globalmacroid:" ZBX_FS_UI64 " macro:'%s' value:'%s' context:'%s'",
 				gmacro->globalmacroid, gmacro->macro,
 				gmacro->value, ZBX_NULL2EMPTY_STR(gmacro->context));
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_hmacros(void)
@@ -346,7 +346,7 @@ static void	DCdump_hmacros(void)
 	zbx_vector_ptr_t	index;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->hmacros, &iter);
@@ -359,14 +359,14 @@ static void	DCdump_hmacros(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		hmacro = (ZBX_DC_HMACRO *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "hostmacroid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " macro:'%s' value:'%s'"
+		treegix_log(LOG_LEVEL_TRACE, "hostmacroid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " macro:'%s' value:'%s'"
 				" context '%s'", hmacro->hostmacroid, hmacro->hostid, hmacro->macro, hmacro->value,
 				ZBX_NULL2EMPTY_STR(hmacro->context));
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_interfaces(void)
@@ -376,7 +376,7 @@ static void	DCdump_interfaces(void)
 	zbx_vector_ptr_t	index;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->interfaces, &iter);
@@ -389,7 +389,7 @@ static void	DCdump_interfaces(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		interface = (ZBX_DC_INTERFACE *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "interfaceid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " ip:'%s' dns:'%s'"
+		treegix_log(LOG_LEVEL_TRACE, "interfaceid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " ip:'%s' dns:'%s'"
 				" port:'%s' type:%u main:%u useip:%u bulk:%u",
 				interface->interfaceid, interface->hostid, interface->ip, interface->dns,
 				interface->port, interface->type, interface->main, interface->useip, interface->bulk);
@@ -397,109 +397,109 @@ static void	DCdump_interfaces(void)
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_numitem(const ZBX_DC_NUMITEM *numitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  units:'%s' trends:%d", numitem->units, numitem->trends);
+	treegix_log(LOG_LEVEL_TRACE, "  units:'%s' trends:%d", numitem->units, numitem->trends);
 }
 
 static void	DCdump_snmpitem(const ZBX_DC_SNMPITEM *snmpitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  snmp:[oid:'%s' community:'%s' oid_type:%u]", snmpitem->snmp_oid,
+	treegix_log(LOG_LEVEL_TRACE, "  snmp:[oid:'%s' community:'%s' oid_type:%u]", snmpitem->snmp_oid,
 			snmpitem->snmp_community, snmpitem->snmp_oid_type);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  snmpv3:[securityname:'%s' authpassphrase:'%s' privpassphrase:'%s']",
+	treegix_log(LOG_LEVEL_TRACE, "  snmpv3:[securityname:'%s' authpassphrase:'%s' privpassphrase:'%s']",
 			snmpitem->snmpv3_securityname, snmpitem->snmpv3_authpassphrase,
 			snmpitem->snmpv3_privpassphrase);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  snmpv3:[contextname:'%s' securitylevel:%u authprotocol:%u privprotocol:%u]",
+	treegix_log(LOG_LEVEL_TRACE, "  snmpv3:[contextname:'%s' securitylevel:%u authprotocol:%u privprotocol:%u]",
 			snmpitem->snmpv3_contextname, snmpitem->snmpv3_securitylevel, snmpitem->snmpv3_authprotocol,
 			snmpitem->snmpv3_privprotocol);
 }
 
 static void	DCdump_ipmiitem(const ZBX_DC_IPMIITEM *ipmiitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  ipmi_sensor:'%s'", ipmiitem->ipmi_sensor);
+	treegix_log(LOG_LEVEL_TRACE, "  ipmi_sensor:'%s'", ipmiitem->ipmi_sensor);
 }
 
 static void	DCdump_trapitem(const ZBX_DC_TRAPITEM *trapitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  trapper_hosts:'%s'", trapitem->trapper_hosts);
+	treegix_log(LOG_LEVEL_TRACE, "  trapper_hosts:'%s'", trapitem->trapper_hosts);
 }
 
 static void	DCdump_logitem(ZBX_DC_LOGITEM *logitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  logtimefmt:'%s'", logitem->logtimefmt);
+	treegix_log(LOG_LEVEL_TRACE, "  logtimefmt:'%s'", logitem->logtimefmt);
 }
 
 static void	DCdump_dbitem(const ZBX_DC_DBITEM *dbitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  db:[params:'%s' username:'%s' password:'%s']", dbitem->params,
+	treegix_log(LOG_LEVEL_TRACE, "  db:[params:'%s' username:'%s' password:'%s']", dbitem->params,
 			dbitem->username, dbitem->password);
 }
 
 static void	DCdump_sshitem(const ZBX_DC_SSHITEM *sshitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  ssh:[username:'%s' password:'%s' authtype:%u params:'%s']",
+	treegix_log(LOG_LEVEL_TRACE, "  ssh:[username:'%s' password:'%s' authtype:%u params:'%s']",
 			sshitem->username, sshitem->password, sshitem->authtype, sshitem->params);
-	zabbix_log(LOG_LEVEL_TRACE, "  ssh:[publickey:'%s' privatekey:'%s']", sshitem->publickey,
+	treegix_log(LOG_LEVEL_TRACE, "  ssh:[publickey:'%s' privatekey:'%s']", sshitem->publickey,
 			sshitem->privatekey);
 }
 
 static void	DCdump_httpitem(const ZBX_DC_HTTPITEM *httpitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  http:[url:'%s']", httpitem->url);
-	zabbix_log(LOG_LEVEL_TRACE, "  http:[query fields:'%s']", httpitem->query_fields);
-	zabbix_log(LOG_LEVEL_TRACE, "  http:[headers:'%s']", httpitem->headers);
-	zabbix_log(LOG_LEVEL_TRACE, "  http:[posts:'%s']", httpitem->posts);
+	treegix_log(LOG_LEVEL_TRACE, "  http:[url:'%s']", httpitem->url);
+	treegix_log(LOG_LEVEL_TRACE, "  http:[query fields:'%s']", httpitem->query_fields);
+	treegix_log(LOG_LEVEL_TRACE, "  http:[headers:'%s']", httpitem->headers);
+	treegix_log(LOG_LEVEL_TRACE, "  http:[posts:'%s']", httpitem->posts);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  http:[timeout:'%s' status codes:'%s' follow redirects:%u post type:%u"
+	treegix_log(LOG_LEVEL_TRACE, "  http:[timeout:'%s' status codes:'%s' follow redirects:%u post type:%u"
 			" http proxy:'%s' retrieve mode:%u request method:%u output format:%u allow traps:%u"
 			" trapper_hosts:'%s']",
 			httpitem->timeout, httpitem->status_codes, httpitem->follow_redirects, httpitem->post_type,
 			httpitem->http_proxy, httpitem->retrieve_mode, httpitem->request_method,
 			httpitem->output_format, httpitem->allow_traps, httpitem->trapper_hosts);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  http:[username:'%s' password:'%s' authtype:%u]",
+	treegix_log(LOG_LEVEL_TRACE, "  http:[username:'%s' password:'%s' authtype:%u]",
 			httpitem->username, httpitem->password, httpitem->authtype);
-	zabbix_log(LOG_LEVEL_TRACE, "  http:[publickey:'%s' privatekey:'%s' ssl key password:'%s' verify peer:%u"
+	treegix_log(LOG_LEVEL_TRACE, "  http:[publickey:'%s' privatekey:'%s' ssl key password:'%s' verify peer:%u"
 			" verify host:%u]", httpitem->ssl_cert_file, httpitem->ssl_key_file, httpitem->ssl_key_password,
 			httpitem->verify_peer, httpitem->verify_host);
 }
 
 static void	DCdump_telnetitem(const ZBX_DC_TELNETITEM *telnetitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  telnet:[username:'%s' password:'%s' params:'%s']", telnetitem->username,
+	treegix_log(LOG_LEVEL_TRACE, "  telnet:[username:'%s' password:'%s' params:'%s']", telnetitem->username,
 			telnetitem->password, telnetitem->params);
 }
 
 static void	DCdump_simpleitem(const ZBX_DC_SIMPLEITEM *simpleitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  simple:[username:'%s' password:'%s']", simpleitem->username,
+	treegix_log(LOG_LEVEL_TRACE, "  simple:[username:'%s' password:'%s']", simpleitem->username,
 			simpleitem->password);
 }
 
 static void	DCdump_jmxitem(const ZBX_DC_JMXITEM *jmxitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  jmx:[username:'%s' password:'%s' endpoint:'%s']",
+	treegix_log(LOG_LEVEL_TRACE, "  jmx:[username:'%s' password:'%s' endpoint:'%s']",
 			jmxitem->username, jmxitem->password, jmxitem->jmx_endpoint);
 }
 
 static void	DCdump_calcitem(const ZBX_DC_CALCITEM *calcitem)
 {
-	zabbix_log(LOG_LEVEL_TRACE, "  calc:[params:'%s']", calcitem->params);
+	treegix_log(LOG_LEVEL_TRACE, "  calc:[params:'%s']", calcitem->params);
 }
 
 static void	DCdump_masteritem(const ZBX_DC_MASTERITEM *masteritem)
 {
 	int	i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "  dependent:");
+	treegix_log(LOG_LEVEL_TRACE, "  dependent:");
 	for (i = 0; i < masteritem->dep_itemids.values_num; i++)
 	{
-		zabbix_log(LOG_LEVEL_TRACE, "    itemid:" ZBX_FS_UI64 " flags:" ZBX_FS_UI64,
+		treegix_log(LOG_LEVEL_TRACE, "    itemid:" ZBX_FS_UI64 " flags:" ZBX_FS_UI64,
 				masteritem->dep_itemids.values[i].first, masteritem->dep_itemids.values[i].second);
 	}
 }
@@ -508,13 +508,13 @@ static void	DCdump_preprocitem(const ZBX_DC_PREPROCITEM *preprocitem)
 {
 	int	i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "  preprocessing:");
-	zabbix_log(LOG_LEVEL_TRACE, "  update_time:%d", preprocitem->update_time);
+	treegix_log(LOG_LEVEL_TRACE, "  preprocessing:");
+	treegix_log(LOG_LEVEL_TRACE, "  update_time:%d", preprocitem->update_time);
 
 	for (i = 0; i < preprocitem->preproc_ops.values_num; i++)
 	{
 		zbx_dc_preproc_op_t	*op = (zbx_dc_preproc_op_t *)preprocitem->preproc_ops.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "      opid:" ZBX_FS_UI64 " step:%d type:%u params:'%s'"
+		treegix_log(LOG_LEVEL_TRACE, "      opid:" ZBX_FS_UI64 " step:%d type:%u params:'%s'"
 				" error_handler:%d error_handler_params:'%s'",
 				op->item_preprocid, op->step, op->type, op->params, op->error_handler, op->error_handler_params);
 	}
@@ -556,7 +556,7 @@ static void	DCdump_items(void)
 		{&config->httpitems, (zbx_dc_dump_func_t)DCdump_httpitem},
 	};
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->items, &iter);
@@ -569,21 +569,21 @@ static void	DCdump_items(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		item = (ZBX_DC_ITEM *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "itemid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " key:'%s'",
+		treegix_log(LOG_LEVEL_TRACE, "itemid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " key:'%s'",
 				item->itemid, item->hostid, item->key);
-		zabbix_log(LOG_LEVEL_TRACE, "  type:%u value_type:%u", item->type, item->value_type);
-		zabbix_log(LOG_LEVEL_TRACE, "  interfaceid:" ZBX_FS_UI64 " port:'%s'", item->interfaceid, item->port);
-		zabbix_log(LOG_LEVEL_TRACE, "  state:%u error:'%s'", item->state, item->error);
-		zabbix_log(LOG_LEVEL_TRACE, "  flags:%u status:%u", item->flags, item->status);
-		zabbix_log(LOG_LEVEL_TRACE, "  valuemapid:" ZBX_FS_UI64, item->valuemapid);
-		zabbix_log(LOG_LEVEL_TRACE, "  lastlogsize:" ZBX_FS_UI64 " mtime:%d", item->lastlogsize, item->mtime);
-		zabbix_log(LOG_LEVEL_TRACE, "  delay:'%s' nextcheck:%d lastclock:%d", item->delay, item->nextcheck,
+		treegix_log(LOG_LEVEL_TRACE, "  type:%u value_type:%u", item->type, item->value_type);
+		treegix_log(LOG_LEVEL_TRACE, "  interfaceid:" ZBX_FS_UI64 " port:'%s'", item->interfaceid, item->port);
+		treegix_log(LOG_LEVEL_TRACE, "  state:%u error:'%s'", item->state, item->error);
+		treegix_log(LOG_LEVEL_TRACE, "  flags:%u status:%u", item->flags, item->status);
+		treegix_log(LOG_LEVEL_TRACE, "  valuemapid:" ZBX_FS_UI64, item->valuemapid);
+		treegix_log(LOG_LEVEL_TRACE, "  lastlogsize:" ZBX_FS_UI64 " mtime:%d", item->lastlogsize, item->mtime);
+		treegix_log(LOG_LEVEL_TRACE, "  delay:'%s' nextcheck:%d lastclock:%d", item->delay, item->nextcheck,
 				item->lastclock);
-		zabbix_log(LOG_LEVEL_TRACE, "  data_expected_from:%d", item->data_expected_from);
-		zabbix_log(LOG_LEVEL_TRACE, "  history:%d history_sec:%d", item->history, item->history_sec);
-		zabbix_log(LOG_LEVEL_TRACE, "  poller_type:%u location:%u", item->poller_type, item->location);
-		zabbix_log(LOG_LEVEL_TRACE, "  inventory_link:%u", item->inventory_link);
-		zabbix_log(LOG_LEVEL_TRACE, "  priority:%u schedulable:%u", item->queue_priority, item->schedulable);
+		treegix_log(LOG_LEVEL_TRACE, "  data_expected_from:%d", item->data_expected_from);
+		treegix_log(LOG_LEVEL_TRACE, "  history:%d history_sec:%d", item->history, item->history_sec);
+		treegix_log(LOG_LEVEL_TRACE, "  poller_type:%u location:%u", item->poller_type, item->location);
+		treegix_log(LOG_LEVEL_TRACE, "  inventory_link:%u", item->inventory_link);
+		treegix_log(LOG_LEVEL_TRACE, "  priority:%u schedulable:%u", item->queue_priority, item->schedulable);
 
 		for (j = 0; j < (int)ARRSIZE(trace_items); j++)
 		{
@@ -595,16 +595,16 @@ static void	DCdump_items(void)
 		{
 			ZBX_DC_TRIGGER	*trigger;
 
-			zabbix_log(LOG_LEVEL_TRACE, "  triggers:");
+			treegix_log(LOG_LEVEL_TRACE, "  triggers:");
 
 			for (j = 0; NULL != (trigger = item->triggers[j]); j++)
-				zabbix_log(LOG_LEVEL_TRACE, "    triggerid:" ZBX_FS_UI64, trigger->triggerid);
+				treegix_log(LOG_LEVEL_TRACE, "    triggerid:" ZBX_FS_UI64, trigger->triggerid);
 		}
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_interface_snmpitems(void)
@@ -614,7 +614,7 @@ static void	DCdump_interface_snmpitems(void)
 	int			i, j;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->interface_snmpitems, &iter);
@@ -627,15 +627,15 @@ static void	DCdump_interface_snmpitems(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		interface_snmpitem = (ZBX_DC_INTERFACE_ITEM *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "interfaceid:" ZBX_FS_UI64, interface_snmpitem->interfaceid);
+		treegix_log(LOG_LEVEL_TRACE, "interfaceid:" ZBX_FS_UI64, interface_snmpitem->interfaceid);
 
 		for (j = 0; j < interface_snmpitem->itemids.values_num; j++)
-			zabbix_log(LOG_LEVEL_TRACE, "  itemid:" ZBX_FS_UI64, interface_snmpitem->itemids.values[j]);
+			treegix_log(LOG_LEVEL_TRACE, "  itemid:" ZBX_FS_UI64, interface_snmpitem->itemids.values[j]);
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_template_items(void)
@@ -645,7 +645,7 @@ static void	DCdump_template_items(void)
 	int			i;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->template_items, &iter);
@@ -658,13 +658,13 @@ static void	DCdump_template_items(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		template_item = (ZBX_DC_TEMPLATE_ITEM *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "itemid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " templateid:" ZBX_FS_UI64,
+		treegix_log(LOG_LEVEL_TRACE, "itemid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " templateid:" ZBX_FS_UI64,
 				template_item->itemid, template_item->hostid, template_item->templateid);
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_master_items(void)
@@ -674,7 +674,7 @@ static void	DCdump_master_items(void)
 	int			i, j;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->masteritems, &iter);
@@ -687,11 +687,11 @@ static void	DCdump_master_items(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		master_item = (ZBX_DC_MASTERITEM *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "master itemid:" ZBX_FS_UI64, master_item->itemid);
+		treegix_log(LOG_LEVEL_TRACE, "master itemid:" ZBX_FS_UI64, master_item->itemid);
 
 		for (j = 0; j < master_item->dep_itemids.values_num; j++)
 		{
-			zabbix_log(LOG_LEVEL_TRACE, "  itemid:" ZBX_FS_UI64 " flags:" ZBX_FS_UI64,
+			treegix_log(LOG_LEVEL_TRACE, "  itemid:" ZBX_FS_UI64 " flags:" ZBX_FS_UI64,
 					master_item->dep_itemids.values[j].first,
 					master_item->dep_itemids.values[j].second);
 		}
@@ -699,7 +699,7 @@ static void	DCdump_master_items(void)
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_prototype_items(void)
@@ -709,7 +709,7 @@ static void	DCdump_prototype_items(void)
 	int			i;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->template_items, &iter);
@@ -722,13 +722,13 @@ static void	DCdump_prototype_items(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		proto_item = (ZBX_DC_PROTOTYPE_ITEM *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "itemid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " templateid:" ZBX_FS_UI64,
+		treegix_log(LOG_LEVEL_TRACE, "itemid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " templateid:" ZBX_FS_UI64,
 				proto_item->itemid, proto_item->hostid, proto_item->templateid);
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_functions(void)
@@ -738,7 +738,7 @@ static void	DCdump_functions(void)
 	int			i;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->functions, &iter);
@@ -751,7 +751,7 @@ static void	DCdump_functions(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		function = (ZBX_DC_FUNCTION *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "functionid:" ZBX_FS_UI64 " triggerid:" ZBX_FS_UI64 " itemid:"
+		treegix_log(LOG_LEVEL_TRACE, "functionid:" ZBX_FS_UI64 " triggerid:" ZBX_FS_UI64 " itemid:"
 				ZBX_FS_UI64 " function:'%s' parameter:'%s' timer:%u", function->functionid,
 				function->triggerid, function->itemid, function->function, function->parameter,
 				function->timer);
@@ -760,7 +760,7 @@ static void	DCdump_functions(void)
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_trigger_tags(const ZBX_DC_TRIGGER *trigger)
@@ -773,12 +773,12 @@ static void	DCdump_trigger_tags(const ZBX_DC_TRIGGER *trigger)
 	zbx_vector_ptr_append_array(&index, trigger->tags.values, trigger->tags.values_num);
 	zbx_vector_ptr_sort(&index, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  tags:");
+	treegix_log(LOG_LEVEL_TRACE, "  tags:");
 
 	for (i = 0; i < index.values_num; i++)
 	{
 		zbx_dc_trigger_tag_t	*tag = (zbx_dc_trigger_tag_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "      tagid:" ZBX_FS_UI64 " tag:'%s' value:'%s'",
+		treegix_log(LOG_LEVEL_TRACE, "      tagid:" ZBX_FS_UI64 " tag:'%s' value:'%s'",
 				tag->triggertagid, tag->tag, tag->value);
 	}
 
@@ -792,7 +792,7 @@ static void	DCdump_triggers(void)
 	int			i;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->triggers, &iter);
@@ -806,18 +806,18 @@ static void	DCdump_triggers(void)
 	{
 		trigger = (ZBX_DC_TRIGGER *)index.values[i];
 
-		zabbix_log(LOG_LEVEL_TRACE, "triggerid:" ZBX_FS_UI64 " description:'%s' type:%u status:%u priority:%u",
+		treegix_log(LOG_LEVEL_TRACE, "triggerid:" ZBX_FS_UI64 " description:'%s' type:%u status:%u priority:%u",
 					trigger->triggerid, trigger->description, trigger->type, trigger->status,
 					trigger->priority);
-		zabbix_log(LOG_LEVEL_TRACE, "  expression:'%s' recovery_expression:'%s'", trigger->expression,
+		treegix_log(LOG_LEVEL_TRACE, "  expression:'%s' recovery_expression:'%s'", trigger->expression,
 				trigger->recovery_expression);
-		zabbix_log(LOG_LEVEL_TRACE, "  value:%u state:%u error:'%s' lastchange:%d", trigger->value,
+		treegix_log(LOG_LEVEL_TRACE, "  value:%u state:%u error:'%s' lastchange:%d", trigger->value,
 				trigger->state, ZBX_NULL2EMPTY_STR(trigger->error), trigger->lastchange);
-		zabbix_log(LOG_LEVEL_TRACE, "  correlation_tag:'%s' recovery_mode:'%u' correlation_mode:'%u'",
+		treegix_log(LOG_LEVEL_TRACE, "  correlation_tag:'%s' recovery_mode:'%u' correlation_mode:'%u'",
 				trigger->correlation_tag, trigger->recovery_mode, trigger->correlation_mode);
-		zabbix_log(LOG_LEVEL_TRACE, "  topoindex:%u functional:%u locked:%u", trigger->topoindex,
+		treegix_log(LOG_LEVEL_TRACE, "  topoindex:%u functional:%u locked:%u", trigger->topoindex,
 				trigger->functional, trigger->locked);
-		zabbix_log(LOG_LEVEL_TRACE, "  opdata:'%s'", trigger->opdata);
+		treegix_log(LOG_LEVEL_TRACE, "  opdata:'%s'", trigger->opdata);
 
 		if (0 != trigger->tags.values_num)
 			DCdump_trigger_tags(trigger);
@@ -825,7 +825,7 @@ static void	DCdump_triggers(void)
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_trigdeps(void)
@@ -835,7 +835,7 @@ static void	DCdump_trigdeps(void)
 	int			i, j;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->trigdeps, &iter);
@@ -848,20 +848,20 @@ static void	DCdump_trigdeps(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		trigdep = (ZBX_DC_TRIGGER_DEPLIST *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "triggerid:" ZBX_FS_UI64 " refcount:%d", trigdep->triggerid,
+		treegix_log(LOG_LEVEL_TRACE, "triggerid:" ZBX_FS_UI64 " refcount:%d", trigdep->triggerid,
 				trigdep->refcount);
 
 		for (j = 0; j < trigdep->dependencies.values_num; j++)
 		{
 			const ZBX_DC_TRIGGER_DEPLIST	*trigdep_up = (ZBX_DC_TRIGGER_DEPLIST *)trigdep->dependencies.values[j];
 
-			zabbix_log(LOG_LEVEL_TRACE, "  triggerid:" ZBX_FS_UI64, trigdep_up->triggerid);
+			treegix_log(LOG_LEVEL_TRACE, "  triggerid:" ZBX_FS_UI64, trigdep_up->triggerid);
 		}
 	}
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_expressions(void)
@@ -871,7 +871,7 @@ static void	DCdump_expressions(void)
 	int			i;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->expressions, &iter);
@@ -884,7 +884,7 @@ static void	DCdump_expressions(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		expression = (ZBX_DC_EXPRESSION *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "expressionid:" ZBX_FS_UI64 " regexp:'%s' expression:'%s delimiter:%d"
+		treegix_log(LOG_LEVEL_TRACE, "expressionid:" ZBX_FS_UI64 " regexp:'%s' expression:'%s delimiter:%d"
 				" type:%u case_sensitive:%u", expression->expressionid, expression->regexp,
 				expression->expression, expression->delimiter, expression->type,
 				expression->case_sensitive);
@@ -892,7 +892,7 @@ static void	DCdump_expressions(void)
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_actions(void)
@@ -902,7 +902,7 @@ static void	DCdump_actions(void)
 	int			i, j;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->actions, &iter);
@@ -915,7 +915,7 @@ static void	DCdump_actions(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		action = (zbx_dc_action_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "actionid:" ZBX_FS_UI64 " formula:'%s' eventsource:%u evaltype:%u"
+		treegix_log(LOG_LEVEL_TRACE, "actionid:" ZBX_FS_UI64 " formula:'%s' eventsource:%u evaltype:%u"
 				" opflags:%x", action->actionid, action->formula, action->eventsource, action->evaltype,
 				action->opflags);
 
@@ -923,7 +923,7 @@ static void	DCdump_actions(void)
 		{
 			zbx_dc_action_condition_t	*condition = (zbx_dc_action_condition_t *)action->conditions.values[j];
 
-			zabbix_log(LOG_LEVEL_TRACE, "  conditionid:" ZBX_FS_UI64 " conditiontype:%u operator:%u"
+			treegix_log(LOG_LEVEL_TRACE, "  conditionid:" ZBX_FS_UI64 " conditiontype:%u operator:%u"
 					" value:'%s' value2:'%s'", condition->conditionid, condition->conditiontype,
 					condition->op, condition->value, condition->value2);
 		}
@@ -931,7 +931,7 @@ static void	DCdump_actions(void)
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_corr_conditions(zbx_dc_correlation_t *correlation)
@@ -944,31 +944,31 @@ static void	DCdump_corr_conditions(zbx_dc_correlation_t *correlation)
 	zbx_vector_ptr_append_array(&index, correlation->conditions.values, correlation->conditions.values_num);
 	zbx_vector_ptr_sort(&index, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  conditions:");
+	treegix_log(LOG_LEVEL_TRACE, "  conditions:");
 
 	for (i = 0; i < index.values_num; i++)
 	{
 		zbx_dc_corr_condition_t	*condition = (zbx_dc_corr_condition_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "      conditionid:" ZBX_FS_UI64 " type:%d",
+		treegix_log(LOG_LEVEL_TRACE, "      conditionid:" ZBX_FS_UI64 " type:%d",
 				condition->corr_conditionid, condition->type);
 
 		switch (condition->type)
 		{
 			case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
-				zabbix_log(LOG_LEVEL_TRACE, "        oldtag:'%s' newtag:'%s'",
+				treegix_log(LOG_LEVEL_TRACE, "        oldtag:'%s' newtag:'%s'",
 						condition->data.tag_pair.oldtag, condition->data.tag_pair.newtag);
 				break;
 			case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
-				zabbix_log(LOG_LEVEL_TRACE, "        groupid:" ZBX_FS_UI64 " op:%u",
+				treegix_log(LOG_LEVEL_TRACE, "        groupid:" ZBX_FS_UI64 " op:%u",
 						condition->data.group.groupid, condition->data.group.op);
 				break;
 			case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
 			case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
-				zabbix_log(LOG_LEVEL_TRACE, "        tag:'%s'", condition->data.tag.tag);
+				treegix_log(LOG_LEVEL_TRACE, "        tag:'%s'", condition->data.tag.tag);
 				break;
 			case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 			case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-				zabbix_log(LOG_LEVEL_TRACE, "        tag:'%s' value:'%s'",
+				treegix_log(LOG_LEVEL_TRACE, "        tag:'%s' value:'%s'",
 						condition->data.tag_value.tag, condition->data.tag_value.value);
 				break;
 		}
@@ -987,12 +987,12 @@ static void	DCdump_corr_operations(zbx_dc_correlation_t *correlation)
 	zbx_vector_ptr_append_array(&index, correlation->operations.values, correlation->operations.values_num);
 	zbx_vector_ptr_sort(&index, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  operations:");
+	treegix_log(LOG_LEVEL_TRACE, "  operations:");
 
 	for (i = 0; i < index.values_num; i++)
 	{
 		zbx_dc_corr_operation_t	*operation = (zbx_dc_corr_operation_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "      operetionid:" ZBX_FS_UI64 " type:%d",
+		treegix_log(LOG_LEVEL_TRACE, "      operetionid:" ZBX_FS_UI64 " type:%d",
 				operation->corr_operationid, operation->type);
 	}
 
@@ -1006,7 +1006,7 @@ static void	DCdump_correlations(void)
 	int			i;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->correlations, &iter);
@@ -1019,7 +1019,7 @@ static void	DCdump_correlations(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		correlation = (zbx_dc_correlation_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "correlationid:" ZBX_FS_UI64 " name:'%s' evaltype:%u formula:'%s'",
+		treegix_log(LOG_LEVEL_TRACE, "correlationid:" ZBX_FS_UI64 " name:'%s' evaltype:%u formula:'%s'",
 				correlation->correlationid, correlation->name, correlation->evaltype,
 				correlation->formula);
 
@@ -1029,7 +1029,7 @@ static void	DCdump_correlations(void)
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_host_group_hosts(zbx_dc_hostgroup_t *group)
@@ -1047,10 +1047,10 @@ static void	DCdump_host_group_hosts(zbx_dc_hostgroup_t *group)
 
 	zbx_vector_uint64_sort(&index, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  hosts:");
+	treegix_log(LOG_LEVEL_TRACE, "  hosts:");
 
 	for (i = 0; i < index.values_num; i++)
-		zabbix_log(LOG_LEVEL_TRACE, "    hostid:" ZBX_FS_UI64, index.values[i]);
+		treegix_log(LOG_LEVEL_TRACE, "    hostid:" ZBX_FS_UI64, index.values[i]);
 
 	zbx_vector_uint64_destroy(&index);
 }
@@ -1062,7 +1062,7 @@ static void	DCdump_host_groups(void)
 	int			i;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->hostgroups, &iter);
@@ -1075,7 +1075,7 @@ static void	DCdump_host_groups(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		group = (zbx_dc_hostgroup_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "groupid:" ZBX_FS_UI64 " name:'%s'", group->groupid, group->name);
+		treegix_log(LOG_LEVEL_TRACE, "groupid:" ZBX_FS_UI64 " name:'%s'", group->groupid, group->name);
 
 		if (0 != group->hostids.num_data)
 			DCdump_host_group_hosts(group);
@@ -1083,7 +1083,7 @@ static void	DCdump_host_groups(void)
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_host_group_index(void)
@@ -1091,17 +1091,17 @@ static void	DCdump_host_group_index(void)
 	zbx_dc_hostgroup_t	*group;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
-	zabbix_log(LOG_LEVEL_TRACE, "group index:");
+	treegix_log(LOG_LEVEL_TRACE, "group index:");
 
 	for (i = 0; i < config->hostgroups_name.values_num; i++)
 	{
 		group = (zbx_dc_hostgroup_t *)config->hostgroups_name.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "  %s", group->name);
+		treegix_log(LOG_LEVEL_TRACE, "  %s", group->name);
 	}
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 static void	DCdump_maintenance_groups(zbx_dc_maintenance_t *maintenance)
@@ -1117,10 +1117,10 @@ static void	DCdump_maintenance_groups(zbx_dc_maintenance_t *maintenance)
 		zbx_vector_uint64_sort(&index, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
 	}
 
-	zabbix_log(LOG_LEVEL_TRACE, "  groups:");
+	treegix_log(LOG_LEVEL_TRACE, "  groups:");
 
 	for (i = 0; i < index.values_num; i++)
-		zabbix_log(LOG_LEVEL_TRACE, "    groupid:" ZBX_FS_UI64, index.values[i]);
+		treegix_log(LOG_LEVEL_TRACE, "    groupid:" ZBX_FS_UI64, index.values[i]);
 
 	zbx_vector_uint64_destroy(&index);
 }
@@ -1138,10 +1138,10 @@ static void	DCdump_maintenance_hosts(zbx_dc_maintenance_t *maintenance)
 		zbx_vector_uint64_sort(&index, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
 	}
 
-	zabbix_log(LOG_LEVEL_TRACE, "  hosts:");
+	treegix_log(LOG_LEVEL_TRACE, "  hosts:");
 
 	for (i = 0; i < index.values_num; i++)
-		zabbix_log(LOG_LEVEL_TRACE, "    hostid:" ZBX_FS_UI64, index.values[i]);
+		treegix_log(LOG_LEVEL_TRACE, "    hostid:" ZBX_FS_UI64, index.values[i]);
 
 	zbx_vector_uint64_destroy(&index);
 }
@@ -1176,12 +1176,12 @@ static void	DCdump_maintenance_tags(zbx_dc_maintenance_t *maintenance)
 		zbx_vector_ptr_sort(&index, maintenance_tag_compare);
 	}
 
-	zabbix_log(LOG_LEVEL_TRACE, "  tags:");
+	treegix_log(LOG_LEVEL_TRACE, "  tags:");
 
 	for (i = 0; i < index.values_num; i++)
 	{
 		zbx_dc_maintenance_tag_t	*tag = (zbx_dc_maintenance_tag_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "    maintenancetagid:" ZBX_FS_UI64 " operator:%u tag:'%s' value:'%s'",
+		treegix_log(LOG_LEVEL_TRACE, "    maintenancetagid:" ZBX_FS_UI64 " operator:%u tag:'%s' value:'%s'",
 				tag->maintenancetagid, tag->op, tag->tag, tag->value);
 	}
 
@@ -1198,12 +1198,12 @@ static void	DCdump_maintenance_periods(zbx_dc_maintenance_t *maintenance)
 	zbx_vector_ptr_append_array(&index, maintenance->periods.values, maintenance->periods.values_num);
 	zbx_vector_ptr_sort(&index, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
-	zabbix_log(LOG_LEVEL_TRACE, "  periods:");
+	treegix_log(LOG_LEVEL_TRACE, "  periods:");
 
 	for (i = 0; i < index.values_num; i++)
 	{
 		zbx_dc_maintenance_period_t	*period = (zbx_dc_maintenance_period_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "    timeperiodid:" ZBX_FS_UI64 " type:%u every:%d month:%d dayofweek:%d"
+		treegix_log(LOG_LEVEL_TRACE, "    timeperiodid:" ZBX_FS_UI64 " type:%u every:%d month:%d dayofweek:%d"
 				" day:%d start_time:%d period:%d start_date:%d",
 				period->timeperiodid, period->type, period->every, period->month, period->dayofweek,
 				period->day, period->start_time, period->period, period->start_date);
@@ -1219,7 +1219,7 @@ static void	DCdump_maintenances(void)
 	int			i;
 	zbx_vector_ptr_t	index;
 
-	zabbix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&index);
 	zbx_hashset_iter_reset(&config->maintenances, &iter);
@@ -1232,10 +1232,10 @@ static void	DCdump_maintenances(void)
 	for (i = 0; i < index.values_num; i++)
 	{
 		maintenance = (zbx_dc_maintenance_t *)index.values[i];
-		zabbix_log(LOG_LEVEL_TRACE, "maintenanceid:" ZBX_FS_UI64 " type:%u tag_evaltype:%u active_since:%d"
+		treegix_log(LOG_LEVEL_TRACE, "maintenanceid:" ZBX_FS_UI64 " type:%u tag_evaltype:%u active_since:%d"
 				" active_until:%d", maintenance->maintenanceid, maintenance->type,
 				maintenance->tags_evaltype, maintenance->active_since, maintenance->active_until);
-		zabbix_log(LOG_LEVEL_TRACE, "  state:%u running_since:%d running_until:%d",
+		treegix_log(LOG_LEVEL_TRACE, "  state:%u running_since:%d running_until:%d",
 				maintenance->state, maintenance->running_since, maintenance->running_until);
 
 		DCdump_maintenance_groups(maintenance);
@@ -1246,7 +1246,7 @@ static void	DCdump_maintenances(void)
 
 	zbx_vector_ptr_destroy(&index);
 
-	zabbix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
 }
 
 void	DCdump_configuration(void)

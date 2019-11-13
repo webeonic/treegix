@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ foreach ($this->data['maps'] as $map) {
 	}
 	$sysmapTable->addRow([
 		$checkbox,
-		new CLink($map['name'], 'zabbix.php?action=map.view&sysmapid='.$map['sysmapid']),
+		new CLink($map['name'], 'treegix.php?action=map.view&sysmapid='.$map['sysmapid']),
 		$map['width'],
 		$map['height'],
 		new CHorList([$action, $constructor])
@@ -89,7 +89,7 @@ $sysmapForm->addItem([
 	$this->data['paging'],
 	new CActionButtonList('action', 'maps', [
 		'map.export' => ['name' => _('Export'), 'redirect' =>
-			(new CUrl('zabbix.php'))
+			(new CUrl('treegix.php'))
 				->setArgument('action', 'export.sysmaps.xml')
 				->setArgument('backurl', (new CUrl('sysmaps.php'))
 					->setArgument('page', getPageNumber())

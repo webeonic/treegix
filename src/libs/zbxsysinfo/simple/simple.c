@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -64,25 +64,25 @@ static int	check_ldap(const char *host, unsigned short port, int timeout, int *v
 
 	if (NULL == (ldap = ldap_init(host, port)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "LDAP - initialization failed [%s:%hu]", host, port);
+		treegix_log(LOG_LEVEL_DEBUG, "LDAP - initialization failed [%s:%hu]", host, port);
 		goto lbl_ret;
 	}
 
 	if (LDAP_SUCCESS != (ldapErr = ldap_search_s(ldap, "", LDAP_SCOPE_BASE, "(objectClass=*)", attrs, 0, &res)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "LDAP - searching failed [%s] [%s]", host, ldap_err2string(ldapErr));
+		treegix_log(LOG_LEVEL_DEBUG, "LDAP - searching failed [%s] [%s]", host, ldap_err2string(ldapErr));
 		goto lbl_ret;
 	}
 
 	if (NULL == (msg = ldap_first_entry(ldap, res)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "LDAP - empty sort result. [%s] [%s]", host, ldap_err2string(ldapErr));
+		treegix_log(LOG_LEVEL_DEBUG, "LDAP - empty sort result. [%s] [%s]", host, ldap_err2string(ldapErr));
 		goto lbl_ret;
 	}
 
 	if (NULL == (attr = ldap_first_attribute(ldap, msg, &ber)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "LDAP - empty first entry result. [%s] [%s]", host, ldap_err2string(ldapErr));
+		treegix_log(LOG_LEVEL_DEBUG, "LDAP - empty first entry result. [%s] [%s]", host, ldap_err2string(ldapErr));
 		goto lbl_ret;
 	}
 
@@ -124,7 +124,7 @@ static int	check_ssh(const char *host, unsigned short port, int timeout, int *va
 			/* parse buf for SSH identification string as per RFC 4253, section 4.2 */
 			if (2 == sscanf(buf, "SSH-%d.%d-%*s", &major, &minor))
 			{
-				zbx_snprintf(send_buf, sizeof(send_buf), "SSH-%d.%d-zabbix_agent\r\n", major, minor);
+				zbx_snprintf(send_buf, sizeof(send_buf), "SSH-%d.%d-treegix_agent\r\n", major, minor);
 				*value_int = 1;
 				break;
 			}
@@ -138,7 +138,7 @@ static int	check_ssh(const char *host, unsigned short port, int timeout, int *va
 	}
 
 	if (FAIL == ret)
-		zabbix_log(LOG_LEVEL_DEBUG, "SSH check error: %s", zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "SSH check error: %s", zbx_socket_strerror());
 
 	return SYSINFO_RET_OK;
 }
@@ -155,7 +155,7 @@ static int	check_https(const char *host, unsigned short port, int timeout, int *
 
 	if (NULL == (easyhandle = curl_easy_init()))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s: could not init cURL library", __func__);
+		treegix_log(LOG_LEVEL_DEBUG, "%s: could not init cURL library", __func__);
 		goto clean;
 	}
 
@@ -164,7 +164,7 @@ static int	check_https(const char *host, unsigned short port, int timeout, int *
 	else
 		zbx_snprintf(https_host, sizeof(https_host), "%s%s", (0 == strncmp(host, "https://", 8) ? "" : "https://"), host);
 
-	if (CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_USERAGENT, "Zabbix " ZABBIX_VERSION)) ||
+	if (CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_USERAGENT, "Treegix " ZABBIX_VERSION)) ||
 		CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_URL, https_host)) ||
 		CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_PORT, (long)port)) ||
 		CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_NOBODY, 1L)) ||
@@ -172,7 +172,7 @@ static int	check_https(const char *host, unsigned short port, int timeout, int *
 		CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_SSL_VERIFYHOST, 0L)) ||
 		CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_TIMEOUT, (long)timeout)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s: could not set cURL option [%d]: %s",
+		treegix_log(LOG_LEVEL_DEBUG, "%s: could not set cURL option [%d]: %s",
 				__func__, (int)opt, curl_easy_strerror(err));
 		goto clean;
 	}
@@ -181,7 +181,7 @@ static int	check_https(const char *host, unsigned short port, int timeout, int *
 	{
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_INTERFACE, CONFIG_SOURCE_IP)))
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "%s: could not set source interface option [%d]: %s",
+			treegix_log(LOG_LEVEL_DEBUG, "%s: could not set source interface option [%d]: %s",
 					__func__, (int)opt, curl_easy_strerror(err));
 			goto clean;
 		}
@@ -190,7 +190,7 @@ static int	check_https(const char *host, unsigned short port, int timeout, int *
 	if (CURLE_OK == (err = curl_easy_perform(easyhandle)))
 		*value_int = 1;
 	else
-		zabbix_log(LOG_LEVEL_DEBUG, "%s: curl_easy_perform failed for [%s:%hu]: %s",
+		treegix_log(LOG_LEVEL_DEBUG, "%s: curl_easy_perform failed for [%s:%hu]: %s",
 				__func__, host, port, curl_easy_strerror(err));
 clean:
 	curl_easy_cleanup(easyhandle);
@@ -222,12 +222,12 @@ static int	check_telnet(const char *host, unsigned short port, int timeout, int 
 		if (SUCCEED == telnet_test_login(s.socket))
 			*value_int = 1;
 		else
-			zabbix_log(LOG_LEVEL_DEBUG, "Telnet check error: no login prompt");
+			treegix_log(LOG_LEVEL_DEBUG, "Telnet check error: no login prompt");
 
 		zbx_tcp_close(&s);
 	}
 	else
-		zabbix_log(LOG_LEVEL_DEBUG, "%s error: %s", __func__, zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "%s error: %s", __func__, zbx_socket_strerror());
 
 	return SYSINFO_RET_OK;
 }

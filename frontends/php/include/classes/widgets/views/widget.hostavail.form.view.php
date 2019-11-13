@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ $scripts = [$field_groupids->getPostJS()];
 $form_list->addRow(
 	CWidgetHelper::getLabel($fields['interface_type']),
 	CWidgetHelper::getCheckBoxList($fields['interface_type'], [
-		INTERFACE_TYPE_AGENT => _('Zabbix agent'),
+		INTERFACE_TYPE_AGENT => _('Treegix agent'),
 		INTERFACE_TYPE_SNMP => _('SNMP'),
 		INTERFACE_TYPE_JMX => _('JMX'),
 		INTERFACE_TYPE_IPMI => _('IPMI')

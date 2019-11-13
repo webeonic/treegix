@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -599,7 +599,7 @@ jQuery(function($) {
 			 * @param {object}  trigger_elmnt - UI element clicked to open dialog.
 			 */
 			var itemEditDialog = function($obj, id, parent, depth, trigger_elmnt) {
-				var url = new Curl('zabbix.php'),
+				var url = new Curl('treegix.php'),
 					item_edit = !!id,
 					ajax_data = {
 						map_name: '',
@@ -635,7 +635,7 @@ jQuery(function($) {
 									'class': 'dialogue-widget-save',
 									'action': function() {
 										var form = $('#widget_dialogue_form'),
-											url = new Curl('zabbix.php'),
+											url = new Curl('treegix.php'),
 											ajax_data = {
 												add_submaps: $('[name="add_submaps"]', form).is(':checked') ? 1 : 0,
 												map_name: $('[name="map.name.' + id + '"]', form).val(),

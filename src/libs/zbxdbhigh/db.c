@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ int	DBconnect(int flag)
 {
 	int	err;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() flag:%d", __func__, flag);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() flag:%d", __func__, flag);
 
 	while (ZBX_DB_OK != (err = zbx_db_connect(CONFIG_DBHOST, CONFIG_DBUSER, CONFIG_DBPASSWORD,
 			CONFIG_DBNAME, CONFIG_DBSCHEMA, CONFIG_DBSOCKET, CONFIG_DBPORT)))
@@ -79,22 +79,22 @@ int	DBconnect(int flag)
 
 		if (ZBX_DB_FAIL == err || ZBX_DB_CONNECT_EXIT == flag)
 		{
-			zabbix_log(LOG_LEVEL_CRIT, "Cannot connect to the database. Exiting...");
+			treegix_log(LOG_LEVEL_CRIT, "Cannot connect to the database. Exiting...");
 			exit(EXIT_FAILURE);
 		}
 
-		zabbix_log(LOG_LEVEL_ERR, "database is down: reconnecting in %d seconds", ZBX_DB_WAIT_DOWN);
+		treegix_log(LOG_LEVEL_ERR, "database is down: reconnecting in %d seconds", ZBX_DB_WAIT_DOWN);
 		connection_failure = 1;
 		zbx_sleep(ZBX_DB_WAIT_DOWN);
 	}
 
 	if (0 != connection_failure)
 	{
-		zabbix_log(LOG_LEVEL_ERR, "database connection re-established");
+		treegix_log(LOG_LEVEL_ERR, "database connection re-established");
 		connection_failure = 0;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, err);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, err);
 
 	return err;
 }
@@ -138,7 +138,7 @@ static void	DBtxn_operation(int (*txn_operation)(void))
 
 		if (ZBX_DB_DOWN == (rc = txn_operation()))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
 			connection_failure = 1;
 			sleep(ZBX_DB_WAIT_DOWN);
 		}
@@ -176,7 +176,7 @@ int	DBcommit(void)
 {
 	if (ZBX_DB_OK > zbx_db_commit())
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "commit called on failed transaction, doing a rollback instead");
+		treegix_log(LOG_LEVEL_DEBUG, "commit called on failed transaction, doing a rollback instead");
 		DBrollback();
 	}
 
@@ -198,7 +198,7 @@ void	DBrollback(void)
 {
 	if (ZBX_DB_OK > zbx_db_rollback())
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "cannot perform transaction rollback, connection will be reset");
+		treegix_log(LOG_LEVEL_WARNING, "cannot perform transaction rollback, connection will be reset");
 
 		DBclose();
 		DBconnect(ZBX_DB_CONNECT_NORMAL);
@@ -247,7 +247,7 @@ void	DBstatement_prepare(const char *sql)
 
 		if (ZBX_DB_DOWN == (rc = zbx_db_statement_prepare(sql)))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
 			connection_failure = 1;
 			sleep(ZBX_DB_WAIT_DOWN);
 		}
@@ -280,7 +280,7 @@ int	DBexecute(const char *fmt, ...)
 
 		if (ZBX_DB_DOWN == (rc = zbx_db_vexecute(fmt, args)))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
 			connection_failure = 1;
 			sleep(ZBX_DB_WAIT_DOWN);
 		}
@@ -370,7 +370,7 @@ DB_RESULT	DBselect(const char *fmt, ...)
 
 		if ((DB_RESULT)ZBX_DB_DOWN == (rc = zbx_db_vselect(fmt, args)))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
 			connection_failure = 1;
 			sleep(ZBX_DB_WAIT_DOWN);
 		}
@@ -403,7 +403,7 @@ DB_RESULT	DBselectN(const char *query, int n)
 
 		if ((DB_RESULT)ZBX_DB_DOWN == (rc = zbx_db_select_n(query, n)))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
 			connection_failure = 1;
 			sleep(ZBX_DB_WAIT_DOWN);
 		}
@@ -418,7 +418,7 @@ int	DBget_row_count(const char *table_name)
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() table_name:'%s'", __func__, table_name);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() table_name:'%s'", __func__, table_name);
 
 	result = DBselect("select count(*) from %s", table_name);
 
@@ -426,7 +426,7 @@ int	DBget_row_count(const char *table_name)
 		count = atoi(row[0]);
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, count);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, count);
 
 	return count;
 }
@@ -438,7 +438,7 @@ int	DBget_proxy_lastaccess(const char *hostname, int *lastaccess, char **error)
 	char		*host_esc;
 	int		ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	host_esc = DBdyn_escape_string(hostname);
 	result = DBselect("select lastaccess from hosts where host='%s' and status in (%d,%d)",
@@ -454,7 +454,7 @@ int	DBget_proxy_lastaccess(const char *hostname, int *lastaccess, char **error)
 		*error = zbx_dsprintf(*error, "Proxy \"%s\" does not exist.", hostname);
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -552,7 +552,7 @@ char	*DBdyn_escape_field(const char *table_name, const char *field_name, const c
 
 	if (NULL == (table = DBget_table(table_name)) || NULL == (field = DBget_field(table, field_name)))
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "invalid table: \"%s\" field: \"%s\"", table_name, field_name);
+		treegix_log(LOG_LEVEL_CRIT, "invalid table: \"%s\" field: \"%s\"", table_name, field_name);
 		exit(EXIT_FAILURE);
 	}
 
@@ -616,7 +616,7 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 	int		found = FAIL, dbres;
 	const ZBX_TABLE	*table;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() tablename:'%s'", __func__, tablename);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() tablename:'%s'", __func__, tablename);
 
 	table = DBget_table(tablename);
 
@@ -625,7 +625,7 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 		/* avoid eternal loop within failed transaction */
 		if (0 < zbx_db_txn_level() && 0 != zbx_db_txn_error())
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "End of %s() transaction failed", __func__);
+			treegix_log(LOG_LEVEL_DEBUG, "End of %s() transaction failed", __func__);
 			return 0;
 		}
 
@@ -648,7 +648,7 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 				ZBX_STR2UINT64(ret1, row[0]);
 				if (ret1 >= max)
 				{
-					zabbix_log(LOG_LEVEL_CRIT, "maximum number of id's exceeded"
+					treegix_log(LOG_LEVEL_CRIT, "maximum number of id's exceeded"
 							" [table:%s, field:%s, id:" ZBX_FS_UI64 "]",
 							table->table, table->recid, ret1);
 					exit(EXIT_FAILURE);
@@ -702,7 +702,7 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 		}
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_UI64 " table:'%s' recid:'%s'",
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_UI64 " table:'%s' recid:'%s'",
 			__func__, ret2 - num + 1, table->table, table->recid);
 
 	return ret2 - num + 1;
@@ -1139,7 +1139,7 @@ const char	*zbx_host_key_string(zbx_uint64_t itemid)
  *                                                                            *
  * Comments: Users has access rights or can view personal information only    *
  *           about themselves and other user who belong to their group.       *
- *           "Zabbix Super Admin" can view and has access rights to           *
+ *           "Treegix Super Admin" can view and has access rights to           *
  *           information about any user.                                      *
  *                                                                            *
  ******************************************************************************/
@@ -1149,7 +1149,7 @@ int	zbx_check_user_permissions(const zbx_uint64_t *userid, const zbx_uint64_t *r
 	DB_ROW		row;
 	int		user_type = -1, ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL == recipient_userid || *userid == *recipient_userid)
 		goto out;
@@ -1162,7 +1162,7 @@ int	zbx_check_user_permissions(const zbx_uint64_t *userid, const zbx_uint64_t *r
 
 	if (-1 == user_type)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot check permissions", __func__);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot check permissions", __func__);
 		ret = FAIL;
 		goto out;
 	}
@@ -1186,7 +1186,7 @@ int	zbx_check_user_permissions(const zbx_uint64_t *userid, const zbx_uint64_t *r
 		DBfree_result(result);
 	}
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1275,7 +1275,7 @@ static int	DBregister_host_active(void)
 	DB_RESULT	result;
 	int		ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	result = DBselect(
 			"select null"
@@ -1290,7 +1290,7 @@ static int	DBregister_host_active(void)
 
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1485,7 +1485,7 @@ void	DBregister_host_flush(zbx_vector_ptr_t *autoreg_hosts, zbx_uint64_t proxy_h
 	size_t			sql_alloc = 256, sql_offset = 0;
 	zbx_timespec_t		ts = {0, 0};
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED != DBregister_host_active())
 		goto exit;
@@ -1581,7 +1581,7 @@ void	DBregister_host_flush(zbx_vector_ptr_t *autoreg_hosts, zbx_uint64_t proxy_h
 	zbx_process_events(NULL, NULL);
 	zbx_clean_events();
 exit:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 void	DBregister_host_clean(zbx_vector_ptr_t *autoreg_hosts)
@@ -1703,7 +1703,7 @@ char	*DBget_unique_hostname_by_sample(const char *host_name_sample, const char *
 
 	assert(host_name_sample && *host_name_sample);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() sample:'%s'", __func__, host_name_sample);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() sample:'%s'", __func__, host_name_sample);
 
 	zbx_vector_uint64_create(&nums);
 	zbx_vector_uint64_reserve(&nums, 8);
@@ -1769,7 +1769,7 @@ char	*DBget_unique_hostname_by_sample(const char *host_name_sample, const char *
 clean:
 	zbx_vector_uint64_destroy(&nums);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():'%s'", __func__, host_name_temp);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():'%s'", __func__, host_name_temp);
 
 	return host_name_temp;
 }
@@ -2319,7 +2319,7 @@ void	zbx_db_insert_prepare(zbx_db_insert_t *self, const char *table, ...)
 	{
 		if (NULL == (pfield = DBget_field(ptable, field)))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "Cannot locate table \"%s\" field \"%s\" in database schema",
+			treegix_log(LOG_LEVEL_ERR, "Cannot locate table \"%s\" field \"%s\" in database schema",
 					table, field);
 			THIS_SHOULD_NEVER_HAPPEN;
 			exit(EXIT_FAILURE);
@@ -2584,7 +2584,7 @@ retry_oracle:
 			char	*str;
 
 			str = zbx_db_format_values((ZBX_FIELD **)self->fields.values, values, self->fields.values_num);
-			zabbix_log(LOG_LEVEL_DEBUG, "insert [txnlev:%d] [%s]", zbx_db_txn_level(), str);
+			treegix_log(LOG_LEVEL_DEBUG, "insert [txnlev:%d] [%s]", zbx_db_txn_level(), str);
 			zbx_free(str);
 		}
 	}
@@ -2598,7 +2598,7 @@ retry_oracle:
 	{
 		if (0 < tries++)
 		{
-			zabbix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
 			connection_failure = 1;
 			sleep(ZBX_DB_WAIT_DOWN);
 		}
@@ -2750,24 +2750,24 @@ int	zbx_db_get_database_type(void)
 	DB_ROW		row;
 	int		ret = ZBX_DB_UNKNOWN;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	DBconnect(ZBX_DB_CONNECT_NORMAL);
 
 	if (NULL == (result = DBselectN("select userid from users", 1)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot select records from \"users\" table");
+		treegix_log(LOG_LEVEL_DEBUG, "cannot select records from \"users\" table");
 		goto out;
 	}
 
 	if (NULL != (row = DBfetch(result)))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "there is at least 1 record in \"users\" table");
+		treegix_log(LOG_LEVEL_DEBUG, "there is at least 1 record in \"users\" table");
 		ret = ZBX_DB_SERVER;
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "no records in \"users\" table");
+		treegix_log(LOG_LEVEL_DEBUG, "no records in \"users\" table");
 		ret = ZBX_DB_PROXY;
 	}
 
@@ -2788,7 +2788,7 @@ out:
 			break;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, result_string);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, result_string);
 
 	return ret;
 }
@@ -2815,10 +2815,10 @@ int	DBlock_record(const char *table, zbx_uint64_t id, const char *add_field, zbx
 	const ZBX_TABLE	*t;
 	int		ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 == zbx_db_txn_level())
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() called outside of transaction", __func__);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() called outside of transaction", __func__);
 
 	t = DBget_table(table);
 
@@ -2839,7 +2839,7 @@ int	DBlock_record(const char *table, zbx_uint64_t id, const char *add_field, zbx
 
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2867,10 +2867,10 @@ int	DBlock_records(const char *table, const zbx_vector_uint64_t *ids)
 	char		*sql = NULL;
 	size_t		sql_alloc = 0, sql_offset = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 == zbx_db_txn_level())
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() called outside of transaction", __func__);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() called outside of transaction", __func__);
 
 	t = DBget_table(table);
 
@@ -2888,7 +2888,7 @@ int	DBlock_records(const char *table, const zbx_vector_uint64_t *ids)
 
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -3028,7 +3028,7 @@ int	DBget_user_by_active_session(const char *sessionid, zbx_user_t *user)
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() sessionid:%s", __func__, sessionid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() sessionid:%s", __func__, sessionid);
 
 	sessionid_esc = DBdyn_escape_string(sessionid);
 
@@ -3054,7 +3054,7 @@ out:
 	DBfree_result(result);
 	zbx_free(sessionid_esc);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ if (!CWebUser::$data) {
 /*
  * Displaying
  */
-$link = (new CLink('GPL v2', 'http://www.zabbix.com/license.php'))
+$link = (new CLink('GPL v2', 'http://www.treegix.com/license.php'))
 	->setTarget('_blank')
 	->addClass(ZBX_STYLE_GREY)
 	->addClass(ZBX_STYLE_LINK_ALT);

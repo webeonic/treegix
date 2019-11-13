@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ class CScreenHttpTest extends CScreenBase {
 
 			order_result($httptests, $sort_field, $sort_order);
 
-			$url = (new CUrl('zabbix.php'))
+			$url = (new CUrl('treegix.php'))
 				->setArgument('action', 'web.view')
 				->setArgument('groupid', $this->data['groupid'])
 				->setArgument('hostid', $this->hostid);
@@ -112,8 +112,8 @@ class CScreenHttpTest extends CScreenBase {
 		// Create table.
 		$table = (new CTableInfo())
 			->setHeader([
-				make_sorting_header(_('Host'), 'hostname', $sort_field, $sort_order, 'zabbix.php?action=web.view'),
-				make_sorting_header(_('Name'), 'name', $sort_field, $sort_order, 'zabbix.php?action=web.view'),
+				make_sorting_header(_('Host'), 'hostname', $sort_field, $sort_order, 'treegix.php?action=web.view'),
+				make_sorting_header(_('Name'), 'name', $sort_field, $sort_order, 'treegix.php?action=web.view'),
 				_('Number of steps'),
 				_('Last check'),
 				_('Status')

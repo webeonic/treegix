@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ static void	log_fatal_signal(int sig, siginfo_t *siginfo, void *context)
 {
 	SIG_CHECK_PARAMS(sig, siginfo, context);
 
-	zabbix_log(LOG_LEVEL_CRIT, "Got signal [signal:%d(%s),reason:%d,refaddr:%p]. Crashing ...",
+	treegix_log(LOG_LEVEL_CRIT, "Got signal [signal:%d(%s),reason:%d,refaddr:%p]. Crashing ...",
 			sig, get_signal_name(sig),
 			SIG_CHECKED_FIELD(siginfo, si_code),
 			SIG_CHECKED_FIELD_TYPE(siginfo, si_addr, void *));
@@ -117,7 +117,7 @@ static void	terminate_signal_handler(int sig, siginfo_t *siginfo, void *context)
 		if (0 == sig_exiting)
 		{
 			sig_exiting = 1;
-			zabbix_log(sig_parent_pid == SIG_CHECKED_FIELD(siginfo, si_pid) ?
+			treegix_log(sig_parent_pid == SIG_CHECKED_FIELD(siginfo, si_pid) ?
 					LOG_LEVEL_DEBUG : LOG_LEVEL_WARNING,
 					"Got signal [signal:%d(%s),sender_pid:%d,sender_uid:%d,"
 					"reason:%d]. Exiting ...",
@@ -151,7 +151,7 @@ static void	child_signal_handler(int sig, siginfo_t *siginfo, void *context)
 	if (0 == sig_exiting)
 	{
 		sig_exiting = 1;
-		zabbix_log(LOG_LEVEL_CRIT, "One child process died (PID:%d,exitcode/signal:%d). Exiting ...",
+		treegix_log(LOG_LEVEL_CRIT, "One child process died (PID:%d,exitcode/signal:%d). Exiting ...",
 				SIG_CHECKED_FIELD(siginfo, si_pid), SIG_CHECKED_FIELD(siginfo, si_status));
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)

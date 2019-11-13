@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ abstract class DbBackend {
 
 		$version = DBfetch(DBselect('SELECT dv.mandatory,dv.optional FROM dbversion dv'));
 		if ($version['mandatory'] != ZABBIX_DB_VERSION) {
-			$this->setError(_s('The frontend does not match Zabbix database. Current database version (mandatory/optional): %d/%d. Required mandatory version: %d. Contact your system administrator.',
+			$this->setError(_s('The frontend does not match Treegix database. Current database version (mandatory/optional): %d/%d. Required mandatory version: %d. Contact your system administrator.',
 				$version['mandatory'], $version['optional'], ZABBIX_DB_VERSION));
 			return false;
 		}

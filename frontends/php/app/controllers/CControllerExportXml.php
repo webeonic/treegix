@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -129,7 +129,7 @@ class CControllerExportXml extends CController {
 			// Access denied.
 
 			$response = new CControllerResponseRedirect(
-				$this->getInput('backurl', 'zabbix.php?action=dashboard.view'));
+				$this->getInput('backurl', 'treegix.php?action=dashboard.view'));
 
 			$response->setMessageError(_('No permissions to referred object or it does not exist!'));
 		}

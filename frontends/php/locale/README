@@ -1,4 +1,4 @@
-This directory holds Zabbix translations and helper scripts to work with them.
+This directory holds Treegix translations and helper scripts to work with them.
 
 If you have checked out this copy of frontend from svn and want to access
  translations, run make_mo.sh .

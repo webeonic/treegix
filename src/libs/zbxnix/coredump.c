@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ int	zbx_coredump_disable(void)
 
 	if (0 != setrlimit(RLIMIT_CORE, &limit))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "cannot set resource limit: %s", zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_WARNING, "cannot set resource limit: %s", zbx_strerror(errno));
 		return FAIL;
 	}
 

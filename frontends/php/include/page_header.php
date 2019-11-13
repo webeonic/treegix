@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ if ($page['type'] == PAGE_TYPE_HTML) {
 	if (isset($ZBX_SERVER_NAME) && $ZBX_SERVER_NAME !== '') {
 		$pageTitle = $ZBX_SERVER_NAME.NAME_DELIMITER;
 	}
-	$pageTitle .= isset($page['title']) ? $page['title'] : _('Zabbix');
+	$pageTitle .= isset($page['title']) ? $page['title'] : _('Treegix');
 
 	if ((defined('ZBX_PAGE_DO_REFRESH') || defined('ZBX_PAGE_DO_JS_REFRESH')) && CWebUser::getRefresh() != 0) {
 		$pageTitle .= ' ['._s('refreshed every %1$s sec.', CWebUser::getRefresh()).']';
@@ -174,7 +174,7 @@ if ($page['type'] == PAGE_TYPE_HTML) {
 			$pageHeader->addStyle(getTriggerSeverityCss($config));
 			$pageHeader->addStyle(getTriggerStatusCss($config));
 
-			// perform Zabbix server check only for standard pages
+			// perform Treegix server check only for standard pages
 			if ($is_standard_page && $config['server_check_interval'] && !empty($ZBX_SERVER) && !empty($ZBX_SERVER_PORT)) {
 				$page['scripts'][] = 'servercheck.js';
 			}

@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -40,13 +40,13 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 			'default_page_id' => 0,
 			'pages' => [
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'dashboard.view',
 					'active_if' => ['dashboard.list', 'dashboard.view'],
 					'label' => _('Dashboard'),
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'problem.view',
 					'active_if' => ['problem.view', 'acknowledge.edit'],
 					'label' => _('Problems'),
@@ -57,7 +57,7 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 					'label' => _('Overview')
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'web.view',
 					'active_if' => ['web.view'],
 					'label' => _('Web'),
@@ -85,14 +85,14 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 					]
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'map.view',
 					'active_if' => ['map.view'],
 					'label' => _('Maps'),
 					'sub_pages' => ['image.php', 'sysmaps.php', 'sysmap.php', 'map.php', 'map.import.php']
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'discovery.view',
 					'active_if' => ['discovery.view'],
 					'label' => _('Discovery'),
@@ -111,7 +111,7 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 					'url' => 'imgstore.php'
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'search',
 					'active_if' => ['search']
 				],
@@ -141,7 +141,7 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 			'default_page_id' => 0,
 			'pages' => [
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'report.status',
 					'active_if' => ['report.status'],
 					'label' => _('System information'),
@@ -254,13 +254,13 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 					'active_if' => ['autoreg.edit']
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'proxy.list',
 					'active_if' => ['proxy.edit', 'proxy.list'],
 					'label' => _('Proxies')
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'authentication.edit',
 					'active_if' => ['authentication.edit', 'authentication.update'],
 					'label' => _('Authentication')
@@ -270,19 +270,19 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 					'label' => _('User groups')
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'user.list',
 					'active_if' => ['user.edit', 'user.list'],
 					'label' => _('Users')
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'mediatype.list',
 					'active_if' => ['mediatype.edit', 'mediatype.list'],
 					'label' => _('Media types')
 				],
 				[
-					'url' => 'zabbix.php',
+					'url' => 'treegix.php',
 					'action' => 'script.list',
 					'active_if' => ['script.edit', 'script.list'],
 					'label' => _('Scripts')
@@ -300,7 +300,7 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 			'pages' => [
 				[
 					'url' => 'index.php',
-					'sub_pages' => ['zabbix.php']
+					'sub_pages' => ['treegix.php']
 				]
 			]
 		]

@@ -1,16 +1,16 @@
 #!/bin/sh
 
 ##########################################################
-###### Zabbix agent daemon init script
+###### Treegix agent daemon init script
 ##########################################################
 
 case $1 in
 
 start)
-	/usr/local/sbin/zabbix_agentd -c /usr/local/etc/zabbix_agentd.conf ;;
+	/usr/local/sbin/treegix_agentd -c /usr/local/etc/treegix_agentd.conf ;;
 
 stop)
-	kill -TERM `cat /tmp/zabbix_agentd.pid` ;;
+	kill -TERM `cat /tmp/treegix_agentd.pid` ;;
 
 restart)
 	$0 stop

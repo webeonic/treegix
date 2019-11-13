@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -190,7 +190,7 @@ static int	get_N_itemid(const char *expression, int N_functionid, zbx_uint64_t *
 	DC_FUNCTION	function;
 	int		errcode, ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() expression:'%s' N_functionid:%d", __func__, expression, N_functionid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() expression:'%s' N_functionid:%d", __func__, expression, N_functionid);
 
 	if (SUCCEED == get_N_functionid(expression, N_functionid, &functionid, NULL))
 	{
@@ -205,7 +205,7 @@ static int	get_N_itemid(const char *expression, int N_functionid, zbx_uint64_t *
 		DCconfig_clean_functions(&function, &errcode, 1);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -274,7 +274,7 @@ static void	DCexpand_trigger_expression(char **expression)
 	zbx_uint64_t	functionid;
 	int		errcode[2];
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() expression:'%s'", __func__, *expression);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() expression:'%s'", __func__, *expression);
 
 	tmp = (char *)zbx_malloc(tmp, tmp_alloc);
 
@@ -355,7 +355,7 @@ static void	DCexpand_trigger_expression(char **expression)
 	zbx_free(*expression);
 	*expression = tmp;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() expression:'%s'", __func__, *expression);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() expression:'%s'", __func__, *expression);
 }
 
 /******************************************************************************
@@ -638,7 +638,7 @@ static int	DBget_trigger_template_name(zbx_uint64_t triggerid, const zbx_uint64_
 			sql_alloc = 256, sql_offset = 0;
 	int		user_type = -1;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL != userid)
 	{
@@ -650,7 +650,7 @@ static int	DBget_trigger_template_name(zbx_uint64_t triggerid, const zbx_uint64_
 
 		if (-1 == user_type)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot check permissions", __func__);
+			treegix_log(LOG_LEVEL_DEBUG, "%s() cannot check permissions", __func__);
 			goto out;
 		}
 	}
@@ -668,7 +668,7 @@ static int	DBget_trigger_template_name(zbx_uint64_t triggerid, const zbx_uint64_
 
 	if (SUCCEED != DBget_templateid_by_triggerid(triggerid, &templateid) || 0 == templateid)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() trigger not found or not templated", __func__);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() trigger not found or not templated", __func__);
 		goto out;
 	}
 
@@ -680,7 +680,7 @@ static int	DBget_trigger_template_name(zbx_uint64_t triggerid, const zbx_uint64_
 
 	if (SUCCEED != ret)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() trigger not found", __func__);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() trigger not found", __func__);
 		goto out;
 	}
 
@@ -725,7 +725,7 @@ static int	DBget_trigger_template_name(zbx_uint64_t triggerid, const zbx_uint64_
 	}
 	DBfree_result(result);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -751,7 +751,7 @@ static int	DBget_trigger_hostgroup_name(zbx_uint64_t triggerid, const zbx_uint64
 			sql_alloc = 256, sql_offset = 0;
 	int		user_type = -1;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL != userid)
 	{
@@ -763,7 +763,7 @@ static int	DBget_trigger_hostgroup_name(zbx_uint64_t triggerid, const zbx_uint64
 
 		if (-1 == user_type)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() cannot check permissions", __func__);
+			treegix_log(LOG_LEVEL_DEBUG, "%s() cannot check permissions", __func__);
 			goto out;
 		}
 	}
@@ -810,7 +810,7 @@ static int	DBget_trigger_hostgroup_name(zbx_uint64_t triggerid, const zbx_uint64
 	}
 	DBfree_result(result);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -945,7 +945,7 @@ static int	DBget_item_value(zbx_uint64_t itemid, char **replace_to, int request)
 	zbx_uint64_t	proxy_hostid;
 	int		ret = FAIL, errcode;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	switch (request)
 	{
@@ -1032,7 +1032,7 @@ static int	DBget_item_value(zbx_uint64_t itemid, char **replace_to, int request)
 	}
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1053,12 +1053,12 @@ static int	DBget_trigger_value(const char *expression, char **replace_to, int N_
 	zbx_uint64_t	itemid;
 	int		ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED == get_N_itemid(expression, N_functionid, &itemid))
 		ret = DBget_item_value(itemid, replace_to, request);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1330,7 +1330,7 @@ static int	DBget_history_log_value(zbx_uint64_t itemid, char **replace_to, int r
 	zbx_timespec_t		ts = {clock, ns};
 	zbx_history_record_t	value;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	DCconfig_get_items_by_itemids(&item, &itemid, &errcode, 1);
 
@@ -1381,7 +1381,7 @@ clean:
 out:
 	DCconfig_clean_items(&item, &errcode, 1);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1402,12 +1402,12 @@ static int	get_history_log_value(const char *expression, char **replace_to, int 
 	zbx_uint64_t	itemid;
 	int		ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED == get_N_itemid(expression, N_functionid, &itemid))
 		ret = DBget_history_log_value(itemid, replace_to, request, clock, ns);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1430,7 +1430,7 @@ static int	DBitem_get_value(zbx_uint64_t itemid, char **lastvalue, int raw, zbx_
 	DB_ROW		row;
 	int		ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	result = DBselect(
 			"select value_type,valuemapid,units"
@@ -1464,7 +1464,7 @@ static int	DBitem_get_value(zbx_uint64_t itemid, char **lastvalue, int raw, zbx_
 	}
 	DBfree_result(result);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1485,12 +1485,12 @@ static int	DBitem_value(const char *expression, char **value, int N_functionid, 
 	zbx_timespec_t	ts = {clock, ns};
 	int		ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED == (ret = get_N_itemid(expression, N_functionid, &itemid)))
 		ret = DBitem_get_value(itemid, value, raw, &ts);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -1512,11 +1512,11 @@ static int	DBitem_lastvalue(const char *expression, char **lastvalue, int N_func
 {
 	int		ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	ret = DBitem_value(expression, lastvalue, N_functionid, time(NULL), 999999999, raw);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -2502,7 +2502,7 @@ static const char	*macro_in_list(const char *str, zbx_strloc_t strloc, const cha
  *                                                                            *
  * Author: Alexander Vladishev                                                *
  *                                                                            *
- * Comments: example: " {Zabbix server:{ITEM.KEY1}.last(0)} " to " 1.34 "     *
+ * Comments: example: " {Treegix server:{ITEM.KEY1}.last(0)} " to " 1.34 "     *
  *                                                                            *
  ******************************************************************************/
 static int	get_trigger_function_value(const char *expression, char **replace_to, char *data,
@@ -2669,7 +2669,7 @@ static const char	*zbx_dobject_status2str(int st)
  ******************************************************************************/
 static void	resolve_opdata(const DB_EVENT *event, char **replace_to, char *error, int maxerrlen)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if ('\0' == *event->trigger.opdata)
 	{
@@ -2727,7 +2727,7 @@ static void	resolve_opdata(const DB_EVENT *event, char **replace_to, char *error
 				MACRO_TYPE_TRIGGER_DESCRIPTION, error, maxerrlen);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2757,11 +2757,11 @@ int	substitute_simple_macros(zbx_uint64_t *actionid, const DB_EVENT *event, cons
 
 	if (NULL == data || NULL == *data || '\0' == **data)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "In %s() data:EMPTY", __func__);
+		treegix_log(LOG_LEVEL_DEBUG, "In %s() data:EMPTY", __func__);
 		return res;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() data:'%s'", __func__, *data);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() data:'%s'", __func__, *data);
 
 	if (0 != (macro_type & MACRO_TYPE_TRIGGER_DESCRIPTION))
 		token_search = ZBX_TOKEN_SEARCH_REFERENCES;
@@ -4487,7 +4487,7 @@ int	substitute_simple_macros(zbx_uint64_t *actionid, const DB_EVENT *event, cons
 
 		if (FAIL == ret)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "cannot resolve macro '%.*s'",
+			treegix_log(LOG_LEVEL_DEBUG, "cannot resolve macro '%.*s'",
 					(int)(token.loc.r - token.loc.l + 1), *data + token.loc.l);
 			replace_to = zbx_strdup(replace_to, STR_UNKNOWN_VARIABLE);
 		}
@@ -4519,7 +4519,7 @@ int	substitute_simple_macros(zbx_uint64_t *actionid, const DB_EVENT *event, cons
 	zbx_free(expression);
 	zbx_vector_uint64_destroy(&hostids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End %s() data:'%s'", __func__, *data);
+	treegix_log(LOG_LEVEL_DEBUG, "End %s() data:'%s'", __func__, *data);
 
 	return res;
 }
@@ -4550,7 +4550,7 @@ static void	zbx_extract_functionids(zbx_vector_uint64_t *functionids, zbx_vector
 	DC_TRIGGER	*tr;
 	int		i, values_num_save;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() tr_num:%d", __func__, triggers->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() tr_num:%d", __func__, triggers->values_num);
 
 	for (i = 0; i < triggers->values_num; i++)
 	{
@@ -4584,7 +4584,7 @@ static void	zbx_extract_functionids(zbx_vector_uint64_t *functionids, zbx_vector
 	zbx_vector_uint64_sort(functionids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
 	zbx_vector_uint64_uniq(functionids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() functionids_num:%d", __func__, functionids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() functionids_num:%d", __func__, functionids->values_num);
 }
 
 typedef struct
@@ -4648,7 +4648,7 @@ static void	zbx_link_triggers_with_functions(zbx_vector_ptr_t *triggers_func_pos
 	DB_EVENT		ev;
 	int			i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() trigger_order_num:%d", __func__, trigger_order->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() trigger_order_num:%d", __func__, trigger_order->values_num);
 
 	zbx_vector_uint64_create(&funcids);
 	zbx_vector_uint64_reserve(&funcids, functionids->values_num);
@@ -4684,7 +4684,7 @@ static void	zbx_link_triggers_with_functions(zbx_vector_ptr_t *triggers_func_pos
 
 	zbx_vector_uint64_destroy(&funcids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() triggers_func_pos_num:%d", __func__, triggers_func_pos->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() triggers_func_pos_num:%d", __func__, triggers_func_pos->values_num);
 }
 
 /******************************************************************************
@@ -4840,7 +4840,7 @@ static void	zbx_populate_function_items(const zbx_vector_uint64_t *functionids, 
 	zbx_ifunc_t	ifunc_local;
 	zbx_func_t	*func, func_local;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() functionids_num:%d", __func__, functionids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() functionids_num:%d", __func__, functionids->values_num);
 
 	func_local.value = NULL;
 	func_local.error = NULL;
@@ -4889,7 +4889,7 @@ static void	zbx_populate_function_items(const zbx_vector_uint64_t *functionids, 
 	zbx_free(errcodes);
 	zbx_free(functions);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() ifuncs_num:%d", __func__, ifuncs->num_data);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() ifuncs_num:%d", __func__, ifuncs->num_data);
 }
 
 static void	zbx_evaluate_item_functions(zbx_hashset_t *funcs, zbx_vector_ptr_t *unknown_msgs)
@@ -4902,7 +4902,7 @@ static void	zbx_evaluate_item_functions(zbx_hashset_t *funcs, zbx_vector_ptr_t *
 	int			*errcodes = NULL;
 	zbx_hashset_iter_t	iter;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() funcs_num:%d", __func__, funcs->num_data);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() funcs_num:%d", __func__, funcs->num_data);
 
 	zbx_vector_uint64_create(&itemids);
 	zbx_vector_uint64_reserve(&itemids, funcs->num_data);
@@ -5017,7 +5017,7 @@ static void	zbx_evaluate_item_functions(zbx_hashset_t *funcs, zbx_vector_ptr_t *
 	zbx_free(errcodes);
 	zbx_free(items);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static int	substitute_expression_functions_results(zbx_hashset_t *ifuncs, char *expression, char **out,
@@ -5091,7 +5091,7 @@ static void	zbx_substitute_functions_results(zbx_hashset_t *ifuncs, zbx_vector_p
 	size_t		out_alloc = TRIGGER_EXPRESSION_LEN_MAX;
 	int		i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() ifuncs_num:%d tr_num:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() ifuncs_num:%d tr_num:%d",
 			__func__, ifuncs->num_data, triggers->values_num);
 
 	out = (char *)zbx_malloc(out, out_alloc);
@@ -5110,7 +5110,7 @@ static void	zbx_substitute_functions_results(zbx_hashset_t *ifuncs, zbx_vector_p
 			continue;
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() expression[%d]:'%s' => '%s'", __func__, i, tr->expression, out);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() expression[%d]:'%s' => '%s'", __func__, i, tr->expression, out);
 
 		tr->expression = zbx_strdup(tr->expression, out);
 
@@ -5123,7 +5123,7 @@ static void	zbx_substitute_functions_results(zbx_hashset_t *ifuncs, zbx_vector_p
 				continue;
 			}
 
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() recovery_expression[%d]:'%s' => '%s'", __func__, i,
+			treegix_log(LOG_LEVEL_DEBUG, "%s() recovery_expression[%d]:'%s' => '%s'", __func__, i,
 					tr->recovery_expression, out);
 
 			tr->recovery_expression = zbx_strdup(tr->recovery_expression, out);
@@ -5132,7 +5132,7 @@ static void	zbx_substitute_functions_results(zbx_hashset_t *ifuncs, zbx_vector_p
 
 	zbx_free(out);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -5156,7 +5156,7 @@ static void	substitute_functions(zbx_vector_ptr_t *triggers, zbx_vector_ptr_t *u
 	zbx_vector_uint64_t	functionids;
 	zbx_hashset_t		ifuncs, funcs;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_uint64_create(&functionids);
 	zbx_extract_functionids(&functionids, triggers);
@@ -5183,7 +5183,7 @@ static void	substitute_functions(zbx_vector_ptr_t *triggers, zbx_vector_ptr_t *u
 empty:
 	zbx_vector_uint64_destroy(&functionids);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -5207,7 +5207,7 @@ void	evaluate_expressions(zbx_vector_ptr_t *triggers)
 	zbx_vector_ptr_t	unknown_msgs;	    /* pointers to messages about origins of 'unknown' values */
 	char			err[MAX_STRING_LEN];
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() tr_num:%d", __func__, triggers->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() tr_num:%d", __func__, triggers->values_num);
 
 	event.object = EVENT_OBJECT_TRIGGER;
 
@@ -5300,12 +5300,12 @@ void	evaluate_expressions(zbx_vector_ptr_t *triggers)
 
 			if (NULL != tr->new_error)
 			{
-				zabbix_log(LOG_LEVEL_DEBUG, "%s():expression [%s] cannot be evaluated: %s",
+				treegix_log(LOG_LEVEL_DEBUG, "%s():expression [%s] cannot be evaluated: %s",
 						__func__, tr->expression, tr->new_error);
 			}
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+		treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 	}
 }
 
@@ -5407,7 +5407,7 @@ static int	process_lld_macro_token(char **data, zbx_token_t *token, int flags, c
 
 	if (SUCCEED != zbx_lld_macro_value_by_name(jp_row, lld_macro_paths, *data + l, &replace_to))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot substitute macro \"%s\": not found in value set", *data + l);
+		treegix_log(LOG_LEVEL_DEBUG, "cannot substitute macro \"%s\": not found in value set", *data + l);
 
 		if (0 != (flags & ZBX_TOKEN_NUMERIC))
 		{
@@ -5429,7 +5429,7 @@ static int	process_lld_macro_token(char **data, zbx_token_t *token, int flags, c
 		{
 			int	len = token->data.lld_func_macro.func.r - token->data.lld_func_macro.func.l + 1;
 
-			zabbix_log(LOG_LEVEL_DEBUG, "cannot execute function \"%.*s\"", len,
+			treegix_log(LOG_LEVEL_DEBUG, "cannot execute function \"%.*s\"", len,
 					*data + token->data.lld_func_macro.func.l);
 
 			if (0 != (flags & ZBX_TOKEN_NUMERIC))
@@ -5628,7 +5628,7 @@ int	substitute_lld_macros(char **data, const struct zbx_json_parse *jp_row, cons
 	int		ret = SUCCEED, pos = 0;
 	zbx_token_t	token;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() data:'%s'", __func__, *data);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() data:'%s'", __func__, *data);
 
 	while (SUCCEED == ret && SUCCEED == zbx_token_find(*data, pos, &token, ZBX_TOKEN_SEARCH_BASIC))
 	{
@@ -5665,7 +5665,7 @@ int	substitute_lld_macros(char **data, const struct zbx_json_parse *jp_row, cons
 		pos++;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s data:'%s'", __func__, zbx_result_string(ret), *data);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s data:'%s'", __func__, zbx_result_string(ret), *data);
 
 	return ret;
 }
@@ -5766,7 +5766,7 @@ int	substitute_key_macros(char **data, zbx_uint64_t *hostid, DC_ITEM *dc_item, c
 	replace_key_param_data_t	replace_key_param_data;
 	int				key_type, ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() data:'%s'", __func__, *data);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() data:'%s'", __func__, *data);
 
 	replace_key_param_data.hostid = hostid;
 	replace_key_param_data.dc_item = dc_item;
@@ -5789,7 +5789,7 @@ int	substitute_key_macros(char **data, zbx_uint64_t *hostid, DC_ITEM *dc_item, c
 
 	ret = replace_key_params_dyn(data, key_type, replace_key_param_cb, &replace_key_param_data, error, maxerrlen);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s data:'%s'", __func__, zbx_result_string(ret), *data);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s data:'%s'", __func__, zbx_result_string(ret), *data);
 
 	return ret;
 }
@@ -5826,7 +5826,7 @@ int	substitute_function_lld_param(const char *e, size_t len, unsigned char key_i
 	char		*param = NULL;
 	const char	*p;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 == len)
 	{
@@ -5895,7 +5895,7 @@ int	substitute_function_lld_param(const char *e, size_t len, unsigned char key_i
 out:
 	zbx_free(param);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -5923,7 +5923,7 @@ int	substitute_macros_in_json_pairs(char **data, const struct zbx_json_parse *jp
 	char			name[MAX_STRING_LEN], value[MAX_STRING_LEN], *p_name = NULL, *p_value = NULL;
 	int			ret = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if ('\0' == **data)
 		goto exit;
@@ -5974,7 +5974,7 @@ int	substitute_macros_in_json_pairs(char **data, const struct zbx_json_parse *jp
 clean:
 	zbx_json_free(&json);
 exit:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 }
@@ -6108,7 +6108,7 @@ int	substitute_macros_xml(char **data, const DC_ITEM *item, const struct zbx_jso
 	xmlChar		*mem;
 	int		size, ret = FAIL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL == (doc = xmlReadMemory(*data, strlen(*data), "noname.xml", NULL, 0)))
 	{
@@ -6147,7 +6147,7 @@ int	substitute_macros_xml(char **data, const DC_ITEM *item, const struct zbx_jso
 clean:
 	xmlFreeDoc(doc);
 exit:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
 
 	return ret;
 #endif

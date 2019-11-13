@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
 #
-# Zabbix
-# Copyright (C) 2001-2019 Zabbix SIA
+# Treegix
+# Copyright (C) 2001-2019 Treegix SIA
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #########################################
 
 # This is an embedded perl SNMP trapper receiver designed for sending data to the server.
-# The receiver will pass the received SNMP traps to Zabbix server or proxy running on the
+# The receiver will pass the received SNMP traps to Treegix server or proxy running on the
 # same machine. Please configure the server/proxy accordingly.
 #
 # Read more about using embedded perl with Net-SNMP:
@@ -40,7 +40,7 @@
 #
 # Mandatory: yes
 # Default:
-$SNMPTrapperFile = '/tmp/zabbix_traps.tmp';
+$SNMPTrapperFile = '/tmp/treegix_traps.tmp';
 
 ### Option: DateTimeFormat
 #	The date time format in strftime() format. Please make sure to have a corresponding
@@ -57,7 +57,7 @@ $DateTimeFormat = '%H:%M:%S %Y/%m/%d';
 use Fcntl qw(O_WRONLY O_APPEND O_CREAT);
 use POSIX qw(strftime);
 
-sub zabbix_receiver
+sub treegix_receiver
 {
 	my (%pdu_info) = %{$_[0]};
 	my (@varbinds) = @{$_[1]};
@@ -109,7 +109,7 @@ sub zabbix_receiver
 	return NETSNMPTRAPD_HANDLER_OK;
 }
 
-NetSNMP::TrapReceiver::register("all", \&zabbix_receiver) or
-	die "failed to register Zabbix SNMP trap receiver\n";
+NetSNMP::TrapReceiver::register("all", \&treegix_receiver) or
+	die "failed to register Treegix SNMP trap receiver\n";
 
-print STDOUT "Loaded Zabbix SNMP trap receiver\n";
+print STDOUT "Loaded Treegix SNMP trap receiver\n";

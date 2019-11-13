@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -206,15 +206,15 @@ static void	elastic_log_error(CURL *handle, CURLcode error, const char *errbuf)
 
 		if (0 != page_r.offset)
 		{
-			zabbix_log(LOG_LEVEL_ERR, "cannot get values from elasticsearch, %s, message: %s", http_status,
+			treegix_log(LOG_LEVEL_ERR, "cannot get values from elasticsearch, %s, message: %s", http_status,
 					page_r.data);
 		}
 		else
-			zabbix_log(LOG_LEVEL_ERR, "cannot get values from elasticsearch, %s", http_status);
+			treegix_log(LOG_LEVEL_ERR, "cannot get values from elasticsearch, %s", http_status);
 	}
 	else
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot get values from elasticsearch: %s",
+		treegix_log(LOG_LEVEL_ERR, "cannot get values from elasticsearch: %s",
 				'\0' != *errbuf ? errbuf : curl_easy_strerror(error));
 	}
 }
@@ -268,7 +268,7 @@ static int	elastic_is_error_present(zbx_httppage_t *page, char **err)
 	size_t			index_alloc = 0, status_alloc = 0, type_alloc = 0, reason_alloc = 0;
 	int			rc_js = SUCCEED;
 
-	zabbix_log(LOG_LEVEL_TRACE, "%s() raw json: %s", __func__, ZBX_NULL2EMPTY_STR(page->data));
+	treegix_log(LOG_LEVEL_TRACE, "%s() raw json: %s", __func__, ZBX_NULL2EMPTY_STR(page->data));
 
 	if (SUCCEED != zbx_json_open(page->data, &jp) || SUCCEED != zbx_json_brackets_open(jp.start, &jp_values))
 		return FAIL;
@@ -305,7 +305,7 @@ static int	elastic_is_error_present(zbx_httppage_t *page, char **err)
 
 	*err = zbx_dsprintf(NULL,"index:%s status:%s type:%s reason:%s%s", ZBX_NULL2EMPTY_STR(index),
 			ZBX_NULL2EMPTY_STR(status), ZBX_NULL2EMPTY_STR(type), ZBX_NULL2EMPTY_STR(reason),
-			FAIL == rc_js ? " / elasticsearch version is not fully compatible with zabbix server" : "");
+			FAIL == rc_js ? " / elasticsearch version is not fully compatible with treegix server" : "");
 
 	zbx_free(status);
 	zbx_free(type);
@@ -386,7 +386,7 @@ static void	elastic_writer_add_iface(zbx_history_iface_t *hist)
 
 	if (NULL == (data->handle = curl_easy_init()))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot initialize cURL session");
+		treegix_log(LOG_LEVEL_ERR, "cannot initialize cURL session");
 		return;
 	}
 	curl_easy_setopt(data->handle, CURLOPT_URL, data->post_url);
@@ -421,7 +421,7 @@ static int	elastic_writer_flush(void)
 	CURLMsg			*msg;
 	zbx_vector_ptr_t	retries;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	/* The writer might be uninitialized only if the history */
 	/* was already flushed. In that case, return SUCCEED */
@@ -439,7 +439,7 @@ static int	elastic_writer_flush(void)
 
 		(void)curl_easy_setopt(data->handle, CURLOPT_HTTPHEADER, curl_headers);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "sending %s", data->buf);
+		treegix_log(LOG_LEVEL_DEBUG, "sending %s", data->buf);
 	}
 
 try_again:
@@ -454,13 +454,13 @@ try_again:
 
 		if (CURLM_OK != (code = curl_multi_perform(writer.handle, &running)))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "cannot perform on curl multi handle: %s", curl_multi_strerror(code));
+			treegix_log(LOG_LEVEL_ERR, "cannot perform on curl multi handle: %s", curl_multi_strerror(code));
 			break;
 		}
 
 		if (CURLM_OK != (code = curl_multi_wait(writer.handle, NULL, 0, ZBX_HISTORY_STORAGE_DOWN, &fds)))
 		{
-			zabbix_log(LOG_LEVEL_ERR, "cannot wait on curl multi handle: %s", curl_multi_strerror(code));
+			treegix_log(LOG_LEVEL_ERR, "cannot wait on curl multi handle: %s", curl_multi_strerror(code));
 			break;
 		}
 
@@ -476,7 +476,7 @@ try_again:
 				if (CURLE_OK == curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE,
 						(char **)&curl_page) && '\0' != *curl_page->errbuf)
 				{
-					zabbix_log(LOG_LEVEL_ERR, "cannot send data to elasticsearch, HTTP error"
+					treegix_log(LOG_LEVEL_ERR, "cannot send data to elasticsearch, HTTP error"
 							" message: %s", curl_page->errbuf);
 				}
 				else
@@ -497,7 +497,7 @@ try_again:
 								sizeof(http_status));
 					}
 
-					zabbix_log(LOG_LEVEL_ERR, "cannot send data to elasticsearch, %s", http_status);
+					treegix_log(LOG_LEVEL_ERR, "cannot send data to elasticsearch, %s", http_status);
 				}
 			}
 			else if (CURLE_OK != msg->data.result)
@@ -505,12 +505,12 @@ try_again:
 				if (CURLE_OK == curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE,
 						(char **)&curl_page) && '\0' != *curl_page->errbuf)
 				{
-					zabbix_log(LOG_LEVEL_WARNING, "cannot send data to elasticsearch: %s",
+					treegix_log(LOG_LEVEL_WARNING, "cannot send data to elasticsearch: %s",
 							curl_page->errbuf);
 				}
 				else
 				{
-					zabbix_log(LOG_LEVEL_WARNING, "cannot send data to elasticsearch: %s",
+					treegix_log(LOG_LEVEL_WARNING, "cannot send data to elasticsearch: %s",
 							curl_easy_strerror(msg->data.result));
 				}
 
@@ -523,7 +523,7 @@ try_again:
 			else if (CURLE_OK == curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, (char **)&curl_page)
 					&& SUCCEED == elastic_is_error_present(&curl_page->page, &error))
 			{
-				zabbix_log(LOG_LEVEL_WARNING, "%s() cannot send data to elasticsearch: %s",
+				treegix_log(LOG_LEVEL_WARNING, "%s() cannot send data to elasticsearch: %s",
 						__func__, error);
 				zbx_free(error);
 
@@ -559,7 +559,7 @@ try_again:
 
 	elastic_writer_release();
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return SUCCEED;
 }
@@ -620,13 +620,13 @@ static int	elastic_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, in
 	struct curl_slist	*curl_headers = NULL;
 	char			*scroll_id = NULL, *scroll_query = NULL, errbuf[CURL_ERROR_SIZE];
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	ret = FAIL;
 
 	if (NULL == (data->handle = curl_easy_init()))
 	{
-		zabbix_log(LOG_LEVEL_ERR, "cannot initialize cURL session");
+		treegix_log(LOG_LEVEL_ERR, "cannot initialize cURL session");
 
 		return FAIL;
 	}
@@ -687,7 +687,7 @@ static int	elastic_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, in
 	curl_easy_setopt(data->handle, CURLOPT_FAILONERROR, 1L);
 	curl_easy_setopt(data->handle, CURLOPT_ERRORBUFFER, errbuf);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "sending query to %s; post data: %s", data->post_url, query.buffer);
+	treegix_log(LOG_LEVEL_DEBUG, "sending query to %s; post data: %s", data->post_url, query.buffer);
 
 	page_r.offset = 0;
 	*errbuf = '\0';
@@ -715,7 +715,7 @@ static int	elastic_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, in
 
 		empty = 1;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "received from elasticsearch: %s", page_r.data);
+		treegix_log(LOG_LEVEL_DEBUG, "received from elasticsearch: %s", page_r.data);
 
 		zbx_json_open(page_r.data, &jp);
 		zbx_json_brackets_open(jp.start, &jp_values);
@@ -723,7 +723,7 @@ static int	elastic_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, in
 		/* get the scroll id immediately, for being used in subsequent queries */
 		if (SUCCEED != zbx_json_value_by_name_dyn(&jp_values, "_scroll_id", &scroll_id, &id_alloc))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "elasticsearch version is not compatible with zabbix server. "
+			treegix_log(LOG_LEVEL_WARNING, "elasticsearch version is not compatible with treegix server. "
 					"_scroll_id tag is absent");
 		}
 
@@ -789,7 +789,7 @@ static int	elastic_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, in
 		curl_easy_setopt(data->handle, CURLOPT_POSTFIELDS, NULL);
 		curl_easy_setopt(data->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
 
-		zabbix_log(LOG_LEVEL_DEBUG, "elasticsearch closing scroll %s", data->post_url);
+		treegix_log(LOG_LEVEL_DEBUG, "elasticsearch closing scroll %s", data->post_url);
 
 		page_r.offset = 0;
 		*errbuf = '\0';
@@ -809,7 +809,7 @@ out:
 
 	zbx_vector_history_record_sort(values, (zbx_compare_func_t)zbx_history_record_compare_desc_func);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -833,7 +833,7 @@ static int	elastic_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t 
 	size_t			buf_alloc = 0, buf_offset = 0;
 	char			pipeline[14]; /* index name length + suffix "-pipeline" */
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_json_init(&json_idx, ZBX_IDX_JSON_ALLOCATE);
 
@@ -896,7 +896,7 @@ static int	elastic_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t 
 
 	zbx_json_free(&json_idx);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return num;
 }

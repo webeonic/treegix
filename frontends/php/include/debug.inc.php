@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ function sdFile($data, $persist = false, $fileName = 'debug.txt') {
 	fclose($fileStream);
 }
 
-function sdff($msg, $fileName = '/tmp/zabbix.log') {
+function sdff($msg, $fileName = '/tmp/treegix.log') {
 	$fileStreem = @fopen($fileName, 'a');
 	if (is_array($msg)) {
 		$toImplode = [];

@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -665,8 +665,8 @@ int	NET_TCP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 				error = "unknown error";
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "netlink interface error: %s", error);
-		zabbix_log(LOG_LEVEL_DEBUG, "falling back on reading /proc/net/tcp...");
+		treegix_log(LOG_LEVEL_DEBUG, "netlink interface error: %s", error);
+		treegix_log(LOG_LEVEL_DEBUG, "falling back on reading /proc/net/tcp...");
 #endif
 		buffer = (char *)zbx_malloc(NULL, buffer_alloc);
 

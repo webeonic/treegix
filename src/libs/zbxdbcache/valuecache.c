@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -678,13 +678,13 @@ static void	vc_warn_low_memory(void)
 		vc_cache->mode = ZBX_VC_MODE_NORMAL;
 		vc_cache->mode_time = now;
 
-		zabbix_log(LOG_LEVEL_WARNING, "value cache has been switched from low memory to normal operation mode");
+		treegix_log(LOG_LEVEL_WARNING, "value cache has been switched from low memory to normal operation mode");
 	}
 	else if (now - vc_cache->last_warning_time > ZBX_VC_LOW_MEMORY_WARNING_PERIOD)
 	{
 		vc_cache->last_warning_time = now;
 
-		zabbix_log(LOG_LEVEL_WARNING, "value cache is fully used: please increase ValueCacheSize"
+		treegix_log(LOG_LEVEL_WARNING, "value cache is fully used: please increase ValueCacheSize"
 				" configuration parameter");
 	}
 }
@@ -2304,7 +2304,7 @@ int	zbx_vc_init(char **error)
 	if (0 == CONFIG_VALUE_CACHE_SIZE)
 		return SUCCEED;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED != zbx_mutex_create(&vc_lock, ZBX_MUTEX_VALUECACHE, error))
 		goto out;
@@ -2354,7 +2354,7 @@ int	zbx_vc_init(char **error)
 out:
 	zbx_vc_disable();
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -2368,7 +2368,7 @@ out:
  ******************************************************************************/
 void	zbx_vc_destroy(void)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL != vc_cache)
 	{
@@ -2381,7 +2381,7 @@ void	zbx_vc_destroy(void)
 		vc_cache = NULL;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2396,7 +2396,7 @@ void	zbx_vc_destroy(void)
  ******************************************************************************/
 void	zbx_vc_reset(void)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL != vc_cache)
 	{
@@ -2422,7 +2422,7 @@ void	zbx_vc_reset(void)
 		vc_try_unlock();
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2520,7 +2520,7 @@ int	zbx_vc_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_history_re
 	zbx_vc_item_t	*item = NULL;
 	int 		ret = FAIL, cache_used = 1;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" ZBX_FS_UI64 " value_type:%d seconds:%d count:%d sec:%d ns:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" ZBX_FS_UI64 " value_type:%d seconds:%d count:%d sec:%d ns:%d",
 			__func__, itemid, value_type, seconds, count, ts->sec, ts->ns);
 
 	vc_try_lock();
@@ -2573,7 +2573,7 @@ out:
 
 	vc_try_unlock();
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s count:%d cached:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s count:%d cached:%d",
 			__func__, zbx_result_string(ret), values->values_num, cache_used);
 
 	return ret;

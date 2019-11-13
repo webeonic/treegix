@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -27,11 +27,11 @@ $widget = (new CWidget())
 	->setTitle(_('Scripts'))
 	->setControls((new CTag('nav', true,
 		(new CList())
-			->addItem(new CRedirectButton(_('Create script'), 'zabbix.php?action=script.edit'))
+			->addItem(new CRedirectButton(_('Create script'), 'treegix.php?action=script.edit'))
 		))
 			->setAttribute('aria-label', _('Content controls'))
 	)
-	->addItem((new CFilter((new CUrl('zabbix.php'))->setArgument('action', 'script.list')))
+	->addItem((new CFilter((new CUrl('treegix.php'))->setArgument('action', 'script.list')))
 		->setProfile($data['profileIdx'])
 		->setActiveTab($data['active_tab'])
 		->addFilterTab(_('Filter'), [
@@ -92,7 +92,7 @@ foreach ($data['scripts'] as $script) {
 	$scriptsTable->addRow([
 		new CCheckBox('scriptids['.$script['scriptid'].']', $script['scriptid']),
 		(new CCol(
-			new CLink($script['name'], 'zabbix.php?action=script.edit&scriptid='.$script['scriptid'])
+			new CLink($script['name'], 'treegix.php?action=script.edit&scriptid='.$script['scriptid'])
 		))->addClass(ZBX_STYLE_NOWRAP),
 		$scriptType,
 		$scriptExecuteOn,

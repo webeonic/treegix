@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class CControllerScriptCreate extends CController {
 		if (!$ret) {
 			switch ($this->GetValidationError()) {
 				case self::VALIDATION_ERROR:
-					$response = new CControllerResponseRedirect('zabbix.php?action=script.edit');
+					$response = new CControllerResponseRedirect('treegix.php?action=script.edit');
 					$response->setFormData($this->getInputAll());
 					$response->setMessageError(_('Cannot add script'));
 					$this->setResponse($response);
@@ -82,11 +82,11 @@ class CControllerScriptCreate extends CController {
 		$result = (bool) API::Script()->create($script);
 
 		if ($result) {
-			$response = new CControllerResponseRedirect('zabbix.php?action=script.list&uncheck=1');
+			$response = new CControllerResponseRedirect('treegix.php?action=script.list&uncheck=1');
 			$response->setMessageOk(_('Script added'));
 		}
 		else {
-			$response = new CControllerResponseRedirect('zabbix.php?action=script.edit');
+			$response = new CControllerResponseRedirect('treegix.php?action=script.edit');
 			$response->setFormData($this->getInputAll());
 			$response->setMessageError(_('Cannot add script'));
 		}

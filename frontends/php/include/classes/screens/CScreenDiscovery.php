@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ class CScreenDiscovery extends CScreenBase {
 
 		$header = [
 			make_sorting_header(_('Discovered device'), 'ip', $sort_field, $sort_order,
-				'zabbix.php?action=discovery.view'
+				'treegix.php?action=discovery.view'
 			),
 			_('Monitored host'),
 			_('Uptime').'/'._('Downtime')

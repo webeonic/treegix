@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ class CControllerProxyList extends CController {
 		// sorting & paging
 		order_result($data['proxies'], $sortField, $sortOrder);
 
-		$url = (new CUrl('zabbix.php'))
+		$url = (new CUrl('treegix.php'))
 			->setArgument('action', 'proxy.list');
 
 		$data['paging'] = getPagingLine($data['proxies'], $sortOrder, $url);
@@ -124,7 +124,7 @@ class CControllerProxyList extends CController {
 		if ($data['proxies']) {
 			global $ZBX_SERVER, $ZBX_SERVER_PORT;
 
-			$server = new CZabbixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
+			$server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
 			$server_status = $server->getStatus(get_cookie(ZBX_SESSION_NAME));
 
 			if ($server_status !== false) {

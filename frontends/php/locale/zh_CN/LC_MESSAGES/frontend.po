@@ -4,12 +4,12 @@
 # 20160923
 msgid ""
 msgstr ""
-"Project-Id-Version: Zabbix 4.2\n"
+"Project-Id-Version: Treegix 4.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-21 14:21+0300\n"
 "PO-Revision-Date: 2017-10-11 11:47+0300\n"
 "Last-Translator: 岂几 <tom3000@126.com>\n"
-"Language-Team: Zabbix <info@zabbix.com>\n"
+"Language-Team: Treegix <info@treegix.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -830,8 +830,8 @@ msgid "Aggregate"
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:669
-msgid "Aggregate checks do not require any agent running on a host being monitored. Zabbix server collects aggregate information by doing direct database queries. See Zabbix Manual."
-msgstr "聚合检查不需要在被监控主机上运行任何代理程序。Zabbix服务器直接通过数据库查询来收集聚合信息。参阅Zabbix手册。"
+msgid "Aggregate checks do not require any agent running on a host being monitored. Treegix server collects aggregate information by doing direct database queries. See Treegix Manual."
+msgstr "聚合检查不需要在被监控主机上运行任何代理程序。Treegix服务器直接通过数据库查询来收集聚合信息。参阅Treegix手册。"
 
 #: include/classes/widgets/CWidgetHelper.php:1078
 msgid "Aggregation function"
@@ -1922,8 +1922,8 @@ msgstr "不能创建构件: %1$s 。"
 
 #: include/classes/api/services/CUser.php:991
 #, c-format
-msgid "Cannot delete Zabbix internal user \"%1$s\", try disabling that user."
-msgstr "无法删除Zabbix内部用户 \"%1$s\", 试试停用这个用户."
+msgid "Cannot delete Treegix internal user \"%1$s\", try disabling that user."
+msgstr "无法删除Treegix内部用户 \"%1$s\", 试试停用这个用户."
 
 #: actionconf.php:254
 msgid "Cannot delete action"
@@ -2488,10 +2488,10 @@ msgstr "无法读取JSON：%1$s 。"
 msgid "Cannot read XML: %1$s."
 msgstr "无法读取XML： %1$s 。"
 
-#: include/classes/server/CZabbixServer.php:410
+#: include/classes/server/CTreegixServer.php:410
 #, c-format
-msgid "Cannot read the response, check connection with the Zabbix server \"%1$s\"."
-msgstr "不能读取响应, 检查与Zabbix服务器 \"%1$s\" 的连接."
+msgid "Cannot read the response, check connection with the Treegix server \"%1$s\"."
+msgstr "不能读取响应, 检查与Treegix服务器 \"%1$s\" 的连接."
 
 #: include/classes/api/services/CUser.php:430
 msgid "Cannot rename guest user."
@@ -2507,10 +2507,10 @@ msgstr "无法储存未检验的自动发现规则"
 msgid "Cannot save widget \"%1$s\"."
 msgstr "无法保存小构件 \"%1$s\" 。"
 
-#: include/classes/server/CZabbixServer.php:351
+#: include/classes/server/CTreegixServer.php:351
 #, c-format
-msgid "Cannot send command, check connection with Zabbix server \"%1$s\"."
-msgstr "无法发送命令, 检查于Zabbix 服务器 \"%1$s\" 的连接."
+msgid "Cannot send command, check connection with Treegix server \"%1$s\"."
+msgstr "无法发送命令, 检查于Treegix 服务器 \"%1$s\" 的连接."
 
 #: host_discovery.php:309 host_discovery.php:647 items.php:972 items.php:1447
 msgid "Cannot send request"
@@ -2933,8 +2933,8 @@ msgid "Cannot update web scenario"
 msgstr "无法更新 web 场景"
 
 #: include/views/js/configuration.discovery.edit.js.php:675
-msgid "Cannot validate discovery check: invalid request or connection to Zabbix server failed."
-msgstr "不可用的发现检查：请求不合法或连接到Zabbix服务器失败."
+msgid "Cannot validate discovery check: invalid request or connection to Treegix server failed."
+msgstr "不可用的发现检查：请求不合法或连接到Treegix服务器失败."
 
 #: include/views/administration.general.regularexpressions.edit.php:52
 msgid "Case sensitive"
@@ -3389,8 +3389,8 @@ msgid "Configuration of GUI"
 msgstr "图形接口的配置"
 
 #: include/audit.inc.php:25
-msgid "Configuration of Zabbix"
-msgstr "Zabbix的配置"
+msgid "Configuration of Treegix"
+msgstr "Treegix的配置"
 
 #: actionconf.php:27
 msgid "Configuration of actions"
@@ -3548,8 +3548,8 @@ msgid "Confirmation text"
 msgstr "确认文字"
 
 #: include/classes/setup/CSetupWizard.php:383
-msgid "Congratulations! You have successfully installed Zabbix frontend."
-msgstr "恩！不错zabbix前端已经配置好了！千山万水第一步！加油，少年！"
+msgid "Congratulations! You have successfully installed Treegix frontend."
+msgstr "恩！不错treegix前端已经配置好了！千山万水第一步！加油，少年！"
 
 #: app/views/administration.proxy.edit.php:43
 #: include/views/configuration.host.edit.php:115
@@ -3571,46 +3571,46 @@ msgstr "已连接"
 msgid "Connection security"
 msgstr "安全链接"
 
-#: include/classes/server/CZabbixServer.php:364
+#: include/classes/server/CTreegixServer.php:364
 #, c-format
-msgid "Connection timeout of %1$s seconds exceeded when connecting to Zabbix server \"%2$s\"."
-msgstr "连接超时 %1$s 秒超出当连接Zabbix 服务器 \"%2$s\"."
+msgid "Connection timeout of %1$s seconds exceeded when connecting to Treegix server \"%2$s\"."
+msgstr "连接超时 %1$s 秒超出当连接Treegix 服务器 \"%2$s\"."
 
-#: include/classes/server/CZabbixServer.php:472
+#: include/classes/server/CTreegixServer.php:472
 #, c-format
 msgid ""
-"Connection to Zabbix server \"%s\" failed. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Connection to Treegix server \"%s\" failed. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Incorrect DNS server configuration.\n"
 msgstr ""
-"连接到Zabbix主机 \"%s\" 失败. 可能的原因是:\n"
-"1. 错误的 IP/DNS 设于 \"zabbix.conf.php\";\n"
+"连接到Treegix主机 \"%s\" 失败. 可能的原因是:\n"
+"1. 错误的 IP/DNS 设于 \"treegix.conf.php\";\n"
 "2. 错误的 DNS 主机配置.\n"
 
-#: include/classes/server/CZabbixServer.php:460
+#: include/classes/server/CTreegixServer.php:460
 #, c-format
 msgid ""
-"Connection to Zabbix server \"%s\" refused. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Connection to Treegix server \"%s\" refused. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Security environment (for example, SELinux) is blocking the connection;\n"
-"3. Zabbix server daemon not running;\n"
+"3. Treegix server daemon not running;\n"
 "4. Firewall is blocking TCP connection.\n"
 msgstr ""
-"连接到Zabbix主机 \"%s\" 被拒绝。可能的原因是:\n"
-"1. \"zabbix.conf.php\" 中错误的 IP/DNS 设置；\n"
+"连接到Treegix主机 \"%s\" 被拒绝。可能的原因是:\n"
+"1. \"treegix.conf.php\" 中错误的 IP/DNS 设置；\n"
 "2. 安全环境 (例如, SELinux) 阻断了连接；\n"
-"3. Zabbix 主机的服务未运行；\n"
+"3. Treegix 主机的服务未运行；\n"
 "4. 防火墙阻断了 TCP 连接。\n"
 
-#: include/classes/server/CZabbixServer.php:468
+#: include/classes/server/CTreegixServer.php:468
 #, c-format
 msgid ""
-"Connection to Zabbix server \"%s\" timed out. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Connection to Treegix server \"%s\" timed out. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Firewall is blocking TCP connection.\n"
 msgstr ""
-"连接到 Zabbix 主机 \"%s\" 超时。可能的原因是：\n"
-"1. \"zabbix.conf.php\" 中错误的 IP/DNS 设置；\n"
+"连接到 Treegix 主机 \"%s\" 超时。可能的原因是：\n"
+"1. \"treegix.conf.php\" 中错误的 IP/DNS 设置；\n"
 "2. 防火牆阻断了TCP连接。\n"
 
 #: include/views/configuration.host.massupdate.php:284
@@ -6064,8 +6064,8 @@ msgid "Failure Audit"
 msgstr "失败审计"
 
 #: app/views/system.warning.php:21 app/views/system.warning.php:33
-msgid "Fatal error, please report to the Zabbix team"
-msgstr "呦吼~中奖了。你发现了一个致命的zabbix错误。来我们的社区把问题跟我们说下吧。我们很乐意帮你解决。"
+msgid "Fatal error, please report to the Treegix team"
+msgstr "呦吼~中奖了。你发现了一个致命的treegix错误。来我们的社区把问题跟我们说下吧。我们很乐意帮你解决。"
 
 #: include/classes/widgets/CWidgetConfig.php:37
 msgid "Favourite graphs"
@@ -8371,12 +8371,12 @@ msgstr "不正确的正则表达式 \"%1$s\": \"%2$s\""
 msgid "Incorrect resource type provided for screen item."
 msgstr "提供了不正确的资源类型给聚合图形项目."
 
-#: include/classes/server/CZabbixServer.php:376
-#: include/classes/server/CZabbixServer.php:418
-#: include/classes/server/CZabbixServer.php:425
+#: include/classes/server/CTreegixServer.php:376
+#: include/classes/server/CTreegixServer.php:418
+#: include/classes/server/CTreegixServer.php:425
 #, c-format
-msgid "Incorrect response received from Zabbix server \"%1$s\"."
-msgstr "收到了来自于zabbix服务器\"%1$s\"的错误应答."
+msgid "Incorrect response received from Treegix server \"%1$s\"."
+msgstr "收到了来自于treegix服务器\"%1$s\"的错误应答."
 
 #: include/classes/api/services/CScreenItem.php:739
 #, c-format
@@ -11948,8 +11948,8 @@ msgid "Number of items (enabled/disabled/not supported)"
 msgstr "监控项数量（已启用/已禁用/不支持）"
 
 #: include/classes/items/CHelpItems.php:987
-msgid "Number of items in Zabbix database."
-msgstr "Zabbix 数据库中的监控项数量"
+msgid "Number of items in Treegix database."
+msgstr "Treegix 数据库中的监控项数量"
 
 #: include/classes/items/CHelpItems.php:1007
 msgid "Number of items in proxy history that are not yet sent to the server"
@@ -11962,7 +11962,7 @@ msgstr "队列中延时秒数的项目的数量，包括."
 #: include/classes/items/CHelpItems.php:353
 #: include/classes/items/CHelpItems.php:663
 #: include/classes/items/CHelpItems.php:1027
-msgid "Number of items in the queue which are delayed in Zabbix server or proxy by \"from\" till \"to\" seconds, inclusive."
+msgid "Number of items in the queue which are delayed in Treegix server or proxy by \"from\" till \"to\" seconds, inclusive."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:983
@@ -12016,12 +12016,12 @@ msgid "Number of triggers (enabled/disabled [problem/ok])"
 msgstr "触发器数量（已启用/已禁用 [问题/正常]）"
 
 #: include/classes/items/CHelpItems.php:1039
-msgid "Number of triggers in Zabbix database."
-msgstr "Zabbix 数据库中的触发器数量"
+msgid "Number of triggers in Treegix database."
+msgstr "Treegix 数据库中的触发器数量"
 
 #: include/classes/items/CHelpItems.php:991
-msgid "Number of unsupported items in Zabbix database."
-msgstr "Zabbix 数据库中不支持的监控项数量。"
+msgid "Number of unsupported items in Treegix database."
+msgstr "Treegix 数据库中不支持的监控项数量。"
 
 #: include/classes/items/CHelpItems.php:967
 msgid "Number of unsupported items on the host."
@@ -12252,8 +12252,8 @@ msgid "Only Super Admins can update user groups."
 msgstr "只有超级用户才能更新用户组。"
 
 #: include/classes/api/services/CDRule.php:481
-msgid "Only Zabbix agent, SNMPv1, SNMPv2 and SNMPv3 checks can be made unique."
-msgstr "只有Zabbix代理, SNMPv1,SNMPv2 和 SNMPv3检查才是独特的."
+msgid "Only Treegix agent, SNMPv1, SNMPv2 and SNMPv3 checks can be made unique."
+msgstr "只有Treegix代理, SNMPv1,SNMPv2 和 SNMPv3检查才是独特的."
 
 #: include/classes/api/services/CMap.php:658
 #: include/classes/api/services/CMap.php:1108
@@ -13027,8 +13027,8 @@ msgid "Please create database manually, and set the configuration parameters for
 msgstr "请手动创建数据并且完成一些必要的设置。完成后按\"%1$s\"来结束。"
 
 #: include/classes/setup/CSetupWizard.php:293
-msgid "Please enter the host name or host IP address and port number of the Zabbix server, as well as the name of the installation (optional)."
-msgstr "请输入主机名或主机IP地址和zabbix服务器的端口号，以及安装的名称（可选）。"
+msgid "Please enter the host name or host IP address and port number of the Treegix server, as well as the name of the installation (optional)."
+msgstr "请输入主机名或主机IP地址和treegix服务器的端口号，以及安装的名称（可选）。"
 
 #: jsLoader.php:190
 msgid "Please select two elements"
@@ -13920,8 +13920,8 @@ msgid "Required performance (vps)"
 msgstr "要求的性能(vps)"
 
 #: include/classes/items/CHelpItems.php:1019
-msgid "Required performance of the Zabbix server, in new values per second expected."
-msgstr "Zabbix服务器所需求的性能,每秒钟处理的新值数."
+msgid "Required performance of the Treegix server, in new values per second expected."
+msgstr "Treegix服务器所需求的性能,每秒钟处理的新值数."
 
 #: include/blocks.inc.php:659
 msgid "Required server performance, new values per second"
@@ -14077,13 +14077,13 @@ msgid "Returns ICMP ping response time in seconds. Example: 0.02"
 msgstr "返回ICMP ping的响应时间单位秒.例如：0.02"
 
 #: include/classes/items/CHelpItems.php:975
-msgid "Returns a JSON array describing the host network interfaces configured in Zabbix. Can be used for LLD."
+msgid "Returns a JSON array describing the host network interfaces configured in Treegix. Can be used for LLD."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:349
 #: include/classes/items/CHelpItems.php:659
 #: include/classes/items/CHelpItems.php:1023
-msgid "Returns a JSON object containing Zabbix server or proxy internal metrics."
+msgid "Returns a JSON object containing Treegix server or proxy internal metrics."
 msgstr ""
 
 #: include/classes/items/CHelpItems.php:979
@@ -14095,8 +14095,8 @@ msgid "Returns current maintenance status of the host."
 msgstr "返回主机当前的维护状态."
 
 #: include/classes/items/CHelpItems.php:995
-msgid "Returns information associated with Zabbix Java gateway. Valid params are: ping, version."
-msgstr "返回与Zabbix Java应用网关相关联的信息。可用的参数有：ping,version."
+msgid "Returns information associated with Treegix Java gateway. Valid params are: ping, version."
+msgstr "返回与Treegix Java应用网关相关联的信息。可用的参数有：ping,version."
 
 #: include/classes/items/CHelpItems.php:679
 msgid "Returns percentage of lost ICMP ping packets."
@@ -15160,8 +15160,8 @@ msgid "Show value"
 msgstr "查看值"
 
 #: adm.gui.php:46 include/views/administration.general.gui.edit.php:61
-msgid "Show warning if Zabbix server is down"
-msgstr "当Zabbix服务器停机时显示警告"
+msgid "Show warning if Treegix server is down"
+msgstr "当Treegix服务器停机时显示警告"
 
 #: include/views/configuration.graph.edit.php:108
 msgid "Show working time"
@@ -15250,10 +15250,10 @@ msgstr "场所州/省"
 msgid "Size"
 msgstr "大小"
 
-#: include/classes/server/CZabbixServer.php:397
+#: include/classes/server/CTreegixServer.php:397
 #, c-format
-msgid "Size of the response received from Zabbix server \"%1$s\" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php."
-msgstr "Zabbix服务器\"%1$s\" 收到响应的大小字节超过允许的大小%2$s 。这个值通过在Zinclude / defines.inc.php文件中定义的ZBX_SOCKET_BYTES_LIMIT 变量来增加."
+msgid "Size of the response received from Treegix server \"%1$s\" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php."
+msgstr "Treegix服务器\"%1$s\" 收到响应的大小字节超过允许的大小%2$s 。这个值通过在Zinclude / defines.inc.php文件中定义的ZBX_SOCKET_BYTES_LIMIT 变量来增加."
 
 #: include/graphs.inc.php:471
 #, c-format
@@ -15432,8 +15432,8 @@ msgid "Starting TLS failed."
 msgstr "启动 TLS 失败。"
 
 #: include/classes/items/CHelpItems.php:939
-msgid "Startup time of Zabbix server, Unix timestamp."
-msgstr "Zabbix服务器的启动时间，Unix时间截."
+msgid "Startup time of Treegix server, Unix timestamp."
+msgstr "Treegix服务器的启动时间，Unix时间截."
 
 #: include/forms.inc.php:204 include/forms.inc.php:698
 #: include/views/configuration.maintenance.list.php:50
@@ -15695,8 +15695,8 @@ msgid "System default"
 msgstr "系统默认"
 
 #: include/func.inc.php:1920
-msgid "System error occurred. Please contact Zabbix administrator."
-msgstr "发生系统错误。请联系 Zabbix 管理员。"
+msgid "System error occurred. Please contact Treegix administrator."
+msgstr "发生系统错误。请联系 Treegix 管理员。"
 
 #: include/classes/core/CJsonRpc.php:215
 msgid "System error."
@@ -16087,13 +16087,13 @@ msgstr "该应用程序不再被发现，并在下一次发现规则处理时删
 #: include/classes/db/MysqlDbBackend.php:35
 #: include/classes/db/OracleDbBackend.php:36
 #: include/classes/db/PostgresqlDbBackend.php:44
-msgid "The frontend does not match Zabbix database."
-msgstr "前端不匹配Zabbix数据库."
+msgid "The frontend does not match Treegix database."
+msgstr "前端不匹配Treegix数据库."
 
 #: include/classes/db/DbBackend.php:48
 #, c-format
-msgid "The frontend does not match Zabbix database. Current database version (mandatory/optional): %d/%d. Required mandatory version: %d. Contact your system administrator."
-msgstr "前端不匹配 Zabbix 数据库。当前数据库版本(强制/可选)：%d/%d。需要的版本为: %d。联系你的系统管理员。"
+msgid "The frontend does not match Treegix database. Current database version (mandatory/optional): %d/%d. Required mandatory version: %d. Contact your system administrator."
+msgstr "前端不匹配 Treegix 数据库。当前数据库版本(强制/可选)：%d/%d。需要的版本为: %d。联系你的系统管理员。"
 
 #: include/html.inc.php:652
 #, c-format
@@ -16165,7 +16165,7 @@ msgid "This field is automatically populated by item \"%s\"."
 msgstr "这栏位是由项目\"%s\"自动填入的."
 
 #: app/controllers/CControllerPopupMediatypeTestEdit.php:80
-msgid "This is the test message from Zabbix"
+msgid "This is the test message from Treegix"
 msgstr ""
 
 #: include/func.inc.php:2673 srv_status.php:41
@@ -16261,8 +16261,8 @@ msgstr "时间(降序)"
 
 #: include/classes/items/CHelpItems.php:999
 #, fuzzy
-msgid "Time a particular Zabbix process or a group of processes (identified by <type> and <mode>) spent in <state> in percentage."
-msgstr "乘以一个特定的 Zabbix 进程或一组进程（由 <type> 和 <mode> 标识）花费在 <state> 中的百分比。"
+msgid "Time a particular Treegix process or a group of processes (identified by <type> and <mode>) spent in <state> in percentage."
+msgstr "乘以一个特定的 Treegix 进程或一组进程（由 <type> 和 <mode> 标识）花费在 <state> 中的百分比。"
 
 #: include/classes/items/CHelpItems.php:1003
 msgid "Time of proxy last access. Name - proxy name. Param - lastaccess. Unix timestamp."
@@ -17234,8 +17234,8 @@ msgid "Uptime"
 msgstr "在线时间"
 
 #: include/classes/items/CHelpItems.php:1043
-msgid "Uptime of Zabbix server process in seconds."
-msgstr "Zabbix服务器进程的在线时间单位秒."
+msgid "Uptime of Treegix server process in seconds."
+msgstr "Treegix服务器进程的在线时间单位秒."
 
 #: include/actions.inc.php:59
 msgid "Uptime/Downtime"
@@ -17913,8 +17913,8 @@ msgstr "冗余"
 
 #: include/classes/items/CHelpItems.php:73
 #: include/classes/items/CHelpItems.php:367
-msgid "Version of Zabbix agent. Returns string"
-msgstr "zabbix客户端（agent）的版本。返回字符串"
+msgid "Version of Treegix agent. Returns string"
+msgstr "treegix客户端（agent）的版本。返回字符串"
 
 #: include/classes/widgets/forms/CWidgetFormHostAvail.php:50
 #: include/classes/widgets/forms/CWidgetFormProblemsBySv.php:97
@@ -18459,30 +18459,30 @@ msgstr "您的数据库无法正常工作。请等待几分钟，然后尝试重
 
 #: index.php:28
 msgid "ZABBIX"
-msgstr "Zabbix"
+msgstr "Treegix"
 
 #: include/page_header.php:156
-msgid "Zabbix"
-msgstr "Zabbix"
+msgid "Treegix"
+msgstr "Treegix"
 
 #: include/users.inc.php:55
-msgid "Zabbix Admin"
+msgid "Treegix Admin"
 msgstr "管理员"
 
 #: app/views/layout.htmlpage.menu.php:58
-msgid "Zabbix Share"
-msgstr "zabbix 共享"
+msgid "Treegix Share"
+msgstr "treegix 共享"
 
 #: include/users.inc.php:56
-msgid "Zabbix Super Admin"
+msgid "Treegix Super Admin"
 msgstr "超级管理员"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Zabbix Technical Support"
-msgstr "Zabbix 技术支持"
+msgid "Treegix Technical Support"
+msgstr "Treegix 技术支持"
 
 #: include/users.inc.php:54
-msgid "Zabbix User"
+msgid "Treegix User"
 msgstr "用户"
 
 #: app/views/administration.script.edit.php:50
@@ -18494,88 +18494,88 @@ msgstr "用户"
 #: include/views/configuration.action.edit.php:1722
 #: include/views/configuration.action.edit.php:2192
 #: include/views/js/configuration.discovery.edit.js.php:219
-msgid "Zabbix agent"
-msgstr "Zabbix 客户端"
+msgid "Treegix agent"
+msgstr "Treegix 客户端"
 
 #: include/items.inc.php:87
-msgid "Zabbix agent (active)"
-msgstr "Zabbix客户端(主动式)"
+msgid "Treegix agent (active)"
+msgstr "Treegix客户端(主动式)"
 
 #: include/items.inc.php:95
-msgid "Zabbix aggregate"
-msgstr "Zabbix整合"
+msgid "Treegix aggregate"
+msgstr "Treegix整合"
 
 #: include/validate.inc.php:369
-msgid "Zabbix has received an incorrect request."
-msgstr "Zabbix已接收到一个错误的请求."
+msgid "Treegix has received an incorrect request."
+msgstr "Treegix已接收到一个错误的请求."
 
 #: include/items.inc.php:93
-msgid "Zabbix internal"
-msgstr "Zabbix内部"
+msgid "Treegix internal"
+msgstr "Treegix内部"
 
 #: include/perm.inc.php:48
-msgid "Zabbix internal authentication"
-msgstr "Zabbix内部认证"
+msgid "Treegix internal authentication"
+msgstr "Treegix内部认证"
 
 #: app/views/administration.authentication.edit.php:44
-msgid "Zabbix login form"
-msgstr "Zabbix 登录表单"
+msgid "Treegix login form"
+msgstr "Treegix 登录表单"
 
 #: app/views/administration.script.edit.php:52 include/actions.inc.php:930
 #: include/classes/setup/CSetupWizard.php:320
 #: include/views/configuration.action.edit.php:942
 #: include/views/configuration.action.edit.php:1724
 #: include/views/configuration.action.edit.php:2194
-msgid "Zabbix server"
-msgstr "zabbix服务器"
+msgid "Treegix server"
+msgstr "treegix服务器"
 
-#: include/classes/server/CZabbixServer.php:464
+#: include/classes/server/CTreegixServer.php:464
 #, c-format
 msgid ""
-"Zabbix server \"%s\" can not be reached. Possible reasons:\n"
-"1. Incorrect server IP/DNS in the \"zabbix.conf.php\";\n"
+"Treegix server \"%s\" can not be reached. Possible reasons:\n"
+"1. Incorrect server IP/DNS in the \"treegix.conf.php\";\n"
 "2. Incorrect network configuration.\n"
 msgstr ""
-"无法连到Zabbix服务器\"%s\"。可能的原因是：\n"
-"1. \"zabbix.conf.php\" 中 IP/DNS 设置错误；\n"
+"无法连到Treegix服务器\"%s\"。可能的原因是：\n"
+"1. \"treegix.conf.php\" 中 IP/DNS 设置错误；\n"
 "2. 错误的网络配置。\n"
 
 #: app/views/administration.script.edit.php:51 include/actions.inc.php:925
 #: include/views/configuration.action.edit.php:941
 #: include/views/configuration.action.edit.php:1723
 #: include/views/configuration.action.edit.php:2193
-msgid "Zabbix server (proxy)"
-msgstr "Zabbix server (代理)"
+msgid "Treegix server (proxy)"
+msgstr "Treegix server (代理)"
 
 #: include/classes/setup/CSetupWizard.php:45
 #: include/classes/setup/CSetupWizard.php:291
-msgid "Zabbix server details"
-msgstr "zabbix 服务器 详细信息"
+msgid "Treegix server details"
+msgstr "treegix 服务器 详细信息"
 
 #: jsrpc.php:82
-msgid "Zabbix server is not running: the information displayed may not be current."
-msgstr "Zabbix server is not running: the information displayed may not be current."
+msgid "Treegix server is not running: the information displayed may not be current."
+msgstr "Treegix server is not running: the information displayed may not be current."
 
 #: include/blocks.inc.php:617
-msgid "Zabbix server is running"
-msgstr "Zabbix服务器端运行中"
+msgid "Treegix server is running"
+msgstr "Treegix服务器端运行中"
 
 #: include/profiles.inc.php:256
 #, c-format
-msgid "Zabbix server is running check interval \"%1$s\"."
-msgstr "Zabbix主机正运行检查间隔\"%1$s\"."
+msgid "Treegix server is running check interval \"%1$s\"."
+msgstr "Treegix主机正运行检查间隔\"%1$s\"."
 
 #: include/classes/setup/CSetupWizard.php:322
-msgid "Zabbix server name"
-msgstr "Zabbix主机名称"
+msgid "Treegix server name"
+msgstr "Treegix主机名称"
 
 #: include/classes/setup/CSetupWizard.php:321
-msgid "Zabbix server port"
-msgstr "Zabbix主机端口"
+msgid "Treegix server port"
+msgstr "Treegix主机端口"
 
 #: include/items.inc.php:94
-msgid "Zabbix trapper"
-msgstr "Zabbix采集器"
+msgid "Treegix trapper"
+msgstr "Treegix采集器"
 
 #: include/classes/html/CFilter.php:251
 msgid "Zoom out"
@@ -19088,8 +19088,8 @@ msgid "fourth"
 msgstr "第四"
 
 #: app/controllers/CControllerPopupTriggerExpr.php:338
-msgid "fuzzytime() - Difference between item value (as timestamp) and Zabbix server timestamp is less than or equal to T seconds (1 - true, 0 - false)"
-msgstr "fuzzytime() - 监控项值的时间戳和 Zabbix 服务器时间戳之间的差异小于或等于 T 秒（1 - true，0 - false）"
+msgid "fuzzytime() - Difference between item value (as timestamp) and Treegix server timestamp is less than or equal to T seconds (1 - true, 0 - false)"
+msgstr "fuzzytime() - 监控项值的时间戳和 Treegix 服务器时间戳之间的差异小于或等于 T 秒（1 - true，0 - false）"
 
 #: include/views/configuration.item.edit.php:759
 #: include/views/configuration.item.edit.php:761

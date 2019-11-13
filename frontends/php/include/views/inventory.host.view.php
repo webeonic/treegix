@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -122,7 +122,7 @@ if ($data['host']['description'] !== '') {
 $overviewFormList->addRow(_('Monitoring'),
 	new CHorList([
 		new CLink(_('Web'),
-			'zabbix.php?action=web.view&hostid='.$data['host']['hostid'].url_param('groupid')
+			'treegix.php?action=web.view&hostid='.$data['host']['hostid'].url_param('groupid')
 		),
 		new CLink(_('Latest data'),
 			(new CUrl('latest.php'))
@@ -133,7 +133,7 @@ $overviewFormList->addRow(_('Monitoring'),
 				->setArgument('hostids[]', $data['host']['hostid'])
 		),
 		new CLink(_('Problems'),
-			(new CUrl('zabbix.php'))
+			(new CUrl('treegix.php'))
 				->setArgument('action', 'problem.view')
 				->setArgument('filter_hostids[]', $data['host']['hostid'])
 				->setArgument('filter_set', '1')

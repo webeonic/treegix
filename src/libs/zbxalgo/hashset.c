@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -419,7 +419,7 @@ void	zbx_hashset_iter_remove(zbx_hashset_iter_t *iter)
 {
 	if (ITER_START == iter->slot || ITER_FINISH == iter->slot || NULL == iter->entry)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "removing a hashset entry through a bad iterator");
+		treegix_log(LOG_LEVEL_CRIT, "removing a hashset entry through a bad iterator");
 		exit(EXIT_FAILURE);
 	}
 

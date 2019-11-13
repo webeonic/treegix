@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ $table = (new CTableInfo())->setNoDataMessage(_('No maps added.'));
 
 foreach ($data['maps'] as $map) {
 	$table->addRow([
-		new CLink($map['label'], (new CUrl('zabbix.php'))
+		new CLink($map['label'], (new CUrl('treegix.php'))
 			->setArgument('action', 'map.view')
 			->setArgument('sysmapid', $map['sysmapid'])
 		),

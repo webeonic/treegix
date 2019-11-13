@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -127,12 +127,12 @@ static char	*dc_strdup(const char *source)
  *           ,------------------+--------------------------------------,      *
  *           | type             | key                                  |      *
  *           +------------------+--------------------------------------+      *
- *           | Zabbix internal  | zabbix[host,,items]                  |      *
- *           | Zabbix internal  | zabbix[host,,items_unsupported]      |      *
- *           | Zabbix internal  | zabbix[host,discovery,interfaces]    |      *
- *           | Zabbix internal  | zabbix[host,,maintenance]            |      *
- *           | Zabbix internal  | zabbix[proxy,<proxyname>,lastaccess] |      *
- *           | Zabbix aggregate | *                                    |      *
+ *           | Treegix internal  | treegix[host,,items]                  |      *
+ *           | Treegix internal  | treegix[host,,items_unsupported]      |      *
+ *           | Treegix internal  | treegix[host,discovery,interfaces]    |      *
+ *           | Treegix internal  | treegix[host,,maintenance]            |      *
+ *           | Treegix internal  | treegix[proxy,<proxyname>,lastaccess] |      *
+ *           | Treegix aggregate | *                                    |      *
  *           | Calculated       | *                                    |      *
  *           '------------------+--------------------------------------'      *
  *                                                                            *
@@ -149,7 +149,7 @@ int	is_item_processed_by_server(unsigned char type, const char *key)
 			break;
 
 		case ITEM_TYPE_INTERNAL:
-			if (0 == strncmp(key, "zabbix[", 7))
+			if (0 == strncmp(key, "treegix[", 7))
 			{
 				AGENT_REQUEST	request;
 				char		*arg1, *arg2, *arg3;
@@ -858,7 +858,7 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 	zbx_uint64_t	rowid;
 	unsigned char	tag;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	*flags = 0;
 
@@ -873,7 +873,7 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 		/* load default config data */
 
 		if (0 != (program_type & ZBX_PROGRAM_TYPE_SERVER))
-			zabbix_log(LOG_LEVEL_ERR, "no records in table 'config'");
+			treegix_log(LOG_LEVEL_ERR, "no records in table 'config'");
 
 		config_table = DBget_table("config");
 
@@ -890,7 +890,7 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 
 	if (SUCCEED != is_time_suffix(row[0], &refresh_unsupported, ZBX_LENGTH_UNLIMITED))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "invalid unsupported item refresh interval, restoring default");
+		treegix_log(LOG_LEVEL_WARNING, "invalid unsupported item refresh interval, restoring default");
 
 		config_table = DBget_table("config");
 
@@ -932,7 +932,7 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 			SUCCEED != set_hk_opt(&config->config->hk.events_discovery, 1, SEC_PER_DAY, row[12]) ||
 			SUCCEED != set_hk_opt(&config->config->hk.events_autoreg, 1, SEC_PER_DAY, row[13])))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "trigger, internal, network discovery and auto-registration data"
+		treegix_log(LOG_LEVEL_WARNING, "trigger, internal, network discovery and auto-registration data"
 				" housekeeping will be disabled due to invalid settings");
 		config->config->hk.events_mode = ZBX_HK_OPTION_DISABLED;
 	}
@@ -940,7 +940,7 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 	if (ZBX_HK_OPTION_ENABLED == (config->config->hk.services_mode = atoi(row[14])) &&
 			SUCCEED != set_hk_opt(&config->config->hk.services, 1, SEC_PER_DAY, row[15]))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "IT services data housekeeping will be disabled due to invalid"
+		treegix_log(LOG_LEVEL_WARNING, "IT services data housekeeping will be disabled due to invalid"
 				" settings");
 		config->config->hk.services_mode = ZBX_HK_OPTION_DISABLED;
 	}
@@ -948,7 +948,7 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 	if (ZBX_HK_OPTION_ENABLED == (config->config->hk.audit_mode = atoi(row[16])) &&
 			SUCCEED != set_hk_opt(&config->config->hk.audit, 1, SEC_PER_DAY, row[17]))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "audit data housekeeping will be disabled due to invalid"
+		treegix_log(LOG_LEVEL_WARNING, "audit data housekeeping will be disabled due to invalid"
 				" settings");
 		config->config->hk.audit_mode = ZBX_HK_OPTION_DISABLED;
 	}
@@ -956,7 +956,7 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 	if (ZBX_HK_OPTION_ENABLED == (config->config->hk.sessions_mode = atoi(row[18])) &&
 			SUCCEED != set_hk_opt(&config->config->hk.sessions, 1, SEC_PER_DAY, row[19]))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "user sessions data housekeeping will be disabled due to invalid"
+		treegix_log(LOG_LEVEL_WARNING, "user sessions data housekeeping will be disabled due to invalid"
 				" settings");
 		config->config->hk.sessions_mode = ZBX_HK_OPTION_DISABLED;
 	}
@@ -965,7 +965,7 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 	if (ZBX_HK_OPTION_ENABLED == (config->config->hk.history_global = atoi(row[21])) &&
 			SUCCEED != set_hk_opt(&config->config->hk.history, 0, ZBX_HK_HISTORY_MIN, row[22]))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "history data housekeeping will be disabled and all items will"
+		treegix_log(LOG_LEVEL_WARNING, "history data housekeeping will be disabled and all items will"
 				" store their history due to invalid global override settings");
 		config->config->hk.history_mode = ZBX_HK_MODE_DISABLED;
 		config->config->hk.history = 1;	/* just enough to make 0 == items[i].history condition fail */
@@ -984,7 +984,7 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 	if (ZBX_HK_OPTION_ENABLED == (config->config->hk.trends_global = atoi(row[24])) &&
 			SUCCEED != set_hk_opt(&config->config->hk.trends, 0, ZBX_HK_TRENDS_MIN, row[25]))
 	{
-		zabbix_log(LOG_LEVEL_WARNING, "trends data housekeeping will be disabled and all numeric items"
+		treegix_log(LOG_LEVEL_WARNING, "trends data housekeeping will be disabled and all numeric items"
 				" will store their history due to invalid global override settings");
 		config->config->hk.trends_mode = ZBX_HK_MODE_DISABLED;
 		config->config->hk.trends = 1;	/* just enough to make 0 == items[i].trends condition fail */
@@ -1000,9 +1000,9 @@ static int	DCsync_config(zbx_dbsync_t *sync, int *flags)
 #endif
 
 	if (SUCCEED == ret && SUCCEED == zbx_dbsync_next(sync, &rowid, &db_row, &tag))	/* table must have */
-		zabbix_log(LOG_LEVEL_ERR, "table 'config' has multiple records");	/* only one record */
+		treegix_log(LOG_LEVEL_ERR, "table 'config' has multiple records");	/* only one record */
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return SUCCEED;
 }
@@ -1015,7 +1015,7 @@ static void	DCsync_autoreg_config(zbx_dbsync_t *sync)
 	zbx_uint64_t	rowid;
 	unsigned char	tag;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &db_row, &tag)))
 	{
@@ -1036,7 +1036,7 @@ static void	DCsync_autoreg_config(zbx_dbsync_t *sync)
 		}
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCsync_hosts(zbx_dbsync_t *sync)
@@ -1062,7 +1062,7 @@ static void	DCsync_hosts(zbx_dbsync_t *sync)
 	zbx_ptr_pair_t	*psk_owner, psk_owner_local;
 	zbx_hashset_t	psk_owners;
 #endif
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	zbx_hashset_create(&psk_owners, 0, ZBX_DEFAULT_PTR_HASH_FUNC, ZBX_DEFAULT_PTR_COMPARE_FUNC);
@@ -1257,7 +1257,7 @@ static void	DCsync_hosts(zbx_dbsync_t *sync)
 					}
 					else
 					{
-						zabbix_log(LOG_LEVEL_WARNING, "conflicting PSK values for PSK identity"
+						treegix_log(LOG_LEVEL_WARNING, "conflicting PSK values for PSK identity"
 								" \"%s\" on hosts \"%s\" and \"%s\" (and maybe others)",
 								(char *)psk_owner->first, (char *)psk_owner->second,
 								host->host);
@@ -1298,7 +1298,7 @@ static void	DCsync_hosts(zbx_dbsync_t *sync)
 				}
 				else
 				{
-					zabbix_log(LOG_LEVEL_WARNING, "conflicting PSK values for PSK identity"
+					treegix_log(LOG_LEVEL_WARNING, "conflicting PSK values for PSK identity"
 							" \"%s\" on hosts \"%s\" and \"%s\" (and maybe others)",
 							(char *)psk_owner->first, (char *)psk_owner->second,
 							host->host);
@@ -1568,7 +1568,7 @@ done:
 	zbx_hashset_destroy(&psk_owners);
 #endif
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCsync_host_inventory(zbx_dbsync_t *sync)
@@ -1579,7 +1579,7 @@ static void	DCsync_host_inventory(zbx_dbsync_t *sync)
 	char			**row;
 	unsigned char		tag;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -1646,7 +1646,7 @@ static void	DCsync_host_inventory(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->host_inventories_auto, host_inventory_auto);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCsync_htmpls(zbx_dbsync_t *sync)
@@ -1661,7 +1661,7 @@ static void	DCsync_htmpls(zbx_dbsync_t *sync)
 	zbx_uint64_t		_hostid = 0, hostid, templateid;
 	zbx_vector_ptr_t	sort;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&sort);
 
@@ -1736,7 +1736,7 @@ static void	DCsync_htmpls(zbx_dbsync_t *sync)
 
 	zbx_vector_ptr_destroy(&sort);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCsync_gmacros(zbx_dbsync_t *sync)
@@ -1751,7 +1751,7 @@ static void	DCsync_gmacros(zbx_dbsync_t *sync)
 	zbx_uint64_t	globalmacroid;
 	char		*macro = NULL, *context = NULL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -1763,7 +1763,7 @@ static void	DCsync_gmacros(zbx_dbsync_t *sync)
 
 		if (SUCCEED != zbx_user_macro_parse_dyn(row[1], &macro, &context, NULL))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot parse user macro \"%s\"", row[1]);
+			treegix_log(LOG_LEVEL_WARNING, "cannot parse user macro \"%s\"", row[1]);
 			continue;
 		}
 
@@ -1825,7 +1825,7 @@ static void	DCsync_gmacros(zbx_dbsync_t *sync)
 	zbx_free(context);
 	zbx_free(macro);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCsync_hmacros(zbx_dbsync_t *sync)
@@ -1840,7 +1840,7 @@ static void	DCsync_hmacros(zbx_dbsync_t *sync)
 	zbx_uint64_t	hostmacroid, hostid;
 	char		*macro = NULL, *context = NULL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -1853,7 +1853,7 @@ static void	DCsync_hmacros(zbx_dbsync_t *sync)
 
 		if (SUCCEED != zbx_user_macro_parse_dyn(row[2], &macro, &context, NULL))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot parse host \"%s\" macro \"%s\"", row[1], row[2]);
+			treegix_log(LOG_LEVEL_WARNING, "cannot parse host \"%s\" macro \"%s\"", row[1], row[2]);
 			continue;
 		}
 
@@ -1917,7 +1917,7 @@ static void	DCsync_hmacros(zbx_dbsync_t *sync)
 	zbx_free(context);
 	zbx_free(macro);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2017,7 +2017,7 @@ static void	DCsync_interfaces(zbx_dbsync_t *sync)
 	unsigned char		bulk, reset_snmp_stats;
 	zbx_vector_ptr_t	interfaces;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&interfaces);
 
@@ -2219,7 +2219,7 @@ static void	DCsync_interfaces(zbx_dbsync_t *sync)
 
 	zbx_vector_ptr_destroy(&interfaces);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -2356,7 +2356,7 @@ static void	DCsync_items(zbx_dbsync_t *sync, int flags)
 
 	zbx_vector_ptr_create(&dep_items);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	now = time(NULL);
 
@@ -3096,7 +3096,7 @@ static void	DCsync_items(zbx_dbsync_t *sync, int flags)
 		zbx_hashset_remove_direct(&config->items, item);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCsync_template_items(zbx_dbsync_t *sync)
@@ -3107,7 +3107,7 @@ static void	DCsync_template_items(zbx_dbsync_t *sync)
 	int			ret, found;
 	ZBX_DC_TEMPLATE_ITEM 	*item;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -3132,7 +3132,7 @@ static void	DCsync_template_items(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->template_items, item);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCsync_prototype_items(zbx_dbsync_t *sync)
@@ -3143,7 +3143,7 @@ static void	DCsync_prototype_items(zbx_dbsync_t *sync)
 	int			ret, found;
 	ZBX_DC_PROTOTYPE_ITEM 	*item;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -3168,7 +3168,7 @@ static void	DCsync_prototype_items(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->prototype_items, item);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCsync_triggers(zbx_dbsync_t *sync)
@@ -3182,7 +3182,7 @@ static void	DCsync_triggers(zbx_dbsync_t *sync)
 	int		found, ret;
 	zbx_uint64_t	triggerid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -3274,7 +3274,7 @@ static void	DCsync_triggers(zbx_dbsync_t *sync)
 		zbx_vector_uint64_destroy(&functionids);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCconfig_sort_triggers_topologically(void);
@@ -3340,7 +3340,7 @@ static void	DCsync_trigdeps(zbx_dbsync_t *sync)
 	zbx_uint64_t		triggerid_down, triggerid_up;
 	ZBX_DC_TRIGGER		*trigger_up, *trigger_down;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -3405,7 +3405,7 @@ static void	DCsync_trigdeps(zbx_dbsync_t *sync)
 		}
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	DCsync_functions(zbx_dbsync_t *sync)
@@ -3420,7 +3420,7 @@ static void	DCsync_functions(zbx_dbsync_t *sync)
 	int		found, ret;
 	zbx_uint64_t	itemid, functionid, triggerid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -3495,7 +3495,7 @@ static void	DCsync_functions(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->functions, function);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -3546,7 +3546,7 @@ static void	DCsync_expressions(zbx_dbsync_t *sync)
 	zbx_uint64_t		expressionid;
 	int			found, ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -3616,7 +3616,7 @@ static void	DCsync_expressions(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->expressions, expression);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -3643,7 +3643,7 @@ static void	DCsync_actions(zbx_dbsync_t *sync)
 	zbx_dc_action_t	*action;
 	int		found, ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -3682,7 +3682,7 @@ static void	DCsync_actions(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->actions, action);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -3706,7 +3706,7 @@ static void	DCsync_action_ops(zbx_dbsync_t *sync)
 	zbx_uint64_t	actionid;
 	zbx_dc_action_t	*action;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == zbx_dbsync_next(sync, &rowid, &row, &tag))
 	{
@@ -3718,7 +3718,7 @@ static void	DCsync_action_ops(zbx_dbsync_t *sync)
 		action->opflags = atoi(row[1]);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -3767,7 +3767,7 @@ static void	DCsync_action_conditions(zbx_dbsync_t *sync)
 	int				found, i, index, ret;
 	zbx_vector_ptr_t		actions;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&actions);
 
@@ -3842,7 +3842,7 @@ static void	DCsync_action_conditions(zbx_dbsync_t *sync)
 
 	zbx_vector_ptr_destroy(&actions);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -3869,7 +3869,7 @@ static void	DCsync_correlations(zbx_dbsync_t *sync)
 	zbx_dc_correlation_t	*correlation;
 	int			found, ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -3912,7 +3912,7 @@ static void	DCsync_correlations(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->correlations, correlation);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4083,7 +4083,7 @@ static void	DCsync_corr_conditions(zbx_dbsync_t *sync)
 	size_t			condition_size;
 	zbx_vector_ptr_t	correlations;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&correlations);
 
@@ -4154,7 +4154,7 @@ static void	DCsync_corr_conditions(zbx_dbsync_t *sync)
 
 	zbx_vector_ptr_destroy(&correlations);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4183,7 +4183,7 @@ static void	DCsync_corr_operations(zbx_dbsync_t *sync)
 	int			found, ret, index;
 	unsigned char		type;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -4230,7 +4230,7 @@ static void	DCsync_corr_operations(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->corr_operations, operation);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static int	dc_compare_hgroups(const void *d1, const void *d2)
@@ -4263,7 +4263,7 @@ static void	DCsync_hostgroups(zbx_dbsync_t *sync)
 	zbx_dc_hostgroup_t	*group;
 	int			found, ret, index;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -4306,7 +4306,7 @@ static void	DCsync_hostgroups(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->hostgroups, group);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4334,7 +4334,7 @@ static void	DCsync_trigger_tags(zbx_dbsync_t *sync)
 	ZBX_DC_TRIGGER		*trigger;
 	zbx_dc_trigger_tag_t	*trigger_tag;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -4390,7 +4390,7 @@ static void	DCsync_trigger_tags(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->trigger_tags, trigger_tag);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4420,7 +4420,7 @@ static void	DCsync_host_tags(zbx_dbsync_t *sync)
 	int		found, index, ret;
 	zbx_uint64_t	hosttagid, hostid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -4488,7 +4488,7 @@ static void	DCsync_host_tags(zbx_dbsync_t *sync)
 		zbx_hashset_remove_direct(&config->host_tags, host_tag);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4536,7 +4536,7 @@ static void	DCsync_item_preproc(zbx_dbsync_t *sync, int timestamp)
 	zbx_dc_preproc_op_t	*op;
 	zbx_vector_ptr_t	items;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_vector_ptr_create(&items);
 
@@ -4627,7 +4627,7 @@ static void	DCsync_item_preproc(zbx_dbsync_t *sync, int timestamp)
 
 	zbx_vector_ptr_destroy(&items);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4654,7 +4654,7 @@ static void	DCsync_hostgroup_hosts(zbx_dbsync_t *sync)
 	int			ret;
 	zbx_uint64_t		last_groupid = 0, groupid, hostid;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
@@ -4691,7 +4691,7 @@ static void	DCsync_hostgroup_hosts(zbx_dbsync_t *sync)
 		zbx_hashset_remove(&group->hostids, &hostid);
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -4917,7 +4917,7 @@ void	DCsync_configuration(unsigned char mode)
 	zbx_dbsync_t	autoreg_config_sync;
 	zbx_uint64_t	update_flags = 0;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	zbx_dbsync_init_env(config);
 
@@ -5288,239 +5288,239 @@ void	DCsync_configuration(unsigned char mode)
 				correlation_sec2 + corr_condition_sec2 + corr_operation_sec2 + hgroups_sec2 +
 				itempp_sec2 + maintenance_sec2 + update_sec;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() config     : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() config     : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, csec, csec2, config_sync.add_num, config_sync.update_num,
 				config_sync.remove_num);
 
 		total += autoreg_csec;
 		total2 += autoreg_csec2;
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() autoreg    : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() autoreg    : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, autoreg_csec, autoreg_csec2, autoreg_config_sync.add_num,
 				autoreg_config_sync.update_num, autoreg_config_sync.remove_num);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() hosts      : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() hosts      : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, hsec, hsec2, hosts_sync.add_num, hosts_sync.update_num,
 				hosts_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() host_invent: sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() host_invent: sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, hisec, hisec2, hi_sync.add_num, hi_sync.update_num,
 				hi_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() templates  : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() templates  : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, htsec, htsec2, htmpl_sync.add_num, htmpl_sync.update_num,
 				htmpl_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() globmacros : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() globmacros : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, gmsec, gmsec2, gmacro_sync.add_num, gmacro_sync.update_num,
 				gmacro_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() hostmacros : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() hostmacros : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, hmsec, hmsec2, hmacro_sync.add_num, hmacro_sync.update_num,
 				hmacro_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() interfaces : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() interfaces : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, ifsec, ifsec2, if_sync.add_num, if_sync.update_num,
 				if_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() items      : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() items      : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, isec, isec2, items_sync.add_num, items_sync.update_num,
 				items_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() template_items      : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() template_items      : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, isec, isec2, template_items_sync.add_num,
 				template_items_sync.update_num, template_items_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() prototype_items      : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() prototype_items      : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, isec, isec2, prototype_items_sync.add_num,
 				prototype_items_sync.update_num, prototype_items_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() triggers   : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() triggers   : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, tsec, tsec2, triggers_sync.add_num, triggers_sync.update_num,
 				triggers_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() trigdeps   : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() trigdeps   : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, dsec, dsec2, tdep_sync.add_num, tdep_sync.update_num,
 				tdep_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() trig. tags : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() trig. tags : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, trigger_tag_sec, trigger_tag_sec2, trigger_tag_sync.add_num,
 				trigger_tag_sync.update_num, trigger_tag_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() host tags : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() host tags : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, host_tag_sec, host_tag_sec2, host_tag_sync.add_num,
 				host_tag_sync.update_num, host_tag_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() functions  : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() functions  : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, fsec, fsec2, func_sync.add_num, func_sync.update_num,
 				func_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() expressions: sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() expressions: sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, expr_sec, expr_sec2, expr_sync.add_num, expr_sync.update_num,
 				expr_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() actions    : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() actions    : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, action_sec, action_sec2, action_sync.add_num, action_sync.update_num,
 				action_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() operations : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() operations : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, action_op_sec, action_op_sec2, action_op_sync.add_num,
 				action_op_sync.update_num, action_op_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() conditions : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() conditions : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, action_condition_sec, action_condition_sec2,
 				action_condition_sync.add_num, action_condition_sync.update_num,
 				action_condition_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() corr       : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() corr       : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, correlation_sec, correlation_sec2, correlation_sync.add_num,
 				correlation_sync.update_num, correlation_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() corr_cond  : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() corr_cond  : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, corr_condition_sec, corr_condition_sec2, corr_condition_sync.add_num,
 				corr_condition_sync.update_num, corr_condition_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() corr_op    : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() corr_op    : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, corr_operation_sec, corr_operation_sec2, corr_operation_sync.add_num,
 				corr_operation_sync.update_num, corr_operation_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() hgroups    : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() hgroups    : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, hgroups_sec, hgroups_sec2, hgroups_sync.add_num,
 				hgroups_sync.update_num, hgroups_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() item pproc : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() item pproc : sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, itempp_sec, itempp_sec2, itempp_sync.add_num, itempp_sync.update_num,
 				itempp_sync.remove_num);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() maintenance: sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
+		treegix_log(LOG_LEVEL_DEBUG, "%s() maintenance: sql:" ZBX_FS_DBL " sync:" ZBX_FS_DBL " sec ("
 				ZBX_FS_UI64 "/" ZBX_FS_UI64 "/" ZBX_FS_UI64 ").",
 				__func__, maintenance_sec, maintenance_sec2, maintenance_sync.add_num,
 				maintenance_sync.update_num, maintenance_sync.remove_num);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() reindex    : " ZBX_FS_DBL " sec.", __func__, update_sec);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() reindex    : " ZBX_FS_DBL " sec.", __func__, update_sec);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() total sql  : " ZBX_FS_DBL " sec.", __func__, total);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() total sync : " ZBX_FS_DBL " sec.", __func__, total2);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() total sql  : " ZBX_FS_DBL " sec.", __func__, total);
+		treegix_log(LOG_LEVEL_DEBUG, "%s() total sync : " ZBX_FS_DBL " sec.", __func__, total2);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() proxies    : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() proxies    : %d (%d slots)", __func__,
 				config->proxies.num_data, config->proxies.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() hosts      : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() hosts      : %d (%d slots)", __func__,
 				config->hosts.num_data, config->hosts.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() hosts_h    : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() hosts_h    : %d (%d slots)", __func__,
 				config->hosts_h.num_data, config->hosts_h.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() hosts_p    : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() hosts_p    : %d (%d slots)", __func__,
 				config->hosts_p.num_data, config->hosts_p.num_slots);
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() psks       : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() psks       : %d (%d slots)", __func__,
 				config->psks.num_data, config->psks.num_slots);
 #endif
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() ipmihosts  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() ipmihosts  : %d (%d slots)", __func__,
 				config->ipmihosts.num_data, config->ipmihosts.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() host_invent: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() host_invent: %d (%d slots)", __func__,
 				config->host_inventories.num_data, config->host_inventories.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() htmpls     : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() htmpls     : %d (%d slots)", __func__,
 				config->htmpls.num_data, config->htmpls.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() gmacros    : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() gmacros    : %d (%d slots)", __func__,
 				config->gmacros.num_data, config->gmacros.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() gmacros_m  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() gmacros_m  : %d (%d slots)", __func__,
 				config->gmacros_m.num_data, config->gmacros_m.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() hmacros    : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() hmacros    : %d (%d slots)", __func__,
 				config->hmacros.num_data, config->hmacros.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() hmacros_hm : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() hmacros_hm : %d (%d slots)", __func__,
 				config->hmacros_hm.num_data, config->hmacros_hm.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() interfaces : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() interfaces : %d (%d slots)", __func__,
 				config->interfaces.num_data, config->interfaces.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() interfac_ht: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() interfac_ht: %d (%d slots)", __func__,
 				config->interfaces_ht.num_data, config->interfaces_ht.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() if_snmpitms: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() if_snmpitms: %d (%d slots)", __func__,
 				config->interface_snmpitems.num_data, config->interface_snmpitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() if_snmpaddr: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() if_snmpaddr: %d (%d slots)", __func__,
 				config->interface_snmpaddrs.num_data, config->interface_snmpaddrs.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() items      : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() items      : %d (%d slots)", __func__,
 				config->items.num_data, config->items.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() items_hk   : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() items_hk   : %d (%d slots)", __func__,
 				config->items_hk.num_data, config->items_hk.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() numitems   : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() numitems   : %d (%d slots)", __func__,
 				config->numitems.num_data, config->numitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() preprocitems: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() preprocitems: %d (%d slots)", __func__,
 				config->preprocitems.num_data, config->preprocitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() preprocops : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() preprocops : %d (%d slots)", __func__,
 				config->preprocops.num_data, config->preprocops.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() snmpitems  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() snmpitems  : %d (%d slots)", __func__,
 				config->snmpitems.num_data, config->snmpitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() ipmiitems  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() ipmiitems  : %d (%d slots)", __func__,
 				config->ipmiitems.num_data, config->ipmiitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() trapitems  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() trapitems  : %d (%d slots)", __func__,
 				config->trapitems.num_data, config->trapitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() dependentitems  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() dependentitems  : %d (%d slots)", __func__,
 				config->dependentitems.num_data, config->dependentitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() logitems   : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() logitems   : %d (%d slots)", __func__,
 				config->logitems.num_data, config->logitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() dbitems    : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() dbitems    : %d (%d slots)", __func__,
 				config->dbitems.num_data, config->dbitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() sshitems   : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() sshitems   : %d (%d slots)", __func__,
 				config->sshitems.num_data, config->sshitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() telnetitems: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() telnetitems: %d (%d slots)", __func__,
 				config->telnetitems.num_data, config->telnetitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() simpleitems: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() simpleitems: %d (%d slots)", __func__,
 				config->simpleitems.num_data, config->simpleitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() jmxitems   : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() jmxitems   : %d (%d slots)", __func__,
 				config->jmxitems.num_data, config->jmxitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() calcitems  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() calcitems  : %d (%d slots)", __func__,
 				config->calcitems.num_data, config->calcitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() httpitems  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() httpitems  : %d (%d slots)", __func__,
 				config->httpitems.num_data, config->httpitems.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() functions  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() functions  : %d (%d slots)", __func__,
 				config->functions.num_data, config->functions.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() triggers   : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() triggers   : %d (%d slots)", __func__,
 				config->triggers.num_data, config->triggers.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() trigdeps   : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() trigdeps   : %d (%d slots)", __func__,
 				config->trigdeps.num_data, config->trigdeps.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() trig. tags : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() trig. tags : %d (%d slots)", __func__,
 				config->trigger_tags.num_data, config->trigger_tags.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() expressions: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() expressions: %d (%d slots)", __func__,
 				config->expressions.num_data, config->expressions.num_slots);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() actions    : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() actions    : %d (%d slots)", __func__,
 				config->actions.num_data, config->actions.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() conditions : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() conditions : %d (%d slots)", __func__,
 				config->action_conditions.num_data, config->action_conditions.num_slots);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() corr.      : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() corr.      : %d (%d slots)", __func__,
 				config->correlations.num_data, config->correlations.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() corr. conds: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() corr. conds: %d (%d slots)", __func__,
 				config->corr_conditions.num_data, config->corr_conditions.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() corr. ops  : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() corr. ops  : %d (%d slots)", __func__,
 				config->corr_operations.num_data, config->corr_operations.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() hgroups    : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() hgroups    : %d (%d slots)", __func__,
 				config->hostgroups.num_data, config->hostgroups.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() item procs : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() item procs : %d (%d slots)", __func__,
 				config->preprocops.num_data, config->preprocops.num_slots);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() maintenance: %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() maintenance: %d (%d slots)", __func__,
 				config->maintenances.num_data, config->maintenances.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() maint tags : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() maint tags : %d (%d slots)", __func__,
 				config->maintenance_tags.num_data, config->maintenance_tags.num_slots);
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() maint time : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() maint time : %d (%d slots)", __func__,
 				config->maintenance_periods.num_data, config->maintenance_periods.num_slots);
 
 		for (i = 0; ZBX_POLLER_TYPE_COUNT > i; i++)
 		{
-			zabbix_log(LOG_LEVEL_DEBUG, "%s() queue[%d]   : %d (%d allocated)", __func__,
+			treegix_log(LOG_LEVEL_DEBUG, "%s() queue[%d]   : %d (%d allocated)", __func__,
 					i, config->queues[i].elems_num, config->queues[i].elems_alloc);
 		}
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() pqueue     : %d (%d allocated)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() pqueue     : %d (%d allocated)", __func__,
 				config->pqueue.elems_num, config->pqueue.elems_alloc);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() timer queue: %d (%d allocated)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() timer queue: %d (%d allocated)", __func__,
 				config->timer_queue.elems_num, config->timer_queue.elems_alloc);
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() configfree : " ZBX_FS_DBL "%%", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() configfree : " ZBX_FS_DBL "%%", __func__,
 				100 * ((double)config_mem->free_size / config_mem->orig_size));
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s() strings    : %d (%d slots)", __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() strings    : %d (%d slots)", __func__,
 				config->strpool.num_data, config->strpool.num_slots);
 
 		zbx_mem_dump_stats(LOG_LEVEL_DEBUG, config_mem);
@@ -5568,7 +5568,7 @@ out:
 	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 		DCdump_configuration();
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -5897,7 +5897,7 @@ int	init_configuration_cache(char **error)
 {
 	int	i, ret;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() size:" ZBX_FS_UI64, __func__, CONFIG_CONF_CACHE_SIZE);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() size:" ZBX_FS_UI64, __func__, CONFIG_CONF_CACHE_SIZE);
 
 	if (SUCCEED != (ret = zbx_rwlock_create(&config_lock, ZBX_RWLOCK_CONFIG, error)))
 		goto out;
@@ -6067,7 +6067,7 @@ int	init_configuration_cache(char **error)
 #undef CREATE_HASHSET
 #undef CREATE_HASHSET_EXT
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -6083,7 +6083,7 @@ out:
  ******************************************************************************/
 void	free_configuration_cache(void)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	WRLOCK_CACHE;
 
@@ -6093,7 +6093,7 @@ void	free_configuration_cache(void)
 
 	zbx_rwlock_destroy(&config_lock);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -6426,7 +6426,7 @@ size_t	DCget_psk_by_identity(const unsigned char *psk_identity, unsigned char *p
 		return psk_len;
 	}
 
-	zabbix_log(LOG_LEVEL_WARNING, "host PSK and autoregistration PSK have the same identity \"%s\" but"
+	treegix_log(LOG_LEVEL_WARNING, "host PSK and autoregistration PSK have the same identity \"%s\" but"
 			" different PSK values, autoregistration will not be allowed", psk_identity);
 	return psk_len;
 }
@@ -7052,7 +7052,7 @@ void	DCconfig_get_preprocessable_items(zbx_hashset_t *items, int *timestamp)
 	zbx_preproc_op_t		*op;
 	int				i;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	/* no changes */
 	if (0 != *timestamp && *timestamp == config->item_sync_ts)
@@ -7123,7 +7123,7 @@ void	DCconfig_get_preprocessable_items(zbx_hashset_t *items, int *timestamp)
 
 	UNLOCK_CACHE;
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() items:%d", __func__, items->num_data);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() items:%d", __func__, items->num_data);
 }
 
 void	DCconfig_get_hosts_by_itemids(DC_HOST *hosts, const zbx_uint64_t *itemids, int *errcodes, size_t num)
@@ -7855,7 +7855,7 @@ int	DCconfig_get_poller_nextcheck(unsigned char poller_type)
 	int			nextcheck;
 	zbx_binary_heap_t	*queue;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() poller_type:%d", __func__, (int)poller_type);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() poller_type:%d", __func__, (int)poller_type);
 
 	queue = &config->queues[poller_type];
 
@@ -7865,7 +7865,7 @@ int	DCconfig_get_poller_nextcheck(unsigned char poller_type)
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, nextcheck);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, nextcheck);
 
 	return nextcheck;
 }
@@ -7942,7 +7942,7 @@ int	DCconfig_get_poller_items(unsigned char poller_type, DC_ITEM *items)
 	int			now, num = 0, max_items;
 	zbx_binary_heap_t	*queue;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() poller_type:%d", __func__, (int)poller_type);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() poller_type:%d", __func__, (int)poller_type);
 
 	now = time(NULL);
 
@@ -8058,7 +8058,7 @@ int	DCconfig_get_poller_items(unsigned char poller_type, DC_ITEM *items)
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, num);
 
 	return num;
 }
@@ -8086,7 +8086,7 @@ int	DCconfig_get_ipmi_poller_items(int now, DC_ITEM *items, int items_num, int *
 	int			num = 0;
 	zbx_binary_heap_t	*queue;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	queue = &config->queues[ZBX_POLLER_TYPE_IPMI];
 
@@ -8146,7 +8146,7 @@ int	DCconfig_get_ipmi_poller_items(int now, DC_ITEM *items, int items_num, int *
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, num);
 
 	return num;
 }
@@ -8169,7 +8169,7 @@ int	DCconfig_get_snmp_interfaceids_by_addr(const char *addr, zbx_uint64_t **inte
 	const ZBX_DC_INTERFACE_ADDR	*dc_interface_snmpaddr;
 	ZBX_DC_INTERFACE_ADDR		dc_interface_snmpaddr_local;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() addr:'%s'", __func__, addr);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() addr:'%s'", __func__, addr);
 
 	dc_interface_snmpaddr_local.addr = addr;
 
@@ -8187,7 +8187,7 @@ int	DCconfig_get_snmp_interfaceids_by_addr(const char *addr, zbx_uint64_t **inte
 unlock:
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, count);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, count);
 
 	return count;
 }
@@ -8212,7 +8212,7 @@ size_t	DCconfig_get_snmp_items_by_interfaceid(zbx_uint64_t interfaceid, DC_ITEM 
 	const ZBX_DC_INTERFACE		*dc_interface;
 	const ZBX_DC_HOST		*dc_host;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() interfaceid:" ZBX_FS_UI64, __func__, interfaceid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() interfaceid:" ZBX_FS_UI64, __func__, interfaceid);
 
 	RDLOCK_CACHE;
 
@@ -8257,7 +8257,7 @@ size_t	DCconfig_get_snmp_items_by_interfaceid(zbx_uint64_t interfaceid, DC_ITEM 
 unlock:
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)items_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)items_num);
 
 	return items_num;
 }
@@ -8931,7 +8931,7 @@ static int	DCconfig_check_trigger_dependencies_rec(const ZBX_DC_TRIGGER_DEPLIST 
 
 	if (ZBX_TRIGGER_DEPENDENCY_LEVELS_MAX < level)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "recursive trigger dependency is too deep (triggerid:" ZBX_FS_UI64 ")",
+		treegix_log(LOG_LEVEL_CRIT, "recursive trigger dependency is too deep (triggerid:" ZBX_FS_UI64 ")",
 				trigdep->triggerid);
 		return SUCCEED;
 	}
@@ -9008,14 +9008,14 @@ static unsigned char	DCconfig_sort_triggers_topologically_rec(const ZBX_DC_TRIGG
 
 	if (32 < level)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "recursive trigger dependency is too deep (triggerid:" ZBX_FS_UI64 ")",
+		treegix_log(LOG_LEVEL_CRIT, "recursive trigger dependency is too deep (triggerid:" ZBX_FS_UI64 ")",
 				trigdep->triggerid);
 		goto exit;
 	}
 
 	if (0 == trigdep->trigger->topoindex)
 	{
-		zabbix_log(LOG_LEVEL_CRIT, "trigger dependencies contain a cycle (triggerid:" ZBX_FS_UI64 ")",
+		treegix_log(LOG_LEVEL_CRIT, "trigger dependencies contain a cycle (triggerid:" ZBX_FS_UI64 ")",
 				trigdep->triggerid);
 		goto exit;
 	}
@@ -9249,7 +9249,7 @@ int	DCconfig_get_proxypoller_hosts(DC_PROXY *proxies, int max_hosts)
 	int			now, num = 0;
 	zbx_binary_heap_t	*queue;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	now = time(NULL);
 
@@ -9277,7 +9277,7 @@ int	DCconfig_get_proxypoller_hosts(DC_PROXY *proxies, int max_hosts)
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, num);
 
 	return num;
 }
@@ -9298,7 +9298,7 @@ int	DCconfig_get_proxypoller_nextcheck(void)
 	int			nextcheck;
 	zbx_binary_heap_t	*queue;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	queue = &config->pqueue;
 
@@ -9319,7 +9319,7 @@ int	DCconfig_get_proxypoller_nextcheck(void)
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, nextcheck);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, nextcheck);
 
 	return nextcheck;
 }
@@ -9330,7 +9330,7 @@ void	DCrequeue_proxy(zbx_uint64_t hostid, unsigned char update_nextcheck, int pr
 	ZBX_DC_HOST	*dc_host;
 	ZBX_DC_PROXY	*dc_proxy;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() update_nextcheck:%d", __func__, (int)update_nextcheck);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() update_nextcheck:%d", __func__, (int)update_nextcheck);
 
 	now = time(NULL);
 
@@ -9373,7 +9373,7 @@ void	DCrequeue_proxy(zbx_uint64_t hostid, unsigned char update_nextcheck, int pr
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 static void	dc_get_host_macro(const zbx_uint64_t *hostids, int host_num, const char *macro, const char *context,
@@ -9506,7 +9506,7 @@ void	DCget_user_macro(const zbx_uint64_t *hostids, int hostids_num, const char *
 {
 	char	*name = NULL, *context = NULL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() macro:'%s'", __func__, macro);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() macro:'%s'", __func__, macro);
 
 	if (SUCCEED != zbx_user_macro_parse_dyn(macro, &name, &context, NULL))
 		goto out;
@@ -9520,7 +9520,7 @@ void	DCget_user_macro(const zbx_uint64_t *hostids, int hostids_num, const char *
 	zbx_free(context);
 	zbx_free(name);
 out:
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -9641,7 +9641,7 @@ static char	*dc_expression_expand_user_macros(const char *expression)
 
 	if (NULL != strstr(out, "{$"))
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "cannot evaluate expression: invalid macro value");
+		treegix_log(LOG_LEVEL_DEBUG, "cannot evaluate expression: invalid macro value");
 		zbx_free(out);
 	}
 
@@ -9874,7 +9874,7 @@ static int	dc_trigger_items_hosts_enabled(const char *expression)
  *             - number of disabled triggers                                  *
  *             - required performance (total and per proxy)                   *
  *           Gathered information can then be displayed in the frontend (see  *
- *           "status.get" request) and used in calculation of zabbix[] items. *
+ *           "status.get" request) and used in calculation of treegix[] items. *
  *                                                                            *
  * NOTE: Always call this function before accessing information stored in     *
  *       config->status as well as host and required performance counters     *
@@ -10436,7 +10436,7 @@ void	zbx_dc_get_hostids_by_functionids(const zbx_uint64_t *functionids, int func
  ******************************************************************************/
 void	DCget_hostids_by_functionids(zbx_vector_uint64_t *functionids, zbx_vector_uint64_t *hostids)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	RDLOCK_CACHE;
 
@@ -10444,7 +10444,7 @@ void	DCget_hostids_by_functionids(zbx_vector_uint64_t *functionids, zbx_vector_u
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s(): found %d hosts", __func__, hostids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s(): found %d hosts", __func__, hostids->values_num);
 }
 
 /******************************************************************************
@@ -10494,7 +10494,7 @@ static void	dc_get_hosts_by_functionids(const zbx_uint64_t *functionids, int fun
  ******************************************************************************/
 void	DCget_hosts_by_functionids(const zbx_vector_uint64_t *functionids, zbx_hashset_t *hosts)
 {
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	RDLOCK_CACHE;
 
@@ -10502,7 +10502,7 @@ void	DCget_hosts_by_functionids(const zbx_vector_uint64_t *functionids, zbx_hash
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s(): found %d hosts", __func__, hosts->num_data);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s(): found %d hosts", __func__, hosts->num_data);
 }
 
 /******************************************************************************
@@ -10611,7 +10611,7 @@ int	DCreset_hosts_availability(zbx_vector_ptr_t *hosts)
 	zbx_host_availability_t	*ha = NULL;
 	int			now;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	now = time(NULL);
 
@@ -10687,7 +10687,7 @@ int	DCreset_hosts_availability(zbx_vector_ptr_t *hosts)
 
 	zbx_vector_ptr_sort(hosts, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() hosts:%d", __func__, hosts->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() hosts:%d", __func__, hosts->values_num);
 
 	return 0 == hosts->values_num ? FAIL : SUCCEED;
 }
@@ -10713,7 +10713,7 @@ int	DCget_hosts_availability(zbx_vector_ptr_t *hosts, int *ts)
 	zbx_hashset_iter_t	iter;
 	zbx_host_availability_t	*ha = NULL;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	RDLOCK_CACHE;
 
@@ -10745,7 +10745,7 @@ int	DCget_hosts_availability(zbx_vector_ptr_t *hosts, int *ts)
 
 	zbx_vector_ptr_sort(hosts, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() hosts:%d", __func__, hosts->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() hosts:%d", __func__, hosts->values_num);
 
 	return 0 == hosts->values_num ? FAIL : SUCCEED;
 }
@@ -10765,7 +10765,7 @@ void	DCtouch_hosts_availability(const zbx_vector_uint64_t *hostids)
 	ZBX_DC_HOST	*dc_host;
 	int		i, now;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() hostids:%d", __func__, hostids->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostids:%d", __func__, hostids->values_num);
 
 	now = time(NULL);
 
@@ -10779,7 +10779,7 @@ void	DCtouch_hosts_availability(const zbx_vector_uint64_t *hostids)
 
 	UNLOCK_CACHE;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
@@ -10995,7 +10995,7 @@ void	zbx_dc_get_actions_eval(zbx_vector_ptr_t *actions, zbx_hashset_t *uniq_cond
 	const zbx_dc_action_t		*dc_action;
 	zbx_hashset_iter_t		iter;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	RDLOCK_CACHE;
 
@@ -11011,7 +11011,7 @@ void	zbx_dc_get_actions_eval(zbx_vector_ptr_t *actions, zbx_hashset_t *uniq_cond
 
 	prepare_actions_eval(actions, uniq_conditions);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() actions:%d", __func__, actions->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() actions:%d", __func__, actions->values_num);
 }
 
 /******************************************************************************
@@ -11929,14 +11929,14 @@ void	zbx_dc_reschedule_items(const zbx_vector_uint64_t *itemids, int nextcheck, 
 		if (NULL == (dc_item = (ZBX_DC_ITEM *)zbx_hashset_search(&config->items, &itemids->values[i])) ||
 				NULL == (dc_host = (ZBX_DC_HOST *)zbx_hashset_search(&config->hosts, &dc_item->hostid)))
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot perform check now for itemid [" ZBX_FS_UI64 "]"
+			treegix_log(LOG_LEVEL_WARNING, "cannot perform check now for itemid [" ZBX_FS_UI64 "]"
 					": item is not in cache", itemids->values[i]);
 
 			proxy_hostid = 0;
 		}
 		else if (0 == dc_item->schedulable)
 		{
-			zabbix_log(LOG_LEVEL_WARNING, "cannot perform check now for item \"%s\" on host \"%s\""
+			treegix_log(LOG_LEVEL_WARNING, "cannot perform check now for item \"%s\" on host \"%s\""
 					": item configuration error", dc_item->key, dc_host->host);
 
 			proxy_hostid = 0;

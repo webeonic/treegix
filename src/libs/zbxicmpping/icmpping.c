@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -212,7 +212,7 @@ static int	process_ping(ZBX_FPING_HOST *hosts, int hosts_count, int count, int i
 
 	assert(hosts);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() hosts_count:%d", __func__, hosts_count);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() hosts_count:%d", __func__, hosts_count);
 
 	if (-1 == access(CONFIG_FPING_LOCATION, X_OK))
 	{
@@ -391,17 +391,17 @@ static int	process_ping(ZBX_FPING_HOST *hosts, int hosts_count, int count, int i
 		return ret;
 	}
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s", filename);
+	treegix_log(LOG_LEVEL_DEBUG, "%s", filename);
 
 	for (i = 0; i < hosts_count; i++)
 	{
-		zabbix_log(LOG_LEVEL_DEBUG, "    %s", hosts[i].addr);
+		treegix_log(LOG_LEVEL_DEBUG, "    %s", hosts[i].addr);
 		fprintf(f, "%s\n", hosts[i].addr);
 	}
 
 	fclose(f);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "%s", tmp);
+	treegix_log(LOG_LEVEL_DEBUG, "%s", tmp);
 
 	if (NULL == (f = popen(tmp, "r")))
 	{
@@ -427,7 +427,7 @@ static int	process_ping(ZBX_FPING_HOST *hosts, int hosts_count, int count, int i
 		do
 		{
 			zbx_rtrim(tmp, "\n");
-			zabbix_log(LOG_LEVEL_DEBUG, "read line [%s]", tmp);
+			treegix_log(LOG_LEVEL_DEBUG, "read line [%s]", tmp);
 
 			host = NULL;
 
@@ -524,7 +524,7 @@ static int	process_ping(ZBX_FPING_HOST *hosts, int hosts_count, int count, int i
 	if (NOTSUPPORTED == ret)
 		zbx_snprintf(error, max_error_len, "fping failed: %s", tmp);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
@@ -549,12 +549,12 @@ int	do_ping(ZBX_FPING_HOST *hosts, int hosts_count, int count, int interval, int
 {
 	int	res;
 
-	zabbix_log(LOG_LEVEL_DEBUG, "In %s() hosts_count:%d", __func__, hosts_count);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() hosts_count:%d", __func__, hosts_count);
 
 	if (NOTSUPPORTED == (res = process_ping(hosts, hosts_count, count, interval, size, timeout, error, max_error_len)))
-		zabbix_log(LOG_LEVEL_ERR, "%s", error);
+		treegix_log(LOG_LEVEL_ERR, "%s", error);
 
-	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
 
 	return res;
 }

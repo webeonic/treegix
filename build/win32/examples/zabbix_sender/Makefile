@@ -2,11 +2,11 @@ CC = cl.exe /nologo
 LINKER = link.exe /NOLOGO
 
 CFLAGS = /I ..\..\..\..\bin\win32\dev /c
-LFLAGS = /LIBPATH:..\..\..\..\bin\win32\dev /DEFAULTLIB:zabbix_sender.lib
+LFLAGS = /LIBPATH:..\..\..\..\bin\win32\dev /DEFAULTLIB:treegix_sender.lib
 
 PROGNAME = sender.exe
 OBJS = sender.obj
-LIBS = zabbix_sender.lib ws2_32.lib
+LIBS = treegix_sender.lib ws2_32.lib
 
 all: $(PROGNAME)
 

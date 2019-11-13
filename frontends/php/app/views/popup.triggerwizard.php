@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ $output = [
 ];
 
 // SID for this form is added by JS getUrl() and "form_refresh" is not used at all.
-$form = (new CForm('post', 'zabbix.php'))
+$form = (new CForm('post', 'treegix.php'))
 	->cleanItems()
 	->setName('sform')
 	->addVar('sform', '1')

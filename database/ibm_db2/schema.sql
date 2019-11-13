@@ -236,7 +236,7 @@ CREATE TABLE httptest (
 	nextcheck                integer         WITH DEFAULT '0'          NOT NULL,
 	delay                    varchar(255)    WITH DEFAULT '1m'         NOT NULL,
 	status                   integer         WITH DEFAULT '0'          NOT NULL,
-	agent                    varchar(255)    WITH DEFAULT 'Zabbix'     NOT NULL,
+	agent                    varchar(255)    WITH DEFAULT 'Treegix'     NOT NULL,
 	authentication           integer         WITH DEFAULT '0'          NOT NULL,
 	http_user                varchar(64)     WITH DEFAULT ''           NOT NULL,
 	http_password            varchar(64)     WITH DEFAULT ''           NOT NULL,

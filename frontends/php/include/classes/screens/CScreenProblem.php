@@ -1,7 +1,7 @@
 <?php
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -784,7 +784,7 @@ class CScreenProblem extends CScreenBase {
 	public function get() {
 		$this->dataId = 'problem';
 
-		$url = (new CUrl('zabbix.php'))->setArgument('action', 'problem.view');
+		$url = (new CUrl('treegix.php'))->setArgument('action', 'problem.view');
 
 		$data = self::getData($this->data['filter'], $this->config, true);
 		$data = self::sortData($data, $this->config, $this->data['sort'], $this->data['sortorder']);
@@ -823,7 +823,7 @@ class CScreenProblem extends CScreenBase {
 		if ($this->data['action'] === 'problem.view') {
 			$url_form = clone $url;
 
-			$form = (new CForm('post', 'zabbix.php'))
+			$form = (new CForm('post', 'treegix.php'))
 				->setName('problem')
 				->cleanItems()
 				->addVar('backurl',
@@ -956,7 +956,7 @@ class CScreenProblem extends CScreenBase {
 			}
 
 			// Create link to Problem update page.
-			$problem_update_url = (new CUrl('zabbix.php'))
+			$problem_update_url = (new CUrl('treegix.php'))
 				->setArgument('action', 'acknowledge.edit')
 				->setArgument('backurl', $url->setArgument('uncheck', '1')->getUrl());
 

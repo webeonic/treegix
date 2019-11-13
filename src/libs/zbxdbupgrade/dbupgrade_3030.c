@@ -1,6 +1,6 @@
 /*
-** Zabbix
-** Copyright (C) 2001-2019 Zabbix SIA
+** Treegix
+** Copyright (C) 2001-2019 Treegix SIA
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -332,7 +332,7 @@ static int	DBpatch_3030029(void)
  *           actions. 'p_eventid' value is defined as per last problematic    *
  *           event, that was closed by correct recovery event.                *
  *           This is done because the relation between recovery alerts and    *
- *           this method is most successful for updating zabbix 3.0 to latest *
+ *           this method is most successful for updating treegix 3.0 to latest *
  *           versions.                                                        *
  *                                                                            *
  ******************************************************************************/
@@ -671,7 +671,7 @@ static int	DBpatch_3030053(void)
 				goto out;
 			}
 
-			zabbix_log(LOG_LEVEL_WARNING, "Map trigger element \"%s\" (selementid: " ZBX_FS_UI64 ") will be"
+			treegix_log(LOG_LEVEL_WARNING, "Map trigger element \"%s\" (selementid: " ZBX_FS_UI64 ") will be"
 					" removed during database upgrade: no trigger found", row[1], selementid);
 		}
 	}
