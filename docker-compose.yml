@@ -1,0 +1,15 @@
+postgres:
+  build: pg/.
+  volumes:
+    - ./data/pg:/var/lib/postgresql/data
+
+treegix_server:
+  build: .
+  ports:
+    - 10051:10051
+
+frontend:
+  build: apache
+  ports:
+    - 81:80
+
