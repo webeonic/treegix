@@ -1,12 +1,16 @@
 postgres:
   image: postgres
+  environment:
+    - POSTGRES_USER=treegix
+    - POSTGRES_PASSWORD=treegix
+    - POSTGRES_DB=treegix
   ports:
-    - 5432:5432
+    - 54333:5432
   volumes:
     - ./database/postgresql/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
-    - ./database/postgresql/data.sql:/docker-entrypoint-initdb.d/2-data.sql
-    - ./database/postgresql/images.sql:/docker-entrypoint-initdb.d/3-images.sql
-    - ./data/pg:/var/lib/postgresql/data
+    - ./database/postgresql/images.sql:/docker-entrypoint-initdb.d/2-images.sql
+    - ./database/postgresql/data.sql:/docker-entrypoint-initdb.d/3-data.sql
+    - $HOME/data/pg:/var/lib/postgresql/data
 
 treegix_server:
   image: treegix_server:latest
@@ -17,4 +21,7 @@ frontend:
   image: treegix_web:latest
   ports:
     - 81:80
+  links:
+    - postgres
+    - treegix_server
 
