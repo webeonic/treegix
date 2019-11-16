@@ -501,7 +501,7 @@ Send \fB342.45\fR as the value for \fBmysql.queries\fR item in \fBMonitored Host
 .RE
 
 .SH "SEE ALSO"
-.UR https://www.treegix.com/manuals
+.UR
 Documentation
 .UE
 .PP

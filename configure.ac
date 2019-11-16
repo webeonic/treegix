@@ -2197,8 +2197,5 @@ echo "
 echo
 echo "***********************************************************"
 echo "*            Now run '${am_make} install'                       *"
-echo "*                                                         *"
-echo "*            Thank you for using Treegix!                  *"
-echo "*              <http://www.treegix.com>                    *"
 echo "***********************************************************"
 echo

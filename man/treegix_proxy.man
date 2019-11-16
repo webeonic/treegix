@@ -116,7 +116,7 @@ Output version information and exit.
 .I /usr/local/etc/treegix_proxy.conf
 Default location of Treegix proxy configuration file (if not modified during compile time).
 .SH "SEE ALSO"
-.UR https://www.treegix.com/manuals
+.UR
 Documentation
 .UE
 .PP

@@ -143,7 +143,7 @@ Output version information and exit.
 .br
 \fBtreegix_get \-s 127.0.0.1 \-p 10050 \-k "system.cpu.load[all,avg1]" \-\-tls\-connect psk \-\-tls\-psk\-identity "PSK ID Treegix agentd" \-\-tls\-psk\-file /home/treegix/treegix_agentd.psk\fR
 .SH "SEE ALSO"
-.UR https://www.treegix.com/manuals
+.UR
 Documentation
 .UE
 .PP

@@ -153,7 +153,7 @@ Output version information and exit.
 .I /usr/local/etc/treegix_agentd.conf
 Default location of Treegix agent configuration file (if not modified during compile time).
 .SH "SEE ALSO"
-.UR https://www.treegix.com/manuals
+.UR
 Documentation
 .UE
 .PP

@@ -19,4 +19,6 @@ WORKDIR /app
 RUN ./configure --enable-server  --with-postgresql
 RUN make install
 
+RUN cp treegix_server.conf /usr/local/etc/treegix_server.conf
+
 CMD ["treegix_server", "-f"]

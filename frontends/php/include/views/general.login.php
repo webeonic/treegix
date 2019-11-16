@@ -80,7 +80,8 @@ global $ZBX_SERVER_NAME;
 		CBrandHelper::isRebranded() ? null : '&nbsp;&nbsp;•&nbsp;&nbsp;',
 		CBrandHelper::isRebranded()
 			? null
-			: (new CLink(_('Support'), 'http://www.treegix.com/support.php'))
+            //todo tip
+			: (new CLink(_('Support'),'' /*'http://www.treegix.com/support.php'*/))
 				->setTarget('_blank')
 				->addClass(ZBX_STYLE_GREY)
 				->addClass(ZBX_STYLE_LINK_ALT)

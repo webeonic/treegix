@@ -147,7 +147,7 @@ Output version information and exit.
 .I /usr/local/etc/treegix_agent2.conf
 Default location of Treegix agent 2 configuration file (if not modified during compile time).
 .SH "SEE ALSO"
-.UR https://www.treegix.com/manuals
+.UR
 Documentation
 .UE
 .PP

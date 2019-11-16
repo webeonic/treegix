@@ -14,6 +14,8 @@ postgres:
 
 treegix_server:
   image: treegix_server:latest
+  links:
+    - postgres
   ports:
     - 10051:10051
 

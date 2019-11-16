@@ -81,7 +81,8 @@ class CBrandHelper {
 	 * @return string
 	 */
 	public static function getHelpUrl() {
-		return self::getValue('BRAND_HELP_URL', 'https://www.treegix.com/documentation/'.
+	    //todo tip
+		return self::getValue('BRAND_HELP_URL', ''/*'https://www.treegix.com/documentation/'*/.
 			(preg_match('/^\d+\.\d+/', ZABBIX_VERSION, $version) ? $version[0].'/' : '')
 		);
 	}
@@ -111,7 +112,8 @@ class CBrandHelper {
 			[
 				$with_version ? 'Treegix '.ZABBIX_VERSION.'. ' : null,
 				'&copy; '.ZABBIX_COPYRIGHT_FROM.'&ndash;'.ZABBIX_COPYRIGHT_TO.', ',
-				(new CLink('Treegix SIA', 'http://www.treegix.com/'))
+				//todo tip
+				(new CLink('Treegix SIA', ''/*'http://www.treegix.com/'*/))
 					->addClass(ZBX_STYLE_GREY)
 					->addClass(ZBX_STYLE_LINK_ALT)
 					->setAttribute('target', '_blank')

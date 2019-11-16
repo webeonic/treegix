@@ -34,9 +34,7 @@ static const char	copyright_message[] =
 	"the license. There is NO WARRANTY, to the extent permitted by law.";
 
 static const char	help_message_footer[] =
-	"Report bugs to: <https://support.treegix.com>\n"
-	"Treegix home page: <http://www.treegix.com>\n"
-	"Documentation: <https://www.treegix.com/documentation>";
+	"";
 
 /******************************************************************************
  *                                                                            *

@@ -168,9 +168,6 @@ zbx_hash_t	zbx_hash_murmur2(const void *data, size_t len, zbx_hash_t seed)
 	return hash;
 }
 
-/*
- * sdbm (see http://www.cse.yorku.ca/~oz/hash.html)
- */
 zbx_hash_t	zbx_hash_sdbm(const void *data, size_t len, zbx_hash_t seed)
 {
 	const uchar	*p = (const uchar *)data;
@@ -213,9 +210,6 @@ zbx_hash_t	zbx_hash_sdbm(const void *data, size_t len, zbx_hash_t seed)
 	return hash;
 }
 
-/*
- * djb2 (see http://www.cse.yorku.ca/~oz/hash.html)
- */
 zbx_hash_t	zbx_hash_djb2(const void *data, size_t len, zbx_hash_t seed)
 {
 	const uchar	*p = (const uchar *)data;
