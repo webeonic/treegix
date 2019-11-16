@@ -19,4 +19,4 @@ WORKDIR /app
 RUN ./configure --enable-server  --with-postgresql
 RUN make install
 
-CMD ["/usr/local/sbin/treegix_server"]
+CMD ["treegix_server", "-f"]
