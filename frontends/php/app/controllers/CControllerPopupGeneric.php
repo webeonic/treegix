@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 require_once dirname(__FILE__).'/../../include/hosts.inc.php';
@@ -48,8 +31,8 @@ class CControllerPopupGeneric extends CController {
 		$this->disableSIDvalidation();
 
 		$this->allowed_item_types = [
-			ITEM_TYPE_ZABBIX,
-			ITEM_TYPE_ZABBIX_ACTIVE,
+			ITEM_TYPE_TREEGIX,
+			ITEM_TYPE_TREEGIX_ACTIVE,
 			ITEM_TYPE_SIMPLE,
 			ITEM_TYPE_INTERNAL,
 			ITEM_TYPE_AGGREGATE,
@@ -61,7 +44,7 @@ class CControllerPopupGeneric extends CController {
 		$this->popup_properties = [
 			'hosts' => [
 				'title' => _('Hosts'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'hostid,host',
 				'form' => [
 					'name' => 'hostform',
@@ -73,7 +56,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'templates' => [
 				'title' => _('Templates'),
-				'min_user_type' => USER_TYPE_ZABBIX_ADMIN,
+				'min_user_type' => USER_TYPE_TREEGIX_ADMIN,
 				'allowed_src_fields' => 'hostid,host',
 				'form' => [
 					'name' => 'templateform',
@@ -85,7 +68,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'host_templates' => [
 				'title' => _('Hosts'),
-				'min_user_type' => USER_TYPE_ZABBIX_ADMIN,
+				'min_user_type' => USER_TYPE_TREEGIX_ADMIN,
 				'allowed_src_fields' => 'hostid,host',
 				'form' => [
 					'name' => 'hosttemplateform',
@@ -97,7 +80,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'host_groups' => [
 				'title' => _('Host groups'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'groupid,name',
 				'form' => [
 					'name' => 'hostGroupsform',
@@ -109,7 +92,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'proxies' => [
 				'title' => _('Proxies'),
-				'min_user_type' => USER_TYPE_ZABBIX_ADMIN,
+				'min_user_type' => USER_TYPE_TREEGIX_ADMIN,
 				'allowed_src_fields' => 'proxyid,host',
 				'form' => [
 					'name' => 'proxiesform',
@@ -121,7 +104,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'applications' => [
 				'title' => _('Applications'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'applicationid,name',
 				'form' => [
 					'name' => 'applicationform',
@@ -133,7 +116,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'application_prototypes' => [
 				'title' => _('Application prototypes'),
-				'min_user_type' => USER_TYPE_ZABBIX_ADMIN,
+				'min_user_type' => USER_TYPE_TREEGIX_ADMIN,
 				'allowed_src_fields' => 'application_prototypeid,name',
 				'form' => [
 					'name' => 'application_prototype_form',
@@ -145,7 +128,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'triggers' => [
 				'title' => _('Triggers'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'description,triggerid,expression',
 				'form' => [
 					'name' => 'triggerform',
@@ -159,7 +142,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'trigger_prototypes' => [
 				'title' => _('Trigger prototypes'),
-				'min_user_type' => USER_TYPE_ZABBIX_ADMIN,
+				'min_user_type' => USER_TYPE_TREEGIX_ADMIN,
 				'allowed_src_fields' => 'description,triggerid,expression',
 				'form' => [
 					'name' => 'trigger_prototype_form',
@@ -173,7 +156,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'usrgrp' => [
 				'title' => _('User groups'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'usrgrpid,name',
 				'form' => [
 					'name' => 'usrgrpform',
@@ -185,7 +168,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'users' => [
 				'title' => _('Users'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'usergrpid,alias,fullname,userid',
 				'form' => [
 					'name' => 'userform',
@@ -199,7 +182,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'items' => [
 				'title' => _('Items'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'itemid,name',
 				'form' => [
 					'name' => 'itemform',
@@ -215,7 +198,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'help_items' => [
 				'title' => _('Standard items'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'key',
 				'table_columns' => [
 					_('Key'),
@@ -224,7 +207,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'screens' => [
 				'title' => _('Screens'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'screenid',
 				'form' => [
 					'name' => 'screenform',
@@ -236,7 +219,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'graphs' => [
 				'title' => _('Graphs'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'graphid,name',
 				'form' => [
 					'name' => 'graphform',
@@ -249,7 +232,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'graph_prototypes' => [
 				'title' => _('Graph prototypes'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'graphid,name',
 				'form' => [
 					'name' => 'graphform',
@@ -262,7 +245,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'item_prototypes' => [
 				'title' => _('Item prototypes'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'itemid,name,flags',
 				'form' => [
 					'name' => 'itemform',
@@ -277,7 +260,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'sysmaps' => [
 				'title' => _('Maps'),
-				'min_user_type' => USER_TYPE_ZABBIX_USER,
+				'min_user_type' => USER_TYPE_TREEGIX_USER,
 				'allowed_src_fields' => 'sysmapid,name',
 				'form' => [
 					'name' => 'sysmapform',
@@ -289,7 +272,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'drules' => [
 				'title' => _('Discovery rules'),
-				'min_user_type' => USER_TYPE_ZABBIX_ADMIN,
+				'min_user_type' => USER_TYPE_TREEGIX_ADMIN,
 				'allowed_src_fields' => 'druleid,name',
 				'form' => [
 					'name' => 'druleform',
@@ -301,7 +284,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'dchecks' => [
 				'title' => _('Discovery checks'),
-				'min_user_type' => USER_TYPE_ZABBIX_ADMIN,
+				'min_user_type' => USER_TYPE_TREEGIX_ADMIN,
 				'allowed_src_fields' => 'dcheckid,name',
 				'table_columns' => [
 					_('Name')
@@ -309,7 +292,7 @@ class CControllerPopupGeneric extends CController {
 			],
 			'scripts' => [
 				'title' => _('Global scripts'),
-				'min_user_type' => USER_TYPE_ZABBIX_ADMIN,
+				'min_user_type' => USER_TYPE_TREEGIX_ADMIN,
 				'allowed_src_fields' => 'scriptid,name',
 				'form' => [
 					'name' => 'scriptform',

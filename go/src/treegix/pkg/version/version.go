@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 // Package version provides treegix release version
 package version
@@ -28,17 +11,14 @@ import (
 
 const (
 	APPLICATION_NAME        = "Treegix Agent"
-	ZABBIX_REVDATE          = "28 October 2019"
-	ZABBIX_VERSION_MAJOR    = 4
-	ZABBIX_VERSION_MINOR    = 4
-	ZABBIX_VERSION_PATCH    = 1
-	ZABBIX_VERSION_RC       = ""
-	ZABBIX_VERSION_RC_NUM   = "1400"
-	ZABBIX_VERSION_REVISION = "8870606e6a"
-	copyrightMessage        = "Copyright (C) 2019 Treegix SIA\n" +
-		"License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>.\n" +
-		"This is free software: you are free to change and redistribute it according to\n" +
-		"the license. There is NO WARRANTY, to the extent permitted by law."
+	TREEGIX_REVDATE          = "28 October 2019"
+	TREEGIX_VERSION_MAJOR    = 4
+	TREEGIX_VERSION_MINOR    = 4
+	TREEGIX_VERSION_PATCH    = 1
+	TREEGIX_VERSION_RC       = ""
+	TREEGIX_VERSION_RC_NUM   = "1400"
+	TREEGIX_VERSION_REVISION = "8870606e6a"
+	copyrightMessage        = ""
 )
 
 var (
@@ -54,23 +34,23 @@ func ApplicationName() string {
 	return APPLICATION_NAME
 }
 func RevDate() string {
-	return ZABBIX_REVDATE
+	return TREEGIX_REVDATE
 }
 
 func Major() int {
-	return ZABBIX_VERSION_MAJOR
+	return TREEGIX_VERSION_MAJOR
 }
 
 func Minor() int {
-	return ZABBIX_VERSION_MINOR
+	return TREEGIX_VERSION_MINOR
 }
 
 func Patch() int {
-	return ZABBIX_VERSION_PATCH
+	return TREEGIX_VERSION_PATCH
 }
 
 func RC() string {
-	return ZABBIX_VERSION_RC
+	return TREEGIX_VERSION_RC
 }
 
 func LongStr() string {
@@ -94,7 +74,7 @@ func Short() string {
 }
 
 func Revision() string {
-	return ZABBIX_VERSION_REVISION
+	return TREEGIX_VERSION_REVISION
 }
 
 func CopyrightMessage() string {

@@ -1,24 +1,6 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
 
-#ifndef ZABBIX_DB_H
-#define ZABBIX_DB_H
+#ifndef TREEGIX_DB_H
+#define TREEGIX_DB_H
 
 #include "common.h"
 #include "zbxalgo.h"
@@ -685,7 +667,7 @@ void	zbx_db_insert_clean(zbx_db_insert_t *self);
 void	zbx_db_insert_autoincrement(zbx_db_insert_t *self, const char *field_name);
 int	zbx_db_get_database_type(void);
 
-/* agent (ZABBIX, SNMP, IPMI, JMX) availability data */
+/* agent (TREEGIX, SNMP, IPMI, JMX) availability data */
 typedef struct
 {
 	/* flags specifying which fields are set, see ZBX_FLAGS_AGENT_STATUS_* defines */
@@ -710,7 +692,7 @@ zbx_agent_availability_t;
 					ZBX_FLAGS_AGENT_STATUS_ERRORS_FROM |	\
 					ZBX_FLAGS_AGENT_STATUS_DISABLE_UNTIL)
 
-#define ZBX_AGENT_ZABBIX	(INTERFACE_TYPE_AGENT - 1)
+#define ZBX_AGENT_TREEGIX	(INTERFACE_TYPE_AGENT - 1)
 #define ZBX_AGENT_SNMP		(INTERFACE_TYPE_SNMP - 1)
 #define ZBX_AGENT_IPMI		(INTERFACE_TYPE_IPMI - 1)
 #define ZBX_AGENT_JMX		(INTERFACE_TYPE_JMX - 1)

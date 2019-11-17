@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 
@@ -894,7 +877,7 @@ int	main(int argc, char **argv)
 	return daemon_start(CONFIG_ALLOW_ROOT, CONFIG_USER, t.flags);
 }
 
-int	MAIN_ZABBIX_ENTRY(int flags)
+int	MAIN_TREEGIX_ENTRY(int flags)
 {
 	zbx_socket_t	listen_sock;
 	char		*error = NULL;
@@ -903,7 +886,7 @@ int	MAIN_ZABBIX_ENTRY(int flags)
 	if (0 != (flags & ZBX_TASK_FLAG_FOREGROUND))
 	{
 		printf("Starting Treegix Server. Treegix %s (revision %s).\nPress Ctrl+C to exit.\n\n",
-				ZABBIX_VERSION, ZABBIX_REVISION);
+				TREEGIX_VERSION, TREEGIX_REVISION);
 	}
 
 	if (SUCCEED != zbx_locks_create(&error))
@@ -967,7 +950,7 @@ int	MAIN_ZABBIX_ENTRY(int flags)
 #endif
 
 	treegix_log(LOG_LEVEL_INFORMATION, "Starting Treegix Server. Treegix %s (revision %s).",
-			ZABBIX_VERSION, ZABBIX_REVISION);
+			TREEGIX_VERSION, TREEGIX_REVISION);
 
 	treegix_log(LOG_LEVEL_INFORMATION, "****** Enabled features ******");
 	treegix_log(LOG_LEVEL_INFORMATION, "SNMP monitoring:           " SNMP_FEATURE_STATUS);
@@ -1288,7 +1271,7 @@ void	zbx_on_exit(int ret)
 	zbx_unload_modules();
 
 	treegix_log(LOG_LEVEL_INFORMATION, "Treegix Server stopped. Treegix %s (revision %s).",
-			ZABBIX_VERSION, ZABBIX_REVISION);
+			TREEGIX_VERSION, TREEGIX_REVISION);
 
 	treegix_close_log();
 

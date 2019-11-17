@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -211,14 +194,14 @@ class C44XmlValidator {
 	];
 
 	private $ITEM_TYPE = [
-		CXmlConstantValue::ITEM_TYPE_ZABBIX_PASSIVE => CXmlConstantName::ZABBIX_PASSIVE,
+		CXmlConstantValue::ITEM_TYPE_TREEGIX_PASSIVE => CXmlConstantName::TREEGIX_PASSIVE,
 		CXmlConstantValue::ITEM_TYPE_SNMPV1 => CXmlConstantName::SNMPV1,
 		CXmlConstantValue::ITEM_TYPE_TRAP => CXmlConstantName::TRAP,
 		CXmlConstantValue::ITEM_TYPE_SIMPLE => CXmlConstantName::SIMPLE,
 		CXmlConstantValue::ITEM_TYPE_SNMPV2 => CXmlConstantName::SNMPV2,
 		CXmlConstantValue::ITEM_TYPE_INTERNAL => CXmlConstantName::INTERNAL,
 		CXmlConstantValue::ITEM_TYPE_SNMPV3 => CXmlConstantName::SNMPV3,
-		CXmlConstantValue::ITEM_TYPE_ZABBIX_ACTIVE => CXmlConstantName::ZABBIX_ACTIVE,
+		CXmlConstantValue::ITEM_TYPE_TREEGIX_ACTIVE => CXmlConstantName::TREEGIX_ACTIVE,
 		CXmlConstantValue::ITEM_TYPE_AGGREGATE => CXmlConstantName::AGGREGATE,
 		CXmlConstantValue::ITEM_TYPE_EXTERNAL => CXmlConstantName::EXTERNAL,
 		CXmlConstantValue::ITEM_TYPE_ODBC => CXmlConstantName::ODBC,
@@ -233,14 +216,14 @@ class C44XmlValidator {
 	];
 
 	private $ITEM_TYPE_DRULE = [
-		CXmlConstantValue::ITEM_TYPE_ZABBIX_PASSIVE => CXmlConstantName::ZABBIX_PASSIVE,
+		CXmlConstantValue::ITEM_TYPE_TREEGIX_PASSIVE => CXmlConstantName::TREEGIX_PASSIVE,
 		CXmlConstantValue::ITEM_TYPE_SNMPV1 => CXmlConstantName::SNMPV1,
 		CXmlConstantValue::ITEM_TYPE_TRAP => CXmlConstantName::TRAP,
 		CXmlConstantValue::ITEM_TYPE_SIMPLE => CXmlConstantName::SIMPLE,
 		CXmlConstantValue::ITEM_TYPE_SNMPV2 => CXmlConstantName::SNMPV2,
 		CXmlConstantValue::ITEM_TYPE_INTERNAL => CXmlConstantName::INTERNAL,
 		CXmlConstantValue::ITEM_TYPE_SNMPV3 => CXmlConstantName::SNMPV3,
-		CXmlConstantValue::ITEM_TYPE_ZABBIX_ACTIVE => CXmlConstantName::ZABBIX_ACTIVE,
+		CXmlConstantValue::ITEM_TYPE_TREEGIX_ACTIVE => CXmlConstantName::TREEGIX_ACTIVE,
 		CXmlConstantValue::ITEM_TYPE_EXTERNAL => CXmlConstantName::EXTERNAL,
 		CXmlConstantValue::ITEM_TYPE_ODBC => CXmlConstantName::ODBC,
 		CXmlConstantValue::ITEM_TYPE_IPMI => CXmlConstantName::IPMI,
@@ -334,7 +317,7 @@ class C44XmlValidator {
 					'interfaces' =>				['type' => XML_INDEXED_ARRAY, 'prefix' => 'interface', 'rules' => [
 						'interface' =>				['type' => XML_ARRAY, 'rules' => [
 							'default' =>				['type' => XML_STRING, 'default' => CXmlConstantValue::YES, 'in' => [CXmlConstantValue::NO => CXmlConstantName::NO, CXmlConstantValue::YES => CXmlConstantName::YES]],
-							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ZABBIX, 'in' => [CXmlConstantValue::ZABBIX => CXmlConstantName::ZABBIX, CXmlConstantValue::SNMP => CXmlConstantName::SNMP, CXmlConstantValue::IPMI => CXmlConstantName::IPMI, CXmlConstantValue::JMX => CXmlConstantName::JMX]],
+							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::TREEGIX, 'in' => [CXmlConstantValue::TREEGIX => CXmlConstantName::TREEGIX, CXmlConstantValue::SNMP => CXmlConstantName::SNMP, CXmlConstantValue::IPMI => CXmlConstantName::IPMI, CXmlConstantValue::JMX => CXmlConstantName::JMX]],
 							'useip' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::YES, 'in' => [CXmlConstantValue::NO => CXmlConstantName::NO, CXmlConstantValue::YES => CXmlConstantName::YES]],
 							'ip' =>						['type' => XML_STRING, 'default' => '127.0.0.1'],
 							'dns' =>					['type' => XML_STRING, 'default' => ''],
@@ -351,7 +334,7 @@ class C44XmlValidator {
 					'items' =>					['type' => XML_INDEXED_ARRAY, 'prefix' => 'item', 'rules' => [
 						'item' =>					['type' => XML_ARRAY, 'rules' => [
 							'name' =>					['type' => XML_STRING | XML_REQUIRED],
-							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_ZABBIX_PASSIVE, 'in' => $this->ITEM_TYPE],
+							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_TREEGIX_PASSIVE, 'in' => $this->ITEM_TYPE],
 							'snmp_community' =>			['type' => XML_STRING, 'default' => ''],
 							'snmp_oid' =>				['type' => XML_STRING, 'default' => ''],
 							'key' =>					['type' => XML_STRING | XML_REQUIRED],
@@ -464,7 +447,7 @@ class C44XmlValidator {
 					'discovery_rules' =>		['type' => XML_INDEXED_ARRAY, 'prefix' => 'discovery_rule', 'rules' => [
 						'discovery_rule' =>			['type' => XML_ARRAY, 'rules' => [
 							'name' =>					['type' => XML_STRING | XML_REQUIRED],
-							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_ZABBIX_PASSIVE, 'in' => $this->ITEM_TYPE_DRULE],
+							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_TREEGIX_PASSIVE, 'in' => $this->ITEM_TYPE_DRULE],
 							'snmp_community' =>			['type' => XML_STRING, 'default' => ''],
 							'snmp_oid' =>				['type' => XML_STRING, 'default' => ''],
 							'key' =>					['type' => XML_STRING | XML_REQUIRED],
@@ -504,7 +487,7 @@ class C44XmlValidator {
 							'item_prototypes' =>		['type' => XML_INDEXED_ARRAY, 'prefix' => 'item_prototype', 'rules' => [
 								'item_prototype' =>			['type' => XML_ARRAY, 'rules' => [
 									'name' =>					['type' => XML_STRING | XML_REQUIRED],
-									'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_ZABBIX_PASSIVE, 'in' => $this->ITEM_TYPE],
+									'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_TREEGIX_PASSIVE, 'in' => $this->ITEM_TYPE],
 									'snmp_community' =>			['type' => XML_STRING, 'default' => ''],
 									'snmp_oid' =>				['type' => XML_STRING, 'default' => ''],
 									'key' =>					['type' => XML_STRING | XML_REQUIRED],
@@ -931,7 +914,7 @@ class C44XmlValidator {
 					'items' =>					['type' => XML_INDEXED_ARRAY, 'prefix' => 'item', 'rules' => [
 						'item' =>					['type' => XML_ARRAY, 'rules' => [
 							'name' =>					['type' => XML_STRING | XML_REQUIRED],
-							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_ZABBIX_PASSIVE, 'in' => $this->ITEM_TYPE],
+							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_TREEGIX_PASSIVE, 'in' => $this->ITEM_TYPE],
 							'snmp_community' =>			['type' => XML_STRING, 'default' => ''],
 							'snmp_oid' =>				['type' => XML_STRING, 'default' => ''],
 							'key' =>					['type' => XML_STRING | XML_REQUIRED],
@@ -1043,7 +1026,7 @@ class C44XmlValidator {
 					'discovery_rules' =>		['type' => XML_INDEXED_ARRAY, 'prefix' => 'discovery_rule', 'rules' => [
 						'discovery_rule' =>			['type' => XML_ARRAY, 'rules' => [
 							'name' =>					['type' => XML_STRING | XML_REQUIRED],
-							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_ZABBIX_PASSIVE, 'in' => $this->ITEM_TYPE_DRULE],
+							'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_TREEGIX_PASSIVE, 'in' => $this->ITEM_TYPE_DRULE],
 							'snmp_community' =>			['type' => XML_STRING, 'default' => ''],
 							'snmp_oid' =>				['type' => XML_STRING, 'default' => ''],
 							'key' =>					['type' => XML_STRING | XML_REQUIRED],
@@ -1082,7 +1065,7 @@ class C44XmlValidator {
 							'item_prototypes' =>		['type' => XML_INDEXED_ARRAY, 'prefix' => 'item_prototype', 'rules' => [
 								'item_prototype' =>			['type' => XML_ARRAY, 'rules' => [
 									'name' =>					['type' => XML_STRING | XML_REQUIRED],
-									'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_ZABBIX_PASSIVE, 'in' => $this->ITEM_TYPE],
+									'type' =>					['type' => XML_STRING, 'default' => CXmlConstantValue::ITEM_TYPE_TREEGIX_PASSIVE, 'in' => $this->ITEM_TYPE],
 									'snmp_community' =>			['type' => XML_STRING, 'default' => ''],
 									'snmp_oid' =>				['type' => XML_STRING, 'default' => ''],
 									'key' =>					['type' => XML_STRING | XML_REQUIRED],

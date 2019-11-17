@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 class CLineGraphDraw extends CGraphDraw {
@@ -2623,7 +2606,7 @@ class CLineGraphDraw extends CGraphDraw {
 				$delay = $this->items[$item]['delay'];
 
 				if ($this->items[$item]['type'] == ITEM_TYPE_TRAPPER
-						|| ($this->items[$item]['type'] == ITEM_TYPE_ZABBIX_ACTIVE
+						|| ($this->items[$item]['type'] == ITEM_TYPE_TREEGIX_ACTIVE
 							&& preg_match('/^(event)?log(rt)?\[/', $this->items[$item]['key_']))
 						|| ($this->items[$item]['has_scheduling_intervals'] && $delay == 0)) {
 					$draw = true;

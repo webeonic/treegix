@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "log.h"
@@ -370,7 +353,7 @@ void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
 		return;
 
 #ifdef _WINDOWS
-#ifdef ZABBIX_AGENT
+#ifdef TREEGIX_AGENT
 	if (0 != (ZBX_MUTEX_THREAD_DENIED & get_thread_global_mutex_flag()))
 	{
 		zbx_error("[file:'%s',line:%d] lock failed: ZBX_MUTEX_THREAD_DENIED is set for thread with id = %d",

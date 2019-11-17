@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "sysinfo.h"
@@ -55,8 +38,8 @@ ZBX_METRIC	parameters_specific[] =
 	{"system.uname",	0,		SYSTEM_UNAME,		NULL},
 
 	{"service.discovery",	0,		SERVICE_DISCOVERY,	NULL},
-	{"service.info",	CF_HAVEPARAMS,	SERVICE_INFO,		ZABBIX_SERVICE_NAME},
-	{"service_state",	CF_HAVEPARAMS,	SERVICE_STATE,		ZABBIX_SERVICE_NAME},
+	{"service.info",	CF_HAVEPARAMS,	SERVICE_INFO,		TREEGIX_SERVICE_NAME},
+	{"service_state",	CF_HAVEPARAMS,	SERVICE_STATE,		TREEGIX_SERVICE_NAME},
 	{"services",		CF_HAVEPARAMS,	SERVICES,		NULL},
 	{"perf_counter",	CF_HAVEPARAMS,	PERF_COUNTER,		"\\System\\Processes"},
 	{"perf_counter_en",	CF_HAVEPARAMS,	PERF_COUNTER_EN,	"\\System\\Processes"},

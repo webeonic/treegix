@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 class CControllerAuthenticationUpdate extends CController {
@@ -54,7 +37,7 @@ class CControllerAuthenticationUpdate extends CController {
 			'ldap_search_attribute' => 'db config.ldap_search_attribute',
 			'ldap_bind_password' => 'db config.ldap_bind_password',
 			'http_auth_enabled' => 'in '.ZBX_AUTH_HTTP_DISABLED.','.ZBX_AUTH_HTTP_ENABLED,
-			'http_login_form' => 'in '.ZBX_AUTH_FORM_ZABBIX.','.ZBX_AUTH_FORM_HTTP,
+			'http_login_form' => 'in '.ZBX_AUTH_FORM_TREEGIX.','.ZBX_AUTH_FORM_HTTP,
 			'http_strip_domains' => 'db config.http_strip_domains'
 		];
 
@@ -237,7 +220,7 @@ class CControllerAuthenticationUpdate extends CController {
 				}
 
 				$this->response->setMessageOk(_('Authentication settings updated'));
-				add_audit(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_ZABBIX_CONFIG, _('Authentication method changed'));
+				add_audit(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_TREEGIX_CONFIG, _('Authentication method changed'));
 			}
 			else {
 				$this->response->setFormData($this->getInputAll());

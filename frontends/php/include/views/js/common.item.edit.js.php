@@ -53,8 +53,8 @@
 $this->data['typeVisibility'] = [];
 
 if (!empty($this->data['interfaces'])) {
-	zbx_subarray_push($this->data['typeVisibility'], ITEM_TYPE_ZABBIX, 'interface_row');
-	zbx_subarray_push($this->data['typeVisibility'], ITEM_TYPE_ZABBIX, 'interfaceid');
+	zbx_subarray_push($this->data['typeVisibility'], ITEM_TYPE_TREEGIX, 'interface_row');
+	zbx_subarray_push($this->data['typeVisibility'], ITEM_TYPE_TREEGIX, 'interfaceid');
 	zbx_subarray_push($this->data['typeVisibility'], ITEM_TYPE_SIMPLE, 'interface_row');
 	zbx_subarray_push($this->data['typeVisibility'], ITEM_TYPE_SIMPLE, 'interfaceid');
 	zbx_subarray_push($this->data['typeVisibility'], ITEM_TYPE_SNMPV1, 'interface_row');

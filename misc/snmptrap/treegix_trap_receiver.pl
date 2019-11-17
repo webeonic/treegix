@@ -1,26 +1,9 @@
 #!/usr/bin/env perl
 
-#
-# Treegix
-# Copyright (C) 2001-2019 Treegix SIA
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#
+
 
 #########################################
-#### ABOUT ZABBIX SNMP TRAP RECEIVER ####
+#### ABOUT TREEGIX SNMP TRAP RECEIVER ####
 #########################################
 
 # This is an embedded perl SNMP trapper receiver designed for sending data to the server.
@@ -31,7 +14,7 @@
 #	http://net-snmp.sourceforge.net/wiki/index.php/Tut:Extending_snmpd_using_perl
 
 #################################################
-#### ZABBIX SNMP TRAP RECEIVER CONFIGURATION ####
+#### TREEGIX SNMP TRAP RECEIVER CONFIGURATION ####
 #################################################
 
 ### Option: SNMPTrapperFile
@@ -51,7 +34,7 @@ $SNMPTrapperFile = '/tmp/treegix_traps.tmp';
 $DateTimeFormat = '%H:%M:%S %Y/%m/%d';
 
 ###################################
-#### ZABBIX SNMP TRAP RECEIVER ####
+#### TREEGIX SNMP TRAP RECEIVER ####
 ###################################
 
 use Fcntl qw(O_WRONLY O_APPEND O_CREAT);

@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+ 
 
 
 require_once dirname(__FILE__).'/include/config.inc.php';
@@ -159,11 +142,11 @@ if (hasRequest('add') || hasRequest('update')) {
 		$map['sysmapid'] = getRequest('sysmapid');
 
 		// Only administrators can set map owner.
-		if (CWebUser::getType() == USER_TYPE_ZABBIX_USER) {
+		if (CWebUser::getType() == USER_TYPE_TREEGIX_USER) {
 			unset($map['userid']);
 		}
 		// Map update with inaccessible user.
-		elseif (CWebUser::getType() == USER_TYPE_ZABBIX_ADMIN && $map['userid'] === '') {
+		elseif (CWebUser::getType() == USER_TYPE_TREEGIX_ADMIN && $map['userid'] === '') {
 			$user_exist = API::User()->get([
 				'output' => ['userid'],
 				'userids' => [$sysmap['userid']]

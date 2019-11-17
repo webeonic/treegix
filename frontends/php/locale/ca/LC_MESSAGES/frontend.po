@@ -18531,7 +18531,7 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr ""
 
 #: index.php:28
-msgid "ZABBIX"
+msgid "TREEGIX"
 msgstr ""
 
 #: include/page_header.php:156
@@ -18551,7 +18551,7 @@ msgid "Treegix Super Admin"
 msgstr ""
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
+msgid ""
 msgstr ""
 
 #: include/users.inc.php:54

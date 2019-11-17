@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "db.h"
@@ -552,7 +535,7 @@ static int	get_proxyconfig_table_items(zbx_uint64_t proxy_hostid, struct zbx_jso
 			proxy_hostid,
 			HOST_STATUS_MONITORED, HOST_STATUS_NOT_MONITORED,
 			ZBX_FLAG_DISCOVERY_PROTOTYPE,
-			ITEM_TYPE_ZABBIX, ITEM_TYPE_ZABBIX_ACTIVE, ITEM_TYPE_SNMPv1, ITEM_TYPE_SNMPv2c,
+			ITEM_TYPE_TREEGIX, ITEM_TYPE_TREEGIX_ACTIVE, ITEM_TYPE_SNMPv1, ITEM_TYPE_SNMPv2c,
 			ITEM_TYPE_SNMPv3, ITEM_TYPE_IPMI, ITEM_TYPE_TRAPPER, ITEM_TYPE_SIMPLE,
 			ITEM_TYPE_HTTPTEST, ITEM_TYPE_EXTERNAL, ITEM_TYPE_DB_MONITOR, ITEM_TYPE_SSH,
 			ITEM_TYPE_TELNET, ITEM_TYPE_JMX, ITEM_TYPE_SNMPTRAP, ITEM_TYPE_INTERNAL,
@@ -3496,7 +3479,7 @@ static int	agent_item_validator(DC_ITEM *item, zbx_socket_t *sock, void *args, c
 	if (0 != item->host.proxy_hostid)
 		return FAIL;
 
-	if (ITEM_TYPE_ZABBIX_ACTIVE != item->type)
+	if (ITEM_TYPE_TREEGIX_ACTIVE != item->type)
 		return FAIL;
 
 	if (rights->hostid != item->host.hostid)
@@ -4708,7 +4691,7 @@ int	zbx_check_protocol_version(DC_PROXY *proxy)
 	int	print_log = 0;
 
 	/* warn if another proxy version is used and proceed with compatibility rules*/
-	if ((server_version = ZBX_COMPONENT_VERSION(ZABBIX_VERSION_MAJOR, ZABBIX_VERSION_MINOR)) != proxy->version)
+	if ((server_version = ZBX_COMPONENT_VERSION(TREEGIX_VERSION_MAJOR, TREEGIX_VERSION_MINOR)) != proxy->version)
 	{
 		now = (int)time(NULL);
 
@@ -4738,7 +4721,7 @@ int	zbx_check_protocol_version(DC_PROXY *proxy)
 			treegix_log(LOG_LEVEL_WARNING, "proxy \"%s\" protocol version %d.%d differs from server version"
 					" %d.%d", proxy->host, ZBX_COMPONENT_VERSION_MAJOR(proxy->version),
 					ZBX_COMPONENT_VERSION_MINOR(proxy->version),
-					ZABBIX_VERSION_MAJOR, ZABBIX_VERSION_MINOR);
+					TREEGIX_VERSION_MAJOR, TREEGIX_VERSION_MINOR);
 		}
 
 		if (proxy->version > server_version)

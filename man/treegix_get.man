@@ -33,7 +33,7 @@
 .
 .  hy \\n(HY
 ..
-.TH ZABBIX_GET 1 "2019\-01\-29" Treegix
+.TH TREEGIX_GET 1 "2019\-01\-29" Treegix
 .SH NAME
 treegix_get \- Treegix get utility
 .SH SYNOPSIS

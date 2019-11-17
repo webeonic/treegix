@@ -18,7 +18,7 @@ libzbxproxy_a_SOURCES = \
 	proxy_alerter_protocol.c
 
 libzbxproxy_a_CFLAGS = \
-	-DZABBIX_DAEMON
+	-DTREEGIX_DAEMON
 
 treegix_proxy_SOURCES = proxy.c
 

@@ -23,7 +23,7 @@ libzbxagent_a_SOURCES = \
 	metrics.h
 
 libzbxagent_a_CFLAGS = \
-	-DZABBIX_DAEMON
+	-DTREEGIX_DAEMON
 
 treegix_agentd_SOURCES = treegix_agentd.c
 
@@ -56,7 +56,7 @@ treegix_agentd_LDADD += @AGENT_LIBS@
 treegix_agentd_LDFLAGS = @AGENT_LDFLAGS@
 
 treegix_agentd_CFLAGS = \
-	-DZABBIX_DAEMON \
+	-DTREEGIX_DAEMON \
 	-DDEFAULT_CONFIG_FILE="\"@AGENT_CONFIG_FILE@\"" \
 	-DDEFAULT_LOAD_MODULE_PATH="\"@LOAD_MODULE_PATH@\""
 

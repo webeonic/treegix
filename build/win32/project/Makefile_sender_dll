@@ -28,7 +28,7 @@ POSTBUILD = post-build
 POSTCLEAN = post-clean
 
 ADD_CFLAGS = $(ADD_CFLAGS) /D NDEBUG
-ADD_RFLAGS = /d "ZABBIX_SENDER"
+ADD_RFLAGS = /d "TREEGIX_SENDER"
 
 !INCLUDE Makefile_common.inc
 

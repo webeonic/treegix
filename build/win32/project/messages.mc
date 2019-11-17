@@ -1,5 +1,5 @@
 ;/****************************************************************************
-; Messages for ZABBIX Win32 Agent
+; Messages for TREEGIX Win32 Agent
 ;****************************************************************************/
 ;
 ;#ifndef _messages_h_
@@ -9,7 +9,7 @@
 MessageIdTypedef=DWORD
 
 MessageId=1
-SymbolicName=MSG_ZABBIX_MESSAGE
+SymbolicName=MSG_TREEGIX_MESSAGE
 Language=English
 %1 %2
 .

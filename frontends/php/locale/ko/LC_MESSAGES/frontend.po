@@ -3384,7 +3384,7 @@ msgstr "GUI 설정"
 
 #: include/audit.inc.php:25
 msgid "Configuration of Treegix"
-msgstr "ZABBIX 설정"
+msgstr "TREEGIX 설정"
 
 #: actionconf.php:27
 msgid "Configuration of actions"
@@ -18444,8 +18444,8 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr "데이터베이스가 정상으로 동작하지 않습니다. 잠시 기다렸다가 다시 시도해주세요. 그래도 문제가 해결되지 않는 경우, 시스템 관리자에게 연락해주십시오. 이 문제는 장시간 사용중인 트랜젝션이나 DBMS에 의해 row level lock이 발생하였을 가능성도 있습니다."
 
 #: index.php:28
-msgid "ZABBIX"
-msgstr "ZABBIX"
+msgid "TREEGIX"
+msgstr "TREEGIX"
 
 #: include/page_header.php:156
 msgid "Treegix"
@@ -18453,7 +18453,7 @@ msgstr "Treegix"
 
 #: include/users.inc.php:55
 msgid "Treegix Admin"
-msgstr "ZABBIX 관리자"
+msgstr "TREEGIX 관리자"
 
 #: app/views/layout.htmlpage.menu.php:58
 msgid "Treegix Share"
@@ -18461,15 +18461,15 @@ msgstr "Treegix Share"
 
 #: include/users.inc.php:56
 msgid "Treegix Super Admin"
-msgstr "ZABBIX 최고 관리자"
+msgstr "TREEGIX 최고 관리자"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
+msgid ""
 msgstr "Treegix 기술 지원"
 
 #: include/users.inc.php:54
 msgid "Treegix User"
-msgstr "ZABBIX 유저"
+msgstr "TREEGIX 유저"
 
 #: app/views/administration.script.edit.php:50
 #: app/views/monitoring.widget.hostavail.view.php:23
@@ -18481,15 +18481,15 @@ msgstr "ZABBIX 유저"
 #: include/views/configuration.action.edit.php:2192
 #: include/views/js/configuration.discovery.edit.js.php:219
 msgid "Treegix agent"
-msgstr "ZABBIX 에이전트"
+msgstr "TREEGIX 에이전트"
 
 #: include/items.inc.php:87
 msgid "Treegix agent (active)"
-msgstr "ZABBIX 에이전트 (액티브)"
+msgstr "TREEGIX 에이전트 (액티브)"
 
 #: include/items.inc.php:95
 msgid "Treegix aggregate"
-msgstr "ZABBIX 집합"
+msgstr "TREEGIX 집합"
 
 #: include/validate.inc.php:369
 msgid "Treegix has received an incorrect request."
@@ -18497,7 +18497,7 @@ msgstr "잘못된 URL 파라미터"
 
 #: include/items.inc.php:93
 msgid "Treegix internal"
-msgstr "ZABBIX 내장"
+msgstr "TREEGIX 내장"
 
 #: include/perm.inc.php:48
 msgid "Treegix internal authentication"

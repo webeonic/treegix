@@ -20,7 +20,7 @@ RUN apt-get install -y postgresql-10
 
 #create treegix user
 RUN addgroup --system --quiet treegix
-RUN adduser --quiet --system --disabled-login --ingroup treegix --home /var/lib/zabbix --no-create-home treegix
+RUN adduser --quiet --system --disabled-login --ingroup treegix --home /var/lib/treegix --no-create-home treegix
 
 #create treegix db and user
 USER postgres

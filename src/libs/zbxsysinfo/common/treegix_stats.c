@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2018 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "comms.h"
@@ -138,7 +121,7 @@ int	zbx_get_remote_treegix_stats(const char *ip, unsigned short port, AGENT_RESU
 	struct zbx_json	json;
 
 	zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_ZABBIX_STATS, ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&json, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_TREEGIX_STATS, ZBX_JSON_TYPE_STRING);
 
 	get_remote_treegix_stats(&json, ip, port, result);
 
@@ -169,8 +152,8 @@ int	zbx_get_remote_treegix_stats_queue(const char *ip, unsigned short port, cons
 	struct zbx_json	json;
 
 	zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_ZABBIX_STATS, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(&json, ZBX_PROTO_TAG_TYPE, ZBX_PROTO_VALUE_ZABBIX_STATS_QUEUE, ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&json, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_TREEGIX_STATS, ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&json, ZBX_PROTO_TAG_TYPE, ZBX_PROTO_VALUE_TREEGIX_STATS_QUEUE, ZBX_JSON_TYPE_STRING);
 
 	zbx_json_addobject(&json, ZBX_PROTO_TAG_PARAMS);
 
@@ -188,7 +171,7 @@ int	zbx_get_remote_treegix_stats_queue(const char *ip, unsigned short port, cons
 	return 0 == ISSET_MSG(result) ? SUCCEED : FAIL;
 }
 
-int	ZABBIX_STATS(AGENT_REQUEST *request, AGENT_RESULT *result)
+int	TREEGIX_STATS(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	const char	*ip_str, *port_str, *tmp;
 	unsigned short	port_number;
@@ -217,7 +200,7 @@ int	ZABBIX_STATS(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (SUCCEED != zbx_get_remote_treegix_stats(ip_str, port_number, result))
 			return SYSINFO_RET_FAIL;
 	}
-	else if (0 == strcmp((tmp = get_rparam(request, 2)), ZBX_PROTO_VALUE_ZABBIX_STATS_QUEUE))
+	else if (0 == strcmp((tmp = get_rparam(request, 2)), ZBX_PROTO_VALUE_TREEGIX_STATS_QUEUE))
 	{
 		if (SUCCEED != zbx_get_remote_treegix_stats_queue(ip_str, port_number, get_rparam(request, 3),
 				get_rparam(request, 4), result))

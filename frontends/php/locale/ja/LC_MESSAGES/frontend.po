@@ -18443,7 +18443,7 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr "データベースが正常に動作していません。数分待ってからリトライを行ってください。それでも問題が解決しない場合は、システム管理者に連絡してください。この問題は、長時間かかっているトランザクションやDBMSによる行レベルロックによって発生する可能性があります。"
 
 #: index.php:28
-msgid "ZABBIX"
+msgid "TREEGIX"
 msgstr "Treegix"
 
 #: include/page_header.php:156
@@ -18463,7 +18463,7 @@ msgid "Treegix Super Admin"
 msgstr "特権管理者"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
+msgid ""
 msgstr "Treegix技術サポート"
 
 #: include/users.inc.php:54

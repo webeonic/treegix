@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "log.h"
@@ -80,8 +63,8 @@ static ZBX_THREAD_LOCAL volatile sig_atomic_t	zbx_timed_out;	/* 0 - no timeout o
 
 #ifdef _WINDOWS
 
-char	ZABBIX_SERVICE_NAME[ZBX_SERVICE_NAME_LEN] = APPLICATION_NAME;
-char	ZABBIX_EVENT_SOURCE[ZBX_SERVICE_NAME_LEN] = APPLICATION_NAME;
+char	TREEGIX_SERVICE_NAME[ZBX_SERVICE_NAME_LEN] = APPLICATION_NAME;
+char	TREEGIX_EVENT_SOURCE[ZBX_SERVICE_NAME_LEN] = APPLICATION_NAME;
 
 int	__zbx_stat(const char *path, zbx_stat_t *buf)
 {
@@ -2139,7 +2122,7 @@ int	calculate_item_nextcheck(zbx_uint64_t seed, int item_type, int simple_interv
 	int	nextcheck = 0;
 
 	/* special processing of active items to see better view in queue */
-	if (ITEM_TYPE_ZABBIX_ACTIVE == item_type)
+	if (ITEM_TYPE_TREEGIX_ACTIVE == item_type)
 	{
 		if (0 != simple_interval)
 			nextcheck = (int)now + simple_interval;
@@ -3509,7 +3492,7 @@ unsigned char	get_interface_type_by_item_type(unsigned char type)
 {
 	switch (type)
 	{
-		case ITEM_TYPE_ZABBIX:
+		case ITEM_TYPE_TREEGIX:
 			return INTERFACE_TYPE_AGENT;
 		case ITEM_TYPE_SNMPv1:
 		case ITEM_TYPE_SNMPv2c:
@@ -3755,12 +3738,12 @@ int	zbx_get_agent_item_nextcheck(zbx_uint64_t itemid, const char *delay, unsigne
 			return FAIL;
 		}
 
-		*nextcheck = calculate_item_nextcheck(itemid, ITEM_TYPE_ZABBIX, simple_interval, custom_intervals, now);
+		*nextcheck = calculate_item_nextcheck(itemid, ITEM_TYPE_TREEGIX, simple_interval, custom_intervals, now);
 		zbx_custom_interval_free(custom_intervals);
 	}
 	else	/* for items notsupported for other reasons use refresh_unsupported interval */
 	{
-		*nextcheck = calculate_item_nextcheck(itemid, ITEM_TYPE_ZABBIX, refresh_unsupported, NULL, now);
+		*nextcheck = calculate_item_nextcheck(itemid, ITEM_TYPE_TREEGIX, refresh_unsupported, NULL, now);
 	}
 
 	return SUCCEED;

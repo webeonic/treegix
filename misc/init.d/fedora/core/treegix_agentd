@@ -1,17 +1,4 @@
 #!/bin/bash
-#
-# chkconfig: - 90 10
-# description:  Starts and stops Treegix Agent using chkconfig
-#				Tested on Fedora Core 2 - 5
-#				Should work on all Fedora Core versions
-#
-# @name:	treegix_agentd
-# @author:	Alexander Hagenah <hagenah@topconcepts.com>
-# @created:	18.04.2006
-#
-# Modified for Treegix 2.0.0
-# May 2012, Treegix SIA
-#
 # Source function library.
 . /etc/init.d/functions
 

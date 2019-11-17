@@ -3445,7 +3445,7 @@ msgstr "GUI konfigulásása"
 
 #: include/audit.inc.php:25
 msgid "Configuration of Treegix"
-msgstr "ZABBIX konfigurálása"
+msgstr "TREEGIX konfigurálása"
 
 #: actionconf.php:27
 msgid "Configuration of actions"
@@ -15718,7 +15718,7 @@ msgid "Sunday"
 msgstr "Vasárnap"
 
 #: app/views/layout.htmlpage.menu.php:46 include/views/general.login.php:83
-msgid "Support"
+msgid ""
 msgstr ""
 
 #: include/html.inc.php:850
@@ -18541,8 +18541,8 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr ""
 
 #: index.php:28
-msgid "ZABBIX"
-msgstr "ZABBIX"
+msgid "TREEGIX"
+msgstr "TREEGIX"
 
 #: include/page_header.php:156
 msgid "Treegix"
@@ -18561,7 +18561,7 @@ msgid "Treegix Super Admin"
 msgstr "Treegix Szuper Admin"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
+msgid ""
 msgstr ""
 
 #: include/users.inc.php:54
@@ -18578,15 +18578,15 @@ msgstr "Treegix felhasználó"
 #: include/views/configuration.action.edit.php:2192
 #: include/views/js/configuration.discovery.edit.js.php:219
 msgid "Treegix agent"
-msgstr "ZABBIX agent"
+msgstr "TREEGIX agent"
 
 #: include/items.inc.php:87
 msgid "Treegix agent (active)"
-msgstr "ZABBIX agent (aktív)"
+msgstr "TREEGIX agent (aktív)"
 
 #: include/items.inc.php:95
 msgid "Treegix aggregate"
-msgstr "ZABBIX összeg"
+msgstr "TREEGIX összeg"
 
 #: include/validate.inc.php:369
 msgid "Treegix has received an incorrect request."
@@ -18594,7 +18594,7 @@ msgstr ""
 
 #: include/items.inc.php:93
 msgid "Treegix internal"
-msgstr "ZABBIX belső"
+msgstr "TREEGIX belső"
 
 #: include/perm.inc.php:48
 msgid "Treegix internal authentication"
@@ -18655,7 +18655,7 @@ msgstr ""
 
 #: include/items.inc.php:94
 msgid "Treegix trapper"
-msgstr "ZABBIX trapper"
+msgstr "TREEGIX trapper"
 
 #: include/classes/html/CFilter.php:251
 msgid "Zoom out"

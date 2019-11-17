@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -48,7 +31,7 @@ class CXmlConstantName {
 	const NO = 'NO';
 	const YES = 'YES';
 
-	const ZABBIX = 'ZABBIX';
+	const TREEGIX = 'TREEGIX';
 	const SNMP = 'SNMP';
 	const IPMI = 'IPMI';
 	const JMX = 'JMX';
@@ -206,14 +189,14 @@ class CXmlConstantName {
 	const AUTHNOPRIV = 'AUTHNOPRIV';
 	const AUTHPRIV = 'AUTHPRIV';
 
-	const ZABBIX_PASSIVE = 'ZABBIX_PASSIVE';
+	const TREEGIX_PASSIVE = 'TREEGIX_PASSIVE';
 	const SNMPV1 = 'SNMPV1';
 	const TRAP = 'TRAP';
 	// const SIMPLE = 'SIMPLE'; // Duplicate.
 	const SNMPV2 = 'SNMPV2';
 	const INTERNAL = 'INTERNAL';
 	const SNMPV3 = 'SNMPV3';
-	const ZABBIX_ACTIVE = 'ZABBIX_ACTIVE';
+	const TREEGIX_ACTIVE = 'TREEGIX_ACTIVE';
 	const AGGREGATE = 'AGGREGATE';
 	const EXTERNAL = 'EXTERNAL';
 	const ODBC = 'ODBC';

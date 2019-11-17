@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "sysinfo.h"
@@ -100,9 +83,9 @@ char	*CONFIG_TLS_PSK_FILE		= NULL;
 
 #include "symbols.h"
 
-#if defined(ZABBIX_SERVICE)
+#if defined(TREEGIX_SERVICE)
 #	include "service.h"
-#elif defined(ZABBIX_DAEMON)
+#elif defined(TREEGIX_DAEMON)
 #	include "daemon.h"
 #endif
 
@@ -118,9 +101,9 @@ const char	title_message[] = "treegix_agentd"
 #elif defined(_WIN32)
 				" Win32"
 #endif
-#if defined(ZABBIX_SERVICE)
+#if defined(TREEGIX_SERVICE)
 				" (service)"
-#elif defined(ZABBIX_DAEMON)
+#elif defined(TREEGIX_DAEMON)
 				" (daemon)"
 #endif
 	;
@@ -894,7 +877,7 @@ static int	zbx_exec_service_task(const char *name, const ZBX_TASK_EX *t)
 }
 #endif	/* _WINDOWS */
 
-int	MAIN_ZABBIX_ENTRY(int flags)
+int	MAIN_TREEGIX_ENTRY(int flags)
 {
 	zbx_socket_t	listen_sock;
 	char		*error = NULL;
@@ -906,7 +889,7 @@ int	MAIN_ZABBIX_ENTRY(int flags)
 	if (0 != (flags & ZBX_TASK_FLAG_FOREGROUND))
 	{
 		printf("Starting Treegix Agent [%s]. Treegix %s (revision %s).\nPress Ctrl+C to exit.\n\n",
-				CONFIG_HOSTNAME, ZABBIX_VERSION, ZABBIX_REVISION);
+				CONFIG_HOSTNAME, TREEGIX_VERSION, TREEGIX_REVISION);
 	}
 #ifndef _WINDOWS
 	if (SUCCEED != zbx_locks_create(&error))
@@ -935,7 +918,7 @@ int	MAIN_ZABBIX_ENTRY(int flags)
 #endif
 
 	treegix_log(LOG_LEVEL_INFORMATION, "Starting Treegix Agent [%s]. Treegix %s (revision %s).",
-			CONFIG_HOSTNAME, ZABBIX_VERSION, ZABBIX_REVISION);
+			CONFIG_HOSTNAME, TREEGIX_VERSION, TREEGIX_REVISION);
 
 	treegix_log(LOG_LEVEL_INFORMATION, "**** Enabled features ****");
 	treegix_log(LOG_LEVEL_INFORMATION, "IPv6 support:          " IPV6_FEATURE_STATUS);
@@ -1122,7 +1105,7 @@ void	zbx_free_service_resources(int ret)
 	zbx_unload_modules();
 #endif
 	treegix_log(LOG_LEVEL_INFORMATION, "Treegix Agent stopped. Treegix %s (revision %s).",
-			ZABBIX_VERSION, ZABBIX_REVISION);
+			TREEGIX_VERSION, TREEGIX_REVISION);
 
 	treegix_close_log();
 }
@@ -1204,9 +1187,9 @@ int	main(int argc, char **argv)
 			{
 				zbx_load_config(ZBX_CFG_FILE_REQUIRED, &t);
 
-				zbx_snprintf(ZABBIX_SERVICE_NAME, sizeof(ZABBIX_SERVICE_NAME), "%s [%s]",
+				zbx_snprintf(TREEGIX_SERVICE_NAME, sizeof(TREEGIX_SERVICE_NAME), "%s [%s]",
 						APPLICATION_NAME, CONFIG_HOSTNAME);
-				zbx_snprintf(ZABBIX_EVENT_SOURCE, sizeof(ZABBIX_EVENT_SOURCE), "%s [%s]",
+				zbx_snprintf(TREEGIX_EVENT_SOURCE, sizeof(TREEGIX_EVENT_SOURCE), "%s [%s]",
 						APPLICATION_NAME, CONFIG_HOSTNAME);
 			}
 			else
@@ -1286,7 +1269,7 @@ int	main(int argc, char **argv)
 			break;
 	}
 
-	START_MAIN_ZABBIX_ENTRY(CONFIG_ALLOW_ROOT, CONFIG_USER, t.flags);
+	START_MAIN_TREEGIX_ENTRY(CONFIG_ALLOW_ROOT, CONFIG_USER, t.flags);
 
 	exit(EXIT_SUCCESS);
 }

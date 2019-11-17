@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -33,7 +16,7 @@ class CMediatype extends CApiService {
 	 *
 	 * @param array $options
 	 * @param array $options['mediatypeids'] filter by Mediatype IDs
-	 * @param boolean $options['type'] filter by Mediatype type [ USER_TYPE_ZABBIX_USER: 1, USER_TYPE_ZABBIX_ADMIN: 2, USER_TYPE_SUPER_ADMIN: 3 ]
+	 * @param boolean $options['type'] filter by Mediatype type [ USER_TYPE_TREEGIX_USER: 1, USER_TYPE_TREEGIX_ADMIN: 2, USER_TYPE_SUPER_ADMIN: 3 ]
 	 * @param boolean $options['output'] output only Mediatype IDs if not set.
 	 * @param boolean $options['count'] output only count of objects in result. ( result returned in property 'rowscount' )
 	 * @param string $options['pattern'] filter by Host name containing only give pattern
@@ -81,7 +64,7 @@ class CMediatype extends CApiService {
 		// permission check
 		if (self::$userData['type'] == USER_TYPE_SUPER_ADMIN) {
 		}
-		elseif (!$options['editable'] && self::$userData['type'] == USER_TYPE_ZABBIX_ADMIN) {
+		elseif (!$options['editable'] && self::$userData['type'] == USER_TYPE_TREEGIX_ADMIN) {
 		}
 		elseif ($options['editable'] || self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
 			return [];

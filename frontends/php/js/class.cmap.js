@@ -1,32 +1,15 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
 
 
-ZABBIX.namespace('classes.Observer');
 
-ZABBIX.classes.Observer = (function() {
+TREEGIX.namespace('classes.Observer');
+
+TREEGIX.classes.Observer = (function() {
 	var Observer = function() {
 		this.listeners = {};
 	};
 
 	Observer.prototype = {
-		constructor: ZABBIX.classes.Observer,
+		constructor: TREEGIX.classes.Observer,
 
 		bind: function(event, callback) {
 			var i;
@@ -86,11 +69,11 @@ ZABBIX.classes.Observer = (function() {
 	return Observer;
 }());
 
-ZABBIX.namespace('apps.map');
+TREEGIX.namespace('apps.map');
 
-ZABBIX.apps.map = (function($) {
+TREEGIX.apps.map = (function($) {
 	// dependencies
-	var Observer = ZABBIX.classes.Observer;
+	var Observer = TREEGIX.classes.Observer;
 
 	function createMap(containerId, mapData) {
 		var CMap = function(containerId, mapData) {

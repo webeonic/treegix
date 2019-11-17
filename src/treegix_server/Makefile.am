@@ -34,7 +34,7 @@ libzbxserver_a_SOURCES = \
 	postinit.c postinit.h
 
 libzbxserver_a_CFLAGS = \
-	-DZABBIX_DAEMON \
+	-DTREEGIX_DAEMON \
 	-I@top_srcdir@/src/libs/zbxdbcache
 
 treegix_server_SOURCES = server.c

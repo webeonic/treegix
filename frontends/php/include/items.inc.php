@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -83,8 +66,8 @@ function get_item_logtype_style($logtype) {
  */
 function item_type2str($type = null) {
 	$types = [
-		ITEM_TYPE_ZABBIX => _('Treegix agent'),
-		ITEM_TYPE_ZABBIX_ACTIVE => _('Treegix agent (active)'),
+		ITEM_TYPE_TREEGIX => _('Treegix agent'),
+		ITEM_TYPE_TREEGIX_ACTIVE => _('Treegix agent (active)'),
 		ITEM_TYPE_SIMPLE => _('Simple check'),
 		ITEM_TYPE_SNMPV1 => _('SNMPv1 agent'),
 		ITEM_TYPE_SNMPV2C => _('SNMPv2 agent'),
@@ -360,7 +343,7 @@ function itemTypeInterface($type = null) {
 		ITEM_TYPE_SNMPV3 => INTERFACE_TYPE_SNMP,
 		ITEM_TYPE_SNMPTRAP => INTERFACE_TYPE_SNMP,
 		ITEM_TYPE_IPMI => INTERFACE_TYPE_IPMI,
-		ITEM_TYPE_ZABBIX => INTERFACE_TYPE_AGENT,
+		ITEM_TYPE_TREEGIX => INTERFACE_TYPE_AGENT,
 		ITEM_TYPE_SIMPLE => INTERFACE_TYPE_ANY,
 		ITEM_TYPE_EXTERNAL => INTERFACE_TYPE_ANY,
 		ITEM_TYPE_SSH => INTERFACE_TYPE_ANY,
@@ -1932,7 +1915,7 @@ function expandItemNamesWithMasterItems($items, $data_source) {
  */
 function checkNowAllowedTypes() {
 	return [
-		ITEM_TYPE_ZABBIX,
+		ITEM_TYPE_TREEGIX,
 		ITEM_TYPE_SNMPV1,
 		ITEM_TYPE_SIMPLE,
 		ITEM_TYPE_SNMPV2C,

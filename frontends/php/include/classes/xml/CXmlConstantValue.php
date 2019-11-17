@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -49,7 +32,7 @@ class CXmlConstantValue {
 	const NO = 0;
 	const YES = 1;
 
-	const ZABBIX = INTERFACE_TYPE_AGENT;
+	const TREEGIX = INTERFACE_TYPE_AGENT;
 	const SNMP = INTERFACE_TYPE_SNMP;
 	const IPMI = INTERFACE_TYPE_IPMI;
 	const JMX = INTERFACE_TYPE_JMX;
@@ -205,14 +188,14 @@ class CXmlConstantValue {
 	const AUTHNOPRIV = ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV;
 	const AUTHPRIV = ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV;
 
-	const ITEM_TYPE_ZABBIX_PASSIVE = ITEM_TYPE_ZABBIX;
+	const ITEM_TYPE_TREEGIX_PASSIVE = ITEM_TYPE_TREEGIX;
 	const ITEM_TYPE_SNMPV1 = ITEM_TYPE_SNMPV1;
 	const ITEM_TYPE_TRAP = ITEM_TYPE_TRAPPER;
 	const ITEM_TYPE_SIMPLE = ITEM_TYPE_SIMPLE;
 	const ITEM_TYPE_SNMPV2 = ITEM_TYPE_SNMPV2C;
 	const ITEM_TYPE_INTERNAL = ITEM_TYPE_INTERNAL;
 	const ITEM_TYPE_SNMPV3 = ITEM_TYPE_SNMPV3;
-	const ITEM_TYPE_ZABBIX_ACTIVE = ITEM_TYPE_ZABBIX_ACTIVE;
+	const ITEM_TYPE_TREEGIX_ACTIVE = ITEM_TYPE_TREEGIX_ACTIVE;
 	const ITEM_TYPE_AGGREGATE = ITEM_TYPE_AGGREGATE;
 	const ITEM_TYPE_EXTERNAL = ITEM_TYPE_EXTERNAL;
 	const ITEM_TYPE_ODBC = ITEM_TYPE_DB_MONITOR;

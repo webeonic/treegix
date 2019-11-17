@@ -18591,8 +18591,8 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr "Ihre Datenbank funktioniert nicht richtig. Bitte warten Sie einige Minuten und wiederholen Sie diese Aktion. Wenn das Problem bestehen bleibt, kontaktieren Sie Ihren System-Administrator. Das Problem wird möglicherweise durch lang andauernde Transaktionen oder durch eine Zeilensperre Ihres Datenbank-Management-Systems verursacht."
 
 #: index.php:28
-msgid "ZABBIX"
-msgstr "ZABBIX"
+msgid "TREEGIX"
+msgstr "TREEGIX"
 
 #: include/page_header.php:156
 msgid "Treegix"
@@ -18611,7 +18611,7 @@ msgid "Treegix Super Admin"
 msgstr "Treegix-Super-Admin"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
+msgid ""
 msgstr ""
 
 #: include/users.inc.php:54

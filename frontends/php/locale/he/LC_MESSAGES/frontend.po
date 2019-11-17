@@ -18546,8 +18546,8 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr "מסד הנתונים שלך אינו פועל כראוי. נא להמתין מספר דקות ולנסות לחזור על פעולה זו. אם הבעיה עדיין מתרחשת, נא ליצור קשר עם מנהל המערכת. הבעיה מתרחשת כנראה עקב פעולות ממושכרות או נעילה ברמת שורה שנגרמו על ידי מערכת ניהול מסד הנתונים שלך."
 
 #: index.php:28
-msgid "ZABBIX"
-msgstr "ZABBIX"
+msgid "TREEGIX"
+msgstr "TREEGIX"
 
 #: include/page_header.php:156
 msgid "Treegix"
@@ -18566,7 +18566,7 @@ msgid "Treegix Super Admin"
 msgstr "מנהל על של Treegix"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
+msgid ""
 msgstr "התמיכה הטכנית של Treegix"
 
 #: include/users.inc.php:54

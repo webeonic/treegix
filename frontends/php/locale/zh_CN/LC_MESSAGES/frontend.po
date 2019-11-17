@@ -18458,7 +18458,7 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr "您的数据库无法正常工作。请等待几分钟，然后尝试重复此操作。如果问题仍然存在，请与系统管理员联系。该问题可能是数据库管理系统由于长期运行的事务或行级锁定引起的。"
 
 #: index.php:28
-msgid "ZABBIX"
+msgid "TREEGIX"
 msgstr "Treegix"
 
 #: include/page_header.php:156
@@ -18478,7 +18478,7 @@ msgid "Treegix Super Admin"
 msgstr "超级管理员"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
+msgid ""
 msgstr "Treegix 技术支持"
 
 #: include/users.inc.php:54

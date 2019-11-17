@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -36,7 +19,7 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 	$zbx_menu = [
 		'view' => [
 			'label' => _('Monitoring'),
-			'user_type' => USER_TYPE_ZABBIX_USER,
+			'user_type' => USER_TYPE_TREEGIX_USER,
 			'default_page_id' => 0,
 			'pages' => [
 				[
@@ -96,7 +79,7 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 					'action' => 'discovery.view',
 					'active_if' => ['discovery.view'],
 					'label' => _('Discovery'),
-					'user_type' => USER_TYPE_ZABBIX_ADMIN
+					'user_type' => USER_TYPE_TREEGIX_ADMIN
 				],
 				[
 					'url' => 'srv_status.php',
@@ -122,7 +105,7 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 		],
 		'cm' => [
 			'label' => _('Inventory'),
-			'user_type' => USER_TYPE_ZABBIX_USER,
+			'user_type' => USER_TYPE_TREEGIX_USER,
 			'default_page_id' => 0,
 			'pages' => [
 				[
@@ -137,7 +120,7 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 		],
 		'reports' => [
 			'label' => _('Reports'),
-			'user_type' => USER_TYPE_ZABBIX_USER,
+			'user_type' => USER_TYPE_TREEGIX_USER,
 			'default_page_id' => 0,
 			'pages' => [
 				[
@@ -169,13 +152,13 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 				[
 					'url' => 'report4.php',
 					'label' => _('Notifications'),
-					'user_type' => USER_TYPE_ZABBIX_ADMIN
+					'user_type' => USER_TYPE_TREEGIX_ADMIN
 				]
 			]
 		],
 		'config' => [
 			'label' => _('Configuration'),
-			'user_type' => USER_TYPE_ZABBIX_ADMIN,
+			'user_type' => USER_TYPE_TREEGIX_ADMIN,
 			'default_page_id' => 0,
 			'pages' => [
 				[

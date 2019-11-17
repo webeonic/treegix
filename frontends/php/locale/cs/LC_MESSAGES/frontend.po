@@ -3502,7 +3502,7 @@ msgstr "Nastavení uživatelského prostředí"
 
 #: include/audit.inc.php:25
 msgid "Configuration of Treegix"
-msgstr "Nastavení ZABBIXe"
+msgstr "Nastavení TREEGIXe"
 
 #: actionconf.php:27
 msgid "Configuration of actions"
@@ -18651,8 +18651,8 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr "Vaše databáze nefunguje správně. Počkejte prosím několik minut a zkuste zopakovat tuto akci. Pokud problém stále přetrvává, kontaktujte prosím systémového administrátora. Problém mohl být způsoben dlouho dobou výměny nebo základním zamknutím provedeným systémem vaší správy databází."
 
 #: index.php:28
-msgid "ZABBIX"
-msgstr "ZABBIX"
+msgid "TREEGIX"
+msgstr "TREEGIX"
 
 #: include/page_header.php:156
 msgid "Treegix"
@@ -18671,8 +18671,8 @@ msgid "Treegix Super Admin"
 msgstr "Treegix super administrátor"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
-msgstr "Treegix Technical Support"
+msgid ""
+msgstr ""
 
 #: include/users.inc.php:54
 msgid "Treegix User"

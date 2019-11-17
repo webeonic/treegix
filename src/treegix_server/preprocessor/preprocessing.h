@@ -1,24 +1,7 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
 
-#ifndef ZABBIX_PREPROCESSING_H
-#define ZABBIX_PREPROCESSING_H
+
+#ifndef TREEGIX_PREPROCESSING_H
+#define TREEGIX_PREPROCESSING_H
 
 #include "common.h"
 #include "module.h"
@@ -70,4 +53,4 @@ zbx_uint32_t	zbx_preprocessor_pack_test_result(unsigned char **data, const zbx_p
 void	zbx_preprocessor_unpack_test_result(zbx_vector_ptr_t *results, zbx_vector_ptr_t *history,
 		char **error, const unsigned char *data);
 
-#endif /* ZABBIX_PREPROCESSING_H */
+#endif /* TREEGIX_PREPROCESSING_H */

@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+ 
 
 
 /**
@@ -59,7 +42,7 @@ class CHelpItems {
 	 */
 	protected function getItems() {
 		return [
-			ITEM_TYPE_ZABBIX => [
+			ITEM_TYPE_TREEGIX => [
 				[
 					'key' => 'agent.hostname',
 					'description' => _('Agent host name. Returns string')
@@ -353,7 +336,7 @@ class CHelpItems {
 					'description' => _('Number of items in the queue which are delayed in Treegix server or proxy by "from" till "to" seconds, inclusive.')
 				]
 			],
-			ITEM_TYPE_ZABBIX_ACTIVE => [
+			ITEM_TYPE_TREEGIX_ACTIVE => [
 				[
 					'key' => 'agent.hostname',
 					'description' => _('Agent host name. Returns string')

@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -82,7 +65,7 @@ class CDashboard extends CApiService {
 		];
 
 		// permissions
-		if (in_array(self::$userData['type'], [USER_TYPE_ZABBIX_USER, USER_TYPE_ZABBIX_ADMIN])) {
+		if (in_array(self::$userData['type'], [USER_TYPE_TREEGIX_USER, USER_TYPE_TREEGIX_ADMIN])) {
 			$permission = $options['editable'] ? PERM_READ_WRITE : PERM_READ;
 
 			$user_groups = getUserGroupsByUserId(self::$userData['userid']);
@@ -459,7 +442,7 @@ class CDashboard extends CApiService {
 			if (array_key_exists('userid', $dashboard)
 					&& ($db_dashboard === null || bccomp($dashboard['userid'], $db_dashboard['userid']) != 0)) {
 				if (bccomp($dashboard['userid'], self::$userData['userid']) != 0
-						&& in_array(self::$userData['type'], [USER_TYPE_ZABBIX_USER, USER_TYPE_ZABBIX_ADMIN])) {
+						&& in_array(self::$userData['type'], [USER_TYPE_TREEGIX_USER, USER_TYPE_TREEGIX_ADMIN])) {
 					self::exception(ZBX_API_ERROR_PARAMETERS, _('Only super admins can set dashboard owner.'));
 				}
 

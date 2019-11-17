@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "threads.h"
@@ -28,7 +11,7 @@
 #endif
 
 static const char	copyright_message[] =
-	"Copyright (C) 2019 Treegix SIA\n"
+	"Copyright (C) 2019 \n"
 	"License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>.\n"
 	"This is free software: you are free to change and redistribute it according to\n"
 	"the license. There is NO WARRANTY, to the extent permitted by law.";
@@ -51,8 +34,8 @@ static const char	help_message_footer[] =
  ******************************************************************************/
 void	version(void)
 {
-	printf("%s (Treegix) %s\n", title_message, ZABBIX_VERSION);
-	printf("Revision %s %s, compilation time: %s %s\n\n", ZABBIX_REVISION, ZABBIX_REVDATE, __DATE__, __TIME__);
+	printf("%s (Treegix) %s\n", title_message, TREEGIX_VERSION);
+	printf("Revision %s %s, compilation time: %s %s\n\n", TREEGIX_REVISION, TREEGIX_REVDATE, __DATE__, __TIME__);
 	puts(copyright_message);
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	printf("\n");
@@ -1308,7 +1291,7 @@ const char	*zbx_agent_type_string(zbx_item_type_t item_type)
 {
 	switch (item_type)
 	{
-		case ITEM_TYPE_ZABBIX:
+		case ITEM_TYPE_TREEGIX:
 			return "Treegix agent";
 		case ITEM_TYPE_SNMPv1:
 		case ITEM_TYPE_SNMPv2c:

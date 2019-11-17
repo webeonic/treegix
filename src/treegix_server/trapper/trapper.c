@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 
@@ -701,7 +684,7 @@ const zbx_status_section_t	status_sections[] = {
 /*		}                                                                                                  */
 /*	},                                                                                                         */
 /*	...                                                                                                        */
-	{"template stats",		ZBX_SECTION_ENTRY_THE_ONLY,	USER_TYPE_ZABBIX_USER,	&templates_res,
+	{"template stats",		ZBX_SECTION_ENTRY_THE_ONLY,	USER_TYPE_TREEGIX_USER,	&templates_res,
 		{
 			{&templates,			ZBX_COUNTER_TYPE_UI64,
 				{
@@ -711,7 +694,7 @@ const zbx_status_section_t	status_sections[] = {
 			{NULL}
 		}
 	},
-	{"host stats",			ZBX_SECTION_ENTRY_PER_PROXY,	USER_TYPE_ZABBIX_USER,	NULL,
+	{"host stats",			ZBX_SECTION_ENTRY_PER_PROXY,	USER_TYPE_TREEGIX_USER,	NULL,
 		{
 			{&hosts_monitored,		ZBX_COUNTER_TYPE_UI64,
 				{
@@ -728,7 +711,7 @@ const zbx_status_section_t	status_sections[] = {
 			{NULL}
 		}
 	},
-	{"item stats",			ZBX_SECTION_ENTRY_PER_PROXY,	USER_TYPE_ZABBIX_USER,	NULL,
+	{"item stats",			ZBX_SECTION_ENTRY_PER_PROXY,	USER_TYPE_TREEGIX_USER,	NULL,
 		{
 			{&items_active_normal,		ZBX_COUNTER_TYPE_UI64,
 				{
@@ -753,7 +736,7 @@ const zbx_status_section_t	status_sections[] = {
 			{NULL}
 		}
 	},
-	{"trigger stats",		ZBX_SECTION_ENTRY_THE_ONLY,	USER_TYPE_ZABBIX_USER,	NULL,
+	{"trigger stats",		ZBX_SECTION_ENTRY_THE_ONLY,	USER_TYPE_TREEGIX_USER,	NULL,
 		{
 			{&triggers_enabled_ok,		ZBX_COUNTER_TYPE_UI64,
 				{
@@ -778,7 +761,7 @@ const zbx_status_section_t	status_sections[] = {
 			{NULL}
 		}
 	},
-	{"user stats",			ZBX_SECTION_ENTRY_THE_ONLY,	USER_TYPE_ZABBIX_USER,	&users_res,
+	{"user stats",			ZBX_SECTION_ENTRY_THE_ONLY,	USER_TYPE_TREEGIX_USER,	&users_res,
 		{
 			{&users_online,			ZBX_COUNTER_TYPE_UI64,
 				{
@@ -1023,7 +1006,7 @@ static int	send_internal_stats_json(zbx_socket_t *sock, const struct zbx_json_pa
 	zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
 
 	if (SUCCEED == zbx_json_value_by_name(jp, ZBX_PROTO_TAG_TYPE, type, sizeof(type)) &&
-			0 == strcmp(type, ZBX_PROTO_VALUE_ZABBIX_STATS_QUEUE))
+			0 == strcmp(type, ZBX_PROTO_VALUE_TREEGIX_STATS_QUEUE))
 	{
 		char			from_str[ZBX_MAX_UINT64_LEN + 1], to_str[ZBX_MAX_UINT64_LEN + 1];
 		int			from = ZBX_QUEUE_FROM_DEFAULT, to = ZBX_QUEUE_TO_INFINITY;
@@ -1056,7 +1039,7 @@ static int	send_internal_stats_json(zbx_socket_t *sock, const struct zbx_json_pa
 		}
 
 		zbx_json_addstring(&json, ZBX_PROTO_TAG_RESPONSE, ZBX_PROTO_VALUE_SUCCESS, ZBX_JSON_TYPE_STRING);
-		zbx_json_adduint64(&json, ZBX_PROTO_VALUE_ZABBIX_STATS_QUEUE, DCget_item_queue(NULL, from, to));
+		zbx_json_adduint64(&json, ZBX_PROTO_VALUE_TREEGIX_STATS_QUEUE, DCget_item_queue(NULL, from, to));
 	}
 	else
 	{
@@ -1183,11 +1166,11 @@ static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
 				if (0 != (program_type & ZBX_PROGRAM_TYPE_SERVER))
 					ret = recv_getstatus(sock, &jp);
 			}
-			else if (0 == strcmp(value, ZBX_PROTO_VALUE_ZABBIX_STATS))
+			else if (0 == strcmp(value, ZBX_PROTO_VALUE_TREEGIX_STATS))
 			{
 				ret = send_internal_stats_json(sock, &jp);
 			}
-			else if (0 == strcmp(value, ZBX_PROTO_VALUE_ZABBIX_ALERT_SEND))
+			else if (0 == strcmp(value, ZBX_PROTO_VALUE_TREEGIX_ALERT_SEND))
 			{
 				if (0 != (program_type & ZBX_PROGRAM_TYPE_SERVER))
 					recv_alert_send(sock, &jp);

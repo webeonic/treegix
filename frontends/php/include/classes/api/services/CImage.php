@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -80,7 +63,7 @@ class CImage extends CApiService {
 		$options = zbx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
-		if ($options['editable'] && self::$userData['type'] < USER_TYPE_ZABBIX_ADMIN) {
+		if ($options['editable'] && self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
 			return [];
 		}
 
@@ -371,7 +354,7 @@ class CImage extends CApiService {
 			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty parameters'));
 		}
 
-		if (self::$userData['type'] < USER_TYPE_ZABBIX_ADMIN) {
+		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
 			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
@@ -443,7 +426,7 @@ class CImage extends CApiService {
 	 */
 	protected function validateCreate(array &$images) {
 		// validate permissions
-		if (self::$userData['type'] < USER_TYPE_ZABBIX_ADMIN) {
+		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
 			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
@@ -495,7 +478,7 @@ class CImage extends CApiService {
 	 * @throws APIException if image with same name already exists.
 	 */
 	protected function validateUpdate(array $images) {
-		if (self::$userData['type'] < USER_TYPE_ZABBIX_ADMIN) {
+		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
 			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 

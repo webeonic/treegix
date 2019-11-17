@@ -18550,8 +18550,8 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr "Veritabanınız düzgün çalışmıyor. Lütfen birkaç dakika bekleyin ve bu işlemi tekrarlamayı deneyin. Sorun devam ederse, lütfen sistem yöneticisine başvurun. Soruna, veritabanı yönetim sisteminiz tarafından gerçekleştirilen uzun süren bir işlem veya satır düzeyi kilidi neden olabilir."
 
 #: index.php:28
-msgid "ZABBIX"
-msgstr "ZABBIX"
+msgid "TREEGIX"
+msgstr "TREEGIX"
 
 #: include/page_header.php:156
 msgid "Treegix"
@@ -18570,7 +18570,7 @@ msgid "Treegix Super Admin"
 msgstr "Treegix Süper Yöneticisi"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
+msgid ""
 msgstr ""
 
 #: include/users.inc.php:54

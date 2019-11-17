@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "comms.h"
@@ -95,7 +78,7 @@ static zbx_uint64_t	select_discovered_host(const DB_EVENT *event)
 
 			zbx_free(ip_esc);
 			break;
-		case EVENT_OBJECT_ZABBIX_ACTIVE:
+		case EVENT_OBJECT_TREEGIX_ACTIVE:
 			sql = zbx_dsprintf(sql,
 					"select h.hostid"
 					" from hosts h,autoreg_host a"
@@ -440,7 +423,7 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 		}
 		DBfree_result(result);
 	}
-	else if (EVENT_OBJECT_ZABBIX_ACTIVE == event->object)
+	else if (EVENT_OBJECT_TREEGIX_ACTIVE == event->object)
 	{
 		result = DBselect(
 				"select proxy_hostid,host,listen_ip,listen_dns,listen_port,flags,tls_accepted"
@@ -594,7 +577,7 @@ static int	is_discovery_or_auto_registration(const DB_EVENT *event)
 		return SUCCEED;
 	}
 
-	if (event->source == EVENT_SOURCE_AUTO_REGISTRATION && event->object == EVENT_OBJECT_ZABBIX_ACTIVE)
+	if (event->source == EVENT_SOURCE_AUTO_REGISTRATION && event->object == EVENT_OBJECT_TREEGIX_ACTIVE)
 		return SUCCEED;
 
 	return FAIL;

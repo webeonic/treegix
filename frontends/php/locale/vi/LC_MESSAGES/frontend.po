@@ -18451,8 +18451,8 @@ msgid "Your database is not working properly. Please wait a few minutes and try 
 msgstr "Cơ sở dữ liệu của bạn không hoạt động đúng. Vui lòng đợi vài phút và cố gắng lặp lại hành động này. Nếu sự cố vẫn còn, vui lòng liên hệ với quản trị viên hệ thống. Vấn đề có thể do giao dịch chạy dài hoặc khóa cấp hàng được thực hiện bởi hệ thống quản lý cơ sở dữ liệu của bạn."
 
 #: index.php:28
-msgid "ZABBIX"
-msgstr "ZABBIX"
+msgid "TREEGIX"
+msgstr "TREEGIX"
 
 #: include/page_header.php:156
 msgid "Treegix"
@@ -18471,7 +18471,7 @@ msgid "Treegix Super Admin"
 msgstr "Treegix Super Admin"
 
 #: app/views/layout.htmlpage.menu.php:49
-msgid "Treegix Technical Support"
+msgid ""
 msgstr "Hỗ trợ kỹ thuật treegix"
 
 #: include/users.inc.php:54

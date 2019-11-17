@@ -1,24 +1,7 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
 
-#ifndef ZABBIX_COMMON_H
-#define ZABBIX_COMMON_H
+
+#ifndef TREEGIX_COMMON_H
+#define TREEGIX_COMMON_H
 
 #include "sysinc.h"
 #include "zbxtypes.h"
@@ -73,8 +56,8 @@
 
 #if defined(_WINDOWS)
 #	define	ZBX_SERVICE_NAME_LEN	64
-extern char ZABBIX_SERVICE_NAME[ZBX_SERVICE_NAME_LEN];
-extern char ZABBIX_EVENT_SOURCE[ZBX_SERVICE_NAME_LEN];
+extern char TREEGIX_SERVICE_NAME[ZBX_SERVICE_NAME_LEN];
+extern char TREEGIX_EVENT_SOURCE[ZBX_SERVICE_NAME_LEN];
 
 #	pragma warning (disable: 4996)	/* warning C4996: <function> was declared deprecated */
 #endif
@@ -147,14 +130,14 @@ int	zbx_double_compare(double a, double b);
 /* item types */
 typedef enum
 {
-	ITEM_TYPE_ZABBIX = 0,
+	ITEM_TYPE_TREEGIX = 0,
 	ITEM_TYPE_SNMPv1,
 	ITEM_TYPE_TRAPPER,
 	ITEM_TYPE_SIMPLE,
 	ITEM_TYPE_SNMPv2c,
 	ITEM_TYPE_INTERNAL,
 	ITEM_TYPE_SNMPv3,
-	ITEM_TYPE_ZABBIX_ACTIVE,
+	ITEM_TYPE_TREEGIX_ACTIVE,
 	ITEM_TYPE_AGGREGATE,
 	ITEM_TYPE_HTTPTEST,
 	ITEM_TYPE_EXTERNAL,
@@ -216,7 +199,7 @@ zbx_item_authtype_t;
 #define EVENT_OBJECT_TRIGGER		0
 #define EVENT_OBJECT_DHOST		1
 #define EVENT_OBJECT_DSERVICE		2
-#define EVENT_OBJECT_ZABBIX_ACTIVE	3
+#define EVENT_OBJECT_TREEGIX_ACTIVE	3
 #define EVENT_OBJECT_ITEM		4
 #define EVENT_OBJECT_LLDRULE		5
 
@@ -746,8 +729,8 @@ const char	*zbx_item_logtype_string(unsigned char logtype);
 /* user permissions */
 typedef enum
 {
-	USER_TYPE_ZABBIX_USER = 1,
-	USER_TYPE_ZABBIX_ADMIN,
+	USER_TYPE_TREEGIX_USER = 1,
+	USER_TYPE_TREEGIX_ADMIN,
 	USER_TYPE_SUPER_ADMIN
 }
 zbx_user_type_t;
@@ -1223,7 +1206,7 @@ void	find_cr_lf_szbyte(const char *encoding, const char **cr, const char **lf, s
 int	zbx_read(int fd, char *buf, size_t count, const char *encoding);
 int	zbx_is_regular_file(const char *path);
 
-int	MAIN_ZABBIX_ENTRY(int flags);
+int	MAIN_TREEGIX_ENTRY(int flags);
 
 zbx_uint64_t	zbx_letoh_uint64(zbx_uint64_t data);
 zbx_uint64_t	zbx_htole_uint64(zbx_uint64_t data);

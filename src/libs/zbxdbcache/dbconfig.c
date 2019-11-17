@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include <stddef.h>
 
@@ -202,7 +185,7 @@ static unsigned char	poller_by_item(unsigned char type, const char *key)
 				return ZBX_POLLER_TYPE_PINGER;
 			}
 			ZBX_FALLTHROUGH;
-		case ITEM_TYPE_ZABBIX:
+		case ITEM_TYPE_TREEGIX:
 		case ITEM_TYPE_SNMPv1:
 		case ITEM_TYPE_SNMPv2c:
 		case ITEM_TYPE_SNMPv3:
@@ -246,7 +229,7 @@ int	zbx_is_counted_in_item_queue(unsigned char type, const char *key)
 {
 	switch (type)
 	{
-		case ITEM_TYPE_ZABBIX_ACTIVE:
+		case ITEM_TYPE_TREEGIX_ACTIVE:
 			if (0 == strncmp(key, "log[", 4) ||
 					0 == strncmp(key, "logrt[", 6) ||
 					0 == strncmp(key, "eventlog[", 9))
@@ -431,7 +414,7 @@ static int	DCget_disable_until(const ZBX_DC_ITEM *item, const ZBX_DC_HOST *host)
 {
 	switch (item->type)
 	{
-		case ITEM_TYPE_ZABBIX:
+		case ITEM_TYPE_TREEGIX:
 			if (0 != host->errors_from)
 				return host->disable_until;
 			break;
@@ -460,7 +443,7 @@ static void	DCincrease_disable_until(const ZBX_DC_ITEM *item, ZBX_DC_HOST *host,
 {
 	switch (item->type)
 	{
-		case ITEM_TYPE_ZABBIX:
+		case ITEM_TYPE_TREEGIX:
 			if (0 != host->errors_from)
 				host->disable_until = now + CONFIG_TIMEOUT;
 			break;
@@ -2305,7 +2288,7 @@ static void	dc_host_update_agent_stats(ZBX_DC_HOST *host, unsigned char type, in
 {
 	switch (type)
 	{
-		case ITEM_TYPE_ZABBIX:
+		case ITEM_TYPE_TREEGIX:
 			host->items_num += num;
 			break;
 		case ITEM_TYPE_SNMPv1:
@@ -8405,7 +8388,7 @@ static void	DChost_get_agent_availability(const ZBX_DC_HOST *dc_host, unsigned c
 
 	switch (agent_type)
 	{
-		case ZBX_AGENT_ZABBIX:
+		case ZBX_AGENT_TREEGIX:
 			agent->available = dc_host->available;
 			agent->error = zbx_strdup(agent->error, dc_host->error);
 			agent->errors_from = dc_host->errors_from;
@@ -8485,7 +8468,7 @@ static int	DChost_set_agent_availability(ZBX_DC_HOST *dc_host, int now, unsigned
 {
 	switch (agent_type)
 	{
-		case ZBX_AGENT_ZABBIX:
+		case ZBX_AGENT_TREEGIX:
 			DCagent_set_availability(agent, &dc_host->available,
 					&dc_host->error, &dc_host->errors_from, &dc_host->disable_until);
 			break;
@@ -8535,7 +8518,7 @@ static int	DChost_set_availability(ZBX_DC_HOST *dc_host, int now, zbx_host_avail
 	int		i;
 	unsigned char	flags = ZBX_FLAGS_AGENT_STATUS_NONE;
 
-	DCagent_set_availability(&ha->agents[ZBX_AGENT_ZABBIX], &dc_host->available, &dc_host->error,
+	DCagent_set_availability(&ha->agents[ZBX_AGENT_TREEGIX], &dc_host->available, &dc_host->error,
 			&dc_host->errors_from, &dc_host->disable_until);
 	DCagent_set_availability(&ha->agents[ZBX_AGENT_SNMP], &dc_host->snmp_available, &dc_host->snmp_error,
 			&dc_host->snmp_errors_from, &dc_host->snmp_disable_until);
@@ -9745,11 +9728,11 @@ int	DCget_item_queue(zbx_vector_ptr_t *queue, int from, int to)
 
 		switch (dc_item->type)
 		{
-			case ITEM_TYPE_ZABBIX:
+			case ITEM_TYPE_TREEGIX:
 				if (HOST_AVAILABLE_TRUE != dc_host->available)
 					continue;
 				break;
-			case ITEM_TYPE_ZABBIX_ACTIVE:
+			case ITEM_TYPE_TREEGIX_ACTIVE:
 				if (dc_host->data_expected_from > (data_expected_from = dc_item->data_expected_from))
 					data_expected_from = dc_host->data_expected_from;
 				if (SUCCEED != zbx_interval_preproc(dc_item->delay, &delay, NULL, NULL))
@@ -10657,7 +10640,7 @@ int	DCreset_hosts_availability(zbx_vector_ptr_t *hosts)
 		}
 
 		if (0 == items_num && HOST_AVAILABLE_UNKNOWN != host->available)
-			zbx_agent_availability_init(&ha->agents[ZBX_AGENT_ZABBIX], HOST_AVAILABLE_UNKNOWN, "", 0, 0);
+			zbx_agent_availability_init(&ha->agents[ZBX_AGENT_TREEGIX], HOST_AVAILABLE_UNKNOWN, "", 0, 0);
 
 		if (0 == snmp_items_num && HOST_AVAILABLE_UNKNOWN != host->snmp_available)
 			zbx_agent_availability_init(&ha->agents[ZBX_AGENT_SNMP], HOST_AVAILABLE_UNKNOWN, "", 0, 0);
@@ -10728,7 +10711,7 @@ int	DCget_hosts_availability(zbx_vector_ptr_t *hosts, int *ts)
 			ha = (zbx_host_availability_t *)zbx_malloc(NULL, sizeof(zbx_host_availability_t));
 			zbx_host_availability_init(ha, host->hostid);
 
-			zbx_agent_availability_init(&ha->agents[ZBX_AGENT_ZABBIX], host->available, host->error,
+			zbx_agent_availability_init(&ha->agents[ZBX_AGENT_TREEGIX], host->available, host->error,
 					host->errors_from, host->disable_until);
 			zbx_agent_availability_init(&ha->agents[ZBX_AGENT_SNMP], host->snmp_available, host->snmp_error,
 					host->snmp_errors_from, host->snmp_disable_until);

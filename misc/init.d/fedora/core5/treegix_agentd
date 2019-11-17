@@ -1,16 +1,4 @@
 #!/bin/bash
-#
-#       /etc/rc.d/init.d/treegix_agentd
-#
-# Starts the treegix_agentd daemon
-#
-# chkconfig: - 95 5
-# description: Treegix Monitoring Agent
-# processname: treegix_agentd
-# pidfile: /tmp/treegix_agentd.pid
-
-# Modified for Treegix 2.0.0
-# May 2012, Treegix SIA
 
 # Source function library.
 
@@ -18,17 +6,17 @@
 
 RETVAL=0
 prog="Treegix Agent"
-ZABBIX_BIN="/usr/local/sbin/treegix_agentd"
+TREEGIX_BIN="/usr/local/sbin/treegix_agentd"
 
-if [ ! -x ${ZABBIX_BIN} ] ; then
-        echo -n "${ZABBIX_BIN} not installed! "
+if [ ! -x ${TREEGIX_BIN} ] ; then
+        echo -n "${TREEGIX_BIN} not installed! "
         # Tell the user this has skipped
         exit 5
 fi
 
 start() {
         echo -n $"Starting $prog: "
-        daemon $ZABBIX_BIN
+        daemon $TREEGIX_BIN
         RETVAL=$?
         [ $RETVAL -eq 0 ] && touch /var/lock/subsys/treegix_agentd
         echo
@@ -36,7 +24,7 @@ start() {
 
 stop() {
         echo -n $"Stopping $prog: "
-        killproc $ZABBIX_BIN
+        killproc $TREEGIX_BIN
         RETVAL=$?
         [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/treegix_agentd
         echo
@@ -62,7 +50,7 @@ case "$1" in
         fi
         ;;
   status)
-        status $ZABBIX_BIN
+        status $TREEGIX_BIN
         RETVAL=$?
         ;;
   *)

@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "checks_internal.h"
@@ -742,7 +725,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 		{
 			tmp1 = get_rparam(&request, 3);
 
-			if (0 == strcmp(tmp1, ZBX_PROTO_VALUE_ZABBIX_STATS_QUEUE))
+			if (0 == strcmp(tmp1, ZBX_PROTO_VALUE_TREEGIX_STATS_QUEUE))
 			{
 				tmp = get_rparam(&request, 4);		/* from */
 				tmp1 = get_rparam(&request, 5);		/* to */
@@ -774,7 +757,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 
 					zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
 
-					zbx_json_adduint64(&json, ZBX_PROTO_VALUE_ZABBIX_STATS_QUEUE,
+					zbx_json_adduint64(&json, ZBX_PROTO_VALUE_TREEGIX_STATS_QUEUE,
 							DCget_item_queue(NULL, from, to));
 
 					set_result_type(result, ITEM_VALUE_TYPE_TEXT, json.buffer);

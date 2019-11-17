@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 #include "log.h"
@@ -249,7 +232,7 @@ static void	unlock_log(void)
 #else
 static void	lock_log(void)
 {
-#ifdef ZABBIX_AGENT
+#ifdef TREEGIX_AGENT
 	if (0 == (ZBX_MUTEX_LOGGING_DENIED & get_thread_global_mutex_flag()))
 #endif
 		LOCK_LOG;
@@ -257,7 +240,7 @@ static void	lock_log(void)
 
 static void	unlock_log(void)
 {
-#ifdef ZABBIX_AGENT
+#ifdef TREEGIX_AGENT
 	if (0 == (ZBX_MUTEX_LOGGING_DENIED & get_thread_global_mutex_flag()))
 #endif
 		UNLOCK_LOG;
@@ -286,7 +269,7 @@ int	treegix_open_log(int type, int level, const char *filename, char **error)
 #ifdef _WINDOWS
 		wchar_t	*wevent_source;
 
-		wevent_source = zbx_utf8_to_unicode(ZABBIX_EVENT_SOURCE);
+		wevent_source = zbx_utf8_to_unicode(TREEGIX_EVENT_SOURCE);
 		system_log_handle = RegisterEventSource(NULL, wevent_source);
 		zbx_free(wevent_source);
 #else
@@ -362,7 +345,7 @@ void	__zbx_treegix_log(int level, const char *fmt, ...)
 	wchar_t		thread_id[20], *strings[2];
 #endif
 
-#ifndef ZBX_ZABBIX_LOG_CHECK
+#ifndef ZBX_TREEGIX_LOG_CHECK
 	if (SUCCEED != ZBX_CHECK_LOG_LEVEL(level))
 		return;
 #endif
@@ -481,7 +464,7 @@ void	__zbx_treegix_log(int level, const char *fmt, ...)
 			system_log_handle,
 			wType,
 			0,
-			MSG_ZABBIX_MESSAGE,
+			MSG_TREEGIX_MESSAGE,
 			NULL,
 			sizeof(strings) / sizeof(*strings),
 			0,

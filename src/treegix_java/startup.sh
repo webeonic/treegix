@@ -24,27 +24,27 @@ for jar in lib/*.jar bin/*.jar; do
 	CLASSPATH="$CLASSPATH:$jar"
 done
 
-ZABBIX_OPTIONS=""
+TREEGIX_OPTIONS=""
 if [ -n "$PID_FILE" ]; then
-	ZABBIX_OPTIONS="$ZABBIX_OPTIONS -Dtreegix.pidFile=$PID_FILE"
+	TREEGIX_OPTIONS="$TREEGIX_OPTIONS -Dtreegix.pidFile=$PID_FILE"
 fi
 if [ -n "$LISTEN_IP" ]; then
-	ZABBIX_OPTIONS="$ZABBIX_OPTIONS -Dtreegix.listenIP=$LISTEN_IP"
+	TREEGIX_OPTIONS="$TREEGIX_OPTIONS -Dtreegix.listenIP=$LISTEN_IP"
 fi
 if [ -n "$LISTEN_PORT" ]; then
-	ZABBIX_OPTIONS="$ZABBIX_OPTIONS -Dtreegix.listenPort=$LISTEN_PORT"
+	TREEGIX_OPTIONS="$TREEGIX_OPTIONS -Dtreegix.listenPort=$LISTEN_PORT"
 fi
 if [ -n "$START_POLLERS" ]; then
-	ZABBIX_OPTIONS="$ZABBIX_OPTIONS -Dtreegix.startPollers=$START_POLLERS"
+	TREEGIX_OPTIONS="$TREEGIX_OPTIONS -Dtreegix.startPollers=$START_POLLERS"
 fi
 if [ -n "$TIMEOUT" ]; then
-	ZABBIX_OPTIONS="$ZABBIX_OPTIONS -Dtreegix.timeout=$TIMEOUT"
+	TREEGIX_OPTIONS="$TREEGIX_OPTIONS -Dtreegix.timeout=$TIMEOUT"
 fi
 
 tcp_timeout=${TIMEOUT:=3}000
-ZABBIX_OPTIONS="$ZABBIX_OPTIONS -Dsun.rmi.transport.tcp.responseTimeout=$tcp_timeout"
+TREEGIX_OPTIONS="$TREEGIX_OPTIONS -Dsun.rmi.transport.tcp.responseTimeout=$tcp_timeout"
 
-COMMAND_LINE="$JAVA $JAVA_OPTIONS -classpath $CLASSPATH $ZABBIX_OPTIONS com.treegix.gateway.JavaGateway"
+COMMAND_LINE="$JAVA $JAVA_OPTIONS -classpath $CLASSPATH $TREEGIX_OPTIONS com.treegix.gateway.JavaGateway"
 
 if [ -n "$PID_FILE" ]; then
 

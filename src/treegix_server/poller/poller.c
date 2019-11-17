@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 
@@ -103,7 +86,7 @@ static int	host_get_availability(const DC_HOST *dc_host, unsigned char agent, zb
 
 	switch (agent)
 	{
-		case ZBX_AGENT_ZABBIX:
+		case ZBX_AGENT_TREEGIX:
 			availability->available = dc_host->available;
 			availability->error = zbx_strdup(NULL, dc_host->error);
 			availability->errors_from = dc_host->errors_from;
@@ -160,7 +143,7 @@ static int	host_set_availability(DC_HOST *dc_host, unsigned char agent, const zb
 
 	switch (agent)
 	{
-		case ZBX_AGENT_ZABBIX:
+		case ZBX_AGENT_TREEGIX:
 			pavailable = &dc_host->available;
 			perror = dc_host->error;
 			perrors_from = &dc_host->errors_from;
@@ -207,8 +190,8 @@ static unsigned char	host_availability_agent_by_item_type(unsigned char type)
 {
 	switch (type)
 	{
-		case ITEM_TYPE_ZABBIX:
-			return ZBX_AGENT_ZABBIX;
+		case ITEM_TYPE_TREEGIX:
+			return ZBX_AGENT_TREEGIX;
 			break;
 		case ITEM_TYPE_SNMPv1:
 		case ITEM_TYPE_SNMPv2c:
@@ -346,7 +329,7 @@ static int	get_value(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 
 	switch (item->type)
 	{
-		case ITEM_TYPE_ZABBIX:
+		case ITEM_TYPE_TREEGIX:
 			zbx_alarm_on(CONFIG_TIMEOUT);
 			res = get_value_agent(item, result);
 			zbx_alarm_off();
@@ -533,7 +516,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 
 		switch (items[i].type)
 		{
-			case ITEM_TYPE_ZABBIX:
+			case ITEM_TYPE_TREEGIX:
 			case ITEM_TYPE_SNMPv1:
 			case ITEM_TYPE_SNMPv2c:
 			case ITEM_TYPE_SNMPv3:

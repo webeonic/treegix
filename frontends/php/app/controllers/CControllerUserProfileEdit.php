@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -44,7 +27,7 @@ class CControllerUserProfileEdit extends CControllerUserEditGeneral {
 			'form_refresh' =>		'int32'
 		];
 
-		if (CWebUser::$data['type'] > USER_TYPE_ZABBIX_USER) {
+		if (CWebUser::$data['type'] > USER_TYPE_TREEGIX_USER) {
 			$fields += [
 				'user_medias' =>	'array',
 				'new_media' =>		'array',
@@ -71,7 +54,7 @@ class CControllerUserProfileEdit extends CControllerUserEditGeneral {
 			'output' => ['alias', 'name', 'surname', 'lang', 'theme', 'autologin', 'autologout', 'refresh',
 				'rows_per_page', 'url'
 			],
-			'selectMedias' => (CWebUser::$data['type'] > USER_TYPE_ZABBIX_USER)
+			'selectMedias' => (CWebUser::$data['type'] > USER_TYPE_TREEGIX_USER)
 				? ['mediatypeid', 'period', 'sendto', 'severity', 'active']
 				: null,
 			'userids' => CWebUser::$data['userid'],
@@ -121,7 +104,7 @@ class CControllerUserProfileEdit extends CControllerUserEditGeneral {
 			'action' => $this->getAction()
 		];
 
-		if (CWebUser::$data['type'] > USER_TYPE_ZABBIX_USER) {
+		if (CWebUser::$data['type'] > USER_TYPE_TREEGIX_USER) {
 			$data['user_medias'] = $this->user['medias'];
 		}
 
@@ -130,7 +113,7 @@ class CControllerUserProfileEdit extends CControllerUserEditGeneral {
 			'rows_per_page', 'url', 'form_refresh'
 		]);
 
-		if (CWebUser::$data['type'] > USER_TYPE_ZABBIX_USER) {
+		if (CWebUser::$data['type'] > USER_TYPE_TREEGIX_USER) {
 			if ($data['form_refresh'] != 0) {
 				$data['user_medias'] = $this->getInput('user_medias', []);
 			}

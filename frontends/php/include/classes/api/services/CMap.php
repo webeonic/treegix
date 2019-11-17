@@ -1,22 +1,5 @@
 <?php
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -155,7 +138,7 @@ class CMap extends CMapElement {
 		];
 
 		// Editable + permission check.
-		if (self::$userData['type'] < USER_TYPE_ZABBIX_ADMIN && !$options['nopermissions']) {
+		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN && !$options['nopermissions']) {
 			$public_maps = '';
 
 			if ($options['editable']) {
@@ -654,7 +637,7 @@ class CMap extends CMapElement {
 					self::exception(ZBX_API_ERROR_PARAMETERS, _('Map owner cannot be empty.'));
 				}
 				elseif ($map['userid'] != $user_data['userid'] && $user_data['type'] != USER_TYPE_SUPER_ADMIN
-						&& $user_data['type'] != USER_TYPE_ZABBIX_ADMIN) {
+						&& $user_data['type'] != USER_TYPE_TREEGIX_ADMIN) {
 					self::exception(ZBX_API_ERROR_PARAMETERS, _('Only administrators can set map owner.'));
 				}
 			}
@@ -1104,7 +1087,7 @@ class CMap extends CMapElement {
 					self::exception(ZBX_API_ERROR_PARAMETERS, _('Map owner cannot be empty.'));
 				}
 				elseif ($map['userid'] != $user_data['userid'] && $user_data['type'] != USER_TYPE_SUPER_ADMIN
-						&& $user_data['type'] != USER_TYPE_ZABBIX_ADMIN) {
+						&& $user_data['type'] != USER_TYPE_TREEGIX_ADMIN) {
 					self::exception(ZBX_API_ERROR_PARAMETERS, _('Only administrators can set map owner.'));
 				}
 			}

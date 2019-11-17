@@ -33,7 +33,7 @@
 .
 .  hy \\n(HY
 ..
-.TH ZABBIX_AGENT2 8 "2019\-01\-29" Treegix
+.TH TREEGIX_AGENT2 8 "2019\-01\-29" Treegix
 .SH NAME
 treegix_agent2 \- Treegix agent 2
 .SH SYNOPSIS

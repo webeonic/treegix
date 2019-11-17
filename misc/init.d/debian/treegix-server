@@ -1,8 +1,6 @@
 #!/bin/sh
 #
 # Treegix daemon start/stop script.
-#
-# Copyright (C) 2001-2019 Treegix SIA
 
 NAME=treegix_server
 DAEMON=/usr/local/sbin/${NAME}

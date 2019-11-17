@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 
 /**
@@ -919,16 +902,16 @@ ZBX_NotificationsAlarm.prototype.acceptNotification = function(notif) {
 /**
  * Registering instance.
  */
-ZABBIX.namespace('instances.notifications', new ZBX_Notifications(
-	ZABBIX.namespace('instances.localStorage'),
-	ZABBIX.namespace('instances.browserTab')
+TREEGIX.namespace('instances.notifications', new ZBX_Notifications(
+	TREEGIX.namespace('instances.localStorage'),
+	TREEGIX.namespace('instances.browserTab')
 ));
 
 /**
  * Appends list node to DOM when document is ready, then make it draggable.
  */
 jQuery(function() {
-	var notifications_node = ZABBIX.namespace('instances.notifications.collection.node');
+	var notifications_node = TREEGIX.namespace('instances.notifications.collection.node');
 
 	document.body.appendChild(notifications_node);
 	jQuery(notifications_node).draggable({handle: '>.dashbrd-widget-head'});

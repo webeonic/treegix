@@ -1,21 +1,4 @@
-/*
-** Treegix
-** Copyright (C) 2001-2019 Treegix SIA
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**/
+
 
 #include "common.h"
 
@@ -241,11 +224,11 @@ static int	WITH_TIMESTAMPS = 0;
 static int	REAL_TIME = 0;
 
 static char	*CONFIG_SOURCE_IP = NULL;
-static char	*ZABBIX_SERVER = NULL;
-static char	*ZABBIX_SERVER_PORT = NULL;
-static char	*ZABBIX_HOSTNAME = NULL;
-static char	*ZABBIX_KEY = NULL;
-static char	*ZABBIX_KEY_VALUE = NULL;
+static char	*TREEGIX_SERVER = NULL;
+static char	*TREEGIX_SERVER_PORT = NULL;
+static char	*TREEGIX_HOSTNAME = NULL;
+static char	*TREEGIX_KEY = NULL;
+static char	*TREEGIX_KEY_VALUE = NULL;
 
 typedef struct
 {
@@ -748,14 +731,14 @@ static void	zbx_load_config(const char *config_file)
 
 	zbx_fill_from_config_file(&CONFIG_SOURCE_IP, cfg_source_ip);
 
-	if (NULL == ZABBIX_SERVER)
+	if (NULL == TREEGIX_SERVER)
 	{
 		if (NULL != cfg_active_hosts && '\0' != *cfg_active_hosts)
 			zbx_set_data_destination_hosts(cfg_active_hosts, sender_add_serveractive_host_cb);
 	}
 	zbx_free(cfg_active_hosts);
 
-	zbx_fill_from_config_file(&ZABBIX_HOSTNAME, cfg_hostname);
+	zbx_fill_from_config_file(&TREEGIX_HOSTNAME, cfg_hostname);
 
 	zbx_fill_from_config_file(&CONFIG_TLS_CONNECT, cfg_tls_connect);
 	zbx_fill_from_config_file(&CONFIG_TLS_CA_FILE, cfg_tls_ca_file);
@@ -771,9 +754,9 @@ static void	zbx_load_config(const char *config_file)
 static void	parse_commandline(int argc, char **argv)
 {
 /* Minimum and maximum port numbers Treegix sender can connect to. */
-/* Do not forget to modify port number validation below if MAX_ZABBIX_PORT is ever changed. */
-#define MIN_ZABBIX_PORT 1u
-#define MAX_ZABBIX_PORT 65535u
+/* Do not forget to modify port number validation below if MAX_TREEGIX_PORT is ever changed. */
+#define MIN_TREEGIX_PORT 1u
+#define MAX_TREEGIX_PORT 65535u
 
 	int		i, fatal = 0;
 	char		ch;
@@ -804,24 +787,24 @@ static void	parse_commandline(int argc, char **argv)
 					CONFIG_SOURCE_IP = zbx_strdup(CONFIG_SOURCE_IP, zbx_optarg);
 				break;
 			case 'z':
-				if (NULL == ZABBIX_SERVER)
-					ZABBIX_SERVER = zbx_strdup(ZABBIX_SERVER, zbx_optarg);
+				if (NULL == TREEGIX_SERVER)
+					TREEGIX_SERVER = zbx_strdup(TREEGIX_SERVER, zbx_optarg);
 				break;
 			case 'p':
-				if (NULL == ZABBIX_SERVER_PORT)
-					ZABBIX_SERVER_PORT = zbx_strdup(ZABBIX_SERVER_PORT, zbx_optarg);
+				if (NULL == TREEGIX_SERVER_PORT)
+					TREEGIX_SERVER_PORT = zbx_strdup(TREEGIX_SERVER_PORT, zbx_optarg);
 				break;
 			case 's':
-				if (NULL == ZABBIX_HOSTNAME)
-					ZABBIX_HOSTNAME = zbx_strdup(ZABBIX_HOSTNAME, zbx_optarg);
+				if (NULL == TREEGIX_HOSTNAME)
+					TREEGIX_HOSTNAME = zbx_strdup(TREEGIX_HOSTNAME, zbx_optarg);
 				break;
 			case 'k':
-				if (NULL == ZABBIX_KEY)
-					ZABBIX_KEY = zbx_strdup(ZABBIX_KEY, zbx_optarg);
+				if (NULL == TREEGIX_KEY)
+					TREEGIX_KEY = zbx_strdup(TREEGIX_KEY, zbx_optarg);
 				break;
 			case 'o':
-				if (NULL == ZABBIX_KEY_VALUE)
-					ZABBIX_KEY_VALUE = zbx_strdup(ZABBIX_KEY_VALUE, zbx_optarg);
+				if (NULL == TREEGIX_KEY_VALUE)
+					TREEGIX_KEY_VALUE = zbx_strdup(TREEGIX_KEY_VALUE, zbx_optarg);
 				break;
 			case 'i':
 				if (NULL == INPUT_FILE)
@@ -889,24 +872,24 @@ static void	parse_commandline(int argc, char **argv)
 		}
 	}
 
-	if (NULL != ZABBIX_SERVER)
+	if (NULL != TREEGIX_SERVER)
 	{
 		unsigned short	port;
 
-		if (NULL != ZABBIX_SERVER_PORT)
+		if (NULL != TREEGIX_SERVER_PORT)
 		{
-			if (SUCCEED != is_ushort(ZABBIX_SERVER_PORT, &port) || MIN_ZABBIX_PORT > port)
+			if (SUCCEED != is_ushort(TREEGIX_SERVER_PORT, &port) || MIN_TREEGIX_PORT > port)
 			{
 				zbx_error("option \"-p\" used with invalid port number \"%s\", valid port numbers are"
-						" %d-%d", ZABBIX_SERVER_PORT, (int)MIN_ZABBIX_PORT,
-						(int)MAX_ZABBIX_PORT);
+						" %d-%d", TREEGIX_SERVER_PORT, (int)MIN_TREEGIX_PORT,
+						(int)MAX_TREEGIX_PORT);
 				exit(EXIT_FAILURE);
 			}
 		}
 		else
 			port = (unsigned short)ZBX_DEFAULT_SERVER_PORT;
 
-		sender_add_serveractive_host_cb(ZABBIX_SERVER, port);
+		sender_add_serveractive_host_cb(TREEGIX_SERVER, port);
 	}
 
 	/* every option may be specified only once */
@@ -1311,7 +1294,7 @@ int	main(int argc, char **argv)
 
 			if (0 == strcmp(hostname, "-"))
 			{
-				if (NULL == ZABBIX_HOSTNAME)
+				if (NULL == TREEGIX_HOSTNAME)
 				{
 					treegix_log(LOG_LEVEL_CRIT, "[line %d] '-' encountered as 'Hostname',"
 							" but no default hostname was specified", total_count);
@@ -1319,7 +1302,7 @@ int	main(int argc, char **argv)
 					break;
 				}
 				else
-					zbx_strlcpy(hostname, ZABBIX_HOSTNAME, sizeof(hostname));
+					zbx_strlcpy(hostname, TREEGIX_HOSTNAME, sizeof(hostname));
 			}
 
 			if ('\0' == *p || NULL == (p = get_string(p, key, sizeof(key))) || '\0' == *key)
@@ -1443,17 +1426,17 @@ int	main(int argc, char **argv)
 
 		do /* try block simulation */
 		{
-			if (NULL == ZABBIX_HOSTNAME)
+			if (NULL == TREEGIX_HOSTNAME)
 			{
 				treegix_log(LOG_LEVEL_WARNING, "'Hostname' parameter required");
 				break;
 			}
-			if (NULL == ZABBIX_KEY)
+			if (NULL == TREEGIX_KEY)
 			{
 				treegix_log(LOG_LEVEL_WARNING, "Key required");
 				break;
 			}
-			if (NULL == ZABBIX_KEY_VALUE)
+			if (NULL == TREEGIX_KEY_VALUE)
 			{
 				treegix_log(LOG_LEVEL_WARNING, "Key value required");
 				break;
@@ -1462,9 +1445,9 @@ int	main(int argc, char **argv)
 			ret = SUCCEED;
 
 			zbx_json_addobject(&sendval_args->json, NULL);
-			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_HOST, ZABBIX_HOSTNAME, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_KEY, ZABBIX_KEY, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_VALUE, ZABBIX_KEY_VALUE, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_HOST, TREEGIX_HOSTNAME, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_KEY, TREEGIX_KEY, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_VALUE, TREEGIX_KEY_VALUE, ZBX_JSON_TYPE_STRING);
 			zbx_json_close(&sendval_args->json);
 
 			succeed_count++;
