@@ -187,7 +187,7 @@ abstract class CItemGeneral extends CApiService {
 			foreach ($items as &$item) {
 				// check permissions
 				if (!array_key_exists($item['itemid'], $dbItems)) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS,
+					self::exception(TRX_API_ERROR_PERMISSIONS,
 						_('No permissions to referred object or it does not exist!')
 					);
 				}
@@ -195,7 +195,7 @@ abstract class CItemGeneral extends CApiService {
 				$dbItem = $dbItems[$item['itemid']];
 
 				if (array_key_exists('hostid', $item) && bccomp($dbItem['hostid'], $item['hostid']) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'hostid', _('cannot be changed'))
 					);
 				}
@@ -219,7 +219,7 @@ abstract class CItemGeneral extends CApiService {
 
 		$item_key_parser = new CItemKey();
 		$ip_range_parser = new CIPRangeParser([
-			'v6' => ZBX_HAVE_IPV6,
+			'v6' => TRX_HAVE_IPV6,
 			'ranges' => false,
 			'usermacros' => true,
 			'macros' => [
@@ -237,7 +237,7 @@ abstract class CItemGeneral extends CApiService {
 			$fullItem = $items[$inum];
 
 			if (!check_db_fields($itemDbFields, $item)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			if ($update) {
@@ -290,7 +290,7 @@ abstract class CItemGeneral extends CApiService {
 				}
 
 				if (!isset($dbHosts[$item['hostid']])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 				}
 
 				check_db_fields($itemDbFields, $fullItem);
@@ -304,7 +304,7 @@ abstract class CItemGeneral extends CApiService {
 
 				if ($this instanceof CItemPrototype && (!array_key_exists($fullItem['ruleid'], $discovery_rules)
 						|| $discovery_rules[$fullItem['ruleid']]['hostid'] != $fullItem['hostid'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_('No permissions to referred object or it does not exist!')
 					);
 				}
@@ -315,7 +315,7 @@ abstract class CItemGeneral extends CApiService {
 			// Validate update interval.
 			if (!in_array($fullItem['type'], [ITEM_TYPE_TRAPPER, ITEM_TYPE_SNMPTRAP, ITEM_TYPE_DEPENDENT])) {
 				if ($update_interval_parser->parse($fullItem['delay']) != CParser::PARSE_SUCCESS) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'delay', _('invalid delay'))
 					);
 				}
@@ -339,20 +339,20 @@ abstract class CItemGeneral extends CApiService {
 
 					// If delay is 0, there must be at least one either flexible or scheduling interval.
 					if ($delay_sec == 0 && !$intervals) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Item will not be refreshed. Specified update interval requires having at least one either flexible or scheduling interval.')
 						);
 					}
 					elseif ($delay_sec < 0 || $delay_sec > SEC_PER_DAY) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Item will not be refreshed. Update interval should be between 1s and 1d. Also Scheduled/Flexible intervals can be used.')
 						);
 					}
 
 					// If there are scheduling intervals or intervals with macros, skip the next check calculation.
 					if (!$has_macros && !$has_scheduling_intervals && $flexible_intervals
-							&& calculateItemNextCheck(0, $delay_sec, $flexible_intervals, time()) == ZBX_JAN_2038) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+							&& calculateItemNextCheck(0, $delay_sec, $flexible_intervals, time()) == TRX_JAN_2038) {
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Item will not be refreshed. Please enter a correct update interval.')
 						);
 					}
@@ -374,13 +374,13 @@ abstract class CItemGeneral extends CApiService {
 
 				if ($itemInterfaceType !== false) {
 					if (!array_key_exists('interfaceid', $fullItem) || !$fullItem['interfaceid']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('No interface found.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('No interface found.'));
 					}
 					elseif (!isset($interfaces[$fullItem['interfaceid']]) || bccomp($interfaces[$fullItem['interfaceid']]['hostid'], $fullItem['hostid']) != 0) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Item uses host interface from non-parent host.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Item uses host interface from non-parent host.'));
 					}
 					elseif ($itemInterfaceType !== INTERFACE_TYPE_ANY && $interfaces[$fullItem['interfaceid']]['type'] != $itemInterfaceType) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Item uses incorrect interface type.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Item uses incorrect interface type.'));
 					}
 				}
 				// no interface required, just set it to null
@@ -391,29 +391,29 @@ abstract class CItemGeneral extends CApiService {
 
 			// item key
 			if ($fullItem['type'] == ITEM_TYPE_DB_MONITOR) {
-				if (!isset($fullItem['flags']) || $fullItem['flags'] != ZBX_FLAG_DISCOVERY_RULE) {
-					if (strcmp($fullItem['key_'], ZBX_DEFAULT_KEY_DB_MONITOR) == 0) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+				if (!isset($fullItem['flags']) || $fullItem['flags'] != TRX_FLAG_DISCOVERY_RULE) {
+					if (strcmp($fullItem['key_'], TRX_DEFAULT_KEY_DB_MONITOR) == 0) {
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Check the key, please. Default example was passed.')
 						);
 					}
 				}
-				elseif ($fullItem['flags'] == ZBX_FLAG_DISCOVERY_RULE) {
-					if (strcmp($fullItem['key_'], ZBX_DEFAULT_KEY_DB_MONITOR_DISCOVERY) == 0) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+				elseif ($fullItem['flags'] == TRX_FLAG_DISCOVERY_RULE) {
+					if (strcmp($fullItem['key_'], TRX_DEFAULT_KEY_DB_MONITOR_DISCOVERY) == 0) {
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Check the key, please. Default example was passed.')
 						);
 					}
 				}
 			}
-			elseif (($fullItem['type'] == ITEM_TYPE_SSH && strcmp($fullItem['key_'], ZBX_DEFAULT_KEY_SSH) == 0)
-					|| ($fullItem['type'] == ITEM_TYPE_TELNET && strcmp($fullItem['key_'], ZBX_DEFAULT_KEY_TELNET) == 0)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Check the key, please. Default example was passed.'));
+			elseif (($fullItem['type'] == ITEM_TYPE_SSH && strcmp($fullItem['key_'], TRX_DEFAULT_KEY_SSH) == 0)
+					|| ($fullItem['type'] == ITEM_TYPE_TELNET && strcmp($fullItem['key_'], TRX_DEFAULT_KEY_TELNET) == 0)) {
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Check the key, please. Default example was passed.'));
 			}
 
 			// key
 			if ($item_key_parser->parse($fullItem['key_']) != CParser::PARSE_SUCCESS) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_params($this->getErrorMsg(self::ERROR_INVALID_KEY), [
 						$fullItem['key_'], $fullItem['name'], $host['name'], $item_key_parser->getError()
 					])
@@ -428,7 +428,7 @@ abstract class CItemGeneral extends CApiService {
 						|| $params_num > 4 || $params_num < 3
 						|| ($params_num == 3 && $item_key_parser->getParam(2) !== 'last')
 						|| !str_in_array($item_key_parser->getParam(2), ['last', 'min', 'max', 'avg', 'sum', 'count'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Key "%1$s" does not match <grpmax|grpmin|grpsum|grpavg>["Host group(s)", "Item key",'.
 							' "<last|min|max|avg|sum|count>", "parameter"].', $item_key_parser->getKey()));
 				}
@@ -437,14 +437,14 @@ abstract class CItemGeneral extends CApiService {
 			// type of information
 			if ($fullItem['type'] == ITEM_TYPE_AGGREGATE && $fullItem['value_type'] != ITEM_VALUE_TYPE_UINT64
 					&& $fullItem['value_type'] != ITEM_VALUE_TYPE_FLOAT) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_('Type of information must be "Numeric (unsigned)" or "Numeric (float)" for aggregate items.'));
 			}
 
 			if (($fullItem['type'] == ITEM_TYPE_TRAPPER || $fullItem['type'] == ITEM_TYPE_HTTPAGENT)
 					&& array_key_exists('trapper_hosts', $fullItem) && $fullItem['trapper_hosts'] !== ''
 					&& !$ip_range_parser->parse($fullItem['trapper_hosts'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'trapper_hosts', $ip_range_parser->getError())
 				);
 			}
@@ -452,16 +452,16 @@ abstract class CItemGeneral extends CApiService {
 			// jmx
 			if ($fullItem['type'] == ITEM_TYPE_JMX) {
 				if (!array_key_exists('jmx_endpoint', $fullItem) && !$update) {
-					$item['jmx_endpoint'] = ZBX_DEFAULT_JMX_ENDPOINT;
+					$item['jmx_endpoint'] = TRX_DEFAULT_JMX_ENDPOINT;
 				}
 				if (array_key_exists('jmx_endpoint', $fullItem) && $fullItem['jmx_endpoint'] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'jmx_endpoint', _('cannot be empty'))
 					);
 				}
 
 				if (($fullItem['username'] === '') !== ($fullItem['password'] === '')) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'username',
 								_('both username and password should be either present or empty'))
 					);
@@ -469,7 +469,7 @@ abstract class CItemGeneral extends CApiService {
 			}
 			else {
 				if (array_key_exists('jmx_endpoint', $item) && $item['jmx_endpoint'] !== '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'jmx_endpoint', _('should be empty'))
 					);
 				}
@@ -482,32 +482,32 @@ abstract class CItemGeneral extends CApiService {
 			if ($fullItem['type'] == ITEM_TYPE_DEPENDENT) {
 				if ($update) {
 					if (array_key_exists('master_itemid', $item) && !$item['master_itemid']) {
-						self::exception(ZBX_API_ERROR_PERMISSIONS, _s('Incorrect value for field "%1$s": %2$s.',
+						self::exception(TRX_API_ERROR_PERMISSIONS, _s('Incorrect value for field "%1$s": %2$s.',
 							'master_itemid', _('cannot be empty')
 						));
 					}
 					if ($dbItems[$fullItem['itemid']]['type'] != ITEM_TYPE_DEPENDENT
 							&& !array_key_exists('master_itemid', $item)) {
-						self::exception(ZBX_API_ERROR_PERMISSIONS, _s('Incorrect value for field "%1$s": %2$s.',
+						self::exception(TRX_API_ERROR_PERMISSIONS, _s('Incorrect value for field "%1$s": %2$s.',
 							'master_itemid', _('cannot be empty')
 						));
 					}
 				}
 				elseif (!array_key_exists('master_itemid', $item) || !$item['master_itemid']) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s('Incorrect value for field "%1$s": %2$s.',
 						'master_itemid', _('cannot be empty')
 					));
 				}
 				if (array_key_exists('master_itemid', $item) && !is_int($item['master_itemid'])
 						&& !(is_string($item['master_itemid']) && ctype_digit($item['master_itemid']))) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
 						$item['master_itemid'], 'master_itemid'
 					));
 				}
 			}
 			else {
 				if (array_key_exists('master_itemid', $item) && $item['master_itemid']) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'master_itemid', _('should be empty')
 					));
 				}
@@ -517,15 +517,15 @@ abstract class CItemGeneral extends CApiService {
 			// ssh, telnet
 			if ($fullItem['type'] == ITEM_TYPE_SSH || $fullItem['type'] == ITEM_TYPE_TELNET) {
 				if (zbx_empty($fullItem['username'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('No authentication user name specified.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('No authentication user name specified.'));
 				}
 
 				if ($fullItem['type'] == ITEM_TYPE_SSH && $fullItem['authtype'] == ITEM_AUTHTYPE_PUBLICKEY) {
 					if (zbx_empty($fullItem['publickey'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('No public key file specified.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('No public key file specified.'));
 					}
 					if (zbx_empty($fullItem['privatekey'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('No private key file specified.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('No private key file specified.'));
 					}
 				}
 			}
@@ -533,24 +533,24 @@ abstract class CItemGeneral extends CApiService {
 			// snmp trap
 			if ($fullItem['type'] == ITEM_TYPE_SNMPTRAP
 					&& $fullItem['key_'] !== 'snmptrap.fallback' && $item_key_parser->getKey() !== 'snmptrap') {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('SNMP trap key is invalid.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('SNMP trap key is invalid.'));
 			}
 
 			// snmp oid
 			if ((in_array($fullItem['type'], [ITEM_TYPE_SNMPV1, ITEM_TYPE_SNMPV2C, ITEM_TYPE_SNMPV3]))
 					&& zbx_empty($fullItem['snmp_oid'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No SNMP OID specified.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No SNMP OID specified.'));
 			}
 
 			// snmp community
 			if (in_array($fullItem['type'], [ITEM_TYPE_SNMPV1, ITEM_TYPE_SNMPV2C])
 					&& zbx_empty($fullItem['snmp_community'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No SNMP community specified.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No SNMP community specified.'));
 			}
 
 			// snmp port
 			if (isset($fullItem['port']) && !zbx_empty($fullItem['port']) && !validatePortNumberOrMacro($fullItem['port'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Item "%1$s:%2$s" has invalid port: "%3$s".', $fullItem['name'], $fullItem['key_'], $fullItem['port']));
 			}
 
@@ -560,7 +560,7 @@ abstract class CItemGeneral extends CApiService {
 					if (isset($fullItem['snmpv3_authprotocol']) && (zbx_empty($fullItem['snmpv3_authprotocol'])
 							|| !str_in_array($fullItem['snmpv3_authprotocol'],
 								[ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]))) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect authentication protocol for item "%1$s".', $fullItem['name']));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect authentication protocol for item "%1$s".', $fullItem['name']));
 					}
 				}
 
@@ -569,7 +569,7 @@ abstract class CItemGeneral extends CApiService {
 					if (isset($fullItem['snmpv3_privprotocol']) && (zbx_empty($fullItem['snmpv3_privprotocol'])
 							|| !str_in_array($fullItem['snmpv3_privprotocol'],
 								[ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]))) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect privacy protocol for item "%1$s".', $fullItem['name']));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect privacy protocol for item "%1$s".', $fullItem['name']));
 					}
 				}
 			}
@@ -579,9 +579,9 @@ abstract class CItemGeneral extends CApiService {
 				 * 'flags' is available for update and item prototypes.
 				 * Don't allow discovered or any other application types for item prototypes in 'applications' option.
 				 */
-				if (array_key_exists('flags', $fullItem) && $fullItem['flags'] == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+				if (array_key_exists('flags', $fullItem) && $fullItem['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 					foreach ($host['applications'] as $num => $application) {
-						if ($application['flags'] != ZBX_FLAG_DISCOVERY_NORMAL) {
+						if ($application['flags'] != TRX_FLAG_DISCOVERY_NORMAL) {
 							unset($host['applications'][$num]);
 						}
 					}
@@ -592,7 +592,7 @@ abstract class CItemGeneral extends CApiService {
 				foreach ($item['applications'] as $appId) {
 					if (!in_array($appId, $dbApplicationIds)) {
 						$error = _s('Application with ID "%1$s" is not available on "%2$s".', $appId, $host['name']);
-						self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+						self::exception(TRX_API_ERROR_PARAMETERS, $error);
 					}
 				}
 			}
@@ -635,20 +635,20 @@ abstract class CItemGeneral extends CApiService {
 
 	protected function errorInheritFlags($flag, $key, $host) {
 		switch ($flag) {
-			case ZBX_FLAG_DISCOVERY_NORMAL:
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as an item.', $key, $host));
+			case TRX_FLAG_DISCOVERY_NORMAL:
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as an item.', $key, $host));
 				break;
-			case ZBX_FLAG_DISCOVERY_RULE:
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as a discovery rule.', $key, $host));
+			case TRX_FLAG_DISCOVERY_RULE:
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as a discovery rule.', $key, $host));
 				break;
-			case ZBX_FLAG_DISCOVERY_PROTOTYPE:
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as an item prototype.', $key, $host));
+			case TRX_FLAG_DISCOVERY_PROTOTYPE:
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as an item prototype.', $key, $host));
 				break;
-			case ZBX_FLAG_DISCOVERY_CREATED:
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as an item created from item prototype.', $key, $host));
+			case TRX_FLAG_DISCOVERY_CREATED:
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as an item created from item prototype.', $key, $host));
 				break;
 			default:
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as unknown item element.', $key, $host));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Item with key "%1$s" already exists on "%2$s" as unknown item element.', $key, $host));
 		}
 	}
 
@@ -999,7 +999,7 @@ abstract class CItemGeneral extends CApiService {
 
 					// Check if item already linked to another template.
 					if ($chd_item['templateid'] != 0 && bccomp($chd_item['templateid'], $tpl_item['itemid']) != 0) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _params(
+						self::exception(TRX_API_ERROR_PARAMETERS, _params(
 							$this->getErrorMsg(self::ERROR_EXISTS_TEMPLATE), [$tpl_item['key_'], $chd_host['host']]
 						));
 					}
@@ -1007,7 +1007,7 @@ abstract class CItemGeneral extends CApiService {
 					if ($this instanceof CItemPrototype) {
 						$chd_ruleid = $chd_ruleids[$chd_host['hostid']][$tpl_item['ruleid']];
 						if (bccomp($chd_item['ruleid'], $chd_ruleid) != 0) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Item prototype "%1$s" already exists on "%2$s", linked to another rule.',
 									$chd_item['key_'], $chd_host['host']
 								)
@@ -1038,7 +1038,7 @@ abstract class CItemGeneral extends CApiService {
 							$new_item['interfaceid'] = $interface['interfaceid'];
 						}
 						elseif ($interface !== false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _params(
+							self::exception(TRX_API_ERROR_PARAMETERS, _params(
 								$this->getErrorMsg(self::ERROR_NO_INTERFACE), [$chd_host['host'], $new_item['key_']]
 							));
 						}
@@ -1087,7 +1087,7 @@ abstract class CItemGeneral extends CApiService {
 			$db_items = DBselect($sql, 1);
 
 			if ($db_item = DBfetch($db_items)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _params($this->getErrorMsg(self::ERROR_EXISTS),
+				self::exception(TRX_API_ERROR_PARAMETERS, _params($this->getErrorMsg(self::ERROR_EXISTS),
 					[$db_item['key_'], $chd_hosts[$db_item['hostid']]['host']]
 				));
 			}
@@ -1195,52 +1195,52 @@ abstract class CItemGeneral extends CApiService {
 	 * @param array  $item                                             An array of single item data.
 	 * @param array  $item['preprocessing']                            An array of item pre-processing data.
 	 * @param string $item['preprocessing'][]['type']                  The preprocessing option type. Possible values:
-	 *                                                                  1 - ZBX_PREPROC_MULTIPLIER;
-	 *                                                                  2 - ZBX_PREPROC_RTRIM;
-	 *                                                                  3 - ZBX_PREPROC_LTRIM;
-	 *                                                                  4 - ZBX_PREPROC_TRIM;
-	 *                                                                  5 - ZBX_PREPROC_REGSUB;
-	 *                                                                  6 - ZBX_PREPROC_BOOL2DEC;
-	 *                                                                  7 - ZBX_PREPROC_OCT2DEC;
-	 *                                                                  8 - ZBX_PREPROC_HEX2DEC;
-	 *                                                                  9 - ZBX_PREPROC_DELTA_VALUE;
-	 *                                                                  10 - ZBX_PREPROC_DELTA_SPEED;
-	 *                                                                  11 - ZBX_PREPROC_XPATH;
-	 *                                                                  12 - ZBX_PREPROC_JSONPATH;
-	 *                                                                  13 - ZBX_PREPROC_VALIDATE_RANGE;
-	 *                                                                  14 - ZBX_PREPROC_VALIDATE_REGEX;
-	 *                                                                  15 - ZBX_PREPROC_VALIDATE_NOT_REGEX;
-	 *                                                                  16 - ZBX_PREPROC_ERROR_FIELD_JSON;
-	 *                                                                  17 - ZBX_PREPROC_ERROR_FIELD_XML;
-	 *                                                                  18 - ZBX_PREPROC_ERROR_FIELD_REGEX;
-	 *                                                                  19 - ZBX_PREPROC_THROTTLE_VALUE;
-	 *                                                                  20 - ZBX_PREPROC_THROTTLE_TIMED_VALUE;
-	 *                                                                  21 - ZBX_PREPROC_SCRIPT;
-	 *                                                                  22 - ZBX_PREPROC_PROMETHEUS_PATTERN;
-	 *                                                                  23 - ZBX_PREPROC_PROMETHEUS_TO_JSON;
-	 *                                                                  24 - ZBX_PREPROC_CSV_TO_JSON.
+	 *                                                                  1 - TRX_PREPROC_MULTIPLIER;
+	 *                                                                  2 - TRX_PREPROC_RTRIM;
+	 *                                                                  3 - TRX_PREPROC_LTRIM;
+	 *                                                                  4 - TRX_PREPROC_TRIM;
+	 *                                                                  5 - TRX_PREPROC_REGSUB;
+	 *                                                                  6 - TRX_PREPROC_BOOL2DEC;
+	 *                                                                  7 - TRX_PREPROC_OCT2DEC;
+	 *                                                                  8 - TRX_PREPROC_HEX2DEC;
+	 *                                                                  9 - TRX_PREPROC_DELTA_VALUE;
+	 *                                                                  10 - TRX_PREPROC_DELTA_SPEED;
+	 *                                                                  11 - TRX_PREPROC_XPATH;
+	 *                                                                  12 - TRX_PREPROC_JSONPATH;
+	 *                                                                  13 - TRX_PREPROC_VALIDATE_RANGE;
+	 *                                                                  14 - TRX_PREPROC_VALIDATE_REGEX;
+	 *                                                                  15 - TRX_PREPROC_VALIDATE_NOT_REGEX;
+	 *                                                                  16 - TRX_PREPROC_ERROR_FIELD_JSON;
+	 *                                                                  17 - TRX_PREPROC_ERROR_FIELD_XML;
+	 *                                                                  18 - TRX_PREPROC_ERROR_FIELD_REGEX;
+	 *                                                                  19 - TRX_PREPROC_THROTTLE_VALUE;
+	 *                                                                  20 - TRX_PREPROC_THROTTLE_TIMED_VALUE;
+	 *                                                                  21 - TRX_PREPROC_SCRIPT;
+	 *                                                                  22 - TRX_PREPROC_PROMETHEUS_PATTERN;
+	 *                                                                  23 - TRX_PREPROC_PROMETHEUS_TO_JSON;
+	 *                                                                  24 - TRX_PREPROC_CSV_TO_JSON.
 	 * @param string $item['preprocessing'][]['params']                Additional parameters used by preprocessing
 	 *                                                                 option. Multiple parameters are separated by LF
 	 *                                                                 (\n) character.
 	 * @param string $item['preprocessing'][]['error_handler']         Action type used in case of preprocessing step
 	 *                                                                 failure. Possible values:
-	 *                                                                  0 - ZBX_PREPROC_FAIL_DEFAULT;
-	 *                                                                  1 - ZBX_PREPROC_FAIL_DISCARD_VALUE;
-	 *                                                                  2 - ZBX_PREPROC_FAIL_SET_VALUE;
-	 *                                                                  3 - ZBX_PREPROC_FAIL_SET_ERROR.
+	 *                                                                  0 - TRX_PREPROC_FAIL_DEFAULT;
+	 *                                                                  1 - TRX_PREPROC_FAIL_DISCARD_VALUE;
+	 *                                                                  2 - TRX_PREPROC_FAIL_SET_VALUE;
+	 *                                                                  3 - TRX_PREPROC_FAIL_SET_ERROR.
 	 * @param string $item['preprocessing'][]['error_handler_params']  Error handler parameters.
 	 */
 	protected function validateItemPreprocessing(array $item) {
 		if (array_key_exists('preprocessing', $item)) {
 			if (!is_array($item['preprocessing'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			$type_validator = new CLimitedSetValidator(['values' => $this::$supported_preprocessing_types]);
 
 			$error_handler_validator = new CLimitedSetValidator([
-				'values' => [ZBX_PREPROC_FAIL_DEFAULT, ZBX_PREPROC_FAIL_DISCARD_VALUE, ZBX_PREPROC_FAIL_SET_VALUE,
-					ZBX_PREPROC_FAIL_SET_ERROR
+				'values' => [TRX_PREPROC_FAIL_DEFAULT, TRX_PREPROC_FAIL_DISCARD_VALUE, TRX_PREPROC_FAIL_SET_VALUE,
+					TRX_PREPROC_FAIL_SET_ERROR
 				]
 			]);
 
@@ -1260,23 +1260,23 @@ abstract class CItemGeneral extends CApiService {
 				$missing_keys = array_diff($required_fields, array_keys($preprocessing));
 
 				if ($missing_keys) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Item pre-processing is missing parameters: %1$s', implode(', ', $missing_keys))
 					);
 				}
 
 				if (is_array($preprocessing['type'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 				elseif ($preprocessing['type'] === '' || $preprocessing['type'] === null
 						|| $preprocessing['type'] === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'type', _('cannot be empty'))
 					);
 				}
 
 				if (!$type_validator->validate($preprocessing['type'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'type',
 							_s('unexpected value "%1$s"', $preprocessing['type'])
 						)
@@ -1286,15 +1286,15 @@ abstract class CItemGeneral extends CApiService {
 				$preprocessing['params'] = str_replace("\r\n", "\n", $preprocessing['params']);
 
 				switch ($preprocessing['type']) {
-					case ZBX_PREPROC_MULTIPLIER:
+					case TRX_PREPROC_MULTIPLIER:
 						// Check if custom multiplier is a valid number.
 						$params = $preprocessing['params'];
 
 						if (is_array($params)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif ($params === '' || $params === null || $params === false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'params', _('cannot be empty'))
 							);
 						}
@@ -1304,43 +1304,43 @@ abstract class CItemGeneral extends CApiService {
 								&& (!($this instanceof CItemPrototype)
 									|| ((new CLLDMacroFunctionParser())->parse($params) != CParser::PARSE_SUCCESS
 										&& (new CLLDMacroParser())->parse($params) != CParser::PARSE_SUCCESS))) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'params', _('a numeric value is expected')
 							));
 						}
 						break;
 
-					case ZBX_PREPROC_RTRIM:
-					case ZBX_PREPROC_LTRIM:
-					case ZBX_PREPROC_TRIM:
-					case ZBX_PREPROC_XPATH:
-					case ZBX_PREPROC_JSONPATH:
-					case ZBX_PREPROC_VALIDATE_REGEX:
-					case ZBX_PREPROC_VALIDATE_NOT_REGEX:
-					case ZBX_PREPROC_ERROR_FIELD_JSON:
-					case ZBX_PREPROC_ERROR_FIELD_XML:
-					case ZBX_PREPROC_SCRIPT:
+					case TRX_PREPROC_RTRIM:
+					case TRX_PREPROC_LTRIM:
+					case TRX_PREPROC_TRIM:
+					case TRX_PREPROC_XPATH:
+					case TRX_PREPROC_JSONPATH:
+					case TRX_PREPROC_VALIDATE_REGEX:
+					case TRX_PREPROC_VALIDATE_NOT_REGEX:
+					case TRX_PREPROC_ERROR_FIELD_JSON:
+					case TRX_PREPROC_ERROR_FIELD_XML:
+					case TRX_PREPROC_SCRIPT:
 						// Check 'params' if not empty.
 						if (is_array($preprocessing['params'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif ($preprocessing['params'] === '' || $preprocessing['params'] === null
 								|| $preprocessing['params'] === false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'params', _('cannot be empty'))
 							);
 						}
 						break;
 
-					case ZBX_PREPROC_REGSUB:
-					case ZBX_PREPROC_ERROR_FIELD_REGEX:
+					case TRX_PREPROC_REGSUB:
+					case TRX_PREPROC_ERROR_FIELD_REGEX:
 						// Check if 'params' are not empty and if second parameter contains (after \n) is not empty.
 						if (is_array($preprocessing['params'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif ($preprocessing['params'] === '' || $preprocessing['params'] === null
 								|| $preprocessing['params'] === false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'params', _('cannot be empty'))
 							);
 						}
@@ -1348,25 +1348,25 @@ abstract class CItemGeneral extends CApiService {
 						$params = explode("\n", $preprocessing['params']);
 
 						if ($params[0] === '') {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'params', _('first parameter is expected')
 							));
 						}
 
 						if (!array_key_exists(1, $params) || $params[1] === '') {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'params', _('second parameter is expected')
 							));
 						}
 						break;
 
-					case ZBX_PREPROC_VALIDATE_RANGE:
+					case TRX_PREPROC_VALIDATE_RANGE:
 						if (is_array($preprocessing['params'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif (trim($preprocessing['params']) === '' || $preprocessing['params'] === null
 								|| $preprocessing['params'] === false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'params', _('cannot be empty'))
 							);
 						}
@@ -1378,7 +1378,7 @@ abstract class CItemGeneral extends CApiService {
 								&& (!($this instanceof CItemPrototype)
 									|| ((new CLLDMacroFunctionParser())->parse($params[0]) != CParser::PARSE_SUCCESS
 										&& (new CLLDMacroParser())->parse($params[0]) != CParser::PARSE_SUCCESS))) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'params', _('a numeric value is expected')
 							));
 						}
@@ -1388,13 +1388,13 @@ abstract class CItemGeneral extends CApiService {
 								&& (!($this instanceof CItemPrototype)
 									|| ((new CLLDMacroFunctionParser())->parse($params[1]) != CParser::PARSE_SUCCESS
 										&& (new CLLDMacroParser())->parse($params[1]) != CParser::PARSE_SUCCESS))) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'params', _('a numeric value is expected')
 							));
 						}
 
 						if (is_numeric($params[0]) && is_numeric($params[1]) && $params[0] > $params[1]) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value for field "%1$s": %2$s.',
 								'params',
 								_s('"%1$s" value must be less than or equal to "%2$s" value', _('min'), _('max'))
@@ -1402,24 +1402,24 @@ abstract class CItemGeneral extends CApiService {
 						}
 						break;
 
-					case ZBX_PREPROC_BOOL2DEC:
-					case ZBX_PREPROC_OCT2DEC:
-					case ZBX_PREPROC_HEX2DEC:
-					case ZBX_PREPROC_THROTTLE_VALUE:
+					case TRX_PREPROC_BOOL2DEC:
+					case TRX_PREPROC_OCT2DEC:
+					case TRX_PREPROC_HEX2DEC:
+					case TRX_PREPROC_THROTTLE_VALUE:
 						// Check if 'params' is empty, because it must be empty.
 						if (is_array($preprocessing['params'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif ($preprocessing['params'] !== '' && $preprocessing['params'] !== null
 								&& $preprocessing['params'] !== false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'params', _('should be empty'))
 							);
 						}
 
-						if ($preprocessing['type'] == ZBX_PREPROC_THROTTLE_VALUE) {
+						if ($preprocessing['type'] == TRX_PREPROC_THROTTLE_VALUE) {
 							if ($throttling) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _('Only one throttling step is allowed.'));
+								self::exception(TRX_API_ERROR_PARAMETERS, _('Only one throttling step is allowed.'));
 							}
 							else {
 								$throttling = true;
@@ -1427,66 +1427,66 @@ abstract class CItemGeneral extends CApiService {
 						}
 						break;
 
-					case ZBX_PREPROC_DELTA_VALUE:
-					case ZBX_PREPROC_DELTA_SPEED:
+					case TRX_PREPROC_DELTA_VALUE:
+					case TRX_PREPROC_DELTA_SPEED:
 						// Check if 'params' is empty, because it must be empty.
 						if (is_array($preprocessing['params'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif ($preprocessing['params'] !== '' && $preprocessing['params'] !== null
 								&& $preprocessing['params'] !== false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'params', _('should be empty'))
 							);
 						}
 
 						// Check if one of the deltas (Delta per second or Delta value) already exists.
 						if ($delta) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Only one change step is allowed.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Only one change step is allowed.'));
 						}
 						else {
 							$delta = true;
 						}
 						break;
 
-					case ZBX_PREPROC_THROTTLE_TIMED_VALUE:
+					case TRX_PREPROC_THROTTLE_TIMED_VALUE:
 						$api_input_rules = [
 							'type' => API_TIME_UNIT,
 							'flags' => ($this instanceof CItem)
 								? API_NOT_EMPTY | API_ALLOW_USER_MACRO
 								: API_NOT_EMPTY | API_ALLOW_USER_MACRO | API_ALLOW_LLD_MACRO,
-							'in' => '1:'.ZBX_MAX_TIMESHIFT
+							'in' => '1:'.TRX_MAX_TIMESHIFT
 						];
 
 						if (!CApiInputValidator::validate($api_input_rules, $preprocessing['params'], 'params',
 								$error)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+							self::exception(TRX_API_ERROR_PARAMETERS, $error);
 						}
 
 						if ($throttling) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Only one throttling step is allowed.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Only one throttling step is allowed.'));
 						}
 						else {
 							$throttling = true;
 						}
 						break;
 
-					case ZBX_PREPROC_PROMETHEUS_PATTERN:
-					case ZBX_PREPROC_PROMETHEUS_TO_JSON:
+					case TRX_PREPROC_PROMETHEUS_PATTERN:
+					case TRX_PREPROC_PROMETHEUS_TO_JSON:
 						if ($prometheus) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Only one Prometheus step is allowed.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Only one Prometheus step is allowed.'));
 						}
 
 						$prometheus = true;
 
 						if (is_array($preprocessing['params'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 
-						if ($preprocessing['type'] == ZBX_PREPROC_PROMETHEUS_PATTERN) {
+						if ($preprocessing['type'] == TRX_PREPROC_PROMETHEUS_PATTERN) {
 							if ($preprocessing['params'] === '' || $preprocessing['params'] === null
 									|| $preprocessing['params'] === false) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('Incorrect value for field "%1$s": %2$s.', 'params', _('cannot be empty'))
 								);
 							}
@@ -1494,20 +1494,20 @@ abstract class CItemGeneral extends CApiService {
 							$params = explode("\n", $preprocessing['params']);
 
 							if ($params[0] === '') {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+								self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 									'params', _('first parameter is expected')
 								));
 							}
 
 							if ($prometheus_pattern_parser->parse($params[0]) != CParser::PARSE_SUCCESS) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+								self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 									'params', _('invalid Prometheus pattern')
 								));
 							}
 
 							if ($params[1] !== ''
 									&& $prometheus_output_parser->parse($params[1]) != CParser::PARSE_SUCCESS) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+								self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 									'params', _('invalid Prometheus output')
 								));
 							}
@@ -1515,20 +1515,20 @@ abstract class CItemGeneral extends CApiService {
 						// Prometheus to JSON can be empty and has only one parameter.
 						elseif ($preprocessing['params'] !== '') {
 							if ($prometheus_pattern_parser->parse($preprocessing['params']) != CParser::PARSE_SUCCESS) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+								self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 									'params', _('invalid Prometheus pattern')
 								));
 							}
 						}
 						break;
 
-					case ZBX_PREPROC_CSV_TO_JSON:
+					case TRX_PREPROC_CSV_TO_JSON:
 						if (is_array($preprocessing['params'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif ($preprocessing['params'] === '' || $preprocessing['params'] === null
 								|| $preprocessing['params'] === false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'params', _('cannot be empty'))
 							);
 						}
@@ -1537,15 +1537,15 @@ abstract class CItemGeneral extends CApiService {
 
 						$params_cnt = count($params);
 						if ($params_cnt > 3) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif ($params_cnt == 1) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'params', _('second parameter is expected')
 							));
 						}
 						elseif ($params_cnt == 2) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'params', _('third parameter is expected')
 							));
 						}
@@ -1553,26 +1553,26 @@ abstract class CItemGeneral extends CApiService {
 							// Correct amount of parameters, but check if they are valid.
 
 							if (mb_strlen($params[0]) > 1) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+								self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 									'params', _('value of first parameter is too long')
 								));
 							}
 
 							if (mb_strlen($params[1]) > 1) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+								self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 									'params', _('value of second parameter is too long')
 								));
 							}
 
 							$with_header_row_validator = new CLimitedSetValidator([
-								'values' => [ZBX_PREPROC_CSV_NO_HEADER, ZBX_PREPROC_CSV_HEADER]
+								'values' => [TRX_PREPROC_CSV_NO_HEADER, TRX_PREPROC_CSV_HEADER]
 							]);
 
 							if (!$with_header_row_validator->validate($params[2])) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('Incorrect value for field "%1$s": %2$s.', 'params',
 										_s('value of third parameter must be one of %1$s',
-											implode(', ', [ZBX_PREPROC_CSV_NO_HEADER, ZBX_PREPROC_CSV_HEADER])
+											implode(', ', [TRX_PREPROC_CSV_NO_HEADER, TRX_PREPROC_CSV_HEADER])
 										)
 									)
 								);
@@ -1582,17 +1582,17 @@ abstract class CItemGeneral extends CApiService {
 				}
 
 				switch ($preprocessing['type']) {
-					case ZBX_PREPROC_RTRIM:
-					case ZBX_PREPROC_LTRIM:
-					case ZBX_PREPROC_TRIM:
-					case ZBX_PREPROC_THROTTLE_VALUE:
-					case ZBX_PREPROC_THROTTLE_TIMED_VALUE:
-					case ZBX_PREPROC_SCRIPT:
+					case TRX_PREPROC_RTRIM:
+					case TRX_PREPROC_LTRIM:
+					case TRX_PREPROC_TRIM:
+					case TRX_PREPROC_THROTTLE_VALUE:
+					case TRX_PREPROC_THROTTLE_TIMED_VALUE:
+					case TRX_PREPROC_SCRIPT:
 						if (is_array($preprocessing['error_handler'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
-						elseif ($preprocessing['error_handler'] != ZBX_PREPROC_FAIL_DEFAULT) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+						elseif ($preprocessing['error_handler'] != TRX_PREPROC_FAIL_DEFAULT) {
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'error_handler',
 									_s('unexpected value "%1$s"', $preprocessing['error_handler'])
 								)
@@ -1600,12 +1600,12 @@ abstract class CItemGeneral extends CApiService {
 						}
 
 						if (is_array($preprocessing['error_handler_params'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif ($preprocessing['error_handler_params'] !== ''
 								&& $preprocessing['error_handler_params'] !== null
 								&& $preprocessing['error_handler_params'] !== false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'error_handler_params',
 									_('should be empty')
 								)
@@ -1615,10 +1615,10 @@ abstract class CItemGeneral extends CApiService {
 
 					default:
 						if (is_array($preprocessing['error_handler'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
 						elseif (!$error_handler_validator->validate($preprocessing['error_handler'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'error_handler',
 									_s('unexpected value "%1$s"', $preprocessing['error_handler'])
 								)
@@ -1626,24 +1626,24 @@ abstract class CItemGeneral extends CApiService {
 						}
 
 						if (is_array($preprocessing['error_handler_params'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 						}
-						elseif (($preprocessing['error_handler'] == ZBX_PREPROC_FAIL_DEFAULT
-									|| $preprocessing['error_handler'] == ZBX_PREPROC_FAIL_DISCARD_VALUE)
+						elseif (($preprocessing['error_handler'] == TRX_PREPROC_FAIL_DEFAULT
+									|| $preprocessing['error_handler'] == TRX_PREPROC_FAIL_DISCARD_VALUE)
 								&& $preprocessing['error_handler_params'] !== ''
 								&& $preprocessing['error_handler_params'] !== null
 								&& $preprocessing['error_handler_params'] !== false) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'error_handler_params',
 									_('should be empty')
 								)
 							);
 						}
-						elseif ($preprocessing['error_handler'] == ZBX_PREPROC_FAIL_SET_ERROR
+						elseif ($preprocessing['error_handler'] == TRX_PREPROC_FAIL_SET_ERROR
 								&& ($preprocessing['error_handler_params'] === ''
 									|| $preprocessing['error_handler_params'] === null
 									|| $preprocessing['error_handler_params'] === false)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'error_handler_params',
 									_('cannot be empty')
 								)
@@ -1779,7 +1779,7 @@ abstract class CItemGeneral extends CApiService {
 			}
 			$dbItems = DBselect($sql, 1);
 			while ($dbItem = DBfetch($dbItems)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Item with key "%1$s" already exists on "%2$s".', $dbItem['key_'], $dbItem['host']));
 			}
 		}
@@ -1847,7 +1847,7 @@ abstract class CItemGeneral extends CApiService {
 		foreach ($items as $item) {
 			if ($item['type'] == ITEM_TYPE_DEPENDENT) {
 				if ($this instanceof CDiscoveryRule || $this instanceof CItemPrototype
-						|| $item['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) {
+						|| $item['flags'] == TRX_FLAG_DISCOVERY_NORMAL) {
 					$dep_items[] = $item;
 				}
 
@@ -1899,7 +1899,7 @@ abstract class CItemGeneral extends CApiService {
 						' LEFT JOIN item_discovery id'.
 							' ON i.itemid=id.itemid'.
 					' WHERE '.dbConditionId('i.itemid', array_keys($master_itemids)).
-						' AND '.dbConditionInt('i.flags', [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_PROTOTYPE])
+						' AND '.dbConditionInt('i.flags', [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_PROTOTYPE])
 				);
 			}
 			// CDiscoveryRule, CItem
@@ -1908,7 +1908,7 @@ abstract class CItemGeneral extends CApiService {
 					'SELECT i.itemid,i.hostid,i.master_itemid'.
 					' FROM items i'.
 					' WHERE '.dbConditionId('i.itemid', array_keys($master_itemids)).
-						' AND '.dbConditionInt('i.flags', [ZBX_FLAG_DISCOVERY_NORMAL])
+						' AND '.dbConditionInt('i.flags', [TRX_FLAG_DISCOVERY_NORMAL])
 				);
 			}
 
@@ -1921,7 +1921,7 @@ abstract class CItemGeneral extends CApiService {
 			if ($master_itemids) {
 				reset($master_itemids);
 
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'master_itemid',
 						_s('Item "%1$s" does not exist or you have no access to this item', key($master_itemids))
 					)
@@ -1942,14 +1942,14 @@ abstract class CItemGeneral extends CApiService {
 			$master_item = $master_items[$dep_item['master_itemid']];
 
 			if ($dep_item['hostid'] != $master_item['hostid']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'master_itemid', _('hostid of dependent item and master item should match')
 				));
 			}
 
-			if ($this instanceof CItemPrototype && $master_item['flags'] == ZBX_FLAG_DISCOVERY_PROTOTYPE
+			if ($this instanceof CItemPrototype && $master_item['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE
 					&& $dep_item['ruleid'] != $master_item['ruleid']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'master_itemid', _('ruleid of dependent item and master item should match')
 				));
 			}
@@ -1959,7 +1959,7 @@ abstract class CItemGeneral extends CApiService {
 
 				while ($master_itemid != 0) {
 					if ($master_itemid == $dep_item['itemid']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 							'master_itemid', _('circular item dependency is not allowed')
 						));
 					}
@@ -2038,8 +2038,8 @@ abstract class CItemGeneral extends CApiService {
 		$count = 0;
 
 		if (array_key_exists($root_itemid, $dependent_items)) {
-			if (++$level > ZBX_DEPENDENT_ITEM_MAX_LEVELS) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+			if (++$level > TRX_DEPENDENT_ITEM_MAX_LEVELS) {
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'master_itemid', _('maximum number of dependency levels reached')
 				));
 			}
@@ -2052,8 +2052,8 @@ abstract class CItemGeneral extends CApiService {
 				}
 			}
 
-			if ($count > ZBX_DEPENDENT_ITEM_MAX_COUNT) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+			if ($count > TRX_DEPENDENT_ITEM_MAX_COUNT) {
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'master_itemid', _('maximum dependent items count reached')
 				));
 			}
@@ -2129,7 +2129,7 @@ abstract class CItemGeneral extends CApiService {
 			],
 			'post_type' => [
 				'type' => API_INT32,
-				'in' => implode(',', [ZBX_POSTTYPE_RAW, ZBX_POSTTYPE_JSON, ZBX_POSTTYPE_XML])
+				'in' => implode(',', [TRX_POSTTYPE_RAW, TRX_POSTTYPE_JSON, TRX_POSTTYPE_XML])
 			],
 			'http_proxy' => [
 				'type' => API_STRING_UTF8, 'length' => DB::getFieldLength('items', 'http_proxy')
@@ -2201,7 +2201,7 @@ abstract class CItemGeneral extends CApiService {
 		}
 
 		if (array_key_exists('post_type', $data)
-				&& ($data['post_type'] == ZBX_POSTTYPE_JSON || $data['post_type'] == ZBX_POSTTYPE_XML)) {
+				&& ($data['post_type'] == TRX_POSTTYPE_JSON || $data['post_type'] == TRX_POSTTYPE_XML)) {
 			$rules['posts'] = [
 				'type' => API_STRING_UTF8,
 				'length' => DB::getFieldLength('items', 'posts')
@@ -2216,7 +2216,7 @@ abstract class CItemGeneral extends CApiService {
 
 		if (array_key_exists('trapper_hosts', $item) && $item['trapper_hosts'] !== ''
 				&& (!array_key_exists('allow_traps', $data) || $data['allow_traps'] == HTTPCHECK_ALLOW_TRAPS_OFF)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'trapper_hosts', _('should be empty'))
 			);
 		}
@@ -2225,21 +2225,21 @@ abstract class CItemGeneral extends CApiService {
 		$data = array_intersect_key($data, $rules);
 
 		if (!CApiInputValidator::validate(['type' => API_OBJECT, 'fields' => $rules], $data, '', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$json = new CJson();
 
 		if (array_key_exists('query_fields', $item)) {
 			if (!is_array($item['query_fields'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Invalid parameter "%1$s": %2$s.', 'query_fields', _('an array is expected'))
 				);
 			}
 
 			foreach ($item['query_fields'] as $v) {
 				if (!is_array($v) || count($v) > 1 || key($v) === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid parameter "%1$s": %2$s.', 'query_fields', _('nonempty key and value pair expected'))
 					);
 				}
@@ -2248,7 +2248,7 @@ abstract class CItemGeneral extends CApiService {
 			$json_string = $json->encode($item['query_fields']);
 
 			if (strlen($json_string) > DB::getFieldLength('items', 'query_fields')) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Invalid parameter "%1$s": %2$s.', 'query_fields',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Invalid parameter "%1$s": %2$s.', 'query_fields',
 					_('cannot convert to JSON, result value too long')
 				));
 			}
@@ -2256,14 +2256,14 @@ abstract class CItemGeneral extends CApiService {
 
 		if (array_key_exists('headers', $item)) {
 			if (!is_array($item['headers'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Invalid parameter "%1$s": %2$s.', 'headers', _('an array is expected'))
 				);
 			}
 
 			foreach ($item['headers'] as $k => $v) {
 				if (trim($k) === '' || !is_string($v) || $v === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid parameter "%1$s": %2$s.', 'headers', _('nonempty key and value pair expected'))
 					);
 				}
@@ -2277,39 +2277,39 @@ abstract class CItemGeneral extends CApiService {
 			]);
 
 			if ($ranges_parser->parse($item['status_codes']) != CParser::PARSE_SUCCESS) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value "%1$s" for "%2$s" field.', $item['status_codes'], 'status_codes')
 				);
 			}
 		}
 
 		if ((array_key_exists('post_type', $item) || array_key_exists('posts', $item))
-				&& ($data['post_type'] == ZBX_POSTTYPE_JSON || $data['post_type'] == ZBX_POSTTYPE_XML)) {
+				&& ($data['post_type'] == TRX_POSTTYPE_JSON || $data['post_type'] == TRX_POSTTYPE_XML)) {
 			$posts = array_key_exists('posts', $data) ? $data['posts'] : '';
 			libxml_use_internal_errors(true);
 
-			if ($data['post_type'] == ZBX_POSTTYPE_XML
+			if ($data['post_type'] == TRX_POSTTYPE_XML
 					&& simplexml_load_string($posts, null, LIBXML_IMPORT_FLAGS) === false) {
 				$errors = libxml_get_errors();
 				libxml_clear_errors();
 
 				if (!$errors) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid parameter "%1$s": %2$s.', 'posts', _('XML is expected'))
 					);
 				}
 				else {
 					$error = reset($errors);
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Invalid parameter "%1$s": %2$s.', 'posts',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Invalid parameter "%1$s": %2$s.', 'posts',
 						_s('%1$s [Line: %2$s | Column: %3$s]', '('.$error->code.') '.trim($error->message),
 						$error->line, $error->column
 					)));
 				}
 			}
 
-			if ($data['post_type'] == ZBX_POSTTYPE_JSON) {
+			if ($data['post_type'] == TRX_POSTTYPE_JSON) {
 				if (trim($posts, " \r\n") === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid parameter "%1$s": %2$s.', 'posts', _('JSON is expected'))
 					);
 				}
@@ -2338,7 +2338,7 @@ abstract class CItemGeneral extends CApiService {
 				$json->decode($posts);
 
 				if ($json->hasError()) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid parameter "%1$s": %2$s.', 'posts', _('JSON is expected'))
 					);
 				}

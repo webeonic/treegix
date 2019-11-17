@@ -14,7 +14,7 @@ class CControllerDiscoveryView extends CController {
 			'filter_set' =>			'in 1',
 			'filter_rst' =>			'in 1',
 			'filter_druleids' =>	'array_id',
-			'sortorder' =>			'in '.ZBX_SORT_DOWN.','.ZBX_SORT_UP
+			'sortorder' =>			'in '.TRX_SORT_DOWN.','.TRX_SORT_UP
 		];
 
 		$ret = $this->validateInput($fields);
@@ -32,7 +32,7 @@ class CControllerDiscoveryView extends CController {
 
 	protected function doAction() {
 		$sortField = $this->getInput('sort', CProfile::get('web.discovery.php.sort', 'ip'));
-		$sortOrder = $this->getInput('sortorder', CProfile::get('web.discovery.php.sortorder', ZBX_SORT_UP));
+		$sortOrder = $this->getInput('sortorder', CProfile::get('web.discovery.php.sortorder', TRX_SORT_UP));
 
 		CProfile::update('web.discovery.php.sort', $sortField, PROFILE_TYPE_STR);
 		CProfile::update('web.discovery.php.sortorder', $sortOrder, PROFILE_TYPE_STR);

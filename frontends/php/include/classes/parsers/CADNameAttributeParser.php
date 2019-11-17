@@ -6,9 +6,9 @@
  */
 class CADNameAttributeParser extends CParser {
 
-	const ZBX_TYPE_UNKNOWN = 0;
-	const ZBX_TYPE_SAMA = 0x1;
-	const ZBX_TYPE_UPN = 0x2;
+	const TRX_TYPE_UNKNOWN = 0;
+	const TRX_TYPE_SAMA = 0x1;
+	const TRX_TYPE_UPN = 0x2;
 
 	/**
 	 * User name attribute type.
@@ -41,11 +41,11 @@ class CADNameAttributeParser extends CParser {
 	 *                                    Default parse sAMAccountName and UserPrincipalName.
 	 */
 	public function __construct(array $options = []) {
-		$options += ['nametype' => self::ZBX_TYPE_SAMA | self::ZBX_TYPE_UPN];
+		$options += ['nametype' => self::TRX_TYPE_SAMA | self::TRX_TYPE_UPN];
 		$this->options = [
 			'strict' => array_key_exists('strict', $options) && (bool) $options['strict'],
-			'type_sama' => array_key_exists('nametype', $options) && ($options['nametype'] & self::ZBX_TYPE_SAMA),
-			'type_upn' => array_key_exists('nametype', $options) && ($options['nametype'] & self::ZBX_TYPE_UPN)
+			'type_sama' => array_key_exists('nametype', $options) && ($options['nametype'] & self::TRX_TYPE_SAMA),
+			'type_upn' => array_key_exists('nametype', $options) && ($options['nametype'] & self::TRX_TYPE_UPN)
 		];
 	}
 
@@ -62,13 +62,13 @@ class CADNameAttributeParser extends CParser {
 		$this->user_name = '';
 		$this->domain_name = '';
 		$this->match = '';
-		$this->name_type = self::ZBX_TYPE_UNKNOWN;
+		$this->name_type = self::TRX_TYPE_UNKNOWN;
 
 		if (($this->options['type_upn']) && $this->parseUserPrincipalName($source, $pos) == self::PARSE_SUCCESS) {
-			$this->name_type = self::ZBX_TYPE_UPN;
+			$this->name_type = self::TRX_TYPE_UPN;
 		}
 		elseif ($this->options['type_sama'] && $this->parseSamAccountName($source, $pos) == self::PARSE_SUCCESS) {
-			$this->name_type = self::ZBX_TYPE_SAMA;
+			$this->name_type = self::TRX_TYPE_SAMA;
 		}
 		else {
 			return self::PARSE_FAIL;
@@ -92,7 +92,7 @@ class CADNameAttributeParser extends CParser {
 	 * @return string|null
 	 */
 	public function getUserName() {
-		return ($this->name_type == self::ZBX_TYPE_UNKNOWN) ? null : $this->user_name;
+		return ($this->name_type == self::TRX_TYPE_UNKNOWN) ? null : $this->user_name;
 	}
 
 	/**
@@ -101,7 +101,7 @@ class CADNameAttributeParser extends CParser {
 	 * @return string|null
 	 */
 	public function getDomainName() {
-		return ($this->name_type == self::ZBX_TYPE_UNKNOWN) ? null : $this->domain_name;
+		return ($this->name_type == self::TRX_TYPE_UNKNOWN) ? null : $this->domain_name;
 	}
 
 	/**

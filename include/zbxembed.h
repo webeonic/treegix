@@ -1,7 +1,7 @@
 
 
-#ifndef TREEGIX_ZBXEMBED_H
-#define TREEGIX_ZBXEMBED_H
+#ifndef TREEGIX_TRXEMBED_H
+#define TREEGIX_TRXEMBED_H
 
 typedef struct zbx_es_env zbx_es_env_t;
 
@@ -22,4 +22,4 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 	char **error);
 void	zbx_es_set_timeout(zbx_es_t *es, int timeout);
 
-#endif /* TREEGIX_ZBXEMBED_H */
+#endif /* TREEGIX_TRXEMBED_H */

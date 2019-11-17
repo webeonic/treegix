@@ -16,7 +16,7 @@ class CWidgetFieldComboBox extends CWidgetField {
 	public function __construct($name, $label, $values) {
 		parent::__construct($name, $label);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_INT32);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_INT32);
 		$this->values = $values;
 		$this->setExValidationRules(['in' => implode(',', array_keys($this->values))]);
 	}

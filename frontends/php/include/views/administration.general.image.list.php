@@ -11,7 +11,7 @@ $widget = (new CWidget())
 				->addItem(makeAdministrationGeneralMenu('adm.images.php'))
 				->addItem([
 					new CLabel(_('Type'), 'imagetype'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					new CComboBox('imagetype', $data['imagetype'], 'submit();', [
 						IMAGE_TYPE_ICON => _('Icon'),
 						IMAGE_TYPE_BACKGROUND => _('Background')
@@ -33,11 +33,11 @@ if (!$data['images']) {
 else {
 	// header
 	$imageTable = (new CDiv())
-		->addClass(ZBX_STYLE_TABLE)
-		->addClass(ZBX_STYLE_ADM_IMG);
+		->addClass(TRX_STYLE_TABLE)
+		->addClass(TRX_STYLE_ADM_IMG);
 
 	$count = 0;
-	$imageRow = (new CDiv())->addClass(ZBX_STYLE_ROW);
+	$imageRow = (new CDiv())->addClass(TRX_STYLE_ROW);
 	foreach ($data['images'] as $image) {
 		$img = ($image['imagetype'] == IMAGE_TYPE_BACKGROUND)
 			? new CLink(
@@ -48,7 +48,7 @@ else {
 
 		$imageRow->addItem(
 			(new CDiv())
-				->addClass(ZBX_STYLE_CELL)
+				->addClass(TRX_STYLE_CELL)
 				->addItem([
 					$img,
 					BR(),
@@ -58,7 +58,7 @@ else {
 
 		if ((++$count % 5) == 0) {
 			$imageTable->addItem($imageRow);
-			$imageRow = (new CDiv())->addClass(ZBX_STYLE_ROW);
+			$imageRow = (new CDiv())->addClass(TRX_STYLE_ROW);
 		}
 	}
 

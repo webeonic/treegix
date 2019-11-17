@@ -790,7 +790,7 @@ class CImportReferencer {
 					'SELECT a.applicationid,a.hostid,a.name'.
 					' FROM applications a'.
 					' WHERE '.implode(' OR ', $sqlWhere).
-						' AND a.flags='.ZBX_FLAG_DISCOVERY_NORMAL
+						' AND a.flags='.TRX_FLAG_DISCOVERY_NORMAL
 				);
 				while ($dbApplication = DBfetch($dbApplications)) {
 					$this->applicationsRefs[$dbApplication['hostid']][$dbApplication['name']] = $dbApplication['applicationid'];
@@ -869,9 +869,9 @@ class CImportReferencer {
 				'filter' => [
 					'description' => array_keys($this->triggers),
 					'flags' => [
-						ZBX_FLAG_DISCOVERY_NORMAL,
-						ZBX_FLAG_DISCOVERY_PROTOTYPE,
-						ZBX_FLAG_DISCOVERY_CREATED
+						TRX_FLAG_DISCOVERY_NORMAL,
+						TRX_FLAG_DISCOVERY_PROTOTYPE,
+						TRX_FLAG_DISCOVERY_CREATED
 					]
 				]
 			]);

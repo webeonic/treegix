@@ -11,21 +11,21 @@ $page['scripts'] = ['colorpicker.js'];
 require_once dirname(__FILE__).'/include/page_header.php';
 
 $fields = [
-	'severity_name_0' =>	[T_ZBX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Not classified')],
-	'severity_color_0' =>	[T_ZBX_CLR, O_OPT, null, null, 'isset({update})', _('Not classified')],
-	'severity_name_1' =>	[T_ZBX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Information')],
-	'severity_color_1' =>	[T_ZBX_CLR, O_OPT, null, null, 'isset({update})', _('Information')],
-	'severity_name_2' =>	[T_ZBX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Warning')],
-	'severity_color_2' =>	[T_ZBX_CLR, O_OPT, null, null, 'isset({update})', _('Warning')],
-	'severity_name_3' =>	[T_ZBX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Average')],
-	'severity_color_3' =>	[T_ZBX_CLR, O_OPT, null, null, 'isset({update})', _('Average')],
-	'severity_name_4' =>	[T_ZBX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('High')],
-	'severity_color_4' =>	[T_ZBX_CLR, O_OPT, null, null, 'isset({update})', _('High')],
-	'severity_name_5' =>	[T_ZBX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Disaster')],
-	'severity_color_5' =>	[T_ZBX_CLR, O_OPT, null, null, 'isset({update})', _('Disaster')],
+	'severity_name_0' =>	[T_TRX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Not classified')],
+	'severity_color_0' =>	[T_TRX_CLR, O_OPT, null, null, 'isset({update})', _('Not classified')],
+	'severity_name_1' =>	[T_TRX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Information')],
+	'severity_color_1' =>	[T_TRX_CLR, O_OPT, null, null, 'isset({update})', _('Information')],
+	'severity_name_2' =>	[T_TRX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Warning')],
+	'severity_color_2' =>	[T_TRX_CLR, O_OPT, null, null, 'isset({update})', _('Warning')],
+	'severity_name_3' =>	[T_TRX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Average')],
+	'severity_color_3' =>	[T_TRX_CLR, O_OPT, null, null, 'isset({update})', _('Average')],
+	'severity_name_4' =>	[T_TRX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('High')],
+	'severity_color_4' =>	[T_TRX_CLR, O_OPT, null, null, 'isset({update})', _('High')],
+	'severity_name_5' =>	[T_TRX_STR, O_OPT, null, NOT_EMPTY, 'isset({update})', _('Disaster')],
+	'severity_color_5' =>	[T_TRX_CLR, O_OPT, null, null, 'isset({update})', _('Disaster')],
 	// actions
-	'update' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null, null],
-	'form_refresh' =>		[T_ZBX_INT, O_OPT, null, null, null]
+	'update' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null, null],
+	'form_refresh' =>		[T_TRX_INT, O_OPT, null, null, null]
 ];
 check_fields($fields);
 

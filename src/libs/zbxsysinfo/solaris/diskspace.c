@@ -10,18 +10,18 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 {
 #ifdef HAVE_SYS_STATVFS_H
 #	ifdef HAVE_SYS_STATVFS64
-#		define ZBX_STATFS	statvfs64
+#		define TRX_STATFS	statvfs64
 #	else
-#		define ZBX_STATFS	statvfs
+#		define TRX_STATFS	statvfs
 #	endif
-#	define ZBX_BSIZE	f_frsize
+#	define TRX_BSIZE	f_frsize
 #else
-#	define ZBX_STATFS	statfs
-#	define ZBX_BSIZE	f_bsize
+#	define TRX_STATFS	statfs
+#	define TRX_BSIZE	f_bsize
 #endif
-	struct ZBX_STATFS	s;
+	struct TRX_STATFS	s;
 
-	if (0 != ZBX_STATFS(fs, &s))
+	if (0 != TRX_STATFS(fs, &s))
 	{
 		*error = zbx_dsprintf(NULL, "Cannot obtain filesystem information: %s", zbx_strerror(errno));
 		return SYSINFO_RET_FAIL;
@@ -29,17 +29,17 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 
 	/* Available space could be negative (top bit set) if we hit disk space */
 	/* reserved for non-privileged users. Treat it as 0.                    */
-	if (0 != ZBX_IS_TOP_BIT_SET(s.f_bavail))
+	if (0 != TRX_IS_TOP_BIT_SET(s.f_bavail))
 		s.f_bavail = 0;
 
 	if (NULL != total)
-		*total = (zbx_uint64_t)s.f_blocks * s.ZBX_BSIZE;
+		*total = (zbx_uint64_t)s.f_blocks * s.TRX_BSIZE;
 
 	if (NULL != free)
-		*free = (zbx_uint64_t)s.f_bavail * s.ZBX_BSIZE;
+		*free = (zbx_uint64_t)s.f_bavail * s.TRX_BSIZE;
 
 	if (NULL != used)
-		*used = (zbx_uint64_t)(s.f_blocks - s.f_bfree) * s.ZBX_BSIZE;
+		*used = (zbx_uint64_t)(s.f_blocks - s.f_bfree) * s.TRX_BSIZE;
 
 	if (NULL != pfree)
 	{
@@ -193,14 +193,14 @@ int	VFS_FS_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	/* fill mnttab structure from file */
 	while (-1 != getmntent(f, &mt))
 	{
 		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#FSNAME}", mt.mnt_mountp, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&j, "{#FSTYPE}", mt.mnt_fstype, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#FSNAME}", mt.mnt_mountp, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#FSTYPE}", mt.mnt_fstype, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&j);
 	}
 

@@ -16,7 +16,7 @@ static int	dummy_ping(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	dummy_echo(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	dummy_random(AGENT_REQUEST *request, AGENT_RESULT *result);
 
-static ZBX_METRIC keys[] =
+static TRX_METRIC keys[] =
 /*	KEY			FLAG		FUNCTION	TEST PARAMETERS */
 {
 	{"dummy.ping",		0,		dummy_ping,	NULL},
@@ -31,14 +31,14 @@ static ZBX_METRIC keys[] =
  *                                                                            *
  * Purpose: returns version number of the module interface                    *
  *                                                                            *
- * Return value: ZBX_MODULE_API_VERSION - version of module.h module is       *
+ * Return value: TRX_MODULE_API_VERSION - version of module.h module is       *
  *               compiled with, in order to load module successfully Treegix   *
  *               MUST be compiled with the same version of this header file   *
  *                                                                            *
  ******************************************************************************/
 int	zbx_module_api_version(void)
 {
-	return ZBX_MODULE_API_VERSION;
+	return TRX_MODULE_API_VERSION;
 }
 
 /******************************************************************************
@@ -64,7 +64,7 @@ void	zbx_module_item_timeout(int timeout)
  * Return value: list of item keys                                            *
  *                                                                            *
  ******************************************************************************/
-ZBX_METRIC	*zbx_module_item_list(void)
+TRX_METRIC	*zbx_module_item_list(void)
 {
 	return keys;
 }
@@ -155,10 +155,10 @@ static int	dummy_random(AGENT_REQUEST *request, AGENT_RESULT *result)
  * Purpose: the function is called on agent startup                           *
  *          It should be used to call any initialization routines             *
  *                                                                            *
- * Return value: ZBX_MODULE_OK - success                                      *
- *               ZBX_MODULE_FAIL - module initialization failed               *
+ * Return value: TRX_MODULE_OK - success                                      *
+ *               TRX_MODULE_FAIL - module initialization failed               *
  *                                                                            *
- * Comment: the module won't be loaded in case of ZBX_MODULE_FAIL             *
+ * Comment: the module won't be loaded in case of TRX_MODULE_FAIL             *
  *                                                                            *
  ******************************************************************************/
 int	zbx_module_init(void)
@@ -166,7 +166,7 @@ int	zbx_module_init(void)
 	/* initialization for dummy.random */
 	srand(time(NULL));
 
-	return ZBX_MODULE_OK;
+	return TRX_MODULE_OK;
 }
 
 /******************************************************************************
@@ -176,13 +176,13 @@ int	zbx_module_init(void)
  * Purpose: the function is called on agent shutdown                          *
  *          It should be used to cleanup used resources if there are any      *
  *                                                                            *
- * Return value: ZBX_MODULE_OK - success                                      *
- *               ZBX_MODULE_FAIL - function failed                            *
+ * Return value: TRX_MODULE_OK - success                                      *
+ *               TRX_MODULE_FAIL - function failed                            *
  *                                                                            *
  ******************************************************************************/
 int	zbx_module_uninit(void)
 {
-	return ZBX_MODULE_OK;
+	return TRX_MODULE_OK;
 }
 
 /******************************************************************************
@@ -200,7 +200,7 @@ int	zbx_module_uninit(void)
  *             history_num - number of elements in history array              *
  *                                                                            *
  ******************************************************************************/
-static void	dummy_history_float_cb(const ZBX_HISTORY_FLOAT *history, int history_num)
+static void	dummy_history_float_cb(const TRX_HISTORY_FLOAT *history, int history_num)
 {
 	int	i;
 
@@ -210,7 +210,7 @@ static void	dummy_history_float_cb(const ZBX_HISTORY_FLOAT *history, int history
 	}
 }
 
-static void	dummy_history_integer_cb(const ZBX_HISTORY_INTEGER *history, int history_num)
+static void	dummy_history_integer_cb(const TRX_HISTORY_INTEGER *history, int history_num)
 {
 	int	i;
 
@@ -220,7 +220,7 @@ static void	dummy_history_integer_cb(const ZBX_HISTORY_INTEGER *history, int his
 	}
 }
 
-static void	dummy_history_string_cb(const ZBX_HISTORY_STRING *history, int history_num)
+static void	dummy_history_string_cb(const TRX_HISTORY_STRING *history, int history_num)
 {
 	int	i;
 
@@ -230,7 +230,7 @@ static void	dummy_history_string_cb(const ZBX_HISTORY_STRING *history, int histo
 	}
 }
 
-static void	dummy_history_text_cb(const ZBX_HISTORY_TEXT *history, int history_num)
+static void	dummy_history_text_cb(const TRX_HISTORY_TEXT *history, int history_num)
 {
 	int	i;
 
@@ -240,7 +240,7 @@ static void	dummy_history_text_cb(const ZBX_HISTORY_TEXT *history, int history_n
 	}
 }
 
-static void	dummy_history_log_cb(const ZBX_HISTORY_LOG *history, int history_num)
+static void	dummy_history_log_cb(const TRX_HISTORY_LOG *history, int history_num)
 {
 	int	i;
 
@@ -261,9 +261,9 @@ static void	dummy_history_log_cb(const ZBX_HISTORY_LOG *history, int history_num
  *               module is not interested in data of certain types)           *
  *                                                                            *
  ******************************************************************************/
-ZBX_HISTORY_WRITE_CBS	zbx_module_history_write_cbs(void)
+TRX_HISTORY_WRITE_CBS	zbx_module_history_write_cbs(void)
 {
-	static ZBX_HISTORY_WRITE_CBS	dummy_callbacks =
+	static TRX_HISTORY_WRITE_CBS	dummy_callbacks =
 	{
 		dummy_history_float_cb,
 		dummy_history_integer_cb,

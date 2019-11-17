@@ -32,7 +32,7 @@ function DBconnect(&$error) {
 	}
 	else {
 		switch ($DB['TYPE']) {
-			case ZBX_DB_MYSQL:
+			case TRX_DB_MYSQL:
 				$DB['DB'] = @mysqli_connect($DB['SERVER'], $DB['USER'], $DB['PASSWORD'], $DB['DATABASE'], $DB['PORT']);
 				if (!$DB['DB']) {
 					$error = 'Error connecting to database: '.trim(mysqli_connect_error());
@@ -50,7 +50,7 @@ function DBconnect(&$error) {
 					$dbBackend = new MysqlDbBackend();
 				}
 				break;
-			case ZBX_DB_POSTGRESQL:
+			case TRX_DB_POSTGRESQL:
 				$pg_connection_string =
 					(!empty($DB['SERVER']) ? 'host=\''.pg_connect_escape($DB['SERVER']).'\' ' : '').
 					'dbname=\''.pg_connect_escape($DB['DATABASE']).'\' '.
@@ -85,7 +85,7 @@ function DBconnect(&$error) {
 					$dbBackend = new PostgresqlDbBackend();
 				}
 				break;
-			case ZBX_DB_ORACLE:
+			case TRX_DB_ORACLE:
 				$connect = '';
 				if (!empty($DB['SERVER'])) {
 					$connect = '//'.$DB['SERVER'];
@@ -112,7 +112,7 @@ function DBconnect(&$error) {
 					$dbBackend = new OracleDbBackend();
 				}
 				break;
-			case ZBX_DB_DB2:
+			case TRX_DB_DB2:
 				$connect = '';
 				$connect .= 'DATABASE='.$DB['DATABASE'].';';
 				$connect .= 'HOSTNAME='.$DB['SERVER'].';';
@@ -177,16 +177,16 @@ function DBclose() {
 
 	if (isset($DB['DB']) && !empty($DB['DB'])) {
 		switch ($DB['TYPE']) {
-			case ZBX_DB_MYSQL:
+			case TRX_DB_MYSQL:
 				$result = mysqli_close($DB['DB']);
 				break;
-			case ZBX_DB_POSTGRESQL:
+			case TRX_DB_POSTGRESQL:
 				$result = pg_close($DB['DB']);
 				break;
-			case ZBX_DB_ORACLE:
+			case TRX_DB_ORACLE:
 				$result = oci_close($DB['DB']);
 				break;
-			case ZBX_DB_DB2:
+			case TRX_DB_DB2:
 				$result = db2_close($DB['DB']);
 				break;
 		}
@@ -213,16 +213,16 @@ function DBstart() {
 	}
 
 	switch ($DB['TYPE']) {
-		case ZBX_DB_MYSQL:
+		case TRX_DB_MYSQL:
 			$result = DBexecute('BEGIN');
 			break;
-		case ZBX_DB_POSTGRESQL:
+		case TRX_DB_POSTGRESQL:
 			$result = DBexecute('BEGIN');
 			break;
-		case ZBX_DB_ORACLE:
+		case TRX_DB_ORACLE:
 			$result = true;
 			break;
-		case ZBX_DB_DB2:
+		case TRX_DB_DB2:
 			$result = db2_autocommit($DB['DB'], DB2_AUTOCOMMIT_OFF);
 			break;
 	}
@@ -270,16 +270,16 @@ function DBcommit() {
 	$result = false;
 
 	switch ($DB['TYPE']) {
-		case ZBX_DB_MYSQL:
+		case TRX_DB_MYSQL:
 			$result = DBexecute('COMMIT');
 			break;
-		case ZBX_DB_POSTGRESQL:
+		case TRX_DB_POSTGRESQL:
 			$result = DBexecute('COMMIT');
 			break;
-		case ZBX_DB_ORACLE:
+		case TRX_DB_ORACLE:
 			$result = oci_commit($DB['DB']);
 			break;
-		case ZBX_DB_DB2:
+		case TRX_DB_DB2:
 			$result = db2_commit($DB['DB']);
 			if ($result) {
 				db2_autocommit($DB['DB'], DB2_AUTOCOMMIT_ON);
@@ -295,16 +295,16 @@ function DBrollback() {
 	$result = false;
 
 	switch ($DB['TYPE']) {
-		case ZBX_DB_MYSQL:
+		case TRX_DB_MYSQL:
 			$result = DBexecute('ROLLBACK');
 			break;
-		case ZBX_DB_POSTGRESQL:
+		case TRX_DB_POSTGRESQL:
 			$result = DBexecute('ROLLBACK');
 			break;
-		case ZBX_DB_ORACLE:
+		case TRX_DB_ORACLE:
 			$result = oci_rollback($DB['DB']);
 			break;
-		case ZBX_DB_DB2:
+		case TRX_DB_DB2:
 			$result = db2_rollback($DB['DB']);
 			db2_autocommit($DB['DB'], DB2_AUTOCOMMIT_ON);
 			break;
@@ -343,17 +343,17 @@ function DBselect($query, $limit = null, $offset = 0) {
 	$DB['SELECT_COUNT']++;
 
 	switch ($DB['TYPE']) {
-		case ZBX_DB_MYSQL:
+		case TRX_DB_MYSQL:
 			if (!$result = mysqli_query($DB['DB'], $query)) {
 				error('Error in query ['.$query.'] ['.mysqli_error($DB['DB']).']', 'sql');
 			}
 			break;
-		case ZBX_DB_POSTGRESQL:
+		case TRX_DB_POSTGRESQL:
 			if (!$result = pg_query($DB['DB'], $query)) {
 				error('Error in query ['.$query.'] ['.pg_last_error().']', 'sql');
 			}
 			break;
-		case ZBX_DB_ORACLE:
+		case TRX_DB_ORACLE:
 			if (!$result = oci_parse($DB['DB'], $query)) {
 				$e = @oci_error();
 				error('SQL error ['.$e['message'].'] in ['.$e['sqltext'].']', 'sql');
@@ -363,7 +363,7 @@ function DBselect($query, $limit = null, $offset = 0) {
 				error('SQL error ['.$e['message'].'] in ['.$e['sqltext'].']', 'sql');
 			}
 			break;
-		case ZBX_DB_DB2:
+		case TRX_DB_DB2:
 			$options = [];
 			if ($DB['TRANSACTIONS']) {
 				$options['autocommit'] = DB2_AUTOCOMMIT_OFF;
@@ -432,13 +432,13 @@ function DBaddLimit($query, $limit = 0, $offset = 0) {
 	// Process limit and offset
 	if (isset($limit)) {
 		switch ($DB['TYPE']) {
-			case ZBX_DB_MYSQL:
-			case ZBX_DB_POSTGRESQL:
+			case TRX_DB_MYSQL:
+			case TRX_DB_POSTGRESQL:
 				$query .= ' LIMIT '.intval($limit);
 				$query .= $offset != 0 ? ' OFFSET '.intval($offset) : '';
 				break;
-			case ZBX_DB_ORACLE:
-			case ZBX_DB_DB2:
+			case TRX_DB_ORACLE:
+			case TRX_DB_DB2:
 				$till = $offset + $limit;
 				$query = 'SELECT * FROM ('.$query.') WHERE rownum BETWEEN '.intval($offset).' AND '.intval($till);
 				break;
@@ -461,17 +461,17 @@ function DBexecute($query, $skip_error_messages = 0) {
 	$DB['EXECUTE_COUNT']++;
 
 	switch ($DB['TYPE']) {
-		case ZBX_DB_MYSQL:
+		case TRX_DB_MYSQL:
 			if (!$result = mysqli_query($DB['DB'], $query)) {
 				error('Error in query ['.$query.'] ['.mysqli_error($DB['DB']).']', 'sql');
 			}
 			break;
-		case ZBX_DB_POSTGRESQL:
+		case TRX_DB_POSTGRESQL:
 			if (!$result = (bool) pg_query($DB['DB'], $query)) {
 				error('Error in query ['.$query.'] ['.pg_last_error().']', 'sql');
 			}
 			break;
-		case ZBX_DB_ORACLE:
+		case TRX_DB_ORACLE:
 			if (!$result = oci_parse($DB['DB'], $query)) {
 				$e = @oci_error();
 				error('SQL error ['.$e['message'].'] in ['.$e['sqltext'].']', 'sql');
@@ -484,7 +484,7 @@ function DBexecute($query, $skip_error_messages = 0) {
 				$result = true; // function must return boolean
 			}
 			break;
-		case ZBX_DB_DB2:
+		case TRX_DB_DB2:
 			if (!$result = db2_prepare($DB['DB'], $query)) {
 				$e = @db2_stmt_errormsg($result);
 				error('SQL error ['.$query.'] in ['.$e.']', 'sql');
@@ -528,18 +528,18 @@ function DBfetch($cursor, $convertNulls = true) {
 	}
 
 	switch ($DB['TYPE']) {
-		case ZBX_DB_MYSQL:
+		case TRX_DB_MYSQL:
 			$result = mysqli_fetch_assoc($cursor);
 			if (!$result) {
 				mysqli_free_result($cursor);
 			}
 			break;
-		case ZBX_DB_POSTGRESQL:
+		case TRX_DB_POSTGRESQL:
 			if (!$result = pg_fetch_assoc($cursor)) {
 				pg_free_result($cursor);
 			}
 			break;
-		case ZBX_DB_ORACLE:
+		case TRX_DB_ORACLE:
 			if ($row = oci_fetch_assoc($cursor)) {
 				$result = [];
 				foreach ($row as $key => $value) {
@@ -555,7 +555,7 @@ function DBfetch($cursor, $convertNulls = true) {
 				}
 			}
 			break;
-		case ZBX_DB_DB2:
+		case TRX_DB_DB2:
 			if (!$result = db2_fetch_assoc($cursor)) {
 				db2_free_result($cursor);
 			}
@@ -595,14 +595,14 @@ function get_dbid($table, $field) {
 	// PGSQL on transaction failure on all queries returns false..
 	global $DB;
 
-	if ($DB['TYPE'] == ZBX_DB_POSTGRESQL && $DB['TRANSACTIONS'] && !$DB['TRANSACTION_NO_FAILED_SQLS']) {
+	if ($DB['TYPE'] == TRX_DB_POSTGRESQL && $DB['TRANSACTIONS'] && !$DB['TRANSACTION_NO_FAILED_SQLS']) {
 		return 0;
 	}
 
 	$found = false;
 
 	$min = 0;
-	$max = ZBX_DB_MAX_ID;
+	$max = TRX_DB_MAX_ID;
 
 	do {
 		$dbSelect = DBselect('SELECT i.nextid FROM ids i WHERE i.table_name='.zbx_dbstr($table).' AND i.field_name='.zbx_dbstr($field));
@@ -788,7 +788,7 @@ function dbConditionInt($fieldName, array $values, $notIn = false, $zero_to_null
 	$values = array_values($values);
 
 	foreach ($values as $i => $value) {
-		if (!ctype_digit((string) $value) || bccomp($value, ZBX_MAX_UINT64) > 0) {
+		if (!ctype_digit((string) $value) || bccomp($value, TRX_MAX_UINT64) > 0) {
 			$values[$i] = zbx_dbstr($value);
 		}
 	}
@@ -890,7 +890,7 @@ function dbConditionCoalesce($field_name, $default_value, $alias = '') {
 		$default_value = ($default_value == '') ? '\'\'' : zbx_dbstr($default_value);
 	}
 
-	$query = (($DB['TYPE'] == ZBX_DB_ORACLE) ? 'NVL(' : 'COALESCE(').$field_name.','.$default_value.')';
+	$query = (($DB['TYPE'] == TRX_DB_ORACLE) ? 'NVL(' : 'COALESCE(').$field_name.','.$default_value.')';
 
 	if ($alias) {
 		$query .= ' AS '.$alias;
@@ -982,7 +982,7 @@ function zbx_dbstr($var) {
 	}
 
 	switch ($DB['TYPE']) {
-		case ZBX_DB_DB2:
+		case TRX_DB_DB2:
 			if (is_array($var)) {
 				foreach ($var as $vnum => $value) {
 					$var[$vnum] = "'".db2_escape_string($value)."'";
@@ -991,7 +991,7 @@ function zbx_dbstr($var) {
 			}
 			return "'".db2_escape_string($var)."'";
 
-		case ZBX_DB_MYSQL:
+		case TRX_DB_MYSQL:
 			if (is_array($var)) {
 				foreach ($var as $vnum => $value) {
 					$var[$vnum] = "'".mysqli_real_escape_string($DB['DB'], $value)."'";
@@ -1000,7 +1000,7 @@ function zbx_dbstr($var) {
 			}
 			return "'".mysqli_real_escape_string($DB['DB'], $var)."'";
 
-		case ZBX_DB_ORACLE:
+		case TRX_DB_ORACLE:
 			if (is_array($var)) {
 				foreach ($var as $vnum => $value) {
 					$var[$vnum] = "'".preg_replace('/\'/', '\'\'', $value)."'";
@@ -1009,7 +1009,7 @@ function zbx_dbstr($var) {
 			}
 			return "'".preg_replace('/\'/','\'\'',$var)."'";
 
-		case ZBX_DB_POSTGRESQL:
+		case TRX_DB_POSTGRESQL:
 			if (is_array($var)) {
 				foreach ($var as $vnum => $value) {
 					$var[$vnum] = "'".pg_escape_string($value)."'";
@@ -1039,14 +1039,14 @@ function zbx_dbcast_2bigint($field) {
 	}
 
 	switch ($DB['TYPE']) {
-		case ZBX_DB_DB2:
-		case ZBX_DB_POSTGRESQL:
+		case TRX_DB_DB2:
+		case TRX_DB_POSTGRESQL:
 			return 'CAST('.$field.' AS BIGINT)';
 
-		case ZBX_DB_MYSQL:
+		case TRX_DB_MYSQL:
 			return 'CAST('.$field.' AS UNSIGNED)';
 
-		case ZBX_DB_ORACLE:
+		case TRX_DB_ORACLE:
 			return 'CAST('.$field.' AS NUMBER(20))';
 
 		default:

@@ -9,7 +9,7 @@ $widget = (new CWidget())->setTitle(_('Maintenance periods'));
 // create form
 $maintenanceForm = (new CForm())
 	->setName('maintenanceForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $this->data['form']);
 if (isset($this->data['maintenanceid'])) {
 	$maintenanceForm->addVar('maintenanceid', $this->data['maintenanceid']);
@@ -22,7 +22,7 @@ $maintenanceFormList = (new CFormList('maintenanceFormList'))
 	->addRow(
 		(new CLabel(_('Name'), 'mname'))->setAsteriskMark(),
 		(new CTextBox('mname', $this->data['mname']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 			->setAttribute('maxlength', DB::getFieldLength('maintenances', 'name'))
@@ -36,19 +36,19 @@ $maintenanceFormList = (new CFormList('maintenanceFormList'))
 	// Show date and time in shorter format without seconds.
 	->addRow((new CLabel(_('Active since'), 'active_since'))->setAsteriskMark(),
 		(new CDateSelector('active_since', $data['active_since']))
-			->setDateFormat(ZBX_DATE_TIME)
+			->setDateFormat(TRX_DATE_TIME)
 			->setPlaceholder(_('YYYY-MM-DD hh:mm'))
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('Active till'), 'active_till'))->setAsteriskMark(),
 		(new CDateSelector('active_till', $data['active_till']))
-			->setDateFormat(ZBX_DATE_TIME)
+			->setDateFormat(TRX_DATE_TIME)
 			->setPlaceholder(_('YYYY-MM-DD hh:mm'))
 			->setAriaRequired()
 	);
 
 $maintenanceFormList->addRow(_('Description'),
-	(new CTextArea('description', $this->data['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	(new CTextArea('description', $this->data['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 );
 
 /*
@@ -63,25 +63,25 @@ $maintenance_period_table = (new CTable())
 
 foreach ($data['timeperiods'] as $id => $timeperiod) {
 	$maintenance_period_table->addRow([
-		(new CCol(timeperiod_type2str($timeperiod['timeperiod_type'])))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol(timeperiod_type2str($timeperiod['timeperiod_type'])))->addClass(TRX_STYLE_NOWRAP),
 		($timeperiod['timeperiod_type'] == TIMEPERIOD_TYPE_ONETIME)
 			? $timeperiod['start_date']
 			: schedule2str($timeperiod),
-		(new CCol(zbx_date2age(0, $timeperiod['period'])))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol(zbx_date2age(0, $timeperiod['period'])))->addClass(TRX_STYLE_NOWRAP),
 		(new CCol(
 			new CHorList([
 				(new CSimpleButton(_('Edit')))
 					->onClick('javascript: submitFormWithParam('.
 						'"'.$maintenanceForm->getName().'", "edit_timeperiodid['.$id.']", "1"'.
 					');')
-					->addClass(ZBX_STYLE_BTN_LINK),
+					->addClass(TRX_STYLE_BTN_LINK),
 				(new CSimpleButton(_('Remove')))
 					->onClick('javascript: submitFormWithParam('.
 						'"'.$maintenanceForm->getName().'", "del_timeperiodid['.$id.']", "1"'.
 					');')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 			])
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	]);
 	if (isset($timeperiod['timeperiodid'])) {
 		$maintenanceForm->addVar('timeperiods['.$id.'][timeperiodid]', $timeperiod['timeperiodid']);
@@ -98,14 +98,14 @@ foreach ($data['timeperiods'] as $id => $timeperiod) {
 }
 
 $periodsDiv = (new CDiv($maintenance_period_table))
-	->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-	->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;');
+	->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+	->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;');
 
 if (!isset($_REQUEST['new_timeperiod'])) {
 	$periodsDiv->addItem(
 		(new CSimpleButton(_('New')))
 			->onClick('javascript: submitFormWithParam("'.$maintenanceForm->getName().'", "new_timeperiod", "1");')
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 	);
 }
 $maintenancePeriodFormList->addRow(
@@ -126,14 +126,14 @@ if ($data['new_timeperiod']) {
 			new CHorList([
 				(new CSimpleButton($save_label))
 					->onClick('javascript: submitFormWithParam("'.$maintenanceForm->getName().'", "add_timeperiod", "1");')
-					->addClass(ZBX_STYLE_BTN_LINK),
+					->addClass(TRX_STYLE_BTN_LINK),
 				(new CSimpleButton(_('Cancel')))
 					->onClick('javascript: submitFormWithParam("'.$maintenanceForm->getName().'", "cancel_new_timeperiod", "1");')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 			])
 		]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 }
 
@@ -162,7 +162,7 @@ foreach ($tags as $tag) {
 	if ($data['maintenance_type'] == MAINTENANCE_TYPE_NODATA) {
 		$tag_table->addRow([
 			(new CTextBox('tags['.$i.'][tag]', $tag['tag']))
-				->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 				->setEnabled(false),
 			(new CRadioButtonList('tags['.$i.'][operator]', (int) $tag['operator']))
 				->addValue(_('Contains'), MAINTENANCE_TAG_OPERATOR_LIKE)
@@ -170,33 +170,33 @@ foreach ($tags as $tag) {
 				->setModern(true)
 				->setEnabled(false),
 			(new CTextBox('tags['.$i.'][value]', $tag['value']))
-				->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 				->setEnabled(false),
 			(new CCol(
 				(new CButton('tags['.$i.'][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
 					->setEnabled(false)
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		], 'form_row');
 	}
 	else {
 		$tag_table->addRow([
 			(new CTextBox('tags['.$i.'][tag]', $tag['tag']))
 				->setAttribute('placeholder', _('tag'))
-				->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+				->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 			(new CRadioButtonList('tags['.$i.'][operator]', (int) $tag['operator']))
 				->addValue(_('Contains'), MAINTENANCE_TAG_OPERATOR_LIKE)
 				->addValue(_('Equals'), MAINTENANCE_TAG_OPERATOR_EQUAL)
 				->setModern(true),
 			(new CTextBox('tags['.$i.'][value]', $tag['value']))
 				->setAttribute('placeholder', _('value'))
-				->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+				->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 			(new CCol(
 				(new CButton('tags['.$i.'][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		], 'form_row');
 	}
 
@@ -205,7 +205,7 @@ foreach ($tags as $tag) {
 $tag_table->addRow(
 	(new CCol(
 		(new CButton('tags_add', _('Add')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-add')
 			->setEnabled($data['maintenance_type'] == MAINTENANCE_TYPE_NODATA ? false : true)
 	))->setColSpan(3)
@@ -229,7 +229,7 @@ $hostsAndGroupsFormList = (new CFormList('hostsAndGroupsFormList'))
 					'editable' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(new CLabel(_('Hosts'), 'hostids__ms'),
 		(new CMultiSelect([
@@ -245,12 +245,12 @@ $hostsAndGroupsFormList = (new CFormList('hostsAndGroupsFormList'))
 					'editable' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('Tags'),
 		(new CDiv($tag_table))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 	);
 
 // Append tabs to form.

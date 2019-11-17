@@ -91,7 +91,7 @@ if ($data['action'] == 'problem.view') {
 						'enrich_parent_groups' => true
 					]
 				]
-			]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+			]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 		)
 		->addRow((new CLabel(_('Hosts'), 'filter_hostids__ms')),
 			(new CMultiSelect([
@@ -106,12 +106,12 @@ if ($data['action'] == 'problem.view') {
 						'dstfld1' => 'filter_hostids_'
 					]
 				]
-			]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+			]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 		)
 		->addRow(_('Application'), [
 			(new CTextBox('filter_application', $data['filter']['application']))
-				->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CButton('filter_application_select', _('Select')))
 				->onClick('return PopUp("popup.generic",'.
 					CJs::encodeJson([
@@ -123,7 +123,7 @@ if ($data['action'] == 'problem.view') {
 						'real_hosts' => '1'
 					]).', null, this);'
 				)
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 		])
 		->addRow((new CLabel(_('Triggers'), 'filter_triggerids__ms')),
 			(new CMultiSelect([
@@ -141,17 +141,17 @@ if ($data['action'] == 'problem.view') {
 						'noempty' => true
 					]
 				]
-			]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+			]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 		)
 		->addRow(_('Problem'),
-			(new CTextBox('filter_name', $data['filter']['name']))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+			(new CTextBox('filter_name', $data['filter']['name']))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 		)
 		->addRow(_('Minimum severity'),
 			new CComboBox('filter_severity', $data['filter']['severity'], null, $data['filter']['severities'])
 		);
 
 	$filter_age = (new CNumericBox('filter_age', $data['filter']['age'], 3, false, false, false))
-		->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH);
+		->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH);
 	if ($data['filter']['age_state'] == 0) {
 		$filter_age->setAttribute('disabled', 'disabled');
 	}
@@ -161,9 +161,9 @@ if ($data['action'] == 'problem.view') {
 			(new CCheckBox('filter_age_state'))
 				->setChecked($data['filter']['age_state'] == 1)
 				->onClick('javascript: this.checked ? $("filter_age").enable() : $("filter_age").disable()'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$filter_age,
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			_('days')
 		]);
 
@@ -178,12 +178,12 @@ if ($data['action'] == 'problem.view') {
 	foreach ($filter_inventory as $field) {
 		$filter_inventory_table->addRow([
 			new CComboBox('filter_inventory['.$i.'][field]', $field['field'], null, $data['filter']['inventories']),
-			(new CTextBox('filter_inventory['.$i.'][value]', $field['value']))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			(new CTextBox('filter_inventory['.$i.'][value]', $field['value']))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 			(new CCol(
 				(new CButton('filter_inventory['.$i.'][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		], 'form_row');
 
 		$i++;
@@ -191,7 +191,7 @@ if ($data['action'] == 'problem.view') {
 	$filter_inventory_table->addRow(
 		(new CCol(
 			(new CButton('filter_inventory_add', _('Add')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-add')
 		))->setColSpan(3)
 	);
@@ -218,19 +218,19 @@ if ($data['action'] == 'problem.view') {
 		$filter_tags_table->addRow([
 			(new CTextBox('filter_tags['.$i.'][tag]', $tag['tag']))
 				->setAttribute('placeholder', _('tag'))
-				->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+				->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 			(new CRadioButtonList('filter_tags['.$i.'][operator]', (int) $tag['operator']))
 				->addValue(_('Contains'), TAG_OPERATOR_LIKE)
 				->addValue(_('Equals'), TAG_OPERATOR_EQUAL)
 				->setModern(true),
 			(new CTextBox('filter_tags['.$i.'][value]', $tag['value']))
 				->setAttribute('placeholder', _('value'))
-				->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+				->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 			(new CCol(
 				(new CButton('filter_tags['.$i.'][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		], 'form_row');
 
 		$i++;
@@ -238,7 +238,7 @@ if ($data['action'] == 'problem.view') {
 	$filter_tags_table->addRow(
 		(new CCol(
 			(new CButton('filter_tags_add', _('Add')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-add')
 		))->setColSpan(3)
 	);
@@ -251,7 +251,7 @@ if ($data['action'] == 'problem.view') {
 				->addValue(PROBLEMS_SHOW_TAGS_3, PROBLEMS_SHOW_TAGS_3)
 				->setModern(true)
 		)
-		->addItem((new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN))
+		->addItem((new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN))
 		->addItem(_('Tag name'))
 		->addItem((new CRadioButtonList('filter_tag_name_format', (int) $data['filter']['tag_name_format']))
 				->addValue(_('Full'), PROBLEMS_TAG_NAME_FULL)
@@ -267,7 +267,7 @@ if ($data['action'] == 'problem.view') {
 		->addRow(_('Show tags'), $tag_format_line)
 		->addRow(_('Tag display priority'),
 			(new CTextBox('filter_tag_priority', $data['filter']['tag_priority']))
-				->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 				->setAttribute('placeholder', _('comma-separated list'))
 				->setEnabled((int) $data['filter']['show_tags'] !== PROBLEMS_SHOW_TAGS_NONE)
 		)
@@ -281,35 +281,35 @@ if ($data['action'] == 'problem.view') {
 		])
 		->addRow(_('Show suppressed problems'), [
 			(new CCheckBox('filter_show_suppressed'))
-				->setChecked($data['filter']['show_suppressed'] == ZBX_PROBLEM_SUPPRESSED_TRUE),
+				->setChecked($data['filter']['show_suppressed'] == TRX_PROBLEM_SUPPRESSED_TRUE),
 			(new CDiv([
 				(new CLabel(_('Show unacknowledged only'), 'filter_unacknowledged'))
-					->addClass(ZBX_STYLE_SECOND_COLUMN_LABEL),
+					->addClass(TRX_STYLE_SECOND_COLUMN_LABEL),
 				(new CCheckBox('filter_unacknowledged'))
 					->setChecked($data['filter']['unacknowledged'] == 1)
-			]))->addClass(ZBX_STYLE_TABLE_FORMS_SECOND_COLUMN)
+			]))->addClass(TRX_STYLE_TABLE_FORMS_SECOND_COLUMN)
 		])
 		->addRow(_('Compact view'), [
 			(new CCheckBox('filter_compact_view'))->setChecked($data['filter']['compact_view'] == 1),
 			(new CDiv([
-				(new CLabel(_('Show timeline'), 'filter_show_timeline'))->addClass(ZBX_STYLE_SECOND_COLUMN_LABEL),
+				(new CLabel(_('Show timeline'), 'filter_show_timeline'))->addClass(TRX_STYLE_SECOND_COLUMN_LABEL),
 				(new CCheckBox('filter_show_timeline'))
 					->setChecked($data['filter']['show_timeline'] == 1)
 					->setEnabled($data['filter']['compact_view'] == 0),
-			]))->addClass(ZBX_STYLE_TABLE_FORMS_SECOND_COLUMN)
+			]))->addClass(TRX_STYLE_TABLE_FORMS_SECOND_COLUMN)
 		])
 		->addRow(_('Show details'), [
 			(new CCheckBox('filter_details'))
 				->setChecked($data['filter']['details'] == 1)
 				->setEnabled($data['filter']['compact_view'] == 0),
 			(new CDiv([
-				(new CLabel(_('Highlight whole row'), 'filter_highlight_row'))->addClass(ZBX_STYLE_SECOND_COLUMN_LABEL),
+				(new CLabel(_('Highlight whole row'), 'filter_highlight_row'))->addClass(TRX_STYLE_SECOND_COLUMN_LABEL),
 				(new CCheckBox('filter_highlight_row'))
 					->setChecked($data['filter']['highlight_row'] == 1)
 					->setEnabled($data['filter']['compact_view'] == 1)
 			]))
-				->addClass(ZBX_STYLE_FILTER_HIGHLIGHT_ROW_CB)
-				->addClass(ZBX_STYLE_TABLE_FORMS_SECOND_COLUMN)
+				->addClass(TRX_STYLE_FILTER_HIGHLIGHT_ROW_CB)
+				->addClass(TRX_STYLE_TABLE_FORMS_SECOND_COLUMN)
 		]);
 
 	$filter = (new CFilter((new CUrl('treegix.php'))->setArgument('action', 'problem.view')))
@@ -346,7 +346,7 @@ if ($data['action'] == 'problem.view') {
 				->setAttribute('aria-label', _('Content controls'))
 		);
 
-	if (in_array($web_layout_mode, [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN])) {
+	if (in_array($web_layout_mode, [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN])) {
 		$widget->addItem($filter);
 	}
 

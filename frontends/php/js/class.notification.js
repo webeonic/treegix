@@ -5,14 +5,14 @@
  * In case if user has set incredibly long notification timeout - he would end up never seeing them, because JS would
  * execute scheduled timeout immediately. So limit the upper bound.
  */
-ZBX_Notification.max_timeout = Math.pow(2, 30);
+TRX_Notification.max_timeout = Math.pow(2, 30);
 
 /**
  * Represents notification object.
  *
  * @param {object} raw  A server or LS format of this notification.
  */
-function ZBX_Notification(raw) {
+function TRX_Notification(raw) {
 	/*
 	 * These are pseudo that properties will cycle back into store, to be reused when rendering next time.
 	 * If `received_at` property has not been set it is first render. This property might be updated to a new client
@@ -31,14 +31,14 @@ function ZBX_Notification(raw) {
 /**
  * @return {string}
  */
-ZBX_Notification.prototype.getId = function() {
+TRX_Notification.prototype.getId = function() {
 	return this._raw.eventid;
 };
 
 /**
  * @return {object}
  */
-ZBX_Notification.prototype.getRaw = function() {
+TRX_Notification.prototype.getRaw = function() {
 	return this._raw;
 };
 
@@ -48,9 +48,9 @@ ZBX_Notification.prototype.getRaw = function() {
  *
  * @param {object} raw  An object in format that is used in store. All keys are optional.
  *
- * @return {ZBX_Notification}
+ * @return {TRX_Notification}
  */
-ZBX_Notification.prototype.updateRaw = function(raw) {
+TRX_Notification.prototype.updateRaw = function(raw) {
 	if (!this._raw.resolved && raw.resolved) {
 		this._raw.received_at = (+new Date / 1000);
 	}
@@ -67,7 +67,7 @@ ZBX_Notification.prototype.updateRaw = function(raw) {
  *
  * @param {object} severity_styles  Object of class names keyed by severity id.
  */
-ZBX_Notification.prototype.render = function(severity_styles) {
+TRX_Notification.prototype.render = function(severity_styles) {
 	var title_prefix = this._raw.resolved ? locale.S_RESOLVED : locale.S_PROBLEM_ON;
 
 	this.node.title_node.innerHTML = title_prefix + ' ' + BBCode.Parse(this._raw.title);
@@ -78,7 +78,7 @@ ZBX_Notification.prototype.render = function(severity_styles) {
 /**
  * @return {float}  Zero or more milliseconds.
  */
-ZBX_Notification.prototype.calcDisplayTimeout = function(user_settings) {
+TRX_Notification.prototype.calcDisplayTimeout = function(user_settings) {
 	var time_local = (+new Date / 1000),
 		timeout = this._raw.resolved ? user_settings.msg_recovery_timeout : user_settings.msg_timeout,
 		ttl = (this._raw.received_at - time_local) + timeout;
@@ -91,7 +91,7 @@ ZBX_Notification.prototype.calcDisplayTimeout = function(user_settings) {
  *
  * @return {HTMLElement}  Detached DOM node.
  */
-ZBX_Notification.prototype.makeNode = function() {
+TRX_Notification.prototype.makeNode = function() {
 	var node = document.createElement('li'),
 		indicator = document.createElement('div'),
 		title_node = document.createElement('h4');
@@ -122,6 +122,6 @@ ZBX_Notification.prototype.makeNode = function() {
  *
  * @return {bool}
  */
-ZBX_Notification.prototype.isNodeConnected = function() {
+TRX_Notification.prototype.isNodeConnected = function() {
 	return !!(this.node.isConnected || this.node.parentNode);
 };

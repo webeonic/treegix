@@ -17,10 +17,10 @@ function makeStepResult(step) {
 		));
 	}
 	else if (typeof step.result === 'undefined' || step.result === null) {
-		return jQuery('<span>', {'class': '<?= ZBX_STYLE_GREY ?>'}).text(<?= CJs::encodeJson(_('No value')) ?>);
+		return jQuery('<span>', {'class': '<?= TRX_STYLE_GREY ?>'}).text(<?= CJs::encodeJson(_('No value')) ?>);
 	}
 	else if (step.result === '') {
-		return jQuery('<span>', {'class': '<?= ZBX_STYLE_GREY ?>'}).text(<?= CJs::encodeJson(_('<empty string>')) ?>);
+		return jQuery('<span>', {'class': '<?= TRX_STYLE_GREY ?>'}).text(<?= CJs::encodeJson(_('<empty string>')) ?>);
 	}
 	else if (step.result.indexOf("\n") != -1 || step.result.length > 25) {
 		return jQuery(new Template(jQuery('#preprocessing-step-result').html()).evaluate(
@@ -120,23 +120,23 @@ function processItemPreprocessingTestResults(steps) {
 	steps.each(function(step, i) {
 		if (typeof step.action !== 'undefined') {
 			switch (step.action) {
-				case <?= ZBX_PREPROC_FAIL_DEFAULT ?>:
+				case <?= TRX_PREPROC_FAIL_DEFAULT ?>:
 					step.action = null;
 					break;
 
-				case <?= ZBX_PREPROC_FAIL_DISCARD_VALUE ?>:
+				case <?= TRX_PREPROC_FAIL_DISCARD_VALUE ?>:
 					step.action = jQuery(tmpl_gray_label.evaluate(<?= CJs::encodeJson([
 						'label' => _('Discard value')
 					]) ?>));
 					break;
 
-				case <?= ZBX_PREPROC_FAIL_SET_VALUE ?>:
+				case <?= TRX_PREPROC_FAIL_SET_VALUE ?>:
 					step.action = jQuery(tmpl_act_done.evaluate(jQuery.extend(<?= CJs::encodeJson([
 						'action_name' => _('Set value to')
 					]) ?>, {failed: step.result})));
 					break;
 
-				case <?= ZBX_PREPROC_FAIL_SET_ERROR ?>:
+				case <?= TRX_PREPROC_FAIL_SET_ERROR ?>:
 					step.action = jQuery(tmpl_act_done.evaluate(jQuery.extend(<?= CJs::encodeJson([
 						'action_name' => _('Set error to')
 					]) ?>, {failed: step.failed})));
@@ -208,7 +208,7 @@ jQuery(document).ready(function($) {
 		rows: 0
 	});
 
-	$('#preprocessing-test-form .<?= ZBX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
+	$('#preprocessing-test-form .<?= TRX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
 });
 
 <?php return ob_get_clean(); ?>

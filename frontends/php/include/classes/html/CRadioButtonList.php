@@ -6,7 +6,7 @@ class CRadioButtonList extends CList {
 	/**
 	 * Default CSS class name for HTML root element.
 	 */
-	const ZBX_STYLE_CLASS = 'radio-list-control';
+	const TRX_STYLE_CLASS = 'radio-list-control';
 
 	const ORIENTATION_HORIZONTAL = 'horizontal';
 	const ORIENTATION_VERTICAL = 'vertical';
@@ -90,11 +90,11 @@ class CRadioButtonList extends CList {
 
 	public function toString($destroy = true) {
 		if ($this->modern) {
-			$this->addClass(static::ZBX_STYLE_CLASS);
+			$this->addClass(static::TRX_STYLE_CLASS);
 		}
 		else {
-			$this->addClass(ZBX_STYLE_LIST_CHECK_RADIO);
-			$this->addClass($this->orientation === self::ORIENTATION_HORIZONTAL ? ZBX_STYLE_HOR_LIST : null);
+			$this->addClass(TRX_STYLE_LIST_CHECK_RADIO);
+			$this->addClass($this->orientation === self::ORIENTATION_HORIZONTAL ? TRX_STYLE_HOR_LIST : null);
 		}
 
 		if ($this->readonly) {
@@ -128,7 +128,7 @@ class CRadioButtonList extends CList {
 				));
 			}
 			else {
-				$radio->addClass(ZBX_STYLE_CHECKBOX_RADIO);
+				$radio->addClass(TRX_STYLE_CHECKBOX_RADIO);
 				$this->addItem((new CListItem([$radio, new CLabel([new CSpan(), $value['name']], $value['id'])]))
 					->addClass(array_key_exists('class', $value) ? $value['class'] : null)
 				);

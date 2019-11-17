@@ -61,7 +61,7 @@ int	SYSTEM_USERS_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	AGENT_REQUEST	request_tmp;
 	int		ret;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	zbx_snprintf(counter_path, sizeof(counter_path), "\\%u\\%u",
 			(unsigned int)get_builtin_counter_index(PCI_TERMINAL_SERVICES),
@@ -77,7 +77,7 @@ int	SYSTEM_USERS_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	return ret;
 #else
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	return EXECUTE_INT("who | wc -l", result);
 #endif

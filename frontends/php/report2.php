@@ -14,17 +14,17 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'mode' =>			[T_ZBX_INT,			O_OPT,	P_SYS,			IN('0,1'),	null],
-	'hostgroupid' =>	[T_ZBX_INT,			O_OPT,	P_SYS,			DB_ID,		null],
-	'tpl_triggerid' =>	[T_ZBX_INT,			O_OPT,	P_SYS,			DB_ID,		null],
-	'triggerid' =>		[T_ZBX_INT,			O_OPT,	P_SYS|P_NZERO,	DB_ID,		null],
+	'mode' =>			[T_TRX_INT,			O_OPT,	P_SYS,			IN('0,1'),	null],
+	'hostgroupid' =>	[T_TRX_INT,			O_OPT,	P_SYS,			DB_ID,		null],
+	'tpl_triggerid' =>	[T_TRX_INT,			O_OPT,	P_SYS,			DB_ID,		null],
+	'triggerid' =>		[T_TRX_INT,			O_OPT,	P_SYS|P_NZERO,	DB_ID,		null],
 	// filter
-	'filter_groupid' =>	[T_ZBX_INT,			O_OPT,	P_SYS,			DB_ID,		null],
-	'filter_hostid' =>	[T_ZBX_INT,			O_OPT,	P_SYS,			DB_ID,		null],
-	'filter_rst'=>		[T_ZBX_STR,			O_OPT,	P_SYS,			null,		null],
-	'filter_set' =>		[T_ZBX_STR,			O_OPT,	P_SYS,			null,		null],
-	'from' =>			[T_ZBX_RANGE_TIME,	O_OPT,	P_SYS,			null,		null],
-	'to' =>				[T_ZBX_RANGE_TIME,	O_OPT,	P_SYS,			null,		null],
+	'filter_groupid' =>	[T_TRX_INT,			O_OPT,	P_SYS,			DB_ID,		null],
+	'filter_hostid' =>	[T_TRX_INT,			O_OPT,	P_SYS,			DB_ID,		null],
+	'filter_rst'=>		[T_TRX_STR,			O_OPT,	P_SYS,			null,		null],
+	'filter_set' =>		[T_TRX_STR,			O_OPT,	P_SYS,			null,		null],
+	'from' =>			[T_TRX_RANGE_TIME,	O_OPT,	P_SYS,			null,		null],
+	'to' =>				[T_TRX_RANGE_TIME,	O_OPT,	P_SYS,			null,		null],
 ];
 check_fields($fields);
 validateTimeSelectorPeriod(getRequest('from'), getRequest('to'));
@@ -169,7 +169,7 @@ elseif (hasRequest('filter_hostid')) {
 		->addItem((new CList())
 			->addItem([
 				new CLabel(_('Mode'), 'mode'),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				new CComboBox('mode', $availabilityReportMode, 'submit()', [
 					AVAILABILITY_REPORT_BY_HOST => _('By host'),
 					AVAILABILITY_REPORT_BY_TEMPLATE => _('By trigger template')
@@ -270,7 +270,7 @@ elseif (hasRequest('filter_hostid')) {
 			'templateids' => ($filter_hostid == 0) ? null : $filter_hostid,
 			'groupids' => $filter_groupids,
 			'templated' => true,
-			'filter' => ['status' => TRIGGER_STATUS_ENABLED, 'flags' => [ZBX_FLAG_DISCOVERY_NORMAL]],
+			'filter' => ['status' => TRIGGER_STATUS_ENABLED, 'flags' => [TRX_FLAG_DISCOVERY_NORMAL]],
 			'sortfield' => 'description',
 			'preservekeys' => true
 		]);
@@ -428,7 +428,7 @@ elseif (hasRequest('filter_hostid')) {
 			->setActiveTab($data['filter']['active_tab'])
 			->addFormItem((new CVar('config', $availabilityReportMode))->removeId())
 			->addTimeSelector($data['filter']['timeline']['from'], $data['filter']['timeline']['to'], true,
-				ZBX_DATE_TIME)
+				TRX_DATE_TIME)
 			->addFilterTab(_('Filter'), [$filter_column])
 	);
 
@@ -439,7 +439,7 @@ elseif (hasRequest('filter_hostid')) {
 
 	CArrayHelper::sort($triggers, ['host_name', 'description']);
 
-	$paging = getPagingLine($triggers, ZBX_SORT_UP, new CUrl('report2.php'));
+	$paging = getPagingLine($triggers, TRX_SORT_UP, new CUrl('report2.php'));
 
 	foreach ($triggers as $trigger) {
 		$availability = calculateAvailability($trigger['triggerid'], $data['filter']['timeline']['from_ts'],
@@ -456,10 +456,10 @@ elseif (hasRequest('filter_hostid')) {
 			),
 			($availability['true'] < 0.00005)
 				? ''
-				: (new CSpan(sprintf('%.4f%%', $availability['true'])))->addClass(ZBX_STYLE_RED),
+				: (new CSpan(sprintf('%.4f%%', $availability['true'])))->addClass(TRX_STYLE_RED),
 			($availability['false'] < 0.00005)
 				? ''
-				: (new CSpan(sprintf('%.4f%%', $availability['false'])))->addClass(ZBX_STYLE_GREEN),
+				: (new CSpan(sprintf('%.4f%%', $availability['false'])))->addClass(TRX_STYLE_GREEN),
 			new CLink(_('Show'), 'report2.php?filter_groupid='.$_REQUEST['filter_groupid'].
 				'&filter_hostid='.$_REQUEST['filter_hostid'].'&triggerid='.$trigger['triggerid']
 			)

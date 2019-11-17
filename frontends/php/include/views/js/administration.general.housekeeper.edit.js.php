@@ -39,7 +39,7 @@ $schema = DB::getSchema('config');
 					{
 						'title': <?= CJs::encodeJson(_('Cancel')) ?>,
 						'cancel': true,
-						'class': '<?= ZBX_STYLE_BTN_ALT ?>',
+						'class': '<?= TRX_STYLE_BTN_ALT ?>',
 						'action': function() {}
 					},
 					{

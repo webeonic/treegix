@@ -13,7 +13,7 @@ class CControllerWebView extends CController {
 			'groupid' =>	'db hstgrp.groupid',
 			'hostid' =>		'db hosts.hostid',
 			'sort' =>		'in hostname,name',
-			'sortorder' =>	'in '.ZBX_SORT_DOWN.','.ZBX_SORT_UP,
+			'sortorder' =>	'in '.TRX_SORT_DOWN.','.TRX_SORT_UP,
 			'page' =>		'ge 1'
 		];
 
@@ -58,7 +58,7 @@ class CControllerWebView extends CController {
 
 	protected function doAction() {
 		$sortField = $this->getInput('sort', CProfile::get('web.httpmon.php.sort', 'name'));
-		$sortOrder = $this->getInput('sortorder', CProfile::get('web.httpmon.php.sortorder', ZBX_SORT_UP));
+		$sortOrder = $this->getInput('sortorder', CProfile::get('web.httpmon.php.sortorder', TRX_SORT_UP));
 
 		CProfile::update('web.httpmon.php.sort', $sortField, PROFILE_TYPE_STR);
 		CProfile::update('web.httpmon.php.sortorder', $sortOrder, PROFILE_TYPE_STR);

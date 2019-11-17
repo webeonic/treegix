@@ -21,7 +21,7 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			)
 		])
@@ -36,12 +36,12 @@ $hostGroupTable = (new CTableInfo())
 		(new CColHeader(
 			(new CCheckBox('all_groups'))
 				->onClick("checkAll('".$hostGroupForm->getName()."', 'all_groups', 'groups');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $this->data['sort'], $this->data['sortorder']),
 		_('Hosts'),
 		_('Templates'),
 		_('Members'),
-		(new CColHeader(_('Info')))->addClass(ZBX_STYLE_CELL_WIDTH)
+		(new CColHeader(_('Info')))->addClass(TRX_STYLE_CELL_WIDTH)
 	]);
 
 $current_time = time();
@@ -66,8 +66,8 @@ foreach ($this->data['groups'] as $group) {
 		$url = 'templates.php?form=update&templateid='.$template['templateid'].'&groupid='.$group['groupid'];
 
 		$hostsOutput[] = (new CLink($template['name'], $url))
-			->addClass(ZBX_STYLE_LINK_ALT)
-			->addClass(ZBX_STYLE_GREY);
+			->addClass(TRX_STYLE_LINK_ALT)
+			->addClass(TRX_STYLE_GREY);
 	}
 
 	if ($group['templates'] && $group['hosts']) {
@@ -92,8 +92,8 @@ foreach ($this->data['groups'] as $group) {
 
 		$url = 'hosts.php?form=update&hostid='.$host['hostid'].'&groupid='.$group['groupid'];
 		$hostsOutput[] = (new CLink($host['name'], $url))
-			->addClass(ZBX_STYLE_LINK_ALT)
-			->addClass($host['status'] == HOST_STATUS_MONITORED ? ZBX_STYLE_GREEN : ZBX_STYLE_RED);
+			->addClass(TRX_STYLE_LINK_ALT)
+			->addClass($host['status'] == HOST_STATUS_MONITORED ? TRX_STYLE_GREEN : TRX_STYLE_RED);
 	}
 
 	$hostCount = $this->data['groupCounts'][$group['groupid']]['hosts'];
@@ -103,20 +103,20 @@ foreach ($this->data['groups'] as $group) {
 	$name = [];
 	if ($group['discoveryRule']) {
 		$name[] = (new CLink($group['discoveryRule']['name'], 'host_prototypes.php?parent_discoveryid='.$group['discoveryRule']['itemid']))
-			->addClass(ZBX_STYLE_ORANGE);
+			->addClass(TRX_STYLE_ORANGE);
 		$name[] = NAME_DELIMITER;
 	}
 	$name[] = new CLink($group['name'], 'hostgroups.php?form=update&groupid='.$group['groupid']);
 
 	// info, discovered item lifetime indicator
 	$info_icons = [];
-	if ($group['flags'] == ZBX_FLAG_DISCOVERY_CREATED && $group['groupDiscovery']['ts_delete'] != 0) {
+	if ($group['flags'] == TRX_FLAG_DISCOVERY_CREATED && $group['groupDiscovery']['ts_delete'] != 0) {
 		$info_icons[] = getHostGroupLifetimeIndicator($current_time, $group['groupDiscovery']['ts_delete']);
 	}
 
 	$hostGroupTable->addRow([
 		new CCheckBox('groups['.$group['groupid'].']', $group['groupid']),
-		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol($name))->addClass(TRX_STYLE_NOWRAP),
 		[new CLink(_('Hosts'), 'hosts.php?groupid='.$group['groupid']), CViewHelper::showNum($hostCount)],
 		[
 			(new CLink(_('Templates'), 'templates.php?groupid='.$group['groupid'])),

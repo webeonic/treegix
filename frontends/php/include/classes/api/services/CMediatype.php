@@ -150,32 +150,32 @@ class CMediatype extends CApiService {
 	 */
 	protected function validateCreate(array $mediatypes) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only Super Admins can create media types.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only Super Admins can create media types.'));
 		}
 
 		if (!$mediatypes) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$required_fields = ['type', 'name'];
 
 		foreach ($mediatypes as $mediatype) {
 			if (!is_array($mediatype)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			// Check required parameters.
 			$missing_keys = array_diff($required_fields, array_keys($mediatype));
 
 			if ($missing_keys) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Media type is missing parameters: %1$s', implode(', ', $missing_keys))
 				);
 			}
 			else {
 				foreach ($required_fields as $field) {
 					if ($mediatype[$field] === '' || $mediatype[$field] === null) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Field "%1$s" is missing a value for media type "%2$s".', $field, $mediatype['name'])
 						);
 					}
@@ -186,7 +186,7 @@ class CMediatype extends CApiService {
 		// Check for duplicate names.
 		$duplicate_name = CArrayHelper::findDuplicate($mediatypes, 'name');
 		if ($duplicate_name) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Media type "%1$s" already exists.', $duplicate_name['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Media type "%1$s" already exists.', $duplicate_name['name']));
 		}
 
 		$simple_interval_parser = new CSimpleIntervalParser();
@@ -202,7 +202,7 @@ class CMediatype extends CApiService {
 			]);
 
 			if ($db_mediatype) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Media type "%1$s" already exists.', $mediatype['name']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Media type "%1$s" already exists.', $mediatype['name']));
 			}
 
 			// Check additional fields and values depeding on type.
@@ -216,7 +216,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$smtp_authentication_validator->validate($mediatype['smtp_authentication'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['smtp_authentication'],
 								'smtp_authentication',
@@ -227,7 +227,7 @@ class CMediatype extends CApiService {
 
 					// Validate optional 'smtp_port' field.
 					if (array_key_exists('smtp_port', $mediatype) && !validatePortNumber($mediatype['smtp_port'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 							$mediatype['smtp_port'],
 							'smtp_port',
@@ -246,7 +246,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$smtp_security_validator->validate($mediatype['smtp_security'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['smtp_security'],
 								'smtp_security',
@@ -262,7 +262,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$smtp_verify_peer_validator->validate($mediatype['smtp_verify_peer'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['smtp_verify_peer'],
 								'smtp_verify_peer',
@@ -278,7 +278,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$smtp_verify_host_validator->validate($mediatype['smtp_verify_host'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['smtp_verify_host'],
 								'smtp_verify_host',
@@ -297,7 +297,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$content_type_validator->validate($mediatype['content_type'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['content_type'],
 								'content_type',
@@ -312,7 +312,7 @@ class CMediatype extends CApiService {
 						$pos = strrpos($mediatype['exec_params'], "\n");
 
 						if ($pos === false || strlen($mediatype['exec_params']) != $pos + 1) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Script parameters "%1$s" are missing the last new line feed for media type "%2$s".',
 								$mediatype['exec_params'],
 								$mediatype['name']
@@ -326,7 +326,7 @@ class CMediatype extends CApiService {
 			$validated_data = array_intersect_key($mediatype, $api_input_rules['fields']);
 
 			if (!CApiInputValidator::validate($api_input_rules, $validated_data, '/'.($i + 1), $error)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+				self::exception(TRX_API_ERROR_PARAMETERS, $error);
 			}
 			$mediatype = $validated_data + $mediatype;
 
@@ -337,7 +337,7 @@ class CMediatype extends CApiService {
 				]);
 
 				if (!$status_validator->validate($mediatype['status'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 						$mediatype['status'],
 						'status',
@@ -349,7 +349,7 @@ class CMediatype extends CApiService {
 			// Validate optional 'maxsessions' field.
 			if (array_key_exists('maxsessions', $mediatype)) {
 				if ($mediatype['maxsessions'] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'maxsessions', _('cannot be empty')
 					));
 				}
@@ -359,7 +359,7 @@ class CMediatype extends CApiService {
 
 				if (!ctype_digit((string) $mediatype['maxsessions']) || $mediatype['maxsessions'] > $max
 						|| $mediatype['maxsessions'] < $min) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'maxsessions', _s('must be between "%1$s" and "%2$s"', $min, $max)
 					));
 				}
@@ -368,14 +368,14 @@ class CMediatype extends CApiService {
 			// Validate optional 'maxattempts' field.
 			if (array_key_exists('maxattempts', $mediatype)) {
 				if ($mediatype['maxattempts'] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'maxattempts', _('cannot be empty')
 					));
 				}
 
 				if (!ctype_digit((string) $mediatype['maxattempts']) || $mediatype['maxattempts'] > 10
 						|| $mediatype['maxattempts'] < 1) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'maxattempts', _s('must be between "%1$s" and "%2$s"', 1, 10)
 					));
 				}
@@ -384,7 +384,7 @@ class CMediatype extends CApiService {
 			// Validate optional 'attempt_interval' field.
 			if (array_key_exists('attempt_interval', $mediatype)) {
 				if ($mediatype['attempt_interval'] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'attempt_interval', _('cannot be empty')
 					));
 				}
@@ -393,13 +393,13 @@ class CMediatype extends CApiService {
 					$attempt_interval = timeUnitToSeconds($mediatype['attempt_interval']);
 
 					if ($attempt_interval < 0 || $attempt_interval > 60) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 							'attempt_interval', _s('must be between "%1$s" and "%2$s"', 0, 60)
 						));
 					}
 				}
 				else {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'attempt_interval', _s('must be between "%1$s" and "%2$s"', 0, 60)
 					));
 				}
@@ -416,11 +416,11 @@ class CMediatype extends CApiService {
 	 */
 	protected function validateUpdate(array $mediatypes) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only Super Admins can edit media types.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only Super Admins can edit media types.'));
 		}
 
 		if (!$mediatypes) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		// Validate given IDs.
@@ -449,7 +449,7 @@ class CMediatype extends CApiService {
 		foreach ($mediatypes as $mediatype) {
 			// Check if this media type exists.
 			if (!array_key_exists($mediatype['mediatypeid'], $db_mediatypes)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -457,10 +457,10 @@ class CMediatype extends CApiService {
 			// Validate "name" field.
 			if (array_key_exists('name', $mediatype)) {
 				if (is_array($mediatype['name'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 				elseif ($mediatype['name'] === '' || $mediatype['name'] === null || $mediatype['name'] === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'name', _('cannot be empty'))
 					);
 				}
@@ -480,7 +480,7 @@ class CMediatype extends CApiService {
 				if (array_key_exists('name', $mediatype)
 						&& array_key_exists($mediatype['name'], $db_mediatype_names)
 						&& !idcmp($db_mediatype_names[$mediatype['name']]['mediatypeid'], $mediatype['mediatypeid'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Media type "%1$s" already exists.', $mediatype['name'])
 					);
 				}
@@ -492,7 +492,7 @@ class CMediatype extends CApiService {
 
 		$duplicate_name = CArrayHelper::findDuplicate($mediatypes, 'name');
 		if ($duplicate_name) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Media type "%1$s" already exists.', $duplicate_name['name'])
 			);
 		}
@@ -517,7 +517,7 @@ class CMediatype extends CApiService {
 				foreach ($optional_fields_by_type[$db_mediatype['type']] as $field) {
 					if (array_key_exists($field, $mediatype)
 							&& ($mediatype[$field] === '' || $mediatype[$field] === null)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Field "%1$s" is missing a value for media type "%2$s".',
 							$field,
 							$mediatype['name']
@@ -537,7 +537,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$smtp_authentication_validator->validate($mediatype['smtp_authentication'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['smtp_authentication'],
 								'smtp_authentication',
@@ -550,7 +550,7 @@ class CMediatype extends CApiService {
 					if (array_key_exists('smtp_port', $mediatype)
 							&& $db_mediatype['smtp_port'] != $mediatype['smtp_port']
 							&& !validatePortNumber($mediatype['smtp_port'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 							$mediatype['smtp_port'],
 							'smtp_port',
@@ -569,7 +569,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$smtp_security_validator->validate($mediatype['smtp_security'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['smtp_security'],
 								'smtp_security',
@@ -586,7 +586,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$smtp_verify_peer_validator->validate($mediatype['smtp_verify_peer'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['smtp_verify_peer'],
 								'smtp_verify_peer',
@@ -603,7 +603,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$smtp_verify_host_validator->validate($mediatype['smtp_verify_host'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['smtp_verify_host'],
 								'smtp_verify_host',
@@ -623,7 +623,7 @@ class CMediatype extends CApiService {
 						]);
 
 						if (!$content_type_validator->validate($mediatype['content_type'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 								$mediatype['content_type'],
 								'content_type',
@@ -638,7 +638,7 @@ class CMediatype extends CApiService {
 						$pos = strrpos($mediatype['exec_params'], "\n");
 
 						if ($pos === false || strlen($mediatype['exec_params']) != $pos + 1) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Script parameters "%1$s" are missing the last new line feed for media type "%2$s".',
 								$mediatype['exec_params'],
 								$mediatype['name']
@@ -652,7 +652,7 @@ class CMediatype extends CApiService {
 			$validated_data = array_intersect_key($mediatype, $api_input_rules['fields']);
 
 			if (!CApiInputValidator::validate($api_input_rules, $validated_data, '/'.$i, $error)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+				self::exception(TRX_API_ERROR_PARAMETERS, $error);
 			}
 			$mediatype = $validated_data + $mediatype;
 
@@ -663,7 +663,7 @@ class CMediatype extends CApiService {
 				]);
 
 				if (!$status_validator->validate($mediatype['status'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 						$mediatype['status'],
 						'status',
@@ -676,7 +676,7 @@ class CMediatype extends CApiService {
 			if (array_key_exists('maxsessions', $mediatype)
 					&& $db_mediatype['maxsessions'] != $mediatype['maxsessions']) {
 				if ($mediatype['maxsessions'] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'maxsessions', _('cannot be empty')
 					));
 				}
@@ -686,14 +686,14 @@ class CMediatype extends CApiService {
 
 				if (!ctype_digit((string) $mediatype['maxsessions']) || $mediatype['maxsessions'] > $max
 						|| $mediatype['maxsessions'] < $min) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'maxsessions', _s('must be between "%1$s" and "%2$s"', $min, $max)
 					));
 				}
 			}
 			elseif ($mediatype['type'] == MEDIA_TYPE_SMS && $mediatype['type'] != $db_mediatype['type']
 						&& $db_mediatype['maxsessions'] != 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'maxsessions', _s('must be between "%1$s" and "%2$s"', 1, 1)
 				));
 			}
@@ -702,14 +702,14 @@ class CMediatype extends CApiService {
 			if (array_key_exists('maxattempts', $mediatype)
 					&& $db_mediatype['maxattempts'] != $mediatype['maxattempts']) {
 				if ($mediatype['maxattempts'] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'maxattempts', _('cannot be empty')
 					));
 				}
 
 				if (!ctype_digit((string) $mediatype['maxattempts']) || $mediatype['maxattempts'] > 10
 						|| $mediatype['maxattempts'] < 1) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'maxattempts', _s('must be between "%1$s" and "%2$s"', 1, 10)
 					));
 				}
@@ -719,7 +719,7 @@ class CMediatype extends CApiService {
 			if (array_key_exists('attempt_interval', $mediatype)
 					&& $db_mediatype['attempt_interval'] != $mediatype['attempt_interval']) {
 				if ($mediatype['attempt_interval'] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'attempt_interval', _('cannot be empty')
 					));
 				}
@@ -728,13 +728,13 @@ class CMediatype extends CApiService {
 					$attempt_interval = timeUnitToSeconds($mediatype['attempt_interval']);
 
 					if ($attempt_interval < 0 || $attempt_interval > 60) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 							'attempt_interval', _s('must be between "%1$s" and "%2$s"', 0, 60)
 						));
 					}
 				}
 				else {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'attempt_interval', _s('must be between "%1$s" and "%2$s"', 0, 60)
 					));
 				}
@@ -762,16 +762,16 @@ class CMediatype extends CApiService {
 		}
 
 		foreach (['event_menu_url', 'event_menu_name'] as $field_name) {
-			if ($mediatype['show_event_menu'] == ZBX_EVENT_MENU_HIDE) {
+			if ($mediatype['show_event_menu'] == TRX_EVENT_MENU_HIDE) {
 				if ($mediatype[$field_name] !== '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', $field_name, _('should be empty'))
 					);
 				}
 			}
 			else {
 				if ($mediatype[$field_name] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', $field_name, _('cannot be empty'))
 					);
 				}
@@ -940,7 +940,7 @@ class CMediatype extends CApiService {
 				}
 
 				if (array_key_exists('show_event_menu', $mediatype)
-						&& $mediatype['show_event_menu'] == ZBX_EVENT_MENU_HIDE) {
+						&& $mediatype['show_event_menu'] == TRX_EVENT_MENU_HIDE) {
 					$mediatype += ['event_menu_url' => '', 'event_menu_name' => ''];
 				}
 
@@ -1028,7 +1028,7 @@ class CMediatype extends CApiService {
 	 */
 	public function delete(array $mediatypeids) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only Super Admins can delete media types.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only Super Admins can delete media types.'));
 		}
 
 		$actions = API::Action()->get([
@@ -1038,7 +1038,7 @@ class CMediatype extends CApiService {
 		]);
 		if (!empty($actions)) {
 			$action = reset($actions);
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Media types used by action "%s".', $action['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Media types used by action "%s".', $action['name']));
 		}
 
 		$db_mediatypes = DB::select('media_type', [
@@ -1069,7 +1069,7 @@ class CMediatype extends CApiService {
 		]);
 
 		if (!$type_validator->validate($mediatype['type'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+			self::exception(TRX_API_ERROR_PARAMETERS, _s(
 				'Incorrect value "%1$s" in field "%2$s" for media type "%3$s".',
 				$mediatype['type'],
 				'type',
@@ -1087,13 +1087,13 @@ class CMediatype extends CApiService {
 		foreach ($required_fields_by_type[$mediatype['type']] as $field) {
 			// Check if fields set on Create method. For update method they are checked when type is changed.
 			if (!array_key_exists($field, $mediatype)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Field "%1$s" is required for media type "%2$s".', $field, $mediatype['name'])
 				);
 			}
 			elseif (array_key_exists($field, $mediatype)
 					&& ($mediatype[$field] === '' || $mediatype[$field] === null)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Field "%1$s" is missing a value for media type "%2$s".', $field, $mediatype['name'])
 				);
 			}
@@ -1152,8 +1152,8 @@ class CMediatype extends CApiService {
 			$api_input_rules['fields'] += [
 				'script' =>				['type' => API_STRING_UTF8, 'flags' => API_NOT_EMPTY, 'length' => DB::getFieldLength('media_type', 'script')],
 				'timeout' =>			['type' => API_TIME_UNIT, 'length' => DB::getFieldLength('media_type', 'timeout'), 'in' => '1:60'],
-				'process_tags' =>		['type' => API_INT32, 'in' => implode(',', [ZBX_MEDIA_TYPE_TAGS_DISABLED, ZBX_MEDIA_TYPE_TAGS_ENABLED])],
-				'show_event_menu' =>	['type' => API_INT32, 'in' => implode(',', [ZBX_EVENT_MENU_HIDE, ZBX_EVENT_MENU_SHOW])],
+				'process_tags' =>		['type' => API_INT32, 'in' => implode(',', [TRX_MEDIA_TYPE_TAGS_DISABLED, TRX_MEDIA_TYPE_TAGS_ENABLED])],
+				'show_event_menu' =>	['type' => API_INT32, 'in' => implode(',', [TRX_EVENT_MENU_HIDE, TRX_EVENT_MENU_SHOW])],
 				// Should be checked as string not as url because it can contain maros tags.
 				'event_menu_url' =>		['type' => API_URL, 'flags' => API_ALLOW_EVENT_TAGS_MACRO, 'length' => DB::getFieldLength('media_type', 'event_menu_url')],
 				'event_menu_name' =>	['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('media_type', 'event_menu_name')],

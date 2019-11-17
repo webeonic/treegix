@@ -31,11 +31,11 @@ typedef struct
 	/* -- memory -- */
 	zbx_uint64_t	mem_avm, mem_fre;
 }
-ZBX_VMSTAT_DATA;
+TRX_VMSTAT_DATA;
 
 #define VMSTAT_COLLECTOR_STARTED(collector)	(collector)
 
-void	collect_vmstat_data(ZBX_VMSTAT_DATA *vmstat);
+void	collect_vmstat_data(TRX_VMSTAT_DATA *vmstat);
 
 #endif /* _AIX */
 

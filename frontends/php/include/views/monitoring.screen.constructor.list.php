@@ -15,7 +15,7 @@ $screenBuilder = new CScreenBuilder([
 ]);
 
 $widget->addItem(
-	(new CDiv($screenBuilder->show()))->addClass(ZBX_STYLE_TABLE_FORMS_CONTAINER)
+	(new CDiv($screenBuilder->show()))->addClass(TRX_STYLE_TABLE_FORMS_CONTAINER)
 );
 
 $screenBuilder->insertInitScreenJs($data['screenid']);

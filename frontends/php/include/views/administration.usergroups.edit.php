@@ -7,7 +7,7 @@ $widget = (new CWidget())->setTitle(_('User groups'));
 // create form
 $userGroupForm = (new CForm())
 	->setName('userGroupsForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $data['form']);
 
 if ($data['usrgrpid'] != 0) {
@@ -18,7 +18,7 @@ $userGroupFormList = (new CFormList())
 	->addRow(
 		(new CLabel(_('Group name'), 'gname'))->setAsteriskMark(),
 		(new CTextBox('gname', $data['name']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 			->setAttribute('maxlength', DB::getFieldLength('usrgrp', 'name'))
@@ -38,7 +38,7 @@ $userGroupFormList = (new CFormList())
 					'dstfld1' => 'userids_'
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 // append frontend and user status to from list
@@ -115,8 +115,8 @@ foreach ($data['groups_rights'] as $groupid => $group_rights) {
 
 $permissionsFormList->addRow(_('Permissions'),
 	(new CDiv($permissions_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 $new_permissions_table = (new CTable())
@@ -133,7 +133,7 @@ $new_permissions_table = (new CTable())
 					'dstfld1' => 'groupids_'
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+		]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		(new CCol(
 			(new CRadioButtonList('new_permission', (int) $data['new_permission']))
 				->addValue(_('Read-write'), PERM_READ_WRITE)
@@ -147,13 +147,13 @@ $new_permissions_table = (new CTable())
 	->addRow([
 		(new CSimpleButton(_('Add')))
 			->onClick('javascript: submitFormWithParam("'.$userGroupForm->getName().'", "add_permission", "1");')
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 	]);
 
 $permissionsFormList->addRow(null,
 	(new CDiv($new_permissions_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 /*
@@ -173,7 +173,7 @@ foreach ($data['tag_filters'] as $key => $tag_filter) {
 		->onClick('javascript: submitFormWithParam('.
 			'"'.$userGroupForm->getName().'", "remove_tag_filter['.$key.']", "1"'.
 		');')
-		->addClass(ZBX_STYLE_BTN_LINK);
+		->addClass(TRX_STYLE_BTN_LINK);
 	if ($pre_name === $tag_filter['name']) {
 		$tag_filter['name'] = '';
 	}
@@ -199,8 +199,8 @@ foreach ($data['tag_filters'] as $key => $tag_filter) {
 
 $tag_filter_form_list->addRow(_('Permissions'),
 	(new CDiv($tag_filter_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 $new_tag_filter_table = (new CTable())
@@ -218,15 +218,15 @@ $new_tag_filter_table = (new CTable())
 				]
 			],
 			'styles' => ['margin-top' => '-.3em']
-		]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+		]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		new CCol(
 			(new CTextBox('tag', $data['tag']))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				->setAttribute('placeholder', _('tag'))
 		),
 		new CCol(
 			(new CTextBox('value', $data['value']))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				->setAttribute('placeholder', _('value'))
 		)
 	])
@@ -237,13 +237,13 @@ $new_tag_filter_table = (new CTable())
 	->addRow([
 		(new CSimpleButton(_('Add')))
 			->onClick('javascript: submitFormWithParam("'.$userGroupForm->getName().'", "add_tag_filter", "1");')
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 	]);
 
 $tag_filter_form_list->addRow(null,
 	(new CDiv($new_tag_filter_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 // append form lists to tab

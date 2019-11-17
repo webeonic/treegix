@@ -27,11 +27,11 @@ class CWidgetFormNavTree extends CWidgetForm {
 				$item_id = $field_details[1];
 
 				// map.name.#
-				$this->fields[$field_key] = (new CWidgetFieldHidden($field_key, ZBX_WIDGET_FIELD_TYPE_STR))
+				$this->fields[$field_key] = (new CWidgetFieldHidden($field_key, TRX_WIDGET_FIELD_TYPE_STR))
 					->setValue($value);
 
 				// map.parent.#
-				$field_parent = (new CWidgetFieldHidden('map.parent.'.$item_id, ZBX_WIDGET_FIELD_TYPE_INT32))
+				$field_parent = (new CWidgetFieldHidden('map.parent.'.$item_id, TRX_WIDGET_FIELD_TYPE_INT32))
 					->setDefault(0);
 
 				if (array_key_exists('map.parent.'.$item_id, $this->data)) {
@@ -41,7 +41,7 @@ class CWidgetFormNavTree extends CWidgetForm {
 				$this->fields[$field_parent->getName()] = $field_parent;
 
 				// map.order.#
-				$field_order = new CWidgetFieldHidden('map.order.'.$item_id, ZBX_WIDGET_FIELD_TYPE_INT32);
+				$field_order = new CWidgetFieldHidden('map.order.'.$item_id, TRX_WIDGET_FIELD_TYPE_INT32);
 
 				if (array_key_exists('map.order.'.$item_id, $this->data)) {
 					$field_order->setValue((int) $this->data['map.order.'.$item_id]);
@@ -51,7 +51,7 @@ class CWidgetFormNavTree extends CWidgetForm {
 
 				// mapid.#
 				if (array_key_exists('mapid.'.$item_id, $this->data) && $this->data['mapid.'.$item_id]) {
-					$field_mapid = (new CWidgetFieldHidden('mapid.'.$item_id, ZBX_WIDGET_FIELD_TYPE_MAP))
+					$field_mapid = (new CWidgetFieldHidden('mapid.'.$item_id, TRX_WIDGET_FIELD_TYPE_MAP))
 						->setValue($this->data['mapid.'.$item_id])
 						->setDefault(0);
 

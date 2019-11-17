@@ -12,31 +12,31 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'groups' =>			[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
-	'groupids' =>		[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'groups' =>			[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'groupids' =>		[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
 	// group
-	'groupid' =>		[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
-	'name' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('Group name')],
-	'subgroups' =>		[T_ZBX_INT, O_OPT, null,	IN([1]),	null],
+	'groupid' =>		[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
+	'name' =>			[T_TRX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('Group name')],
+	'subgroups' =>		[T_TRX_INT, O_OPT, null,	IN([1]),	null],
 	// actions
-	'action' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 							IN('"hostgroup.massdelete","hostgroup.massdisable","hostgroup.massenable"'),
 							null
 						],
-	'add' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'clone' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'delete' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'clone' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'delete' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
 	// other
-	'form' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'form_refresh' =>	[T_ZBX_INT, O_OPT, null,	null,		null],
+	'form' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'form_refresh' =>	[T_TRX_INT, O_OPT, null,	null,		null],
 	// filter
-	'filter_set' =>		[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_rst' =>		[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_name' =>	[T_ZBX_STR, O_OPT, null,	null,		null],
+	'filter_set' =>		[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_rst' =>		[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_name' =>	[T_TRX_STR, O_OPT, null,	null,		null],
 	// sort and sortorder
-	'sort' =>			[T_ZBX_STR, O_OPT, P_SYS, IN('"name"'),								null],
-	'sortorder' =>		[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>			[T_TRX_STR, O_OPT, P_SYS, IN('"name"'),								null],
+	'sortorder' =>		[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -76,7 +76,7 @@ if (hasRequest('form')) {
 			$result = true;
 
 			// don't try to update the name for a discovered host group
-			if ($oldGroup['flags'] != ZBX_FLAG_DISCOVERY_CREATED) {
+			if ($oldGroup['flags'] != TRX_FLAG_DISCOVERY_CREATED) {
 				$result = API::HostGroup()->update([
 					'groupid' => $groupId,
 					'name' => $name
@@ -242,7 +242,7 @@ if (hasRequest('form')) {
  */
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

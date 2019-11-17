@@ -40,15 +40,15 @@ void	zbx_variant_clear(zbx_variant_t *value)
 {
 	switch (value->type)
 	{
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			zbx_free(value->data.str);
 			break;
-		case ZBX_VARIANT_BIN:
+		case TRX_VARIANT_BIN:
 			zbx_free(value->data.bin);
 			break;
 	}
 
-	value->type = ZBX_VARIANT_NONE;
+	value->type = TRX_VARIANT_NONE;
 }
 
 /******************************************************************************
@@ -66,30 +66,30 @@ void	zbx_variant_clear(zbx_variant_t *value)
 void	zbx_variant_set_str(zbx_variant_t *value, char *text)
 {
 	value->data.str = text;
-	value->type = ZBX_VARIANT_STR;
+	value->type = TRX_VARIANT_STR;
 }
 
 void	zbx_variant_set_dbl(zbx_variant_t *value, double value_dbl)
 {
 	value->data.dbl = value_dbl;
-	value->type = ZBX_VARIANT_DBL;
+	value->type = TRX_VARIANT_DBL;
 }
 
 void	zbx_variant_set_ui64(zbx_variant_t *value, zbx_uint64_t value_ui64)
 {
 	value->data.ui64 = value_ui64;
-	value->type = ZBX_VARIANT_UI64;
+	value->type = TRX_VARIANT_UI64;
 }
 
 void	zbx_variant_set_none(zbx_variant_t *value)
 {
-	value->type = ZBX_VARIANT_NONE;
+	value->type = TRX_VARIANT_NONE;
 }
 
 void	zbx_variant_set_bin(zbx_variant_t *value, void *value_bin)
 {
 	value->data.bin = value_bin;
-	value->type = ZBX_VARIANT_BIN;
+	value->type = TRX_VARIANT_BIN;
 }
 
 /******************************************************************************
@@ -109,20 +109,20 @@ void	zbx_variant_copy(zbx_variant_t *value, const zbx_variant_t *source)
 {
 	switch (source->type)
 	{
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			zbx_variant_set_str(value, zbx_strdup(NULL, source->data.str));
 			break;
-		case ZBX_VARIANT_UI64:
+		case TRX_VARIANT_UI64:
 			zbx_variant_set_ui64(value, source->data.ui64);
 			break;
-		case ZBX_VARIANT_DBL:
+		case TRX_VARIANT_DBL:
 			zbx_variant_set_dbl(value, source->data.dbl);
 			break;
-		case ZBX_VARIANT_BIN:
+		case TRX_VARIANT_BIN:
 			zbx_variant_set_bin(value, zbx_variant_data_bin_copy(source->data.bin));
 			break;
-		case ZBX_VARIANT_NONE:
-			value->type = ZBX_VARIANT_NONE;
+		case TRX_VARIANT_NONE:
+			value->type = TRX_VARIANT_NONE;
 			break;
 	}
 }
@@ -134,12 +134,12 @@ static int	variant_to_dbl(zbx_variant_t *value)
 
 	switch (value->type)
 	{
-		case ZBX_VARIANT_DBL:
+		case TRX_VARIANT_DBL:
 			return SUCCEED;
-		case ZBX_VARIANT_UI64:
+		case TRX_VARIANT_UI64:
 			zbx_variant_set_dbl(value, (double)value->data.ui64);
 			return SUCCEED;
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			zbx_strlcpy(buffer, value->data.str, sizeof(buffer));
 			break;
 		default:
@@ -167,15 +167,15 @@ static int	variant_to_ui64(zbx_variant_t *value)
 
 	switch (value->type)
 	{
-		case ZBX_VARIANT_UI64:
+		case TRX_VARIANT_UI64:
 			return SUCCEED;
-		case ZBX_VARIANT_DBL:
+		case TRX_VARIANT_DBL:
 			if (0 > value->data.dbl)
 				return FAIL;
 
 			zbx_variant_set_ui64(value, value->data.dbl);
 			return SUCCEED;
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			zbx_strlcpy(buffer, value->data.str, sizeof(buffer));
 			break;
 		default:
@@ -201,14 +201,14 @@ static int	variant_to_str(zbx_variant_t *value)
 
 	switch (value->type)
 	{
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			return SUCCEED;
-		case ZBX_VARIANT_DBL:
-			value_str = zbx_dsprintf(NULL, ZBX_FS_DBL, value->data.dbl);
+		case TRX_VARIANT_DBL:
+			value_str = zbx_dsprintf(NULL, TRX_FS_DBL, value->data.dbl);
 			del_zeros(value_str);
 			break;
-		case ZBX_VARIANT_UI64:
-			value_str = zbx_dsprintf(NULL, ZBX_FS_UI64, value->data.ui64);
+		case TRX_VARIANT_UI64:
+			value_str = zbx_dsprintf(NULL, TRX_FS_UI64, value->data.ui64);
 			break;
 		default:
 			return FAIL;
@@ -224,13 +224,13 @@ int	zbx_variant_convert(zbx_variant_t *value, int type)
 {
 	switch(type)
 	{
-		case ZBX_VARIANT_UI64:
+		case TRX_VARIANT_UI64:
 			return variant_to_ui64(value);
-		case ZBX_VARIANT_DBL:
+		case TRX_VARIANT_DBL:
 			return variant_to_dbl(value);
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			return variant_to_str(value);
-		case ZBX_VARIANT_NONE:
+		case TRX_VARIANT_NONE:
 			zbx_variant_clear(value);
 			return SUCCEED;
 		default:
@@ -272,23 +272,23 @@ int	zbx_variant_set_numeric(zbx_variant_t *value, const char *text)
 
 const char	*zbx_variant_value_desc(const zbx_variant_t *value)
 {
-	static ZBX_THREAD_LOCAL char	buffer[ZBX_MAX_UINT64_LEN + 1];
+	static TRX_THREAD_LOCAL char	buffer[TRX_MAX_UINT64_LEN + 1];
 	zbx_uint32_t			size, i, len;
 
 	switch (value->type)
 	{
-		case ZBX_VARIANT_DBL:
-			zbx_snprintf(buffer, sizeof(buffer), ZBX_FS_DBL, value->data.dbl);
+		case TRX_VARIANT_DBL:
+			zbx_snprintf(buffer, sizeof(buffer), TRX_FS_DBL, value->data.dbl);
 			del_zeros(buffer);
 			return buffer;
-		case ZBX_VARIANT_UI64:
-			zbx_snprintf(buffer, sizeof(buffer), ZBX_FS_UI64, value->data.ui64);
+		case TRX_VARIANT_UI64:
+			zbx_snprintf(buffer, sizeof(buffer), TRX_FS_UI64, value->data.ui64);
 			return buffer;
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			return value->data.str;
-		case ZBX_VARIANT_NONE:
+		case TRX_VARIANT_NONE:
 			return "";
-		case ZBX_VARIANT_BIN:
+		case TRX_VARIANT_BIN:
 			memcpy(&size, value->data.bin, sizeof(size));
 			if (0 != (len = MIN(sizeof(buffer) / 3, size)))
 			{
@@ -304,7 +304,7 @@ const char	*zbx_variant_value_desc(const zbx_variant_t *value)
 			return buffer;
 		default:
 			THIS_SHOULD_NEVER_HAPPEN;
-			return ZBX_UNKNOWN_STR;
+			return TRX_UNKNOWN_STR;
 	}
 }
 
@@ -312,19 +312,19 @@ const char	*zbx_get_variant_type_desc(unsigned char type)
 {
 	switch (type)
 	{
-		case ZBX_VARIANT_DBL:
+		case TRX_VARIANT_DBL:
 			return "double";
-		case ZBX_VARIANT_UI64:
+		case TRX_VARIANT_UI64:
 			return "uint64";
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			return "string";
-		case ZBX_VARIANT_NONE:
+		case TRX_VARIANT_NONE:
 			return "none";
-		case ZBX_VARIANT_BIN:
+		case TRX_VARIANT_BIN:
 			return "binary";
 		default:
 			THIS_SHOULD_NEVER_HAPPEN;
-			return ZBX_UNKNOWN_STR;
+			return TRX_UNKNOWN_STR;
 	}
 }
 
@@ -350,14 +350,14 @@ int	zbx_validate_value_dbl(double value)
  * Function: variant_compare_empty                                            *
  *                                                                            *
  * Purpose: compares two variant values when at least one is empty (having    *
- *          type of ZBX_VARIANT_NONE)                                         *
+ *          type of TRX_VARIANT_NONE)                                         *
  *                                                                            *
  ******************************************************************************/
 static int	variant_compare_empty(const zbx_variant_t *value1, const zbx_variant_t *value2)
 {
-	if (ZBX_VARIANT_NONE == value1->type)
+	if (TRX_VARIANT_NONE == value1->type)
 	{
-		if (ZBX_VARIANT_NONE == value2->type)
+		if (TRX_VARIANT_NONE == value2->type)
 			return 0;
 
 		return -1;
@@ -375,16 +375,16 @@ static int	variant_compare_empty(const zbx_variant_t *value1, const zbx_variant_
  ******************************************************************************/
 static int	variant_compare_bin(const zbx_variant_t *value1, const zbx_variant_t *value2)
 {
-	if (ZBX_VARIANT_BIN == value1->type)
+	if (TRX_VARIANT_BIN == value1->type)
 	{
 		zbx_uint32_t	size1, size2;
 
-		if (ZBX_VARIANT_BIN != value2->type)
+		if (TRX_VARIANT_BIN != value2->type)
 			return 1;
 
 		memcpy(&size1, value1->data.bin, sizeof(size1));
 		memcpy(&size2, value2->data.bin, sizeof(size2));
-		ZBX_RETURN_IF_NOT_EQUAL(size1, size2);
+		TRX_RETURN_IF_NOT_EQUAL(size1, size2);
 		return memcmp(value1->data.bin, value2->data.bin, size1 + sizeof(size1));
 	}
 
@@ -400,7 +400,7 @@ static int	variant_compare_bin(const zbx_variant_t *value1, const zbx_variant_t 
  ******************************************************************************/
 static int	variant_compare_str(const zbx_variant_t *value1, const zbx_variant_t *value2)
 {
-	if (ZBX_VARIANT_STR == value1->type)
+	if (TRX_VARIANT_STR == value1->type)
 		return strcmp(value1->data.str, zbx_variant_value_desc(value2));
 
 	return strcmp(zbx_variant_value_desc(value1), value2->data.str);
@@ -421,13 +421,13 @@ static int	variant_compare_dbl(const zbx_variant_t *value1, const zbx_variant_t 
 
 	switch (value1->type)
 	{
-		case ZBX_VARIANT_DBL:
+		case TRX_VARIANT_DBL:
 			value1_dbl = value1->data.dbl;
 			break;
-		case ZBX_VARIANT_UI64:
+		case TRX_VARIANT_UI64:
 			value1_dbl = value1->data.ui64;
 			break;
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			value1_dbl = atof(value1->data.str);
 			break;
 		default:
@@ -437,13 +437,13 @@ static int	variant_compare_dbl(const zbx_variant_t *value1, const zbx_variant_t 
 
 	switch (value2->type)
 	{
-		case ZBX_VARIANT_DBL:
+		case TRX_VARIANT_DBL:
 			value2_dbl = value2->data.dbl;
 			break;
-		case ZBX_VARIANT_UI64:
+		case TRX_VARIANT_UI64:
 			value2_dbl = value2->data.ui64;
 			break;
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			value2_dbl = atof(value2->data.str);
 			break;
 		default:
@@ -454,7 +454,7 @@ static int	variant_compare_dbl(const zbx_variant_t *value1, const zbx_variant_t 
 	if (SUCCEED == zbx_double_compare(value1_dbl, value2_dbl))
 		return 0;
 
-	ZBX_RETURN_IF_NOT_EQUAL(value1_dbl, value2_dbl);
+	TRX_RETURN_IF_NOT_EQUAL(value1_dbl, value2_dbl);
 
 	THIS_SHOULD_NEVER_HAPPEN;
 	exit(EXIT_FAILURE);
@@ -469,7 +469,7 @@ static int	variant_compare_dbl(const zbx_variant_t *value1, const zbx_variant_t 
  ******************************************************************************/
 static int	variant_compare_ui64(const zbx_variant_t *value1, const zbx_variant_t *value2)
 {
-	ZBX_RETURN_IF_NOT_EQUAL(value1->data.ui64, value2->data.ui64);
+	TRX_RETURN_IF_NOT_EQUAL(value1->data.ui64, value2->data.ui64);
 	return 0;
 }
 
@@ -500,17 +500,17 @@ static int	variant_compare_ui64(const zbx_variant_t *value1, const zbx_variant_t
  ******************************************************************************/
 int	zbx_variant_compare(const zbx_variant_t *value1, const zbx_variant_t *value2)
 {
-	if (ZBX_VARIANT_NONE == value1->type || ZBX_VARIANT_NONE == value2->type)
+	if (TRX_VARIANT_NONE == value1->type || TRX_VARIANT_NONE == value2->type)
 		return variant_compare_empty(value1, value2);
 
-	if (ZBX_VARIANT_BIN == value1->type || ZBX_VARIANT_BIN == value2->type)
+	if (TRX_VARIANT_BIN == value1->type || TRX_VARIANT_BIN == value2->type)
 		return variant_compare_bin(value1, value2);
 
-	if (ZBX_VARIANT_UI64 == value1->type && ZBX_VARIANT_UI64 == value2->type)
+	if (TRX_VARIANT_UI64 == value1->type && TRX_VARIANT_UI64 == value2->type)
 		return  variant_compare_ui64(value1, value2);
 
-	if ((ZBX_VARIANT_STR != value1->type || SUCCEED == is_double(value1->data.str)) &&
-			(ZBX_VARIANT_STR != value2->type || SUCCEED == is_double(value2->data.str)))
+	if ((TRX_VARIANT_STR != value1->type || SUCCEED == is_double(value1->data.str)) &&
+			(TRX_VARIANT_STR != value2->type || SUCCEED == is_double(value2->data.str)))
 	{
 		return variant_compare_dbl(value1, value2);
 	}

@@ -12,14 +12,14 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'imageid' =>	[T_ZBX_INT, O_NO,	P_SYS,		DB_ID,		'isset({form}) && {form} == "update"'],
-	'name' =>		[T_ZBX_STR, O_NO,	null,		NOT_EMPTY,	'isset({add}) || isset({update})'],
-	'imagetype' =>	[T_ZBX_INT, O_OPT, null,		IN('1,2'),	'isset({add}) || isset({update})'],
+	'imageid' =>	[T_TRX_INT, O_NO,	P_SYS,		DB_ID,		'isset({form}) && {form} == "update"'],
+	'name' =>		[T_TRX_STR, O_NO,	null,		NOT_EMPTY,	'isset({add}) || isset({update})'],
+	'imagetype' =>	[T_TRX_INT, O_OPT, null,		IN('1,2'),	'isset({add}) || isset({update})'],
 	// actions
-	'add' =>		[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,		null],
-	'update' =>		[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,		null],
-	'delete' =>		[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,		null],
-	'form' =>		[T_ZBX_STR, O_OPT, P_SYS,		null,		null]
+	'add' =>		[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,		null],
+	'update' =>		[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,		null],
+	'delete' =>		[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,		null],
+	'form' =>		[T_TRX_STR, O_OPT, P_SYS,		null,		null]
 ];
 check_fields($fields);
 

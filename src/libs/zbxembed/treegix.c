@@ -16,7 +16,7 @@
  ******************************************************************************/
 static duk_ret_t	es_treegix_dtor(duk_context *ctx)
 {
-	ZBX_UNUSED(ctx);
+	TRX_UNUSED(ctx);
 	return 0;
 }
 

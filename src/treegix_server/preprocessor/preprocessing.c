@@ -178,19 +178,19 @@ static int	preprocessor_pack_variant(zbx_packed_field_t *fields, const zbx_varia
 
 	switch (value->type)
 	{
-		case ZBX_VARIANT_UI64:
+		case TRX_VARIANT_UI64:
 			fields[offset++] = PACKED_FIELD(&value->data.ui64, sizeof(zbx_uint64_t));
 			break;
 
-		case ZBX_VARIANT_DBL:
+		case TRX_VARIANT_DBL:
 			fields[offset++] = PACKED_FIELD(&value->data.dbl, sizeof(double));
 			break;
 
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			fields[offset++] = PACKED_FIELD(value->data.str, 0);
 			break;
 
-		case ZBX_VARIANT_BIN:
+		case TRX_VARIANT_BIN:
 			fields[offset++] = PACKED_FIELD(value->data.bin, sizeof(zbx_uint32_t) +
 					zbx_variant_data_bin_get(value->data.bin, NULL));
 			break;
@@ -307,19 +307,19 @@ static int	preprocesser_unpack_variant(const unsigned char *data, zbx_variant_t 
 
 	switch (value->type)
 	{
-		case ZBX_VARIANT_UI64:
+		case TRX_VARIANT_UI64:
 			offset += zbx_deserialize_uint64(offset, &value->data.ui64);
 			break;
 
-		case ZBX_VARIANT_DBL:
+		case TRX_VARIANT_DBL:
 			offset += zbx_deserialize_double(offset, &value->data.dbl);
 			break;
 
-		case ZBX_VARIANT_STR:
+		case TRX_VARIANT_STR:
 			offset += zbx_deserialize_str(offset, &value->data.str, value_len);
 			break;
 
-		case ZBX_VARIANT_BIN:
+		case TRX_VARIANT_BIN:
 			offset += zbx_deserialize_bin(offset, &value->data.bin, value_len);
 			break;
 	}
@@ -775,7 +775,7 @@ static void	preprocessor_send(zbx_uint32_t code, unsigned char *data, zbx_uint32
 	static zbx_ipc_socket_t	socket = {0};
 
 	/* each process has a permanent connection to preprocessing manager */
-	if (0 == socket.fd && FAIL == zbx_ipc_socket_open(&socket, ZBX_IPC_SERVICE_PREPROCESSING, SEC_PER_MIN,
+	if (0 == socket.fd && FAIL == zbx_ipc_socket_open(&socket, TRX_IPC_SERVICE_PREPROCESSING, SEC_PER_MIN,
 			&error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot connect to preprocessing service: %s", error);
@@ -839,7 +839,7 @@ void	zbx_preprocessor_flush(void)
 {
 	if (0 < cached_message.size)
 	{
-		preprocessor_send(ZBX_IPC_PREPROCESSOR_REQUEST, cached_message.data, cached_message.size, NULL);
+		preprocessor_send(TRX_IPC_PREPROCESSOR_REQUEST, cached_message.data, cached_message.size, NULL);
 
 		zbx_ipc_message_clean(&cached_message);
 		zbx_ipc_message_init(&cached_message);
@@ -862,7 +862,7 @@ zbx_uint64_t	zbx_preprocessor_get_queue_size(void)
 	zbx_ipc_message_t	message;
 
 	zbx_ipc_message_init(&message);
-	preprocessor_send(ZBX_IPC_PREPROCESSOR_QUEUE, NULL, 0, &message);
+	preprocessor_send(TRX_IPC_PREPROCESSOR_QUEUE, NULL, 0, &message);
 	memcpy(&size, message.data, sizeof(zbx_uint64_t));
 	zbx_ipc_message_clean(&message);
 
@@ -992,7 +992,7 @@ int	zbx_preprocessor_test(unsigned char value_type, const char *value, const zbx
 
 	size = preprocessor_pack_test_request(&data, value_type, value, ts, history, steps);
 
-	if (SUCCEED != zbx_ipc_async_exchange(ZBX_IPC_SERVICE_PREPROCESSING, ZBX_IPC_PREPROCESSOR_TEST_REQUEST,
+	if (SUCCEED != zbx_ipc_async_exchange(TRX_IPC_SERVICE_PREPROCESSING, TRX_IPC_PREPROCESSOR_TEST_REQUEST,
 			SEC_PER_MIN, data, size, &result, error))
 	{
 		goto out;

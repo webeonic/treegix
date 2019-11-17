@@ -5,7 +5,7 @@
 					id: 'copy_targetids',
 					class: 'multiselect',
 					css: {
-						width: '<?= ZBX_TEXTAREA_MEDIUM_WIDTH ?>px'
+						width: '<?= TRX_TEXTAREA_MEDIUM_WIDTH ?>px'
 					},
 					'aria-required': true
 				}),

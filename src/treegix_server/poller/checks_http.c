@@ -52,8 +52,8 @@ static size_t	curl_write_cb(void *ptr, size_t size, size_t nmemb, void *userdata
 
 static size_t	curl_ignore_cb(void *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	ZBX_UNUSED(ptr);
-	ZBX_UNUSED(userdata);
+	TRX_UNUSED(ptr);
+	TRX_UNUSED(userdata);
 
 	return size * nmemb;
 }
@@ -127,11 +127,11 @@ static void	http_add_json_header(struct zbx_json *json, char *line)
 		zbx_ltrim(colon + 1, " \t");
 
 		*colon = '\0';
-		zbx_json_addstring(json, line, colon + 1, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(json, line, colon + 1, TRX_JSON_TYPE_STRING);
 		*colon = ':';
 	}
 	else
-		zbx_json_addstring(json, line, "", ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(json, line, "", TRX_JSON_TYPE_STRING);
 }
 
 static void	http_output_json(unsigned char retrieve_mode, char **buffer, zbx_http_response_t *header,
@@ -142,45 +142,45 @@ static void	http_output_json(unsigned char retrieve_mode, char **buffer, zbx_htt
 	char			*headers, *line;
 	unsigned char		json_content = 0;
 
-	zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
 	headers = header->data;
 
-	if (retrieve_mode != ZBX_RETRIEVE_MODE_CONTENT)
+	if (retrieve_mode != TRX_RETRIEVE_MODE_CONTENT)
 		zbx_json_addobject(&json, "header");
 
 	while (NULL != (line = zbx_http_get_header(&headers)))
 	{
 		if (0 == json_content && 0 == strncmp(line, "Content-Type:",
-				ZBX_CONST_STRLEN("Content-Type:")) &&
+				TRX_CONST_STRLEN("Content-Type:")) &&
 				NULL != strstr(line, "application/json"))
 		{
 			json_content = 1;
 		}
 
-		if (retrieve_mode != ZBX_RETRIEVE_MODE_CONTENT)
+		if (retrieve_mode != TRX_RETRIEVE_MODE_CONTENT)
 			http_add_json_header(&json, line);
 
 		zbx_free(line);
 	}
 
-	if (retrieve_mode != ZBX_RETRIEVE_MODE_CONTENT)
+	if (retrieve_mode != TRX_RETRIEVE_MODE_CONTENT)
 		zbx_json_close(&json);
 
 	if (NULL != body->data)
 	{
 		if (0 == json_content)
 		{
-			zbx_json_addstring(&json, "body", body->data, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json, "body", body->data, TRX_JSON_TYPE_STRING);
 		}
 		else if (FAIL == zbx_json_open(body->data, &jp))
 		{
-			zbx_json_addstring(&json, "body", body->data, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json, "body", body->data, TRX_JSON_TYPE_STRING);
 			treegix_log(LOG_LEVEL_DEBUG, "received invalid JSON object %s", zbx_json_strerror());
 		}
 		else
 		{
-			zbx_lrtrim(body->data, ZBX_WHITESPACE);
+			zbx_lrtrim(body->data, TRX_WHITESPACE);
 			zbx_json_addraw(&json, "body", body->data);
 		}
 	}
@@ -215,11 +215,11 @@ int	get_value_http(const DC_ITEM *item, AGENT_RESULT *result)
 
 	switch (item->retrieve_mode)
 	{
-		case ZBX_RETRIEVE_MODE_CONTENT:
-		case ZBX_RETRIEVE_MODE_BOTH:
+		case TRX_RETRIEVE_MODE_CONTENT:
+		case TRX_RETRIEVE_MODE_BOTH:
 			curl_body_cb = curl_write_cb;
 			break;
-		case ZBX_RETRIEVE_MODE_HEADERS:
+		case TRX_RETRIEVE_MODE_HEADERS:
 			curl_body_cb = curl_ignore_cb;
 			break;
 		default:
@@ -274,7 +274,7 @@ int	get_value_http(const DC_ITEM *item, AGENT_RESULT *result)
 	}
 
 	if (0 != item->follow_redirects &&
-			CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_MAXREDIRS, ZBX_CURLOPT_MAXREDIRS)))
+			CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_MAXREDIRS, TRX_CURLOPT_MAXREDIRS)))
 	{
 		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot set number of redirects allowed: %s",
 				curl_easy_strerror(err)));
@@ -317,7 +317,7 @@ int	get_value_http(const DC_ITEM *item, AGENT_RESULT *result)
 	{
 		headers_slist = curl_slist_append(headers_slist, line);
 
-		if (FAIL == found && 0 == strncmp(line, "Content-Type:", ZBX_CONST_STRLEN("Content-Type:")))
+		if (FAIL == found && 0 == strncmp(line, "Content-Type:", TRX_CONST_STRLEN("Content-Type:")))
 			found = SUCCEED;
 
 		zbx_free(line);
@@ -325,9 +325,9 @@ int	get_value_http(const DC_ITEM *item, AGENT_RESULT *result)
 
 	if (FAIL == found)
 	{
-		if (ZBX_POSTTYPE_JSON == item->post_type)
+		if (TRX_POSTTYPE_JSON == item->post_type)
 			headers_slist = curl_slist_append(headers_slist, application_json);
-		else if (ZBX_POSTTYPE_XML == item->post_type)
+		else if (TRX_POSTTYPE_XML == item->post_type)
 			headers_slist = curl_slist_append(headers_slist, application_xml);
 	}
 
@@ -383,7 +383,7 @@ int	get_value_http(const DC_ITEM *item, AGENT_RESULT *result)
 
 	switch (item->retrieve_mode)
 	{
-		case ZBX_RETRIEVE_MODE_CONTENT:
+		case TRX_RETRIEVE_MODE_CONTENT:
 			if (NULL == body.data)
 			{
 				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Server returned empty content"));
@@ -407,7 +407,7 @@ int	get_value_http(const DC_ITEM *item, AGENT_RESULT *result)
 				body.data = NULL;
 			}
 			break;
-		case ZBX_RETRIEVE_MODE_HEADERS:
+		case TRX_RETRIEVE_MODE_HEADERS:
 			if (FAIL == zbx_is_utf8(header.data))
 			{
 				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Server returned invalid UTF-8 sequence"));
@@ -416,7 +416,7 @@ int	get_value_http(const DC_ITEM *item, AGENT_RESULT *result)
 
 			if (HTTP_STORE_JSON == item->output_format)
 			{
-				zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
+				zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 				zbx_json_addobject(&json, "header");
 				headers = header.data;
 				while (NULL != (line = zbx_http_get_header(&headers)))
@@ -433,7 +433,7 @@ int	get_value_http(const DC_ITEM *item, AGENT_RESULT *result)
 				header.data = NULL;
 			}
 			break;
-		case ZBX_RETRIEVE_MODE_BOTH:
+		case TRX_RETRIEVE_MODE_BOTH:
 			if (FAIL == zbx_is_utf8(header.data) || (NULL != body.data && FAIL == zbx_is_utf8(body.data)))
 			{
 				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Server returned invalid UTF-8 sequence"));

@@ -35,7 +35,7 @@ package zbxlib
 #include "../src/treegix_agent/metrics.h"
 #include "../src/treegix_agent/logfiles/logfiles.h"
 
-typedef ZBX_ACTIVE_METRIC* ZBX_ACTIVE_METRIC_LP;
+typedef TRX_ACTIVE_METRIC* TRX_ACTIVE_METRIC_LP;
 typedef zbx_vector_ptr_t * zbx_vector_ptr_lp_t;
 
 int CONFIG_MAX_LINES_PER_SECOND = 20;
@@ -45,8 +45,8 @@ int	CONFIG_ENABLE_REMOTE_COMMANDS= 0;
 int	CONFIG_LOG_REMOTE_COMMANDS= 0;
 char	*CONFIG_SOURCE_IP= NULL;
 
-unsigned int	configured_tls_connect_mode = ZBX_TCP_SEC_UNENCRYPTED;
-unsigned int	configured_tls_accept_modes = ZBX_TCP_SEC_UNENCRYPTED;
+unsigned int	configured_tls_connect_mode = TRX_TCP_SEC_UNENCRYPTED;
+unsigned int	configured_tls_accept_modes = TRX_TCP_SEC_UNENCRYPTED;
 
 char *CONFIG_TLS_CONNECT= NULL;
 char *CONFIG_TLS_ACCEPT	= NULL;
@@ -69,8 +69,8 @@ const char	*usage_message[] = {};
 unsigned char	program_type	= 0x80;
 const char	*help_message[] = {};
 
-ZBX_METRIC	parameters_agent[] = {NULL};
-ZBX_METRIC	parameters_specific[] = {NULL};
+TRX_METRIC	parameters_agent[] = {NULL};
+TRX_METRIC	parameters_specific[] = {NULL};
 
 void zbx_on_exit(int ret)
 {

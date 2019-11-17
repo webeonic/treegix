@@ -11,7 +11,7 @@ int	SYSTEM_BOOTTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	int		ret = SYSINFO_RET_FAIL;
 	unsigned long	value;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (NULL == (f = fopen("/proc/stat", "r")))
 	{

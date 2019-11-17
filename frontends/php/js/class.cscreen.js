@@ -1,20 +1,20 @@
  
 
-var ZBX_SCREENS = []; // screens obj reference
+var TRX_SCREENS = []; // screens obj reference
 Position.includeScrollOffsets = true;
 
 // screenid always must be a string (js doesn't support uint64) !
 function init_screen(screenid, obj_id, id) {
 	if (typeof(id) == 'undefined') {
-		id = ZBX_SCREENS.length;
+		id = TRX_SCREENS.length;
 	}
 
 	if (is_number(screenid) && screenid > 100000000000000) {
 		throw('Error: Wrong type of arguments passed to function [init_screen]');
 	}
 
-	ZBX_SCREENS[id] = new Object;
-	ZBX_SCREENS[id].screen = new Cscreen(screenid, obj_id, id);
+	TRX_SCREENS[id] = new Object;
+	TRX_SCREENS[id].screen = new Cscreen(screenid, obj_id, id);
 }
 
 var Cscreen = Class.create();

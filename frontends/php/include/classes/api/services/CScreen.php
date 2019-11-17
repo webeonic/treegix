@@ -372,13 +372,13 @@ class CScreen extends CApiService {
 			}
 
 			if (!zbx_is_int($screen[$field_name])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_s('Incorrect value for field "%1$s": %2$s.', $field_name, _('a numeric value is expected'))
 				);
 			}
 
 			if ($screen[$field_name] < SCREEN_MIN_SIZE || $screen[$field_name] > SCREEN_MAX_SIZE) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_s('Incorrect value for field "%1$s": %2$s.', $field_name,
 						_s('must be between "%1$s" and "%2$s"', SCREEN_MIN_SIZE, SCREEN_MAX_SIZE)
 					)
@@ -396,7 +396,7 @@ class CScreen extends CApiService {
 	 */
 	protected function validateCreate(array $screens) {
 		if (!$screens) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$user_data = self::$userData;
@@ -405,7 +405,7 @@ class CScreen extends CApiService {
 
 		foreach ($screens as &$screen) {
 			if (!check_db_fields($screen_db_fields, $screen)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 
 			$this->validateScreenSize($screen);
@@ -413,7 +413,7 @@ class CScreen extends CApiService {
 			// "templateid", is not allowed
 			if (array_key_exists('templateid', $screen)) {
 				self::exception(
-					ZBX_API_ERROR_PARAMETERS,
+					TRX_API_ERROR_PARAMETERS,
 					_s('Cannot set "templateid" for screen "%1$s".', $screen['name'])
 				);
 			}
@@ -425,7 +425,7 @@ class CScreen extends CApiService {
 		// Check for duplicate names.
 		$duplicate = CArrayHelper::findDuplicate($screens, 'name');
 		if ($duplicate) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Duplicate "name" value "%1$s" for screen.', $duplicate['name'])
 			);
 		}
@@ -439,7 +439,7 @@ class CScreen extends CApiService {
 		]);
 
 		if ($db_screens) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Screen "%1$s" already exists.', $db_screens[0]['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Screen "%1$s" already exists.', $db_screens[0]['name']));
 		}
 
 		$private_validator = new CLimitedSetValidator([
@@ -454,18 +454,18 @@ class CScreen extends CApiService {
 			// Check if owner can be set.
 			if (array_key_exists('userid', $screen)) {
 				if ($screen['userid'] === '' || $screen['userid'] === null || $screen['userid'] === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Screen owner cannot be empty.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Screen owner cannot be empty.'));
 				}
 				elseif ($screen['userid'] != $user_data['userid'] && $user_data['type'] != USER_TYPE_SUPER_ADMIN
 						&& $user_data['type'] != USER_TYPE_TREEGIX_ADMIN) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Only administrators can set screen owner.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Only administrators can set screen owner.'));
 				}
 			}
 
 			// Check for invalid "private" values.
 			if (array_key_exists('private', $screen)) {
 				if (!$private_validator->validate($screen['private'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect "private" value "%1$s" for screen "%2$s".', $screen['private'], $screen['name'])
 					);
 				}
@@ -476,7 +476,7 @@ class CScreen extends CApiService {
 			// Screen user shares.
 			if (array_key_exists('users', $screen)) {
 				if (!is_array($screen['users'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				$required_fields = ['userid', 'permission'];
@@ -486,7 +486,7 @@ class CScreen extends CApiService {
 					$missing_keys = array_diff($required_fields, array_keys($share));
 
 					if ($missing_keys) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'User sharing is missing parameters: %1$s for screen "%2$s".',
 							implode(', ', $missing_keys),
 							$screen['name']
@@ -495,7 +495,7 @@ class CScreen extends CApiService {
 					else {
 						foreach ($required_fields as $field) {
 							if ($share[$field] === '' || $share[$field] === null) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Sharing option "%1$s" is missing a value for screen "%2$s".',
 									$field,
 									$screen['name']
@@ -505,7 +505,7 @@ class CScreen extends CApiService {
 					}
 
 					if (!$permission_validator->validate($share['permission'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect "permission" value "%1$s" in users for screen "%2$s".',
 							$share['permission'],
 							$screen['name']
@@ -514,13 +514,13 @@ class CScreen extends CApiService {
 
 					if (array_key_exists('private', $screen) && $screen['private'] == PUBLIC_SHARING
 							&& $share['permission'] == PERM_READ) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Screen "%1$s" is public and read-only sharing is disallowed.', $screen['name'])
 						);
 					}
 
 					if (array_key_exists($share['userid'], $userids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Duplicate userid "%1$s" in users for screen "%2$s".', $share['userid'], $screen['name'])
 						);
 					}
@@ -541,7 +541,7 @@ class CScreen extends CApiService {
 				]);
 
 				if (count($userids) != $db_users) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect user ID specified for screen "%1$s".', $screen['name'])
 					);
 				}
@@ -550,7 +550,7 @@ class CScreen extends CApiService {
 			// Screen user group shares.
 			if (array_key_exists('userGroups', $screen)) {
 				if (!is_array($screen['userGroups'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				$shared_user_groupids = [];
@@ -561,7 +561,7 @@ class CScreen extends CApiService {
 					$missing_keys = array_diff($required_fields, array_keys($share));
 
 					if ($missing_keys) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'User group sharing is missing parameters: %1$s for screen "%2$s".',
 							implode(', ', $missing_keys),
 							$screen['name']
@@ -570,7 +570,7 @@ class CScreen extends CApiService {
 					else {
 						foreach ($required_fields as $field) {
 							if ($share[$field] === '' || $share[$field] === null) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Field "%1$s" is missing a value for screen "%2$s".',
 									$field,
 									$screen['name']
@@ -580,7 +580,7 @@ class CScreen extends CApiService {
 					}
 
 					if (!$permission_validator->validate($share['permission'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect "permission" value "%1$s" in user groups for screen "%2$s".',
 							$share['permission'],
 							$screen['name']
@@ -589,13 +589,13 @@ class CScreen extends CApiService {
 
 					if (array_key_exists('private', $screen) && $screen['private'] == PUBLIC_SHARING
 							&& $share['permission'] == PERM_READ) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Screen "%1$s" is public and read-only sharing is disallowed.', $screen['name'])
 						);
 					}
 
 					if (array_key_exists($share['usrgrpid'], $shared_user_groupids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Duplicate usrgrpid "%1$s" in user groups for screen "%2$s".',
 							$share['usrgrpid'],
 							$screen['name']
@@ -612,7 +612,7 @@ class CScreen extends CApiService {
 					]);
 
 					if (count($shared_user_groupids) != $db_user_groups) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect user group ID specified for screen "%1$s".', $screen['name'])
 						);
 					}
@@ -702,7 +702,7 @@ class CScreen extends CApiService {
 	 */
 	protected function validateUpdate(array $screens, array $db_screens) {
 		if (!$screens) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$user_data = self::$userData;
@@ -720,7 +720,7 @@ class CScreen extends CApiService {
 			$this->validateScreenSize($screen);
 
 			if (!array_key_exists($screen['screenid'], $db_screens)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -732,7 +732,7 @@ class CScreen extends CApiService {
 			// "templateid" is not allowed
 			if (array_key_exists('templateid', $screen)) {
 				self::exception(
-					ZBX_API_ERROR_PARAMETERS,
+					TRX_API_ERROR_PARAMETERS,
 					_s('Cannot update "templateid" for screen "%1$s".', $screen['name'])
 				);
 			}
@@ -741,10 +741,10 @@ class CScreen extends CApiService {
 				// Validate "name" field.
 				if (array_key_exists('name', $screen)) {
 					if (is_array($screen['name'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 					}
 					elseif ($screen['name'] === '' || $screen['name'] === null || $screen['name'] === false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Screen name cannot be empty.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Screen name cannot be empty.'));
 					}
 
 					if ($db_screens[$screen['screenid']]['name'] !== $screen['name']) {
@@ -758,7 +758,7 @@ class CScreen extends CApiService {
 			// Check for duplicate names.
 			$duplicate = CArrayHelper::findDuplicate($check_names, 'name');
 			if ($duplicate) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Duplicate "name" value "%1$s" for screen.', $duplicate['name'])
 				);
 			}
@@ -774,7 +774,7 @@ class CScreen extends CApiService {
 			foreach ($check_names as $screen) {
 				if (array_key_exists($screen['name'], $db_screen_names)
 						&& bccomp($db_screen_names[$screen['name']]['screenid'], $screen['screenid']) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Screen "%1$s" already exists.', $screen['name'])
 					);
 				}
@@ -793,11 +793,11 @@ class CScreen extends CApiService {
 			// Check if owner can be set.
 			if (array_key_exists('userid', $screen)) {
 				if ($screen['userid'] === '' || $screen['userid'] === null || $screen['userid'] === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Screen owner cannot be empty.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Screen owner cannot be empty.'));
 				}
 				elseif ($screen['userid'] != $user_data['userid'] && $user_data['type'] != USER_TYPE_SUPER_ADMIN
 						&& $user_data['type'] != USER_TYPE_TREEGIX_ADMIN) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Only administrators can set screen owner.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Only administrators can set screen owner.'));
 				}
 			}
 
@@ -807,7 +807,7 @@ class CScreen extends CApiService {
 			$screen = array_merge($db_screens[$screen['screenid']], $screen);
 
 			if (!$private_validator->validate($screen['private'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect "private" value "%1$s" for screen "%2$s".', $screen['private'], $screen['name'])
 				);
 			}
@@ -817,7 +817,7 @@ class CScreen extends CApiService {
 			// Screen user shares.
 			if (array_key_exists('users', $screen)) {
 				if (!is_array($screen['users'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				$required_fields = ['userid', 'permission'];
@@ -827,7 +827,7 @@ class CScreen extends CApiService {
 					$missing_keys = array_diff($required_fields, array_keys($share));
 
 					if ($missing_keys) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'User sharing is missing parameters: %1$s for screen "%2$s".',
 							implode(', ', $missing_keys),
 							$screen['name']
@@ -836,7 +836,7 @@ class CScreen extends CApiService {
 					else {
 						foreach ($required_fields as $field) {
 							if ($share[$field] === '' || $share[$field] === null) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Sharing option "%1$s" is missing a value for screen "%2$s".',
 									$field,
 									$screen['name']
@@ -846,7 +846,7 @@ class CScreen extends CApiService {
 					}
 
 					if (!$permission_validator->validate($share['permission'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect "permission" value "%1$s" in users for screen "%2$s".',
 							$share['permission'],
 							$screen['name']
@@ -854,13 +854,13 @@ class CScreen extends CApiService {
 					}
 
 					if ($screen['private'] == PUBLIC_SHARING && $share['permission'] == PERM_READ) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Screen "%1$s" is public and read-only sharing is disallowed.', $screen['name'])
 						);
 					}
 
 					if (array_key_exists($share['userid'], $userids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Duplicate userid "%1$s" in users for screen "%2$s".', $share['userid'], $screen['name'])
 						);
 					}
@@ -881,7 +881,7 @@ class CScreen extends CApiService {
 				]);
 
 				if (count($userids) != $db_users) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect user ID specified for screen "%1$s".', $screen['name'])
 					);
 				}
@@ -890,7 +890,7 @@ class CScreen extends CApiService {
 			// Screen user group shares.
 			if (array_key_exists('userGroups', $screen)) {
 				if (!is_array($screen['userGroups'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				$shared_user_groupids = [];
@@ -901,7 +901,7 @@ class CScreen extends CApiService {
 					$missing_keys = array_diff($required_fields, array_keys($share));
 
 					if ($missing_keys) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'User group sharing is missing parameters: %1$s for screen "%2$s".',
 							implode(', ', $missing_keys),
 							$screen['name'])
@@ -910,7 +910,7 @@ class CScreen extends CApiService {
 					else {
 						foreach ($required_fields as $field) {
 							if ($share[$field] === '' || $share[$field] === null) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Sharing option "%1$s" is missing a value for screen "%2$s".',
 									$field,
 									$screen['name']
@@ -920,7 +920,7 @@ class CScreen extends CApiService {
 					}
 
 					if (!$permission_validator->validate($share['permission'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect "permission" value "%1$s" in user groups for screen "%2$s".',
 							$share['permission'],
 							$screen['name']
@@ -928,13 +928,13 @@ class CScreen extends CApiService {
 					}
 
 					if ($screen['private'] == PUBLIC_SHARING && $share['permission'] == PERM_READ) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Screen "%1$s" is public and read-only sharing is disallowed.', $screen['name'])
 						);
 					}
 
 					if (array_key_exists($share['usrgrpid'], $shared_user_groupids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Duplicate usrgrpid "%1$s" in user groups for screen "%2$s".',
 							$share['usrgrpid'],
 							$screen['name']
@@ -951,7 +951,7 @@ class CScreen extends CApiService {
 					]);
 
 					if (count($shared_user_groupids) != $db_user_groups) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect user group ID specified for screen "%1$s".', $screen['name'])
 						);
 					}
@@ -1176,7 +1176,7 @@ class CScreen extends CApiService {
 	 */
 	protected function validateDelete(array $screenids) {
 		if (!$screenids) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$db_screens = $this->get([
@@ -1188,7 +1188,7 @@ class CScreen extends CApiService {
 
 		foreach ($screenids as $screenid) {
 			if (!array_key_exists($screenid, $db_screens)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}

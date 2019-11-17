@@ -197,8 +197,8 @@ class CControllerMenuPopup extends CController {
 				'itemid' => $data['itemid'],
 				'hostid' => $db_item['hostid'],
 				'name' => $db_item['name'],
-				'create_dependent_item' => ($db_item['flags'] != ZBX_FLAG_DISCOVERY_CREATED),
-				'create_dependent_discovery' => ($db_item['flags'] != ZBX_FLAG_DISCOVERY_CREATED)
+				'create_dependent_item' => ($db_item['flags'] != TRX_FLAG_DISCOVERY_CREATED),
+				'create_dependent_discovery' => ($db_item['flags'] != TRX_FLAG_DISCOVERY_CREATED)
 			];
 
 			if (in_array($db_item['value_type'], [ITEM_VALUE_TYPE_LOG, ITEM_VALUE_TYPE_STR, ITEM_VALUE_TYPE_TEXT])) {
@@ -212,7 +212,7 @@ class CControllerMenuPopup extends CController {
 				$menu_data['triggers'] = [];
 
 				foreach ($db_triggers as $db_trigger) {
-					if ($db_trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+					if ($db_trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 						continue;
 					}
 

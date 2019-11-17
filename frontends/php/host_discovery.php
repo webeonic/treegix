@@ -25,26 +25,26 @@ $evalTypes = [
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'hostid' =>					[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		'!isset({form})'],
-	'itemid' =>					[T_ZBX_INT, O_NO,	P_SYS,	DB_ID,		'(isset({form}) && ({form} == "update"))'],
-	'interfaceid' =>			[T_ZBX_INT, O_OPT, P_SYS,	DB_ID, null, _('Interface')],
-	'name' =>					[T_ZBX_STR, O_OPT, null,	NOT_EMPTY, 'isset({add}) || isset({update})', _('Name')],
-	'description' =>			[T_ZBX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
-	'key' =>					[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('Key')],
-	'master_itemid' =>			[T_ZBX_STR, O_OPT, null,	null,
+	'hostid' =>					[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		'!isset({form})'],
+	'itemid' =>					[T_TRX_INT, O_NO,	P_SYS,	DB_ID,		'(isset({form}) && ({form} == "update"))'],
+	'interfaceid' =>			[T_TRX_INT, O_OPT, P_SYS,	DB_ID, null, _('Interface')],
+	'name' =>					[T_TRX_STR, O_OPT, null,	NOT_EMPTY, 'isset({add}) || isset({update})', _('Name')],
+	'description' =>			[T_TRX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
+	'key' =>					[T_TRX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('Key')],
+	'master_itemid' =>			[T_TRX_STR, O_OPT, null,	null,
 									'(isset({add}) || isset({update})) && isset({type})'.
 										' && {type} == '.ITEM_TYPE_DEPENDENT,
 									_('Master item')
 								],
-	'delay' =>					[T_ZBX_TU, O_OPT, P_ALLOW_USER_MACRO, null,
+	'delay' =>					[T_TRX_TU, O_OPT, P_ALLOW_USER_MACRO, null,
 									'(isset({add}) || isset({update})) && isset({type})'.
 										' && {type} != '.ITEM_TYPE_TRAPPER.' && {type} != '.ITEM_TYPE_SNMPTRAP.
 										' && {type} != '.ITEM_TYPE_DEPENDENT,
 									_('Update interval')
 								],
-	'delay_flex' =>				[T_ZBX_STR, O_OPT, null,	null,			null],
-	'status' =>					[T_ZBX_INT, O_OPT, null,	IN(ITEM_STATUS_ACTIVE), null],
-	'type' =>					[T_ZBX_INT, O_OPT, null,
+	'delay_flex' =>				[T_TRX_STR, O_OPT, null,	null,			null],
+	'status' =>					[T_TRX_INT, O_OPT, null,	IN(ITEM_STATUS_ACTIVE), null],
+	'type' =>					[T_TRX_INT, O_OPT, null,
 									IN([-1, ITEM_TYPE_TREEGIX, ITEM_TYPE_SNMPV1, ITEM_TYPE_TRAPPER, ITEM_TYPE_SIMPLE,
 										ITEM_TYPE_SNMPV2C, ITEM_TYPE_INTERNAL, ITEM_TYPE_SNMPV3,
 										ITEM_TYPE_TREEGIX_ACTIVE, ITEM_TYPE_EXTERNAL, ITEM_TYPE_DB_MONITOR,
@@ -53,173 +53,173 @@ $fields = [
 									]),
 									'isset({add}) || isset({update})'
 								],
-	'authtype' =>				[T_ZBX_INT, O_OPT, null,	IN(ITEM_AUTHTYPE_PASSWORD.','.ITEM_AUTHTYPE_PUBLICKEY),
+	'authtype' =>				[T_TRX_INT, O_OPT, null,	IN(ITEM_AUTHTYPE_PASSWORD.','.ITEM_AUTHTYPE_PUBLICKEY),
 		'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SSH],
-	'username' =>				[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,
+	'username' =>				[T_TRX_STR, O_OPT, null,	NOT_EMPTY,
 									'(isset({add}) || isset({update})) && isset({type})'.
 										' && '.IN(ITEM_TYPE_SSH.','.ITEM_TYPE_TELNET, 'type'),
 									_('User name')
 								],
-	'password' =>				[T_ZBX_STR, O_OPT, null,	null,
+	'password' =>				[T_TRX_STR, O_OPT, null,	null,
 									'(isset({add}) || isset({update})) && isset({type})'.
 										' && '.IN(ITEM_TYPE_SSH.','.ITEM_TYPE_TELNET, 'type')
 								],
-	'publickey' =>				[T_ZBX_STR, O_OPT, null,	null,
+	'publickey' =>				[T_TRX_STR, O_OPT, null,	null,
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SSH.
 										' && {authtype} == '.ITEM_AUTHTYPE_PUBLICKEY
 								],
-	'privatekey' =>				[T_ZBX_STR, O_OPT, null,	null,
+	'privatekey' =>				[T_TRX_STR, O_OPT, null,	null,
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SSH.
 										' && {authtype} == '.ITEM_AUTHTYPE_PUBLICKEY
 								],
-	$paramsFieldName =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'(isset({add}) || isset({update}))'.
+	$paramsFieldName =>			[T_TRX_STR, O_OPT, null,	NOT_EMPTY,	'(isset({add}) || isset({update}))'.
 									' && isset({type}) && '.IN(ITEM_TYPE_SSH.','.ITEM_TYPE_DB_MONITOR.','.
 										ITEM_TYPE_TELNET.','.ITEM_TYPE_CALCULATED, 'type'
 									),
 									getParamFieldLabelByType(getRequest('type', 0))
 								],
-	'snmp_community' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,
+	'snmp_community' =>			[T_TRX_STR, O_OPT, null,	NOT_EMPTY,
 									'(isset({add}) || isset({update})) && isset({type})'.
 										' && '.IN(ITEM_TYPE_SNMPV1.','.ITEM_TYPE_SNMPV2C, 'type'),
 									_('SNMP community')
 								],
-	'snmp_oid' =>				[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,
+	'snmp_oid' =>				[T_TRX_STR, O_OPT, null,	NOT_EMPTY,
 									'(isset({add}) || isset({update})) && isset({type})'.
 										' && '.IN(ITEM_TYPE_SNMPV1.','.ITEM_TYPE_SNMPV2C.','.ITEM_TYPE_SNMPV3, 'type'),
 									_('SNMP OID')
 								],
-	'port' =>					[T_ZBX_STR, O_OPT, null,	BETWEEN(0, 65535),
+	'port' =>					[T_TRX_STR, O_OPT, null,	BETWEEN(0, 65535),
 									'(isset({add}) || isset({update})) && isset({type})'.
 										' && '.IN(ITEM_TYPE_SNMPV1.','.ITEM_TYPE_SNMPV2C.','.ITEM_TYPE_SNMPV3, 'type'),
 									_('Port')
 								],
-	'snmpv3_contextname' =>		[T_ZBX_STR, O_OPT, null,	null,
+	'snmpv3_contextname' =>		[T_TRX_STR, O_OPT, null,	null,
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SNMPV3
 								],
-	'snmpv3_securitylevel' =>	[T_ZBX_INT, O_OPT, null,	IN('0,1,2'),
+	'snmpv3_securitylevel' =>	[T_TRX_INT, O_OPT, null,	IN('0,1,2'),
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SNMPV3
 								],
-	'snmpv3_securityname' =>	[T_ZBX_STR, O_OPT, null,	null,
+	'snmpv3_securityname' =>	[T_TRX_STR, O_OPT, null,	null,
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SNMPV3
 								],
-	'snmpv3_authprotocol' =>	[T_ZBX_INT, O_OPT, null, IN(ITEM_AUTHPROTOCOL_MD5.','.ITEM_AUTHPROTOCOL_SHA),
+	'snmpv3_authprotocol' =>	[T_TRX_INT, O_OPT, null, IN(ITEM_AUTHPROTOCOL_MD5.','.ITEM_AUTHPROTOCOL_SHA),
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SNMPV3.
 										' && ({snmpv3_securitylevel} == '.ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV.
 										' || {snmpv3_securitylevel}=='.ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV.')'
 								],
-	'snmpv3_authpassphrase' =>	[T_ZBX_STR, O_OPT, null, null,
+	'snmpv3_authpassphrase' =>	[T_TRX_STR, O_OPT, null, null,
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SNMPV3.
 										' && ({snmpv3_securitylevel} == '.ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV.
 										' || {snmpv3_securitylevel}=='.ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV.')'
 								],
-	'snmpv3_privprotocol' =>	[T_ZBX_INT, O_OPT, null, IN(ITEM_PRIVPROTOCOL_DES.','.ITEM_PRIVPROTOCOL_AES),
+	'snmpv3_privprotocol' =>	[T_TRX_INT, O_OPT, null, IN(ITEM_PRIVPROTOCOL_DES.','.ITEM_PRIVPROTOCOL_AES),
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SNMPV3.
 										' && {snmpv3_securitylevel} == '.ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV
 								],
-	'snmpv3_privpassphrase' =>	[T_ZBX_STR, O_OPT, null, null,
+	'snmpv3_privpassphrase' =>	[T_TRX_STR, O_OPT, null, null,
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_SNMPV3.
 										' && {snmpv3_securitylevel} == '.ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV
 								],
-	'ipmi_sensor' =>			[T_ZBX_STR, O_OPT, P_NO_TRIM,	NOT_EMPTY,
+	'ipmi_sensor' =>			[T_TRX_STR, O_OPT, P_NO_TRIM,	NOT_EMPTY,
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_IPMI,
 									_('IPMI sensor')
 								],
-	'trapper_hosts' =>			[T_ZBX_STR, O_OPT, null,	null,
+	'trapper_hosts' =>			[T_TRX_STR, O_OPT, null,	null,
 									'(isset({add}) || isset({update})) && isset({type}) && {type} == 2'
 								],
-	'lifetime' =>				[T_ZBX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
-	'evaltype' =>				[T_ZBX_INT, O_OPT, null, 	IN($evalTypes), 'isset({add}) || isset({update})'],
-	'formula' =>				[T_ZBX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
-	'conditions' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'lld_macro_paths' =>		[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'jmx_endpoint' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,
+	'lifetime' =>				[T_TRX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
+	'evaltype' =>				[T_TRX_INT, O_OPT, null, 	IN($evalTypes), 'isset({add}) || isset({update})'],
+	'formula' =>				[T_TRX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
+	'conditions' =>				[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'lld_macro_paths' =>		[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'jmx_endpoint' =>			[T_TRX_STR, O_OPT, null,	NOT_EMPTY,
 		'(isset({add}) || isset({update})) && isset({type}) && {type} == '.ITEM_TYPE_JMX
 	],
-	'timeout' =>				[T_ZBX_STR, O_OPT, null,	null,		null],
-	'url' =>					[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,
+	'timeout' =>				[T_TRX_STR, O_OPT, null,	null,		null],
+	'url' =>					[T_TRX_STR, O_OPT, null,	NOT_EMPTY,
 									'(isset({add}) || isset({update})) && isset({type})'.
 										' && {type} == '.ITEM_TYPE_HTTPAGENT,
 									_('URL')
 								],
-	'query_fields' =>			[T_ZBX_STR, O_OPT, null,	null,		null],
-	'posts' =>					[T_ZBX_STR, O_OPT, null,	null,		null],
-	'status_codes' =>			[T_ZBX_STR, O_OPT, null,	null,		null],
-	'follow_redirects' =>		[T_ZBX_INT, O_OPT, null,
+	'query_fields' =>			[T_TRX_STR, O_OPT, null,	null,		null],
+	'posts' =>					[T_TRX_STR, O_OPT, null,	null,		null],
+	'status_codes' =>			[T_TRX_STR, O_OPT, null,	null,		null],
+	'follow_redirects' =>		[T_TRX_INT, O_OPT, null,
 									IN([HTTPTEST_STEP_FOLLOW_REDIRECTS_OFF, HTTPTEST_STEP_FOLLOW_REDIRECTS_ON]),
 									null
 								],
-	'post_type' =>				[T_ZBX_INT, O_OPT, null,
-									IN([ZBX_POSTTYPE_RAW, ZBX_POSTTYPE_JSON, ZBX_POSTTYPE_XML]),
+	'post_type' =>				[T_TRX_INT, O_OPT, null,
+									IN([TRX_POSTTYPE_RAW, TRX_POSTTYPE_JSON, TRX_POSTTYPE_XML]),
 									null
 								],
-	'http_proxy' =>				[T_ZBX_STR, O_OPT, null,	null,		null],
-	'headers' => 				[T_ZBX_STR, O_OPT, null,	null,		null],
-	'retrieve_mode' =>			[T_ZBX_INT, O_OPT, null,
+	'http_proxy' =>				[T_TRX_STR, O_OPT, null,	null,		null],
+	'headers' => 				[T_TRX_STR, O_OPT, null,	null,		null],
+	'retrieve_mode' =>			[T_TRX_INT, O_OPT, null,
 									IN([HTTPTEST_STEP_RETRIEVE_MODE_CONTENT, HTTPTEST_STEP_RETRIEVE_MODE_HEADERS,
 										HTTPTEST_STEP_RETRIEVE_MODE_BOTH
 									]),
 									null
 								],
-	'request_method' =>			[T_ZBX_INT, O_OPT, null,
+	'request_method' =>			[T_TRX_INT, O_OPT, null,
 									IN([HTTPCHECK_REQUEST_GET, HTTPCHECK_REQUEST_POST, HTTPCHECK_REQUEST_PUT,
 										HTTPCHECK_REQUEST_HEAD
 									]),
 									null
 								],
-	'allow_traps' =>			[T_ZBX_INT, O_OPT, null,	IN([HTTPCHECK_ALLOW_TRAPS_OFF, HTTPCHECK_ALLOW_TRAPS_ON]),
+	'allow_traps' =>			[T_TRX_INT, O_OPT, null,	IN([HTTPCHECK_ALLOW_TRAPS_OFF, HTTPCHECK_ALLOW_TRAPS_ON]),
 									null
 								],
-	'ssl_cert_file' =>			[T_ZBX_STR, O_OPT, null,	null,		null],
-	'ssl_key_file' =>			[T_ZBX_STR, O_OPT, null,	null,		null],
-	'ssl_key_password' =>		[T_ZBX_STR, O_OPT, null,	null,		null],
-	'verify_peer' =>			[T_ZBX_INT, O_OPT, null,
+	'ssl_cert_file' =>			[T_TRX_STR, O_OPT, null,	null,		null],
+	'ssl_key_file' =>			[T_TRX_STR, O_OPT, null,	null,		null],
+	'ssl_key_password' =>		[T_TRX_STR, O_OPT, null,	null,		null],
+	'verify_peer' =>			[T_TRX_INT, O_OPT, null,
 									IN([HTTPTEST_VERIFY_PEER_OFF, HTTPTEST_VERIFY_PEER_ON]),
 									null
 								],
-	'verify_host' =>			[T_ZBX_INT, O_OPT, null,
+	'verify_host' =>			[T_TRX_INT, O_OPT, null,
 									IN([HTTPTEST_VERIFY_HOST_OFF, HTTPTEST_VERIFY_HOST_ON]),
 									null
 								],
-	'http_authtype' =>			[T_ZBX_INT, O_OPT, null,
+	'http_authtype' =>			[T_TRX_INT, O_OPT, null,
 									IN([HTTPTEST_AUTH_NONE, HTTPTEST_AUTH_BASIC, HTTPTEST_AUTH_NTLM,
 										HTTPTEST_AUTH_KERBEROS
 									]),
 									null
 								],
-	'http_username' =>			[T_ZBX_STR, O_OPT, null,	null,
+	'http_username' =>			[T_TRX_STR, O_OPT, null,	null,
 									'(isset({add}) || isset({update})) && isset({http_authtype})'.
 										' && ({http_authtype} == '.HTTPTEST_AUTH_BASIC.
 											' || {http_authtype} == '.HTTPTEST_AUTH_NTLM.
 											' || {http_authtype} == '.HTTPTEST_AUTH_KERBEROS.')',
 									_('Username')
 								],
-	'http_password' =>			[T_ZBX_STR, O_OPT, null,	null,
+	'http_password' =>			[T_TRX_STR, O_OPT, null,	null,
 									'(isset({add}) || isset({update})) && isset({http_authtype})'.
 										' && ({http_authtype} == '.HTTPTEST_AUTH_BASIC.
 											' || {http_authtype} == '.HTTPTEST_AUTH_NTLM.
 											' || {http_authtype} == '.HTTPTEST_AUTH_KERBEROS.')',
 									_('Password')
 								],
-	'preprocessing' =>			[T_ZBX_STR, O_OPT, P_NO_TRIM,	null,	null],
+	'preprocessing' =>			[T_TRX_STR, O_OPT, P_NO_TRIM,	null,	null],
 	// actions
-	'action' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 									IN('"discoveryrule.massdelete","discoveryrule.massdisable",'.
 										'"discoveryrule.massenable","discoveryrule.masscheck_now"'
 									),
 									null
 								],
-	'g_hostdruleid' =>			[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
-	'add' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'clone' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'delete' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel' =>					[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'check_now' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'form' =>					[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'form_refresh' =>			[T_ZBX_INT, O_OPT, null,	null,		null],
+	'g_hostdruleid' =>			[T_TRX_INT, O_OPT, null,	DB_ID,		null],
+	'add' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'clone' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'delete' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel' =>					[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'check_now' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'form' =>					[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'form_refresh' =>			[T_TRX_INT, O_OPT, null,	null,		null],
 	// sort and sortorder
-	'sort' =>					[T_ZBX_STR, O_OPT, P_SYS, IN('"delay","key_","name","status","type"'),	null],
-	'sortorder' =>				[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>					[T_TRX_STR, O_OPT, P_SYS, IN('"delay","key_","name","status","type"'),	null],
+	'sortorder' =>				[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -263,7 +263,7 @@ else {
 // Convert CR+LF to LF in preprocessing script.
 if (hasRequest('preprocessing')) {
 	foreach ($_REQUEST['preprocessing'] as &$step) {
-		if ($step['type'] == ZBX_PREPROC_SCRIPT) {
+		if ($step['type'] == TRX_PREPROC_SCRIPT) {
 			$step['params'][0] = CRLFtoLF($step['params'][0]);
 		}
 	}
@@ -285,7 +285,7 @@ if (hasRequest('delete') && hasRequest('itemid')) {
 }
 elseif (hasRequest('check_now') && hasRequest('itemid')) {
 	$result = (bool) API::Task()->create([
-		'type' => ZBX_TM_TASK_CHECK_NOW,
+		'type' => TRX_TM_TASK_CHECK_NOW,
 		'itemids' => getRequest('itemid')
 	]);
 
@@ -351,28 +351,28 @@ elseif (hasRequest('add') || hasRequest('update')) {
 
 		foreach ($preprocessing as &$step) {
 			switch ($step['type']) {
-				case ZBX_PREPROC_PROMETHEUS_TO_JSON:
+				case TRX_PREPROC_PROMETHEUS_TO_JSON:
 					$step['params'] = trim($step['params'][0]);
 					break;
 
-				case ZBX_PREPROC_XPATH:
-				case ZBX_PREPROC_JSONPATH:
-				case ZBX_PREPROC_VALIDATE_NOT_REGEX:
-				case ZBX_PREPROC_ERROR_FIELD_JSON:
-				case ZBX_PREPROC_ERROR_FIELD_XML:
-				case ZBX_PREPROC_THROTTLE_TIMED_VALUE:
-				case ZBX_PREPROC_SCRIPT:
+				case TRX_PREPROC_XPATH:
+				case TRX_PREPROC_JSONPATH:
+				case TRX_PREPROC_VALIDATE_NOT_REGEX:
+				case TRX_PREPROC_ERROR_FIELD_JSON:
+				case TRX_PREPROC_ERROR_FIELD_XML:
+				case TRX_PREPROC_THROTTLE_TIMED_VALUE:
+				case TRX_PREPROC_SCRIPT:
 					$step['params'] = $step['params'][0];
 					break;
 
-				case ZBX_PREPROC_REGSUB:
+				case TRX_PREPROC_REGSUB:
 					$step['params'] = implode("\n", $step['params']);
 					break;
 
-				// ZBX-16642
-				case ZBX_PREPROC_CSV_TO_JSON:
+				// TRX-16642
+				case TRX_PREPROC_CSV_TO_JSON:
 					if (!array_key_exists(2, $step['params'])) {
-						$step['params'][2] = ZBX_PREPROC_CSV_NO_HEADER;
+						$step['params'][2] = TRX_PREPROC_CSV_NO_HEADER;
 					}
 					$step['params'] = implode("\n", $step['params']);
 					break;
@@ -382,7 +382,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 			}
 
 			$step += [
-				'error_handler' => ZBX_PREPROC_FAIL_DEFAULT,
+				'error_handler' => TRX_PREPROC_FAIL_DEFAULT,
 				'error_handler_params' => ''
 			];
 		}
@@ -619,7 +619,7 @@ elseif (hasRequest('action') && getRequest('action') === 'discoveryrule.massdele
 }
 elseif (hasRequest('action') && getRequest('action') === 'discoveryrule.masscheck_now' && hasRequest('g_hostdruleid')) {
 	$result = (bool) API::Task()->create([
-		'type' => ZBX_TM_TASK_CHECK_NOW,
+		'type' => TRX_TM_TASK_CHECK_NOW,
 		'itemids' => getRequest('g_hostdruleid')
 	]);
 
@@ -674,12 +674,12 @@ if (hasRequest('form')) {
 	$data['conditions'] = getRequest('conditions', []);
 	$data['lld_macro_paths'] = getRequest('lld_macro_paths', []);
 	$data['host'] = $host;
-	$data['preprocessing_test_type'] = CControllerPopupPreprocTestEdit::ZBX_TEST_TYPE_LLD;
+	$data['preprocessing_test_type'] = CControllerPopupPreprocTestEdit::TRX_TEST_TYPE_LLD;
 	$data['preprocessing_types'] = CDiscoveryRule::$supported_preprocessing_types;
 
 	if (!hasRequest('form_refresh')) {
 		foreach ($data['preprocessing'] as &$step) {
-			if ($step['type'] == ZBX_PREPROC_SCRIPT) {
+			if ($step['type'] == TRX_PREPROC_SCRIPT) {
 				$step['params'] = [$step['params'], ''];
 			}
 			else {
@@ -705,11 +705,11 @@ if (hasRequest('form')) {
 
 	// Sort interfaces to be listed starting with one selected as 'main'.
 	CArrayHelper::sort($data['interfaces'], [
-		['field' => 'main', 'order' => ZBX_SORT_DOWN]
+		['field' => 'main', 'order' => TRX_SORT_DOWN]
 	]);
 
 	if ($data['type'] != ITEM_TYPE_JMX) {
-		$data['jmx_endpoint'] = ZBX_DEFAULT_JMX_ENDPOINT;
+		$data['jmx_endpoint'] = TRX_DEFAULT_JMX_ENDPOINT;
 	}
 
 	// render view
@@ -721,7 +721,7 @@ if (hasRequest('form')) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);
@@ -769,7 +769,7 @@ else {
 
 	$data['discoveries'] = expandItemNamesWithMasterItems($data['discoveries'], 'items');
 	$data['paging'] = getPagingLine($data['discoveries'], $sortOrder, $url);
-	$data['parent_templates'] = getItemParentTemplates($data['discoveries'], ZBX_FLAG_DISCOVERY_RULE);
+	$data['parent_templates'] = getItemParentTemplates($data['discoveries'], TRX_FLAG_DISCOVERY_RULE);
 
 	// render view
 	$discoveryView = new CView('configuration.host.discovery.list', $data);

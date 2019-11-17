@@ -81,7 +81,7 @@ int	zbx_ipmi_execute_command(const DC_HOST *host, const char *command, char *err
 	if (SUCCEED != zbx_parse_ipmi_command(command, sensor, &op, error, max_error_len))
 		goto out;
 
-	if (FAIL == zbx_ipc_socket_open(&ipmi_socket, ZBX_IPC_SERVICE_IPMI, SEC_PER_MIN, &errmsg))
+	if (FAIL == zbx_ipc_socket_open(&ipmi_socket, TRX_IPC_SERVICE_IPMI, SEC_PER_MIN, &errmsg))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot connect to IPMI service: %s", errmsg);
 		exit(EXIT_FAILURE);
@@ -105,7 +105,7 @@ int	zbx_ipmi_execute_command(const DC_HOST *host, const char *command, char *err
 	data_len = zbx_ipmi_serialize_request(&data, host->hostid, interface.addr, interface.port, host->ipmi_authtype,
 			host->ipmi_privilege, host->ipmi_username, host->ipmi_password, sensor, op);
 
-	if (FAIL == zbx_ipc_socket_write(&ipmi_socket, ZBX_IPC_IPMI_SCRIPT_REQUEST, data, data_len))
+	if (FAIL == zbx_ipc_socket_write(&ipmi_socket, TRX_IPC_IPMI_SCRIPT_REQUEST, data, data_len))
 	{
 		zbx_strlcpy(error, "cannot send script request message to IPMI service", max_error_len);
 		goto cleanup;
@@ -119,7 +119,7 @@ int	zbx_ipmi_execute_command(const DC_HOST *host, const char *command, char *err
 		goto cleanup;
 	}
 
-	if (ZBX_IPC_IPMI_SCRIPT_RESULT != message.code)
+	if (TRX_IPC_IPMI_SCRIPT_RESULT != message.code)
 	{
 		zbx_snprintf(error, max_error_len, "invalid response code:%u received from IPMI service", message.code);
 		goto cleanup;

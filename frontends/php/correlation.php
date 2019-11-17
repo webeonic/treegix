@@ -13,52 +13,52 @@ $page['scripts'] = ['multiselect.js'];
 require_once dirname(__FILE__).'/include/page_header.php';
 // VAR									TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'correlationid' =>					[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
-	'name' =>							[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})',
+	'correlationid' =>					[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
+	'name' =>							[T_TRX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})',
 											_('Name')
 										],
-	'description' =>					[T_ZBX_STR, O_OPT, null,	null,		null],
-	'evaltype' =>						[T_ZBX_INT, O_OPT, null,
+	'description' =>					[T_TRX_STR, O_OPT, null,	null,		null],
+	'evaltype' =>						[T_TRX_INT, O_OPT, null,
 											IN([CONDITION_EVAL_TYPE_AND_OR, CONDITION_EVAL_TYPE_AND,
 												CONDITION_EVAL_TYPE_OR, CONDITION_EVAL_TYPE_EXPRESSION
 											]),
 											'isset({add}) || isset({update})'
 										],
-	'formula' =>						[T_ZBX_STR, O_OPT, null,   null,		'isset({add}) || isset({update})'],
-	'status' =>							[T_ZBX_INT, O_OPT, null,
-											IN([ZBX_CORRELATION_ENABLED, ZBX_CORRELATION_DISABLED]),
+	'formula' =>						[T_TRX_STR, O_OPT, null,   null,		'isset({add}) || isset({update})'],
+	'status' =>							[T_TRX_INT, O_OPT, null,
+											IN([TRX_CORRELATION_ENABLED, TRX_CORRELATION_DISABLED]),
 											null
 										],
-	'g_correlationid' =>				[T_ZBX_INT, O_OPT, null,	DB_ID,		'isset({action})'],
+	'g_correlationid' =>				[T_TRX_INT, O_OPT, null,	DB_ID,		'isset({action})'],
 	'conditions' =>						[null,		O_OPT,	null,	null,		null],
 	'new_condition' =>					[null,		O_OPT,	null,	null,		'isset({add_condition})'],
 	'operations' =>						[null,		O_OPT,	null,	null,		null],
-	'edit_operationid' =>				[T_ZBX_STR, O_OPT,	P_ACT,	null,		null],
+	'edit_operationid' =>				[T_TRX_STR, O_OPT,	P_ACT,	null,		null],
 	'new_operation' =>					[null,		O_OPT,	null,	null,		null],
 	// actions
-	'action' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 											IN('"correlation.massdelete","correlation.massdisable","correlation.massenable"'),
 											null
 										],
-	'add_condition' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add_operation' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'delete' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel' =>							[T_ZBX_STR, O_OPT, P_SYS,		null,	null],
-	'form' =>							[T_ZBX_STR, O_OPT, P_SYS,		null,	null],
-	'form_refresh' =>					[T_ZBX_INT, O_OPT, null,		null,	null],
+	'add_condition' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add_operation' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'delete' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel' =>							[T_TRX_STR, O_OPT, P_SYS,		null,	null],
+	'form' =>							[T_TRX_STR, O_OPT, P_SYS,		null,	null],
+	'form_refresh' =>					[T_TRX_INT, O_OPT, null,		null,	null],
 	// filter
-	'filter_set' =>						[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_rst' =>						[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_name' =>					[T_ZBX_STR, O_OPT, null,	null,		null],
-	'filter_status' =>					[T_ZBX_INT, O_OPT, null,
-											IN([-1, ZBX_CORRELATION_ENABLED, ZBX_CORRELATION_DISABLED]),
+	'filter_set' =>						[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_rst' =>						[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_name' =>					[T_TRX_STR, O_OPT, null,	null,		null],
+	'filter_status' =>					[T_TRX_INT, O_OPT, null,
+											IN([-1, TRX_CORRELATION_ENABLED, TRX_CORRELATION_DISABLED]),
 											null
 										],
 	// sort and sortorder
-	'sort' =>							[T_ZBX_STR, O_OPT, P_SYS, IN('"name","status"'),						null],
-	'sortorder' =>						[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>							[T_TRX_STR, O_OPT, P_SYS, IN('"name","status"'),						null],
+	'sortorder' =>						[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 
 check_fields($fields);
@@ -93,7 +93,7 @@ if (hasRequest('add') || hasRequest('update')) {
 	$correlation = [
 		'name' => getRequest('name'),
 		'description' => getRequest('description'),
-		'status' => getRequest('status', ZBX_CORRELATION_DISABLED),
+		'status' => getRequest('status', TRX_CORRELATION_DISABLED),
 		'operations' => getRequest('operations', [])
 	];
 
@@ -163,14 +163,14 @@ elseif (hasRequest('add_condition') && hasRequest('new_condition')) {
 			// Check if still exists in loop and if type is the same. Remove same values.
 			if (isset($new_condition) && $new_condition['type'] == $condition['type']) {
 				switch ($new_condition['type']) {
-					case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
-					case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
+					case TRX_CORR_CONDITION_OLD_EVENT_TAG:
+					case TRX_CORR_CONDITION_NEW_EVENT_TAG:
 						if ($new_condition['tag'] === $condition['tag']) {
 							unset($new_condition);
 						}
 						break;
 
-					case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+					case TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 						foreach ($new_condition['groupids'] as $i => $groupid) {
 							if ($condition['groupid'] == $groupid) {
 								unset($new_condition['groupids'][$i]);
@@ -183,15 +183,15 @@ elseif (hasRequest('add_condition') && hasRequest('new_condition')) {
 						}
 						break;
 
-					case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+					case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 						if ($new_condition['oldtag'] === $condition['oldtag']
 								&& $new_condition['newtag'] === $condition['newtag']) {
 							unset($new_condition);
 						}
 						break;
 
-					case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-					case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+					case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+					case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 						if ($new_condition['tag'] === $condition['tag']
 								&& $new_condition['value'] === $condition['value']) {
 							unset($new_condition);
@@ -204,8 +204,8 @@ elseif (hasRequest('add_condition') && hasRequest('new_condition')) {
 		// Check if new condition is valid (tags cannot be empty) and host group IDs must be valid.
 		if (isset($new_condition)) {
 			switch ($new_condition['type']) {
-				case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
-				case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
+				case TRX_CORR_CONDITION_OLD_EVENT_TAG:
+				case TRX_CORR_CONDITION_NEW_EVENT_TAG:
 					if ($new_condition['tag'] === '') {
 						error(_s('Incorrect value for field "%1$s": %2$s.', 'tag', _('cannot be empty')));
 						show_error_message(_('Cannot add correlation condition'));
@@ -215,7 +215,7 @@ elseif (hasRequest('add_condition') && hasRequest('new_condition')) {
 					}
 					break;
 
-				case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+				case TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 					if (!$new_condition['groupids']) {
 						error(_s('Incorrect value for field "%1$s": %2$s.', 'groupid', _('cannot be empty')));
 						show_error_message(_('Cannot add correlation condition'));
@@ -241,7 +241,7 @@ elseif (hasRequest('add_condition') && hasRequest('new_condition')) {
 					}
 					break;
 
-				case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+				case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 					if ($new_condition['oldtag'] === '') {
 						error(_s('Incorrect value for field "%1$s": %2$s.', 'oldtag', _('cannot be empty')));
 						show_error_message(_('Cannot add correlation condition'));
@@ -257,8 +257,8 @@ elseif (hasRequest('add_condition') && hasRequest('new_condition')) {
 					}
 					break;
 
-				case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-				case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+				case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+				case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 					if ($new_condition['tag'] === '') {
 						error(_s('Incorrect value for field "%1$s": %2$s.', 'tag', _('cannot be empty')));
 						show_error_message(_('Cannot add correlation condition'));
@@ -281,8 +281,8 @@ elseif (hasRequest('add_operation') && hasRequest('new_operation')) {
 	$_REQUEST['operations'] = getRequest('operations', []);
 
 	$uniqOperations = [
-		ZBX_CORR_OPERATION_CLOSE_OLD => 0,
-		ZBX_CORR_OPERATION_CLOSE_NEW => 0
+		TRX_CORR_OPERATION_CLOSE_OLD => 0,
+		TRX_CORR_OPERATION_CLOSE_NEW => 0
 	];
 
 	if (array_key_exists($new_operation['type'], $uniqOperations)) {
@@ -319,7 +319,7 @@ elseif (hasRequest('action')
 		&& str_in_array(getRequest('action'), ['correlation.massenable', 'correlation.massdisable'])) {
 
 	$enable = (getRequest('action') === 'correlation.massenable');
-	$status = $enable ? ZBX_CORRELATION_ENABLED : ZBX_CORRELATION_DISABLED;
+	$status = $enable ? TRX_CORRELATION_ENABLED : TRX_CORRELATION_DISABLED;
 
 	$correlations_to_update = [];
 	foreach (getRequest('g_correlationid') as $g_correlationid) {
@@ -408,7 +408,7 @@ if (hasRequest('form')) {
 
 	if ($data['new_condition']) {
 		switch ($data['new_condition']['type']) {
-			case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+			case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 				if (!array_key_exists('oldtag', $data['new_condition'])) {
 					$data['new_condition']['oldtag'] = '';
 				}
@@ -418,8 +418,8 @@ if (hasRequest('form')) {
 				}
 				break;
 
-			case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-			case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+			case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+			case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 				if (!array_key_exists('value', $data['new_condition'])) {
 					$data['new_condition']['value'] = '';
 				}
@@ -428,7 +428,7 @@ if (hasRequest('form')) {
 	}
 	else {
 		$data['new_condition'] = [
-			'type' => ZBX_CORR_CONDITION_OLD_EVENT_TAG,
+			'type' => TRX_CORR_CONDITION_OLD_EVENT_TAG,
 			'operator' => CONDITION_OPERATOR_EQUAL,
 			'tag' => ''
 		];
@@ -441,7 +441,7 @@ if (hasRequest('form')) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

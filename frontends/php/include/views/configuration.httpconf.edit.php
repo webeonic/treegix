@@ -13,7 +13,7 @@ if (!empty($this->data['hostid'])) {
 $http_form = (new CForm())
 	->setName('httpForm')
 	->setId('httpForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $this->data['form'])
 	->addVar('hostid', $this->data['hostid'])
 	->addVar('templated', $this->data['templated']);
@@ -34,7 +34,7 @@ if (!empty($this->data['templates'])) {
 
 // Name
 $name_text_box = (new CTextBox('name', $this->data['name'], $this->data['templated'], 64))
-	->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	->setAriaRequired();
 if (!$this->data['templated']) {
 	$name_text_box->setAttribute('autofocus', 'autofocus');
@@ -56,25 +56,25 @@ else {
 $http_form_list
 	->addRow(new CLabel(_('New application'), 'new_application'),
 		(new CSpan(
-			(new CTextBox('new_application', $this->data['new_application']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
-		))->addClass(ZBX_STYLE_FORM_NEW_GROUP)
+			(new CTextBox('new_application', $this->data['new_application']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
+		))->addClass(TRX_STYLE_FORM_NEW_GROUP)
 	)
 	->addRow((new CLabel(_('Update interval'), 'delay'))->setAsteriskMark(),
 		(new CTextBox('delay', $data['delay']))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow(
 		(new CLabel(_('Attempts'), 'retries'))->setAsteriskMark(),
 		(new CNumericBox('retries', $this->data['retries'], 2))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	);
 
 $agent_combo_box = new CComboBox('agent', $this->data['agent']);
 
 $user_agents_all = userAgents();
-$user_agents_all[_('Others')][ZBX_AGENT_OTHER] = _('other').' ...';
+$user_agents_all[_('Others')][TRX_AGENT_OTHER] = _('other').' ...';
 
 foreach ($user_agents_all as $user_agent_group => $user_agents) {
 	$agent_combo_box->addItemsInGroup($user_agent_group, $user_agents);
@@ -83,7 +83,7 @@ foreach ($user_agents_all as $user_agent_group => $user_agents) {
 $http_form_list->addRow(_('Agent'), $agent_combo_box);
 
 $http_form_list->addRow(_('User agent string'),
-	(new CTextBox('agent_other', $this->data['agent_other']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+	(new CTextBox('agent_other', $this->data['agent_other']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 	'row_agent_other'
 );
 
@@ -91,7 +91,7 @@ $http_form_list->addRow(_('User agent string'),
 $http_form_list
 	->addRow(_('HTTP proxy'),
 		(new CTextBox('http_proxy', $this->data['http_proxy'], false, 255))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAttribute('placeholder', '[protocol://][user[:password]@]proxy.example.com[:port]'));
 
 $http_form_list->addRow(_('Variables'), (new CDiv(
@@ -103,13 +103,13 @@ $http_form_list->addRow(_('Variables'), (new CDiv(
 		->addRow((new CRow([
 			(new CCol(
 				(new CButton(null, _('Add')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-add')
 			))->setColSpan(5)
 		])))
 ))
-	->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-	->setAttribute('style', 'min-width: ' . ZBX_TEXTAREA_BIG_WIDTH . 'px;')
+	->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+	->setAttribute('style', 'min-width: ' . TRX_TEXTAREA_BIG_WIDTH . 'px;')
 );
 
 $http_form_list->addRow(_('Headers'), (new CDiv(
@@ -121,13 +121,13 @@ $http_form_list->addRow(_('Headers'), (new CDiv(
 		->addRow((new CRow([
 			(new CCol(
 				(new CButton(null, _('Add')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-add')
 			))->setColSpan(5)
 		])))
 ))
-	->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-	->setAttribute('style', 'min-width: ' . ZBX_TEXTAREA_BIG_WIDTH . 'px;')
+	->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+	->setAttribute('style', 'min-width: ' . TRX_TEXTAREA_BIG_WIDTH . 'px;')
 );
 
 $http_form_list->addRow(_('Enabled'), (new CCheckBox('status'))->setChecked(!$this->data['status']));
@@ -144,10 +144,10 @@ $http_authentication_form_list->addRow(_('HTTP authentication'),
 
 $http_authentication_form_list
 	->addRow(new CLabel(_('User'), 'http_user'),
-		(new CTextBox('http_user', $this->data['http_user'], false, 64))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('http_user', $this->data['http_user'], false, 64))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(new CLabel(_('Password'), 'http_password'),
-		(new CTextBox('http_password', $this->data['http_password'], false, 64))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('http_password', $this->data['http_password'], false, 64))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('SSL verify peer'),
 		(new CCheckBox('verify_peer'))->setChecked($this->data['verify_peer'] == 1)
@@ -156,14 +156,14 @@ $http_authentication_form_list
 		(new CCheckBox('verify_host'))->setChecked($this->data['verify_host'] == 1)
 	)
 	->addRow(_('SSL certificate file'),
-		(new CTextBox('ssl_cert_file', $this->data['ssl_cert_file'], false, 255))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('ssl_cert_file', $this->data['ssl_cert_file'], false, 255))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('SSL key file'),
-		(new CTextBox('ssl_key_file', $this->data['ssl_key_file'], false, 255))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('ssl_key_file', $this->data['ssl_key_file'], false, 255))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('SSL key password'),
 		(new CTextBox('ssl_key_password', $this->data['ssl_key_password'], false, 64))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 /*
@@ -180,7 +180,7 @@ $steps_table = (new CTable())
 		(new CColHeader(_('URL')))->setWidth('200'),
 		(new CColHeader(_('Required')))->setWidth('75'),
 		(new CColHeader(_('Status codes')))
-			->addClass(ZBX_STYLE_NOWRAP)
+			->addClass(TRX_STYLE_NOWRAP)
 			->setWidth('90'),
 		(new CColHeader(_('Action')))->setWidth('50')
 	]);
@@ -190,7 +190,7 @@ if (!$this->data['templated']) {
 		(new CCol(
 			(new CButton(null, _('Add')))
 				->addClass('element-table-add')
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 		))->setColSpan(8)
 	);
 }
@@ -202,7 +202,7 @@ else {
 
 $http_step_form_list->addRow((new CLabel(_('Steps'), $steps_table->getId()))->setAsteriskMark(),
 	(new CDiv($steps_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 		->setAriaRequired()
 );
 
@@ -257,8 +257,8 @@ foreach ($data['pairs'] as $field) {
 	zbx_subarray_push($this->data['scenario_tab_data']['pairs'], $field['type'], $field);
 }
 
-zbx_subarray_push($this->data['scenario_tab_data']['agent_visibility'], ZBX_AGENT_OTHER, 'agent_other');
-zbx_subarray_push($this->data['scenario_tab_data']['agent_visibility'], ZBX_AGENT_OTHER, 'row_agent_other');
+zbx_subarray_push($this->data['scenario_tab_data']['agent_visibility'], TRX_AGENT_OTHER, 'agent_other');
+zbx_subarray_push($this->data['scenario_tab_data']['agent_visibility'], TRX_AGENT_OTHER, 'row_agent_other');
 
 require_once dirname(__FILE__).'/js/configuration.httpconf.edit.js.php';
 

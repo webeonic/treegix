@@ -57,7 +57,7 @@
 			softCheckbox.setAttribute('value', '1');
 			softCheckbox.setAttribute('name', 'children[' + serviceid + '][soft]');
 			softCheckbox.setAttribute('id', 'children_' + serviceid + '_soft');
-			softCheckbox.setAttribute('class', '<?= ZBX_STYLE_CHECKBOX_RADIO ?>');
+			softCheckbox.setAttribute('class', '<?= TRX_STYLE_CHECKBOX_RADIO ?>');
 
 			var softCheckboxLabel = document.createElement('label');
 			softCheckboxLabel.setAttribute('for', 'children_' + serviceid + '_soft');
@@ -74,9 +74,9 @@
 
 			// column "action"
 			var td = document.createElement('td');
-			td.setAttribute('class', '<?= ZBX_STYLE_NOWRAP ?>');
+			td.setAttribute('class', '<?= TRX_STYLE_NOWRAP ?>');
 			var inputRemove = document.createElement('button');
-			inputRemove.setAttribute('class', '<?= ZBX_STYLE_BTN_LINK ?>');
+			inputRemove.setAttribute('class', '<?= TRX_STYLE_BTN_LINK ?>');
 			inputRemove.setAttribute('onclick', 'javascript: removeDependentChild(\'' + serviceid + '\');');
 			inputRemove.appendChild(document.createTextNode(<?= CJs::encodeJson(_('Remove')) ?>));
 

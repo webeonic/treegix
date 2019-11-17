@@ -108,7 +108,7 @@ class CWidgetFormSvgGraph extends CWidgetForm {
 		// Min value on left Y axis.
 		$field_lefty_min = (new CWidgetFieldNumericBox('lefty_min', _('Min')))
 			->setPlaceholder(_('calculated'))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH);
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH);
 
 		if ($field_lefty->getValue() != SVG_GRAPH_AXIS_SHOW) {
 			$field_lefty_min->setFlags(CWidgetField::FLAG_DISABLED);
@@ -122,7 +122,7 @@ class CWidgetFormSvgGraph extends CWidgetForm {
 		// Max value on left Y axis.
 		$field_lefty_max = (new CWidgetFieldNumericBox('lefty_max', _('Max')))
 			->setPlaceholder(_('calculated'))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH);
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH);
 
 		if ($field_lefty->getValue() != SVG_GRAPH_AXIS_SHOW) {
 			$field_lefty_max->setFlags(CWidgetField::FLAG_DISABLED);
@@ -155,7 +155,7 @@ class CWidgetFormSvgGraph extends CWidgetForm {
 		// Static units on left Y axis.
 		$field_lefty_static_units = (new CWidgetFieldTextBox('lefty_static_units', null))
 			->setPlaceholder(_('value'))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH);
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH);
 
 		if ($field_lefty->getValue() != SVG_GRAPH_AXIS_SHOW
 				|| $field_lefty_units->getValue() != SVG_GRAPH_AXIS_UNITS_STATIC) {
@@ -181,7 +181,7 @@ class CWidgetFormSvgGraph extends CWidgetForm {
 		// Min value on right Y axis.
 		$field_righty_min = (new CWidgetFieldNumericBox('righty_min', _('Min')))
 			->setPlaceholder(_('calculated'))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH);
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH);
 
 		if ($field_righty->getValue() != SVG_GRAPH_AXIS_SHOW) {
 			$field_righty_min->setFlags(CWidgetField::FLAG_DISABLED);
@@ -195,7 +195,7 @@ class CWidgetFormSvgGraph extends CWidgetForm {
 		// Max value on right Y axis.
 		$field_righty_max = (new CWidgetFieldNumericBox('righty_max', _('Max')))
 			->setPlaceholder(_('calculated'))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH);
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH);
 
 		if ($field_righty->getValue() != SVG_GRAPH_AXIS_SHOW) {
 			$field_righty_max->setFlags(CWidgetField::FLAG_DISABLED);
@@ -228,7 +228,7 @@ class CWidgetFormSvgGraph extends CWidgetForm {
 		// Static units on right Y axis.
 		$field_righty_static_units = (new CWidgetFieldTextBox('righty_static_units', null))
 			->setPlaceholder(_('value'))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH);
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH);
 
 		if ($field_righty->getValue() != SVG_GRAPH_AXIS_SHOW
 				|| $field_righty_units->getValue() != SVG_GRAPH_AXIS_UNITS_STATIC) {
@@ -420,14 +420,14 @@ class CWidgetFormSvgGraph extends CWidgetForm {
 
 		$period = $ts['to'] - $ts['from'] + 1;
 
-		if ($period < ZBX_MIN_PERIOD) {
+		if ($period < TRX_MIN_PERIOD) {
 			$errors[] = _n('Minimum time period to display is %1$s minute.',
-				'Minimum time period to display is %1$s minutes.', (int) ZBX_MIN_PERIOD / SEC_PER_MIN
+				'Minimum time period to display is %1$s minutes.', (int) TRX_MIN_PERIOD / SEC_PER_MIN
 			);
 		}
-		elseif ($period > ZBX_MAX_PERIOD) {
+		elseif ($period > TRX_MAX_PERIOD) {
 			$errors[] = _n('Maximum time period to display is %1$s day.',
-				'Maximum time period to display is %1$s days.', (int) ZBX_MAX_PERIOD / SEC_PER_DAY
+				'Maximum time period to display is %1$s days.', (int) TRX_MAX_PERIOD / SEC_PER_DAY
 			);
 		}
 
@@ -456,8 +456,8 @@ class CWidgetFormSvgGraph extends CWidgetForm {
 		if ($this->fields['lefty']->getValue() == SVG_GRAPH_AXIS_SHOW) {
 			$lefty_min = $this->fields['lefty_min']->getValue();
 			$lefty_max = $this->fields['lefty_max']->getValue();
-			$lefty_min = ($lefty_min !== '') ? convertFunctionValue($lefty_min, ZBX_UNITS_ROUNDOFF_LOWER_LIMIT) : '';
-			$lefty_max = ($lefty_max !== '') ? convertFunctionValue($lefty_max, ZBX_UNITS_ROUNDOFF_LOWER_LIMIT) : '';
+			$lefty_min = ($lefty_min !== '') ? convertFunctionValue($lefty_min, TRX_UNITS_ROUNDOFF_LOWER_LIMIT) : '';
+			$lefty_max = ($lefty_max !== '') ? convertFunctionValue($lefty_max, TRX_UNITS_ROUNDOFF_LOWER_LIMIT) : '';
 			$compare = true;
 
 			if (strlen(substr(strrchr($lefty_min, '.'), 1)) > 4) {
@@ -480,8 +480,8 @@ class CWidgetFormSvgGraph extends CWidgetForm {
 		if ($this->fields['righty']->getValue() == SVG_GRAPH_AXIS_SHOW) {
 			$righty_min = $this->fields['righty_min']->getValue();
 			$righty_max = $this->fields['righty_max']->getValue();
-			$righty_min = ($righty_min != '') ? convertFunctionValue($righty_min, ZBX_UNITS_ROUNDOFF_LOWER_LIMIT) : '';
-			$righty_max = ($righty_max != '') ? convertFunctionValue($righty_max, ZBX_UNITS_ROUNDOFF_LOWER_LIMIT) : '';
+			$righty_min = ($righty_min != '') ? convertFunctionValue($righty_min, TRX_UNITS_ROUNDOFF_LOWER_LIMIT) : '';
+			$righty_max = ($righty_max != '') ? convertFunctionValue($righty_max, TRX_UNITS_ROUNDOFF_LOWER_LIMIT) : '';
 			$compare = true;
 
 			if (strlen(substr(strrchr($righty_min, '.'), 1)) > 4) {

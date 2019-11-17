@@ -62,10 +62,10 @@ sub treegix_receiver
 
 	# print trap header
 	#       timestamp must be placed at the beginning of the first line (can be omitted)
-	#       the first line must include the header "ZBXTRAP [IP/DNS address] "
+	#       the first line must include the header "TRXTRAP [IP/DNS address] "
 	#              * IP/DNS address is the used to find the corresponding SNMP trap items
 	#              * this header will be cut during processing (will not appear in the item value)
-	printf OUTPUT_FILE "%s ZBXTRAP %s\n", strftime($DateTimeFormat, localtime), $hostname;
+	printf OUTPUT_FILE "%s TRXTRAP %s\n", strftime($DateTimeFormat, localtime), $hostname;
 
 	# print the PDU info
 	print OUTPUT_FILE "PDU INFO:\n";

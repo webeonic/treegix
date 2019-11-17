@@ -9,7 +9,7 @@ $hostInventoryWidget = (new CWidget())
 		->addItem((new CList())
 			->addItem([
 				new CLabel(_('Group'), 'groupid'),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				$this->data['pageFilter']->getGroupsCB()
 			])
 		)
@@ -31,13 +31,13 @@ $hostInventoryWidget->addItem(
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Field'), [
 				$inventoryFieldsComboBox,
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				new CComboBox('filter_exact', $this->data['filterExact'], null, [
 					0 => _('contains'),
 					1 => _('equals')
 				]),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-				(new CTextBox('filter_field_value', $this->data['filterFieldValue']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+				(new CTextBox('filter_field_value', $this->data['filterFieldValue']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			])
 		])
 );
@@ -64,7 +64,7 @@ foreach ($this->data['hosts'] as $host) {
 
 	$row = [
 		(new CLink($host['name'], '?hostid='.$host['hostid'].url_param('groupid')))
-			->addClass($host['status'] == HOST_STATUS_NOT_MONITORED ? ZBX_STYLE_RED : null),
+			->addClass($host['status'] == HOST_STATUS_NOT_MONITORED ? TRX_STYLE_RED : null),
 		$hostGroups,
 		zbx_str2links($host['inventory']['name']),
 		zbx_str2links($host['inventory']['type']),

@@ -44,10 +44,10 @@ class CControllerTimeSelectorUpdate extends CController {
 			 * throw a JS alert() with current message in timeSelectorEventHandler() in gtlc.js.
 			 */
 
-			global $ZBX_MESSAGES;
+			global $TRX_MESSAGES;
 
 			$this->setResponse(new CControllerResponseData([
-				'main_block' => CJs::encodeJson(['error' => $ZBX_MESSAGES[0]['message']])
+				'main_block' => CJs::encodeJson(['error' => $TRX_MESSAGES[0]['message']])
 			]));
 
 			return $ret;
@@ -99,8 +99,8 @@ class CControllerTimeSelectorUpdate extends CController {
 				$ts['from'] -= $offset;
 				$ts['to'] -= $offset;
 
-				$value['from'] = $date->setTimestamp($ts['from'])->format(ZBX_FULL_DATE_TIME);
-				$value['to'] = $date->setTimestamp($ts['to'])->format(ZBX_FULL_DATE_TIME);
+				$value['from'] = $date->setTimestamp($ts['from'])->format(TRX_FULL_DATE_TIME);
+				$value['to'] = $date->setTimestamp($ts['to'])->format(TRX_FULL_DATE_TIME);
 				break;
 
 			case 'increment':
@@ -113,8 +113,8 @@ class CControllerTimeSelectorUpdate extends CController {
 				$ts['from'] += $offset;
 				$ts['to'] += $offset;
 
-				$value['from'] = $date->setTimestamp($ts['from'])->format(ZBX_FULL_DATE_TIME);
-				$value['to'] = $date->setTimestamp($ts['to'])->format(ZBX_FULL_DATE_TIME);
+				$value['from'] = $date->setTimestamp($ts['from'])->format(TRX_FULL_DATE_TIME);
+				$value['to'] = $date->setTimestamp($ts['to'])->format(TRX_FULL_DATE_TIME);
 				break;
 
 			case 'zoomout':
@@ -130,12 +130,12 @@ class CControllerTimeSelectorUpdate extends CController {
 				$ts['from'] -= $left_offset;
 				$ts['to'] += $right_offset;
 
-				if ($ts['to'] - $ts['from'] + 1 > ZBX_MAX_PERIOD) {
-					$ts['from'] = $ts['to'] - ZBX_MAX_PERIOD + 1;
+				if ($ts['to'] - $ts['from'] + 1 > TRX_MAX_PERIOD) {
+					$ts['from'] = $ts['to'] - TRX_MAX_PERIOD + 1;
 				}
 
-				$value['from'] = $date->setTimestamp($ts['from'])->format(ZBX_FULL_DATE_TIME);
-				$value['to'] = $date->setTimestamp($ts['to'])->format(ZBX_FULL_DATE_TIME);
+				$value['from'] = $date->setTimestamp($ts['from'])->format(TRX_FULL_DATE_TIME);
+				$value['to'] = $date->setTimestamp($ts['to'])->format(TRX_FULL_DATE_TIME);
 				break;
 
 			case 'rangeoffset':
@@ -144,20 +144,20 @@ class CControllerTimeSelectorUpdate extends CController {
 
 				if ($from_offset > 0) {
 					$ts['from'] += $from_offset;
-					$value['from'] = $date->setTimestamp($ts['from'])->format(ZBX_FULL_DATE_TIME);
+					$value['from'] = $date->setTimestamp($ts['from'])->format(TRX_FULL_DATE_TIME);
 				}
 
 				if ($to_offset > 0) {
 					$ts['to'] -= $to_offset;
-					$value['to'] = $date->setTimestamp($ts['to'])->format(ZBX_FULL_DATE_TIME);
+					$value['to'] = $date->setTimestamp($ts['to'])->format(TRX_FULL_DATE_TIME);
 				}
 				break;
 
 			case 'rangechange':
-				// Format only absolute date according ZBX_FULL_DATE_TIME string.
+				// Format only absolute date according TRX_FULL_DATE_TIME string.
 				foreach (['from', 'to'] as $field) {
-					if ($date_type[$field] === CRangeTimeParser::ZBX_TIME_ABSOLUTE) {
-						$value[$field] = $date->setTimestamp($ts[$field])->format(ZBX_FULL_DATE_TIME);
+					if ($date_type[$field] === CRangeTimeParser::TRX_TIME_ABSOLUTE) {
+						$value[$field] = $date->setTimestamp($ts[$field])->format(TRX_FULL_DATE_TIME);
 					}
 				}
 				break;
@@ -174,11 +174,11 @@ class CControllerTimeSelectorUpdate extends CController {
 			'label' => relativeDateToText($value['from'], $value['to']),
 			'from' => $value['from'],
 			'from_ts' => $ts['from'],
-			'from_date' => $date->setTimestamp($ts['from'])->format(ZBX_FULL_DATE_TIME),
+			'from_date' => $date->setTimestamp($ts['from'])->format(TRX_FULL_DATE_TIME),
 			'to' => $value['to'],
 			'to_ts' => $ts['to'],
-			'to_date' => $date->setTimestamp($ts['to'])->format(ZBX_FULL_DATE_TIME),
-			'can_zoomout' => ($ts['to'] - $ts['from'] + 1 < ZBX_MAX_PERIOD),
+			'to_date' => $date->setTimestamp($ts['to'])->format(TRX_FULL_DATE_TIME),
+			'can_zoomout' => ($ts['to'] - $ts['from'] + 1 < TRX_MAX_PERIOD),
 			'can_decrement' => ($ts['from'] > 0),
 			'can_increment' => ($ts['to'] < $ts['now'])
 		])]));
@@ -215,14 +215,14 @@ class CControllerTimeSelectorUpdate extends CController {
 
 		$period = $ts['to'] - $ts['from'] + 1;
 
-		if ($period < ZBX_MIN_PERIOD) {
+		if ($period < TRX_MIN_PERIOD) {
 			$this->data['error']['from'] = _n('Minimum time period to display is %1$s minute.',
-				'Minimum time period to display is %1$s minutes.', (int) ZBX_MIN_PERIOD / SEC_PER_MIN
+				'Minimum time period to display is %1$s minutes.', (int) TRX_MIN_PERIOD / SEC_PER_MIN
 			);
 		}
-		elseif ($period > ZBX_MAX_PERIOD) {
+		elseif ($period > TRX_MAX_PERIOD) {
 			$this->data['error']['from'] = _n('Maximum time period to display is %1$s day.',
-				'Maximum time period to display is %1$s days.', (int) ZBX_MAX_PERIOD / SEC_PER_DAY
+				'Maximum time period to display is %1$s days.', (int) TRX_MAX_PERIOD / SEC_PER_DAY
 			);
 		}
 

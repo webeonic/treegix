@@ -888,25 +888,25 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 
 						if ($options['html']) {
 							$style = ($function['status'] == ITEM_STATUS_ACTIVE)
-								? ($function['state'] == ITEM_STATE_NORMAL) ? ZBX_STYLE_GREEN : ZBX_STYLE_GREY
-								: $style = ZBX_STYLE_RED;
+								? ($function['state'] == ITEM_STATE_NORMAL) ? TRX_STYLE_GREEN : TRX_STYLE_GREY
+								: $style = TRX_STYLE_RED;
 
 							if ($function['type'] == ITEM_TYPE_HTTPTEST) {
 								$link = (new CSpan($function['host'].':'.$function['key_']))->addClass($style);
 							}
-							elseif ($function['flags'] == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+							elseif ($function['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 								$link = (new CLink($function['host'].':'.$function['key_'],
 									'disc_prototypes.php?form=update&itemid='.$function['itemid'].
 									'&parent_discoveryid='.$function['parent_itemid']
 								))
-									->addClass(ZBX_STYLE_LINK_ALT)
+									->addClass(TRX_STYLE_LINK_ALT)
 									->addClass($style);
 							}
 							else {
 								$link = (new CLink($function['host'].':'.$function['key_'],
 									'items.php?form=update&itemid='.$function['itemid']
 								))
-									->addClass(ZBX_STYLE_LINK_ALT)
+									->addClass(TRX_STYLE_LINK_ALT)
 									->setAttribute('data-itemid', $function['itemid'])
 									->addClass($style);
 							}
@@ -924,7 +924,7 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 						}
 					}
 					else {
-						$value = $options['html'] ? (new CSpan('*ERROR*'))->addClass(ZBX_STYLE_RED) : '*ERROR*';
+						$value = $options['html'] ? (new CSpan('*ERROR*'))->addClass(TRX_STYLE_RED) : '*ERROR*';
 					}
 				}
 				unset($value);
@@ -1116,10 +1116,10 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 			 * searches for macros, for example, "{somehost:somekey["param[123]"].min(10m)}"
 			 */
 			preg_match_all('/(?P<macros>{'.
-				'(?P<hosts>('.ZBX_PREG_HOST_FORMAT.'|({('.self::PATTERN_HOST_INTERNAL.')'.self::PATTERN_MACRO_PARAM.'}))):'.
-				'(?P<keys>'.ZBX_PREG_ITEM_KEY_FORMAT.')\.'.
+				'(?P<hosts>('.TRX_PREG_HOST_FORMAT.'|({('.self::PATTERN_HOST_INTERNAL.')'.self::PATTERN_MACRO_PARAM.'}))):'.
+				'(?P<keys>'.TRX_PREG_ITEM_KEY_FORMAT.')\.'.
 				'(?P<functions>(last|max|min|avg))\('.
-				'(?P<parameters>([0-9]+['.ZBX_TIME_SUFFIXES.']?)?)'.
+				'(?P<parameters>([0-9]+['.TRX_TIME_SUFFIXES.']?)?)'.
 				'\)}{1})/Uux', $sourceString, $matches, PREG_OFFSET_CAPTURE);
 
 			foreach ($matches['hosts'] as $i => &$host) {
@@ -1691,11 +1691,11 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 	 */
 	public function resolveMapLabelMacros($label, $replaceHosts = null) {
 		$pattern = '/(?P<macros>{'.
-				'('.ZBX_PREG_HOST_FORMAT.(($replaceHosts !== null)
+				'('.TRX_PREG_HOST_FORMAT.(($replaceHosts !== null)
 						? '|({('.self::PATTERN_HOST_INTERNAL.')'.self::PATTERN_MACRO_PARAM.'})' : '').'):'.
-				ZBX_PREG_ITEM_KEY_FORMAT.'\.'.
+				TRX_PREG_ITEM_KEY_FORMAT.'\.'.
 				'(last|max|min|avg)\('.
-				'([0-9]+['.ZBX_TIME_SUFFIXES.']?)?'.
+				'([0-9]+['.TRX_TIME_SUFFIXES.']?)?'.
 				'\)}{1})/Uux';
 
 		if (preg_match_all($pattern, $label, $matches) !== false && array_key_exists('macros', $matches)) {

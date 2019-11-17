@@ -142,7 +142,7 @@ class CSvgGraph extends CSvg {
 		$this->grid_color = '#' . $theme['gridcolor'];
 
 		$this
-			->addClass(ZBX_STYLE_SVG_GRAPH)
+			->addClass(TRX_STYLE_SVG_GRAPH)
 			->setTimePeriod($options['time_period']['time_from'], $options['time_period']['time_to'])
 			->setXAxis($options['x_axis'])
 			->setYAxisLeft($options['left_y_axis'])
@@ -410,7 +410,7 @@ class CSvgGraph extends CSvg {
 	 * @return CSvgGraph
 	 */
 	public function addHelper() {
-		$this->addItem((new CSvgLine(0, 0, 0, 0))->addClass(CSvgTag::ZBX_STYLE_GRAPH_HELPER));
+		$this->addItem((new CSvgLine(0, 0, 0, 0))->addClass(CSvgTag::TRX_STYLE_GRAPH_HELPER));
 
 		return $this;
 	}
@@ -455,7 +455,7 @@ class CSvgGraph extends CSvg {
 		$areaid = uniqid('metric_clip_');
 
 		// CSS styles.
-		$this->styles['.'.CSvgTag::ZBX_STYLE_GRAPH_AREA]['clip-path'] = 'url(#'.$areaid.')';
+		$this->styles['.'.CSvgTag::TRX_STYLE_GRAPH_AREA]['clip-path'] = 'url(#'.$areaid.')';
 		$this->styles['[data-metric]']['clip-path'] = 'url(#'.$areaid.')';
 
 		$this->addItem(
@@ -1002,7 +1002,7 @@ class CSvgGraph extends CSvg {
 	 */
 	protected function drawProblems() {
 		$today = strtotime('today');
-		$container = (new CSvgGroup())->addClass(CSvgTag::ZBX_STYLE_GRAPH_PROBLEMS);
+		$container = (new CSvgGroup())->addClass(CSvgTag::TRX_STYLE_GRAPH_PROBLEMS);
 
 		foreach ($this->problems as $problem) {
 			// If problem is never recovered, it will be drown till the end of graph or till current time.
@@ -1022,16 +1022,16 @@ class CSvgGraph extends CSvg {
 			// Make problem info.
 			if ($problem['r_clock'] != 0) {
 				$status_str = _('RESOLVED');
-				$status_color = ZBX_STYLE_OK_UNACK_FG;
+				$status_color = TRX_STYLE_OK_UNACK_FG;
 			}
 			else {
 				$status_str = _('PROBLEM');
-				$status_color = ZBX_STYLE_PROBLEM_UNACK_FG;
+				$status_color = TRX_STYLE_PROBLEM_UNACK_FG;
 
 				foreach ($problem['acknowledges'] as $acknowledge) {
-					if ($acknowledge['action'] & ZBX_PROBLEM_UPDATE_CLOSE) {
+					if ($acknowledge['action'] & TRX_PROBLEM_UPDATE_CLOSE) {
 						$status_str = _('CLOSING');
-						$status_color = ZBX_STYLE_OK_UNACK_FG;
+						$status_color = TRX_STYLE_OK_UNACK_FG;
 						break;
 					}
 				}

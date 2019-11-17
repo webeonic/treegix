@@ -154,7 +154,7 @@ class CWidgetFormProblems extends CWidgetForm {
 
 		// Show suppressed problems.
 		$field_show_suppressed = (new CWidgetFieldCheckBox('show_suppressed', _('Show suppressed problems')))
-			->setDefault(ZBX_PROBLEM_SUPPRESSED_FALSE);
+			->setDefault(TRX_PROBLEM_SUPPRESSED_FALSE);
 
 		if (array_key_exists('show_suppressed', $this->data)) {
 			$field_show_suppressed->setValue($this->data['show_suppressed']);
@@ -216,11 +216,11 @@ class CWidgetFormProblems extends CWidgetForm {
 		$this->fields[$field_show_timeline->getName()] = $field_show_timeline;
 
 		// Show lines.
-		$field_lines = (new CWidgetFieldIntegerBox('show_lines', _('Show lines'), ZBX_MIN_WIDGET_LINES,
-			ZBX_MAX_WIDGET_LINES
+		$field_lines = (new CWidgetFieldIntegerBox('show_lines', _('Show lines'), TRX_MIN_WIDGET_LINES,
+			TRX_MAX_WIDGET_LINES
 		))
 			->setFlags(CWidgetField::FLAG_LABEL_ASTERISK)
-			->setDefault(ZBX_DEFAULT_WIDGET_LINES);
+			->setDefault(TRX_DEFAULT_WIDGET_LINES);
 
 		if (array_key_exists('show_lines', $this->data)) {
 			$field_lines->setValue($this->data['show_lines']);

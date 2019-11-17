@@ -11,7 +11,7 @@ typedef PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX PSYS_LPI_EX;
 
 /* pointer to GetLogicalProcessorInformationEx(), it's not guaranteed to be available */
 typedef BOOL (WINAPI *GETLPIEX)(LOGICAL_PROCESSOR_RELATIONSHIP, PSYS_LPI_EX, PDWORD);
-ZBX_THREAD_LOCAL static GETLPIEX		get_lpiex;
+TRX_THREAD_LOCAL static GETLPIEX		get_lpiex;
 
 /******************************************************************************
  *                                                                            *
@@ -27,7 +27,7 @@ int	get_cpu_num_win32(void)
 	/* pointer to GetActiveProcessorCount() */
 	typedef DWORD (WINAPI *GETACTIVEPC)(WORD);
 
-	ZBX_THREAD_LOCAL static GETACTIVEPC	get_act;
+	TRX_THREAD_LOCAL static GETACTIVEPC	get_act;
 	SYSTEM_INFO				sysInfo;
 	PSYS_LPI_EX				buffer = NULL;
 	int					cpu_count = 0;
@@ -121,7 +121,7 @@ int	get_cpu_group_num_win32(void)
 {
 	/* pointer type for the GetActiveProcessorGroupCount() */
 	typedef WORD (WINAPI *GETACTIVEPGC)();
-	ZBX_THREAD_LOCAL static GETACTIVEPGC	get_act;
+	TRX_THREAD_LOCAL static GETACTIVEPGC	get_act;
 
 	/* Check if GetActiveProcessorGroupCount() is available. See comments in get_cpu_num_win32() for details. */
 
@@ -245,7 +245,7 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	if (NULL == (tmp = get_rparam(request, 0)) || '\0' == *tmp || 0 == strcmp(tmp, "all"))
-		cpu_num = ZBX_CPUNUM_ALL;
+		cpu_num = TRX_CPUNUM_ALL;
 	else if (SUCCEED != is_uint_range(tmp, &cpu_num, 0, collector->cpus.count - 1))
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));

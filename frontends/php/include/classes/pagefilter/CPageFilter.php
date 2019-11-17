@@ -208,10 +208,10 @@ class CPageFilter {
 		// dropdown
 		$this->config['DDRemember'] = $config['dropdown_first_remember'];
 		if (isset($options['config']['allow_all'])) {
-			$this->config['DDFirst'] = ZBX_DROPDOWN_FIRST_ALL;
+			$this->config['DDFirst'] = TRX_DROPDOWN_FIRST_ALL;
 		}
 		elseif (isset($options['config']['deny_all'])) {
-			$this->config['DDFirst'] = ZBX_DROPDOWN_FIRST_NONE;
+			$this->config['DDFirst'] = TRX_DROPDOWN_FIRST_NONE;
 		}
 		else {
 			$this->config['DDFirst'] = $config['dropdown_first_entry'];
@@ -416,7 +416,7 @@ class CPageFilter {
 				$groupId = 0;
 
 				// For 'Dropdown first entry' option NONE, select the first possible group when the host is given.
-				if ($this->config['DDFirst'] == ZBX_DROPDOWN_FIRST_NONE && $hostId) {
+				if ($this->config['DDFirst'] == TRX_DROPDOWN_FIRST_NONE && $hostId) {
 					$groupids = [];
 
 					$hosts = API::Host()->get([
@@ -454,7 +454,7 @@ class CPageFilter {
 		CProfile::update($this->_profileIdx['groups'], $groupId, PROFILE_TYPE_ID);
 		CProfile::update(self::GROUP_LATEST_IDX, $groupId, PROFILE_TYPE_ID);
 
-		$firstIsAllAndHaveGroups = (($this->config['DDFirst'] == ZBX_DROPDOWN_FIRST_ALL) && $this->data['groups']);
+		$firstIsAllAndHaveGroups = (($this->config['DDFirst'] == TRX_DROPDOWN_FIRST_ALL) && $this->data['groups']);
 
 		$this->isSelected['groupsSelected'] = ($firstIsAllAndHaveGroups || $groupId > 0);
 		$this->isSelected['groupsAll'] = ($firstIsAllAndHaveGroups && $groupId == 0);
@@ -534,8 +534,8 @@ class CPageFilter {
 			CProfile::update(self::HOST_LATEST_IDX, $hostId, PROFILE_TYPE_ID);
 		}
 
-		$this->isSelected['hostsSelected'] = (($this->config['DDFirst'] == ZBX_DROPDOWN_FIRST_ALL && !empty($this->data['hosts'])) || $hostId > 0);
-		$this->isSelected['hostsAll'] = ($this->config['DDFirst'] == ZBX_DROPDOWN_FIRST_ALL && !empty($this->data['hosts']) && $hostId == 0);
+		$this->isSelected['hostsSelected'] = (($this->config['DDFirst'] == TRX_DROPDOWN_FIRST_ALL && !empty($this->data['hosts'])) || $hostId > 0);
+		$this->isSelected['hostsAll'] = ($this->config['DDFirst'] == TRX_DROPDOWN_FIRST_ALL && !empty($this->data['hosts']) && $hostId == 0);
 		$this->ids['hostid'] = $hostId;
 	}
 
@@ -656,12 +656,12 @@ class CPageFilter {
 		$items = $classes = [];
 		foreach ($this->hosts as $id => $host) {
 			$items[$id] = $host['name'];
-			$classes[$id] = ($host['status'] == HOST_STATUS_NOT_MONITORED) ? ZBX_STYLE_RED : null;
+			$classes[$id] = ($host['status'] == HOST_STATUS_NOT_MONITORED) ? TRX_STYLE_RED : null;
 		}
 		$options += ['objectName' => 'hosts', 'classes' => $classes];
 
 		return $this->_getCB('hostid', $this->hostid, $items, $options)
-					->addStyle('max-width: '.ZBX_TEXTAREA_FILTER_STANDARD_WIDTH.'px;');
+					->addStyle('max-width: '.TRX_TEXTAREA_FILTER_STANDARD_WIDTH.'px;');
 	}
 
 	/**
@@ -683,7 +683,7 @@ class CPageFilter {
 		];
 
 		return $this->_getCB('groupid', $this->groupid, $items, $options)
-					->addStyle('max-width: '.ZBX_TEXTAREA_FILTER_STANDARD_WIDTH.'px;');
+					->addStyle('max-width: '.TRX_TEXTAREA_FILTER_STANDARD_WIDTH.'px;');
 	}
 
 	/**
@@ -747,7 +747,7 @@ class CPageFilter {
 				$firstLabel = $this->config['DDFirstLabels'][$options['objectName']];
 			}
 			else {
-				$firstLabel = ($this->config['DDFirst'] == ZBX_DROPDOWN_FIRST_NONE) ? _('not selected') : _('all');
+				$firstLabel = ($this->config['DDFirst'] == TRX_DROPDOWN_FIRST_NONE) ? _('not selected') : _('all');
 			}
 
 			$items = [$firstLabel] + $items;

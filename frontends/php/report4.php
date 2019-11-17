@@ -11,9 +11,9 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'year' =>		[T_ZBX_INT, O_OPT, P_SYS|P_NZERO,	null,	null],
-	'period' =>		[T_ZBX_STR, O_OPT, P_SYS|P_NZERO,	IN('"daily","weekly","monthly","yearly"'), null],
-	'media_type' =>	[T_ZBX_INT, O_OPT, P_SYS,			DB_ID,	null]
+	'year' =>		[T_TRX_INT, O_OPT, P_SYS|P_NZERO,	null,	null],
+	'period' =>		[T_TRX_STR, O_OPT, P_SYS|P_NZERO,	IN('"daily","weekly","monthly","yearly"'), null],
+	'media_type' =>	[T_TRX_INT, O_OPT, P_SYS,			DB_ID,	null]
 ];
 check_fields($fields);
 
@@ -84,12 +84,12 @@ else {
 	$controls
 		->addItem([
 			new CLabel(_('Media type'), 'media_type'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$cmbMedia
 		])
 		->addItem([
 			new CLabel(_('Period'), 'period'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			new CComboBox('period', $period, 'submit()', [
 				'daily' => _('Daily'),
 				'weekly' => _('Weekly'),
@@ -105,7 +105,7 @@ else {
 		}
 		$controls->addItem([
 			new CLabel(_('Year'), 'year'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$cmbYear
 		]);
 	}

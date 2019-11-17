@@ -57,8 +57,8 @@ struct zbx_db_result
 };
 
 static int	txn_level = 0;	/* transaction level, nested transactions are not supported */
-static int	txn_error = ZBX_DB_OK;	/* failed transaction */
-static int	txn_end_error = ZBX_DB_OK;	/* transaction result */
+static int	txn_error = TRX_DB_OK;	/* failed transaction */
+static int	txn_end_error = TRX_DB_OK;	/* transaction result */
 
 static char	*last_db_strerror = NULL;	/* last database error message */
 
@@ -100,12 +100,12 @@ static ub4	OCI_DBserver_status(void);
 
 #elif defined(HAVE_POSTGRESQL)
 static PGconn			*conn = NULL;
-static unsigned int		ZBX_PG_BYTEAOID = 0;
-static int			ZBX_PG_SVERSION = 0;
-char				ZBX_PG_ESCAPE_BACKSLASH = 1;
+static unsigned int		TRX_PG_BYTEAOID = 0;
+static int			TRX_PG_SVERSION = 0;
+char				TRX_PG_ESCAPE_BACKSLASH = 1;
 #elif defined(HAVE_SQLITE3)
 static sqlite3			*conn = NULL;
-static zbx_mutex_t		sqlite_access = ZBX_MUTEX_NULL;
+static zbx_mutex_t		sqlite_access = TRX_MUTEX_NULL;
 #endif
 
 #if defined(HAVE_ORACLE)
@@ -208,7 +208,7 @@ static const char	*zbx_oci_error(sword status, sb4 *err)
 			break;
 	}
 
-	zbx_rtrim(errbuf, ZBX_WHITESPACE);
+	zbx_rtrim(errbuf, TRX_WHITESPACE);
 
 	return errbuf;
 }
@@ -224,8 +224,8 @@ static const char	*zbx_oci_error(sword status, sb4 *err)
  *             oci_error  - [IN] the return code from failed Oracle operation *
  *             sql        - [IN] the failed sql statement (can be NULL)       *
  *                                                                            *
- * Return value: ZBX_DB_DOWN - database connection is down                    *
- *               ZBX_DB_FAIL - otherwise                                      *
+ * Return value: TRX_DB_DOWN - database connection is down                    *
+ *               TRX_DB_FAIL - otherwise                                      *
  *                                                                            *
  * Comments: This function logs the error description and checks the          *
  *           database connection status.                                      *
@@ -234,7 +234,7 @@ static const char	*zbx_oci_error(sword status, sb4 *err)
 static int	OCI_handle_sql_error(int zerrcode, sword oci_error, const char *sql)
 {
 	sb4	errcode;
-	int	ret = ZBX_DB_DOWN;
+	int	ret = TRX_DB_DOWN;
 
 	zbx_db_errlog(zerrcode, oci_error, zbx_oci_error(oci_error, &errcode), sql);
 
@@ -247,7 +247,7 @@ static int	OCI_handle_sql_error(int zerrcode, sword oci_error, const char *sql)
 	}
 
 	if (OCI_SERVER_NORMAL == OCI_DBserver_status())
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 out:
 	return ret;
 }
@@ -341,14 +341,14 @@ static int	is_recoverable_postgresql_error(const PGconn *pg_conn, const PGresult
  *                                                                            *
  * Purpose: connect to the database                                           *
  *                                                                            *
- * Return value: ZBX_DB_OK - successfully connected                           *
- *               ZBX_DB_DOWN - database is down                               *
- *               ZBX_DB_FAIL - failed to connect                              *
+ * Return value: TRX_DB_OK - successfully connected                           *
+ *               TRX_DB_DOWN - database is down                               *
+ *               TRX_DB_FAIL - failed to connect                              *
  *                                                                            *
  ******************************************************************************/
 int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *dbschema, char *dbsocket, int port)
 {
-	int		ret = ZBX_DB_OK, last_txn_error, last_txn_level;
+	int		ret = TRX_DB_OK, last_txn_error, last_txn_level;
 #if defined(HAVE_IBM_DB2)
 	char		*connect = NULL;
 #elif defined(HAVE_MYSQL)
@@ -371,16 +371,16 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 #endif
 
 #ifndef HAVE_MYSQL
-	ZBX_UNUSED(dbsocket);
+	TRX_UNUSED(dbsocket);
 #endif
 	/* Allow executing statements during a connection initialization. Make sure to mark transaction as failed. */
 	if (0 != txn_level)
-		txn_error = ZBX_DB_DOWN;
+		txn_error = TRX_DB_DOWN;
 
 	last_txn_error = txn_error;
 	last_txn_level = txn_level;
 
-	txn_error = ZBX_DB_OK;
+	txn_error = TRX_DB_OK;
 	txn_level = 0;
 
 #if defined(HAVE_IBM_DB2)
@@ -400,72 +400,72 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 
 	/* allocate an environment handle */
 	if (SUCCEED != zbx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &ibm_db2.henv)))
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 
 	/* set attribute to enable application to run as ODBC 3.0 application; */
 	/* recommended for pure IBM DB2 CLI, but not required */
-	if (ZBX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetEnvAttr(ibm_db2.henv, SQL_ATTR_ODBC_VERSION,
+	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetEnvAttr(ibm_db2.henv, SQL_ATTR_ODBC_VERSION,
 			(void *)SQL_OV_ODBC3, 0)))
 	{
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 	}
 
 	/* allocate a database connection handle */
-	if (ZBX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_DBC, ibm_db2.henv,
+	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_DBC, ibm_db2.henv,
 			&ibm_db2.hdbc)))
 	{
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 	}
 
 	/* set codepage to utf-8 */
-	if (ZBX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_CLIENT_CODEPAGE,
+	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_CLIENT_CODEPAGE,
 			(SQLPOINTER)(SQLUINTEGER)1208, SQL_IS_UINTEGER)))
 	{
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 	}
 
 	/* connect to the database */
-	if (ZBX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLDriverConnect(ibm_db2.hdbc, NULL, (SQLCHAR *)connect,
+	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLDriverConnect(ibm_db2.hdbc, NULL, (SQLCHAR *)connect,
 			SQL_NTS, NULL, 0, NULL, SQL_DRIVER_NOPROMPT)))
 	{
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 	}
 
 	/* set autocommit on */
-	if (ZBX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
+	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
 			(SQLPOINTER)SQL_AUTOCOMMIT_ON, SQL_NTS)))
 	{
-		ret = ZBX_DB_DOWN;
+		ret = TRX_DB_DOWN;
 	}
 
 	/* we do not generate vendor escape clause sequences */
-	if (ZBX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_NOSCAN,
+	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_NOSCAN,
 			(SQLPOINTER)SQL_NOSCAN_ON, SQL_NTS)))
 	{
-		ret = ZBX_DB_DOWN;
+		ret = TRX_DB_DOWN;
 	}
 
 	/* set current schema */
-	if (NULL != dbschema && '\0' != *dbschema && ZBX_DB_OK == ret)
+	if (NULL != dbschema && '\0' != *dbschema && TRX_DB_OK == ret)
 	{
 		char	*dbschema_esc;
 
-		dbschema_esc = zbx_db_dyn_escape_string(dbschema, ZBX_SIZE_T_MAX, ZBX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
+		dbschema_esc = zbx_db_dyn_escape_string(dbschema, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
 		if (0 < (ret = zbx_db_execute("set current schema='%s'", dbschema_esc)))
-			ret = ZBX_DB_OK;
+			ret = TRX_DB_OK;
 		zbx_free(dbschema_esc);
 	}
 
 	zbx_free(connect);
 
 	/* output error information */
-	if (ZBX_DB_OK != ret)
+	if (TRX_DB_OK != ret)
 	{
 		zbx_ibm_db2_log_errors(SQL_HANDLE_ENV, ibm_db2.henv, ERR_Z3001, dbname);
 		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3001, dbname);
 	}
 #elif defined(HAVE_MYSQL)
-	ZBX_UNUSED(dbschema);
+	TRX_UNUSED(dbschema);
 
 	if (NULL == (conn = mysql_init(NULL)))
 	{
@@ -476,7 +476,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	if (NULL == mysql_real_connect(conn, host, user, password, dbname, port, dbsocket, CLIENT_MULTI_STATEMENTS))
 	{
 		zbx_db_errlog(ERR_Z3001, mysql_errno(conn), mysql_error(conn), dbname);
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 	}
 
 	/* The RECONNECT option setting is placed here, AFTER the connection	*/
@@ -485,30 +485,30 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	/* set to prior to the connection. MySQL allows changing connection	*/
 	/* options on an open connection, so setting it here is safe.		*/
 
-	if (ZBX_DB_OK == ret && 0 != mysql_options(conn, MYSQL_OPT_RECONNECT, &mysql_reconnect))
+	if (TRX_DB_OK == ret && 0 != mysql_options(conn, MYSQL_OPT_RECONNECT, &mysql_reconnect))
 		treegix_log(LOG_LEVEL_WARNING, "Cannot set MySQL reconnect option.");
 
 	/* in contrast to "set names utf8" results of this call will survive auto-reconnects */
-	if (ZBX_DB_OK == ret && 0 != mysql_set_character_set(conn, "utf8"))
+	if (TRX_DB_OK == ret && 0 != mysql_set_character_set(conn, "utf8"))
 		treegix_log(LOG_LEVEL_WARNING, "cannot set MySQL character set to \"utf8\"");
 
-	if (ZBX_DB_OK == ret && 0 != mysql_autocommit(conn, 1))
+	if (TRX_DB_OK == ret && 0 != mysql_autocommit(conn, 1))
 	{
 		zbx_db_errlog(ERR_Z3001, mysql_errno(conn), mysql_error(conn), dbname);
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 	}
 
-	if (ZBX_DB_OK == ret && 0 != mysql_select_db(conn, dbname))
+	if (TRX_DB_OK == ret && 0 != mysql_select_db(conn, dbname))
 	{
 		zbx_db_errlog(ERR_Z3001, mysql_errno(conn), mysql_error(conn), dbname);
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 	}
 
-	if (ZBX_DB_FAIL == ret && SUCCEED == is_recoverable_mysql_error())
-		ret = ZBX_DB_DOWN;
+	if (TRX_DB_FAIL == ret && SUCCEED == is_recoverable_mysql_error())
+		ret = TRX_DB_DOWN;
 
 #elif defined(HAVE_ORACLE)
-	ZBX_UNUSED(dbschema);
+	TRX_UNUSED(dbschema);
 
 	memset(&oracle, 0, sizeof(oracle));
 
@@ -525,9 +525,9 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 			connect = zbx_strdcatf(connect, "/%s", dbname);
 	}
 	else
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 
-	while (ZBX_DB_OK == ret)
+	while (TRX_DB_OK == ret)
 	{
 		/* initialize environment */
 		if (OCI_SUCCESS == (err = OCIEnvNlsCreate((OCIEnv **)&oracle.envhp, (ub4)OCI_DEFAULT, (dvoid *)0,
@@ -552,11 +552,11 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 		else
 		{
 			zbx_db_errlog(ERR_Z3001, err, zbx_oci_error(err, NULL), connect);
-			ret = ZBX_DB_FAIL;
+			ret = TRX_DB_FAIL;
 		}
 	}
 
-	if (ZBX_DB_OK == ret)
+	if (TRX_DB_OK == ret)
 	{
 		/* allocate an error handle */
 		(void)OCIHandleAlloc((dvoid *)oracle.envhp, (dvoid **)&oracle.errhp, OCI_HTYPE_ERROR,
@@ -582,11 +582,11 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 		if (OCI_SUCCESS != err)
 		{
 			zbx_db_errlog(ERR_Z3001, err, zbx_oci_error(err, NULL), connect);
-			ret = ZBX_DB_DOWN;
+			ret = TRX_DB_DOWN;
 		}
 	}
 
-	if (ZBX_DB_OK == ret)
+	if (TRX_DB_OK == ret)
 	{
 		/* initialize statement handle */
 		err = OCIHandleAlloc((dvoid *)oracle.envhp, (dvoid **)&oracle.stmthp, OCI_HTYPE_STMT,
@@ -595,14 +595,14 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 		if (OCI_SUCCESS != err)
 		{
 			zbx_db_errlog(ERR_Z3001, err, zbx_oci_error(err, NULL), connect);
-			ret = ZBX_DB_DOWN;
+			ret = TRX_DB_DOWN;
 		}
 	}
 
-	if (ZBX_DB_OK == ret)
+	if (TRX_DB_OK == ret)
 	{
 		if (0 < (ret = zbx_db_execute("alter session set nls_numeric_characters='. '")))
-			ret = ZBX_DB_OK;
+			ret = TRX_DB_OK;
 	}
 
 	zbx_free(connect);
@@ -618,7 +618,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	if (CONNECTION_OK != PQstatus(conn))
 	{
 		zbx_db_errlog(ERR_Z3001, 0, PQerrorMessage(conn), dbname);
-		ret = ZBX_DB_DOWN;
+		ret = TRX_DB_DOWN;
 		goto out;
 	}
 
@@ -626,62 +626,62 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	{
 		char	*dbschema_esc;
 
-		dbschema_esc = zbx_db_dyn_escape_string(dbschema, ZBX_SIZE_T_MAX, ZBX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
-		if (ZBX_DB_DOWN == (rc = zbx_db_execute("set schema '%s'", dbschema_esc)) || ZBX_DB_FAIL == rc)
+		dbschema_esc = zbx_db_dyn_escape_string(dbschema, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
+		if (TRX_DB_DOWN == (rc = zbx_db_execute("set schema '%s'", dbschema_esc)) || TRX_DB_FAIL == rc)
 			ret = rc;
 		zbx_free(dbschema_esc);
 	}
 
-	if (ZBX_DB_FAIL == ret || ZBX_DB_DOWN == ret)
+	if (TRX_DB_FAIL == ret || TRX_DB_DOWN == ret)
 		goto out;
 
 	result = zbx_db_select("select oid from pg_type where typname='bytea'");
 
-	if ((DB_RESULT)ZBX_DB_DOWN == result || NULL == result)
+	if ((DB_RESULT)TRX_DB_DOWN == result || NULL == result)
 	{
-		ret = (NULL == result) ? ZBX_DB_FAIL : ZBX_DB_DOWN;
+		ret = (NULL == result) ? TRX_DB_FAIL : TRX_DB_DOWN;
 		goto out;
 	}
 
 	if (NULL != (row = zbx_db_fetch(result)))
-		ZBX_PG_BYTEAOID = atoi(row[0]);
+		TRX_PG_BYTEAOID = atoi(row[0]);
 	DBfree_result(result);
 
-	ZBX_PG_SVERSION = PQserverVersion(conn);
-	treegix_log(LOG_LEVEL_DEBUG, "PostgreSQL Server version: %d", ZBX_PG_SVERSION);
+	TRX_PG_SVERSION = PQserverVersion(conn);
+	treegix_log(LOG_LEVEL_DEBUG, "PostgreSQL Server version: %d", TRX_PG_SVERSION);
 
 	/* disable "nonstandard use of \' in a string literal" warning */
 	if (0 < (ret = zbx_db_execute("set escape_string_warning to off")))
-		ret = ZBX_DB_OK;
+		ret = TRX_DB_OK;
 
-	if (ZBX_DB_OK != ret)
+	if (TRX_DB_OK != ret)
 		goto out;
 
 	result = zbx_db_select("show standard_conforming_strings");
 
-	if ((DB_RESULT)ZBX_DB_DOWN == result || NULL == result)
+	if ((DB_RESULT)TRX_DB_DOWN == result || NULL == result)
 	{
-		ret = (NULL == result) ? ZBX_DB_FAIL : ZBX_DB_DOWN;
+		ret = (NULL == result) ? TRX_DB_FAIL : TRX_DB_DOWN;
 		goto out;
 	}
 
 	if (NULL != (row = zbx_db_fetch(result)))
-		ZBX_PG_ESCAPE_BACKSLASH = (0 == strcmp(row[0], "off"));
+		TRX_PG_ESCAPE_BACKSLASH = (0 == strcmp(row[0], "off"));
 	DBfree_result(result);
 
-	if (90000 <= ZBX_PG_SVERSION)
+	if (90000 <= TRX_PG_SVERSION)
 	{
 		/* change the output format for values of type bytea from hex (the default) to escape */
 		if (0 < (ret = zbx_db_execute("set bytea_output=escape")))
-			ret = ZBX_DB_OK;
+			ret = TRX_DB_OK;
 	}
 out:
 #elif defined(HAVE_SQLITE3)
-	ZBX_UNUSED(host);
-	ZBX_UNUSED(user);
-	ZBX_UNUSED(password);
-	ZBX_UNUSED(dbschema);
-	ZBX_UNUSED(port);
+	TRX_UNUSED(host);
+	TRX_UNUSED(user);
+	TRX_UNUSED(password);
+	TRX_UNUSED(dbschema);
+	TRX_UNUSED(port);
 #ifdef HAVE_FUNCTION_SQLITE3_OPEN_V2
 	if (SQLITE_OK != sqlite3_open_v2(dbname, &conn, SQLITE_OPEN_READWRITE, NULL))
 #else
@@ -689,7 +689,7 @@ out:
 #endif
 	{
 		zbx_db_errlog(ERR_Z3001, 0, sqlite3_errmsg(conn), dbname);
-		ret = ZBX_DB_DOWN;
+		ret = TRX_DB_DOWN;
 		goto out;
 	}
 
@@ -697,15 +697,15 @@ out:
 	sqlite3_busy_timeout(conn, SEC_PER_MIN * 1000);
 
 	if (0 < (ret = zbx_db_execute("pragma synchronous=0")))
-		ret = ZBX_DB_OK;
+		ret = TRX_DB_OK;
 
-	if (ZBX_DB_OK != ret)
+	if (TRX_DB_OK != ret)
 		goto out;
 
 	if (0 < (ret = zbx_db_execute("pragma temp_store=2")))
-		ret = ZBX_DB_OK;
+		ret = TRX_DB_OK;
 
-	if (ZBX_DB_OK != ret)
+	if (TRX_DB_OK != ret)
 		goto out;
 
 	path = zbx_strdup(NULL, dbname);
@@ -716,12 +716,12 @@ out:
 		*path = '\0';
 
 	if (0 < (ret = zbx_db_execute("pragma temp_store_directory='%s'", path)))
-		ret = ZBX_DB_OK;
+		ret = TRX_DB_OK;
 
 	zbx_free(path);
 out:
 #endif	/* HAVE_SQLITE3 */
-	if (ZBX_DB_OK != ret)
+	if (TRX_DB_OK != ret)
 		zbx_db_close();
 
 	txn_error = last_txn_error;
@@ -747,7 +747,7 @@ int	zbx_db_init(const char *dbname, const char *const dbschema, char **error)
 			return FAIL;
 		}
 
-		if (SUCCEED != zbx_mutex_create(&sqlite_access, ZBX_MUTEX_SQLITE3, error))
+		if (SUCCEED != zbx_mutex_create(&sqlite_access, TRX_MUTEX_SQLITE3, error))
 			return FAIL;
 
 		zbx_db_execute("%s", dbschema);
@@ -755,11 +755,11 @@ int	zbx_db_init(const char *dbname, const char *const dbschema, char **error)
 		return SUCCEED;
 	}
 
-	return zbx_mutex_create(&sqlite_access, ZBX_MUTEX_SQLITE3, error);
+	return zbx_mutex_create(&sqlite_access, TRX_MUTEX_SQLITE3, error);
 #else	/* not HAVE_SQLITE3 */
-	ZBX_UNUSED(dbname);
-	ZBX_UNUSED(dbschema);
-	ZBX_UNUSED(error);
+	TRX_UNUSED(dbname);
+	TRX_UNUSED(dbschema);
+	TRX_UNUSED(error);
 
 	return SUCCEED;
 #endif	/* HAVE_SQLITE3 */
@@ -864,7 +864,7 @@ void	zbx_db_close(void)
  ******************************************************************************/
 int	zbx_db_begin(void)
 {
-	int	rc = ZBX_DB_OK;
+	int	rc = TRX_DB_OK;
 
 	if (txn_level > 0)
 	{
@@ -878,20 +878,20 @@ int	zbx_db_begin(void)
 	if (SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
 			(SQLPOINTER)SQL_AUTOCOMMIT_OFF, SQL_NTS)))
 	{
-		rc = ZBX_DB_DOWN;
+		rc = TRX_DB_DOWN;
 	}
 
-	if (ZBX_DB_OK == rc)
+	if (TRX_DB_OK == rc)
 	{
 		/* create savepoint for correct rollback on DB2 */
 		if (0 <= (rc = zbx_db_execute("savepoint zbx_begin_savepoint unique on rollback retain cursors;")))
-			rc = ZBX_DB_OK;
+			rc = TRX_DB_OK;
 	}
 
-	if (ZBX_DB_OK != rc)
+	if (TRX_DB_OK != rc)
 	{
 		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, "<begin>");
-		rc = (SQL_CD_TRUE == IBM_DB2server_status() ? ZBX_DB_FAIL : ZBX_DB_DOWN);
+		rc = (SQL_CD_TRUE == IBM_DB2server_status() ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
 
 #elif defined(HAVE_MYSQL) || defined(HAVE_POSTGRESQL)
@@ -901,7 +901,7 @@ int	zbx_db_begin(void)
 	rc = zbx_db_execute("begin;");
 #endif
 
-	if (ZBX_DB_DOWN == rc)
+	if (TRX_DB_DOWN == rc)
 		txn_level--;
 
 	return rc;
@@ -918,7 +918,7 @@ int	zbx_db_begin(void)
  ******************************************************************************/
 int	zbx_db_commit(void)
 {
-	int	rc = ZBX_DB_OK;
+	int	rc = TRX_DB_OK;
 #ifdef HAVE_ORACLE
 	sword	err;
 #endif
@@ -930,21 +930,21 @@ int	zbx_db_commit(void)
 		assert(0);
 	}
 
-	if (ZBX_DB_OK != txn_error)
-		return ZBX_DB_FAIL; /* commit called on failed transaction */
+	if (TRX_DB_OK != txn_error)
+		return TRX_DB_FAIL; /* commit called on failed transaction */
 
 #if defined(HAVE_IBM_DB2)
 	if (SUCCEED != zbx_ibm_db2_success(SQLEndTran(SQL_HANDLE_DBC, ibm_db2.hdbc, SQL_COMMIT)))
-		rc = ZBX_DB_DOWN;
+		rc = TRX_DB_DOWN;
 	if (SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
 			(SQLPOINTER)SQL_AUTOCOMMIT_ON, SQL_NTS)))
 	{
-		rc = ZBX_DB_DOWN;
+		rc = TRX_DB_DOWN;
 	}
-	if (ZBX_DB_OK != rc)
+	if (TRX_DB_OK != rc)
 	{
 		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, "<commit>");
-		rc = (SQL_CD_TRUE == IBM_DB2server_status() ? ZBX_DB_FAIL : ZBX_DB_DOWN);
+		rc = (SQL_CD_TRUE == IBM_DB2server_status() ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
 #elif defined(HAVE_ORACLE)
 	if (OCI_SUCCESS != (err = OCITransCommit(oracle.svchp, oracle.errhp, OCI_DEFAULT)))
@@ -953,7 +953,7 @@ int	zbx_db_commit(void)
 	rc = zbx_db_execute("commit;");
 #endif
 
-	if (ZBX_DB_OK > rc) { /* commit failed */
+	if (TRX_DB_OK > rc) { /* commit failed */
 		txn_error = rc;
 		return rc;
 	}
@@ -963,7 +963,7 @@ int	zbx_db_commit(void)
 #endif
 
 	txn_level--;
-	txn_end_error = ZBX_DB_OK;
+	txn_end_error = TRX_DB_OK;
 
 	return rc;
 }
@@ -979,7 +979,7 @@ int	zbx_db_commit(void)
  ******************************************************************************/
 int	zbx_db_rollback(void)
 {
-	int	rc = ZBX_DB_OK, last_txn_error;
+	int	rc = TRX_DB_OK, last_txn_error;
 #ifdef HAVE_ORACLE
 	sword	err;
 #endif
@@ -994,24 +994,24 @@ int	zbx_db_rollback(void)
 	last_txn_error = txn_error;
 
 	/* allow rollback of failed transaction */
-	txn_error = ZBX_DB_OK;
+	txn_error = TRX_DB_OK;
 
 #if defined(HAVE_IBM_DB2)
 
 	/* Rollback to begin that is marked with savepoint. This move undo all transactions. */
 	if (0 <= (rc = zbx_db_execute("rollback to savepoint zbx_begin_savepoint;")))
-		rc = ZBX_DB_OK;
+		rc = TRX_DB_OK;
 
 	if (SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
 			(SQLPOINTER)SQL_AUTOCOMMIT_ON, SQL_NTS)))
 	{
-		rc = ZBX_DB_DOWN;
+		rc = TRX_DB_DOWN;
 	}
 
-	if (ZBX_DB_OK != rc)
+	if (TRX_DB_OK != rc)
 	{
 		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, "<rollback>");
-		rc = (SQL_CD_TRUE == IBM_DB2server_status() ? ZBX_DB_FAIL : ZBX_DB_DOWN);
+		rc = (SQL_CD_TRUE == IBM_DB2server_status() ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
 #elif defined(HAVE_MYSQL) || defined(HAVE_POSTGRESQL)
 	rc = zbx_db_execute("rollback;");
@@ -1025,10 +1025,10 @@ int	zbx_db_rollback(void)
 
 	/* There is no way to recover from rollback errors, so there is no need to preserve transaction level / error. */
 	txn_level = 0;
-	txn_error = ZBX_DB_OK;
+	txn_error = TRX_DB_OK;
 
-	if (ZBX_DB_FAIL == rc)
-		txn_end_error = ZBX_DB_FAIL;
+	if (TRX_DB_FAIL == rc)
+		txn_end_error = TRX_DB_FAIL;
 	else
 		txn_end_error = last_txn_error;	/* error that caused rollback */
 
@@ -1077,15 +1077,15 @@ static sword	zbx_oracle_statement_execute(ub4 iters, ub4 *nrows)
 int	zbx_db_statement_prepare(const char *sql)
 {
 	sword	err;
-	int	ret = ZBX_DB_OK;
+	int	ret = TRX_DB_OK;
 
 	if (0 == txn_level)
 		treegix_log(LOG_LEVEL_DEBUG, "query without transaction detected");
 
-	if (ZBX_DB_OK != txn_error)
+	if (TRX_DB_OK != txn_error)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] within failed transaction", txn_level);
-		return ZBX_DB_FAIL;
+		return TRX_DB_FAIL;
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "query [txnlev:%d] [%s]", txn_level, sql);
@@ -1093,10 +1093,10 @@ int	zbx_db_statement_prepare(const char *sql)
 	if (OCI_SUCCESS != (err = zbx_oracle_statement_prepare(sql)))
 		ret = OCI_handle_sql_error(ERR_Z3005, err, sql);
 
-	if (ZBX_DB_FAIL == ret && 0 < txn_level)
+	if (TRX_DB_FAIL == ret && 0 < txn_level)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "query [%s] failed, setting transaction as failed", sql);
-		txn_error = ZBX_DB_FAIL;
+		txn_error = TRX_DB_FAIL;
 	}
 
 	return ret;
@@ -1114,12 +1114,12 @@ static sb4 db_bind_dynamic_cb(dvoid *ctxp, OCIBind *bindp, ub4 iter, ub4 index, 
 {
 	zbx_db_bind_context_t	*context = (zbx_db_bind_context_t *)ctxp;
 
-	ZBX_UNUSED(bindp);
-	ZBX_UNUSED(index);
+	TRX_UNUSED(bindp);
+	TRX_UNUSED(index);
 
 	switch (context->type)
 	{
-		case ZBX_TYPE_ID: /* handle 0 -> NULL conversion */
+		case TRX_TYPE_ID: /* handle 0 -> NULL conversion */
 			if (0 == context->rows[iter][context->position].ui64)
 			{
 				*bufpp = NULL;
@@ -1127,22 +1127,22 @@ static sb4 db_bind_dynamic_cb(dvoid *ctxp, OCIBind *bindp, ub4 iter, ub4 index, 
 				break;
 			}
 			/* break; is not missing here */
-		case ZBX_TYPE_UINT:
+		case TRX_TYPE_UINT:
 			*bufpp = &((OCINumber *)context->data)[iter];
 			*alenp = sizeof(OCINumber);
 			break;
-		case ZBX_TYPE_INT:
+		case TRX_TYPE_INT:
 			*bufpp = &context->rows[iter][context->position].i32;
 			*alenp = sizeof(int);
 			break;
-		case ZBX_TYPE_FLOAT:
+		case TRX_TYPE_FLOAT:
 			*bufpp = &context->rows[iter][context->position].dbl;
 			*alenp = sizeof(double);
 			break;
-		case ZBX_TYPE_CHAR:
-		case ZBX_TYPE_TEXT:
-		case ZBX_TYPE_SHORTTEXT:
-		case ZBX_TYPE_LONGTEXT:
+		case TRX_TYPE_CHAR:
+		case TRX_TYPE_TEXT:
+		case TRX_TYPE_SHORTTEXT:
+		case TRX_TYPE_LONGTEXT:
 			*bufpp = context->rows[iter][context->position].str;
 			*alenp = ((size_t *)context->data)[iter];
 			break;
@@ -1164,7 +1164,7 @@ static sb4 db_bind_dynamic_cb(dvoid *ctxp, OCIBind *bindp, ub4 iter, ub4 index, 
  *                                                                            *
  * Parameters: context  - [OUT] the bind context                              *
  *             position - [IN] the parameter position                         *
- *             type     - [IN] the parameter type (ZBX_TYPE_* )               *
+ *             type     - [IN] the parameter type (TRX_TYPE_* )               *
  *             rows     - [IN] the data to bind - array of rows,              *
  *                             each row being an array of columns             *
  *             rows_num - [IN] the number of rows in the data                 *
@@ -1173,7 +1173,7 @@ static sb4 db_bind_dynamic_cb(dvoid *ctxp, OCIBind *bindp, ub4 iter, ub4 index, 
 int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsigned char type,
 		zbx_db_value_t **rows, int rows_num)
 {
-	int		i, ret = ZBX_DB_OK;
+	int		i, ret = TRX_DB_OK;
 	size_t		*sizes;
 	sword		err;
 	OCINumber	*values;
@@ -1187,8 +1187,8 @@ int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsi
 
 	switch (type)
 	{
-		case ZBX_TYPE_ID:
-		case ZBX_TYPE_UINT:
+		case TRX_TYPE_ID:
+		case TRX_TYPE_UINT:
 			values = (OCINumber *)zbx_malloc(NULL, sizeof(OCINumber) * rows_num);
 
 			for (i = 0; i < rows_num; i++)
@@ -1207,18 +1207,18 @@ int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsi
 			context->size_max = sizeof(OCINumber);
 			data_type = SQLT_VNU;
 			break;
-		case ZBX_TYPE_INT:
+		case TRX_TYPE_INT:
 			context->size_max = sizeof(int);
 			data_type = SQLT_INT;
 			break;
-		case ZBX_TYPE_FLOAT:
+		case TRX_TYPE_FLOAT:
 			context->size_max = sizeof(double);
 			data_type = SQLT_FLT;
 			break;
-		case ZBX_TYPE_CHAR:
-		case ZBX_TYPE_TEXT:
-		case ZBX_TYPE_SHORTTEXT:
-		case ZBX_TYPE_LONGTEXT:
+		case TRX_TYPE_CHAR:
+		case TRX_TYPE_TEXT:
+		case TRX_TYPE_SHORTTEXT:
+		case TRX_TYPE_LONGTEXT:
 			sizes = (size_t *)zbx_malloc(NULL, sizeof(size_t) * rows_num);
 			context->size_max = 0;
 
@@ -1245,10 +1245,10 @@ int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsi
 	{
 		ret = OCI_handle_sql_error(ERR_Z3007, err, NULL);
 
-		if (ZBX_DB_FAIL == ret && 0 < txn_level)
+		if (TRX_DB_FAIL == ret && 0 < txn_level)
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "query failed, setting transaction as failed");
-			txn_error = ZBX_DB_FAIL;
+			txn_error = TRX_DB_FAIL;
 		}
 
 		goto out;
@@ -1260,16 +1260,16 @@ int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsi
 	{
 		ret = OCI_handle_sql_error(ERR_Z3007, err, NULL);
 
-		if (ZBX_DB_FAIL == ret && 0 < txn_level)
+		if (TRX_DB_FAIL == ret && 0 < txn_level)
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "query failed, setting transaction as failed");
-			txn_error = ZBX_DB_FAIL;
+			txn_error = TRX_DB_FAIL;
 		}
 
 		goto out;
 	}
 out:
-	if (ret != ZBX_DB_OK)
+	if (ret != TRX_DB_OK)
 		zbx_db_clean_bind_context(context);
 
 	return ret;
@@ -1286,10 +1286,10 @@ int	zbx_db_statement_execute(int iters)
 	ub4	nrows;
 	int	ret;
 
-	if (ZBX_DB_OK != txn_error)
+	if (TRX_DB_OK != txn_error)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] within failed transaction", txn_level);
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 		goto out;
 	}
 
@@ -1298,10 +1298,10 @@ int	zbx_db_statement_execute(int iters)
 	else
 		ret = (int)nrows;
 
-	if (ZBX_DB_FAIL == ret && 0 < txn_level)
+	if (TRX_DB_FAIL == ret && 0 < txn_level)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "query failed, setting transaction as failed");
-		txn_error = ZBX_DB_FAIL;
+		txn_error = TRX_DB_FAIL;
 	}
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "%s():%d", __func__, ret);
@@ -1316,14 +1316,14 @@ out:
  *                                                                            *
  * Purpose: Execute SQL statement. For non-select statements only.            *
  *                                                                            *
- * Return value: ZBX_DB_FAIL (on error) or ZBX_DB_DOWN (on recoverable error) *
+ * Return value: TRX_DB_FAIL (on error) or TRX_DB_DOWN (on recoverable error) *
  *               or number of rows affected (on success)                      *
  *                                                                            *
  ******************************************************************************/
 int	zbx_db_vexecute(const char *fmt, va_list args)
 {
 	char	*sql = NULL;
-	int	ret = ZBX_DB_OK;
+	int	ret = TRX_DB_OK;
 	double	sec = 0;
 #if defined(HAVE_IBM_DB2)
 	SQLHANDLE	hstmt = 0;
@@ -1350,10 +1350,10 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 	if (0 == txn_level)
 		treegix_log(LOG_LEVEL_DEBUG, "query without transaction detected");
 
-	if (ZBX_DB_OK != txn_error)
+	if (TRX_DB_OK != txn_error)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] [%s] within failed transaction", txn_level, sql);
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 		goto clean;
 	}
 
@@ -1362,34 +1362,34 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 #if defined(HAVE_IBM_DB2)
 	/* allocate a statement handle */
 	if (SUCCEED != zbx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_STMT, ibm_db2.hdbc, &hstmt)))
-		ret = ZBX_DB_DOWN;
+		ret = TRX_DB_DOWN;
 
 	/* directly execute the statement; returns SQL_NO_DATA_FOUND when no rows were affected */
-  	if (ZBX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success_ext(SQLExecDirect(hstmt, (SQLCHAR *)sql, SQL_NTS)))
-		ret = ZBX_DB_DOWN;
+  	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success_ext(SQLExecDirect(hstmt, (SQLCHAR *)sql, SQL_NTS)))
+		ret = TRX_DB_DOWN;
 
 	/* get number of affected rows */
-	if (ZBX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLRowCount(hstmt, &rows)))
-		ret = ZBX_DB_DOWN;
+	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLRowCount(hstmt, &rows)))
+		ret = TRX_DB_DOWN;
 
 	/* process other SQL statements in the batch */
-	while (ZBX_DB_OK == ret && SUCCEED == zbx_ibm_db2_success(ret1 = SQLMoreResults(hstmt)))
+	while (TRX_DB_OK == ret && SUCCEED == zbx_ibm_db2_success(ret1 = SQLMoreResults(hstmt)))
 	{
 		if (SUCCEED != zbx_ibm_db2_success(SQLRowCount(hstmt, &row1)))
-			ret = ZBX_DB_DOWN;
+			ret = TRX_DB_DOWN;
 		else
 			rows += row1;
 	}
 
-	if (ZBX_DB_OK == ret && SQL_NO_DATA_FOUND != ret1)
-		ret = ZBX_DB_DOWN;
+	if (TRX_DB_OK == ret && SQL_NO_DATA_FOUND != ret1)
+		ret = TRX_DB_DOWN;
 
-	if (ZBX_DB_OK != ret)
+	if (TRX_DB_OK != ret)
 	{
 		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, sql);
 		zbx_ibm_db2_log_errors(SQL_HANDLE_STMT, hstmt, ERR_Z3005, sql);
 
-		ret = (SQL_CD_TRUE == IBM_DB2server_status() ? ZBX_DB_FAIL : ZBX_DB_DOWN);
+		ret = (SQL_CD_TRUE == IBM_DB2server_status() ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
 	else if (0 <= rows)
 	{
@@ -1402,7 +1402,7 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 	if (NULL == conn)
 	{
 		zbx_db_errlog(ERR_Z3003, 0, NULL, NULL);
-		ret = ZBX_DB_FAIL;
+		ret = TRX_DB_FAIL;
 	}
 	else
 	{
@@ -1410,7 +1410,7 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 		{
 			zbx_db_errlog(ERR_Z3005, mysql_errno(conn), mysql_error(conn), sql);
 
-			ret = (SUCCEED == is_recoverable_mysql_error() ? ZBX_DB_DOWN : ZBX_DB_FAIL);
+			ret = (SUCCEED == is_recoverable_mysql_error() ? TRX_DB_DOWN : TRX_DB_FAIL);
 		}
 		else
 		{
@@ -1428,7 +1428,7 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 				if (0 < (status = mysql_next_result(conn)))
 				{
 					zbx_db_errlog(ERR_Z3005, mysql_errno(conn), mysql_error(conn), sql);
-					ret = (SUCCEED == is_recoverable_mysql_error() ? ZBX_DB_DOWN : ZBX_DB_FAIL);
+					ret = (SUCCEED == is_recoverable_mysql_error() ? TRX_DB_DOWN : TRX_DB_FAIL);
 				}
 			}
 			while (0 == status);
@@ -1452,7 +1452,7 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 	if (NULL == result)
 	{
 		zbx_db_errlog(ERR_Z3005, 0, "result is NULL", sql);
-		ret = (CONNECTION_OK == PQstatus(conn) ? ZBX_DB_FAIL : ZBX_DB_DOWN);
+		ret = (CONNECTION_OK == PQstatus(conn) ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
 	else if (PGRES_COMMAND_OK != PQresultStatus(result))
 	{
@@ -1460,10 +1460,10 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 		zbx_db_errlog(ERR_Z3005, 0, error, sql);
 		zbx_free(error);
 
-		ret = (SUCCEED == is_recoverable_postgresql_error(conn, result) ? ZBX_DB_DOWN : ZBX_DB_FAIL);
+		ret = (SUCCEED == is_recoverable_postgresql_error(conn, result) ? TRX_DB_DOWN : TRX_DB_FAIL);
 	}
 
-	if (ZBX_DB_OK == ret)
+	if (TRX_DB_OK == ret)
 		ret = atoi(PQcmdTuples(result));
 
 	PQclear(result);
@@ -1488,15 +1488,15 @@ lbl_exec:
 			case SQLITE_TOOBIG:	/* String or BLOB exceeds size limit */
 			case SQLITE_CONSTRAINT:	/* Abort due to constraint violation */
 			case SQLITE_MISMATCH:	/* Data type mismatch */
-				ret = ZBX_DB_FAIL;
+				ret = TRX_DB_FAIL;
 				break;
 			default:
-				ret = ZBX_DB_DOWN;
+				ret = TRX_DB_DOWN;
 				break;
 		}
 	}
 
-	if (ZBX_DB_OK == ret)
+	if (TRX_DB_OK == ret)
 		ret = sqlite3_changes(conn);
 
 	if (0 == txn_level)
@@ -1507,13 +1507,13 @@ lbl_exec:
 	{
 		sec = zbx_time() - sec;
 		if (sec > (double)CONFIG_LOG_SLOW_QUERIES / 1000.0)
-			treegix_log(LOG_LEVEL_WARNING, "slow query: " ZBX_FS_DBL " sec, \"%s\"", sec, sql);
+			treegix_log(LOG_LEVEL_WARNING, "slow query: " TRX_FS_DBL " sec, \"%s\"", sec, sql);
 	}
 
-	if (ZBX_DB_FAIL == ret && 0 < txn_level)
+	if (TRX_DB_FAIL == ret && 0 < txn_level)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "query [%s] failed, setting transaction as failed", sql);
-		txn_error = ZBX_DB_FAIL;
+		txn_error = TRX_DB_FAIL;
 	}
 clean:
 	zbx_free(sql);
@@ -1527,7 +1527,7 @@ clean:
  *                                                                            *
  * Purpose: execute a select statement                                        *
  *                                                                            *
- * Return value: data, NULL (on error) or (DB_RESULT)ZBX_DB_DOWN              *
+ * Return value: data, NULL (on error) or (DB_RESULT)TRX_DB_DOWN              *
  *                                                                            *
  ******************************************************************************/
 DB_RESULT	zbx_db_vselect(const char *fmt, va_list args)
@@ -1553,7 +1553,7 @@ DB_RESULT	zbx_db_vselect(const char *fmt, va_list args)
 
 	sql = zbx_dvsprintf(sql, fmt, args);
 
-	if (ZBX_DB_OK != txn_error)
+	if (TRX_DB_OK != txn_error)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "ignoring query [txnlev:%d] [%s] within failed transaction", txn_level, sql);
 		goto clean;
@@ -1615,7 +1615,7 @@ error:
 
 		DBfree_result(result);
 
-		result = (SQL_CD_TRUE == IBM_DB2server_status() ? NULL : (DB_RESULT)ZBX_DB_DOWN);
+		result = (SQL_CD_TRUE == IBM_DB2server_status() ? NULL : (DB_RESULT)TRX_DB_DOWN);
 	}
 #elif defined(HAVE_MYSQL)
 	result = (DB_RESULT)zbx_malloc(NULL, sizeof(struct zbx_db_result));
@@ -1635,7 +1635,7 @@ error:
 			zbx_db_errlog(ERR_Z3005, mysql_errno(conn), mysql_error(conn), sql);
 
 			DBfree_result(result);
-			result = (SUCCEED == is_recoverable_mysql_error() ? (DB_RESULT)ZBX_DB_DOWN : NULL);
+			result = (SUCCEED == is_recoverable_mysql_error() ? (DB_RESULT)TRX_DB_DOWN : NULL);
 		}
 	}
 #elif defined(HAVE_ORACLE)
@@ -1649,7 +1649,7 @@ error:
 	/* selects (default behavior). There are 2 ways to do prefetching: memory based and rows based. Based on the   */
 	/* study optimal (speed-wise) memory based prefetch is 2 MB. But in case of many subsequent selects CPU usage  */
 	/* jumps up to 100 %. Using rows prefetch with up to 200 rows does not affect CPU usage, it is the same as     */
-	/* without prefetching at all. See ZBX-5920, ZBX-6493 for details.                                             */
+	/* without prefetching at all. See TRX-5920, TRX-6493 for details.                                             */
 	/*                                                                                                             */
 	/* Tested on Oracle 11gR2.                                                                                     */
 	/*                                                                                                             */
@@ -1782,7 +1782,7 @@ error:
 		server_status = OCI_handle_sql_error(ERR_Z3005, err, sql);
 		DBfree_result(result);
 
-		result = (ZBX_DB_DOWN == server_status ? (DB_RESULT)(intptr_t)server_status : NULL);
+		result = (TRX_DB_DOWN == server_status ? (DB_RESULT)(intptr_t)server_status : NULL);
 	}
 #elif defined(HAVE_POSTGRESQL)
 	result = zbx_malloc(NULL, sizeof(struct zbx_db_result));
@@ -1803,7 +1803,7 @@ error:
 		if (SUCCEED == is_recoverable_postgresql_error(conn, result->pg_result))
 		{
 			DBfree_result(result);
-			result = (DB_RESULT)ZBX_DB_DOWN;
+			result = (DB_RESULT)TRX_DB_DOWN;
 		}
 		else
 		{
@@ -1840,7 +1840,7 @@ lbl_get_table:
 				result = NULL;
 				break;
 			default:
-				result = (DB_RESULT)ZBX_DB_DOWN;
+				result = (DB_RESULT)TRX_DB_DOWN;
 				break;
 		}
 	}
@@ -1852,13 +1852,13 @@ lbl_get_table:
 	{
 		sec = zbx_time() - sec;
 		if (sec > (double)CONFIG_LOG_SLOW_QUERIES / 1000.0)
-			treegix_log(LOG_LEVEL_WARNING, "slow query: " ZBX_FS_DBL " sec, \"%s\"", sec, sql);
+			treegix_log(LOG_LEVEL_WARNING, "slow query: " TRX_FS_DBL " sec, \"%s\"", sec, sql);
 	}
 
 	if (NULL == result && 0 < txn_level)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "query [%s] failed, setting transaction as failed", sql);
-		txn_error = ZBX_DB_FAIL;
+		txn_error = TRX_DB_FAIL;
 	}
 clean:
 	zbx_free(sql);
@@ -2029,7 +2029,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 			return NULL;
 		}
 
-		if (result->values_alloc[i] < (alloc = amount * ZBX_MAX_BYTES_IN_UTF8_CHAR + 1))
+		if (result->values_alloc[i] < (alloc = amount * TRX_MAX_BYTES_IN_UTF8_CHAR + 1))
 		{
 			result->values_alloc[i] = alloc;
 			result->values[i] = zbx_realloc(result->values[i], result->values_alloc[i]);
@@ -2077,7 +2077,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 			else
 			{
 				result->values[i] = PQgetvalue(result->pg_result, result->cursor, i);
-				if (PQftype(result->pg_result, i) == ZBX_PG_BYTEAOID)	/* binary data type BYTEAOID */
+				if (PQftype(result->pg_result, i) == TRX_PG_BYTEAOID)	/* binary data type BYTEAOID */
 					zbx_db_bytea_unescape((u_char *)result->values[i]);
 			}
 		}
@@ -2290,7 +2290,7 @@ static int	zbx_db_is_escape_sequence(char c)
 #if defined(HAVE_MYSQL)
 	if ('\'' == c || '\\' == c)
 #elif defined(HAVE_POSTGRESQL)
-	if ('\'' == c || ('\\' == c && 1 == ZBX_PG_ESCAPE_BACKSLASH))
+	if ('\'' == c || ('\\' == c && 1 == TRX_PG_ESCAPE_BACKSLASH))
 #else
 	if ('\'' == c)
 #endif
@@ -2430,11 +2430,11 @@ static int	zbx_db_get_escape_like_pattern_len(const char *src)
 	int		len;
 	const char	*s;
 
-	len = zbx_db_get_escape_string_len(src, ZBX_SIZE_T_MAX, ZBX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON) - 1; /* minus '\0' */
+	len = zbx_db_get_escape_string_len(src, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON) - 1; /* minus '\0' */
 
 	for (s = src; s && *s; s++)
 	{
-		len += (*s == '_' || *s == '%' || *s == ZBX_SQL_LIKE_ESCAPE_CHAR);
+		len += (*s == '_' || *s == '%' || *s == TRX_SQL_LIKE_ESCAPE_CHAR);
 		len += 1;
 	}
 
@@ -2484,11 +2484,11 @@ static void	zbx_db_escape_like_pattern(const char *src, char *dst, int len)
 
 	for (t = tmp, d = dst; t && *t && len; t++)
 	{
-		if (*t == '_' || *t == '%' || *t == ZBX_SQL_LIKE_ESCAPE_CHAR)
+		if (*t == '_' || *t == '%' || *t == TRX_SQL_LIKE_ESCAPE_CHAR)
 		{
 			if (len <= 1)
 				break;
-			*d++ = ZBX_SQL_LIKE_ESCAPE_CHAR;
+			*d++ = TRX_SQL_LIKE_ESCAPE_CHAR;
 			len--;
 		}
 		*d++ = *t;

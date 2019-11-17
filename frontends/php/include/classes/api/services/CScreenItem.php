@@ -133,7 +133,7 @@ class CScreenItem extends CApiService {
 
 		foreach ($screenItems as &$screenItem) {
 			if (!check_db_fields($screenItemDBfields, $screenItem)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
 			}
 
 			unset($screenItem['screenitemid']);
@@ -250,7 +250,7 @@ class CScreenItem extends CApiService {
 
 		foreach ($screenItems as $screenItem) {
 			if (!check_db_fields($screenItemDBfields, $screenItem)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
 			}
 		}
 
@@ -316,7 +316,7 @@ class CScreenItem extends CApiService {
 
 		foreach ($screenItems as $screenItem) {
 			if (!check_db_fields($screenItemDBfields, $screenItem)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
 			}
 		}
 
@@ -375,7 +375,7 @@ class CScreenItem extends CApiService {
 
 		foreach ($screenItemIds as $screenItemId) {
 			if (!isset($dbScreenItems[$screenItemId])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -392,7 +392,7 @@ class CScreenItem extends CApiService {
 	 *
 	 * If the $dbScreenItems parameter is given, the screen items will be matched
 	 * against the ones given in $dbScreenItems. If a screen item is not present in
-	 * $dbScreenItems, a ZBX_API_ERROR_PERMISSIONS exception will be thrown.
+	 * $dbScreenItems, a TRX_API_ERROR_PERMISSIONS exception will be thrown.
 	 *
 	 * @throws APIException if a validation error occurred.
 	 *
@@ -422,11 +422,11 @@ class CScreenItem extends CApiService {
 		foreach ($screenItems as $screenItem) {
 			// check permissions
 			if (isset($screenItem['screenitemid']) && !isset($dbScreenItems[$screenItem['screenitemid']])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 			}
 
 			if (!$this->isValidResourceType($screenItem['resourcetype'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect resource type provided for screen item.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect resource type provided for screen item.'));
 			}
 
 			if (!isset($screenItem['resourceid'])) {
@@ -443,7 +443,7 @@ class CScreenItem extends CApiService {
 					$overviewResources = [SCREEN_RESOURCE_TRIGGER_OVERVIEW, SCREEN_RESOURCE_DATA_OVERVIEW];
 					if (in_array($screenItem['resourcetype'], $overviewResources)) {
 						if (!$screenItem['resourceid']) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _(
+							self::exception(TRX_API_ERROR_PARAMETERS, _(
 								'No host group ID provided for screen element.'
 							));
 						}
@@ -462,7 +462,7 @@ class CScreenItem extends CApiService {
 
 				case SCREEN_RESOURCE_GRAPH:
 					if (!$screenItem['resourceid']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('No graph ID provided for screen element.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('No graph ID provided for screen element.'));
 					}
 
 					$graphIds[$screenItem['resourceid']] = $screenItem['resourceid'];
@@ -470,7 +470,7 @@ class CScreenItem extends CApiService {
 
 				case SCREEN_RESOURCE_LLD_GRAPH:
 					if (!$screenItem['resourceid']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _(
+						self::exception(TRX_API_ERROR_PARAMETERS, _(
 							'No graph prototype ID provided for screen element.'
 						));
 					}
@@ -480,7 +480,7 @@ class CScreenItem extends CApiService {
 
 				case SCREEN_RESOURCE_LLD_SIMPLE_GRAPH:
 					if (!$screenItem['resourceid']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _(
+						self::exception(TRX_API_ERROR_PARAMETERS, _(
 							'No item prototype ID provided for screen element.'
 						));
 					}
@@ -491,7 +491,7 @@ class CScreenItem extends CApiService {
 				case SCREEN_RESOURCE_SIMPLE_GRAPH:
 				case SCREEN_RESOURCE_PLAIN_TEXT:
 					if (!$screenItem['resourceid']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('No item ID provided for screen element.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('No item ID provided for screen element.'));
 					}
 
 					$itemIds[$screenItem['resourceid']] = $screenItem['resourceid'];
@@ -501,20 +501,20 @@ class CScreenItem extends CApiService {
 					if (isset($screenItem['style'])) {
 						if ($screenItem['style'] == TIME_TYPE_HOST) {
 							if (!$screenItem['resourceid']) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _('No item ID provided for screen element.'));
+								self::exception(TRX_API_ERROR_PARAMETERS, _('No item ID provided for screen element.'));
 							}
 
 							$itemIds[$screenItem['resourceid']] = $screenItem['resourceid'];
 						}
 						elseif ($screenItem['resourceid']) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot set resource ID for screen element.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot set resource ID for screen element.'));
 						}
 					}
 					break;
 
 				case SCREEN_RESOURCE_MAP:
 					if (!$screenItem['resourceid']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('No map ID provided for screen element.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('No map ID provided for screen element.'));
 					}
 
 					$mapIds[$screenItem['resourceid']] = $screenItem['resourceid'];
@@ -525,7 +525,7 @@ class CScreenItem extends CApiService {
 				case SCREEN_RESOURCE_SYSTEM_STATUS:
 				case SCREEN_RESOURCE_URL:
 					if ($screenItem['resourceid']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot set resource ID for screen element.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot set resource ID for screen element.'));
 					}
 					break;
 			}
@@ -533,7 +533,7 @@ class CScreenItem extends CApiService {
 			// check url
 			if ($screenItem['resourcetype'] == SCREEN_RESOURCE_URL) {
 				if (!isset($screenItem['url']) || zbx_empty($screenItem['url'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('No URL provided for screen element.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('No URL provided for screen element.'));
 				}
 			}
 
@@ -546,7 +546,7 @@ class CScreenItem extends CApiService {
 					case SCREEN_RESOURCE_HOST_TRIGGERS:
 					case SCREEN_RESOURCE_PLAIN_TEXT:
 						if ($screenItem['elements'] < 1 || $screenItem['elements'] > 100) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" for "%2$s" field: must be between %3$s and %4$s.',
 								$screenItem['elements'], 'elements', 1, 100
 							));
@@ -566,13 +566,13 @@ class CScreenItem extends CApiService {
 
 				$error = ($dbScreenItem ? ($set && !$valid) : (!$set || !$valid));
 				if ($error) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect max columns provided for screen element.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect max columns provided for screen element.'));
 				}
 			}
 
 			if (isset($validStyles[$screenItem['resourcetype']])
 					&& !in_array($screenItem['style'], $validStyles[$screenItem['resourcetype']])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect style provided for screen element.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect style provided for screen element.'));
 			}
 		}
 
@@ -586,7 +586,7 @@ class CScreenItem extends CApiService {
 
 			foreach ($hostGroupsIds as $hostGroupsId) {
 				if (!isset($dbHostGroups[$hostGroupsId])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s(
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s(
 						'Incorrect host group ID "%1$s" provided for screen element.', $hostGroupsId
 					));
 				}
@@ -603,7 +603,7 @@ class CScreenItem extends CApiService {
 
 			foreach ($hostIds as $hostId) {
 				if (!isset($dbHosts[$hostId])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s(
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s(
 						'Incorrect host ID "%1$s" provided for screen element.', $hostId
 					));
 				}
@@ -620,7 +620,7 @@ class CScreenItem extends CApiService {
 
 			foreach ($graphIds as $graphId) {
 				if (!isset($dbGraphs[$graphId])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s(
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s(
 						'Incorrect graph ID "%1$s" provided for screen element.', $graphId
 					));
 				}
@@ -637,7 +637,7 @@ class CScreenItem extends CApiService {
 
 			foreach ($graphPrototypeIds as $graphPrototypeId) {
 				if (!isset($dbGraphPrototypes[$graphPrototypeId])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s(
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s(
 						'Incorrect graph prototype ID "%1$s" provided for screen element.', $graphPrototypeId
 					));
 				}
@@ -655,7 +655,7 @@ class CScreenItem extends CApiService {
 
 			foreach ($itemIds as $itemId) {
 				if (!isset($dbItems[$itemId])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s(
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s(
 						'Incorrect item ID "%1$s" provided for screen element.', $itemId
 					));
 				}
@@ -672,7 +672,7 @@ class CScreenItem extends CApiService {
 
 			foreach ($itemPrototypeIds as $itemPrototypeId) {
 				if (!isset($dbItemPrototypes[$itemPrototypeId])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s(
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s(
 						'Incorrect item prototype ID "%1$s" provided for screen element.', $itemPrototypeId
 					));
 				}
@@ -689,7 +689,7 @@ class CScreenItem extends CApiService {
 
 			foreach ($mapIds as $mapId) {
 				if (!isset($dbMaps[$mapId])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s(
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s(
 						'Incorrect map ID "%1$s" provided for screen element.', $mapId
 					));
 				}
@@ -718,7 +718,7 @@ class CScreenItem extends CApiService {
 
 			foreach ($screenIds as $screenId) {
 				if (!isset($dbScreens[$screenId])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s(
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s(
 						'Incorrect screen ID "%1$s" provided for screen element.', $screenId
 					));
 				}
@@ -749,7 +749,7 @@ class CScreenItem extends CApiService {
 		if (isset($screenItem['rowspan'])) {
 			if (!zbx_is_int($screenItem['rowspan']) || $screenItem['rowspan'] < 1) {
 				self::exception(
-					ZBX_API_ERROR_PARAMETERS,
+					TRX_API_ERROR_PARAMETERS,
 					_s(
 						'Screen "%1$s" row span in cell X - %2$s Y - %3$s is incorrect.',
 						$screen['name'],
@@ -763,7 +763,7 @@ class CScreenItem extends CApiService {
 		if (isset($screenItem['colspan'])) {
 			if (!zbx_is_int($screenItem['colspan']) || $screenItem['colspan'] < 1) {
 				self::exception(
-					ZBX_API_ERROR_PARAMETERS,
+					TRX_API_ERROR_PARAMETERS,
 					_s(
 						'Screen "%1$s" column span in cell X - %2$s Y - %3$s is incorrect.',
 						$screen['name'],
@@ -799,7 +799,7 @@ class CScreenItem extends CApiService {
 		if (isset($screenItem['rowspan']) && isset($screen['vsize'])
 				&& $screenItem['rowspan'] > $screen['vsize'] - $screenItem['y']) {
 			self::exception(
-				ZBX_API_ERROR_PARAMETERS,
+				TRX_API_ERROR_PARAMETERS,
 				_s(
 					'Screen "%1$s" row span in cell X - %2$s Y - %3$s is too big.',
 					$screen['name'],
@@ -812,7 +812,7 @@ class CScreenItem extends CApiService {
 		if (isset($screenItem['colspan']) && isset($screen['hsize'])
 				&& $screenItem['colspan'] > $screen['hsize'] - $screenItem['x']) {
 			self::exception(
-				ZBX_API_ERROR_PARAMETERS,
+				TRX_API_ERROR_PARAMETERS,
 				_s(
 					'Screen "%1$s" column span in cell X - %2$s Y - %3$s is too big.',
 					$screen['name'],
@@ -857,7 +857,7 @@ class CScreenItem extends CApiService {
 				$overlaps_x = ($checked['left'] <= $entry['right'] && $checked['right'] >= $entry['left']);
 				$overlaps_y = ($checked['top'] <= $entry['bottom'] && $checked['bottom'] >= $entry['top']);
 				if ($overlaps_x && $overlaps_y) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Screen "%1$s" cell X - %2$s Y - %3$s is already taken.', $screens[$screenid]['name'],
 							$checked['left'], $checked['top']
 						)
@@ -880,7 +880,7 @@ class CScreenItem extends CApiService {
 	protected function checkGridCoordinates(array $screenItem, array $screen) {
 		if (isset($screenItem['x']) && $screenItem['x'] > $screen['hsize'] - 1) {
 			self::exception(
-				ZBX_API_ERROR_PARAMETERS,
+				TRX_API_ERROR_PARAMETERS,
 				_s(
 					'The X coordinate of screen element located at X - %1$s and Y - %2$s of screen "%3$s" is too big.',
 					$screenItem['x'],
@@ -892,7 +892,7 @@ class CScreenItem extends CApiService {
 
 		if (isset($screenItem['y']) && $screenItem['y'] > $screen['vsize'] - 1) {
 			self::exception(
-				ZBX_API_ERROR_PARAMETERS,
+				TRX_API_ERROR_PARAMETERS,
 				_s(
 					'The Y coordinate of screen element located at X - %1$s and Y - %2$s of screen "%3$s" is too big.',
 					$screenItem['x'],
@@ -938,7 +938,7 @@ class CScreenItem extends CApiService {
 		foreach ($screen_items as $screen_item) {
 			if ($screen_item['resourcetype'] == SCREEN_RESOURCE_URL && array_key_exists('url', $screen_item)
 					&& !CHtmlUrlValidator::validate($screen_item['url'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
 			}
 		}
 	}

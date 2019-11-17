@@ -42,14 +42,14 @@ zbx_graph_item_type;
 
 struct	_DC_TRIGGER;
 
-#define ZBX_DB_CONNECT_NORMAL	0
-#define ZBX_DB_CONNECT_EXIT	1
-#define ZBX_DB_CONNECT_ONCE	2
+#define TRX_DB_CONNECT_NORMAL	0
+#define TRX_DB_CONNECT_EXIT	1
+#define TRX_DB_CONNECT_ONCE	2
 
 /* type of database */
-#define ZBX_DB_UNKNOWN	0
-#define ZBX_DB_SERVER	1
-#define ZBX_DB_PROXY	2
+#define TRX_DB_UNKNOWN	0
+#define TRX_DB_SERVER	1
+#define TRX_DB_PROXY	2
 
 #define TRIGGER_OPDATA_LEN		255
 #define TRIGGER_URL_LEN			255
@@ -66,7 +66,7 @@ struct	_DC_TRIGGER;
 
 #define GROUP_NAME_LEN			255
 
-#define HOST_HOST_LEN			MAX_ZBX_HOSTNAME_LEN
+#define HOST_HOST_LEN			MAX_TRX_HOSTNAME_LEN
 #define HOST_HOST_LEN_MAX		(HOST_HOST_LEN + 1)
 #define HOST_NAME_LEN			128
 #define HOST_ERROR_LEN			2048
@@ -172,7 +172,7 @@ struct	_DC_TRIGGER;
 #define GRAPH_ITEM_COLOR_LEN_MAX	(GRAPH_ITEM_COLOR_LEN + 1)
 
 #define DSERVICE_VALUE_LEN		255
-#define MAX_DISCOVERED_VALUE_SIZE	(DSERVICE_VALUE_LEN * ZBX_MAX_BYTES_IN_UTF8_CHAR + 1)
+#define MAX_DISCOVERED_VALUE_SIZE	(DSERVICE_VALUE_LEN * TRX_MAX_BYTES_IN_UTF8_CHAR + 1)
 
 #define HTTPTEST_HTTP_USER_LEN		64
 #define HTTPTEST_HTTP_PASSWORD_LEN	64
@@ -185,32 +185,32 @@ struct	_DC_TRIGGER;
 
 #define FUNCTION_PARAM_LEN		255
 
-#define ZBX_SQL_ITEM_FIELDS	"i.itemid,i.key_,h.host,i.type,i.history,i.hostid,i.value_type,i.delta,"	\
+#define TRX_SQL_ITEM_FIELDS	"i.itemid,i.key_,h.host,i.type,i.history,i.hostid,i.value_type,i.delta,"	\
 				"i.units,i.multiplier,i.formula,i.state,i.valuemapid,i.trends,i.data_type"
-#define ZBX_SQL_ITEM_TABLES	"hosts h,items i"
-#define ZBX_SQL_TIME_FUNCTIONS	"'nodata','date','dayofmonth','dayofweek','time','now'"
-#define ZBX_SQL_ITEM_FIELDS_NUM	15
-#define ZBX_SQL_ITEM_SELECT	ZBX_SQL_ITEM_FIELDS " from " ZBX_SQL_ITEM_TABLES
+#define TRX_SQL_ITEM_TABLES	"hosts h,items i"
+#define TRX_SQL_TIME_FUNCTIONS	"'nodata','date','dayofmonth','dayofweek','time','now'"
+#define TRX_SQL_ITEM_FIELDS_NUM	15
+#define TRX_SQL_ITEM_SELECT	TRX_SQL_ITEM_FIELDS " from " TRX_SQL_ITEM_TABLES
 
 #ifdef HAVE_ORACLE
-#	define ZBX_PLSQL_BEGIN	"begin\n"
-#	define ZBX_PLSQL_END	"end;"
+#	define TRX_PLSQL_BEGIN	"begin\n"
+#	define TRX_PLSQL_END	"end;"
 #	define	DBbegin_multiple_update(sql, sql_alloc, sql_offset)			\
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, ZBX_PLSQL_BEGIN)
+			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_PLSQL_BEGIN)
 #	define	DBend_multiple_update(sql, sql_alloc, sql_offset)			\
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, ZBX_PLSQL_END)
-#	if 0 == ZBX_MAX_OVERFLOW_SQL_SIZE
-#		define	ZBX_SQL_EXEC_FROM	ZBX_CONST_STRLEN(ZBX_PLSQL_BEGIN)
+			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_PLSQL_END)
+#	if 0 == TRX_MAX_OVERFLOW_SQL_SIZE
+#		define	TRX_SQL_EXEC_FROM	TRX_CONST_STRLEN(TRX_PLSQL_BEGIN)
 #	else
-#		define	ZBX_SQL_EXEC_FROM	0
+#		define	TRX_SQL_EXEC_FROM	0
 #	endif
 
-#	define	ZBX_SQL_STRCMP		"%s%s%s"
-#	define	ZBX_SQL_STRVAL_EQ(str)				\
+#	define	TRX_SQL_STRCMP		"%s%s%s"
+#	define	TRX_SQL_STRVAL_EQ(str)				\
 			'\0' != *str ? "='"  : "",		\
 			'\0' != *str ? str   : " is null",	\
 			'\0' != *str ? "'"   : ""
-#	define	ZBX_SQL_STRVAL_NE(str)				\
+#	define	TRX_SQL_STRVAL_NE(str)				\
 			'\0' != *str ? "<>'" : "",		\
 			'\0' != *str ? str   : " is not null",	\
 			'\0' != *str ? "'"   : ""
@@ -219,24 +219,24 @@ struct	_DC_TRIGGER;
 #	define	DBbegin_multiple_update(sql, sql_alloc, sql_offset)	do {} while (0)
 #	define	DBend_multiple_update(sql, sql_alloc, sql_offset)	do {} while (0)
 
-#	define	ZBX_SQL_EXEC_FROM	0
+#	define	TRX_SQL_EXEC_FROM	0
 #	ifdef HAVE_MYSQL
-#		define	ZBX_SQL_STRCMP		"%s binary '%s'"
+#		define	TRX_SQL_STRCMP		"%s binary '%s'"
 #	else
-#		define	ZBX_SQL_STRCMP		"%s'%s'"
+#		define	TRX_SQL_STRCMP		"%s'%s'"
 #	endif
-#	define	ZBX_SQL_STRVAL_EQ(str)	"=", str
-#	define	ZBX_SQL_STRVAL_NE(str)	"<>", str
+#	define	TRX_SQL_STRVAL_EQ(str)	"=", str
+#	define	TRX_SQL_STRVAL_NE(str)	"<>", str
 #endif
 
-#define ZBX_SQL_NULLCMP(f1, f2)	"((" f1 " is null and " f2 " is null) or " f1 "=" f2 ")"
+#define TRX_SQL_NULLCMP(f1, f2)	"((" f1 " is null and " f2 " is null) or " f1 "=" f2 ")"
 
-#define ZBX_DBROW2UINT64(uint, row)	if (SUCCEED == DBis_null(row))		\
+#define TRX_DBROW2UINT64(uint, row)	if (SUCCEED == DBis_null(row))		\
 						uint = 0;			\
 					else					\
 						is_uint64(row, &uint)
 
-#define ZBX_DB_MAX_ID	(zbx_uint64_t)__UINT64_C(0x7fffffffffffffff)
+#define TRX_DB_MAX_ID	(zbx_uint64_t)__UINT64_C(0x7fffffffffffffff)
 
 typedef struct
 {
@@ -318,9 +318,9 @@ typedef struct
 
 	zbx_vector_ptr_t	tags;	/* used for both zbx_tag_t and zbx_host_tag_t */
 
-#define ZBX_FLAGS_DB_EVENT_UNSET		0x0000
-#define ZBX_FLAGS_DB_EVENT_CREATE		0x0001
-#define ZBX_FLAGS_DB_EVENT_NO_ACTION		0x0002
+#define TRX_FLAGS_DB_EVENT_UNSET		0x0000
+#define TRX_FLAGS_DB_EVENT_CREATE		0x0001
+#define TRX_FLAGS_DB_EVENT_NO_ACTION		0x0002
 	zbx_uint64_t		flags;
 }
 DB_EVENT;
@@ -483,14 +483,14 @@ int		DBcommit(void);
 void		DBrollback(void);
 int		DBend(int ret);
 
-const ZBX_TABLE	*DBget_table(const char *tablename);
-const ZBX_FIELD	*DBget_field(const ZBX_TABLE *table, const char *fieldname);
+const TRX_TABLE	*DBget_table(const char *tablename);
+const TRX_FIELD	*DBget_field(const TRX_TABLE *table, const char *fieldname);
 #define DBget_maxid(table)	DBget_maxid_num(table, 1)
 zbx_uint64_t	DBget_maxid_num(const char *tablename, int num);
 
 /******************************************************************************
  *                                                                            *
- * Type: ZBX_GRAPH_ITEMS                                                      *
+ * Type: TRX_GRAPH_ITEMS                                                      *
  *                                                                            *
  * Purpose: represent graph item data                                         *
  *                                                                            *
@@ -501,7 +501,7 @@ typedef struct
 {
 	zbx_uint64_t	itemid;	/* itemid should come first for correct sorting */
 	zbx_uint64_t	gitemid;
-	char		key[ITEM_KEY_LEN * ZBX_MAX_BYTES_IN_UTF8_CHAR + 1];
+	char		key[ITEM_KEY_LEN * TRX_MAX_BYTES_IN_UTF8_CHAR + 1];
 	int		drawtype;
 	int		sortorder;
 	char		color[GRAPH_ITEM_COLOR_LEN_MAX];
@@ -510,7 +510,7 @@ typedef struct
 	int		type;
 	unsigned char	flags;
 }
-ZBX_GRAPH_ITEMS;
+TRX_GRAPH_ITEMS;
 
 typedef struct
 {
@@ -522,16 +522,16 @@ typedef struct
 	int		problem_count;
 	char		*error;
 
-#define ZBX_FLAGS_TRIGGER_DIFF_UNSET				0x0000
-#define ZBX_FLAGS_TRIGGER_DIFF_UPDATE_VALUE			0x0001
-#define ZBX_FLAGS_TRIGGER_DIFF_UPDATE_LASTCHANGE		0x0002
-#define ZBX_FLAGS_TRIGGER_DIFF_UPDATE_STATE			0x0004
-#define ZBX_FLAGS_TRIGGER_DIFF_UPDATE_ERROR			0x0008
-#define ZBX_FLAGS_TRIGGER_DIFF_UPDATE										\
-		(ZBX_FLAGS_TRIGGER_DIFF_UPDATE_VALUE | ZBX_FLAGS_TRIGGER_DIFF_UPDATE_LASTCHANGE | 		\
-		ZBX_FLAGS_TRIGGER_DIFF_UPDATE_STATE | ZBX_FLAGS_TRIGGER_DIFF_UPDATE_ERROR)
-#define ZBX_FLAGS_TRIGGER_DIFF_UPDATE_PROBLEM_COUNT		0x1000
-#define ZBX_FLAGS_TRIGGER_DIFF_RECALCULATE_PROBLEM_COUNT	0x2000
+#define TRX_FLAGS_TRIGGER_DIFF_UNSET				0x0000
+#define TRX_FLAGS_TRIGGER_DIFF_UPDATE_VALUE			0x0001
+#define TRX_FLAGS_TRIGGER_DIFF_UPDATE_LASTCHANGE		0x0002
+#define TRX_FLAGS_TRIGGER_DIFF_UPDATE_STATE			0x0004
+#define TRX_FLAGS_TRIGGER_DIFF_UPDATE_ERROR			0x0008
+#define TRX_FLAGS_TRIGGER_DIFF_UPDATE										\
+		(TRX_FLAGS_TRIGGER_DIFF_UPDATE_VALUE | TRX_FLAGS_TRIGGER_DIFF_UPDATE_LASTCHANGE | 		\
+		TRX_FLAGS_TRIGGER_DIFF_UPDATE_STATE | TRX_FLAGS_TRIGGER_DIFF_UPDATE_ERROR)
+#define TRX_FLAGS_TRIGGER_DIFF_UPDATE_PROBLEM_COUNT		0x1000
+#define TRX_FLAGS_TRIGGER_DIFF_RECALCULATE_PROBLEM_COUNT	0x2000
 	zbx_uint64_t			flags;
 }
 zbx_trigger_diff_t;
@@ -604,9 +604,9 @@ const char	*DBsql_id_cmp(zbx_uint64_t id);
 
 typedef enum
 {
-	ZBX_CONN_DEFAULT = 0,
-	ZBX_CONN_IP,
-	ZBX_CONN_DNS,
+	TRX_CONN_DEFAULT = 0,
+	TRX_CONN_IP,
+	TRX_CONN_DNS,
 }
 zbx_conn_flags_t;
 
@@ -647,8 +647,8 @@ void	DBselect_uint64(const char *sql, zbx_vector_uint64_t *ids);
 typedef struct
 {
 	/* the target table */
-	const ZBX_TABLE		*table;
-	/* the fields to insert (pointers to the ZBX_FIELD structures from database schema) */
+	const TRX_TABLE		*table;
+	/* the fields to insert (pointers to the TRX_FIELD structures from database schema) */
 	zbx_vector_ptr_t	fields;
 	/* the values rows to insert (pointers to arrays of zbx_db_value_t structures) */
 	zbx_vector_ptr_t	rows;
@@ -657,7 +657,7 @@ typedef struct
 }
 zbx_db_insert_t;
 
-void	zbx_db_insert_prepare_dyn(zbx_db_insert_t *self, const ZBX_TABLE *table, const ZBX_FIELD **fields,
+void	zbx_db_insert_prepare_dyn(zbx_db_insert_t *self, const TRX_TABLE *table, const TRX_FIELD **fields,
 		int fields_num);
 void	zbx_db_insert_prepare(zbx_db_insert_t *self, const char *table, ...);
 void	zbx_db_insert_add_values_dyn(zbx_db_insert_t *self, const zbx_db_value_t **values, int values_num);
@@ -670,7 +670,7 @@ int	zbx_db_get_database_type(void);
 /* agent (TREEGIX, SNMP, IPMI, JMX) availability data */
 typedef struct
 {
-	/* flags specifying which fields are set, see ZBX_FLAGS_AGENT_STATUS_* defines */
+	/* flags specifying which fields are set, see TRX_FLAGS_AGENT_STATUS_* defines */
 	unsigned char	flags;
 
 	/* agent availability fields */
@@ -681,29 +681,29 @@ typedef struct
 }
 zbx_agent_availability_t;
 
-#define ZBX_FLAGS_AGENT_STATUS_NONE		0x00000000
-#define ZBX_FLAGS_AGENT_STATUS_AVAILABLE	0x00000001
-#define ZBX_FLAGS_AGENT_STATUS_ERROR		0x00000002
-#define ZBX_FLAGS_AGENT_STATUS_ERRORS_FROM	0x00000004
-#define ZBX_FLAGS_AGENT_STATUS_DISABLE_UNTIL	0x00000008
+#define TRX_FLAGS_AGENT_STATUS_NONE		0x00000000
+#define TRX_FLAGS_AGENT_STATUS_AVAILABLE	0x00000001
+#define TRX_FLAGS_AGENT_STATUS_ERROR		0x00000002
+#define TRX_FLAGS_AGENT_STATUS_ERRORS_FROM	0x00000004
+#define TRX_FLAGS_AGENT_STATUS_DISABLE_UNTIL	0x00000008
 
-#define ZBX_FLAGS_AGENT_STATUS		(ZBX_FLAGS_AGENT_STATUS_AVAILABLE |	\
-					ZBX_FLAGS_AGENT_STATUS_ERROR |		\
-					ZBX_FLAGS_AGENT_STATUS_ERRORS_FROM |	\
-					ZBX_FLAGS_AGENT_STATUS_DISABLE_UNTIL)
+#define TRX_FLAGS_AGENT_STATUS		(TRX_FLAGS_AGENT_STATUS_AVAILABLE |	\
+					TRX_FLAGS_AGENT_STATUS_ERROR |		\
+					TRX_FLAGS_AGENT_STATUS_ERRORS_FROM |	\
+					TRX_FLAGS_AGENT_STATUS_DISABLE_UNTIL)
 
-#define ZBX_AGENT_TREEGIX	(INTERFACE_TYPE_AGENT - 1)
-#define ZBX_AGENT_SNMP		(INTERFACE_TYPE_SNMP - 1)
-#define ZBX_AGENT_IPMI		(INTERFACE_TYPE_IPMI - 1)
-#define ZBX_AGENT_JMX		(INTERFACE_TYPE_JMX - 1)
-#define ZBX_AGENT_UNKNOWN 	255
-#define ZBX_AGENT_MAX		INTERFACE_TYPE_COUNT
+#define TRX_AGENT_TREEGIX	(INTERFACE_TYPE_AGENT - 1)
+#define TRX_AGENT_SNMP		(INTERFACE_TYPE_SNMP - 1)
+#define TRX_AGENT_IPMI		(INTERFACE_TYPE_IPMI - 1)
+#define TRX_AGENT_JMX		(INTERFACE_TYPE_JMX - 1)
+#define TRX_AGENT_UNKNOWN 	255
+#define TRX_AGENT_MAX		INTERFACE_TYPE_COUNT
 
 typedef struct
 {
 	zbx_uint64_t			hostid;
 
-	zbx_agent_availability_t	agents[ZBX_AGENT_MAX];
+	zbx_agent_availability_t	agents[TRX_AGENT_MAX];
 }
 zbx_host_availability_t;
 
@@ -722,16 +722,16 @@ typedef struct
 	const char	*error;
 
 	zbx_uint64_t	flags;
-#define ZBX_FLAGS_ITEM_DIFF_UNSET			__UINT64_C(0x0000)
-#define ZBX_FLAGS_ITEM_DIFF_UPDATE_STATE		__UINT64_C(0x0001)
-#define ZBX_FLAGS_ITEM_DIFF_UPDATE_ERROR		__UINT64_C(0x0002)
-#define ZBX_FLAGS_ITEM_DIFF_UPDATE_MTIME		__UINT64_C(0x0004)
-#define ZBX_FLAGS_ITEM_DIFF_UPDATE_LASTLOGSIZE		__UINT64_C(0x0008)
-#define ZBX_FLAGS_ITEM_DIFF_UPDATE_LASTCLOCK		__UINT64_C(0x1000)
-#define ZBX_FLAGS_ITEM_DIFF_UPDATE_DB			\
-	(ZBX_FLAGS_ITEM_DIFF_UPDATE_STATE | ZBX_FLAGS_ITEM_DIFF_UPDATE_ERROR |\
-	ZBX_FLAGS_ITEM_DIFF_UPDATE_MTIME | ZBX_FLAGS_ITEM_DIFF_UPDATE_LASTLOGSIZE)
-#define ZBX_FLAGS_ITEM_DIFF_UPDATE	(ZBX_FLAGS_ITEM_DIFF_UPDATE_DB | ZBX_FLAGS_ITEM_DIFF_UPDATE_LASTCLOCK)
+#define TRX_FLAGS_ITEM_DIFF_UNSET			__UINT64_C(0x0000)
+#define TRX_FLAGS_ITEM_DIFF_UPDATE_STATE		__UINT64_C(0x0001)
+#define TRX_FLAGS_ITEM_DIFF_UPDATE_ERROR		__UINT64_C(0x0002)
+#define TRX_FLAGS_ITEM_DIFF_UPDATE_MTIME		__UINT64_C(0x0004)
+#define TRX_FLAGS_ITEM_DIFF_UPDATE_LASTLOGSIZE		__UINT64_C(0x0008)
+#define TRX_FLAGS_ITEM_DIFF_UPDATE_LASTCLOCK		__UINT64_C(0x1000)
+#define TRX_FLAGS_ITEM_DIFF_UPDATE_DB			\
+	(TRX_FLAGS_ITEM_DIFF_UPDATE_STATE | TRX_FLAGS_ITEM_DIFF_UPDATE_ERROR |\
+	TRX_FLAGS_ITEM_DIFF_UPDATE_MTIME | TRX_FLAGS_ITEM_DIFF_UPDATE_LASTLOGSIZE)
+#define TRX_FLAGS_ITEM_DIFF_UPDATE	(TRX_FLAGS_ITEM_DIFF_UPDATE_DB | TRX_FLAGS_ITEM_DIFF_UPDATE_LASTCLOCK)
 }
 zbx_item_diff_t;
 
@@ -752,15 +752,15 @@ typedef struct
 	int		lastaccess;
 	int		last_version_error_time;
 
-#define ZBX_FLAGS_PROXY_DIFF_UNSET				__UINT64_C(0x0000)
-#define ZBX_FLAGS_PROXY_DIFF_UPDATE_COMPRESS			__UINT64_C(0x0001)
-#define ZBX_FLAGS_PROXY_DIFF_UPDATE_VERSION			__UINT64_C(0x0002)
-#define ZBX_FLAGS_PROXY_DIFF_UPDATE_LASTACCESS			__UINT64_C(0x0004)
-#define ZBX_FLAGS_PROXY_DIFF_UPDATE_LASTERROR			__UINT64_C(0x0008)
-#define ZBX_FLAGS_PROXY_DIFF_UPDATE (			\
-		ZBX_FLAGS_PROXY_DIFF_UPDATE_COMPRESS |	\
-		ZBX_FLAGS_PROXY_DIFF_UPDATE_VERSION | 	\
-		ZBX_FLAGS_PROXY_DIFF_UPDATE_LASTACCESS)
+#define TRX_FLAGS_PROXY_DIFF_UNSET				__UINT64_C(0x0000)
+#define TRX_FLAGS_PROXY_DIFF_UPDATE_COMPRESS			__UINT64_C(0x0001)
+#define TRX_FLAGS_PROXY_DIFF_UPDATE_VERSION			__UINT64_C(0x0002)
+#define TRX_FLAGS_PROXY_DIFF_UPDATE_LASTACCESS			__UINT64_C(0x0004)
+#define TRX_FLAGS_PROXY_DIFF_UPDATE_LASTERROR			__UINT64_C(0x0008)
+#define TRX_FLAGS_PROXY_DIFF_UPDATE (			\
+		TRX_FLAGS_PROXY_DIFF_UPDATE_COMPRESS |	\
+		TRX_FLAGS_PROXY_DIFF_UPDATE_VERSION | 	\
+		TRX_FLAGS_PROXY_DIFF_UPDATE_LASTACCESS)
 	zbx_uint64_t	flags;
 }
 zbx_proxy_diff_t;

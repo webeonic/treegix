@@ -37,12 +37,12 @@ else {
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Group'), 'groupid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$data['pageFilter']->getGroupsCB()
 				])
 				->addItem([
 					new CLabel(_('Host'), 'hostid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$data['pageFilter']->getHostsCB()
 				])
 		);
@@ -63,7 +63,7 @@ else {
 						->setAttribute('aria-disabled', !$data['dashboard']['editable'] ? 'true' : null)
 					)
 					->addItem((new CButton('', '&nbsp;'))
-						->addClass(ZBX_STYLE_BTN_ACTION)
+						->addClass(TRX_STYLE_BTN_ACTION)
 						->setId('dashbrd-actions')
 						->setTitle(_('Actions'))
 						->setAttribute('aria-haspopup', true)
@@ -75,16 +75,16 @@ else {
 		->addItem((new CListItem([
 			(new CTag('nav', true, [
 				new CList([
-					(new CButton('dashbrd-config'))->addClass(ZBX_STYLE_BTN_DASHBRD_CONF),
-					(new CButton('dashbrd-add-widget', [(new CSpan())->addClass(ZBX_STYLE_PLUS_ICON), _('Add widget')]))
-						->addClass(ZBX_STYLE_BTN_ALT),
+					(new CButton('dashbrd-config'))->addClass(TRX_STYLE_BTN_DASHBRD_CONF),
+					(new CButton('dashbrd-add-widget', [(new CSpan())->addClass(TRX_STYLE_PLUS_ICON), _('Add widget')]))
+						->addClass(TRX_STYLE_BTN_ALT),
 					(new CButton('dashbrd-save', _('Save changes'))),
 					(new CLink(_('Cancel'), '#'))->setId('dashbrd-cancel'),
 					''
 				])
 			]))
 				->setAttribute('aria-label', _('Content controls'))
-				->addClass(ZBX_STYLE_DASHBRD_EDIT)
+				->addClass(TRX_STYLE_DASHBRD_EDIT)
 			]))
 				->addStyle('display: none')
 	))
@@ -92,8 +92,8 @@ else {
 			->setAttribute('role', 'navigation')
 			->setAttribute('aria-label', _x('Hierarchy', 'screen reader'))
 			->addItem($breadcrumbs)
-			->addClass(ZBX_STYLE_OBJECT_GROUP)
-			->addClass(ZBX_STYLE_FILTER_BREADCRUMB)
+			->addClass(TRX_STYLE_OBJECT_GROUP)
+			->addClass(TRX_STYLE_FILTER_BREADCRUMB)
 		);
 
 	$timeline = null;
@@ -102,12 +102,12 @@ else {
 			->setProfile($data['timeline']['profileIdx'], $data['timeline']['profileIdx2'])
 			->setActiveTab($data['active_tab'])
 			->addTimeSelector($data['timeline']['from'], $data['timeline']['to'],
-				$web_layout_mode != ZBX_LAYOUT_KIOSKMODE);
+				$web_layout_mode != TRX_LAYOUT_KIOSKMODE);
 		}
 
 	$widget
 		->addItem($timeline)
-		->addItem((new CDiv())->addClass(ZBX_STYLE_DASHBRD_GRID_CONTAINER))
+		->addItem((new CDiv())->addClass(TRX_STYLE_DASHBRD_GRID_CONTAINER))
 		->show();
 
 	/*
@@ -134,7 +134,7 @@ else {
 		'widget-max-rows' => DASHBOARD_WIDGET_MAX_ROWS,
 		'editable' => $data['dashboard']['editable'],
 		'edit_mode' => $data['dashboard_edit_mode'],
-		'kioskmode' => ($web_layout_mode === ZBX_LAYOUT_KIOSKMODE)
+		'kioskmode' => ($web_layout_mode === TRX_LAYOUT_KIOSKMODE)
 	];
 	if ($data['dashboard']['dashboardid'] != 0) {
 		$dashboard_data['id'] = $data['dashboard']['dashboardid'];
@@ -155,7 +155,7 @@ else {
 
 	// Initialize dashboard grid.
 	$this->addPostJS(
-		'jQuery(".'.ZBX_STYLE_DASHBRD_GRID_CONTAINER.'")'.
+		'jQuery(".'.TRX_STYLE_DASHBRD_GRID_CONTAINER.'")'.
 			'.dashboardGrid('.CJs::encodeJson($dashboard_options).')'.
 			'.dashboardGrid("setDashboardData", '.CJs::encodeJson($dashboard_data).')'.
 			'.dashboardGrid("setWidgetDefaults", '.CJs::encodeJson($data['widget_defaults']).')'.

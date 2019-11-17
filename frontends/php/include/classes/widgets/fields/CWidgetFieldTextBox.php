@@ -16,10 +16,10 @@ class CWidgetFieldTextBox extends CWidgetField {
 	public function __construct($name, $label) {
 		parent::__construct($name, $label);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_STR);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_STR);
 		$this->setDefault('');
 		$this->placeholder = null;
-		$this->width = ZBX_TEXTAREA_STANDARD_WIDTH;
+		$this->width = TRX_TEXTAREA_STANDARD_WIDTH;
 	}
 
 	/**

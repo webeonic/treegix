@@ -18,11 +18,11 @@ class CSvgGraphArea extends CSvgGraphLine {
 
 	public function makeStyles() {
 		$this
-			->addClass(CSvgTag::ZBX_STYLE_GRAPH_AREA)
-			->addClass(CSvgTag::ZBX_STYLE_GRAPH_AREA.'-'.$this->itemid.'-'.$this->options['order']);
+			->addClass(CSvgTag::TRX_STYLE_GRAPH_AREA)
+			->addClass(CSvgTag::TRX_STYLE_GRAPH_AREA.'-'.$this->itemid.'-'.$this->options['order']);
 
 		return [
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_AREA.'-'.$this->itemid.'-'.$this->options['order'] => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_AREA.'-'.$this->itemid.'-'.$this->options['order'] => [
 				'fill-opacity' => $this->options['fill'] * 0.1,
 				'fill' => $this->options['color'],
 				'stroke-opacity' => 0.1,

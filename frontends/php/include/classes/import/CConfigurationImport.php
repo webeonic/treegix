@@ -1855,7 +1855,7 @@ class CConfigurationImport {
 			'preservekeys' => true,
 			'nopermissions' => true,
 			'inherited' => false,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL]
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 		]);
 
 		$itemsToDelete = array_diff_key($dbItemIds, $itemIdsXML);
@@ -1911,7 +1911,7 @@ class CConfigurationImport {
 			'preservekeys' => true,
 			'nopermissions' => true,
 			'inherited' => false,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL]
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 		]);
 
 		$applicationsToDelete = array_diff_key($dbApplicationIds, $applicationIdsXML);
@@ -1966,7 +1966,7 @@ class CConfigurationImport {
 			'preservekeys' => true,
 			'nopermissions' => true,
 			'inherited' => false,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL]
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 		]);
 
 		// check that potentially deletable trigger belongs to same hosts that are in XML
@@ -2037,7 +2037,7 @@ class CConfigurationImport {
 			'preservekeys' => true,
 			'nopermissions' => true,
 			'inherited' => false,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL]
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 		]);
 
 		// check that potentially deletable graph belongs to same hosts that are in XML
@@ -2623,7 +2623,7 @@ class CConfigurationImport {
 			$resolve_entity_keys = [];
 			$host_entity_idkey_hash = [];
 
-			for ($level = 0; $level < ZBX_DEPENDENT_ITEM_MAX_LEVELS; $level++) {
+			for ($level = 0; $level < TRX_DEPENDENT_ITEM_MAX_LEVELS; $level++) {
 				$find_ids = [];
 
 				foreach ($resolved_entities as $entityid => $entity) {
@@ -2741,7 +2741,7 @@ class CConfigurationImport {
 						));
 					}
 
-					if ($level > ZBX_DEPENDENT_ITEM_MAX_LEVELS) {
+					if ($level > TRX_DEPENDENT_ITEM_MAX_LEVELS) {
 						throw new Exception(_s('Incorrect value for field "%1$s": %2$s.', 'master_itemid',
 							_('maximum number of dependency levels reached')
 						));

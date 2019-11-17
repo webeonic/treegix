@@ -19,15 +19,15 @@ static int	parse_response(AGENT_RESULT *results, int *errcodes, int num, char *r
 
 	if (SUCCEED == zbx_json_open(response, &jp))
 	{
-		if (SUCCEED != zbx_json_value_by_name_dyn(&jp, ZBX_PROTO_TAG_RESPONSE, &value, &value_alloc))
+		if (SUCCEED != zbx_json_value_by_name_dyn(&jp, TRX_PROTO_TAG_RESPONSE, &value, &value_alloc))
 		{
-			zbx_snprintf(error, max_error_len, "No '%s' tag in received JSON", ZBX_PROTO_TAG_RESPONSE);
+			zbx_snprintf(error, max_error_len, "No '%s' tag in received JSON", TRX_PROTO_TAG_RESPONSE);
 			goto exit;
 		}
 
-		if (0 == strcmp(value, ZBX_PROTO_VALUE_SUCCESS))
+		if (0 == strcmp(value, TRX_PROTO_VALUE_SUCCESS))
 		{
-			if (SUCCEED != zbx_json_brackets_by_name(&jp, ZBX_PROTO_TAG_DATA, &jp_data))
+			if (SUCCEED != zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_DATA, &jp_data))
 			{
 				zbx_strlcpy(error, "Cannot open data array in received JSON", max_error_len);
 				goto exit;
@@ -52,12 +52,12 @@ static int	parse_response(AGENT_RESULT *results, int *errcodes, int num, char *r
 					goto exit;
 				}
 
-				if (SUCCEED == zbx_json_value_by_name_dyn(&jp_row, ZBX_PROTO_TAG_VALUE, &value, &value_alloc))
+				if (SUCCEED == zbx_json_value_by_name_dyn(&jp_row, TRX_PROTO_TAG_VALUE, &value, &value_alloc))
 				{
 					set_result_type(&results[i], ITEM_VALUE_TYPE_TEXT, value);
 					errcodes[i] = SUCCEED;
 				}
-				else if (SUCCEED == zbx_json_value_by_name_dyn(&jp_row, ZBX_PROTO_TAG_ERROR, &value, &value_alloc))
+				else if (SUCCEED == zbx_json_value_by_name_dyn(&jp_row, TRX_PROTO_TAG_ERROR, &value, &value_alloc))
 				{
 					SET_MSG_RESULT(&results[i], zbx_strdup(NULL, value));
 					errcodes[i] = NOTSUPPORTED;
@@ -71,9 +71,9 @@ static int	parse_response(AGENT_RESULT *results, int *errcodes, int num, char *r
 
 			ret = SUCCEED;
 		}
-		else if (0 == strcmp(value, ZBX_PROTO_VALUE_FAILED))
+		else if (0 == strcmp(value, TRX_PROTO_VALUE_FAILED))
 		{
-			if (SUCCEED == zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_ERROR, error, max_error_len))
+			if (SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_ERROR, error, max_error_len))
 				ret = NETWORK_ERROR;
 			else
 				zbx_strlcpy(error, "Cannot get error message describing reasons for failure", max_error_len);
@@ -83,7 +83,7 @@ static int	parse_response(AGENT_RESULT *results, int *errcodes, int num, char *r
 		else
 		{
 			zbx_snprintf(error, max_error_len, "Bad '%s' tag value '%s' in received JSON",
-					ZBX_PROTO_TAG_RESPONSE, value);
+					TRX_PROTO_TAG_RESPONSE, value);
 			goto exit;
 		}
 	}
@@ -125,7 +125,7 @@ void	get_values_java(unsigned char request, const DC_ITEM *items, AGENT_RESULT *
 	if (j == num)	/* all items already NOTSUPPORTED (with invalid key or port) */
 		goto out;
 
-	zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
 	if (NULL == CONFIG_JAVA_GATEWAY || '\0' == *CONFIG_JAVA_GATEWAY)
 	{
@@ -134,12 +134,12 @@ void	get_values_java(unsigned char request, const DC_ITEM *items, AGENT_RESULT *
 		goto exit;
 	}
 
-	if (ZBX_JAVA_GATEWAY_REQUEST_INTERNAL == request)
+	if (TRX_JAVA_GATEWAY_REQUEST_INTERNAL == request)
 	{
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_JAVA_GATEWAY_INTERNAL,
-				ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_JAVA_GATEWAY_INTERNAL,
+				TRX_JSON_TYPE_STRING);
 	}
-	else if (ZBX_JAVA_GATEWAY_REQUEST_JMX == request)
+	else if (TRX_JAVA_GATEWAY_REQUEST_JMX == request)
 	{
 		for (i = j + 1; i < num; i++)
 		{
@@ -156,37 +156,37 @@ void	get_values_java(unsigned char request, const DC_ITEM *items, AGENT_RESULT *
 			}
 		}
 
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_JAVA_GATEWAY_JMX, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_JAVA_GATEWAY_JMX, TRX_JSON_TYPE_STRING);
 
 		if ('\0' != *items[j].username)
 		{
-			zbx_json_addstring(&json, ZBX_PROTO_TAG_USERNAME, items[j].username, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json, TRX_PROTO_TAG_USERNAME, items[j].username, TRX_JSON_TYPE_STRING);
 		}
 		if ('\0' != *items[j].password)
 		{
-			zbx_json_addstring(&json, ZBX_PROTO_TAG_PASSWORD, items[j].password, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json, TRX_PROTO_TAG_PASSWORD, items[j].password, TRX_JSON_TYPE_STRING);
 		}
 		if ('\0' != *items[j].jmx_endpoint)
 		{
-			zbx_json_addstring(&json, ZBX_PROTO_TAG_JMX_ENDPOINT, items[j].jmx_endpoint,
-					ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json, TRX_PROTO_TAG_JMX_ENDPOINT, items[j].jmx_endpoint,
+					TRX_JSON_TYPE_STRING);
 		}
 	}
 	else
 		assert(0);
 
-	zbx_json_addarray(&json, ZBX_PROTO_TAG_KEYS);
+	zbx_json_addarray(&json, TRX_PROTO_TAG_KEYS);
 	for (i = j; i < num; i++)
 	{
 		if (SUCCEED != errcodes[i])
 			continue;
 
-		zbx_json_addstring(&json, NULL, items[i].key, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, NULL, items[i].key, TRX_JSON_TYPE_STRING);
 	}
 	zbx_json_close(&json);
 
 	if (SUCCEED == (err = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, CONFIG_JAVA_GATEWAY, CONFIG_JAVA_GATEWAY_PORT,
-			CONFIG_TIMEOUT, ZBX_TCP_SEC_UNENCRYPTED, NULL, NULL)))
+			CONFIG_TIMEOUT, TRX_TCP_SEC_UNENCRYPTED, NULL, NULL)))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "JSON before sending [%s]", json.buffer);
 

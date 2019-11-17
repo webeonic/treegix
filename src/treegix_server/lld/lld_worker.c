@@ -31,7 +31,7 @@ static void	lld_register_worker(zbx_ipc_socket_t *socket)
 
 	ppid = getppid();
 
-	zbx_ipc_socket_write(socket, ZBX_IPC_LLD_REGISTER, (unsigned char *)&ppid, sizeof(ppid));
+	zbx_ipc_socket_write(socket, TRX_IPC_LLD_REGISTER, (unsigned char *)&ppid, sizeof(ppid));
 }
 
 /******************************************************************************
@@ -62,9 +62,9 @@ static void	lld_process_task(zbx_ipc_message_t *message)
 	if (SUCCEED != errcode)
 		goto out;
 
-	treegix_log(LOG_LEVEL_DEBUG, "processing discovery rule:" ZBX_FS_UI64, itemid);
+	treegix_log(LOG_LEVEL_DEBUG, "processing discovery rule:" TRX_FS_UI64, itemid);
 
-	diff.flags = ZBX_FLAGS_ITEM_DIFF_UNSET;
+	diff.flags = TRX_FLAGS_ITEM_DIFF_UNSET;
 
 	if (NULL != error || NULL != value)
 	{
@@ -76,7 +76,7 @@ static void	lld_process_task(zbx_ipc_message_t *message)
 		if (state != item.state)
 		{
 			diff.state = state;
-			diff.flags |= ZBX_FLAGS_ITEM_DIFF_UPDATE_STATE;
+			diff.flags |= TRX_FLAGS_ITEM_DIFF_UPDATE_STATE;
 
 			if (ITEM_STATE_NORMAL == state)
 			{
@@ -105,7 +105,7 @@ static void	lld_process_task(zbx_ipc_message_t *message)
 		if (NULL != error && 0 != strcmp(error, item.error))
 		{
 			diff.error = error;
-			diff.flags |= ZBX_FLAGS_ITEM_DIFF_UPDATE_ERROR;
+			diff.flags |= TRX_FLAGS_ITEM_DIFF_UPDATE_ERROR;
 		}
 	}
 
@@ -114,16 +114,16 @@ static void	lld_process_task(zbx_ipc_message_t *message)
 		if (item.lastlogsize != lastlogsize)
 		{
 			diff.lastlogsize = lastlogsize;
-			diff.flags |= ZBX_FLAGS_ITEM_DIFF_UPDATE_LASTLOGSIZE;
+			diff.flags |= TRX_FLAGS_ITEM_DIFF_UPDATE_LASTLOGSIZE;
 		}
 		if (item.mtime != mtime)
 		{
 			diff.mtime = mtime;
-			diff.flags |= ZBX_FLAGS_ITEM_DIFF_UPDATE_MTIME;
+			diff.flags |= TRX_FLAGS_ITEM_DIFF_UPDATE_MTIME;
 		}
 	}
 
-	if (ZBX_FLAGS_ITEM_DIFF_UNSET != diff.flags)
+	if (TRX_FLAGS_ITEM_DIFF_UNSET != diff.flags)
 	{
 		zbx_vector_ptr_t	diffs;
 		char			*sql = NULL;
@@ -154,7 +154,7 @@ out:
 }
 
 
-ZBX_THREAD_ENTRY(lld_worker_thread, args)
+TRX_THREAD_ENTRY(lld_worker_thread, args)
 {
 #define	STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
@@ -176,7 +176,7 @@ ZBX_THREAD_ENTRY(lld_worker_thread, args)
 
 	zbx_ipc_message_init(&message);
 
-	if (FAIL == zbx_ipc_socket_open(&lld_socket, ZBX_IPC_SERVICE_LLD, SEC_PER_MIN, &error))
+	if (FAIL == zbx_ipc_socket_open(&lld_socket, TRX_IPC_SERVICE_LLD, SEC_PER_MIN, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot connect to lld manager service: %s", error);
 		zbx_free(error);
@@ -188,20 +188,20 @@ ZBX_THREAD_ENTRY(lld_worker_thread, args)
 	time_stat = zbx_time();
 
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	zbx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
 
-	update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		time_now = zbx_time();
 
 		if (STAT_INTERVAL < time_now - time_stat)
 		{
-			zbx_setproctitle("%s #%d [processed " ZBX_FS_UI64 " LLD rules, idle " ZBX_FS_DBL " sec during "
-					ZBX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
+			zbx_setproctitle("%s #%d [processed " TRX_FS_UI64 " LLD rules, idle " TRX_FS_DBL " sec during "
+					TRX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
 					processed_num, time_idle, time_now - time_stat);
 
 			time_stat = time_now;
@@ -209,13 +209,13 @@ ZBX_THREAD_ENTRY(lld_worker_thread, args)
 			processed_num = 0;
 		}
 
-		update_selfmon_counter(ZBX_PROCESS_STATE_IDLE);
+		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
 		if (SUCCEED != zbx_ipc_socket_read(&lld_socket, &message))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "cannot read LLD manager service request");
 			exit(EXIT_FAILURE);
 		}
-		update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+		update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
 		time_read = zbx_time();
 		time_idle += time_read - time_now;
@@ -223,9 +223,9 @@ ZBX_THREAD_ENTRY(lld_worker_thread, args)
 
 		switch (message.code)
 		{
-			case ZBX_IPC_LLD_TASK:
+			case TRX_IPC_LLD_TASK:
 				lld_process_task(&message);
-				zbx_ipc_socket_write(&lld_socket, ZBX_IPC_LLD_DONE, NULL, 0);
+				zbx_ipc_socket_write(&lld_socket, TRX_IPC_LLD_DONE, NULL, 0);
 				processed_num++;
 				break;
 		}

@@ -43,17 +43,17 @@ if ($data['parent_discoveryid'] !== '') {
 $item = [
 	(new CTextBox('description', $data['description'], true))
 		->setAriaRequired()
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
-	(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
+	(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 	(new CButton('select', _('Select')))
-		->addClass(ZBX_STYLE_BTN_GREY)
+		->addClass(TRX_STYLE_BTN_GREY)
 		->onClick('return PopUp("popup.generic",'.CJs::encodeJson($popup_options).', null, this);')
 ];
 
 if ($data['parent_discoveryid'] !== '') {
-	$item[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+	$item[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 	$item[] = (new CButton('select', _('Select prototype')))
-		->addClass(ZBX_STYLE_BTN_GREY)
+		->addClass(TRX_STYLE_BTN_GREY)
 		->onClick('return PopUp("popup.generic",'.
 			CJs::encodeJson([
 				'srctbl' => 'item_prototypes',
@@ -89,7 +89,7 @@ if (array_key_exists('params', $data['functions'][$data['selectedFunction']])) {
 
 		$label = $param_function['A'] ? (new CLabel($param_function['C']))->setAsteriskMark() : $param_function['C'];
 
-		if ($param_function['T'] == T_ZBX_INT) {
+		if ($param_function['T'] == T_TRX_INT) {
 			$param_type_element = null;
 
 			if (in_array($param_name, ['last'])) {
@@ -115,17 +115,17 @@ if (array_key_exists('params', $data['functions'][$data['selectedFunction']])) {
 				$param_type_element = _('Time');
 			}
 
-			$param_field = (new CTextBox('params['.$param_name.']', $param_value))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH);
+			$param_field = (new CTextBox('params['.$param_name.']', $param_value))->setWidth(TRX_TEXTAREA_SMALL_WIDTH);
 
 			$expression_form_list->addRow($label, [
 				$param_field,
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				$param_type_element
 			]);
 		}
 		else {
 			$expression_form_list->addRow($label,
-				(new CTextBox('params['.$param_name.']', $param_value))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				(new CTextBox('params['.$param_name.']', $param_value))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			);
 			if ($paramid === 0) {
 				$expression_form->addItem((new CVar('paramtype', PARAM_TYPE_TIME))->removeId());
@@ -149,7 +149,7 @@ $expression_form_list->addRow(
 		' ',
 		(new CTextBox('value', $data['value']))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	]
 );
 

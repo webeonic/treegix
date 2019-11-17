@@ -26,7 +26,7 @@ $table = (new CTableInfo())
 		(new CColHeader(
 			(new CCheckBox('all_valuemaps'))
 				->onClick("checkAll('".$form->getName()."', 'all_valuemaps', 'valuemapids');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder']),
 		_('Value map'),
 		_('Used in items')
@@ -45,7 +45,7 @@ foreach ($data['valuemaps'] as $valuemap) {
 		new CCheckBox('valuemapids['.$valuemap['valuemapid'].']', $valuemap['valuemapid']),
 		new CLink($valuemap['name'], 'adm.valuemapping.php?form=update&valuemapid='.$valuemap['valuemapid']),
 		$mappings,
-		$valuemap['used_in_items'] ? (new CCol(_('Yes')))->addClass(ZBX_STYLE_GREEN) : ''
+		$valuemap['used_in_items'] ? (new CCol(_('Yes')))->addClass(TRX_STYLE_GREEN) : ''
 	]);
 }
 

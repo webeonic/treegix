@@ -8,7 +8,7 @@ require_once dirname(__FILE__).'/include/items.inc.php';
 $page['title'] = _('Queue');
 $page['file'] = 'queue.php';
 
-define('ZBX_PAGE_DO_REFRESH', 1);
+define('TRX_PAGE_DO_REFRESH', 1);
 
 require_once dirname(__FILE__).'/include/page_header.php';
 
@@ -20,7 +20,7 @@ $queueModes = [
 
 //		VAR			TYPE	OPTIONAL FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'config' => [T_ZBX_INT, O_OPT, P_SYS, IN($queueModes), null]
+	'config' => [T_TRX_INT, O_OPT, P_SYS, IN($queueModes), null]
 ];
 
 check_fields($fields);
@@ -29,13 +29,13 @@ $config = getRequest('config', CProfile::get('web.queue.config', 0));
 CProfile::update('web.queue.config', $config, PROFILE_TYPE_INT);
 
 // fetch data
-$treegixServer = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
+$treegixServer = new CTreegixServer($TRX_SERVER, $TRX_SERVER_PORT, TRX_SOCKET_TIMEOUT, TRX_SOCKET_BYTES_LIMIT);
 $queueRequests = [
 	QUEUE_OVERVIEW => CTreegixServer::QUEUE_OVERVIEW,
 	QUEUE_OVERVIEW_BY_PROXY => CTreegixServer::QUEUE_OVERVIEW_BY_PROXY,
 	QUEUE_DETAILS => CTreegixServer::QUEUE_DETAILS
 ];
-$queueData = $treegixServer->getQueue($queueRequests[$config], get_cookie(ZBX_SESSION_NAME), QUEUE_DETAIL_ITEM_COUNT);
+$queueData = $treegixServer->getQueue($queueRequests[$config], get_cookie(TRX_SESSION_NAME), QUEUE_DETAIL_ITEM_COUNT);
 
 // check for errors error
 if ($treegixServer->getError()) {
@@ -290,11 +290,11 @@ else {
 
 if ($total !== null) {
 	$total = (new CDiv())
-		->addClass(ZBX_STYLE_TABLE_PAGING)
+		->addClass(TRX_STYLE_TABLE_PAGING)
 		->addItem((new CDiv())
-			->addClass(ZBX_STYLE_PAGING_BTN_CONTAINER)
+			->addClass(TRX_STYLE_PAGING_BTN_CONTAINER)
 			->addItem((new CDiv())
-				->addClass(ZBX_STYLE_TABLE_STATS)
+				->addClass(TRX_STYLE_TABLE_STATS)
 				->addItem($total)
 			)
 		);

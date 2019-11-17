@@ -126,13 +126,13 @@ function get_icon($type, $params = []) {
 		case 'favourite':
 			if (CFavorite::exists($params['fav'], $params['elid'], $params['elname'])) {
 				$icon = (new CRedirectButton(SPACE, null))
-					->addClass(ZBX_STYLE_BTN_REMOVE_FAV)
+					->addClass(TRX_STYLE_BTN_REMOVE_FAV)
 					->setTitle(_('Remove from favourites'))
 					->onClick('rm4favorites("'.$params['elname'].'", "'.$params['elid'].'");');
 			}
 			else {
 				$icon = (new CRedirectButton(SPACE, null))
-					->addClass(ZBX_STYLE_BTN_ADD_FAV)
+					->addClass(TRX_STYLE_BTN_ADD_FAV)
 					->setTitle(_('Add to favourites'))
 					->onClick('add2favorites("'.$params['elname'].'", "'.$params['elid'].'");');
 			}
@@ -142,41 +142,41 @@ function get_icon($type, $params = []) {
 
 		case 'fullscreen':
 			switch (CView::getLayoutMode()) {
-				case ZBX_LAYOUT_KIOSKMODE:
+				case TRX_LAYOUT_KIOSKMODE:
 					$icon = (new CButton(null, '&nbsp;'))
 						->setTitle(_('Normal view'))
-						->setAttribute('data-layout-mode', ZBX_LAYOUT_NORMAL)
-						->addClass(ZBX_LAYOUT_MODE)
-						->addClass(ZBX_STYLE_BTN_DASHBRD_NORMAL)
-						->addClass(ZBX_STYLE_BTN_MIN);
+						->setAttribute('data-layout-mode', TRX_LAYOUT_NORMAL)
+						->addClass(TRX_LAYOUT_MODE)
+						->addClass(TRX_STYLE_BTN_DASHBRD_NORMAL)
+						->addClass(TRX_STYLE_BTN_MIN);
 					break;
 
-				case ZBX_LAYOUT_FULLSCREEN:
+				case TRX_LAYOUT_FULLSCREEN:
 					$icon = (new CButton(null, '&nbsp;'))
 						->setTitle(_('Kiosk mode'))
-						->setAttribute('data-layout-mode', ZBX_LAYOUT_KIOSKMODE)
-						->addClass(ZBX_LAYOUT_MODE)
-						->addClass(ZBX_STYLE_BTN_KIOSK);
+						->setAttribute('data-layout-mode', TRX_LAYOUT_KIOSKMODE)
+						->addClass(TRX_LAYOUT_MODE)
+						->addClass(TRX_STYLE_BTN_KIOSK);
 					break;
 
 				default:
 					$icon = (new CButton(null, '&nbsp;'))
 						->setTitle(_('Fullscreen'))
-						->setAttribute('data-layout-mode', ZBX_LAYOUT_FULLSCREEN)
-						->addClass(ZBX_LAYOUT_MODE)
-						->addClass(ZBX_STYLE_BTN_MAX);
+						->setAttribute('data-layout-mode', TRX_LAYOUT_FULLSCREEN)
+						->addClass(TRX_LAYOUT_MODE)
+						->addClass(TRX_STYLE_BTN_MAX);
 			}
 
 			return $icon;
 
 		case 'screenconf':
 			return (new CRedirectButton(SPACE, null))
-				->addClass(ZBX_STYLE_BTN_CONF)
+				->addClass(TRX_STYLE_BTN_CONF)
 				->setTitle(_('Refresh interval'));
 
 		case 'overviewhelp':
 			return (new CRedirectButton(SPACE, null))
-				->addClass(ZBX_STYLE_BTN_INFO);
+				->addClass(TRX_STYLE_BTN_INFO);
 	}
 }
 
@@ -260,8 +260,8 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 	 * list and host (template) name
 	 */
 	$list = (new CList())
-		->addClass(ZBX_STYLE_OBJECT_GROUP)
-		->addClass(ZBX_STYLE_FILTER_BREADCRUMB);
+		->addClass(TRX_STYLE_OBJECT_GROUP)
+		->addClass(TRX_STYLE_FILTER_BREADCRUMB);
 
 	$breadcrumbs = (new CListItem(null))
 		->setAttribute('role', 'navigation')
@@ -273,7 +273,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 		);
 
 		if ($current_element === '') {
-			$template->addClass(ZBX_STYLE_SELECTED);
+			$template->addClass(TRX_STYLE_SELECTED);
 		}
 
 		$breadcrumbs->addItem([
@@ -304,14 +304,14 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 		switch ($db_host['status']) {
 			case HOST_STATUS_MONITORED:
 				if ($db_host['maintenance_status'] == HOST_MAINTENANCE_STATUS_ON) {
-					$status = (new CSpan(_('In maintenance')))->addClass(ZBX_STYLE_ORANGE);
+					$status = (new CSpan(_('In maintenance')))->addClass(TRX_STYLE_ORANGE);
 				}
 				else {
-					$status = (new CSpan(_('Enabled')))->addClass(ZBX_STYLE_GREEN);
+					$status = (new CSpan(_('Enabled')))->addClass(TRX_STYLE_GREEN);
 				}
 				break;
 			case HOST_STATUS_NOT_MONITORED:
-				$status = (new CSpan(_('Disabled')))->addClass(ZBX_STYLE_RED);
+				$status = (new CSpan(_('Disabled')))->addClass(TRX_STYLE_RED);
 				break;
 			default:
 				$status = _('Unknown');
@@ -321,7 +321,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 		$host = new CSpan(new CLink($name, 'hosts.php?form=update&hostid='.$db_host['hostid']));
 
 		if ($current_element === '') {
-			$host->addClass(ZBX_STYLE_SELECTED);
+			$host->addClass(TRX_STYLE_SELECTED);
 		}
 
 		$breadcrumbs->addItem([
@@ -333,7 +333,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 		$list->addItem($status);
 		$list->addItem(getHostAvailabilityTable($db_host));
 
-		if ($db_host['flags'] == ZBX_FLAG_DISCOVERY_CREATED && $db_host['hostDiscovery']['ts_delete'] != 0) {
+		if ($db_host['flags'] == TRX_FLAG_DISCOVERY_CREATED && $db_host['hostDiscovery']['ts_delete'] != 0) {
 			$info_icons = [getHostLifetimeIndicator(time(), $db_host['hostDiscovery']['ts_delete'])];
 			$list->addItem(makeInformationList($info_icons));
 		}
@@ -352,7 +352,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 			CViewHelper::showNum($db_host['applications'])
 		]);
 		if ($current_element == 'applications') {
-			$applications->addClass(ZBX_STYLE_SELECTED);
+			$applications->addClass(TRX_STYLE_SELECTED);
 		}
 		$content_menu->addItem($applications);
 
@@ -366,7 +366,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 			CViewHelper::showNum($db_host['items'])
 		]);
 		if ($current_element == 'items') {
-			$items->addClass(ZBX_STYLE_SELECTED);
+			$items->addClass(TRX_STYLE_SELECTED);
 		}
 		$content_menu->addItem($items);
 
@@ -380,7 +380,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 			CViewHelper::showNum($db_host['triggers'])
 		]);
 		if ($current_element == 'triggers') {
-			$triggers->addClass(ZBX_STYLE_SELECTED);
+			$triggers->addClass(TRX_STYLE_SELECTED);
 		}
 		$content_menu->addItem($triggers);
 
@@ -390,7 +390,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 			CViewHelper::showNum($db_host['graphs'])
 		]);
 		if ($current_element == 'graphs') {
-			$graphs->addClass(ZBX_STYLE_SELECTED);
+			$graphs->addClass(TRX_STYLE_SELECTED);
 		}
 		$content_menu->addItem($graphs);
 
@@ -401,7 +401,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 				CViewHelper::showNum($db_host['screens'])
 			]);
 			if ($current_element == 'screens') {
-				$screens->addClass(ZBX_STYLE_SELECTED);
+				$screens->addClass(TRX_STYLE_SELECTED);
 			}
 			$content_menu->addItem($screens);
 		}
@@ -412,7 +412,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 			CViewHelper::showNum($db_host['discoveries'])
 		]);
 		if ($current_element == 'discoveries') {
-			$lld_rules->addClass(ZBX_STYLE_SELECTED);
+			$lld_rules->addClass(TRX_STYLE_SELECTED);
 		}
 		$content_menu->addItem($lld_rules);
 
@@ -422,7 +422,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 			CViewHelper::showNum($db_host['httpTests'])
 		]);
 		if ($current_element == 'web') {
-			$http_tests->addClass(ZBX_STYLE_SELECTED);
+			$http_tests->addClass(TRX_STYLE_SELECTED);
 		}
 		$content_menu->addItem($http_tests);
 	}
@@ -435,7 +435,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 		);
 
 		if ($current_element == 'discoveries') {
-			$discovery_rule->addClass(ZBX_STYLE_SELECTED);
+			$discovery_rule->addClass(TRX_STYLE_SELECTED);
 		}
 
 		$list->addItem([
@@ -452,7 +452,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 			CViewHelper::showNum($db_discovery_rule['items'])
 		]);
 		if ($current_element == 'items') {
-			$item_prototypes->addClass(ZBX_STYLE_SELECTED);
+			$item_prototypes->addClass(TRX_STYLE_SELECTED);
 		}
 		$content_menu->addItem($item_prototypes);
 
@@ -464,7 +464,7 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 			CViewHelper::showNum($db_discovery_rule['triggers'])
 		]);
 		if ($current_element == 'triggers') {
-			$trigger_prototypes->addClass(ZBX_STYLE_SELECTED);
+			$trigger_prototypes->addClass(TRX_STYLE_SELECTED);
 		}
 		$content_menu->addItem($trigger_prototypes);
 
@@ -474,18 +474,18 @@ function get_header_host_table($current_element, $hostid, $lld_ruleid = 0) {
 			CViewHelper::showNum($db_discovery_rule['graphs'])
 		]);
 		if ($current_element == 'graphs') {
-			$graph_prototypes->addClass(ZBX_STYLE_SELECTED);
+			$graph_prototypes->addClass(TRX_STYLE_SELECTED);
 		}
 		$content_menu->addItem($graph_prototypes);
 
 		// host prototypes
-		if ($db_host['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) {
+		if ($db_host['flags'] == TRX_FLAG_DISCOVERY_NORMAL) {
 			$host_prototypes = new CSpan([
 				new CLink(_('Host prototypes'), 'host_prototypes.php?parent_discoveryid='.$db_discovery_rule['itemid']),
 				CViewHelper::showNum($db_discovery_rule['hostPrototypes'])
 			]);
 			if ($current_element == 'hosts') {
-				$host_prototypes->addClass(ZBX_STYLE_SELECTED);
+				$host_prototypes->addClass(TRX_STYLE_SELECTED);
 			}
 			$content_menu->addItem($host_prototypes);
 		}
@@ -509,13 +509,13 @@ function get_header_sysmap_table($sysmapid, $name, $severity_min) {
 	$list = (new CList())
 		->setAttribute('role', 'navigation')
 		->setAttribute('aria-label', _x('Hierarchy', 'screen reader'))
-		->addClass(ZBX_STYLE_OBJECT_GROUP)
-		->addClass(ZBX_STYLE_FILTER_BREADCRUMB)
+		->addClass(TRX_STYLE_OBJECT_GROUP)
+		->addClass(TRX_STYLE_FILTER_BREADCRUMB)
 		->addItem([
 			(new CSpan())->addItem(new CLink(_('All maps'), new CUrl('sysmaps.php'))),
 			'/',
 			(new CSpan())
-				->addClass(ZBX_STYLE_SELECTED)
+				->addClass(TRX_STYLE_SELECTED)
 				->addItem(
 					new CLink($name, (new CUrl('treegix.php'))
 						->setArgument('action', 'map.view')
@@ -531,8 +531,8 @@ function get_header_sysmap_table($sysmapid, $name, $severity_min) {
 		$parent_maps = (new CList())
 			->setAttribute('role', 'navigation')
 			->setAttribute('aria-label', _('Upper level maps'))
-			->addClass(ZBX_STYLE_FILTER_BREADCRUMB)
-			->addClass(ZBX_STYLE_OBJECT_GROUP)
+			->addClass(TRX_STYLE_FILTER_BREADCRUMB)
+			->addClass(TRX_STYLE_OBJECT_GROUP)
 			->addItem((new CSpan())->addItem(_('Upper level maps').':'));
 
 		foreach ($parent_sysmaps as $parent_sysmap) {
@@ -563,7 +563,7 @@ function get_header_sysmap_table($sysmapid, $name, $severity_min) {
  */
 function makeFormFooter(CButtonInterface $main_button = null, array $other_buttons = []) {
 	foreach ($other_buttons as $other_button) {
-		$other_button->addClass(ZBX_STYLE_BTN_ALT);
+		$other_button->addClass(TRX_STYLE_BTN_ALT);
 	}
 
 	if ($main_button !== null) {
@@ -571,11 +571,11 @@ function makeFormFooter(CButtonInterface $main_button = null, array $other_butto
 	}
 
 	return (new CList())
-		->addClass(ZBX_STYLE_TABLE_FORMS)
+		->addClass(TRX_STYLE_TABLE_FORMS)
 		->addItem([
-			(new CDiv())->addClass(ZBX_STYLE_TABLE_FORMS_TD_LEFT),
+			(new CDiv())->addClass(TRX_STYLE_TABLE_FORMS_TD_LEFT),
 			(new CDiv($other_buttons))
-				->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)
+				->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)
 				->addClass('tfoot-buttons')
 		]);
 }
@@ -588,25 +588,25 @@ function makeFormFooter(CButtonInterface $main_button = null, array $other_butto
  * @return CDiv
  */
 function getHostAvailabilityTable($host) {
-	$container = (new CDiv())->addClass(ZBX_STYLE_STATUS_CONTAINER);
+	$container = (new CDiv())->addClass(TRX_STYLE_STATUS_CONTAINER);
 
 	foreach (['zbx' => '', 'snmp' => 'snmp_', 'jmx' => 'jmx_', 'ipmi' => 'ipmi_'] as $type => $prefix) {
 		switch ($host[$prefix.'available']) {
 			case HOST_AVAILABLE_TRUE:
-				$ai = (new CSpan($type))->addClass(ZBX_STYLE_STATUS_GREEN);
+				$ai = (new CSpan($type))->addClass(TRX_STYLE_STATUS_GREEN);
 				break;
 			case HOST_AVAILABLE_FALSE:
-				$ai = (new CSpan($type))->addClass(ZBX_STYLE_STATUS_RED);
+				$ai = (new CSpan($type))->addClass(TRX_STYLE_STATUS_RED);
 
 				if ($host[$prefix.'error'] !== '') {
 					$ai
-						->addClass(ZBX_STYLE_CURSOR_POINTER)
-						->setHint($host[$prefix.'error'], ZBX_STYLE_RED);
+						->addClass(TRX_STYLE_CURSOR_POINTER)
+						->setHint($host[$prefix.'error'], TRX_STYLE_RED);
 				}
 
 				break;
 			case HOST_AVAILABLE_UNKNOWN:
-				$ai = (new CSpan($type))->addClass(ZBX_STYLE_STATUS_GREY);
+				$ai = (new CSpan($type))->addClass(TRX_STYLE_STATUS_GREY);
 				break;
 		}
 		$container->addItem($ai);
@@ -760,7 +760,7 @@ function makeAdministrationGeneralMenu($selected) {
  * @return CDiv|string
  */
 function makeInformationList($info_icons) {
-	return $info_icons ? (new CDiv($info_icons))->addClass(ZBX_STYLE_REL_CONTAINER) : '';
+	return $info_icons ? (new CDiv($info_icons))->addClass(TRX_STYLE_REL_CONTAINER) : '';
 }
 
 /**
@@ -772,8 +772,8 @@ function makeInformationList($info_icons) {
  */
 function makeInformationIcon($message) {
 	return (new CSpan())
-		->addClass(ZBX_STYLE_ICON_INFO)
-		->addClass(ZBX_STYLE_STATUS_GREEN)
+		->addClass(TRX_STYLE_ICON_INFO)
+		->addClass(TRX_STYLE_STATUS_GREEN)
 		->setHint($message);
 }
 
@@ -796,8 +796,8 @@ function makeMaintenanceIcon($type, $name, $description) {
 	}
 
 	return (new CSpan())
-		->addClass(ZBX_STYLE_ICON_MAINT)
-		->addClass(ZBX_STYLE_CURSOR_POINTER)
+		->addClass(TRX_STYLE_ICON_MAINT)
+		->addClass(TRX_STYLE_CURSOR_POINTER)
 		->setHint($hint);
 }
 
@@ -817,8 +817,8 @@ function makeSuppressedProblemIcon(array $icon_data) {
 	$maintenance_names = implode(', ', zbx_objectValues($icon_data, 'maintenance_name'));
 
 	return (new CSpan())
-		->addClass(ZBX_STYLE_ICON_INVISIBLE)
-		->addClass(ZBX_STYLE_CURSOR_POINTER)
+		->addClass(TRX_STYLE_ICON_INVISIBLE)
+		->addClass(TRX_STYLE_CURSOR_POINTER)
 		->setHint(
 			_s('Suppressed till: %1$s', ($suppress_until < strtotime('tomorrow'))
 				? zbx_date2str(TIME_FORMAT, $suppress_until)
@@ -851,8 +851,8 @@ function makeActionIcon(array $icon_data) {
 
 	if (array_key_exists('hint', $icon_data)) {
 		$icon
-			->addClass(ZBX_STYLE_CURSOR_POINTER)
-			->setHint($icon_data['hint'], '', true, 'max-width: '.ZBX_ACTIONS_POPUP_MAX_WIDTH.'px;');
+			->addClass(TRX_STYLE_CURSOR_POINTER)
+			->setHint($icon_data['hint'], '', true, 'max-width: '.TRX_ACTIONS_POPUP_MAX_WIDTH.'px;');
 	}
 	elseif (array_key_exists('title', $icon_data)) {
 		$icon->setTitle($icon_data['title']);
@@ -861,7 +861,7 @@ function makeActionIcon(array $icon_data) {
 	if (array_key_exists('aria-label', $icon_data)) {
 		$icon
 			->addItem($icon_data['aria-label'])
-			->addClass(ZBX_STYLE_INLINE_SR_ONLY);
+			->addClass(TRX_STYLE_INLINE_SR_ONLY);
 	}
 
 	return $icon;
@@ -876,9 +876,9 @@ function makeActionIcon(array $icon_data) {
  */
 function makeDescriptionIcon($description) {
 	return (new CSpan())
-		->addClass(ZBX_STYLE_ICON_DESCRIPTION)
-		->addClass(ZBX_STYLE_CURSOR_POINTER)
-		->setHint(zbx_str2links($description), '', true, 'max-width: '.ZBX_ACTIONS_POPUP_MAX_WIDTH.'px;');
+		->addClass(TRX_STYLE_ICON_DESCRIPTION)
+		->addClass(TRX_STYLE_CURSOR_POINTER)
+		->setHint(zbx_str2links($description), '', true, 'max-width: '.TRX_ACTIONS_POPUP_MAX_WIDTH.'px;');
 }
 
 /**
@@ -890,9 +890,9 @@ function makeDescriptionIcon($description) {
  */
 function makeErrorIcon($error) {
 	return (new CSpan())
-		->addClass(ZBX_STYLE_ICON_INFO)
-		->addClass(ZBX_STYLE_STATUS_RED)
-		->setHint($error, ZBX_STYLE_RED);
+		->addClass(TRX_STYLE_ICON_INFO)
+		->addClass(TRX_STYLE_STATUS_RED)
+		->setHint($error, TRX_STYLE_RED);
 }
 
 /**
@@ -904,9 +904,9 @@ function makeErrorIcon($error) {
  */
 function makeUnknownIcon($error) {
 	return (new CSpan())
-		->addClass(ZBX_STYLE_ICON_INFO)
-		->addClass(ZBX_STYLE_STATUS_DARK_GREY)
-		->setHint($error, ZBX_STYLE_RED);
+		->addClass(TRX_STYLE_ICON_INFO)
+		->addClass(TRX_STYLE_STATUS_DARK_GREY)
+		->setHint($error, TRX_STYLE_RED);
 }
 
 /**
@@ -918,8 +918,8 @@ function makeUnknownIcon($error) {
  */
 function makeWarningIcon($error) {
 	return (new CSpan())
-		->addClass(ZBX_STYLE_ICON_INFO)
-		->addClass(ZBX_STYLE_STATUS_YELLOW)
+		->addClass(TRX_STYLE_ICON_INFO)
+		->addClass(TRX_STYLE_STATUS_YELLOW)
 		->setHint($error);
 }
 
@@ -938,7 +938,7 @@ function makeDebugButton() {
 					".blur();".
 				"showHideByName('zbx_debug_info', this.state);"
 			)
-	))->addClass(ZBX_STYLE_BTN_DEBUG);
+	))->addClass(TRX_STYLE_BTN_DEBUG);
 }
 
 /**
@@ -958,12 +958,12 @@ function getTriggerSeverityCss($config) {
 	$css = '';
 
 	$severities = [
-		ZBX_STYLE_NA_BG => $config['severity_color_0'],
-		ZBX_STYLE_INFO_BG => $config['severity_color_1'],
-		ZBX_STYLE_WARNING_BG => $config['severity_color_2'],
-		ZBX_STYLE_AVERAGE_BG => $config['severity_color_3'],
-		ZBX_STYLE_HIGH_BG => $config['severity_color_4'],
-		ZBX_STYLE_DISASTER_BG => $config['severity_color_5']
+		TRX_STYLE_NA_BG => $config['severity_color_0'],
+		TRX_STYLE_INFO_BG => $config['severity_color_1'],
+		TRX_STYLE_WARNING_BG => $config['severity_color_2'],
+		TRX_STYLE_AVERAGE_BG => $config['severity_color_3'],
+		TRX_STYLE_HIGH_BG => $config['severity_color_4'],
+		TRX_STYLE_DISASTER_BG => $config['severity_color_5']
 	];
 
 	foreach ($severities as $class => $color) {
@@ -991,10 +991,10 @@ function getTriggerStatusCss($config) {
 
 	if ($config['custom_color'] == EVENT_CUSTOM_COLOR_ENABLED) {
 		$event_statuses = [
-			ZBX_STYLE_PROBLEM_UNACK_FG => $config['problem_unack_color'],
-			ZBX_STYLE_PROBLEM_ACK_FG => $config['problem_ack_color'],
-			ZBX_STYLE_OK_UNACK_FG => $config['ok_unack_color'],
-			ZBX_STYLE_OK_ACK_FG => $config['ok_ack_color']
+			TRX_STYLE_PROBLEM_UNACK_FG => $config['problem_unack_color'],
+			TRX_STYLE_PROBLEM_ACK_FG => $config['problem_ack_color'],
+			TRX_STYLE_OK_UNACK_FG => $config['ok_unack_color'],
+			TRX_STYLE_OK_ACK_FG => $config['ok_ack_color']
 		];
 
 		foreach ($event_statuses as $class => $color) {

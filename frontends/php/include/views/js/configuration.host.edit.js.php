@@ -5,8 +5,8 @@
 ?>
 <script type="text/x-jquery-tmpl" id="hostInterfaceRow">
 <tr class="interfaceRow" id="hostInterfaceRow_#{iface.interfaceid}" data-interfaceid="#{iface.interfaceid}">
-	<td class="interface-drag-control <?= ZBX_STYLE_TD_DRAG_ICON ?>">
-		<div class="<?= ZBX_STYLE_DRAG_ICON ?>"></div>
+	<td class="interface-drag-control <?= TRX_STYLE_TD_DRAG_ICON ?>">
+		<div class="<?= TRX_STYLE_DRAG_ICON ?>"></div>
 		<input type="hidden" name="interfaces[#{iface.interfaceid}][items]" value="#{iface.items}" />
 		<input type="hidden" name="interfaces[#{iface.interfaceid}][locked]" value="#{iface.locked}" />
 	</td>
@@ -14,10 +14,10 @@
 		<input type="hidden" name="interfaces[#{iface.interfaceid}][isNew]" value="#{iface.isNew}">
 		<input type="hidden" name="interfaces[#{iface.interfaceid}][interfaceid]" value="#{iface.interfaceid}">
 		<input type="hidden" id="interface_type_#{iface.interfaceid}" name="interfaces[#{iface.interfaceid}][type]" value="#{iface.type}">
-		<input name="interfaces[#{iface.interfaceid}][ip]" type="text" style="width: <?= ZBX_TEXTAREA_INTERFACE_IP_WIDTH ?>px" maxlength="64" value="#{iface.ip}">
-		<ul class="interface-bulk <?= ZBX_STYLE_LIST_CHECK_RADIO ?> <?= ZBX_STYLE_HOR_LIST ?>">
+		<input name="interfaces[#{iface.interfaceid}][ip]" type="text" style="width: <?= TRX_TEXTAREA_INTERFACE_IP_WIDTH ?>px" maxlength="64" value="#{iface.ip}">
+		<ul class="interface-bulk <?= TRX_STYLE_LIST_CHECK_RADIO ?> <?= TRX_STYLE_HOR_LIST ?>">
 			<li>
-				<input class="<?= ZBX_STYLE_CHECKBOX_RADIO ?>" type="checkbox" id="interfaces_#{iface.interfaceid}_bulk" name="interfaces[#{iface.interfaceid}][bulk]" value="1" #{attrs.checked_bulk}>
+				<input class="<?= TRX_STYLE_CHECKBOX_RADIO ?>" type="checkbox" id="interfaces_#{iface.interfaceid}_bulk" name="interfaces[#{iface.interfaceid}][bulk]" value="1" #{attrs.checked_bulk}>
 				<label for="interfaces_#{iface.interfaceid}_bulk"><span></span><?= _('Use bulk requests') ?></label>
 			</li>
 		</ul>
@@ -26,7 +26,7 @@
 		<?= (new CTextBox('interfaces[#{iface.interfaceid}][dns]', '#{iface.dns}', false,
 				DB::getFieldLength('interface', 'dns'))
 			)
-				->setWidth(ZBX_TEXTAREA_INTERFACE_DNS_WIDTH)
+				->setWidth(TRX_TEXTAREA_INTERFACE_DNS_WIDTH)
 		?>
 	</td>
 	<?= (new CCol(
@@ -40,16 +40,16 @@
 	?>
 	<td class="interface-port">
 		<?= (new CTextBox('interfaces[#{iface.interfaceid}][port]', '#{iface.port}', false, 64))
-				->setWidth(ZBX_TEXTAREA_INTERFACE_PORT_WIDTH)
+				->setWidth(TRX_TEXTAREA_INTERFACE_PORT_WIDTH)
 				->setAriaRequired()
 		?>
 	</td>
 	<td class="interface-default">
-		<input class="mainInterface <?= ZBX_STYLE_CHECKBOX_RADIO ?>" type="radio" id="interface_main_#{iface.interfaceid}" name="mainInterfaces[#{iface.type}]" value="#{iface.interfaceid}">
+		<input class="mainInterface <?= TRX_STYLE_CHECKBOX_RADIO ?>" type="radio" id="interface_main_#{iface.interfaceid}" name="mainInterfaces[#{iface.type}]" value="#{iface.interfaceid}">
 		<label class="checkboxLikeLabel" for="interface_main_#{iface.interfaceid}" style="height: 16px; width: 16px;"><span></span></label>
 	</td>
-	<td class="<?= ZBX_STYLE_NOWRAP ?> interface-control">
-		<button class="<?= ZBX_STYLE_BTN_LINK ?> remove" type="button" id="removeInterface_#{iface.interfaceid}" data-interfaceid="#{iface.interfaceid}" #{attrs.disabled}><?= _('Remove') ?></button>
+	<td class="<?= TRX_STYLE_NOWRAP ?> interface-control">
+		<button class="<?= TRX_STYLE_BTN_LINK ?> remove" type="button" id="removeInterface_#{iface.interfaceid}" data-interfaceid="#{iface.interfaceid}" #{attrs.disabled}><?= _('Remove') ?></button>
 	</td>
 </tr>
 </script>
@@ -144,7 +144,7 @@
 
 		function addDraggableIcon(domElement) {
 			domElement.draggable({
-				handle: 'div.<?= ZBX_STYLE_DRAG_ICON ?>',
+				handle: 'div.<?= TRX_STYLE_DRAG_ICON ?>',
 				opacity: 0.6,
 				revert: 'invalid',
 				helper: function(event) {
@@ -176,8 +176,8 @@
 		}
 
 		function addNotDraggableIcon(domElement) {
-			jQuery('td.<?= ZBX_STYLE_TD_DRAG_ICON ?> div.<?= ZBX_STYLE_DRAG_ICON ?>', domElement)
-				.addClass('<?= ZBX_STYLE_DISABLED ?>')
+			jQuery('td.<?= TRX_STYLE_TD_DRAG_ICON ?> div.<?= TRX_STYLE_DRAG_ICON ?>', domElement)
+				.addClass('<?= TRX_STYLE_DISABLED ?>')
 				.hover(
 					function (event) {
 						hintBox.showHint(event, this,
@@ -385,7 +385,7 @@
 				if (getHostInterfaceNumericType(hostInterfaceTypeName) == <?= INTERFACE_TYPE_SNMP ?>) {
 					if (jQuery('.interface-bulk', jQuery('#hostInterfaceRow_' + hostInterfaceId)).length == 0) {
 						var bulkList = jQuery('<ul>', {
-							'class': 'interface-bulk <?= ZBX_STYLE_LIST_CHECK_RADIO ?> <?= ZBX_STYLE_HOR_LIST ?>'
+							'class': 'interface-bulk <?= TRX_STYLE_LIST_CHECK_RADIO ?> <?= TRX_STYLE_HOR_LIST ?>'
 						});
 
 						var bulkItem = jQuery('<li>');
@@ -394,7 +394,7 @@
 						bulkItem.append(jQuery('<input>', {
 							id: 'interfaces_' + hostInterfaceId + '_bulk',
 							type: 'checkbox',
-							class: '<?= ZBX_STYLE_CHECKBOX_RADIO ?>',
+							class: '<?= TRX_STYLE_CHECKBOX_RADIO ?>',
 							name: 'interfaces[' + hostInterfaceId + '][bulk]',
 							value: 1,
 							checked: true
@@ -422,11 +422,11 @@
 			},
 			activate: function(event, ui) {
 				if (!jQuery(this).find(ui.draggable).length) {
-					jQuery(this).addClass('<?= ZBX_STYLE_DRAG_DROP_AREA ?>');
+					jQuery(this).addClass('<?= TRX_STYLE_DRAG_DROP_AREA ?>');
 				}
 			},
 			deactivate: function(event, ui) {
-				jQuery(this).removeClass('<?= ZBX_STYLE_DRAG_DROP_AREA ?>');
+				jQuery(this).removeClass('<?= TRX_STYLE_DRAG_DROP_AREA ?>');
 			}
 		});
 

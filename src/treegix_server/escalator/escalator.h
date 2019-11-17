@@ -5,7 +5,7 @@
 
 #include "threads.h"
 
-ZBX_THREAD_ENTRY(escalator_thread, args);
+TRX_THREAD_ENTRY(escalator_thread, args);
 
 
 

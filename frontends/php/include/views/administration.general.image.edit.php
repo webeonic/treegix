@@ -12,7 +12,7 @@ $widget = (new CWidget())
 	);
 
 $imageForm = (new CForm('post', null, 'multipart/form-data'))
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $this->data['form']);
 if (isset($this->data['imageid'])) {
 	$imageForm->addVar('imageid', $this->data['imageid']);
@@ -24,13 +24,13 @@ $imageFormList = (new CFormList('imageFormList'))
 	->addRow(
 		(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $this->data['imagename'], false, 64))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAttribute('autofocus', 'autofocus')
 			->setAriaRequired()
 	)
 	->addRow(
 		(new CLabel(_('Upload'), 'image'))->setAsteriskMark(),
-		(new CFile('image'))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CFile('image'))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	);
 

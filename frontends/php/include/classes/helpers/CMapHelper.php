@@ -598,7 +598,7 @@ class CMapHelper {
 				}
 
 				// Sort hosts by name.
-				CArrayHelper::sort($group['hosts'], ['field' => 'name', 'order' => ZBX_SORT_UP]);
+				CArrayHelper::sort($group['hosts'], ['field' => 'name', 'order' => TRX_SORT_UP]);
 
 				// Define area in which to locate hosts.
 				if ($selement['areatype'] == SYSMAP_ELEMENT_AREA_TYPE_CUSTOM) {

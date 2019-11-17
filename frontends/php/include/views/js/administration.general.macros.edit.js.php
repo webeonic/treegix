@@ -3,25 +3,25 @@
 			(new CCol(
 				(new CTextAreaFlexible('macros[#{rowNum}][macro]', '', ['add_post_js' => false]))
 					->addClass('macro')
-					->setWidth(ZBX_TEXTAREA_MACRO_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_WIDTH)
 					->setAttribute('placeholder', '{$MACRO}')
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			'&rArr;',
 			(new CCol(
 				(new CTextAreaFlexible('macros[#{rowNum}][value]', '', ['add_post_js' => false]))
-					->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 					->setAttribute('placeholder', _('value'))
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			(new CCol(
 				(new CTextAreaFlexible('macros[#{rowNum}][description]', '', ['add_post_js' => false]))
-					->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 					->setAttribute('placeholder', _('description'))
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			(new CCol(
 				(new CButton('macros[#{rowNum}][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('form_row')
 			->toString()
@@ -41,9 +41,9 @@
 			})
 			.dynamicRows({template: '#macro-row-tmpl'})
 			.on('click', 'button.element-table-add', function() {
-				$('#tbl_macros .<?= ZBX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
+				$('#tbl_macros .<?= TRX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
 			})
-			.on('blur', '.<?= ZBX_STYLE_TEXTAREA_FLEXIBLE ?>', function() {
+			.on('blur', '.<?= TRX_STYLE_TEXTAREA_FLEXIBLE ?>', function() {
 				if ($(this).hasClass('macro')) {
 					macroToUpperCase(this);
 				}

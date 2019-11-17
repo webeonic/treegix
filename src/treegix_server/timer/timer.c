@@ -14,7 +14,7 @@
 
 #include "timer.h"
 
-#define ZBX_TIMER_DELAY		SEC_PER_MIN
+#define TRX_TIMER_DELAY		SEC_PER_MIN
 
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
@@ -49,30 +49,30 @@ static void	log_host_maintenance_update(const zbx_host_maintenance_diff_t* diff)
 	size_t	msg_alloc = 0, msg_offset = 0;
 	int	maintenance_off = 0;
 
-	if (0 != (diff->flags & ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_STATUS))
+	if (0 != (diff->flags & TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_STATUS))
 	{
 		if (HOST_MAINTENANCE_STATUS_ON == diff->maintenance_status)
 		{
-			zbx_snprintf_alloc(&msg, &msg_alloc, &msg_offset, "putting host (" ZBX_FS_UI64 ") into",
+			zbx_snprintf_alloc(&msg, &msg_alloc, &msg_offset, "putting host (" TRX_FS_UI64 ") into",
 					diff->hostid);
 		}
 		else
 		{
 			maintenance_off = 1;
-			zbx_snprintf_alloc(&msg, &msg_alloc, &msg_offset, "taking host (" ZBX_FS_UI64 ") out of",
+			zbx_snprintf_alloc(&msg, &msg_alloc, &msg_offset, "taking host (" TRX_FS_UI64 ") out of",
 				diff->hostid);
 		}
 	}
 	else
-		zbx_snprintf_alloc(&msg, &msg_alloc, &msg_offset, "changing host (" ZBX_FS_UI64 ")", diff->hostid);
+		zbx_snprintf_alloc(&msg, &msg_alloc, &msg_offset, "changing host (" TRX_FS_UI64 ")", diff->hostid);
 
 	zbx_strcpy_alloc(&msg, &msg_alloc, &msg_offset, " maintenance");
 
-	if (0 != (diff->flags & ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCEID) && 0 != diff->maintenanceid)
-		zbx_snprintf_alloc(&msg, &msg_alloc, &msg_offset, "(" ZBX_FS_UI64 ")", diff->maintenanceid);
+	if (0 != (diff->flags & TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCEID) && 0 != diff->maintenanceid)
+		zbx_snprintf_alloc(&msg, &msg_alloc, &msg_offset, "(" TRX_FS_UI64 ")", diff->maintenanceid);
 
 
-	if (0 != (diff->flags & ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_TYPE) && 0 == maintenance_off)
+	if (0 != (diff->flags & TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_TYPE) && 0 == maintenance_off)
 	{
 		const char	*description[] = {"with data collection", "without data collection"};
 
@@ -107,11 +107,11 @@ static void	db_update_host_maintenances(const zbx_vector_ptr_t *updates)
 
 		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update hosts set");
 
-		if (0 != (diff->flags & ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCEID))
+		if (0 != (diff->flags & TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCEID))
 		{
 			if (0 != diff->maintenanceid)
 			{
-				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cmaintenanceid=" ZBX_FS_UI64, delim,
+				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cmaintenanceid=" TRX_FS_UI64, delim,
 						diff->maintenanceid);
 			}
 			else
@@ -122,32 +122,32 @@ static void	db_update_host_maintenances(const zbx_vector_ptr_t *updates)
 			delim = ',';
 		}
 
-		if (0 != (diff->flags & ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_TYPE))
+		if (0 != (diff->flags & TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_TYPE))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cmaintenance_type=%u", delim,
 					diff->maintenance_type);
 			delim = ',';
 		}
 
-		if (0 != (diff->flags & ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_STATUS))
+		if (0 != (diff->flags & TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_STATUS))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cmaintenance_status=%u", delim,
 					diff->maintenance_status);
 			delim = ',';
 		}
 
-		if (0 != (diff->flags & ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_FROM))
+		if (0 != (diff->flags & TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_FROM))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cmaintenance_from=%d", delim,
 					diff->maintenance_from);
 		}
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where hostid=" ZBX_FS_UI64 ";\n", diff->hostid);
+		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where hostid=" TRX_FS_UI64 ";\n", diff->hostid);
 
 		if (SUCCEED != DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset))
 			break;
 
-		if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+		if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 			log_host_maintenance_update(diff);
 	}
 
@@ -210,16 +210,16 @@ static void	db_get_query_events(zbx_vector_ptr_t *event_queries, zbx_vector_ptr_
 			" from problem"
 			" where source=%d"
 				" and object=%d"
-				" and " ZBX_SQL_MOD(eventid, %d) "=%d"
+				" and " TRX_SQL_MOD(eventid, %d) "=%d"
 			" order by eventid",
 			EVENT_SOURCE_TRIGGERS, EVENT_OBJECT_TRIGGER, CONFIG_TIMER_FORKS, process_num - 1);
 
 	while (NULL != (row = DBfetch(result)))
 	{
 		query = (zbx_event_suppress_query_t *)zbx_malloc(NULL, sizeof(zbx_event_suppress_query_t));
-		ZBX_STR2UINT64(query->eventid, row[0]);
-		ZBX_STR2UINT64(query->triggerid, row[1]);
-		ZBX_DBROW2UINT64(query->r_eventid, row[2]);
+		TRX_STR2UINT64(query->eventid, row[0]);
+		TRX_STR2UINT64(query->triggerid, row[1]);
+		TRX_DBROW2UINT64(query->r_eventid, row[2]);
 		zbx_vector_uint64_create(&query->functionids);
 		zbx_vector_ptr_create(&query->tags);
 		zbx_vector_uint64_pair_create(&query->maintenances);
@@ -233,15 +233,15 @@ static void	db_get_query_events(zbx_vector_ptr_t *event_queries, zbx_vector_ptr_
 
 	result = DBselect("select eventid,maintenanceid,suppress_until"
 			" from event_suppress"
-			" where " ZBX_SQL_MOD(eventid, %d) "=%d"
+			" where " TRX_SQL_MOD(eventid, %d) "=%d"
 			" order by eventid",
 			CONFIG_TIMER_FORKS, process_num - 1);
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(eventid, row[0]);
+		TRX_STR2UINT64(eventid, row[0]);
 
-		if (FAIL == zbx_vector_ptr_bsearch(event_queries, &eventid, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC))
+		if (FAIL == zbx_vector_ptr_bsearch(event_queries, &eventid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC))
 			zbx_vector_uint64_append(&eventids, eventid);
 
 		if (NULL == data || data->eventid != eventid)
@@ -252,7 +252,7 @@ static void	db_get_query_events(zbx_vector_ptr_t *event_queries, zbx_vector_ptr_
 			zbx_vector_ptr_append(event_data, data);
 		}
 
-		ZBX_DBROW2UINT64(pair.first, row[1]);
+		TRX_DBROW2UINT64(pair.first, row[1]);
 		pair.second = atoi(row[2]);
 		zbx_vector_uint64_pair_append(&data->maintenances, pair);
 	}
@@ -265,7 +265,7 @@ static void	db_get_query_events(zbx_vector_ptr_t *event_queries, zbx_vector_ptr_
 		char	*sql = NULL;
 		size_t	sql_alloc = 0, sql_offset = 0;
 
-		zbx_vector_uint64_uniq(&eventids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_uniq(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
 				"select e.eventid,e.objectid,er.r_eventid"
@@ -281,9 +281,9 @@ static void	db_get_query_events(zbx_vector_ptr_t *event_queries, zbx_vector_ptr_
 		while (NULL != (row = DBfetch(result)))
 		{
 			query = (zbx_event_suppress_query_t *)zbx_malloc(NULL, sizeof(zbx_event_suppress_query_t));
-			ZBX_STR2UINT64(query->eventid, row[0]);
-			ZBX_STR2UINT64(query->triggerid, row[1]);
-			ZBX_DBROW2UINT64(query->r_eventid, row[2]);
+			TRX_STR2UINT64(query->eventid, row[0]);
+			TRX_STR2UINT64(query->triggerid, row[1]);
+			TRX_DBROW2UINT64(query->r_eventid, row[2]);
 			zbx_vector_uint64_create(&query->functionids);
 			zbx_vector_ptr_create(&query->tags);
 			zbx_vector_uint64_pair_create(&query->maintenances);
@@ -291,7 +291,7 @@ static void	db_get_query_events(zbx_vector_ptr_t *event_queries, zbx_vector_ptr_
 		}
 		DBfree_result(result);
 
-		zbx_vector_ptr_sort(event_queries, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+		zbx_vector_ptr_sort(event_queries, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 	}
 
 	zbx_vector_uint64_destroy(&eventids);
@@ -320,7 +320,7 @@ static void	db_get_query_functions(zbx_vector_ptr_t *event_queries)
 
 	/* cache functionids by triggerids */
 
-	zbx_hashset_create(&triggers, 100, ZBX_DEFAULT_UINT64_HASH_FUNC, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_hashset_create(&triggers, 100, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	zbx_vector_uint64_create(&triggerids);
 
@@ -330,8 +330,8 @@ static void	db_get_query_functions(zbx_vector_ptr_t *event_queries)
 		zbx_vector_uint64_append(&triggerids, query->triggerid);
 	}
 
-	zbx_vector_uint64_sort(&triggerids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(&triggerids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&triggerids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_uniq(&triggerids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "select functionid,triggerid from functions where");
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "triggerid", triggerids.values,
@@ -343,8 +343,8 @@ static void	db_get_query_functions(zbx_vector_ptr_t *event_queries)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(functionid, row[0]);
-		ZBX_STR2UINT64(triggerid, row[1]);
+		TRX_STR2UINT64(functionid, row[0]);
+		TRX_STR2UINT64(triggerid, row[1]);
 
 		if (NULL == trigger || trigger->triggerid != triggerid)
 		{
@@ -417,7 +417,7 @@ static void	db_get_query_tags(zbx_vector_ptr_t *event_queries)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(eventid, row[0]);
+		TRX_STR2UINT64(eventid, row[0]);
 
 		while (query->eventid != eventid)
 			query = (zbx_event_suppress_query_t *)event_queries->values[++i];
@@ -485,15 +485,15 @@ static void	db_update_event_suppress_data(int *suppressed_num)
 		for (i = 0; i < event_queries.values_num; i++)
 		{
 			query = (zbx_event_suppress_query_t *)event_queries.values[i];
-			zbx_vector_uint64_pair_sort(&query->maintenances, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+			zbx_vector_uint64_pair_sort(&query->maintenances, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 			k = 0;
 
 			if (FAIL != (j = zbx_vector_ptr_bsearch(&event_data, &query->eventid,
-					ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+					TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 			{
 				data = (zbx_event_suppress_data_t *)event_data.values[j];
-				zbx_vector_uint64_pair_sort(&data->maintenances, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+				zbx_vector_uint64_pair_sort(&data->maintenances, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 				j = 0;
 
@@ -530,8 +530,8 @@ static void	db_update_event_suppress_data(int *suppressed_num)
 						zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 								"update event_suppress"
 								" set suppress_until=%d"
-								" where eventid=" ZBX_FS_UI64
-									" and maintenanceid=" ZBX_FS_UI64 ";\n",
+								" where eventid=" TRX_FS_UI64
+									" and maintenanceid=" TRX_FS_UI64 ";\n",
 									(int)query->maintenances.values[k].second,
 									query->eventid,
 									query->maintenances.values[k].first);
@@ -568,8 +568,8 @@ static void	db_update_event_suppress_data(int *suppressed_num)
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 					"delete from event_suppress"
-					" where eventid=" ZBX_FS_UI64
-						" and maintenanceid=" ZBX_FS_UI64 ";\n",
+					" where eventid=" TRX_FS_UI64
+						" and maintenanceid=" TRX_FS_UI64 ";\n",
 						del_event_maintenances.values[i].first,
 						del_event_maintenances.values[i].second);
 
@@ -581,7 +581,7 @@ static void	db_update_event_suppress_data(int *suppressed_num)
 
 		if (16 < sql_offset)
 		{
-			if (ZBX_DB_OK > DBexecute("%s", sql))
+			if (TRX_DB_OK > DBexecute("%s", sql))
 				goto cleanup;
 		}
 
@@ -636,13 +636,13 @@ static int	update_host_maintenances(void)
 		if (0 != updates.values_num)
 			db_update_host_maintenances(&updates);
 
-		if (ZBX_DB_OK == (tnx_error = DBcommit()) && 0 != (hosts_num = updates.values_num))
+		if (TRX_DB_OK == (tnx_error = DBcommit()) && 0 != (hosts_num = updates.values_num))
 			zbx_dc_flush_host_maintenance_updates(&updates);
 
 		zbx_vector_ptr_clear_ext(&updates, (zbx_clean_func_t)zbx_ptr_free);
 		zbx_vector_uint64_clear(&maintenanceids);
 	}
-	while (ZBX_DB_DOWN == tnx_error);
+	while (TRX_DB_DOWN == tnx_error);
 
 	zbx_vector_ptr_destroy(&updates);
 	zbx_vector_uint64_destroy(&maintenanceids);
@@ -657,7 +657,7 @@ static int	update_host_maintenances(void)
  * Purpose: periodically processes maintenance                                *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(timer_thread, args)
+TRX_THREAD_ENTRY(timer_thread, args)
 {
 	double		sec = 0.0;
 	int		maintenance_time = 0, update_time = 0, idle = 1, events_num, hosts_num, update;
@@ -674,9 +674,9 @@ ZBX_THREAD_ENTRY(timer_thread, args)
 	zbx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
 	zbx_strcpy_alloc(&info, &info_alloc, &info_offset, "started");
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 		zbx_update_env(sec);
@@ -684,7 +684,7 @@ ZBX_THREAD_ENTRY(timer_thread, args)
 		if (1 == process_num)
 		{
 			/* start update process only when all timers have finished their updates */
-			if (sec - maintenance_time >= ZBX_TIMER_DELAY && FAIL == zbx_dc_maintenance_check_update_flags())
+			if (sec - maintenance_time >= TRX_TIMER_DELAY && FAIL == zbx_dc_maintenance_check_update_flags())
 			{
 				zbx_setproctitle("%s #%d [%s, processing maintenances]",
 						get_process_type_string(process_type), process_num, info);
@@ -714,7 +714,7 @@ ZBX_THREAD_ENTRY(timer_thread, args)
 
 				info_offset = 0;
 				zbx_snprintf_alloc(&info, &info_alloc, &info_offset,
-						"updated %d hosts, suppressed %d events in " ZBX_FS_DBL " sec",
+						"updated %d hosts, suppressed %d events in " TRX_FS_DBL " sec",
 						hosts_num, events_num, zbx_time() - sec);
 
 				update_time = (int)sec;
@@ -728,7 +728,7 @@ ZBX_THREAD_ENTRY(timer_thread, args)
 			db_update_event_suppress_data(&events_num);
 
 			info_offset = 0;
-			zbx_snprintf_alloc(&info, &info_alloc, &info_offset, "suppressed %d events in " ZBX_FS_DBL
+			zbx_snprintf_alloc(&info, &info_alloc, &info_offset, "suppressed %d events in " TRX_FS_DBL
 					" sec", events_num, zbx_time() - sec);
 
 			update_time = (int)sec;
@@ -740,7 +740,7 @@ ZBX_THREAD_ENTRY(timer_thread, args)
 			update_time -= update_time % 60;
 			maintenance_time = update_time;
 
-			if (0 > (idle = ZBX_TIMER_DELAY - (zbx_time() - maintenance_time)))
+			if (0 > (idle = TRX_TIMER_DELAY - (zbx_time() - maintenance_time)))
 				idle = 0;
 
 			zbx_setproctitle("%s #%d [%s, idle %d sec]",

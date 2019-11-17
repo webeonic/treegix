@@ -20,7 +20,7 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			)
 		])
@@ -35,7 +35,7 @@ $scriptsTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_scripts'))->onClick("checkAll('".$scriptsForm->getName()."', 'all_scripts', 'scriptids');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder']),
 		_('Type'),
 		_('Execute on'),
@@ -47,23 +47,23 @@ $scriptsTable = (new CTableInfo())
 
 foreach ($data['scripts'] as $script) {
 	switch ($script['type']) {
-		case ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT:
+		case TRX_SCRIPT_TYPE_CUSTOM_SCRIPT:
 			$scriptType = _('Script');
 			break;
-		case ZBX_SCRIPT_TYPE_IPMI:
+		case TRX_SCRIPT_TYPE_IPMI:
 			$scriptType = _('IPMI');
 			break;
 	}
 
-	if ($script['type'] == ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT) {
+	if ($script['type'] == TRX_SCRIPT_TYPE_CUSTOM_SCRIPT) {
 		switch ($script['execute_on']) {
-			case ZBX_SCRIPT_EXECUTE_ON_AGENT:
+			case TRX_SCRIPT_EXECUTE_ON_AGENT:
 				$scriptExecuteOn = _('Agent');
 				break;
-			case ZBX_SCRIPT_EXECUTE_ON_SERVER:
+			case TRX_SCRIPT_EXECUTE_ON_SERVER:
 				$scriptExecuteOn = _('Server');
 				break;
-			case ZBX_SCRIPT_EXECUTE_ON_PROXY:
+			case TRX_SCRIPT_EXECUTE_ON_PROXY:
 				$scriptExecuteOn = _('Server (proxy)');
 				break;
 		}
@@ -76,12 +76,12 @@ foreach ($data['scripts'] as $script) {
 		new CCheckBox('scriptids['.$script['scriptid'].']', $script['scriptid']),
 		(new CCol(
 			new CLink($script['name'], 'treegix.php?action=script.edit&scriptid='.$script['scriptid'])
-		))->addClass(ZBX_STYLE_NOWRAP),
+		))->addClass(TRX_STYLE_NOWRAP),
 		$scriptType,
 		$scriptExecuteOn,
 		(new CCol(
 			zbx_nl2br(htmlspecialchars($script['command'], ENT_COMPAT, 'UTF-8'))
-		))->addClass(ZBX_STYLE_MONOSPACE_FONT),
+		))->addClass(TRX_STYLE_MONOSPACE_FONT),
 		($script['userGroupName'] === null) ? _('All') : $script['userGroupName'],
 		($script['hostGroupName'] === null) ? _('All') : $script['hostGroupName'],
 		($script['host_access'] == PERM_READ_WRITE) ? _('Write') : _('Read')

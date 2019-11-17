@@ -12,7 +12,7 @@ $widget = (new CWidget())
 $controls = (new CList())
 	->addItem([
 		new CLabel(_('Period'), 'period'),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		new CComboBox('period', $data['period'], 'submit()', [
 			'daily' => _('Daily'),
 			'weekly' => _('Weekly'),
@@ -28,7 +28,7 @@ if ($data['period'] != 'yearly') {
 	}
 	$controls->addItem([
 		new CLabel(_('Year'), 'year'),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		new CComboBox('year', $data['year'], 'submit();', $years)
 	]);
 }
@@ -55,7 +55,7 @@ $header = [
 // create table
 $table = (new CTableInfo())->setHeader($header[$data['period']]);
 
-order_result($data['sla']['sla'], 'from', ZBX_SORT_DOWN);
+order_result($data['sla']['sla'], 'from', TRX_SORT_DOWN);
 
 foreach ($data['sla']['sla'] as $sla) {
 	switch ($data['period']) {
@@ -87,7 +87,7 @@ foreach ($data['sla']['sla'] as $sla) {
 				($sla['okTime'] % SEC_PER_DAY) / SEC_PER_HOUR,
 				($sla['okTime'] % SEC_PER_HOUR) / SEC_PER_MIN
 			)
-		))->addClass(ZBX_STYLE_GREEN)
+		))->addClass(TRX_STYLE_GREEN)
 		: '';
 
 	$problems = ($sla['problemTime'] != 0)
@@ -97,7 +97,7 @@ foreach ($data['sla']['sla'] as $sla) {
 				($sla['problemTime'] % SEC_PER_DAY) / SEC_PER_HOUR,
 				($sla['problemTime'] % SEC_PER_HOUR) /SEC_PER_MIN
 			)
-		))->addClass(ZBX_STYLE_RED)
+		))->addClass(TRX_STYLE_RED)
 		: '';
 
 	$downtime = ($sla['downtimeTime'] != 0)
@@ -107,12 +107,12 @@ foreach ($data['sla']['sla'] as $sla) {
 				($sla['downtimeTime'] % SEC_PER_DAY) / SEC_PER_HOUR,
 				($sla['downtimeTime'] % SEC_PER_HOUR) / SEC_PER_MIN
 			)
-		))->addClass(ZBX_STYLE_GREY)
+		))->addClass(TRX_STYLE_GREY)
 		: '';
 
 	$percentage = $data['service']['showsla']
 		? (new CSpan(sprintf('%2.4f', $sla['sla'])))
-			->addClass($sla['sla'] >= $data['service']['goodsla'] ? ZBX_STYLE_GREEN : ZBX_STYLE_RED)
+			->addClass($sla['sla'] >= $data['service']['goodsla'] ? TRX_STYLE_GREEN : TRX_STYLE_RED)
 		: '';
 
 	$goodsla = $data['service']['showsla'] ? $data['service']['goodsla'] : '';

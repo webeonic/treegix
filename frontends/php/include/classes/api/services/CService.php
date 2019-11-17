@@ -180,7 +180,7 @@ class CService extends CApiService {
 	public function validateUpdate(array $services) {
 		foreach ($services as $service) {
 			if (empty($service['serviceid'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
 			}
 		}
 
@@ -313,7 +313,7 @@ class CService extends CApiService {
 	 */
 	public function validateDelete($serviceIds) {
 		if (!$serviceIds) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$this->checkServicePermissions($serviceIds);
@@ -346,12 +346,12 @@ class CService extends CApiService {
 	 */
 	protected function validateAddDependencies(array $dependencies) {
 		if (!$dependencies) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		foreach ($dependencies as $dependency) {
 			if (empty($dependency['serviceid']) || empty($dependency['dependsOnServiceid'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
 			}
 		}
 
@@ -410,7 +410,7 @@ class CService extends CApiService {
 	 */
 	protected function validateDeleteDependencies(array $serviceIds) {
 		if (!$serviceIds) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$this->checkServicePermissions($serviceIds);
@@ -478,7 +478,7 @@ class CService extends CApiService {
 	 */
 	protected function validateDeleteTimes(array $serviceIds) {
 		if (!$serviceIds) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$this->checkServicePermissions($serviceIds);
@@ -833,7 +833,7 @@ class CService extends CApiService {
 	 */
 	protected function checkName(array $service) {
 		if (!isset($service['name']) || zbx_empty($service['name'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty name.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty name.'));
 		}
 	}
 
@@ -846,7 +846,7 @@ class CService extends CApiService {
 	 */
 	protected function checkAlgorithm(array $service) {
 		if (!isset($service['algorithm']) || !serviceAlgorithm($service['algorithm'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect algorithm for service "%1$s".', $service['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect algorithm for service "%1$s".', $service['name']));
 		}
 	}
 
@@ -863,7 +863,7 @@ class CService extends CApiService {
 			SERVICE_SHOW_SLA_ON => true
 		];
 		if (!isset($service['showsla']) || !isset($showSlaValues[$service['showsla']])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect calculate SLA value for service "%1$s".', $service['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect calculate SLA value for service "%1$s".', $service['name']));
 		}
 	}
 
@@ -879,7 +879,7 @@ class CService extends CApiService {
 				|| (isset($service['goodsla'])
 					&& (!is_numeric($service['goodsla']) || $service['goodsla'] < 0 || $service['goodsla'] > 100))) {
 
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect acceptable SLA for service "%1$s".', $service['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect acceptable SLA for service "%1$s".', $service['name']));
 		}
 	}
 
@@ -894,7 +894,7 @@ class CService extends CApiService {
 		if (!isset($service['sortorder']) || !zbx_is_int($service['sortorder'])
 			|| $service['sortorder'] < 0 || $service['sortorder'] > 999) {
 
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect sort order for service "%1$s".', $service['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect sort order for service "%1$s".', $service['name']));
 		}
 	}
 
@@ -907,7 +907,7 @@ class CService extends CApiService {
 	 */
 	protected function checkTriggerId(array $service) {
 		if (!empty($service['triggerid']) && !zbx_is_int($service['triggerid'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect trigger ID for service "%1$s".', $service['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect trigger ID for service "%1$s".', $service['name']));
 		}
 	}
 
@@ -921,15 +921,15 @@ class CService extends CApiService {
 	protected function checkParentId(array $service) {
 		if (!empty($service['parentid']) && !zbx_is_int($service['parentid'])) {
 			if (isset($service['name'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect parent for service "%1$s".', $service['name']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect parent for service "%1$s".', $service['name']));
 			}
 			else {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect parent service.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect parent service.'));
 			}
 		}
 
 		if (isset($service['serviceid']) && idcmp($service['serviceid'], $service['parentid'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Service cannot be parent and child at the same time.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Service cannot be parent and child at the same time.'));
 		}
 	}
 
@@ -942,7 +942,7 @@ class CService extends CApiService {
 	 */
 	protected function checkStatus(array $service) {
 		if (!empty($service['status']) && !zbx_is_int($service['status'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect status for service "%1$s".', $service['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect status for service "%1$s".', $service['name']));
 		}
 	}
 
@@ -968,7 +968,7 @@ class CService extends CApiService {
 			]);
 
 			if ($count != count($triggerids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -992,7 +992,7 @@ class CService extends CApiService {
 			]);
 
 			if ($count != count($serviceids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -1023,7 +1023,7 @@ class CService extends CApiService {
 				'limit' => 1
 			]);
 			$service = reset($service);
-			self::exception(ZBX_API_ERROR_PERMISSIONS,
+			self::exception(TRX_API_ERROR_PERMISSIONS,
 				_s('Service "%1$s" cannot be deleted, because it is dependent on another service.', $service['name'])
 			);
 		}
@@ -1043,7 +1043,7 @@ class CService extends CApiService {
 				'serviceids' => $dependency['serviceid']
 			]);
 			$service = reset($service);
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Service "%1$s" cannot be dependent on itself.', $service['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Service "%1$s" cannot be dependent on itself.', $service['name']));
 		}
 
 		// check 'soft' field value
@@ -1053,7 +1053,7 @@ class CService extends CApiService {
 				'serviceids' => $dependency['serviceid']
 			]);
 			$service = reset($service);
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect "soft" field value for dependency for service "%1$s".', $service['name'])
 			);
 		}
@@ -1094,7 +1094,7 @@ class CService extends CApiService {
 					'serviceids' => $dep['servicedownid']
 				]);
 				$service = reset($service);
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Service "%1$s" is already hardlinked to a different service.', $service['name'])
 				);
 			}
@@ -1117,7 +1117,7 @@ class CService extends CApiService {
 					' WHERE '.dbConditionInt('s.serviceid', $parentServiceIds).
 					' AND s.triggerid IS NOT NULL', 1);
 			if ($parentService = DBfetch($query)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Service "%1$s" cannot be linked to a trigger and have children at the same time.', $parentService['name']));
 			}
 		}
@@ -1165,7 +1165,7 @@ class CService extends CApiService {
 	protected function dfCircularitySearch($id, $depId, &$arr) {
 		if ($id == $depId) {
 			// cycle found
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Services form a circular dependency.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Services form a circular dependency.'));
 		}
 		if (isset($arr[$depId])) {
 			foreach ($arr[$depId] as $dep) {
@@ -1183,7 +1183,7 @@ class CService extends CApiService {
 	 */
 	protected function checkTime(array $serviceTime) {
 		if (empty($serviceTime['serviceid'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Invalid method parameters.'));
 		}
 
 		checkServiceTime($serviceTime);

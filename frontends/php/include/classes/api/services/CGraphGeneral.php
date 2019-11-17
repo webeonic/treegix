@@ -44,7 +44,7 @@ abstract class CGraphGeneral extends CApiService {
 		foreach ($graphs as &$graph) {
 			// check permissions
 			if (!isset($dbGraphs[$graph['graphid']])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 
 			// cannot update discovered graphs
@@ -54,7 +54,7 @@ abstract class CGraphGeneral extends CApiService {
 			if (isset($graph['gitems'])) {
 				foreach ($graph['gitems'] as $item) {
 					if (isset($item['gitemid']) && !$item['gitemid']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Missing "gitemid" field for item.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Missing "gitemid" field for item.'));
 					}
 
 					if (isset($item['gitemid']) && $item['gitemid']) {
@@ -65,7 +65,7 @@ abstract class CGraphGeneral extends CApiService {
 						}
 
 						if (!in_array($item['gitemid'], $validGraphItemIds)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_('No permissions to referred object or it does not exist!')
 							);
 						}
@@ -270,7 +270,7 @@ abstract class CGraphGeneral extends CApiService {
 			$cntExist = API::Item()->get($options);
 
 			if ($cntExist != count($axisItems)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect item for axis value.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect item for axis value.'));
 			}
 		}
 
@@ -283,7 +283,7 @@ abstract class CGraphGeneral extends CApiService {
 				}
 			}
 			if ($sumItems > 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s($this->getErrorMsg(self::ERROR_GRAPH_SUM), $graph['name'])
 				);
 			}
@@ -294,7 +294,7 @@ abstract class CGraphGeneral extends CApiService {
 			&& $graph['ymin_type'] == GRAPH_YAXIS_TYPE_FIXED
 			&& $graph['ymax_type'] == GRAPH_YAXIS_TYPE_FIXED
 			&& $graph['yaxismin'] >= $graph['yaxismax']) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Y axis MAX value must be greater than Y axis MIN value.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Y axis MAX value must be greater than Y axis MIN value.'));
 		}
 	}
 
@@ -407,12 +407,12 @@ abstract class CGraphGeneral extends CApiService {
 			// validate graph name
 			$fields = ['name' => null];
 			if (!check_db_fields($fields, $graph)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _($this->getErrorMsg(self::ERROR_MISSING_GRAPH_NAME)));
+				self::exception(TRX_API_ERROR_PARAMETERS, _($this->getErrorMsg(self::ERROR_MISSING_GRAPH_NAME)));
 			}
 
 			// graph items are mandatory
 			if (!isset($graph['gitems']) || !is_array($graph['gitems']) || !$graph['gitems']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s($this->getErrorMsg(self::ERROR_MISSING_GRAPH_ITEMS), $graph['name'])
 				);
 			}
@@ -423,7 +423,7 @@ abstract class CGraphGeneral extends CApiService {
 				foreach ($graph['gitems'] as $gitem) {
 					// "itemid" is required
 					if (!check_db_fields($fields, $gitem)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Missing "itemid" field for item.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Missing "itemid" field for item.'));
 					}
 
 					// assigning with key preserves unique itemids
@@ -434,7 +434,7 @@ abstract class CGraphGeneral extends CApiService {
 			// add Y min axis item ID for permission validation
 			if (array_key_exists('ymin_type', $graph) && $graph['ymin_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 				if (!CApiInputValidator::validate($itemid_rules, $graph['ymin_itemid'], 'ymin_itemid', $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 				else {
 					$itemIds[$graph['ymin_itemid']] = $graph['ymin_itemid'];
@@ -444,7 +444,7 @@ abstract class CGraphGeneral extends CApiService {
 			// add Y max axis item ID for permission validation
 			if (array_key_exists('ymax_type', $graph) && $graph['ymax_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 				if (!CApiInputValidator::validate($itemid_rules, $graph['ymax_itemid'], 'ymax_itemid', $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 				else {
 					$itemIds[$graph['ymax_itemid']] = $graph['ymax_itemid'];
@@ -474,7 +474,7 @@ abstract class CGraphGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		$read_only_fields = ['templateid', 'flags'];
@@ -501,7 +501,7 @@ abstract class CGraphGeneral extends CApiService {
 				}
 
 				if ($templatedGraph && count($graphHosts) > 1) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s($this->getErrorMsg(self::ERROR_TEMPLATE_HOST_MIX), $graph['name'])
 					);
 				}
@@ -509,13 +509,13 @@ abstract class CGraphGeneral extends CApiService {
 				// check color
 				foreach ($graph['gitems'] as $gitem) {
 					if (!isset($gitem['color'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s($this->getErrorMsg(self::ERROR_MISSING_REQUIRED_VALUE), 'color')
 						);
 					}
 
 					if (!$colorValidator->validate($gitem['color'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, $colorValidator->getError());
+						self::exception(TRX_API_ERROR_PARAMETERS, $colorValidator->getError());
 					}
 				}
 			}
@@ -542,7 +542,7 @@ abstract class CGraphGeneral extends CApiService {
 		foreach ($graphs as $graph) {
 			// graph items are optional
 			if (isset($graph['gitems']) && (!is_array($graph['gitems']) || !$graph['gitems'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s($this->getErrorMsg(self::ERROR_MISSING_GRAPH_ITEMS), $graph['name'])
 				);
 			}
@@ -552,7 +552,7 @@ abstract class CGraphGeneral extends CApiService {
 				foreach ($graph['gitems'] as $gitem) {
 					// "itemid" is required only if no "gitemid" is set
 					if (!isset($gitem['gitemid']) && !check_db_fields($dbFields, $gitem)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Missing "itemid" field for item.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Missing "itemid" field for item.'));
 					}
 
 					// assigning with key preserves unique itemids
@@ -563,7 +563,7 @@ abstract class CGraphGeneral extends CApiService {
 			// add Y min axis item ID for permission validation
 			if (array_key_exists('ymin_type', $graph) && $graph['ymin_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 				if (!CApiInputValidator::validate($itemid_rules, $graph['ymin_itemid'], 'ymin_itemid', $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 				else {
 					$itemIds[$graph['ymin_itemid']] = $graph['ymin_itemid'];
@@ -573,7 +573,7 @@ abstract class CGraphGeneral extends CApiService {
 			// add Y max axis item ID for permission validation
 			if (array_key_exists('ymax_type', $graph) && $graph['ymax_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 				if (!CApiInputValidator::validate($itemid_rules, $graph['ymax_itemid'], 'ymax_itemid', $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 				else {
 					$itemIds[$graph['ymax_itemid']] = $graph['ymax_itemid'];
@@ -605,7 +605,7 @@ abstract class CGraphGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		$read_only_fields = ['templateid', 'flags'];
@@ -652,7 +652,7 @@ abstract class CGraphGeneral extends CApiService {
 						$itemHosts = array_unique(zbx_objectValues($itemHosts, 'hostid'));
 
 						if (count($itemHosts) > 1 || !in_array($host['hostid'], $itemHosts)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s($this->getErrorMsg(self::ERROR_TEMPLATE_HOST_MIX), $graph['name'])
 							);
 						}
@@ -663,7 +663,7 @@ abstract class CGraphGeneral extends CApiService {
 				foreach ($graph['gitems'] as $gitem) {
 					// check color
 					if (isset($gitem['color']) && !$colorValidator->validate($gitem['color'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, $colorValidator->getError());
+						self::exception(TRX_API_ERROR_PARAMETERS, $colorValidator->getError());
 					}
 				}
 			}
@@ -718,7 +718,7 @@ abstract class CGraphGeneral extends CApiService {
 				}
 
 				if ($duplicateGraphsFound) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Graph with name "%1$s" already exists in graphs or graph prototypes.', $graph['name'])
 					);
 				}
@@ -731,7 +731,7 @@ abstract class CGraphGeneral extends CApiService {
 				}
 
 				if (isset($graphNames[$graph['name']][$id])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('More than one graph with name "%1$s" within host.', $graph['name'])
 					);
 				}

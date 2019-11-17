@@ -53,7 +53,7 @@ function getFontComboBox($name) {
 ?>
 <script type="text/x-jquery-tmpl" id="mapElementFormTpl">
 	<?= (new CDiv(new CTag('h4', true, _('Map element'))))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD)
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD)
 			->setId('formDragHandler')
 			->toString()
 	?>
@@ -90,15 +90,15 @@ function getFontComboBox($name) {
 					)
 					->addRow(new CLabel(_('Area size'), 'areaSizeWidth'), [
 						_('Width'),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						(new CTextBox('width'))
-							->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+							->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 							->setId('areaSizeWidth'),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						_('Height'),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						(new CTextBox('height'))
-							->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+							->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 							->setId('areaSizeHeight')
 					], 'areaSizeRow')
 					->addRow(_('Placing algorithm'),
@@ -109,7 +109,7 @@ function getFontComboBox($name) {
 					)
 					->addRow(_('Label'),
 						(new CTextArea('label'))
-							->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+							->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 							->setRows(2)
 							->setId('elementLabel')
 					)
@@ -127,7 +127,7 @@ function getFontComboBox($name) {
 							'name' => 'elementNameHostGroup',
 							'object_name' => 'hostGroup',
 							'multiple' => false
-						]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 							->setAriaRequired(),
 						'hostGroupSelectRow'
 					)
@@ -136,7 +136,7 @@ function getFontComboBox($name) {
 							'name' => 'elementNameHost',
 							'object_name' => 'hosts',
 							'multiple' => false
-						]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 							->setAriaRequired(),
 						'hostSelectRow'
 					)
@@ -148,8 +148,8 @@ function getFontComboBox($name) {
 								->setAttribute('style', 'width: 100%;')
 								->addClass('ui-sortable')
 						]))
-							->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-							->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+							->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+							->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 					], 'triggerListRow')
 					->addRow((new CLabel(_('New triggers'), 'elementNameTriggers_ms')),
 						(new CDiv([
@@ -168,26 +168,26 @@ function getFontComboBox($name) {
 										'real_hosts' => true
 									]
 								]
-							]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+							]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 							new CDiv(
 								(new CButton(null, _('Add')))
-									->addClass(ZBX_STYLE_BTN_LINK)
+									->addClass(TRX_STYLE_BTN_LINK)
 									->setId('newSelementTriggers')
 						)]))
-							->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-							->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;'),
+							->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+							->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;'),
 						'triggerSelectRow'
 					)
 					->addRow((new CLabel(_('Map'), 'elementName'))->setAsteriskMark(), [
 						(new CTextBox('elementName'))
 							->setReadonly(true)
 							->setId('elementNameMap')
-							->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+							->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 							->setAriaRequired(),
 						(new CVar('elements[0][sysmapid]', 0, 'sysmapid')),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						(new CButton(null, _('Select')))
-							->addClass(ZBX_STYLE_BTN_GREY)
+							->addClass(TRX_STYLE_BTN_GREY)
 							->onClick('return PopUp("popup.generic",jQuery.extend('.
 								CJs::encodeJson([
 									'srctbl' => 'sysmaps',
@@ -203,11 +203,11 @@ function getFontComboBox($name) {
 					->addRow(_('Application'), [
 						(new CTextBox('application'))
 							->setId('application')
-							->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						(new CButton(null, _('Select')))
 							->setId('application-select')
-							->addClass(ZBX_STYLE_BTN_GREY)
+							->addClass(TRX_STYLE_BTN_GREY)
 					], 'application-select-row')
 					->addRow(_('Automatic icon selection'),
 						new CCheckBox('use_iconmap'),
@@ -235,17 +235,17 @@ function getFontComboBox($name) {
 								)
 								->setAttribute('style', 'width: 100%;')
 						))
-							->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-							->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+							->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+							->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 					)
 					->addRow(new CLabel(_('Coordinates'), 'x'), [
 						_('X'),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-						(new CTextBox('x'))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+						(new CTextBox('x'))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						_('Y'),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-						(new CTextBox('y'))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+						(new CTextBox('y'))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 					], 'areaSizeRow')
 					->addRow(_('URLs'),
 						(new CDiv([
@@ -254,28 +254,28 @@ function getFontComboBox($name) {
 								->setId('urlContainer')
 								->setAttribute('style', 'width: 100%;'),
 							(new CButton(null, _('Add')))
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 								->setId('newSelementUrl')
 						]))
-							->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-							->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+							->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+							->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 					)
 					->addItem([
-						(new CDiv())->addClass(ZBX_STYLE_TABLE_FORMS_TD_LEFT),
+						(new CDiv())->addClass(TRX_STYLE_TABLE_FORMS_TD_LEFT),
 						(new CDiv([
 							(new CButton(null, _('Apply')))
 								->addClass('element-edit-control')
 								->setId('elementApply'),
 							(new CButton(null, _('Remove')))
 								->addClass('element-edit-control')
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('elementRemove'),
 							(new CButton(null, _('Close')))
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('elementClose')
 						]))
-							->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)
-							->addClass(ZBX_STYLE_TFOOT_BUTTONS)
+							->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)
+							->addClass(TRX_STYLE_TFOOT_BUTTONS)
 					])
 			)
 			->toString()
@@ -284,7 +284,7 @@ function getFontComboBox($name) {
 
 <script type="text/x-jquery-tmpl" id="mapShapeFormTpl">
 	<?= (new CDiv(new CTag('h4', true, _('Map shape'))))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD)
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD)
 			->setId('shapeDragHandler')
 			->toString().
 		(new CForm())
@@ -306,42 +306,42 @@ function getFontComboBox($name) {
 						(new CDiv([
 							(new CTextArea('text'))
 								->addStyle('margin-bottom: 4px;')
-								->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+								->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 								->setRows(3),
 							BR(),
 							_('Font'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							getFontComboBox('font'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							_('Font size'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-							(new CTextBox('font_size'))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+							(new CTextBox('font_size'))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							_('Colour'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CColor('font_color', '#{color}'))->appendColorPickerJs(false),
 							BR(),
 							_('Horizontal align'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CComboBox('text_halign', SYSMAP_SHAPE_LABEL_HALIGN_CENTER, null,
 								$horizontal_align_types
 							))
 								->setAttribute('style', 'margin-top: 4px'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							_('Vertical align'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CComboBox('text_valign', SYSMAP_SHAPE_LABEL_VALIGN_MIDDLE, null,
 								$vertical_align_types
 							))
-						]))->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR),
+						]))->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR),
 						'shape-text-row'
 					)
 					->addRow(_('Background'),
 						(new CDiv([
 							_('Colour'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CColor('background_color', '#{color}'))->appendColorPickerJs(false),
-						]))->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR),
+						]))->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR),
 						'shape-background-row'
 					)
 					->addRow((new CSpan())
@@ -350,19 +350,19 @@ function getFontComboBox($name) {
 							->setAttribute('data-value-2', _('Line')),
 						(new CDiv([
 							_('Type'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CComboBox('border_type', null, null, $shape_border_types)),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							_('Width'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-							(new CTextBox('border_width'))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+							(new CTextBox('border_width'))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							_('Colour'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CColor('border_color', '#{color}'))->appendColorPickerJs(false),
 						]))
-							->addClass(ZBX_STYLE_NOWRAP)
-							->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+							->addClass(TRX_STYLE_NOWRAP)
+							->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 					)
 					->addRow((new CSpan())
 							->addClass('switchable-content')
@@ -373,16 +373,16 @@ function getFontComboBox($name) {
 								->addClass('switchable-content')
 								->setAttribute('data-value', _('X'))
 								->setAttribute('data-value-2', _('X1')),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-							(new CTextBox('x'))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+							(new CTextBox('x'))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CSpan())
 								->addClass('switchable-content')
 								->setAttribute('data-value', _('Y'))
 								->setAttribute('data-value-2', _('Y1')),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-							(new CTextBox('y'))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
-						]))->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+							(new CTextBox('y'))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+						]))->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 					)
 					->addRow((new CSpan())
 							->addClass('switchable-content')
@@ -393,37 +393,37 @@ function getFontComboBox($name) {
 								->addClass('switchable-content')
 								->setAttribute('data-value', _('Width'))
 								->setAttribute('data-value-2', _('X2')),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CTextBox('width'))
-								->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+								->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 								->setId('areaSizeWidth'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CSpan())
 								->addClass('switchable-content')
 								->setAttribute('data-value', _('Height'))
 								->setAttribute('data-value-2', _('Y2')),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							(new CTextBox('height'))
-								->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+								->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 								->setId('areaSizeHeight')
-						]))->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+						]))->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 					)
 					->addItem([
-						(new CDiv())->addClass(ZBX_STYLE_TABLE_FORMS_TD_LEFT),
+						(new CDiv())->addClass(TRX_STYLE_TABLE_FORMS_TD_LEFT),
 						(new CDiv([
 							(new CButton(null, _('Apply')))
 								->addClass('shape-edit-control')
 								->setId('shapeApply'),
 							(new CButton(null, _('Remove')))
 								->addClass('shape-edit-control')
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('shapeRemove'),
 							(new CButton(null, _('Close')))
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('shapeClose')
 						]))
-							->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)
-							->addClass(ZBX_STYLE_TFOOT_BUTTONS)
+							->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)
+							->addClass(TRX_STYLE_TFOOT_BUTTONS)
 					])
 			)
 			->toString()
@@ -432,7 +432,7 @@ function getFontComboBox($name) {
 
 <script type="text/x-jquery-tmpl" id="mapMassShapeFormTpl">
 	<?= (new CDiv(new CTag('h4', true, _('Mass update shapes'))))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD)
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD)
 			->setId('massShapeDragHandler')
 			->toString().
 		(new CForm())
@@ -454,7 +454,7 @@ function getFontComboBox($name) {
 							->setId('chkboxText')
 							->setLabel(_('Text')),
 						(new CTextArea('mass_text'))
-								->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+								->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 								->setRows(2),
 						null, 'shape_figure_row'
 					)
@@ -467,7 +467,7 @@ function getFontComboBox($name) {
 					->addRow((new CCheckBox('chkbox_font_size'))
 							->setId('chkboxFontSize')
 							->setLabel(_('Font size')),
-						(new CTextBox('mass_font_size'))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+						(new CTextBox('mass_font_size'))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
 						null, 'shape_figure_row'
 					)
 					->addRow((new CCheckBox('chkbox_font_color'))
@@ -516,7 +516,7 @@ function getFontComboBox($name) {
 								->setAttribute('data-value', _('Border width'))
 								->setAttribute('data-value-2', _('Line width'))
 							),
-						(new CTextBox('mass_border_width'))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+						(new CTextBox('mass_border_width'))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 					)
 					->addRow((new CCheckBox('chkbox_border_color'))
 							->setId('chkboxBorderColor')
@@ -529,21 +529,21 @@ function getFontComboBox($name) {
 						(new CColor('mass_border_color', '#{color}'))->appendColorPickerJs(false)
 					)
 					->addItem([
-						(new CDiv())->addClass(ZBX_STYLE_TABLE_FORMS_TD_LEFT),
+						(new CDiv())->addClass(TRX_STYLE_TABLE_FORMS_TD_LEFT),
 						(new CDiv([
 							(new CButton(null, _('Apply')))
 								->addClass('shape-edit-control')
 								->setId('shapeMassApply'),
 							(new CButton(null, _('Remove')))
 								->addClass('shape-edit-control')
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('shapeMassRemove'),
 							(new CButton(null, _('Close')))
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('shapeMassClose')
 						]))
-							->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)
-							->addClass(ZBX_STYLE_TFOOT_BUTTONS)
+							->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)
+							->addClass(TRX_STYLE_TFOOT_BUTTONS)
 					])
 			)
 			->toString()
@@ -552,7 +552,7 @@ function getFontComboBox($name) {
 
 <script type="text/x-jquery-tmpl" id="mapMassFormTpl">
 	<?= (new CDiv(new CTag('h4', true, _('Mass update elements'))))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD)
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD)
 			->setId('massDragHandler')
 			->toString()
 	?>
@@ -568,15 +568,15 @@ function getFontComboBox($name) {
 								->setAttribute('style', 'width: 100%;')
 								->setId('massList')
 						))
-							->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-							->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+							->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+							->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 					)
 					->addRow(
 						(new CCheckBox('chkbox_label'))
 							->setId('chkboxLabel')
 							->setLabel(_('Label')),
 						(new CTextArea('label'))
-							->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+							->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 							->setRows(2)
 							->setId('massLabel')
 					)
@@ -624,21 +624,21 @@ function getFontComboBox($name) {
 						(new CComboBox('iconid_disabled'))->setId('massIconidDisabled')
 					)
 					->addItem([
-						(new CDiv())->addClass(ZBX_STYLE_TABLE_FORMS_TD_LEFT),
+						(new CDiv())->addClass(TRX_STYLE_TABLE_FORMS_TD_LEFT),
 						(new CDiv([
 							(new CButton(null, _('Apply')))
 								->addClass('element-edit-control')
 								->setId('massApply'),
 							(new CButton(null, _('Remove')))
 								->addClass('element-edit-control')
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('massRemove'),
 							(new CButton(null, _('Close')))
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('massClose')
 						]))
-							->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)
-							->addClass(ZBX_STYLE_TFOOT_BUTTONS)
+							->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)
+							->addClass(TRX_STYLE_TFOOT_BUTTONS)
 					])
 			)
 			->toString()
@@ -658,8 +658,8 @@ function getFontComboBox($name) {
 					->setAttribute('style', 'width: 100%;')
 					->setId('element-links')
 			))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;'),
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;'),
 			null, 'element-links'
 		)
 		->addRow(_('Links'),
@@ -669,8 +669,8 @@ function getFontComboBox($name) {
 					->setAttribute('style', 'width: 100%;')
 					->setId('mass-element-links')
 			))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;'),
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;'),
 			null, 'element-links'
 		)
 		->setId('mapLinksContainer')
@@ -684,7 +684,7 @@ function getFontComboBox($name) {
 				(new CFormList())
 					->addRow(_('Label'),
 						(new CTextArea('label'))
-							->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+							->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 							->setRows(2)
 							->setId('linklabel')
 					)
@@ -707,7 +707,7 @@ function getFontComboBox($name) {
 								->setAttribute('style', 'width: 100%;')
 								->setId('linkTriggerscontainer'),
 							(new CButton(null, _('Add')))
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 								->onClick('return PopUp("popup.generic",'.
 									CJs::encodeJson([
 										'srctbl' => 'triggers',
@@ -720,22 +720,22 @@ function getFontComboBox($name) {
 									]).', null, this);'
 								)
 						]))
-							->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-							->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+							->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+							->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 					)
 					->addItem([
-						(new CDiv())->addClass(ZBX_STYLE_TABLE_FORMS_TD_LEFT),
+						(new CDiv())->addClass(TRX_STYLE_TABLE_FORMS_TD_LEFT),
 						(new CDiv([
 							(new CButton(null, _('Apply')))->setId('formLinkApply'),
 							(new CButton(null, _('Remove')))
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('formLinkRemove'),
 							(new CButton(null, _('Close')))
-								->addClass(ZBX_STYLE_BTN_ALT)
+								->addClass(TRX_STYLE_BTN_ALT)
 								->setId('formLinkClose')
 						]))
-							->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)
-							->addClass(ZBX_STYLE_TFOOT_BUTTONS)
+							->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)
+							->addClass(TRX_STYLE_TFOOT_BUTTONS)
 					])
 			)
 			->toString()
@@ -748,10 +748,10 @@ function getFontComboBox($name) {
 			(new CCol())->addClass('element-urls'),
 			(new CCol(
 				(new CButton(null, _('Edit')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('openlink')
 					->setAttribute('data-linkid', '#{linkid}')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))->toString()
 	?>
 </script>
@@ -763,10 +763,10 @@ function getFontComboBox($name) {
 			(new CCol())->addClass('element-urls'),
 			(new CCol(
 				(new CButton(null, _('Edit')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('openlink')
 					->setAttribute('data-linkid', '#{linkid}')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))->toString()
 	?>
 </script>
@@ -788,10 +788,10 @@ function getFontComboBox($name) {
 			(new CColor('linktrigger_#{linktriggerid}_color', '#{color}'))->appendColorPickerJs(false),
 			(new CCol(
 				(new CButton(null, _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('triggerRemove')
 					->setAttribute('data-linktriggerid', '#{linktriggerid}')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->setId('linktrigger_#{linktriggerid}')
 			->toString()
@@ -800,13 +800,13 @@ function getFontComboBox($name) {
 
 <script type="text/x-jquery-tmpl" id="selementFormUrls">
 	<?= (new CRow([
-			(new CTextBox('url_#{selementurlid}_name', '#{name}'))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
-			(new CTextBox('url_#{selementurlid}_url', '#{url}'))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			(new CTextBox('url_#{selementurlid}_name', '#{name}'))->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
+			(new CTextBox('url_#{selementurlid}_url', '#{url}'))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 			(new CCol(
 				(new CButton(null, _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->onClick('jQuery("#urlrow_#{selementurlid}").remove();')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->setId('urlrow_#{selementurlid}')
 			->toString()
@@ -817,11 +817,11 @@ function getFontComboBox($name) {
 	<?= (new CRow([
 			(new CCol([
 				(new CDiv())
-					->addClass(ZBX_STYLE_DRAG_ICON)
+					->addClass(TRX_STYLE_DRAG_ICON)
 					->addStyle('top: 0px;'),
-				(new CSpan())->addClass('ui-icon ui-icon-arrowthick-2-n-s move '.ZBX_STYLE_TD_DRAG_ICON)
-			]))->addClass(ZBX_STYLE_TD_DRAG_ICON),
-			(new CCol([(new CDiv('#{name}'))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)]))
+				(new CSpan())->addClass('ui-icon ui-icon-arrowthick-2-n-s move '.TRX_STYLE_TD_DRAG_ICON)
+			]))->addClass(TRX_STYLE_TD_DRAG_ICON),
+			(new CCol([(new CDiv('#{name}'))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)]))
 				->addStyle('padding: 0 5px;')
 				->addClass('#{class_name}'),
 			(new CCol([
@@ -829,10 +829,10 @@ function getFontComboBox($name) {
 				(new CVar('element_name[#{triggerid}]', '#{name}')),
 				(new CVar('element_priority[#{triggerid}]', '#{priority}')),
 				(new CButton(null, _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addStyle('margin: 0 5px;')
 					->onClick('jQuery("#triggerrow_#{triggerid}").remove();')
-			]))->addClass(ZBX_STYLE_NOWRAP)
+			]))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('sortable')
 			->setId('triggerrow_#{triggerid}')

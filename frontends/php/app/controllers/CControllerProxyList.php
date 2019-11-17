@@ -11,7 +11,7 @@ class CControllerProxyList extends CController {
 	protected function checkInput() {
 		$fields = [
 			'sort' =>			'in host',
-			'sortorder' =>		'in '.ZBX_SORT_DOWN.','.ZBX_SORT_UP,
+			'sortorder' =>		'in '.TRX_SORT_DOWN.','.TRX_SORT_UP,
 			'uncheck' =>		'in 1',
 			'filter_set' =>		'in 1',
 			'filter_rst' =>		'in 1',
@@ -34,7 +34,7 @@ class CControllerProxyList extends CController {
 
 	protected function doAction() {
 		$sortField = $this->getInput('sort', CProfile::get('web.proxies.php.sort', 'host'));
-		$sortOrder = $this->getInput('sortorder', CProfile::get('web.proxies.php.sortorder', ZBX_SORT_UP));
+		$sortOrder = $this->getInput('sortorder', CProfile::get('web.proxies.php.sortorder', TRX_SORT_UP));
 
 		CProfile::update('web.proxies.php.sort', $sortField, PROFILE_TYPE_STR);
 		CProfile::update('web.proxies.php.sortorder', $sortOrder, PROFILE_TYPE_STR);
@@ -105,10 +105,10 @@ class CControllerProxyList extends CController {
 		unset($proxy);
 
 		if ($data['proxies']) {
-			global $ZBX_SERVER, $ZBX_SERVER_PORT;
+			global $TRX_SERVER, $TRX_SERVER_PORT;
 
-			$server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
-			$server_status = $server->getStatus(get_cookie(ZBX_SESSION_NAME));
+			$server = new CTreegixServer($TRX_SERVER, $TRX_SERVER_PORT, TRX_SOCKET_TIMEOUT, TRX_SOCKET_BYTES_LIMIT);
+			$server_status = $server->getStatus(get_cookie(TRX_SESSION_NAME));
 
 			if ($server_status !== false) {
 				$defaults = [

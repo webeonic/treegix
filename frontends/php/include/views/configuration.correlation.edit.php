@@ -8,7 +8,7 @@ $widget = (new CWidget())->setTitle(_('Event correlation rules'));
 
 $form = (new CForm())
 	->setName('correlation.edit')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $data['form']);
 
 if ($data['correlationid']) {
@@ -19,7 +19,7 @@ $correlation_tab = (new CFormList())
 	->addRow(
 		(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $data['correlation']['name']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	);
@@ -58,10 +58,10 @@ if ($data['correlation']['filter']['conditions']) {
 				(new CCol([
 					(new CButton('remove', _('Remove')))
 						->onClick('javascript: removeCondition('.$i.');')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 						->removeId(),
 					new CVar('conditions['.$i.']', $condition)
-				]))->addClass(ZBX_STYLE_NOWRAP)
+				]))->addClass(TRX_STYLE_NOWRAP)
 			],
 			null, 'conditions_'.$i
 		);
@@ -78,32 +78,32 @@ $correlation_tab
 			CONDITION_EVAL_TYPE_OR => _('Or'),
 			CONDITION_EVAL_TYPE_EXPRESSION => _('Custom expression')
 		]),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		(new CSpan())->setId('condition_label'),
 		(new CTextBox('formula', $data['correlation']['filter']['formula']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setId('formula')
 			->setAttribute('placeholder', 'A or (B and C) &hellip;')
 	])
 	->addRow(
 		(new CLabel(_('Conditions'), $condition_table->getId()))->setAsteriskMark(),
 		(new CDiv($condition_table))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 			->setAriaRequired()
 	);
 
 $condition2 = null;
 
 switch ($data['new_condition']['type']) {
-	case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
-	case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
+	case TRX_CORR_CONDITION_OLD_EVENT_TAG:
+	case TRX_CORR_CONDITION_NEW_EVENT_TAG:
 		$condition = (new CTextBox('new_condition[tag]'))
-			->setWidth(ZBX_TEXTAREA_TAG_WIDTH)
+			->setWidth(TRX_TEXTAREA_TAG_WIDTH)
 			->setAttribute('placeholder', _('tag'));
 		break;
 
-	case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+	case TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 		$condition = (new CMultiSelect([
 			'name' => 'new_condition[groupids][]',
 			'object_name' => 'hostGroup',
@@ -116,25 +116,25 @@ switch ($data['new_condition']['type']) {
 					'dstfld1' => 'new_condition_groupids_'
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
-	case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+	case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 		$condition = (new CTextBox('new_condition[newtag]', $data['new_condition']['newtag']))
-			->setWidth(ZBX_TEXTAREA_TAG_WIDTH)
+			->setWidth(TRX_TEXTAREA_TAG_WIDTH)
 			->setAttribute('placeholder', _('new event tag'));
 		$condition2 = (new CTextBox('new_condition[oldtag]', $data['new_condition']['oldtag']))
-			->setWidth(ZBX_TEXTAREA_TAG_WIDTH)
+			->setWidth(TRX_TEXTAREA_TAG_WIDTH)
 			->setAttribute('placeholder', _('old event tag'));
 		break;
 
-	case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-	case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+	case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+	case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 		$condition = (new CTextBox('new_condition[value]', $data['new_condition']['value']))
-			->setWidth(ZBX_TEXTAREA_TAG_VALUE_WIDTH)
+			->setWidth(TRX_TEXTAREA_TAG_VALUE_WIDTH)
 			->setAttribute('placeholder', _('value'));
 		$condition2 = (new CTextBox('new_condition[tag]'))
-			->setWidth(ZBX_TEXTAREA_TAG_WIDTH)
+			->setWidth(TRX_TEXTAREA_TAG_WIDTH)
 			->setAttribute('placeholder', _('tag'));
 		break;
 
@@ -168,29 +168,29 @@ $correlation_tab
 						new CComboBox('new_condition[type]', $data['new_condition']['type'], 'submit()',
 							$data['allowedConditions']
 						),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						$condition2,
-						($condition2 === null) ? null : (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						($condition2 === null) ? null : (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						$condition_operator,
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						$condition
 					])
 				)
 				->addRow(
 					(new CSimpleButton(_('Add')))
 						->onClick('javascript: submitFormWithParam("'.$form->getName().'", "add_condition", "1");')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 				)
 		))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	)
 	->addRow(_('Description'),
-		(new CTextArea('description', $data['correlation']['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('description', $data['correlation']['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('Enabled'),
-		(new CCheckBox('status', ZBX_CORRELATION_ENABLED))
-			->setChecked($data['correlation']['status'] == ZBX_CORRELATION_ENABLED)
+		(new CCheckBox('status', TRX_CORRELATION_ENABLED))
+			->setChecked($data['correlation']['status'] == TRX_CORRELATION_ENABLED)
 	);
 
 // Operations tab.
@@ -212,10 +212,10 @@ if ($data['correlation']['operations']) {
 			(new CCol([
 				(new CButton('remove', _('Remove')))
 					->onClick('javascript: removeOperation('.$operationid.');')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->removeId(),
 				new CVar('operations['.$operationid.']', $operation)
-			]))->addClass(ZBX_STYLE_NOWRAP)
+			]))->addClass(TRX_STYLE_NOWRAP)
 		], null, 'operations_'.$operationid);
 	}
 }
@@ -224,8 +224,8 @@ $operation_tab
 	->addRow(
 		(new CLabel(_('Operations'), $operations_table->getId()))->setAsteriskMark(),
 		(new CDiv([$operations_table]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	)
 	->addRow(_('New operation'),
 		(new CDiv(
@@ -237,11 +237,11 @@ $operation_tab
 				->addRow(
 					(new CSimpleButton(_('Add')))
 						->onClick('javascript: submitFormWithParam("'.$form->getName().'", "add_operation", "1");')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 				)
 		))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 
 // Append tabs to form.

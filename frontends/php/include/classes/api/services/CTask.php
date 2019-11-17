@@ -21,8 +21,8 @@ class CTask extends CApiService {
 			'SELECT t.taskid,tcn.itemid'.
 			' FROM task t,task_check_now tcn'.
 			' WHERE t.taskid=tcn.taskid'.
-				' AND t.type='.ZBX_TM_TASK_CHECK_NOW.
-				' AND t.status='.ZBX_TM_STATUS_NEW.
+				' AND t.type='.TRX_TM_TASK_CHECK_NOW.
+				' AND t.status='.TRX_TM_STATUS_NEW.
 				' AND '.dbConditionId('tcn.itemid', $task['itemids'])
 		);
 
@@ -54,7 +54,7 @@ class CTask extends CApiService {
 				$ins_tasks[] = [
 					'taskid' => $taskid,
 					'type' => $task['type'],
-					'status' => ZBX_TM_STATUS_NEW,
+					'status' => TRX_TM_STATUS_NEW,
 					'clock' => $time,
 					'ttl' => SEC_PER_HOUR
 				];
@@ -84,16 +84,16 @@ class CTask extends CApiService {
 	 */
 	protected function validateCreate(array &$task) {
 		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECT, 'fields' => [
-			'type' =>		['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [ZBX_TM_TASK_CHECK_NOW])],
+			'type' =>		['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [TRX_TM_TASK_CHECK_NOW])],
 			'itemids' =>	['type' => API_IDS, 'flags' => API_REQUIRED | API_NOT_EMPTY | API_NORMALIZE, 'uniq' => true]
 		]];
 
 		if (!CApiInputValidator::validate($api_input_rules, $task, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		// Check if user has permissions to items and LLD rules.
@@ -115,7 +115,7 @@ class CTask extends CApiService {
 			]);
 
 			if (count($discovery_rules) + $items_cnt != $itemids_cnt) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -127,11 +127,11 @@ class CTask extends CApiService {
 
 		foreach ($items as $item) {
 			if (!in_array($item['type'], $allowed_types)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Cannot send request: %1$s.', _('wrong item type')));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Cannot send request: %1$s.', _('wrong item type')));
 			}
 
 			if ($item['status'] != ITEM_STATUS_ACTIVE) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Cannot send request: %1$s.', _('item is disabled')));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Cannot send request: %1$s.', _('item is disabled')));
 			}
 
 			$hostids[$item['hostid']] = true;
@@ -139,13 +139,13 @@ class CTask extends CApiService {
 
 		foreach ($discovery_rules as $discovery_rule) {
 			if (!in_array($discovery_rule['type'], $allowed_types)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Cannot send request: %1$s.', _('wrong discovery rule type'))
 				);
 			}
 
 			if ($discovery_rule['status'] != ITEM_STATUS_ACTIVE) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Cannot send request: %1$s.', _('discovery rule is disabled'))
 				);
 			}
@@ -164,7 +164,7 @@ class CTask extends CApiService {
 		// Check host status. Allow only monitored hosts.
 		foreach ($hosts as $host) {
 			if ($host['status'] != HOST_STATUS_MONITORED) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Cannot send request: %1$s.', _('host is not monitored')));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Cannot send request: %1$s.', _('host is not monitored')));
 			}
 		}
 	}

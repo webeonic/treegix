@@ -9,13 +9,13 @@
 #include "zbxmedia.h"
 
 /* number of characters per line when wrapping Base64 data in Email */
-#define ZBX_EMAIL_B64_MAXLINE			76
+#define TRX_EMAIL_B64_MAXLINE			76
 
 /* number of characters per "encoded-word" in RFC-2047 message header */
-#define ZBX_EMAIL_B64_MAXWORD_RFC2047		75
+#define TRX_EMAIL_B64_MAXWORD_RFC2047		75
 
 /* multiple 'encoded-word's should be separated by <CR><LF><SPACE> */
-#define ZBX_EMAIL_ENCODED_WORD_SEPARATOR	"\r\n "
+#define TRX_EMAIL_ENCODED_WORD_SEPARATOR	"\r\n "
 
 /******************************************************************************
  *                                                                            *
@@ -42,7 +42,7 @@ static void	str_base64_encode_rfc2047(const char *src, char **p_base64)
 	assert(src);
 	assert(NULL == *p_base64);		/* do not accept already allocated memory */
 
-	p_base64_alloc = ZBX_EMAIL_B64_MAXWORD_RFC2047 + sizeof(ZBX_EMAIL_ENCODED_WORD_SEPARATOR);
+	p_base64_alloc = TRX_EMAIL_B64_MAXWORD_RFC2047 + sizeof(TRX_EMAIL_ENCODED_WORD_SEPARATOR);
 	*p_base64 = (char *)zbx_malloc(NULL, p_base64_alloc);
 	**p_base64 = '\0';
 
@@ -65,14 +65,14 @@ static void	str_base64_encode_rfc2047(const char *src, char **p_base64)
 		if (0 < p1 - p0)
 		{
 			/* 12 characters are taken by header "=?UTF-8?B?" and trailer "?=" plus '\0' */
-			char	b64_buf[ZBX_EMAIL_B64_MAXWORD_RFC2047 - 12 + 1];
+			char	b64_buf[TRX_EMAIL_B64_MAXWORD_RFC2047 - 12 + 1];
 
 			str_base64_encode(p0, b64_buf, p1 - p0);
 
 			if (0 != p_base64_offset)	/* not the first "encoded-word" ? */
 			{
 				zbx_strcpy_alloc(p_base64, &p_base64_alloc, &p_base64_offset,
-						ZBX_EMAIL_ENCODED_WORD_SEPARATOR);
+						TRX_EMAIL_ENCODED_WORD_SEPARATOR);
 			}
 
 			zbx_snprintf_alloc(p_base64, &p_base64_alloc, &p_base64_offset, "=?UTF-8?B?%s?=", b64_buf);
@@ -291,7 +291,7 @@ static char	*smtp_prepare_payload(zbx_vector_ptr_t *from_mails, zbx_vector_ptr_t
 	str_base64_encode_dyn(localbody, &base64, strlen(localbody));
 
 	/* wrap base64 encoded data with linefeeds */
-	base64_lf = str_linefeed(base64, ZBX_EMAIL_B64_MAXLINE, "\r\n");
+	base64_lf = str_linefeed(base64, TRX_EMAIL_B64_MAXLINE, "\r\n");
 	zbx_free(base64);
 	base64 = base64_lf;
 
@@ -308,7 +308,7 @@ static char	*smtp_prepare_payload(zbx_vector_ptr_t *from_mails, zbx_vector_ptr_t
 	for (i = 0; i < from_mails->values_num; i++)
 	{
 		zbx_snprintf_alloc(&from, &from_alloc, &from_offset, "%s%s",
-				ZBX_NULL2EMPTY_STR(((zbx_mailaddr_t *)from_mails->values[i])->disp_name),
+				TRX_NULL2EMPTY_STR(((zbx_mailaddr_t *)from_mails->values[i])->disp_name),
 				((zbx_mailaddr_t *)from_mails->values[i])->addr);
 
 		if (from_mails->values_num - 1 > i)
@@ -318,7 +318,7 @@ static char	*smtp_prepare_payload(zbx_vector_ptr_t *from_mails, zbx_vector_ptr_t
 	for (i = 0; i < to_mails->values_num; i++)
 	{
 		zbx_snprintf_alloc(&to, &to_alloc, &to_offset, "%s%s",
-				ZBX_NULL2EMPTY_STR(((zbx_mailaddr_t *)to_mails->values[i])->disp_name),
+				TRX_NULL2EMPTY_STR(((zbx_mailaddr_t *)to_mails->values[i])->disp_name),
 				((zbx_mailaddr_t *)to_mails->values[i])->addr);
 
 		if (to_mails->values_num - 1 > i)
@@ -340,7 +340,7 @@ static char	*smtp_prepare_payload(zbx_vector_ptr_t *from_mails, zbx_vector_ptr_t
 			"%s",
 			from, to,
 			str_time, localsubject,
-			ZBX_MEDIA_CONTENT_TYPE_HTML == content_type ? "text/html" : "text/plain",
+			TRX_MEDIA_CONTENT_TYPE_HTML == content_type ? "text/html" : "text/plain",
 			localbody);
 
 	zbx_free(localsubject);
@@ -378,8 +378,8 @@ static int	smtp_debug_function(CURL *easyhandle, curl_infotype type, char *data,
 {
 	const char	labels[3] = {'*', '<', '>'};
 
-	ZBX_UNUSED(easyhandle);
-	ZBX_UNUSED(userptr);
+	TRX_UNUSED(easyhandle);
+	TRX_UNUSED(userptr);
 
 	if (CURLINFO_TEXT != type && CURLINFO_HEADER_IN != type && CURLINFO_HEADER_OUT != type)
 		goto out;
@@ -411,7 +411,7 @@ static int	send_email_plain(const char *smtp_server, unsigned short smtp_port, c
 
 	/* connect to and receive an initial greeting from SMTP server */
 
-	if (FAIL == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, smtp_server, smtp_port, 0, ZBX_TCP_SEC_UNENCRYPTED, NULL,
+	if (FAIL == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, smtp_server, smtp_port, 0, TRX_TCP_SEC_UNENCRYPTED, NULL,
 			NULL))
 	{
 		zbx_snprintf(error, max_error_len, "cannot connect to SMTP server \"%s\": %s",
@@ -695,7 +695,7 @@ static int	send_email_curl(const char *smtp_server, unsigned short smtp_port, co
 			goto error;
 	}
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 	{
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_VERBOSE, 1L)))
 			goto error;
@@ -723,21 +723,21 @@ clean:
 out:
 	return ret;
 #else
-	ZBX_UNUSED(smtp_server);
-	ZBX_UNUSED(smtp_port);
-	ZBX_UNUSED(smtp_helo);
-	ZBX_UNUSED(from_mails);
-	ZBX_UNUSED(to_mails);
-	ZBX_UNUSED(mailsubject);
-	ZBX_UNUSED(mailbody);
-	ZBX_UNUSED(smtp_security);
-	ZBX_UNUSED(smtp_verify_peer);
-	ZBX_UNUSED(smtp_verify_host);
-	ZBX_UNUSED(smtp_authentication);
-	ZBX_UNUSED(username);
-	ZBX_UNUSED(password);
-	ZBX_UNUSED(content_type);
-	ZBX_UNUSED(timeout);
+	TRX_UNUSED(smtp_server);
+	TRX_UNUSED(smtp_port);
+	TRX_UNUSED(smtp_helo);
+	TRX_UNUSED(from_mails);
+	TRX_UNUSED(to_mails);
+	TRX_UNUSED(mailsubject);
+	TRX_UNUSED(mailbody);
+	TRX_UNUSED(smtp_security);
+	TRX_UNUSED(smtp_verify_peer);
+	TRX_UNUSED(smtp_verify_host);
+	TRX_UNUSED(smtp_authentication);
+	TRX_UNUSED(username);
+	TRX_UNUSED(password);
+	TRX_UNUSED(content_type);
+	TRX_UNUSED(timeout);
 
 	zbx_strlcpy(error, "Support for SMTP authentication was not compiled in", max_error_len);
 	return FAIL;

@@ -8,14 +8,14 @@ class CControllerAcknowledgeCreate extends CController {
 		$fields = [
 			'eventids' =>				'required|array_db acknowledges.eventid',
 			'message' =>				'db acknowledges.message |flags '.P_CRLF,
-			'scope' =>					'in '.ZBX_ACKNOWLEDGE_SELECTED.','.ZBX_ACKNOWLEDGE_PROBLEM,
+			'scope' =>					'in '.TRX_ACKNOWLEDGE_SELECTED.','.TRX_ACKNOWLEDGE_PROBLEM,
 			'change_severity' =>		'db acknowledges.action|in '.
-											ZBX_PROBLEM_UPDATE_NONE.','.ZBX_PROBLEM_UPDATE_SEVERITY,
+											TRX_PROBLEM_UPDATE_NONE.','.TRX_PROBLEM_UPDATE_SEVERITY,
 			'severity' =>				'ge '.TRIGGER_SEVERITY_NOT_CLASSIFIED.'|le '.TRIGGER_SEVERITY_COUNT,
 			'acknowledge_problem' =>	'db acknowledges.action|in '.
-												ZBX_PROBLEM_UPDATE_NONE.','.ZBX_PROBLEM_UPDATE_ACKNOWLEDGE,
+												TRX_PROBLEM_UPDATE_NONE.','.TRX_PROBLEM_UPDATE_ACKNOWLEDGE,
 			'close_problem' =>			'db acknowledges.action|in '.
-											ZBX_PROBLEM_UPDATE_NONE.','.ZBX_PROBLEM_UPDATE_CLOSE,
+											TRX_PROBLEM_UPDATE_NONE.','.TRX_PROBLEM_UPDATE_CLOSE,
 			'backurl' =>				'string'
 		];
 
@@ -55,16 +55,16 @@ class CControllerAcknowledgeCreate extends CController {
 		$result = false;
 		$data = null;
 
-		$this->close_problems = ($this->getInput('close_problem', ZBX_PROBLEM_UPDATE_NONE) == ZBX_PROBLEM_UPDATE_CLOSE);
-		$this->change_severity = ($this->getInput('change_severity', ZBX_PROBLEM_UPDATE_NONE) == ZBX_PROBLEM_UPDATE_SEVERITY);
-		$this->acknowledge = ($this->getInput('acknowledge_problem', ZBX_PROBLEM_UPDATE_NONE) == ZBX_PROBLEM_UPDATE_ACKNOWLEDGE);
+		$this->close_problems = ($this->getInput('close_problem', TRX_PROBLEM_UPDATE_NONE) == TRX_PROBLEM_UPDATE_CLOSE);
+		$this->change_severity = ($this->getInput('change_severity', TRX_PROBLEM_UPDATE_NONE) == TRX_PROBLEM_UPDATE_SEVERITY);
+		$this->acknowledge = ($this->getInput('acknowledge_problem', TRX_PROBLEM_UPDATE_NONE) == TRX_PROBLEM_UPDATE_ACKNOWLEDGE);
 		$this->new_severity = $this->getInput('severity', '');
 		$this->message = $this->getInput('message', '');
 
 		$eventids = array_flip($this->getInput('eventids'));
 
-		// Select events that are created from the same trigger if ZBX_ACKNOWLEDGE_PROBLEM is selected.
-		if ($this->getInput('scope', ZBX_ACKNOWLEDGE_SELECTED) == ZBX_ACKNOWLEDGE_PROBLEM) {
+		// Select events that are created from the same trigger if TRX_ACKNOWLEDGE_PROBLEM is selected.
+		if ($this->getInput('scope', TRX_ACKNOWLEDGE_SELECTED) == TRX_ACKNOWLEDGE_PROBLEM) {
 			$eventids += array_flip($this->getRelatedProblemids($eventids));
 		}
 
@@ -83,12 +83,12 @@ class CControllerAcknowledgeCreate extends CController {
 			 * for any of selected events. This can happen, when you will perform one action on multiple problems,
 			 * where only some of these problems can perform this action (ex. close problem).
 			 */
-			if ($data['action'] === ZBX_PROBLEM_UPDATE_NONE) {
+			if ($data['action'] === TRX_PROBLEM_UPDATE_NONE) {
 				break;
 			}
 
 			if ($data['eventids']) {
-				$eventid_chunks = array_chunk($data['eventids'], ZBX_DB_MAX_INSERTS);
+				$eventid_chunks = array_chunk($data['eventids'], TRX_DB_MAX_INSERTS);
 				foreach ($eventid_chunks as $eventid_chunk) {
 					$data['eventids'] = $eventid_chunk;
 					$result = API::Event()->acknowledge($data);
@@ -110,7 +110,7 @@ class CControllerAcknowledgeCreate extends CController {
 		else {
 			$response = new CControllerResponseRedirect('treegix.php?action=acknowledge.edit');
 			$response->setFormData($this->getInputAll());
-			$response->setMessageError(($data && $data['action'] == ZBX_PROBLEM_UPDATE_NONE)
+			$response->setMessageError(($data && $data['action'] == TRX_PROBLEM_UPDATE_NONE)
 				? _('At least one update operation is mandatory')
 				: _n('Cannot update event', 'Cannot update events', $updated_events_count)
 			);
@@ -238,13 +238,13 @@ class CControllerAcknowledgeCreate extends CController {
 	 */
 	protected function isEventClosable(array $event, array $editable_triggers) {
 		if (!array_key_exists($event['objectid'], $editable_triggers)
-				|| $editable_triggers[$event['objectid']]['manual_close'] == ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED
+				|| $editable_triggers[$event['objectid']]['manual_close'] == TRX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED
 				|| bccomp($event['r_eventid'], '0') > 0) {
 			return false;
 		}
 		else {
 			foreach ($event['acknowledges'] as $acknowledge) {
-				if (($acknowledge['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE) {
+				if (($acknowledge['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE) {
 					return false;
 				}
 			}
@@ -267,12 +267,12 @@ class CControllerAcknowledgeCreate extends CController {
 	 */
 	protected function getAcknowledgeOptions(array &$eventid_groups) {
 		$data = [
-			'action' => ZBX_PROBLEM_UPDATE_NONE,
+			'action' => TRX_PROBLEM_UPDATE_NONE,
 			'eventids' => []
 		];
 
 		if ($this->close_problems && $eventid_groups['closable']) {
-			$data['action'] |= ZBX_PROBLEM_UPDATE_CLOSE;
+			$data['action'] |= TRX_PROBLEM_UPDATE_CLOSE;
 			$data['eventids'] = $eventid_groups['closable'];
 			$eventid_groups['closable'] = [];
 		}
@@ -283,7 +283,7 @@ class CControllerAcknowledgeCreate extends CController {
 				$data['eventids'] = $eventid_groups['editable'];
 			}
 
-			$data['action'] |= ZBX_PROBLEM_UPDATE_SEVERITY;
+			$data['action'] |= TRX_PROBLEM_UPDATE_SEVERITY;
 			$data['severity'] = $this->new_severity;
 			$eventid_groups['editable'] = array_diff($eventid_groups['editable'], $data['eventids']);
 		}
@@ -294,7 +294,7 @@ class CControllerAcknowledgeCreate extends CController {
 				$data['eventids'] = $eventid_groups['acknowledgeable'];
 			}
 
-			$data['action'] |= ZBX_PROBLEM_UPDATE_ACKNOWLEDGE;
+			$data['action'] |= TRX_PROBLEM_UPDATE_ACKNOWLEDGE;
 			$eventid_groups['acknowledgeable'] = array_diff($eventid_groups['acknowledgeable'], $data['eventids']);
 		}
 
@@ -304,7 +304,7 @@ class CControllerAcknowledgeCreate extends CController {
 				$data['eventids'] = $eventid_groups['readable'];
 			}
 
-			$data['action'] |= ZBX_PROBLEM_UPDATE_MESSAGE;
+			$data['action'] |= TRX_PROBLEM_UPDATE_MESSAGE;
 			$data['message'] = $this->message;
 		}
 

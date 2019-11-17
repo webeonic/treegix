@@ -28,22 +28,22 @@ static int	connect_to_proxy(const DC_PROXY *proxy, zbx_socket_t *sock, int timeo
 
 	switch (proxy->tls_connect)
 	{
-		case ZBX_TCP_SEC_UNENCRYPTED:
+		case TRX_TCP_SEC_UNENCRYPTED:
 			tls_arg1 = NULL;
 			tls_arg2 = NULL;
 			break;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		case ZBX_TCP_SEC_TLS_CERT:
+		case TRX_TCP_SEC_TLS_CERT:
 			tls_arg1 = proxy->tls_issuer;
 			tls_arg2 = proxy->tls_subject;
 			break;
-		case ZBX_TCP_SEC_TLS_PSK:
+		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = proxy->tls_psk_identity;
 			tls_arg2 = proxy->tls_psk;
 			break;
 #else
-		case ZBX_TCP_SEC_TLS_CERT:
-		case ZBX_TCP_SEC_TLS_PSK:
+		case TRX_TCP_SEC_TLS_CERT:
+		case TRX_TCP_SEC_TLS_PSK:
 			treegix_log(LOG_LEVEL_ERR, "TLS connection is configured to be used with passive proxy \"%s\""
 					" but support for TLS was not compiled into %s.", proxy->host,
 					get_program_type_string(program_type));
@@ -69,12 +69,12 @@ out:
 
 static int	send_data_to_proxy(const DC_PROXY *proxy, zbx_socket_t *sock, const char *data, size_t size)
 {
-	int	ret, flags = ZBX_TCP_PROTOCOL;
+	int	ret, flags = TRX_TCP_PROTOCOL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() data:'%s'", __func__, data);
 
 	if (0 != proxy->auto_compress)
-		flags |= ZBX_TCP_COMPRESS;
+		flags |= TRX_TCP_COMPRESS;
 
 	if (FAIL == (ret = zbx_tcp_send_ext(sock, data, size, flags, 0)))
 	{
@@ -144,9 +144,9 @@ static int	get_data_from_proxy(DC_PROXY *proxy, const char *request, char **data
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() request:'%s'", __func__, request);
 
-	zbx_json_init(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_init(&j, TRX_JSON_STAT_BUF_LEN);
 
-	zbx_json_addstring(&j, "request", request, ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, "request", request, TRX_JSON_TYPE_STRING);
 
 	if (SUCCEED == (ret = connect_to_proxy(proxy, &s, CONFIG_TRAPPER_TIMEOUT)))
 	{
@@ -158,15 +158,15 @@ static int	get_data_from_proxy(DC_PROXY *proxy, const char *request, char **data
 		{
 			if (SUCCEED == (ret = recv_data_from_proxy(proxy, &s)))
 			{
-				if (0 != (s.protocol & ZBX_TCP_COMPRESS))
+				if (0 != (s.protocol & TRX_TCP_COMPRESS))
 					proxy->auto_compress = 1;
 
-				if (!ZBX_IS_RUNNING())
+				if (!TRX_IS_RUNNING())
 				{
-					int	flags = ZBX_TCP_PROTOCOL;
+					int	flags = TRX_TCP_PROTOCOL;
 
-					if (0 != (s.protocol & ZBX_TCP_COMPRESS))
-						flags |= ZBX_TCP_COMPRESS;
+					if (0 != (s.protocol & TRX_TCP_COMPRESS))
+						flags |= TRX_TCP_COMPRESS;
 
 					zbx_send_response_ext(&s, FAIL, "Treegix server shutdown in progress", NULL,
 							flags, CONFIG_TIMEOUT);
@@ -217,10 +217,10 @@ static int	proxy_send_configuration(DC_PROXY *proxy)
 	zbx_socket_t	s;
 	struct zbx_json	j;
 
-	zbx_json_init(&j, 512 * ZBX_KIBIBYTE);
+	zbx_json_init(&j, 512 * TRX_KIBIBYTE);
 
-	zbx_json_addstring(&j, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_PROXY_CONFIG, ZBX_JSON_TYPE_STRING);
-	zbx_json_addobject(&j, ZBX_PROTO_TAG_DATA);
+	zbx_json_addstring(&j, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_PROXY_CONFIG, TRX_JSON_TYPE_STRING);
+	zbx_json_addobject(&j, TRX_PROTO_TAG_DATA);
 
 	if (SUCCEED != (ret = get_proxyconfig_data(proxy->hostid, &j, &error)))
 	{
@@ -232,7 +232,7 @@ static int	proxy_send_configuration(DC_PROXY *proxy)
 	if (SUCCEED != (ret = connect_to_proxy(proxy, &s, CONFIG_TRAPPER_TIMEOUT)))
 		goto out;
 
-	treegix_log(LOG_LEVEL_WARNING, "sending configuration data to proxy \"%s\" at \"%s\", datalen " ZBX_FS_SIZE_T,
+	treegix_log(LOG_LEVEL_WARNING, "sending configuration data to proxy \"%s\" at \"%s\", datalen " TRX_FS_SIZE_T,
 			proxy->host, s.peer, (zbx_fs_size_t)j.buffer_size);
 
 	if (SUCCEED == (ret = send_data_to_proxy(proxy, &s, j.buffer, j.buffer_size)))
@@ -254,7 +254,7 @@ static int	proxy_send_configuration(DC_PROXY *proxy)
 			else
 			{
 				proxy->version = zbx_get_proxy_protocol_version(&jp);
-				proxy->auto_compress = (0 != (s.protocol & ZBX_TCP_COMPRESS) ? 1 : 0);
+				proxy->auto_compress = (0 != (s.protocol & TRX_TCP_COMPRESS) ? 1 : 0);
 				proxy->lastaccess = time(NULL);
 			}
 		}
@@ -295,7 +295,7 @@ static int	proxy_process_proxy_data(DC_PROXY *proxy, const char *answer, zbx_tim
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	*more = ZBX_PROXY_DATA_DONE;
+	*more = TRX_PROXY_DATA_DONE;
 
 	if ('\0' == *answer)
 	{
@@ -327,7 +327,7 @@ static int	proxy_process_proxy_data(DC_PROXY *proxy, const char *answer, zbx_tim
 	{
 		char	value[MAX_STRING_LEN];
 
-		if (SUCCEED == zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_MORE, value, sizeof(value)))
+		if (SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_MORE, value, sizeof(value)))
 			*more = atoi(value);
 	}
 out:
@@ -362,13 +362,13 @@ static int	proxy_get_data(DC_PROXY *proxy, int *more)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != (ret = get_data_from_proxy(proxy, ZBX_PROTO_VALUE_PROXY_DATA, &answer, &ts)))
+	if (SUCCEED != (ret = get_data_from_proxy(proxy, TRX_PROTO_VALUE_PROXY_DATA, &answer, &ts)))
 		goto out;
 
 	/* handle pre 3.4 proxies that did not support proxy data request */
 	if ('\0' == *answer)
 	{
-		proxy->version = ZBX_COMPONENT_VERSION(3, 2);
+		proxy->version = TRX_COMPONENT_VERSION(3, 2);
 		zbx_free(answer);
 		ret = FAIL;
 		goto out;
@@ -409,10 +409,10 @@ static int	proxy_get_tasks(DC_PROXY *proxy)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (ZBX_COMPONENT_VERSION(3, 2) >= proxy->version)
+	if (TRX_COMPONENT_VERSION(3, 2) >= proxy->version)
 		goto out;
 
-	if (SUCCEED != (ret = get_data_from_proxy(proxy, ZBX_PROTO_VALUE_PROXY_TASKS, &answer, &ts)))
+	if (SUCCEED != (ret = get_data_from_proxy(proxy, TRX_PROTO_VALUE_PROXY_TASKS, &answer, &ts)))
 		goto out;
 
 	proxy->lastaccess = time(NULL);
@@ -462,11 +462,11 @@ static int	process_proxy(void)
 		memcpy(&proxy_old, &proxy, sizeof(DC_PROXY));
 
 		if (proxy.proxy_config_nextcheck <= now)
-			update_nextcheck |= ZBX_PROXY_CONFIG_NEXTCHECK;
+			update_nextcheck |= TRX_PROXY_CONFIG_NEXTCHECK;
 		if (proxy.proxy_data_nextcheck <= now)
-			update_nextcheck |= ZBX_PROXY_DATA_NEXTCHECK;
+			update_nextcheck |= TRX_PROXY_DATA_NEXTCHECK;
 		if (proxy.proxy_tasks_nextcheck <= now)
-			update_nextcheck |= ZBX_PROXY_TASKS_NEXTCHECK;
+			update_nextcheck |= TRX_PROXY_TASKS_NEXTCHECK;
 
 		/* Check if passive proxy has been misconfigured on the server side. If it has happened more */
 		/* recently than last synchronisation of cache then there is no point to retry connecting to */
@@ -504,7 +504,7 @@ static int	process_proxy(void)
 					if (SUCCEED != (ret = proxy_get_data(&proxy, &more)))
 						goto error;
 				}
-				while (ZBX_PROXY_DATA_MORE == more);
+				while (TRX_PROXY_DATA_MORE == more);
 			}
 			else if (proxy.proxy_tasks_nextcheck <= now)
 			{
@@ -527,7 +527,7 @@ exit:
 	return num;
 }
 
-ZBX_THREAD_ENTRY(proxypoller_thread, args)
+TRX_THREAD_ENTRY(proxypoller_thread, args)
 {
 	int	nextcheck, sleeptime = -1, processed = 0, old_processed = 0;
 	double	sec, total_sec = 0.0, old_total_sec = 0.0;
@@ -549,16 +549,16 @@ ZBX_THREAD_ENTRY(proxypoller_thread, args)
 	zbx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
 	last_stat_time = time(NULL);
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 		zbx_update_env(sec);
 
 		if (0 != sleeptime)
 		{
-			zbx_setproctitle("%s #%d [exchanged data with %d proxies in " ZBX_FS_DBL " sec,"
+			zbx_setproctitle("%s #%d [exchanged data with %d proxies in " TRX_FS_DBL " sec,"
 					" exchanging data]", get_process_type_string(process_type), process_num,
 					old_processed, old_total_sec);
 		}
@@ -573,13 +573,13 @@ ZBX_THREAD_ENTRY(proxypoller_thread, args)
 		{
 			if (0 == sleeptime)
 			{
-				zbx_setproctitle("%s #%d [exchanged data with %d proxies in " ZBX_FS_DBL " sec,"
+				zbx_setproctitle("%s #%d [exchanged data with %d proxies in " TRX_FS_DBL " sec,"
 						" exchanging data]", get_process_type_string(process_type), process_num,
 						processed, total_sec);
 			}
 			else
 			{
-				zbx_setproctitle("%s #%d [exchanged data with %d proxies in " ZBX_FS_DBL " sec,"
+				zbx_setproctitle("%s #%d [exchanged data with %d proxies in " TRX_FS_DBL " sec,"
 						" idle %d sec]", get_process_type_string(process_type), process_num,
 						processed, total_sec, sleeptime);
 				old_processed = processed;

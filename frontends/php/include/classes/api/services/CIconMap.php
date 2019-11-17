@@ -158,7 +158,7 @@ class CIconMap extends CApiService {
 	 */
 	private function validateCreate(array &$iconmaps) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['name']], 'fields' => [
@@ -172,7 +172,7 @@ class CIconMap extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $iconmaps, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$this->checkDuplicates(zbx_objectValues($iconmaps, 'name'));
@@ -229,7 +229,7 @@ class CIconMap extends CApiService {
 	 */
 	private function validateUpdate(array &$iconmaps, array &$db_iconmaps = null) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['iconmapid'], ['name']], 'fields' => [
@@ -244,7 +244,7 @@ class CIconMap extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $iconmaps, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_iconmaps = DB::select('icon_map', [
@@ -257,7 +257,7 @@ class CIconMap extends CApiService {
 
 		foreach ($iconmaps as $iconmap) {
 			if (!array_key_exists($iconmap['iconmapid'], $db_iconmaps)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -291,7 +291,7 @@ class CIconMap extends CApiService {
 		]);
 
 		if ($db_iconmaps) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Icon map "%s" already exists.', $db_iconmaps[0]['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Icon map "%s" already exists.', $db_iconmaps[0]['name']));
 		}
 	}
 
@@ -331,7 +331,7 @@ class CIconMap extends CApiService {
 
 			foreach ($names as $name) {
 				if (!array_key_exists($name, $db_regexps)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Global regular expression "%1$s" does not exist.', $name)
 					);
 				}
@@ -373,7 +373,7 @@ class CIconMap extends CApiService {
 
 			foreach ($iconids as $iconid) {
 				if (!array_key_exists($iconid, $db_icons)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Icon with ID "%1$s" is not available.', $iconid));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Icon with ID "%1$s" is not available.', $iconid));
 				}
 			}
 		}
@@ -488,7 +488,7 @@ class CIconMap extends CApiService {
 	private function validateDelete(array &$iconmapids, array &$db_iconmaps = null) {
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $iconmapids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_iconmaps = $this->get([
@@ -500,7 +500,7 @@ class CIconMap extends CApiService {
 
 		foreach ($iconmapids as $iconmapid) {
 			if (!array_key_exists($iconmapid, $db_iconmaps)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -513,7 +513,7 @@ class CIconMap extends CApiService {
 		]);
 
 		if ($db_sysmaps) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Icon map "%1$s" cannot be deleted. Used in map "%2$s".',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Icon map "%1$s" cannot be deleted. Used in map "%2$s".',
 				$db_iconmaps[$db_sysmaps[0]['iconmapid']]['name'], $db_sysmaps[0]['name']
 			));
 		}

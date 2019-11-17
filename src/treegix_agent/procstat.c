@@ -7,7 +7,7 @@
 #include "ipc.h"
 #include "procstat.h"
 
-#ifdef ZBX_PROCSTAT_COLLECTOR
+#ifdef TRX_PROCSTAT_COLLECTOR
 
 /*
  * The process CPU statistics are stored using the following memory layout.
@@ -51,7 +51,7 @@
  * * Change the dshm size with zbx_dshm_realloc().
  *
  * Synchronisation.
- * * agentd processes share a single instance of ZBX_COLLECTOR_DATA (*collector) containing reference
+ * * agentd processes share a single instance of TRX_COLLECTOR_DATA (*collector) containing reference
  *   to shared procstat memory segment.
  * * Each agentd process also holds local reference to procstat shared memory segment.
  * * The system keeps the shared memory segment until the last process detaches from it.
@@ -59,7 +59,7 @@
  */
 
 /* the main collector data */
-extern ZBX_COLLECTOR_DATA	*collector;
+extern TRX_COLLECTOR_DATA	*collector;
 
 /* local reference to the procstat shared memory */
 static zbx_dshm_ref_t	procstat_ref;
@@ -79,7 +79,7 @@ zbx_procstat_header_t;
 
 #define PROCSTAT_NULL_OFFSET		0
 
-#define PROCSTAT_ALIGNED_HEADER_SIZE	ZBX_SIZE_T_ALIGN8(sizeof(zbx_procstat_header_t))
+#define PROCSTAT_ALIGNED_HEADER_SIZE	TRX_SIZE_T_ALIGN8(sizeof(zbx_procstat_header_t))
 
 #define PROCSTAT_PTR(base, offset)	((char *)base + offset)
 
@@ -219,15 +219,15 @@ static size_t	procstat_dshm_used_size(void *base)
 	for (query = PROCSTAT_QUERY_FIRST(base); NULL != query; query = PROCSTAT_QUERY_NEXT(base, query))
 	{
 		if (PROCSTAT_NULL_OFFSET != query->procname)
-			size += ZBX_SIZE_T_ALIGN8(strlen(PROCSTAT_PTR(base, query->procname)) + 1);
+			size += TRX_SIZE_T_ALIGN8(strlen(PROCSTAT_PTR(base, query->procname)) + 1);
 
 		if (PROCSTAT_NULL_OFFSET != query->username)
-			size += ZBX_SIZE_T_ALIGN8(strlen(PROCSTAT_PTR(base, query->username)) + 1);
+			size += TRX_SIZE_T_ALIGN8(strlen(PROCSTAT_PTR(base, query->username)) + 1);
 
 		if (PROCSTAT_NULL_OFFSET != query->cmdline)
-			size += ZBX_SIZE_T_ALIGN8(strlen(PROCSTAT_PTR(base, query->cmdline)) + 1);
+			size += TRX_SIZE_T_ALIGN8(strlen(PROCSTAT_PTR(base, query->cmdline)) + 1);
 
-		size += ZBX_SIZE_T_ALIGN8(sizeof(zbx_procstat_query_t));
+		size += TRX_SIZE_T_ALIGN8(sizeof(zbx_procstat_query_t));
 	}
 
 	return size;
@@ -279,7 +279,7 @@ static int	procstat_alloc(void *base, size_t size)
 	zbx_procstat_header_t	*header = (zbx_procstat_header_t *)base;
 	int			offset;
 
-	size = ZBX_SIZE_T_ALIGN8(size);
+	size = TRX_SIZE_T_ALIGN8(size);
 
 	if (FAIL == procstat_dshm_has_enough_space(header, size))
 	{
@@ -407,7 +407,7 @@ static void	procstat_copy_data(void *dst, size_t size_dst, const void *src)
  ******************************************************************************/
 static int	procstat_running(void)
 {
-	if (ZBX_NONEXISTENT_SHMID == collector->procstat.shmid)
+	if (TRX_NONEXISTENT_SHMID == collector->procstat.shmid)
 		return FAIL;
 
 	return SUCCEED;
@@ -484,19 +484,19 @@ static void	procstat_add(const char *procname, const char *username, const char 
 
 	/* reserve space for process attributes */
 	if (NULL != procname)
-		size += ZBX_SIZE_T_ALIGN8(strlen(procname) + 1);
+		size += TRX_SIZE_T_ALIGN8(strlen(procname) + 1);
 
 	if (NULL != username)
-		size += ZBX_SIZE_T_ALIGN8(strlen(username) + 1);
+		size += TRX_SIZE_T_ALIGN8(strlen(username) + 1);
 
 	if (NULL != cmdline)
-		size += ZBX_SIZE_T_ALIGN8(strlen(cmdline) + 1);
+		size += TRX_SIZE_T_ALIGN8(strlen(cmdline) + 1);
 
 	/* procstat_add() is called when the shared memory reference has already been validated - */
 	/* no need to call procstat_reattach()                                                    */
 
 	/* reserve space for query container */
-	size += ZBX_SIZE_T_ALIGN8(sizeof(zbx_procstat_query_t));
+	size += TRX_SIZE_T_ALIGN8(sizeof(zbx_procstat_query_t));
 
 	if (NULL == procstat_ref.addr || FAIL == procstat_dshm_has_enough_space(procstat_ref.addr, size))
 	{
@@ -599,7 +599,7 @@ static void	procstat_try_compress(void *base)
  *                                current collector iteration                 *
  *                                                                            *
  * Return value: The flags defining the process properties to be retrieved.   *
- *               See ZBX_SYSINFO_PROC_ defines.                               *
+ *               See TRX_SYSINFO_PROC_ defines.                               *
  *                                                                            *
  * Comments: updates queries (runid) in shared memory segment                 *
  *                                                                            *
@@ -610,7 +610,7 @@ static int	procstat_build_local_query_vector(zbx_vector_ptr_t *queries_ptr, int 
 	time_t				now;
 	zbx_procstat_query_t		*query;
 	zbx_procstat_query_data_t	*qdata;
-	int				flags = ZBX_SYSINFO_PROC_NONE, *pnext_query;
+	int				flags = TRX_SYSINFO_PROC_NONE, *pnext_query;
 
 	zbx_dshm_lock(&collector->procstat);
 
@@ -621,7 +621,7 @@ static int	procstat_build_local_query_vector(zbx_vector_ptr_t *queries_ptr, int 
 	if (PROCSTAT_NULL_OFFSET == header->queries)
 		goto out;
 
-	flags = ZBX_SYSINFO_PROC_PID;
+	flags = TRX_SYSINFO_PROC_PID;
 
 	now = time(NULL);
 	pnext_query = &header->queries;
@@ -642,13 +642,13 @@ static int	procstat_build_local_query_vector(zbx_vector_ptr_t *queries_ptr, int 
 		/* store the reference to query attributes, which is guaranteed to be */
 		/* valid until we call process_reattach()                             */
 		if (NULL != (qdata->procname = PROCSTAT_PTR_NULL(procstat_ref.addr, query->procname)))
-			flags |= ZBX_SYSINFO_PROC_NAME;
+			flags |= TRX_SYSINFO_PROC_NAME;
 
 		if (NULL != (qdata->username = PROCSTAT_PTR_NULL(procstat_ref.addr, query->username)))
-			flags |= ZBX_SYSINFO_PROC_USER;
+			flags |= TRX_SYSINFO_PROC_USER;
 
 		if (NULL != (qdata->cmdline = PROCSTAT_PTR_NULL(procstat_ref.addr, query->cmdline)))
-			flags |= ZBX_SYSINFO_PROC_CMDLINE;
+			flags |= TRX_SYSINFO_PROC_CMDLINE;
 
 		qdata->flags = query->flags;
 		qdata->utime = 0;
@@ -738,8 +738,8 @@ static void	procstat_get_monitored_pids(zbx_vector_uint64_t *pids, const zbx_vec
 		pids->values_num += qdata->pids.values_num;
 	}
 
-	zbx_vector_uint64_sort(pids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(pids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(pids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_uniq(pids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 }
 
 /******************************************************************************
@@ -784,7 +784,7 @@ static int	procstat_util_compare(const void *d1, const void *d2)
 	const zbx_procstat_util_t	*u1 = (zbx_procstat_util_t *)d1;
 	const zbx_procstat_util_t	*u2 = (zbx_procstat_util_t *)d2;
 
-	ZBX_RETURN_IF_NOT_EQUAL(u1->pid, u2->pid);
+	TRX_RETURN_IF_NOT_EQUAL(u1->pid, u2->pid);
 
 	return 0;
 }
@@ -960,7 +960,7 @@ void	zbx_procstat_init(void)
 {
 	char	*errmsg = NULL;
 
-	if (SUCCEED != zbx_dshm_create(&collector->procstat, 0, ZBX_MUTEX_PROCSTAT,
+	if (SUCCEED != zbx_dshm_create(&collector->procstat, 0, TRX_MUTEX_PROCSTAT,
 			procstat_copy_data, &errmsg))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize process data collector: %s", errmsg);
@@ -968,7 +968,7 @@ void	zbx_procstat_init(void)
 		exit(EXIT_FAILURE);
 	}
 
-	procstat_ref.shmid = ZBX_NONEXISTENT_SHMID;
+	procstat_ref.shmid = TRX_NONEXISTENT_SHMID;
 	procstat_ref.addr = NULL;
 }
 
@@ -989,7 +989,7 @@ void	zbx_procstat_destroy(void)
 		zbx_free(errmsg);
 	}
 
-	procstat_ref.shmid = ZBX_NONEXISTENT_SHMID;
+	procstat_ref.shmid = TRX_NONEXISTENT_SHMID;
 	procstat_ref.addr = NULL;
 }
 
@@ -1006,7 +1006,7 @@ void	zbx_procstat_destroy(void)
  *                              statistics gathering                          *
  *             period         - [IN] the time period                          *
  *             type           - [IN] the cpu utilization type, see            *
- *                              ZBX_PROCSTAT_CPU_* defines                    *
+ *                              TRX_PROCSTAT_CPU_* defines                    *
  *             value          - [OUT] the utilization in %                    *
  *             errmsg         - [OUT] the error message                       *
  *                                                                            *
@@ -1060,10 +1060,10 @@ int	zbx_procstat_get_util(const char *procname, const char *username, const char
 	if (0 > (start = current - period))
 		start += MAX_COLLECTOR_HISTORY;
 
-	if (0 != (type & ZBX_PROCSTAT_CPU_USER))
+	if (0 != (type & TRX_PROCSTAT_CPU_USER))
 		ticks_diff += query->h_data[current].utime - query->h_data[start].utime;
 
-	if (0 != (type & ZBX_PROCSTAT_CPU_SYSTEM))
+	if (0 != (type & TRX_PROCSTAT_CPU_SYSTEM))
 		ticks_diff += query->h_data[current].stime - query->h_data[start].stime;
 
 	time_diff = (zbx_uint64_t)(query->h_data[current].timestamp.sec - query->h_data[start].timestamp.sec) *
@@ -1124,7 +1124,7 @@ void	zbx_procstat_collect(void)
 	zbx_vector_ptr_create(&processes);
 	zbx_vector_uint64_create(&pids);
 
-	if (ZBX_SYSINFO_PROC_NONE == (flags = procstat_build_local_query_vector(&queries, runid)))
+	if (TRX_SYSINFO_PROC_NONE == (flags = procstat_build_local_query_vector(&queries, runid)))
 		goto clean;
 
 	if (SUCCEED != zbx_proc_get_processes(&processes, flags))

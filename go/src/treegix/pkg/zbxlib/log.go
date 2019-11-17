@@ -35,11 +35,11 @@ void __zbx_treegix_log(int level, const char *format, ...)
 	}
 }
 
-#define ZBX_MESSAGE_BUF_SIZE	1024
+#define TRX_MESSAGE_BUF_SIZE	1024
 
 char	*zbx_strerror(int errnum)
 {
-	static __thread char	utf8_string[ZBX_MESSAGE_BUF_SIZE];
+	static __thread char	utf8_string[TRX_MESSAGE_BUF_SIZE];
 	zbx_snprintf(utf8_string, sizeof(utf8_string), "[%d] %s", errnum, strerror(errnum));
 	return utf8_string;
 }

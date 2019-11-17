@@ -5,7 +5,7 @@
 #include "log.h"
 #include "zbxjson.h"
 
-#define ZBX_QSC_BUFSIZE	8192	/* QueryServiceConfig() and QueryServiceConfig2() maximum output buffer size */
+#define TRX_QSC_BUFSIZE	8192	/* QueryServiceConfig() and QueryServiceConfig2() maximum output buffer size */
 				/* as documented by Microsoft */
 typedef enum
 {
@@ -110,7 +110,7 @@ static void	log_if_buffer_too_small(const char *function_name, DWORD sz)
  *     hService - [IN] QueryServiceConfig() parameter 'hService'              *
  *     buf      - [OUT] QueryServiceConfig() parameter 'lpServiceConfig'.     *
  *                Pointer to a caller supplied buffer with size               *
- *                ZBX_QSC_BUFSIZE bytes !                                     *
+ *                TRX_QSC_BUFSIZE bytes !                                     *
  * Return value:                                                              *
  *      SUCCEED - data were successfully copied into 'buf'                    *
  *      FAIL    - use strerror_from_system(GetLastError() to see what failed  *
@@ -120,7 +120,7 @@ static int	zbx_get_service_config(SC_HANDLE hService, LPQUERY_SERVICE_CONFIG buf
 {
 	DWORD	sz = 0;
 
-	if (0 != QueryServiceConfig(hService, buf, ZBX_QSC_BUFSIZE, &sz))
+	if (0 != QueryServiceConfig(hService, buf, TRX_QSC_BUFSIZE, &sz))
 		return SUCCEED;
 
 	log_if_buffer_too_small("QueryServiceConfig", sz);
@@ -138,7 +138,7 @@ static int	zbx_get_service_config(SC_HANDLE hService, LPQUERY_SERVICE_CONFIG buf
  *     dwInfoLevel - [IN] QueryServiceConfig2() parameter 'dwInfoLevel'       *
  *     buf         - [OUT] QueryServiceConfig2() parameter 'lpBuffer'.        *
  *                   Pointer to a caller supplied buffer with size            *
- *                   ZBX_QSC_BUFSIZE bytes !                                 *
+ *                   TRX_QSC_BUFSIZE bytes !                                 *
  * Return value:                                                              *
  *      SUCCEED - data were successfully copied into 'buf'                    *
  *      FAIL    - use strerror_from_system(GetLastError() to see what failed  *
@@ -148,7 +148,7 @@ static int	zbx_get_service_config2(SC_HANDLE hService, DWORD dwInfoLevel, LPBYTE
 {
 	DWORD	sz = 0;
 
-	if (0 != QueryServiceConfig2(hService, dwInfoLevel, buf, ZBX_QSC_BUFSIZE, &sz))
+	if (0 != QueryServiceConfig2(hService, dwInfoLevel, buf, TRX_QSC_BUFSIZE, &sz))
 		return SUCCEED;
 
 	log_if_buffer_too_small("QueryServiceConfig2", sz);
@@ -157,7 +157,7 @@ static int	zbx_get_service_config2(SC_HANDLE hService, DWORD dwInfoLevel, LPBYTE
 
 static int	check_trigger_start(SC_HANDLE h_srv, const char *service_name)
 {
-	BYTE	buf[ZBX_QSC_BUFSIZE];
+	BYTE	buf[TRX_QSC_BUFSIZE];
 
 	if (SUCCEED == zbx_get_service_config2(h_srv, SERVICE_CONFIG_TRIGGER_INFO, buf))
 	{
@@ -185,7 +185,7 @@ static int	check_trigger_start(SC_HANDLE h_srv, const char *service_name)
 
 static int	check_delayed_start(SC_HANDLE h_srv, const char *service_name)
 {
-	BYTE	buf[ZBX_QSC_BUFSIZE];
+	BYTE	buf[TRX_QSC_BUFSIZE];
 
 	if (SUCCEED == zbx_get_service_config2(h_srv, SERVICE_CONFIG_DELAYED_AUTO_START_INFO, buf))
 	{
@@ -252,7 +252,7 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	while (0 != EnumServicesStatusEx(h_mgr, SC_ENUM_PROCESS_INFO, SERVICE_WIN32, SERVICE_STATE_ALL,
 			(LPBYTE)ssp, sz, &szn, &services, &resume_handle, NULL) || ERROR_MORE_DATA == GetLastError())
@@ -264,8 +264,8 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 			char			*utf8, *service_name_utf8;
 			QUERY_SERVICE_CONFIG	*qsc;
 			SERVICE_DESCRIPTION	*scd;
-			BYTE			buf_qsc[ZBX_QSC_BUFSIZE];
-			BYTE			buf_scd[ZBX_QSC_BUFSIZE];
+			BYTE			buf_qsc[TRX_QSC_BUFSIZE];
+			BYTE			buf_scd[TRX_QSC_BUFSIZE];
 
 			if (NULL == (h_srv = OpenService(h_mgr, ssp[i].lpServiceName, SERVICE_QUERY_CONFIG)))
 				continue;
@@ -292,32 +292,32 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 			zbx_json_addobject(&j, NULL);
 
-			zbx_json_addstring(&j, "{#SERVICE.NAME}", service_name_utf8, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&j, "{#SERVICE.NAME}", service_name_utf8, TRX_JSON_TYPE_STRING);
 
 			utf8 = zbx_unicode_to_utf8(ssp[i].lpDisplayName);
-			zbx_json_addstring(&j, "{#SERVICE.DISPLAYNAME}", utf8, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&j, "{#SERVICE.DISPLAYNAME}", utf8, TRX_JSON_TYPE_STRING);
 			zbx_free(utf8);
 
 			if (NULL != scd->lpDescription)
 			{
 				utf8 = zbx_unicode_to_utf8(scd->lpDescription);
-				zbx_json_addstring(&j, "{#SERVICE.DESCRIPTION}", utf8, ZBX_JSON_TYPE_STRING);
+				zbx_json_addstring(&j, "{#SERVICE.DESCRIPTION}", utf8, TRX_JSON_TYPE_STRING);
 				zbx_free(utf8);
 			}
 			else
-				zbx_json_addstring(&j, "{#SERVICE.DESCRIPTION}", "", ZBX_JSON_TYPE_STRING);
+				zbx_json_addstring(&j, "{#SERVICE.DESCRIPTION}", "", TRX_JSON_TYPE_STRING);
 
 			current_state = ssp[i].ServiceStatusProcess.dwCurrentState;
 			zbx_json_adduint64(&j, "{#SERVICE.STATE}", get_state_code(current_state));
 			zbx_json_addstring(&j, "{#SERVICE.STATENAME}", get_state_string(current_state),
-					ZBX_JSON_TYPE_STRING);
+					TRX_JSON_TYPE_STRING);
 
 			utf8 = zbx_unicode_to_utf8(qsc->lpBinaryPathName);
-			zbx_json_addstring(&j, "{#SERVICE.PATH}", utf8, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&j, "{#SERVICE.PATH}", utf8, TRX_JSON_TYPE_STRING);
 			zbx_free(utf8);
 
 			utf8 = zbx_unicode_to_utf8(qsc->lpServiceStartName);
-			zbx_json_addstring(&j, "{#SERVICE.USER}", utf8, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&j, "{#SERVICE.USER}", utf8, TRX_JSON_TYPE_STRING);
 			zbx_free(utf8);
 
 			if (SERVICE_DISABLED == qsc->dwStartType)
@@ -325,7 +325,7 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 				zbx_json_adduint64(&j, "{#SERVICE.STARTUPTRIGGER}", 0);
 				zbx_json_adduint64(&j, "{#SERVICE.STARTUP}", STARTUP_TYPE_DISABLED);
 				zbx_json_addstring(&j, "{#SERVICE.STARTUPNAME}",
-						get_startup_string(STARTUP_TYPE_DISABLED), ZBX_JSON_TYPE_STRING);
+						get_startup_string(STARTUP_TYPE_DISABLED), TRX_JSON_TYPE_STRING);
 			}
 			else
 			{
@@ -344,7 +344,7 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 				zbx_json_adduint64(&j, "{#SERVICE.STARTUP}", startup_type);
 				zbx_json_addstring(&j, "{#SERVICE.STARTUPNAME}", get_startup_string(startup_type),
-						ZBX_JSON_TYPE_STRING);
+						TRX_JSON_TYPE_STRING);
 			}
 
 			zbx_json_close(&j);
@@ -376,14 +376,14 @@ next:
 	return SYSINFO_RET_OK;
 }
 
-#define ZBX_SRV_PARAM_STATE		0x01
-#define ZBX_SRV_PARAM_DISPLAYNAME	0x02
-#define ZBX_SRV_PARAM_PATH		0x03
-#define ZBX_SRV_PARAM_USER		0x04
-#define ZBX_SRV_PARAM_STARTUP		0x05
-#define ZBX_SRV_PARAM_DESCRIPTION	0x06
+#define TRX_SRV_PARAM_STATE		0x01
+#define TRX_SRV_PARAM_DISPLAYNAME	0x02
+#define TRX_SRV_PARAM_PATH		0x03
+#define TRX_SRV_PARAM_USER		0x04
+#define TRX_SRV_PARAM_STARTUP		0x05
+#define TRX_SRV_PARAM_DESCRIPTION	0x06
 
-#define ZBX_NON_EXISTING_SRV		255
+#define TRX_NON_EXISTING_SRV		255
 
 int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
@@ -410,17 +410,17 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "state"))	/* default second parameter */
-		param_type = ZBX_SRV_PARAM_STATE;
+		param_type = TRX_SRV_PARAM_STATE;
 	else if (0 == strcmp(param, "displayname"))
-		param_type = ZBX_SRV_PARAM_DISPLAYNAME;
+		param_type = TRX_SRV_PARAM_DISPLAYNAME;
 	else if (0 == strcmp(param, "path"))
-		param_type = ZBX_SRV_PARAM_PATH;
+		param_type = TRX_SRV_PARAM_PATH;
 	else if (0 == strcmp(param, "user"))
-		param_type = ZBX_SRV_PARAM_USER;
+		param_type = TRX_SRV_PARAM_USER;
 	else if (0 == strcmp(param, "startup"))
-		param_type = ZBX_SRV_PARAM_STARTUP;
+		param_type = TRX_SRV_PARAM_STARTUP;
 	else if (0 == strcmp(param, "description"))
-		param_type = ZBX_SRV_PARAM_DESCRIPTION;
+		param_type = TRX_SRV_PARAM_DESCRIPTION;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
@@ -445,9 +445,9 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		int	ret;
 
-		if (ZBX_SRV_PARAM_STATE == param_type)
+		if (TRX_SRV_PARAM_STATE == param_type)
 		{
-			SET_UI64_RESULT(result, ZBX_NON_EXISTING_SRV);
+			SET_UI64_RESULT(result, TRX_NON_EXISTING_SRV);
 			ret = SYSINFO_RET_OK;
 		}
 		else
@@ -460,17 +460,17 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return ret;
 	}
 
-	if (ZBX_SRV_PARAM_STATE == param_type)
+	if (TRX_SRV_PARAM_STATE == param_type)
 	{
 		if (0 != QueryServiceStatus(h_srv, &status))
 			SET_UI64_RESULT(result, get_state_code(status.dwCurrentState));
 		else
 			SET_UI64_RESULT(result, 7);
 	}
-	else if (ZBX_SRV_PARAM_DESCRIPTION == param_type)
+	else if (TRX_SRV_PARAM_DESCRIPTION == param_type)
 	{
 		SERVICE_DESCRIPTION	*scd;
-		BYTE			buf[ZBX_QSC_BUFSIZE];
+		BYTE			buf[TRX_QSC_BUFSIZE];
 
 		if (SUCCEED != zbx_get_service_config2(h_srv, SERVICE_CONFIG_DESCRIPTION, buf))
 		{
@@ -491,7 +491,7 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 	else
 	{
 		QUERY_SERVICE_CONFIG	*qsc;
-		BYTE			buf_qsc[ZBX_QSC_BUFSIZE];
+		BYTE			buf_qsc[TRX_QSC_BUFSIZE];
 
 		if (SUCCEED != zbx_get_service_config(h_srv, (LPQUERY_SERVICE_CONFIG)buf_qsc))
 		{
@@ -506,16 +506,16 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		switch (param_type)
 		{
-			case ZBX_SRV_PARAM_DISPLAYNAME:
+			case TRX_SRV_PARAM_DISPLAYNAME:
 				SET_STR_RESULT(result, zbx_unicode_to_utf8(qsc->lpDisplayName));
 				break;
-			case ZBX_SRV_PARAM_PATH:
+			case TRX_SRV_PARAM_PATH:
 				SET_STR_RESULT(result, zbx_unicode_to_utf8(qsc->lpBinaryPathName));
 				break;
-			case ZBX_SRV_PARAM_USER:
+			case TRX_SRV_PARAM_USER:
 				SET_STR_RESULT(result, zbx_unicode_to_utf8(qsc->lpServiceStartName));
 				break;
-			case ZBX_SRV_PARAM_STARTUP:
+			case TRX_SRV_PARAM_STARTUP:
 				if (SERVICE_DISABLED == qsc->dwStartType)
 					SET_UI64_RESULT(result, STARTUP_TYPE_DISABLED);
 				else
@@ -586,18 +586,18 @@ int	SERVICE_STATE(AGENT_REQUEST *request, AGENT_RESULT *result)
 	return SYSINFO_RET_OK;
 }
 
-#define	ZBX_SRV_STARTTYPE_ALL		0x00
-#define	ZBX_SRV_STARTTYPE_AUTOMATIC	0x01
-#define	ZBX_SRV_STARTTYPE_MANUAL	0x02
-#define	ZBX_SRV_STARTTYPE_DISABLED	0x03
+#define	TRX_SRV_STARTTYPE_ALL		0x00
+#define	TRX_SRV_STARTTYPE_AUTOMATIC	0x01
+#define	TRX_SRV_STARTTYPE_MANUAL	0x02
+#define	TRX_SRV_STARTTYPE_DISABLED	0x03
 
 static int	check_service_starttype(SC_HANDLE h_srv, int start_type)
 {
 	int			ret = FAIL;
 	QUERY_SERVICE_CONFIG	*qsc;
-	BYTE			buf[ZBX_QSC_BUFSIZE];
+	BYTE			buf[TRX_QSC_BUFSIZE];
 
-	if (ZBX_SRV_STARTTYPE_ALL == start_type)
+	if (TRX_SRV_STARTTYPE_ALL == start_type)
 		return SUCCEED;
 
 	if (SUCCEED != zbx_get_service_config(h_srv, (LPQUERY_SERVICE_CONFIG)buf))
@@ -607,15 +607,15 @@ static int	check_service_starttype(SC_HANDLE h_srv, int start_type)
 
 	switch (start_type)
 	{
-		case ZBX_SRV_STARTTYPE_AUTOMATIC:
+		case TRX_SRV_STARTTYPE_AUTOMATIC:
 			if (SERVICE_AUTO_START == qsc->dwStartType)
 				ret = SUCCEED;
 			break;
-		case ZBX_SRV_STARTTYPE_MANUAL:
+		case TRX_SRV_STARTTYPE_MANUAL:
 			if (SERVICE_DEMAND_START == qsc->dwStartType)
 				ret = SUCCEED;
 			break;
-		case ZBX_SRV_STARTTYPE_DISABLED:
+		case TRX_SRV_STARTTYPE_DISABLED:
 			if (SERVICE_DISABLED == qsc->dwStartType)
 				ret = SUCCEED;
 			break;
@@ -624,18 +624,18 @@ static int	check_service_starttype(SC_HANDLE h_srv, int start_type)
 	return ret;
 }
 
-#define ZBX_SRV_STATE_STOPPED		0x0001
-#define ZBX_SRV_STATE_START_PENDING	0x0002
-#define ZBX_SRV_STATE_STOP_PENDING	0x0004
-#define ZBX_SRV_STATE_RUNNING		0x0008
-#define ZBX_SRV_STATE_CONTINUE_PENDING	0x0010
-#define ZBX_SRV_STATE_PAUSE_PENDING	0x0020
-#define ZBX_SRV_STATE_PAUSED		0x0040
-#define ZBX_SRV_STATE_STARTED		0x007e	/* ZBX_SRV_STATE_START_PENDING | ZBX_SRV_STATE_STOP_PENDING |
-						 * ZBX_SRV_STATE_RUNNING | ZBX_SRV_STATE_CONTINUE_PENDING |
-						 * ZBX_SRV_STATE_PAUSE_PENDING | ZBX_SRV_STATE_PAUSED
+#define TRX_SRV_STATE_STOPPED		0x0001
+#define TRX_SRV_STATE_START_PENDING	0x0002
+#define TRX_SRV_STATE_STOP_PENDING	0x0004
+#define TRX_SRV_STATE_RUNNING		0x0008
+#define TRX_SRV_STATE_CONTINUE_PENDING	0x0010
+#define TRX_SRV_STATE_PAUSE_PENDING	0x0020
+#define TRX_SRV_STATE_PAUSED		0x0040
+#define TRX_SRV_STATE_STARTED		0x007e	/* TRX_SRV_STATE_START_PENDING | TRX_SRV_STATE_STOP_PENDING |
+						 * TRX_SRV_STATE_RUNNING | TRX_SRV_STATE_CONTINUE_PENDING |
+						 * TRX_SRV_STATE_PAUSE_PENDING | TRX_SRV_STATE_PAUSED
 						 */
-#define ZBX_SRV_STATE_ALL		0x007f  /* ZBX_SRV_STATE_STOPPED | ZBX_SRV_STATE_STARTED
+#define TRX_SRV_STATE_ALL		0x007f  /* TRX_SRV_STATE_STOPPED | TRX_SRV_STATE_STARTED
 						 */
 static int	check_service_state(SC_HANDLE h_srv, int service_state)
 {
@@ -646,31 +646,31 @@ static int	check_service_state(SC_HANDLE h_srv, int service_state)
 		switch (status.dwCurrentState)
 		{
 			case SERVICE_STOPPED:
-				if (0 != (service_state & ZBX_SRV_STATE_STOPPED))
+				if (0 != (service_state & TRX_SRV_STATE_STOPPED))
 					return SUCCEED;
 				break;
 			case SERVICE_START_PENDING:
-				if (0 != (service_state & ZBX_SRV_STATE_START_PENDING))
+				if (0 != (service_state & TRX_SRV_STATE_START_PENDING))
 					return SUCCEED;
 				break;
 			case SERVICE_STOP_PENDING:
-				if (0 != (service_state & ZBX_SRV_STATE_STOP_PENDING))
+				if (0 != (service_state & TRX_SRV_STATE_STOP_PENDING))
 					return SUCCEED;
 				break;
 			case SERVICE_RUNNING:
-				if (0 != (service_state & ZBX_SRV_STATE_RUNNING))
+				if (0 != (service_state & TRX_SRV_STATE_RUNNING))
 					return SUCCEED;
 				break;
 			case SERVICE_CONTINUE_PENDING:
-				if (0 != (service_state & ZBX_SRV_STATE_CONTINUE_PENDING))
+				if (0 != (service_state & TRX_SRV_STATE_CONTINUE_PENDING))
 					return SUCCEED;
 				break;
 			case SERVICE_PAUSE_PENDING:
-				if (0 != (service_state & ZBX_SRV_STATE_PAUSE_PENDING))
+				if (0 != (service_state & TRX_SRV_STATE_PAUSE_PENDING))
 					return SUCCEED;
 				break;
 			case SERVICE_PAUSED:
-				if (0 != (service_state & ZBX_SRV_STATE_PAUSED))
+				if (0 != (service_state & TRX_SRV_STATE_PAUSED))
 					return SUCCEED;
 				break;
 		}
@@ -698,13 +698,13 @@ int	SERVICES(AGENT_REQUEST *request, AGENT_RESULT *result)
 	exclude = get_rparam(request, 2);
 
 	if (NULL == type || '\0' == *type || 0 == strcmp(type, "all"))	/* default parameter */
-		start_type = ZBX_SRV_STARTTYPE_ALL;
+		start_type = TRX_SRV_STARTTYPE_ALL;
 	else if (0 == strcmp(type, "automatic"))
-		start_type = ZBX_SRV_STARTTYPE_AUTOMATIC;
+		start_type = TRX_SRV_STARTTYPE_AUTOMATIC;
 	else if (0 == strcmp(type, "manual"))
-		start_type = ZBX_SRV_STARTTYPE_MANUAL;
+		start_type = TRX_SRV_STARTTYPE_MANUAL;
 	else if (0 == strcmp(type, "disabled"))
-		start_type = ZBX_SRV_STARTTYPE_DISABLED;
+		start_type = TRX_SRV_STARTTYPE_DISABLED;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
@@ -712,23 +712,23 @@ int	SERVICES(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	if (NULL == state || '\0' == *state || 0 == strcmp(state, "all"))	/* default parameter */
-		service_state = ZBX_SRV_STATE_ALL;
+		service_state = TRX_SRV_STATE_ALL;
 	else if (0 == strcmp(state, "stopped"))
-		service_state = ZBX_SRV_STATE_STOPPED;
+		service_state = TRX_SRV_STATE_STOPPED;
 	else if (0 == strcmp(state, "started"))
-		service_state = ZBX_SRV_STATE_STARTED;
+		service_state = TRX_SRV_STATE_STARTED;
 	else if (0 == strcmp(state, "start_pending"))
-		service_state = ZBX_SRV_STATE_START_PENDING;
+		service_state = TRX_SRV_STATE_START_PENDING;
 	else if (0 == strcmp(state, "stop_pending"))
-		service_state = ZBX_SRV_STATE_STOP_PENDING;
+		service_state = TRX_SRV_STATE_STOP_PENDING;
 	else if (0 == strcmp(state, "running"))
-		service_state = ZBX_SRV_STATE_RUNNING;
+		service_state = TRX_SRV_STATE_RUNNING;
 	else if (0 == strcmp(state, "continue_pending"))
-		service_state = ZBX_SRV_STATE_CONTINUE_PENDING;
+		service_state = TRX_SRV_STATE_CONTINUE_PENDING;
 	else if (0 == strcmp(state, "pause_pending"))
-		service_state = ZBX_SRV_STATE_PAUSE_PENDING;
+		service_state = TRX_SRV_STATE_PAUSE_PENDING;
 	else if (0 == strcmp(state, "paused"))
-		service_state = ZBX_SRV_STATE_PAUSED;
+		service_state = TRX_SRV_STATE_PAUSED;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));

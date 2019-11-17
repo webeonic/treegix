@@ -8,7 +8,7 @@
 
 #include "../zbxalgo/vectorimpl.h"
 
-ZBX_VECTOR_IMPL(history_record, zbx_history_record_t)
+TRX_VECTOR_IMPL(history_record, zbx_history_record_t)
 
 extern char	*CONFIG_HISTORY_STORAGE_URL;
 extern char	*CONFIG_HISTORY_STORAGE_OPTS;
@@ -134,13 +134,13 @@ int	zbx_history_get_values(zbx_uint64_t itemid, int value_type, int start, int c
 	int			ret, pos;
 	zbx_history_iface_t	*writer = &history_ifaces[value_type];
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" ZBX_FS_UI64 " value_type:%d start:%d count:%d end:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" TRX_FS_UI64 " value_type:%d start:%d count:%d end:%d",
 			__func__, itemid, value_type, start, count, end);
 
 	pos = values->values_num;
 	ret = writer->get_values(writer, itemid, start, count, end, values);
 
-	if (SUCCEED == ret && SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
+	if (SUCCEED == ret && SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 	{
 		int	i;
 		char	buffer[MAX_STRING_LEN];
@@ -259,10 +259,10 @@ void	zbx_history_value2str(char *buffer, size_t size, const history_value_t *val
 	switch (value_type)
 	{
 		case ITEM_VALUE_TYPE_FLOAT:
-			zbx_snprintf(buffer, size, ZBX_FS_DBL, value->dbl);
+			zbx_snprintf(buffer, size, TRX_FS_DBL, value->dbl);
 			break;
 		case ITEM_VALUE_TYPE_UINT64:
-			zbx_snprintf(buffer, size, ZBX_FS_UI64, value->ui64);
+			zbx_snprintf(buffer, size, TRX_FS_UI64, value->ui64);
 			break;
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:

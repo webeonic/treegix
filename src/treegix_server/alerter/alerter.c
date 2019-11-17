@@ -37,7 +37,7 @@ static int	execute_script_alert(const char *command, char *error, size_t max_err
 	int	ret = FAIL;
 
 	if (SUCCEED == (ret = zbx_execute(command, &output, error, max_error_len, ALARM_ACTION_TIMEOUT,
-			ZBX_EXIT_CODE_CHECKS_ENABLED)))
+			TRX_EXIT_CODE_CHECKS_ENABLED)))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "%s output:\n%s", command, output);
 		zbx_free(output);
@@ -61,7 +61,7 @@ static void	alerter_register(zbx_ipc_socket_t *socket)
 
 	ppid = getppid();
 
-	zbx_ipc_socket_write(socket, ZBX_IPC_ALERTER_REGISTER, (unsigned char *)&ppid, sizeof(ppid));
+	zbx_ipc_socket_write(socket, TRX_IPC_ALERTER_REGISTER, (unsigned char *)&ppid, sizeof(ppid));
 }
 
 /******************************************************************************
@@ -81,7 +81,7 @@ static void	alerter_send_result(zbx_ipc_socket_t *socket, const char *value, int
 	zbx_uint32_t	data_len;
 
 	data_len = zbx_alerter_serialize_result(&data, value, errcode, error);
-	zbx_ipc_socket_write(socket, ZBX_IPC_ALERTER_RESULT, data, data_len);
+	zbx_ipc_socket_write(socket, TRX_IPC_ALERTER_RESULT, data, data_len);
 
 	zbx_free(data);
 }
@@ -237,7 +237,7 @@ static void	alerter_process_webhook(zbx_ipc_socket_t *socket, zbx_ipc_message_t 
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(alerter_thread, args)
+TRX_THREAD_ENTRY(alerter_thread, args)
 {
 #define	STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
@@ -261,7 +261,7 @@ ZBX_THREAD_ENTRY(alerter_thread, args)
 
 	zbx_ipc_message_init(&message);
 
-	if (FAIL == zbx_ipc_socket_open(&alerter_socket, ZBX_IPC_SERVICE_ALERTER, SEC_PER_MIN, &error))
+	if (FAIL == zbx_ipc_socket_open(&alerter_socket, TRX_IPC_SERVICE_ALERTER, SEC_PER_MIN, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot connect to alert manager service: %s", error);
 		zbx_free(error);
@@ -274,16 +274,16 @@ ZBX_THREAD_ENTRY(alerter_thread, args)
 
 	zbx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
 
-	update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		time_now = zbx_time();
 
 		if (STAT_INTERVAL < time_now - time_stat)
 		{
-			zbx_setproctitle("%s #%d [sent %d, failed %d alerts, idle " ZBX_FS_DBL " sec during "
-					ZBX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
+			zbx_setproctitle("%s #%d [sent %d, failed %d alerts, idle " TRX_FS_DBL " sec during "
+					TRX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
 					success_num, fail_num, time_idle, time_now - time_stat);
 
 			time_stat = time_now;
@@ -292,7 +292,7 @@ ZBX_THREAD_ENTRY(alerter_thread, args)
 			fail_num = 0;
 		}
 
-		update_selfmon_counter(ZBX_PROCESS_STATE_IDLE);
+		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
 
 		if (SUCCEED != zbx_ipc_socket_read(&alerter_socket, &message))
 		{
@@ -300,7 +300,7 @@ ZBX_THREAD_ENTRY(alerter_thread, args)
 			exit(EXIT_FAILURE);
 		}
 
-		update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+		update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
 		time_read = zbx_time();
 		time_idle += time_read - time_now;
@@ -308,16 +308,16 @@ ZBX_THREAD_ENTRY(alerter_thread, args)
 
 		switch (message.code)
 		{
-			case ZBX_IPC_ALERTER_EMAIL:
+			case TRX_IPC_ALERTER_EMAIL:
 				alerter_process_email(&alerter_socket, &message);
 				break;
-			case ZBX_IPC_ALERTER_SMS:
+			case TRX_IPC_ALERTER_SMS:
 				alerter_process_sms(&alerter_socket, &message);
 				break;
-			case ZBX_IPC_ALERTER_EXEC:
+			case TRX_IPC_ALERTER_EXEC:
 				alerter_process_exec(&alerter_socket, &message);
 				break;
-			case ZBX_IPC_ALERTER_WEBHOOK:
+			case TRX_IPC_ALERTER_WEBHOOK:
 				alerter_process_webhook(&alerter_socket, &message);
 				break;
 		}

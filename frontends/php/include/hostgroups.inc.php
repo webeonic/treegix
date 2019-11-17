@@ -276,7 +276,7 @@ function makeProblemHostsHintBox(array $hosts, array $data, CUrl $url) {
 			$host_name = [$host_name, $maintenance_icon];
 		}
 
-		$row = new CRow((new CCol($host_name))->addClass(ZBX_STYLE_NOWRAP));
+		$row = new CRow((new CCol($host_name))->addClass(TRX_STYLE_NOWRAP));
 
 		foreach (range(TRIGGER_SEVERITY_COUNT - 1, TRIGGER_SEVERITY_NOT_CLASSIFIED) as $severity) {
 			if (in_array($severity, $data['filter']['severities'])) {
@@ -290,7 +290,7 @@ function makeProblemHostsHintBox(array $hosts, array $data, CUrl $url) {
 
 		$table_inf->addRow($row);
 
-		if (++$popup_rows == ZBX_WIDGET_ROWS) {
+		if (++$popup_rows == TRX_WIDGET_ROWS) {
 			break;
 		}
 	}

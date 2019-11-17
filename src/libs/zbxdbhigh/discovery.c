@@ -17,10 +17,10 @@ static DB_RESULT	discovery_get_dhost_by_value(zbx_uint64_t dcheckid, const char 
 			"select dh.dhostid,dh.status,dh.lastup,dh.lastdown"
 			" from dhosts dh,dservices ds"
 			" where ds.dhostid=dh.dhostid"
-				" and ds.dcheckid=" ZBX_FS_UI64
-				" and ds.value" ZBX_SQL_STRCMP
+				" and ds.dcheckid=" TRX_FS_UI64
+				" and ds.value" TRX_SQL_STRCMP
 			" order by dh.dhostid",
-			dcheckid, ZBX_SQL_STRVAL_EQ(value_esc));
+			dcheckid, TRX_SQL_STRVAL_EQ(value_esc));
 
 	zbx_free(value_esc);
 
@@ -38,11 +38,11 @@ static DB_RESULT	discovery_get_dhost_by_ip_port(zbx_uint64_t druleid, const char
 			"select dh.dhostid,dh.status,dh.lastup,dh.lastdown"
 			" from dhosts dh,dservices ds"
 			" where ds.dhostid=dh.dhostid"
-				" and dh.druleid=" ZBX_FS_UI64
-				" and ds.ip" ZBX_SQL_STRCMP
+				" and dh.druleid=" TRX_FS_UI64
+				" and ds.ip" TRX_SQL_STRCMP
 				" and ds.port=%d"
 			" order by dh.dhostid",
-			druleid, ZBX_SQL_STRVAL_EQ(ip_esc), port);
+			druleid, TRX_SQL_STRVAL_EQ(ip_esc), port);
 
 	zbx_free(ip_esc);
 
@@ -72,9 +72,9 @@ static void	discovery_separate_host(const DB_DRULE *drule, DB_DHOST *dhost, cons
 	sql = zbx_dsprintf(sql,
 			"select dserviceid"
 			" from dservices"
-			" where dhostid=" ZBX_FS_UI64
-				" and ip" ZBX_SQL_STRCMP,
-			dhost->dhostid, ZBX_SQL_STRVAL_NE(ip_esc));
+			" where dhostid=" TRX_FS_UI64
+				" and ip" TRX_SQL_STRCMP,
+			dhost->dhostid, TRX_SQL_STRVAL_NE(ip_esc));
 
 	result = DBselectN(sql, 1);
 
@@ -83,14 +83,14 @@ static void	discovery_separate_host(const DB_DRULE *drule, DB_DHOST *dhost, cons
 		dhostid = DBget_maxid("dhosts");
 
 		DBexecute("insert into dhosts (dhostid,druleid)"
-				" values (" ZBX_FS_UI64 "," ZBX_FS_UI64 ")",
+				" values (" TRX_FS_UI64 "," TRX_FS_UI64 ")",
 				dhostid, drule->druleid);
 
 		DBexecute("update dservices"
-				" set dhostid=" ZBX_FS_UI64
-				" where dhostid=" ZBX_FS_UI64
-					" and ip" ZBX_SQL_STRCMP,
-				dhostid, dhost->dhostid, ZBX_SQL_STRVAL_EQ(ip_esc));
+				" set dhostid=" TRX_FS_UI64
+				" where dhostid=" TRX_FS_UI64
+					" and ip" TRX_SQL_STRCMP,
+				dhostid, dhost->dhostid, TRX_SQL_STRVAL_EQ(ip_esc));
 
 		dhost->dhostid = dhostid;
 		dhost->status = DOBJECT_STATUS_DOWN;
@@ -156,7 +156,7 @@ static void	discovery_register_host(const DB_DRULE *drule, zbx_uint64_t dcheckid
 			dhost->lastdown = 0;
 
 			DBexecute("insert into dhosts (dhostid,druleid)"
-					" values (" ZBX_FS_UI64 "," ZBX_FS_UI64 ")",
+					" values (" TRX_FS_UI64 "," TRX_FS_UI64 ")",
 					dhost->dhostid, drule->druleid);
 		}
 	}
@@ -164,7 +164,7 @@ static void	discovery_register_host(const DB_DRULE *drule, zbx_uint64_t dcheckid
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "host at %s is already in database", ip);
 
-		ZBX_STR2UINT64(dhost->dhostid, row[0]);
+		TRX_STR2UINT64(dhost->dhostid, row[0]);
 		dhost->status = atoi(row[1]);
 		dhost->lastup = atoi(row[2]);
 		dhost->lastdown = atoi(row[3]);
@@ -202,10 +202,10 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 	result = DBselect(
 			"select dserviceid,dhostid,status,lastup,lastdown,value,dns"
 			" from dservices"
-			" where dcheckid=" ZBX_FS_UI64
-				" and ip" ZBX_SQL_STRCMP
+			" where dcheckid=" TRX_FS_UI64
+				" and ip" TRX_SQL_STRCMP
 				" and port=%d",
-			dcheckid, ZBX_SQL_STRVAL_EQ(ip_esc), port);
+			dcheckid, TRX_SQL_STRVAL_EQ(ip_esc), port);
 
 	if (NULL == (row = DBfetch(result)))
 	{
@@ -220,7 +220,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 			dns_esc = DBdyn_escape_field("dservices", "dns", dns);
 
 			DBexecute("insert into dservices (dserviceid,dhostid,dcheckid,ip,dns,port,status)"
-					" values (" ZBX_FS_UI64 "," ZBX_FS_UI64 "," ZBX_FS_UI64 ",'%s','%s',%d,%d)",
+					" values (" TRX_FS_UI64 "," TRX_FS_UI64 "," TRX_FS_UI64 ",'%s','%s',%d,%d)",
 					dservice->dserviceid, dhost->dhostid, dcheckid, ip_esc, dns_esc, port,
 					dservice->status);
 
@@ -231,8 +231,8 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "service is already in database");
 
-		ZBX_STR2UINT64(dservice->dserviceid, row[0]);
-		ZBX_STR2UINT64(dhostid, row[1]);
+		TRX_STR2UINT64(dservice->dserviceid, row[0]);
+		TRX_STR2UINT64(dhostid, row[1]);
 		dservice->status = atoi(row[2]);
 		dservice->lastup = atoi(row[3]);
 		dservice->lastdown = atoi(row[4]);
@@ -241,12 +241,12 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 		if (dhostid != dhost->dhostid)
 		{
 			DBexecute("update dservices"
-					" set dhostid=" ZBX_FS_UI64
-					" where dhostid=" ZBX_FS_UI64,
+					" set dhostid=" TRX_FS_UI64
+					" where dhostid=" TRX_FS_UI64,
 					dhost->dhostid, dhostid);
 
 			DBexecute("delete from dhosts"
-					" where dhostid=" ZBX_FS_UI64,
+					" where dhostid=" TRX_FS_UI64,
 					dhostid);
 		}
 
@@ -256,7 +256,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 
 			DBexecute("update dservices"
 					" set dns='%s'"
-					" where dserviceid=" ZBX_FS_UI64,
+					" where dserviceid=" TRX_FS_UI64,
 					dns_esc, dservice->dserviceid);
 
 			zbx_free(dns_esc);
@@ -283,7 +283,7 @@ static void	discovery_update_dservice(zbx_uint64_t dserviceid, int status, int l
 
 	value_esc = DBdyn_escape_field("dservices", "value", value);
 
-	DBexecute("update dservices set status=%d,lastup=%d,lastdown=%d,value='%s' where dserviceid=" ZBX_FS_UI64,
+	DBexecute("update dservices set status=%d,lastup=%d,lastdown=%d,value='%s' where dserviceid=" TRX_FS_UI64,
 			status, lastup, lastdown, value_esc, dserviceid);
 
 	zbx_free(value_esc);
@@ -302,7 +302,7 @@ static void	discovery_update_dservice_value(zbx_uint64_t dserviceid, const char 
 
 	value_esc = DBdyn_escape_field("dservices", "value", value);
 
-	DBexecute("update dservices set value='%s' where dserviceid=" ZBX_FS_UI64, value_esc, dserviceid);
+	DBexecute("update dservices set value='%s' where dserviceid=" TRX_FS_UI64, value_esc, dserviceid);
 
 	zbx_free(value_esc);
 }
@@ -316,7 +316,7 @@ static void	discovery_update_dservice_value(zbx_uint64_t dserviceid, const char 
  ******************************************************************************/
 static void	discovery_update_dhost(const DB_DHOST *dhost)
 {
-	DBexecute("update dhosts set status=%d,lastup=%d,lastdown=%d where dhostid=" ZBX_FS_UI64,
+	DBexecute("update dhosts set status=%d,lastup=%d,lastdown=%d where dhostid=" TRX_FS_UI64,
 			dhost->status, dhost->lastup, dhost->lastdown, dhost->dhostid);
 }
 

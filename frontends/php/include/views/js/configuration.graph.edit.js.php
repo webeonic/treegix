@@ -4,8 +4,8 @@
 	<?php if ($readonly): ?>
 		<td>
 	<?php else: ?>
-		<td class="<?= ZBX_STYLE_TD_DRAG_ICON ?>">
-			<div class="<?= ZBX_STYLE_DRAG_ICON ?>"></div>
+		<td class="<?= TRX_STYLE_TD_DRAG_ICON ?>">
+			<div class="<?= TRX_STYLE_DRAG_ICON ?>"></div>
 			<span class="ui-icon ui-icon-arrowthick-2-n-s move"></span>
 	<?php endif ?>
 		<input type="hidden" id="items_#{number}_gitemid" name="items[#{number}][gitemid]" value="#{gitemid}">
@@ -89,8 +89,8 @@
 		<?= (new CColor('items[#{number}][color]', '#{color}'))->appendColorPickerJs(false) ?>
 	</td>
 	<?php if (!$readonly): ?>
-		<td class="<?= ZBX_STYLE_NOWRAP ?>">
-			<button type="button" class="<?= ZBX_STYLE_BTN_LINK ?>" id="items_#{number}_remove" data-remove="#{number}" onclick="removeItem(this);"><?= _('Remove') ?></button>
+		<td class="<?= TRX_STYLE_NOWRAP ?>">
+			<button type="button" class="<?= TRX_STYLE_BTN_LINK ?>" id="items_#{number}_remove" data-remove="#{number}" onclick="removeItem(this);"><?= _('Remove') ?></button>
 		</td>
 	<?php endif ?>
 </tr>
@@ -197,7 +197,7 @@
 				with_webitems: 1,
 				writeonly: 1
 			};
-			if (jQuery('#items_' + i + '_flags').val() == <?= ZBX_FLAG_DISCOVERY_PROTOTYPE ?>) {
+			if (jQuery('#items_' + i + '_flags').val() == <?= TRX_FLAG_DISCOVERY_PROTOTYPE ?>) {
 				popup_options['srctbl'] = 'item_prototypes',
 				popup_options['srcfld3'] = 'flags',
 				popup_options['dstfld3'] = 'items_' + i + '_flags',
@@ -314,7 +314,7 @@
 			axis: 'y',
 			containment: 'parent',
 			cursor: IE ? 'move' : 'grabbing',
-			handle: 'div.<?= ZBX_STYLE_DRAG_ICON ?>',
+			handle: 'div.<?= TRX_STYLE_DRAG_ICON ?>',
 			tolerance: 'pointer',
 			opacity: 0.6,
 			update: recalculateSortOrder,

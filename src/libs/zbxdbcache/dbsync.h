@@ -6,27 +6,27 @@
 #include "common.h"
 
 /* no changes */
-#define ZBX_DBSYNC_ROW_NONE	0
+#define TRX_DBSYNC_ROW_NONE	0
 /*  a new object must be added to configuration cache */
-#define ZBX_DBSYNC_ROW_ADD	1
+#define TRX_DBSYNC_ROW_ADD	1
 /* a cached object must be updated in configuration cache */
-#define ZBX_DBSYNC_ROW_UPDATE	2
+#define TRX_DBSYNC_ROW_UPDATE	2
 /* a cached object must be removed from configuration cache */
-#define ZBX_DBSYNC_ROW_REMOVE	3
+#define TRX_DBSYNC_ROW_REMOVE	3
 
-#define ZBX_DBSYNC_UPDATE_HOSTS			__UINT64_C(0x0001)
-#define ZBX_DBSYNC_UPDATE_ITEMS			__UINT64_C(0x0002)
-#define ZBX_DBSYNC_UPDATE_FUNCTIONS		__UINT64_C(0x0004)
-#define ZBX_DBSYNC_UPDATE_TRIGGERS		__UINT64_C(0x0008)
-#define ZBX_DBSYNC_UPDATE_TRIGGER_DEPENDENCY	__UINT64_C(0x0010)
-#define ZBX_DBSYNC_UPDATE_HOST_GROUPS		__UINT64_C(0x0020)
-#define ZBX_DBSYNC_UPDATE_MAINTENANCE_GROUPS	__UINT64_C(0x0040)
+#define TRX_DBSYNC_UPDATE_HOSTS			__UINT64_C(0x0001)
+#define TRX_DBSYNC_UPDATE_ITEMS			__UINT64_C(0x0002)
+#define TRX_DBSYNC_UPDATE_FUNCTIONS		__UINT64_C(0x0004)
+#define TRX_DBSYNC_UPDATE_TRIGGERS		__UINT64_C(0x0008)
+#define TRX_DBSYNC_UPDATE_TRIGGER_DEPENDENCY	__UINT64_C(0x0010)
+#define TRX_DBSYNC_UPDATE_HOST_GROUPS		__UINT64_C(0x0020)
+#define TRX_DBSYNC_UPDATE_MAINTENANCE_GROUPS	__UINT64_C(0x0040)
 
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-#	define ZBX_HOST_TLS_OFFSET	4
+#	define TRX_HOST_TLS_OFFSET	4
 #else
-#	define ZBX_HOST_TLS_OFFSET	0
+#	define TRX_HOST_TLS_OFFSET	0
 #endif
 
 /******************************************************************************
@@ -48,20 +48,20 @@ typedef char **(*zbx_dbsync_preproc_row_func_t)(char **row);
 
 typedef struct
 {
-	/* a row tag, describing the changes (see ZBX_DBSYNC_ROW_* defines) */
+	/* a row tag, describing the changes (see TRX_DBSYNC_ROW_* defines) */
 	unsigned char	tag;
 
 	/* the identifier of the object represented by the row */
 	zbx_uint64_t	rowid;
 
-	/* the column values, NULL if the tag is ZBX_DBSYNC_ROW_REMOVE */
+	/* the column values, NULL if the tag is TRX_DBSYNC_ROW_REMOVE */
 	char		**row;
 }
 zbx_dbsync_row_t;
 
 struct zbx_dbsync
 {
-	/* the synchronization mode (see ZBX_DBSYNC_* defines) */
+	/* the synchronization mode (see TRX_DBSYNC_* defines) */
 	unsigned char			mode;
 
 	/* the number of columns in diff */
@@ -73,7 +73,7 @@ struct zbx_dbsync
 	/* the changed rows */
 	zbx_vector_ptr_t		rows;
 
-	/* the database result set for ZBX_DBSYNC_ALL mode */
+	/* the database result set for TRX_DBSYNC_ALL mode */
 	DB_RESULT			dbresult;
 
 	/* the row preprocessing function */
@@ -91,7 +91,7 @@ struct zbx_dbsync
 	zbx_uint64_t	remove_num;
 };
 
-void	zbx_dbsync_init_env(ZBX_DC_CONFIG *cache);
+void	zbx_dbsync_init_env(TRX_DC_CONFIG *cache);
 void	zbx_dbsync_free_env(void);
 
 void	zbx_dbsync_init(zbx_dbsync_t *sync, unsigned char mode);
@@ -130,4 +130,4 @@ int	zbx_dbsync_compare_maintenance_groups(zbx_dbsync_t *sync);
 int	zbx_dbsync_compare_maintenance_hosts(zbx_dbsync_t *sync);
 int	zbx_dbsync_compare_host_group_hosts(zbx_dbsync_t *sync);
 
-#endif /* BUILD_SRC_LIBS_ZBXDBCACHE_DBSYNC_H_ */
+#endif /* BUILD_SRC_LIBS_TRXDBCACHE_DBSYNC_H_ */

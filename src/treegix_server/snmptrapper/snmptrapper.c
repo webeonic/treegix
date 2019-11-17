@@ -36,7 +36,7 @@ static void	DBget_lastsize(void)
 		trap_lastsize = 0;
 	}
 	else
-		ZBX_STR2UINT64(trap_lastsize, row[0]);
+		TRX_STR2UINT64(trap_lastsize, row[0]);
 
 	DBfree_result(result);
 
@@ -131,8 +131,8 @@ static int	process_trap_for_interface(zbx_uint64_t interfaceid, char *trap, zbx_
 				}
 			}
 
-			if (ZBX_REGEXP_NO_MATCH == (regexp_ret = regexp_match_ex(&regexps, trap, regex,
-					ZBX_CASE_SENSITIVE)))
+			if (TRX_REGEXP_NO_MATCH == (regexp_ret = regexp_match_ex(&regexps, trap, regex,
+					TRX_CASE_SENSITIVE)))
 			{
 				goto next;
 			}
@@ -250,9 +250,9 @@ static void	process_trap(const char *addr, char *begin, char *end)
 	{
 		zbx_config_t	cfg;
 
-		zbx_config_get(&cfg, ZBX_CONFIG_FLAGS_SNMPTRAP_LOGGING);
+		zbx_config_get(&cfg, TRX_CONFIG_FLAGS_SNMPTRAP_LOGGING);
 
-		if (ZBX_SNMPTRAP_LOGGING_ENABLED == cfg.snmptrap_logging)
+		if (TRX_SNMPTRAP_LOGGING_ENABLED == cfg.snmptrap_logging)
 			treegix_log(LOG_LEVEL_WARNING, "unmatched trap received from \"%s\": %s", addr, trap);
 
 		zbx_config_clean(&cfg);
@@ -285,7 +285,7 @@ static void	parse_traps(int flag)
 			continue;
 		}
 
-		if (0 != strncmp(c, "ZBXTRAP", 7))
+		if (0 != strncmp(c, "TRXTRAP", 7))
 		{
 			c++;
 			continue;
@@ -293,9 +293,9 @@ static void	parse_traps(int flag)
 
 		pzbegin = c;
 
-		c += 7;	/* c now points to the delimiter between "ZBXTRAP" and address */
+		c += 7;	/* c now points to the delimiter between "TRXTRAP" and address */
 
-		while ('\0' != *c && NULL != strchr(ZBX_WHITESPACE, *c))
+		while ('\0' != *c && NULL != strchr(TRX_WHITESPACE, *c))
 			c++;
 
 		/* c now points to the address */
@@ -316,7 +316,7 @@ static void	parse_traps(int flag)
 		addr = c;
 		pzdate = pzbegin;
 
-		while ('\0' != *c && NULL == strchr(ZBX_WHITESPACE, *c))
+		while ('\0' != *c && NULL == strchr(TRX_WHITESPACE, *c))
 			c++;
 
 		pzaddr = c;
@@ -599,7 +599,7 @@ static int	get_latest_data(void)
  * Author: Rudolfs Kreicbergs                                                 *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(snmptrapper_thread, args)
+TRX_THREAD_ENTRY(snmptrapper_thread, args)
 {
 	double	sec;
 
@@ -614,25 +614,25 @@ ZBX_THREAD_ENTRY(snmptrapper_thread, args)
 
 	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	DBget_lastsize();
 
 	buffer = (char *)zbx_malloc(buffer, MAX_BUFFER_LEN);
 	*buffer = '\0';
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 		zbx_update_env(sec);
 
 		zbx_setproctitle("%s [processing data]", get_process_type_string(process_type));
 
-		while (ZBX_IS_RUNNING() && SUCCEED == get_latest_data())
+		while (TRX_IS_RUNNING() && SUCCEED == get_latest_data())
 			read_traps();
 		sec = zbx_time() - sec;
 
-		zbx_setproctitle("%s [processed data in " ZBX_FS_DBL " sec, idle 1 sec]",
+		zbx_setproctitle("%s [processed data in " TRX_FS_DBL " sec, idle 1 sec]",
 				get_process_type_string(process_type), sec);
 
 		zbx_sleep_loop(1);

@@ -530,7 +530,7 @@ SVGTextArea.prototype.create = function(attributes, parent, content) {
 	this.parseContent(content, parse_links);
 	this.text = this.element.add('text', attributes, this.lines);
 
-	size = this.ZBX_getBBox();
+	size = this.TRX_getBBox();
 	this.width = Math.ceil(size.width);
 	this.height = Math.ceil(size.height + size.y);
 
@@ -565,7 +565,7 @@ SVGTextArea.prototype.create = function(attributes, parent, content) {
  *
  * Read more about this bug here https://bugzilla.mozilla.org/show_bug.cgi?id=612118
  */
-SVGTextArea.prototype.ZBX_getBBox = function() {
+SVGTextArea.prototype.TRX_getBBox = function() {
 	try {
 		return this.text.element.getBBox();
 	}

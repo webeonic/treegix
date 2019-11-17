@@ -34,7 +34,7 @@ class CFunctionIdParser extends CParser {
 
 		$functionid = substr($source, $pos + 1, $p - $pos - 2);
 
-		if (bccomp(1, $functionid) > 0 ||  bccomp($functionid, ZBX_DB_MAX_ID) > 0) {
+		if (bccomp(1, $functionid) > 0 ||  bccomp($functionid, TRX_DB_MAX_ID) > 0) {
 			return CParser::PARSE_FAIL;
 		}
 

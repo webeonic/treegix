@@ -18,7 +18,7 @@
 #	include <lber.h>
 #endif
 
-ZBX_METRIC	parameters_simple[] =
+TRX_METRIC	parameters_simple[] =
 /*	KEY			FLAG		FUNCTION		TEST PARAMETERS */
 {
 	{"net.tcp.service",	CF_HAVEPARAMS,	CHECK_SERVICE,		"ssh,127.0.0.1,22"},
@@ -99,7 +99,7 @@ static int	check_ssh(const char *host, unsigned short port, int timeout, int *va
 
 	*value_int = 0;
 
-	if (SUCCEED == (ret = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, ZBX_TCP_SEC_UNENCRYPTED, NULL,
+	if (SUCCEED == (ret = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL,
 			NULL)))
 	{
 		while (NULL != (buf = zbx_tcp_recv_line(&s)))
@@ -192,7 +192,7 @@ static int	check_telnet(const char *host, unsigned short port, int timeout, int 
 #endif
 	*value_int = 0;
 
-	if (SUCCEED == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, ZBX_TCP_SEC_UNENCRYPTED, NULL, NULL))
+	if (SUCCEED == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL, NULL))
 	{
 #ifdef _WINDOWS
 		ioctlsocket(s.socket, FIONBIO, &argp);	/* non-zero value sets the socket to non-blocking */
@@ -221,45 +221,45 @@ static int	validate_smtp(const char *line)
 	if (0 == strncmp(line, "220", 3))
 	{
 		if ('-' == line[3])
-			return ZBX_TCP_EXPECT_IGNORE;
+			return TRX_TCP_EXPECT_IGNORE;
 
 		if ('\0' == line[3] || ' ' == line[3])
-			return ZBX_TCP_EXPECT_OK;
+			return TRX_TCP_EXPECT_OK;
 	}
 
-	return ZBX_TCP_EXPECT_FAIL;
+	return TRX_TCP_EXPECT_FAIL;
 }
 
 static int	validate_ftp(const char *line)
 {
 	if (0 == strncmp(line, "220 ", 4))
-		return ZBX_TCP_EXPECT_OK;
+		return TRX_TCP_EXPECT_OK;
 
-	return ZBX_TCP_EXPECT_IGNORE;
+	return TRX_TCP_EXPECT_IGNORE;
 }
 
 static int	validate_pop(const char *line)
 {
-	return 0 == strncmp(line, "+OK", 3) ? ZBX_TCP_EXPECT_OK : ZBX_TCP_EXPECT_FAIL;
+	return 0 == strncmp(line, "+OK", 3) ? TRX_TCP_EXPECT_OK : TRX_TCP_EXPECT_FAIL;
 }
 
 static int	validate_nntp(const char *line)
 {
 	if (0 == strncmp(line, "200", 3) || 0 == strncmp(line, "201", 3))
-		return ZBX_TCP_EXPECT_OK;
+		return TRX_TCP_EXPECT_OK;
 
-	return ZBX_TCP_EXPECT_FAIL;
+	return TRX_TCP_EXPECT_FAIL;
 }
 
 static int	validate_imap(const char *line)
 {
-	return 0 == strncmp(line, "* OK", 4) ? ZBX_TCP_EXPECT_OK : ZBX_TCP_EXPECT_FAIL;
+	return 0 == strncmp(line, "* OK", 4) ? TRX_TCP_EXPECT_OK : TRX_TCP_EXPECT_FAIL;
 }
 
 int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT *result, int perf)
 {
 	unsigned short	port = 0;
-	char		*service, *ip_str, ip[MAX_ZBX_DNSNAME_LEN + 1], *port_str;
+	char		*service, *ip_str, ip[MAX_TRX_DNSNAME_LEN + 1], *port_str;
 	int		value_int, ret = SYSINFO_RET_FAIL;
 	double		check_time;
 
@@ -297,14 +297,14 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 		if (0 == strcmp(service, "ssh"))
 		{
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_SSH_PORT;
+				port = TRX_DEFAULT_SSH_PORT;
 			ret = check_ssh(ip, port, CONFIG_TIMEOUT, &value_int);
 		}
 		else if (0 == strcmp(service, "ldap"))
 		{
 #ifdef HAVE_LDAP
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_LDAP_PORT;
+				port = TRX_DEFAULT_LDAP_PORT;
 			ret = check_ldap(ip, port, CONFIG_TIMEOUT, &value_int);
 #else
 			SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for LDAP check was not compiled in."));
@@ -313,37 +313,37 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 		else if (0 == strcmp(service, "smtp"))
 		{
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_SMTP_PORT;
+				port = TRX_DEFAULT_SMTP_PORT;
 			ret = tcp_expect(ip, port, CONFIG_TIMEOUT, NULL, validate_smtp, "QUIT\r\n", &value_int);
 		}
 		else if (0 == strcmp(service, "ftp"))
 		{
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_FTP_PORT;
+				port = TRX_DEFAULT_FTP_PORT;
 			ret = tcp_expect(ip, port, CONFIG_TIMEOUT, NULL, validate_ftp, "QUIT\r\n", &value_int);
 		}
 		else if (0 == strcmp(service, "http"))
 		{
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_HTTP_PORT;
+				port = TRX_DEFAULT_HTTP_PORT;
 			ret = tcp_expect(ip, port, CONFIG_TIMEOUT, NULL, NULL, NULL, &value_int);
 		}
 		else if (0 == strcmp(service, "pop"))
 		{
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_POP_PORT;
+				port = TRX_DEFAULT_POP_PORT;
 			ret = tcp_expect(ip, port, CONFIG_TIMEOUT, NULL, validate_pop, "QUIT\r\n", &value_int);
 		}
 		else if (0 == strcmp(service, "nntp"))
 		{
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_NNTP_PORT;
+				port = TRX_DEFAULT_NNTP_PORT;
 			ret = tcp_expect(ip, port, CONFIG_TIMEOUT, NULL, validate_nntp, "QUIT\r\n", &value_int);
 		}
 		else if (0 == strcmp(service, "imap"))
 		{
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_IMAP_PORT;
+				port = TRX_DEFAULT_IMAP_PORT;
 			ret = tcp_expect(ip, port, CONFIG_TIMEOUT, NULL, validate_imap, "a1 LOGOUT\r\n", &value_int);
 		}
 		else if (0 == strcmp(service, "tcp"))
@@ -359,7 +359,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 		{
 #ifdef HAVE_LIBCURL
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_HTTPS_PORT;
+				port = TRX_DEFAULT_HTTPS_PORT;
 			ret = check_https(ip, port, CONFIG_TIMEOUT, &value_int);
 #else
 			SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for HTTPS check was not compiled in."));
@@ -368,7 +368,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 		else if (0 == strcmp(service, "telnet"))
 		{
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_TELNET_PORT;
+				port = TRX_DEFAULT_TELNET_PORT;
 			ret = check_telnet(ip, port, CONFIG_TIMEOUT, &value_int);
 		}
 		else
@@ -382,7 +382,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 		if (0 == strcmp(service, "ntp"))
 		{
 			if (NULL == port_str || '\0' == *port_str)
-				port = ZBX_DEFAULT_NTP_PORT;
+				port = TRX_DEFAULT_NTP_PORT;
 			ret = check_ntp(ip, port, CONFIG_TIMEOUT, &value_int);
 		}
 		else
@@ -400,8 +400,8 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 			{
 				check_time = zbx_time() - check_time;
 
-				if (ZBX_FLOAT_PRECISION > check_time)
-					check_time = ZBX_FLOAT_PRECISION;
+				if (TRX_FLOAT_PRECISION > check_time)
+					check_time = TRX_FLOAT_PRECISION;
 
 				SET_DBL_RESULT(result, check_time);
 			}

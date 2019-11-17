@@ -39,14 +39,14 @@ class CControllerWidgetGraphView extends CControllerWidget {
 		$unavailable_object = false;
 		$header_label = '';
 
-		if ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_GRAPH && $fields['graphid']) {
+		if ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_GRAPH && $fields['graphid']) {
 			$resource_type = SCREEN_RESOURCE_GRAPH;
 			$resourceid = reset($fields['graphid']);
 			$graph_dims = getGraphDims($resourceid);
 			$graph_dims['graphHeight'] = $height;
 			$graph_dims['width'] = $width;
 		}
-		elseif ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH && $fields['itemid']) {
+		elseif ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH && $fields['itemid']) {
 			$resource_type = SCREEN_RESOURCE_SIMPLE_GRAPH;
 			$resourceid = $fields['itemid'][0];
 			$graph_dims = getGraphDims();
@@ -87,7 +87,7 @@ class CControllerWidgetGraphView extends CControllerWidget {
 		// Replace graph item by particular host item if dynamic items are used.
 		if ($fields['dynamic'] == WIDGET_DYNAMIC_ITEM && $dynamic_hostid && $resourceid) {
 			// Find same simple-graph item in selected $dynamic_hostid host.
-			if ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH) {
+			if ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH) {
 				$src_items = API::Item()->get([
 					'output' => ['key_'],
 					'itemids' => $resourceid,
@@ -113,7 +113,7 @@ class CControllerWidgetGraphView extends CControllerWidget {
 				}
 			}
 			// Find requested host and change graph details.
-			elseif ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_GRAPH) {
+			elseif ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_GRAPH) {
 				// get host
 				$hosts = API::Host()->get([
 					'output' => ['hostid', 'host', 'name'],
@@ -194,7 +194,7 @@ class CControllerWidgetGraphView extends CControllerWidget {
 			if (!$resourceid) {
 				$unavailable_object = true;
 			}
-			elseif ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH) {
+			elseif ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH) {
 				$items = API::Item()->get([
 					'output' => ['name', 'key_', 'delay', 'hostid'],
 					'selectHosts' => ['name'],
@@ -208,7 +208,7 @@ class CControllerWidgetGraphView extends CControllerWidget {
 					$unavailable_object = true;
 				}
 			}
-			elseif ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_GRAPH) {
+			elseif ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_GRAPH) {
 				// get graph, used below
 				$graph = API::Graph()->get([
 					'output' => API_OUTPUT_EXTEND,
@@ -226,7 +226,7 @@ class CControllerWidgetGraphView extends CControllerWidget {
 
 		if (!$unavailable_object) {
 			// Build graph action and data source links.
-			if ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH) {
+			if ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH) {
 				if (!$edit_mode) {
 					$time_control_data['loadSBox'] = 1;
 				}
@@ -249,7 +249,7 @@ class CControllerWidgetGraphView extends CControllerWidget {
 				$item = CMacrosResolverHelper::resolveItemNames([$item])[0];
 				$header_label = $item['hosts'][0]['name'].NAME_DELIMITER.$item['name_expanded'];
 			}
-			elseif ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_GRAPH) {
+			elseif ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_GRAPH) {
 				$graph_src = '';
 
 				if (count($graph['hosts']) == 1 || $fields['dynamic'] == WIDGET_DYNAMIC_ITEM && $dynamic_hostid != 0) {
@@ -328,7 +328,7 @@ class CControllerWidgetGraphView extends CControllerWidget {
 			$graph_src->setArgument('widget_view', '1');
 			$time_control_data['src'] = $graph_src->getUrl();
 
-			if ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_GRAPH) {
+			if ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_GRAPH) {
 				$item_graph_url = (new CUrl('charts.php'))->setArgument('graphid', $resourceid);
 			}
 			else {

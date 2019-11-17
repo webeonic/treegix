@@ -164,8 +164,8 @@ function make_event_details($event, $backurl) {
 		->addRow([
 			_('Acknowledged'),
 			(new CLink($event['acknowledged'] == EVENT_ACKNOWLEDGED ? _('Yes') : _('No'), $event_update_url))
-				->addClass($event['acknowledged'] == EVENT_ACKNOWLEDGED ? ZBX_STYLE_GREEN : ZBX_STYLE_RED)
-				->addClass(ZBX_STYLE_LINK_ALT)
+				->addClass($event['acknowledged'] == EVENT_ACKNOWLEDGED ? TRX_STYLE_GREEN : TRX_STYLE_RED)
+				->addClass(TRX_STYLE_LINK_ALT)
 		]);
 
 	if ($event['r_eventid'] != 0) {
@@ -181,7 +181,7 @@ function make_event_details($event, $backurl) {
 						(new CUrl('correlation.php'))
 							->setArgument('correlationid', $correlations[0]['correlationid'])
 							->getUrl()
-					))->addClass(ZBX_STYLE_LINK_ALT);
+					))->addClass(TRX_STYLE_LINK_ALT);
 				}
 				else {
 					$correlation_name = $correlations[0]['name'];
@@ -252,7 +252,7 @@ function make_small_eventlist($startEvent, $backurl) {
 		'objectids' => $startEvent['objectid'],
 		'eventid_till' => $startEvent['eventid'],
 		'sortfield' => ['clock', 'eventid'],
-		'sortorder' => ZBX_SORT_DOWN,
+		'sortorder' => TRX_SORT_DOWN,
 		'limit' => 20,
 		'preservekeys' => true
 	]);
@@ -322,7 +322,7 @@ function make_small_eventlist($startEvent, $backurl) {
 			$in_closing = false;
 
 			foreach ($event['acknowledges'] as $acknowledge) {
-				if (($acknowledge['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE) {
+				if (($acknowledge['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE) {
 					$in_closing = true;
 					break;
 				}
@@ -366,8 +366,8 @@ function make_small_eventlist($startEvent, $backurl) {
 			zbx_date2age($event['clock']),
 			$duration,
 			(new CLink($event['acknowledged'] == EVENT_ACKNOWLEDGED ? _('Yes') : _('No'), $problem_update_url))
-				->addClass($event['acknowledged'] == EVENT_ACKNOWLEDGED ? ZBX_STYLE_GREEN : ZBX_STYLE_RED)
-				->addClass(ZBX_STYLE_LINK_ALT),
+				->addClass($event['acknowledged'] == EVENT_ACKNOWLEDGED ? TRX_STYLE_GREEN : TRX_STYLE_RED)
+				->addClass(TRX_STYLE_LINK_ALT),
 			makeEventActionsIcons($event['eventid'], $actions['data'], $mediatypes, $users, $severity_config)
 		]);
 	}
@@ -412,7 +412,7 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 		$div->addItem(
 			(new CDiv())
 				->addItem(zbx_str2links($trigger['comments']))
-				->addClass(ZBX_STYLE_OVERLAY_DESCR)
+				->addClass(TRX_STYLE_OVERLAY_DESCR)
 				->addStyle('max-width: 500px')
 		);
 	}
@@ -426,19 +426,19 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 		$div->addItem(
 			(new CDiv())
 				->addItem(new CLink(CHTML::encode($trigger['url']), $trigger_url))
-				->addClass(ZBX_STYLE_OVERLAY_DESCR_URL)
+				->addClass(TRX_STYLE_OVERLAY_DESCR_URL)
 				->addStyle('max-width: 500px')
 		);
 	}
 
 	// indicator of sort field
-	$sort_div = (new CSpan())->addClass(ZBX_STYLE_ARROW_DOWN);
+	$sort_div = (new CSpan())->addClass(TRX_STYLE_ARROW_DOWN);
 
 	if ($show_timeline) {
 		$header = [
-			(new CColHeader([_('Time'), $sort_div]))->addClass(ZBX_STYLE_RIGHT),
-			(new CColHeader())->addClass(ZBX_STYLE_TIMELINE_TH),
-			(new CColHeader())->addClass(ZBX_STYLE_TIMELINE_TH)
+			(new CColHeader([_('Time'), $sort_div]))->addClass(TRX_STYLE_RIGHT),
+			(new CColHeader())->addClass(TRX_STYLE_TIMELINE_TH),
+			(new CColHeader())->addClass(TRX_STYLE_TIMELINE_TH)
 		];
 	}
 	else {
@@ -466,13 +466,13 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 			'objectids' => $trigger['triggerid'],
 			'value' => TRIGGER_VALUE_TRUE,
 			'sortfield' => ['eventid'],
-			'sortorder' => ZBX_SORT_DOWN,
-			'limit' => ZBX_WIDGET_ROWS
+			'sortorder' => TRX_SORT_DOWN,
+			'limit' => TRX_WIDGET_ROWS
 		]);
 
 		CArrayHelper::sort($problems, [
-			['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-			['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+			['field' => 'clock', 'order' => TRX_SORT_DOWN],
+			['field' => 'ns', 'order' => TRX_SORT_DOWN]
 		]);
 
 		$r_eventids = [];
@@ -524,7 +524,7 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 				$in_closing = false;
 
 				foreach ($problem['acknowledges'] as $acknowledge) {
-					if (($acknowledge['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE) {
+					if (($acknowledge['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE) {
 						$in_closing = true;
 						break;
 					}
@@ -548,8 +548,8 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 					? zbx_date2str(TIME_FORMAT_SECONDS, $problem['r_clock'])
 					: zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock']);
 				$cell_r_clock = (new CCol(new CLink($cell_r_clock, $url_details)))
-					->addClass(ZBX_STYLE_NOWRAP)
-					->addClass(ZBX_STYLE_RIGHT);
+					->addClass(TRX_STYLE_NOWRAP)
+					->addClass(TRX_STYLE_RIGHT);
 			}
 			else {
 				$cell_r_clock = '';
@@ -562,23 +562,23 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 
 			if ($show_timeline) {
 				if ($last_clock != 0) {
-					CScreenProblem::addTimelineBreakpoint($table, $last_clock, $problem['clock'], ZBX_SORT_DOWN);
+					CScreenProblem::addTimelineBreakpoint($table, $last_clock, $problem['clock'], TRX_SORT_DOWN);
 				}
 				$last_clock = $problem['clock'];
 
 				$row = [
-					$cell_clock->addClass(ZBX_STYLE_TIMELINE_DATE),
+					$cell_clock->addClass(TRX_STYLE_TIMELINE_DATE),
 					(new CCol())
-						->addClass(ZBX_STYLE_TIMELINE_AXIS)
-						->addClass(ZBX_STYLE_TIMELINE_DOT),
-					(new CCol())->addClass(ZBX_STYLE_TIMELINE_TD)
+						->addClass(TRX_STYLE_TIMELINE_AXIS)
+						->addClass(TRX_STYLE_TIMELINE_DOT),
+					(new CCol())->addClass(TRX_STYLE_TIMELINE_TD)
 				];
 			}
 			else {
 				$row = [
 					$cell_clock
-						->addClass(ZBX_STYLE_NOWRAP)
-						->addClass(ZBX_STYLE_RIGHT)
+						->addClass(TRX_STYLE_NOWRAP)
+						->addClass(TRX_STYLE_RIGHT)
 				];
 			}
 
@@ -591,8 +591,8 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 
 			$acknowledged = $problem['acknowledged'] == EVENT_ACKNOWLEDGED;
 			$problem_update_link = (new CLink($acknowledged ? _('Yes') : _('No'), $problem_update_url))
-				->addClass($acknowledged ? ZBX_STYLE_GREEN : ZBX_STYLE_RED)
-				->addClass(ZBX_STYLE_LINK_ALT);
+				->addClass($acknowledged ? TRX_STYLE_GREEN : TRX_STYLE_RED)
+				->addClass(TRX_STYLE_LINK_ALT);
 
 			$table->addRow(array_merge($row, [
 				$cell_r_clock,
@@ -602,7 +602,7 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 						? zbx_date2age($problem['clock'], $problem['r_clock'])
 						: zbx_date2age($problem['clock'])
 				))
-					->addClass(ZBX_STYLE_NOWRAP),
+					->addClass(TRX_STYLE_NOWRAP),
 				$problem_update_link,
 				($show_tags != PROBLEMS_SHOW_TAGS_NONE) ? $tags[$problem['eventid']] : null
 			]));
@@ -698,7 +698,7 @@ function orderEventTagsByPriority(array $event_tags, array $priorities) {
  *
  * @return array
  */
-function makeTags(array $list, $html = true, $key = 'eventid', $list_tag_count = ZBX_TAG_COUNT_DEFAULT,
+function makeTags(array $list, $html = true, $key = 'eventid', $list_tag_count = TRX_TAG_COUNT_DEFAULT,
 		array $filter_tags = [], $tag_name_format = PROBLEMS_TAG_NAME_FULL, $tag_priority = '') {
 	$tags = [];
 
@@ -745,7 +745,7 @@ function makeTags(array $list, $html = true, $key = 'eventid', $list_tag_count =
 
 				if ($value !== '') {
 					$tags[$element[$key]][] = (new CSpan($value))
-						->addClass(ZBX_STYLE_TAG)
+						->addClass(TRX_STYLE_TAG)
 						->setHint(getTagString($tag));
 
 					$tags_shown++;
@@ -764,15 +764,15 @@ function makeTags(array $list, $html = true, $key = 'eventid', $list_tag_count =
 				foreach ($element['tags'] as $tag) {
 					$value = getTagString($tag);
 					$hint_content[$element[$key]][] = (new CSpan($value))
-						->addClass(ZBX_STYLE_TAG)
+						->addClass(TRX_STYLE_TAG)
 						->setHint($value);
 				}
 
 				$tags[$element[$key]][] = (new CSpan(
 					(new CButton(null))
-						->addClass(ZBX_STYLE_ICON_WZRD_ACTION)
+						->addClass(TRX_STYLE_ICON_WZRD_ACTION)
 						->setHint(new CDiv($hint_content), '', true, 'max-width: 500px')
-				))->addClass(ZBX_STYLE_REL_CONTAINER);
+				))->addClass(TRX_STYLE_REL_CONTAINER);
 			}
 		}
 		else {

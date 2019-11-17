@@ -14,35 +14,35 @@ extern unsigned char	program_type;
 
 static int	DBpatch_4030000(void)
 {
-	const ZBX_FIELD	field = {"host", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"host", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBmodify_field_type("autoreg_host", &field, NULL);
 }
 
 static int	DBpatch_4030001(void)
 {
-	const ZBX_FIELD	field = {"host", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"host", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBmodify_field_type("proxy_autoreg_host", &field, NULL);
 }
 
 static int	DBpatch_4030002(void)
 {
-	const ZBX_FIELD	field = {"host", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"host", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBmodify_field_type("host_discovery", &field, NULL);
 }
 
 static int	DBpatch_4030003(void)
 {
-	const ZBX_TABLE table =
+	const TRX_TABLE table =
 		{"item_rtdata", "itemid", 0,
 			{
-				{"itemid", NULL, NULL, NULL, 0, ZBX_TYPE_ID, ZBX_NOTNULL, 0},
-				{"lastlogsize", "0", NULL, NULL, 0, ZBX_TYPE_UINT, ZBX_NOTNULL, 0},
-				{"state", "0", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0},
-				{"mtime", "0", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0},
-				{"error", "", NULL, NULL, 2048, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
+				{"itemid", NULL, NULL, NULL, 0, TRX_TYPE_ID, TRX_NOTNULL, 0},
+				{"lastlogsize", "0", NULL, NULL, 0, TRX_TYPE_UINT, TRX_NOTNULL, 0},
+				{"state", "0", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0},
+				{"mtime", "0", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0},
+				{"error", "", NULL, NULL, 2048, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
 				{0}
 			},
 			NULL
@@ -53,19 +53,19 @@ static int	DBpatch_4030003(void)
 
 static int	DBpatch_4030004(void)
 {
-	const ZBX_FIELD	field = {"itemid", NULL, "items", "itemid", 0, 0, 0, ZBX_FK_CASCADE_DELETE};
+	const TRX_FIELD	field = {"itemid", NULL, "items", "itemid", 0, 0, 0, TRX_FK_CASCADE_DELETE};
 
 	return DBadd_foreign_key("item_rtdata", 1, &field);
 }
 
 static int	DBpatch_4030005(void)
 {
-	if (ZBX_DB_OK <= DBexecute("insert into item_rtdata (itemid,lastlogsize,state,mtime,error)"
+	if (TRX_DB_OK <= DBexecute("insert into item_rtdata (itemid,lastlogsize,state,mtime,error)"
 			" select i.itemid,i.lastlogsize,i.state,i.mtime,i.error"
 			" from items i"
 			" join hosts h on i.hostid=h.hostid"
 			" where h.status in (%d,%d) and i.flags<>%d",
-			HOST_STATUS_MONITORED, HOST_STATUS_NOT_MONITORED, ZBX_FLAG_DISCOVERY_PROTOTYPE))
+			HOST_STATUS_MONITORED, HOST_STATUS_NOT_MONITORED, TRX_FLAG_DISCOVERY_PROTOTYPE))
 	{
 		return SUCCEED;
 	}
@@ -95,11 +95,11 @@ static int	DBpatch_4030009(void)
 
 static int	DBpatch_4030010(void)
 {
-	if (0 == (program_type & ZBX_PROGRAM_TYPE_SERVER))
+	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
 	/* 8 - SCREEN_RESOURCE_SCREEN */
-	if (ZBX_DB_OK > DBexecute("delete from screens_items where resourcetype=8"))
+	if (TRX_DB_OK > DBexecute("delete from screens_items where resourcetype=8"))
 		return FAIL;
 
 	return SUCCEED;
@@ -107,28 +107,28 @@ static int	DBpatch_4030010(void)
 
 static int	DBpatch_4030012(void)
 {
-	const ZBX_FIELD	field = {"flags", "0", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"flags", "0", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0};
 
 	return DBadd_field("autoreg_host", &field);
 }
 
 static int	DBpatch_4030013(void)
 {
-	const ZBX_FIELD	field = {"flags", "0", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"flags", "0", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0};
 
 	return DBadd_field("proxy_autoreg_host", &field);
 }
 
 static int	DBpatch_4030014(void)
 {
-	const ZBX_FIELD	field = {"view_mode", "0", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"view_mode", "0", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0};
 
 	return DBadd_field("widget", &field);
 }
 
 static int	DBpatch_4030015(void)
 {
-	if (ZBX_DB_OK > DBexecute("update widget set x=x*2, width=width*2"))
+	if (TRX_DB_OK > DBexecute("update widget set x=x*2, width=width*2"))
 		return FAIL;
 
 	return SUCCEED;
@@ -147,12 +147,12 @@ static int	DBpatch_4030016(void)
 			"alarm_disaster"
 		};
 
-	if (0 == (program_type & ZBX_PROGRAM_TYPE_SERVER))
+	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
 	for (i = 0; i < (int)ARRSIZE(values); i++)
 	{
-		if (ZBX_DB_OK > DBexecute(
+		if (TRX_DB_OK > DBexecute(
 				"update profiles"
 				" set value_str='%s.mp3'"
 				" where value_str='%s.wav'"
@@ -167,7 +167,7 @@ static int	DBpatch_4030016(void)
 
 static int	DBpatch_4030017(void)
 {
-	const ZBX_FIELD	field = {"opdata", "", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"opdata", "", NULL, NULL, 255, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBrename_field("triggers", "details", &field);
 }
@@ -182,12 +182,12 @@ static int	DBpatch_4030018(void)
 			"web.problem.filter.show_latest_values", "web.problem.filter.show_opdata"
 		};
 
-	if (0 == (program_type & ZBX_PROGRAM_TYPE_SERVER))
+	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
 	for (i = 0; i < (int)ARRSIZE(values); i += 2)
 	{
-		if (ZBX_DB_OK > DBexecute("update profiles set idx='%s' where idx='%s'", values[i + 1], values[i]))
+		if (TRX_DB_OK > DBexecute("update profiles set idx='%s' where idx='%s'", values[i + 1], values[i]))
 			return FAIL;
 	}
 
@@ -196,10 +196,10 @@ static int	DBpatch_4030018(void)
 
 static int	DBpatch_4030019(void)
 {
-	if (0 == (program_type & ZBX_PROGRAM_TYPE_SERVER))
+	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
-	if (ZBX_DB_OK > DBexecute(
+	if (TRX_DB_OK > DBexecute(
 			"update widget_field"
 			" set name='show_opdata'"
 			" where name='show_latest_values'"
@@ -228,7 +228,7 @@ static int	DBpatch_4030020(void)
 	zbx_uint32_t	id, next_id = 0;
 	zbx_uint64_t	last_widgetid = 0, widgetid, fieldid;
 
-	if (0 == (program_type & ZBX_PROGRAM_TYPE_SERVER))
+	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
 	result = DBselect("SELECT widgetid,widget_fieldid,name,value_str"
@@ -243,8 +243,8 @@ static int	DBpatch_4030020(void)
 
 	while (SUCCEED == ret && NULL != (row = DBfetch(result)))
 	{
-		ZBX_DBROW2UINT64(widgetid, row[0]);
-		ZBX_DBROW2UINT64(fieldid, row[1]);
+		TRX_DBROW2UINT64(widgetid, row[0]);
+		TRX_DBROW2UINT64(fieldid, row[1]);
 
 		if (NULL == (pos = strrchr(row[2], '.')) || FIELD_LEN <= pos - row[2])
 		{
@@ -281,12 +281,12 @@ static int	DBpatch_4030020(void)
 			{
 				token_esc = DBdyn_escape_string(token);
 
-				if (ZBX_DB_OK > DBexecute("insert into widget_field (widgetid,widget_fieldid,type,name,"
-						"value_str) values (" ZBX_FS_UI64 "," ZBX_FS_UI64 ",1,'%s.%u','%s')",
+				if (TRX_DB_OK > DBexecute("insert into widget_field (widgetid,widget_fieldid,type,name,"
+						"value_str) values (" TRX_FS_UI64 "," TRX_FS_UI64 ",1,'%s.%u','%s')",
 						widgetid, DBget_maxid_num("widget_field", 1), field, next_id,
 						token_esc) ||
-						ZBX_DB_OK > DBexecute("delete from widget_field where widget_fieldid="
-								ZBX_FS_UI64, fieldid))
+						TRX_DB_OK > DBexecute("delete from widget_field where widget_fieldid="
+								TRX_FS_UI64, fieldid))
 				{
 					zbx_free(token_esc);
 					ret = FAIL;
@@ -312,33 +312,33 @@ static int	DBpatch_4030020(void)
 
 static int	DBpatch_4030021(void)
 {
-	const ZBX_FIELD	field = {"autoreg_tls_accept", "1", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"autoreg_tls_accept", "1", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0};
 
 	return DBadd_field("config", &field);
 }
 
 static int	DBpatch_4030022(void)
 {
-	const ZBX_FIELD	field = {"tls_accepted", "1", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"tls_accepted", "1", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0};
 
 	return DBadd_field("autoreg_host", &field);
 }
 
 static int	DBpatch_4030023(void)
 {
-	const ZBX_FIELD	field = {"tls_accepted", "1", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"tls_accepted", "1", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0};
 
 	return DBadd_field("proxy_autoreg_host", &field);
 }
 
 static int	DBpatch_4030024(void)
 {
-	const ZBX_TABLE table =
+	const TRX_TABLE table =
 		{"config_autoreg_tls", "autoreg_tlsid", 0,
 			{
-				{"autoreg_tlsid", NULL, NULL, NULL, 0, ZBX_TYPE_ID, ZBX_NOTNULL, 0},
-				{"tls_psk_identity", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-				{"tls_psk", "", NULL, NULL, 512, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
+				{"autoreg_tlsid", NULL, NULL, NULL, 0, TRX_TYPE_ID, TRX_NOTNULL, 0},
+				{"tls_psk_identity", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+				{"tls_psk", "", NULL, NULL, 512, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
 				{0}
 			},
 			NULL
@@ -354,10 +354,10 @@ static int	DBpatch_4030025(void)
 
 static int	DBpatch_4030026(void)
 {
-	if (0 == (program_type & ZBX_PROGRAM_TYPE_SERVER))
+	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
-	if (ZBX_DB_OK <= DBexecute("insert into config_autoreg_tls (autoreg_tlsid) values (1)"))
+	if (TRX_DB_OK <= DBexecute("insert into config_autoreg_tls (autoreg_tlsid) values (1)"))
 		return SUCCEED;
 
 	return FAIL;
@@ -371,7 +371,7 @@ static int	DBpatch_4030027(void)
 	char		*exec_params = NULL, *exec_params_esc;
 	size_t		exec_params_alloc = 0;
 
-	if (0 == (program_type & ZBX_PROGRAM_TYPE_SERVER))
+	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
 	/* type : 1 - MEDIA_TYPE_EXEC, 3 - MEDIA_TYPE_JABBER, 100 - MEDIA_TYPE_EZ_TEXTING */
@@ -392,7 +392,7 @@ static int	DBpatch_4030027(void)
 
 		exec_params_esc = DBdyn_escape_string_len(exec_params, 255);
 
-		if (ZBX_DB_OK > DBexecute("update media_type"
+		if (TRX_DB_OK > DBexecute("update media_type"
 				" set type=1,"
 					"exec_path='dummy.sh',"
 					"exec_params='%s',"
@@ -426,7 +426,7 @@ static int	DBpatch_4030028(void)
 
 static int	DBpatch_4030029(void)
 {
-	const ZBX_FIELD	field = {"name", "", NULL, NULL, 100, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"name", "", NULL, NULL, 100, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBrename_field("media_type", "description", &field);
 }
@@ -442,10 +442,10 @@ static int	DBpatch_4030030(void)
 
 static int	DBpatch_4030031(void)
 {
-	if (0 == (program_type & ZBX_PROGRAM_TYPE_SERVER))
+	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
-	if (ZBX_DB_OK > DBexecute(
+	if (TRX_DB_OK > DBexecute(
 			"update profiles"
 			" set value_str='name'"
 			" where value_str='description'"
@@ -463,7 +463,7 @@ static int	DBpatch_4030032(void)
 #ifdef HAVE_MYSQL
 	return SUCCEED;
 #else
-	const ZBX_FIELD	field = {"name", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"name", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBmodify_field_type("host_inventory", &field, NULL);
 #endif
@@ -474,7 +474,7 @@ static int	DBpatch_4030033(void)
 #ifdef HAVE_MYSQL
 	return SUCCEED;
 #else
-	const ZBX_FIELD	field = {"alias", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"alias", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBmodify_field_type("host_inventory", &field, NULL);
 #endif
@@ -485,7 +485,7 @@ static int	DBpatch_4030034(void)
 #ifdef HAVE_MYSQL
 	return SUCCEED;
 #else
-	const ZBX_FIELD	field = {"os", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"os", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBmodify_field_type("host_inventory", &field, NULL);
 #endif
@@ -496,7 +496,7 @@ static int	DBpatch_4030035(void)
 #ifdef HAVE_MYSQL
 	return SUCCEED;
 #else
-	const ZBX_FIELD	field = {"os_short", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"os_short", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBmodify_field_type("host_inventory", &field, NULL);
 #endif
@@ -525,81 +525,81 @@ static int	DBpatch_4030038(void)
 #ifdef HAVE_MYSQL
 	/* Store columns on overflow pages to respect row size limit of 8126 bytes on MariaDB. */
 	/* Columns can only be stored on overflow pages if they are 256 bytes or longer.       */
-	const ZBX_TABLE table =
+	const TRX_TABLE table =
 			{"host_inventory", "hostid", 0,
 				{
-					{"hostid", NULL, NULL, NULL, 0, ZBX_TYPE_ID, ZBX_NOTNULL, 0},
-					{"inventory_mode", "0", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0},
-					{"type", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"type_full", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"name", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"alias", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"os", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"os_full", "", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"os_short", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"serialno_a", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"serialno_b", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"tag", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"asset_tag", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"macaddress_a", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"macaddress_b", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"hardware", "", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"hardware_full", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0},
-					{"software", "", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"software_full", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0},
-					{"software_app_a", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"software_app_b", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"software_app_c", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"software_app_d", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"software_app_e", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"contact", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0},
-					{"location", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0},
-					{"location_lat", "", NULL, NULL, 16, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"location_lon", "", NULL, NULL, 16, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"notes", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0},
-					{"chassis", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"model", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"hw_arch", "", NULL, NULL, 32, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"vendor", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"contract_number", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"installer_name", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"deployment_status", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"url_a", "", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"url_b", "", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"url_c", "", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"host_networks", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0},
-					{"host_netmask", "", NULL, NULL, 39, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"host_router", "", NULL, NULL, 39, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"oob_ip", "", NULL, NULL, 39, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"oob_netmask", "", NULL, NULL, 39, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"oob_router", "", NULL, NULL, 39, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"date_hw_purchase", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"date_hw_install", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"date_hw_expiry", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"date_hw_decomm", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"site_address_a", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"site_address_b", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"site_address_c", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"site_city", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"site_state", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"site_country", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"site_zip", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"site_rack", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"site_notes", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0},
-					{"poc_1_name", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_1_email", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_1_phone_a", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_1_phone_b", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_1_cell", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_1_screen", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_1_notes", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0},
-					{"poc_2_name", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_2_email", "", NULL, NULL, 128, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_2_phone_a", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_2_phone_b", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_2_cell", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_2_screen", "", NULL, NULL, 64, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-					{"poc_2_notes", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0},
+					{"hostid", NULL, NULL, NULL, 0, TRX_TYPE_ID, TRX_NOTNULL, 0},
+					{"inventory_mode", "0", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0},
+					{"type", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"type_full", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"name", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"alias", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"os", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"os_full", "", NULL, NULL, 255, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"os_short", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"serialno_a", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"serialno_b", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"tag", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"asset_tag", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"macaddress_a", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"macaddress_b", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"hardware", "", NULL, NULL, 255, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"hardware_full", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0},
+					{"software", "", NULL, NULL, 255, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"software_full", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0},
+					{"software_app_a", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"software_app_b", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"software_app_c", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"software_app_d", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"software_app_e", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"contact", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0},
+					{"location", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0},
+					{"location_lat", "", NULL, NULL, 16, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"location_lon", "", NULL, NULL, 16, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"notes", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0},
+					{"chassis", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"model", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"hw_arch", "", NULL, NULL, 32, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"vendor", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"contract_number", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"installer_name", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"deployment_status", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"url_a", "", NULL, NULL, 255, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"url_b", "", NULL, NULL, 255, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"url_c", "", NULL, NULL, 255, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"host_networks", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0},
+					{"host_netmask", "", NULL, NULL, 39, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"host_router", "", NULL, NULL, 39, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"oob_ip", "", NULL, NULL, 39, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"oob_netmask", "", NULL, NULL, 39, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"oob_router", "", NULL, NULL, 39, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"date_hw_purchase", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"date_hw_install", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"date_hw_expiry", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"date_hw_decomm", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"site_address_a", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"site_address_b", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"site_address_c", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"site_city", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"site_state", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"site_country", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"site_zip", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"site_rack", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"site_notes", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0},
+					{"poc_1_name", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_1_email", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_1_phone_a", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_1_phone_b", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_1_cell", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_1_screen", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_1_notes", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0},
+					{"poc_2_name", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_2_email", "", NULL, NULL, 128, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_2_phone_a", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_2_phone_b", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_2_cell", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_2_screen", "", NULL, NULL, 64, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+					{"poc_2_notes", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0},
 					{0}
 				},
 				NULL
@@ -614,7 +614,7 @@ static int	DBpatch_4030038(void)
 static int	DBpatch_4030039(void)
 {
 #ifdef HAVE_MYSQL
-	if (ZBX_DB_OK <= DBexecute(
+	if (TRX_DB_OK <= DBexecute(
 			"insert into host_inventory (select * from host_inventory_tmp)"))
 	{
 		return SUCCEED;
@@ -638,7 +638,7 @@ static int	DBpatch_4030040(void)
 static int	DBpatch_4030041(void)
 {
 #ifdef HAVE_MYSQL
-	const ZBX_FIELD	field = {"hostid", NULL, "hosts", "hostid", 0, 0, 0, ZBX_FK_CASCADE_DELETE};
+	const TRX_FIELD	field = {"hostid", NULL, "hosts", "hostid", 0, 0, 0, TRX_FK_CASCADE_DELETE};
 
 	return DBadd_foreign_key("host_inventory", 1, &field);
 #else
@@ -648,62 +648,62 @@ static int	DBpatch_4030041(void)
 
 static int	DBpatch_4030042(void)
 {
-	const ZBX_FIELD	field = {"script", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"script", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0};
 
 	return DBadd_field("media_type", &field);
 }
 
 static int	DBpatch_4030043(void)
 {
-	const ZBX_FIELD	field = {"timeout", "30s", NULL, NULL, 32, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"timeout", "30s", NULL, NULL, 32, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBadd_field("media_type", &field);
 }
 
 static int	DBpatch_4030044(void)
 {
-	const ZBX_FIELD	field = {"process_tags", "0", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"process_tags", "0", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0};
 
 	return DBadd_field("media_type", &field);
 }
 
 static int	DBpatch_4030045(void)
 {
-	const ZBX_FIELD	field = {"show_event_menu", "0", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"show_event_menu", "0", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0};
 
 	return DBadd_field("media_type", &field);
 }
 
 static int	DBpatch_4030046(void)
 {
-	const ZBX_FIELD	field = {"event_menu_url", "", NULL, NULL, 2048, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"event_menu_url", "", NULL, NULL, 2048, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBadd_field("media_type", &field);
 }
 
 static int	DBpatch_4030047(void)
 {
-	const ZBX_FIELD	field = {"event_menu_name", "", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"event_menu_name", "", NULL, NULL, 255, TRX_TYPE_CHAR, TRX_NOTNULL, 0};
 
 	return DBadd_field("media_type", &field);
 }
 
 static int	DBpatch_4030048(void)
 {
-	const ZBX_FIELD	field = {"description", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"description", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0};
 
 	return DBadd_field("media_type", &field);
 }
 
 static int	DBpatch_4030049(void)
 {
-	const ZBX_TABLE table =
+	const TRX_TABLE table =
 		{"media_type_param", "mediatype_paramid", 0,
 			{
-				{"mediatype_paramid", NULL, NULL, NULL, 0, ZBX_TYPE_ID, ZBX_NOTNULL, 0},
-				{"mediatypeid", NULL, NULL, NULL, 0, ZBX_TYPE_ID, ZBX_NOTNULL, 0},
-				{"name", "", NULL, NULL, 255, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
-				{"value", "", NULL, NULL, 2048, ZBX_TYPE_CHAR, ZBX_NOTNULL, 0},
+				{"mediatype_paramid", NULL, NULL, NULL, 0, TRX_TYPE_ID, TRX_NOTNULL, 0},
+				{"mediatypeid", NULL, NULL, NULL, 0, TRX_TYPE_ID, TRX_NOTNULL, 0},
+				{"name", "", NULL, NULL, 255, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
+				{"value", "", NULL, NULL, 2048, TRX_TYPE_CHAR, TRX_NOTNULL, 0},
 				{0}
 			},
 			NULL
@@ -719,35 +719,35 @@ static int	DBpatch_4030050(void)
 
 static int	DBpatch_4030051(void)
 {
-	const ZBX_FIELD	field = {"mediatypeid", NULL, "media_type", "mediatypeid", 0, 0, 0, ZBX_FK_CASCADE_DELETE};
+	const TRX_FIELD	field = {"mediatypeid", NULL, "media_type", "mediatypeid", 0, 0, 0, TRX_FK_CASCADE_DELETE};
 
 	return DBadd_foreign_key("media_type_param", 1, &field);
 }
 
 static int	DBpatch_4030052(void)
 {
-	const ZBX_FIELD	field = {"parameters", "{}", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"parameters", "{}", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0};
 
 	return DBadd_field("alerts", &field);
 }
 
 static int	DBpatch_4030053(void)
 {
-	const ZBX_FIELD	field =  {"type", "1", NULL, NULL, 0, ZBX_TYPE_INT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field =  {"type", "1", NULL, NULL, 0, TRX_TYPE_INT, TRX_NOTNULL, 0};
 
 	return DBset_default("interface", &field);
 }
 
 static int	DBpatch_4030054(void)
 {
-	const ZBX_FIELD	field = {"description", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"description", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0};
 
 	return DBadd_field("globalmacro", &field);
 }
 
 static int	DBpatch_4030055(void)
 {
-	const ZBX_FIELD	field = {"description", "", NULL, NULL, 0, ZBX_TYPE_SHORTTEXT, ZBX_NOTNULL, 0};
+	const TRX_FIELD	field = {"description", "", NULL, NULL, 0, TRX_TYPE_SHORTTEXT, TRX_NOTNULL, 0};
 
 	return DBadd_field("hostmacro", &field);
 }

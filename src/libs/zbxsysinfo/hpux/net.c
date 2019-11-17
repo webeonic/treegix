@@ -30,14 +30,14 @@ static struct strbuf	ctlbuf =
 
 #if HPUX_VERSION < 1131
 
-#define ZBX_IF_SEP	','
+#define TRX_IF_SEP	','
 
 static void	add_if_name(char **if_list, size_t *if_list_alloc, size_t *if_list_offset, const char *name)
 {
-	if (FAIL == str_in_list(*if_list, name, ZBX_IF_SEP))
+	if (FAIL == str_in_list(*if_list, name, TRX_IF_SEP))
 	{
 		if ('\0' != **if_list)
-			zbx_chrcpy_alloc(if_list, if_list_alloc, if_list_offset, ZBX_IF_SEP);
+			zbx_chrcpy_alloc(if_list, if_list_alloc, if_list_offset, TRX_IF_SEP);
 
 		zbx_strcpy_alloc(if_list, if_list_alloc, if_list_offset, name);
 	}
@@ -152,22 +152,22 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	if_name = if_list;
 
 	while (NULL != if_name)
 	{
-		if (NULL != (if_name_end = strchr(if_name, ZBX_IF_SEP)))
+		if (NULL != (if_name_end = strchr(if_name, TRX_IF_SEP)))
 			*if_name_end = '\0';
 
 		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#IFNAME}", if_name, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#IFNAME}", if_name, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&j);
 
 		if (NULL != if_name_end)
 		{
-			*if_name_end = ZBX_IF_SEP;
+			*if_name_end = TRX_IF_SEP;
 			if_name = if_name_end + 1;
 		}
 		else
@@ -185,12 +185,12 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; 0 != ni[i].if_index; i++)
 	{
 		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#IFNAME}", ni[i].if_name, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#IFNAME}", ni[i].if_name, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&j);
 	}
 

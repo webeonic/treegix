@@ -65,8 +65,8 @@ swap_stat_t;
 #	define PARSE(line)								\
 											\
 		if (6 != sscanf(line, "%d %d %*d %*s "					\
-				ZBX_FS_UI64 " %*d " ZBX_FS_UI64 " %*d "			\
-				ZBX_FS_UI64 " %*d " ZBX_FS_UI64 " %*d %*d %*d %*d",	\
+				TRX_FS_UI64 " %*d " TRX_FS_UI64 " %*d "			\
+				TRX_FS_UI64 " %*d " TRX_FS_UI64 " %*d %*d %*d %*d",	\
 				&rdev_major, 		/* major */			\
 				&rdev_minor, 		/* minor */			\
 				&result->rio,		/* rio */			\
@@ -79,8 +79,8 @@ swap_stat_t;
 #	define PARSE(line)								\
 											\
 		if (6 != sscanf(line, "%u %u %*s "					\
-				ZBX_FS_UI64 " %*d " ZBX_FS_UI64 " %*d "			\
-				ZBX_FS_UI64 " %*d " ZBX_FS_UI64 " %*d %*d %*d %*d",	\
+				TRX_FS_UI64 " %*d " TRX_FS_UI64 " %*d "			\
+				TRX_FS_UI64 " %*d " TRX_FS_UI64 " %*d %*d %*d %*d",	\
 				&rdev_major, 		/* major */			\
 				&rdev_minor, 		/* minor */			\
 				&result->rio,		/* rio */			\
@@ -89,8 +89,8 @@ swap_stat_t;
 				&result->wsect		/* wsect */			\
 				))							\
 			if (6 != sscanf(line, "%u %u %*s "				\
-					ZBX_FS_UI64 " " ZBX_FS_UI64 " "			\
-					ZBX_FS_UI64 " " ZBX_FS_UI64,			\
+					TRX_FS_UI64 " " TRX_FS_UI64 " "			\
+					TRX_FS_UI64 " " TRX_FS_UI64,			\
 					&rdev_major, 		/* major */		\
 					&rdev_minor, 		/* minor */		\
 					&result->rio,		/* rio */		\
@@ -151,17 +151,17 @@ static int	get_swap_pages(swap_stat_t *result)
 #ifdef KERNEL_2_4
 			if (0 != strncmp(line, "swap ", 5))
 
-			if (2 != sscanf(line + 5, ZBX_FS_UI64 " " ZBX_FS_UI64, &result->rpag, &result->wpag))
+			if (2 != sscanf(line + 5, TRX_FS_UI64 " " TRX_FS_UI64, &result->rpag, &result->wpag))
 				continue;
 #else
 			if (0x00 == (0x01 & st) && 0 == strncmp(line, "pswpin ", 7))
 			{
-				sscanf(line + 7, ZBX_FS_UI64, &result->rpag);
+				sscanf(line + 7, TRX_FS_UI64, &result->rpag);
 				st |= 0x01;
 			}
 			else if (0x00 == (0x02 & st) && 0 == strncmp(line, "pswpout ", 8))
 			{
-				sscanf(line + 8, ZBX_FS_UI64, &result->wpag);
+				sscanf(line + 8, TRX_FS_UI64, &result->wpag);
 				st |= 0x02;
 			}
 

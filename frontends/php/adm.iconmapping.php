@@ -10,14 +10,14 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'iconmapid' =>		[T_ZBX_INT, O_OPT, P_SYS,			DB_ID,	'(isset({form}) && {form} == "update") || isset({delete})'],
-	'iconmap' =>		[T_ZBX_STR, O_OPT, null,			null,	'isset({add}) || isset({update})'],
-	'add' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'update' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'delete' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'clone' =>			[T_ZBX_STR, O_OPT, null,			null,	null],
-	'form' =>			[T_ZBX_STR, O_OPT, P_SYS,			null,	null],
-	'form_refresh' =>	[T_ZBX_INT, O_OPT, null,			null,	null]
+	'iconmapid' =>		[T_TRX_INT, O_OPT, P_SYS,			DB_ID,	'(isset({form}) && {form} == "update") || isset({delete})'],
+	'iconmap' =>		[T_TRX_STR, O_OPT, null,			null,	'isset({add}) || isset({update})'],
+	'add' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'update' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'delete' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'clone' =>			[T_TRX_STR, O_OPT, null,			null,	null],
+	'form' =>			[T_TRX_STR, O_OPT, P_SYS,			null,	null],
+	'form_refresh' =>	[T_TRX_INT, O_OPT, null,			null,	null]
 ];
 check_fields($fields);
 

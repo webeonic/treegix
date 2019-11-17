@@ -31,7 +31,7 @@ int	zbx_dshm_create(zbx_dshm_t *shm, size_t shm_size, zbx_mutex_name_t mutex,
 {
 	int	ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() size:" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)shm_size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() size:" TRX_FS_SIZE_T, __func__, (zbx_fs_size_t)shm_size);
 
 	if (SUCCEED != zbx_mutex_create(&shm->lock, mutex, errmsg))
 		goto out;
@@ -45,7 +45,7 @@ int	zbx_dshm_create(zbx_dshm_t *shm, size_t shm_size, zbx_mutex_name_t mutex,
 		}
 	}
 	else
-		shm->shmid = ZBX_NONEXISTENT_SHMID;
+		shm->shmid = TRX_NONEXISTENT_SHMID;
 
 	shm->size = shm_size;
 	shm->copy_func = copy_func;
@@ -80,14 +80,14 @@ int	zbx_dshm_destroy(zbx_dshm_t *shm, char **errmsg)
 
 	zbx_mutex_destroy(&shm->lock);
 
-	if (ZBX_NONEXISTENT_SHMID != shm->shmid)
+	if (TRX_NONEXISTENT_SHMID != shm->shmid)
 	{
 		if (-1 == shmctl(shm->shmid, IPC_RMID, NULL))
 		{
 			*errmsg = zbx_dsprintf(*errmsg, "cannot remove shared memory: %s", zbx_strerror(errno));
 			goto out;
 		}
-		shm->shmid = ZBX_NONEXISTENT_SHMID;
+		shm->shmid = TRX_NONEXISTENT_SHMID;
 	}
 
 	ret = SUCCEED;
@@ -147,7 +147,7 @@ int	zbx_dshm_validate_ref(const zbx_dshm_t *shm, zbx_dshm_ref_t *shm_ref, char *
 
 	if (shm->shmid != shm_ref->shmid)
 	{
-		if (ZBX_NONEXISTENT_SHMID != shm_ref->shmid)
+		if (TRX_NONEXISTENT_SHMID != shm_ref->shmid)
 		{
 			if (-1 == shmdt((void *)shm_ref->addr))
 			{
@@ -155,7 +155,7 @@ int	zbx_dshm_validate_ref(const zbx_dshm_t *shm, zbx_dshm_ref_t *shm_ref, char *
 				goto out;
 			}
 			shm_ref->addr = NULL;
-			shm_ref->shmid = ZBX_NONEXISTENT_SHMID;
+			shm_ref->shmid = TRX_NONEXISTENT_SHMID;
 		}
 
 		if ((void *)(-1) == (shm_ref->addr = shmat(shm->shmid, NULL, 0)))
@@ -201,12 +201,12 @@ int	zbx_dshm_realloc(zbx_dshm_t *shm, size_t size, char **errmsg)
 	void	*addr, *addr_old = NULL;
 	size_t	shm_size;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() shmid:%d size:" ZBX_FS_SIZE_T, __func__, shm->shmid, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() shmid:%d size:" TRX_FS_SIZE_T, __func__, shm->shmid, (zbx_fs_size_t)size);
 
-	shm_size = ZBX_SIZE_T_ALIGN8(size);
+	shm_size = TRX_SIZE_T_ALIGN8(size);
 
 	/* attach to the old segment if possible */
-	if (ZBX_NONEXISTENT_SHMID != shm->shmid && (void *)(-1) == (addr_old = shmat(shm->shmid, NULL, 0)))
+	if (TRX_NONEXISTENT_SHMID != shm->shmid && (void *)(-1) == (addr_old = shmat(shm->shmid, NULL, 0)))
 	{
 		*errmsg = zbx_dsprintf(*errmsg, "cannot attach current shared memory: %s", zbx_strerror(errno));
 		goto out;

@@ -535,7 +535,7 @@ class CMap extends CMapElement {
 	 */
 	protected function validateDelete(array $sysmapids) {
 		if (!$sysmapids) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$db_maps = $this->get([
@@ -547,7 +547,7 @@ class CMap extends CMapElement {
 
 		foreach ($sysmapids as $sysmapid) {
 			if (!array_key_exists($sysmapid, $db_maps)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 	}
@@ -561,7 +561,7 @@ class CMap extends CMapElement {
 	 */
 	protected function validateCreate(array $maps) {
 		if (!$maps) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$user_data = self::$userData;
@@ -578,14 +578,14 @@ class CMap extends CMapElement {
 		// Validate mandatory fields and map name.
 		foreach ($maps as $map) {
 			if (!check_db_fields($map_db_fields, $map)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect fields for sysmap.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect fields for sysmap.'));
 			}
 		}
 
 		// Check for duplicate names.
 		$duplicate = CArrayHelper::findDuplicate($maps, 'name');
 		if ($duplicate) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Duplicate "name" value "%1$s" for map.', $duplicate['name'])
 			);
 		}
@@ -599,7 +599,7 @@ class CMap extends CMapElement {
 		]);
 
 		if ($db_maps) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Map "%1$s" already exists.', $db_maps[0]['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Map "%1$s" already exists.', $db_maps[0]['name']));
 		}
 
 		$private_validator = new CLimitedSetValidator([
@@ -610,7 +610,7 @@ class CMap extends CMapElement {
 			'values' => [PERM_READ, PERM_READ_WRITE]
 		]);
 
-		$show_suppressed_types = [ZBX_PROBLEM_SUPPRESSED_FALSE, ZBX_PROBLEM_SUPPRESSED_TRUE];
+		$show_suppressed_types = [TRX_PROBLEM_SUPPRESSED_FALSE, TRX_PROBLEM_SUPPRESSED_TRUE];
 		$show_suppressed_validator = new CLimitedSetValidator(['values' => $show_suppressed_types]);
 
 		$expandproblem_types = [SYSMAP_PROBLEMS_NUMBER, SYSMAP_SINGLE_PROBLEM, SYSMAP_PROBLEMS_NUMBER_CRITICAL];
@@ -620,13 +620,13 @@ class CMap extends CMapElement {
 		foreach ($maps as $map) {
 			// Check mandatory fields "width" and "height".
 			if ($map['width'] > 65535 || $map['width'] < 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect "width" value for map "%1$s".', $map['name'])
 				);
 			}
 
 			if ($map['height'] > 65535 || $map['height'] < 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect "height" value for map "%1$s".', $map['name'])
 				);
 			}
@@ -634,18 +634,18 @@ class CMap extends CMapElement {
 			// Check if owner can be set.
 			if (array_key_exists('userid', $map)) {
 				if ($map['userid'] === '' || $map['userid'] === null || $map['userid'] === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Map owner cannot be empty.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Map owner cannot be empty.'));
 				}
 				elseif ($map['userid'] != $user_data['userid'] && $user_data['type'] != USER_TYPE_SUPER_ADMIN
 						&& $user_data['type'] != USER_TYPE_TREEGIX_ADMIN) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Only administrators can set map owner.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Only administrators can set map owner.'));
 				}
 			}
 
 			// Check for invalid "private" values.
 			if (array_key_exists('private', $map)) {
 				if (!$private_validator->validate($map['private'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect "private" value "%1$s" for map "%2$s".', $map['private'], $map['name'])
 					);
 				}
@@ -654,13 +654,13 @@ class CMap extends CMapElement {
 			// Check for invalid "show_suppressed" values.
 			if (array_key_exists('show_suppressed', $map)
 					&& !$show_suppressed_validator->validate($map['show_suppressed'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'show_suppressed', _s('value must be one of %1$s', implode(', ', $show_suppressed_types))
 				));
 			}
 
 			if (array_key_exists('expandproblem', $map) && !$expandproblem_validator->validate($map['expandproblem'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'expandproblem',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'expandproblem',
 					_s('value must be one of %1$s', implode(', ', $expandproblem_types))
 				));
 			}
@@ -670,7 +670,7 @@ class CMap extends CMapElement {
 			// Map user shares.
 			if (array_key_exists('users', $map)) {
 				if (!is_array($map['users'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				$required_fields = ['userid', 'permission'];
@@ -680,7 +680,7 @@ class CMap extends CMapElement {
 					$missing_keys = array_diff($required_fields, array_keys($share));
 
 					if ($missing_keys) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'User sharing is missing parameters: %1$s for map "%2$s".',
 							implode(', ', $missing_keys),
 							$map['name']
@@ -689,7 +689,7 @@ class CMap extends CMapElement {
 					else {
 						foreach ($required_fields as $field) {
 							if ($share[$field] === '' || $share[$field] === null) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Sharing option "%1$s" is missing a value for map "%2$s".',
 									$field,
 									$map['name']
@@ -699,7 +699,7 @@ class CMap extends CMapElement {
 					}
 
 					if (!$permission_validator->validate($share['permission'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect "permission" value "%1$s" in users for map "%2$s".',
 							$share['permission'],
 							$map['name']
@@ -708,13 +708,13 @@ class CMap extends CMapElement {
 
 					if (array_key_exists('private', $map) && $map['private'] == PUBLIC_SHARING
 							&& $share['permission'] == PERM_READ) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Map "%1$s" is public and read-only sharing is disallowed.', $map['name'])
 						);
 					}
 
 					if (array_key_exists($share['userid'], $userids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Duplicate userid "%1$s" in users for map "%2$s".', $share['userid'], $map['name'])
 						);
 					}
@@ -735,7 +735,7 @@ class CMap extends CMapElement {
 				]);
 
 				if (count($userids) != $db_users) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect user ID specified for map "%1$s".', $map['name'])
 					);
 				}
@@ -744,7 +744,7 @@ class CMap extends CMapElement {
 			// Map user group shares.
 			if (array_key_exists('userGroups', $map)) {
 				if (!is_array($map['userGroups'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				$shared_user_groupids = [];
@@ -755,7 +755,7 @@ class CMap extends CMapElement {
 					$missing_keys = array_diff($required_fields, array_keys($share));
 
 					if ($missing_keys) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'User group sharing is missing parameters: %1$s for map "%2$s".',
 							implode(', ', $missing_keys),
 							$map['name']
@@ -764,7 +764,7 @@ class CMap extends CMapElement {
 					else {
 						foreach ($required_fields as $field) {
 							if ($share[$field] === '' || $share[$field] === null) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Field "%1$s" is missing a value for map "%2$s".',
 									$field,
 									$map['name']
@@ -774,7 +774,7 @@ class CMap extends CMapElement {
 					}
 
 					if (!$permission_validator->validate($share['permission'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect "permission" value "%1$s" in user groups for map "%2$s".',
 							$share['permission'],
 							$map['name']
@@ -783,13 +783,13 @@ class CMap extends CMapElement {
 
 					if (array_key_exists('private', $map) && $map['private'] == PUBLIC_SHARING
 							&& $share['permission'] == PERM_READ) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Map "%1$s" is public and read-only sharing is disallowed.', $map['name'])
 						);
 					}
 
 					if (array_key_exists($share['usrgrpid'], $shared_user_groupids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Duplicate usrgrpid "%1$s" in user groups for map "%2$s".',
 							$share['usrgrpid'],
 							$map['name']
@@ -806,7 +806,7 @@ class CMap extends CMapElement {
 					]);
 
 					if (count($shared_user_groupids) != $db_user_groups) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect user group ID specified for map "%1$s".', $map['name'])
 						);
 					}
@@ -847,20 +847,20 @@ class CMap extends CMapElement {
 				}
 
 				if (sysmapElementLabel($map[$label_name]) === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect %1$s label type value for map "%2$s".', $label_data['typeName'], $map['name'])
 					);
 				}
 
 				if ($map[$label_name] == MAP_LABEL_TYPE_CUSTOM) {
 					if (!array_key_exists('string', $label_data)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect %1$s label type value for map "%2$s".', $label_data['typeName'], $map['name'])
 						);
 					}
 
 					if (!array_key_exists($label_data['string'], $map) || zbx_empty($map[$label_data['string']])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Custom label for map "%2$s" elements of type "%1$s" may not be empty.',
 								$label_data['typeName'],
 								$map['name']
@@ -870,7 +870,7 @@ class CMap extends CMapElement {
 				}
 
 				if ($label_name == 'label_type_image' && $map[$label_name] == MAP_LABEL_TYPE_STATUS) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect %1$s label type value for map "%2$s".', $label_data['typeName'], $map['name'])
 					);
 				}
@@ -880,7 +880,7 @@ class CMap extends CMapElement {
 				}
 
 				if ($map[$label_name] == MAP_LABEL_TYPE_IP) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect %1$s label type value for map "%2$s".', $label_data['typeName'], $map['name'])
 					);
 				}
@@ -891,7 +891,7 @@ class CMap extends CMapElement {
 
 			// Grid size.
 			if (array_key_exists('grid_size', $map) && !in_array($map['grid_size'], $possibleGridSizes)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Value "%1$s" is invalid for parameter "grid_show". Choices are: "%2$s".',
 					$map['grid_size'],
 					implode('", "', $possibleGridSizes)
@@ -901,7 +901,7 @@ class CMap extends CMapElement {
 			// Grid auto align.
 			if (array_key_exists('grid_align', $map) && $map['grid_align'] != SYSMAP_GRID_ALIGN_ON
 					&& $map['grid_align'] != SYSMAP_GRID_ALIGN_OFF) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Value "%1$s" is invalid for parameter "grid_align". Choices are: "%2$s" and "%3$s"',
 					$map['grid_align'],
 					SYSMAP_GRID_ALIGN_ON,
@@ -912,7 +912,7 @@ class CMap extends CMapElement {
 			// Grid show.
 			if (array_key_exists('grid_show', $map) && $map['grid_show'] != SYSMAP_GRID_SHOW_ON
 					&& $map['grid_show'] != SYSMAP_GRID_SHOW_OFF) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Value "%1$s" is invalid for parameter "grid_show". Choices are: "%2$s" and "%3$s".',
 					$map['grid_show'],
 					SYSMAP_GRID_SHOW_ON,
@@ -926,13 +926,13 @@ class CMap extends CMapElement {
 
 				foreach ($map['urls'] as $url) {
 					if ($url['name'] === '' || $url['url'] === '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('URL should have both "name" and "url" fields for map "%1$s".', $map['name'])
 						);
 					}
 
 					if (!array_key_exists($url['name'], $url_names)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('URL name should be unique for map "%1$s".', $map['name'])
 						);
 					}
@@ -949,7 +949,7 @@ class CMap extends CMapElement {
 					}
 
 					if (!CHtmlUrlValidator::validate($url['url'], $url_validate_options)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
 					}
 
 					unset($url_names[$url['name']]);
@@ -958,10 +958,10 @@ class CMap extends CMapElement {
 
 			if (array_key_exists('selements', $map)) {
 				if (!is_array($map['selements'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 				elseif (!CMapHelper::checkSelementPermissions($map['selements'])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS,
+					self::exception(TRX_API_ERROR_PERMISSIONS,
 						_('No permissions to referred object or it does not exist!')
 					);
 				}
@@ -973,7 +973,7 @@ class CMap extends CMapElement {
 
 				foreach ($map['links'] as $link) {
 					if (!in_array($link['selementid1'], $selementids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Link selementid1 field is pointing to a nonexistent map selement ID "%1$s" for map "%2$s".',
 							$link['selementid1'],
 							$map['name']
@@ -981,7 +981,7 @@ class CMap extends CMapElement {
 					}
 
 					if (!in_array($link['selementid2'], $selementids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Link selementid2 field is pointing to a nonexistent map selement ID "%1$s" for map "%2$s".',
 							$link['selementid2'],
 							$map['name']
@@ -1002,7 +1002,7 @@ class CMap extends CMapElement {
 	 */
 	protected function validateUpdate(array $maps, array $db_maps) {
 		if (!$maps) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$user_data = self::$userData;
@@ -1019,7 +1019,7 @@ class CMap extends CMapElement {
 		foreach ($maps as $map) {
 			// Check if this map exists and user has write permissions.
 			if (!array_key_exists($map['sysmapid'], $db_maps)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -1027,10 +1027,10 @@ class CMap extends CMapElement {
 			// Validate "name" field.
 			if (array_key_exists('name', $map)) {
 				if (is_array($map['name'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 				elseif ($map['name'] === '' || $map['name'] === null || $map['name'] === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Map name cannot be empty.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Map name cannot be empty.'));
 				}
 
 				if ($db_maps[$map['sysmapid']]['name'] !== $map['name']) {
@@ -1043,7 +1043,7 @@ class CMap extends CMapElement {
 			// Check for duplicate names.
 			$duplicate = CArrayHelper::findDuplicate($check_names, 'name');
 			if ($duplicate) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Duplicate "name" value "%1$s" for map.', $duplicate['name'])
 				);
 			}
@@ -1059,7 +1059,7 @@ class CMap extends CMapElement {
 			foreach ($check_names as $map) {
 				if (array_key_exists($map['name'], $db_map_names)
 						&& bccomp($db_map_names[$map['name']]['sysmapid'], $map['sysmapid']) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Map "%1$s" already exists.', $map['name'])
 					);
 				}
@@ -1074,7 +1074,7 @@ class CMap extends CMapElement {
 			'values' => [PERM_READ, PERM_READ_WRITE]
 		]);
 
-		$show_suppressed_types = [ZBX_PROBLEM_SUPPRESSED_FALSE, ZBX_PROBLEM_SUPPRESSED_TRUE];
+		$show_suppressed_types = [TRX_PROBLEM_SUPPRESSED_FALSE, TRX_PROBLEM_SUPPRESSED_TRUE];
 		$show_suppressed_validator = new CLimitedSetValidator(['values' => $show_suppressed_types]);
 
 		$expandproblem_types = [SYSMAP_PROBLEMS_NUMBER, SYSMAP_SINGLE_PROBLEM, SYSMAP_PROBLEMS_NUMBER_CRITICAL];
@@ -1084,11 +1084,11 @@ class CMap extends CMapElement {
 			// Check if owner can be set.
 			if (array_key_exists('userid', $map)) {
 				if ($map['userid'] === '' || $map['userid'] === null || $map['userid'] === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Map owner cannot be empty.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Map owner cannot be empty.'));
 				}
 				elseif ($map['userid'] != $user_data['userid'] && $user_data['type'] != USER_TYPE_SUPER_ADMIN
 						&& $user_data['type'] != USER_TYPE_TREEGIX_ADMIN) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Only administrators can set map owner.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Only administrators can set map owner.'));
 				}
 			}
 
@@ -1099,19 +1099,19 @@ class CMap extends CMapElement {
 
 			// Check "width" and "height" fields.
 			if ($map['width'] > 65535 || $map['width'] < 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect "width" value for map "%1$s".', $map['name'])
 				);
 			}
 
 			if ($map['height'] > 65535 || $map['height'] < 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect "height" value for map "%1$s".', $map['name'])
 				);
 			}
 
 			if (!$private_validator->validate($map['private'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect "private" value "%1$s" for map "%2$s".', $map['private'], $map['name'])
 				);
 			}
@@ -1119,13 +1119,13 @@ class CMap extends CMapElement {
 			// Check for invalid "show_suppressed" values.
 			if (array_key_exists('show_suppressed', $map)
 					&& !$show_suppressed_validator->validate($map['show_suppressed'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'show_suppressed', _s('value must be one of %1$s', implode(', ', $show_suppressed_types))
 				));
 			}
 
 			if (array_key_exists('expandproblem', $map) && !$expandproblem_validator->validate($map['expandproblem'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'expandproblem',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'expandproblem',
 					_s('value must be one of %1$s', implode(', ', $expandproblem_types))
 				));
 			}
@@ -1135,7 +1135,7 @@ class CMap extends CMapElement {
 			// Map user shares.
 			if (array_key_exists('users', $map)) {
 				if (!is_array($map['users'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				$required_fields = ['userid', 'permission'];
@@ -1145,7 +1145,7 @@ class CMap extends CMapElement {
 					$missing_keys = array_diff($required_fields, array_keys($share));
 
 					if ($missing_keys) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'User sharing is missing parameters: %1$s for map "%2$s".',
 							implode(', ', $missing_keys),
 							$map['name']
@@ -1154,7 +1154,7 @@ class CMap extends CMapElement {
 					else {
 						foreach ($required_fields as $field) {
 							if ($share[$field] === '' || $share[$field] === null) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Sharing option "%1$s" is missing a value for map "%2$s".',
 									$field,
 									$map['name']
@@ -1164,7 +1164,7 @@ class CMap extends CMapElement {
 					}
 
 					if (!$permission_validator->validate($share['permission'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect "permission" value "%1$s" in users for map "%2$s".',
 							$share['permission'],
 							$map['name']
@@ -1172,13 +1172,13 @@ class CMap extends CMapElement {
 					}
 
 					if ($map['private'] == PUBLIC_SHARING && $share['permission'] == PERM_READ) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Map "%1$s" is public and read-only sharing is disallowed.', $map['name'])
 						);
 					}
 
 					if (array_key_exists($share['userid'], $userids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Duplicate userid "%1$s" in users for map "%2$s".', $share['userid'], $map['name'])
 						);
 					}
@@ -1199,7 +1199,7 @@ class CMap extends CMapElement {
 				]);
 
 				if (count($userids) != $db_users) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect user ID specified for map "%1$s".', $map['name'])
 					);
 				}
@@ -1208,7 +1208,7 @@ class CMap extends CMapElement {
 			// Map user group shares.
 			if (array_key_exists('userGroups', $map)) {
 				if (!is_array($map['userGroups'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				$shared_user_groupids = [];
@@ -1219,7 +1219,7 @@ class CMap extends CMapElement {
 					$missing_keys = array_diff($required_fields, array_keys($share));
 
 					if ($missing_keys) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'User group sharing is missing parameters: %1$s for map "%2$s".',
 							implode(', ', $missing_keys),
 							$map['name'])
@@ -1228,7 +1228,7 @@ class CMap extends CMapElement {
 					else {
 						foreach ($required_fields as $field) {
 							if ($share[$field] === '' || $share[$field] === null) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Sharing option "%1$s" is missing a value for map "%2$s".',
 									$field,
 									$map['name']
@@ -1238,7 +1238,7 @@ class CMap extends CMapElement {
 					}
 
 					if (!$permission_validator->validate($share['permission'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect "permission" value "%1$s" in user groups for map "%2$s".',
 							$share['permission'],
 							$map['name']
@@ -1246,13 +1246,13 @@ class CMap extends CMapElement {
 					}
 
 					if ($map['private'] == PUBLIC_SHARING && $share['permission'] == PERM_READ) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Map "%1$s" is public and read-only sharing is disallowed.', $map['name'])
 						);
 					}
 
 					if (array_key_exists($share['usrgrpid'], $shared_user_groupids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Duplicate usrgrpid "%1$s" in user groups for map "%2$s".',
 							$share['usrgrpid'],
 							$map['name']
@@ -1269,7 +1269,7 @@ class CMap extends CMapElement {
 					]);
 
 					if (count($shared_user_groupids) != $db_user_groups) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect user group ID specified for map "%1$s".', $map['name'])
 						);
 					}
@@ -1311,7 +1311,7 @@ class CMap extends CMapElement {
 				}
 
 				if (sysmapElementLabel($map[$label_name]) === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Incorrect %1$s label type value for map "%2$s".',
 						$labelData['typeName'],
 						$map['name']
@@ -1320,7 +1320,7 @@ class CMap extends CMapElement {
 
 				if ($map[$label_name] == MAP_LABEL_TYPE_CUSTOM) {
 					if (!array_key_exists('string', $labelData)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Incorrect %1$s label type value for map "%2$s".',
 							$labelData['typeName'],
 							$map['name']
@@ -1328,7 +1328,7 @@ class CMap extends CMapElement {
 					}
 
 					if (!array_key_exists($labelData['string'], $map) || zbx_empty($map[$labelData['string']])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Custom label for map "%2$s" elements of type "%1$s" may not be empty.',
 							$labelData['typeName'],
 							$map['name']
@@ -1337,7 +1337,7 @@ class CMap extends CMapElement {
 				}
 
 				if ($label_name === 'label_type_image' && $map[$label_name] == MAP_LABEL_TYPE_STATUS) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Incorrect %1$s label type value for map "%2$s".',
 						$labelData['typeName'],
 						$map['name']
@@ -1349,7 +1349,7 @@ class CMap extends CMapElement {
 				}
 
 				if ($map[$label_name] == MAP_LABEL_TYPE_IP) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Incorrect %1$s label type value for map "%2$s".',
 						$labelData['typeName'],
 						$map['name']
@@ -1362,7 +1362,7 @@ class CMap extends CMapElement {
 
 			// Grid size.
 			if (array_key_exists('grid_size', $map) && !in_array($map['grid_size'], $possibleGridSizes)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Value "%1$s" is invalid for parameter "grid_show". Choices are: "%2$s".',
 					$map['grid_size'],
 					implode('", "', $possibleGridSizes)
@@ -1372,7 +1372,7 @@ class CMap extends CMapElement {
 			// Grid auto align.
 			if (array_key_exists('grid_align', $map) && $map['grid_align'] != SYSMAP_GRID_ALIGN_ON
 					&& $map['grid_align'] != SYSMAP_GRID_ALIGN_OFF) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Value "%1$s" is invalid for parameter "grid_align". Choices are: "%2$s" and "%3$s"',
 					$map['grid_align'],
 					SYSMAP_GRID_ALIGN_ON,
@@ -1383,7 +1383,7 @@ class CMap extends CMapElement {
 			// Grid show.
 			if (array_key_exists('grid_show', $map) && $map['grid_show'] != SYSMAP_GRID_SHOW_ON
 					&& $map['grid_show'] != SYSMAP_GRID_SHOW_OFF) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Value "%1$s" is invalid for parameter "grid_show". Choices are: "%2$s" and "%3$s".',
 					$map['grid_show'],
 					SYSMAP_GRID_SHOW_ON,
@@ -1397,13 +1397,13 @@ class CMap extends CMapElement {
 
 				foreach ($map['urls'] as $url) {
 					if ($url['name'] === '' || $url['url'] === '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('URL should have both "name" and "url" fields for map "%1$s".', $map['name'])
 						);
 					}
 
 					if (!array_key_exists($url['name'], $urlNames)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('URL name should be unique for map "%1$s".', $map['name'])
 						);
 					}
@@ -1420,7 +1420,7 @@ class CMap extends CMapElement {
 					}
 
 					if (!CHtmlUrlValidator::validate($url['url'], $url_validate_options)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
 					}
 
 					unset($urlNames[$url['name']]);
@@ -1428,7 +1428,7 @@ class CMap extends CMapElement {
 			}
 
 			if (array_key_exists('selements', $map) && !is_array($map['selements'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			// Map selement links.
@@ -1437,7 +1437,7 @@ class CMap extends CMapElement {
 
 				foreach ($map['links'] as $link) {
 					if (!in_array($link['selementid1'], $selementids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Link selementid1 field is pointing to a nonexistent map selement ID "%1$s" for map "%2$s".',
 							$link['selementid1'],
 							$map['name']
@@ -1445,7 +1445,7 @@ class CMap extends CMapElement {
 					}
 
 					if (!in_array($link['selementid2'], $selementids)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Link selementid2 field is pointing to a nonexistent map selement ID "%1$s" for map "%2$s".',
 							$link['selementid2'],
 							$map['name']
@@ -1488,7 +1488,7 @@ class CMap extends CMapElement {
 
 			foreach ($map['selements'] as $selement) {
 				if (!$this->validateCircularReferenceRecursive($selement, $cref_mapids)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Cannot add map element of the map "%1$s" due to circular reference.', $map['name'])
 					);
 				}
@@ -1541,7 +1541,7 @@ class CMap extends CMapElement {
 				unset($selements);
 			}
 			else {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -1685,7 +1685,7 @@ class CMap extends CMapElement {
 				unset($shape);
 
 				if (!CApiInputValidator::validate($api_shape_rules, $maps[$key]['shapes'], $path, $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 
 				foreach ($maps[$key]['shapes'] as $snum => $shape) {
@@ -1709,7 +1709,7 @@ class CMap extends CMapElement {
 				unset($line);
 
 				if (!CApiInputValidator::validate($api_line_rules, $maps[$key]['lines'], $path, $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 
 				foreach ($maps[$key]['lines'] as $line) {
@@ -1978,7 +1978,7 @@ class CMap extends CMapElement {
 				$path = '/'.($index + 1).'/shape';
 				foreach ($shape_diff['first'] as $new_shape) {
 					if (array_key_exists('sysmap_shapeid', $new_shape)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('No permissions to referred object or it does not exist!')
 						);
 					}
@@ -1992,13 +1992,13 @@ class CMap extends CMapElement {
 				$api_shape_rules['fields']['height']['in'] = '1:'.$map_height;
 
 				if (!CApiInputValidator::validate($api_shape_rules, $shape_diff['first'], $path, $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 
 				$api_shape_rules['fields']['sysmap_shapeid'] = ['type' => API_ID, 'flags' => API_REQUIRED];
 				$api_shape_rules['fields']['type']['flags'] = 0;
 				if (!CApiInputValidator::validate($api_shape_rules, $shape_diff['both'], $path, $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 
 				$shapes_to_update = array_merge($shapes_to_update, $shape_diff['both']);
@@ -2029,7 +2029,7 @@ class CMap extends CMapElement {
 				unset($line);
 
 				if (!CApiInputValidator::validate($api_line_rules, $map['lines'], $path, $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 
 				foreach ($map['lines'] as $line) {
@@ -2040,7 +2040,7 @@ class CMap extends CMapElement {
 
 				foreach ($line_diff['first'] as $new_line) {
 					if (array_key_exists('sysmap_shapeid', $new_line)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('No permissions to referred object or it does not exist!')
 						);
 					}

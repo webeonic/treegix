@@ -49,7 +49,7 @@ class CIdValidator extends CValidator {
 
 		if (!preg_match($regex, $value) ||
 			bccomp($value, 0)  == -1 ||
-			bccomp($value, ZBX_DB_MAX_ID) == 1
+			bccomp($value, TRX_DB_MAX_ID) == 1
 		) {
 			$this->error($this->messageInvalid, $value);
 

@@ -69,7 +69,7 @@ static zbx_uint64_t	last_rblks = 0;			/* 512 bytes blocks read from all disks */
  *           data and indicate that it is available                           *
  *                                                                            *
  ******************************************************************************/
-static void	update_vmstat(ZBX_VMSTAT_DATA *vmstat)
+static void	update_vmstat(TRX_VMSTAT_DATA *vmstat)
 {
 #if defined(HAVE_LIBPERFSTAT)
 	int				now;
@@ -318,7 +318,7 @@ static void	update_vmstat(ZBX_VMSTAT_DATA *vmstat)
 #endif	/* HAVE_LIBPERFSTAT */
 }
 
-void	collect_vmstat_data(ZBX_VMSTAT_DATA *vmstat)
+void	collect_vmstat_data(TRX_VMSTAT_DATA *vmstat)
 {
 	update_vmstat(vmstat);
 }

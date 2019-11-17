@@ -13,7 +13,7 @@
 					axis: 'y',
 					containment: 'parent',
 					cursor: IE ? 'move' : 'grabbing',
-					handle: 'div.<?= ZBX_STYLE_DRAG_ICON ?>',
+					handle: 'div.<?= TRX_STYLE_DRAG_ICON ?>',
 					tolerance: 'pointer',
 					opacity: 0.6,
 					helper: function(e, ui) {

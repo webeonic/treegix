@@ -2,8 +2,8 @@
 <?=
 	(new CRow([
 		(new CCol(
-			(new CDiv())->addClass(ZBX_STYLE_DRAG_ICON)
-		))->addClass(ZBX_STYLE_TD_DRAG_ICON),
+			(new CDiv())->addClass(TRX_STYLE_DRAG_ICON)
+		))->addClass(TRX_STYLE_TD_DRAG_ICON),
 		(new CSpan('#0:'))->addClass('rowNum'),
 		(new CComboBox('iconmap[mappings][#{iconmappingid}][inventory_link]', null, null, $data['inventoryList']))
 			->setId('iconmap_mappings_#{iconmappingid}_inventory_link')
@@ -11,24 +11,24 @@
 		(new CTextBox('iconmap[mappings][#{iconmappingid}][expression]', '', false, 64))
 			->setId('iconmap_mappings_#{iconmappingid}_expression')
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
 		(new CComboBox('iconmap[mappings][#{iconmappingid}][iconid]', null, null, $data['iconList']))
 			->setId('iconmap_mappings_#{iconmappingid}_iconid')
 			->addClass('mappingIcon')
 			->setAttribute('autocomplete', 'off'),
 		(new CCol(
-			(new CImg('imgstore.php?iconid='.$data['default_imageid'].'&width='.ZBX_ICON_PREVIEW_WIDTH.
-				'&height='.ZBX_ICON_PREVIEW_HEIGHT, _('Preview'))
+			(new CImg('imgstore.php?iconid='.$data['default_imageid'].'&width='.TRX_ICON_PREVIEW_WIDTH.
+				'&height='.TRX_ICON_PREVIEW_HEIGHT, _('Preview'))
 			)
 				->setAttribute('data-image-full', 'imgstore.php?iconid='.$data['default_imageid'])
-				->addClass(ZBX_STYLE_CURSOR_POINTER)
+				->addClass(TRX_STYLE_CURSOR_POINTER)
 				->addClass('preview')
 		))->addStyle('vertical-align: middle'),
 		(new CCol(
 			(new CButton('remove', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('remove_mapping')
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	]))
 		->setId('iconmapidRow_#{iconmappingid}')
 		->addClass('sortable')
@@ -53,7 +53,7 @@
 			axis: 'y',
 			containment: 'parent',
 			cursor: IE ? 'move' : 'grabbing',
-			handle: 'div.<?= ZBX_STYLE_DRAG_ICON ?>',
+			handle: 'div.<?= TRX_STYLE_DRAG_ICON ?>',
 			tolerance: 'pointer',
 			opacity: 0.6,
 			update: recalculateSortOrder,
@@ -88,7 +88,7 @@
 			})
 			.on('change', 'select.mappingIcon, select#iconmap_default_iconid', function() {
 				$(this).closest('tr').find('.preview')
-					.attr('src', 'imgstore.php?&width=<?= ZBX_ICON_PREVIEW_WIDTH ?>&height=<?= ZBX_ICON_PREVIEW_HEIGHT ?>&iconid=' + $(this).val())
+					.attr('src', 'imgstore.php?&width=<?= TRX_ICON_PREVIEW_WIDTH ?>&height=<?= TRX_ICON_PREVIEW_HEIGHT ?>&iconid=' + $(this).val())
 					.data('imageFull', 'imgstore.php?iconid=' + $(this).val());
 			})
 			.on('click', 'img.preview', function(e) {

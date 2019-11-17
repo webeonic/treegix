@@ -11,32 +11,32 @@ zbx_uint32_t	zbx_alerter_serialize_alert_send(unsigned char **data, zbx_uint64_t
 		const char *attempt_interval, unsigned char content_type, const char *script, const char *timeout,
 		const char *sendto, const char *subject, const char *message, const char *params)
 {
-	ZBX_UNUSED(data);
-	ZBX_UNUSED(mediatypeid);
-	ZBX_UNUSED(type);
-	ZBX_UNUSED(smtp_server);
-	ZBX_UNUSED(smtp_helo);
-	ZBX_UNUSED(smtp_email);
-	ZBX_UNUSED(exec_path);
-	ZBX_UNUSED(gsm_modem);
-	ZBX_UNUSED(username);
-	ZBX_UNUSED(passwd);
-	ZBX_UNUSED(smtp_port);
-	ZBX_UNUSED(smtp_security);
-	ZBX_UNUSED(smtp_verify_peer);
-	ZBX_UNUSED(smtp_verify_host);
-	ZBX_UNUSED(smtp_authentication);
-	ZBX_UNUSED(exec_params);
-	ZBX_UNUSED(maxsessions);
-	ZBX_UNUSED(maxattempts);
-	ZBX_UNUSED(attempt_interval);
-	ZBX_UNUSED(content_type);
-	ZBX_UNUSED(script);
-	ZBX_UNUSED(timeout);
-	ZBX_UNUSED(sendto);
-	ZBX_UNUSED(subject);
-	ZBX_UNUSED(message);
-	ZBX_UNUSED(params);
+	TRX_UNUSED(data);
+	TRX_UNUSED(mediatypeid);
+	TRX_UNUSED(type);
+	TRX_UNUSED(smtp_server);
+	TRX_UNUSED(smtp_helo);
+	TRX_UNUSED(smtp_email);
+	TRX_UNUSED(exec_path);
+	TRX_UNUSED(gsm_modem);
+	TRX_UNUSED(username);
+	TRX_UNUSED(passwd);
+	TRX_UNUSED(smtp_port);
+	TRX_UNUSED(smtp_security);
+	TRX_UNUSED(smtp_verify_peer);
+	TRX_UNUSED(smtp_verify_host);
+	TRX_UNUSED(smtp_authentication);
+	TRX_UNUSED(exec_params);
+	TRX_UNUSED(maxsessions);
+	TRX_UNUSED(maxattempts);
+	TRX_UNUSED(attempt_interval);
+	TRX_UNUSED(content_type);
+	TRX_UNUSED(script);
+	TRX_UNUSED(timeout);
+	TRX_UNUSED(sendto);
+	TRX_UNUSED(subject);
+	TRX_UNUSED(message);
+	TRX_UNUSED(params);
 
 	THIS_SHOULD_NEVER_HAPPEN;
 
@@ -45,10 +45,10 @@ zbx_uint32_t	zbx_alerter_serialize_alert_send(unsigned char **data, zbx_uint64_t
 
 void	zbx_alerter_deserialize_result(const unsigned char *data, char **value, int *errcode, char **errmsg)
 {
-	ZBX_UNUSED(value);
-	ZBX_UNUSED(data);
-	ZBX_UNUSED(errcode);
-	ZBX_UNUSED(errmsg);
+	TRX_UNUSED(value);
+	TRX_UNUSED(data);
+	TRX_UNUSED(errcode);
+	TRX_UNUSED(errmsg);
 
 	THIS_SHOULD_NEVER_HAPPEN;
 }

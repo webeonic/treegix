@@ -223,7 +223,7 @@ for arg2 in "struct sockaddr" void; do
 done
 if test "x$zbx_socklen_t" != "x"; then
   AC_MSG_RESULT($zbx_socklen_t)
-  AC_DEFINE_UNQUOTED(ZBX_SOCKLEN_T, $zbx_socklen_t, [Define actual socklen_t parameter type in socket functions.])
+  AC_DEFINE_UNQUOTED(TRX_SOCKLEN_T, $zbx_socklen_t, [Define actual socklen_t parameter type in socket functions.])
 else
   AC_MSG_RESULT(leaving undefined)
 fi
@@ -245,7 +245,7 @@ for field in sival_int sigval_int; do
 done
 if test "x$zbx_sival_int" != "x"; then
   AC_MSG_RESULT($zbx_sival_int)
-  AC_DEFINE_UNQUOTED(ZBX_SIVAL_INT, $zbx_sival_int, [Define integer field name in union 'sigval' of struct 'siginfo_t'])
+  AC_DEFINE_UNQUOTED(TRX_SIVAL_INT, $zbx_sival_int, [Define integer field name in union 'sigval' of struct 'siginfo_t'])
 else
   AC_MSG_ERROR(Unable to find integer field name in union sigval of struct siginfo_t)
 fi
@@ -942,11 +942,11 @@ AC_MSG_RESULT(no))
 AC_MSG_CHECKING(for macro __VA_ARGS__)
 AC_TRY_COMPILE(
 [
-#define ZBX_CONST_STRING(str)   str
+#define TRX_CONST_STRING(str)   str
 int test(const char *fmt, ...) { return 0; }
 ],
 [
-#define TEST(fmt, ...) test(ZBX_CONST_STRING(fmt), ##__VA_ARGS__)
+#define TEST(fmt, ...) test(TRX_CONST_STRING(fmt), ##__VA_ARGS__)
 TEST("%s","test");
 TEST("test");
 ],
@@ -1297,7 +1297,7 @@ AM_CONDITIONAL(IPV6, test "x$ipv6" = "xyes")
 
 AM_CONDITIONAL([DBSCHEMA], [test -d create])
 
-AM_CONDITIONAL([ZBXCMOCKA], [(test -d tests/) && (test "x$server" = "xyes" || test "x$proxy" = "xyes" || test "x$agent" = "xyes")])
+AM_CONDITIONAL([TRXCMOCKA], [(test -d tests/) && (test "x$server" = "xyes" || test "x$proxy" = "xyes" || test "x$agent" = "xyes")])
 
 have_db="no"
 have_unixodbc="no"
@@ -1569,8 +1569,8 @@ PROXY_LIBS="$PROXY_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
 AGENT_LDFLAGS="$AGENT_LDFLAGS $ZLIB_LDFLAGS $LIBPTHREAD_LDFLAGS"
 AGENT_LIBS="$AGENT_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
 
-ZBXGET_LDFLAGS="$ZBXGET_LDFLAGS $ZLIB_LDFLAGS $LIBPTHREAD_LDFLAGS"
-ZBXGET_LIBS="$ZBXGET_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
+TRXGET_LDFLAGS="$TRXGET_LDFLAGS $ZLIB_LDFLAGS $LIBPTHREAD_LDFLAGS"
+TRXGET_LIBS="$TRXGET_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
 
 SENDER_LDFLAGS="$SENDER_LDFLAGS $ZLIB_LDFLAGS $LIBPTHREAD_LDFLAGS"
 SENDER_LIBS="$SENDER_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
@@ -1677,8 +1677,8 @@ PROXY_LIBS="$PROXY_LIBS $TLS_LIBS"
 AGENT_LDFLAGS="$AGENT_LDFLAGS $TLS_LDFLAGS"
 AGENT_LIBS="$AGENT_LIBS $TLS_LIBS"
 
-ZBXGET_LDFLAGS="$ZBXGET_LDFLAGS $TLS_LDFLAGS"
-ZBXGET_LIBS="$ZBXGET_LIBS $TLS_LIBS"
+TRXGET_LDFLAGS="$TRXGET_LDFLAGS $TLS_LDFLAGS"
+TRXGET_LIBS="$TRXGET_LIBS $TLS_LIBS"
 
 SENDER_LDFLAGS="$SENDER_LDFLAGS $TLS_LDFLAGS"
 SENDER_LIBS="$SENDER_LIBS $TLS_LIBS"
@@ -1822,8 +1822,8 @@ CGO_LDFLAGS="-Wl,--start-group \
 	-Wl,--end-group"
 AC_SUBST(CGO_LDFLAGS)
 
-AC_SUBST(ZBXGET_LDFLAGS)
-AC_SUBST(ZBXGET_LIBS)
+AC_SUBST(TRXGET_LDFLAGS)
+AC_SUBST(TRXGET_LIBS)
 
 AC_SUBST(SENDER_LDFLAGS)
 AC_SUBST(SENDER_LIBS)
@@ -1871,7 +1871,7 @@ AC_MSG_RESULT([ok (${MKDIR_P})])
 dnl Check if process statistics collector should be enabled
 case "x$ARCH" in
 	xlinux|xsolaris)
-		AC_DEFINE(ZBX_PROCSTAT_COLLECTOR, 1 , [Define to 1 on linux and solaris platforms])
+		AC_DEFINE(TRX_PROCSTAT_COLLECTOR, 1 , [Define to 1 on linux and solaris platforms])
 		;;
 esac
 
@@ -1881,7 +1881,7 @@ dnl *                 Output configuration results                  *
 dnl *                                                               *
 dnl *****************************************************************
 
-m4_ifdef([CONF_TESTS],[CONF_TESTS(ZBXCMOCKA)])
+m4_ifdef([CONF_TESTS],[CONF_TESTS(TRXCMOCKA)])
 
 AC_OUTPUT([
 	Makefile

@@ -7,6 +7,6 @@
 
 extern int	CONFIG_PROXYCONFIG_FREQUENCY;
 
-ZBX_THREAD_ENTRY(proxyconfig_thread, args);
+TRX_THREAD_ENTRY(proxyconfig_thread, args);
 
 #endif

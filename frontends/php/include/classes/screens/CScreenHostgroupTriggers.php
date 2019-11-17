@@ -25,17 +25,17 @@ class CScreenHostgroupTriggers extends CScreenHostTriggers {
 		switch ($this->screenitem['sort_triggers']) {
 			case SCREEN_SORT_TRIGGERS_DATE_DESC:
 				$params['sortfield'] = 'lastchange';
-				$params['sortorder'] = ZBX_SORT_DOWN;
+				$params['sortorder'] = TRX_SORT_DOWN;
 				break;
 			case SCREEN_SORT_TRIGGERS_SEVERITY_DESC:
 				$params['sortfield'] = 'severity';
-				$params['sortorder'] = ZBX_SORT_DOWN;
+				$params['sortorder'] = TRX_SORT_DOWN;
 				break;
 			case SCREEN_SORT_TRIGGERS_HOST_NAME_ASC:
 				// a little black magic here - there is no such field 'hostname' in 'triggers',
 				// but API has a special case for sorting by hostname
 				$params['sortfield'] = 'hostname';
-				$params['sortorder'] = ZBX_SORT_UP;
+				$params['sortorder'] = TRX_SORT_UP;
 				break;
 		}
 
@@ -48,7 +48,7 @@ class CScreenHostgroupTriggers extends CScreenHostTriggers {
 			$header = (new CDiv([
 				new CTag('h4', true, _('Host group issues')),
 				(new CList())->addItem([_('Group'), ':', SPACE, $groups[0]['name']])
-			]))->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD);
+			]))->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD);
 
 			$params['groupids'] = $this->screenitem['resourceid'];
 		}
@@ -117,7 +117,7 @@ class CScreenHostgroupTriggers extends CScreenHostTriggers {
 							->addItem('&nbsp;')
 							->addItem([_('Host'), '&nbsp;', $hosts_cb])
 					)
-			]))->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD);
+			]))->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD);
 		}
 
 		list($table, $info) = $this->getProblemsListTable($params,
@@ -129,7 +129,7 @@ class CScreenHostgroupTriggers extends CScreenHostTriggers {
 		$footer = (new CList())
 			->addItem($info)
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(new CUiWidget('hat_htstatus', [$header, $table, $footer]));
 	}

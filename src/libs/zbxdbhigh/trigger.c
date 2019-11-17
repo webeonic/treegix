@@ -9,11 +9,11 @@
 #include "template.h"
 #include "events.h"
 
-#define ZBX_FLAGS_TRIGGER_CREATE_NOTHING		0x00
-#define ZBX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT		0x01
-#define ZBX_FLAGS_TRIGGER_CREATE_INTERNAL_EVENT		0x02
-#define ZBX_FLAGS_TRIGGER_CREATE_EVENT										\
-		(ZBX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT | ZBX_FLAGS_TRIGGER_CREATE_INTERNAL_EVENT)
+#define TRX_FLAGS_TRIGGER_CREATE_NOTHING		0x00
+#define TRX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT		0x01
+#define TRX_FLAGS_TRIGGER_CREATE_INTERNAL_EVENT		0x02
+#define TRX_FLAGS_TRIGGER_CREATE_EVENT										\
+		(TRX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT | TRX_FLAGS_TRIGGER_CREATE_INTERNAL_EVENT)
 
 
 /******************************************************************************
@@ -54,9 +54,9 @@ static int	zbx_process_trigger(struct _DC_TRIGGER *trigger, zbx_vector_ptr_t *di
 {
 	const char		*new_error;
 	int			new_state, new_value, ret = FAIL;
-	zbx_uint64_t		flags = ZBX_FLAGS_TRIGGER_DIFF_UNSET, event_flags = ZBX_FLAGS_TRIGGER_CREATE_NOTHING;
+	zbx_uint64_t		flags = TRX_FLAGS_TRIGGER_DIFF_UNSET, event_flags = TRX_FLAGS_TRIGGER_CREATE_NOTHING;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() triggerid:" ZBX_FS_UI64 " value:%d(%d) new_value:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() triggerid:" TRX_FS_UI64 " value:%d(%d) new_value:%d",
 			__func__, trigger->triggerid, trigger->value, trigger->state, trigger->new_value);
 
 	if (TRIGGER_VALUE_UNKNOWN == trigger->new_value)
@@ -73,32 +73,32 @@ static int	zbx_process_trigger(struct _DC_TRIGGER *trigger, zbx_vector_ptr_t *di
 
 	if (trigger->state != new_state)
 	{
-		flags |= ZBX_FLAGS_TRIGGER_DIFF_UPDATE_STATE;
-		event_flags |= ZBX_FLAGS_TRIGGER_CREATE_INTERNAL_EVENT;
+		flags |= TRX_FLAGS_TRIGGER_DIFF_UPDATE_STATE;
+		event_flags |= TRX_FLAGS_TRIGGER_CREATE_INTERNAL_EVENT;
 	}
 
 	if (0 != strcmp(trigger->error, new_error))
-		flags |= ZBX_FLAGS_TRIGGER_DIFF_UPDATE_ERROR;
+		flags |= TRX_FLAGS_TRIGGER_DIFF_UPDATE_ERROR;
 
 	if (TRIGGER_STATE_NORMAL == new_state)
 	{
 		if (TRIGGER_VALUE_PROBLEM == new_value)
 		{
 			if (TRIGGER_VALUE_OK == trigger->value || TRIGGER_TYPE_MULTIPLE_TRUE == trigger->type)
-				event_flags |= ZBX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT;
+				event_flags |= TRX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT;
 		}
 		else if (TRIGGER_VALUE_OK == new_value)
 		{
 			if (TRIGGER_VALUE_PROBLEM == trigger->value || 0 == trigger->lastchange)
-				event_flags |= ZBX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT;
+				event_flags |= TRX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT;
 		}
 	}
 
 	/* check if there is something to be updated */
-	if (0 == (flags & ZBX_FLAGS_TRIGGER_DIFF_UPDATE) && 0 == (event_flags & ZBX_FLAGS_TRIGGER_CREATE_EVENT))
+	if (0 == (flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE) && 0 == (event_flags & TRX_FLAGS_TRIGGER_CREATE_EVENT))
 		goto out;
 
-	if (0 != (event_flags & ZBX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT))
+	if (0 != (event_flags & TRX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT))
 	{
 		zbx_add_event(EVENT_SOURCE_TRIGGERS, EVENT_OBJECT_TRIGGER, trigger->triggerid,
 				&trigger->timespec, new_value, trigger->description,
@@ -108,7 +108,7 @@ static int	zbx_process_trigger(struct _DC_TRIGGER *trigger, zbx_vector_ptr_t *di
 				NULL);
 	}
 
-	if (0 != (event_flags & ZBX_FLAGS_TRIGGER_CREATE_INTERNAL_EVENT))
+	if (0 != (event_flags & TRX_FLAGS_TRIGGER_CREATE_INTERNAL_EVENT))
 	{
 		zbx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_TRIGGER, trigger->triggerid,
 				&trigger->timespec, new_state, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL,
@@ -120,7 +120,7 @@ static int	zbx_process_trigger(struct _DC_TRIGGER *trigger, zbx_vector_ptr_t *di
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s flags:" ZBX_FS_UI64, __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s flags:" TRX_FS_UI64, __func__, zbx_result_string(ret),
 			flags);
 
 	return ret;
@@ -151,30 +151,30 @@ void	zbx_db_save_trigger_changes(const zbx_vector_ptr_t *trigger_diff)
 		char	delim = ' ';
 		diff = (const zbx_trigger_diff_t *)trigger_diff->values[i];
 
-		if (0 == (diff->flags & ZBX_FLAGS_TRIGGER_DIFF_UPDATE))
+		if (0 == (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE))
 			continue;
 
 		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update triggers set");
 
-		if (0 != (diff->flags & ZBX_FLAGS_TRIGGER_DIFF_UPDATE_LASTCHANGE))
+		if (0 != (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE_LASTCHANGE))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%clastchange=%d", delim, diff->lastchange);
 			delim = ',';
 		}
 
-		if (0 != (diff->flags & ZBX_FLAGS_TRIGGER_DIFF_UPDATE_VALUE))
+		if (0 != (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE_VALUE))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cvalue=%d", delim, diff->value);
 			delim = ',';
 		}
 
-		if (0 != (diff->flags & ZBX_FLAGS_TRIGGER_DIFF_UPDATE_STATE))
+		if (0 != (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE_STATE))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cstate=%d", delim, diff->state);
 			delim = ',';
 		}
 
-		if (0 != (diff->flags & ZBX_FLAGS_TRIGGER_DIFF_UPDATE_ERROR))
+		if (0 != (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE_ERROR))
 		{
 			char	*error_esc;
 
@@ -183,7 +183,7 @@ void	zbx_db_save_trigger_changes(const zbx_vector_ptr_t *trigger_diff)
 			zbx_free(error_esc);
 		}
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where triggerid=" ZBX_FS_UI64 ";\n",
+		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where triggerid=" TRX_FS_UI64 ";\n",
 				diff->triggerid);
 
 		DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset);
@@ -222,7 +222,7 @@ static int	zbx_trigger_topoindex_compare(const void *d1, const void *d2)
 	const DC_TRIGGER	*t1 = *(const DC_TRIGGER **)d1;
 	const DC_TRIGGER	*t2 = *(const DC_TRIGGER **)d2;
 
-	ZBX_RETURN_IF_NOT_EQUAL(t1->topoindex, t2->topoindex);
+	TRX_RETURN_IF_NOT_EQUAL(t1->topoindex, t2->topoindex);
 
 	return 0;
 }
@@ -256,7 +256,7 @@ void	zbx_process_triggers(zbx_vector_ptr_t *triggers, zbx_vector_ptr_t *trigger_
 	for (i = 0; i < triggers->values_num; i++)
 		zbx_process_trigger((struct _DC_TRIGGER *)triggers->values[i], trigger_diff);
 
-	zbx_vector_ptr_sort(trigger_diff, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	zbx_vector_ptr_sort(trigger_diff, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }

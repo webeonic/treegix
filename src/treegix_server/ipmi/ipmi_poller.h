@@ -9,7 +9,7 @@
 
 #include "threads.h"
 
-ZBX_THREAD_ENTRY(ipmi_poller_thread, args);
+TRX_THREAD_ENTRY(ipmi_poller_thread, args);
 
 #endif
 

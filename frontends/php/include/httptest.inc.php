@@ -43,15 +43,15 @@ function httptest_status2str($status = null) {
 
 function httptest_status2style($status) {
 	$statuses = [
-		HTTPTEST_STATUS_ACTIVE => ZBX_STYLE_GREEN,
-		HTTPTEST_STATUS_DISABLED => ZBX_STYLE_RED
+		HTTPTEST_STATUS_ACTIVE => TRX_STYLE_GREEN,
+		HTTPTEST_STATUS_DISABLED => TRX_STYLE_RED
 	];
 
 	if (isset($statuses[$status])) {
 		return $statuses[$status];
 	}
 	else {
-		return ZBX_STYLE_GREY;
+		return TRX_STYLE_GREY;
 	}
 }
 
@@ -223,13 +223,13 @@ function makeHttpTestTemplatePrefix($httptestid, array $parent_templates) {
 			(new CUrl('httpconf.php'))
 				->setArgument('hostid', $template['hostid'])
 				->setArgument('filter_set', 1)
-		))->addClass(ZBX_STYLE_LINK_ALT);
+		))->addClass(TRX_STYLE_LINK_ALT);
 	}
 	else {
 		$name = new CSpan(CHtml::encode($template['name']));
 	}
 
-	return [$name->addClass(ZBX_STYLE_GREY), NAME_DELIMITER];
+	return [$name->addClass(TRX_STYLE_GREY), NAME_DELIMITER];
 }
 
 /**
@@ -255,7 +255,7 @@ function makeHttpTestTemplatesHtml($httptestid, array $parent_templates) {
 			);
 		}
 		else {
-			$name = (new CSpan(CHtml::encode($template['name'])))->addClass(ZBX_STYLE_GREY);
+			$name = (new CSpan(CHtml::encode($template['name'])))->addClass(TRX_STYLE_GREY);
 		}
 
 		array_unshift($list, $name, '&nbsp;&rArr;&nbsp;');
@@ -413,7 +413,7 @@ function userAgents() {
 			'Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5' => 'Safari 5.0.2 (iPhone)'
 		],
 		_('Others') => [
-			ZBX_DEFAULT_AGENT => 'Treegix',
+			TRX_DEFAULT_AGENT => 'Treegix',
 			'Mozilla/5.0 (X11; Linux x86_64) konqueror/4.14.2' => 'Konqueror 4.14.2',
 			'Lynx/2.8.8rel.2 libwww-FM/2.14 SSL-MM/1.4.1' => 'Lynx 2.8.8rel.2',
 			'Links (2.8; Linux 3.13.0-36-generic x86_64; GNU C 4.8.2; text)' => 'Links 2.8',

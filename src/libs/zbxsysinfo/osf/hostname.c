@@ -7,7 +7,7 @@
 #	include <sys/utsname.h>
 #endif
 
-ZBX_METRIC	parameter_hostname =
+TRX_METRIC	parameter_hostname =
 /*	KEY			FLAG		FUNCTION		TEST PARAMETERS */
 	{"system.hostname",     0,              SYSTEM_HOSTNAME,        NULL};
 

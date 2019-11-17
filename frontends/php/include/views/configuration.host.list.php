@@ -13,7 +13,7 @@ $widget = (new CWidget())
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Group'), 'groupid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$data['pageFilter']->getGroupsCB()
 				])
 			),
@@ -50,19 +50,19 @@ foreach ($filter_tags as $tag) {
 	$filter_tags_table->addRow([
 		(new CTextBox('filter_tags['.$i.'][tag]', $tag['tag']))
 			->setAttribute('placeholder', _('tag'))
-			->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		(new CRadioButtonList('filter_tags['.$i.'][operator]', (int) $tag['operator']))
 			->addValue(_('Contains'), TAG_OPERATOR_LIKE)
 			->addValue(_('Equals'), TAG_OPERATOR_EQUAL)
 			->setModern(true),
 		(new CTextBox('filter_tags['.$i.'][value]', $tag['value']))
 			->setAttribute('placeholder', _('value'))
-			->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		(new CCol(
 			(new CButton('filter_tags['.$i.'][remove]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	], 'form_row');
 
 	$i++;
@@ -70,7 +70,7 @@ foreach ($filter_tags as $tag) {
 $filter_tags_table->addRow(
 	(new CCol(
 		(new CButton('filter_tags_add', _('Add')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-add')
 	))->setColSpan(3)
 );
@@ -84,7 +84,7 @@ $filter
 		(new CFormList())
 			->addRow(_('Name'),
 				(new CTextBox('filter_host', $data['filter']['host']))
-					->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+					->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			)
 			->addRow(
@@ -102,23 +102,23 @@ $filter
 							'dstfld1' => 'filter_templates_'
 						]
 					]
-				]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+				]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 			)
 			->addRow(_('DNS'),
-				(new CTextBox('filter_dns', $data['filter']['dns']))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+				(new CTextBox('filter_dns', $data['filter']['dns']))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 			)
 			->addRow(_('IP'),
-				(new CTextBox('filter_ip', $data['filter']['ip']))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+				(new CTextBox('filter_ip', $data['filter']['ip']))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 			)
 			->addRow(_('Port'),
-				(new CTextBox('filter_port', $data['filter']['port']))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+				(new CTextBox('filter_port', $data['filter']['port']))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 			),
 		(new CFormList())
 			->addRow(_('Monitored by'),
 				(new CRadioButtonList('filter_monitored_by', (int) $data['filter']['monitored_by']))
-					->addValue(_('Any'), ZBX_MONITORED_BY_ANY)
-					->addValue(_('Server'), ZBX_MONITORED_BY_SERVER)
-					->addValue(_('Proxy'), ZBX_MONITORED_BY_PROXY)
+					->addValue(_('Any'), TRX_MONITORED_BY_ANY)
+					->addValue(_('Server'), TRX_MONITORED_BY_SERVER)
+					->addValue(_('Proxy'), TRX_MONITORED_BY_PROXY)
 					->setModern(true)
 			)
 			->addRow(
@@ -127,7 +127,7 @@ $filter
 					'name' => 'filter_proxyids[]',
 					'object_name' => 'proxies',
 					'data' => $data['proxies_ms'],
-					'disabled' => ($data['filter']['monitored_by'] != ZBX_MONITORED_BY_PROXY),
+					'disabled' => ($data['filter']['monitored_by'] != TRX_MONITORED_BY_PROXY),
 					'popup' => [
 						'parameters' => [
 							'srctbl' => 'proxies',
@@ -137,7 +137,7 @@ $filter
 							'dstfld1' => 'filter_proxyids_'
 						]
 					]
-				]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+				]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 			)
 			->addRow(_('Tags'), $filter_tags_table)
 	]);
@@ -151,7 +151,7 @@ $table = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_hosts'))->onClick("checkAll('".$form->getName()."', 'all_hosts', 'hosts');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sortField'], $data['sortOrder'], 'hosts.php'),
 		_('Applications'),
 		_('Items'),
@@ -160,8 +160,8 @@ $table = (new CTableInfo())
 		_('Discovery'),
 		_('Web'),
 		_('Interface'),
-		($data['filter']['monitored_by'] == ZBX_MONITORED_BY_PROXY
-				|| $data['filter']['monitored_by'] == ZBX_MONITORED_BY_ANY) ? _('Proxy') : null,
+		($data['filter']['monitored_by'] == TRX_MONITORED_BY_PROXY
+				|| $data['filter']['monitored_by'] == TRX_MONITORED_BY_ANY) ? _('Proxy') : null,
 		_('Templates'),
 		make_sorting_header(_('Status'), 'status', $data['sortField'], $data['sortOrder'], 'hosts.php'),
 		_('Availability'),
@@ -191,13 +191,13 @@ foreach ($data['hosts'] as $host) {
 		$description[] = (new CLink(CHtml::encode($host['discoveryRule']['name']),
 			(new CUrl('host_prototypes.php'))->setArgument('parent_discoveryid', $host['discoveryRule']['itemid'])
 		))
-			->addClass(ZBX_STYLE_LINK_ALT)
-			->addClass(ZBX_STYLE_ORANGE);
+			->addClass(TRX_STYLE_LINK_ALT)
+			->addClass(TRX_STYLE_ORANGE);
 		$description[] = NAME_DELIMITER;
 	}
-	elseif ($host['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+	elseif ($host['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 		// Discovered host which does not contain info about parent discovery rule is inaccessible for current user.
-		$description[] = (new CSpan(_('Inaccessible discovery rule')))->addClass(ZBX_STYLE_ORANGE);
+		$description[] = (new CSpan(_('Inaccessible discovery rule')))->addClass(TRX_STYLE_ORANGE);
 		$description[] = NAME_DELIMITER;
 	}
 
@@ -223,7 +223,7 @@ foreach ($data['hosts'] as $host) {
 		}
 
 		$statusCaption = _('Enabled');
-		$statusClass = ZBX_STYLE_GREEN;
+		$statusClass = TRX_STYLE_GREEN;
 		$confirm_message = _('Disable host?');
 		$statusUrl = 'hosts.php?hosts[]='.$host['hostid'].'&action=host.massdisable'.url_param('groupid');
 	}
@@ -231,11 +231,11 @@ foreach ($data['hosts'] as $host) {
 		$statusCaption = _('Disabled');
 		$statusUrl = 'hosts.php?hosts[]='.$host['hostid'].'&action=host.massenable'.url_param('groupid');
 		$confirm_message = _('Enable host?');
-		$statusClass = ZBX_STYLE_RED;
+		$statusClass = TRX_STYLE_RED;
 	}
 
 	$status = (new CLink($statusCaption, $statusUrl))
-		->addClass(ZBX_STYLE_LINK_ACTION)
+		->addClass(TRX_STYLE_LINK_ACTION)
 		->addClass($statusClass)
 		->addConfirmation($confirm_message)
 		->addSID();
@@ -244,7 +244,7 @@ foreach ($data['hosts'] as $host) {
 		$status = [$maintenance_icon, $status];
 	}
 	elseif (count($data['maintenances'])) {
-		$status->addClass(ZBX_STYLE_ICON_NONE);
+		$status->addClass(TRX_STYLE_ICON_NONE);
 	}
 
 	order_result($host['parentTemplates'], 'name');
@@ -268,13 +268,13 @@ foreach ($data['hosts'] as $host) {
 						->setArgument('form', 'update')
 						->setArgument('templateid', $template['templateid'])
 				))
-					->addClass(ZBX_STYLE_LINK_ALT)
-					->addClass(ZBX_STYLE_GREY)
+					->addClass(TRX_STYLE_LINK_ALT)
+					->addClass(TRX_STYLE_GREY)
 			];
 		}
 		else {
 			$caption = [
-				(new CSpan(CHtml::encode($template['name'])))->addClass(ZBX_STYLE_GREY)
+				(new CSpan(CHtml::encode($template['name'])))->addClass(TRX_STYLE_GREY)
 			];
 		}
 
@@ -291,11 +291,11 @@ foreach ($data['hosts'] as $host) {
 							->setArgument('form', 'update')
 							->setArgument('templateid', $parent_template['templateid'])
 					))
-						->addClass(ZBX_STYLE_LINK_ALT)
-						->addClass(ZBX_STYLE_GREY);
+						->addClass(TRX_STYLE_LINK_ALT)
+						->addClass(TRX_STYLE_GREY);
 				}
 				else {
-					$caption[] = (new CSpan(CHtml::encode($parent_template['name'])))->addClass(ZBX_STYLE_GREY);
+					$caption[] = (new CSpan(CHtml::encode($parent_template['name'])))->addClass(TRX_STYLE_GREY);
 				}
 				$caption[] = ', ';
 			}
@@ -312,7 +312,7 @@ foreach ($data['hosts'] as $host) {
 	}
 
 	$info_icons = [];
-	if ($host['flags'] == ZBX_FLAG_DISCOVERY_CREATED && $host['hostDiscovery']['ts_delete'] != 0) {
+	if ($host['flags'] == TRX_FLAG_DISCOVERY_CREATED && $host['hostDiscovery']['ts_delete'] != 0) {
 		$info_icons[] = getHostLifetimeIndicator($current_time, $host['hostDiscovery']['ts_delete']);
 	}
 
@@ -320,50 +320,50 @@ foreach ($data['hosts'] as $host) {
 			&& ($host['tls_accept'] & HOST_ENCRYPTION_NONE) == HOST_ENCRYPTION_NONE
 			&& ($host['tls_accept'] & HOST_ENCRYPTION_PSK) != HOST_ENCRYPTION_PSK
 			&& ($host['tls_accept'] & HOST_ENCRYPTION_CERTIFICATE) != HOST_ENCRYPTION_CERTIFICATE) {
-		$encryption = (new CDiv((new CSpan(_('None')))->addClass(ZBX_STYLE_STATUS_GREEN)))
-			->addClass(ZBX_STYLE_STATUS_CONTAINER);
+		$encryption = (new CDiv((new CSpan(_('None')))->addClass(TRX_STYLE_STATUS_GREEN)))
+			->addClass(TRX_STYLE_STATUS_CONTAINER);
 	}
 	else {
 		// Incoming encryption.
 		if ($host['tls_connect'] == HOST_ENCRYPTION_NONE) {
-			$in_encryption = (new CSpan(_('None')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$in_encryption = (new CSpan(_('None')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 		elseif ($host['tls_connect'] == HOST_ENCRYPTION_PSK) {
-			$in_encryption = (new CSpan(_('PSK')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$in_encryption = (new CSpan(_('PSK')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 		else {
-			$in_encryption = (new CSpan(_('CERT')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$in_encryption = (new CSpan(_('CERT')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 
 		// Outgoing encryption.
 		$out_encryption = [];
 		if (($host['tls_accept'] & HOST_ENCRYPTION_NONE) == HOST_ENCRYPTION_NONE) {
-			$out_encryption[] = (new CSpan(_('None')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$out_encryption[] = (new CSpan(_('None')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 		else {
-			$out_encryption[] = (new CSpan(_('None')))->addClass(ZBX_STYLE_STATUS_GREY);
+			$out_encryption[] = (new CSpan(_('None')))->addClass(TRX_STYLE_STATUS_GREY);
 		}
 
 		if (($host['tls_accept'] & HOST_ENCRYPTION_PSK) == HOST_ENCRYPTION_PSK) {
-			$out_encryption[] = (new CSpan(_('PSK')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$out_encryption[] = (new CSpan(_('PSK')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 		else {
-			$out_encryption[] = (new CSpan(_('PSK')))->addClass(ZBX_STYLE_STATUS_GREY);
+			$out_encryption[] = (new CSpan(_('PSK')))->addClass(TRX_STYLE_STATUS_GREY);
 		}
 
 		if (($host['tls_accept'] & HOST_ENCRYPTION_CERTIFICATE) == HOST_ENCRYPTION_CERTIFICATE) {
-			$out_encryption[] = (new CSpan(_('CERT')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$out_encryption[] = (new CSpan(_('CERT')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 		else {
-			$out_encryption[] = (new CSpan(_('CERT')))->addClass(ZBX_STYLE_STATUS_GREY);
+			$out_encryption[] = (new CSpan(_('CERT')))->addClass(TRX_STYLE_STATUS_GREY);
 		}
 
-		$encryption = (new CDiv([$in_encryption, ' ', $out_encryption]))->addClass(ZBX_STYLE_STATUS_CONTAINER);
+		$encryption = (new CDiv([$in_encryption, ' ', $out_encryption]))->addClass(TRX_STYLE_STATUS_CONTAINER);
 	}
 
 	$table->addRow([
 		new CCheckBox('hosts['.$host['hostid'].']', $host['hostid']),
-		(new CCol($description))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol($description))->addClass(TRX_STYLE_NOWRAP),
 		[
 			new CLink(_('Applications'), 'applications.php?groupid='.$data['groupId'].'&hostid='.$host['hostid']),
 			CViewHelper::showNum($host['applications'])
@@ -397,8 +397,8 @@ foreach ($data['hosts'] as $host) {
 			CViewHelper::showNum($host['httpTests'])
 		],
 		$hostInterface,
-		($data['filter']['monitored_by'] == ZBX_MONITORED_BY_PROXY
-				|| $data['filter']['monitored_by'] == ZBX_MONITORED_BY_ANY)
+		($data['filter']['monitored_by'] == TRX_MONITORED_BY_PROXY
+				|| $data['filter']['monitored_by'] == TRX_MONITORED_BY_ANY)
 			? ($host['proxy_hostid'] != 0)
 				? $data['proxies'][$host['proxy_hostid']]['host']
 				: ''

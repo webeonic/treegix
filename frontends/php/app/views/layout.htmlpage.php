@@ -57,11 +57,11 @@ function local_generateHeader($data) {
 	]);
 	echo $pageHeader->getOutput();
 
-	if ($data['web_layout_mode'] === ZBX_LAYOUT_NORMAL) {
-		global $ZBX_SERVER_NAME;
+	if ($data['web_layout_mode'] === TRX_LAYOUT_NORMAL) {
+		global $TRX_SERVER_NAME;
 
 		$pageMenu = new CView('layout.htmlpage.menu', [
-			'server_name' => isset($ZBX_SERVER_NAME) ? $ZBX_SERVER_NAME : '',
+			'server_name' => isset($TRX_SERVER_NAME) ? $TRX_SERVER_NAME : '',
 			'menu' => [
 				'main_menu' => $main_menu,
 				'sub_menus' => $sub_menus,
@@ -77,7 +77,7 @@ function local_generateHeader($data) {
 		echo $pageMenu->getOutput();
 	}
 
-	echo '<main'.(CView::getLayoutMode() === ZBX_LAYOUT_KIOSKMODE ? ' class="'.ZBX_STYLE_LAYOUT_KIOSKMODE.'"' : '').'>';
+	echo '<main'.(CView::getLayoutMode() === TRX_LAYOUT_KIOSKMODE ? ' class="'.TRX_STYLE_LAYOUT_KIOSKMODE.'"' : '').'>';
 
 	// if a user logs in after several unsuccessful attempts, display a warning
 	if ($failedAttempts = CProfile::get('web.login.attempt.failed', 0)) {
@@ -112,11 +112,11 @@ function local_generateFooter($data) {
 }
 
 function local_showMessage() {
-	global $ZBX_MESSAGES;
+	global $TRX_MESSAGES;
 
 	if (CSession::keyExists('messageOk') || CSession::keyExists('messageError')) {
 		if (CSession::keyExists('messages')) {
-			$ZBX_MESSAGES = CSession::getValue('messages');
+			$TRX_MESSAGES = CSession::getValue('messages');
 			CSession::unsetValue(['messages']);
 		}
 

@@ -19,7 +19,7 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			),
 			(new CFormList())->addRow(_('Status'),
@@ -40,7 +40,7 @@ $discoveryTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_drules'))->onClick("checkAll('".$discoveryForm->getName()."', 'all_drules', 'g_druleid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'], 'discoveryconf.php'),
 		_('IP range'),
 		_('Proxy'),
@@ -56,7 +56,7 @@ foreach ($data['drules'] as $drule) {
 			'?g_druleid[]='.$drule['druleid'].
 			'&action='.($drule['status'] == DRULE_STATUS_ACTIVE ? 'drule.massdisable' : 'drule.massenable')
 		))
-			->addClass(ZBX_STYLE_LINK_ACTION)
+			->addClass(TRX_STYLE_LINK_ACTION)
 			->addClass(discovery_status2style($drule['status']))
 			->addSID()
 	);

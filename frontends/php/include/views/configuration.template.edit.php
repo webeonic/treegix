@@ -30,7 +30,7 @@ if ($data['templateid'] != 0) {
 $frmHost = (new CForm())
 	->setId('templatesForm')
 	->setName('templatesForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $data['form']);
 
 if ($data['templateid'] != 0) {
@@ -65,12 +65,12 @@ $templateList = (new CFormList('hostlist'))
 	->addRow(
 		(new CLabel(_('Template name'), 'template_name'))->setAsteriskMark(),
 		(new CTextBox('template_name', $host, false, 128))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	)
 	->addRow(_('Visible name'), (new CTextBox('visiblename', $visiblename, false, 128))
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow((new CLabel(_('Groups'), 'groups__ms'))->setAsteriskMark(),
 		(new CMultiSelect([
@@ -89,10 +89,10 @@ $templateList = (new CFormList('hostlist'))
 			]
 		]))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('Description'),
-		(new CTextArea('description', $data['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('description', $data['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 if ($data['form'] === 'full_clone') {
@@ -120,7 +120,7 @@ if ($data['form'] === 'full_clone') {
 	$hostItems = API::Item()->get([
 		'hostids' => $data['templateid'],
 		'inherited' => false,
-		'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+		'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 		'output' => ['itemid', 'key_', 'name', 'hostid']
 	]);
 
@@ -145,7 +145,7 @@ if ($data['form'] === 'full_clone') {
 		'inherited' => false,
 		'hostids' => $data['templateid'],
 		'output' => API_OUTPUT_EXTEND,
-		'filter' => ['flags' => [ZBX_FLAG_DISCOVERY_NORMAL]]
+		'filter' => ['flags' => [TRX_FLAG_DISCOVERY_NORMAL]]
 	]);
 	if (!empty($hostTriggers)) {
 		$triggersList = [];
@@ -165,7 +165,7 @@ if ($data['form'] === 'full_clone') {
 	$hostGraphs = API::Graph()->get([
 		'inherited' => false,
 		'hostids' => $data['templateid'],
-		'filter' => ['flags' => [ZBX_FLAG_DISCOVERY_NORMAL]],
+		'filter' => ['flags' => [TRX_FLAG_DISCOVERY_NORMAL]],
 		'output' => API_OUTPUT_EXTEND,
 	]);
 	if (!empty($hostGraphs)) {
@@ -350,16 +350,16 @@ foreach ($data['linkedTemplates'] as $template) {
 					->onClick('javascript: submitFormWithParam('.
 						'"'.$frmHost->getName().'", "unlink['.$template['templateid'].']", "1"'.
 					');')
-					->addClass(ZBX_STYLE_BTN_LINK),
+					->addClass(TRX_STYLE_BTN_LINK),
 				(array_key_exists($template['templateid'], $data['original_templates']) && !$cloneOrFullClone)
 					? (new CSimpleButton(_('Unlink and clear')))
 						->onClick('javascript: submitFormWithParam('.
 							'"'.$frmHost->getName().'", "unlink_and_clear['.$template['templateid'].']", "1"'.
 						');')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 					: null
 			])
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	], null, 'conditions_'.$template['templateid']);
 
 	$disableids[] = $template['templateid'];
@@ -378,13 +378,13 @@ $linkedTemplateTable->addRow([
 			'excludeids' => ($data['templateid'] == 0) ? [] : [$data['templateid']],
 			'disableids' => $disableids
 		]).', null, this);')
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 ]);
 
 $tmplList->addRow(_('Linked templates'),
 	(new CDiv($linkedTemplateTable))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 $divTabs->addTab('tmplTab', _('Linked templates'), $tmplList);
@@ -402,7 +402,7 @@ $divTabs->addTab('tags-tab', _('Tags'), $tags_view->render());
 if (!$macros) {
 	$macro = ['macro' => '', 'value' => '', 'description' => ''];
 	if ($data['show_inherited_macros']) {
-		$macro['type'] = ZBX_PROPERTY_OWN;
+		$macro['type'] = TRX_PROPERTY_OWN;
 	}
 	$macros[] = $macro;
 }

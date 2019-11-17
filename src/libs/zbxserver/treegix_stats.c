@@ -26,7 +26,7 @@ void	zbx_get_treegix_stats(struct zbx_json *json)
 	zbx_config_cache_info_t	count_stats;
 	zbx_vmware_stats_t	vmware_stats;
 	zbx_wcache_info_t	wcache_info;
-	zbx_process_info_t	process_stats[ZBX_PROCESS_TYPE_COUNT];
+	zbx_process_info_t	process_stats[TRX_PROCESS_TYPE_COUNT];
 	int			proc_type;
 
 	DCget_count_stats_all(&count_stats);
@@ -56,11 +56,11 @@ void	zbx_get_treegix_stats(struct zbx_json *json)
 
 	/* treegix[rcache,<cache>,<mode>] */
 	zbx_json_addobject(json, "rcache");
-	zbx_json_adduint64(json, "total", *(zbx_uint64_t *)DCconfig_get_stats(ZBX_CONFSTATS_BUFFER_TOTAL));
-	zbx_json_adduint64(json, "free", *(zbx_uint64_t *)DCconfig_get_stats(ZBX_CONFSTATS_BUFFER_FREE));
-	zbx_json_addfloat(json, "pfree", *(double *)DCconfig_get_stats(ZBX_CONFSTATS_BUFFER_PFREE));
-	zbx_json_adduint64(json, "used", *(zbx_uint64_t *)DCconfig_get_stats(ZBX_CONFSTATS_BUFFER_USED));
-	zbx_json_addfloat(json, "pused", *(double *)DCconfig_get_stats(ZBX_CONFSTATS_BUFFER_PUSED));
+	zbx_json_adduint64(json, "total", *(zbx_uint64_t *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_TOTAL));
+	zbx_json_adduint64(json, "free", *(zbx_uint64_t *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_FREE));
+	zbx_json_addfloat(json, "pfree", *(double *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_PFREE));
+	zbx_json_adduint64(json, "used", *(zbx_uint64_t *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_USED));
+	zbx_json_addfloat(json, "pused", *(double *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_PUSED));
 	zbx_json_close(json);
 
 	/* treegix[wcache,<cache>,<mode>] */
@@ -95,7 +95,7 @@ void	zbx_get_treegix_stats(struct zbx_json *json)
 			wcache_info.index_total);
 	zbx_json_close(json);
 
-	if (0 != (program_type & ZBX_PROGRAM_TYPE_SERVER))
+	if (0 != (program_type & TRX_PROGRAM_TYPE_SERVER))
 	{
 		zbx_json_addobject(json, "trend");
 		zbx_json_addfloat(json, "pfree", 100 * (double)wcache_info.trend_free / wcache_info.trend_total);
@@ -127,7 +127,7 @@ void	zbx_get_treegix_stats(struct zbx_json *json)
 
 	if (SUCCEED == zbx_get_all_process_stats(process_stats))
 	{
-		for (proc_type = 0; proc_type < ZBX_PROCESS_TYPE_COUNT; proc_type++)
+		for (proc_type = 0; proc_type < TRX_PROCESS_TYPE_COUNT; proc_type++)
 		{
 			if (0 == process_stats[proc_type].count)
 				continue;

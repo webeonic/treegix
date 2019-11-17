@@ -6,16 +6,16 @@
 
 static int	check_procstate(struct procentry64 *procentry, int zbx_proc_stat)
 {
-	if (ZBX_PROC_STAT_ALL == zbx_proc_stat)
+	if (TRX_PROC_STAT_ALL == zbx_proc_stat)
 		return SUCCEED;
 
 	switch (zbx_proc_stat)
 	{
-		case ZBX_PROC_STAT_RUN:
+		case TRX_PROC_STAT_RUN:
 			return SACTIVE == procentry->pi_state && 0 != procentry->pi_cpu ? SUCCEED : FAIL;
-		case ZBX_PROC_STAT_SLEEP:
+		case TRX_PROC_STAT_SLEEP:
 			return SACTIVE == procentry->pi_state && 0 == procentry->pi_cpu ? SUCCEED : FAIL;
-		case ZBX_PROC_STAT_ZOMB:
+		case TRX_PROC_STAT_ZOMB:
 			return SZOMB == procentry->pi_state ? SUCCEED : FAIL;
 	}
 
@@ -49,23 +49,23 @@ static int	check_procargs(struct procentry64 *procentry, const char *proccomm)
 
 int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-#define ZBX_VSIZE	0
-#define ZBX_RSS		1
-#define ZBX_PMEM	2
-#define ZBX_SIZE	3
-#define ZBX_DSIZE	4
-#define ZBX_TSIZE	5
-#define ZBX_SDSIZE	6
-#define ZBX_DRSS	7
-#define ZBX_TRSS	8
+#define TRX_VSIZE	0
+#define TRX_RSS		1
+#define TRX_PMEM	2
+#define TRX_SIZE	3
+#define TRX_DSIZE	4
+#define TRX_TSIZE	5
+#define TRX_SDSIZE	6
+#define TRX_DRSS	7
+#define TRX_TRSS	8
 
 /* The pi_???_l2psize fields are described as: log2 of a proc's ??? pg sz */
 /* Basically it's bits per page, so define 12 bits (4kb) for earlier AIX  */
 /* versions that do not support those fields.                             */
 #ifdef _AIX61
-#	define ZBX_L2PSIZE(field) 	field
+#	define TRX_L2PSIZE(field) 	field
 #else
-#	define ZBX_L2PSIZE(field)	12
+#	define TRX_L2PSIZE(field)	12
 #endif
 
 	char			*param, *procname, *proccomm, *mem_type = NULL;
@@ -96,13 +96,13 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "sum"))
-		do_task = ZBX_DO_SUM;
+		do_task = TRX_DO_SUM;
 	else if (0 == strcmp(param, "avg"))
-		do_task = ZBX_DO_AVG;
+		do_task = TRX_DO_AVG;
 	else if (0 == strcmp(param, "max"))
-		do_task = ZBX_DO_MAX;
+		do_task = TRX_DO_MAX;
 	else if (0 == strcmp(param, "min"))
-		do_task = ZBX_DO_MIN;
+		do_task = TRX_DO_MIN;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -114,39 +114,39 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == mem_type || '\0' == *mem_type || 0 == strcmp(mem_type, "vsize"))
 	{
-		mem_type_code = ZBX_VSIZE;		/* virtual memory size */
+		mem_type_code = TRX_VSIZE;		/* virtual memory size */
 	}
 	else if (0 == strcmp(mem_type, "rss"))
 	{
-		mem_type_code = ZBX_RSS;		/* resident set size */
+		mem_type_code = TRX_RSS;		/* resident set size */
 	}
 	else if (0 == strcmp(mem_type, "pmem"))
 	{
-		mem_type_code = ZBX_PMEM;		/* percentage of real memory used by process */
+		mem_type_code = TRX_PMEM;		/* percentage of real memory used by process */
 	}
 	else if (0 == strcmp(mem_type, "size"))
 	{
-		mem_type_code = ZBX_SIZE;		/* size of process (code + data) */
+		mem_type_code = TRX_SIZE;		/* size of process (code + data) */
 	}
 	else if (0 == strcmp(mem_type, "dsize"))
 	{
-		mem_type_code = ZBX_DSIZE;		/* data size */
+		mem_type_code = TRX_DSIZE;		/* data size */
 	}
 	else if (0 == strcmp(mem_type, "tsize"))
 	{
-		mem_type_code = ZBX_TSIZE;		/* text size */
+		mem_type_code = TRX_TSIZE;		/* text size */
 	}
 	else if (0 == strcmp(mem_type, "sdsize"))
 	{
-		mem_type_code = ZBX_SDSIZE;		/* data size from shared library */
+		mem_type_code = TRX_SDSIZE;		/* data size from shared library */
 	}
 	else if (0 == strcmp(mem_type, "drss"))
 	{
-		mem_type_code = ZBX_DRSS;		/* data resident set size */
+		mem_type_code = TRX_DRSS;		/* data resident set size */
 	}
 	else if (0 == strcmp(mem_type, "trss"))
 	{
-		mem_type_code = ZBX_TRSS;		/* text resident set size */
+		mem_type_code = TRX_TRSS;		/* text resident set size */
 	}
 	else
 	{
@@ -170,48 +170,48 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		switch (mem_type_code)
 		{
-			case ZBX_VSIZE:
+			case TRX_VSIZE:
 				/* historically default proc.mem[] on AIX */
 				byte_value = (zbx_uint64_t)procentry.pi_size << 12;	/* number of pages to bytes */
 				break;
-			case ZBX_RSS:
+			case TRX_RSS:
 				/* try to be compatible with "ps -o rssize" */
-				byte_value = ((zbx_uint64_t)procentry.pi_drss << ZBX_L2PSIZE(procentry.pi_data_l2psize)) +
-						((zbx_uint64_t)procentry.pi_trss << ZBX_L2PSIZE(procentry.pi_text_l2psize));
+				byte_value = ((zbx_uint64_t)procentry.pi_drss << TRX_L2PSIZE(procentry.pi_data_l2psize)) +
+						((zbx_uint64_t)procentry.pi_trss << TRX_L2PSIZE(procentry.pi_text_l2psize));
 				break;
-			case ZBX_PMEM:
+			case TRX_PMEM:
 				/* try to be compatible with "ps -o pmem" */
 				pct_value = procentry.pi_prm;
 				break;
-			case ZBX_SIZE:
+			case TRX_SIZE:
 				/* try to be compatible with "ps gvw" SIZE column */
-				byte_value = (zbx_uint64_t)procentry.pi_dvm << ZBX_L2PSIZE(procentry.pi_data_l2psize);
+				byte_value = (zbx_uint64_t)procentry.pi_dvm << TRX_L2PSIZE(procentry.pi_data_l2psize);
 				break;
-			case ZBX_DSIZE:
+			case TRX_DSIZE:
 				byte_value = procentry.pi_dsize;
 				break;
-			case ZBX_TSIZE:
+			case TRX_TSIZE:
 				/* try to be compatible with "ps gvw" TSIZ column */
 				byte_value = procentry.pi_tsize;
 				break;
-			case ZBX_SDSIZE:
+			case TRX_SDSIZE:
 				byte_value = procentry.pi_sdsize;
 				break;
-			case ZBX_DRSS:
-				byte_value = (zbx_uint64_t)procentry.pi_drss << ZBX_L2PSIZE(procentry.pi_data_l2psize);
+			case TRX_DRSS:
+				byte_value = (zbx_uint64_t)procentry.pi_drss << TRX_L2PSIZE(procentry.pi_data_l2psize);
 				break;
-			case ZBX_TRSS:
-				byte_value = (zbx_uint64_t)procentry.pi_trss << ZBX_L2PSIZE(procentry.pi_text_l2psize);
+			case TRX_TRSS:
+				byte_value = (zbx_uint64_t)procentry.pi_trss << TRX_L2PSIZE(procentry.pi_text_l2psize);
 				break;
 		}
 
-		if (ZBX_PMEM != mem_type_code)
+		if (TRX_PMEM != mem_type_code)
 		{
 			if (0 != proccount++)
 			{
-				if (ZBX_DO_MAX == do_task)
+				if (TRX_DO_MAX == do_task)
 					mem_size = MAX(mem_size, byte_value);
-				else if (ZBX_DO_MIN == do_task)
+				else if (TRX_DO_MIN == do_task)
 					mem_size = MIN(mem_size, byte_value);
 				else
 					mem_size += byte_value;
@@ -223,9 +223,9 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != proccount++)
 			{
-				if (ZBX_DO_MAX == do_task)
+				if (TRX_DO_MAX == do_task)
 					pct_size = MAX(pct_size, pct_value);
-				else if (ZBX_DO_MIN == do_task)
+				else if (TRX_DO_MIN == do_task)
 					pct_size = MIN(pct_size, pct_value);
 				else
 					pct_size += pct_value;
@@ -235,16 +235,16 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		}
 	}
 out:
-	if (ZBX_PMEM != mem_type_code)
+	if (TRX_PMEM != mem_type_code)
 	{
-		if (ZBX_DO_AVG == do_task)
+		if (TRX_DO_AVG == do_task)
 			SET_DBL_RESULT(result, 0 == proccount ? 0.0 : (double)mem_size / (double)proccount);
 		else
 			SET_UI64_RESULT(result, mem_size);
 	}
 	else
 	{
-		if (ZBX_DO_AVG == do_task)
+		if (TRX_DO_AVG == do_task)
 			SET_DBL_RESULT(result, 0 == proccount ? 0.0 : pct_size / (double)proccount);
 		else
 			SET_DBL_RESULT(result, pct_size);
@@ -252,17 +252,17 @@ out:
 
 	return SYSINFO_RET_OK;
 
-#undef ZBX_L2PSIZE
+#undef TRX_L2PSIZE
 
-#undef ZBX_SIZE
-#undef ZBX_RSS
-#undef ZBX_VSIZE
-#undef ZBX_PMEM
-#undef ZBX_TSIZE
-#undef ZBX_DSIZE
-#undef ZBX_SDSIZE
-#undef ZBX_DRSS
-#undef ZBX_TRSS
+#undef TRX_SIZE
+#undef TRX_RSS
+#undef TRX_VSIZE
+#undef TRX_PMEM
+#undef TRX_TSIZE
+#undef TRX_DSIZE
+#undef TRX_SDSIZE
+#undef TRX_DRSS
+#undef TRX_TRSS
 }
 
 int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
@@ -293,13 +293,13 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = ZBX_PROC_STAT_ALL;
+		zbx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = ZBX_PROC_STAT_RUN;
+		zbx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = ZBX_PROC_STAT_SLEEP;
+		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = ZBX_PROC_STAT_ZOMB;
+		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));

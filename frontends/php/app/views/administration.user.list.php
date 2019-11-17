@@ -16,7 +16,7 @@ $widget = (new CWidget())
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('User group'), 'filter_usrgrpid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					new CComboBox('filter_usrgrpid', $data['filter_usrgrpid'], 'submit()', $data['user_groups'])
 				])
 			),
@@ -32,14 +32,14 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Alias'),
 				(new CTextBox('filter_alias', $data['filter']['alias']))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			),
 			(new CFormList())->addRow(_('Name'),
-				(new CTextBox('filter_name', $data['filter']['name']))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+				(new CTextBox('filter_name', $data['filter']['name']))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 			),
 			(new CFormList())->addRow(_('Surname'),
-				(new CTextBox('filter_surname', $data['filter']['surname']))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+				(new CTextBox('filter_surname', $data['filter']['surname']))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 			),
 			(new CFormList())->addRow(_('User type'),
 				(new CRadioButtonList('filter_type', (int) $data['filter']['type']))
@@ -62,7 +62,7 @@ $table = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_users'))->onClick("checkAll('".$form->getName()."', 'all_users', 'userids');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Alias'), 'alias', $data['sort'], $data['sortorder']),
 		make_sorting_header(_x('Name', 'user first name'), 'name', $data['sort'], $data['sortorder']),
 		make_sorting_header(_('Surname'), 'surname', $data['sort'], $data['sortorder']),
@@ -83,27 +83,27 @@ foreach ($data['users'] as $user) {
 	if ($session['lastaccess']) {
 		$autologout = timeUnitToSeconds($user['autologout']);
 
-		$online_time = ($autologout == 0 || ZBX_USER_ONLINE_TIME < $autologout)
-			? ZBX_USER_ONLINE_TIME
+		$online_time = ($autologout == 0 || TRX_USER_ONLINE_TIME < $autologout)
+			? TRX_USER_ONLINE_TIME
 			: $autologout;
 
-		$online = ($session['status'] == ZBX_SESSION_ACTIVE && $user['users_status'] == GROUP_STATUS_ENABLED
+		$online = ($session['status'] == TRX_SESSION_ACTIVE && $user['users_status'] == GROUP_STATUS_ENABLED
 				&& ($session['lastaccess'] + $online_time) >= time())
 			? (new CCol(_('Yes').' ('.zbx_date2str(DATE_TIME_FORMAT_SECONDS, $session['lastaccess']).')'))
-				->addClass(ZBX_STYLE_GREEN)
+				->addClass(TRX_STYLE_GREEN)
 			: (new CCol(_('No').' ('.zbx_date2str(DATE_TIME_FORMAT_SECONDS, $session['lastaccess']).')'))
-				->addClass(ZBX_STYLE_RED);
+				->addClass(TRX_STYLE_RED);
 	}
 	else {
-		$online = (new CCol(_('No')))->addClass(ZBX_STYLE_RED);
+		$online = (new CCol(_('No')))->addClass(TRX_STYLE_RED);
 	}
 
-	$blocked = ($user['attempt_failed'] >= ZBX_LOGIN_ATTEMPTS)
+	$blocked = ($user['attempt_failed'] >= TRX_LOGIN_ATTEMPTS)
 		? (new CLink(_('Blocked'), 'treegix.php?action=user.unblock&userids[]='.$userid))
-			->addClass(ZBX_STYLE_LINK_ACTION)
-			->addClass(ZBX_STYLE_RED)
+			->addClass(TRX_STYLE_LINK_ACTION)
+			->addClass(TRX_STYLE_RED)
 			->addSID()
-		: (new CSpan(_('Ok')))->addClass(ZBX_STYLE_GREEN);
+		: (new CSpan(_('Ok')))->addClass(TRX_STYLE_GREEN);
 
 	order_result($user['usrgrps'], 'name');
 
@@ -129,25 +129,25 @@ foreach ($data['users'] as $user) {
 			$user_group['name'],
 			$url->setArgument('usrgrpid', $user_group['usrgrpid'])
 		))
-			->addClass(ZBX_STYLE_LINK_ALT)
+			->addClass(TRX_STYLE_LINK_ALT)
 			->addClass($user_group['gui_access'] == GROUP_GUI_ACCESS_DISABLED
 					|| $user_group['users_status'] == GROUP_STATUS_DISABLED
-				? ZBX_STYLE_RED
-				: ZBX_STYLE_GREEN);
+				? TRX_STYLE_RED
+				: TRX_STYLE_GREEN);
 	}
 
 	// GUI Access style.
 	switch ($user['gui_access']) {
 		case GROUP_GUI_ACCESS_INTERNAL:
-			$gui_access_style = ZBX_STYLE_ORANGE;
+			$gui_access_style = TRX_STYLE_ORANGE;
 			break;
 
 		case GROUP_GUI_ACCESS_DISABLED:
-			$gui_access_style = ZBX_STYLE_GREY;
+			$gui_access_style = TRX_STYLE_GREY;
 			break;
 
 		default:
-			$gui_access_style = ZBX_STYLE_GREEN;
+			$gui_access_style = TRX_STYLE_GREEN;
 	}
 
 	$alias = new CLink($user['alias'], (new CUrl('treegix.php'))
@@ -158,7 +158,7 @@ foreach ($data['users'] as $user) {
 	// Append user to table.
 	$table->addRow([
 		new CCheckBox('userids['.$userid.']', $userid),
-		(new CCol($alias))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol($alias))->addClass(TRX_STYLE_NOWRAP),
 		$user['name'],
 		$user['surname'],
 		user_type2str($user['type']),
@@ -167,11 +167,11 @@ foreach ($data['users'] as $user) {
 		$blocked,
 		(new CSpan(user_auth_type2str($user['gui_access'])))->addClass($gui_access_style),
 		($user['debug_mode'] == GROUP_DEBUG_MODE_ENABLED)
-			? (new CSpan(_('Enabled')))->addClass(ZBX_STYLE_ORANGE)
-			: (new CSpan(_('Disabled')))->addClass(ZBX_STYLE_GREEN),
+			? (new CSpan(_('Enabled')))->addClass(TRX_STYLE_ORANGE)
+			: (new CSpan(_('Disabled')))->addClass(TRX_STYLE_GREEN),
 		($user['users_status'] == GROUP_STATUS_DISABLED)
-			? (new CSpan(_('Disabled')))->addClass(ZBX_STYLE_RED)
-			: (new CSpan(_('Enabled')))->addClass(ZBX_STYLE_GREEN)
+			? (new CSpan(_('Disabled')))->addClass(TRX_STYLE_RED)
+			: (new CSpan(_('Enabled')))->addClass(TRX_STYLE_GREEN)
 	]);
 }
 

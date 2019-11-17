@@ -65,13 +65,13 @@ class C32ImportConverter extends CConverter {
 			if ($item['data_type'] != ITEM_DATA_TYPE_DECIMAL) {
 				switch ($item['data_type']) {
 					case ITEM_DATA_TYPE_OCTAL:
-						$type = ZBX_PREPROC_OCT2DEC;
+						$type = TRX_PREPROC_OCT2DEC;
 						break;
 					case ITEM_DATA_TYPE_HEXADECIMAL:
-						$type = ZBX_PREPROC_HEX2DEC;
+						$type = TRX_PREPROC_HEX2DEC;
 						break;
 					case ITEM_DATA_TYPE_BOOLEAN:
-						$type = ZBX_PREPROC_BOOL2DEC;
+						$type = TRX_PREPROC_BOOL2DEC;
 						break;
 				}
 
@@ -79,14 +79,14 @@ class C32ImportConverter extends CConverter {
 			}
 
 			if ($item['delta'] == 1) {
-				$item['preprocessing'][] = ['type' => (string) ZBX_PREPROC_DELTA_SPEED, 'params' => ''];
+				$item['preprocessing'][] = ['type' => (string) TRX_PREPROC_DELTA_SPEED, 'params' => ''];
 			}
 			elseif ($item['delta'] == 2) {
-				$item['preprocessing'][] = ['type' => (string) ZBX_PREPROC_DELTA_VALUE, 'params' => ''];
+				$item['preprocessing'][] = ['type' => (string) TRX_PREPROC_DELTA_VALUE, 'params' => ''];
 			}
 
 			if ($item['multiplier'] == 1) {
-				$item['preprocessing'][] = ['type' => (string) ZBX_PREPROC_MULTIPLIER, 'params' => $item['formula']];
+				$item['preprocessing'][] = ['type' => (string) TRX_PREPROC_MULTIPLIER, 'params' => $item['formula']];
 			}
 
 			unset($item['data_type'], $item['delta'], $item['multiplier'], $item['formula']);
@@ -112,7 +112,7 @@ class C32ImportConverter extends CConverter {
 				$item['trends'] .= 'd';
 			}
 
-			$item['jmx_endpoint'] = ($item['type'] == ITEM_TYPE_JMX) ? ZBX_DEFAULT_JMX_ENDPOINT : '';
+			$item['jmx_endpoint'] = ($item['type'] == ITEM_TYPE_JMX) ? TRX_DEFAULT_JMX_ENDPOINT : '';
 
 			$item = $item + $default_fields;
 		}
@@ -134,7 +134,7 @@ class C32ImportConverter extends CConverter {
 				'master_item_prototype'	=> []
 			]);
 			$discovery_rule['jmx_endpoint'] = ($discovery_rule['type'] == ITEM_TYPE_JMX)
-				? ZBX_DEFAULT_JMX_ENDPOINT
+				? TRX_DEFAULT_JMX_ENDPOINT
 				: '';
 
 			// Merge delay_flex into delay separated by a semicolon.

@@ -16,10 +16,10 @@ typedef struct
 	PDH_HQUERY		pdh_query;
 	time_t			nextcheck;	/* refresh time of not supported counters */
 }
-ZBX_PERF_STAT_DATA;
+TRX_PERF_STAT_DATA;
 
-static ZBX_PERF_STAT_DATA	ppsd;
-static zbx_mutex_t		perfstat_access = ZBX_MUTEX_NULL;
+static TRX_PERF_STAT_DATA	ppsd;
+static zbx_mutex_t		perfstat_access = TRX_MUTEX_NULL;
 
 #define LOCK_PERFCOUNTERS	zbx_mutex_lock(perfstat_access)
 #define UNLOCK_PERFCOUNTERS	zbx_mutex_unlock(perfstat_access)
@@ -265,10 +265,10 @@ int	init_perf_collector(zbx_threadedness_t threadedness, char **error)
 
 	switch (threadedness)
 	{
-		case ZBX_SINGLE_THREADED:
+		case TRX_SINGLE_THREADED:
 			break;
-		case ZBX_MULTI_THREADED:
-			if (SUCCEED != zbx_mutex_create(&perfstat_access, ZBX_MUTEX_PERFSTAT, error))
+		case TRX_MULTI_THREADED:
+			if (SUCCEED != zbx_mutex_create(&perfstat_access, TRX_MUTEX_PERFSTAT, error))
 				goto out;
 			break;
 		default:

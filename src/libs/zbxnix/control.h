@@ -5,9 +5,9 @@
 
 #include "common.h"
 
-#define ZBX_RTC_LOG_SCOPE_FLAG	0x80
-#define ZBX_RTC_LOG_SCOPE_PROC	0
-#define ZBX_RTC_LOG_SCOPE_PID	1
+#define TRX_RTC_LOG_SCOPE_FLAG	0x80
+#define TRX_RTC_LOG_SCOPE_PROC	0
+#define TRX_RTC_LOG_SCOPE_PID	1
 
 int	parse_rtc_options(const char *opt, unsigned char program_type, int *message);
 

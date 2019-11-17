@@ -79,9 +79,9 @@ foreach ($titles as $key => $title) {
 
 	$rulesTable->addRow([
 		$title,
-		(new CCol($cbExist))->addClass(ZBX_STYLE_CENTER),
-		(new CCol($cbMissed))->addClass(ZBX_STYLE_CENTER),
-		(new CCol($cbDeleted))->addClass(ZBX_STYLE_CENTER)
+		(new CCol($cbExist))->addClass(TRX_STYLE_CENTER),
+		(new CCol($cbMissed))->addClass(TRX_STYLE_CENTER),
+		(new CCol($cbDeleted))->addClass(TRX_STYLE_CENTER)
 	]);
 }
 
@@ -89,7 +89,7 @@ foreach ($titles as $key => $title) {
 $form_list = (new CFormList())
 	->addRow((new CLabel(_('Import file'), 'import_file'))->setAsteriskMark(),
 		(new CFile('import_file'))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	)
@@ -105,7 +105,7 @@ $tab_view->setFooter(makeFormFooter(
 ));
 
 $form = (new CForm('post', null, 'multipart/form-data'))
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('backurl', $data['backurl'])
 	->addItem($tab_view);
 

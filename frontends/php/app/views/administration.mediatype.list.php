@@ -21,7 +21,7 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			),
 			(new CFormList())->addRow(_('Status'),
@@ -44,7 +44,7 @@ $mediaTypeTable = (new CTableInfo())
 		(new CColHeader(
 			(new CCheckBox('all_media_types'))
 				->onClick("checkAll('".$mediaTypeForm->getName()."', 'all_media_types', 'mediatypeids');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder']),
 		make_sorting_header(_('Type'), 'type', $data['sort'], $data['sortorder']),
 		_('Status'),
@@ -99,16 +99,16 @@ foreach ($data['mediatypes'] as $mediaType) {
 
 	$status = (MEDIA_TYPE_STATUS_ACTIVE == $mediaType['status'])
 		? (new CLink(_('Enabled'), $statusLink))
-			->addClass(ZBX_STYLE_LINK_ACTION)
-			->addClass(ZBX_STYLE_GREEN)
+			->addClass(TRX_STYLE_LINK_ACTION)
+			->addClass(TRX_STYLE_GREEN)
 			->addSID()
 		: (new CLink(_('Disabled'), $statusLink))
-			->addClass(ZBX_STYLE_LINK_ACTION)
-			->addClass(ZBX_STYLE_RED)
+			->addClass(TRX_STYLE_LINK_ACTION)
+			->addClass(TRX_STYLE_RED)
 			->addSID();
 
 	$test_link = (new CButton('mediatypetest_edit', _('Test')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->setEnabled(MEDIA_TYPE_STATUS_ACTIVE == $mediaType['status'])
 		->onClick('return PopUp("popup.mediatypetest.edit",'.CJs::encodeJson([
 			'mediatypeid' => $mediaType['mediatypeid']
@@ -119,7 +119,7 @@ foreach ($data['mediatypes'] as $mediaType) {
 	// append row
 	$mediaTypeTable->addRow([
 		new CCheckBox('mediatypeids['.$mediaType['mediatypeid'].']', $mediaType['mediatypeid']),
-		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol($name))->addClass(TRX_STYLE_NOWRAP),
 		media_type2str($mediaType['typeid']),
 		$status,
 		$actionColumn,

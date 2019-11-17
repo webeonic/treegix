@@ -14,7 +14,7 @@ if ($data['hostid'] != 0) {
 // Create form.
 $form = (new CForm())
 	->setName('triggersForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('hostid', $data['hostid'])
 	->addVar('action', $data['action']);
 
@@ -44,8 +44,8 @@ $trigger_form_list = (new CFormList('trigger-form-list'))
 			->setChecked(array_key_exists('manual_close', $data['visible'])),
 		(new CDiv(
 			(new CRadioButtonList('manual_close', (int) $data['manual_close']))
-				->addValue(_('No'), ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED)
-				->addValue(_('Yes'), ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED)
+				->addValue(_('No'), TRX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED)
+				->addValue(_('Yes'), TRX_TRIGGER_MANUAL_CLOSE_ALLOWED)
 				->setModern(true)
 		))->setId('manual-close-div')
 	);
@@ -59,10 +59,10 @@ $tags_form_list = (new CFormList('tags-form-list'))
 			->setLabel(_('Tags'))
 			->setChecked(array_key_exists('tags', $data['visible'])),
 		(new CDiv([
-			(new CRadioButtonList('mass_update_tags', ZBX_ACTION_ADD))
-				->addValue(_('Add'), ZBX_ACTION_ADD)
-				->addValue(_('Replace'), ZBX_ACTION_REPLACE)
-				->addValue(_('Remove'), ZBX_ACTION_REMOVE)
+			(new CRadioButtonList('mass_update_tags', TRX_ACTION_ADD))
+				->addValue(_('Add'), TRX_ACTION_ADD)
+				->addValue(_('Replace'), TRX_ACTION_REPLACE)
+				->addValue(_('Remove'), TRX_ACTION_REMOVE)
 				->setModern(true)
 				->addStyle('margin-bottom: 10px;'),
 			renderTagTable($data['tags'])
@@ -87,7 +87,7 @@ foreach ($data['dependencies'] as $dependency) {
 		implode(', ', zbx_objectValues($dependency['hosts'], 'name')).NAME_DELIMITER.$dependency['description']
 	);
 
-	if ($dependency['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) {
+	if ($dependency['flags'] == TRX_FLAG_DISCOVERY_NORMAL) {
 		$description = (new CLink($dependency_description,
 			'triggers.php?form=update&triggerid='.$dependency['triggerid']
 		))->setAttribute('target', '_blank');
@@ -102,9 +102,9 @@ foreach ($data['dependencies'] as $dependency) {
 			(new CCol(
 				(new CButton('remove', _('Remove')))
 					->onClick('javascript: removeDependency(\''.$dependency['triggerid'].'\');')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->removeId()
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))->setId('dependency_'.$dependency['triggerid'])
 	);
 }
@@ -130,10 +130,10 @@ $dependencies_form_list->addRow(
 					'noempty' => '1'
 				]).', null, this);'
 			)
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 	]))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 		->setId('dependencies-div')
 );
 

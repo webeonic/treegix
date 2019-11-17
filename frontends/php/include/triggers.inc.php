@@ -12,17 +12,17 @@
 function getSeverityFlhStyle($severity) {
 	switch ($severity) {
 		case TRIGGER_SEVERITY_DISASTER:
-			return ZBX_STYLE_FLH_DISASTER_BG;
+			return TRX_STYLE_FLH_DISASTER_BG;
 		case TRIGGER_SEVERITY_HIGH:
-			return ZBX_STYLE_FLH_HIGH_BG;
+			return TRX_STYLE_FLH_HIGH_BG;
 		case TRIGGER_SEVERITY_AVERAGE:
-			return ZBX_STYLE_FLH_AVERAGE_BG;
+			return TRX_STYLE_FLH_AVERAGE_BG;
 		case TRIGGER_SEVERITY_WARNING:
-			return ZBX_STYLE_FLH_WARNING_BG;
+			return TRX_STYLE_FLH_WARNING_BG;
 		case TRIGGER_SEVERITY_INFORMATION:
-			return ZBX_STYLE_FLH_INFO_BG;
+			return TRX_STYLE_FLH_INFO_BG;
 		case TRIGGER_SEVERITY_NOT_CLASSIFIED:
-			return ZBX_STYLE_FLH_NA_BG;
+			return TRX_STYLE_FLH_NA_BG;
 		default:
 			return null;
 	}
@@ -38,17 +38,17 @@ function getSeverityFlhStyle($severity) {
 function getSeverityStatusStyle($severity) {
 	switch ($severity) {
 		case TRIGGER_SEVERITY_DISASTER:
-			return ZBX_STYLE_STATUS_DISASTER_BG;
+			return TRX_STYLE_STATUS_DISASTER_BG;
 		case TRIGGER_SEVERITY_HIGH:
-			return ZBX_STYLE_STATUS_HIGH_BG;
+			return TRX_STYLE_STATUS_HIGH_BG;
 		case TRIGGER_SEVERITY_AVERAGE:
-			return ZBX_STYLE_STATUS_AVERAGE_BG;
+			return TRX_STYLE_STATUS_AVERAGE_BG;
 		case TRIGGER_SEVERITY_WARNING:
-			return ZBX_STYLE_STATUS_WARNING_BG;
+			return TRX_STYLE_STATUS_WARNING_BG;
 		case TRIGGER_SEVERITY_INFORMATION:
-			return ZBX_STYLE_STATUS_INFO_BG;
+			return TRX_STYLE_STATUS_INFO_BG;
 		case TRIGGER_SEVERITY_NOT_CLASSIFIED:
-			return ZBX_STYLE_STATUS_NA_BG;
+			return TRX_STYLE_STATUS_NA_BG;
 		default:
 			return null;
 	}
@@ -56,22 +56,22 @@ function getSeverityStatusStyle($severity) {
 
 function getSeverityStyle($severity, $type = true) {
 	if (!$type) {
-		return ZBX_STYLE_NORMAL_BG;
+		return TRX_STYLE_NORMAL_BG;
 	}
 
 	switch ($severity) {
 		case TRIGGER_SEVERITY_DISASTER:
-			return ZBX_STYLE_DISASTER_BG;
+			return TRX_STYLE_DISASTER_BG;
 		case TRIGGER_SEVERITY_HIGH:
-			return ZBX_STYLE_HIGH_BG;
+			return TRX_STYLE_HIGH_BG;
 		case TRIGGER_SEVERITY_AVERAGE:
-			return ZBX_STYLE_AVERAGE_BG;
+			return TRX_STYLE_AVERAGE_BG;
 		case TRIGGER_SEVERITY_WARNING:
-			return ZBX_STYLE_WARNING_BG;
+			return TRX_STYLE_WARNING_BG;
 		case TRIGGER_SEVERITY_INFORMATION:
-			return ZBX_STYLE_INFO_BG;
+			return TRX_STYLE_INFO_BG;
 		case TRIGGER_SEVERITY_NOT_CLASSIFIED:
-			return ZBX_STYLE_NA_BG;
+			return TRX_STYLE_NA_BG;
 		default:
 			return null;
 	}
@@ -178,19 +178,19 @@ function addTriggerValueStyle($object, $triggerValue, $triggerLastChange, $isAck
 
 	// Color class for text and blinking depends on trigger value and whether event is acknowledged.
 	if ($triggerValue == TRIGGER_VALUE_TRUE && !$isAcknowledged) {
-		$color_class = ZBX_STYLE_PROBLEM_UNACK_FG;
+		$color_class = TRX_STYLE_PROBLEM_UNACK_FG;
 		$blinks = $config['problem_unack_style'];
 	}
 	elseif ($triggerValue == TRIGGER_VALUE_TRUE && $isAcknowledged) {
-		$color_class = ZBX_STYLE_PROBLEM_ACK_FG;
+		$color_class = TRX_STYLE_PROBLEM_ACK_FG;
 		$blinks = $config['problem_ack_style'];
 	}
 	elseif ($triggerValue == TRIGGER_VALUE_FALSE && !$isAcknowledged) {
-		$color_class = ZBX_STYLE_OK_UNACK_FG;
+		$color_class = TRX_STYLE_OK_UNACK_FG;
 		$blinks = $config['ok_unack_style'];
 	}
 	elseif ($triggerValue == TRIGGER_VALUE_FALSE && $isAcknowledged) {
-		$color_class = ZBX_STYLE_OK_ACK_FG;
+		$color_class = TRX_STYLE_OK_ACK_FG;
 		$blinks = $config['ok_ack_style'];
 	}
 
@@ -207,7 +207,7 @@ function addTriggerValueStyle($object, $triggerValue, $triggerLastChange, $isAck
 		}
 	}
 	else {
-		$object->addClass(ZBX_STYLE_GREY);
+		$object->addClass(TRX_STYLE_GREY);
 	}
 }
 
@@ -382,7 +382,7 @@ function copyTriggersToHosts($src_triggerids, $dst_hostids, $src_hostid = null) 
 				$dstHost['host']
 			);
 
-			if ($srcTrigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+			if ($srcTrigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 				$srcTrigger['recovery_expression'] = triggerExpressionReplaceHost($srcTrigger['recovery_expression'],
 					$host, $dstHost['host']
 				);
@@ -658,7 +658,7 @@ function getTriggersOverviewData(array $groupids, $application, array $host_opti
 		array $problem_options = []) {
 	$problem_options += [
 		'min_severity' => TRIGGER_SEVERITY_NOT_CLASSIFIED,
-		'show_suppressed' => ZBX_PROBLEM_SUPPRESSED_FALSE,
+		'show_suppressed' => TRX_PROBLEM_SUPPRESSED_FALSE,
 		'time_from' => null
 	];
 
@@ -742,7 +742,7 @@ function getTriggersWithActualSeverity(array $trigger_options, array $problem_op
 		$problems = API::Problem()->get([
 			'output' => ['eventid', 'acknowledged', 'objectid', 'severity', 'r_eventid'],
 			'objectids' => array_keys($triggers),
-			'suppressed' => ($problem_options['show_suppressed'] == ZBX_PROBLEM_SUPPRESSED_FALSE) ? false : null,
+			'suppressed' => ($problem_options['show_suppressed'] == TRX_PROBLEM_SUPPRESSED_FALSE) ? false : null,
 			'recent' => $problem_options['show_recent'],
 			'acknowledged' => $problem_options['acknowledged'],
 			'time_from' => $problem_options['time_from']
@@ -903,7 +903,7 @@ function getTriggersOverview(array $hosts, array $triggers, $pageFile, $viewMode
 		// data
 		foreach ($data as $trigger_name => $trigger_data) {
 			foreach ($trigger_data as $trigger_hosts) {
-				$columns = [(new CColHeader($trigger_name))->addClass(ZBX_STYLE_NOWRAP)];
+				$columns = [(new CColHeader($trigger_name))->addClass(TRX_STYLE_NOWRAP)];
 
 				foreach ($host_names as $host_name) {
 					$columns[] = getTriggerOverviewCells(
@@ -933,7 +933,7 @@ function getTriggersOverview(array $hosts, array $triggers, $pageFile, $viewMode
 		foreach ($host_names as $hostId => $host_name) {
 			$name = (new CLinkAction($host_name))->setMenuPopup(CMenuPopupHelper::getHost($hostId));
 
-			$columns = [(new CColHeader($name))->addClass(ZBX_STYLE_NOWRAP)];
+			$columns = [(new CColHeader($name))->addClass(TRX_STYLE_NOWRAP)];
 			foreach ($data as $trigger_data) {
 				foreach ($trigger_data as $trigger_hosts) {
 					$columns[] = getTriggerOverviewCells(
@@ -979,7 +979,7 @@ function getTriggerOverviewCells($trigger, $dependencies, $pageFile, $screenid =
 		}
 
 		if ($trigger['problem']['acknowledged'] == 1) {
-			$ack = (new CSpan())->addClass(ZBX_STYLE_ICON_ACKN);
+			$ack = (new CSpan())->addClass(TRX_STYLE_ICON_ACKN);
 		}
 
 		$desc = array_key_exists($trigger['triggerid'], $dependencies)
@@ -992,7 +992,7 @@ function getTriggerOverviewCells($trigger, $dependencies, $pageFile, $screenid =
 	if ($css !== null) {
 		$column
 			->addClass($css)
-			->addClass(ZBX_STYLE_CURSOR_POINTER);
+			->addClass(TRX_STYLE_CURSOR_POINTER);
 	}
 
 	if ($trigger) {
@@ -1004,7 +1004,7 @@ function getTriggerOverviewCells($trigger, $dependencies, $pageFile, $screenid =
 		if ($config['blink_period'] > 0 && $duration < $config['blink_period']) {
 			$column->addClass('blink');
 			$column->setAttribute('data-time-to-blink', $config['blink_period'] - $duration);
-			$column->setAttribute('data-toggle-class', ZBX_STYLE_BLINK_HIDDEN);
+			$column->setAttribute('data-toggle-class', TRX_STYLE_BLINK_HIDDEN);
 		}
 
 		$column->setMenuPopup(CMenuPopupHelper::getTrigger($trigger['triggerid'], $eventid, $acknowledge));
@@ -1254,14 +1254,14 @@ function make_trigger_details($trigger, $eventid) {
 			: '')
 		]);
 
-	$table->addRow([_('Allow manual close'), ($trigger['manual_close'] == ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED)
-		? (new CCol(_('Yes')))->addClass(ZBX_STYLE_GREEN)
-		: (new CCol(_('No')))->addClass(ZBX_STYLE_RED)
+	$table->addRow([_('Allow manual close'), ($trigger['manual_close'] == TRX_TRIGGER_MANUAL_CLOSE_ALLOWED)
+		? (new CCol(_('Yes')))->addClass(TRX_STYLE_GREEN)
+		: (new CCol(_('No')))->addClass(TRX_STYLE_RED)
 	]);
 
 	$table->addRow([_('Enabled'), ($trigger['status'] == TRIGGER_STATUS_ENABLED)
-		? (new CCol(_('Yes')))->addClass(ZBX_STYLE_GREEN)
-		: (new CCol(_('No')))->addClass(ZBX_STYLE_RED)
+		? (new CCol(_('Yes')))->addClass(TRX_STYLE_GREEN)
+		: (new CCol(_('No')))->addClass(TRX_STYLE_RED)
 	]);
 
 	return $table;
@@ -1857,8 +1857,8 @@ function makeExpression(array $expressionTree, $level = 0, $operator = null) {
 }
 
 function get_item_function_info($expr) {
-	$rule_float = [_('Numeric (float)'), 'preg_match("/^'.ZBX_PREG_NUMBER.'$/", {})'];
-	$rule_int = [_('Numeric (integer)'), 'preg_match("/^'.ZBX_PREG_INT.'$/", {})'];
+	$rule_float = [_('Numeric (float)'), 'preg_match("/^'.TRX_PREG_NUMBER.'$/", {})'];
+	$rule_int = [_('Numeric (integer)'), 'preg_match("/^'.TRX_PREG_INT.'$/", {})'];
 	$rule_0or1 = [_('0 or 1'), IN('0,1')];
 	$rules = [
 		// Every nested array should have two elements: label, validation.
@@ -1958,7 +1958,7 @@ function get_item_function_info($expr) {
 	switch (true) {
 		case ($expression->hasTokenOfType(CTriggerExprParserResult::TOKEN_TYPE_MACRO)):
 			$result = [
-				'type' => T_ZBX_STR,
+				'type' => T_TRX_STR,
 				'value_type' => $rule_0or1[0],
 				'validation' => $rule_0or1[1]
 			];
@@ -1967,7 +1967,7 @@ function get_item_function_info($expr) {
 		case ($expression->hasTokenOfType(CTriggerExprParserResult::TOKEN_TYPE_USER_MACRO)):
 		case ($expression->hasTokenOfType(CTriggerExprParserResult::TOKEN_TYPE_LLD_MACRO)):
 			$result = [
-				'type' => T_ZBX_STR,
+				'type' => T_TRX_STR,
 				'value_type' => $rule_float[0],
 				'validation' => $rule_float[1]
 			];
@@ -2028,7 +2028,7 @@ function get_item_function_info($expr) {
 			}
 
 			$result = [
-				'type' => T_ZBX_STR,
+				'type' => T_TRX_STR,
 				'value_type' => $function[$value_type][0],
 				'validation' => $function[$value_type][1]
 			];
@@ -2119,7 +2119,7 @@ function evalExpressionData($expression, $replaceFunctionMacros) {
 function convert($value) {
 	$value = trim($value);
 
-	if (!preg_match('/(?P<value>[\-+]?([.][0-9]+|[0-9]+[.]?[0-9]*))(?P<mult>['.ZBX_BYTE_SUFFIXES.ZBX_TIME_SUFFIXES.']?)/',
+	if (!preg_match('/(?P<value>[\-+]?([.][0-9]+|[0-9]+[.]?[0-9]*))(?P<mult>['.TRX_BYTE_SUFFIXES.TRX_TIME_SUFFIXES.']?)/',
 			$value, $arr)) {
 		return $value;
 	}
@@ -2127,16 +2127,16 @@ function convert($value) {
 	$value = $arr['value'];
 	switch ($arr['mult']) {
 		case 'T':
-			$value = bcmul($value, bcmul(ZBX_KIBIBYTE, ZBX_GIBIBYTE));
+			$value = bcmul($value, bcmul(TRX_KIBIBYTE, TRX_GIBIBYTE));
 			break;
 		case 'G':
-			$value = bcmul($value, ZBX_GIBIBYTE);
+			$value = bcmul($value, TRX_GIBIBYTE);
 			break;
 		case 'M':
-			$value = bcmul($value, ZBX_MEBIBYTE);
+			$value = bcmul($value, TRX_MEBIBYTE);
 			break;
 		case 'K':
-			$value = bcmul($value, ZBX_KIBIBYTE);
+			$value = bcmul($value, TRX_KIBIBYTE);
 			break;
 		case 'm':
 			$value *= 60;
@@ -2202,11 +2202,11 @@ function triggerIndicator($status, $state = null) {
 function triggerIndicatorStyle($status, $state = null) {
 	if ($status == TRIGGER_STATUS_ENABLED) {
 		return ($state == TRIGGER_STATE_UNKNOWN) ?
-			ZBX_STYLE_GREY :
-			ZBX_STYLE_GREEN;
+			TRX_STYLE_GREY :
+			TRX_STYLE_GREEN;
 	}
 
-	return ZBX_STYLE_RED;
+	return TRX_STYLE_RED;
 }
 
 /**
@@ -2217,7 +2217,7 @@ function triggerIndicatorStyle($status, $state = null) {
  * @param array  $triggers
  * @param string $sortorder
  */
-function orderTriggersByStatus(array &$triggers, $sortorder = ZBX_SORT_UP) {
+function orderTriggersByStatus(array &$triggers, $sortorder = TRX_SORT_UP) {
 	$sort = [];
 
 	foreach ($triggers as $key => $trigger) {
@@ -2229,7 +2229,7 @@ function orderTriggersByStatus(array &$triggers, $sortorder = ZBX_SORT_UP) {
 		}
 	}
 
-	if ($sortorder == ZBX_SORT_UP) {
+	if ($sortorder == TRX_SORT_UP) {
 		asort($sort);
 	}
 	else {
@@ -2344,7 +2344,7 @@ function makeTriggersHostsList(array $triggers_hosts) {
 					);
 				}
 
-				$host_name = (new CSpan([$host_name, $maintenance_icon]))->addClass(ZBX_STYLE_REL_CONTAINER);
+				$host_name = (new CSpan([$host_name, $maintenance_icon]))->addClass(TRX_STYLE_REL_CONTAINER);
 			}
 
 			if ($trigger_hosts) {
@@ -2366,8 +2366,8 @@ function makeTriggersHostsList(array $triggers_hosts) {
  * @param $array $triggers                  An array of triggers.
  * @param string $triggers[]['triggerid']   ID of a trigger.
  * @param string $triggers[]['templateid']  ID of parent template trigger.
- * @param int    $flag                      Origin of the trigger (ZBX_FLAG_DISCOVERY_NORMAL or
- *                                          ZBX_FLAG_DISCOVERY_PROTOTYPE).
+ * @param int    $flag                      Origin of the trigger (TRX_FLAG_DISCOVERY_NORMAL or
+ *                                          TRX_FLAG_DISCOVERY_PROTOTYPE).
  *
  * @return array
  */
@@ -2391,12 +2391,12 @@ function getTriggerParentTemplates(array $triggers, $flag) {
 
 	$all_parent_triggerids = [];
 	$hostids = [];
-	if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+	if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 		$lld_ruleids = [];
 	}
 
 	do {
-		if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+		if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 			$db_triggers = API::TriggerPrototype()->get([
 				'output' => ['triggerid', 'templateid'],
 				'selectHosts' => ['hostid'],
@@ -2404,7 +2404,7 @@ function getTriggerParentTemplates(array $triggers, $flag) {
 				'triggerids' => array_keys($parent_triggerids)
 			]);
 		}
-		// ZBX_FLAG_DISCOVERY_NORMAL
+		// TRX_FLAG_DISCOVERY_NORMAL
 		else {
 			$db_triggers = API::Trigger()->get([
 				'output' => ['triggerid', 'templateid'],
@@ -2422,7 +2422,7 @@ function getTriggerParentTemplates(array $triggers, $flag) {
 				$hostids[$db_trigger['triggerid']][] = $host['hostid'];
 			}
 
-			if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+			if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 				$lld_ruleids[$db_trigger['triggerid']] = $db_trigger['discoveryRule']['itemid'];
 			}
 
@@ -2442,7 +2442,7 @@ function getTriggerParentTemplates(array $triggers, $flag) {
 			? $hostids[$parent_trigger['triggerid']]
 			: [0];
 
-		if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+		if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 			$parent_trigger['lld_ruleid'] = array_key_exists($parent_trigger['triggerid'], $lld_ruleids)
 				? $lld_ruleids[$parent_trigger['triggerid']]
 				: 0;
@@ -2492,7 +2492,7 @@ function getTriggerParentTemplates(array $triggers, $flag) {
  *
  * @param string $triggerid
  * @param array  $parent_templates  The list of the templates, prepared by getTriggerParentTemplates() function.
- * @param int    $flag              Origin of the trigger (ZBX_FLAG_DISCOVERY_NORMAL or ZBX_FLAG_DISCOVERY_PROTOTYPE).
+ * @param int    $flag              Origin of the trigger (TRX_FLAG_DISCOVERY_NORMAL or TRX_FLAG_DISCOVERY_PROTOTYPE).
  *
  * @return array|null
  */
@@ -2516,24 +2516,24 @@ function makeTriggerTemplatePrefix($triggerid, array $parent_templates, $flag) {
 
 	foreach ($templates as $template) {
 		if ($template['permission'] == PERM_READ_WRITE) {
-			if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+			if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 				$url = (new CUrl('trigger_prototypes.php'))
 					->setArgument('parent_discoveryid', $parent_templates['links'][$triggerid]['lld_ruleid']);
 			}
-			// ZBX_FLAG_DISCOVERY_NORMAL
+			// TRX_FLAG_DISCOVERY_NORMAL
 			else {
 				$url = (new CUrl('triggers.php'))
 					->setArgument('filter_hostids', [$template['hostid']])
 					->setArgument('filter_set', 1);
 			}
 
-			$name = (new CLink(CHtml::encode($template['name']), $url))->addClass(ZBX_STYLE_LINK_ALT);
+			$name = (new CLink(CHtml::encode($template['name']), $url))->addClass(TRX_STYLE_LINK_ALT);
 		}
 		else {
 			$name = new CSpan(CHtml::encode($template['name']));
 		}
 
-		$list[] = $name->addClass(ZBX_STYLE_GREY);
+		$list[] = $name->addClass(TRX_STYLE_GREY);
 		$list[] = ', ';
 	}
 
@@ -2548,7 +2548,7 @@ function makeTriggerTemplatePrefix($triggerid, array $parent_templates, $flag) {
  *
  * @param string $triggerid
  * @param array  $parent_templates  The list of the templates, prepared by getTriggerParentTemplates() function.
- * @param int    $flag              Origin of the trigger (ZBX_FLAG_DISCOVERY_NORMAL or ZBX_FLAG_DISCOVERY_PROTOTYPE).
+ * @param int    $flag              Origin of the trigger (TRX_FLAG_DISCOVERY_NORMAL or TRX_FLAG_DISCOVERY_PROTOTYPE).
  *
  * @return array
  */
@@ -2572,13 +2572,13 @@ function makeTriggerTemplatesHtml($triggerid, array $parent_templates, $flag) {
 
 		foreach ($templates as $template) {
 			if ($template['permission'] == PERM_READ_WRITE) {
-				if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+				if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 					$url = (new CUrl('trigger_prototypes.php'))
 						->setArgument('form', 'update')
 						->setArgument('triggerid', $parent_templates['links'][$triggerid]['triggerid'])
 						->setArgument('parent_discoveryid', $parent_templates['links'][$triggerid]['lld_ruleid']);
 				}
-				// ZBX_FLAG_DISCOVERY_NORMAL
+				// TRX_FLAG_DISCOVERY_NORMAL
 				else {
 					$url = (new CUrl('triggers.php'))
 						->setArgument('form', 'update')
@@ -2589,7 +2589,7 @@ function makeTriggerTemplatesHtml($triggerid, array $parent_templates, $flag) {
 				$name = new CLink(CHtml::encode($template['name']), $url);
 			}
 			else {
-				$name = (new CSpan(CHtml::encode($template['name'])))->addClass(ZBX_STYLE_GREY);
+				$name = (new CSpan(CHtml::encode($template['name'])))->addClass(TRX_STYLE_GREY);
 			}
 
 			$list_item[] = $name;
@@ -2709,10 +2709,10 @@ function makeTriggerDependencies(array $dependencies, $freeze_on_click = true) {
 	foreach (['down', 'up'] as $type) {
 		if (array_key_exists($type, $dependencies)) {
 			$header = ($type === 'down') ? _('Depends on') : _('Dependent');
-			$class = ($type === 'down') ? ZBX_STYLE_ICON_DEPEND_DOWN : ZBX_STYLE_ICON_DEPEND_UP;
+			$class = ($type === 'down') ? TRX_STYLE_ICON_DEPEND_DOWN : TRX_STYLE_ICON_DEPEND_UP;
 
 			$table = (new CTableInfo())
-				->setAttribute('style', 'max-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+				->setAttribute('style', 'max-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 				->setHeader([$header]);
 
 			foreach ($dependencies[$type] as $description) {
@@ -2721,7 +2721,7 @@ function makeTriggerDependencies(array $dependencies, $freeze_on_click = true) {
 
 			$result[] = (new CSpan())
 				->addClass($class)
-				->addClass(ZBX_STYLE_CURSOR_POINTER)
+				->addClass(TRX_STYLE_CURSOR_POINTER)
 				->setHint($table, '', $freeze_on_click);
 		}
 	}

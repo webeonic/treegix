@@ -24,7 +24,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 		$sqlParts = [
 			'select'	=> ['triggers' => 't.triggerid'],
 			'from'		=> ['t' => 'triggers t'],
-			'where'		=> ['t.flags='.ZBX_FLAG_DISCOVERY_PROTOTYPE],
+			'where'		=> ['t.flags='.TRX_FLAG_DISCOVERY_PROTOTYPE],
 			'group'		=> [],
 			'order'		=> [],
 			'limit'		=> null
@@ -500,7 +500,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 	protected function validateDelete(array &$triggerids, array &$db_triggers = null) {
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $triggerids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_triggers = $this->get([
@@ -512,7 +512,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		foreach ($triggerids as $triggerid) {
 			if (!array_key_exists($triggerid, $db_triggers)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -520,7 +520,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			$db_trigger = $db_triggers[$triggerid];
 
 			if ($db_trigger['templateid'] != 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Cannot delete templated trigger prototype "%1$s:%2$s".', $db_trigger['description'],
 						CMacrosResolverHelper::resolveTriggerExpression($db_trigger['expression'])
 					)
@@ -568,7 +568,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			]);
 		}
 		catch (APIException $e) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot delete dependency'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot delete dependency'));
 		}
 	}
 
@@ -690,7 +690,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 						$depTriggerDRuleId = $depTriggerPrototypes[$dependency['triggerid']]['discoveryRule']['itemid'];
 
 						if (bccomp($depTriggerDRuleId, $dRuleId) != 0) {
-							self::exception(ZBX_API_ERROR_PERMISSIONS,
+							self::exception(TRX_API_ERROR_PERMISSIONS,
 								_('No permissions to referred object or it does not exist!')
 							);
 						}
@@ -704,12 +704,12 @@ class CTriggerPrototype extends CTriggerGeneral {
 			'output' => ['triggerid'],
 			'triggerids' => $depTriggerIds,
 			'filter' => [
-				'flags' => [ZBX_FLAG_DISCOVERY_NORMAL]
+				'flags' => [TRX_FLAG_DISCOVERY_NORMAL]
 			]
 		]);
 
 		if (!$depTriggerPrototypes && !$triggers) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		$this->checkDependencies($triggerPrototypes);
@@ -740,7 +740,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 			foreach ($triggerids_up as $triggerid_up) {
 				if (bccomp($triggerid_down, $triggerid_up) == 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_('Cannot create dependency on trigger prototype itself.')
 					);
 				}
@@ -771,7 +771,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 				]);
 
 				if ($triggerDepTemplates) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot add dependency from a host to a template.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot add dependency from a host to a template.'));
 				}
 			}
 
@@ -802,7 +802,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 				$downTriggerIds = [];
 				foreach ($upTriggersIds as $id) {
 					if (bccomp($id, $triggerPrototype['triggerid']) == 0) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot create circular dependencies.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot create circular dependencies.'));
 					}
 					$downTriggerIds[] = $id;
 				}
@@ -849,7 +849,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 							// then make sure all of the dependency templates are also linked
 							foreach ($depTemplateIds as $depTemplateId) {
 								if (!isset($templates[$depTemplateId])) {
-									self::exception(ZBX_API_ERROR_PARAMETERS,
+									self::exception(TRX_API_ERROR_PARAMETERS,
 										_s('Not all templates are linked to "%s".', reset($templates))
 									);
 								}
@@ -906,7 +906,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 					if (isset($parentDepTriggers[$depTriggerId])
 							&& $parentDepTriggers[$depTriggerId]['templateid'] == $triggerPrototype['triggerid']) {
 
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Trigger prototype cannot be dependent on a trigger that is inherited from it.')
 						);
 					}
@@ -971,7 +971,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 				' FROM triggers t'.
 				' WHERE t.triggerid='.zbx_dbstr($duplicateTriggerId)
 			));
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Duplicate dependencies in trigger prototype "%1$s".', $duplicateTrigger['description'])
 			);
 		}

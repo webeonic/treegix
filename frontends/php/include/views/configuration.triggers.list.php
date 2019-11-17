@@ -19,7 +19,7 @@ $filter_column1 = (new CFormList())
 					'editable' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 	)
 	->addRow((new CLabel(_('Hosts'), 'filter_hostids')),
 		(new CMultiSelect([
@@ -36,16 +36,16 @@ $filter_column1 = (new CFormList())
 					'templated_hosts' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 	)
 	->addRow(_('Name'),
-		(new CTextBox('filter_name', $data['filter_name']))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+		(new CTextBox('filter_name', $data['filter_name']))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 	)
 	->addRow(_('Severity'),
 		(new CCheckBoxList('filter_priority'))
 			->setOptions($data['config_priorities'])
 			->setChecked($data['filter_priority'])
-			->addClass(ZBX_STYLE_COLUMNS_3)
+			->addClass(TRX_STYLE_COLUMNS_3)
 	)
 	->addRow(_('State'),
 		(new CRadioButtonList('filter_state', (int) $data['filter_state']))
@@ -89,19 +89,19 @@ foreach ($filter_tags as $tag) {
 	$filter_tags_table->addRow([
 		(new CTextBox('filter_tags['.$i.'][tag]', $tag['tag']))
 			->setAttribute('placeholder', _('tag'))
-			->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		(new CRadioButtonList('filter_tags['.$i.'][operator]', (int) $tag['operator']))
 			->addValue(_('Contains'), TAG_OPERATOR_LIKE)
 			->addValue(_('Equals'), TAG_OPERATOR_EQUAL)
 			->setModern(true),
 		(new CTextBox('filter_tags['.$i.'][value]', $tag['value']))
 			->setAttribute('placeholder', _('value'))
-			->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		(new CCol(
 			(new CButton('filter_tags['.$i.'][remove]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	], 'form_row');
 
 	$i++;
@@ -109,7 +109,7 @@ foreach ($filter_tags as $tag) {
 $filter_tags_table->addRow(
 	(new CCol(
 		(new CButton('filter_tags_add', _('Add')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-add')
 	))->setColSpan(3)
 );
@@ -174,7 +174,7 @@ $triggers_table = (new CTableInfo())->setHeader([
 	(new CColHeader(
 		(new CCheckBox('all_triggers'))
 			->onClick("checkAll('".$triggers_form->getName()."', 'all_triggers', 'g_triggerid');")
-	))->addClass(ZBX_STYLE_CELL_WIDTH),
+	))->addClass(TRX_STYLE_CELL_WIDTH),
 	make_sorting_header(_('Severity'), 'priority', $data['sort'], $data['sortorder'], $url),
 	$data['show_value_column'] ? _('Value') : null,
 	$data['single_selected_hostid'] == 0 ? _('Host') : null,
@@ -197,7 +197,7 @@ foreach ($data['triggers'] as $tnum => $trigger) {
 	// description
 	$description = [];
 	$description[] = makeTriggerTemplatePrefix($trigger['triggerid'], $data['parent_templates'],
-		ZBX_FLAG_DISCOVERY_NORMAL
+		TRX_FLAG_DISCOVERY_NORMAL
 	);
 
 	$trigger['hosts'] = zbx_toHash($trigger['hosts'], 'hostid');
@@ -207,8 +207,8 @@ foreach ($data['triggers'] as $tnum => $trigger) {
 			CHtml::encode($trigger['discoveryRule']['name']),
 			(new CUrl('trigger_prototypes.php'))->setArgument('parent_discoveryid', $trigger['discoveryRule']['itemid'])
 		))
-			->addClass(ZBX_STYLE_LINK_ALT)
-			->addClass(ZBX_STYLE_ORANGE);
+			->addClass(TRX_STYLE_LINK_ALT)
+			->addClass(TRX_STYLE_ORANGE);
 		$description[] = NAME_DELIMITER;
 	}
 
@@ -233,7 +233,7 @@ foreach ($data['triggers'] as $tnum => $trigger) {
 			$trigger_deps[] = (new CLink($dep_trigger_desc,
 				'triggers.php?form=update&triggerid='.$dep_trigger['triggerid']
 			))
-				->addClass(ZBX_STYLE_LINK_ALT)
+				->addClass(TRX_STYLE_LINK_ALT)
 				->addClass(triggerIndicatorStyle($dep_trigger['status']));
 
 			$trigger_deps[] = BR();
@@ -260,7 +260,7 @@ foreach ($data['triggers'] as $tnum => $trigger) {
 				: 'trigger.massdisable'
 			).
 			'&g_triggerid='.$triggerid))
-		->addClass(ZBX_STYLE_LINK_ACTION)
+		->addClass(TRX_STYLE_LINK_ACTION)
 		->addClass(triggerIndicatorStyle($trigger['status'], $trigger['state']))
 		->addSID();
 
@@ -275,7 +275,7 @@ foreach ($data['triggers'] as $tnum => $trigger) {
 		}
 	}
 
-	if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+	if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 		$expression = [
 			_('Problem'), ': ', $trigger['expression'], BR(),
 			_('Recovery'), ': ', $trigger['recovery_expression']
@@ -288,7 +288,7 @@ foreach ($data['triggers'] as $tnum => $trigger) {
 	$host = reset($trigger['hosts']);
 	$trigger_value = ($host['status'] == HOST_STATUS_MONITORED || $host['status'] == HOST_STATUS_NOT_MONITORED)
 		? (new CSpan(trigger_value2str($trigger['value'])))->addClass(
-			($trigger['value'] == TRIGGER_VALUE_TRUE) ? ZBX_STYLE_PROBLEM_UNACK_FG : ZBX_STYLE_OK_UNACK_FG
+			($trigger['value'] == TRIGGER_VALUE_TRUE) ? TRX_STYLE_PROBLEM_UNACK_FG : TRX_STYLE_OK_UNACK_FG
 		)
 		: '';
 

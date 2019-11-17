@@ -8,7 +8,7 @@ static int		mib[] = {CTL_VM, VM_UVMEXP};
 static size_t		len;
 static struct uvmexp	uvm;
 
-#define ZBX_SYSCTL(value)										\
+#define TRX_SYSCTL(value)										\
 													\
 	len = sizeof(value);										\
 	if (0 != sysctl(mib, 2, &value, &len, NULL, 0))							\
@@ -20,7 +20,7 @@ static struct uvmexp	uvm;
 
 static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)uvm.npages * uvm.pagesize);
 
@@ -29,7 +29,7 @@ static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 
 static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)uvm.active * uvm.pagesize);
 
@@ -38,7 +38,7 @@ static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_INACTIVE(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)uvm.inactive * uvm.pagesize);
 
@@ -47,7 +47,7 @@ static int	VM_MEMORY_INACTIVE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_WIRED(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)uvm.wired * uvm.pagesize);
 
@@ -56,7 +56,7 @@ static int	VM_MEMORY_WIRED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)uvm.free * uvm.pagesize);
 
@@ -65,7 +65,7 @@ static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_USED(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)(uvm.active + uvm.wired) * uvm.pagesize);
 
@@ -74,7 +74,7 @@ static int	VM_MEMORY_USED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	if (0 == uvm.npages)
 	{
@@ -89,7 +89,7 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)(uvm.inactive + uvm.free + uvm.vnodepages + uvm.vtextpages) * uvm.pagesize);
 
@@ -98,7 +98,7 @@ static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	if (0 == uvm.npages)
 	{
@@ -115,7 +115,7 @@ static int	VM_MEMORY_BUFFERS(AGENT_RESULT *result)
 {
 	int	mib[] = {CTL_VM, VM_NKMEMPAGES}, pages;
 
-	ZBX_SYSCTL(pages);
+	TRX_SYSCTL(pages);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)pages * sysconf(_SC_PAGESIZE));
 
@@ -124,7 +124,7 @@ static int	VM_MEMORY_BUFFERS(AGENT_RESULT *result)
 
 static int	VM_MEMORY_CACHED(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(uvm);
+	TRX_SYSCTL(uvm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)(uvm.vnodepages + uvm.vtextpages) * uvm.pagesize);
 
@@ -136,7 +136,7 @@ static int	VM_MEMORY_SHARED(AGENT_RESULT *result)
 	int		mib[] = {CTL_VM, VM_METER};
 	struct vmtotal	vm;
 
-	ZBX_SYSCTL(vm);
+	TRX_SYSCTL(vm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)(vm.t_vmshr + vm.t_rmshr) * sysconf(_SC_PAGESIZE));
 

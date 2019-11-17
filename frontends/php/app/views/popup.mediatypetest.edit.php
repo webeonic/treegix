@@ -12,7 +12,7 @@ if ($data['type'] == MEDIA_TYPE_WEBHOOK) {
 		$form_list
 			->addRow(new CLabel($parameter['name'], $fieldid.'[value]'), [
 				new CVar($fieldid.'[name]', $parameter['name']),
-				(new CTextBox($fieldid.'[value]', $parameter['value']))->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+				(new CTextBox($fieldid.'[value]', $parameter['value']))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			]);
 		$i++;
 	}
@@ -26,7 +26,7 @@ else {
 		->addRow(
 			(new CLabel(_('Send to'), 'sendto'))->setAsteriskMark(),
 			(new CTextBox('sendto', $data['sendto'], false, 1024))
-				->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+				->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 				->setAttribute('autofocus', 'autofocus')
 				->setAriaRequired()
 				->setEnabled($data['enabled'])
@@ -34,13 +34,13 @@ else {
 		->addRow(
 			new CLabel(_('Subject'), 'subject'),
 			(new CTextBox('subject', $data['subject'], false, 1024))
-				->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+				->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 				->setEnabled($data['enabled'])
 		)
 		->addRow(
 			(new CLabel(_('Message'), 'message'))->setAsteriskMark($data['type'] != MEDIA_TYPE_EXEC),
 			(new CTextArea('message', $data['message'], ['rows' => 10]))
-				->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+				->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 				->setAriaRequired($data['type'] != MEDIA_TYPE_EXEC)
 				->setEnabled($data['enabled'])
 		);

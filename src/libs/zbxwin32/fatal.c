@@ -10,13 +10,13 @@
 
 #define STACKWALK_MAX_NAMELEN	4096
 
-#define ZBX_LSHIFT(value, bits)	(((unsigned __int64)value) << bits)
+#define TRX_LSHIFT(value, bits)	(((unsigned __int64)value) << bits)
 
 extern const char	*progname;
 
 #ifdef _M_X64
 
-#define ZBX_IMAGE_FILE_MACHINE	IMAGE_FILE_MACHINE_AMD64
+#define TRX_IMAGE_FILE_MACHINE	IMAGE_FILE_MACHINE_AMD64
 
 static void	print_register(const char *name, unsigned __int64 value)
 {
@@ -50,12 +50,12 @@ static void	print_fatal_info(CONTEXT *pctx)
 
 	print_register("rsp", pctx->Rsp);
 	print_register("efl", pctx->EFlags);
-	print_register("csgsfs", ZBX_LSHIFT(pctx->SegCs, 24) | ZBX_LSHIFT(pctx->SegGs, 16) | ZBX_LSHIFT(pctx->SegFs, 8));
+	print_register("csgsfs", TRX_LSHIFT(pctx->SegCs, 24) | TRX_LSHIFT(pctx->SegGs, 16) | TRX_LSHIFT(pctx->SegFs, 8));
 }
 
 #else
 
-#define ZBX_IMAGE_FILE_MACHINE	IMAGE_FILE_MACHINE_I386
+#define TRX_IMAGE_FILE_MACHINE	IMAGE_FILE_MACHINE_I386
 
 static void	print_register(const char *name, unsigned __int32 value)
 {
@@ -80,7 +80,7 @@ static void	print_fatal_info(CONTEXT *pctx)
 
 	print_register("esp", pctx->Esp);
 	print_register("efl", pctx->EFlags);
-	print_register("csgsfs", ZBX_LSHIFT(pctx->SegCs, 24) | ZBX_LSHIFT(pctx->SegGs, 16) | ZBX_LSHIFT(pctx->SegFs, 8));
+	print_register("csgsfs", TRX_LSHIFT(pctx->SegCs, 24) | TRX_LSHIFT(pctx->SegGs, 16) | TRX_LSHIFT(pctx->SegFs, 8));
 }
 
 #endif
@@ -165,7 +165,7 @@ static void	print_backtrace(CONTEXT *pctx)
 	ctxcount = ctx;
 
 	/* get number of frames, ctxcount may be modified during StackWalk64() calls */
-	while (TRUE == StackWalk64(ZBX_IMAGE_FILE_MACHINE, hProcess, hThread, &scount, &ctxcount, NULL, NULL, NULL,
+	while (TRUE == StackWalk64(TRX_IMAGE_FILE_MACHINE, hProcess, hThread, &scount, &ctxcount, NULL, NULL, NULL,
 			NULL))
 	{
 		if (0 == scount.AddrReturn.Offset)
@@ -173,7 +173,7 @@ static void	print_backtrace(CONTEXT *pctx)
 		nframes++;
 	}
 
-	while (TRUE == StackWalk64(ZBX_IMAGE_FILE_MACHINE, hProcess, hThread, &s, &ctx, NULL, NULL, NULL, NULL))
+	while (TRUE == StackWalk64(TRX_IMAGE_FILE_MACHINE, hProcess, hThread, &s, &ctx, NULL, NULL, NULL, NULL))
 	{
 		frame_offset = 0;
 		zbx_snprintf_alloc(&frame, &frame_alloc, &frame_offset, "%d: %s", nframes--,

@@ -9,7 +9,7 @@
 
 #include "threads.h"
 
-extern ZBX_THREAD_HANDLE	*threads;
+extern TRX_THREAD_HANDLE	*threads;
 
 void	service_start(int flags);
 
@@ -22,11 +22,11 @@ void	set_parent_signal_handler(void);
 
 int	application_status;	/* required for closing application from service */
 
-#define ZBX_APP_STOPPED	0
-#define ZBX_APP_RUNNING	1
+#define TRX_APP_STOPPED	0
+#define TRX_APP_RUNNING	1
 
-#define ZBX_IS_RUNNING()	(ZBX_APP_RUNNING == application_status)
-#define ZBX_DO_EXIT()		application_status = ZBX_APP_STOPPED
+#define TRX_IS_RUNNING()	(TRX_APP_RUNNING == application_status)
+#define TRX_DO_EXIT()		application_status = TRX_APP_STOPPED
 
 #define START_MAIN_TREEGIX_ENTRY(allow_root, user, flags)	service_start(flags)
 

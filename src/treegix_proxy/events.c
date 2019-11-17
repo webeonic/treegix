@@ -22,22 +22,22 @@ DB_EVENT	*zbx_add_event(unsigned char source, unsigned char object, zbx_uint64_t
 		unsigned char trigger_correlation_mode, const char *trigger_correlation_tag,
 		unsigned char trigger_value, const char *trigger_opdata, const char *error)
 {
-	ZBX_UNUSED(source);
-	ZBX_UNUSED(object);
-	ZBX_UNUSED(objectid);
-	ZBX_UNUSED(timespec);
-	ZBX_UNUSED(value);
-	ZBX_UNUSED(trigger_description);
-	ZBX_UNUSED(trigger_expression);
-	ZBX_UNUSED(trigger_recovery_expression);
-	ZBX_UNUSED(trigger_priority);
-	ZBX_UNUSED(trigger_type);
-	ZBX_UNUSED(trigger_tags);
-	ZBX_UNUSED(trigger_correlation_mode);
-	ZBX_UNUSED(trigger_correlation_tag);
-	ZBX_UNUSED(trigger_value);
-	ZBX_UNUSED(trigger_opdata);
-	ZBX_UNUSED(error);
+	TRX_UNUSED(source);
+	TRX_UNUSED(object);
+	TRX_UNUSED(objectid);
+	TRX_UNUSED(timespec);
+	TRX_UNUSED(value);
+	TRX_UNUSED(trigger_description);
+	TRX_UNUSED(trigger_expression);
+	TRX_UNUSED(trigger_recovery_expression);
+	TRX_UNUSED(trigger_priority);
+	TRX_UNUSED(trigger_type);
+	TRX_UNUSED(trigger_tags);
+	TRX_UNUSED(trigger_correlation_mode);
+	TRX_UNUSED(trigger_correlation_tag);
+	TRX_UNUSED(trigger_value);
+	TRX_UNUSED(trigger_opdata);
+	TRX_UNUSED(error);
 
 	THIS_SHOULD_NEVER_HAPPEN;
 
@@ -46,9 +46,9 @@ DB_EVENT	*zbx_add_event(unsigned char source, unsigned char object, zbx_uint64_t
 
 int	zbx_close_problem(zbx_uint64_t triggerid, zbx_uint64_t eventid, zbx_uint64_t userid)
 {
-	ZBX_UNUSED(triggerid);
-	ZBX_UNUSED(eventid);
-	ZBX_UNUSED(userid);
+	TRX_UNUSED(triggerid);
+	TRX_UNUSED(eventid);
+	TRX_UNUSED(userid);
 
 	THIS_SHOULD_NEVER_HAPPEN;
 	return 0;
@@ -56,8 +56,8 @@ int	zbx_close_problem(zbx_uint64_t triggerid, zbx_uint64_t eventid, zbx_uint64_t
 
 int	zbx_process_events(zbx_vector_ptr_t *trigger_diff, zbx_vector_uint64_t *triggerids_lock)
 {
-	ZBX_UNUSED(trigger_diff);
-	ZBX_UNUSED(triggerids_lock);
+	TRX_UNUSED(trigger_diff);
+	TRX_UNUSED(triggerids_lock);
 
 	THIS_SHOULD_NEVER_HAPPEN;
 	return 0;

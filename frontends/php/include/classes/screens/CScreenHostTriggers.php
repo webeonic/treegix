@@ -25,17 +25,17 @@ class CScreenHostTriggers extends CScreenBase {
 		switch ($this->screenitem['sort_triggers']) {
 			case SCREEN_SORT_TRIGGERS_DATE_DESC:
 				$params['sortfield'] = 'lastchange';
-				$params['sortorder'] = ZBX_SORT_DOWN;
+				$params['sortorder'] = TRX_SORT_DOWN;
 				break;
 			case SCREEN_SORT_TRIGGERS_SEVERITY_DESC:
 				$params['sortfield'] = 'severity';
-				$params['sortorder'] = ZBX_SORT_DOWN;
+				$params['sortorder'] = TRX_SORT_DOWN;
 				break;
 			case SCREEN_SORT_TRIGGERS_HOST_NAME_ASC:
 				// a little black magic here - there is no such field 'hostname' in 'triggers',
 				// but API has a special case for sorting by hostname
 				$params['sortfield'] = 'hostname';
-				$params['sortorder'] = ZBX_SORT_UP;
+				$params['sortorder'] = TRX_SORT_UP;
 				break;
 		}
 
@@ -48,7 +48,7 @@ class CScreenHostTriggers extends CScreenBase {
 			$header = (new CDiv([
 				new CTag('h4', true, _('Host issues')),
 				(new CList())->addItem([_('Host'), ':', SPACE, $hosts[0]['name']])
-			]))->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD);
+			]))->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD);
 
 			$params['hostids'] = $this->screenitem['resourceid'];
 		}
@@ -117,7 +117,7 @@ class CScreenHostTriggers extends CScreenBase {
 							->addItem('&nbsp;')
 							->addItem([_('Host'), '&nbsp;', $hosts_cb])
 					)
-			]))->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD);
+			]))->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD);
 		}
 
 		list($table, $info) = $this->getProblemsListTable($params,
@@ -129,7 +129,7 @@ class CScreenHostTriggers extends CScreenBase {
 		$footer = (new CList())
 			->addItem($info)
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(new CUiWidget('hat_trstatus', [$header, $table, $footer]));
 	}
@@ -159,7 +159,7 @@ class CScreenHostTriggers extends CScreenBase {
 			'details' => 1,
 			'show_opdata' => 0,
 			'sort_field' => '',
-			'sort_order' => ZBX_SORT_DOWN
+			'sort_order' => TRX_SORT_DOWN
 		];
 
 		$data = CScreenProblem::getData($filter, $config, true, true);
@@ -172,11 +172,11 @@ class CScreenHostTriggers extends CScreenBase {
 
 		if (array_key_exists('sortfield', $filter)) {
 			$sort_field = $filter['sortfield'];
-			$sort_order = ($sort_field !== 'lastchange') ? $filter['sortorder'] : ZBX_SORT_DOWN;
+			$sort_order = ($sort_field !== 'lastchange') ? $filter['sortorder'] : TRX_SORT_DOWN;
 
 			$header[$sort_field] = [
 				$header[$sort_field],
-				(new CDiv())->addClass(($sort_order === ZBX_SORT_DOWN) ? ZBX_STYLE_ARROW_DOWN : ZBX_STYLE_ARROW_UP)
+				(new CDiv())->addClass(($sort_order === TRX_SORT_DOWN) ? TRX_STYLE_ARROW_DOWN : TRX_STYLE_ARROW_UP)
 			];
 
 			$data = CScreenProblem::sortData($data, $config, $sort_field === 'hostname' ? 'host' : $sort_field,
@@ -260,8 +260,8 @@ class CScreenHostTriggers extends CScreenBase {
 						->setArgument('backurl', $back_url)
 						->getUrl())
 					)
-					->addClass($problem['acknowledged'] ? ZBX_STYLE_GREEN : ZBX_STYLE_RED)
-					->addClass(ZBX_STYLE_LINK_ALT),
+					->addClass($problem['acknowledged'] ? TRX_STYLE_GREEN : TRX_STYLE_RED)
+					->addClass(TRX_STYLE_LINK_ALT),
 				makeEventActionsIcons($problem['eventid'], $data['actions'], $data['mediatypes'], $data['users'],
 					$config
 				)

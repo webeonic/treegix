@@ -20,37 +20,37 @@
 		<meta name="msapplication-TileImage" content="assets/img/ms-tile-144x144.png">
 		<meta name="msapplication-TileColor" content="#d40000">
 		<meta name="msapplication-config" content="none"/>
-		<link rel="stylesheet" type="text/css" href="assets/styles/<?= ZBX_DEFAULT_THEME ?>.css" />
+		<link rel="stylesheet" type="text/css" href="assets/styles/<?= TRX_DEFAULT_THEME ?>.css" />
 	</head>
 	<body lang="en">
 		<main>
-			<div class="<?= ZBX_STYLE_BROWSER_WARNING_CONTAINER ?>">
-				<h2 class="<?= ZBX_STYLE_RED ?>">You are using an outdated browser.</h2>
+			<div class="<?= TRX_STYLE_BROWSER_WARNING_CONTAINER ?>">
+				<h2 class="<?= TRX_STYLE_RED ?>">You are using an outdated browser.</h2>
 				<p>Treegix frontend is built on advanced, modern technologies and does not support old browsers. It is highly recommended that you choose and install a modern browser. It is free of charge and only takes a couple of minutes.</p>
 				<p>New browsers usually come with support for new technologies, increasing web page speed, better privacy settings and so on. They also resolve security and functional issues.</p>
 				<ul>
 					<li>
-						<a target="_blank" href="http://www.google.com/chrome"><div class="<?= ZBX_STYLE_BROWSER_LOGO_CHROME ?>"></div></a>
+						<a target="_blank" href="http://www.google.com/chrome"><div class="<?= TRX_STYLE_BROWSER_LOGO_CHROME ?>"></div></a>
 						<a target="_blank" href="http://www.google.com/chrome">Google Chrome</a>
 					</li>
 					<li>
-						<a target="_blank" href="http://www.mozilla.org/firefox"><div class="<?= ZBX_STYLE_BROWSER_LOGO_FF ?>"></div></a>
+						<a target="_blank" href="http://www.mozilla.org/firefox"><div class="<?= TRX_STYLE_BROWSER_LOGO_FF ?>"></div></a>
 						<a target="_blank" href="http://www.mozilla.org/firefox">Mozilla Firefox</a>
 					</li>
 					<li>
-						<a target="_blank" href="http://windows.microsoft.com/en-US/internet-explorer/downloads/ie"><div class="<?= ZBX_STYLE_BROWSER_LOGO_IE ?>"></div></a>
+						<a target="_blank" href="http://windows.microsoft.com/en-US/internet-explorer/downloads/ie"><div class="<?= TRX_STYLE_BROWSER_LOGO_IE ?>"></div></a>
 						<a target="_blank" href="http://windows.microsoft.com/en-US/internet-explorer/downloads/ie">Internet Explorer</a>
 					</li>
 					<li>
-						<a target="_blank" href="http://www.opera.com/download"><div class="<?= ZBX_STYLE_BROWSER_LOGO_OPERA ?>"></div></a>
+						<a target="_blank" href="http://www.opera.com/download"><div class="<?= TRX_STYLE_BROWSER_LOGO_OPERA ?>"></div></a>
 						<a target="_blank" href="http://www.opera.com/download">Opera browser</a>
 					</li>
 					<li>
-						<a target="_blank" href="http://www.apple.com/safari/download"><div class="<?= ZBX_STYLE_BROWSER_LOGO_SAFARI ?>"></div></a>
+						<a target="_blank" href="http://www.apple.com/safari/download"><div class="<?= TRX_STYLE_BROWSER_LOGO_SAFARI ?>"></div></a>
 						<a target="_blank" href="http://www.apple.com/safari/download">Apple Safari</a>
 					</li>
 				</ul>
-				<div class="<?= ZBX_STYLE_BROWSER_WARNING_FOOTER ?>">
+				<div class="<?= TRX_STYLE_BROWSER_WARNING_FOOTER ?>">
 					<a href="index.php" onClick="javascript: document.cookie='browserwarning_ignore=yes';">Continue despite this warning</a>
 				</div>
 			</div>

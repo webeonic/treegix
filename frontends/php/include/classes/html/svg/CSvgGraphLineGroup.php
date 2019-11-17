@@ -31,21 +31,21 @@ class CSvgGraphLineGroup extends CSvgGroup {
 
 	public function makeStyles() {
 		$this
-			->addClass(CSvgTag::ZBX_STYLE_GRAPH_LINE)
-			->addClass(CSvgTag::ZBX_STYLE_GRAPH_LINE.'-'.$this->metric['itemid'].'-'.$this->options['order']);
+			->addClass(CSvgTag::TRX_STYLE_GRAPH_LINE)
+			->addClass(CSvgTag::TRX_STYLE_GRAPH_LINE.'-'.$this->metric['itemid'].'-'.$this->options['order']);
 
 		$line_style = ($this->options['type'] == SVG_GRAPH_TYPE_LINE) ? ['stroke-linejoin' => 'round'] : [];
 
 		return [
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_LINE => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_LINE => [
 				'fill' => 'none'
 			],
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_LINE.'-'.$this->metric['itemid'].'-'.$this->options['order'] => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_LINE.'-'.$this->metric['itemid'].'-'.$this->options['order'] => [
 				'stroke-opacity' => $this->options['transparency'] * 0.1,
 				'stroke' => $this->options['color'],
 				'stroke-width' => $this->options['width']
 			] + $line_style,
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_LINE.'-'.$this->metric['itemid'].'-'.$this->options['order'].' circle' => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_LINE.'-'.$this->metric['itemid'].'-'.$this->options['order'].' circle' => [
 				'fill-opacity' => $this->options['transparency'] * 0.1,
 				'fill' => $this->options['color'],
 				'stroke-width' => 0
@@ -69,7 +69,7 @@ class CSvgGraphLineGroup extends CSvgGroup {
 			->setAttribute('data-metric', CHtml::encode($this->metric['name']))
 			->setAttribute('data-color', $this->options['color'])
 			->addItem((new CSvgCircle(-10, -10, $this->options['width'] + 4))
-				->addClass(CSvgTag::ZBX_STYLE_GRAPH_HIGHLIGHTED_VALUE))
+				->addClass(CSvgTag::TRX_STYLE_GRAPH_HIGHLIGHTED_VALUE))
 			->draw();
 
 		return parent::toString($destroy);

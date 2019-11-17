@@ -8,7 +8,7 @@
 extern char	*CONFIG_SOURCE_IP;
 extern int	CONFIG_TRAPPER_TIMEOUT;
 
-ZBX_THREAD_ENTRY(proxypoller_thread, args);
+TRX_THREAD_ENTRY(proxypoller_thread, args);
 
 #endif
 

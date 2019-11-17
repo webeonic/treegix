@@ -67,8 +67,8 @@ typedef struct
 }
 zbx_hk_cleanup_table_t;
 
-static unsigned char poption_mode_regular 	= ZBX_HK_MODE_REGULAR;
-static unsigned char poption_global_disabled	= ZBX_HK_OPTION_DISABLED;
+static unsigned char poption_mode_regular 	= TRX_HK_MODE_REGULAR;
+static unsigned char poption_global_disabled	= TRX_HK_OPTION_DISABLED;
 
 /* Housekeeper table mapping to housekeeping configuration values.    */
 /* This mapping is used to exclude disabled tables from housekeeping  */
@@ -168,7 +168,7 @@ static zbx_hk_history_rule_t	hk_history_rules[] = {
 
 static void	zbx_housekeeper_sigusr_handler(int flags)
 {
-	if (ZBX_RTC_HOUSEKEEPER_EXECUTE == ZBX_RTC_GET_MSG(flags))
+	if (TRX_RTC_HOUSEKEEPER_EXECUTE == TRX_RTC_GET_MSG(flags))
 	{
 		if (0 < zbx_sleep_get_remainder())
 		{
@@ -203,7 +203,7 @@ static int	hk_item_update_cache_compare(const void *d1, const void *d2)
 	zbx_hk_delete_queue_t	*r1 = *(zbx_hk_delete_queue_t **)d1;
 	zbx_hk_delete_queue_t	*r2 = *(zbx_hk_delete_queue_t **)d2;
 
-	ZBX_RETURN_IF_NOT_EQUAL(r1->itemid, r2->itemid);
+	TRX_RETURN_IF_NOT_EQUAL(r1->itemid, r2->itemid);
 
 	return 0;
 }
@@ -285,7 +285,7 @@ static void	hk_history_prepare(zbx_hk_history_rule_t *rule)
 		int			min_clock;
 		zbx_hk_item_cache_t	item_record;
 
-		ZBX_STR2UINT64(itemid, row[0]);
+		TRX_STR2UINT64(itemid, row[0]);
 		min_clock = atoi(row[1]);
 
 		item_record.itemid = itemid;
@@ -391,7 +391,7 @@ static void	hk_history_update(zbx_hk_history_rule_t *rules, int now)
 			" where i.flags in (%d,%d)"
 				" and i.hostid=h.hostid"
 				" and h.status in (%d,%d)",
-			ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED,
+			TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED,
 			HOST_STATUS_MONITORED, HOST_STATUS_NOT_MONITORED);
 
 	while (NULL != (row = DBfetch(result)))
@@ -400,31 +400,31 @@ static void	hk_history_update(zbx_hk_history_rule_t *rules, int now)
 		int			history, trends, value_type;
 		zbx_hk_history_rule_t	*rule;
 
-		ZBX_STR2UINT64(itemid, row[0]);
+		TRX_STR2UINT64(itemid, row[0]);
 		value_type = atoi(row[1]);
-		ZBX_STR2UINT64(hostid, row[4]);
+		TRX_STR2UINT64(hostid, row[4]);
 
 		if (value_type < ITEM_VALUE_TYPE_MAX &&
-				ZBX_HK_MODE_REGULAR == *(rule = rules + value_type)->poption_mode)
+				TRX_HK_MODE_REGULAR == *(rule = rules + value_type)->poption_mode)
 		{
 			tmp = zbx_strdup(tmp, row[2]);
 			substitute_simple_macros(NULL, NULL, NULL, NULL, &hostid, NULL, NULL, NULL, NULL, &tmp,
 					MACRO_TYPE_COMMON, NULL, 0);
 
-			if (SUCCEED != is_time_suffix(tmp, &history, ZBX_LENGTH_UNLIMITED))
+			if (SUCCEED != is_time_suffix(tmp, &history, TRX_LENGTH_UNLIMITED))
 			{
 				treegix_log(LOG_LEVEL_WARNING, "invalid history storage period '%s' for itemid '%s'",
 						tmp, row[0]);
 				continue;
 			}
 
-			if (0 != history && (ZBX_HK_HISTORY_MIN > history || ZBX_HK_PERIOD_MAX < history))
+			if (0 != history && (TRX_HK_HISTORY_MIN > history || TRX_HK_PERIOD_MAX < history))
 			{
 				treegix_log(LOG_LEVEL_WARNING, "invalid history storage period for itemid '%s'", row[0]);
 				continue;
 			}
 
-			if (0 != history && ZBX_HK_OPTION_DISABLED != *rule->poption_global)
+			if (0 != history && TRX_HK_OPTION_DISABLED != *rule->poption_global)
 				history = *rule->poption;
 
 			hk_history_item_update(rules, rule, ITEM_VALUE_TYPE_MAX, now, itemid, history);
@@ -435,26 +435,26 @@ static void	hk_history_update(zbx_hk_history_rule_t *rules, int now)
 			rule = rules + (value_type == ITEM_VALUE_TYPE_FLOAT ?
 					HK_UPDATE_CACHE_OFFSET_TREND_FLOAT : HK_UPDATE_CACHE_OFFSET_TREND_UINT);
 
-			if (ZBX_HK_MODE_REGULAR != *rule->poption_mode)
+			if (TRX_HK_MODE_REGULAR != *rule->poption_mode)
 				continue;
 
 			tmp = zbx_strdup(tmp, row[3]);
 			substitute_simple_macros(NULL, NULL, NULL, NULL, &hostid, NULL, NULL, NULL, NULL, &tmp,
 					MACRO_TYPE_COMMON, NULL, 0);
 
-			if (SUCCEED != is_time_suffix(tmp, &trends, ZBX_LENGTH_UNLIMITED))
+			if (SUCCEED != is_time_suffix(tmp, &trends, TRX_LENGTH_UNLIMITED))
 			{
 				treegix_log(LOG_LEVEL_WARNING, "invalid trends storage period '%s' for itemid '%s'",
 						tmp, row[0]);
 				continue;
 			}
-			else if (0 != trends && (ZBX_HK_TRENDS_MIN > trends || ZBX_HK_PERIOD_MAX < trends))
+			else if (0 != trends && (TRX_HK_TRENDS_MIN > trends || TRX_HK_PERIOD_MAX < trends))
 			{
 				treegix_log(LOG_LEVEL_WARNING, "invalid trends storage period for itemid '%s'", row[0]);
 				continue;
 			}
 
-			if (0 != trends && ZBX_HK_OPTION_DISABLED != *rule->poption_global)
+			if (0 != trends && TRX_HK_OPTION_DISABLED != *rule->poption_global)
 				trends = *rule->poption;
 
 			hk_history_item_update(rules + HK_UPDATE_CACHE_OFFSET_TREND_FLOAT, rule,
@@ -492,7 +492,7 @@ static void	hk_history_delete_queue_prepare_all(zbx_hk_history_rule_t *rules, in
 	/* prepare history item cache (hashset containing itemid:min_clock values) */
 	for (rule = rules; NULL != rule->table; rule++)
 	{
-		if (ZBX_HK_MODE_REGULAR == *rule->poption_mode)
+		if (TRX_HK_MODE_REGULAR == *rule->poption_mode)
 		{
 			if (0 == rule->item_cache.num_slots)
 				hk_history_prepare(rule);
@@ -550,7 +550,7 @@ static void	hk_drop_partition_for_rule(zbx_hk_history_rule_t *rule, int now)
 
 	history_seconds = *rule->poption;
 
-	if (ZBX_HK_HISTORY_MIN > history_seconds || ZBX_HK_PERIOD_MAX < history_seconds)
+	if (TRX_HK_HISTORY_MIN > history_seconds || TRX_HK_PERIOD_MAX < history_seconds)
 	{
 		treegix_log(LOG_LEVEL_WARNING, "invalid history storage period for table '%s'", rule->table);
 		return;
@@ -596,14 +596,14 @@ static int	housekeeping_history_and_trends(int now)
 	/* we need to clear records from */
 	for (rule = hk_history_rules; NULL != rule->table; rule++)
 	{
-		if (ZBX_HK_MODE_DISABLED == *rule->poption_mode)
+		if (TRX_HK_MODE_DISABLED == *rule->poption_mode)
 			continue;
 
 		/* If partitioning enabled for history and/or trends then drop partitions with expired history.  */
-		/* ZBX_HK_MODE_PARTITION is set during configuration sync based on the following: */
+		/* TRX_HK_MODE_PARTITION is set during configuration sync based on the following: */
 		/* 1. "Override item history (or trend) period" must be on 2. DB must be PostgreSQL */
 		/* 3. config.db_extension must be set to "timescaledb" */
-		if (ZBX_HK_MODE_PARTITION == *rule->poption_mode)
+		if (TRX_HK_MODE_PARTITION == *rule->poption_mode)
 		{
 			hk_drop_partition_for_rule(rule, now);
 			continue;
@@ -617,9 +617,9 @@ static int	housekeeping_history_and_trends(int now)
 		{
 			zbx_hk_delete_queue_t	*item_record = (zbx_hk_delete_queue_t *)rule->delete_queue.values[i];
 
-			rc = DBexecute("delete from %s where itemid=" ZBX_FS_UI64 " and clock<%d",
+			rc = DBexecute("delete from %s where itemid=" TRX_FS_UI64 " and clock<%d",
 					rule->table, item_record->itemid, item_record->min_clock);
-			if (ZBX_DB_OK < rc)
+			if (TRX_DB_OK < rc)
 				deleted += rc;
 		}
 
@@ -705,7 +705,7 @@ static int	housekeeping_process_rule(int now, zbx_hk_rule_t *rule)
 			{
 				zbx_uint64_t	id;
 
-				ZBX_STR2UINT64(id, row[0]);
+				TRX_STR2UINT64(id, row[0]);
 				zbx_vector_uint64_append(&ids, id);
 			}
 			DBfree_result(result);
@@ -718,7 +718,7 @@ static int	housekeeping_process_rule(int now, zbx_hk_rule_t *rule)
 			DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, rule->field_name, ids.values,
 					ids.values_num);
 
-			if (ZBX_DB_OK > (ret = DBexecute("%s", sql)))
+			if (TRX_DB_OK > (ret = DBexecute("%s", sql)))
 				break;
 
 			deleted += ret;
@@ -813,15 +813,15 @@ static int	hk_problem_cleanup(const char *table, int source, int object, zbx_uin
 	char	filter[MAX_STRING_LEN];
 	int	ret;
 
-	zbx_snprintf(filter, sizeof(filter), "source=%d and object=%d and objectid=" ZBX_FS_UI64,
+	zbx_snprintf(filter, sizeof(filter), "source=%d and object=%d and objectid=" TRX_FS_UI64,
 			source, object, objectid);
 
 	ret = DBdelete_from_table(table, filter, CONFIG_MAX_HOUSEKEEPER_DELETE);
 
-	if (ZBX_DB_OK > ret || (0 != CONFIG_MAX_HOUSEKEEPER_DELETE && ret >= CONFIG_MAX_HOUSEKEEPER_DELETE))
+	if (TRX_DB_OK > ret || (0 != CONFIG_MAX_HOUSEKEEPER_DELETE && ret >= CONFIG_MAX_HOUSEKEEPER_DELETE))
 		*more = 1;
 
-	return ZBX_DB_OK <= ret ? ret : 0;
+	return TRX_DB_OK <= ret ? ret : 0;
 }
 
 /******************************************************************************
@@ -844,14 +844,14 @@ static int	hk_table_cleanup(const char *table, const char *field, zbx_uint64_t i
 	char	filter[MAX_STRING_LEN];
 	int	ret;
 
-	zbx_snprintf(filter, sizeof(filter), "%s=" ZBX_FS_UI64, field, id);
+	zbx_snprintf(filter, sizeof(filter), "%s=" TRX_FS_UI64, field, id);
 
 	ret = DBdelete_from_table(table, filter, CONFIG_MAX_HOUSEKEEPER_DELETE);
 
-	if (ZBX_DB_OK > ret || (0 != CONFIG_MAX_HOUSEKEEPER_DELETE && ret >= CONFIG_MAX_HOUSEKEEPER_DELETE))
+	if (TRX_DB_OK > ret || (0 != CONFIG_MAX_HOUSEKEEPER_DELETE && ret >= CONFIG_MAX_HOUSEKEEPER_DELETE))
 		*more = 1;
 
-	return ZBX_DB_OK <= ret ? ret : 0;
+	return TRX_DB_OK <= ret ? ret : 0;
 }
 
 /******************************************************************************
@@ -890,7 +890,7 @@ static int	housekeeping_cleanup(void)
 	/* assemble list of tables included in the housekeeping procedure */
 	for (table = hk_cleanup_tables; NULL != table->name; table++)
 	{
-		if (ZBX_HK_MODE_REGULAR != *table->poption_mode || ZBX_HK_OPTION_ENABLED == *table->poption_global)
+		if (TRX_HK_MODE_REGULAR != *table->poption_mode || TRX_HK_OPTION_ENABLED == *table->poption_global)
 			continue;
 
 		table_name_esc = DBdyn_escape_string(table->name);
@@ -912,8 +912,8 @@ static int	housekeeping_cleanup(void)
 	{
 		int	more = 0;
 
-		ZBX_STR2UINT64(housekeeperid, row[0]);
-		ZBX_STR2UINT64(objectid, row[3]);
+		TRX_STR2UINT64(housekeeperid, row[0]);
+		TRX_STR2UINT64(objectid, row[3]);
 
 		if (0 == strcmp(row[1], "events")) /* events name is used for backwards compatibility with frontend */
 		{
@@ -947,7 +947,7 @@ static int	housekeeping_cleanup(void)
 
 	if (0 != housekeeperids.values_num)
 	{
-		zbx_vector_uint64_sort(&housekeeperids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_sort(&housekeeperids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		DBexecute_multiple_query("delete from housekeeper where", "housekeeperid", &housekeeperids);
 	}
 
@@ -966,7 +966,7 @@ static int	housekeeping_sessions(int now)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() now:%d", __func__, now);
 
-	if (ZBX_HK_OPTION_ENABLED == cfg.hk.sessions_mode)
+	if (TRX_HK_OPTION_ENABLED == cfg.hk.sessions_mode)
 	{
 		char	*sql = NULL;
 		size_t	sql_alloc = 0, sql_offset = 0;
@@ -975,7 +975,7 @@ static int	housekeeping_sessions(int now)
 		rc = DBdelete_from_table("sessions", sql, CONFIG_MAX_HOUSEKEEPER_DELETE);
 		zbx_free(sql);
 
-		if (ZBX_DB_OK <= rc)
+		if (TRX_DB_OK <= rc)
 			deleted = rc;
 	}
 
@@ -988,7 +988,7 @@ static int	housekeeping_services(int now)
 {
 	static zbx_hk_rule_t	rule = {"service_alarms", "servicealarmid", "", 0, &cfg.hk.services};
 
-	if (ZBX_HK_OPTION_ENABLED == cfg.hk.services_mode)
+	if (TRX_HK_OPTION_ENABLED == cfg.hk.services_mode)
 		return housekeeping_process_rule(now, &rule);
 
 	return 0;
@@ -998,7 +998,7 @@ static int	housekeeping_audit(int now)
 {
 	static zbx_hk_rule_t	rule = {"auditlog", "auditid", "", 0, &cfg.hk.audit};
 
-	if (ZBX_HK_OPTION_ENABLED == cfg.hk.audit_mode)
+	if (TRX_HK_OPTION_ENABLED == cfg.hk.audit_mode)
 		return housekeeping_process_rule(now, &rule);
 
 	return 0;
@@ -1006,42 +1006,42 @@ static int	housekeeping_audit(int now)
 
 static int	housekeeping_events(int now)
 {
-#define ZBX_HK_EVENT_RULE	" and not exists (select null from problem where events.eventid=problem.eventid)" \
+#define TRX_HK_EVENT_RULE	" and not exists (select null from problem where events.eventid=problem.eventid)" \
 				" and not exists (select null from problem where events.eventid=problem.r_eventid)"
 
 	static zbx_hk_rule_t	rules[] = {
-		{"events", "eventid", "events.source=" ZBX_STR(EVENT_SOURCE_TRIGGERS)
-			" and events.object=" ZBX_STR(EVENT_OBJECT_TRIGGER)
-			ZBX_HK_EVENT_RULE, 0, &cfg.hk.events_trigger},
-		{"events", "eventid", "events.source=" ZBX_STR(EVENT_SOURCE_INTERNAL)
-			" and events.object=" ZBX_STR(EVENT_OBJECT_TRIGGER)
-			ZBX_HK_EVENT_RULE, 0, &cfg.hk.events_internal},
-		{"events", "eventid", "events.source=" ZBX_STR(EVENT_SOURCE_INTERNAL)
-			" and events.object=" ZBX_STR(EVENT_OBJECT_ITEM)
-			ZBX_HK_EVENT_RULE, 0, &cfg.hk.events_internal},
-		{"events", "eventid", "events.source=" ZBX_STR(EVENT_SOURCE_INTERNAL)
-			" and events.object=" ZBX_STR(EVENT_OBJECT_LLDRULE)
-			ZBX_HK_EVENT_RULE, 0, &cfg.hk.events_internal},
-		{"events", "eventid", "events.source=" ZBX_STR(EVENT_SOURCE_DISCOVERY)
-			" and events.object=" ZBX_STR(EVENT_OBJECT_DHOST), 0, &cfg.hk.events_discovery},
-		{"events", "eventid", "events.source=" ZBX_STR(EVENT_SOURCE_DISCOVERY)
-			" and events.object=" ZBX_STR(EVENT_OBJECT_DSERVICE), 0, &cfg.hk.events_discovery},
-		{"events", "eventid", "events.source=" ZBX_STR(EVENT_SOURCE_AUTO_REGISTRATION)
-			" and events.object=" ZBX_STR(EVENT_OBJECT_TREEGIX_ACTIVE), 0, &cfg.hk.events_autoreg},
+		{"events", "eventid", "events.source=" TRX_STR(EVENT_SOURCE_TRIGGERS)
+			" and events.object=" TRX_STR(EVENT_OBJECT_TRIGGER)
+			TRX_HK_EVENT_RULE, 0, &cfg.hk.events_trigger},
+		{"events", "eventid", "events.source=" TRX_STR(EVENT_SOURCE_INTERNAL)
+			" and events.object=" TRX_STR(EVENT_OBJECT_TRIGGER)
+			TRX_HK_EVENT_RULE, 0, &cfg.hk.events_internal},
+		{"events", "eventid", "events.source=" TRX_STR(EVENT_SOURCE_INTERNAL)
+			" and events.object=" TRX_STR(EVENT_OBJECT_ITEM)
+			TRX_HK_EVENT_RULE, 0, &cfg.hk.events_internal},
+		{"events", "eventid", "events.source=" TRX_STR(EVENT_SOURCE_INTERNAL)
+			" and events.object=" TRX_STR(EVENT_OBJECT_LLDRULE)
+			TRX_HK_EVENT_RULE, 0, &cfg.hk.events_internal},
+		{"events", "eventid", "events.source=" TRX_STR(EVENT_SOURCE_DISCOVERY)
+			" and events.object=" TRX_STR(EVENT_OBJECT_DHOST), 0, &cfg.hk.events_discovery},
+		{"events", "eventid", "events.source=" TRX_STR(EVENT_SOURCE_DISCOVERY)
+			" and events.object=" TRX_STR(EVENT_OBJECT_DSERVICE), 0, &cfg.hk.events_discovery},
+		{"events", "eventid", "events.source=" TRX_STR(EVENT_SOURCE_AUTO_REGISTRATION)
+			" and events.object=" TRX_STR(EVENT_OBJECT_TREEGIX_ACTIVE), 0, &cfg.hk.events_autoreg},
 		{NULL}
 	};
 
 	int		deleted = 0;
 	zbx_hk_rule_t	*rule;
 
-	if (ZBX_HK_OPTION_ENABLED != cfg.hk.events_mode)
+	if (TRX_HK_OPTION_ENABLED != cfg.hk.events_mode)
 		return 0;
 
 	for (rule = rules; NULL != rule->table; rule++)
 		deleted += housekeeping_process_rule(now, rule);
 
 	return deleted;
-#undef ZBX_HK_EVENT_RULE
+#undef TRX_HK_EVENT_RULE
 }
 
 static int	housekeeping_problems(int now)
@@ -1052,7 +1052,7 @@ static int	housekeeping_problems(int now)
 
 	rc = DBexecute("delete from problem where r_clock<>0 and r_clock<%d", now - SEC_PER_DAY);
 
-	if (ZBX_DB_OK <= rc)
+	if (TRX_DB_OK <= rc)
 		deleted = rc;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, deleted);
@@ -1068,7 +1068,7 @@ static int	housekeeping_proxy_dhistory(int now)
 
 	rc = DBexecute("delete from proxy_dhistory where clock<%d", now - SEC_PER_DAY);
 
-	if (ZBX_DB_OK <= rc)
+	if (TRX_DB_OK <= rc)
 		deleted = rc;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, deleted);
@@ -1087,7 +1087,7 @@ static int	get_housekeeping_period(double time_slept)
 		return (int)time_slept;
 }
 
-ZBX_THREAD_ENTRY(housekeeper_thread, args)
+TRX_THREAD_ENTRY(housekeeper_thread, args)
 {
 	int	now, d_history_and_trends, d_cleanup, d_events, d_problems, d_sessions, d_services, d_audit, sleeptime,
 		records;
@@ -1116,7 +1116,7 @@ ZBX_THREAD_ENTRY(housekeeper_thread, args)
 
 	zbx_set_sigusr_handler(zbx_housekeeper_sigusr_handler);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 
@@ -1125,7 +1125,7 @@ ZBX_THREAD_ENTRY(housekeeper_thread, args)
 		else
 			zbx_sleep_loop(sleeptime);
 
-		if (!ZBX_IS_RUNNING())
+		if (!TRX_IS_RUNNING())
 			break;
 
 		time_now = zbx_time();
@@ -1139,9 +1139,9 @@ ZBX_THREAD_ENTRY(housekeeper_thread, args)
 		now = time(NULL);
 
 		zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
-		DBconnect(ZBX_DB_CONNECT_NORMAL);
+		DBconnect(TRX_DB_CONNECT_NORMAL);
 
-		zbx_config_get(&cfg, ZBX_CONFIG_FLAGS_HOUSEKEEPER | ZBX_CONFIG_FLAGS_DB_EXTENSION);
+		zbx_config_get(&cfg, TRX_CONFIG_FLAGS_HOUSEKEEPER | TRX_CONFIG_FLAGS_DB_EXTENSION);
 
 		zbx_setproctitle("%s [removing old history and trends]",
 				get_process_type_string(process_type));
@@ -1171,7 +1171,7 @@ ZBX_THREAD_ENTRY(housekeeper_thread, args)
 		sec = zbx_time() - sec;
 
 		treegix_log(LOG_LEVEL_WARNING, "%s [deleted %d hist/trends, %d items/triggers, %d events, %d problems,"
-				" %d sessions, %d alarms, %d audit, %d records in " ZBX_FS_DBL " sec, %s]",
+				" %d sessions, %d alarms, %d audit, %d records in " TRX_FS_DBL " sec, %s]",
 				get_process_type_string(process_type), d_history_and_trends, d_cleanup, d_events,
 				d_problems, d_sessions, d_services, d_audit, records, sec, sleeptext);
 
@@ -1182,7 +1182,7 @@ ZBX_THREAD_ENTRY(housekeeper_thread, args)
 		zbx_dc_cleanup_data_sessions();
 
 		zbx_setproctitle("%s [deleted %d hist/trends, %d items/triggers, %d events, %d sessions, %d alarms,"
-				" %d audit items, %d records in " ZBX_FS_DBL " sec, %s]",
+				" %d audit items, %d records in " TRX_FS_DBL " sec, %s]",
 				get_process_type_string(process_type), d_history_and_trends, d_cleanup, d_events,
 				d_sessions, d_services, d_audit, records, sec, sleeptext);
 

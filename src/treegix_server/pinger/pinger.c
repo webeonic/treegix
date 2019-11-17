@@ -100,7 +100,7 @@ clean:
  * Comments:                                                                  *
  *                                                                            *
  ******************************************************************************/
-static void	process_values(icmpitem_t *items, int first_index, int last_index, ZBX_FPING_HOST *hosts,
+static void	process_values(icmpitem_t *items, int first_index, int last_index, TRX_FPING_HOST *hosts,
 		int hosts_count, zbx_timespec_t *ts, int ping_result, char *error)
 {
 	int		i, h;
@@ -111,7 +111,7 @@ static void	process_values(icmpitem_t *items, int first_index, int last_index, Z
 
 	for (h = 0; h < hosts_count; h++)
 	{
-		const ZBX_FPING_HOST	*host = &hosts[h];
+		const TRX_FPING_HOST	*host = &hosts[h];
 
 		if (NOTSUPPORTED == ping_result)
 		{
@@ -120,7 +120,7 @@ static void	process_values(icmpitem_t *items, int first_index, int last_index, Z
 		else
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "host [%s] cnt=%d rcv=%d"
-					" min=" ZBX_FS_DBL " max=" ZBX_FS_DBL " sum=" ZBX_FS_DBL,
+					" min=" TRX_FS_DBL " max=" TRX_FS_DBL " sum=" TRX_FS_DBL,
 					host->addr, host->cnt, host->rcv, host->min, host->max, host->sum);
 		}
 
@@ -164,8 +164,8 @@ static void	process_values(icmpitem_t *items, int first_index, int last_index, Z
 							break;
 					}
 
-					if (0 < value_dbl && ZBX_FLOAT_PRECISION > value_dbl)
-						value_dbl = ZBX_FLOAT_PRECISION;
+					if (0 < value_dbl && TRX_FLOAT_PRECISION > value_dbl)
+						value_dbl = TRX_FLOAT_PRECISION;
 
 					process_value(item->itemid, NULL, &value_dbl, ts, SUCCEED, NULL);
 					break;
@@ -398,11 +398,11 @@ static void	get_pinger_hosts(icmpitem_t **icmp_items, int *icmp_items_alloc, int
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	num = DCconfig_get_poller_items(ZBX_POLLER_TYPE_PINGER, items);
+	num = DCconfig_get_poller_items(TRX_POLLER_TYPE_PINGER, items);
 
 	for (i = 0; i < num; i++)
 	{
-		ZBX_STRDUP(items[i].key, items[i].key_orig);
+		TRX_STRDUP(items[i].key, items[i].key_orig);
 		rc = substitute_key_macros(&items[i].key, NULL, &items[i], NULL, NULL, MACRO_TYPE_ITEM_KEY, error,
 				sizeof(error));
 
@@ -450,11 +450,11 @@ static void	free_hosts(icmpitem_t **items, int *items_count)
 	*items_count = 0;
 }
 
-static void	add_pinger_host(ZBX_FPING_HOST **hosts, int *hosts_alloc, int *hosts_count, char *addr)
+static void	add_pinger_host(TRX_FPING_HOST **hosts, int *hosts_alloc, int *hosts_count, char *addr)
 {
 	int		i;
 	size_t		sz;
-	ZBX_FPING_HOST	*h;
+	TRX_FPING_HOST	*h;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() addr:'%s'", __func__, addr);
 
@@ -469,12 +469,12 @@ static void	add_pinger_host(ZBX_FPING_HOST **hosts, int *hosts_alloc, int *hosts
 	if (*hosts_alloc < *hosts_count)
 	{
 		*hosts_alloc += 4;
-		sz = *hosts_alloc * sizeof(ZBX_FPING_HOST);
-		*hosts = (ZBX_FPING_HOST *)zbx_realloc(*hosts, sz);
+		sz = *hosts_alloc * sizeof(TRX_FPING_HOST);
+		*hosts = (TRX_FPING_HOST *)zbx_realloc(*hosts, sz);
 	}
 
 	h = &(*hosts)[*hosts_count - 1];
-	memset(h, 0, sizeof(ZBX_FPING_HOST));
+	memset(h, 0, sizeof(TRX_FPING_HOST));
 	h->addr = addr;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -499,7 +499,7 @@ static void	process_pinger_hosts(icmpitem_t *items, int items_count)
 {
 	int			i, first_index = 0, ping_result;
 	char			error[ITEM_ERROR_LEN_MAX];
-	static ZBX_FPING_HOST	*hosts = NULL;
+	static TRX_FPING_HOST	*hosts = NULL;
 	static int		hosts_alloc = 4;
 	int			hosts_count = 0;
 	zbx_timespec_t		ts;
@@ -507,9 +507,9 @@ static void	process_pinger_hosts(icmpitem_t *items, int items_count)
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL == hosts)
-		hosts = (ZBX_FPING_HOST *)zbx_malloc(hosts, sizeof(ZBX_FPING_HOST) * hosts_alloc);
+		hosts = (TRX_FPING_HOST *)zbx_malloc(hosts, sizeof(TRX_FPING_HOST) * hosts_alloc);
 
-	for (i = 0; i < items_count && ZBX_IS_RUNNING(); i++)
+	for (i = 0; i < items_count && TRX_IS_RUNNING(); i++)
 	{
 		add_pinger_host(&hosts, &hosts_alloc, &hosts_count, items[i].addr);
 
@@ -549,7 +549,7 @@ static void	process_pinger_hosts(icmpitem_t *items, int items_count)
  * Comments: never returns                                                    *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(pinger_thread, args)
+TRX_THREAD_ENTRY(pinger_thread, args)
 {
 	int			nextcheck, sleeptime, items_count = 0, itc;
 	double			sec;
@@ -566,7 +566,7 @@ ZBX_THREAD_ENTRY(pinger_thread, args)
 	if (NULL == items)
 		items = (icmpitem_t *)zbx_malloc(items, sizeof(icmpitem_t) * items_alloc);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 		zbx_update_env(sec);
@@ -580,10 +580,10 @@ ZBX_THREAD_ENTRY(pinger_thread, args)
 
 		free_hosts(&items, &items_count);
 
-		nextcheck = DCconfig_get_poller_nextcheck(ZBX_POLLER_TYPE_PINGER);
+		nextcheck = DCconfig_get_poller_nextcheck(TRX_POLLER_TYPE_PINGER);
 		sleeptime = calculate_sleeptime(nextcheck, POLLER_DELAY);
 
-		zbx_setproctitle("%s #%d [got %d values in " ZBX_FS_DBL " sec, idle %d sec]",
+		zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, idle %d sec]",
 				get_process_type_string(process_type), process_num, itc, sec, sleeptime);
 
 		zbx_sleep_loop(sleeptime);

@@ -19,7 +19,7 @@ $workingTimeView = (new CTabView())
 		(new CFormList())
 			->addRow((new CLabel(_('Working time'), 'work_period'))->setAsteriskMark(),
 				(new CTextBox('work_period', $data['work_period']))
-					->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 					->setAriaRequired()
 					->setAttribute('autofocus', 'autofocus')
 			)
@@ -27,7 +27,7 @@ $workingTimeView = (new CTabView())
 	->setFooter(makeFormFooter(new CSubmit('update', _('Update'))));
 
 $workingTimeForm = (new CForm())
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addItem($workingTimeView);
 
 $widget->addItem($workingTimeForm);

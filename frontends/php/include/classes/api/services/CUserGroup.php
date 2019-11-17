@@ -185,7 +185,7 @@ class CUserGroup extends CApiService {
 	 */
 	private function validateCreate(array &$usrgrps) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only Super Admins can create user groups.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only Super Admins can create user groups.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['name']], 'fields' => [
@@ -205,7 +205,7 @@ class CUserGroup extends CApiService {
 			'userids' =>		['type' => API_IDS, 'flags' => API_NORMALIZE]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $usrgrps, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$this->checkDuplicates(zbx_objectValues($usrgrps, 'name'));
@@ -272,7 +272,7 @@ class CUserGroup extends CApiService {
 	 */
 	private function validateUpdate(array &$usrgrps, array &$db_usrgrps = null) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only Super Admins can update user groups.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only Super Admins can update user groups.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['usrgrpid'], ['name']], 'fields' => [
@@ -293,7 +293,7 @@ class CUserGroup extends CApiService {
 			'userids' =>		['type' => API_IDS, 'flags' => API_NORMALIZE]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $usrgrps, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		// Check user group names.
@@ -308,7 +308,7 @@ class CUserGroup extends CApiService {
 		foreach ($usrgrps as $usrgrp) {
 			// Check if this user group exists.
 			if (!array_key_exists($usrgrp['usrgrpid'], $db_usrgrps)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -345,7 +345,7 @@ class CUserGroup extends CApiService {
 		]);
 
 		if ($db_usrgrps) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('User group "%1$s" already exists.', $db_usrgrps[0]['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('User group "%1$s" already exists.', $db_usrgrps[0]['name']));
 		}
 	}
 
@@ -382,7 +382,7 @@ class CUserGroup extends CApiService {
 
 		foreach ($userids as $userid) {
 			if (!array_key_exists($userid, $db_users)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('User with ID "%1$s" is not available.', $userid));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('User with ID "%1$s" is not available.', $userid));
 			}
 		}
 	}
@@ -425,7 +425,7 @@ class CUserGroup extends CApiService {
 
 		foreach ($groupids as $groupid) {
 			if (!array_key_exists($groupid, $db_groups)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Host group with ID "%1$s" is not available.', $groupid));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Host group with ID "%1$s" is not available.', $groupid));
 			}
 		}
 	}
@@ -442,7 +442,7 @@ class CUserGroup extends CApiService {
 			if (array_key_exists('tag_filters', $usrgrp)) {
 				foreach ($usrgrp['tag_filters'] as $tag_filter) {
 					if ($tag_filter['tag'] === '' && $tag_filter['value'] !== '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', _('tag'), _('cannot be empty'))
 						);
 					}
@@ -514,7 +514,7 @@ class CUserGroup extends CApiService {
 		foreach ($usrgrps as $usrgrp) {
 			if (self::userGroupDisabled($usrgrp, $method, $db_usrgrps)
 					&& uint_in_array(self::$userData['userid'], $usrgrp['userids'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_('User cannot add himself to a disabled group or a group with disabled GUI access.')
 				);
 			}
@@ -589,7 +589,7 @@ class CUserGroup extends CApiService {
 
 		while ($db_user = DBfetch($db_users)) {
 			if ($db_user['usrgrp_num'] == $del_userids[$db_user['userid']]) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('User "%1$s" cannot be without user group.', $db_user['alias'])
 				);
 			}
@@ -836,12 +836,12 @@ class CUserGroup extends CApiService {
 	 */
 	protected function validateDelete(array &$usrgrpids, array &$db_usrgrps = null) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only Super Admins can delete user groups.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only Super Admins can delete user groups.'));
 		}
 
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $usrgrpids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_usrgrps = DB::select('usrgrp', [
@@ -855,7 +855,7 @@ class CUserGroup extends CApiService {
 		foreach ($usrgrpids as $usrgrpid) {
 			// Check if this user group exists.
 			if (!array_key_exists($usrgrpid, $db_usrgrps)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -877,7 +877,7 @@ class CUserGroup extends CApiService {
 		);
 
 		if ($db_action = DBfetch($db_actions)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('User group "%1$s" is used in "%2$s" action.',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('User group "%1$s" is used in "%2$s" action.',
 				$db_usrgrps[$db_action['usrgrpid']]['name'], $db_action['name']
 			));
 		}
@@ -890,7 +890,7 @@ class CUserGroup extends CApiService {
 		]);
 
 		if ($db_scripts) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('User group "%1$s" is used in script "%2$s".',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('User group "%1$s" is used in script "%2$s".',
 				$db_usrgrps[$db_scripts[0]['usrgrpid']]['name'], $db_scripts[0]['name']
 			));
 		}
@@ -899,7 +899,7 @@ class CUserGroup extends CApiService {
 		$config = select_config();
 
 		if (array_key_exists($config['alert_usrgrpid'], $db_usrgrps)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+			self::exception(TRX_API_ERROR_PARAMETERS, _s(
 				'User group "%1$s" is used in configuration for database down messages.',
 				$db_usrgrps[$config['alert_usrgrpid']]['name']
 			));

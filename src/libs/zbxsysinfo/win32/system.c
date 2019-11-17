@@ -36,13 +36,13 @@ static wchar_t	*read_registry_value(HKEY hKey, LPCTSTR name)
  ******************************************************************************/
 const OSVERSIONINFOEX		*zbx_win_getversion(void)
 {
-#	define ZBX_REGKEY_VERSION		"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"
-#	define ZBX_REGVALUE_CURRENTVERSION	"CurrentVersion"
-#	define ZBX_REGVALUE_CURRENTBUILDNUMBER	"CurrentBuildNumber"
-#	define ZBX_REGVALUE_CSDVERSION		"CSDVersion"
+#	define TRX_REGKEY_VERSION		"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"
+#	define TRX_REGVALUE_CURRENTVERSION	"CurrentVersion"
+#	define TRX_REGVALUE_CURRENTBUILDNUMBER	"CurrentBuildNumber"
+#	define TRX_REGVALUE_CSDVERSION		"CSDVersion"
 
-#	define ZBX_REGKEY_PRODUCT		"System\\CurrentControlSet\\Control\\ProductOptions"
-#	define ZBX_REGVALUE_PRODUCTTYPE		"ProductType"
+#	define TRX_REGKEY_PRODUCT		"System\\CurrentControlSet\\Control\\ProductOptions"
+#	define TRX_REGVALUE_PRODUCTTYPE		"ProductType"
 
 	static OSVERSIONINFOEX	vi = {sizeof(OSVERSIONINFOEX)};
 
@@ -53,15 +53,15 @@ const OSVERSIONINFOEX		*zbx_win_getversion(void)
 	if (0 != vi.dwMajorVersion)
 		return &vi;
 
-	if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT(ZBX_REGKEY_VERSION), 0, KEY_READ, &h_key_registry))
+	if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT(TRX_REGKEY_VERSION), 0, KEY_READ, &h_key_registry))
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "failed to open registry key '%s'", ZBX_REGKEY_VERSION);
+		treegix_log(LOG_LEVEL_DEBUG, "failed to open registry key '%s'", TRX_REGKEY_VERSION);
 		goto out;
 	}
 
-	if (NULL == (key_value = read_registry_value(h_key_registry, TEXT(ZBX_REGVALUE_CURRENTVERSION))))
+	if (NULL == (key_value = read_registry_value(h_key_registry, TEXT(TRX_REGVALUE_CURRENTVERSION))))
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "failed to read registry value '%s'", ZBX_REGVALUE_CURRENTVERSION);
+		treegix_log(LOG_LEVEL_DEBUG, "failed to read registry value '%s'", TRX_REGVALUE_CURRENTVERSION);
 		goto out;
 	}
 
@@ -81,17 +81,17 @@ const OSVERSIONINFOEX		*zbx_win_getversion(void)
 	}
 	else
 	{
-		if (NULL != (key_value = read_registry_value(h_key_registry, TEXT(ZBX_REGVALUE_CSDVERSION))))
+		if (NULL != (key_value = read_registry_value(h_key_registry, TEXT(TRX_REGVALUE_CSDVERSION))))
 		{
 			wcscpy_s(vi.szCSDVersion, sizeof(vi.szCSDVersion) / sizeof(*vi.szCSDVersion), key_value);
 
 			zbx_free(key_value);
 		}
 
-		if (NULL == (key_value = read_registry_value(h_key_registry, TEXT(ZBX_REGVALUE_CURRENTBUILDNUMBER))))
+		if (NULL == (key_value = read_registry_value(h_key_registry, TEXT(TRX_REGVALUE_CURRENTBUILDNUMBER))))
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "failed to read registry value '%s'",
-					ZBX_REGVALUE_CURRENTBUILDNUMBER);
+					TRX_REGVALUE_CURRENTBUILDNUMBER);
 			goto out;
 		}
 
@@ -101,16 +101,16 @@ const OSVERSIONINFOEX		*zbx_win_getversion(void)
 		RegCloseKey(h_key_registry);
 		h_key_registry = NULL;
 
-		if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT(ZBX_REGKEY_PRODUCT), 0, KEY_READ,
+		if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT(TRX_REGKEY_PRODUCT), 0, KEY_READ,
 				&h_key_registry))
 		{
-			treegix_log(LOG_LEVEL_DEBUG, "failed to open registry key '%s'", ZBX_REGKEY_PRODUCT);
+			treegix_log(LOG_LEVEL_DEBUG, "failed to open registry key '%s'", TRX_REGKEY_PRODUCT);
 			goto out;
 		}
 
-		if (NULL == (key_value = read_registry_value(h_key_registry, TEXT(ZBX_REGVALUE_PRODUCTTYPE))))
+		if (NULL == (key_value = read_registry_value(h_key_registry, TEXT(TRX_REGVALUE_PRODUCTTYPE))))
 		{
-			treegix_log(LOG_LEVEL_DEBUG, "failed to read registry value '%s'", ZBX_REGVALUE_PRODUCTTYPE);
+			treegix_log(LOG_LEVEL_DEBUG, "failed to read registry value '%s'", TRX_REGVALUE_PRODUCTTYPE);
 			goto out;
 		}
 

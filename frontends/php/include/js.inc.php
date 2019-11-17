@@ -131,21 +131,21 @@ function get_js($script, $jQueryDocumentReady = false) {
 
 // add JavaScript for calling after page loading
 function zbx_add_post_js($script) {
-	global $ZBX_PAGE_POST_JS;
+	global $TRX_PAGE_POST_JS;
 
-	if ($ZBX_PAGE_POST_JS === null) {
-		$ZBX_PAGE_POST_JS = [];
+	if ($TRX_PAGE_POST_JS === null) {
+		$TRX_PAGE_POST_JS = [];
 	}
 
-	if (!in_array($script, $ZBX_PAGE_POST_JS)) {
-		$ZBX_PAGE_POST_JS[] = $script;
+	if (!in_array($script, $TRX_PAGE_POST_JS)) {
+		$TRX_PAGE_POST_JS[] = $script;
 	}
 }
 
 function insertPagePostJs() {
-	global $ZBX_PAGE_POST_JS;
+	global $TRX_PAGE_POST_JS;
 
-	if ($ZBX_PAGE_POST_JS) {
-		echo get_js(implode("\n", $ZBX_PAGE_POST_JS), true);
+	if ($TRX_PAGE_POST_JS) {
+		echo get_js(implode("\n", $TRX_PAGE_POST_JS), true);
 	}
 }

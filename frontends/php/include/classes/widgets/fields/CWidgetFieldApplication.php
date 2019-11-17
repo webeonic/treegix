@@ -24,7 +24,7 @@ class CWidgetFieldApplication extends CWidgetField {
 		parent::__construct($name, $label);
 
 		$this->filter_parameters['dstfld1'] = $name;
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_STR);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_STR);
 		$this->setDefault('');
 	}
 

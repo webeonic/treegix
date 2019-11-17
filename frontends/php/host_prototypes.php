@@ -15,37 +15,37 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'hostid' =>					[T_ZBX_INT, O_NO,	P_SYS,	DB_ID,		'(isset({form}) && ({form} == "update"))'],
-	'parent_discoveryid' =>		[T_ZBX_INT, O_MAND, P_SYS,	DB_ID, null],
-	'host' =>		        	[T_ZBX_STR, O_OPT, null,		NOT_EMPTY,	'isset({add}) || isset({update})', _('Host name')],
-	'name' =>	            	[T_ZBX_STR, O_OPT, null,		null,		'isset({add}) || isset({update})'],
-	'status' =>		        	[T_ZBX_INT, O_OPT, null,		IN([HOST_STATUS_NOT_MONITORED, HOST_STATUS_MONITORED]), null],
-	'inventory_mode' =>			[T_ZBX_INT, O_OPT, null, IN([HOST_INVENTORY_DISABLED, HOST_INVENTORY_MANUAL, HOST_INVENTORY_AUTOMATIC]), null],
-	'templates' =>		    	[T_ZBX_STR, O_OPT, null, NOT_EMPTY,	null],
-	'add_template' =>			[T_ZBX_STR, O_OPT, null,		null,	null],
-	'add_templates' =>		    [T_ZBX_STR, O_OPT, null, NOT_EMPTY,	null],
-	'group_links' =>			[T_ZBX_STR, O_OPT, null, NOT_EMPTY,	null],
-	'group_prototypes' =>		[T_ZBX_STR, O_OPT, null, NOT_EMPTY,	null],
-	'unlink' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,		null],
-	'group_hostid' =>			[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
-	'show_inherited_macros' =>	[T_ZBX_INT, O_OPT, null, IN([0,1]), null],
+	'hostid' =>					[T_TRX_INT, O_NO,	P_SYS,	DB_ID,		'(isset({form}) && ({form} == "update"))'],
+	'parent_discoveryid' =>		[T_TRX_INT, O_MAND, P_SYS,	DB_ID, null],
+	'host' =>		        	[T_TRX_STR, O_OPT, null,		NOT_EMPTY,	'isset({add}) || isset({update})', _('Host name')],
+	'name' =>	            	[T_TRX_STR, O_OPT, null,		null,		'isset({add}) || isset({update})'],
+	'status' =>		        	[T_TRX_INT, O_OPT, null,		IN([HOST_STATUS_NOT_MONITORED, HOST_STATUS_MONITORED]), null],
+	'inventory_mode' =>			[T_TRX_INT, O_OPT, null, IN([HOST_INVENTORY_DISABLED, HOST_INVENTORY_MANUAL, HOST_INVENTORY_AUTOMATIC]), null],
+	'templates' =>		    	[T_TRX_STR, O_OPT, null, NOT_EMPTY,	null],
+	'add_template' =>			[T_TRX_STR, O_OPT, null,		null,	null],
+	'add_templates' =>		    [T_TRX_STR, O_OPT, null, NOT_EMPTY,	null],
+	'group_links' =>			[T_TRX_STR, O_OPT, null, NOT_EMPTY,	null],
+	'group_prototypes' =>		[T_TRX_STR, O_OPT, null, NOT_EMPTY,	null],
+	'unlink' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,		null],
+	'group_hostid' =>			[T_TRX_INT, O_OPT, null,	DB_ID,		null],
+	'show_inherited_macros' =>	[T_TRX_INT, O_OPT, null, IN([0,1]), null],
 	// actions
-	'action' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 									IN('"hostprototype.massdelete","hostprototype.massdisable",'.
 										'"hostprototype.massenable"'
 									),
 									null
 								],
-	'add' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'clone' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'delete' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel' =>					[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'form' =>					[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'form_refresh' =>			[T_ZBX_INT, O_OPT, null,	null,		null],
+	'add' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'clone' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'delete' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel' =>					[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'form' =>					[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'form_refresh' =>			[T_TRX_INT, O_OPT, null,	null,		null],
 	// sort and sortorder
-	'sort' =>					[T_ZBX_STR, O_OPT, P_SYS, IN('"name","status"'),						null],
-	'sortorder' =>				[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>					[T_TRX_STR, O_OPT, P_SYS, IN('"name","status"'),						null],
+	'sortorder' =>				[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -58,7 +58,7 @@ if (getRequest('parent_discoveryid')) {
 		'editable' => true
 	]);
 	$discoveryRule = reset($discoveryRule);
-	if (!$discoveryRule || $discoveryRule['hosts'][0]['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+	if (!$discoveryRule || $discoveryRule['hosts'][0]['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 		access_deny();
 	}
 
@@ -366,7 +366,7 @@ if (hasRequest('form')) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

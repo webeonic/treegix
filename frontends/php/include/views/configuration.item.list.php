@@ -39,7 +39,7 @@ $itemTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_items'))->onClick("checkAll('".$itemForm->getName()."', 'all_items', 'group_itemid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		_('Wizard'),
 		($data['hostid'] == 0) ? _('Host') : null,
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'], $url),
@@ -66,14 +66,14 @@ $update_interval_parser = new CUpdateIntervalParser(['usermacros' => true]);
 foreach ($data['items'] as $item) {
 	// description
 	$description = [];
-	$description[] = makeItemTemplatePrefix($item['itemid'], $data['parent_templates'], ZBX_FLAG_DISCOVERY_NORMAL);
+	$description[] = makeItemTemplatePrefix($item['itemid'], $data['parent_templates'], TRX_FLAG_DISCOVERY_NORMAL);
 
 	if (!empty($item['discoveryRule'])) {
 		$description[] = (new CLink(CHtml::encode($item['discoveryRule']['name']),
 			(new CUrl('disc_prototypes.php'))->setArgument('parent_discoveryid', $item['discoveryRule']['itemid'])
 		))
-			->addClass(ZBX_STYLE_LINK_ALT)
-			->addClass(ZBX_STYLE_ORANGE);
+			->addClass(TRX_STYLE_LINK_ALT)
+			->addClass(TRX_STYLE_ORANGE);
 		$description[] = NAME_DELIMITER;
 	}
 
@@ -85,8 +85,8 @@ foreach ($data['items'] as $item) {
 			$description[] = (new CLink(CHtml::encode($item['master_item']['name_expanded']),
 				'?form=update&hostid='.$item['hostid'].'&itemid='.$item['master_item']['itemid']
 			))
-				->addClass(ZBX_STYLE_LINK_ALT)
-				->addClass(ZBX_STYLE_TEAL);
+				->addClass(TRX_STYLE_LINK_ALT)
+				->addClass(TRX_STYLE_TEAL);
 		}
 
 		$description[] = NAME_DELIMITER;
@@ -102,7 +102,7 @@ foreach ($data['items'] as $item) {
 		'?group_itemid[]='.$item['itemid'].
 			'&hostid='.$item['hostid'].
 			'&action='.($item['status'] == ITEM_STATUS_DISABLED ? 'item.massenable' : 'item.massdisable')))
-		->addClass(ZBX_STYLE_LINK_ACTION)
+		->addClass(TRX_STYLE_LINK_ACTION)
 		->addClass(itemIndicatorStyle($item['status'], $item['state']))
 		->addSID()
 	);
@@ -115,7 +115,7 @@ foreach ($data['items'] as $item) {
 	}
 
 	// discovered item lifetime indicator
-	if ($item['flags'] == ZBX_FLAG_DISCOVERY_CREATED && $item['itemDiscovery']['ts_delete'] != 0) {
+	if ($item['flags'] == TRX_FLAG_DISCOVERY_CREATED && $item['itemDiscovery']['ts_delete'] != 0) {
 		$info_icons[] = getItemLifetimeIndicator($current_time, $item['itemDiscovery']['ts_delete']);
 	}
 
@@ -127,12 +127,12 @@ foreach ($data['items'] as $item) {
 
 		$trigger_description = [];
 		$trigger_description[] = makeTriggerTemplatePrefix($trigger['triggerid'], $data['trigger_parent_templates'],
-			ZBX_FLAG_DISCOVERY_NORMAL
+			TRX_FLAG_DISCOVERY_NORMAL
 		);
 
 		$trigger['hosts'] = zbx_toHash($trigger['hosts'], 'hostid');
 
-		if ($trigger['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+		if ($trigger['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 			$trigger_description[] = new CSpan(CHtml::encode($trigger['description']));
 		}
 		else {
@@ -146,7 +146,7 @@ foreach ($data['items'] as $item) {
 			$trigger['error'] = '';
 		}
 
-		if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+		if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 			$expression = [
 				_('Problem'), ': ', $trigger['expression'], BR(),
 				_('Recovery'), ': ', $trigger['recovery_expression']
@@ -179,14 +179,14 @@ foreach ($data['items'] as $item) {
 
 	$wizard = (new CSpan(
 		(new CButton(null))
-			->addClass(ZBX_STYLE_ICON_WZRD_ACTION)
+			->addClass(TRX_STYLE_ICON_WZRD_ACTION)
 			->setMenuPopup(CMenuPopupHelper::getItem($item['itemid']))
-	))->addClass(ZBX_STYLE_REL_CONTAINER);
+	))->addClass(TRX_STYLE_REL_CONTAINER);
 
 	if (in_array($item['value_type'], [ITEM_VALUE_TYPE_STR, ITEM_VALUE_TYPE_LOG, ITEM_VALUE_TYPE_TEXT])) {
 		$item['trends'] = '';
 	}
-	else if ($item['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+	else if ($item['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 		$wizard = '';
 	}
 

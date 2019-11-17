@@ -11,19 +11,19 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'valuemapids' =>	[T_ZBX_INT, O_OPT,	P_SYS,			DB_ID,		null],
-	'valuemapid' =>		[T_ZBX_INT, O_NO,	P_SYS,			DB_ID,		'isset({form}) && {form} == "update"'],
-	'name' =>			[T_ZBX_STR, O_OPT,	null,			NOT_EMPTY,	'isset({add}) || isset({update})'],
-	'mappings' =>		[T_ZBX_STR, O_OPT,	null,			null,		null],
+	'valuemapids' =>	[T_TRX_INT, O_OPT,	P_SYS,			DB_ID,		null],
+	'valuemapid' =>		[T_TRX_INT, O_NO,	P_SYS,			DB_ID,		'isset({form}) && {form} == "update"'],
+	'name' =>			[T_TRX_STR, O_OPT,	null,			NOT_EMPTY,	'isset({add}) || isset({update})'],
+	'mappings' =>		[T_TRX_STR, O_OPT,	null,			null,		null],
 	// actions
-	'add' =>			[T_ZBX_STR, O_OPT,	P_SYS|P_ACT,	null,		null],
-	'update' =>			[T_ZBX_STR, O_OPT,	P_SYS|P_ACT,	null,		null],
-	'form' =>			[T_ZBX_STR, O_OPT,	P_SYS,			null,		null],
-	'form_refresh' =>	[T_ZBX_INT, O_OPT,	null,			null,		null],
-	'action' =>			[T_ZBX_STR, O_OPT,	P_SYS|P_ACT,	IN('"valuemap.export","valuemap.delete"'), null],
+	'add' =>			[T_TRX_STR, O_OPT,	P_SYS|P_ACT,	null,		null],
+	'update' =>			[T_TRX_STR, O_OPT,	P_SYS|P_ACT,	null,		null],
+	'form' =>			[T_TRX_STR, O_OPT,	P_SYS,			null,		null],
+	'form_refresh' =>	[T_TRX_INT, O_OPT,	null,			null,		null],
+	'action' =>			[T_TRX_STR, O_OPT,	P_SYS|P_ACT,	IN('"valuemap.export","valuemap.delete"'), null],
 	// sort and sortorder
-	'sort' =>			[T_ZBX_STR, O_OPT, P_SYS, IN('"name"'),									null],
-	'sortorder' =>		[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>			[T_TRX_STR, O_OPT, P_SYS, IN('"name"'),									null],
+	'sortorder' =>		[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -139,7 +139,7 @@ if (hasRequest('form')) {
 }
 else {
 	$sortfield = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortorder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortorder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortfield, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortorder, PROFILE_TYPE_STR);

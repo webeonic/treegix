@@ -6,7 +6,7 @@
 
 static u_int	pagesize = 0;
 
-#define ZBX_SYSCTLBYNAME(name, value)									\
+#define TRX_SYSCTLBYNAME(name, value)									\
 													\
 	len = sizeof(value);										\
 	if (0 != sysctlbyname(name, &value, &len, NULL, 0))						\
@@ -21,7 +21,7 @@ static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 	unsigned long	totalbytes;
 	size_t		len;
 
-	ZBX_SYSCTLBYNAME("hw.physmem", totalbytes);
+	TRX_SYSCTLBYNAME("hw.physmem", totalbytes);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)totalbytes);
 
@@ -33,7 +33,7 @@ static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 	u_int	activepages;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_active_count", activepages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_active_count", activepages);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)activepages * pagesize);
 
@@ -45,7 +45,7 @@ static int	VM_MEMORY_INACTIVE(AGENT_RESULT *result)
 	u_int	inactivepages;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_inactive_count", inactivepages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_inactive_count", inactivepages);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)inactivepages * pagesize);
 
@@ -57,7 +57,7 @@ static int	VM_MEMORY_WIRED(AGENT_RESULT *result)
 	u_int	wiredpages;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_wire_count", wiredpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_wire_count", wiredpages);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)wiredpages * pagesize);
 
@@ -69,7 +69,7 @@ static int	VM_MEMORY_CACHED(AGENT_RESULT *result)
 	u_int	cachedpages;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)cachedpages * pagesize);
 
@@ -81,7 +81,7 @@ static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 	u_int	freepages;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_free_count", freepages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_free_count", freepages);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)freepages * pagesize);
 
@@ -93,9 +93,9 @@ static int	VM_MEMORY_USED(AGENT_RESULT *result)
 	u_int	activepages, wiredpages, cachedpages;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_active_count", activepages);
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_wire_count", wiredpages);
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_active_count", activepages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_wire_count", wiredpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)(activepages + wiredpages + cachedpages) * pagesize);
 
@@ -107,11 +107,11 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 	u_int	activepages, wiredpages, cachedpages, totalpages;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_active_count", activepages);
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_wire_count", wiredpages);
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_active_count", activepages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_wire_count", wiredpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_page_count", totalpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_page_count", totalpages);
 
 	if (0 == totalpages)
 	{
@@ -129,9 +129,9 @@ static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 	u_int	inactivepages, cachedpages, freepages;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_inactive_count", inactivepages);
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_free_count", freepages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_inactive_count", inactivepages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_free_count", freepages);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)(inactivepages + cachedpages + freepages) * pagesize);
 
@@ -143,11 +143,11 @@ static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 	u_int	inactivepages, cachedpages, freepages, totalpages;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_inactive_count", inactivepages);
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_free_count", freepages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_inactive_count", inactivepages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_free_count", freepages);
 
-	ZBX_SYSCTLBYNAME("vm.stats.vm.v_page_count", totalpages);
+	TRX_SYSCTLBYNAME("vm.stats.vm.v_page_count", totalpages);
 
 	if (0 == totalpages)
 	{
@@ -165,7 +165,7 @@ static int	VM_MEMORY_BUFFERS(AGENT_RESULT *result)
 	u_int	bufspace;
 	size_t	len;
 
-	ZBX_SYSCTLBYNAME("vfs.bufspace", bufspace);
+	TRX_SYSCTLBYNAME("vfs.bufspace", bufspace);
 
 	SET_UI64_RESULT(result, bufspace);
 
@@ -204,7 +204,7 @@ int     VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		size_t	len;
 
-		ZBX_SYSCTLBYNAME("vm.stats.vm.v_page_size", pagesize);
+		TRX_SYSCTLBYNAME("vm.stats.vm.v_page_size", pagesize);
 	}
 
 	mode = get_rparam(request, 0);

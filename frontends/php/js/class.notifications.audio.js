@@ -7,7 +7,7 @@
  * It plays, meanwhile decrementing timeout. Pausing and playing is done by control of 'volume' and 'muted' properties.
  * It holds infinite loop, so it allows us easily adjust timeout during playback.
  */
-function ZBX_NotificationsAudio() {
+function TRX_NotificationsAudio() {
 	this.audio = new Audio();
 
 	this.audio.volume = 0;
@@ -34,7 +34,7 @@ function ZBX_NotificationsAudio() {
  *
  * @return int  Interval ID.
  */
-ZBX_NotificationsAudio.prototype.listen = function() {
+TRX_NotificationsAudio.prototype.listen = function() {
 	var ms_step = 10;
 
 	function resolveAudioState() {
@@ -69,9 +69,9 @@ ZBX_NotificationsAudio.prototype.listen = function() {
  *
  * @param {string} file  Audio file path relative to DOCUMENT_ROOT/audio/ directory.
  *
- * @return {ZBX_NotificationsAudio}
+ * @return {TRX_NotificationsAudio}
  */
-ZBX_NotificationsAudio.prototype.file = function(file) {
+TRX_NotificationsAudio.prototype.file = function(file) {
 	if (this.wave == file) {
 		return this;
 	}
@@ -94,9 +94,9 @@ ZBX_NotificationsAudio.prototype.file = function(file) {
  *
  * @param {number} seconds
  *
- * @return {ZBX_NotificationsAudio}
+ * @return {TRX_NotificationsAudio}
  */
-ZBX_NotificationsAudio.prototype.seek = function(seconds) {
+TRX_NotificationsAudio.prototype.seek = function(seconds) {
 	if (this.audio.readyState > 0) {
 		this.audio.currentTime = seconds;
 	}
@@ -109,7 +109,7 @@ ZBX_NotificationsAudio.prototype.seek = function(seconds) {
  *
  * @return {Promise}
  */
-ZBX_NotificationsAudio.prototype.once = function() {
+TRX_NotificationsAudio.prototype.once = function() {
 	if (this.play_once_on_ready && this.audio.readyState >= 3) {
 		this.play_once_on_ready = false;
 
@@ -128,9 +128,9 @@ ZBX_NotificationsAudio.prototype.once = function() {
 /**
  * An alias method. Player is stopped by exhausting timeout.
  *
- * @return {ZBX_NotificationsAudio}
+ * @return {TRX_NotificationsAudio}
  */
-ZBX_NotificationsAudio.prototype.stop = function() {
+TRX_NotificationsAudio.prototype.stop = function() {
 	this.ms_timeout = 0;
 	this.is_playing = false;
 
@@ -140,9 +140,9 @@ ZBX_NotificationsAudio.prototype.stop = function() {
 /**
  * Mute player.
  *
- * @return {ZBX_NotificationsAudio}
+ * @return {TRX_NotificationsAudio}
  */
-ZBX_NotificationsAudio.prototype.mute = function() {
+TRX_NotificationsAudio.prototype.mute = function() {
 	this.audio.muted = true;
 
 	return this;
@@ -151,9 +151,9 @@ ZBX_NotificationsAudio.prototype.mute = function() {
 /**
  * Unmute player.
  *
- * @return {ZBX_NotificationsAudio}
+ * @return {TRX_NotificationsAudio}
  */
-ZBX_NotificationsAudio.prototype.unmute = function() {
+TRX_NotificationsAudio.prototype.unmute = function() {
 	this.audio.muted = false;
 
 	return this;
@@ -166,9 +166,9 @@ ZBX_NotificationsAudio.prototype.unmute = function() {
  * @argument {bool}    options[playOnce]        Player will not play in the loop if set to true.
  * @argument {number}  options[messageTimeout]  Message display timeout. Used to avoid playing when message box is gone.
  *
- * @return {ZBX_NotificationsAudio}
+ * @return {TRX_NotificationsAudio}
  */
-ZBX_NotificationsAudio.prototype.tune = function(options) {
+TRX_NotificationsAudio.prototype.tune = function(options) {
 	if (typeof options.playOnce === 'boolean') {
 		this.audio.loop = !options.playOnce;
 	}
@@ -189,7 +189,7 @@ ZBX_NotificationsAudio.prototype.tune = function(options) {
  *
  * @return {Promise}
  */
-ZBX_NotificationsAudio.prototype.resetPromise = function() {
+TRX_NotificationsAudio.prototype.resetPromise = function() {
 	this.timeout_promise = new Promise(function(resolve, reject) {
 		this._resolve_timeout = resolve;
 	}.bind(this));
@@ -205,14 +205,14 @@ ZBX_NotificationsAudio.prototype.resetPromise = function() {
  *
  * @return {Promise}
  */
-ZBX_NotificationsAudio.prototype.timeout = function(seconds) {
+TRX_NotificationsAudio.prototype.timeout = function(seconds) {
 	if (this.message_timeout == 0) {
 		this.stop();
 		return this.resetPromise();
 	}
 
 	if (!this.audio.loop) {
-		if (seconds == ZBX_Notifications.ALARM_ONCE_PLAYER) {
+		if (seconds == TRX_Notifications.ALARM_ONCE_PLAYER) {
 			return this.once();
 		}
 		else if (this.is_playing) {
@@ -233,7 +233,7 @@ ZBX_NotificationsAudio.prototype.timeout = function(seconds) {
  *
  * @return {float}  Amount of seconds.
  */
-ZBX_NotificationsAudio.prototype.getSeek = function() {
+TRX_NotificationsAudio.prototype.getSeek = function() {
 	return this.audio.currentTime;
 };
 
@@ -242,7 +242,7 @@ ZBX_NotificationsAudio.prototype.getSeek = function() {
  *
  * @return {float}  Amount of seconds.
  */
-ZBX_NotificationsAudio.prototype.getTimeout = function() {
+TRX_NotificationsAudio.prototype.getTimeout = function() {
 	return this.ms_timeout / 1000;
 };
 
@@ -250,7 +250,7 @@ ZBX_NotificationsAudio.prototype.getTimeout = function() {
  * This handler will be invoked once audio file has successfully pre-loaded. Attempt to auto play and see, if auto play
  * policy error occurs.
  */
-ZBX_NotificationsAudio.prototype.handleOnloadeddata = function() {
+TRX_NotificationsAudio.prototype.handleOnloadeddata = function() {
 	var promise = this.audio.play();
 
 	// Internet explorer does not return promise.

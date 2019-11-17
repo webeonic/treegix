@@ -14,81 +14,81 @@ $page['scripts'] = ['multiselect.js'];
 require_once dirname(__FILE__).'/include/page_header.php';
 // VAR							TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'actionid' =>						[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
-	'name' =>							[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})',
+	'actionid' =>						[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
+	'name' =>							[T_TRX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})',
 											_('Name')
 										],
-	'eventsource' =>					[T_ZBX_INT, O_OPT, null,
+	'eventsource' =>					[T_TRX_INT, O_OPT, null,
 											IN([EVENT_SOURCE_TRIGGERS, EVENT_SOURCE_DISCOVERY,
 												EVENT_SOURCE_AUTO_REGISTRATION, EVENT_SOURCE_INTERNAL
 											]),
 											null
 										],
-	'evaltype' =>						[T_ZBX_INT, O_OPT, null,
+	'evaltype' =>						[T_TRX_INT, O_OPT, null,
 											IN([CONDITION_EVAL_TYPE_AND_OR, CONDITION_EVAL_TYPE_AND,
 												CONDITION_EVAL_TYPE_OR, CONDITION_EVAL_TYPE_EXPRESSION
 											]),
 											'isset({add}) || isset({update})'
 										],
-	'formula' =>						[T_ZBX_STR, O_OPT, null,	null,	'isset({add}) || isset({update})'],
-	'esc_period' =>						[T_ZBX_STR, O_OPT, null,	null,	null, _('Default operation step duration')],
-	'status' =>							[T_ZBX_INT, O_OPT, null,	IN([ACTION_STATUS_ENABLED, ACTION_STATUS_DISABLED]),
+	'formula' =>						[T_TRX_STR, O_OPT, null,	null,	'isset({add}) || isset({update})'],
+	'esc_period' =>						[T_TRX_STR, O_OPT, null,	null,	null, _('Default operation step duration')],
+	'status' =>							[T_TRX_INT, O_OPT, null,	IN([ACTION_STATUS_ENABLED, ACTION_STATUS_DISABLED]),
 											null
 										],
-	'def_shortdata' =>					[T_ZBX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
-	'def_longdata' =>					[T_ZBX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
-	'r_shortdata' =>					[T_ZBX_STR, O_OPT, null,	null,		null],
-	'r_longdata' =>						[T_ZBX_STR, O_OPT, null,	null,		null],
-	'ack_shortdata' =>					[T_ZBX_STR, O_OPT, null,	null,		null],
-	'ack_longdata' =>					[T_ZBX_STR, O_OPT, null,	null,		null],
-	'g_actionid' =>						[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
+	'def_shortdata' =>					[T_TRX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
+	'def_longdata' =>					[T_TRX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
+	'r_shortdata' =>					[T_TRX_STR, O_OPT, null,	null,		null],
+	'r_longdata' =>						[T_TRX_STR, O_OPT, null,	null,		null],
+	'ack_shortdata' =>					[T_TRX_STR, O_OPT, null,	null,		null],
+	'ack_longdata' =>					[T_TRX_STR, O_OPT, null,	null,		null],
+	'g_actionid' =>						[T_TRX_INT, O_OPT, null,	DB_ID,		null],
 	'conditions' =>						[null,		O_OPT,	null,	null,		null],
 	'new_condition' =>					[null,		O_OPT,	null,	null,		'isset({add_condition})'],
 	'operations' =>						[null,		O_OPT,	null,	null,		null],
-	'edit_operationid' =>				[T_ZBX_STR, O_OPT,	P_ACT,	null,		null],
+	'edit_operationid' =>				[T_TRX_STR, O_OPT,	P_ACT,	null,		null],
 	'new_operation' =>					[null,		O_OPT,	null,	null,		null],
 	'recovery_operations' =>			[null,		O_OPT,	null,	null,		null],
-	'edit_recovery_operationid' =>		[T_ZBX_STR, O_OPT,	P_ACT,	null,		null],
+	'edit_recovery_operationid' =>		[T_TRX_STR, O_OPT,	P_ACT,	null,		null],
 	'new_recovery_operation' =>			[null,		O_OPT,	null,	null,		null],
 	'ack_operations' =>					[null,		O_OPT,	null,	null,		null],
-	'edit_ack_operationid' =>			[T_ZBX_STR, O_OPT,	P_ACT,	null,		null],
+	'edit_ack_operationid' =>			[T_TRX_STR, O_OPT,	P_ACT,	null,		null],
 	'new_ack_operation' =>				[null,		O_OPT,	null,	null,		null],
 	'opconditions' =>					[null,		O_OPT,	null,	null,		null],
 	'new_opcondition' =>				[null,		O_OPT,	null,	null,		'isset({add_opcondition})'],
 	// actions
-	'action' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 											IN('"action.massdelete","action.massdisable","action.massenable"'),
 											null
 										],
-	'add_condition' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel_new_condition' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add_operation' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel_new_operation' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add_recovery_operation' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel_new_recovery_operation' =>	[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add_ack_operation' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel_new_ack_operation' =>		[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add_opcondition' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel_new_opcondition' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'pause_suppressed' =>				[T_ZBX_STR, O_OPT, null,
+	'add_condition' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel_new_condition' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add_operation' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel_new_operation' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add_recovery_operation' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel_new_recovery_operation' =>	[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add_ack_operation' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel_new_ack_operation' =>		[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add_opcondition' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel_new_opcondition' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'pause_suppressed' =>				[T_TRX_STR, O_OPT, null,
 											IN([ACTION_PAUSE_SUPPRESSED_FALSE, ACTION_PAUSE_SUPPRESSED_TRUE]),
 											null,
 											_('Pause operations for suppressed problems')
 										],
-	'add' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'delete' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel' =>							[T_ZBX_STR, O_OPT, P_SYS,		null,	null],
-	'form' =>							[T_ZBX_STR, O_OPT, P_SYS,		null,	null],
-	'form_refresh' =>					[T_ZBX_INT, O_OPT, null,		null,	null],
+	'add' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'delete' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel' =>							[T_TRX_STR, O_OPT, P_SYS,		null,	null],
+	'form' =>							[T_TRX_STR, O_OPT, P_SYS,		null,	null],
+	'form_refresh' =>					[T_TRX_INT, O_OPT, null,		null,	null],
 	// filter
-	'filter_set' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_rst' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_name' =>			[T_ZBX_STR, O_OPT, null,	null,		null],
-	'filter_status' =>			[T_ZBX_INT, O_OPT, null,	IN([-1, ACTION_STATUS_ENABLED, ACTION_STATUS_DISABLED]),		null],
+	'filter_set' =>				[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_rst' =>				[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_name' =>			[T_TRX_STR, O_OPT, null,	null,		null],
+	'filter_status' =>			[T_TRX_INT, O_OPT, null,	IN([-1, ACTION_STATUS_ENABLED, ACTION_STATUS_DISABLED]),		null],
 	// sort and sortorder
-	'sort' =>							[T_ZBX_STR, O_OPT, P_SYS, IN('"name","status"'),						null],
-	'sortorder' =>						[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>							[T_TRX_STR, O_OPT, P_SYS, IN('"name","status"'),						null],
+	'sortorder' =>						[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 
 $dataValid = check_fields($fields);
@@ -760,7 +760,7 @@ if (hasRequest('form')) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

@@ -25,12 +25,12 @@ $widget = (new CWidget())
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Group'), 'groupid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$this->data['pageFilter']->getGroupsCB()
 				])
 				->addItem([
 					new CLabel(_('Host'), 'hostid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$this->data['pageFilter']->getHostsCB()
 				])
 			),
@@ -64,7 +64,7 @@ $httpTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_httptests'))->onClick("checkAll('".$httpForm->getName()."', 'all_httptests', 'group_httptestid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		($this->data['hostid'] == 0)
 			? make_sorting_header(_('Host'), 'hostname', $data['sort'], $data['sortorder'], $url)
 			: null,
@@ -132,7 +132,7 @@ foreach ($httpTests as $httpTestId => $httpTest) {
 					: 'httptest.massdisable'
 				)
 		))
-			->addClass(ZBX_STYLE_LINK_ACTION)
+			->addClass(TRX_STYLE_LINK_ACTION)
 			->addClass(httptest_status2style($httpTest['status']))
 			->addSID(),
 		$this->data['showInfoColumn'] ? makeInformationList($info_icons) : null

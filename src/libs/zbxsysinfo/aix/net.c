@@ -198,7 +198,7 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	if (0 == rc)	/* no network interfaces found */
 	{
@@ -220,7 +220,7 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 	for (i = 0; i < rc; i++)
 	{
 		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#IFNAME}", ps_netif[i].name, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#IFNAME}", ps_netif[i].name, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&j);
 	}
 

@@ -18,7 +18,7 @@ else {
 // Create form.
 $graphForm = (new CForm())
 	->setName('graphForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $this->data['form'])
 	->addVar('hostid', $this->data['hostid'])
 	->addVar('ymin_itemid', $this->data['ymin_itemid'])
@@ -41,7 +41,7 @@ if ($is_templated) {
 }
 
 $discovered_graph = false;
-if (array_key_exists('flags', $data) && $data['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+if (array_key_exists('flags', $data) && $data['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 	$discovered_graph = true;
 }
 
@@ -63,18 +63,18 @@ $graphFormList
 	->addRow(
 		(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $this->data['name'], $readonly))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	)
 	->addRow((new CLabel(_('Width'), 'width'))->setAsteriskMark(),
 		(new CNumericBox('width', $this->data['width'], 5, $readonly))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('Height'), 'height'))->setAsteriskMark(),
 		(new CNumericBox('height', $this->data['height'], 5, $readonly))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('Graph type'), 'graphtype')),
@@ -102,7 +102,7 @@ if ($this->data['graphtype'] == GRAPH_TYPE_NORMAL || $this->data['graphtype'] ==
 	if ($this->data['graphtype'] == GRAPH_TYPE_NORMAL) {
 		// Percent left.
 		$percentLeftTextBox = (new CTextBox('percent_left', $this->data['percent_left'], $readonly, 7))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH);
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH);
 		$percentLeftCheckbox = (new CCheckBox('visible[percent_left]'))
 			->setChecked(true)
 			->onClick('javascript: showHideVisible("percent_left");')
@@ -120,7 +120,7 @@ if ($this->data['graphtype'] == GRAPH_TYPE_NORMAL || $this->data['graphtype'] ==
 
 		// Percent right.
 		$percentRightTextBox = (new CTextBox('percent_right', $this->data['percent_right'], $readonly, 7))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH);
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH);
 		$percentRightCheckbox = (new CCheckBox('visible[percent_right]'))
 			->setChecked(true)
 			->onClick('javascript: showHideVisible("percent_right");')
@@ -144,9 +144,9 @@ if ($this->data['graphtype'] == GRAPH_TYPE_NORMAL || $this->data['graphtype'] ==
 	]))->setEnabled(!$readonly)];
 
 	if ($this->data['ymin_type'] == GRAPH_YAXIS_TYPE_FIXED) {
-		$yaxisMinData[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$yaxisMinData[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 		$yaxisMinData[] = (new CTextBox('yaxismin', $this->data['yaxismin'], $readonly))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH);
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH);
 	}
 	elseif ($this->data['ymin_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 		$graphForm->addVar('yaxismin', $this->data['yaxismin']);
@@ -161,15 +161,15 @@ if ($this->data['graphtype'] == GRAPH_TYPE_NORMAL || $this->data['graphtype'] ==
 			$ymin_name = $min_host['name'].NAME_DELIMITER.$minItem['name_expanded'];
 		}
 
-		$yaxisMinData[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$yaxisMinData[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 		$yaxisMinData[] = (new CTextBox('ymin_name', $ymin_name, true))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired();
-		$yaxisMinData[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$yaxisMinData[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 
 		// Select item button.
 		$yaxisMinData[] = (new CButton('yaxis_min', _('Select')))
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->onClick('return PopUp("popup.generic",jQuery.extend('.
 				CJs::encodeJson([
 					'srctbl' => 'items',
@@ -188,9 +188,9 @@ if ($this->data['graphtype'] == GRAPH_TYPE_NORMAL || $this->data['graphtype'] ==
 
 		// Select item prototype button.
 		if ($data['parent_discoveryid'] !== null) {
-			$yaxisMinData[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+			$yaxisMinData[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 			$yaxisMinData[] = (new CButton('yaxis_min_prototype', _('Select prototype')))
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 				->onClick('return PopUp("popup.generic",'.
 					CJs::encodeJson([
 						'srctbl' => 'item_prototypes',
@@ -226,9 +226,9 @@ if ($this->data['graphtype'] == GRAPH_TYPE_NORMAL || $this->data['graphtype'] ==
 	]))->setEnabled(!$readonly)];
 
 	if ($this->data['ymax_type'] == GRAPH_YAXIS_TYPE_FIXED) {
-		$yaxisMaxData[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$yaxisMaxData[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 		$yaxisMaxData[] = (new CTextBox('yaxismax', $this->data['yaxismax'], $readonly))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH);
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH);
 	}
 	elseif ($this->data['ymax_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 		$graphForm->addVar('yaxismax', $this->data['yaxismax']);
@@ -243,15 +243,15 @@ if ($this->data['graphtype'] == GRAPH_TYPE_NORMAL || $this->data['graphtype'] ==
 			$ymax_name = $max_host['name'].NAME_DELIMITER.$maxItem['name_expanded'];
 		}
 
-		$yaxisMaxData[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$yaxisMaxData[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 		$yaxisMaxData[] = (new CTextBox('ymax_name', $ymax_name, true))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired();
-		$yaxisMaxData[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$yaxisMaxData[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 
 		// Select item button.
 		$yaxisMaxData[] = (new CButton('yaxis_max', _('Select')))
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->onClick('return PopUp("popup.generic",jQuery.extend('.
 				CJs::encodeJson([
 					'srctbl' => 'items',
@@ -270,9 +270,9 @@ if ($this->data['graphtype'] == GRAPH_TYPE_NORMAL || $this->data['graphtype'] ==
 
 		// Select item prototype button.
 		if ($data['parent_discoveryid'] !== null) {
-			$yaxisMaxData[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+			$yaxisMaxData[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 			$yaxisMaxData[] = (new CButton('yaxis_max_prototype', _('Select prototype')))
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 				->onClick('return PopUp("popup.generic",'.
 					CJs::encodeJson([
 						'srctbl' => 'item_prototypes',
@@ -322,12 +322,12 @@ $items_table = (new CTable())
 		(new CColHeader(_('Function')))->setWidth(80),
 		($this->data['graphtype'] == GRAPH_TYPE_NORMAL)
 			? (new CColHeader(_('Draw style')))
-				->addClass(ZBX_STYLE_NOWRAP)
+				->addClass(TRX_STYLE_NOWRAP)
 				->setWidth(80)
 			: null,
 		($this->data['graphtype'] == GRAPH_TYPE_NORMAL || $this->data['graphtype'] == GRAPH_TYPE_STACKED)
 			? (new CColHeader(_('Y axis side')))
-				->addClass(ZBX_STYLE_NOWRAP)
+				->addClass(TRX_STYLE_NOWRAP)
 				->setWidth(80)
 			: null,
 		(new CColHeader(_('Colour')))->setWidth(100),
@@ -379,13 +379,13 @@ $items_table->addRow(
 						->onClick('return PopUp("popup.generic",jQuery.extend('.
 							CJs::encodeJson($popup_options_add).',getOnlyHostParam()), null, this);'
 						)
-						->addClass(ZBX_STYLE_BTN_LINK),
+						->addClass(TRX_STYLE_BTN_LINK),
 					$data['parent_discoveryid']
 						? (new CButton('add_protoitem', _('Add prototype')))
 							->onClick('return PopUp("popup.generic",'.
 								CJs::encodeJson($popup_options_add_prototype).', null, this);'
 							)
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 						: null
 				])
 			))->setColSpan(8)
@@ -412,7 +412,7 @@ foreach ($this->data['items'] as $n => $item) {
 
 $graphFormList->addRow(
 	(new CLabel(_('Items'), $items_table->getId()))->setAsteriskMark(),
-	(new CDiv($items_table))->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+	(new CDiv($items_table))->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 );
 
 // Append tabs to form.
@@ -428,7 +428,7 @@ $graphPreviewTable = (new CTable())
 	->addRow(
 		(new CRow(
 			(new CDiv())->setId('previewChart')
-		))->addClass(ZBX_STYLE_CENTER)
+		))->addClass(TRX_STYLE_CENTER)
 	);
 $graphTab->addTab('previewTab', _('Preview'), $graphPreviewTable);
 

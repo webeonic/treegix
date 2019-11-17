@@ -18,7 +18,7 @@ class CWidgetFieldReference extends CWidgetField {
 		 */
 		parent::__construct(self::FIELD_NAME, null);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_STR);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_STR);
 	}
 
 	/**

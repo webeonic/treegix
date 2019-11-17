@@ -21,8 +21,8 @@ else {
 				->setArgument('filter_set', 1)
 				->setArgument('filter_druleids', [$drule['druleid']])
 			),
-			($drule['up'] != 0) ? (new CSpan($drule['up']))->addClass(ZBX_STYLE_GREEN) : '',
-			($drule['down'] != 0) ? (new CSpan($drule['down']))->addClass(ZBX_STYLE_RED) : ''
+			($drule['up'] != 0) ? (new CSpan($drule['up']))->addClass(TRX_STYLE_GREEN) : '',
+			($drule['down'] != 0) ? (new CSpan($drule['down']))->addClass(TRX_STYLE_RED) : ''
 		]);
 	}
 }

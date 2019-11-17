@@ -71,7 +71,7 @@ class CWebUser {
 			}
 
 			// remove guest session after successful login
-			$result &= DBexecute('DELETE FROM sessions WHERE sessionid='.zbx_dbstr(get_cookie(ZBX_SESSION_NAME)));
+			$result &= DBexecute('DELETE FROM sessions WHERE sessionid='.zbx_dbstr(get_cookie(TRX_SESSION_NAME)));
 
 			if ($result) {
 				self::setSessionCookie(self::$data['sessionid']);
@@ -94,7 +94,7 @@ class CWebUser {
 		if (API::User()->logout([])) {
 			self::$data = null;
 			CSession::destroy();
-			zbx_unsetcookie(ZBX_SESSION_NAME);
+			zbx_unsetcookie(TRX_SESSION_NAME);
 		}
 	}
 
@@ -110,7 +110,7 @@ class CWebUser {
 			if ($sessionId === null || empty(self::$data)) {
 				self::setDefault();
 				self::$data = API::User()->login([
-					'user' => ZBX_GUEST_USER,
+					'user' => TRX_GUEST_USER,
 					'password' => '',
 					'userData' => true
 				]);
@@ -149,21 +149,21 @@ class CWebUser {
 	public static function setSessionCookie($sessionId) {
 		$autoLogin = self::isGuest() ? false : (bool) self::$data['autologin'];
 
-		zbx_setcookie(ZBX_SESSION_NAME, $sessionId,  $autoLogin ? strtotime('+1 month') : 0);
+		zbx_setcookie(TRX_SESSION_NAME, $sessionId,  $autoLogin ? strtotime('+1 month') : 0);
 	}
 
 	/**
-	 * Retrieves current session ID from cookie named as defined in ZBX_SESSION_NAME.
+	 * Retrieves current session ID from cookie named as defined in TRX_SESSION_NAME.
 	 *
 	 * @return string
 	 */
 	public static function getSessionCookie() {
-		return get_cookie(ZBX_SESSION_NAME);
+		return get_cookie(TRX_SESSION_NAME);
 	}
 
 	public static function setDefault() {
 		self::$data = [
-			'alias' => ZBX_GUEST_USER,
+			'alias' => TRX_GUEST_USER,
 			'userid' => 0,
 			'lang' => 'en_gb',
 			'type' => '0',
@@ -206,7 +206,7 @@ class CWebUser {
 	 * @return bool
 	 */
 	public static function isGuest() {
-		return (self::$data['alias'] == ZBX_GUEST_USER);
+		return (self::$data['alias'] == TRX_GUEST_USER);
 	}
 
 	/**
@@ -217,7 +217,7 @@ class CWebUser {
 	public static function isGuestAllowed() {
 		$guest = DB::select('users', [
 			'output' => ['userid'],
-			'filter' => ['alias' => ZBX_GUEST_USER]
+			'filter' => ['alias' => TRX_GUEST_USER]
 		]);
 
 		return check_perm2system($guest[0]['userid'])

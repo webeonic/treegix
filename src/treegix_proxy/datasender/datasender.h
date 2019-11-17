@@ -7,6 +7,6 @@
 
 extern int	CONFIG_PROXYDATA_FREQUENCY;
 
-ZBX_THREAD_ENTRY(datasender_thread, args);
+TRX_THREAD_ENTRY(datasender_thread, args);
 
 #endif

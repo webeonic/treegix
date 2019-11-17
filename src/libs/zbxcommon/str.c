@@ -58,9 +58,9 @@ void	version(void)
  ******************************************************************************/
 void	usage(void)
 {
-#define ZBX_MAXCOL	79
-#define ZBX_SPACE1	"  "			/* left margin for the first line */
-#define ZBX_SPACE2	"               "	/* left margin for subsequent lines */
+#define TRX_MAXCOL	79
+#define TRX_SPACE1	"  "			/* left margin for the first line */
+#define TRX_SPACE2	"               "	/* left margin for subsequent lines */
 	const char	**p = usage_message;
 
 	if (NULL != *p)
@@ -70,8 +70,8 @@ void	usage(void)
 	{
 		size_t	pos;
 
-		printf("%s%s", ZBX_SPACE1, progname);
-		pos = ZBX_CONST_STRLEN(ZBX_SPACE1) + strlen(progname);
+		printf("%s%s", TRX_SPACE1, progname);
+		pos = TRX_CONST_STRLEN(TRX_SPACE1) + strlen(progname);
 
 		while (NULL != *p)
 		{
@@ -79,15 +79,15 @@ void	usage(void)
 
 			len = strlen(*p);
 
-			if (ZBX_MAXCOL > pos + len)
+			if (TRX_MAXCOL > pos + len)
 			{
 				pos += len + 1;
 				printf(" %s", *p);
 			}
 			else
 			{
-				pos = ZBX_CONST_STRLEN(ZBX_SPACE2) + len + 1;
-				printf("\n%s %s", ZBX_SPACE2, *p);
+				pos = TRX_CONST_STRLEN(TRX_SPACE2) + len + 1;
+				printf("\n%s %s", TRX_SPACE2, *p);
 			}
 
 			p++;
@@ -96,9 +96,9 @@ void	usage(void)
 		printf("\n");
 		p++;
 	}
-#undef ZBX_MAXCOL
-#undef ZBX_SPACE1
-#undef ZBX_SPACE2
+#undef TRX_MAXCOL
+#undef TRX_SPACE1
+#undef TRX_SPACE2
 }
 
 /******************************************************************************
@@ -779,7 +779,7 @@ char	*zbx_strdcatf(char *dest, const char *f, ...)
  *                                                                            *
  * Return value: return SUCCEED if hostname is valid                          *
  *               or FAIL if hostname contains invalid chars, is empty         *
- *               or is longer than MAX_ZBX_HOSTNAME_LEN                       *
+ *               or is longer than MAX_TRX_HOSTNAME_LEN                       *
  *                                                                            *
  * Author: Alexander Vladishev                                                *
  *                                                                            *
@@ -807,10 +807,10 @@ int	zbx_check_hostname(const char *hostname, char **error)
 		return FAIL;
 	}
 
-	if (MAX_ZBX_HOSTNAME_LEN < len)
+	if (MAX_TRX_HOSTNAME_LEN < len)
 	{
 		if (NULL != error)
-			*error = zbx_dsprintf(NULL, "name is too long (max %d characters)", MAX_ZBX_HOSTNAME_LEN);
+			*error = zbx_dsprintf(NULL, "name is too long (max %d characters)", MAX_TRX_HOSTNAME_LEN);
 		return FAIL;
 	}
 
@@ -1159,7 +1159,7 @@ int	cmp_key_id(const char *key_1, const char *key_2)
  *                                                                            *
  * Purpose: Returns process name                                              *
  *                                                                            *
- * Parameters: process_type - [IN] process type; ZBX_PROCESS_TYPE_*           *
+ * Parameters: process_type - [IN] process type; TRX_PROCESS_TYPE_*           *
  *                                                                            *
  * Author: Alexander Vladishev                                                *
  *                                                                            *
@@ -1171,67 +1171,67 @@ const char	*get_process_type_string(unsigned char proc_type)
 {
 	switch (proc_type)
 	{
-		case ZBX_PROCESS_TYPE_POLLER:
+		case TRX_PROCESS_TYPE_POLLER:
 			return "poller";
-		case ZBX_PROCESS_TYPE_UNREACHABLE:
+		case TRX_PROCESS_TYPE_UNREACHABLE:
 			return "unreachable poller";
-		case ZBX_PROCESS_TYPE_IPMIPOLLER:
+		case TRX_PROCESS_TYPE_IPMIPOLLER:
 			return "ipmi poller";
-		case ZBX_PROCESS_TYPE_PINGER:
+		case TRX_PROCESS_TYPE_PINGER:
 			return "icmp pinger";
-		case ZBX_PROCESS_TYPE_JAVAPOLLER:
+		case TRX_PROCESS_TYPE_JAVAPOLLER:
 			return "java poller";
-		case ZBX_PROCESS_TYPE_HTTPPOLLER:
+		case TRX_PROCESS_TYPE_HTTPPOLLER:
 			return "http poller";
-		case ZBX_PROCESS_TYPE_TRAPPER:
+		case TRX_PROCESS_TYPE_TRAPPER:
 			return "trapper";
-		case ZBX_PROCESS_TYPE_SNMPTRAPPER:
+		case TRX_PROCESS_TYPE_SNMPTRAPPER:
 			return "snmp trapper";
-		case ZBX_PROCESS_TYPE_PROXYPOLLER:
+		case TRX_PROCESS_TYPE_PROXYPOLLER:
 			return "proxy poller";
-		case ZBX_PROCESS_TYPE_ESCALATOR:
+		case TRX_PROCESS_TYPE_ESCALATOR:
 			return "escalator";
-		case ZBX_PROCESS_TYPE_HISTSYNCER:
+		case TRX_PROCESS_TYPE_HISTSYNCER:
 			return "history syncer";
-		case ZBX_PROCESS_TYPE_DISCOVERER:
+		case TRX_PROCESS_TYPE_DISCOVERER:
 			return "discoverer";
-		case ZBX_PROCESS_TYPE_ALERTER:
+		case TRX_PROCESS_TYPE_ALERTER:
 			return "alerter";
-		case ZBX_PROCESS_TYPE_TIMER:
+		case TRX_PROCESS_TYPE_TIMER:
 			return "timer";
-		case ZBX_PROCESS_TYPE_HOUSEKEEPER:
+		case TRX_PROCESS_TYPE_HOUSEKEEPER:
 			return "housekeeper";
-		case ZBX_PROCESS_TYPE_DATASENDER:
+		case TRX_PROCESS_TYPE_DATASENDER:
 			return "data sender";
-		case ZBX_PROCESS_TYPE_CONFSYNCER:
+		case TRX_PROCESS_TYPE_CONFSYNCER:
 			return "configuration syncer";
-		case ZBX_PROCESS_TYPE_HEARTBEAT:
+		case TRX_PROCESS_TYPE_HEARTBEAT:
 			return "heartbeat sender";
-		case ZBX_PROCESS_TYPE_SELFMON:
+		case TRX_PROCESS_TYPE_SELFMON:
 			return "self-monitoring";
-		case ZBX_PROCESS_TYPE_VMWARE:
+		case TRX_PROCESS_TYPE_VMWARE:
 			return "vmware collector";
-		case ZBX_PROCESS_TYPE_COLLECTOR:
+		case TRX_PROCESS_TYPE_COLLECTOR:
 			return "collector";
-		case ZBX_PROCESS_TYPE_LISTENER:
+		case TRX_PROCESS_TYPE_LISTENER:
 			return "listener";
-		case ZBX_PROCESS_TYPE_ACTIVE_CHECKS:
+		case TRX_PROCESS_TYPE_ACTIVE_CHECKS:
 			return "active checks";
-		case ZBX_PROCESS_TYPE_TASKMANAGER:
+		case TRX_PROCESS_TYPE_TASKMANAGER:
 			return "task manager";
-		case ZBX_PROCESS_TYPE_IPMIMANAGER:
+		case TRX_PROCESS_TYPE_IPMIMANAGER:
 			return "ipmi manager";
-		case ZBX_PROCESS_TYPE_ALERTMANAGER:
+		case TRX_PROCESS_TYPE_ALERTMANAGER:
 			return "alert manager";
-		case ZBX_PROCESS_TYPE_PREPROCMAN:
+		case TRX_PROCESS_TYPE_PREPROCMAN:
 			return "preprocessing manager";
-		case ZBX_PROCESS_TYPE_PREPROCESSOR:
+		case TRX_PROCESS_TYPE_PREPROCESSOR:
 			return "preprocessing worker";
-		case ZBX_PROCESS_TYPE_LLDMANAGER:
+		case TRX_PROCESS_TYPE_LLDMANAGER:
 			return "lld manager";
-		case ZBX_PROCESS_TYPE_LLDWORKER:
+		case TRX_PROCESS_TYPE_LLDWORKER:
 			return "lld worker";
-		case ZBX_PROCESS_TYPE_ALERTSYNCER:
+		case TRX_PROCESS_TYPE_ALERTSYNCER:
 			return "alert syncer";
 	}
 
@@ -1243,29 +1243,29 @@ int	get_process_type_by_name(const char *proc_type_str)
 {
 	int	i;
 
-	for (i = 0; i < ZBX_PROCESS_TYPE_COUNT; i++)
+	for (i = 0; i < TRX_PROCESS_TYPE_COUNT; i++)
 	{
 		if (0 == strcmp(proc_type_str, get_process_type_string(i)))
 			return i;
 	}
 
-	return ZBX_PROCESS_TYPE_UNKNOWN;
+	return TRX_PROCESS_TYPE_UNKNOWN;
 }
 
 const char	*get_program_type_string(unsigned char program_type)
 {
 	switch (program_type)
 	{
-		case ZBX_PROGRAM_TYPE_SERVER:
+		case TRX_PROGRAM_TYPE_SERVER:
 			return "server";
-		case ZBX_PROGRAM_TYPE_PROXY_ACTIVE:
-		case ZBX_PROGRAM_TYPE_PROXY_PASSIVE:
+		case TRX_PROGRAM_TYPE_PROXY_ACTIVE:
+		case TRX_PROGRAM_TYPE_PROXY_PASSIVE:
 			return "proxy";
-		case ZBX_PROGRAM_TYPE_AGENTD:
+		case TRX_PROGRAM_TYPE_AGENTD:
 			return "agent";
-		case ZBX_PROGRAM_TYPE_SENDER:
+		case TRX_PROGRAM_TYPE_SENDER:
 			return "sender";
-		case ZBX_PROGRAM_TYPE_GET:
+		case TRX_PROGRAM_TYPE_GET:
 			return "get";
 		default:
 			return "unknown";
@@ -1880,8 +1880,8 @@ size_t	zbx_utf8_char_len(const char *text)
 		return 3;
 	else if (0xf0 == (*text & 0xf8))	/* 11110000-11110100 starts a 4-byte sequence */
 		return 4;
-#if ZBX_MAX_BYTES_IN_UTF8_CHAR != 4
-#	error "zbx_utf8_char_len() is not synchronized with ZBX_MAX_BYTES_IN_UTF8_CHAR"
+#if TRX_MAX_BYTES_IN_UTF8_CHAR != 4
+#	error "zbx_utf8_char_len() is not synchronized with TRX_MAX_BYTES_IN_UTF8_CHAR"
 #endif
 	return 0;				/* not a valid UTF-8 character */
 }
@@ -2054,7 +2054,7 @@ void	zbx_replace_invalid_utf8(char *text)
 		else if (0x80 == (*text & 0xc0) ||		/* unexpected continuation byte */
 				0xfe == (*text & 0xfe))		/* invalid UTF-8 bytes '\xfe' & '\xff' */
 		{
-			*out++ = ZBX_UTF8_REPLACE_CHAR;
+			*out++ = TRX_UTF8_REPLACE_CHAR;
 			text++;
 		}
 		else						/* multibyte sequence */
@@ -2134,7 +2134,7 @@ void	zbx_replace_invalid_utf8(char *text)
 			if (SUCCEED != ret)
 			{
 				out -= mb_len;
-				*out++ = ZBX_UTF8_REPLACE_CHAR;
+				*out++ = TRX_UTF8_REPLACE_CHAR;
 			}
 		}
 	}
@@ -2962,19 +2962,19 @@ char	*zbx_function_get_param_dyn(const char *params, int Nparam)
 static int	function_validate_parameters(const char *expr, char terminator, size_t *par_r, size_t *lpp_offset,
 		size_t *lpp_len)
 {
-#define ZBX_FUNC_PARAM_NEXT		0
-#define ZBX_FUNC_PARAM_QUOTED		1
-#define ZBX_FUNC_PARAM_UNQUOTED		2
-#define ZBX_FUNC_PARAM_POSTQUOTED	3
+#define TRX_FUNC_PARAM_NEXT		0
+#define TRX_FUNC_PARAM_QUOTED		1
+#define TRX_FUNC_PARAM_UNQUOTED		2
+#define TRX_FUNC_PARAM_POSTQUOTED	3
 
 	const char	*ptr;
-	int		state = ZBX_FUNC_PARAM_NEXT;
+	int		state = TRX_FUNC_PARAM_NEXT;
 
 	*lpp_offset = 0;
 
 	for (ptr = expr; '\0' != *ptr; ptr++)
 	{
-		if (terminator == *ptr && ZBX_FUNC_PARAM_QUOTED != state)
+		if (terminator == *ptr && TRX_FUNC_PARAM_QUOTED != state)
 		{
 			*par_r = ptr - expr;
 			return SUCCEED;
@@ -2982,25 +2982,25 @@ static int	function_validate_parameters(const char *expr, char terminator, size_
 
 		switch (state)
 		{
-			case ZBX_FUNC_PARAM_NEXT:
+			case TRX_FUNC_PARAM_NEXT:
 				*lpp_offset = ptr - expr;
 				if ('"' == *ptr)
-					state = ZBX_FUNC_PARAM_QUOTED;
+					state = TRX_FUNC_PARAM_QUOTED;
 				else if (' ' != *ptr && ',' != *ptr)
-					state = ZBX_FUNC_PARAM_UNQUOTED;
+					state = TRX_FUNC_PARAM_UNQUOTED;
 				break;
-			case ZBX_FUNC_PARAM_QUOTED:
+			case TRX_FUNC_PARAM_QUOTED:
 				if ('"' == *ptr && '\\' != *(ptr - 1))
-					state = ZBX_FUNC_PARAM_POSTQUOTED;
+					state = TRX_FUNC_PARAM_POSTQUOTED;
 				break;
-			case ZBX_FUNC_PARAM_UNQUOTED:
+			case TRX_FUNC_PARAM_UNQUOTED:
 				if (',' == *ptr)
-					state = ZBX_FUNC_PARAM_NEXT;
+					state = TRX_FUNC_PARAM_NEXT;
 				break;
-			case ZBX_FUNC_PARAM_POSTQUOTED:
+			case TRX_FUNC_PARAM_POSTQUOTED:
 				if (',' == *ptr)
 				{
-					state = ZBX_FUNC_PARAM_NEXT;
+					state = TRX_FUNC_PARAM_NEXT;
 				}
 				else if (' ' != *ptr)
 				{
@@ -3015,7 +3015,7 @@ static int	function_validate_parameters(const char *expr, char terminator, size_
 
 	*lpp_len = ptr - (expr + *lpp_offset);
 
-	if (terminator == *ptr && ZBX_FUNC_PARAM_QUOTED != state)
+	if (terminator == *ptr && TRX_FUNC_PARAM_QUOTED != state)
 	{
 		*par_r = ptr - expr;
 		return SUCCEED;
@@ -3023,10 +3023,10 @@ static int	function_validate_parameters(const char *expr, char terminator, size_
 
 	return FAIL;
 
-#undef ZBX_FUNC_PARAM_NEXT
-#undef ZBX_FUNC_PARAM_QUOTED
-#undef ZBX_FUNC_PARAM_UNQUOTED
-#undef ZBX_FUNC_PARAM_POSTQUOTED
+#undef TRX_FUNC_PARAM_NEXT
+#undef TRX_FUNC_PARAM_QUOTED
+#undef TRX_FUNC_PARAM_UNQUOTED
+#undef TRX_FUNC_PARAM_POSTQUOTED
 }
 
 /******************************************************************************
@@ -3203,7 +3203,7 @@ static int	zbx_token_parse_user_macro(const char *expression, const char *macro,
 	offset = macro - expression;
 
 	/* initialize token */
-	token->type = ZBX_TOKEN_USER_MACRO;
+	token->type = TRX_TOKEN_USER_MACRO;
 	token->loc.l = offset;
 	token->loc.r = offset + macro_r;
 
@@ -3275,7 +3275,7 @@ static int	zbx_token_parse_lld_macro(const char *expression, const char *macro, 
 	offset = macro - expression;
 
 	/* initialize token */
-	token->type = ZBX_TOKEN_LLD_MACRO;
+	token->type = TRX_TOKEN_LLD_MACRO;
 	token->loc.l = offset;
 	token->loc.r = offset + (ptr - macro);
 
@@ -3329,7 +3329,7 @@ static int	zbx_token_parse_objectid(const char *expression, const char *macro, z
 	offset = macro - expression;
 
 	/* initialize token */
-	token->type = ZBX_TOKEN_OBJECTID;
+	token->type = TRX_TOKEN_OBJECTID;
 	token->loc.l = offset;
 	token->loc.r = offset + (ptr - macro);
 
@@ -3382,7 +3382,7 @@ static int	zbx_token_parse_macro(const char *expression, const char *macro, zbx_
 	offset = macro - expression;
 
 	/* initialize token */
-	token->type = ZBX_TOKEN_MACRO;
+	token->type = TRX_TOKEN_MACRO;
 	token->loc.l = offset;
 	token->loc.r = offset + (ptr - macro);
 
@@ -3437,8 +3437,8 @@ static int	zbx_token_parse_function(const char *expression, const char *func,
  *             func       - [IN] the beginning of the macro function in the   *
  *                               token                                        *
  *             token      - [OUT] the token data                              *
- *             token_type - [IN] type flag ZBX_TOKEN_FUNC_MACRO or            *
- *                               ZBX_TOKEN_LLD_FUNC_MACRO                     *
+ *             token_type - [IN] type flag TRX_TOKEN_FUNC_MACRO or            *
+ *                               TRX_TOKEN_LLD_FUNC_MACRO                     *
  *                                                                            *
  * Return value: SUCCEED - the function macro was parsed successfully         *
  *               FAIL    - macro does not point at valid function macro       *
@@ -3482,7 +3482,7 @@ static int	zbx_token_parse_func_macro(const char *expression, const char *macro,
 	token->loc.r = ptr - expression;
 
 	/* initialize token data */
-	data = ZBX_TOKEN_FUNC_MACRO == token_type ? &token->data.func_macro : &token->data.lld_func_macro;
+	data = TRX_TOKEN_FUNC_MACRO == token_type ? &token->data.func_macro : &token->data.lld_func_macro;
 	data->macro.l = offset + 1;
 	data->macro.r = func_loc.l - 2;
 
@@ -3565,7 +3565,7 @@ static int	zbx_token_parse_simple_macro_key(const char *expression, const char *
 	offset = macro - expression;
 
 	/* initialize token */
-	token->type = ZBX_TOKEN_SIMPLE_MACRO;
+	token->type = TRX_TOKEN_SIMPLE_MACRO;
 	token->loc.l = offset;
 	token->loc.r = ptr - expression;
 
@@ -3684,7 +3684,7 @@ static int	zbx_token_parse_nested_macro(const char *expression, const char *macr
 	if ('.' == ptr[1])
 	{
 		return zbx_token_parse_func_macro(expression, macro, ptr + 2, token, '#' == macro[2] ?
-				ZBX_TOKEN_LLD_FUNC_MACRO : ZBX_TOKEN_FUNC_MACRO);
+				TRX_TOKEN_LLD_FUNC_MACRO : TRX_TOKEN_FUNC_MACRO);
 	}
 	else if ('#' != macro[2] && ':' == ptr[1])
 		return zbx_token_parse_simple_macro_key(expression, macro, ptr + 2, token);
@@ -3732,9 +3732,9 @@ int	zbx_token_find(const char *expression, int pos, zbx_token_t *token, zbx_toke
 
 		switch (token_search)
 		{
-			case ZBX_TOKEN_SEARCH_BASIC:
+			case TRX_TOKEN_SEARCH_BASIC:
 				break;
-			case ZBX_TOKEN_SEARCH_REFERENCES:
+			case TRX_TOKEN_SEARCH_REFERENCES:
 				while (NULL != (dollar = strchr(dollar, '$')) && (NULL == ptr || ptr > dollar))
 				{
 					if (0 == isdigit(dollar[1]))
@@ -3744,14 +3744,14 @@ int	zbx_token_find(const char *expression, int pos, zbx_token_t *token, zbx_toke
 					}
 
 					token->data.reference.index = dollar[1] - '0';
-					token->type = ZBX_TOKEN_REFERENCE;
+					token->type = TRX_TOKEN_REFERENCE;
 					token->loc.l = dollar - expression;
 					token->loc.r = token->loc.l + 1;
 					return SUCCEED;
 				}
 
 				if (NULL == dollar)
-					token_search = ZBX_TOKEN_SEARCH_BASIC;
+					token_search = TRX_TOKEN_SEARCH_BASIC;
 
 				break;
 			default:
@@ -3788,7 +3788,7 @@ int	zbx_token_find(const char *expression, int pos, zbx_token_t *token, zbx_toke
 			case '9':
 				if (SUCCEED == (ret = zbx_token_parse_objectid(expression, ptr, token)))
 					break;
-				ZBX_FALLTHROUGH;
+				TRX_FALLTHROUGH;
 			default:
 				if (SUCCEED != (ret = zbx_token_parse_macro(expression, ptr, token)))
 					ret = zbx_token_parse_simple_macro(expression, ptr, token);
@@ -3829,14 +3829,14 @@ static size_t	zbx_no_function(const char *expr)
 		{
 			ptr++;	/* skip one character which cannot belong to function name */
 		}
-		else if ((0 == strncmp("and", ptr, len = ZBX_CONST_STRLEN("and")) ||
-				0 == strncmp("not", ptr, len = ZBX_CONST_STRLEN("not")) ||
-				0 == strncmp("or", ptr, len = ZBX_CONST_STRLEN("or"))) &&
-				NULL != strchr("()" ZBX_WHITESPACE, ptr[len]))
+		else if ((0 == strncmp("and", ptr, len = TRX_CONST_STRLEN("and")) ||
+				0 == strncmp("not", ptr, len = TRX_CONST_STRLEN("not")) ||
+				0 == strncmp("or", ptr, len = TRX_CONST_STRLEN("or"))) &&
+				NULL != strchr("()" TRX_WHITESPACE, ptr[len]))
 		{
 			ptr += len;	/* skip to the position after and/or/not operator */
 		}
-		else if (ptr > expr && 0 != isdigit(*(ptr - 1)) && NULL != strchr(ZBX_UNIT_SYMBOLS, *ptr))
+		else if (ptr > expr && 0 != isdigit(*(ptr - 1)) && NULL != strchr(TRX_UNIT_SYMBOLS, *ptr))
 		{
 			ptr++;	/* skip unit suffix symbol if it's preceded by a digit */
 		}
@@ -4005,7 +4005,7 @@ int	zbx_suffixed_number_parse(const char *number, int *len)
 	if (FAIL == zbx_number_parse(number, len))
 		return FAIL;
 
-	if (0 != isalpha(number[*len]) && NULL != strchr(ZBX_UNIT_SYMBOLS, number[*len]))
+	if (0 != isalpha(number[*len]) && NULL != strchr(TRX_UNIT_SYMBOLS, number[*len]))
 		(*len)++;
 
 	return SUCCEED;
@@ -4063,7 +4063,7 @@ int	zbx_number_find(const char *str, size_t pos, zbx_strloc_t *number_loc)
 			{
 				e = s - 2;
 
-				if (e > str && NULL != strchr(ZBX_UNIT_SYMBOLS, *e))
+				if (e > str && NULL != strchr(TRX_UNIT_SYMBOLS, *e))
 					e--;
 
 				/* check that minus is not preceded by function, parentheses or (suffixed) number */
@@ -4206,7 +4206,7 @@ int	num_param(const char *p)
  ******************************************************************************/
 int	get_param(const char *p, int num, char *buf, size_t max_len)
 {
-#define ZBX_ASSIGN_PARAM				\
+#define TRX_ASSIGN_PARAM				\
 {							\
 	if (buf_i == max_len)				\
 		return 1;	/* buffer overflow */	\
@@ -4233,25 +4233,25 @@ int	get_param(const char *p, int num, char *buf, size_t max_len)
 					if (0 == array)
 						idx++;
 					else if (idx == num)
-						ZBX_ASSIGN_PARAM;
+						TRX_ASSIGN_PARAM;
 				}
 				else if ('"' == *p)
 				{
 					state = 1;
 					if (0 != array && idx == num)
-						ZBX_ASSIGN_PARAM;
+						TRX_ASSIGN_PARAM;
 				}
 				else if ('[' == *p)
 				{
 					if (0 != array && idx == num)
-						ZBX_ASSIGN_PARAM;
+						TRX_ASSIGN_PARAM;
 					array++;
 				}
 				else if (']' == *p && 0 != array)
 				{
 					array--;
 					if (0 != array && idx == num)
-						ZBX_ASSIGN_PARAM;
+						TRX_ASSIGN_PARAM;
 
 					/* skip spaces */
 					while (' ' == p[1])
@@ -4263,7 +4263,7 @@ int	get_param(const char *p, int num, char *buf, size_t max_len)
 				else if (' ' != *p)
 				{
 					if (idx == num)
-						ZBX_ASSIGN_PARAM;
+						TRX_ASSIGN_PARAM;
 					state = 2;
 				}
 				break;
@@ -4273,7 +4273,7 @@ int	get_param(const char *p, int num, char *buf, size_t max_len)
 				if ('"' == *p)
 				{
 					if (0 != array && idx == num)
-						ZBX_ASSIGN_PARAM;
+						TRX_ASSIGN_PARAM;
 
 					/* skip spaces */
 					while (' ' == p[1])
@@ -4287,15 +4287,15 @@ int	get_param(const char *p, int num, char *buf, size_t max_len)
 				else if ('\\' == *p && '"' == p[1])
 				{
 					if (idx == num && 0 != array)
-						ZBX_ASSIGN_PARAM;
+						TRX_ASSIGN_PARAM;
 
 					p++;
 
 					if (idx == num)
-						ZBX_ASSIGN_PARAM;
+						TRX_ASSIGN_PARAM;
 				}
 				else if (idx == num)
-					ZBX_ASSIGN_PARAM;
+					TRX_ASSIGN_PARAM;
 				break;
 			case 2:
 				/* unquoted */
@@ -4306,14 +4306,14 @@ int	get_param(const char *p, int num, char *buf, size_t max_len)
 					state = 0;
 				}
 				else if (idx == num)
-					ZBX_ASSIGN_PARAM;
+					TRX_ASSIGN_PARAM;
 				break;
 		}
 
 		if (idx > num)
 			break;
 	}
-#undef ZBX_ASSIGN_PARAM
+#undef TRX_ASSIGN_PARAM
 
 	/* missing terminating '"' character */
 	if (1 == state)
@@ -4540,7 +4540,7 @@ static int	replace_key_param(char **data, int key_type, size_t l, size_t *r, int
  *                                                                            *
  * Parameters:                                                                *
  *      data      - [IN/OUT] item key or SNMP OID                             *
- *      key_type  - [IN] ZBX_KEY_TYPE_*                                       *
+ *      key_type  - [IN] TRX_KEY_TYPE_*                                       *
  *      cb        - [IN] callback function                                    *
  *      cb_data   - [IN] callback function custom data                        *
  *      error     - [OUT] error message                                       *
@@ -4555,18 +4555,18 @@ int	replace_key_params_dyn(char **data, int key_type, replace_key_param_f cb, vo
 {
 	typedef enum
 	{
-		ZBX_STATE_NEW,
-		ZBX_STATE_END,
-		ZBX_STATE_UNQUOTED,
-		ZBX_STATE_QUOTED
+		TRX_STATE_NEW,
+		TRX_STATE_END,
+		TRX_STATE_UNQUOTED,
+		TRX_STATE_QUOTED
 	}
 	zbx_parser_state_t;
 
 	size_t			i = 0, l = 0;
 	int			level = 0, num = 0, ret = SUCCEED;
-	zbx_parser_state_t	state = ZBX_STATE_NEW;
+	zbx_parser_state_t	state = TRX_STATE_NEW;
 
-	if (ZBX_KEY_TYPE_ITEM == key_type)
+	if (TRX_KEY_TYPE_ITEM == key_type)
 	{
 		for (; SUCCEED == is_key_char((*data)[i]) && '\0' != (*data)[i]; i++)
 			;
@@ -4609,7 +4609,7 @@ int	replace_key_params_dyn(char **data, int key_type, replace_key_param_f cb, vo
 	{
 		switch (state)
 		{
-			case ZBX_STATE_NEW:	/* a new parameter started */
+			case TRX_STATE_NEW:	/* a new parameter started */
 				switch ((*data)[i])
 				{
 					case ' ':
@@ -4631,24 +4631,24 @@ int	replace_key_params_dyn(char **data, int key_type, replace_key_param_f cb, vo
 						ret = replace_key_param(data, key_type, i, &i, level, num, 0, cb,
 								cb_data);
 						level--;
-						state = ZBX_STATE_END;
+						state = TRX_STATE_END;
 						break;
 					case '"':
-						state = ZBX_STATE_QUOTED;
+						state = TRX_STATE_QUOTED;
 						l = i;
 						break;
 					default:
-						state = ZBX_STATE_UNQUOTED;
+						state = TRX_STATE_UNQUOTED;
 						l = i;
 				}
 				break;
-			case ZBX_STATE_END:	/* end of parameter */
+			case TRX_STATE_END:	/* end of parameter */
 				switch ((*data)[i])
 				{
 					case ' ':
 						break;
 					case ',':
-						state = ZBX_STATE_NEW;
+						state = TRX_STATE_NEW;
 						if (1 == level)
 							num++;
 						break;
@@ -4661,23 +4661,23 @@ int	replace_key_params_dyn(char **data, int key_type, replace_key_param_f cb, vo
 						goto clean;
 				}
 				break;
-			case ZBX_STATE_UNQUOTED:	/* an unquoted parameter */
+			case TRX_STATE_UNQUOTED:	/* an unquoted parameter */
 				if (']' == (*data)[i] || ',' == (*data)[i])
 				{
 					ret = replace_key_param(data, key_type, l, &i, level, num, 0, cb, cb_data);
 
 					i--;
-					state = ZBX_STATE_END;
+					state = TRX_STATE_END;
 				}
 				break;
-			case ZBX_STATE_QUOTED:	/* a quoted parameter */
+			case TRX_STATE_QUOTED:	/* a quoted parameter */
 				if ('"' == (*data)[i] && '\\' != (*data)[i - 1])
 				{
 					i++;
 					ret = replace_key_param(data, key_type, l, &i, level, num, 1, cb, cb_data);
 					i--;
 
-					state = ZBX_STATE_END;
+					state = TRX_STATE_END;
 				}
 				break;
 		}
@@ -4687,8 +4687,8 @@ clean:
 	{
 		if (NULL != error)
 		{
-			zbx_snprintf(error, maxerrlen, "Invalid %s at position " ZBX_FS_SIZE_T,
-					(ZBX_KEY_TYPE_ITEM == key_type ? "item key" : "SNMP OID"), (zbx_fs_size_t)i);
+			zbx_snprintf(error, maxerrlen, "Invalid %s at position " TRX_FS_SIZE_T,
+					(TRX_KEY_TYPE_ITEM == key_type ? "item key" : "SNMP OID"), (zbx_fs_size_t)i);
 		}
 		ret = FAIL;
 	}
@@ -5084,5 +5084,5 @@ int	zbx_get_component_version(char *value)
 	if (NULL != (ptr = strchr(pminor, '.')))
 		*ptr = '\0';
 
-	return ZBX_COMPONENT_VERSION(atoi(value), atoi(pminor));
+	return TRX_COMPONENT_VERSION(atoi(value), atoi(pminor));
 }

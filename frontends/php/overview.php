@@ -15,7 +15,7 @@ $page['scripts'] = ['layout.mode.js'];
 CView::$has_web_layout_mode = true;
 $page['web_layout_mode'] = CView::getLayoutMode();
 
-define('ZBX_PAGE_DO_REFRESH', 1);
+define('TRX_PAGE_DO_REFRESH', 1);
 define('SHOW_TRIGGERS', 0);
 define('SHOW_DATA', 1);
 
@@ -23,21 +23,21 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'groupid'     => [T_ZBX_INT, O_OPT, P_SYS, DB_ID,							null],
-	'view_style'  => [T_ZBX_INT, O_OPT, P_SYS, IN(STYLE_LEFT.','.STYLE_TOP),	null],
-	'type'        => [T_ZBX_INT, O_OPT, P_SYS, IN(SHOW_TRIGGERS.','.SHOW_DATA), null],
+	'groupid'     => [T_TRX_INT, O_OPT, P_SYS, DB_ID,							null],
+	'view_style'  => [T_TRX_INT, O_OPT, P_SYS, IN(STYLE_LEFT.','.STYLE_TOP),	null],
+	'type'        => [T_TRX_INT, O_OPT, P_SYS, IN(SHOW_TRIGGERS.','.SHOW_DATA), null],
 	// filter
-	'filter_rst' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_set' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'show_triggers' =>		[T_ZBX_INT, O_OPT, null,	null,		null],
-	'ack_status' =>			[T_ZBX_INT, O_OPT, P_SYS,	null,		null],
-	'show_severity' =>		[T_ZBX_INT, O_OPT, P_SYS,	null,		null],
-	'show_suppressed' =>	[T_ZBX_INT, O_OPT, null,	null,		null],
-	'status_change_days' =>	[T_ZBX_INT, O_OPT, null,	BETWEEN(1, DAY_IN_YEAR * 2), null],
-	'status_change' =>		[T_ZBX_INT, O_OPT, null,	null,		null],
-	'txt_select' =>			[T_ZBX_STR, O_OPT, null,	null,		null],
-	'application' =>		[T_ZBX_STR, O_OPT, null,	null,		null],
-	'inventory' =>			[T_ZBX_STR, O_OPT, null,	null,		null]
+	'filter_rst' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_set' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'show_triggers' =>		[T_TRX_INT, O_OPT, null,	null,		null],
+	'ack_status' =>			[T_TRX_INT, O_OPT, P_SYS,	null,		null],
+	'show_severity' =>		[T_TRX_INT, O_OPT, P_SYS,	null,		null],
+	'show_suppressed' =>	[T_TRX_INT, O_OPT, null,	null,		null],
+	'status_change_days' =>	[T_TRX_INT, O_OPT, null,	BETWEEN(1, DAY_IN_YEAR * 2), null],
+	'status_change' =>		[T_TRX_INT, O_OPT, null,	null,		null],
+	'txt_select' =>			[T_TRX_STR, O_OPT, null,	null,		null],
+	'application' =>		[T_TRX_STR, O_OPT, null,	null,		null],
+	'inventory' =>			[T_TRX_STR, O_OPT, null,	null,		null]
 ];
 check_fields($fields);
 

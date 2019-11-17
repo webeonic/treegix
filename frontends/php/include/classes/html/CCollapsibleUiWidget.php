@@ -34,12 +34,12 @@ class CCollapsibleUiWidget extends CUiWidget {
 
 		if ($this->expanded) {
 			$icon
-				->addClass(ZBX_STYLE_BTN_WIDGET_COLLAPSE)
+				->addClass(TRX_STYLE_BTN_WIDGET_COLLAPSE)
 				->setTitle(_('Collapse'));
 		}
 		else {
 			$icon
-				->addClass(ZBX_STYLE_BTN_WIDGET_EXPAND)
+				->addClass(TRX_STYLE_BTN_WIDGET_EXPAND)
 				->setTitle(_('Expand'));
 		}
 

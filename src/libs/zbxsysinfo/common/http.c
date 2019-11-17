@@ -14,7 +14,7 @@
 
 #ifndef HAVE_LIBCURL
 
-#define ZBX_MAX_WEBPAGE_SIZE	(1 * 1024 * 1024)
+#define TRX_MAX_WEBPAGE_SIZE	(1 * 1024 * 1024)
 
 #else
 
@@ -59,10 +59,10 @@ static int	process_url(const char *host, const char *port, const char *path, cha
 
 	/* allow HTTP(S) scheme only */
 #ifdef HAVE_LIBCURL
-	if (0 == zbx_strncasecmp(host, HTTP_SCHEME_STR, ZBX_CONST_STRLEN(HTTP_SCHEME_STR)) ||
-			0 == zbx_strncasecmp(host, HTTPS_SCHEME_STR, ZBX_CONST_STRLEN(HTTPS_SCHEME_STR)))
+	if (0 == zbx_strncasecmp(host, HTTP_SCHEME_STR, TRX_CONST_STRLEN(HTTP_SCHEME_STR)) ||
+			0 == zbx_strncasecmp(host, HTTPS_SCHEME_STR, TRX_CONST_STRLEN(HTTPS_SCHEME_STR)))
 #else
-	if (0 == zbx_strncasecmp(host, HTTP_SCHEME_STR, ZBX_CONST_STRLEN(HTTP_SCHEME_STR)))
+	if (0 == zbx_strncasecmp(host, HTTP_SCHEME_STR, TRX_CONST_STRLEN(HTTP_SCHEME_STR)))
 #endif
 	{
 		scheme_found = 1;
@@ -123,8 +123,8 @@ static size_t	curl_write_cb(void *ptr, size_t size, size_t nmemb, void *userdata
 
 static size_t	curl_ignore_cb(void *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	ZBX_UNUSED(ptr);
-	ZBX_UNUSED(userdata);
+	TRX_UNUSED(ptr);
+	TRX_UNUSED(userdata);
 
 	return size * nmemb;
 }
@@ -195,7 +195,7 @@ static int	get_http_page(const char *host, const char *path, const char *port, c
 	{
 		/* URL is not detected - compose URL using host, port and path */
 
-		unsigned short	port_n = ZBX_DEFAULT_HTTP_PORT;
+		unsigned short	port_n = TRX_DEFAULT_HTTP_PORT;
 
 		if (NULL != port && '\0' != *port)
 		{
@@ -269,7 +269,7 @@ static int	get_http_page(const char *host, const char *path, const char *port, c
 		if (SUCCEED != process_url(host, port, path, &url, error))
 			return SYSINFO_RET_FAIL;
 
-		p_host = url + ZBX_CONST_STRLEN(HTTP_SCHEME_STR);
+		p_host = url + TRX_CONST_STRLEN(HTTP_SCHEME_STR);
 
 		if (0 == (authority_len = strcspn(p_host, "/?")))
 		{
@@ -308,7 +308,7 @@ static int	get_http_page(const char *host, const char *path, const char *port, c
 		}
 		else
 		{
-			port_num = ZBX_DEFAULT_HTTP_PORT;
+			port_num = TRX_DEFAULT_HTTP_PORT;
 			hostname = zbx_dsprintf(hostname, "%.*s", (int)(au_end - p_host + 1), p_host);
 		}
 
@@ -340,7 +340,7 @@ static int	get_http_page(const char *host, const char *path, const char *port, c
 
 		if (NULL == port || '\0' == *port)
 		{
-			port_num = ZBX_DEFAULT_HTTP_PORT;
+			port_num = TRX_DEFAULT_HTTP_PORT;
 		}
 		else if (FAIL == is_ushort(port, &port_num))
 		{
@@ -364,7 +364,7 @@ static int	get_http_page(const char *host, const char *path, const char *port, c
 	}
 
 	if (SUCCEED == (ret = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, hostname, port_num, CONFIG_TIMEOUT,
-			ZBX_TCP_SEC_UNENCRYPTED, NULL, NULL)))
+			TRX_TCP_SEC_UNENCRYPTED, NULL, NULL)))
 	{
 		char	*request = NULL;
 
@@ -382,8 +382,8 @@ static int	get_http_page(const char *host, const char *path, const char *port, c
 			{
 				if (NULL != buffer)
 				{
-					*buffer = (char*)zbx_malloc(*buffer, ZBX_MAX_WEBPAGE_SIZE);
-					zbx_strlcpy(*buffer, s.buffer, ZBX_MAX_WEBPAGE_SIZE);
+					*buffer = (char*)zbx_malloc(*buffer, TRX_MAX_WEBPAGE_SIZE);
+					zbx_strlcpy(*buffer, s.buffer, TRX_MAX_WEBPAGE_SIZE);
 				}
 			}
 		}

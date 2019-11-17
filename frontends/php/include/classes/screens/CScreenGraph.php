@@ -153,8 +153,8 @@ class CScreenGraph extends CScreenBase {
 
 		if ($this->mode == SCREEN_MODE_EDIT) {
 			$src
-				->setArgument('from', ZBX_PERIOD_DEFAULT_FROM)
-				->setArgument('to', ZBX_PERIOD_DEFAULT_TO);
+				->setArgument('from', TRX_PERIOD_DEFAULT_FROM)
+				->setArgument('to', TRX_PERIOD_DEFAULT_TO);
 		}
 		else {
 			$src
@@ -191,7 +191,7 @@ class CScreenGraph extends CScreenBase {
 			}
 
 			$item
-				->addClass(ZBX_STYLE_GRAPH_WRAPPER)
+				->addClass(TRX_STYLE_GRAPH_WRAPPER)
 				->setId($containerId);
 
 			return $this->getOutput($item);

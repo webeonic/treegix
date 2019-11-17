@@ -9,7 +9,7 @@ $widget = (new CWidget())->setTitle(_('Actions'));
 // create form
 $actionForm = (new CForm())
 	->setName('action.edit')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $data['form'])
 	->addVar('eventsource', $data['eventsource']);
 
@@ -22,7 +22,7 @@ $action_tab = (new CFormList())
 	->addRow(
 		(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $data['action']['name']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	);
@@ -71,10 +71,10 @@ if ($data['action']['filter']['conditions']) {
 				(new CCol([
 					(new CButton('remove', _('Remove')))
 						->onClick('javascript: removeCondition('.$i.');')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 						->removeId(),
 					new CVar('conditions['.$i.']', $condition)
-				]))->addClass(ZBX_STYLE_NOWRAP)
+				]))->addClass(TRX_STYLE_NOWRAP)
 			],
 			null, 'conditions_'.$i
 		);
@@ -84,7 +84,7 @@ if ($data['action']['filter']['conditions']) {
 }
 
 $formula = (new CTextBox('formula', $data['action']['filter']['formula']))
-	->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	->setId('formula')
 	->setAttribute('placeholder', 'A or (B and C) &hellip;');
 
@@ -100,14 +100,14 @@ $calculationTypeComboBox = new CComboBox('evaltype', $data['action']['filter']['
 
 $action_tab->addRow(_('Type of calculation'), [
 	$calculationTypeComboBox,
-	(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+	(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 	(new CSpan())->setId('conditionLabel'),
 	$formula
 ]);
 $action_tab->addRow(_('Conditions'),
 	(new CDiv($condition_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 // append new condition to form list
@@ -155,7 +155,7 @@ switch ($data['new_condition']['conditiontype']) {
 					'editable' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_TEMPLATE:
@@ -173,7 +173,7 @@ switch ($data['new_condition']['conditiontype']) {
 					'editable' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_HOST:
@@ -190,7 +190,7 @@ switch ($data['new_condition']['conditiontype']) {
 					'editable' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_TRIGGER:
@@ -208,16 +208,16 @@ switch ($data['new_condition']['conditiontype']) {
 					'noempty' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_TRIGGER_NAME:
-		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_TIME_PERIOD:
-		$condition = (new CTextBox('new_condition[value]', ZBX_DEFAULT_INTERVAL))
-			->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		$condition = (new CTextBox('new_condition[value]', TRX_DEFAULT_INTERVAL))
+			->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_TRIGGER_SEVERITY:
@@ -241,16 +241,16 @@ switch ($data['new_condition']['conditiontype']) {
 					'dstfld1' => 'new_condition_value_'
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_DCHECK:
 		$action_tab->addItem(new CVar('new_condition[value]', '0'));
 		$condition = [
-			(new CTextBox('dcheck', '', true))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CTextBox('dcheck', '', true))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CButton('btn1', _('Select')))
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 				->onClick('return PopUp("popup.generic",'.
 					CJs::encodeJson([
 						'srctbl' => 'dchecks',
@@ -280,12 +280,12 @@ switch ($data['new_condition']['conditiontype']) {
 					'dstfld1' => 'new_condition_value'
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_DHOST_IP:
 		$condition = (new CTextBox('new_condition[value]', '192.168.0.1-127,192.168.2.1'))
-			->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+			->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_DSERVICE_TYPE:
@@ -296,7 +296,7 @@ switch ($data['new_condition']['conditiontype']) {
 		break;
 
 	case CONDITION_TYPE_DSERVICE_PORT:
-		$condition = (new CTextBox('new_condition[value]', '0-1023,1024-49151'))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		$condition = (new CTextBox('new_condition[value]', '0-1023,1024-49151'))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_DSTATUS:
@@ -314,19 +314,19 @@ switch ($data['new_condition']['conditiontype']) {
 		break;
 
 	case CONDITION_TYPE_DUPTIME:
-		$condition = (new CNumericBox('new_condition[value]', 600, 15))->setWidth(ZBX_TEXTAREA_NUMERIC_BIG_WIDTH);
+		$condition = (new CNumericBox('new_condition[value]', 600, 15))->setWidth(TRX_TEXTAREA_NUMERIC_BIG_WIDTH);
 		break;
 
 	case CONDITION_TYPE_DVALUE:
-		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_APPLICATION:
-		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_HOST_NAME:
-		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_EVENT_TYPE:
@@ -334,22 +334,22 @@ switch ($data['new_condition']['conditiontype']) {
 		break;
 
 	case CONDITION_TYPE_HOST_METADATA:
-		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH);
+		$condition = (new CTextBox('new_condition[value]', ''))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH);
 		break;
 
 	case CONDITION_TYPE_EVENT_TAG:
 		$condition = (new CTextBox('new_condition[value]', ''))
-			->setWidth(ZBX_TEXTAREA_TAG_WIDTH)
+			->setWidth(TRX_TEXTAREA_TAG_WIDTH)
 			->setAttribute('placeholder', _('tag'));
 		break;
 
 	case CONDITION_TYPE_EVENT_TAG_VALUE:
 		$condition = (new CTextBox('new_condition[value]', ''))
-			->setWidth(ZBX_TEXTAREA_TAG_VALUE_WIDTH)
+			->setWidth(TRX_TEXTAREA_TAG_VALUE_WIDTH)
 			->setAttribute('placeholder', _('value'));
 
 		$condition2 = (new CTextBox('new_condition[value2]', ''))
-			->setWidth(ZBX_TEXTAREA_TAG_WIDTH)
+			->setWidth(TRX_TEXTAREA_TAG_WIDTH)
 			->setAttribute('placeholder', _('tag'));
 		break;
 
@@ -364,22 +364,22 @@ $action_tab->addRow(_('New condition'),
 			->addRow(
 				new CCol([
 					$conditionTypeComboBox,
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$condition2,
-					($condition2 === null) ? null : (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					($condition2 === null) ? null : (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$condition_operator,
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$condition
 				])
 			)
 			->addRow(
 				(new CSimpleButton(_('Add')))
 					->onClick('javascript: submitFormWithParam("'.$actionForm->getName().'", "add_condition", "1");')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 			)
 	))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 $action_tab->addRow(_('Enabled'),
@@ -392,17 +392,17 @@ $operation_tab = new CFormList();
 if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVENT_SOURCE_INTERNAL) {
 	$operation_tab->addRow((new CLabel(_('Default operation step duration'), 'esc_period'))->setAsteriskMark(),
 		(new CTextBox('esc_period', $data['action']['esc_period']))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			->setAriaRequired()
 	);
 }
 
 $operation_tab
 	->addRow(_('Default subject'),
-		(new CTextBox('def_shortdata', $data['action']['def_shortdata']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('def_shortdata', $data['action']['def_shortdata']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('Default message'),
-		(new CTextArea('def_longdata', $data['action']['def_longdata']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('def_longdata', $data['action']['def_longdata']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
@@ -490,16 +490,16 @@ if ($data['action']['operations']) {
 							->onClick('javascript: submitFormWithParam('.
 								'"'.$actionForm->getName().'", "edit_operationid['.$operationid.']", "1"'.
 							');')
-							->addClass(ZBX_STYLE_BTN_LINK),
+							->addClass(TRX_STYLE_BTN_LINK),
 						[
 							(new CButton('remove', _('Remove')))
 								->onClick('javascript: removeOperation('.$operationid.', '.ACTION_OPERATION.');')
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 								->removeId(),
 							new CVar('operations['.$operationid.']', $operation)
 						]
 					])
-				))->addClass(ZBX_STYLE_NOWRAP)
+				))->addClass(TRX_STYLE_NOWRAP)
 			];
 		}
 		else {
@@ -511,16 +511,16 @@ if ($data['action']['operations']) {
 							->onClick('javascript: submitFormWithParam('.
 								'"'.$actionForm->getName().'", "edit_operationid['.$operationid.']", "1"'.
 							');')
-							->addClass(ZBX_STYLE_BTN_LINK),
+							->addClass(TRX_STYLE_BTN_LINK),
 						[
 							(new CButton('remove', _('Remove')))
 								->onClick('javascript: removeOperation('.$operationid.', '.ACTION_OPERATION.');')
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 								->removeId(),
 							new CVar('operations['.$operationid.']', $operation)
 						]
 					])
-				))->addClass(ZBX_STYLE_NOWRAP)
+				))->addClass(TRX_STYLE_NOWRAP)
 			];
 		}
 		$operationsTable->addRow($operationRow, null, 'operations_'.$operationid);
@@ -544,13 +544,13 @@ $footer = null;
 if (empty($data['new_operation'])) {
 	$footer = (new CSimpleButton(_('New')))
 		->onClick('javascript: submitFormWithParam("'.$actionForm->getName().'", "new_operation", "1");')
-		->addClass(ZBX_STYLE_BTN_LINK);
+		->addClass(TRX_STYLE_BTN_LINK);
 }
 
 $operation_tab->addRow(_('Operations'),
 	(new CDiv([$operationsTable, $footer]))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 // create new operation table
@@ -570,24 +570,24 @@ if (!empty($data['new_operation'])) {
 
 	if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVENT_SOURCE_INTERNAL) {
 		$stepFrom = (new CNumericBox('new_operation[esc_step_from]', $data['new_operation']['esc_step_from'], 5))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH);
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH);
 		$stepFrom->onChange('javascript:'.$stepFrom->getAttribute('onchange').' if (this.value == 0) this.value = 1;');
 
 		$new_operation_formlist->addRow(_('Steps'), [
 			$stepFrom,
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			'-',
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CNumericBox('new_operation[esc_step_to]', $data['new_operation']['esc_step_to'], 5))
-				->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			_('(0 - infinitely)')
 		]);
 
 		$new_operation_formlist->addRow(_('Step duration'), [
 			(new CTextBox('new_operation[esc_period]', $data['new_operation']['esc_period']))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			_('(0 - use action default)')
 		]);
 	}
@@ -669,7 +669,7 @@ if (!empty($data['new_operation'])) {
 						'multiselect' => '1'
 					]).', null, this);'
 				)
-				->addClass(ZBX_STYLE_BTN_LINK);
+				->addClass(TRX_STYLE_BTN_LINK);
 			$usrgrpList->addRow(
 				(new CRow(
 					(new CCol($addUsrgrpBtn))->setColSpan(2)
@@ -691,7 +691,7 @@ if (!empty($data['new_operation'])) {
 						'multiselect' => '1'
 					]).', null, this);'
 				)
-				->addClass(ZBX_STYLE_BTN_LINK);
+				->addClass(TRX_STYLE_BTN_LINK);
 			$userList->addRow(
 				(new CRow(
 					(new CCol($addUserBtn))->setColSpan(2)
@@ -737,13 +737,13 @@ if (!empty($data['new_operation'])) {
 				->addRow('', (new CLabel(_('At least one user or user group must be selected.')))->setAsteriskMark())
 				->addRow(_('Send to User groups'),
 					(new CDiv($usrgrpList))
-						->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-						->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+						->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+						->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 				)
 				->addRow(_('Send to Users'),
 					(new CDiv($userList))
-						->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-						->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+						->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+						->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 				);
 
 			$mediaTypeComboBox = (new CComboBox('new_operation[opmessage][mediatypeid]', $data['new_operation']['opmessage']['mediatypeid']))
@@ -767,11 +767,11 @@ if (!empty($data['new_operation'])) {
 				)
 				->addRow(_('Subject'),
 					(new CTextBox('new_operation[opmessage][subject]', $data['new_operation']['opmessage']['subject']))
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				)
 				->addRow(_('Message'),
 					(new CTextArea('new_operation[opmessage][message]', $data['new_operation']['opmessage']['message']))
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				);
 			break;
 
@@ -781,11 +781,11 @@ if (!empty($data['new_operation'])) {
 			}
 
 			$data['new_operation']['opcommand']['type'] = isset($data['new_operation']['opcommand']['type'])
-				? $data['new_operation']['opcommand']['type'] : ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT;
+				? $data['new_operation']['opcommand']['type'] : TRX_SCRIPT_TYPE_CUSTOM_SCRIPT;
 			$data['new_operation']['opcommand']['scriptid'] = isset($data['new_operation']['opcommand']['scriptid'])
 				? $data['new_operation']['opcommand']['scriptid'] : '';
 			$data['new_operation']['opcommand']['execute_on'] = isset($data['new_operation']['opcommand']['execute_on'])
-				? $data['new_operation']['opcommand']['execute_on'] : ZBX_SCRIPT_EXECUTE_ON_AGENT;
+				? $data['new_operation']['opcommand']['execute_on'] : TRX_SCRIPT_EXECUTE_ON_AGENT;
 			$data['new_operation']['opcommand']['publickey'] = isset($data['new_operation']['opcommand']['publickey'])
 				? $data['new_operation']['opcommand']['publickey'] : '';
 			$data['new_operation']['opcommand']['privatekey'] = isset($data['new_operation']['opcommand']['privatekey'])
@@ -876,23 +876,23 @@ if (!empty($data['new_operation'])) {
 								(new CCol(
 									(new CButton('add', _('New')))
 										->onClick('javascript: showOpCmdForm(0, '.ACTION_OPERATION.');')
-										->addClass(ZBX_STYLE_BTN_LINK)
+										->addClass(TRX_STYLE_BTN_LINK)
 								))->setColSpan(3)
 							))->setId('opCmdListFooter')
 						)
 				))
-					->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-					->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+					->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+					->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 					->setId('opCmdList')
 			);
 
 			$userScript = [
 				new CVar('new_operation[opcommand][scriptid]', $data['new_operation']['opcommand']['scriptid']),
 				(new CTextBox('new_operation[opcommand][script]', $data['new_operation']['opcommand']['script'], true))
-					->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 					->setAriaRequired(),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-				(new CButton('select_operation_opcommand_script', _('Select')))->addClass(ZBX_STYLE_BTN_GREY)
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+				(new CButton('select_operation_opcommand_script', _('Select')))->addClass(TRX_STYLE_BTN_GREY)
 			];
 
 			$new_operation_formlist
@@ -902,17 +902,17 @@ if (!empty($data['new_operation'])) {
 					(new CComboBox('new_operation[opcommand][type]',
 						$data['new_operation']['opcommand']['type'],
 						'showOpTypeForm('.ACTION_OPERATION.')',	[
-							ZBX_SCRIPT_TYPE_IPMI => _('IPMI'),
-							ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT => _('Custom script'),
-							ZBX_SCRIPT_TYPE_SSH => _('SSH'),
-							ZBX_SCRIPT_TYPE_TELNET => _('Telnet'),
-							ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT => _('Global script')
+							TRX_SCRIPT_TYPE_IPMI => _('IPMI'),
+							TRX_SCRIPT_TYPE_CUSTOM_SCRIPT => _('Custom script'),
+							TRX_SCRIPT_TYPE_SSH => _('SSH'),
+							TRX_SCRIPT_TYPE_TELNET => _('Telnet'),
+							TRX_SCRIPT_TYPE_GLOBAL_SCRIPT => _('Global script')
 						]
 					))
 				)
 				->addRow(
 					(new CLabel(_('Script name'), 'new_operation_opcommand_script'))->setAsteriskMark(),
-					(new CDiv($userScript))->addClass(ZBX_STYLE_NOWRAP)
+					(new CDiv($userScript))->addClass(TRX_STYLE_NOWRAP)
 				)
 				// script
 				->addRow(
@@ -920,9 +920,9 @@ if (!empty($data['new_operation'])) {
 					(new CRadioButtonList('new_operation[opcommand][execute_on]',
 						(int) $data['new_operation']['opcommand']['execute_on']
 					))
-						->addValue(_('Treegix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
-						->addValue(_('Treegix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
-						->addValue(_('Treegix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
+						->addValue(_('Treegix agent'), TRX_SCRIPT_EXECUTE_ON_AGENT)
+						->addValue(_('Treegix server (proxy)'), TRX_SCRIPT_EXECUTE_ON_PROXY)
+						->addValue(_('Treegix server'), TRX_SCRIPT_EXECUTE_ON_SERVER)
 						->setModern(true)
 				)
 				// ssh
@@ -940,7 +940,7 @@ if (!empty($data['new_operation'])) {
 					(new CTextBox('new_operation[opcommand][username]',
 						$data['new_operation']['opcommand']['username']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired()
 				)
 				->addRow(
@@ -948,7 +948,7 @@ if (!empty($data['new_operation'])) {
 					(new CTextBox('new_operation[opcommand][publickey]',
 						$data['new_operation']['opcommand']['publickey']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired()
 				)
 				->addRow(
@@ -956,40 +956,40 @@ if (!empty($data['new_operation'])) {
 					(new CTextBox('new_operation[opcommand][privatekey]',
 						$data['new_operation']['opcommand']['privatekey']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired()
 				)
 				->addRow(_('Password'),
 					(new CTextBox('new_operation[opcommand][password]',
 						$data['new_operation']['opcommand']['password']
-					))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+					))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				)
 				// set custom id because otherwise they are set based on name (sick!) and produce duplicate ids
 				->addRow(_('Key passphrase'),
 					(new CTextBox('new_operation[opcommand][password]',
 						$data['new_operation']['opcommand']['password']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setId('new_operation_opcommand_passphrase')
 				)
 				// ssh && telnet
 				->addRow(_('Port'),
 					(new CTextBox('new_operation[opcommand][port]', $data['new_operation']['opcommand']['port']))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				)
 				// command
 				->addRow(
 					(new CLabel(_('Commands'), 'new_operation[opcommand][command]'))->setAsteriskMark(),
 					(new CTextArea('new_operation[opcommand][command]', $data['new_operation']['opcommand']['command']))
-						->addClass(ZBX_STYLE_MONOSPACE_FONT)
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->addClass(TRX_STYLE_MONOSPACE_FONT)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 						->setAriaRequired()
 				)
 				->addRow(
 					(new CLabel(_('Commands'), 'new_operation[opcommand][command]'))->setAsteriskMark(),
 					(new CTextBox('new_operation[opcommand][command]', $data['new_operation']['opcommand']['command']))
-						->addClass(ZBX_STYLE_MONOSPACE_FONT)
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->addClass(TRX_STYLE_MONOSPACE_FONT)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 						->setId('new_operation_opcommand_command_ipmi')
 						->setAriaRequired()
 				);
@@ -1024,7 +1024,7 @@ if (!empty($data['new_operation'])) {
 					]
 				]))
 					->setAriaRequired()
-					->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			);
 			break;
 
@@ -1048,7 +1048,7 @@ if (!empty($data['new_operation'])) {
 					]
 				]))
 					->setAriaRequired()
-					->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			);
 			break;
 
@@ -1115,12 +1115,12 @@ if (!empty($data['new_operation'])) {
 					(new CCol([
 						(new CButton('remove', _('Remove')))
 							->onClick('javascript: removeOperationCondition('.$i.');')
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->removeId(),
 						new CVar('new_operation[opconditions]['.$i.'][conditiontype]', $opcondition['conditiontype']),
 						new CVar('new_operation[opconditions]['.$i.'][operator]', $opcondition['operator']),
 						new CVar('new_operation[opconditions]['.$i.'][value]', $opcondition['value'])
-					]))->addClass(ZBX_STYLE_NOWRAP)
+					]))->addClass(TRX_STYLE_NOWRAP)
 				],
 				null, 'opconditions_'.$i
 			);
@@ -1137,7 +1137,7 @@ if (!empty($data['new_operation'])) {
 
 		$new_operation_formlist->addRow(_('Type of calculation'), [
 			$calcTypeComboBox,
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CSpan())->setId('operationConditionLabel')
 		]);
 
@@ -1145,13 +1145,13 @@ if (!empty($data['new_operation'])) {
 			$operationConditionsTable->addRow((new CCol(
 				(new CSimpleButton(_('New')))
 					->onClick('javascript: submitFormWithParam("'.$actionForm->getName().'", "new_opcondition", "1");')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 			))->setColspan(3));
 		}
 		$new_operation_formlist->addRow(_('Conditions'),
 			(new CDiv($operationConditionsTable))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 		);
 	}
 
@@ -1190,11 +1190,11 @@ if (!empty($data['new_operation'])) {
 			new CComboBox('new_opcondition[conditiontype]', $new_opcondition['conditiontype'], 'submit()',
 				$condition_types
 			),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			new CComboBox('new_opcondition[operator]', null, null, $operators)
 		];
 		if ($new_opcondition['conditiontype'] == CONDITION_TYPE_EVENT_ACKNOWLEDGED) {
-			$rowCondition[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+			$rowCondition[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 			$rowCondition[] = new CComboBox('new_opcondition[value]', $new_opcondition['value'], null, [
 				0 => _('Not Ack'),
 				1 => _('Ack')
@@ -1210,16 +1210,16 @@ if (!empty($data['new_operation'])) {
 						->onClick('javascript: submitFormWithParam('.
 							'"'.$actionForm->getName().'", "add_opcondition", "1"'.
 						');')
-						->addClass(ZBX_STYLE_BTN_LINK),
+						->addClass(TRX_STYLE_BTN_LINK),
 					(new CSimpleButton(_('Cancel')))
 						->onClick('javascript: submitFormWithParam('.
 							'"'.$actionForm->getName().'", "cancel_new_opcondition", "1"'.
 						');')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 				])
 			]))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 		);
 	}
 
@@ -1230,16 +1230,16 @@ if (!empty($data['new_operation'])) {
 			new CHorList([
 				(new CSimpleButton((isset($data['new_operation']['id'])) ? _('Update') : _('Add')))
 					->onClick('javascript: submitFormWithParam("'.$actionForm->getName().'", "add_operation", "1");')
-					->addClass(ZBX_STYLE_BTN_LINK),
+					->addClass(TRX_STYLE_BTN_LINK),
 				(new CSimpleButton(_('Cancel')))
 					->onClick('javascript: submitFormWithParam('.
 						'"'.$actionForm->getName().'", "cancel_new_operation", "1"'.
 					');')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 			])
 		]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 }
 
@@ -1255,10 +1255,10 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 	$bottom_note = _('At least one operation or recovery operation must exist.');
 	$recovery_tab = (new CFormList())
 		->addRow(_('Default subject'),
-			(new CTextBox('r_shortdata', $data['action']['r_shortdata']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			(new CTextBox('r_shortdata', $data['action']['r_shortdata']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		)
 		->addRow(_('Default message'),
-			(new CTextArea('r_longdata', $data['action']['r_longdata']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			(new CTextArea('r_longdata', $data['action']['r_longdata']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		);
 
 	// Create operation table.
@@ -1300,18 +1300,18 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 							->onClick('javascript: submitFormWithParam('.
 								'"'.$actionForm->getName().'", "edit_recovery_operationid['.$operationid.']", "1"'.
 							');')
-							->addClass(ZBX_STYLE_BTN_LINK),
+							->addClass(TRX_STYLE_BTN_LINK),
 						[
 							(new CButton('remove', _('Remove')))
 								->onClick(
 									'javascript: removeOperation('.$operationid.', '.ACTION_RECOVERY_OPERATION.');'
 								)
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 								->removeId(),
 							new CVar('recovery_operations['.$operationid.']', $operation)
 						]
 					])
-				))->addClass(ZBX_STYLE_NOWRAP)
+				))->addClass(TRX_STYLE_NOWRAP)
 			];
 			$operationsTable->addRow($operationRow, null, 'recovery_operations_'.$operationid);
 
@@ -1334,13 +1334,13 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 	if (empty($data['new_recovery_operation'])) {
 		$footer = (new CSimpleButton(_('New')))
 			->onClick('javascript: submitFormWithParam("'.$actionForm->getName().'", "new_recovery_operation", "1");')
-			->addClass(ZBX_STYLE_BTN_LINK);
+			->addClass(TRX_STYLE_BTN_LINK);
 	}
 
 	$recovery_tab->addRow(_('Operations'),
 		(new CDiv([$operationsTable, $footer]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 
 	// create new operation table
@@ -1421,7 +1421,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 							'multiselect' => '1'
 						]).', null, this);'
 					)
-					->addClass(ZBX_STYLE_BTN_LINK);
+					->addClass(TRX_STYLE_BTN_LINK);
 				$usrgrpList->addRow(
 					(new CRow(
 						(new CCol($addUsrgrpBtn))->setColSpan(2)
@@ -1443,7 +1443,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 							'multiselect' => '1'
 						]).', null, this);'
 					)
-					->addClass(ZBX_STYLE_BTN_LINK);
+					->addClass(TRX_STYLE_BTN_LINK);
 				$userList->addRow(
 					(new CRow(
 						(new CCol($addUserBtn))->setColSpan(2)
@@ -1492,13 +1492,13 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					)
 					->addRow(_('Send to User groups'),
 						(new CDiv($usrgrpList))
-							->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-							->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+							->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+							->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 					)
 					->addRow(_('Send to Users'),
 						(new CDiv($userList))
-							->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-							->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+							->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+							->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 					);
 
 				$mediaTypeComboBox = (new CComboBox('new_recovery_operation[opmessage][mediatypeid]',
@@ -1524,12 +1524,12 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					->addRow(_('Subject'),
 						(new CTextBox('new_recovery_operation[opmessage][subject]',
 							$data['new_recovery_operation']['opmessage']['subject']
-						))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 					)
 					->addRow(_('Message'),
 						(new CTextArea('new_recovery_operation[opmessage][message]',
 							$data['new_recovery_operation']['opmessage']['message']
-						))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 					);
 				break;
 
@@ -1540,13 +1540,13 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 
 				$data['new_recovery_operation']['opcommand']['type'] = isset($data['new_recovery_operation']['opcommand']['type'])
 					? $data['new_recovery_operation']['opcommand']['type']
-					: ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT;
+					: TRX_SCRIPT_TYPE_CUSTOM_SCRIPT;
 				$data['new_recovery_operation']['opcommand']['scriptid'] = isset($data['new_recovery_operation']['opcommand']['scriptid'])
 					? $data['new_recovery_operation']['opcommand']['scriptid']
 					: '';
 				$data['new_recovery_operation']['opcommand']['execute_on'] = isset($data['new_recovery_operation']['opcommand']['execute_on'])
 					? $data['new_recovery_operation']['opcommand']['execute_on']
-					: ZBX_SCRIPT_EXECUTE_ON_AGENT;
+					: TRX_SCRIPT_EXECUTE_ON_AGENT;
 				$data['new_recovery_operation']['opcommand']['publickey'] = isset($data['new_recovery_operation']['opcommand']['publickey'])
 					? $data['new_recovery_operation']['opcommand']['publickey']
 					: '';
@@ -1652,13 +1652,13 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 									(new CCol(
 										(new CButton('add', _('New')))
 											->onClick('javascript: showOpCmdForm(0, '.ACTION_RECOVERY_OPERATION.');')
-											->addClass(ZBX_STYLE_BTN_LINK)
+											->addClass(TRX_STYLE_BTN_LINK)
 									))->setColSpan(3)
 								))->setId('recOpCmdListFooter')
 							)
 					))
-						->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-						->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+						->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+						->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 						->setId('recOpCmdList')
 				);
 
@@ -1666,11 +1666,11 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 				$typeComboBox = (new CComboBox('new_recovery_operation[opcommand][type]',
 					$data['new_recovery_operation']['opcommand']['type'],
 					'showOpTypeForm('.ACTION_RECOVERY_OPERATION.')', [
-						ZBX_SCRIPT_TYPE_IPMI => _('IPMI'),
-						ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT => _('Custom script'),
-						ZBX_SCRIPT_TYPE_SSH => _('SSH'),
-						ZBX_SCRIPT_TYPE_TELNET => _('Telnet'),
-						ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT => _('Global script')
+						TRX_SCRIPT_TYPE_IPMI => _('IPMI'),
+						TRX_SCRIPT_TYPE_CUSTOM_SCRIPT => _('Custom script'),
+						TRX_SCRIPT_TYPE_SSH => _('SSH'),
+						TRX_SCRIPT_TYPE_TELNET => _('Telnet'),
+						TRX_SCRIPT_TYPE_GLOBAL_SCRIPT => _('Global script')
 					]
 				));
 
@@ -1681,11 +1681,11 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					(new CTextBox('new_recovery_operation[opcommand][script]',
 						$data['new_recovery_operation']['opcommand']['script'], true
 					))
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 						->setAriaRequired(),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					(new CButton('select_recovery_operation_opcommand_script', _('Select')))
-						->addClass(ZBX_STYLE_BTN_GREY)
+						->addClass(TRX_STYLE_BTN_GREY)
 				];
 
 				$new_operation_formlist->addRow((new CLabel(_('Type'), 'new_recovery_operation[opcommand][type]')),
@@ -1693,7 +1693,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 				);
 				$new_operation_formlist->addRow(
 					(new CLabel(_('Script name'), 'new_recovery_operation[opcommand][script]'))->setAsteriskMark(),
-					(new CDiv($userScript))->addClass(ZBX_STYLE_NOWRAP)
+					(new CDiv($userScript))->addClass(TRX_STYLE_NOWRAP)
 				);
 
 				// script
@@ -1702,9 +1702,9 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					(new CRadioButtonList('new_recovery_operation[opcommand][execute_on]',
 						(int) $data['new_recovery_operation']['opcommand']['execute_on']
 					))
-						->addValue(_('Treegix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
-						->addValue(_('Treegix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
-						->addValue(_('Treegix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
+						->addValue(_('Treegix agent'), TRX_SCRIPT_EXECUTE_ON_AGENT)
+						->addValue(_('Treegix server (proxy)'), TRX_SCRIPT_EXECUTE_ON_PROXY)
+						->addValue(_('Treegix server'), TRX_SCRIPT_EXECUTE_ON_SERVER)
 						->setModern(true)
 				);
 
@@ -1723,7 +1723,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					(new CTextBox('new_recovery_operation[opcommand][username]',
 						$data['new_recovery_operation']['opcommand']['username']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired()
 				);
 				$new_operation_formlist->addRow(
@@ -1732,7 +1732,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					(new CTextBox('new_recovery_operation[opcommand][publickey]',
 						$data['new_recovery_operation']['opcommand']['publickey']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired()
 				);
 				$new_operation_formlist->addRow(
@@ -1741,20 +1741,20 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					(new CTextBox('new_recovery_operation[opcommand][privatekey]',
 						$data['new_recovery_operation']['opcommand']['privatekey']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired()
 				);
 				$new_operation_formlist->addRow(_('Password'),
 					(new CTextBox('new_recovery_operation[opcommand][password]',
 						$data['new_recovery_operation']['opcommand']['password']
-					))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+					))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				);
 
 				// set custom id because otherwise they are set based on name (sick!) and produce duplicate ids
 				$passphraseCB = (new CTextBox('new_recovery_operation[opcommand][password]',
 					$data['new_recovery_operation']['opcommand']['password']
 				))
-					->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 					->setId('new_recovery_operation_opcommand_passphrase');
 				$new_operation_formlist->addRow(_('Key passphrase'), $passphraseCB);
 
@@ -1762,7 +1762,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 				$new_operation_formlist->addRow(_('Port'),
 					(new CTextBox('new_recovery_operation[opcommand][port]',
 						$data['new_recovery_operation']['opcommand']['port']
-					))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+					))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				);
 
 				// command
@@ -1771,8 +1771,8 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					(new CTextArea('new_recovery_operation[opcommand][command]',
 						$data['new_recovery_operation']['opcommand']['command']
 					))
-						->addClass(ZBX_STYLE_MONOSPACE_FONT)
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->addClass(TRX_STYLE_MONOSPACE_FONT)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 						->setAriaRequired()
 				);
 				$new_operation_formlist->addRow(
@@ -1780,8 +1780,8 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					(new CTextBox('new_recovery_operation[opcommand][command]',
 						$data['new_recovery_operation']['opcommand']['command']
 					))
-						->addClass(ZBX_STYLE_MONOSPACE_FONT)
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->addClass(TRX_STYLE_MONOSPACE_FONT)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 						->setId('new_recovery_operation_opcommand_command_ipmi')
 						->setAriaRequired()
 				);
@@ -1814,12 +1814,12 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					->addRow(_('Subject'),
 						(new CTextBox('new_recovery_operation[opmessage][subject]',
 								$data['new_recovery_operation']['opmessage']['subject']
-						))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 					)
 					->addRow(_('Message'),
 						(new CTextArea('new_recovery_operation[opmessage][message]',
 							$data['new_recovery_operation']['opmessage']['message']
-						))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 					);
 				break;
 		}
@@ -1833,16 +1833,16 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 						->onClick('javascript: submitFormWithParam('.
 							'"'.$actionForm->getName().'", "add_recovery_operation", "1"'.
 						');')
-						->addClass(ZBX_STYLE_BTN_LINK),
+						->addClass(TRX_STYLE_BTN_LINK),
 					(new CSimpleButton(_('Cancel')))
 						->onClick('javascript: submitFormWithParam('.
 							'"'.$actionForm->getName().'", "cancel_new_recovery_operation", "1"'.
 						');')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 				])
 			]))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 		);
 	}
 
@@ -1856,10 +1856,10 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 
 	$acknowledge_tab = (new CFormList())
 		->addRow(_('Default subject'),
-			(new CTextBox('ack_shortdata', $data['action']['ack_shortdata']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			(new CTextBox('ack_shortdata', $data['action']['ack_shortdata']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		)
 		->addRow(_('Default message'),
-			(new CTextArea('ack_longdata', $data['action']['ack_longdata']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			(new CTextArea('ack_longdata', $data['action']['ack_longdata']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		);
 
 	$operations_table = (new CTable())->setAttribute('style', 'width: 100%;');
@@ -1898,18 +1898,18 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 							->onClick('javascript: submitFormWithParam('.
 								'"'.$action_formname.'", "edit_ack_operationid['.$operationid.']", "1");'
 							)
-							->addClass(ZBX_STYLE_BTN_LINK),
+							->addClass(TRX_STYLE_BTN_LINK),
 						[
 							(new CButton('remove', _('Remove')))
 								->onClick('javascript: removeOperation('.$operationid.', '.ACTION_ACKNOWLEDGE_OPERATION.
 									');'
 								)
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 								->removeId(),
 							new CVar('ack_operations['.$operationid.']', $operation)
 						]
 					])
-				))->addClass(ZBX_STYLE_NOWRAP)
+				))->addClass(TRX_STYLE_NOWRAP)
 			], null, 'ack_operations_'.$operationid);
 
 			$convert_to_hash = [
@@ -1972,7 +1972,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 										'multiselect' => '1'
 									]).', null, this);'
 								)
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 						))->setColSpan(2)
 					))->setId('ackOpmsgUsrgrpListFooter')
 				);
@@ -1994,7 +1994,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 										'multiselect' => '1'
 									]).', null, this);'
 								)
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 						))->setColSpan(2)
 					))->setId('ackOpmsgUserListFooter')
 				);
@@ -2043,9 +2043,9 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 				'opcommand_hst' => []
 			];
 			$data['new_ack_operation']['opcommand'] += [
-				'type'			=> ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT,
+				'type'			=> TRX_SCRIPT_TYPE_CUSTOM_SCRIPT,
 				'scriptid'		=> '',
-				'execute_on'	=> ZBX_SCRIPT_EXECUTE_ON_AGENT,
+				'execute_on'	=> TRX_SCRIPT_EXECUTE_ON_AGENT,
 				'publickey'		=> '',
 				'privatekey'	=> '',
 				'authtype'		=> ITEM_AUTHTYPE_PASSWORD,
@@ -2130,13 +2130,13 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 									(new CCol(
 										(new CButton('add', _('New')))
 											->onClick('javascript: showOpCmdForm(0, '.ACTION_ACKNOWLEDGE_OPERATION.');')
-											->addClass(ZBX_STYLE_BTN_LINK)
+											->addClass(TRX_STYLE_BTN_LINK)
 									))->setColSpan(3)
 								))->setId('ackOpCmdListFooter')
 							)
 					))
-					->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-					->addStyle('min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+					->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+					->addStyle('min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 					->setId('ackOpCmdList')
 				)
 				->addRow(
@@ -2144,11 +2144,11 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 					(new CComboBox('new_ack_operation[opcommand][type]',
 						$data['new_ack_operation']['opcommand']['type'],
 						'showOpTypeForm('.ACTION_ACKNOWLEDGE_OPERATION.')', [
-							ZBX_SCRIPT_TYPE_IPMI => _('IPMI'),
-							ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT => _('Custom script'),
-							ZBX_SCRIPT_TYPE_SSH => _('SSH'),
-							ZBX_SCRIPT_TYPE_TELNET => _('Telnet'),
-							ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT => _('Global script')
+							TRX_SCRIPT_TYPE_IPMI => _('IPMI'),
+							TRX_SCRIPT_TYPE_CUSTOM_SCRIPT => _('Custom script'),
+							TRX_SCRIPT_TYPE_SSH => _('SSH'),
+							TRX_SCRIPT_TYPE_TELNET => _('Telnet'),
+							TRX_SCRIPT_TYPE_GLOBAL_SCRIPT => _('Global script')
 					]))
 				)
 				->addRow(
@@ -2160,21 +2160,21 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 						(new CTextBox('new_ack_operation[opcommand][script]',
 							$data['new_ack_operation']['opcommand']['script'], true
 						))
-							->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+							->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 							->setAriaRequired(),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						(new CButton('select_ack_operation_opcommand_script', _('Select')))
-							->addClass(ZBX_STYLE_BTN_GREY)
-					]))->addClass(ZBX_STYLE_NOWRAP)
+							->addClass(TRX_STYLE_BTN_GREY)
+					]))->addClass(TRX_STYLE_NOWRAP)
 				)
 				->addRow(
 					(new CLabel(_('Execute on'), 'new_ack_operation[opcommand][execute_on]')),
 					(new CRadioButtonList('new_ack_operation[opcommand][execute_on]',
 						(int) $data['new_ack_operation']['opcommand']['execute_on']
 					))
-						->addValue(_('Treegix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
-						->addValue(_('Treegix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
-						->addValue(_('Treegix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
+						->addValue(_('Treegix agent'), TRX_SCRIPT_EXECUTE_ON_AGENT)
+						->addValue(_('Treegix server (proxy)'), TRX_SCRIPT_EXECUTE_ON_PROXY)
+						->addValue(_('Treegix server'), TRX_SCRIPT_EXECUTE_ON_SERVER)
 						->setModern(true)
 				)
 				->addRow(_('Authentication method'),
@@ -2189,7 +2189,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 					(new CTextBox('new_ack_operation[opcommand][username]',
 						$data['new_ack_operation']['opcommand']['username']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired()
 				)
 				->addRow(
@@ -2197,7 +2197,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 					(new CTextBox('new_ack_operation[opcommand][publickey]',
 						$data['new_ack_operation']['opcommand']['publickey']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired()
 				)
 				->addRow(
@@ -2205,33 +2205,33 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 					(new CTextBox('new_ack_operation[opcommand][privatekey]',
 						$data['new_ack_operation']['opcommand']['privatekey']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired()
 				)
 				->addRow(_('Password'),
 					(new CTextBox('new_ack_operation[opcommand][password]',
 						$data['new_ack_operation']['opcommand']['password']
-					))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+					))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				)
 				->addRow(_('Key passphrase'),
 					(new CTextBox('new_ack_operation[opcommand][password]',
 						$data['new_ack_operation']['opcommand']['password']
 					))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setId('new_ack_operation_opcommand_passphrase')
 				)
 				->addRow(_('Port'),
 					(new CTextBox('new_ack_operation[opcommand][port]',
 						$data['new_ack_operation']['opcommand']['port']
-					))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+					))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				)
 				->addRow(
 					(new CLabel(_('Commands'), 'new_ack_operation[opcommand][command]'))->setAsteriskMark(),
 					(new CTextArea('new_ack_operation[opcommand][command]',
 						$data['new_ack_operation']['opcommand']['command']
 					))
-						->addClass(ZBX_STYLE_MONOSPACE_FONT)
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->addClass(TRX_STYLE_MONOSPACE_FONT)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 						->setAriaRequired()
 				)
 				->addRow(
@@ -2239,8 +2239,8 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 					(new CTextBox('new_ack_operation[opcommand][command]',
 						$data['new_ack_operation']['opcommand']['command']
 					))
-						->addClass(ZBX_STYLE_MONOSPACE_FONT)
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->addClass(TRX_STYLE_MONOSPACE_FONT)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 						->setId('new_ack_operation_opcommand_command_ipmi')
 						->setAriaRequired()
 				);
@@ -2256,16 +2256,16 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 		if ($usrgrp_list) {
 			$new_operation_formlist->addRow(_('Send to User groups'),
 				(new CDiv($usrgrp_list))
-					->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-					->addStyle('min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+					->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+					->addStyle('min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 			);
 		}
 
 		if ($user_list) {
 			$new_operation_formlist->addRow(_('Send to Users'),
 				(new CDiv($user_list))
-					->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-					->addStyle('min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+					->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+					->addStyle('min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 			);
 		}
 
@@ -2296,19 +2296,19 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 				->addRow(_('Subject'),
 					(new CTextBox('new_ack_operation[opmessage][subject]',
 						$data['new_ack_operation']['opmessage']['subject']
-					))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				)
 				->addRow(_('Message'),
 					(new CTextArea('new_ack_operation[opmessage][message]',
 						$data['new_ack_operation']['opmessage']['message']
-					))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				);
 		}
 
 		$acknowledge_tab->addRow(_('Operations'),
 			(new CDiv([$new_ack_operation_vars, $operations_table]))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 		);
 
 		$acknowledge_tab->addRow(_('Operation details'),
@@ -2316,14 +2316,14 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 				new CHorList([
 					(new CSimpleButton(array_key_exists('id', $data['new_ack_operation']) ? _('Update') : _('Add')))
 						->onClick('javascript: submitFormWithParam("'.$action_formname.'", "add_ack_operation", "1");')
-						->addClass(ZBX_STYLE_BTN_LINK),
+						->addClass(TRX_STYLE_BTN_LINK),
 					(new CSimpleButton(_('Cancel')))
 						->onClick('javascript: submitFormWithParam("'.$action_formname.'", "cancel_new_ack_operation", "1");')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 				])
 			]))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 		);
 	}
 	else {
@@ -2331,10 +2331,10 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 			(new CDiv([$operations_table,
 				(new CSimpleButton(_('New')))
 					->onClick('javascript: submitFormWithParam("'.$action_formname.'", "new_ack_operation", "1");')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 			]))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 		);
 	}
 
@@ -2368,11 +2368,11 @@ else {
 
 $action_tabs->setFooter([
 	(new CList())
-		->addClass(ZBX_STYLE_TABLE_FORMS)
+		->addClass(TRX_STYLE_TABLE_FORMS)
 		->addItem([
 			new CDiv(''),
 			(new CDiv((new CLabel($bottom_note))->setAsteriskMark()))
-				->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)
+				->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)
 		]),
 	makeFormFooter($form_buttons[0], $form_buttons[1])
 ]);

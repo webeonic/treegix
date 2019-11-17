@@ -322,9 +322,9 @@ class CElasticsearchHelper {
 	public static function addSort($query, $options) {
 		foreach ($options['sortfield'] as $i => $sortfield) {
 			// Add sort field to order.
-			$sortorder = array_key_exists($i, $options['sortorder']) ? $options['sortorder'][$i] : ZBX_SORT_UP;
+			$sortorder = array_key_exists($i, $options['sortorder']) ? $options['sortorder'][$i] : TRX_SORT_UP;
 
-			if ($sortorder === ZBX_SORT_DOWN) {
+			if ($sortorder === TRX_SORT_DOWN) {
 				$query['sort'][$sortfield] = $sortorder;
 			}
 			else {

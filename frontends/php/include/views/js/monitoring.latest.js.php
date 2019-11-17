@@ -8,7 +8,7 @@
 				var open_state = $(this).data('open-state');
 
 				$('span', this)
-					.addClass(open_state == '0' ? '<?= ZBX_STYLE_ARROW_RIGHT ?>' : '<?= ZBX_STYLE_ARROW_DOWN ?>');
+					.addClass(open_state == '0' ? '<?= TRX_STYLE_ARROW_RIGHT ?>' : '<?= TRX_STYLE_ARROW_DOWN ?>');
 
 				if (open_state == '0') {
 					var	hostid = $(this).attr('data-host-id');
@@ -26,7 +26,7 @@
 
 			$('.app-list-toggle-all').data('open-state', open_state_all);
 			$('.app-list-toggle-all span')
-				.addClass(open_state_all == '0' ? '<?= ZBX_STYLE_ARROW_RIGHT ?>' : '<?= ZBX_STYLE_ARROW_DOWN ?>');
+				.addClass(open_state_all == '0' ? '<?= TRX_STYLE_ARROW_RIGHT ?>' : '<?= TRX_STYLE_ARROW_DOWN ?>');
 		};
 
 		initialize();
@@ -37,8 +37,8 @@
 			$(this).closest('table').fadeTo(0, 0);
 
 			var open_state = ($(this).data('open-state') == '0') ? '1' : '0',
-				del_class = (open_state == '0') ? '<?= ZBX_STYLE_ARROW_DOWN ?>' : '<?= ZBX_STYLE_ARROW_RIGHT ?>',
-				add_class = (open_state == '0') ? '<?= ZBX_STYLE_ARROW_RIGHT ?>' : '<?= ZBX_STYLE_ARROW_DOWN ?>',
+				del_class = (open_state == '0') ? '<?= TRX_STYLE_ARROW_DOWN ?>' : '<?= TRX_STYLE_ARROW_RIGHT ?>',
+				add_class = (open_state == '0') ? '<?= TRX_STYLE_ARROW_RIGHT ?>' : '<?= TRX_STYLE_ARROW_DOWN ?>',
 				applicationids = [],
 				hostids = [];
 
@@ -83,8 +83,8 @@
 		// click event for every toggle (+-) button
 		$('.app-list-toggle').click(function() {
 			var open_state = ($(this).data('open-state') == '0') ? '1' : '0',
-				del_class = (open_state == '0') ? '<?= ZBX_STYLE_ARROW_DOWN ?>' : '<?= ZBX_STYLE_ARROW_RIGHT ?>',
-				add_class = (open_state == '0') ? '<?= ZBX_STYLE_ARROW_RIGHT ?>' : '<?= ZBX_STYLE_ARROW_DOWN ?>',
+				del_class = (open_state == '0') ? '<?= TRX_STYLE_ARROW_DOWN ?>' : '<?= TRX_STYLE_ARROW_RIGHT ?>',
+				add_class = (open_state == '0') ? '<?= TRX_STYLE_ARROW_RIGHT ?>' : '<?= TRX_STYLE_ARROW_DOWN ?>',
 				open_state_all = '0';
 
 			// change and store new state

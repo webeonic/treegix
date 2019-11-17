@@ -50,7 +50,7 @@ class CLocalApiClient extends CApiClient {
 
 		// check API
 		if (!$this->isValidApi($api)) {
-			$response->errorCode = ZBX_API_ERROR_PARAMETERS;
+			$response->errorCode = TRX_API_ERROR_PARAMETERS;
 			$response->errorMessage = _s('Incorrect API "%1$s".', $requestApi);
 
 			return $response;
@@ -58,7 +58,7 @@ class CLocalApiClient extends CApiClient {
 
 		// check method
 		if (!$this->isValidMethod($api, $method)) {
-			$response->errorCode = ZBX_API_ERROR_PARAMETERS;
+			$response->errorCode = TRX_API_ERROR_PARAMETERS;
 			$response->errorMessage = _s('Incorrect method "%1$s.%2$s".', $requestApi, $requestMethod);
 
 			return $response;
@@ -66,7 +66,7 @@ class CLocalApiClient extends CApiClient {
 
 		// check params
 		if (!is_array($params)) {
-			$response->errorCode = ZBX_API_ERROR_PARAMETERS;
+			$response->errorCode = TRX_API_ERROR_PARAMETERS;
 			$response->errorMessage = _s('Cannot call method "%1$s.%2$s" without parameters.', $requestApi,
 				$requestMethod
 			);
@@ -78,7 +78,7 @@ class CLocalApiClient extends CApiClient {
 
 		// check that no authentication token is passed to methods that don't require it
 		if (!$requiresAuthentication && $auth !== null) {
-			$response->errorCode = ZBX_API_ERROR_PARAMETERS;
+			$response->errorCode = TRX_API_ERROR_PARAMETERS;
 			$response->errorMessage = _s('The "%1$s.%2$s" method must be called without the "auth" parameter.',
 				$requestApi, $requestMethod
 			);
@@ -125,7 +125,7 @@ class CLocalApiClient extends CApiClient {
 				}
 			}
 
-			$response->errorCode = ($e instanceof APIException) ? $e->getCode() : ZBX_API_ERROR_INTERNAL;
+			$response->errorCode = ($e instanceof APIException) ? $e->getCode() : TRX_API_ERROR_INTERNAL;
 			$response->errorMessage = $e->getMessage();
 
 			// add debug data
@@ -146,7 +146,7 @@ class CLocalApiClient extends CApiClient {
 	 */
 	protected function authenticate($auth) {
 		if (zbx_empty($auth)) {
-			throw new APIException(ZBX_API_ERROR_NO_AUTH, _('Not authorised.'));
+			throw new APIException(TRX_API_ERROR_NO_AUTH, _('Not authorised.'));
 		}
 
 		$user = $this->serviceFactory->getObject('user')->checkAuthentication(['sessionid' => $auth]);

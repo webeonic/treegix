@@ -3,10 +3,10 @@
 #ifndef TREEGIX_SENDER_H
 #define TREEGIX_SENDER_H
 
-#ifdef ZBX_EXPORT
-#	define ZBX_API __declspec(dllexport)
+#ifdef TRX_EXPORT
+#	define TRX_API __declspec(dllexport)
 #else
-#	define ZBX_API __declspec(dllimport)
+#	define TRX_API __declspec(dllimport)
 #endif
 
 typedef struct
@@ -52,7 +52,7 @@ treegix_sender_info_t;
  *               -1 - an error occurred, result contains error message        *
  *                                                                            *
  ******************************************************************************/
-ZBX_API int	treegix_sender_send_values(const char *address, unsigned short port, const char *source,
+TRX_API int	treegix_sender_send_values(const char *address, unsigned short port, const char *source,
 		const treegix_sender_value_t *values, int count, char **result);
 
 /******************************************************************************
@@ -76,7 +76,7 @@ ZBX_API int	treegix_sender_send_values(const char *address, unsigned short port,
  *           the result info field, then info->total is set to -1.            *
  *                                                                            *
  ******************************************************************************/
-ZBX_API int	treegix_sender_parse_result(const char *result, int *response, treegix_sender_info_t *info);
+TRX_API int	treegix_sender_parse_result(const char *result, int *response, treegix_sender_info_t *info);
 
 /******************************************************************************
  *                                                                            *
@@ -87,6 +87,6 @@ ZBX_API int	treegix_sender_parse_result(const char *result, int *response, treeg
  * Parameters: ptr   - [IN] pointer to the data to free                       *
  *                                                                            *
  ******************************************************************************/
-ZBX_API void	treegix_sender_free_result(void *ptr);
+TRX_API void	treegix_sender_free_result(void *ptr);
 
 #endif	/* TREEGIX_SENDER_H */

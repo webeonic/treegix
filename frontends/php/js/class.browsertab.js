@@ -4,24 +4,24 @@
 /**
  * Amount of seconds for keep-alive interval.
  */
-ZBX_BrowserTab.keep_alive_interval = 30;
+TRX_BrowserTab.keep_alive_interval = 30;
 
 /**
  * This object is representing a browser tab. Implements singleton pattern. It ensures there are only non-crashed tabs
  * in store.
  *
- * @param {ZBX_LocalStorage} store  A localStorage wrapper.
+ * @param {TRX_LocalStorage} store  A localStorage wrapper.
  */
-function ZBX_BrowserTab(store) {
-	if (ZBX_BrowserTab.instance) {
-		return ZBX_BrowserTab.instance;
+function TRX_BrowserTab(store) {
+	if (TRX_BrowserTab.instance) {
+		return TRX_BrowserTab.instance;
 	}
 
-	if (!(store instanceof ZBX_LocalStorage)) {
+	if (!(store instanceof TRX_LocalStorage)) {
 		throw 'Unmatched signature!';
 	}
 
-	ZBX_BrowserTab.instance = this;
+	TRX_BrowserTab.instance = this;
 
 	this.uid = (Math.random() % 9e6).toString(36).substr(2);
 	this.store = store;
@@ -43,14 +43,14 @@ function ZBX_BrowserTab(store) {
 /**
  * @param {object} lastseen
  */
-ZBX_BrowserTab.prototype.handlePushedLastseen = function(lastseen) {
+TRX_BrowserTab.prototype.handlePushedLastseen = function(lastseen) {
 	this.lastseen = lastseen;
 };
 
 /**
  * Checks and updates current lastseen object.
  */
-ZBX_BrowserTab.prototype.handleKeepAliveTick = function() {
+TRX_BrowserTab.prototype.handleKeepAliveTick = function() {
 	this.lastseen[this.uid] = Math.floor(+new Date / 1000);
 
 	this.findCrashedTabs().forEach(function(tabid) {
@@ -65,9 +65,9 @@ ZBX_BrowserTab.prototype.handleKeepAliveTick = function() {
  * Writes own ID in `store.tabs` object. Registers unload event to remove own ID from `store.tabs.lastseen`.
  * Registers focus event. Begins a loop to see if any tab of tabs has crashed.
  */
-ZBX_BrowserTab.prototype.bindEventHandlers = function() {
+TRX_BrowserTab.prototype.bindEventHandlers = function() {
 	this.handleKeepAliveTick();
-	setInterval(this.handleKeepAliveTick.bind(this), ZBX_BrowserTab.keep_alive_interval * 1000);
+	setInterval(this.handleKeepAliveTick.bind(this), TRX_BrowserTab.keep_alive_interval * 1000);
 
 	window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this));
 	window.addEventListener('focus', this.handleFocus.bind(this));
@@ -77,8 +77,8 @@ ZBX_BrowserTab.prototype.bindEventHandlers = function() {
 /**
  * @return {array} List of IDs of crashed tabs.
  */
-ZBX_BrowserTab.prototype.findCrashedTabs = function() {
-	var since = this.lastseen[this.uid] - (ZBX_BrowserTab.keep_alive_interval - 1) * 2,
+TRX_BrowserTab.prototype.findCrashedTabs = function() {
+	var since = this.lastseen[this.uid] - (TRX_BrowserTab.keep_alive_interval - 1) * 2,
 		crashed_tabids = [];
 
 	for (var tabid in this.lastseen) {
@@ -95,49 +95,49 @@ ZBX_BrowserTab.prototype.findCrashedTabs = function() {
  *
  * @return {array}
  */
-ZBX_BrowserTab.prototype.getAllTabIds = function() {
+TRX_BrowserTab.prototype.getAllTabIds = function() {
 	return Object.keys(this.lastseen);
 };
 
 /**
  * @param {string} tabid  The crashed tab ID.
  */
-ZBX_BrowserTab.prototype.handleCrashed = function(tabid) {
+TRX_BrowserTab.prototype.handleCrashed = function(tabid) {
 	this.on_crashed_cbs.forEach(function(c) {c(this);}.bind(this));
 };
 
 /**
  * @param {callable} callback
  */
-ZBX_BrowserTab.prototype.onFocus = function(callback) {
+TRX_BrowserTab.prototype.onFocus = function(callback) {
 	this.on_focus_cbs.push(callback);
 };
 
 /**
  * @param {callable} callback
  */
-ZBX_BrowserTab.prototype.onCrashed = function(callback) {
+TRX_BrowserTab.prototype.onCrashed = function(callback) {
 	this.on_crashed_cbs.push(callback);
 };
 
 /**
  * @param {callable} callback
  */
-ZBX_BrowserTab.prototype.onBeforeUnload = function(callback) {
+TRX_BrowserTab.prototype.onBeforeUnload = function(callback) {
 	this.on_unload_cbs.push(callback);
 };
 
 /**
  * @param {FocusEvent} e
  */
-ZBX_BrowserTab.prototype.handleFocus = function(e) {
+TRX_BrowserTab.prototype.handleFocus = function(e) {
 	this.on_focus_cbs.forEach(function(c) {c(this);}.bind(this));
 };
 
 /**
  * @param {UnloadEvent} e
  */
-ZBX_BrowserTab.prototype.handleBeforeUnload = function(e) {
+TRX_BrowserTab.prototype.handleBeforeUnload = function(e) {
 	delete this.lastseen[this.uid];
 
 	this.on_unload_cbs.forEach(function(c) {c(this, this.getAllTabIds());}.bind(this));
@@ -150,10 +150,10 @@ ZBX_BrowserTab.prototype.handleBeforeUnload = function(e) {
 /**
  * Writes to store.
  */
-ZBX_BrowserTab.prototype.pushLastseen = function() {
+TRX_BrowserTab.prototype.pushLastseen = function() {
 	this.store.writeKey('tabs.lastseen', this.lastseen);
 };
 
-TREEGIX.namespace('instances.browserTab', new ZBX_BrowserTab(
+TREEGIX.namespace('instances.browserTab', new TRX_BrowserTab(
 	TREEGIX.namespace('instances.localStorage')
 ));

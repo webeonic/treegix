@@ -18,7 +18,7 @@ if ($data['dashboard']['dashboardid'] != 0) {
 		->addItem((new CLink($data['dashboard']['name'], $url_view->getUrl()))
 			->setId('dashboard-direct-link')
 		)
-		->addClass(ZBX_STYLE_SELECTED);
+		->addClass(TRX_STYLE_SELECTED);
 }
 
 return $breadcrumbs;

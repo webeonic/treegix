@@ -670,7 +670,7 @@ class CTriggerExpression {
 		// check for an optional suffix
 		$suffix = null;
 		if (isset($this->expression[$j])
-				&& strpos(ZBX_BYTE_SUFFIXES.ZBX_TIME_SUFFIXES, $this->expression[$j]) !== false) {
+				&& strpos(TRX_BYTE_SUFFIXES.TRX_TIME_SUFFIXES, $this->expression[$j]) !== false) {
 			$suffix = $this->expression[$j];
 			$j++;
 		}

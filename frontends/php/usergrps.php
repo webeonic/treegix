@@ -20,47 +20,47 @@ $gui_access = [GROUP_GUI_ACCESS_SYSTEM, GROUP_GUI_ACCESS_INTERNAL, GROUP_GUI_ACC
 //	VAR		TYPE	OPTIONAL FLAGS	VALIDATION	EXCEPTION
 $fields = [
 	// group
-	'usrgrpid' =>				[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
-	'group_groupid' =>			[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
-	'gname' =>					[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('Group name')],
-	'gui_access' =>				[T_ZBX_INT, O_OPT, null,	IN($gui_access), 'isset({add}) || isset({update})'],
-	'users_status' =>			[T_ZBX_INT, O_OPT, null,	IN([GROUP_STATUS_ENABLED, GROUP_STATUS_DISABLED]),	null],
-	'debug_mode' =>				[T_ZBX_INT, O_OPT, null,	IN('1'),	null],
-	'userids' =>				[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
-	'groups_rights' =>			[T_ZBX_STR, O_OPT, null,	null,		null],
-	'set_gui_access' =>			[T_ZBX_INT, O_OPT, null,	IN($gui_access),null],
+	'usrgrpid' =>				[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
+	'group_groupid' =>			[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'gname' =>					[T_TRX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('Group name')],
+	'gui_access' =>				[T_TRX_INT, O_OPT, null,	IN($gui_access), 'isset({add}) || isset({update})'],
+	'users_status' =>			[T_TRX_INT, O_OPT, null,	IN([GROUP_STATUS_ENABLED, GROUP_STATUS_DISABLED]),	null],
+	'debug_mode' =>				[T_TRX_INT, O_OPT, null,	IN('1'),	null],
+	'userids' =>				[T_TRX_INT, O_OPT, null,	DB_ID,		null],
+	'groups_rights' =>			[T_TRX_STR, O_OPT, null,	null,		null],
+	'set_gui_access' =>			[T_TRX_INT, O_OPT, null,	IN($gui_access),null],
 	// actions
-	'action' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 									IN('"usergroup.massdisable","usergroup.massdisabledebug","usergroup.massdelete",'.
 										'"usergroup.massenable","usergroup.massenabledebug","usergroup.set_gui_access"'
 									),
 									null
 								],
-	'add' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'delete' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add_permission' =>			[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'new_permission' =>			[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'groupids' =>				[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'subgroups' =>				[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'tag_filters' =>			[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'remove_tag_filter' =>		[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'tag_filter_groupids' =>	[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'tag' =>					[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'value' =>					[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'tag_filter_subgroups' =>	[T_ZBX_STR, O_OPT, null,		 null,	null],
-	'add_tag_filter' =>			[T_ZBX_STR, O_OPT, null,		 null,	null],
+	'add' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'delete' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add_permission' =>			[T_TRX_STR, O_OPT, null,		 null,	null],
+	'new_permission' =>			[T_TRX_STR, O_OPT, null,		 null,	null],
+	'groupids' =>				[T_TRX_STR, O_OPT, null,		 null,	null],
+	'subgroups' =>				[T_TRX_STR, O_OPT, null,		 null,	null],
+	'tag_filters' =>			[T_TRX_STR, O_OPT, null,		 null,	null],
+	'remove_tag_filter' =>		[T_TRX_STR, O_OPT, null,		 null,	null],
+	'tag_filter_groupids' =>	[T_TRX_STR, O_OPT, null,		 null,	null],
+	'tag' =>					[T_TRX_STR, O_OPT, null,		 null,	null],
+	'value' =>					[T_TRX_STR, O_OPT, null,		 null,	null],
+	'tag_filter_subgroups' =>	[T_TRX_STR, O_OPT, null,		 null,	null],
+	'add_tag_filter' =>			[T_TRX_STR, O_OPT, null,		 null,	null],
 	// form
-	'form' =>					[T_ZBX_STR, O_OPT, P_SYS,		 null,	null],
-	'form_refresh' =>			[T_ZBX_INT, O_OPT, null,		 null,	null],
+	'form' =>					[T_TRX_STR, O_OPT, P_SYS,		 null,	null],
+	'form_refresh' =>			[T_TRX_INT, O_OPT, null,		 null,	null],
 	// filter
-	'filter_set' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_rst' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_name' =>			[T_ZBX_STR, O_OPT, null,	null,		null],
-	'filter_users_status' =>	[T_ZBX_INT, O_OPT, null,	IN([-1, GROUP_STATUS_ENABLED, GROUP_STATUS_DISABLED]),		null],
+	'filter_set' =>				[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_rst' =>				[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_name' =>			[T_TRX_STR, O_OPT, null,	null,		null],
+	'filter_users_status' =>	[T_TRX_INT, O_OPT, null,	IN([-1, GROUP_STATUS_ENABLED, GROUP_STATUS_DISABLED]),		null],
 	// sort and sortorder
-	'sort' =>					[T_ZBX_STR, O_OPT, P_SYS, IN('"name"'),								null],
-	'sortorder' =>				[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>					[T_TRX_STR, O_OPT, P_SYS, IN('"name"'),								null],
+	'sortorder' =>				[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -390,7 +390,7 @@ if ($form !== null) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

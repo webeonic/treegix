@@ -14,7 +14,7 @@
 static	SERVICE_STATUS		serviceStatus;
 static	SERVICE_STATUS_HANDLE	serviceHandle;
 
-int	application_status = ZBX_APP_RUNNING;
+int	application_status = TRX_APP_RUNNING;
 
 /* free resources allocated by MAIN_TREEGIX_ENTRY() */
 void	zbx_free_service_resources(int ret);
@@ -25,7 +25,7 @@ static void	parent_signal_handler(int sig)
 	{
 		case SIGINT:
 		case SIGTERM:
-			ZBX_DO_EXIT();
+			TRX_DO_EXIT();
 			treegix_log(LOG_LEVEL_INFORMATION, "Got signal. Exiting ...");
 			zbx_on_exit(SUCCEED);
 			break;
@@ -51,7 +51,7 @@ static VOID WINAPI	ServiceCtrlHandler(DWORD ctrlCode)
 			SetServiceStatus(serviceHandle, &serviceStatus);
 
 			/* notify other threads and allow them to terminate */
-			ZBX_DO_EXIT();
+			TRX_DO_EXIT();
 			zbx_free_service_resources(SUCCEED);
 
 			serviceStatus.dwCurrentState	= SERVICE_STOPPED;
@@ -99,7 +99,7 @@ void	service_start(int flags)
 	int				ret;
 	static SERVICE_TABLE_ENTRY	serviceTable[2];
 
-	if (0 != (flags & ZBX_TASK_FLAG_FOREGROUND))
+	if (0 != (flags & TRX_TASK_FLAG_FOREGROUND))
 	{
 		MAIN_TREEGIX_ENTRY(flags);
 		return;

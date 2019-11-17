@@ -530,18 +530,18 @@ class CApiService {
 			foreach ($options['sortfield'] as $i => $sortfield) {
 				// validate sortfield
 				if (!str_in_array($sortfield, $this->sortColumns)) {
-					throw new APIException(ZBX_API_ERROR_INTERNAL, _s('Sorting by field "%1$s" not allowed.', $sortfield));
+					throw new APIException(TRX_API_ERROR_INTERNAL, _s('Sorting by field "%1$s" not allowed.', $sortfield));
 				}
 
 				// add sort field to order
 				$sortorder = '';
 				if (is_array($options['sortorder'])) {
 					if (!empty($options['sortorder'][$i])) {
-						$sortorder = ($options['sortorder'][$i] == ZBX_SORT_DOWN) ? ' '.ZBX_SORT_DOWN : '';
+						$sortorder = ($options['sortorder'][$i] == TRX_SORT_DOWN) ? ' '.TRX_SORT_DOWN : '';
 					}
 				}
 				else {
-					$sortorder = ($options['sortorder'] == ZBX_SORT_DOWN) ? ' '.ZBX_SORT_DOWN : '';
+					$sortorder = ($options['sortorder'] == TRX_SORT_DOWN) ? ' '.TRX_SORT_DOWN : '';
 				}
 
 				$sqlParts = $this->applyQuerySortField($sortfield, $sortorder, $tableAlias, $sqlParts);
@@ -614,7 +614,7 @@ class CApiService {
 	 *
 	 * @param string $fieldId
 	 * @param array  $sqlParts
-	 * @param string $sortorder		sort direction, ZBX_SORT_UP or ZBX_SORT_DOWN
+	 * @param string $sortorder		sort direction, TRX_SORT_UP or TRX_SORT_DOWN
 	 *
 	 * @return array
 	 */
@@ -764,7 +764,7 @@ class CApiService {
 		]);
 		foreach ($objects as $object) {
 			if (!isset($object[$idField])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _params($messageRequired, [$idField]));
+				self::exception(TRX_API_ERROR_PARAMETERS, _params($messageRequired, [$idField]));
 			}
 
 			$this->checkValidator($object[$idField], $idValidator);
@@ -787,7 +787,7 @@ class CApiService {
 
 		foreach ($object as $field => $value) {
 			if (!DB::hasField($tableName, $field) && !isset($extraFields[$field])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+				self::exception(TRX_API_ERROR_PARAMETERS, $error);
 			}
 		}
 	}
@@ -811,7 +811,7 @@ class CApiService {
 		foreach ($params as $param) {
 			if (array_key_exists($param, $object)) {
 				$error = _params($error, [$param, $objectName]);
-				self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+				self::exception(TRX_API_ERROR_PARAMETERS, $error);
 			}
 		}
 	}
@@ -824,7 +824,7 @@ class CApiService {
 	 * @param int    $code
 	 * @param string $error
 	 */
-	protected static function exception($code = ZBX_API_ERROR_INTERNAL, $error = '') {
+	protected static function exception($code = TRX_API_ERROR_INTERNAL, $error = '') {
 		throw new APIException($code, $error);
 	}
 
@@ -953,7 +953,7 @@ class CApiService {
 	 */
 	protected function checkValidator($value, CValidator $validator) {
 		if (!$validator->validate($value)) {
-			self::exception(ZBX_API_ERROR_INTERNAL, $validator->getError());
+			self::exception(TRX_API_ERROR_INTERNAL, $validator->getError());
 		}
 	}
 
@@ -966,7 +966,7 @@ class CApiService {
 	 */
 	protected function checkPartialValidator(array $array, CPartialValidatorInterface $validator, $fullArray = []) {
 		if (!$validator->validatePartial($array, $fullArray)) {
-			self::exception(ZBX_API_ERROR_INTERNAL, $validator->getError());
+			self::exception(TRX_API_ERROR_INTERNAL, $validator->getError());
 		}
 	}
 

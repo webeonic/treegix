@@ -29,12 +29,12 @@ function corrConditionOperatorToString($operator) {
  */
 function corrConditionTypes($type = null) {
 	$types = [
-		ZBX_CORR_CONDITION_OLD_EVENT_TAG => _('Old event tag'),
-		ZBX_CORR_CONDITION_NEW_EVENT_TAG => _('New event tag'),
-		ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP => _('New event host group'),
-		ZBX_CORR_CONDITION_EVENT_TAG_PAIR => _('Event tag pair'),
-		ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE => _('Old event tag value'),
-		ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE => _('New event tag value')
+		TRX_CORR_CONDITION_OLD_EVENT_TAG => _('Old event tag'),
+		TRX_CORR_CONDITION_NEW_EVENT_TAG => _('New event tag'),
+		TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP => _('New event host group'),
+		TRX_CORR_CONDITION_EVENT_TAG_PAIR => _('Event tag pair'),
+		TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE => _('Old event tag value'),
+		TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE => _('New event tag value')
 	];
 
 	return ($type === null) ? $types : $types[$type];
@@ -49,8 +49,8 @@ function corrConditionTypes($type = null) {
  */
 function corrOperationTypes($type = null) {
 	$types = [
-		ZBX_CORR_OPERATION_CLOSE_OLD => _('Close old events'),
-		ZBX_CORR_OPERATION_CLOSE_NEW => _('Close new event')
+		TRX_CORR_OPERATION_CLOSE_OLD => _('Close old events'),
+		TRX_CORR_OPERATION_CLOSE_NEW => _('Close new event')
 	];
 
 	return ($type === null) ? $types : $types[$type];
@@ -65,18 +65,18 @@ function corrOperationTypes($type = null) {
  */
 function getOperatorsByCorrConditionType($type) {
 	switch ($type) {
-		case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
-		case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
-		case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+		case TRX_CORR_CONDITION_OLD_EVENT_TAG:
+		case TRX_CORR_CONDITION_NEW_EVENT_TAG:
+		case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 			return [CONDITION_OPERATOR_EQUAL];
 
-		case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-		case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+		case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+		case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 			return [CONDITION_OPERATOR_EQUAL, CONDITION_OPERATOR_NOT_EQUAL, CONDITION_OPERATOR_LIKE,
 				CONDITION_OPERATOR_NOT_LIKE
 			];
 
-		case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+		case TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 			return [CONDITION_OPERATOR_EQUAL, CONDITION_OPERATOR_NOT_EQUAL];
 	}
 }
@@ -101,22 +101,22 @@ function corrConditionValueToString(array $correlations) {
 
 		foreach ($correlation['filter']['conditions'] as $j => $condition) {
 			switch ($condition['type']) {
-				case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
-				case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
+				case TRX_CORR_CONDITION_OLD_EVENT_TAG:
+				case TRX_CORR_CONDITION_NEW_EVENT_TAG:
 					$result[$i][$j] = ['tag' => $condition['tag']];
 					break;
 
-				case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+				case TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 					$result[$i][$j] = ['group' => _('Unknown')];
 					$groupids[$condition['groupid']] = true;
 					break;
 
-				case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+				case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 					$result[$i][$j] = ['oldtag' => $condition['oldtag'], 'newtag' => $condition['newtag']];
 					break;
 
-				case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-				case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+				case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+				case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 					$result[$i][$j] = ['tag' => $condition['tag'], 'value' => $condition['value']];
 					break;
 			}
@@ -133,7 +133,7 @@ function corrConditionValueToString(array $correlations) {
 		if ($groups) {
 			foreach ($correlations as $i => $correlation) {
 				foreach ($correlation['filter']['conditions'] as $j => $condition) {
-					if ($condition['type'] == ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP
+					if ($condition['type'] == TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP
 							&& array_key_exists($condition['groupid'], $groups)) {
 						$result[$i][$j] = ['group' => $groups[$condition['groupid']]['name']];
 					}
@@ -176,36 +176,36 @@ function getCorrConditionDescription(array $condition, array $values) {
 	$description = [];
 
 	switch ($condition['type']) {
-		case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
+		case TRX_CORR_CONDITION_OLD_EVENT_TAG:
 			$description[] = _('Old event tag').' '.corrConditionOperatorToString($condition['operator']).' ';
 			$description[] = italic(CHtml::encode($values['tag']));
 			break;
 
-		case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
+		case TRX_CORR_CONDITION_NEW_EVENT_TAG:
 			$description[] = _('New event tag').' '.corrConditionOperatorToString($condition['operator']).' ';
 			$description[] = italic(CHtml::encode($values['tag']));
 			break;
 
-		case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+		case TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 			$description[] = _('New event host group').' '.corrConditionOperatorToString($condition['operator']).' ';
 			$description[] = italic(CHtml::encode($values['group']));
 			break;
 
-		case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+		case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 			$description[] = _('Old event tag').' ';
 			$description[] = italic(CHtml::encode($values['oldtag']));
 			$description[] = ' '.corrConditionOperatorToString($condition['operator']).' '._('new event tag').' ';
 			$description[] = italic(CHtml::encode($values['newtag']));
 			break;
 
-		case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+		case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
 			$description[] = _('Old event tag').' ';
 			$description[] = italic(CHtml::encode($values['tag']));
 			$description[] = ' '.corrConditionOperatorToString($condition['operator']).' ';
 			$description[] = italic(CHtml::encode($values['value']));
 			break;
 
-		case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+		case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 			$description[] = _('New event tag').' ';
 			$description[] = italic(CHtml::encode($values['tag']));
 			$description[] = ' '.corrConditionOperatorToString($condition['operator']).' ';

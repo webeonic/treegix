@@ -189,7 +189,7 @@ class CTemplate extends CHostGeneral {
 				'SELECT NULL'.
 				' FROM items i'.
 				' WHERE h.hostid=i.hostid'.
-					' AND i.flags IN ('.ZBX_FLAG_DISCOVERY_NORMAL.','.ZBX_FLAG_DISCOVERY_CREATED.')'.
+					' AND i.flags IN ('.TRX_FLAG_DISCOVERY_NORMAL.','.TRX_FLAG_DISCOVERY_CREATED.')'.
 				')';
 		}
 
@@ -201,7 +201,7 @@ class CTemplate extends CHostGeneral {
 				' WHERE i.hostid=h.hostid'.
 					' AND i.itemid=f.itemid'.
 					' AND f.triggerid=t.triggerid'.
-					' AND t.flags IN ('.ZBX_FLAG_DISCOVERY_NORMAL.','.ZBX_FLAG_DISCOVERY_CREATED.')'.
+					' AND t.flags IN ('.TRX_FLAG_DISCOVERY_NORMAL.','.TRX_FLAG_DISCOVERY_CREATED.')'.
 				')';
 		}
 
@@ -213,7 +213,7 @@ class CTemplate extends CHostGeneral {
 				' WHERE i.hostid=h.hostid'.
 					' AND i.itemid=gi.itemid'.
 					' AND gi.graphid=g.graphid'.
-					' AND g.flags IN ('.ZBX_FLAG_DISCOVERY_NORMAL.','.ZBX_FLAG_DISCOVERY_CREATED.')'.
+					' AND g.flags IN ('.TRX_FLAG_DISCOVERY_NORMAL.','.TRX_FLAG_DISCOVERY_CREATED.')'.
 				')';
 		}
 
@@ -332,7 +332,7 @@ class CTemplate extends CHostGeneral {
 				);
 
 				if (!$result) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot add group.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot add group.'));
 				}
 			}
 
@@ -346,7 +346,7 @@ class CTemplate extends CHostGeneral {
 			]);
 
 			if (!$result) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot create template.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot create template.'));
 			}
 		}
 
@@ -370,7 +370,7 @@ class CTemplate extends CHostGeneral {
 		foreach ($templates as $template) {
 			// check if hosts have at least 1 group
 			if (!isset($template['groups']) || !$template['groups']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Template "%1$s" cannot be without host group.', $template['host'])
 				);
 			}
@@ -391,7 +391,7 @@ class CTemplate extends CHostGeneral {
 
 		foreach ($groupIds as $groupId) {
 			if (!isset($dbHostGroups[$groupId])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 			}
 		}
 
@@ -406,16 +406,16 @@ class CTemplate extends CHostGeneral {
 			}
 
 			if (!check_db_fields($templateDbFields, $template)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Field "host" is mandatory.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Field "host" is mandatory.'));
 			}
 
 			// Property 'auto_compress' is not supported for templates.
 			if (array_key_exists('auto_compress', $template)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 
 			if ($host_name_parser->parse($template['host']) != CParser::PARSE_SUCCESS) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect characters used for template name "%1$s".', $template['host'])
 				);
 			}
@@ -428,7 +428,7 @@ class CTemplate extends CHostGeneral {
 					'limit' => 1
 				]);
 				if ($templateExists) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Template "%1$s" already exists.', $template['host']));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Template "%1$s" already exists.', $template['host']));
 				}
 
 				$hostExists = API::Host()->get([
@@ -438,7 +438,7 @@ class CTemplate extends CHostGeneral {
 					'limit' => 1
 				]);
 				if ($hostExists) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Host "%1$s" already exists.', $template['host']));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Host "%1$s" already exists.', $template['host']));
 				}
 			}
 
@@ -450,7 +450,7 @@ class CTemplate extends CHostGeneral {
 					'limit' => 1
 				]);
 				if ($templateExists) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Template with the same visible name "%1$s" already exists.',
 						$template['name']
 					));
@@ -463,7 +463,7 @@ class CTemplate extends CHostGeneral {
 					'limit' => 1
 				]);
 				if ($hostExists) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Host with the same visible name "%1$s" already exists.',
 						$template['name']
 					));
@@ -516,7 +516,7 @@ class CTemplate extends CHostGeneral {
 			$template['templates'] = [$templateCopy];
 
 			if (!$this->massUpdate($template)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Failed to update template.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Failed to update template.'));
 			}
 		}
 
@@ -542,12 +542,12 @@ class CTemplate extends CHostGeneral {
 
 		foreach ($templates as $template) {
 			if (!isset($dbTemplates[$template['templateid']])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 			}
 
 			// Property 'auto_compress' is not supported for templates.
 			if (array_key_exists('auto_compress', $template)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 
 			// Validate tags.
@@ -567,7 +567,7 @@ class CTemplate extends CHostGeneral {
 	 */
 	public function delete(array $templateids) {
 		if (empty($templateids)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$options = [
@@ -579,7 +579,7 @@ class CTemplate extends CHostGeneral {
 		$delTemplates = $this->get($options);
 		foreach ($templateids as $templateid) {
 			if (!isset($delTemplates[$templateid])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 			}
 		}
 
@@ -739,7 +739,7 @@ class CTemplate extends CHostGeneral {
 			]);
 
 			if ($count != count($hostids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -800,7 +800,7 @@ class CTemplate extends CHostGeneral {
 	 */
 	public function massUpdate(array $data) {
 		if (!array_key_exists('templates', $data) || !is_array($data['templates'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'templates'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'templates'));
 		}
 
 		$this->validateMassUpdate($data);
@@ -821,7 +821,7 @@ class CTemplate extends CHostGeneral {
 			}
 			// we cannot have empty visible name
 			elseif (zbx_empty(trim($data['name'])) && !isset($data['host'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot have empty visible template name.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot have empty visible template name.'));
 			}
 			else {
 				$fieldsToUpdate[] = 'name='.zbx_dbstr($data['name']);
@@ -857,7 +857,7 @@ class CTemplate extends CHostGeneral {
 				'output' => ['hostid'],
 				'templateids' => $templateIds,
 				'templated_hosts' => true,
-				'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL]
+				'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 			]);
 			$templateHostIds = zbx_objectValues($templateHosts, 'hostid');
 			$newHostIds = zbx_objectValues($data['hosts'], 'hostid');
@@ -873,7 +873,7 @@ class CTemplate extends CHostGeneral {
 				]);
 
 				if (!$result) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot unlink template.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot unlink template.'));
 				}
 			}
 		}
@@ -896,7 +896,7 @@ class CTemplate extends CHostGeneral {
 				]);
 
 				if (!$result) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot unlink template.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot unlink template.'));
 				}
 			}
 		}
@@ -908,7 +908,7 @@ class CTemplate extends CHostGeneral {
 			]);
 
 			if (!$result) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot link template.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot link template.'));
 			}
 		}
 
@@ -922,7 +922,7 @@ class CTemplate extends CHostGeneral {
 				]);
 
 				if (!$result) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot link template.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot link template.'));
 				}
 			}
 		}
@@ -996,14 +996,14 @@ class CTemplate extends CHostGeneral {
 		// check permissions
 		foreach ($templates as $template) {
 			if (!isset($dbTemplates[$template['templateid']])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 			}
 		}
 
 		if (array_key_exists('groups', $data) && !$data['groups'] && $dbTemplates) {
 			$template = reset($dbTemplates);
 
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Template "%1$s" cannot be without host group.', $template['host'])
 			);
 		}
@@ -1011,7 +1011,7 @@ class CTemplate extends CHostGeneral {
 		// check name
 		if (isset($data['name'])) {
 			if (count($templates) > 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot mass update visible template name.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot mass update visible template name.'));
 			}
 
 			$template = reset($templates);
@@ -1023,7 +1023,7 @@ class CTemplate extends CHostGeneral {
 			]);
 			$templateExist = reset($templateExists);
 			if ($templateExist && bccomp($templateExist['templateid'], $template['templateid']) != 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Template with the same visible name "%1$s" already exists.',
 					$data['name']
 				));
@@ -1036,7 +1036,7 @@ class CTemplate extends CHostGeneral {
 				'nopermissions' => true
 			]);
 			if ($hostExists) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Host with the same visible name "%1$s" already exists.',
 					$data['name']
 				));
@@ -1046,7 +1046,7 @@ class CTemplate extends CHostGeneral {
 		// check host
 		if (isset($data['host'])) {
 			if (count($templates) > 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot mass update template name.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot mass update template name.'));
 			}
 
 			$template = reset($templates);
@@ -1058,7 +1058,7 @@ class CTemplate extends CHostGeneral {
 			]);
 			$templateExist = reset($templateExists);
 			if ($templateExist && bccomp($templateExist['templateid'], $template['templateid']) != 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Template with the same name "%1$s" already exists.',
 					$template['host']
 				));
@@ -1071,7 +1071,7 @@ class CTemplate extends CHostGeneral {
 				'nopermissions' => true
 			]);
 			if ($hostExists) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Host with the same name "%1$s" already exists.',
 					$template['host']
 				));
@@ -1081,7 +1081,7 @@ class CTemplate extends CHostGeneral {
 		$host_name_parser = new CHostNameParser();
 
 		if (array_key_exists('host', $data) && $host_name_parser->parse($data['host']) != CParser::PARSE_SUCCESS) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect characters used for template name "%1$s".', $data['host'])
 			);
 		}
@@ -1137,7 +1137,7 @@ class CTemplate extends CHostGeneral {
 			]);
 
 			if ($count != count($templateids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}

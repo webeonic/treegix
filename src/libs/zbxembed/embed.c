@@ -9,16 +9,16 @@
 
 #include "duktape.h"
 
-#define ZBX_ES_MEMORY_LIMIT	(1024 * 1024 * 10)
-#define ZBX_ES_TIMEOUT		10
+#define TRX_ES_MEMORY_LIMIT	(1024 * 1024 * 10)
+#define TRX_ES_TIMEOUT		10
 
-#define ZBX_ES_STACK_LIMIT	1000
+#define TRX_ES_STACK_LIMIT	1000
 
 /* maximum number of consequent runtime errors after which it's treated as fatal error */
-#define ZBX_ES_MAX_CONSEQUENT_RT_ERROR	3
+#define TRX_ES_MAX_CONSEQUENT_RT_ERROR	3
 
-#define ZBX_ES_SCRIPT_HEADER	"function(value){"
-#define ZBX_ES_SCRIPT_FOOTER	"\n}"
+#define TRX_ES_SCRIPT_HEADER	"function(value){"
+#define TRX_ES_SCRIPT_FOOTER	"\n}"
 
 /******************************************************************************
  *                                                                            *
@@ -47,7 +47,7 @@ static void	*es_malloc(void *udata, duk_size_t size)
 	zbx_es_env_t	*env = (zbx_es_env_t *)udata;
 	uint64_t	*uptr;
 
-	if (env->total_alloc + size + 8 > ZBX_ES_MEMORY_LIMIT)
+	if (env->total_alloc + size + 8 > TRX_ES_MEMORY_LIMIT)
 	{
 		if (NULL == env->ctx)
 			env->error = zbx_strdup(env->error, "cannot allocate memory");
@@ -76,7 +76,7 @@ static void	*es_realloc(void *udata, void *ptr, duk_size_t size)
 	else
 		old_size = 0;
 
-	if (env->total_alloc + size + 8 - old_size > ZBX_ES_MEMORY_LIMIT)
+	if (env->total_alloc + size + 8 - old_size > TRX_ES_MEMORY_LIMIT)
 	{
 		if (NULL == env->ctx)
 			env->error = zbx_strdup(env->error, "cannot allocate memory");
@@ -205,7 +205,7 @@ int	zbx_es_init_env(zbx_es_t *es, char **error)
 	if (FAIL == zbx_es_init_httprequest(es, error))
 		goto out;
 
-	es->env->timeout = ZBX_ES_TIMEOUT;
+	es->env->timeout = TRX_ES_TIMEOUT;
 	ret = SUCCEED;
 out:
 	if (SUCCEED != ret)
@@ -215,7 +215,7 @@ out:
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret),
-			ZBX_NULL2EMPTY_STR(*error));
+			TRX_NULL2EMPTY_STR(*error));
 
 	return ret;
 }
@@ -253,7 +253,7 @@ int	zbx_es_destroy_env(zbx_es_t *es, char **error)
 	ret = SUCCEED;
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret),
-		ZBX_NULL2EMPTY_STR(*error));
+		TRX_NULL2EMPTY_STR(*error));
 
 	return ret;
 }
@@ -287,10 +287,10 @@ int	zbx_es_is_env_initialized(zbx_es_t *es)
  ******************************************************************************/
 int	zbx_es_fatal_error(zbx_es_t *es)
 {
-	if (0 != es->env->fatal_error || ZBX_ES_MAX_CONSEQUENT_RT_ERROR < es->env->rt_error_num)
+	if (0 != es->env->fatal_error || TRX_ES_MAX_CONSEQUENT_RT_ERROR < es->env->rt_error_num)
 		return SUCCEED;
 
-	if (ZBX_ES_STACK_LIMIT < duk_get_top(es->env->ctx))
+	if (TRX_ES_STACK_LIMIT < duk_get_top(es->env->ctx))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "embedded scripting engine stack exceeded limits,"
 				" resetting scripting environment");
@@ -343,18 +343,18 @@ int	zbx_es_compile(zbx_es_t *es, const char *script, char **code, int *size, cha
 
 	/* wrap the code block into a function: function(value){<code>\n} */
 	len = strlen(script);
-	ptr = func = zbx_malloc(NULL, len + ZBX_CONST_STRLEN(ZBX_ES_SCRIPT_HEADER) +
-			ZBX_CONST_STRLEN(ZBX_ES_SCRIPT_FOOTER) + 1);
-	memcpy(ptr, ZBX_ES_SCRIPT_HEADER, ZBX_CONST_STRLEN(ZBX_ES_SCRIPT_HEADER));
-	ptr += ZBX_CONST_STRLEN(ZBX_ES_SCRIPT_HEADER);
+	ptr = func = zbx_malloc(NULL, len + TRX_CONST_STRLEN(TRX_ES_SCRIPT_HEADER) +
+			TRX_CONST_STRLEN(TRX_ES_SCRIPT_FOOTER) + 1);
+	memcpy(ptr, TRX_ES_SCRIPT_HEADER, TRX_CONST_STRLEN(TRX_ES_SCRIPT_HEADER));
+	ptr += TRX_CONST_STRLEN(TRX_ES_SCRIPT_HEADER);
 	memcpy(ptr, script, len);
 	ptr += len;
-	memcpy(ptr, ZBX_ES_SCRIPT_FOOTER, ZBX_CONST_STRLEN(ZBX_ES_SCRIPT_FOOTER));
-	ptr += ZBX_CONST_STRLEN(ZBX_ES_SCRIPT_FOOTER);
+	memcpy(ptr, TRX_ES_SCRIPT_FOOTER, TRX_CONST_STRLEN(TRX_ES_SCRIPT_FOOTER));
+	ptr += TRX_CONST_STRLEN(TRX_ES_SCRIPT_FOOTER);
 	*ptr = '\0';
 
 	duk_push_lstring(es->env->ctx, func, ptr - func);
-	duk_push_lstring(es->env->ctx, "function", ZBX_CONST_STRLEN("function"));
+	duk_push_lstring(es->env->ctx, "function", TRX_CONST_STRLEN("function"));
 
 	if (0 != duk_pcompile(es->env->ctx, DUK_COMPILE_FUNCTION))
 	{
@@ -379,7 +379,7 @@ int	zbx_es_compile(zbx_es_t *es, const char *script, char **code, int *size, cha
 out:
 	zbx_free(func);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), ZBX_NULL2EMPTY_STR(*error));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), TRX_NULL2EMPTY_STR(*error));
 
 	return ret;
 }
@@ -421,7 +421,7 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 		goto out;
 	}
 
-	ZBX_UNUSED(script);
+	TRX_UNUSED(script);
 
 	if (0 != setjmp(es->env->loc))
 	{
@@ -468,7 +468,7 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 		else
 			*output = zbx_strdup(NULL, duk_safe_to_string(es->env->ctx, -1));
 
-		treegix_log(LOG_LEVEL_DEBUG, "%s() output:'%s'", __func__, ZBX_NULL2EMPTY_STR(*output));
+		treegix_log(LOG_LEVEL_DEBUG, "%s() output:'%s'", __func__, TRX_NULL2EMPTY_STR(*output));
 		ret = SUCCEED;
 	}
 	else
@@ -477,7 +477,7 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 	duk_pop(es->env->ctx);
 	es->env->rt_error_num = 0;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), ZBX_NULL2EMPTY_STR(*error));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), TRX_NULL2EMPTY_STR(*error));
 
 	return ret;
 }

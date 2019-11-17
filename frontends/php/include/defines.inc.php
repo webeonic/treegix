@@ -6,76 +6,76 @@ define('TREEGIX_API_VERSION',	'3.0');
 define('TREEGIX_EXPORT_VERSION',	'3.0');
 define('TREEGIX_DB_VERSION',		4040000);
 
-define('ZBX_LOGIN_ATTEMPTS',	5);
-define('ZBX_LOGIN_BLOCK',		30); // sec
+define('TRX_LOGIN_ATTEMPTS',	5);
+define('TRX_LOGIN_BLOCK',		30); // sec
 
-define('ZBX_SESSION_NAME', 'zbx_sessionid'); // Session cookie name for Treegix front-end.
+define('TRX_SESSION_NAME', 'zbx_sessionid'); // Session cookie name for Treegix front-end.
 
-define('ZBX_KIBIBYTE',	'1024');
-define('ZBX_MEBIBYTE',	'1048576');
-define('ZBX_GIBIBYTE',	'1073741824');
+define('TRX_KIBIBYTE',	'1024');
+define('TRX_MEBIBYTE',	'1048576');
+define('TRX_GIBIBYTE',	'1073741824');
 
-define('ZBX_MIN_PERIOD',		60); // 1 minute
-define('ZBX_MAX_PERIOD',		63158400); // the maximum period for the time bar control, ~2 years (2 * 365 * 86400) + 86400
-define('ZBX_MIN_INT32',			-2147483648);
-define('ZBX_MAX_INT32',			2147483647);
-define('ZBX_MIN_INT64',			'-9223372036854775808');
-define('ZBX_MAX_INT64',			'9223372036854775807');
-define('ZBX_MAX_UINT64',		'18446744073709551615');
-define('ZBX_MAX_DATE',			2147483647); // 19 Jan 2038 05:14:07
-define('ZBX_PERIOD_DEFAULT_FROM',	'now-1h'); // Default time interval.
-define('ZBX_PERIOD_DEFAULT_TO',		'now');
-define('ZBX_MIN_TIMESHIFT',	-788400000); // Min valid timeshift value in seconds (25 years).
-define('ZBX_MAX_TIMESHIFT',	788400000); // Max valid timeshift value in seconds (25 years).
+define('TRX_MIN_PERIOD',		60); // 1 minute
+define('TRX_MAX_PERIOD',		63158400); // the maximum period for the time bar control, ~2 years (2 * 365 * 86400) + 86400
+define('TRX_MIN_INT32',			-2147483648);
+define('TRX_MAX_INT32',			2147483647);
+define('TRX_MIN_INT64',			'-9223372036854775808');
+define('TRX_MAX_INT64',			'9223372036854775807');
+define('TRX_MAX_UINT64',		'18446744073709551615');
+define('TRX_MAX_DATE',			2147483647); // 19 Jan 2038 05:14:07
+define('TRX_PERIOD_DEFAULT_FROM',	'now-1h'); // Default time interval.
+define('TRX_PERIOD_DEFAULT_TO',		'now');
+define('TRX_MIN_TIMESHIFT',	-788400000); // Min valid timeshift value in seconds (25 years).
+define('TRX_MAX_TIMESHIFT',	788400000); // Max valid timeshift value in seconds (25 years).
 
 // Date and time format seperators must be synced with setSDateFromOuterObj() in class.calendar.js.
-define('ZBX_FULL_DATE_TIME',	'Y-m-d H:i:s'); // Time selector full date and time presentation format.
-define('ZBX_DATE_TIME',			'Y-m-d H:i'); // Time selector date and time without seconds presentation format.
+define('TRX_FULL_DATE_TIME',	'Y-m-d H:i:s'); // Time selector full date and time presentation format.
+define('TRX_DATE_TIME',			'Y-m-d H:i'); // Time selector date and time without seconds presentation format.
 
 // the maximum period to display history data for the latest data and item overview pages in seconds
 // by default set to 86400 seconds (24 hours)
-define('ZBX_HISTORY_PERIOD', 86400);
+define('TRX_HISTORY_PERIOD', 86400);
 
-define('ZBX_HISTORY_SOURCE_ELASTIC',	'elastic');
-define('ZBX_HISTORY_SOURCE_SQL',		'sql');
+define('TRX_HISTORY_SOURCE_ELASTIC',	'elastic');
+define('TRX_HISTORY_SOURCE_SQL',		'sql');
 
 define('ELASTICSEARCH_RESPONSE_PLAIN',			0);
 define('ELASTICSEARCH_RESPONSE_AGGREGATION',	1);
 define('ELASTICSEARCH_RESPONSE_DOCUMENTS',		2);
 
-define('ZBX_FONTPATH',				realpath('assets/fonts')); // where to search for font (GD > 2.0.18)
-define('ZBX_GRAPH_FONT_NAME',		'DejaVuSans'); // font file name
-define('ZBX_GRAPH_LEGEND_HEIGHT',	120); // when graph height is less then this value, some legend will not show up
+define('TRX_FONTPATH',				realpath('assets/fonts')); // where to search for font (GD > 2.0.18)
+define('TRX_GRAPH_FONT_NAME',		'DejaVuSans'); // font file name
+define('TRX_GRAPH_LEGEND_HEIGHT',	120); // when graph height is less then this value, some legend will not show up
 
-define('ZBX_SCRIPT_TIMEOUT',		60); // in seconds
+define('TRX_SCRIPT_TIMEOUT',		60); // in seconds
 
 define('GRAPH_YAXIS_SIDE_DEFAULT', 0); // 0 - LEFT SIDE, 1 - RIGHT SIDE
 
-define('ZBX_MAX_IMAGE_SIZE', ZBX_MEBIBYTE);
+define('TRX_MAX_IMAGE_SIZE', TRX_MEBIBYTE);
 
-define('ZBX_UNITS_ROUNDOFF_THRESHOLD',		0.01);
-define('ZBX_UNITS_ROUNDOFF_UPPER_LIMIT',	2);
-define('ZBX_UNITS_ROUNDOFF_MIDDLE_LIMIT',	4);
-define('ZBX_UNITS_ROUNDOFF_LOWER_LIMIT',	6);
+define('TRX_UNITS_ROUNDOFF_THRESHOLD',		0.01);
+define('TRX_UNITS_ROUNDOFF_UPPER_LIMIT',	2);
+define('TRX_UNITS_ROUNDOFF_MIDDLE_LIMIT',	4);
+define('TRX_UNITS_ROUNDOFF_LOWER_LIMIT',	6);
 
-define('ZBX_PRECISION_10',	10);
+define('TRX_PRECISION_10',	10);
 
-define('ZBX_DEFAULT_INTERVAL', '1-7,00:00-24:00');
+define('TRX_DEFAULT_INTERVAL', '1-7,00:00-24:00');
 
-define('ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT',	0);
-define('ZBX_SCRIPT_TYPE_IPMI',			1);
-define('ZBX_SCRIPT_TYPE_SSH',			2);
-define('ZBX_SCRIPT_TYPE_TELNET',		3);
-define('ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT',	4);
+define('TRX_SCRIPT_TYPE_CUSTOM_SCRIPT',	0);
+define('TRX_SCRIPT_TYPE_IPMI',			1);
+define('TRX_SCRIPT_TYPE_SSH',			2);
+define('TRX_SCRIPT_TYPE_TELNET',		3);
+define('TRX_SCRIPT_TYPE_GLOBAL_SCRIPT',	4);
 
-define('ZBX_SCRIPT_EXECUTE_ON_AGENT',	0);
-define('ZBX_SCRIPT_EXECUTE_ON_SERVER',	1);
-define('ZBX_SCRIPT_EXECUTE_ON_PROXY',	2);
+define('TRX_SCRIPT_EXECUTE_ON_AGENT',	0);
+define('TRX_SCRIPT_EXECUTE_ON_SERVER',	1);
+define('TRX_SCRIPT_EXECUTE_ON_PROXY',	2);
 
-define('ZBX_FLAG_DISCOVERY_NORMAL',		0x0);
-define('ZBX_FLAG_DISCOVERY_RULE',		0x1);
-define('ZBX_FLAG_DISCOVERY_PROTOTYPE',	0x2);
-define('ZBX_FLAG_DISCOVERY_CREATED',	0x4);
+define('TRX_FLAG_DISCOVERY_NORMAL',		0x0);
+define('TRX_FLAG_DISCOVERY_RULE',		0x1);
+define('TRX_FLAG_DISCOVERY_PROTOTYPE',	0x2);
+define('TRX_FLAG_DISCOVERY_CREATED',	0x4);
 
 define('EXTACK_OPTION_ALL',		0);
 define('EXTACK_OPTION_UNACK',	1);
@@ -88,30 +88,30 @@ define('TRIGGERS_OPTION_RECENT_PROBLEM',	1);
 define('TRIGGERS_OPTION_ALL',				2);
 define('TRIGGERS_OPTION_IN_PROBLEM',		3);
 
-define('ZBX_FONT_NAME', 'DejaVuSans');
+define('TRX_FONT_NAME', 'DejaVuSans');
 
-define('ZBX_AUTH_INTERNAL',	0);
-define('ZBX_AUTH_LDAP',		1);
-define('ZBX_AUTH_HTTP_DISABLED',	0);
-define('ZBX_AUTH_HTTP_ENABLED',		1);
-define('ZBX_AUTH_LDAP_DISABLED',	0);
-define('ZBX_AUTH_LDAP_ENABLED',		1);
-define('ZBX_AUTH_FORM_TREEGIX',	0);
-define('ZBX_AUTH_FORM_HTTP',	1);
-define('ZBX_AUTH_CASE_INSENSITIVE',	0);
-define('ZBX_AUTH_CASE_SENSITIVE',	1);
+define('TRX_AUTH_INTERNAL',	0);
+define('TRX_AUTH_LDAP',		1);
+define('TRX_AUTH_HTTP_DISABLED',	0);
+define('TRX_AUTH_HTTP_ENABLED',		1);
+define('TRX_AUTH_LDAP_DISABLED',	0);
+define('TRX_AUTH_LDAP_ENABLED',		1);
+define('TRX_AUTH_FORM_TREEGIX',	0);
+define('TRX_AUTH_FORM_HTTP',	1);
+define('TRX_AUTH_CASE_INSENSITIVE',	0);
+define('TRX_AUTH_CASE_SENSITIVE',	1);
 
-define('ZBX_DB_DB2',		'IBM_DB2');
-define('ZBX_DB_MYSQL',		'MYSQL');
-define('ZBX_DB_ORACLE',		'ORACLE');
-define('ZBX_DB_POSTGRESQL',	'POSTGRESQL');
+define('TRX_DB_DB2',		'IBM_DB2');
+define('TRX_DB_MYSQL',		'MYSQL');
+define('TRX_DB_ORACLE',		'ORACLE');
+define('TRX_DB_POSTGRESQL',	'POSTGRESQL');
 
-define('ZBX_DB_MAX_ID', '9223372036854775807');
+define('TRX_DB_MAX_ID', '9223372036854775807');
 
 // maximum number of records for create() or update() API calls
-define('ZBX_DB_MAX_INSERTS', 10000);
+define('TRX_DB_MAX_INSERTS', 10000);
 
-define('ZBX_SHOW_TECHNICAL_ERRORS', false);
+define('TRX_SHOW_TECHNICAL_ERRORS', false);
 
 define('PAGE_TYPE_HTML',				0);
 define('PAGE_TYPE_IMAGE',				1);
@@ -126,22 +126,22 @@ define('PAGE_TYPE_TEXT',				9); // simple text
 define('PAGE_TYPE_CSV',					10); // CSV format
 define('PAGE_TYPE_TEXT_RETURN_JSON',	11); // input plaintext output json
 
-define('ZBX_SESSION_ACTIVE',	0);
-define('ZBX_SESSION_PASSIVE',	1);
+define('TRX_SESSION_ACTIVE',	0);
+define('TRX_SESSION_PASSIVE',	1);
 
-define('ZBX_DROPDOWN_FIRST_NONE',	0);
-define('ZBX_DROPDOWN_FIRST_ALL',	1);
+define('TRX_DROPDOWN_FIRST_NONE',	0);
+define('TRX_DROPDOWN_FIRST_ALL',	1);
 
-define('T_ZBX_STR',			0);
-define('T_ZBX_INT',			1);
-define('T_ZBX_DBL',			2);
-define('T_ZBX_RANGE_TIME',	3);
-define('T_ZBX_CLR',			5);
-define('T_ZBX_DBL_BIG',		9);
-define('T_ZBX_DBL_STR',		10);
-define('T_ZBX_TP',			11);
-define('T_ZBX_TU',			12);
-define('T_ZBX_ABS_TIME',	13);
+define('T_TRX_STR',			0);
+define('T_TRX_INT',			1);
+define('T_TRX_DBL',			2);
+define('T_TRX_RANGE_TIME',	3);
+define('T_TRX_CLR',			5);
+define('T_TRX_DBL_BIG',		9);
+define('T_TRX_DBL_STR',		10);
+define('T_TRX_TP',			11);
+define('T_TRX_TU',			12);
+define('T_TRX_ABS_TIME',	13);
 
 define('O_MAND',	0);
 define('O_OPT',		1);
@@ -155,9 +155,9 @@ define('P_NZERO',				0x0020);
 define('P_NO_TRIM',				0x0040);
 define('P_ALLOW_USER_MACRO',	0x0080);
 define('P_ALLOW_LLD_MACRO',		0x0100);
-define('ZBX_URI_VALID_SCHEMES', 'http,https,ftp,file,mailto,tel,ssh');
+define('TRX_URI_VALID_SCHEMES', 'http,https,ftp,file,mailto,tel,ssh');
 
-// Validate URI against schemes whitelist defined in ZBX_URI_VALID_SCHEMES.
+// Validate URI against schemes whitelist defined in TRX_URI_VALID_SCHEMES.
 define('VALIDATE_URI_SCHEMES', true);
 
 //	misc parameters
@@ -172,17 +172,17 @@ define('IMAGE_TYPE_BACKGROUND',		2);
 define('ITEM_CONVERT_WITH_UNITS',	0); // - do not convert empty units
 define('ITEM_CONVERT_NO_UNITS',		1); // - no units
 
-define('ZBX_SORT_UP',	'ASC');
-define('ZBX_SORT_DOWN',	'DESC');
+define('TRX_SORT_UP',	'ASC');
+define('TRX_SORT_DOWN',	'DESC');
 
 // Maximum number of tags to display.
-define('ZBX_TAG_COUNT_DEFAULT', 3);
+define('TRX_TAG_COUNT_DEFAULT', 3);
 
-define('ZBX_TCP_HEADER_DATA',		"ZBXD");
-define('ZBX_TCP_HEADER_VERSION',	"\1");
-define('ZBX_TCP_HEADER',			ZBX_TCP_HEADER_DATA.ZBX_TCP_HEADER_VERSION);
-define('ZBX_TCP_HEADER_LEN',		5);
-define('ZBX_TCP_DATALEN_LEN',		8);
+define('TRX_TCP_HEADER_DATA',		"TRXD");
+define('TRX_TCP_HEADER_VERSION',	"\1");
+define('TRX_TCP_HEADER',			TRX_TCP_HEADER_DATA.TRX_TCP_HEADER_VERSION);
+define('TRX_TCP_HEADER_LEN',		5);
+define('TRX_TCP_DATALEN_LEN',		8);
 
 define('AUDIT_ACTION_ADD',		0);
 define('AUDIT_ACTION_UPDATE',	1);
@@ -267,20 +267,20 @@ define('CONDITION_OPERATOR_YES',		10);
 define('CONDITION_OPERATOR_NO',			11);
 
 // correlation statuses
-define('ZBX_CORRELATION_ENABLED',		0);
-define('ZBX_CORRELATION_DISABLED',		1);
+define('TRX_CORRELATION_ENABLED',		0);
+define('TRX_CORRELATION_DISABLED',		1);
 
 // correlation condition types
-define('ZBX_CORR_CONDITION_OLD_EVENT_TAG',			0);
-define('ZBX_CORR_CONDITION_NEW_EVENT_TAG',			1);
-define('ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP',	2);
-define('ZBX_CORR_CONDITION_EVENT_TAG_PAIR',			3);
-define('ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE',	4);
-define('ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE',	5);
+define('TRX_CORR_CONDITION_OLD_EVENT_TAG',			0);
+define('TRX_CORR_CONDITION_NEW_EVENT_TAG',			1);
+define('TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP',	2);
+define('TRX_CORR_CONDITION_EVENT_TAG_PAIR',			3);
+define('TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE',	4);
+define('TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE',	5);
 
 // correlation operation types
-define('ZBX_CORR_OPERATION_CLOSE_OLD',	0);
-define('ZBX_CORR_OPERATION_CLOSE_NEW',	1);
+define('TRX_CORR_OPERATION_CLOSE_OLD',	0);
+define('TRX_CORR_OPERATION_CLOSE_NEW',	1);
 
 // event type action condition values
 define('EVENT_TYPE_ITEM_NOTSUPPORTED',		0);
@@ -424,9 +424,9 @@ define('SYSMAP_GRID_ALIGN_OFF',	0);
 define('PUBLIC_SHARING',	0);
 define('PRIVATE_SHARING',	1);
 
-define('ZBX_ITEM_DELAY_DEFAULT',			'1m');
-define('ZBX_ITEM_FLEXIBLE_DELAY_DEFAULT',	'50s');
-define('ZBX_ITEM_SCHEDULING_DEFAULT',		'wd1-5h9-18');
+define('TRX_ITEM_DELAY_DEFAULT',			'1m');
+define('TRX_ITEM_FLEXIBLE_DELAY_DEFAULT',	'50s');
+define('TRX_ITEM_SCHEDULING_DEFAULT',		'wd1-5h9-18');
 
 define('ITEM_TYPE_TREEGIX',			0);
 define('ITEM_TYPE_SNMPV1',			1);
@@ -449,8 +449,8 @@ define('ITEM_TYPE_SNMPTRAP',		17);
 define('ITEM_TYPE_DEPENDENT',		18);
 define('ITEM_TYPE_HTTPAGENT',		19);
 
-define('ZBX_DEPENDENT_ITEM_MAX_LEVELS',	3);
-define('ZBX_DEPENDENT_ITEM_MAX_COUNT',	29999);
+define('TRX_DEPENDENT_ITEM_MAX_LEVELS',	3);
+define('TRX_DEPENDENT_ITEM_MAX_COUNT',	29999);
 
 define('ITEM_VALUE_TYPE_FLOAT',		0);
 define('ITEM_VALUE_TYPE_STR',		1); // aka Character
@@ -463,18 +463,18 @@ define('ITEM_DATA_TYPE_OCTAL',			1);
 define('ITEM_DATA_TYPE_HEXADECIMAL',	2);
 define('ITEM_DATA_TYPE_BOOLEAN',		3);
 
-define('ZBX_DEFAULT_KEY_DB_MONITOR',			'db.odbc.select[<unique short description>,dsn]');
-define('ZBX_DEFAULT_KEY_DB_MONITOR_DISCOVERY',	'db.odbc.discovery[<unique short description>,dsn]');
-define('ZBX_DEFAULT_KEY_SSH',					'ssh.run[<unique short description>,<ip>,<port>,<encoding>]');
-define('ZBX_DEFAULT_KEY_TELNET',				'telnet.run[<unique short description>,<ip>,<port>,<encoding>]');
+define('TRX_DEFAULT_KEY_DB_MONITOR',			'db.odbc.select[<unique short description>,dsn]');
+define('TRX_DEFAULT_KEY_DB_MONITOR_DISCOVERY',	'db.odbc.discovery[<unique short description>,dsn]');
+define('TRX_DEFAULT_KEY_SSH',					'ssh.run[<unique short description>,<ip>,<port>,<encoding>]');
+define('TRX_DEFAULT_KEY_TELNET',				'telnet.run[<unique short description>,<ip>,<port>,<encoding>]');
 
-define('ZBX_DEFAULT_JMX_ENDPOINT',	'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi');
+define('TRX_DEFAULT_JMX_ENDPOINT',	'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi');
 
 define('SYSMAP_ELEMENT_USE_ICONMAP_ON',		1);
 define('SYSMAP_ELEMENT_USE_ICONMAP_OFF',	0);
 
-define('ZBX_ICON_PREVIEW_HEIGHT',	24);
-define('ZBX_ICON_PREVIEW_WIDTH',	24);
+define('TRX_ICON_PREVIEW_HEIGHT',	24);
+define('TRX_ICON_PREVIEW_WIDTH',	24);
 
 define('ITEM_STATUS_ACTIVE',		0);
 define('ITEM_STATUS_DISABLED',		1);
@@ -513,39 +513,39 @@ define('ITEM_DELAY_FLEXIBLE',	0);
 define('ITEM_DELAY_SCHEDULING',	1);
 
 // Item pre-processing types.
-define('ZBX_PREPROC_MULTIPLIER',			1);
-define('ZBX_PREPROC_RTRIM',					2);
-define('ZBX_PREPROC_LTRIM',					3);
-define('ZBX_PREPROC_TRIM',					4);
-define('ZBX_PREPROC_REGSUB',				5);
-define('ZBX_PREPROC_BOOL2DEC',				6);
-define('ZBX_PREPROC_OCT2DEC',				7);
-define('ZBX_PREPROC_HEX2DEC',				8);
-define('ZBX_PREPROC_DELTA_VALUE',			9);
-define('ZBX_PREPROC_DELTA_SPEED',			10);
-define('ZBX_PREPROC_XPATH',					11);
-define('ZBX_PREPROC_JSONPATH',				12);
-define('ZBX_PREPROC_VALIDATE_RANGE',		13);
-define('ZBX_PREPROC_VALIDATE_REGEX',		14);
-define('ZBX_PREPROC_VALIDATE_NOT_REGEX',	15);
-define('ZBX_PREPROC_ERROR_FIELD_JSON',		16);
-define('ZBX_PREPROC_ERROR_FIELD_XML',		17);
-define('ZBX_PREPROC_ERROR_FIELD_REGEX',		18);
-define('ZBX_PREPROC_THROTTLE_VALUE',		19);
-define('ZBX_PREPROC_THROTTLE_TIMED_VALUE',	20);
-define('ZBX_PREPROC_SCRIPT',				21);
-define('ZBX_PREPROC_PROMETHEUS_PATTERN',	22);
-define('ZBX_PREPROC_PROMETHEUS_TO_JSON',	23);
-define('ZBX_PREPROC_CSV_TO_JSON',			24);
+define('TRX_PREPROC_MULTIPLIER',			1);
+define('TRX_PREPROC_RTRIM',					2);
+define('TRX_PREPROC_LTRIM',					3);
+define('TRX_PREPROC_TRIM',					4);
+define('TRX_PREPROC_REGSUB',				5);
+define('TRX_PREPROC_BOOL2DEC',				6);
+define('TRX_PREPROC_OCT2DEC',				7);
+define('TRX_PREPROC_HEX2DEC',				8);
+define('TRX_PREPROC_DELTA_VALUE',			9);
+define('TRX_PREPROC_DELTA_SPEED',			10);
+define('TRX_PREPROC_XPATH',					11);
+define('TRX_PREPROC_JSONPATH',				12);
+define('TRX_PREPROC_VALIDATE_RANGE',		13);
+define('TRX_PREPROC_VALIDATE_REGEX',		14);
+define('TRX_PREPROC_VALIDATE_NOT_REGEX',	15);
+define('TRX_PREPROC_ERROR_FIELD_JSON',		16);
+define('TRX_PREPROC_ERROR_FIELD_XML',		17);
+define('TRX_PREPROC_ERROR_FIELD_REGEX',		18);
+define('TRX_PREPROC_THROTTLE_VALUE',		19);
+define('TRX_PREPROC_THROTTLE_TIMED_VALUE',	20);
+define('TRX_PREPROC_SCRIPT',				21);
+define('TRX_PREPROC_PROMETHEUS_PATTERN',	22);
+define('TRX_PREPROC_PROMETHEUS_TO_JSON',	23);
+define('TRX_PREPROC_CSV_TO_JSON',			24);
 
 // Item pre-processing error handlers.
-define('ZBX_PREPROC_FAIL_DEFAULT',			0);
-define('ZBX_PREPROC_FAIL_DISCARD_VALUE',	1);
-define('ZBX_PREPROC_FAIL_SET_VALUE',		2);
-define('ZBX_PREPROC_FAIL_SET_ERROR',		3);
+define('TRX_PREPROC_FAIL_DEFAULT',			0);
+define('TRX_PREPROC_FAIL_DISCARD_VALUE',	1);
+define('TRX_PREPROC_FAIL_SET_VALUE',		2);
+define('TRX_PREPROC_FAIL_SET_ERROR',		3);
 
-define('ZBX_PREPROC_CSV_NO_HEADER',	0);
-define('ZBX_PREPROC_CSV_HEADER',	1);
+define('TRX_PREPROC_CSV_NO_HEADER',	0);
+define('TRX_PREPROC_CSV_HEADER',	1);
 
 define('GRAPH_ITEM_DRAWTYPE_LINE',			0);
 define('GRAPH_ITEM_DRAWTYPE_FILLED_REGION',	1);
@@ -574,15 +574,15 @@ define('SERVICE_STATUS_OK', 0);
 define('TRIGGER_MULT_EVENT_DISABLED',	0);
 define('TRIGGER_MULT_EVENT_ENABLED',	1);
 
-define('ZBX_TRIGGER_CORRELATION_NONE',	0);
-define('ZBX_TRIGGER_CORRELATION_TAG',	1);
+define('TRX_TRIGGER_CORRELATION_NONE',	0);
+define('TRX_TRIGGER_CORRELATION_TAG',	1);
 
-define('ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED',	0);
-define('ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED',		1);
+define('TRX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED',	0);
+define('TRX_TRIGGER_MANUAL_CLOSE_ALLOWED',		1);
 
-define('ZBX_RECOVERY_MODE_EXPRESSION',			0);
-define('ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION',	1);
-define('ZBX_RECOVERY_MODE_NONE',				2);
+define('TRX_RECOVERY_MODE_EXPRESSION',			0);
+define('TRX_RECOVERY_MODE_RECOVERY_EXPRESSION',	1);
+define('TRX_RECOVERY_MODE_NONE',				2);
 
 define('TRIGGER_STATUS_ENABLED',	0);
 define('TRIGGER_STATUS_DISABLED',	1);
@@ -617,10 +617,10 @@ define('MEDIA_STATUS_DISABLED',	1);
 
 define('MEDIA_TYPE_STATUS_ACTIVE',		0);
 define('MEDIA_TYPE_STATUS_DISABLED',	1);
-define('ZBX_MEDIA_TYPE_TAGS_DISABLED',	0);
-define('ZBX_MEDIA_TYPE_TAGS_ENABLED',	1);
-define('ZBX_EVENT_MENU_HIDE',	0);
-define('ZBX_EVENT_MENU_SHOW',	1);
+define('TRX_MEDIA_TYPE_TAGS_DISABLED',	0);
+define('TRX_MEDIA_TYPE_TAGS_ENABLED',	1);
+define('TRX_EVENT_MENU_HIDE',	0);
+define('TRX_EVENT_MENU_SHOW',	1);
 
 define('MEDIA_TYPE_EMAIL',		0);
 define('MEDIA_TYPE_EXEC',		1);
@@ -756,9 +756,9 @@ define('SCREEN_MIN_SIZE', 1);
 define('SCREEN_MAX_SIZE', 100);
 
 // default, minimum and maximum number of lines for dashboard widgets
-define('ZBX_DEFAULT_WIDGET_LINES', 25);
-define('ZBX_MIN_WIDGET_LINES', 1);
-define('ZBX_MAX_WIDGET_LINES', 100);
+define('TRX_DEFAULT_WIDGET_LINES', 25);
+define('TRX_MIN_WIDGET_LINES', 1);
+define('TRX_MAX_WIDGET_LINES', 100);
 
 // dashboards
 define('DASHBOARD_MAX_COLUMNS',		24);
@@ -813,17 +813,17 @@ define('SERVICE_TIME_TYPE_UPTIME',				0);
 define('SERVICE_TIME_TYPE_DOWNTIME',			1);
 define('SERVICE_TIME_TYPE_ONETIME_DOWNTIME',	2);
 
-define('ZBX_DISCOVERY_UNSPEC',	0);
-define('ZBX_DISCOVERY_DNS',		1);
-define('ZBX_DISCOVERY_IP',		2);
-define('ZBX_DISCOVERY_VALUE',	3);
+define('TRX_DISCOVERY_UNSPEC',	0);
+define('TRX_DISCOVERY_DNS',		1);
+define('TRX_DISCOVERY_IP',		2);
+define('TRX_DISCOVERY_VALUE',	3);
 
 define('USER_TYPE_TREEGIX_USER',		1);
 define('USER_TYPE_TREEGIX_ADMIN',	2);
 define('USER_TYPE_SUPER_ADMIN',		3);
 
-define('ZBX_NOT_INTERNAL_GROUP',	0);
-define('ZBX_INTERNAL_GROUP',		1);
+define('TRX_NOT_INTERNAL_GROUP',	0);
+define('TRX_INTERNAL_GROUP',		1);
 
 define('GROUP_STATUS_DISABLED', 1);
 define('GROUP_STATUS_ENABLED',	0);
@@ -854,8 +854,8 @@ define('PERM_NONE',			-1);
 define('PARAM_TYPE_TIME',		0);
 define('PARAM_TYPE_COUNTS',		1);
 
-define('ZBX_DEFAULT_AGENT', 'Treegix');
-define('ZBX_AGENT_OTHER', -1);
+define('TRX_DEFAULT_AGENT', 'Treegix');
+define('TRX_AGENT_OTHER', -1);
 
 define('HTTPTEST_AUTH_NONE',		0);
 define('HTTPTEST_AUTH_BASIC',		1);
@@ -865,15 +865,15 @@ define('HTTPTEST_AUTH_KERBEROS',	3);
 define('HTTPTEST_STATUS_ACTIVE',	0);
 define('HTTPTEST_STATUS_DISABLED',	1);
 
-define('ZBX_HTTPFIELD_HEADER',		0);
-define('ZBX_HTTPFIELD_VARIABLE',	1);
-define('ZBX_HTTPFIELD_POST_FIELD',	2);
-define('ZBX_HTTPFIELD_QUERY_FIELD',	3);
+define('TRX_HTTPFIELD_HEADER',		0);
+define('TRX_HTTPFIELD_VARIABLE',	1);
+define('TRX_HTTPFIELD_POST_FIELD',	2);
+define('TRX_HTTPFIELD_QUERY_FIELD',	3);
 
-define('ZBX_POSTTYPE_RAW',	0);
-define('ZBX_POSTTYPE_FORM',	1);
-define('ZBX_POSTTYPE_JSON',	2);
-define('ZBX_POSTTYPE_XML',	3);
+define('TRX_POSTTYPE_RAW',	0);
+define('TRX_POSTTYPE_FORM',	1);
+define('TRX_POSTTYPE_JSON',	2);
+define('TRX_POSTTYPE_XML',	3);
 
 define('HTTPCHECK_STORE_RAW',	0);
 define('HTTPCHECK_STORE_JSON',	1);
@@ -908,29 +908,29 @@ define('HTTPTEST_VERIFY_HOST_ON',	1);
 define('EVENT_NOT_ACKNOWLEDGED',	'0');
 define('EVENT_ACKNOWLEDGED',		'1');
 
-define('ZBX_ACKNOWLEDGE_SELECTED',	0);
-define('ZBX_ACKNOWLEDGE_PROBLEM',	1);
+define('TRX_ACKNOWLEDGE_SELECTED',	0);
+define('TRX_ACKNOWLEDGE_PROBLEM',	1);
 
-define('ZBX_PROBLEM_SUPPRESSED_FALSE',	0);
-define('ZBX_PROBLEM_SUPPRESSED_TRUE',	1);
+define('TRX_PROBLEM_SUPPRESSED_FALSE',	0);
+define('TRX_PROBLEM_SUPPRESSED_TRUE',	1);
 
-define('ZBX_PROBLEM_UPDATE_NONE',			0x00);
-define('ZBX_PROBLEM_UPDATE_CLOSE',			0x01);
-define('ZBX_PROBLEM_UPDATE_ACKNOWLEDGE',	0x02);
-define('ZBX_PROBLEM_UPDATE_MESSAGE',		0x04);
-define('ZBX_PROBLEM_UPDATE_SEVERITY',		0x08);
+define('TRX_PROBLEM_UPDATE_NONE',			0x00);
+define('TRX_PROBLEM_UPDATE_CLOSE',			0x01);
+define('TRX_PROBLEM_UPDATE_ACKNOWLEDGE',	0x02);
+define('TRX_PROBLEM_UPDATE_MESSAGE',		0x04);
+define('TRX_PROBLEM_UPDATE_SEVERITY',		0x08);
 
-define('ZBX_EVENT_HISTORY_PROBLEM_EVENT',		0);
-define('ZBX_EVENT_HISTORY_RECOVERY_EVENT',		1);
-define('ZBX_EVENT_HISTORY_MANUAL_UPDATE',		2);
-define('ZBX_EVENT_HISTORY_ALERT',				3);
+define('TRX_EVENT_HISTORY_PROBLEM_EVENT',		0);
+define('TRX_EVENT_HISTORY_RECOVERY_EVENT',		1);
+define('TRX_EVENT_HISTORY_MANUAL_UPDATE',		2);
+define('TRX_EVENT_HISTORY_ALERT',				3);
 
-define('ZBX_TM_TASK_CLOSE_PROBLEM', 1);
-define('ZBX_TM_TASK_ACKNOWLEDGE',	4);
-define('ZBX_TM_TASK_CHECK_NOW',		6);
+define('TRX_TM_TASK_CLOSE_PROBLEM', 1);
+define('TRX_TM_TASK_ACKNOWLEDGE',	4);
+define('TRX_TM_TASK_CHECK_NOW',		6);
 
-define('ZBX_TM_STATUS_NEW',			1);
-define('ZBX_TM_STATUS_INPROGRESS',	2);
+define('TRX_TM_STATUS_NEW',			1);
+define('TRX_TM_STATUS_INPROGRESS',	2);
 
 define('EVENT_SOURCE_TRIGGERS',				0);
 define('EVENT_SOURCE_DISCOVERY',			1);
@@ -1036,10 +1036,10 @@ define('GRAPH_ZERO_LINE_COLOR_RIGHT',	'888888');
 
 define('GRAPH_TRIGGER_LINE_OPPOSITE_COLOR', '000000');
 
-define('ZBX_MAX_TREND_DIFF', 3600);
+define('TRX_MAX_TREND_DIFF', 3600);
 
-define('ZBX_GRAPH_MAX_SKIP_CELL',	16);
-define('ZBX_GRAPH_MAX_SKIP_DELAY',	4);
+define('TRX_GRAPH_MAX_SKIP_CELL',	16);
+define('TRX_GRAPH_MAX_SKIP_DELAY',	4);
 
 define('DOBJECT_STATUS_UP',			0);
 define('DOBJECT_STATUS_DOWN',		1);
@@ -1114,29 +1114,29 @@ define('NAME_DELIMITER', ': ');
 define('UNKNOWN_VALUE', '');
 
 // End of line sequence.
-define('ZBX_EOL_LF',	0);
-define('ZBX_EOL_CRLF',	1);
+define('TRX_EOL_LF',	0);
+define('TRX_EOL_CRLF',	1);
 
 // suffixes
-define('ZBX_BYTE_SUFFIXES', 'KMGT');
-define('ZBX_TIME_SUFFIXES', 'smhdw');
-define('ZBX_TIME_SUFFIXES_WITH_YEAR', 'smhdwMy');
+define('TRX_BYTE_SUFFIXES', 'KMGT');
+define('TRX_TIME_SUFFIXES', 'smhdw');
+define('TRX_TIME_SUFFIXES_WITH_YEAR', 'smhdwMy');
 
 // preg
-define('ZBX_PREG_PRINT', '^\x00-\x1F');
-define('ZBX_PREG_MACRO_NAME', '([A-Z0-9\._]+)');
-define('ZBX_PREG_MACRO_NAME_LLD', '([A-Z0-9\._]+)');
-define('ZBX_PREG_INTERNAL_NAMES', '([0-9a-zA-Z_\. \-]+)'); // !!! Don't forget sync code with C !!!
-define('ZBX_PREG_NUMBER', '([\-+]?[0-9]+[.]?[0-9]*['.ZBX_BYTE_SUFFIXES.ZBX_TIME_SUFFIXES.']?)');
-define('ZBX_PREG_INT', '([\-+]?[0-9]+['.ZBX_BYTE_SUFFIXES.ZBX_TIME_SUFFIXES.']?)');
-define('ZBX_PREG_DEF_FONT_STRING', '/^[0-9\.:% ]+$/');
-define('ZBX_PREG_DNS_FORMAT', '([0-9a-zA-Z_\.\-$]|\{\$?'.ZBX_PREG_MACRO_NAME.'\})*');
-define('ZBX_PREG_HOST_FORMAT', ZBX_PREG_INTERNAL_NAMES);
-define('ZBX_PREG_MACRO_NAME_FORMAT', '(\{[A-Z\.]+\})');
-define('ZBX_PREG_EXPRESSION_LLD_MACROS', '(\{\#'.ZBX_PREG_MACRO_NAME_LLD.'\})');
+define('TRX_PREG_PRINT', '^\x00-\x1F');
+define('TRX_PREG_MACRO_NAME', '([A-Z0-9\._]+)');
+define('TRX_PREG_MACRO_NAME_LLD', '([A-Z0-9\._]+)');
+define('TRX_PREG_INTERNAL_NAMES', '([0-9a-zA-Z_\. \-]+)'); // !!! Don't forget sync code with C !!!
+define('TRX_PREG_NUMBER', '([\-+]?[0-9]+[.]?[0-9]*['.TRX_BYTE_SUFFIXES.TRX_TIME_SUFFIXES.']?)');
+define('TRX_PREG_INT', '([\-+]?[0-9]+['.TRX_BYTE_SUFFIXES.TRX_TIME_SUFFIXES.']?)');
+define('TRX_PREG_DEF_FONT_STRING', '/^[0-9\.:% ]+$/');
+define('TRX_PREG_DNS_FORMAT', '([0-9a-zA-Z_\.\-$]|\{\$?'.TRX_PREG_MACRO_NAME.'\})*');
+define('TRX_PREG_HOST_FORMAT', TRX_PREG_INTERNAL_NAMES);
+define('TRX_PREG_MACRO_NAME_FORMAT', '(\{[A-Z\.]+\})');
+define('TRX_PREG_EXPRESSION_LLD_MACROS', '(\{\#'.TRX_PREG_MACRO_NAME_LLD.'\})');
 
 // !!! should be used with "x" modifier
-define('ZBX_PREG_ITEM_KEY_PARAMETER_FORMAT', '(
+define('TRX_PREG_ITEM_KEY_PARAMETER_FORMAT', '(
 	(?P>param) # match recursive parameter group
 	|
 	(\" # match quoted string
@@ -1151,14 +1151,14 @@ define('ZBX_PREG_ITEM_KEY_PARAMETER_FORMAT', '(
 	|
 	() # match empty and only empty part
 )');
-define('ZBX_PREG_ITEM_KEY_FORMAT', '([0-9a-zA-Z_\. \-]+? # match key
+define('TRX_PREG_ITEM_KEY_FORMAT', '([0-9a-zA-Z_\. \-]+? # match key
 (?P<param>( # name parameter group used in recursion
 	\[ # match opening bracket
 		(
-			\s*?'.ZBX_PREG_ITEM_KEY_PARAMETER_FORMAT .' # match spaces and parameter
+			\s*?'.TRX_PREG_ITEM_KEY_PARAMETER_FORMAT .' # match spaces and parameter
 			(
 				\s*?,\s*? # match spaces, comma and spaces
-				'.ZBX_PREG_ITEM_KEY_PARAMETER_FORMAT .' # match parameter
+				'.TRX_PREG_ITEM_KEY_PARAMETER_FORMAT .' # match parameter
 			)*? # match spaces, comma, spaces, parameter zero or more times
 			\s*? #matches spaces
 		)
@@ -1166,8 +1166,8 @@ define('ZBX_PREG_ITEM_KEY_FORMAT', '([0-9a-zA-Z_\. \-]+? # match key
 ))*? # matches non comma separated brackets with parameters zero or more times
 )');
 
-define('ZBX_USER_ONLINE_TIME', 600); // 10min
-define('ZBX_GUEST_USER','guest');
+define('TRX_USER_ONLINE_TIME', 600); // 10min
+define('TRX_GUEST_USER','guest');
 
 // IPMI
 define('IPMI_AUTHTYPE_DEFAULT',		-1);
@@ -1184,11 +1184,11 @@ define('IPMI_PRIVILEGE_OPERATOR',	3);
 define('IPMI_PRIVILEGE_ADMIN',		4);
 define('IPMI_PRIVILEGE_OEM',		5);
 
-define('ZBX_HAVE_IPV6', true);
-define('ZBX_DISCOVERER_IPRANGE_LIMIT', 65536);
+define('TRX_HAVE_IPV6', true);
+define('TRX_DISCOVERER_IPRANGE_LIMIT', 65536);
 
-define('ZBX_SOCKET_TIMEOUT',        3);                 // socket timeout limit
-define('ZBX_SOCKET_BYTES_LIMIT',    ZBX_MEBIBYTE * 16); // socket response size limit
+define('TRX_SOCKET_TIMEOUT',        3);                 // socket timeout limit
+define('TRX_SOCKET_BYTES_LIMIT',    TRX_MEBIBYTE * 16); // socket response size limit
 
 // value is also used in servercheck.js file
 define('SERVER_CHECK_INTERVAL', 10);
@@ -1205,10 +1205,10 @@ define('XML_TAG_GRAPH',				'graph');
 define('XML_TAG_GRAPH_ELEMENT',		'graph_element');
 define('XML_TAG_DEPENDENCY',		'dependency');
 
-define('ZBX_DEFAULT_IMPORT_HOST_GROUP', 'Imported hosts');
+define('TRX_DEFAULT_IMPORT_HOST_GROUP', 'Imported hosts');
 
 // XML import flags
-// See ZBX-8151. Old version of libxml suffered from setting DTDLOAD and NOENT flags by default, which allowed
+// See TRX-8151. Old version of libxml suffered from setting DTDLOAD and NOENT flags by default, which allowed
 // performing XXE attacks. Calling libxml_disable_entity_loader(true) also had no affect if flags passed to libxml
 // calls were 0 - so for better security with legacy libxml we need to call libxml_disable_entity_loader(true) AND
 // pass the LIBXML_NONET flag. Please keep in mind that LIBXML_NOENT actually EXPANDS entities, opposite to it's name -
@@ -1280,11 +1280,11 @@ if (!defined('JSON_ERROR_SYNTAX')) {
 }
 
 // API errors
-define('ZBX_API_ERROR_INTERNAL',	111);
-define('ZBX_API_ERROR_PARAMETERS',	100);
-define('ZBX_API_ERROR_PERMISSIONS',	120);
-define('ZBX_API_ERROR_NO_AUTH',		200);
-define('ZBX_API_ERROR_NO_METHOD',	300);
+define('TRX_API_ERROR_INTERNAL',	111);
+define('TRX_API_ERROR_PARAMETERS',	100);
+define('TRX_API_ERROR_PERMISSIONS',	120);
+define('TRX_API_ERROR_NO_AUTH',		200);
+define('TRX_API_ERROR_NO_METHOD',	300);
 
 define('API_OUTPUT_EXTEND',		'extend');
 define('API_OUTPUT_COUNT',		'count');
@@ -1296,56 +1296,56 @@ define('SEC_PER_WEEK',			604800);
 define('SEC_PER_MONTH',			2592000);
 define('SEC_PER_YEAR',			31536000);
 
-define('ZBX_JAN_2038', 2145916800);
+define('TRX_JAN_2038', 2145916800);
 
 define('DAY_IN_YEAR', 365);
 
-define('ZBX_MIN_PORT_NUMBER', 0);
-define('ZBX_MAX_PORT_NUMBER', 65535);
+define('TRX_MIN_PORT_NUMBER', 0);
+define('TRX_MAX_PORT_NUMBER', 65535);
 
 // Layout
-define('ZBX_LAYOUT_NORMAL',     0);
-define('ZBX_LAYOUT_FULLSCREEN', 1);
-define('ZBX_LAYOUT_KIOSKMODE',  2);
-define('ZBX_LAYOUT_MODE', 'layout-mode');
+define('TRX_LAYOUT_NORMAL',     0);
+define('TRX_LAYOUT_FULLSCREEN', 1);
+define('TRX_LAYOUT_KIOSKMODE',  2);
+define('TRX_LAYOUT_MODE', 'layout-mode');
 
 // input fields
-define('ZBX_TEXTAREA_HTTP_PAIR_NAME_WIDTH',		218);
-define('ZBX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH',	218);
-define('ZBX_TEXTAREA_MACRO_WIDTH',				250);
-define('ZBX_TEXTAREA_MACRO_VALUE_WIDTH',		300);
-define('ZBX_TEXTAREA_TAG_WIDTH',				250);
-define('ZBX_TEXTAREA_TAG_VALUE_WIDTH',			300);
-define('ZBX_TEXTAREA_COLOR_WIDTH',				96);
-define('ZBX_TEXTAREA_FILTER_SMALL_WIDTH',		150);
-define('ZBX_TEXTAREA_FILTER_STANDARD_WIDTH',	300);
-define('ZBX_TEXTAREA_TINY_WIDTH',				75);
-define('ZBX_TEXTAREA_SMALL_WIDTH',				150);
-define('ZBX_TEXTAREA_MEDIUM_WIDTH',				270);
-define('ZBX_TEXTAREA_STANDARD_WIDTH',			453);
-define('ZBX_TEXTAREA_BIG_WIDTH',				540);
-define('ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH',	75);
-define('ZBX_TEXTAREA_NUMERIC_BIG_WIDTH',		150);
-define('ZBX_TEXTAREA_2DIGITS_WIDTH',			35);	// please use for date selector only
-define('ZBX_TEXTAREA_4DIGITS_WIDTH',			50);	// please use for date selector only
-define('ZBX_TEXTAREA_INTERFACE_IP_WIDTH',		225);
-define('ZBX_TEXTAREA_INTERFACE_DNS_WIDTH',		175);
-define('ZBX_TEXTAREA_INTERFACE_PORT_WIDTH',		100);
-define('ZBX_TEXTAREA_STANDARD_ROWS',			7);
+define('TRX_TEXTAREA_HTTP_PAIR_NAME_WIDTH',		218);
+define('TRX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH',	218);
+define('TRX_TEXTAREA_MACRO_WIDTH',				250);
+define('TRX_TEXTAREA_MACRO_VALUE_WIDTH',		300);
+define('TRX_TEXTAREA_TAG_WIDTH',				250);
+define('TRX_TEXTAREA_TAG_VALUE_WIDTH',			300);
+define('TRX_TEXTAREA_COLOR_WIDTH',				96);
+define('TRX_TEXTAREA_FILTER_SMALL_WIDTH',		150);
+define('TRX_TEXTAREA_FILTER_STANDARD_WIDTH',	300);
+define('TRX_TEXTAREA_TINY_WIDTH',				75);
+define('TRX_TEXTAREA_SMALL_WIDTH',				150);
+define('TRX_TEXTAREA_MEDIUM_WIDTH',				270);
+define('TRX_TEXTAREA_STANDARD_WIDTH',			453);
+define('TRX_TEXTAREA_BIG_WIDTH',				540);
+define('TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH',	75);
+define('TRX_TEXTAREA_NUMERIC_BIG_WIDTH',		150);
+define('TRX_TEXTAREA_2DIGITS_WIDTH',			35);	// please use for date selector only
+define('TRX_TEXTAREA_4DIGITS_WIDTH',			50);	// please use for date selector only
+define('TRX_TEXTAREA_INTERFACE_IP_WIDTH',		225);
+define('TRX_TEXTAREA_INTERFACE_DNS_WIDTH',		175);
+define('TRX_TEXTAREA_INTERFACE_PORT_WIDTH',		100);
+define('TRX_TEXTAREA_STANDARD_ROWS',			7);
 
 // decoration borders
-define('ZBX_HOST_INTERFACE_WIDTH',				750);
+define('TRX_HOST_INTERFACE_WIDTH',				750);
 
 // overviews help
-define('ZBX_OVERVIEW_HELP_MIN_WIDTH',			125);
+define('TRX_OVERVIEW_HELP_MIN_WIDTH',			125);
 
 // Helper buttons that allow selected objects to be added, replaced or removed.
-define('ZBX_ACTION_ADD',		0);
-define('ZBX_ACTION_REPLACE',	1);
-define('ZBX_ACTION_REMOVE',		2);
+define('TRX_ACTION_ADD',		0);
+define('TRX_ACTION_REPLACE',	1);
+define('TRX_ACTION_REMOVE',		2);
 
 // Maximum width for popups in Actions column for problems.
-define('ZBX_ACTIONS_POPUP_MAX_WIDTH',			800);
+define('TRX_ACTIONS_POPUP_MAX_WIDTH',			800);
 
 // dashboard widgets
 define('WIDGET_ACTION_LOG',			'actionlog');
@@ -1397,44 +1397,44 @@ define('WIDGET_SIMPLE_ITEM',	0);
 define('WIDGET_DYNAMIC_ITEM',	1);
 
 // widget defaults
-define('ZBX_WIDGET_ROWS', 20);
+define('TRX_WIDGET_ROWS', 20);
 
 // widget field types
-define('ZBX_WIDGET_FIELD_TYPE_INT32',			0);
-define('ZBX_WIDGET_FIELD_TYPE_STR',				1);
-define('ZBX_WIDGET_FIELD_TYPE_GROUP',			2);
-define('ZBX_WIDGET_FIELD_TYPE_HOST',			3);
-define('ZBX_WIDGET_FIELD_TYPE_ITEM',			4);
-define('ZBX_WIDGET_FIELD_TYPE_ITEM_PROTOTYPE',	5);
-define('ZBX_WIDGET_FIELD_TYPE_GRAPH',			6);
-define('ZBX_WIDGET_FIELD_TYPE_GRAPH_PROTOTYPE',	7);
-define('ZBX_WIDGET_FIELD_TYPE_MAP',				8);
+define('TRX_WIDGET_FIELD_TYPE_INT32',			0);
+define('TRX_WIDGET_FIELD_TYPE_STR',				1);
+define('TRX_WIDGET_FIELD_TYPE_GROUP',			2);
+define('TRX_WIDGET_FIELD_TYPE_HOST',			3);
+define('TRX_WIDGET_FIELD_TYPE_ITEM',			4);
+define('TRX_WIDGET_FIELD_TYPE_ITEM_PROTOTYPE',	5);
+define('TRX_WIDGET_FIELD_TYPE_GRAPH',			6);
+define('TRX_WIDGET_FIELD_TYPE_GRAPH_PROTOTYPE',	7);
+define('TRX_WIDGET_FIELD_TYPE_MAP',				8);
 
-define('ZBX_WIDGET_FIELD_RESOURCE_GRAPH',					0);
-define('ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH',			1);
-define('ZBX_WIDGET_FIELD_RESOURCE_GRAPH_PROTOTYPE',			2);
-define('ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH_PROTOTYPE',	3);
+define('TRX_WIDGET_FIELD_RESOURCE_GRAPH',					0);
+define('TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH',			1);
+define('TRX_WIDGET_FIELD_RESOURCE_GRAPH_PROTOTYPE',			2);
+define('TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH_PROTOTYPE',	3);
 
 // widget view modes
-define('ZBX_WIDGET_VIEW_MODE_NORMAL',			0);
-define('ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER',	1);
+define('TRX_WIDGET_VIEW_MODE_NORMAL',			0);
+define('TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER',	1);
 
 // validation
 define('DB_ID',		"({}>=0&&bccomp({},\"9223372036854775807\")<=0)&&");
 define('NOT_EMPTY',	"({}!='')&&");
 define('NOT_ZERO',	"({}!=0)&&");
 
-define('ZBX_VALID_OK',		0);
-define('ZBX_VALID_ERROR',	1);
-define('ZBX_VALID_WARNING',	2);
+define('TRX_VALID_OK',		0);
+define('TRX_VALID_ERROR',	1);
+define('TRX_VALID_WARNING',	2);
 
 // user default theme
 define('THEME_DEFAULT', 'default');
 
 // the default theme
-define('ZBX_DEFAULT_THEME', 'dark-theme');
+define('TRX_DEFAULT_THEME', 'dark-theme');
 
-define('ZBX_DEFAULT_URL', 'treegix.php?action=dashboard.view');
+define('TRX_DEFAULT_URL', 'treegix.php?action=dashboard.view');
 
 // date format context, usable for translators
 define('DATE_FORMAT_CONTEXT', 'Date format (see http://php.net/date)');
@@ -1444,9 +1444,9 @@ define('AVAILABILITY_REPORT_BY_HOST', 0);
 define('AVAILABILITY_REPORT_BY_TEMPLATE', 1);
 
 // monitoring modes
-define('ZBX_MONITORED_BY_ANY', 0);
-define('ZBX_MONITORED_BY_SERVER', 1);
-define('ZBX_MONITORED_BY_PROXY', 2);
+define('TRX_MONITORED_BY_ANY', 0);
+define('TRX_MONITORED_BY_SERVER', 1);
+define('TRX_MONITORED_BY_PROXY', 2);
 
 // queue modes
 define('QUEUE_OVERVIEW', 0);
@@ -1477,321 +1477,321 @@ define('ITEM_NO_STORAGE_VALUE',	0);
 define('MAP_DEFAULT_ICON', 'Server_(96)');
 
 // CSS styles
-define('ZBX_STYLE_ACTION_BUTTONS', 'action-buttons');
-define('ZBX_STYLE_ADM_IMG', 'adm-img');
-define('ZBX_STYLE_AVERAGE_BG', 'average-bg');
-define('ZBX_STYLE_ARROW_DOWN', 'arrow-down');
-define('ZBX_STYLE_ARROW_LEFT', 'arrow-left');
-define('ZBX_STYLE_ARROW_RIGHT', 'arrow-right');
-define('ZBX_STYLE_ARROW_UP', 'arrow-up');
-define('ZBX_STYLE_BLUE', 'blue');
-define('ZBX_STYLE_BTN_ADD_FAV', 'btn-add-fav');
-define('ZBX_STYLE_BTN_ALT', 'btn-alt');
-define('ZBX_STYLE_BTN_BACK_MAP', 'btn-back-map');
-define('ZBX_STYLE_BTN_BACK_MAP_CONTAINER', 'btn-back-map-container');
-define('ZBX_STYLE_BTN_BACK_MAP_CONTENT', 'btn-back-map-content');
-define('ZBX_STYLE_BTN_BACK_MAP_ICON', 'btn-back-map-icon');
-define('ZBX_STYLE_BTN_CONF', 'btn-conf');
-define('ZBX_STYLE_BTN_ACTION', 'btn-action');
-define('ZBX_STYLE_BTN_DASHBRD_CONF', 'btn-dashbrd-conf');
-define('ZBX_STYLE_BTN_DASHBRD_NORMAL', 'btn-dashbrd-normal');
-define('ZBX_STYLE_BTN_DEBUG', 'btn-debug');
-define('ZBX_STYLE_BTN_GREY', 'btn-grey');
-define('ZBX_STYLE_BTN_INFO', 'btn-info');
-define('ZBX_STYLE_BTN_LINK', 'btn-link');
-define('ZBX_STYLE_BTN_KIOSK', 'btn-kiosk');
-define('ZBX_STYLE_BTN_MAX', 'btn-max');
-define('ZBX_STYLE_BTN_MIN', 'btn-min');
-define('ZBX_STYLE_BTN_REMOVE_FAV', 'btn-remove-fav');
-define('ZBX_STYLE_BTN_SEARCH', 'btn-search');
-define('ZBX_STYLE_BTN_TIME', 'btn-time');
-define('ZBX_STYLE_BTN_TIME_LEFT', 'btn-time-left');
-define('ZBX_STYLE_BTN_TIME_OUT', 'btn-time-out');
-define('ZBX_STYLE_BTN_TIME_RIGHT', 'btn-time-right');
-define('ZBX_STYLE_BTN_WIDGET_ACTION', 'btn-widget-action');
-define('ZBX_STYLE_BTN_WIDGET_COLLAPSE', 'btn-widget-collapse');
-define('ZBX_STYLE_BTN_WIDGET_DELETE', 'btn-widget-delete');
-define('ZBX_STYLE_BTN_WIDGET_EDIT', 'btn-widget-edit');
-define('ZBX_STYLE_BTN_WIDGET_EXPAND', 'btn-widget-expand');
-define('ZBX_STYLE_BOTTOM', 'bottom');
-define('ZBX_STYLE_BROWSER_LOGO_CHROME', 'browser-logo-chrome');
-define('ZBX_STYLE_BROWSER_LOGO_FF', 'browser-logo-ff');
-define('ZBX_STYLE_BROWSER_LOGO_IE', 'browser-logo-ie');
-define('ZBX_STYLE_BROWSER_LOGO_OPERA', 'browser-logo-opera');
-define('ZBX_STYLE_BROWSER_LOGO_SAFARI', 'browser-logo-safari');
-define('ZBX_STYLE_BROWSER_WARNING_CONTAINER', 'browser-warning-container');
-define('ZBX_STYLE_BROWSER_WARNING_FOOTER', 'browser-warning-footer');
-define('ZBX_STYLE_CELL', 'cell');
-define('ZBX_STYLE_CELL_WIDTH', 'cell-width');
-define('ZBX_STYLE_CENTER', 'center');
-define('ZBX_STYLE_CHECKBOX_RADIO', 'checkbox-radio');
-define('ZBX_STYLE_CLOCK', 'clock');
-define('ZBX_STYLE_COLUMNS_3', 'col-3');
-define('ZBX_STYLE_SYSMAP', 'sysmap');
-define('ZBX_STYLE_NAVIGATIONTREE', 'navtree');
-define('ZBX_STYLE_CHECKBOX_LIST', 'checkbox-list');
-define('ZBX_STYLE_CLOCK_SVG', 'clock-svg');
-define('ZBX_STYLE_CLOCK_FACE', 'clock-face');
-define('ZBX_STYLE_CLOCK_HAND', 'clock-hand');
-define('ZBX_STYLE_CLOCK_HAND_SEC', 'clock-hand-sec');
-define('ZBX_STYLE_CLOCK_LINES', 'clock-lines');
-define('ZBX_STYLE_COLOR_PICKER', 'color-picker');
-define('ZBX_STYLE_COLOR_PREVIEW_BOX', 'color-preview-box');
-define('ZBX_STYLE_COLUMN_TAGS_1', 'column-tags-1');
-define('ZBX_STYLE_COLUMN_TAGS_2', 'column-tags-2');
-define('ZBX_STYLE_COLUMN_TAGS_3', 'column-tags-3');
-define('ZBX_STYLE_COMPACT_VIEW', 'compact-view');
-define('ZBX_STYLE_CURSOR_POINTER', 'cursor-pointer');
-define('ZBX_STYLE_DASHBRD_GRID_CONTAINER', 'dashbrd-grid-container');
-define('ZBX_STYLE_DASHBRD_WIDGET', 'dashbrd-widget');
-define('ZBX_STYLE_DASHBRD_WIDGET_FLUID', 'dashbrd-widget-fluid');
-define('ZBX_STYLE_DASHBRD_WIDGET_HEAD', 'dashbrd-widget-head');
-define('ZBX_STYLE_DASHBRD_WIDGET_FOOT', 'dashbrd-widget-foot');
-define('ZBX_STYLE_DASHBRD_EDIT', 'dashbrd-edit');
-define('ZBX_STYLE_DASHBRD_WIDGET_GRAPH_LINK', 'dashbrd-widget-graph-link');
-define('ZBX_STYLE_DASHED_BORDER', 'dashed-border');
-define('ZBX_STYLE_DEBUG_OUTPUT', 'debug-output');
-define('ZBX_STYLE_DISABLED', 'disabled');
-define('ZBX_STYLE_DISASTER_BG', 'disaster-bg');
-define('ZBX_STYLE_DRAG_ICON', 'drag-icon');
-define('ZBX_STYLE_PROBLEM_UNACK_FG', 'problem-unack-fg');
-define('ZBX_STYLE_PROBLEM_ACK_FG', 'problem-ack-fg');
-define('ZBX_STYLE_OK_UNACK_FG', 'ok-unack-fg');
-define('ZBX_STYLE_OK_ACK_FG', 'ok-ack-fg');
-define('ZBX_STYLE_OVERRIDES_LIST', 'overrides-list');
-define('ZBX_STYLE_OVERRIDES_LIST_ITEM', 'overrides-list-item');
-define('ZBX_STYLE_OVERRIDES_OPTIONS_LIST', 'overrides-options-list');
-define('ZBX_STYLE_PLUS_ICON', 'plus-icon');
-define('ZBX_STYLE_DRAG_DROP_AREA', 'drag-drop-area');
-define('ZBX_STYLE_TABLE_FORMS_SEPARATOR', 'table-forms-separator');
-define('ZBX_STYLE_TIME_INPUT', 'time-input');
-define('ZBX_STYLE_TIME_INPUT_ERROR', 'time-input-error');
-define('ZBX_STYLE_TIME_QUICK', 'time-quick');
-define('ZBX_STYLE_TIME_QUICK_RANGE', 'time-quick-range');
-define('ZBX_STYLE_TIME_SELECTION_CONTAINER', 'time-selection-container');
-define('ZBX_STYLE_FILTER_BREADCRUMB', 'filter-breadcrumb');
-define('ZBX_STYLE_FILTER_BTN_CONTAINER', 'filter-btn-container');
-define('ZBX_STYLE_FILTER_CONTAINER', 'filter-container');
-define('ZBX_STYLE_FILTER_HIGHLIGHT_ROW_CB', 'filter-highlight-row-cb');
-define('ZBX_STYLE_FILTER_FORMS', 'filter-forms');
-define('ZBX_STYLE_FILTER_TRIGGER', 'filter-trigger');
-define('ZBX_STYLE_FLH_AVERAGE_BG', 'flh-average-bg');
-define('ZBX_STYLE_FLH_DISASTER_BG', 'flh-disaster-bg');
-define('ZBX_STYLE_FLH_HIGH_BG', 'flh-high-bg');
-define('ZBX_STYLE_FLH_INFO_BG', 'flh-info-bg');
-define('ZBX_STYLE_FLH_NA_BG', 'flh-na-bg');
-define('ZBX_STYLE_FLH_WARNING_BG', 'flh-warning-bg');
-define('ZBX_STYLE_FLOAT_LEFT', 'float-left');
-define('ZBX_STYLE_FORM_INPUT_MARGIN', 'form-input-margin');
-define('ZBX_STYLE_FORM_NEW_GROUP', 'form-new-group');
-define('ZBX_STYLE_GRAPH_WRAPPER', 'graph-wrapper');
-define('ZBX_STYLE_GREEN', 'green');
-define('ZBX_STYLE_GREEN_BG', 'green-bg');
-define('ZBX_STYLE_GREY', 'grey');
-define('ZBX_STYLE_TEAL', 'teal');
-define('ZBX_STYLE_HEADER_LOGO', 'header-logo');
-define('ZBX_STYLE_HEADER_TITLE', 'header-title');
-define('ZBX_STYLE_HIGH_BG', 'high-bg');
-define('ZBX_STYLE_HOR_LIST', 'hor-list');
-define('ZBX_STYLE_HOVER_NOBG', 'hover-nobg');
-define('ZBX_STYLE_ICON_ACKN', 'icon-ackn');
-define('ZBX_STYLE_ICON_CAL', 'icon-cal');
-define('ZBX_STYLE_ICON_DEPEND_DOWN', 'icon-depend-down');
-define('ZBX_STYLE_ICON_DEPEND_UP', 'icon-depend-up');
-define('ZBX_STYLE_ICON_DESCRIPTION', 'icon-description');
-define('ZBX_STYLE_ICON_INFO', 'icon-info');
-define('ZBX_STYLE_ICON_INVISIBLE', 'icon-invisible');
-define('ZBX_STYLE_ICON_MAINT', 'icon-maint');
-define('ZBX_STYLE_ICON_WZRD_ACTION', 'icon-wzrd-action');
-define('ZBX_STYLE_ICON_NONE', 'icon-none');
-define('ZBX_STYLE_ACTION_COMMAND', 'icon-action-command');
-define('ZBX_STYLE_ACTION_ICON_CLOSE', 'icon-action-close');
-define('ZBX_STYLE_ACTION_ICON_MSG', 'icon-action-msg');
-define('ZBX_STYLE_ACTION_ICON_MSGS', 'icon-action-msgs');
-define('ZBX_STYLE_ACTION_ICON_SEV_UP', 'icon-action-severity-up');
-define('ZBX_STYLE_ACTION_ICON_SEV_DOWN', 'icon-action-severity-down');
-define('ZBX_STYLE_ACTION_ICON_SEV_CHANGED', 'icon-action-severity-changed');
-define('ZBX_STYLE_ACTION_MESSAGE', 'icon-action-message');
-define('ZBX_STYLE_ACTION_ICON_ACK', 'icon-action-ack');
-define('ZBX_STYLE_PROBLEM_GENERATED', 'icon-problem-generated');
-define('ZBX_STYLE_PROBLEM_RECOVERY', 'icon-problem-recovery');
-define('ZBX_STYLE_ACTIONS_NUM_GRAY', 'icon-actions-number-gray');
-define('ZBX_STYLE_ACTIONS_NUM_YELLOW', 'icon-actions-number-yellow');
-define('ZBX_STYLE_ACTIONS_NUM_RED', 'icon-actions-number-red');
-define('ZBX_STYLE_INACTIVE_BG', 'inactive-bg');
-define('ZBX_STYLE_INFO_BG', 'info-bg');
-define('ZBX_STYLE_INPUT_COLOR_PICKER', 'input-color-picker');
-define('ZBX_STYLE_LAYOUT_KIOSKMODE', 'layout-kioskmode');
-define('ZBX_STYLE_LEFT', 'left');
-define('ZBX_STYLE_LINK_ACTION', 'link-action');
-define('ZBX_STYLE_LINK_ALT', 'link-alt');
-define('ZBX_STYLE_LIST_CHECK_RADIO', 'list-check-radio');
-define('ZBX_STYLE_LIST_TABLE', 'list-table');
-define('ZBX_STYLE_LIST_TABLE_FOOTER', 'list-table-footer');
-define('ZBX_STYLE_LIST_VERTICAL_ACCORDION', 'list-vertical-accordion');
-define('ZBX_STYLE_LIST_ACCORDION_FOOT', 'list-accordion-foot');
-define('ZBX_STYLE_LIST_ACCORDION_ITEM', 'list-accordion-item');
-define('ZBX_STYLE_LIST_ACCORDION_ITEM_OPENED', 'list-accordion-item-opened');
-define('ZBX_STYLE_LIST_ACCORDION_ITEM_CLOSED', 'list-accordion-item-closed');
-define('ZBX_STYLE_LIST_ACCORDION_ITEM_HEAD', 'list-accordion-item-head');
-define('ZBX_STYLE_LIST_ACCORDION_ITEM_BODY', 'list-accordion-item-body');
-define('ZBX_STYLE_LOCAL_CLOCK', 'local-clock');
-define('ZBX_STYLE_LOG_NA_BG', 'log-na-bg');
-define('ZBX_STYLE_LOG_INFO_BG', 'log-info-bg');
-define('ZBX_STYLE_LOG_WARNING_BG', 'log-warning-bg');
-define('ZBX_STYLE_LOG_HIGH_BG', 'log-high-bg');
-define('ZBX_STYLE_LOG_DISASTER_BG', 'log-disaster-bg');
-define('ZBX_STYLE_LOGO', 'logo');
-define('ZBX_STYLE_MAP_AREA', 'map-area');
-define('ZBX_STYLE_MIDDLE', 'middle');
-define('ZBX_STYLE_MONOSPACE_FONT', 'monospace-font');
-define('ZBX_STYLE_MSG_GOOD', 'msg-good');
-define('ZBX_STYLE_MSG_BAD', 'msg-bad');
-define('ZBX_STYLE_MSG_WARNING', 'msg-warning');
-define('ZBX_STYLE_MSG_GLOBAL_FOOTER', 'msg-global-footer');
-define('ZBX_STYLE_MSG_DETAILS', 'msg-details');
-define('ZBX_STYLE_MSG_DETAILS_BORDER', 'msg-details-border');
-define('ZBX_STYLE_NA_BG', 'na-bg');
-define('ZBX_STYLE_NORMAL_BG', 'normal-bg');
-define('ZBX_STYLE_NOTIF_BODY', 'notif-body');
-define('ZBX_STYLE_NOTIF_INDIC', 'notif-indic');
-define('ZBX_STYLE_NOTIF_INDIC_CONTAINER', 'notif-indic-container');
-define('ZBX_STYLE_NOTHING_TO_SHOW', 'nothing-to-show');
-define('ZBX_STYLE_NOWRAP', 'nowrap');
-define('ZBX_STYLE_WORDWRAP', 'wordwrap');
-define('ZBX_STYLE_ORANGE', 'orange');
-define('ZBX_STYLE_OVERLAY_CLOSE_BTN', 'overlay-close-btn');
-define('ZBX_STYLE_OVERLAY_DESCR', 'overlay-descr');
-define('ZBX_STYLE_OVERLAY_DESCR_URL', 'overlay-descr-url');
-define('ZBX_STYLE_OVERFLOW_ELLIPSIS', 'overflow-ellipsis');
-define('ZBX_STYLE_OBJECT_GROUP', 'object-group');
-define('ZBX_STYLE_PAGING_BTN_CONTAINER', 'paging-btn-container');
-define('ZBX_STYLE_PAGING_SELECTED', 'paging-selected');
-define('ZBX_STYLE_PRELOADER', 'preloader');
-define('ZBX_STYLE_PAGE_TITLE', 'page-title-general');
-define('ZBX_STYLE_PROGRESS_BAR_BG', 'progress-bar-bg');
-define('ZBX_STYLE_PROGRESS_BAR_CONTAINER', 'progress-bar-container');
-define('ZBX_STYLE_PROGRESS_BAR_LABEL', 'progress-bar-label');
-define('ZBX_STYLE_RED', 'red');
-define('ZBX_STYLE_RED_BG', 'red-bg');
-define('ZBX_STYLE_REL_CONTAINER', 'rel-container');
-define('ZBX_STYLE_REMOVE_BTN', 'remove-btn');
-define('ZBX_STYLE_RIGHT', 'right');
-define('ZBX_STYLE_ROW', 'row');
-define('ZBX_STYLE_INLINE_SR_ONLY', 'inline-sr-only');
-define('ZBX_STYLE_SCREEN_TABLE', 'screen-table');
-define('ZBX_STYLE_SEARCH', 'search');
-define('ZBX_STYLE_SECOND_COLUMN_LABEL', 'second-column-label');
-define('ZBX_STYLE_SELECTED', 'selected');
-define('ZBX_STYLE_SELECTED_ITEM_COUNT', 'selected-item-count');
-define('ZBX_STYLE_SERVER_NAME', 'server-name');
-define('ZBX_STYLE_SETUP_CONTAINER', 'setup-container');
-define('ZBX_STYLE_SETUP_FOOTER', 'setup-footer');
-define('ZBX_STYLE_SETUP_LEFT', 'setup-left');
-define('ZBX_STYLE_SETUP_LEFT_CURRENT', 'setup-left-current');
-define('ZBX_STYLE_SETUP_RIGHT', 'setup-right');
-define('ZBX_STYLE_SETUP_RIGHT_BODY', 'setup-right-body');
-define('ZBX_STYLE_SETUP_TITLE', 'setup-title');
-define('ZBX_STYLE_SIGNIN_CONTAINER', 'signin-container');
-define('ZBX_STYLE_SIGNIN_LINKS', 'signin-links');
-define('ZBX_STYLE_SIGNIN_LOGO', 'signin-logo');
-define('ZBX_STYLE_SIGN_IN_TXT', 'sign-in-txt');
-define('ZBX_STYLE_STATUS_AVERAGE_BG', 'status-average-bg');
-define('ZBX_STYLE_STATUS_CONTAINER', 'status-container');
-define('ZBX_STYLE_STATUS_DARK_GREY', 'status-dark-grey');
-define('ZBX_STYLE_STATUS_DISABLED_BG', 'status-disabled-bg');
-define('ZBX_STYLE_STATUS_DISASTER_BG', 'status-disaster-bg');
-define('ZBX_STYLE_STATUS_GREEN', 'status-green');
-define('ZBX_STYLE_STATUS_GREY', 'status-grey');
-define('ZBX_STYLE_STATUS_HIGH_BG', 'status-high-bg');
-define('ZBX_STYLE_STATUS_INFO_BG', 'status-info-bg');
-define('ZBX_STYLE_STATUS_NA_BG', 'status-na-bg');
-define('ZBX_STYLE_STATUS_RED', 'status-red');
-define('ZBX_STYLE_STATUS_WARNING_BG', 'status-warning-bg');
-define('ZBX_STYLE_STATUS_YELLOW', 'status-yellow');
-define('ZBX_STYLE_SVG_GRAPH', 'svg-graph');
-define('ZBX_STYLE_SVG_GRAPH_PREVIEW', 'svg-graph-preview');
-define('ZBX_STYLE_SUBFILTER', 'subfilter');
-define('ZBX_STYLE_SUBFILTER_ENABLED', 'subfilter-enabled');
-define('ZBX_STYLE_TABLE', 'table');
-define('ZBX_STYLE_TABLE_FORMS', 'table-forms');
-define('ZBX_STYLE_TABLE_FORMS_CONTAINER', 'table-forms-container');
-define('ZBX_STYLE_TABLE_FORMS_SECOND_COLUMN', 'table-forms-second-column');
-define('ZBX_STYLE_TABLE_FORMS_TD_LEFT', 'table-forms-td-left');
-define('ZBX_STYLE_TABLE_FORMS_TD_RIGHT', 'table-forms-td-right');
-define('ZBX_STYLE_TABLE_PAGING', 'table-paging');
-define('ZBX_STYLE_TABLE_STATS', 'table-stats');
-define('ZBX_STYLE_TABS_NAV', 'tabs-nav');
-define('ZBX_STYLE_TAG', 'tag');
-define('ZBX_STYLE_TEXTAREA_FLEXIBLE', 'textarea-flexible');
-define('ZBX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER', 'textarea-flexible-container');
-define('ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT', 'textarea-flexible-parent');
-define('ZBX_STYLE_TFOOT_BUTTONS', 'tfoot-buttons');
-define('ZBX_STYLE_TD_DRAG_ICON', 'td-drag-icon');
-define('ZBX_STYLE_TIME_ZONE', 'time-zone');
-define('ZBX_STYLE_TIMELINE_AXIS', 'timeline-axis');
-define('ZBX_STYLE_TIMELINE_DATE', 'timeline-date');
-define('ZBX_STYLE_TIMELINE_DOT', 'timeline-dot');
-define('ZBX_STYLE_TIMELINE_DOT_BIG', 'timeline-dot-big');
-define('ZBX_STYLE_TIMELINE_TD', 'timeline-td');
-define('ZBX_STYLE_TIMELINE_TH', 'timeline-th');
-define('ZBX_STYLE_TOP', 'top');
-define('ZBX_STYLE_TOP_NAV', 'top-nav');
-define('ZBX_STYLE_TOP_NAV_CONTAINER', 'top-nav-container');
-define('ZBX_STYLE_TOP_NAV_HELP', 'top-nav-help');
-define('ZBX_STYLE_TOP_NAV_ICONS', 'top-nav-icons');
-define('ZBX_STYLE_TOP_NAV_PROFILE', 'top-nav-profile');
-define('ZBX_STYLE_TOP_NAV_SIGNOUT', 'top-nav-signout');
-define('ZBX_STYLE_TOP_NAV_SUPPORT', 'top-nav-support');
-define('ZBX_STYLE_TOP_NAV_ZBBSHARE', 'top-nav-zbbshare');
-define('ZBX_STYLE_TOP_SUBNAV', 'top-subnav');
-define('ZBX_STYLE_TOP_SUBNAV_CONTAINER', 'top-subnav-container');
-define('ZBX_STYLE_TOTALS_LIST', 'totals-list');
-define('ZBX_STYLE_TOTALS_LIST_HORIZONTAL', 'totals-list-horizontal');
-define('ZBX_STYLE_TOTALS_LIST_VERTICAL', 'totals-list-vertical');
-define('ZBX_STYLE_TOTALS_LIST_COUNT', 'count');
-define('ZBX_STYLE_TREEVIEW', 'treeview');
-define('ZBX_STYLE_TREEVIEW_PLUS', 'treeview-plus');
-define('ZBX_STYLE_UPPERCASE', 'uppercase');
-define('ZBX_STYLE_WARNING_BG', 'warning-bg');
-define('ZBX_STYLE_BLINK_HIDDEN', 'blink-hidden');
-define('ZBX_STYLE_YELLOW', 'yellow');
-define('ZBX_STYLE_FIELD_LABEL_ASTERISK', 'form-label-asterisk');
+define('TRX_STYLE_ACTION_BUTTONS', 'action-buttons');
+define('TRX_STYLE_ADM_IMG', 'adm-img');
+define('TRX_STYLE_AVERAGE_BG', 'average-bg');
+define('TRX_STYLE_ARROW_DOWN', 'arrow-down');
+define('TRX_STYLE_ARROW_LEFT', 'arrow-left');
+define('TRX_STYLE_ARROW_RIGHT', 'arrow-right');
+define('TRX_STYLE_ARROW_UP', 'arrow-up');
+define('TRX_STYLE_BLUE', 'blue');
+define('TRX_STYLE_BTN_ADD_FAV', 'btn-add-fav');
+define('TRX_STYLE_BTN_ALT', 'btn-alt');
+define('TRX_STYLE_BTN_BACK_MAP', 'btn-back-map');
+define('TRX_STYLE_BTN_BACK_MAP_CONTAINER', 'btn-back-map-container');
+define('TRX_STYLE_BTN_BACK_MAP_CONTENT', 'btn-back-map-content');
+define('TRX_STYLE_BTN_BACK_MAP_ICON', 'btn-back-map-icon');
+define('TRX_STYLE_BTN_CONF', 'btn-conf');
+define('TRX_STYLE_BTN_ACTION', 'btn-action');
+define('TRX_STYLE_BTN_DASHBRD_CONF', 'btn-dashbrd-conf');
+define('TRX_STYLE_BTN_DASHBRD_NORMAL', 'btn-dashbrd-normal');
+define('TRX_STYLE_BTN_DEBUG', 'btn-debug');
+define('TRX_STYLE_BTN_GREY', 'btn-grey');
+define('TRX_STYLE_BTN_INFO', 'btn-info');
+define('TRX_STYLE_BTN_LINK', 'btn-link');
+define('TRX_STYLE_BTN_KIOSK', 'btn-kiosk');
+define('TRX_STYLE_BTN_MAX', 'btn-max');
+define('TRX_STYLE_BTN_MIN', 'btn-min');
+define('TRX_STYLE_BTN_REMOVE_FAV', 'btn-remove-fav');
+define('TRX_STYLE_BTN_SEARCH', 'btn-search');
+define('TRX_STYLE_BTN_TIME', 'btn-time');
+define('TRX_STYLE_BTN_TIME_LEFT', 'btn-time-left');
+define('TRX_STYLE_BTN_TIME_OUT', 'btn-time-out');
+define('TRX_STYLE_BTN_TIME_RIGHT', 'btn-time-right');
+define('TRX_STYLE_BTN_WIDGET_ACTION', 'btn-widget-action');
+define('TRX_STYLE_BTN_WIDGET_COLLAPSE', 'btn-widget-collapse');
+define('TRX_STYLE_BTN_WIDGET_DELETE', 'btn-widget-delete');
+define('TRX_STYLE_BTN_WIDGET_EDIT', 'btn-widget-edit');
+define('TRX_STYLE_BTN_WIDGET_EXPAND', 'btn-widget-expand');
+define('TRX_STYLE_BOTTOM', 'bottom');
+define('TRX_STYLE_BROWSER_LOGO_CHROME', 'browser-logo-chrome');
+define('TRX_STYLE_BROWSER_LOGO_FF', 'browser-logo-ff');
+define('TRX_STYLE_BROWSER_LOGO_IE', 'browser-logo-ie');
+define('TRX_STYLE_BROWSER_LOGO_OPERA', 'browser-logo-opera');
+define('TRX_STYLE_BROWSER_LOGO_SAFARI', 'browser-logo-safari');
+define('TRX_STYLE_BROWSER_WARNING_CONTAINER', 'browser-warning-container');
+define('TRX_STYLE_BROWSER_WARNING_FOOTER', 'browser-warning-footer');
+define('TRX_STYLE_CELL', 'cell');
+define('TRX_STYLE_CELL_WIDTH', 'cell-width');
+define('TRX_STYLE_CENTER', 'center');
+define('TRX_STYLE_CHECKBOX_RADIO', 'checkbox-radio');
+define('TRX_STYLE_CLOCK', 'clock');
+define('TRX_STYLE_COLUMNS_3', 'col-3');
+define('TRX_STYLE_SYSMAP', 'sysmap');
+define('TRX_STYLE_NAVIGATIONTREE', 'navtree');
+define('TRX_STYLE_CHECKBOX_LIST', 'checkbox-list');
+define('TRX_STYLE_CLOCK_SVG', 'clock-svg');
+define('TRX_STYLE_CLOCK_FACE', 'clock-face');
+define('TRX_STYLE_CLOCK_HAND', 'clock-hand');
+define('TRX_STYLE_CLOCK_HAND_SEC', 'clock-hand-sec');
+define('TRX_STYLE_CLOCK_LINES', 'clock-lines');
+define('TRX_STYLE_COLOR_PICKER', 'color-picker');
+define('TRX_STYLE_COLOR_PREVIEW_BOX', 'color-preview-box');
+define('TRX_STYLE_COLUMN_TAGS_1', 'column-tags-1');
+define('TRX_STYLE_COLUMN_TAGS_2', 'column-tags-2');
+define('TRX_STYLE_COLUMN_TAGS_3', 'column-tags-3');
+define('TRX_STYLE_COMPACT_VIEW', 'compact-view');
+define('TRX_STYLE_CURSOR_POINTER', 'cursor-pointer');
+define('TRX_STYLE_DASHBRD_GRID_CONTAINER', 'dashbrd-grid-container');
+define('TRX_STYLE_DASHBRD_WIDGET', 'dashbrd-widget');
+define('TRX_STYLE_DASHBRD_WIDGET_FLUID', 'dashbrd-widget-fluid');
+define('TRX_STYLE_DASHBRD_WIDGET_HEAD', 'dashbrd-widget-head');
+define('TRX_STYLE_DASHBRD_WIDGET_FOOT', 'dashbrd-widget-foot');
+define('TRX_STYLE_DASHBRD_EDIT', 'dashbrd-edit');
+define('TRX_STYLE_DASHBRD_WIDGET_GRAPH_LINK', 'dashbrd-widget-graph-link');
+define('TRX_STYLE_DASHED_BORDER', 'dashed-border');
+define('TRX_STYLE_DEBUG_OUTPUT', 'debug-output');
+define('TRX_STYLE_DISABLED', 'disabled');
+define('TRX_STYLE_DISASTER_BG', 'disaster-bg');
+define('TRX_STYLE_DRAG_ICON', 'drag-icon');
+define('TRX_STYLE_PROBLEM_UNACK_FG', 'problem-unack-fg');
+define('TRX_STYLE_PROBLEM_ACK_FG', 'problem-ack-fg');
+define('TRX_STYLE_OK_UNACK_FG', 'ok-unack-fg');
+define('TRX_STYLE_OK_ACK_FG', 'ok-ack-fg');
+define('TRX_STYLE_OVERRIDES_LIST', 'overrides-list');
+define('TRX_STYLE_OVERRIDES_LIST_ITEM', 'overrides-list-item');
+define('TRX_STYLE_OVERRIDES_OPTIONS_LIST', 'overrides-options-list');
+define('TRX_STYLE_PLUS_ICON', 'plus-icon');
+define('TRX_STYLE_DRAG_DROP_AREA', 'drag-drop-area');
+define('TRX_STYLE_TABLE_FORMS_SEPARATOR', 'table-forms-separator');
+define('TRX_STYLE_TIME_INPUT', 'time-input');
+define('TRX_STYLE_TIME_INPUT_ERROR', 'time-input-error');
+define('TRX_STYLE_TIME_QUICK', 'time-quick');
+define('TRX_STYLE_TIME_QUICK_RANGE', 'time-quick-range');
+define('TRX_STYLE_TIME_SELECTION_CONTAINER', 'time-selection-container');
+define('TRX_STYLE_FILTER_BREADCRUMB', 'filter-breadcrumb');
+define('TRX_STYLE_FILTER_BTN_CONTAINER', 'filter-btn-container');
+define('TRX_STYLE_FILTER_CONTAINER', 'filter-container');
+define('TRX_STYLE_FILTER_HIGHLIGHT_ROW_CB', 'filter-highlight-row-cb');
+define('TRX_STYLE_FILTER_FORMS', 'filter-forms');
+define('TRX_STYLE_FILTER_TRIGGER', 'filter-trigger');
+define('TRX_STYLE_FLH_AVERAGE_BG', 'flh-average-bg');
+define('TRX_STYLE_FLH_DISASTER_BG', 'flh-disaster-bg');
+define('TRX_STYLE_FLH_HIGH_BG', 'flh-high-bg');
+define('TRX_STYLE_FLH_INFO_BG', 'flh-info-bg');
+define('TRX_STYLE_FLH_NA_BG', 'flh-na-bg');
+define('TRX_STYLE_FLH_WARNING_BG', 'flh-warning-bg');
+define('TRX_STYLE_FLOAT_LEFT', 'float-left');
+define('TRX_STYLE_FORM_INPUT_MARGIN', 'form-input-margin');
+define('TRX_STYLE_FORM_NEW_GROUP', 'form-new-group');
+define('TRX_STYLE_GRAPH_WRAPPER', 'graph-wrapper');
+define('TRX_STYLE_GREEN', 'green');
+define('TRX_STYLE_GREEN_BG', 'green-bg');
+define('TRX_STYLE_GREY', 'grey');
+define('TRX_STYLE_TEAL', 'teal');
+define('TRX_STYLE_HEADER_LOGO', 'header-logo');
+define('TRX_STYLE_HEADER_TITLE', 'header-title');
+define('TRX_STYLE_HIGH_BG', 'high-bg');
+define('TRX_STYLE_HOR_LIST', 'hor-list');
+define('TRX_STYLE_HOVER_NOBG', 'hover-nobg');
+define('TRX_STYLE_ICON_ACKN', 'icon-ackn');
+define('TRX_STYLE_ICON_CAL', 'icon-cal');
+define('TRX_STYLE_ICON_DEPEND_DOWN', 'icon-depend-down');
+define('TRX_STYLE_ICON_DEPEND_UP', 'icon-depend-up');
+define('TRX_STYLE_ICON_DESCRIPTION', 'icon-description');
+define('TRX_STYLE_ICON_INFO', 'icon-info');
+define('TRX_STYLE_ICON_INVISIBLE', 'icon-invisible');
+define('TRX_STYLE_ICON_MAINT', 'icon-maint');
+define('TRX_STYLE_ICON_WZRD_ACTION', 'icon-wzrd-action');
+define('TRX_STYLE_ICON_NONE', 'icon-none');
+define('TRX_STYLE_ACTION_COMMAND', 'icon-action-command');
+define('TRX_STYLE_ACTION_ICON_CLOSE', 'icon-action-close');
+define('TRX_STYLE_ACTION_ICON_MSG', 'icon-action-msg');
+define('TRX_STYLE_ACTION_ICON_MSGS', 'icon-action-msgs');
+define('TRX_STYLE_ACTION_ICON_SEV_UP', 'icon-action-severity-up');
+define('TRX_STYLE_ACTION_ICON_SEV_DOWN', 'icon-action-severity-down');
+define('TRX_STYLE_ACTION_ICON_SEV_CHANGED', 'icon-action-severity-changed');
+define('TRX_STYLE_ACTION_MESSAGE', 'icon-action-message');
+define('TRX_STYLE_ACTION_ICON_ACK', 'icon-action-ack');
+define('TRX_STYLE_PROBLEM_GENERATED', 'icon-problem-generated');
+define('TRX_STYLE_PROBLEM_RECOVERY', 'icon-problem-recovery');
+define('TRX_STYLE_ACTIONS_NUM_GRAY', 'icon-actions-number-gray');
+define('TRX_STYLE_ACTIONS_NUM_YELLOW', 'icon-actions-number-yellow');
+define('TRX_STYLE_ACTIONS_NUM_RED', 'icon-actions-number-red');
+define('TRX_STYLE_INACTIVE_BG', 'inactive-bg');
+define('TRX_STYLE_INFO_BG', 'info-bg');
+define('TRX_STYLE_INPUT_COLOR_PICKER', 'input-color-picker');
+define('TRX_STYLE_LAYOUT_KIOSKMODE', 'layout-kioskmode');
+define('TRX_STYLE_LEFT', 'left');
+define('TRX_STYLE_LINK_ACTION', 'link-action');
+define('TRX_STYLE_LINK_ALT', 'link-alt');
+define('TRX_STYLE_LIST_CHECK_RADIO', 'list-check-radio');
+define('TRX_STYLE_LIST_TABLE', 'list-table');
+define('TRX_STYLE_LIST_TABLE_FOOTER', 'list-table-footer');
+define('TRX_STYLE_LIST_VERTICAL_ACCORDION', 'list-vertical-accordion');
+define('TRX_STYLE_LIST_ACCORDION_FOOT', 'list-accordion-foot');
+define('TRX_STYLE_LIST_ACCORDION_ITEM', 'list-accordion-item');
+define('TRX_STYLE_LIST_ACCORDION_ITEM_OPENED', 'list-accordion-item-opened');
+define('TRX_STYLE_LIST_ACCORDION_ITEM_CLOSED', 'list-accordion-item-closed');
+define('TRX_STYLE_LIST_ACCORDION_ITEM_HEAD', 'list-accordion-item-head');
+define('TRX_STYLE_LIST_ACCORDION_ITEM_BODY', 'list-accordion-item-body');
+define('TRX_STYLE_LOCAL_CLOCK', 'local-clock');
+define('TRX_STYLE_LOG_NA_BG', 'log-na-bg');
+define('TRX_STYLE_LOG_INFO_BG', 'log-info-bg');
+define('TRX_STYLE_LOG_WARNING_BG', 'log-warning-bg');
+define('TRX_STYLE_LOG_HIGH_BG', 'log-high-bg');
+define('TRX_STYLE_LOG_DISASTER_BG', 'log-disaster-bg');
+define('TRX_STYLE_LOGO', 'logo');
+define('TRX_STYLE_MAP_AREA', 'map-area');
+define('TRX_STYLE_MIDDLE', 'middle');
+define('TRX_STYLE_MONOSPACE_FONT', 'monospace-font');
+define('TRX_STYLE_MSG_GOOD', 'msg-good');
+define('TRX_STYLE_MSG_BAD', 'msg-bad');
+define('TRX_STYLE_MSG_WARNING', 'msg-warning');
+define('TRX_STYLE_MSG_GLOBAL_FOOTER', 'msg-global-footer');
+define('TRX_STYLE_MSG_DETAILS', 'msg-details');
+define('TRX_STYLE_MSG_DETAILS_BORDER', 'msg-details-border');
+define('TRX_STYLE_NA_BG', 'na-bg');
+define('TRX_STYLE_NORMAL_BG', 'normal-bg');
+define('TRX_STYLE_NOTIF_BODY', 'notif-body');
+define('TRX_STYLE_NOTIF_INDIC', 'notif-indic');
+define('TRX_STYLE_NOTIF_INDIC_CONTAINER', 'notif-indic-container');
+define('TRX_STYLE_NOTHING_TO_SHOW', 'nothing-to-show');
+define('TRX_STYLE_NOWRAP', 'nowrap');
+define('TRX_STYLE_WORDWRAP', 'wordwrap');
+define('TRX_STYLE_ORANGE', 'orange');
+define('TRX_STYLE_OVERLAY_CLOSE_BTN', 'overlay-close-btn');
+define('TRX_STYLE_OVERLAY_DESCR', 'overlay-descr');
+define('TRX_STYLE_OVERLAY_DESCR_URL', 'overlay-descr-url');
+define('TRX_STYLE_OVERFLOW_ELLIPSIS', 'overflow-ellipsis');
+define('TRX_STYLE_OBJECT_GROUP', 'object-group');
+define('TRX_STYLE_PAGING_BTN_CONTAINER', 'paging-btn-container');
+define('TRX_STYLE_PAGING_SELECTED', 'paging-selected');
+define('TRX_STYLE_PRELOADER', 'preloader');
+define('TRX_STYLE_PAGE_TITLE', 'page-title-general');
+define('TRX_STYLE_PROGRESS_BAR_BG', 'progress-bar-bg');
+define('TRX_STYLE_PROGRESS_BAR_CONTAINER', 'progress-bar-container');
+define('TRX_STYLE_PROGRESS_BAR_LABEL', 'progress-bar-label');
+define('TRX_STYLE_RED', 'red');
+define('TRX_STYLE_RED_BG', 'red-bg');
+define('TRX_STYLE_REL_CONTAINER', 'rel-container');
+define('TRX_STYLE_REMOVE_BTN', 'remove-btn');
+define('TRX_STYLE_RIGHT', 'right');
+define('TRX_STYLE_ROW', 'row');
+define('TRX_STYLE_INLINE_SR_ONLY', 'inline-sr-only');
+define('TRX_STYLE_SCREEN_TABLE', 'screen-table');
+define('TRX_STYLE_SEARCH', 'search');
+define('TRX_STYLE_SECOND_COLUMN_LABEL', 'second-column-label');
+define('TRX_STYLE_SELECTED', 'selected');
+define('TRX_STYLE_SELECTED_ITEM_COUNT', 'selected-item-count');
+define('TRX_STYLE_SERVER_NAME', 'server-name');
+define('TRX_STYLE_SETUP_CONTAINER', 'setup-container');
+define('TRX_STYLE_SETUP_FOOTER', 'setup-footer');
+define('TRX_STYLE_SETUP_LEFT', 'setup-left');
+define('TRX_STYLE_SETUP_LEFT_CURRENT', 'setup-left-current');
+define('TRX_STYLE_SETUP_RIGHT', 'setup-right');
+define('TRX_STYLE_SETUP_RIGHT_BODY', 'setup-right-body');
+define('TRX_STYLE_SETUP_TITLE', 'setup-title');
+define('TRX_STYLE_SIGNIN_CONTAINER', 'signin-container');
+define('TRX_STYLE_SIGNIN_LINKS', 'signin-links');
+define('TRX_STYLE_SIGNIN_LOGO', 'signin-logo');
+define('TRX_STYLE_SIGN_IN_TXT', 'sign-in-txt');
+define('TRX_STYLE_STATUS_AVERAGE_BG', 'status-average-bg');
+define('TRX_STYLE_STATUS_CONTAINER', 'status-container');
+define('TRX_STYLE_STATUS_DARK_GREY', 'status-dark-grey');
+define('TRX_STYLE_STATUS_DISABLED_BG', 'status-disabled-bg');
+define('TRX_STYLE_STATUS_DISASTER_BG', 'status-disaster-bg');
+define('TRX_STYLE_STATUS_GREEN', 'status-green');
+define('TRX_STYLE_STATUS_GREY', 'status-grey');
+define('TRX_STYLE_STATUS_HIGH_BG', 'status-high-bg');
+define('TRX_STYLE_STATUS_INFO_BG', 'status-info-bg');
+define('TRX_STYLE_STATUS_NA_BG', 'status-na-bg');
+define('TRX_STYLE_STATUS_RED', 'status-red');
+define('TRX_STYLE_STATUS_WARNING_BG', 'status-warning-bg');
+define('TRX_STYLE_STATUS_YELLOW', 'status-yellow');
+define('TRX_STYLE_SVG_GRAPH', 'svg-graph');
+define('TRX_STYLE_SVG_GRAPH_PREVIEW', 'svg-graph-preview');
+define('TRX_STYLE_SUBFILTER', 'subfilter');
+define('TRX_STYLE_SUBFILTER_ENABLED', 'subfilter-enabled');
+define('TRX_STYLE_TABLE', 'table');
+define('TRX_STYLE_TABLE_FORMS', 'table-forms');
+define('TRX_STYLE_TABLE_FORMS_CONTAINER', 'table-forms-container');
+define('TRX_STYLE_TABLE_FORMS_SECOND_COLUMN', 'table-forms-second-column');
+define('TRX_STYLE_TABLE_FORMS_TD_LEFT', 'table-forms-td-left');
+define('TRX_STYLE_TABLE_FORMS_TD_RIGHT', 'table-forms-td-right');
+define('TRX_STYLE_TABLE_PAGING', 'table-paging');
+define('TRX_STYLE_TABLE_STATS', 'table-stats');
+define('TRX_STYLE_TABS_NAV', 'tabs-nav');
+define('TRX_STYLE_TAG', 'tag');
+define('TRX_STYLE_TEXTAREA_FLEXIBLE', 'textarea-flexible');
+define('TRX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER', 'textarea-flexible-container');
+define('TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT', 'textarea-flexible-parent');
+define('TRX_STYLE_TFOOT_BUTTONS', 'tfoot-buttons');
+define('TRX_STYLE_TD_DRAG_ICON', 'td-drag-icon');
+define('TRX_STYLE_TIME_ZONE', 'time-zone');
+define('TRX_STYLE_TIMELINE_AXIS', 'timeline-axis');
+define('TRX_STYLE_TIMELINE_DATE', 'timeline-date');
+define('TRX_STYLE_TIMELINE_DOT', 'timeline-dot');
+define('TRX_STYLE_TIMELINE_DOT_BIG', 'timeline-dot-big');
+define('TRX_STYLE_TIMELINE_TD', 'timeline-td');
+define('TRX_STYLE_TIMELINE_TH', 'timeline-th');
+define('TRX_STYLE_TOP', 'top');
+define('TRX_STYLE_TOP_NAV', 'top-nav');
+define('TRX_STYLE_TOP_NAV_CONTAINER', 'top-nav-container');
+define('TRX_STYLE_TOP_NAV_HELP', 'top-nav-help');
+define('TRX_STYLE_TOP_NAV_ICONS', 'top-nav-icons');
+define('TRX_STYLE_TOP_NAV_PROFILE', 'top-nav-profile');
+define('TRX_STYLE_TOP_NAV_SIGNOUT', 'top-nav-signout');
+define('TRX_STYLE_TOP_NAV_SUPPORT', 'top-nav-support');
+define('TRX_STYLE_TOP_NAV_ZBBSHARE', 'top-nav-zbbshare');
+define('TRX_STYLE_TOP_SUBNAV', 'top-subnav');
+define('TRX_STYLE_TOP_SUBNAV_CONTAINER', 'top-subnav-container');
+define('TRX_STYLE_TOTALS_LIST', 'totals-list');
+define('TRX_STYLE_TOTALS_LIST_HORIZONTAL', 'totals-list-horizontal');
+define('TRX_STYLE_TOTALS_LIST_VERTICAL', 'totals-list-vertical');
+define('TRX_STYLE_TOTALS_LIST_COUNT', 'count');
+define('TRX_STYLE_TREEVIEW', 'treeview');
+define('TRX_STYLE_TREEVIEW_PLUS', 'treeview-plus');
+define('TRX_STYLE_UPPERCASE', 'uppercase');
+define('TRX_STYLE_WARNING_BG', 'warning-bg');
+define('TRX_STYLE_BLINK_HIDDEN', 'blink-hidden');
+define('TRX_STYLE_YELLOW', 'yellow');
+define('TRX_STYLE_FIELD_LABEL_ASTERISK', 'form-label-asterisk');
 
 // HTML column layout.
-define('ZBX_STYLE_COLUMNS', 'columns-wrapper');
+define('TRX_STYLE_COLUMNS', 'columns-wrapper');
 // column occupies x% width of column wrapper
-define('ZBX_STYLE_COLUMN_5', 'column-5');
-define('ZBX_STYLE_COLUMN_10', 'column-10');
-define('ZBX_STYLE_COLUMN_15', 'column-15');
-define('ZBX_STYLE_COLUMN_20', 'column-20');
-define('ZBX_STYLE_COLUMN_33', 'column-33'); // column occupies 1/3 width of column wrapper.
-define('ZBX_STYLE_COLUMN_35', 'column-35');
-define('ZBX_STYLE_COLUMN_40', 'column-40');
-define('ZBX_STYLE_COLUMN_50', 'column-50');
-define('ZBX_STYLE_COLUMN_75', 'column-75');
-define('ZBX_STYLE_COLUMN_90', 'column-90');
-define('ZBX_STYLE_COLUMN_95', 'column-95');
+define('TRX_STYLE_COLUMN_5', 'column-5');
+define('TRX_STYLE_COLUMN_10', 'column-10');
+define('TRX_STYLE_COLUMN_15', 'column-15');
+define('TRX_STYLE_COLUMN_20', 'column-20');
+define('TRX_STYLE_COLUMN_33', 'column-33'); // column occupies 1/3 width of column wrapper.
+define('TRX_STYLE_COLUMN_35', 'column-35');
+define('TRX_STYLE_COLUMN_40', 'column-40');
+define('TRX_STYLE_COLUMN_50', 'column-50');
+define('TRX_STYLE_COLUMN_75', 'column-75');
+define('TRX_STYLE_COLUMN_90', 'column-90');
+define('TRX_STYLE_COLUMN_95', 'column-95');
 // column visual options
-define('ZBX_STYLE_COLUMN_CENTER', 'column-center');
-define('ZBX_STYLE_COLUMN_MIDDLE', 'column-middle');
+define('TRX_STYLE_COLUMN_CENTER', 'column-center');
+define('TRX_STYLE_COLUMN_MIDDLE', 'column-middle');
 
 // Widget "Host availability" styles.
-define('ZBX_STYLE_HOST_AVAIL_WIDGET', 'host-avail-widget');
-define('ZBX_STYLE_HOST_AVAIL_TRUE', 'host-avail-true');
-define('ZBX_STYLE_HOST_AVAIL_FALSE', 'host-avail-false');
-define('ZBX_STYLE_HOST_AVAIL_UNKNOWN', 'host-avail-unknown');
-define('ZBX_STYLE_HOST_AVAIL_TOTAL', 'host-avail-total');
+define('TRX_STYLE_HOST_AVAIL_WIDGET', 'host-avail-widget');
+define('TRX_STYLE_HOST_AVAIL_TRUE', 'host-avail-true');
+define('TRX_STYLE_HOST_AVAIL_FALSE', 'host-avail-false');
+define('TRX_STYLE_HOST_AVAIL_UNKNOWN', 'host-avail-unknown');
+define('TRX_STYLE_HOST_AVAIL_TOTAL', 'host-avail-total');
 
 // Widget "Problems by severity" styles.
-define('ZBX_STYLE_BY_SEVERITY_WIDGET', 'by-severity-widget');
+define('TRX_STYLE_BY_SEVERITY_WIDGET', 'by-severity-widget');
 
 // server variables
 define('HTTPS', isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] !== 'off');
 
-define('ZBX_PROPERTY_INHERITED',	0x01);
-define('ZBX_PROPERTY_OWN',			0x02);
-define('ZBX_PROPERTY_BOTH',			0x03);	// ZBX_PROPERTY_INHERITED | ZBX_PROPERTY_OWN
+define('TRX_PROPERTY_INHERITED',	0x01);
+define('TRX_PROPERTY_OWN',			0x02);
+define('TRX_PROPERTY_BOTH',			0x03);	// TRX_PROPERTY_INHERITED | TRX_PROPERTY_OWN
 
 // if magic quotes on, then get rid of them
 if (get_magic_quotes_gpc()) {

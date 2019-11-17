@@ -33,7 +33,7 @@ if (array_key_exists('only_hostid', $options)) {
 	if ($host) {
 		$controls[] = [
 			new CLabel(_('Host'), 'hostid'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CComboBox('hostid', $host['hostid']))
 				->addItem($host['hostid'], $host['name'])
 				->setEnabled(false)
@@ -52,7 +52,7 @@ else {
 			&& ($data['popup_type'] !== 'item_prototypes' || !$options['parent_discoveryid'])) {
 		$controls[] = [
 			new CLabel(_('Group'), 'groupid'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$page_filter->getGroupsCB(['action' => 'javascript: reloadPopup(this.form);'])
 		];
 	}
@@ -67,7 +67,7 @@ else {
 
 		$controls[] = [
 			new CLabel(_('Type'), 'itemtype'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$cmb_types
 		];
 	}
@@ -78,7 +78,7 @@ else {
 			&& ($data['popup_type'] !== 'item_prototypes' || !$options['parent_discoveryid'])) {
 		$controls[] = [
 			new CLabel(_('Host'), 'hostid'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$page_filter->getHostsCB(['action' => 'javascript: reloadPopup(this.form);'])
 		];
 	}
@@ -122,7 +122,7 @@ if ($page_filter->hostsAll) {
 if ($data['multiselect'] && $form !== null) {
 	$ch_box = (new CColHeader(
 		(new CCheckBox('all_records'))->onClick("javascript: checkAll('".$form->getName()."', 'all_records', 'item');")
-	))->addClass(ZBX_STYLE_CELL_WIDTH);
+	))->addClass(TRX_STYLE_CELL_WIDTH);
 
 	$table_columns[] = $ch_box;
 }
@@ -569,15 +569,15 @@ switch ($data['popup_type']) {
 			}
 			$description->onClick($js_action.$js_action_onclick);
 
-			if ($script['type'] == ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT) {
+			if ($script['type'] == TRX_SCRIPT_TYPE_CUSTOM_SCRIPT) {
 				switch ($script['execute_on']) {
-					case ZBX_SCRIPT_EXECUTE_ON_AGENT:
+					case TRX_SCRIPT_EXECUTE_ON_AGENT:
 						$script_execute_on = _('Agent');
 						break;
-					case ZBX_SCRIPT_EXECUTE_ON_SERVER:
+					case TRX_SCRIPT_EXECUTE_ON_SERVER:
 						$script_execute_on = _('Server');
 						break;
-					case ZBX_SCRIPT_EXECUTE_ON_PROXY:
+					case TRX_SCRIPT_EXECUTE_ON_PROXY:
 						$script_execute_on = _('Server (proxy)');
 						break;
 				}

@@ -17,61 +17,61 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 //		VAR						TYPE		OPTIONAL FLAGS			VALIDATION	EXCEPTION
 $fields = [
-	'groups'			=> [T_ZBX_STR, O_OPT, null,			NOT_EMPTY,	'isset({add}) || isset({update})'],
-	'mass_update_groups' => [T_ZBX_INT, O_OPT, null,	IN([ZBX_ACTION_ADD, ZBX_ACTION_REPLACE, ZBX_ACTION_REMOVE]),
+	'groups'			=> [T_TRX_STR, O_OPT, null,			NOT_EMPTY,	'isset({add}) || isset({update})'],
+	'mass_update_groups' => [T_TRX_INT, O_OPT, null,	IN([TRX_ACTION_ADD, TRX_ACTION_REPLACE, TRX_ACTION_REMOVE]),
 								null
 							],
-	'clear_templates'	=> [T_ZBX_INT, O_OPT, P_SYS,		DB_ID,	null],
-	'templates'			=> [T_ZBX_INT, O_OPT, null,		DB_ID,	null],
-	'linked_templates'	=> [T_ZBX_INT, O_OPT, null,		DB_ID,	null],
-	'add_templates'		=> [T_ZBX_INT, O_OPT, null,		DB_ID,	null],
-	'add_template' 		=> [T_ZBX_STR, O_OPT, null,		null,	null],
-	'templateid'		=> [T_ZBX_INT, O_OPT, P_SYS,		DB_ID,	'isset({form}) && {form} == "update"'],
-	'template_name'		=> [T_ZBX_STR, O_OPT, null,		NOT_EMPTY, 'isset({add}) || isset({update})', _('Template name')],
-	'visiblename'		=> [T_ZBX_STR, O_OPT, null,		null,	'isset({add}) || isset({update})'],
-	'groupid'			=> [T_ZBX_INT, O_OPT, P_SYS,		DB_ID,	null],
-	'tags'				=> [T_ZBX_STR, O_OPT, null,		null,	null],
-	'mass_update_tags'	=> [T_ZBX_INT, O_OPT, null,		IN([ZBX_ACTION_ADD, ZBX_ACTION_REPLACE, ZBX_ACTION_REMOVE]),
+	'clear_templates'	=> [T_TRX_INT, O_OPT, P_SYS,		DB_ID,	null],
+	'templates'			=> [T_TRX_INT, O_OPT, null,		DB_ID,	null],
+	'linked_templates'	=> [T_TRX_INT, O_OPT, null,		DB_ID,	null],
+	'add_templates'		=> [T_TRX_INT, O_OPT, null,		DB_ID,	null],
+	'add_template' 		=> [T_TRX_STR, O_OPT, null,		null,	null],
+	'templateid'		=> [T_TRX_INT, O_OPT, P_SYS,		DB_ID,	'isset({form}) && {form} == "update"'],
+	'template_name'		=> [T_TRX_STR, O_OPT, null,		NOT_EMPTY, 'isset({add}) || isset({update})', _('Template name')],
+	'visiblename'		=> [T_TRX_STR, O_OPT, null,		null,	'isset({add}) || isset({update})'],
+	'groupid'			=> [T_TRX_INT, O_OPT, P_SYS,		DB_ID,	null],
+	'tags'				=> [T_TRX_STR, O_OPT, null,		null,	null],
+	'mass_update_tags'	=> [T_TRX_INT, O_OPT, null,		IN([TRX_ACTION_ADD, TRX_ACTION_REPLACE, TRX_ACTION_REMOVE]),
 								null
 							],
-	'description'		=> [T_ZBX_STR, O_OPT, null,		null,	null],
-	'macros'			=> [T_ZBX_STR, O_OPT, P_SYS,		null,	null],
-	'visible'			=> [T_ZBX_STR, O_OPT, null,			null,	null],
-	'mass_replace_tpls'	=> [T_ZBX_STR, O_OPT, null,			null,	null],
-	'mass_clear_tpls'	=> [T_ZBX_STR, O_OPT, null,			null,	null],
-	'show_inherited_macros' => [T_ZBX_INT, O_OPT, null,	IN([0,1]), null],
+	'description'		=> [T_TRX_STR, O_OPT, null,		null,	null],
+	'macros'			=> [T_TRX_STR, O_OPT, P_SYS,		null,	null],
+	'visible'			=> [T_TRX_STR, O_OPT, null,			null,	null],
+	'mass_replace_tpls'	=> [T_TRX_STR, O_OPT, null,			null,	null],
+	'mass_clear_tpls'	=> [T_TRX_STR, O_OPT, null,			null,	null],
+	'show_inherited_macros' => [T_TRX_INT, O_OPT, null,	IN([0,1]), null],
 	// actions
-	'action'			=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action'			=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,
 								IN('"template.export","template.massupdate","template.massupdateform",'.
 									'"template.massdelete","template.massdeleteclear"'
 								),
 								null
 							],
-	'unlink'			=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'unlink_and_clear'	=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'add'				=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'update'			=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'masssave'			=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'clone'				=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'full_clone'		=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'delete'			=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'delete_and_clear'	=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'cancel'			=> [T_ZBX_STR, O_OPT, P_SYS,		null,	null],
-	'form'				=> [T_ZBX_STR, O_OPT, P_SYS,		null,	null],
-	'form_refresh'		=> [T_ZBX_INT, O_OPT, null,		null,	null],
+	'unlink'			=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'unlink_and_clear'	=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'add'				=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'update'			=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'masssave'			=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'clone'				=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'full_clone'		=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'delete'			=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'delete_and_clear'	=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'cancel'			=> [T_TRX_STR, O_OPT, P_SYS,		null,	null],
+	'form'				=> [T_TRX_STR, O_OPT, P_SYS,		null,	null],
+	'form_refresh'		=> [T_TRX_INT, O_OPT, null,		null,	null],
 	// filter
-	'filter_set'		=> [T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_rst'		=> [T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_name'		=> [T_ZBX_STR, O_OPT, null,		null,		null],
-	'filter_templates' =>  [T_ZBX_INT, O_OPT, null,		DB_ID,		null],
-	'filter_evaltype'	=> [T_ZBX_INT, O_OPT, null,
+	'filter_set'		=> [T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_rst'		=> [T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_name'		=> [T_TRX_STR, O_OPT, null,		null,		null],
+	'filter_templates' =>  [T_TRX_INT, O_OPT, null,		DB_ID,		null],
+	'filter_evaltype'	=> [T_TRX_INT, O_OPT, null,
 								IN([TAG_EVAL_TYPE_AND_OR, TAG_EVAL_TYPE_OR]),
 								null
 							],
-	'filter_tags'		=> [T_ZBX_STR, O_OPT, null,		null,		null],
+	'filter_tags'		=> [T_TRX_STR, O_OPT, null,		null,		null],
 	// sort and sortorder
-	'sort'				=> [T_ZBX_STR, O_OPT, P_SYS, IN('"name"'),									null],
-	'sortorder'			=> [T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort'				=> [T_TRX_STR, O_OPT, P_SYS, IN('"name"'),									null],
+	'sortorder'			=> [T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -104,7 +104,7 @@ foreach ($tags as $key => $tag) {
 	}
 
 	// remove inherited tags
-	if (array_key_exists('type', $tag) && !($tag['type'] & ZBX_PROPERTY_OWN)) {
+	if (array_key_exists('type', $tag) && !($tag['type'] & TRX_PROPERTY_OWN)) {
 		unset($tags[$key]);
 	}
 	else {
@@ -201,9 +201,9 @@ elseif (hasRequest('action') && getRequest('action') === 'template.massupdate' &
 		}
 
 		if (array_key_exists('tags', $visible)) {
-			$mass_update_tags = getRequest('mass_update_tags', ZBX_ACTION_ADD);
+			$mass_update_tags = getRequest('mass_update_tags', TRX_ACTION_ADD);
 
-			if ($mass_update_tags == ZBX_ACTION_ADD || $mass_update_tags == ZBX_ACTION_REMOVE) {
+			if ($mass_update_tags == TRX_ACTION_ADD || $mass_update_tags == TRX_ACTION_REMOVE) {
 				$options['selectTags'] = ['tag', 'value'];
 			}
 
@@ -221,9 +221,9 @@ elseif (hasRequest('action') && getRequest('action') === 'template.massupdate' &
 		if (array_key_exists('groups', $visible)) {
 			$new_groupids = [];
 			$remove_groupids = [];
-			$mass_update_groups = getRequest('mass_update_groups', ZBX_ACTION_ADD);
+			$mass_update_groups = getRequest('mass_update_groups', TRX_ACTION_ADD);
 
-			if ($mass_update_groups == ZBX_ACTION_ADD || $mass_update_groups == ZBX_ACTION_REPLACE) {
+			if ($mass_update_groups == TRX_ACTION_ADD || $mass_update_groups == TRX_ACTION_REPLACE) {
 				if (CWebUser::getType() == USER_TYPE_SUPER_ADMIN) {
 					$ins_groups = [];
 
@@ -248,7 +248,7 @@ elseif (hasRequest('action') && getRequest('action') === 'template.massupdate' &
 					$new_groupids = getRequest('groups', []);
 				}
 			}
-			elseif ($mass_update_groups == ZBX_ACTION_REMOVE) {
+			elseif ($mass_update_groups == TRX_ACTION_REMOVE) {
 				$remove_groupids = getRequest('groups', []);
 			}
 		}
@@ -282,13 +282,13 @@ elseif (hasRequest('action') && getRequest('action') === 'template.massupdate' &
 
 		foreach ($templates as &$template) {
 			if (array_key_exists('groups', $visible)) {
-				if ($new_groupids && $mass_update_groups == ZBX_ACTION_ADD) {
+				if ($new_groupids && $mass_update_groups == TRX_ACTION_ADD) {
 					$current_groupids = zbx_objectValues($template['groups'], 'groupid');
 					$template['groups'] = zbx_toObject(array_unique(array_merge($current_groupids, $new_groupids)),
 						'groupid'
 					);
 				}
-				elseif ($new_groupids && $mass_update_groups == ZBX_ACTION_REPLACE) {
+				elseif ($new_groupids && $mass_update_groups == TRX_ACTION_REPLACE) {
 					$template['groups'] = zbx_toObject($new_groupids, 'groupid');
 				}
 				elseif ($remove_groupids) {
@@ -304,7 +304,7 @@ elseif (hasRequest('action') && getRequest('action') === 'template.massupdate' &
 			}
 
 			if (array_key_exists('tags', $visible)) {
-				if ($tags && $mass_update_tags == ZBX_ACTION_ADD) {
+				if ($tags && $mass_update_tags == TRX_ACTION_ADD) {
 					$unique_tags = [];
 
 					foreach (array_merge($template['tags'], $tags) as $tag) {
@@ -313,10 +313,10 @@ elseif (hasRequest('action') && getRequest('action') === 'template.massupdate' &
 
 					$template['tags'] = array_values($unique_tags);
 				}
-				elseif ($mass_update_tags == ZBX_ACTION_REPLACE) {
+				elseif ($mass_update_tags == TRX_ACTION_REPLACE) {
 					$template['tags'] = $tags;
 				}
-				elseif ($tags && $mass_update_tags == ZBX_ACTION_REMOVE) {
+				elseif ($tags && $mass_update_tags == TRX_ACTION_REMOVE) {
 					$diff_tags = [];
 
 					foreach ($template['tags'] as $a) {
@@ -785,7 +785,7 @@ elseif (hasRequest('form')) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);
@@ -942,7 +942,7 @@ else {
 		'writable_hosts' => $writable_hosts,
 		'profileIdx' => 'web.templates.filter',
 		'active_tab' => CProfile::get('web.templates.filter.active', 1),
-		'tags' => makeTags($templates, true, 'templateid', ZBX_TAG_COUNT_DEFAULT, $filter['tags'])
+		'tags' => makeTags($templates, true, 'templateid', TRX_TAG_COUNT_DEFAULT, $filter['tags'])
 	];
 
 	$view = new CView('configuration.template.list', $data);

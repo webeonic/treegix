@@ -243,7 +243,7 @@ class CMaintenance extends CApiService {
 	public function create(array $maintenances) {
 		$maintenances = zbx_toArray($maintenances);
 		if (self::$userData['type'] == USER_TYPE_TREEGIX_USER) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		$hostids = [];
@@ -259,7 +259,7 @@ class CMaintenance extends CApiService {
 
 		// validate hosts & groups
 		if (empty($hostids) && empty($groupids)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('At least one host group or host must be selected.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('At least one host group or host must be selected.'));
 		}
 
 		// hosts permissions
@@ -272,7 +272,7 @@ class CMaintenance extends CApiService {
 		$updHosts = API::Host()->get($options);
 		foreach ($hostids as $hostid) {
 			if (!isset($updHosts[$hostid])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 		// groups permissions
@@ -285,7 +285,7 @@ class CMaintenance extends CApiService {
 		$updGroups = API::HostGroup()->get($options);
 		foreach ($groupids as $groupid) {
 			if (!isset($updGroups[$groupid])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -307,7 +307,7 @@ class CMaintenance extends CApiService {
 			];
 
 			if (!check_db_fields($dbFields, $maintenance)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect parameters for maintenance.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect parameters for maintenance.'));
 			}
 		}
 
@@ -327,34 +327,34 @@ class CMaintenance extends CApiService {
 
 		if ($dbMaintenances) {
 			$dbMaintenance = reset($dbMaintenances);
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Maintenance "%1$s" already exists.', $dbMaintenance['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Maintenance "%1$s" already exists.', $dbMaintenance['name']));
 		}
 
 		foreach ($maintenances as $mnum => $maintenance) {
 			// validate maintenance active since
 			if (!validateUnixTime($maintenance['active_since'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('"%s" must be between 1970.01.01 and 2038.01.18.', _('Active since')));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('"%s" must be between 1970.01.01 and 2038.01.18.', _('Active since')));
 			}
 
 			// validate maintenance active till
 			if (!validateUnixTime($maintenance['active_till'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('"%s" must be between 1970.01.01 and 2038.01.18.', _('Active till')));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('"%s" must be between 1970.01.01 and 2038.01.18.', _('Active till')));
 			}
 
 			// validate maintenance active interval
 			if ($maintenance['active_since'] > $maintenance['active_till']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Maintenance "Active since" value cannot be bigger than "Active till".'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Maintenance "Active since" value cannot be bigger than "Active till".'));
 			}
 
 			// validate timeperiods
 			if (!array_key_exists('timeperiods', $maintenance) || !is_array($maintenance['timeperiods'])
 					|| !$maintenance['timeperiods']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('At least one maintenance period must be created.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('At least one maintenance period must be created.'));
 			}
 
 			foreach ($maintenance['timeperiods'] as $timeperiod) {
 				if (!is_array($timeperiod)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('At least one maintenance period must be created.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('At least one maintenance period must be created.'));
 				}
 
 				$dbFields = [
@@ -451,7 +451,7 @@ class CMaintenance extends CApiService {
 		if (array_key_exists('maintenance_type', $maintenance)
 				&& $maintenance['maintenance_type'] == MAINTENANCE_TYPE_NODATA
 				&& array_key_exists('tags', $maintenance) && $maintenance['tags']) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'tags', _('should be empty'))
 			);
 		}
@@ -470,7 +470,7 @@ class CMaintenance extends CApiService {
 		$maintenance = array_intersect_key($maintenance, $api_input_rules['fields']);
 
 		if (!CApiInputValidator::validate($api_input_rules, $maintenance, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 	}
 
@@ -485,14 +485,14 @@ class CMaintenance extends CApiService {
 	 */
 	public function update(array $maintenances) {
 		if (self::$userData['type'] == USER_TYPE_TREEGIX_USER) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$maintenances = zbx_toArray($maintenances);
 		$maintenanceids = zbx_objectValues($maintenances, 'maintenanceid');
 
 		if (!$maintenances) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$db_fields = [
@@ -502,7 +502,7 @@ class CMaintenance extends CApiService {
 		foreach ($maintenances as $maintenance) {
 			// Validate fields.
 			if (!check_db_fields($db_fields, $maintenance)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect parameters for maintenance.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect parameters for maintenance.'));
 			}
 
 			$this->validateTags($maintenance);
@@ -524,7 +524,7 @@ class CMaintenance extends CApiService {
 
 		foreach ($maintenances as &$maintenance) {
 			if (!array_key_exists($maintenance['maintenanceid'], $db_maintenances)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -535,7 +535,7 @@ class CMaintenance extends CApiService {
 			if (array_key_exists('name', $maintenance) && $maintenance['name'] !== ''
 					&& $db_maintenance['name'] !== $maintenance['name']) {
 				if (array_key_exists($maintenance['name'], $changed_names)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Maintenance "%1$s" already exists.', $maintenance['name'])
 					);
 				}
@@ -548,7 +548,7 @@ class CMaintenance extends CApiService {
 				$active_since = $maintenance['active_since'];
 
 				if (!validateUnixTime($active_since)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('"%s" must be between 1970.01.01 and 2038.01.18.', _('Active since'))
 					);
 				}
@@ -562,7 +562,7 @@ class CMaintenance extends CApiService {
 				$active_till = $maintenance['active_till'];
 
 				if (!validateUnixTime($active_till)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('"%s" must be between 1970.01.01 and 2038.01.18.', _('Active till'))
 					);
 				}
@@ -573,7 +573,7 @@ class CMaintenance extends CApiService {
 
 			// Validate maintenance active interval.
 			if ($active_since > $active_till) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_('Maintenance "Active since" value cannot be bigger than "Active till".')
 				);
 			}
@@ -581,14 +581,14 @@ class CMaintenance extends CApiService {
 			// Validate timeperiods.
 			if (array_key_exists('timeperiods', $maintenance)) {
 				if (!is_array($maintenance['timeperiods']) || !$maintenance['timeperiods']) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('At least one maintenance period must be created.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('At least one maintenance period must be created.'));
 				}
 
 				$db_timeperiods = zbx_toHash($db_maintenance['timeperiods'], 'timeperiodid');
 
 				foreach ($maintenance['timeperiods'] as &$timeperiod) {
 					if (!is_array($timeperiod)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('At least one maintenance period must be created.')
 						);
 					}
@@ -602,7 +602,7 @@ class CMaintenance extends CApiService {
 
 						// Validate incorrect "timeperiodid".
 						if (!array_key_exists($timeperiodid, $db_timeperiods)) {
-							self::exception(ZBX_API_ERROR_PERMISSIONS,
+							self::exception(TRX_API_ERROR_PERMISSIONS,
 								_('No permissions to referred object or it does not exist!')
 							);
 						}
@@ -644,7 +644,7 @@ class CMaintenance extends CApiService {
 			}
 
 			if (!$has_hosts && !$has_groups) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('At least one host group or host must be selected.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('At least one host group or host must be selected.'));
 			}
 
 			// Check if maintenance without data collection has no tags.
@@ -654,7 +654,7 @@ class CMaintenance extends CApiService {
 				: $db_maintenance_type;
 			if ($db_maintenance_type == MAINTENANCE_TYPE_NODATA && $maintenance_type == $db_maintenance_type
 					&& array_key_exists('tags', $maintenance) && $maintenance['tags']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'tags', _('should be empty'))
 				);
 			}
@@ -672,7 +672,7 @@ class CMaintenance extends CApiService {
 
 			if ($db_maintenances_names) {
 				$maintenance = reset($db_maintenances_names);
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Maintenance "%1$s" already exists.', $maintenance['name'])
 				);
 			}
@@ -689,7 +689,7 @@ class CMaintenance extends CApiService {
 
 			foreach ($hostids as $hostid) {
 				if (!array_key_exists($hostid, $db_hosts)) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS,
+					self::exception(TRX_API_ERROR_PERMISSIONS,
 						_('No permissions to referred object or it does not exist!')
 					);
 				}
@@ -707,7 +707,7 @@ class CMaintenance extends CApiService {
 
 			foreach ($groupids as $groupid) {
 				if (!array_key_exists($groupid, $db_groups)) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS,
+					self::exception(TRX_API_ERROR_PERMISSIONS,
 						_('No permissions to referred object or it does not exist!')
 					);
 				}
@@ -899,7 +899,7 @@ class CMaintenance extends CApiService {
 	 */
 	public function delete(array $maintenanceids) {
 		if (self::$userData['type'] == USER_TYPE_TREEGIX_USER) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$maintenances = $this->get([
@@ -911,7 +911,7 @@ class CMaintenance extends CApiService {
 
 		foreach ($maintenanceids as $maintenanceid) {
 			if (!array_key_exists($maintenanceid, $maintenances)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 			}
 		}
 

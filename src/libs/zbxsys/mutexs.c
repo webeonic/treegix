@@ -10,8 +10,8 @@
 #ifdef HAVE_PTHREAD_PROCESS_SHARED
 typedef struct
 {
-	pthread_mutex_t		mutexes[ZBX_MUTEX_COUNT];
-	pthread_rwlock_t	rwlocks[ZBX_RWLOCK_COUNT];
+	pthread_mutex_t		mutexes[TRX_MUTEX_COUNT];
+	pthread_rwlock_t	rwlocks[TRX_RWLOCK_COUNT];
 }
 zbx_shared_lock_t;
 
@@ -34,7 +34,7 @@ static int			shm_id, locks_disabled;
 #	include "cfg.h"
 #	include "threads.h"
 
-	static int		ZBX_SEM_LIST_ID;
+	static int		TRX_SEM_LIST_ID;
 	static unsigned char	mutexes;
 #endif
 
@@ -58,7 +58,7 @@ int	zbx_locks_create(char **error)
 	pthread_mutexattr_t	mta;
 	pthread_rwlockattr_t	rwa;
 
-	if (-1 == (shm_id = shmget(IPC_PRIVATE, ZBX_SIZE_T_ALIGN8(sizeof(zbx_shared_lock_t)),
+	if (-1 == (shm_id = shmget(IPC_PRIVATE, TRX_SIZE_T_ALIGN8(sizeof(zbx_shared_lock_t)),
 			IPC_CREAT | IPC_EXCL | 0600)))
 	{
 		*error = zbx_dsprintf(*error, "cannot allocate shared memory for locks");
@@ -93,7 +93,7 @@ int	zbx_locks_create(char **error)
 		return FAIL;
 	}
 
-	for (i = 0; i < ZBX_MUTEX_COUNT; i++)
+	for (i = 0; i < TRX_MUTEX_COUNT; i++)
 	{
 		if (0 != pthread_mutex_init(&shared_lock->mutexes[i], &mta))
 		{
@@ -114,7 +114,7 @@ int	zbx_locks_create(char **error)
 		return FAIL;
 	}
 
-	for (i = 0; i < ZBX_RWLOCK_COUNT; i++)
+	for (i = 0; i < TRX_RWLOCK_COUNT; i++)
 	{
 		if (0 != pthread_rwlock_init(&shared_lock->rwlocks[i], &rwa))
 		{
@@ -126,7 +126,7 @@ int	zbx_locks_create(char **error)
 	union semun	semopts;
 	int		i;
 
-	if (-1 == (ZBX_SEM_LIST_ID = semget(IPC_PRIVATE, ZBX_MUTEX_COUNT + ZBX_RWLOCK_COUNT, 0600)))
+	if (-1 == (TRX_SEM_LIST_ID = semget(IPC_PRIVATE, TRX_MUTEX_COUNT + TRX_RWLOCK_COUNT, 0600)))
 	{
 		*error = zbx_dsprintf(*error, "cannot create semaphore set: %s", zbx_strerror(errno));
 		return FAIL;
@@ -135,17 +135,17 @@ int	zbx_locks_create(char **error)
 	/* set default semaphore value */
 
 	semopts.val = 1;
-	for (i = 0; ZBX_MUTEX_COUNT + ZBX_RWLOCK_COUNT > i; i++)
+	for (i = 0; TRX_MUTEX_COUNT + TRX_RWLOCK_COUNT > i; i++)
 	{
-		if (-1 != semctl(ZBX_SEM_LIST_ID, i, SETVAL, semopts))
+		if (-1 != semctl(TRX_SEM_LIST_ID, i, SETVAL, semopts))
 			continue;
 
 		*error = zbx_dsprintf(*error, "cannot initialize semaphore: %s", zbx_strerror(errno));
 
-		if (-1 == semctl(ZBX_SEM_LIST_ID, 0, IPC_RMID, 0))
-			zbx_error("cannot remove semaphore set %d: %s", ZBX_SEM_LIST_ID, zbx_strerror(errno));
+		if (-1 == semctl(TRX_SEM_LIST_ID, 0, IPC_RMID, 0))
+			zbx_error("cannot remove semaphore set %d: %s", TRX_SEM_LIST_ID, zbx_strerror(errno));
 
-		ZBX_SEM_LIST_ID = -1;
+		TRX_SEM_LIST_ID = -1;
 
 		return FAIL;
 	}
@@ -171,11 +171,11 @@ int	zbx_locks_create(char **error)
  ******************************************************************************/
 int	zbx_rwlock_create(zbx_rwlock_t *rwlock, zbx_rwlock_name_t name, char **error)
 {
-	ZBX_UNUSED(error);
+	TRX_UNUSED(error);
 #ifdef HAVE_PTHREAD_PROCESS_SHARED
 	*rwlock = &shared_lock->rwlocks[name];
 #else
-	*rwlock = name + ZBX_MUTEX_COUNT;
+	*rwlock = name + TRX_MUTEX_COUNT;
 	mutexes++;
 #endif
 	return SUCCEED;
@@ -192,7 +192,7 @@ int	zbx_rwlock_create(zbx_rwlock_t *rwlock, zbx_rwlock_name_t name, char **error
  ******************************************************************************/
 void	__zbx_rwlock_wrlock(const char *filename, int line, zbx_rwlock_t rwlock)
 {
-	if (ZBX_RWLOCK_NULL == rwlock)
+	if (TRX_RWLOCK_NULL == rwlock)
 		return;
 
 	if (0 != locks_disabled)
@@ -216,7 +216,7 @@ void	__zbx_rwlock_wrlock(const char *filename, int line, zbx_rwlock_t rwlock)
  ******************************************************************************/
 void	__zbx_rwlock_rdlock(const char *filename, int line, zbx_rwlock_t rwlock)
 {
-	if (ZBX_RWLOCK_NULL == rwlock)
+	if (TRX_RWLOCK_NULL == rwlock)
 		return;
 
 	if (0 != locks_disabled)
@@ -240,7 +240,7 @@ void	__zbx_rwlock_rdlock(const char *filename, int line, zbx_rwlock_t rwlock)
  ******************************************************************************/
 void	__zbx_rwlock_unlock(const char *filename, int line, zbx_rwlock_t rwlock)
 {
-	if (ZBX_RWLOCK_NULL == rwlock)
+	if (TRX_RWLOCK_NULL == rwlock)
 		return;
 
 	if (0 != locks_disabled)
@@ -266,7 +266,7 @@ void	__zbx_rwlock_unlock(const char *filename, int line, zbx_rwlock_t rwlock)
 
 void	zbx_rwlock_destroy(zbx_rwlock_t *rwlock)
 {
-	if (ZBX_RWLOCK_NULL == *rwlock)
+	if (TRX_RWLOCK_NULL == *rwlock)
 		return;
 
 	if (0 != locks_disabled)
@@ -275,7 +275,7 @@ void	zbx_rwlock_destroy(zbx_rwlock_t *rwlock)
 	if (0 != pthread_rwlock_destroy(*rwlock))
 		zbx_error("cannot remove read-write lock: %s", zbx_strerror(errno));
 
-	*rwlock = ZBX_RWLOCK_NULL;
+	*rwlock = TRX_RWLOCK_NULL;
 }
 
 /******************************************************************************
@@ -317,7 +317,7 @@ int	zbx_mutex_create(zbx_mutex_t *mutex, zbx_mutex_name_t name, char **error)
 		return FAIL;
 	}
 #else
-	ZBX_UNUSED(error);
+	TRX_UNUSED(error);
 #ifdef	HAVE_PTHREAD_PROCESS_SHARED
 	*mutex = &shared_lock->mutexes[name];
 #else
@@ -349,14 +349,14 @@ void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
 	DWORD   dwWaitResult;
 #endif
 
-	if (ZBX_MUTEX_NULL == mutex)
+	if (TRX_MUTEX_NULL == mutex)
 		return;
 
 #ifdef _WINDOWS
 #ifdef TREEGIX_AGENT
-	if (0 != (ZBX_MUTEX_THREAD_DENIED & get_thread_global_mutex_flag()))
+	if (0 != (TRX_MUTEX_THREAD_DENIED & get_thread_global_mutex_flag()))
 	{
-		zbx_error("[file:'%s',line:%d] lock failed: ZBX_MUTEX_THREAD_DENIED is set for thread with id = %d",
+		zbx_error("[file:'%s',line:%d] lock failed: TRX_MUTEX_THREAD_DENIED is set for thread with id = %d",
 				filename, line, zbx_get_thread_id());
 		exit(EXIT_FAILURE);
 	}
@@ -390,7 +390,7 @@ void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
 	sem_lock.sem_op = -1;
 	sem_lock.sem_flg = SEM_UNDO;
 
-	while (-1 == semop(ZBX_SEM_LIST_ID, &sem_lock, 1))
+	while (-1 == semop(TRX_SEM_LIST_ID, &sem_lock, 1))
 	{
 		if (EINTR != errno)
 		{
@@ -421,7 +421,7 @@ void	__zbx_mutex_unlock(const char *filename, int line, zbx_mutex_t mutex)
 #endif
 #endif
 
-	if (ZBX_MUTEX_NULL == mutex)
+	if (TRX_MUTEX_NULL == mutex)
 		return;
 
 #ifdef _WINDOWS
@@ -446,7 +446,7 @@ void	__zbx_mutex_unlock(const char *filename, int line, zbx_mutex_t mutex)
 	sem_unlock.sem_op = 1;
 	sem_unlock.sem_flg = SEM_UNDO;
 
-	while (-1 == semop(ZBX_SEM_LIST_ID, &sem_unlock, 1))
+	while (-1 == semop(TRX_SEM_LIST_ID, &sem_unlock, 1))
 	{
 		if (EINTR != errno)
 		{
@@ -472,7 +472,7 @@ void	__zbx_mutex_unlock(const char *filename, int line, zbx_mutex_t mutex)
 void	zbx_mutex_destroy(zbx_mutex_t *mutex)
 {
 #ifdef _WINDOWS
-	if (ZBX_MUTEX_NULL == *mutex)
+	if (TRX_MUTEX_NULL == *mutex)
 		return;
 
 	if (0 == CloseHandle(*mutex))
@@ -485,11 +485,11 @@ void	zbx_mutex_destroy(zbx_mutex_t *mutex)
 	if (0 != pthread_mutex_destroy(*mutex))
 		zbx_error("cannot remove mutex %p: %s", (void *)mutex, zbx_strerror(errno));
 #else
-	if (0 == --mutexes && -1 == semctl(ZBX_SEM_LIST_ID, 0, IPC_RMID, 0))
-		zbx_error("cannot remove semaphore set %d: %s", ZBX_SEM_LIST_ID, zbx_strerror(errno));
+	if (0 == --mutexes && -1 == semctl(TRX_SEM_LIST_ID, 0, IPC_RMID, 0))
+		zbx_error("cannot remove semaphore set %d: %s", TRX_SEM_LIST_ID, zbx_strerror(errno));
 #endif
 #endif
-	*mutex = ZBX_MUTEX_NULL;
+	*mutex = TRX_MUTEX_NULL;
 }
 
 #ifdef _WINDOWS
@@ -509,7 +509,7 @@ void	zbx_mutex_destroy(zbx_mutex_t *mutex)
  ******************************************************************************/
 zbx_mutex_name_t	zbx_mutex_create_per_process_name(const zbx_mutex_name_t prefix)
 {
-	zbx_mutex_name_t	name = ZBX_MUTEX_NULL;
+	zbx_mutex_name_t	name = TRX_MUTEX_NULL;
 	int			size;
 	wchar_t			*format = L"%s_PID_%lx";
 	DWORD			pid = GetCurrentProcessId();

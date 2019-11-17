@@ -74,7 +74,7 @@ static int	ssh_run(DC_ITEM *item, AGENT_RESULT *result, const char *encoding)
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (FAIL == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, item->interface.addr, item->interface.port, 0,
-			ZBX_TCP_SEC_UNENCRYPTED, NULL, NULL))
+			TRX_TCP_SEC_UNENCRYPTED, NULL, NULL))
 	{
 		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot connect to SSH server: %s", zbx_socket_strerror()));
 		goto close;
@@ -274,7 +274,7 @@ static int	ssh_run(DC_ITEM *item, AGENT_RESULT *result, const char *encoding)
 	buffer[bytecount] = '\0';
 
 	output = convert_to_utf8(buffer, bytecount, encoding);
-	zbx_rtrim(output, ZBX_WHITESPACE);
+	zbx_rtrim(output, TRX_WHITESPACE);
 
 	if (SUCCEED == set_result_type(result, ITEM_VALUE_TYPE_TEXT, output))
 		ret = SYSINFO_RET_OK;
@@ -357,11 +357,11 @@ int	get_value_ssh(DC_ITEM *item, AGENT_RESULT *result)
 		}
 	}
 	else
-		item->interface.port = ZBX_DEFAULT_SSH_PORT;
+		item->interface.port = TRX_DEFAULT_SSH_PORT;
 
 	encoding = get_rparam(&request, 3);
 
-	ret = ssh_run(item, result, ZBX_NULL2EMPTY_STR(encoding));
+	ret = ssh_run(item, result, TRX_NULL2EMPTY_STR(encoding));
 out:
 	free_request(&request);
 

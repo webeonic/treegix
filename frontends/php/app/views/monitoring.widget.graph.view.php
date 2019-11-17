@@ -14,7 +14,7 @@ else {
 	$flickerfree_item = (new CDiv())
 		->addItem((new CLink(null, $data['item_graph_url']))
 			->setId($data['graph']['containerid'])
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_GRAPH_LINK)
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_GRAPH_LINK)
 		)
 		->addClass('flickerfreescreen')
 		->setAttribute('data-timestamp', $data['graph']['timestamp'])

@@ -46,7 +46,7 @@ class CControllerWidgetNavTreeItemEdit extends CController {
 		$formList->addRow(
 			(new CLabel(_('Name'), 'map.name.'.$map_id))->setAsteriskMark(),
 			(new CTextBox('map.name.'.$map_id, $map_item_name))
-				->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+				->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 				->setAttribute('autofocus', 'autofocus')
 				->setAriaRequired()
 		);
@@ -75,10 +75,10 @@ class CControllerWidgetNavTreeItemEdit extends CController {
 				->setAttribute('onChange',
 					'javascript: if(jQuery("#'.$form->getName().' input[type=text]:first").val() === ""){'.
 						'jQuery("#widget_dialogue_form input[type=text]:first").val(this.value);}')
-				->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CButton('select', _('Select')))
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 				->onClick('return PopUp("popup.generic",'.
 					CJs::encodeJson([
 						'srctbl' => 'sysmaps',

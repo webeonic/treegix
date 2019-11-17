@@ -110,7 +110,7 @@ while (0)
 
 void	*get_result_value_by_type(AGENT_RESULT *result, int require_type);
 
-#define ZBX_FLOAT_PRECISION	0.0001
+#define TRX_FLOAT_PRECISION	0.0001
 
 extern int	CONFIG_ENABLE_REMOTE_COMMANDS;
 extern int	CONFIG_LOG_REMOTE_COMMANDS;
@@ -118,55 +118,55 @@ extern int	CONFIG_UNSAFE_USER_PARAMETERS;
 
 /* collector */
 #define MAX_COLLECTOR_HISTORY	(15 * SEC_PER_MIN + 1)
-#define ZBX_AVG1		0
-#define ZBX_AVG5		1
-#define ZBX_AVG15		2
-#define ZBX_AVG_COUNT		3
+#define TRX_AVG1		0
+#define TRX_AVG5		1
+#define TRX_AVG15		2
+#define TRX_AVG_COUNT		3
 
 #ifdef _WINDOWS
 #	define MAX_COLLECTOR_PERIOD	(15 * SEC_PER_MIN)
 #endif
 
-#define ZBX_CPU_STATE_USER	0
-#define ZBX_CPU_STATE_SYSTEM	1
-#define ZBX_CPU_STATE_NICE	2
-#define ZBX_CPU_STATE_IDLE	3
-#define ZBX_CPU_STATE_INTERRUPT	4
-#define ZBX_CPU_STATE_IOWAIT	5
-#define ZBX_CPU_STATE_SOFTIRQ	6
-#define ZBX_CPU_STATE_STEAL	7
-#define ZBX_CPU_STATE_GCPU	8
-#define ZBX_CPU_STATE_GNICE	9
-#define ZBX_CPU_STATE_COUNT	10
+#define TRX_CPU_STATE_USER	0
+#define TRX_CPU_STATE_SYSTEM	1
+#define TRX_CPU_STATE_NICE	2
+#define TRX_CPU_STATE_IDLE	3
+#define TRX_CPU_STATE_INTERRUPT	4
+#define TRX_CPU_STATE_IOWAIT	5
+#define TRX_CPU_STATE_SOFTIRQ	6
+#define TRX_CPU_STATE_STEAL	7
+#define TRX_CPU_STATE_GCPU	8
+#define TRX_CPU_STATE_GNICE	9
+#define TRX_CPU_STATE_COUNT	10
 
-#define ZBX_PROC_STAT_ALL	0
-#define ZBX_PROC_STAT_RUN	1
-#define ZBX_PROC_STAT_SLEEP	2
-#define ZBX_PROC_STAT_ZOMB	3
-#define ZBX_PROC_STAT_DISK	4
-#define ZBX_PROC_STAT_TRACE	5
+#define TRX_PROC_STAT_ALL	0
+#define TRX_PROC_STAT_RUN	1
+#define TRX_PROC_STAT_SLEEP	2
+#define TRX_PROC_STAT_ZOMB	3
+#define TRX_PROC_STAT_DISK	4
+#define TRX_PROC_STAT_TRACE	5
 
-#define ZBX_DO_SUM		0
-#define ZBX_DO_MAX		1
-#define ZBX_DO_MIN		2
-#define ZBX_DO_AVG		3
-#define ZBX_DO_ONE		4
+#define TRX_DO_SUM		0
+#define TRX_DO_MAX		1
+#define TRX_DO_MIN		2
+#define TRX_DO_AVG		3
+#define TRX_DO_ONE		4
 
-#define ZBX_DSTAT_TYPE_SECT	0
-#define ZBX_DSTAT_TYPE_OPER	1
-#define ZBX_DSTAT_TYPE_BYTE	2
-#define ZBX_DSTAT_TYPE_SPS	3
-#define ZBX_DSTAT_TYPE_OPS	4
-#define ZBX_DSTAT_TYPE_BPS	5
+#define TRX_DSTAT_TYPE_SECT	0
+#define TRX_DSTAT_TYPE_OPER	1
+#define TRX_DSTAT_TYPE_BYTE	2
+#define TRX_DSTAT_TYPE_SPS	3
+#define TRX_DSTAT_TYPE_OPS	4
+#define TRX_DSTAT_TYPE_BPS	5
 
 /* disk statistics */
-#define ZBX_DSTAT_R_SECT	0
-#define ZBX_DSTAT_R_OPER	1
-#define ZBX_DSTAT_R_BYTE	2
-#define ZBX_DSTAT_W_SECT	3
-#define ZBX_DSTAT_W_OPER	4
-#define ZBX_DSTAT_W_BYTE	5
-#define ZBX_DSTAT_MAX		6
+#define TRX_DSTAT_R_SECT	0
+#define TRX_DSTAT_R_OPER	1
+#define TRX_DSTAT_R_BYTE	2
+#define TRX_DSTAT_W_SECT	3
+#define TRX_DSTAT_W_OPER	4
+#define TRX_DSTAT_W_BYTE	5
+#define TRX_DSTAT_MAX		6
 int	get_diskstat(const char *devname, zbx_uint64_t *dstat);
 
 /* flags for process */
@@ -175,7 +175,7 @@ int	get_diskstat(const char *devname, zbx_uint64_t *dstat);
 #define PROCESS_WITH_ALIAS	0x4
 
 void	init_metrics(void);
-int	add_metric(ZBX_METRIC *metric, char *error, size_t max_error_len);
+int	add_metric(TRX_METRIC *metric, char *error, size_t max_error_len);
 void	free_metrics(void);
 
 int	process(const char *in_command, unsigned flags, AGENT_RESULT *result);
@@ -210,7 +210,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	KERNEL_MAXFILES(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	KERNEL_MAXPROC(AGENT_REQUEST *request, AGENT_RESULT *result);
 
-#ifdef ZBX_PROCSTAT_COLLECTOR
+#ifdef TRX_PROCSTAT_COLLECTOR
 int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result);
 #endif
 
@@ -286,16 +286,16 @@ MODE_FUNCTION;
 int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *request, AGENT_RESULT *result);
 
 /* the fields used by proc queries */
-#define ZBX_SYSINFO_PROC_NONE		0x0000
-#define ZBX_SYSINFO_PROC_PID		0x0001
-#define ZBX_SYSINFO_PROC_NAME		0x0002
-#define ZBX_SYSINFO_PROC_CMDLINE	0x0004
-#define ZBX_SYSINFO_PROC_USER		0x0008
+#define TRX_SYSINFO_PROC_NONE		0x0000
+#define TRX_SYSINFO_PROC_PID		0x0001
+#define TRX_SYSINFO_PROC_NAME		0x0002
+#define TRX_SYSINFO_PROC_CMDLINE	0x0004
+#define TRX_SYSINFO_PROC_USER		0x0008
 
 #ifdef _WINDOWS
-#define ZBX_MUTEX_ALL_ALLOW		0
-#define ZBX_MUTEX_THREAD_DENIED		1
-#define ZBX_MUTEX_LOGGING_DENIED	2
+#define TRX_MUTEX_ALL_ALLOW		0
+#define TRX_MUTEX_THREAD_DENIED		1
+#define TRX_MUTEX_LOGGING_DENIED	2
 zbx_uint32_t get_thread_global_mutex_flag(void);
 #endif
 

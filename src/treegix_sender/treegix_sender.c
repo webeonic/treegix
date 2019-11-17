@@ -57,7 +57,7 @@ const char	*usage_message[] = {
 	NULL	/* end of text */
 };
 
-unsigned char	program_type	= ZBX_PROGRAM_TYPE_SENDER;
+unsigned char	program_type	= TRX_PROGRAM_TYPE_SENDER;
 
 const char	*help_message[] = {
 	"Utility for sending monitoring data to Treegix server or proxy.",
@@ -74,7 +74,7 @@ const char	*help_message[] = {
 	"                             server or proxy. When used together with --config,",
 	"                             overrides the port of the first entry of",
 	"                             \"ServerActive\" parameter specified in agentd",
-	"                             configuration file (default: " ZBX_DEFAULT_SERVER_PORT_STR ")",
+	"                             configuration file (default: " TRX_DEFAULT_SERVER_PORT_STR ")",
 	"",
 	"  -I --source-address IP-address   Specify source IP address. When used",
 	"                             together with --config, overrides \"SourceIP\"",
@@ -165,8 +165,8 @@ const char	*help_message[] = {
 };
 
 /* TLS parameters */
-unsigned int	configured_tls_connect_mode = ZBX_TCP_SEC_UNENCRYPTED;
-unsigned int	configured_tls_accept_modes = ZBX_TCP_SEC_UNENCRYPTED;	/* not used in treegix_sender, just for */
+unsigned int	configured_tls_connect_mode = TRX_TCP_SEC_UNENCRYPTED;
+unsigned int	configured_tls_accept_modes = TRX_TCP_SEC_UNENCRYPTED;	/* not used in treegix_sender, just for */
 									/* linking with tls.c */
 char	*CONFIG_TLS_CONNECT		= NULL;
 char	*CONFIG_TLS_ACCEPT		= NULL;	/* not used in treegix_sender, just for linking with tls.c */
@@ -234,7 +234,7 @@ typedef struct
 {
 	char			*host;
 	unsigned short		port;
-	ZBX_THREAD_HANDLE	*thread;
+	TRX_THREAD_HANDLE	*thread;
 }
 zbx_send_destinations_t;
 
@@ -263,7 +263,7 @@ static void	send_signal_handler(int sig)
 	}
 #undef CASE_LOG_WARNING
 
-	/* Calling _exit() to terminate the process immediately is important. See ZBX-5732 for details. */
+	/* Calling _exit() to terminate the process immediately is important. See TRX-5732 for details. */
 	/* Return FAIL instead of EXIT_FAILURE to keep return signals consistent for send_value() */
 	_exit(FAIL);
 }
@@ -275,11 +275,11 @@ typedef struct
 	unsigned short	port;
 	struct zbx_json	json;
 #if defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
-	ZBX_THREAD_SENDVAL_TLS_ARGS	tls_vars;
+	TRX_THREAD_SENDVAL_TLS_ARGS	tls_vars;
 #endif
 	int		sync_timestamp;
 }
-ZBX_THREAD_SENDVAL_ARGS;
+TRX_THREAD_SENDVAL_ARGS;
 
 #define SUCCEED_PARTIAL	2
 
@@ -305,7 +305,7 @@ ZBX_THREAD_SENDVAL_ARGS;
  *           SUCCEED statuses that come after should not overwrite it         *
  *                                                                            *
  ******************************************************************************/
-static int	sender_threads_wait(ZBX_THREAD_HANDLE *threads, int threads_num, const int old_status)
+static int	sender_threads_wait(TRX_THREAD_HANDLE *threads, int threads_num, const int old_status)
 {
 	int		i, sp_count = 0, fail_count = 0;
 #if defined(_WINDOWS)
@@ -334,7 +334,7 @@ static int	sender_threads_wait(ZBX_THREAD_HANDLE *threads, int threads_num, cons
 			}
 		}
 
-		threads[i] = ZBX_THREAD_HANDLE_NULL;
+		threads[i] = TRX_THREAD_HANDLE_NULL;
 	}
 
 	if (threads_num == fail_count)
@@ -473,12 +473,12 @@ static int	check_response(char *response, const char *server, unsigned short por
 	ret = zbx_json_open(response, &jp);
 
 	if (SUCCEED == ret)
-		ret = zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_RESPONSE, value, sizeof(value));
+		ret = zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value));
 
-	if (SUCCEED == ret && 0 != strcmp(value, ZBX_PROTO_VALUE_SUCCESS))
+	if (SUCCEED == ret && 0 != strcmp(value, TRX_PROTO_VALUE_SUCCESS))
 		ret = FAIL;
 
-	if (SUCCEED == ret && SUCCEED == zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_INFO, info, sizeof(info)))
+	if (SUCCEED == ret && SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, info, sizeof(info)))
 	{
 		int	failed;
 
@@ -492,15 +492,15 @@ static int	check_response(char *response, const char *server, unsigned short por
 	return ret;
 }
 
-static	ZBX_THREAD_ENTRY(send_value, args)
+static	TRX_THREAD_ENTRY(send_value, args)
 {
-	ZBX_THREAD_SENDVAL_ARGS	*sendval_args = (ZBX_THREAD_SENDVAL_ARGS *)((zbx_thread_args_t *)args)->args;
+	TRX_THREAD_SENDVAL_ARGS	*sendval_args = (TRX_THREAD_SENDVAL_ARGS *)((zbx_thread_args_t *)args)->args;
 	int			tcp_ret, ret = FAIL;
 	char			*tls_arg1, *tls_arg2;
 	zbx_socket_t		sock;
 
 #if defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
-	if (ZBX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
+	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 	{
 		/* take TLS data passed from 'main' thread */
 		zbx_tls_take_vars(&sendval_args->tls_vars);
@@ -517,16 +517,16 @@ static	ZBX_THREAD_ENTRY(send_value, args)
 #endif
 	switch (configured_tls_connect_mode)
 	{
-		case ZBX_TCP_SEC_UNENCRYPTED:
+		case TRX_TCP_SEC_UNENCRYPTED:
 			tls_arg1 = NULL;
 			tls_arg2 = NULL;
 			break;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		case ZBX_TCP_SEC_TLS_CERT:
+		case TRX_TCP_SEC_TLS_CERT:
 			tls_arg1 = CONFIG_TLS_SERVER_CERT_ISSUER;
 			tls_arg2 = CONFIG_TLS_SERVER_CERT_SUBJECT;
 			break;
-		case ZBX_TCP_SEC_TLS_PSK:
+		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = CONFIG_TLS_PSK_IDENTITY;
 			tls_arg2 = NULL;	/* zbx_tls_connect() will find PSK */
 			break;
@@ -545,8 +545,8 @@ static	ZBX_THREAD_ENTRY(send_value, args)
 
 			zbx_timespec(&ts);
 
-			zbx_json_adduint64(&sendval_args->json, ZBX_PROTO_TAG_CLOCK, ts.sec);
-			zbx_json_adduint64(&sendval_args->json, ZBX_PROTO_TAG_NS, ts.ns);
+			zbx_json_adduint64(&sendval_args->json, TRX_PROTO_TAG_CLOCK, ts.sec);
+			zbx_json_adduint64(&sendval_args->json, TRX_PROTO_TAG_NS, ts.ns);
 		}
 
 		if (SUCCEED == (tcp_ret = zbx_tcp_send(&sock, sendval_args->json.buffer)))
@@ -591,12 +591,12 @@ out:
  *                value at least at one destination failed                    *
  *                                                                            *
  ******************************************************************************/
-static int	perform_data_sending(ZBX_THREAD_SENDVAL_ARGS *sendval_args, int old_status)
+static int	perform_data_sending(TRX_THREAD_SENDVAL_ARGS *sendval_args, int old_status)
 {
 	int			i, ret;
-	ZBX_THREAD_HANDLE	*threads = NULL;
+	TRX_THREAD_HANDLE	*threads = NULL;
 
-	threads = (ZBX_THREAD_HANDLE *)zbx_calloc(threads, destinations_count, sizeof(ZBX_THREAD_HANDLE));
+	threads = (TRX_THREAD_HANDLE *)zbx_calloc(threads, destinations_count, sizeof(TRX_THREAD_HANDLE));
 
 	for (i = 0; i < destinations_count; i++)
 	{
@@ -727,7 +727,7 @@ static void	zbx_load_config(const char *config_file)
 	};
 
 	/* do not complain about unknown parameters in agent configuration file */
-	parse_cfg_file(config_file, cfg, ZBX_CFG_FILE_REQUIRED, ZBX_CFG_NOT_STRICT);
+	parse_cfg_file(config_file, cfg, TRX_CFG_FILE_REQUIRED, TRX_CFG_NOT_STRICT);
 
 	zbx_fill_from_config_file(&CONFIG_SOURCE_IP, cfg_source_ip);
 
@@ -887,7 +887,7 @@ static void	parse_commandline(int argc, char **argv)
 			}
 		}
 		else
-			port = (unsigned short)ZBX_DEFAULT_SERVER_PORT;
+			port = (unsigned short)TRX_DEFAULT_SERVER_PORT;
 
 		sender_add_serveractive_host_cb(TREEGIX_SERVER, port);
 	}
@@ -1161,7 +1161,7 @@ int	main(int argc, char **argv)
 {
 	char			*error = NULL;
 	int			total_count = 0, succeed_count = 0, ret = FAIL, timestamp;
-	ZBX_THREAD_SENDVAL_ARGS	*sendval_args = NULL;
+	TRX_THREAD_SENDVAL_ARGS	*sendval_args = NULL;
 
 	progname = get_program_name(argv[0]);
 
@@ -1213,7 +1213,7 @@ int	main(int argc, char **argv)
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 		zbx_tls_validate_config();
 
-		if (ZBX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
+		if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 		{
 #if defined(_WINDOWS)
 			zbx_tls_init_parent();
@@ -1227,19 +1227,19 @@ int	main(int argc, char **argv)
 #endif
 	}
 
-	sendval_args = (ZBX_THREAD_SENDVAL_ARGS *)zbx_calloc(sendval_args, destinations_count,
-			sizeof(ZBX_THREAD_SENDVAL_ARGS));
+	sendval_args = (TRX_THREAD_SENDVAL_ARGS *)zbx_calloc(sendval_args, destinations_count,
+			sizeof(TRX_THREAD_SENDVAL_ARGS));
 
 #if defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
-	if (ZBX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
+	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 	{
 		/* prepare to pass necessary TLS data to 'send_value' thread (to be started soon) */
 		zbx_tls_pass_vars(&sendval_args->tls_vars);
 	}
 #endif
-	zbx_json_init(&sendval_args->json, ZBX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_SENDER_DATA, ZBX_JSON_TYPE_STRING);
-	zbx_json_addarray(&sendval_args->json, ZBX_PROTO_TAG_DATA);
+	zbx_json_init(&sendval_args->json, TRX_JSON_STAT_BUF_LEN);
+	zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_SENDER_DATA, TRX_JSON_TYPE_STRING);
+	zbx_json_addarray(&sendval_args->json, TRX_PROTO_TAG_DATA);
 
 	if (INPUT_FILE)
 	{
@@ -1354,11 +1354,11 @@ int	main(int argc, char **argv)
 			}
 
 			zbx_json_addobject(&sendval_args->json, NULL);
-			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_HOST, hostname, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_KEY, key, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_VALUE, key_value, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_HOST, hostname, TRX_JSON_TYPE_STRING);
+			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_KEY, key, TRX_JSON_TYPE_STRING);
+			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_VALUE, key_value, TRX_JSON_TYPE_STRING);
 			if (1 == WITH_TIMESTAMPS)
-				zbx_json_adduint64(&sendval_args->json, ZBX_PROTO_TAG_CLOCK, timestamp);
+				zbx_json_adduint64(&sendval_args->json, TRX_PROTO_TAG_CLOCK, timestamp);
 			zbx_json_close(&sendval_args->json);
 
 			succeed_count++;
@@ -1401,9 +1401,9 @@ int	main(int argc, char **argv)
 
 				buffer_count = 0;
 				zbx_json_clean(&sendval_args->json);
-				zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_REQUEST,
-						ZBX_PROTO_VALUE_SENDER_DATA, ZBX_JSON_TYPE_STRING);
-				zbx_json_addarray(&sendval_args->json, ZBX_PROTO_TAG_DATA);
+				zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_REQUEST,
+						TRX_PROTO_VALUE_SENDER_DATA, TRX_JSON_TYPE_STRING);
+				zbx_json_addarray(&sendval_args->json, TRX_PROTO_TAG_DATA);
 			}
 		}
 
@@ -1445,9 +1445,9 @@ int	main(int argc, char **argv)
 			ret = SUCCEED;
 
 			zbx_json_addobject(&sendval_args->json, NULL);
-			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_HOST, TREEGIX_HOSTNAME, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_KEY, TREEGIX_KEY, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, ZBX_PROTO_TAG_VALUE, TREEGIX_KEY_VALUE, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_HOST, TREEGIX_HOSTNAME, TRX_JSON_TYPE_STRING);
+			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_KEY, TREEGIX_KEY, TRX_JSON_TYPE_STRING);
+			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_VALUE, TREEGIX_KEY_VALUE, TRX_JSON_TYPE_STRING);
 			zbx_json_close(&sendval_args->json);
 
 			succeed_count++;
@@ -1471,7 +1471,7 @@ exit:
 	}
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	if (ZBX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
+	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 	{
 		zbx_tls_free();
 #if defined(_WINDOWS)

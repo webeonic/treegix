@@ -4,8 +4,8 @@
 (function($) {
 	"use strict";
 
-	var ZBX_WIDGET_VIEW_MODE_NORMAL = 0,
-		ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER = 1;
+	var TRX_WIDGET_VIEW_MODE_NORMAL = 0,
+		TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER = 1;
 
 	function makeWidgetDiv($obj, data, widget) {
 		var iterator_classes = {
@@ -136,7 +136,7 @@
 		}
 
 		var $div = $('<div>', {'class': classes['root']})
-				.toggleClass(classes['hidden_header'], widget['view_mode'] == ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER)
+				.toggleClass(classes['hidden_header'], widget['view_mode'] == TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER)
 				.toggleClass('new-widget', widget['new_widget']);
 
 		if (!widget['parent']) {
@@ -445,7 +445,7 @@
 				: 'dashbrd-grid-widget-hidden-header';
 
 		if (widget['iterator']) {
-			if (view_mode == ZBX_WIDGET_VIEW_MODE_NORMAL) {
+			if (view_mode == TRX_WIDGET_VIEW_MODE_NORMAL) {
 				widget['div'].removeClass('iterator-double-header');
 			}
 
@@ -454,7 +454,7 @@
 			});
 		}
 
-		widget['div'].toggleClass(hidden_header_class, view_mode == ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER);
+		widget['div'].toggleClass(hidden_header_class, view_mode == TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER);
 	}
 
 	function updateIteratorPager(iterator) {
@@ -2212,7 +2212,7 @@
 		var	fields = $('form', data.dialogue['body']).serializeJSON(),
 			type = fields['type'],
 			name = fields['name'],
-			view_mode = (fields['show_header'] == 1) ? ZBX_WIDGET_VIEW_MODE_NORMAL : ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER,
+			view_mode = (fields['show_header'] == 1) ? TRX_WIDGET_VIEW_MODE_NORMAL : TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER,
 			pos;
 
 		delete fields['type'];
@@ -3255,7 +3255,7 @@
 				'widgetid': '',
 				'type': '',
 				'header': '',
-				'view_mode': ZBX_WIDGET_VIEW_MODE_NORMAL,
+				'view_mode': TRX_WIDGET_VIEW_MODE_NORMAL,
 				'pos': {
 					'x': 0,
 					'y': 0,
@@ -3515,8 +3515,8 @@
 					if (ajax_data['prev_type'] === ajax_data['type']) {
 						ajax_data['name'] = fields['name'];
 						ajax_data['view_mode'] = (fields['show_header'] == 1)
-							? ZBX_WIDGET_VIEW_MODE_NORMAL
-							: ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER;
+							? TRX_WIDGET_VIEW_MODE_NORMAL
+							: TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER;
 
 						delete fields['name'];
 						delete fields['show_header'];

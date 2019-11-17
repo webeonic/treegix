@@ -10,10 +10,10 @@ $page['file'] = 'adm.workingtime.php';
 require_once dirname(__FILE__).'/include/page_header.php';
 
 $fields = [
-	'work_period' =>	[T_ZBX_TP, O_OPT, null, null, 'isset({update})', _('Working time')],
+	'work_period' =>	[T_TRX_TP, O_OPT, null, null, 'isset({update})', _('Working time')],
 	// actions
-	'update' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null, null],
-	'form_refresh' =>	[T_ZBX_INT, O_OPT, null, null, null]
+	'update' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null, null],
+	'form_refresh' =>	[T_TRX_INT, O_OPT, null, null, null]
 ];
 check_fields($fields);
 

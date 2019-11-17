@@ -12,18 +12,18 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'from' =>			[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,				null],
-	'to' =>				[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,				null],
-	'profileIdx' =>		[T_ZBX_STR,			O_OPT, null,	null,				null],
-	'profileIdx2' =>	[T_ZBX_STR,			O_OPT, null,	null,				null],
-	'name' =>			[T_ZBX_STR,			O_OPT, null,	null,				null],
-	'width' =>			[T_ZBX_INT,			O_OPT, null,	BETWEEN(CPieGraphDraw::GRAPH_WIDTH_MIN, 65535),		null],
-	'height' =>			[T_ZBX_INT,			O_OPT, null,	BETWEEN(CPieGraphDraw::GRAPH_HEIGHT_MIN, 65535),	null],
-	'graphtype' =>		[T_ZBX_INT,			O_OPT, null,	IN('2,3'),			null],
-	'graph3d' =>		[T_ZBX_INT,			O_OPT, P_NZERO,	IN('0,1'),			null],
-	'legend' =>			[T_ZBX_INT,			O_OPT, null,	IN('0,1'),			null],
-	'items' =>			[T_ZBX_STR,			O_OPT, null,	null,				null],
-	'widget_view' =>	[T_ZBX_INT,			O_OPT, null,	IN('0,1'),			null]
+	'from' =>			[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,				null],
+	'to' =>				[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,				null],
+	'profileIdx' =>		[T_TRX_STR,			O_OPT, null,	null,				null],
+	'profileIdx2' =>	[T_TRX_STR,			O_OPT, null,	null,				null],
+	'name' =>			[T_TRX_STR,			O_OPT, null,	null,				null],
+	'width' =>			[T_TRX_INT,			O_OPT, null,	BETWEEN(CPieGraphDraw::GRAPH_WIDTH_MIN, 65535),		null],
+	'height' =>			[T_TRX_INT,			O_OPT, null,	BETWEEN(CPieGraphDraw::GRAPH_HEIGHT_MIN, 65535),	null],
+	'graphtype' =>		[T_TRX_INT,			O_OPT, null,	IN('2,3'),			null],
+	'graph3d' =>		[T_TRX_INT,			O_OPT, P_NZERO,	IN('0,1'),			null],
+	'legend' =>			[T_TRX_INT,			O_OPT, null,	IN('0,1'),			null],
+	'items' =>			[T_TRX_STR,			O_OPT, null,	null,				null],
+	'widget_view' =>	[T_TRX_INT,			O_OPT, null,	IN('0,1'),			null]
 ];
 if (!check_fields($fields)) {
 	exit();
@@ -45,7 +45,7 @@ CArrayHelper::sort($items, ['sortorder']);
 $dbItems = API::Item()->get([
 	'itemids' => zbx_objectValues($items, 'itemid'),
 	'filter' => [
-		'flags' => [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_PROTOTYPE, ZBX_FLAG_DISCOVERY_CREATED]
+		'flags' => [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_PROTOTYPE, TRX_FLAG_DISCOVERY_CREATED]
 	],
 	'output' => ['itemid'],
 	'webitems' => true,

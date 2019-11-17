@@ -9,7 +9,7 @@
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
 
-ZBX_THREAD_ENTRY(selfmon_thread, args)
+TRX_THREAD_ENTRY(selfmon_thread, args)
 {
 	double	sec;
 
@@ -20,7 +20,7 @@ ZBX_THREAD_ENTRY(selfmon_thread, args)
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 		zbx_update_env(sec);
@@ -30,10 +30,10 @@ ZBX_THREAD_ENTRY(selfmon_thread, args)
 		collect_selfmon_stats();
 		sec = zbx_time() - sec;
 
-		zbx_setproctitle("%s [processed data in " ZBX_FS_DBL " sec, idle 1 sec]",
+		zbx_setproctitle("%s [processed data in " TRX_FS_DBL " sec, idle 1 sec]",
 				get_process_type_string(process_type), sec);
 
-		zbx_sleep_loop(ZBX_SELFMON_DELAY);
+		zbx_sleep_loop(TRX_SELFMON_DELAY);
 	}
 
 	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);

@@ -12,7 +12,7 @@ class CHorList extends CList {
 	public function __construct(array $values = []) {
 		parent::__construct($values);
 
-		$this->addClass(ZBX_STYLE_HOR_LIST);
+		$this->addClass(TRX_STYLE_HOR_LIST);
 	}
 
 }

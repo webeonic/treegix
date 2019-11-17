@@ -194,15 +194,15 @@ static const char	*get_register_name(int reg)
 
 void	zbx_backtrace(void)
 {
-#	define	ZBX_BACKTRACE_SIZE	60
+#	define	TRX_BACKTRACE_SIZE	60
 #ifdef	HAVE_EXECINFO_H
 	char	**bcktrc_syms;
-	void	*bcktrc[ZBX_BACKTRACE_SIZE];
+	void	*bcktrc[TRX_BACKTRACE_SIZE];
 	int	bcktrc_sz, i;
 
 	treegix_log(LOG_LEVEL_CRIT, "=== Backtrace: ===");
 
-	bcktrc_sz = backtrace(bcktrc, ZBX_BACKTRACE_SIZE);
+	bcktrc_sz = backtrace(bcktrc, TRX_BACKTRACE_SIZE);
 	bcktrc_syms = backtrace_symbols(bcktrc, bcktrc_sz);
 
 	if (NULL == bcktrc_syms)
@@ -237,13 +237,13 @@ void	zbx_log_fatal_info(void *context, unsigned int flags)
 
 #	if	defined(REG_EIP)	/* i386 */
 
-#		define ZBX_GET_REG(uctx, reg)	(uctx)->uc_mcontext.gregs[reg]
-#		define ZBX_GET_PC(uctx)		ZBX_GET_REG(uctx, REG_EIP)
+#		define TRX_GET_REG(uctx, reg)	(uctx)->uc_mcontext.gregs[reg]
+#		define TRX_GET_PC(uctx)		TRX_GET_REG(uctx, REG_EIP)
 
 #	elif	defined(REG_RIP)	/* x86_64 */
 
-#		define ZBX_GET_REG(uctx, reg)	(uctx)->uc_mcontext.gregs[reg]
-#		define ZBX_GET_PC(uctx)		ZBX_GET_REG(uctx, REG_RIP)
+#		define TRX_GET_REG(uctx, reg)	(uctx)->uc_mcontext.gregs[reg]
+#		define TRX_GET_PC(uctx)		TRX_GET_REG(uctx, REG_RIP)
 
 #	endif
 
@@ -253,55 +253,55 @@ void	zbx_log_fatal_info(void *context, unsigned int flags)
 
 	treegix_log(LOG_LEVEL_CRIT, "====== Fatal information: ======");
 
-	if (0 != (flags & ZBX_FATAL_LOG_PC_REG_SF))
+	if (0 != (flags & TRX_FATAL_LOG_PC_REG_SF))
 	{
 #ifdef	HAVE_SYS_UCONTEXT_H
 
-#ifdef	ZBX_GET_PC
-		/* On 64-bit GNU/Linux ZBX_GET_PC() returns 'greg_t' defined as 'long long int' (8 bytes). */
+#ifdef	TRX_GET_PC
+		/* On 64-bit GNU/Linux TRX_GET_PC() returns 'greg_t' defined as 'long long int' (8 bytes). */
 		/* On 32-bit GNU/Linux it is defined as 'int' (4 bytes). To print registers in a common way we print */
 		/* them as 'long int' or 'unsigned long int' which is 8 bytes on 64-bit GNU/Linux and 4 bytes on */
 		/* 32-bit system. */
 
-		treegix_log(LOG_LEVEL_CRIT, "Program counter: %p", (void *)(ZBX_GET_PC(uctx)));
+		treegix_log(LOG_LEVEL_CRIT, "Program counter: %p", (void *)(TRX_GET_PC(uctx)));
 		treegix_log(LOG_LEVEL_CRIT, "=== Registers: ===");
 
 		for (i = 0; i < NGREG; i++)
 		{
 			treegix_log(LOG_LEVEL_CRIT, "%-7s = %16lx = %20lu = %20ld", get_register_name(i),
-					(unsigned long int)(ZBX_GET_REG(uctx, i)),
-					(unsigned long int)(ZBX_GET_REG(uctx, i)),
-					(long int)(ZBX_GET_REG(uctx, i)));
+					(unsigned long int)(TRX_GET_REG(uctx, i)),
+					(unsigned long int)(TRX_GET_REG(uctx, i)),
+					(long int)(TRX_GET_REG(uctx, i)));
 		}
 #ifdef	REG_EBP	/* dump a bit of stack frame for i386 */
 		treegix_log(LOG_LEVEL_CRIT, "=== Stack frame: ===");
 
 		for (i = 16; i >= 2; i--)
 		{
-			unsigned int	offset = (unsigned int)i * ZBX_PTR_SIZE;
+			unsigned int	offset = (unsigned int)i * TRX_PTR_SIZE;
 
 			treegix_log(LOG_LEVEL_CRIT, "+0x%02x(%%ebp) = ebp + %2d = %08x = %10u = %11d%s",
 					offset, (int)offset,
-					*(unsigned int *)((void *)ZBX_GET_REG(uctx, REG_EBP) + offset),
-					*(unsigned int *)((void *)ZBX_GET_REG(uctx, REG_EBP) + offset),
-					*(int *)((void *)ZBX_GET_REG(uctx, REG_EBP) + offset),
+					*(unsigned int *)((void *)TRX_GET_REG(uctx, REG_EBP) + offset),
+					*(unsigned int *)((void *)TRX_GET_REG(uctx, REG_EBP) + offset),
+					*(int *)((void *)TRX_GET_REG(uctx, REG_EBP) + offset),
 					i == 2 ? " <--- call arguments" : "");
 		}
 		treegix_log(LOG_LEVEL_CRIT, "+0x%02x(%%ebp) = ebp + %2d = %08x%28s<--- return address",
-					ZBX_PTR_SIZE, (int)ZBX_PTR_SIZE,
-					*(unsigned int *)((void *)ZBX_GET_REG(uctx, REG_EBP) + ZBX_PTR_SIZE), "");
+					TRX_PTR_SIZE, (int)TRX_PTR_SIZE,
+					*(unsigned int *)((void *)TRX_GET_REG(uctx, REG_EBP) + TRX_PTR_SIZE), "");
 		treegix_log(LOG_LEVEL_CRIT, "     (%%ebp) = ebp      = %08x%28s<--- saved ebp value",
-					*(unsigned int *)((void *)ZBX_GET_REG(uctx, REG_EBP)), "");
+					*(unsigned int *)((void *)TRX_GET_REG(uctx, REG_EBP)), "");
 
 		for (i = 1; i <= 16; i++)
 		{
-			unsigned int	offset = (unsigned int)i * ZBX_PTR_SIZE;
+			unsigned int	offset = (unsigned int)i * TRX_PTR_SIZE;
 
 			treegix_log(LOG_LEVEL_CRIT, "-0x%02x(%%ebp) = ebp - %2d = %08x = %10u = %11d%s",
 					offset, (int)offset,
-					*(unsigned int *)((void *)ZBX_GET_REG(uctx, REG_EBP) - offset),
-					*(unsigned int *)((void *)ZBX_GET_REG(uctx, REG_EBP) - offset),
-					*(int *)((void *)ZBX_GET_REG(uctx, REG_EBP) - offset),
+					*(unsigned int *)((void *)TRX_GET_REG(uctx, REG_EBP) - offset),
+					*(unsigned int *)((void *)TRX_GET_REG(uctx, REG_EBP) - offset),
+					*(int *)((void *)TRX_GET_REG(uctx, REG_EBP) - offset),
 					i == 1 ? " <--- local variables" : "");
 		}
 #endif	/* REG_EBP */
@@ -309,14 +309,14 @@ void	zbx_log_fatal_info(void *context, unsigned int flags)
 		treegix_log(LOG_LEVEL_CRIT, "program counter not available for this architecture");
 		treegix_log(LOG_LEVEL_CRIT, "=== Registers: ===");
 		treegix_log(LOG_LEVEL_CRIT, "register dump not available for this architecture");
-#endif	/* ZBX_GET_PC */
+#endif	/* TRX_GET_PC */
 #endif	/* HAVE_SYS_UCONTEXT_H */
 	}
 
-	if (0 != (flags & ZBX_FATAL_LOG_BACKTRACE))
+	if (0 != (flags & TRX_FATAL_LOG_BACKTRACE))
 		zbx_backtrace();
 
-	if (0 != (flags & ZBX_FATAL_LOG_MEM_MAP))
+	if (0 != (flags & TRX_FATAL_LOG_MEM_MAP))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "=== Memory map: ===");
 
@@ -338,7 +338,7 @@ void	zbx_log_fatal_info(void *context, unsigned int flags)
 			treegix_log(LOG_LEVEL_CRIT, "memory map not available for this platform");
 	}
 
-#ifdef	ZBX_GET_PC
+#ifdef	TRX_GET_PC
 	treegix_log(LOG_LEVEL_CRIT, "================================");
 	treegix_log(LOG_LEVEL_CRIT, "Please consider attaching a disassembly listing to your bug report.");
 	treegix_log(LOG_LEVEL_CRIT, "This listing can be produced with, e.g., objdump -DSswx %s.", progname);

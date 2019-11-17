@@ -560,7 +560,7 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		goto clean;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	zbx_ifrow_init(&ifrow);
 
@@ -577,7 +577,7 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		zbx_json_addobject(&j, NULL);
 
 		utf8_descr = zbx_ifrow_get_utf8_description(&ifrow);
-		zbx_json_addstring(&j, "{#IFNAME}", utf8_descr, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#IFNAME}", utf8_descr, TRX_JSON_TYPE_STRING);
 		zbx_free(utf8_descr);
 
 		zbx_json_close(&j);

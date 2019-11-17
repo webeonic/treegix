@@ -16,7 +16,7 @@ int	SYSTEM_SW_ARCH(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	struct utsname	name;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (-1 == uname(&name))
 	{
@@ -70,7 +70,7 @@ int     SYSTEM_SW_OS(AGENT_REQUEST *request, AGENT_RESULT *result)
 			while (NULL != fgets(tmp_line, sizeof(tmp_line), f))
 			{
 				if (0 != strncmp(tmp_line, SW_OS_OPTION_PRETTY_NAME,
-						ZBX_CONST_STRLEN(SW_OS_OPTION_PRETTY_NAME)))
+						TRX_CONST_STRLEN(SW_OS_OPTION_PRETTY_NAME)))
 					continue;
 
 				if (1 == sscanf(tmp_line, SW_OS_OPTION_PRETTY_NAME "=\"%[^\"]", line))
@@ -98,7 +98,7 @@ int     SYSTEM_SW_OS(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (SUCCEED == line_read || NULL != fgets(line, sizeof(line), f))
 	{
 		ret = SYSINFO_RET_OK;
-		zbx_rtrim(line, ZBX_WHITESPACE);
+		zbx_rtrim(line, TRX_WHITESPACE);
 		SET_STR_RESULT(result, zbx_strdup(NULL, line));
 	}
 	else
@@ -113,7 +113,7 @@ static int	dpkg_parser(const char *line, char *package, size_t max_package_len)
 {
 	char	fmt[32], tmp[32];
 
-	zbx_snprintf(fmt, sizeof(fmt), "%%" ZBX_FS_SIZE_T "s %%" ZBX_FS_SIZE_T "s",
+	zbx_snprintf(fmt, sizeof(fmt), "%%" TRX_FS_SIZE_T "s %%" TRX_FS_SIZE_T "s",
 			(zbx_fs_size_t)(max_package_len - 1), (zbx_fs_size_t)(sizeof(tmp) - 1));
 
 	if (2 != sscanf(line, fmt, package, tmp) || 0 != strcmp(tmp, "install"))
@@ -135,7 +135,7 @@ static size_t	print_packages(char *buffer, size_t size, zbx_vector_str_t *packag
 		if (NULL != manager)
 			offset += zbx_snprintf(buffer + offset, size - offset, " ");
 
-		zbx_vector_str_sort(packages, ZBX_DEFAULT_STR_COMPARE_FUNC);
+		zbx_vector_str_sort(packages, TRX_DEFAULT_STR_COMPARE_FUNC);
 
 		for (i = 0; i < packages->values_num; i++)
 			offset += zbx_snprintf(buffer + offset, size - offset, "%s, ", packages->values[i]);
@@ -148,7 +148,7 @@ static size_t	print_packages(char *buffer, size_t size, zbx_vector_str_t *packag
 	return offset;
 }
 
-static ZBX_PACKAGE_MANAGER	package_managers[] =
+static TRX_PACKAGE_MANAGER	package_managers[] =
 /*	NAME		TEST_CMD					LIST_CMD			PARSER */
 {
 	{"dpkg",	"dpkg --version 2> /dev/null",			"dpkg --get-selections",	dpkg_parser},
@@ -165,7 +165,7 @@ int	SYSTEM_SW_PACKAGES(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char			buffer[MAX_BUFFER_LEN], *regex, *manager, *mode, tmp[MAX_STRING_LEN], *buf = NULL,
 				*package;
 	zbx_vector_str_t	packages;
-	ZBX_PACKAGE_MANAGER	*mng;
+	TRX_PACKAGE_MANAGER	*mng;
 
 	if (3 < request->nparam)
 	{
@@ -201,11 +201,11 @@ int	SYSTEM_SW_PACKAGES(AGENT_REQUEST *request, AGENT_RESULT *result)
 			continue;
 
 		if (SUCCEED == zbx_execute(mng->test_cmd, &buf, tmp, sizeof(tmp), CONFIG_TIMEOUT,
-				ZBX_EXIT_CODE_CHECKS_DISABLED) &&
+				TRX_EXIT_CODE_CHECKS_DISABLED) &&
 				'\0' != *buf)	/* consider PMS present, if test_cmd outputs anything to stdout */
 		{
 			if (SUCCEED != zbx_execute(mng->list_cmd, &buf, tmp, sizeof(tmp), CONFIG_TIMEOUT,
-					ZBX_EXIT_CODE_CHECKS_DISABLED))
+					TRX_EXIT_CODE_CHECKS_DISABLED))
 			{
 				continue;
 			}

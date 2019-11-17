@@ -11,7 +11,7 @@ static int	parse_log_level_options(const char *opt, size_t len, unsigned int *sc
 
 	if ('\0' == *rtc_options)
 	{
-		*scope = ZBX_RTC_LOG_SCOPE_FLAG | ZBX_RTC_LOG_SCOPE_PID;
+		*scope = TRX_RTC_LOG_SCOPE_FLAG | TRX_RTC_LOG_SCOPE_PID;
 		*data = 0;
 	}
 	else if ('=' != *rtc_options)
@@ -28,7 +28,7 @@ static int	parse_log_level_options(const char *opt, size_t len, unsigned int *sc
 			return FAIL;
 		}
 
-		*scope = ZBX_RTC_LOG_SCOPE_FLAG | ZBX_RTC_LOG_SCOPE_PID;
+		*scope = TRX_RTC_LOG_SCOPE_FLAG | TRX_RTC_LOG_SCOPE_PID;
 		*data = num;
 	}
 	else
@@ -54,7 +54,7 @@ static int	parse_log_level_options(const char *opt, size_t len, unsigned int *sc
 			return FAIL;
 		}
 
-		if (ZBX_PROCESS_TYPE_UNKNOWN == (proc_type = get_process_type_by_name(proc_name)))
+		if (TRX_PROCESS_TYPE_UNKNOWN == (proc_type = get_process_type_by_name(proc_name)))
 		{
 			zbx_error("invalid log level control target: unknown process type \"%s\"", proc_name);
 			zbx_free(proc_name);
@@ -82,7 +82,7 @@ static int	parse_log_level_options(const char *opt, size_t len, unsigned int *sc
 
 		zbx_free(proc_name);
 
-		*scope = ZBX_RTC_LOG_SCOPE_PROC | (unsigned int)proc_type;
+		*scope = TRX_RTC_LOG_SCOPE_PROC | (unsigned int)proc_type;
 		*data = num;
 	}
 
@@ -109,31 +109,31 @@ int	parse_rtc_options(const char *opt, unsigned char program_type, int *message)
 {
 	unsigned int	scope, data, command;
 
-	if (0 == strncmp(opt, ZBX_LOG_LEVEL_INCREASE, ZBX_CONST_STRLEN(ZBX_LOG_LEVEL_INCREASE)))
+	if (0 == strncmp(opt, TRX_LOG_LEVEL_INCREASE, TRX_CONST_STRLEN(TRX_LOG_LEVEL_INCREASE)))
 	{
-		command = ZBX_RTC_LOG_LEVEL_INCREASE;
+		command = TRX_RTC_LOG_LEVEL_INCREASE;
 
-		if (SUCCEED != parse_log_level_options(opt, ZBX_CONST_STRLEN(ZBX_LOG_LEVEL_INCREASE), &scope, &data))
+		if (SUCCEED != parse_log_level_options(opt, TRX_CONST_STRLEN(TRX_LOG_LEVEL_INCREASE), &scope, &data))
 			return FAIL;
 	}
-	else if (0 == strncmp(opt, ZBX_LOG_LEVEL_DECREASE, ZBX_CONST_STRLEN(ZBX_LOG_LEVEL_DECREASE)))
+	else if (0 == strncmp(opt, TRX_LOG_LEVEL_DECREASE, TRX_CONST_STRLEN(TRX_LOG_LEVEL_DECREASE)))
 	{
-		command = ZBX_RTC_LOG_LEVEL_DECREASE;
+		command = TRX_RTC_LOG_LEVEL_DECREASE;
 
-		if (SUCCEED != parse_log_level_options(opt, ZBX_CONST_STRLEN(ZBX_LOG_LEVEL_DECREASE), &scope, &data))
+		if (SUCCEED != parse_log_level_options(opt, TRX_CONST_STRLEN(TRX_LOG_LEVEL_DECREASE), &scope, &data))
 			return FAIL;
 	}
-	else if (0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY)) &&
-			0 == strcmp(opt, ZBX_CONFIG_CACHE_RELOAD))
+	else if (0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY)) &&
+			0 == strcmp(opt, TRX_CONFIG_CACHE_RELOAD))
 	{
-		command = ZBX_RTC_CONFIG_CACHE_RELOAD;
+		command = TRX_RTC_CONFIG_CACHE_RELOAD;
 		scope = 0;
 		data = 0;
 	}
-	else if (0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY)) &&
-			0 == strcmp(opt, ZBX_HOUSEKEEPER_EXECUTE))
+	else if (0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY)) &&
+			0 == strcmp(opt, TRX_HOUSEKEEPER_EXECUTE))
 	{
-		command = ZBX_RTC_HOUSEKEEPER_EXECUTE;
+		command = TRX_RTC_HOUSEKEEPER_EXECUTE;
 		scope = 0;
 		data = 0;
 	}
@@ -143,7 +143,7 @@ int	parse_rtc_options(const char *opt, unsigned char program_type, int *message)
 		return FAIL;
 	}
 
-	*message = (int)ZBX_RTC_MAKE_MESSAGE(command, scope, data);
+	*message = (int)TRX_RTC_MAKE_MESSAGE(command, scope, data);
 
 	return SUCCEED;
 }

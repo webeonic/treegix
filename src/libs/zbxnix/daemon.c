@@ -37,9 +37,9 @@ static void	(*zbx_sigusr_handler)(int flags);
  ******************************************************************************/
 static void	common_sigusr_handler(int flags)
 {
-	switch (ZBX_RTC_GET_MSG(flags))
+	switch (TRX_RTC_GET_MSG(flags))
 	{
-		case ZBX_RTC_LOG_LEVEL_INCREASE:
+		case TRX_RTC_LOG_LEVEL_INCREASE:
 			if (SUCCEED != treegix_increase_log_level())
 			{
 				treegix_log(LOG_LEVEL_INFORMATION, "cannot increase log level:"
@@ -51,7 +51,7 @@ static void	common_sigusr_handler(int flags)
 						treegix_get_log_level_string());
 			}
 			break;
-		case ZBX_RTC_LOG_LEVEL_DECREASE:
+		case TRX_RTC_LOG_LEVEL_DECREASE:
 			if (SUCCEED != treegix_decrease_log_level())
 			{
 				treegix_log(LOG_LEVEL_INFORMATION, "cannot decrease log level:"
@@ -76,7 +76,7 @@ static void	zbx_signal_process_by_type(int proc_type, int proc_num, int flags)
 	union sigval	s;
 	unsigned char	process_type;
 
-	s.ZBX_SIVAL_INT = flags;
+	s.TRX_SIVAL_INT = flags;
 
 	for (i = 0; i < threads_num; i++)
 	{
@@ -128,11 +128,11 @@ static void	zbx_signal_process_by_pid(int pid, int flags)
 	union sigval	s;
 	int		i, found = 0;
 
-	s.ZBX_SIVAL_INT = flags;
+	s.TRX_SIVAL_INT = flags;
 
 	for (i = 0; i < threads_num; i++)
 	{
-		if (0 != pid && threads[i] != ZBX_RTC_GET_DATA(flags))
+		if (0 != pid && threads[i] != TRX_RTC_GET_DATA(flags))
 			continue;
 
 		found = 1;
@@ -146,10 +146,10 @@ static void	zbx_signal_process_by_pid(int pid, int flags)
 			treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: %s", zbx_strerror(errno));
 	}
 
-	if (0 != ZBX_RTC_GET_DATA(flags) && 0 == found)
+	if (0 != TRX_RTC_GET_DATA(flags) && 0 == found)
 	{
 		treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: process pid:%d is not a Treegix child"
-				" process", ZBX_RTC_GET_DATA(flags));
+				" process", TRX_RTC_GET_DATA(flags));
 	}
 }
 
@@ -178,10 +178,10 @@ static void	user1_signal_handler(int sig, siginfo_t *siginfo, void *context)
 			sig, get_signal_name(sig),
 			SIG_CHECKED_FIELD(siginfo, si_pid),
 			SIG_CHECKED_FIELD(siginfo, si_uid),
-			SIG_CHECKED_FIELD(siginfo, si_value.ZBX_SIVAL_INT),
-			(unsigned int)SIG_CHECKED_FIELD(siginfo, si_value.ZBX_SIVAL_INT));
+			SIG_CHECKED_FIELD(siginfo, si_value.TRX_SIVAL_INT),
+			(unsigned int)SIG_CHECKED_FIELD(siginfo, si_value.TRX_SIVAL_INT));
 #ifdef HAVE_SIGQUEUE
-	flags = SIG_CHECKED_FIELD(siginfo, si_value.ZBX_SIVAL_INT);
+	flags = SIG_CHECKED_FIELD(siginfo, si_value.TRX_SIVAL_INT);
 
 	if (!SIG_PARENT_PROCESS)
 	{
@@ -195,27 +195,27 @@ static void	user1_signal_handler(int sig, siginfo_t *siginfo, void *context)
 		return;
 	}
 
-	switch (ZBX_RTC_GET_MSG(flags))
+	switch (TRX_RTC_GET_MSG(flags))
 	{
-		case ZBX_RTC_CONFIG_CACHE_RELOAD:
-			if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY_PASSIVE))
+		case TRX_RTC_CONFIG_CACHE_RELOAD:
+			if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY_PASSIVE))
 			{
 				treegix_log(LOG_LEVEL_WARNING, "forced reloading of the configuration cache"
 						" cannot be performed for a passive proxy");
 				return;
 			}
 
-			zbx_signal_process_by_type(ZBX_PROCESS_TYPE_CONFSYNCER, 1, flags);
+			zbx_signal_process_by_type(TRX_PROCESS_TYPE_CONFSYNCER, 1, flags);
 			break;
-		case ZBX_RTC_HOUSEKEEPER_EXECUTE:
-			zbx_signal_process_by_type(ZBX_PROCESS_TYPE_HOUSEKEEPER, 1, flags);
+		case TRX_RTC_HOUSEKEEPER_EXECUTE:
+			zbx_signal_process_by_type(TRX_PROCESS_TYPE_HOUSEKEEPER, 1, flags);
 			break;
-		case ZBX_RTC_LOG_LEVEL_INCREASE:
-		case ZBX_RTC_LOG_LEVEL_DECREASE:
-			if ((ZBX_RTC_LOG_SCOPE_FLAG | ZBX_RTC_LOG_SCOPE_PID) == ZBX_RTC_GET_SCOPE(flags))
-				zbx_signal_process_by_pid(ZBX_RTC_GET_DATA(flags), flags);
+		case TRX_RTC_LOG_LEVEL_INCREASE:
+		case TRX_RTC_LOG_LEVEL_DECREASE:
+			if ((TRX_RTC_LOG_SCOPE_FLAG | TRX_RTC_LOG_SCOPE_PID) == TRX_RTC_GET_SCOPE(flags))
+				zbx_signal_process_by_pid(TRX_RTC_GET_DATA(flags), flags);
 			else
-				zbx_signal_process_by_type(ZBX_RTC_GET_SCOPE(flags), ZBX_RTC_GET_DATA(flags), flags);
+				zbx_signal_process_by_type(TRX_RTC_GET_SCOPE(flags), TRX_RTC_GET_DATA(flags), flags);
 			break;
 	}
 #endif
@@ -333,7 +333,7 @@ int	daemon_start(int allow_root, const char *user, unsigned int flags)
 
 	umask(0002);
 
-	if (0 == (flags & ZBX_TASK_FLAG_FOREGROUND))
+	if (0 == (flags & TRX_TASK_FLAG_FOREGROUND))
 	{
 		if (0 != (pid = zbx_fork()))
 			exit(EXIT_SUCCESS);
@@ -392,7 +392,7 @@ int	zbx_sigusr_send(int flags)
 	{
 		union sigval	s;
 
-		s.ZBX_SIVAL_INT = flags;
+		s.TRX_SIVAL_INT = flags;
 
 		if (-1 != sigqueue(pid, SIGUSR1, s))
 		{

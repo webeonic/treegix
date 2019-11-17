@@ -35,16 +35,16 @@ static void	count_sensor(int do_task, const struct sensor *sensor, double *aggr,
 
 	switch (do_task)
 	{
-		case ZBX_DO_ONE:
+		case TRX_DO_ONE:
 			*aggr = value;
 			break;
-		case ZBX_DO_AVG:
+		case TRX_DO_AVG:
 			*aggr += value;
 			break;
-		case ZBX_DO_MAX:
+		case TRX_DO_MAX:
 			*aggr = (1 == *cnt ? value : MAX(*aggr, value));
 			break;
-		case ZBX_DO_MIN:
+		case TRX_DO_MIN:
 			*aggr = (1 == *cnt ? value : MIN(*aggr, value));
 			break;
 	}
@@ -52,7 +52,7 @@ static void	count_sensor(int do_task, const struct sensor *sensor, double *aggr,
 
 static int	get_device_sensors(int do_task, int *mib, const struct sensordev *sensordev, const char *name, double *aggr, int *cnt)
 {
-	if (ZBX_DO_ONE == do_task)
+	if (TRX_DO_ONE == do_task)
 	{
 		int		i, len = 0;
 		struct sensor	sensor;
@@ -137,13 +137,13 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	if (NULL == function || '\0' == *function)
-		do_task = ZBX_DO_ONE;
+		do_task = TRX_DO_ONE;
 	else if (0 == strcmp(function, "avg"))
-		do_task = ZBX_DO_AVG;
+		do_task = TRX_DO_AVG;
 	else if (0 == strcmp(function, "max"))
-		do_task = ZBX_DO_MAX;
+		do_task = TRX_DO_MAX;
 	else if (0 == strcmp(function, "min"))
-		do_task = ZBX_DO_MIN;
+		do_task = TRX_DO_MIN;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -172,8 +172,8 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 			return SYSINFO_RET_FAIL;
 		}
 
-		if ((ZBX_DO_ONE == do_task && 0 == strcmp(sensordev.xname, device)) ||
-				(ZBX_DO_ONE != do_task && NULL != zbx_regexp_match(sensordev.xname, device, NULL)))
+		if ((TRX_DO_ONE == do_task && 0 == strcmp(sensordev.xname, device)) ||
+				(TRX_DO_ONE != do_task && NULL != zbx_regexp_match(sensordev.xname, device, NULL)))
 		{
 			if (SUCCEED != get_device_sensors(do_task, mib, &sensordev, name, &aggr, &cnt))
 			{
@@ -189,7 +189,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	if (ZBX_DO_AVG == do_task)
+	if (TRX_DO_AVG == do_task)
 		SET_DBL_RESULT(result, aggr / cnt);
 	else
 		SET_DBL_RESULT(result, aggr);

@@ -397,7 +397,7 @@ class CFunctionValidator extends CValidator {
 	 * @return bool
 	 */
 	private function validateSecValue($param) {
-		return preg_match('/^\d+['.ZBX_TIME_SUFFIXES.']{0,1}$/', $param);
+		return preg_match('/^\d+['.TRX_TIME_SUFFIXES.']{0,1}$/', $param);
 	}
 
 	/**
@@ -433,7 +433,7 @@ class CFunctionValidator extends CValidator {
 	 * @return bool
 	 */
 	private function validateSecNeg($param) {
-		return preg_match('/^[-]?\d+['.ZBX_TIME_SUFFIXES.']{0,1}$/', $param);
+		return preg_match('/^[-]?\d+['.TRX_TIME_SUFFIXES.']{0,1}$/', $param);
 	}
 
 	/**
@@ -477,7 +477,7 @@ class CFunctionValidator extends CValidator {
 	 * @return bool
 	 */
 	private function validateNumSuffix($param) {
-		return preg_match('/^(\-?[0-9]+[.]?[0-9]*['.ZBX_BYTE_SUFFIXES.ZBX_TIME_SUFFIXES.']?)$/', $param);
+		return preg_match('/^(\-?[0-9]+[.]?[0-9]*['.TRX_BYTE_SUFFIXES.TRX_TIME_SUFFIXES.']?)$/', $param);
 	}
 
 	/**

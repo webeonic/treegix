@@ -15,7 +15,7 @@
 
 <script type="text/x-jquery-tmpl" id="scenario-step-row">
 	<?= (new CRow([
-			(new CCol((new CDiv())->addClass(ZBX_STYLE_DRAG_ICON)))->addClass(ZBX_STYLE_TD_DRAG_ICON),
+			(new CCol((new CDiv())->addClass(TRX_STYLE_DRAG_ICON)))->addClass(TRX_STYLE_TD_DRAG_ICON),
 			(new CSpan('1:'))->setAttribute('data-row-num', ''),
 			(new CLink('#{name}', 'javascript:httpconf.steps.open(#{httpstepid});')),
 			'#{timeout}',
@@ -24,9 +24,9 @@
 			'#{required}',
 			'#{status_codes}',
 			(new CCol((new CButton(null, _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('sortable')
 			->toString()
@@ -36,22 +36,22 @@
 <script type="text/x-jquery-tmpl" id="scenario-pair-row">
 	<?= (new CRow([
 			(new CCol([
-				(new CDiv())->addClass(ZBX_STYLE_DRAG_ICON)
-			]))->addClass(ZBX_STYLE_TD_DRAG_ICON),
+				(new CDiv())->addClass(TRX_STYLE_DRAG_ICON)
+			]))->addClass(TRX_STYLE_TD_DRAG_ICON),
 			(new CTextBox(null, '#{name}'))
 				->setAttribute('placeholder', _('name'))
 				->setAttribute('data-type', 'name')
-				->setWidth(ZBX_TEXTAREA_HTTP_PAIR_NAME_WIDTH),
+				->setWidth(TRX_TEXTAREA_HTTP_PAIR_NAME_WIDTH),
 			'&rArr;',
 			(new CTextBox(null, '#{value}'))
 				->setAttribute('placeholder', _('value'))
 				->setAttribute('data-type', 'value')
-				->setWidth(ZBX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH),
+				->setWidth(TRX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH),
 			(new CCol(
 				(new CButton(null, _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('sortable')
 			->toString()
@@ -62,13 +62,13 @@
 	jQuery(function($) {
 		window.httpconf = {
 			templated:                           <?= $data['templated'] ? 1 : 0 ?>,
-			ZBX_STYLE_DRAG_ICON:                 <?= zbx_jsvalue(ZBX_STYLE_DRAG_ICON) ?>,
-			ZBX_STYLE_TD_DRAG_ICON:              <?= zbx_jsvalue(ZBX_STYLE_TD_DRAG_ICON) ?>,
-			ZBX_STYLE_DISABLED:                  <?= zbx_jsvalue(ZBX_STYLE_DISABLED) ?>,
+			TRX_STYLE_DRAG_ICON:                 <?= zbx_jsvalue(TRX_STYLE_DRAG_ICON) ?>,
+			TRX_STYLE_TD_DRAG_ICON:              <?= zbx_jsvalue(TRX_STYLE_TD_DRAG_ICON) ?>,
+			TRX_STYLE_DISABLED:                  <?= zbx_jsvalue(TRX_STYLE_DISABLED) ?>,
 			HTTPTEST_AUTH_NONE:                  <?= HTTPTEST_AUTH_NONE ?>,
-			ZBX_POSTTYPE_FORM:                   <?= ZBX_POSTTYPE_FORM ?>,
+			TRX_POSTTYPE_FORM:                   <?= TRX_POSTTYPE_FORM ?>,
 			HTTPTEST_STEP_RETRIEVE_MODE_HEADERS: <?= HTTPTEST_STEP_RETRIEVE_MODE_HEADERS ?>,
-			ZBX_POSTTYPE_RAW:                    <?= ZBX_POSTTYPE_RAW ?>,
+			TRX_POSTTYPE_RAW:                    <?= TRX_POSTTYPE_RAW ?>,
 			msg: {
 				data_not_encoded:           <?= CJs::encodeJson(_('Data is not properly encoded.')) ?>,
 				name_filed_length_exceeded: <?= CJs::encodeJson(_('Name of the form field should not exceed 255 characters.')) ?>,
@@ -132,7 +132,7 @@
 			axis: 'y',
 			containment: 'parent',
 			cursor: IE ? 'move' : 'grabbing',
-			handle: 'div.' + httpconf.ZBX_STYLE_DRAG_ICON,
+			handle: 'div.' + httpconf.TRX_STYLE_DRAG_ICON,
 			tolerance: 'pointer',
 			opacity: 0.6,
 			start: function(e, ui) {
@@ -238,13 +238,13 @@
 		$el.on('dynamic_rows.updated', function(e, dynamic_rows) {
 			if (dynamic_rows.length < 2) {
 				dynamic_rows.$element.sortable('option', 'disabled', true);
-				dynamic_rows.$element.find('.' + httpconf.ZBX_STYLE_DRAG_ICON)
-					.addClass(httpconf.ZBX_STYLE_DISABLED);
+				dynamic_rows.$element.find('.' + httpconf.TRX_STYLE_DRAG_ICON)
+					.addClass(httpconf.TRX_STYLE_DISABLED);
 			}
 			else {
 				dynamic_rows.$element.sortable('option', 'disabled', false);
-				dynamic_rows.$element.find('.' + httpconf.ZBX_STYLE_DRAG_ICON)
-					.removeClass(httpconf.ZBX_STYLE_DISABLED);
+				dynamic_rows.$element.find('.' + httpconf.TRX_STYLE_DRAG_ICON)
+					.removeClass(httpconf.TRX_STYLE_DISABLED);
 			}
 		});
 	}
@@ -492,7 +492,7 @@
 			$table.on('dynamic_rows.beforeadd', function(e, dynamic_rows) {
 
 				if (type === 'variables') {
-					e.new_node.querySelector('.' + httpconf.ZBX_STYLE_DRAG_ICON).remove();
+					e.new_node.querySelector('.' + httpconf.TRX_STYLE_DRAG_ICON).remove();
 				}
 
 				if (type === 'headers') {
@@ -615,7 +615,7 @@
 			frag.appendChild(hiddenInput('url',              step.data.url,              prefix_step));
 
 			if (step.data.retrieve_mode != httpconf.HTTPTEST_STEP_RETRIEVE_MODE_HEADERS) {
-				if (step.data.post_type != httpconf.ZBX_POSTTYPE_FORM) {
+				if (step.data.post_type != httpconf.TRX_POSTTYPE_FORM) {
 					frag.appendChild(hiddenInput('posts', step.data.posts, prefix_step));
 				}
 				else {
@@ -815,7 +815,7 @@
 
 			if (type === 'variables') {
 				$node.on('dynamic_rows.beforeadd', function(e, dynamic_rows) {
-					e.new_node.querySelector('.' + httpconf.ZBX_STYLE_DRAG_ICON).remove();
+					e.new_node.querySelector('.' + httpconf.TRX_STYLE_DRAG_ICON).remove();
 				});
 			}
 
@@ -843,7 +843,7 @@
 
 		this.$radio_post_type.on('change', this.onPostTypeChange.bind(this));
 
-		this.togglePostTypeForm(radioVal.call(this.$radio_post_type) == httpconf.ZBX_POSTTYPE_RAW);
+		this.togglePostTypeForm(radioVal.call(this.$radio_post_type) == httpconf.TRX_POSTTYPE_RAW);
 		this.$radio_retrieve_mode.on('change', this.onRetrieveModeChange.bind(this)).trigger('change');
 		this.$input_url = jQuery('#url', $form);
 	}
@@ -864,13 +864,13 @@
 	 * Post type changed event handler.
 	 */
 	StepEditForm.prototype.onPostTypeChange = function(e) {
-		var is_raw = (radioVal.call(this.$radio_post_type) == httpconf.ZBX_POSTTYPE_RAW);
+		var is_raw = (radioVal.call(this.$radio_post_type) == httpconf.TRX_POSTTYPE_RAW);
 
 		try {
 			this.setPostTypeRaw(!is_raw);
 		}
 		catch (err) {
-			radioVal.call(this.$radio_post_type, is_raw ? httpconf.ZBX_POSTTYPE_FORM : httpconf.ZBX_POSTTYPE_RAW);
+			radioVal.call(this.$radio_post_type, is_raw ? httpconf.TRX_POSTTYPE_FORM : httpconf.TRX_POSTTYPE_RAW);
 			this.errorDialog(httpconf.msg.cannot_convert_post_data + '<br><br>' + err, e.target);
 		}
 	};

@@ -30,13 +30,13 @@
 
 /* use only TLS 1.2 (which has number 3.3) with PolarSSL */
 #if defined(HAVE_POLARSSL)
-#	define ZBX_TLS_MIN_MAJOR_VER	SSL_MAJOR_VERSION_3
-#	define ZBX_TLS_MIN_MINOR_VER	SSL_MINOR_VERSION_3
-#	define ZBX_TLS_MAX_MAJOR_VER	SSL_MAJOR_VERSION_3
-#	define ZBX_TLS_MAX_MINOR_VER	SSL_MINOR_VERSION_3
-#	define ZBX_TLS_CIPHERSUITE_CERT	0			/* select only certificate ciphersuites */
-#	define ZBX_TLS_CIPHERSUITE_PSK	1			/* select only pre-shared key ciphersuites */
-#	define ZBX_TLS_CIPHERSUITE_ALL	2			/* select ciphersuites with certificate and PSK */
+#	define TRX_TLS_MIN_MAJOR_VER	SSL_MAJOR_VERSION_3
+#	define TRX_TLS_MIN_MINOR_VER	SSL_MINOR_VERSION_3
+#	define TRX_TLS_MAX_MAJOR_VER	SSL_MAJOR_VERSION_3
+#	define TRX_TLS_MAX_MINOR_VER	SSL_MINOR_VERSION_3
+#	define TRX_TLS_CIPHERSUITE_CERT	0			/* select only certificate ciphersuites */
+#	define TRX_TLS_CIPHERSUITE_PSK	1			/* select only pre-shared key ciphersuites */
+#	define TRX_TLS_CIPHERSUITE_ALL	2			/* select ciphersuites with certificate and PSK */
 #endif
 
 #if defined(HAVE_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x1010000fL || defined(LIBRESSL_VERSION_NUMBER)
@@ -119,8 +119,8 @@ static void	zbx_openssl_thread_cleanup(void)
 static int	zbx_openssl_init_ssl(int opts, void *settings)
 {
 #if defined(HAVE_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x1010000fL
-	ZBX_UNUSED(opts);
-	ZBX_UNUSED(settings);
+	TRX_UNUSED(opts);
+	TRX_UNUSED(settings);
 
 	SSL_load_error_strings();
 	ERR_load_BIO_strings();
@@ -129,8 +129,8 @@ static int	zbx_openssl_init_ssl(int opts, void *settings)
 	OPENSSL_init_ssl(opts, settings);
 #endif
 #ifdef _WINDOWS
-	ZBX_UNUSED(opts);
-	ZBX_UNUSED(settings);
+	TRX_UNUSED(opts);
+	TRX_UNUSED(settings);
 	zbx_openssl_thread_setup();
 #endif
 	return 1;
@@ -186,10 +186,10 @@ extern char				*CONFIG_TLS_KEY_FILE;
 extern char				*CONFIG_TLS_PSK_IDENTITY;
 extern char				*CONFIG_TLS_PSK_FILE;
 
-static ZBX_THREAD_LOCAL char		*my_psk_identity	= NULL;
-static ZBX_THREAD_LOCAL size_t		my_psk_identity_len	= 0;
-static ZBX_THREAD_LOCAL char		*my_psk			= NULL;
-static ZBX_THREAD_LOCAL size_t		my_psk_len		= 0;
+static TRX_THREAD_LOCAL char		*my_psk_identity	= NULL;
+static TRX_THREAD_LOCAL size_t		my_psk_identity_len	= 0;
+static TRX_THREAD_LOCAL char		*my_psk			= NULL;
+static TRX_THREAD_LOCAL size_t		my_psk_len		= 0;
 
 /* Pointer to DCget_psk_by_identity() initialized at runtime. This is a workaround for linking. */
 /* Server and proxy link with src/libs/zbxdbcache/dbconfig.o where DCget_psk_by_identity() resides */
@@ -200,44 +200,44 @@ size_t	(*find_psk_in_cache)(const unsigned char *, unsigned char *, unsigned int
 static unsigned int	psk_usage;
 
 #if defined(HAVE_POLARSSL)
-static ZBX_THREAD_LOCAL x509_crt		*ca_cert		= NULL;
-static ZBX_THREAD_LOCAL x509_crl		*crl			= NULL;
-static ZBX_THREAD_LOCAL x509_crt		*my_cert		= NULL;
-static ZBX_THREAD_LOCAL pk_context		*my_priv_key		= NULL;
-static ZBX_THREAD_LOCAL entropy_context		*entropy		= NULL;
-static ZBX_THREAD_LOCAL ctr_drbg_context	*ctr_drbg		= NULL;
-static ZBX_THREAD_LOCAL char			*err_msg		= NULL;
-static ZBX_THREAD_LOCAL int			*ciphersuites_cert	= NULL;
-static ZBX_THREAD_LOCAL int			*ciphersuites_psk	= NULL;
-static ZBX_THREAD_LOCAL int			*ciphersuites_all	= NULL;
+static TRX_THREAD_LOCAL x509_crt		*ca_cert		= NULL;
+static TRX_THREAD_LOCAL x509_crl		*crl			= NULL;
+static TRX_THREAD_LOCAL x509_crt		*my_cert		= NULL;
+static TRX_THREAD_LOCAL pk_context		*my_priv_key		= NULL;
+static TRX_THREAD_LOCAL entropy_context		*entropy		= NULL;
+static TRX_THREAD_LOCAL ctr_drbg_context	*ctr_drbg		= NULL;
+static TRX_THREAD_LOCAL char			*err_msg		= NULL;
+static TRX_THREAD_LOCAL int			*ciphersuites_cert	= NULL;
+static TRX_THREAD_LOCAL int			*ciphersuites_psk	= NULL;
+static TRX_THREAD_LOCAL int			*ciphersuites_all	= NULL;
 #elif defined(HAVE_GNUTLS)
-static ZBX_THREAD_LOCAL gnutls_certificate_credentials_t	my_cert_creds		= NULL;
-static ZBX_THREAD_LOCAL gnutls_psk_client_credentials_t		my_psk_client_creds	= NULL;
-static ZBX_THREAD_LOCAL gnutls_psk_server_credentials_t		my_psk_server_creds	= NULL;
-static ZBX_THREAD_LOCAL gnutls_priority_t			ciphersuites_cert	= NULL;
-static ZBX_THREAD_LOCAL gnutls_priority_t			ciphersuites_psk	= NULL;
-static ZBX_THREAD_LOCAL gnutls_priority_t			ciphersuites_all	= NULL;
+static TRX_THREAD_LOCAL gnutls_certificate_credentials_t	my_cert_creds		= NULL;
+static TRX_THREAD_LOCAL gnutls_psk_client_credentials_t		my_psk_client_creds	= NULL;
+static TRX_THREAD_LOCAL gnutls_psk_server_credentials_t		my_psk_server_creds	= NULL;
+static TRX_THREAD_LOCAL gnutls_priority_t			ciphersuites_cert	= NULL;
+static TRX_THREAD_LOCAL gnutls_priority_t			ciphersuites_psk	= NULL;
+static TRX_THREAD_LOCAL gnutls_priority_t			ciphersuites_all	= NULL;
 static int							init_done 		= 0;
 #elif defined(HAVE_OPENSSL)
-static ZBX_THREAD_LOCAL const SSL_METHOD	*method			= NULL;
-static ZBX_THREAD_LOCAL SSL_CTX			*ctx_cert		= NULL;
+static TRX_THREAD_LOCAL const SSL_METHOD	*method			= NULL;
+static TRX_THREAD_LOCAL SSL_CTX			*ctx_cert		= NULL;
 #ifdef HAVE_OPENSSL_WITH_PSK
-static ZBX_THREAD_LOCAL SSL_CTX			*ctx_psk		= NULL;
-static ZBX_THREAD_LOCAL SSL_CTX			*ctx_all		= NULL;
+static TRX_THREAD_LOCAL SSL_CTX			*ctx_psk		= NULL;
+static TRX_THREAD_LOCAL SSL_CTX			*ctx_all		= NULL;
 /* variables for passing required PSK identity and PSK info to client callback function */
-static ZBX_THREAD_LOCAL const char		*psk_identity_for_cb	= NULL;
-static ZBX_THREAD_LOCAL size_t			psk_identity_len_for_cb	= 0;
-static ZBX_THREAD_LOCAL char			*psk_for_cb		= NULL;
-static ZBX_THREAD_LOCAL size_t			psk_len_for_cb		= 0;
+static TRX_THREAD_LOCAL const char		*psk_identity_for_cb	= NULL;
+static TRX_THREAD_LOCAL size_t			psk_identity_len_for_cb	= 0;
+static TRX_THREAD_LOCAL char			*psk_for_cb		= NULL;
+static TRX_THREAD_LOCAL size_t			psk_len_for_cb		= 0;
 #endif
 static int					init_done 		= 0;
 #ifdef HAVE_OPENSSL_WITH_PSK
 /* variables for capturing PSK identity from server callback function */
-static ZBX_THREAD_LOCAL int			incoming_connection_has_psk = 0;
-static ZBX_THREAD_LOCAL char			incoming_connection_psk_id[PSK_MAX_IDENTITY_LEN + 1];
+static TRX_THREAD_LOCAL int			incoming_connection_has_psk = 0;
+static TRX_THREAD_LOCAL char			incoming_connection_psk_id[PSK_MAX_IDENTITY_LEN + 1];
 #endif
 /* buffer for messages produced by zbx_openssl_info_cb() */
-ZBX_THREAD_LOCAL char				info_buf[256];
+TRX_THREAD_LOCAL char				info_buf[256];
 #endif
 
 #if defined(HAVE_POLARSSL)
@@ -291,7 +291,7 @@ static void	polarssl_debug_cb(void *tls_ctx, int level, const char *str)
 {
 	char	msg[1024];	/* Apparently 1024 bytes is the longest message which can come from PolarSSL 1.3.9 */
 
-	ZBX_UNUSED(tls_ctx);
+	TRX_UNUSED(tls_ctx);
 
 	/* remove '\n' from the end of debug message */
 	zbx_strlcpy(msg, str, sizeof(msg));
@@ -333,7 +333,7 @@ static void	zbx_gnutls_audit_cb(gnutls_session_t session, const char *str)
 {
 	char	msg[1024];
 
-	ZBX_UNUSED(session);
+	TRX_UNUSED(session);
 
 	/* remove '\n' from the end of debug message */
 	zbx_strlcpy(msg, str, sizeof(msg));
@@ -367,7 +367,7 @@ static void	zbx_openssl_info_cb(const SSL *ssl, int where, int ret)
 				SSL_state_string_long(ssl));
 	}
 #else
-	ZBX_UNUSED(ssl);
+	TRX_UNUSED(ssl);
 #endif
 	if (0 != (where & SSL_CB_ALERT))	/* alert sent or received */
 	{
@@ -526,28 +526,28 @@ void	zbx_tls_version(void)
  *     param - [IN] address of the global parameter variable                  *
  *                                                                            *
  ******************************************************************************/
-#define ZBX_TLS_PARAMETER_CONFIG_FILE	0
-#define ZBX_TLS_PARAMETER_COMMAND_LINE	1
+#define TRX_TLS_PARAMETER_CONFIG_FILE	0
+#define TRX_TLS_PARAMETER_COMMAND_LINE	1
 static const char	*zbx_tls_parameter_name(int type, char **param)
 {
 	if (&CONFIG_TLS_CONNECT == param)
-		return ZBX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSConnect" : "--tls-connect";
+		return TRX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSConnect" : "--tls-connect";
 
 	if (&CONFIG_TLS_ACCEPT == param)
-		return ZBX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSAccept" : "--tls-accept";
+		return TRX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSAccept" : "--tls-accept";
 
 	if (&CONFIG_TLS_CA_FILE == param)
-		return ZBX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSCAFile" : "--tls-ca-file";
+		return TRX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSCAFile" : "--tls-ca-file";
 
 	if (&CONFIG_TLS_CRL_FILE == param)
-		return ZBX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSCRLFile" : "--tls-crl-file";
+		return TRX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSCRLFile" : "--tls-crl-file";
 
 	if (&CONFIG_TLS_SERVER_CERT_ISSUER == param)
 	{
-		if (ZBX_TLS_PARAMETER_CONFIG_FILE == type)
+		if (TRX_TLS_PARAMETER_CONFIG_FILE == type)
 			return "TLSServerCertIssuer";
 
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
+		if (0 != (program_type & TRX_PROGRAM_TYPE_GET))
 			return "--tls-agent-cert-issuer";
 		else
 			return "--tls-server-cert-issuer";
@@ -555,26 +555,26 @@ static const char	*zbx_tls_parameter_name(int type, char **param)
 
 	if (&CONFIG_TLS_SERVER_CERT_SUBJECT == param)
 	{
-		if (ZBX_TLS_PARAMETER_CONFIG_FILE == type)
+		if (TRX_TLS_PARAMETER_CONFIG_FILE == type)
 			return "TLSServerCertSubject";
 
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
+		if (0 != (program_type & TRX_PROGRAM_TYPE_GET))
 			return "--tls-agent-cert-subject";
 		else
 			return "--tls-server-cert-subject";
 	}
 
 	if (&CONFIG_TLS_CERT_FILE == param)
-		return ZBX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSCertFile" : "--tls-cert-file";
+		return TRX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSCertFile" : "--tls-cert-file";
 
 	if (&CONFIG_TLS_KEY_FILE == param)
-		return ZBX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSKeyFile" : "--tls-key-file";
+		return TRX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSKeyFile" : "--tls-key-file";
 
 	if (&CONFIG_TLS_PSK_IDENTITY == param)
-		return ZBX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSPSKIdentity" : "--tls-psk-identity";
+		return TRX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSPSKIdentity" : "--tls-psk-identity";
 
 	if (&CONFIG_TLS_PSK_FILE == param)
-		return ZBX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSPSKFile" : "--tls-psk-file";
+		return TRX_TLS_PARAMETER_CONFIG_FILE == type ? "TLSPSKFile" : "--tls-psk-file";
 
 	THIS_SHOULD_NEVER_HAPPEN;
 
@@ -606,21 +606,21 @@ static void	zbx_tls_parameter_not_empty(char **param)
 				return;
 		}
 
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
+		if (0 != (program_type & TRX_PROGRAM_TYPE_SENDER))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "configuration parameter \"%s\" or \"%s\" is defined but empty",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param));
 		}
-		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
+		else if (0 != (program_type & TRX_PROGRAM_TYPE_GET))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "configuration parameter \"%s\" is defined but empty",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param));
 		}
 		else
 		{
 			treegix_log(LOG_LEVEL_CRIT, "configuration parameter \"%s\" is defined but empty",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param));
 		}
 
 		zbx_tls_free();
@@ -641,119 +641,119 @@ static void	zbx_tls_parameter_not_empty(char **param)
  *     param2 - [IN] address of the second global parameter variable (if any) *
  *                                                                            *
  ******************************************************************************/
-#define ZBX_TLS_VALIDATION_INVALID	0
-#define ZBX_TLS_VALIDATION_DEPENDENCY	1
-#define ZBX_TLS_VALIDATION_REQUIREMENT	2
-#define ZBX_TLS_VALIDATION_UTF8		3
-#define ZBX_TLS_VALIDATION_NO_PSK	4
+#define TRX_TLS_VALIDATION_INVALID	0
+#define TRX_TLS_VALIDATION_DEPENDENCY	1
+#define TRX_TLS_VALIDATION_REQUIREMENT	2
+#define TRX_TLS_VALIDATION_UTF8		3
+#define TRX_TLS_VALIDATION_NO_PSK	4
 static void	zbx_tls_validation_error(int type, char **param1, char **param2)
 {
-	if (ZBX_TLS_VALIDATION_INVALID == type)
+	if (TRX_TLS_VALIDATION_INVALID == type)
 	{
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
+		if (0 != (program_type & TRX_PROGRAM_TYPE_SENDER))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "invalid value of \"%s\" or \"%s\" parameter",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
-		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
+		else if (0 != (program_type & TRX_PROGRAM_TYPE_GET))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "invalid value of \"%s\" parameter",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
 		else
 		{
 			treegix_log(LOG_LEVEL_CRIT, "invalid value of \"%s\" parameter",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1));
 		}
 	}
-	else if (ZBX_TLS_VALIDATION_DEPENDENCY == type)
+	else if (TRX_TLS_VALIDATION_DEPENDENCY == type)
 	{
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
+		if (0 != (program_type & TRX_PROGRAM_TYPE_SENDER))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" or \"%s\" is defined,"
 					" but neither \"%s\" nor \"%s\" is defined",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param2),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param2));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param2),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param2));
 		}
-		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
+		else if (0 != (program_type & TRX_PROGRAM_TYPE_GET))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" is defined, but \"%s\" is not defined",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param2));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param2));
 		}
 		else
 		{
 			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" is defined, but \"%s\" is not defined",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param2));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param2));
 		}
 	}
-	else if (ZBX_TLS_VALIDATION_REQUIREMENT == type)
+	else if (TRX_TLS_VALIDATION_REQUIREMENT == type)
 	{
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
+		if (0 != (program_type & TRX_PROGRAM_TYPE_SENDER))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" or \"%s\" value requires \"%s\" or \"%s\","
 					" but neither of them is defined",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param2),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param2));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param2),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param2));
 		}
-		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
+		else if (0 != (program_type & TRX_PROGRAM_TYPE_GET))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value requires \"%s\", but it is not defined",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param2));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param2));
 		}
 		else
 		{
 			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value requires \"%s\", but it is not defined",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param2));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param2));
 		}
 	}
-	else if (ZBX_TLS_VALIDATION_UTF8 == type)
+	else if (TRX_TLS_VALIDATION_UTF8 == type)
 	{
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
+		if (0 != (program_type & TRX_PROGRAM_TYPE_SENDER))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" or \"%s\" value is not a valid UTF-8 string",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
-		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
+		else if (0 != (program_type & TRX_PROGRAM_TYPE_GET))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value is not a valid UTF-8 string",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
 		else
 		{
 			treegix_log(LOG_LEVEL_CRIT, "parameter \"%s\" value is not a valid UTF-8 string",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1));
 		}
 	}
-	else if (ZBX_TLS_VALIDATION_NO_PSK == type)
+	else if (TRX_TLS_VALIDATION_NO_PSK == type)
 	{
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_SENDER))
+		if (0 != (program_type & TRX_PROGRAM_TYPE_SENDER))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "value of parameter \"%s\" or \"%s\" requires support of encrypted"
 					" connection with PSK but support for PSK was not compiled in",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1),
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1),
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
-		else if (0 != (program_type & ZBX_PROGRAM_TYPE_GET))
+		else if (0 != (program_type & TRX_PROGRAM_TYPE_GET))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "value of parameter \"%s\" requires support of encrypted"
 					" connection with PSK but support for PSK was not compiled in",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_COMMAND_LINE, param1));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_COMMAND_LINE, param1));
 		}
 		else
 		{
 			treegix_log(LOG_LEVEL_CRIT, "value of parameter \"%s\" requires support of encrypted"
 					" connection with PSK but support for PSK was not compiled in",
-					zbx_tls_parameter_name(ZBX_TLS_PARAMETER_CONFIG_FILE, param1));
+					zbx_tls_parameter_name(TRX_TLS_PARAMETER_CONFIG_FILE, param1));
 		}
 	}
 	else
@@ -807,18 +807,18 @@ void	zbx_tls_validate_config(void)
 	{
 		/* 'configured_tls_connect_mode' is shared between threads on MS Windows */
 
-		if (0 == strcmp(CONFIG_TLS_CONNECT, ZBX_TCP_SEC_UNENCRYPTED_TXT))
-			configured_tls_connect_mode = ZBX_TCP_SEC_UNENCRYPTED;
-		else if (0 == strcmp(CONFIG_TLS_CONNECT, ZBX_TCP_SEC_TLS_CERT_TXT))
-			configured_tls_connect_mode = ZBX_TCP_SEC_TLS_CERT;
-		else if (0 == strcmp(CONFIG_TLS_CONNECT, ZBX_TCP_SEC_TLS_PSK_TXT))
+		if (0 == strcmp(CONFIG_TLS_CONNECT, TRX_TCP_SEC_UNENCRYPTED_TXT))
+			configured_tls_connect_mode = TRX_TCP_SEC_UNENCRYPTED;
+		else if (0 == strcmp(CONFIG_TLS_CONNECT, TRX_TCP_SEC_TLS_CERT_TXT))
+			configured_tls_connect_mode = TRX_TCP_SEC_TLS_CERT;
+		else if (0 == strcmp(CONFIG_TLS_CONNECT, TRX_TCP_SEC_TLS_PSK_TXT))
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || (defined(HAVE_OPENSSL) && defined(HAVE_OPENSSL_WITH_PSK))
-			configured_tls_connect_mode = ZBX_TCP_SEC_TLS_PSK;
+			configured_tls_connect_mode = TRX_TCP_SEC_TLS_PSK;
 #else
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_NO_PSK, &CONFIG_TLS_CONNECT, NULL);
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_NO_PSK, &CONFIG_TLS_CONNECT, NULL);
 #endif
 		else
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_INVALID, &CONFIG_TLS_CONNECT, NULL);
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_INVALID, &CONFIG_TLS_CONNECT, NULL);
 	}
 
 	/* parse and validate 'TLSAccept' parameter (in treegix_proxy.conf, treegix_agentd.conf) */
@@ -840,20 +840,20 @@ void	zbx_tls_validate_config(void)
 			if (NULL != delim)
 				*delim = '\0';
 
-			if (0 == strcmp(p, ZBX_TCP_SEC_UNENCRYPTED_TXT))
-				accept_modes_tmp |= ZBX_TCP_SEC_UNENCRYPTED;
-			else if (0 == strcmp(p, ZBX_TCP_SEC_TLS_CERT_TXT))
-				accept_modes_tmp |= ZBX_TCP_SEC_TLS_CERT;
-			else if (0 == strcmp(p, ZBX_TCP_SEC_TLS_PSK_TXT))
+			if (0 == strcmp(p, TRX_TCP_SEC_UNENCRYPTED_TXT))
+				accept_modes_tmp |= TRX_TCP_SEC_UNENCRYPTED;
+			else if (0 == strcmp(p, TRX_TCP_SEC_TLS_CERT_TXT))
+				accept_modes_tmp |= TRX_TCP_SEC_TLS_CERT;
+			else if (0 == strcmp(p, TRX_TCP_SEC_TLS_PSK_TXT))
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || (defined(HAVE_OPENSSL) && defined(HAVE_OPENSSL_WITH_PSK))
-				accept_modes_tmp |= ZBX_TCP_SEC_TLS_PSK;
+				accept_modes_tmp |= TRX_TCP_SEC_TLS_PSK;
 #else
-				zbx_tls_validation_error(ZBX_TLS_VALIDATION_NO_PSK, &CONFIG_TLS_ACCEPT, NULL);
+				zbx_tls_validation_error(TRX_TLS_VALIDATION_NO_PSK, &CONFIG_TLS_ACCEPT, NULL);
 #endif
 			else
 			{
 				zbx_free(s);
-				zbx_tls_validation_error(ZBX_TLS_VALIDATION_INVALID, &CONFIG_TLS_ACCEPT, NULL);
+				zbx_tls_validation_error(TRX_TLS_VALIDATION_INVALID, &CONFIG_TLS_ACCEPT, NULL);
 			}
 
 			if (NULL == delim)
@@ -870,29 +870,29 @@ void	zbx_tls_validate_config(void)
 	/* either both a certificate and a private key must be defined or none of them */
 
 	if (NULL != CONFIG_TLS_CERT_FILE && NULL == CONFIG_TLS_KEY_FILE)
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CERT_FILE, &CONFIG_TLS_KEY_FILE);
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CERT_FILE, &CONFIG_TLS_KEY_FILE);
 
 	if (NULL != CONFIG_TLS_KEY_FILE && NULL == CONFIG_TLS_CERT_FILE)
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_KEY_FILE, &CONFIG_TLS_CERT_FILE);
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_KEY_FILE, &CONFIG_TLS_CERT_FILE);
 
 	/* CA file must be defined only together with a certificate */
 
 	if (NULL != CONFIG_TLS_CERT_FILE && NULL == CONFIG_TLS_CA_FILE)
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CERT_FILE, &CONFIG_TLS_CA_FILE);
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CERT_FILE, &CONFIG_TLS_CA_FILE);
 
 	if (NULL != CONFIG_TLS_CA_FILE && NULL == CONFIG_TLS_CERT_FILE)
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CA_FILE, &CONFIG_TLS_CERT_FILE);
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CA_FILE, &CONFIG_TLS_CERT_FILE);
 
 	/* CRL file is optional but must be defined only together with a certificate */
 
 	if (NULL == CONFIG_TLS_CERT_FILE && NULL != CONFIG_TLS_CRL_FILE)
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CRL_FILE, &CONFIG_TLS_CERT_FILE);
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CRL_FILE, &CONFIG_TLS_CERT_FILE);
 
 	/* Server certificate issuer is optional but must be defined only together with a certificate */
 
 	if (NULL == CONFIG_TLS_CERT_FILE && NULL != CONFIG_TLS_SERVER_CERT_ISSUER)
 	{
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_SERVER_CERT_ISSUER,
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_SERVER_CERT_ISSUER,
 				&CONFIG_TLS_CERT_FILE);
 	}
 
@@ -900,83 +900,83 @@ void	zbx_tls_validate_config(void)
 
 	if (NULL == CONFIG_TLS_CERT_FILE && NULL != CONFIG_TLS_SERVER_CERT_SUBJECT)
 	{
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_SERVER_CERT_SUBJECT,
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_SERVER_CERT_SUBJECT,
 				&CONFIG_TLS_CERT_FILE);
 	}
 
 	/* either both a PSK and a PSK identity must be defined or none of them */
 
 	if (NULL != CONFIG_TLS_PSK_FILE && NULL == CONFIG_TLS_PSK_IDENTITY)
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_PSK_FILE, &CONFIG_TLS_PSK_IDENTITY);
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_PSK_FILE, &CONFIG_TLS_PSK_IDENTITY);
 
 	if (NULL != CONFIG_TLS_PSK_IDENTITY && NULL == CONFIG_TLS_PSK_FILE)
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_PSK_IDENTITY, &CONFIG_TLS_PSK_FILE);
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_PSK_IDENTITY, &CONFIG_TLS_PSK_FILE);
 
 	/* PSK identity must be a valid UTF-8 string (RFC 4279 says Unicode) */
 	if (NULL != CONFIG_TLS_PSK_IDENTITY && SUCCEED != zbx_is_utf8(CONFIG_TLS_PSK_IDENTITY))
-		zbx_tls_validation_error(ZBX_TLS_VALIDATION_UTF8, &CONFIG_TLS_PSK_IDENTITY, NULL);
+		zbx_tls_validation_error(TRX_TLS_VALIDATION_UTF8, &CONFIG_TLS_PSK_IDENTITY, NULL);
 
 	/* active agentd, active proxy, treegix_get, and treegix_sender specific validation */
 
-	if ((0 != (program_type & ZBX_PROGRAM_TYPE_AGENTD) && 0 != CONFIG_ACTIVE_FORKS) ||
-			(0 != (program_type & (ZBX_PROGRAM_TYPE_PROXY_ACTIVE | ZBX_PROGRAM_TYPE_GET |
-					ZBX_PROGRAM_TYPE_SENDER))))
+	if ((0 != (program_type & TRX_PROGRAM_TYPE_AGENTD) && 0 != CONFIG_ACTIVE_FORKS) ||
+			(0 != (program_type & (TRX_PROGRAM_TYPE_PROXY_ACTIVE | TRX_PROGRAM_TYPE_GET |
+					TRX_PROGRAM_TYPE_SENDER))))
 	{
 		/* 'TLSConnect' is the master parameter to be matched by certificate and PSK parameters. */
 
 		if (NULL != CONFIG_TLS_CERT_FILE && NULL == CONFIG_TLS_CONNECT)
 		{
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CERT_FILE,
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CERT_FILE,
 					&CONFIG_TLS_CONNECT);
 		}
 
 		if (NULL != CONFIG_TLS_PSK_FILE && NULL == CONFIG_TLS_CONNECT)
 		{
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_PSK_FILE,
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_PSK_FILE,
 					&CONFIG_TLS_CONNECT);
 		}
 
-		if (0 != (configured_tls_connect_mode & ZBX_TCP_SEC_TLS_CERT) && NULL == CONFIG_TLS_CERT_FILE)
+		if (0 != (configured_tls_connect_mode & TRX_TCP_SEC_TLS_CERT) && NULL == CONFIG_TLS_CERT_FILE)
 		{
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_REQUIREMENT, &CONFIG_TLS_CONNECT,
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_REQUIREMENT, &CONFIG_TLS_CONNECT,
 					&CONFIG_TLS_CERT_FILE);
 		}
 
-		if (0 != (configured_tls_connect_mode & ZBX_TCP_SEC_TLS_PSK) && NULL == CONFIG_TLS_PSK_FILE)
+		if (0 != (configured_tls_connect_mode & TRX_TCP_SEC_TLS_PSK) && NULL == CONFIG_TLS_PSK_FILE)
 		{
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_REQUIREMENT, &CONFIG_TLS_CONNECT,
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_REQUIREMENT, &CONFIG_TLS_CONNECT,
 					&CONFIG_TLS_PSK_FILE);
 		}
 	}
 
 	/* passive agentd and passive proxy specific validation */
 
-	if ((0 != (program_type & ZBX_PROGRAM_TYPE_AGENTD) && 0 != CONFIG_PASSIVE_FORKS) ||
-			0 != (program_type & ZBX_PROGRAM_TYPE_PROXY_PASSIVE))
+	if ((0 != (program_type & TRX_PROGRAM_TYPE_AGENTD) && 0 != CONFIG_PASSIVE_FORKS) ||
+			0 != (program_type & TRX_PROGRAM_TYPE_PROXY_PASSIVE))
 	{
 		/* 'TLSAccept' is the master parameter to be matched by certificate and PSK parameters */
 
 		if (NULL != CONFIG_TLS_CERT_FILE && NULL == CONFIG_TLS_ACCEPT)
 		{
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CERT_FILE,
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_CERT_FILE,
 					&CONFIG_TLS_ACCEPT);
 		}
 
 		if (NULL != CONFIG_TLS_PSK_FILE && NULL == CONFIG_TLS_ACCEPT)
 		{
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_PSK_FILE,
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_DEPENDENCY, &CONFIG_TLS_PSK_FILE,
 					&CONFIG_TLS_ACCEPT);
 		}
 
-		if (0 != (configured_tls_accept_modes & ZBX_TCP_SEC_TLS_CERT) && NULL == CONFIG_TLS_CERT_FILE)
+		if (0 != (configured_tls_accept_modes & TRX_TCP_SEC_TLS_CERT) && NULL == CONFIG_TLS_CERT_FILE)
 		{
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_REQUIREMENT, &CONFIG_TLS_ACCEPT,
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_REQUIREMENT, &CONFIG_TLS_ACCEPT,
 					&CONFIG_TLS_CERT_FILE);
 		}
 
-		if (0 != (configured_tls_accept_modes & ZBX_TCP_SEC_TLS_PSK) && NULL == CONFIG_TLS_PSK_FILE)
+		if (0 != (configured_tls_accept_modes & TRX_TCP_SEC_TLS_PSK) && NULL == CONFIG_TLS_PSK_FILE)
 		{
-			zbx_tls_validation_error(ZBX_TLS_VALIDATION_REQUIREMENT, &CONFIG_TLS_ACCEPT,
+			zbx_tls_validation_error(TRX_TLS_VALIDATION_REQUIREMENT, &CONFIG_TLS_ACCEPT,
 					&CONFIG_TLS_PSK_FILE);
 		}
 	}
@@ -1006,10 +1006,10 @@ static int	zbx_is_ciphersuite_cert(const int *p)
 			POLARSSL_KEY_EXCHANGE_RSA == info->key_exchange) &&
 			(POLARSSL_CIPHER_AES_128_GCM == info->cipher || POLARSSL_CIPHER_AES_128_CBC == info->cipher) &&
 			0 == (info->flags & POLARSSL_CIPHERSUITE_WEAK) &&
-			(ZBX_TLS_MIN_MAJOR_VER > info->min_major_ver || (ZBX_TLS_MIN_MAJOR_VER == info->min_major_ver &&
-			ZBX_TLS_MIN_MINOR_VER >= info->min_minor_ver)) &&
-			(ZBX_TLS_MAX_MAJOR_VER < info->max_major_ver || (ZBX_TLS_MAX_MAJOR_VER == info->max_major_ver &&
-			ZBX_TLS_MAX_MINOR_VER <= info->max_minor_ver)))
+			(TRX_TLS_MIN_MAJOR_VER > info->min_major_ver || (TRX_TLS_MIN_MAJOR_VER == info->min_major_ver &&
+			TRX_TLS_MIN_MINOR_VER >= info->min_minor_ver)) &&
+			(TRX_TLS_MAX_MAJOR_VER < info->max_major_ver || (TRX_TLS_MAX_MAJOR_VER == info->max_major_ver &&
+			TRX_TLS_MAX_MINOR_VER <= info->max_minor_ver)))
 	{
 		return SUCCEED;
 	}
@@ -1037,10 +1037,10 @@ static int	zbx_is_ciphersuite_psk(const int *p)
 			POLARSSL_KEY_EXCHANGE_PSK == info->key_exchange) &&
 			(POLARSSL_CIPHER_AES_128_GCM == info->cipher || POLARSSL_CIPHER_AES_128_CBC == info->cipher) &&
 			0 == (info->flags & POLARSSL_CIPHERSUITE_WEAK) &&
-			(ZBX_TLS_MIN_MAJOR_VER > info->min_major_ver || (ZBX_TLS_MIN_MAJOR_VER == info->min_major_ver &&
-			ZBX_TLS_MIN_MINOR_VER >= info->min_minor_ver)) &&
-			(ZBX_TLS_MAX_MAJOR_VER < info->max_major_ver || (ZBX_TLS_MAX_MAJOR_VER == info->max_major_ver &&
-			ZBX_TLS_MAX_MINOR_VER <= info->max_minor_ver)))
+			(TRX_TLS_MIN_MAJOR_VER > info->min_major_ver || (TRX_TLS_MIN_MAJOR_VER == info->min_major_ver &&
+			TRX_TLS_MIN_MINOR_VER >= info->min_minor_ver)) &&
+			(TRX_TLS_MAX_MAJOR_VER < info->max_major_ver || (TRX_TLS_MAX_MAJOR_VER == info->max_major_ver &&
+			TRX_TLS_MAX_MINOR_VER <= info->max_minor_ver)))
 	{
 		return SUCCEED;
 	}
@@ -1070,10 +1070,10 @@ static int	zbx_is_ciphersuite_all(const int *p)
 			POLARSSL_KEY_EXCHANGE_PSK == info->key_exchange) &&
 			(POLARSSL_CIPHER_AES_128_GCM == info->cipher || POLARSSL_CIPHER_AES_128_CBC == info->cipher) &&
 			0 == (info->flags & POLARSSL_CIPHERSUITE_WEAK) &&
-			(ZBX_TLS_MIN_MAJOR_VER > info->min_major_ver || (ZBX_TLS_MIN_MAJOR_VER == info->min_major_ver &&
-			ZBX_TLS_MIN_MINOR_VER >= info->min_minor_ver)) &&
-			(ZBX_TLS_MAX_MAJOR_VER < info->max_major_ver || (ZBX_TLS_MAX_MAJOR_VER == info->max_major_ver &&
-			ZBX_TLS_MAX_MINOR_VER <= info->max_minor_ver)))
+			(TRX_TLS_MIN_MAJOR_VER > info->min_major_ver || (TRX_TLS_MIN_MAJOR_VER == info->min_major_ver &&
+			TRX_TLS_MIN_MINOR_VER >= info->min_minor_ver)) &&
+			(TRX_TLS_MAX_MAJOR_VER < info->max_major_ver || (TRX_TLS_MAX_MAJOR_VER == info->max_major_ver &&
+			TRX_TLS_MAX_MINOR_VER <= info->max_minor_ver)))
 	{
 		return SUCCEED;
 	}
@@ -1100,17 +1100,17 @@ static unsigned int	zbx_ciphersuites(int type, int **suites)
 	/* count available relevant ciphersuites */
 	for (p = supported_suites; 0 != *p; p++)
 	{
-		if (ZBX_TLS_CIPHERSUITE_CERT == type)
+		if (TRX_TLS_CIPHERSUITE_CERT == type)
 		{
 			if (SUCCEED != zbx_is_ciphersuite_cert(p))
 				continue;
 		}
-		else if (ZBX_TLS_CIPHERSUITE_PSK == type)
+		else if (TRX_TLS_CIPHERSUITE_PSK == type)
 		{
 			if (SUCCEED != zbx_is_ciphersuite_psk(p))
 				continue;
 		}
-		else	/* ZBX_TLS_CIPHERSUITE_ALL */
+		else	/* TRX_TLS_CIPHERSUITE_ALL */
 		{
 			if (SUCCEED != zbx_is_ciphersuite_all(p))
 				continue;
@@ -1124,17 +1124,17 @@ static unsigned int	zbx_ciphersuites(int type, int **suites)
 	/* copy the ciphersuites into array */
 	for (p = supported_suites, q = *suites; 0 != *p; p++)
 	{
-		if (ZBX_TLS_CIPHERSUITE_CERT == type)
+		if (TRX_TLS_CIPHERSUITE_CERT == type)
 		{
 			if (SUCCEED != zbx_is_ciphersuite_cert(p))
 				continue;
 		}
-		else if (ZBX_TLS_CIPHERSUITE_PSK == type)
+		else if (TRX_TLS_CIPHERSUITE_PSK == type)
 		{
 			if (SUCCEED != zbx_is_ciphersuite_psk(p))
 				continue;
 		}
-		else	/* ZBX_TLS_CIPHERSUITE_ALL */
+		else	/* TRX_TLS_CIPHERSUITE_ALL */
 		{
 			if (SUCCEED != zbx_is_ciphersuite_all(p))
 				continue;
@@ -1240,7 +1240,7 @@ static int	zbx_psk_cb(void *par, ssl_context *tls_ctx, const unsigned char *psk_
 	unsigned char	tls_psk_identity[HOST_TLS_PSK_IDENTITY_LEN_MAX], tls_psk_hex[HOST_TLS_PSK_LEN_MAX],
 			psk_buf[HOST_TLS_PSK_LEN / 2];
 
-	ZBX_UNUSED(par);
+	TRX_UNUSED(par);
 
 	/* special print: psk_identity is not '\0'-terminated */
 	treegix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%.*s\"", __func__, (int)psk_identity_len,
@@ -1273,19 +1273,19 @@ static int	zbx_psk_cb(void *par, ssl_context *tls_ctx, const unsigned char *psk_
 		psk_len = (size_t)psk_bin_len;
 	}
 
-	if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY) &&
+	if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY) &&
 			0 < my_psk_identity_len &&
 			my_psk_identity_len == psk_identity_len &&
 			0 == memcmp(my_psk_identity, psk_identity, psk_identity_len))
 	{
 		/* the PSK is in proxy configuration file */
-		psk_usage |= ZBX_PSK_FOR_PROXY;
+		psk_usage |= TRX_PSK_FOR_PROXY;
 
 		if (0 < psk_len && (psk_len != my_psk_len || 0 != memcmp(psk, my_psk, psk_len)))
 		{
 			/* PSK was also found in configuration cache but with different value */
 			zbx_psk_warn_misconfig((const char *)psk_identity);
-			psk_usage &= ~(unsigned int)ZBX_PSK_FOR_AUTOREG;
+			psk_usage &= ~(unsigned int)TRX_PSK_FOR_AUTOREG;
 		}
 
 		psk = (unsigned char *)my_psk;	/* prefer PSK from proxy configuration file */
@@ -1344,13 +1344,13 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 	int		psk_bin_len;
 	unsigned char	tls_psk_hex[HOST_TLS_PSK_LEN_MAX], psk_buf[HOST_TLS_PSK_LEN / 2];
 
-	ZBX_UNUSED(session);
+	TRX_UNUSED(session);
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%s\"", __func__, psk_identity);
 
 	psk_usage = 0;
 
-	if (0 != (program_type & (ZBX_PROGRAM_TYPE_PROXY | ZBX_PROGRAM_TYPE_SERVER)))
+	if (0 != (program_type & (TRX_PROGRAM_TYPE_PROXY | TRX_PROGRAM_TYPE_SERVER)))
 	{
 		/* call the function DCget_psk_by_identity() by pointer */
 		if (0 < find_psk_in_cache((const unsigned char *)psk_identity, tls_psk_hex, &psk_usage))
@@ -1368,18 +1368,18 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 			psk_len = (size_t)psk_bin_len;
 		}
 
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY) &&
+		if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY) &&
 				0 < my_psk_identity_len &&
 				0 == strcmp(my_psk_identity, psk_identity))
 		{
 			/* the PSK is in proxy configuration file */
-			psk_usage |= ZBX_PSK_FOR_PROXY;
+			psk_usage |= TRX_PSK_FOR_PROXY;
 
 			if (0 < psk_len && (psk_len != my_psk_len || 0 != memcmp(psk, my_psk, psk_len)))
 			{
 				/* PSK was also found in configuration cache but with different value */
 				zbx_psk_warn_misconfig(psk_identity);
-				psk_usage &= ~(unsigned int)ZBX_PSK_FOR_AUTOREG;
+				psk_usage &= ~(unsigned int)TRX_PSK_FOR_AUTOREG;
 			}
 
 			psk = my_psk;	/* prefer PSK from proxy configuration file */
@@ -1392,7 +1392,7 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 			return -1;	/* fail */
 		}
 	}
-	else if (0 != (program_type & ZBX_PROGRAM_TYPE_AGENTD))
+	else if (0 != (program_type & TRX_PROGRAM_TYPE_AGENTD))
 	{
 		if (0 < my_psk_identity_len)
 		{
@@ -1414,7 +1414,7 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 	{
 		if (NULL == (key->data = gnutls_malloc(psk_len)))
 		{
-			treegix_log(LOG_LEVEL_WARNING, "cannot allocate " ZBX_FS_SIZE_T " bytes of memory for PSK with"
+			treegix_log(LOG_LEVEL_WARNING, "cannot allocate " TRX_FS_SIZE_T " bytes of memory for PSK with"
 					" identity \"%s\"", (zbx_fs_size_t)psk_len, psk_identity);
 			return -1;	/* fail */
 		}
@@ -1459,8 +1459,8 @@ static int	zbx_psk_cb(gnutls_session_t session, const char *psk_identity, gnutls
 static unsigned int	zbx_psk_client_cb(SSL *ssl, const char *hint, char *identity,
 		unsigned int max_identity_len, unsigned char *psk, unsigned int max_psk_len)
 {
-	ZBX_UNUSED(ssl);
-	ZBX_UNUSED(hint);
+	TRX_UNUSED(ssl);
+	TRX_UNUSED(hint);
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%s\"", __func__, psk_identity_for_cb);
 
@@ -1514,14 +1514,14 @@ static unsigned int	zbx_psk_server_cb(SSL *ssl, const char *identity, unsigned c
 	int		psk_bin_len;
 	unsigned char	tls_psk_hex[HOST_TLS_PSK_LEN_MAX], psk_buf[HOST_TLS_PSK_LEN / 2];
 
-	ZBX_UNUSED(ssl);
+	TRX_UNUSED(ssl);
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() requested PSK identity \"%s\"", __func__, identity);
 
 	incoming_connection_has_psk = 1;
 	psk_usage = 0;
 
-	if (0 != (program_type & (ZBX_PROGRAM_TYPE_PROXY | ZBX_PROGRAM_TYPE_SERVER)))
+	if (0 != (program_type & (TRX_PROGRAM_TYPE_PROXY | TRX_PROGRAM_TYPE_SERVER)))
 	{
 		/* call the function DCget_psk_by_identity() by pointer */
 		if (0 < find_psk_in_cache((const unsigned char *)identity, tls_psk_hex, &psk_usage))
@@ -1539,18 +1539,18 @@ static unsigned int	zbx_psk_server_cb(SSL *ssl, const char *identity, unsigned c
 			psk_len = (size_t)psk_bin_len;
 		}
 
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY) &&
+		if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY) &&
 				0 < my_psk_identity_len &&
 				0 == strcmp(my_psk_identity, identity))
 		{
 			/* the PSK is in proxy configuration file */
-			psk_usage |= ZBX_PSK_FOR_PROXY;
+			psk_usage |= TRX_PSK_FOR_PROXY;
 
 			if (0 < psk_len && (psk_len != my_psk_len || 0 != memcmp(psk_loc, my_psk, psk_len)))
 			{
 				/* PSK was also found in configuration cache but with different value */
 				zbx_psk_warn_misconfig(identity);
-				psk_usage &= ~(unsigned int)ZBX_PSK_FOR_AUTOREG;
+				psk_usage &= ~(unsigned int)TRX_PSK_FOR_AUTOREG;
 			}
 
 			psk_loc = my_psk;	/* prefer PSK from proxy configuration file */
@@ -1563,7 +1563,7 @@ static unsigned int	zbx_psk_server_cb(SSL *ssl, const char *identity, unsigned c
 			goto fail;
 		}
 	}
-	else if (0 != (program_type & ZBX_PROGRAM_TYPE_AGENTD))
+	else if (0 != (program_type & TRX_PROGRAM_TYPE_AGENTD))
 	{
 		if (0 < my_psk_identity_len)
 		{
@@ -1612,7 +1612,7 @@ static void	zbx_check_psk_identity_len(size_t psk_identity_len)
 {
 	if (HOST_TLS_PSK_IDENTITY_LEN < psk_identity_len)
 	{
-		treegix_log(LOG_LEVEL_CRIT, "PSK identity length " ZBX_FS_SIZE_T " exceeds the maximum length of %d"
+		treegix_log(LOG_LEVEL_CRIT, "PSK identity length " TRX_FS_SIZE_T " exceeds the maximum length of %d"
 				" bytes.", (zbx_fs_size_t)psk_identity_len, HOST_TLS_PSK_IDENTITY_LEN);
 		zbx_tls_free();
 		exit(EXIT_FAILURE);
@@ -1722,7 +1722,7 @@ out:
  ******************************************************************************/
 static void	zbx_log_ciphersuites(const char *title1, const char *title2, const int *cipher_ids)
 {
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
 		char		*msg = NULL;
 		size_t		msg_alloc = 0, msg_offset = 0;
@@ -1753,7 +1753,7 @@ static void	zbx_log_ciphersuites(const char *title1, const char *title2, const i
  ******************************************************************************/
 static void	zbx_log_ciphersuites(const char *title1, const char *title2, gnutls_priority_t ciphers)
 {
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
 		char		*msg = NULL;
 		size_t		msg_alloc = 0, msg_offset = 0;
@@ -1799,7 +1799,7 @@ static void	zbx_log_ciphersuites(const char *title1, const char *title2, gnutls_
  ******************************************************************************/
 static void	zbx_log_ciphersuites(const char *title1, const char *title2, SSL_CTX *ciphers)
 {
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
 		char			*msg = NULL;
 		size_t			msg_alloc = 0, msg_offset = 0;
@@ -2086,30 +2086,30 @@ small_buf:
  ******************************************************************************/
 static int	zbx_x509_dn_gets(const gnutls_x509_dn_t dn, char *buf, size_t size, char **error)
 {
-#define ZBX_AVA_BUF_SIZE	20	/* hopefully no more than 20 RDNs */
+#define TRX_AVA_BUF_SIZE	20	/* hopefully no more than 20 RDNs */
 
 	int			res, i = 0, i_max, ava_dyn_size;
 	char			*p, *p_end;
 	gnutls_x509_ava_st	*ava, *ava_dyn = NULL;
 	char			oid_str[128];		/* size equal to MAX_OID_SIZE, internally defined in GnuTLS */
-	gnutls_x509_ava_st	ava_stat[ZBX_AVA_BUF_SIZE];
+	gnutls_x509_ava_st	ava_stat[TRX_AVA_BUF_SIZE];
 
 	/* Find index of the last RDN in distinguished name. Remember pointers to RDNs to minimize calling of */
 	/* gnutls_x509_dn_get_rdn_ava() as it seems a bit expensive. */
 
 	while (1)
 	{
-		if (ZBX_AVA_BUF_SIZE > i)	/* most common case: small number of RDNs, fits in fixed buffer */
+		if (TRX_AVA_BUF_SIZE > i)	/* most common case: small number of RDNs, fits in fixed buffer */
 		{
 			ava = &ava_stat[i];
 		}
 		else if (NULL == ava_dyn)	/* fixed buffer full, copy data to dynamic buffer */
 		{
-			ava_dyn_size = 2 * ZBX_AVA_BUF_SIZE;
+			ava_dyn_size = 2 * TRX_AVA_BUF_SIZE;
 			ava_dyn = zbx_malloc(NULL, (size_t)ava_dyn_size * sizeof(gnutls_x509_ava_st));
 
-			memcpy(ava_dyn, ava_stat, ZBX_AVA_BUF_SIZE * sizeof(gnutls_x509_ava_st));
-			ava = ava_dyn + ZBX_AVA_BUF_SIZE;
+			memcpy(ava_dyn, ava_stat, TRX_AVA_BUF_SIZE * sizeof(gnutls_x509_ava_st));
+			ava = ava_dyn + TRX_AVA_BUF_SIZE;
 		}
 		else if (ava_dyn_size > i)	/* fits in dynamic buffer */
 		{
@@ -2117,7 +2117,7 @@ static int	zbx_x509_dn_gets(const gnutls_x509_dn_t dn, char *buf, size_t size, c
 		}
 		else				/* expand dynamic buffer */
 		{
-			ava_dyn_size += ZBX_AVA_BUF_SIZE;
+			ava_dyn_size += TRX_AVA_BUF_SIZE;
 			ava_dyn = zbx_realloc(ava_dyn, (size_t)ava_dyn_size * sizeof(gnutls_x509_ava_st));
 			ava = ava_dyn + i;
 		}
@@ -2207,7 +2207,7 @@ small_buf:
 
 	return FAIL;
 
-#undef ZBX_AVA_BUF_SIZE
+#undef TRX_AVA_BUF_SIZE
 }
 #elif defined(HAVE_OPENSSL)
 /******************************************************************************
@@ -2372,7 +2372,7 @@ static void	zbx_log_peer_cert(const char *function_name, const zbx_tls_context_t
 	char			issuer[HOST_TLS_ISSUER_LEN_MAX], subject[HOST_TLS_SUBJECT_LEN_MAX];
 #endif
 
-	if (SUCCEED != ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED != TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 		return;
 #if defined(HAVE_POLARSSL)
 	if (NULL == (cert = ssl_get_peer_cert(tls_ctx->ctx)))
@@ -2877,7 +2877,7 @@ void	zbx_tls_init_child(void)
 			exit(EXIT_FAILURE);
 		}
 
-		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded " ZBX_FS_SIZE_T "-bit %s private key from file \"%s\"",
+		treegix_log(LOG_LEVEL_DEBUG, "%s() loaded " TRX_FS_SIZE_T "-bit %s private key from file \"%s\"",
 				__func__, (zbx_fs_size_t)pk_get_size(my_priv_key), pk_get_name(my_priv_key),
 				CONFIG_TLS_KEY_FILE);
 	}
@@ -2905,24 +2905,24 @@ void	zbx_tls_init_child(void)
 	/* Certificate always comes from configuration file. Set up ciphersuites. */
 	if (NULL != my_cert)
 	{
-		zbx_ciphersuites(ZBX_TLS_CIPHERSUITE_CERT, &ciphersuites_cert);
+		zbx_ciphersuites(TRX_TLS_CIPHERSUITE_CERT, &ciphersuites_cert);
 		zbx_log_ciphersuites(__func__, "certificate", ciphersuites_cert);
 	}
 
 	/* PSK can come from configuration file (in proxy, agentd) and later from database (in server, proxy). */
 	/* Configure ciphersuites just in case they will be used. */
-	if (NULL != my_psk || 0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY)))
+	if (NULL != my_psk || 0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY)))
 	{
-		zbx_ciphersuites(ZBX_TLS_CIPHERSUITE_PSK, &ciphersuites_psk);
+		zbx_ciphersuites(TRX_TLS_CIPHERSUITE_PSK, &ciphersuites_psk);
 		zbx_log_ciphersuites(__func__, "PSK", ciphersuites_psk);
 	}
 
 	/* Sometimes we need to be ready for both certificate and PSK whichever comes in. Set up a combined list of */
 	/* ciphersuites. */
 	if (NULL != my_cert && (NULL != my_psk ||
-			0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY))))
+			0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY))))
 	{
-		zbx_ciphersuites(ZBX_TLS_CIPHERSUITE_ALL, &ciphersuites_all);
+		zbx_ciphersuites(TRX_TLS_CIPHERSUITE_ALL, &ciphersuites_all);
 		zbx_log_ciphersuites(__func__, "certificate and PSK", ciphersuites_all);
 	}
 
@@ -3073,8 +3073,8 @@ void	zbx_tls_init_child(void)
 		/* allocate here only PSK credential stores which do not change (e.g. for proxy communication with */
 		/* server) */
 
-		if (0 != (program_type & (ZBX_PROGRAM_TYPE_PROXY_ACTIVE | ZBX_PROGRAM_TYPE_AGENTD |
-				ZBX_PROGRAM_TYPE_SENDER | ZBX_PROGRAM_TYPE_GET)))
+		if (0 != (program_type & (TRX_PROGRAM_TYPE_PROXY_ACTIVE | TRX_PROGRAM_TYPE_AGENTD |
+				TRX_PROGRAM_TYPE_SENDER | TRX_PROGRAM_TYPE_GET)))
 		{
 			if (GNUTLS_E_SUCCESS != (res = gnutls_psk_allocate_client_credentials(&my_psk_client_creds)))
 			{
@@ -3095,7 +3095,7 @@ void	zbx_tls_init_child(void)
 			}
 		}
 
-		if (0 != (program_type & (ZBX_PROGRAM_TYPE_PROXY_PASSIVE | ZBX_PROGRAM_TYPE_AGENTD)))
+		if (0 != (program_type & (TRX_PROGRAM_TYPE_PROXY_PASSIVE | TRX_PROGRAM_TYPE_AGENTD)))
 		{
 			if (0 != (res = gnutls_psk_allocate_server_credentials(&my_psk_server_creds)))
 			{
@@ -3136,7 +3136,7 @@ void	zbx_tls_init_child(void)
 	/* PSK can come from configuration file (in proxy, agentd) and later from database (in server, proxy). */
 	/* Configure ciphersuites just in case they will be used. */
 	if (NULL != my_psk_client_creds || NULL != my_psk_server_creds ||
-			0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY)))
+			0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY)))
 	{
 		/* this should work with GnuTLS 3.1.18 - 3.3.16 */
 		if (GNUTLS_E_SUCCESS != (res = gnutls_priority_init(&ciphersuites_psk, "NONE:+VERS-TLS1.2:+ECDHE-PSK:"
@@ -3155,7 +3155,7 @@ void	zbx_tls_init_child(void)
 	/* Sometimes we need to be ready for both certificate and PSK whichever comes in. Set up a combined list of */
 	/* ciphersuites. */
 	if (NULL != my_cert_creds && (NULL != my_psk_client_creds || NULL != my_psk_server_creds ||
-			0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY))))
+			0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY))))
 	{
 		/* this should work with GnuTLS 3.1.18 - 3.3.16 */
 		if (GNUTLS_E_SUCCESS != (res = gnutls_priority_init(&ciphersuites_all, "NONE:+VERS-TLS1.2:+ECDHE-RSA:"
@@ -3190,7 +3190,7 @@ static const char	*zbx_ctx_name(SSL_CTX *param)
 		return "certificate and PSK-based encryption";
 #endif
 	THIS_SHOULD_NEVER_HAPPEN;
-	return ZBX_NULL2STR(NULL);
+	return TRX_NULL2STR(NULL);
 }
 
 static int	zbx_set_ecdhe_parameters(SSL_CTX *ctx)
@@ -3225,21 +3225,21 @@ static int	zbx_set_ecdhe_parameters(SSL_CTX *ctx)
 
 void	zbx_tls_init_child(void)
 {
-#define ZBX_CIPHERS_CERT_ECDHE		"EECDH+aRSA+AES128:"
-#define ZBX_CIPHERS_CERT		"RSA+aRSA+AES128"
+#define TRX_CIPHERS_CERT_ECDHE		"EECDH+aRSA+AES128:"
+#define TRX_CIPHERS_CERT		"RSA+aRSA+AES128"
 
 #if defined(HAVE_OPENSSL_WITH_PSK)
 #if OPENSSL_VERSION_NUMBER >= 0x1010100fL	/* OpenSSL 1.1.1 or newer */
 	/* TLS_AES_256_GCM_SHA384 is excluded from client ciphersuite list for PSK based connections. */
 	/* By default, in TLS 1.3 only *-SHA256 ciphersuites work with PSK. */
-#	define ZBX_CIPHERS_PSK_TLS13	"TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256"
+#	define TRX_CIPHERS_PSK_TLS13	"TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256"
 #endif
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL	/* OpenSSL 1.1.0 or newer */
-#	define ZBX_CIPHERS_PSK_ECDHE	"kECDHEPSK+AES128:"
-#	define ZBX_CIPHERS_PSK		"kPSK+AES128"
+#	define TRX_CIPHERS_PSK_ECDHE	"kECDHEPSK+AES128:"
+#	define TRX_CIPHERS_PSK		"kPSK+AES128"
 #else
-#	define ZBX_CIPHERS_PSK_ECDHE	""
-#	define ZBX_CIPHERS_PSK		"PSK-AES128-CBC-SHA"
+#	define TRX_CIPHERS_PSK_ECDHE	""
+#	define TRX_CIPHERS_PSK		"PSK-AES128-CBC-SHA"
 #endif
 #endif
 
@@ -3272,9 +3272,9 @@ void	zbx_tls_init_child(void)
 
 	/* set protocol version to TLS 1.2 */
 
-	if (0 != (program_type & (ZBX_PROGRAM_TYPE_SENDER | ZBX_PROGRAM_TYPE_GET)))
+	if (0 != (program_type & (TRX_PROGRAM_TYPE_SENDER | TRX_PROGRAM_TYPE_GET)))
 		method = TLS_client_method();
-	else	/* ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY | ZBX_PROGRAM_TYPE_AGENTD */
+	else	/* TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY | TRX_PROGRAM_TYPE_AGENTD */
 		method = TLS_method();
 
 	/* create context for certificate-only authentication if certificate is configured */
@@ -3289,7 +3289,7 @@ void	zbx_tls_init_child(void)
 #if defined(HAVE_OPENSSL_WITH_PSK)
 	/* Create context for PSK-only authentication. PSK can come from configuration file (in proxy, agentd) */
 	/* and later from database (in server, proxy). */
-	if (NULL != CONFIG_TLS_PSK_FILE || 0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY)))
+	if (NULL != CONFIG_TLS_PSK_FILE || 0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY)))
 	{
 		if (NULL == (ctx_psk = SSL_CTX_new(method)))
 			goto out_method;
@@ -3480,8 +3480,8 @@ void	zbx_tls_init_child(void)
 #if defined(HAVE_OPENSSL_WITH_PSK)
 	/* set up PSK global variables for client callback if PSK comes only from configuration file or command line */
 
-	if (NULL != ctx_psk && 0 != (program_type & (ZBX_PROGRAM_TYPE_AGENTD | ZBX_PROGRAM_TYPE_SENDER |
-			ZBX_PROGRAM_TYPE_GET)))
+	if (NULL != ctx_psk && 0 != (program_type & (TRX_PROGRAM_TYPE_AGENTD | TRX_PROGRAM_TYPE_SENDER |
+			TRX_PROGRAM_TYPE_GET)))
 	{
 		psk_identity_for_cb = my_psk_identity;
 		psk_identity_len_for_cb = my_psk_identity_len;
@@ -3509,9 +3509,9 @@ void	zbx_tls_init_child(void)
 
 		/* try to enable ECDH ciphersuites */
 		if (SUCCEED == zbx_set_ecdhe_parameters(ctx_cert))
-			ciphers = ZBX_CIPHERS_CERT_ECDHE ZBX_CIPHERS_CERT;
+			ciphers = TRX_CIPHERS_CERT_ECDHE TRX_CIPHERS_CERT;
 		else
-			ciphers = ZBX_CIPHERS_CERT;
+			ciphers = TRX_CIPHERS_CERT;
 
 		/* set up ciphersuites */
 		if (1 != SSL_CTX_set_cipher_list(ctx_cert, ciphers))
@@ -3530,13 +3530,13 @@ void	zbx_tls_init_child(void)
 
 		SSL_CTX_set_info_callback(ctx_psk, zbx_openssl_info_cb);
 
-		if (0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY | ZBX_PROGRAM_TYPE_AGENTD |
-				ZBX_PROGRAM_TYPE_SENDER | ZBX_PROGRAM_TYPE_GET)))
+		if (0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY | TRX_PROGRAM_TYPE_AGENTD |
+				TRX_PROGRAM_TYPE_SENDER | TRX_PROGRAM_TYPE_GET)))
 		{
 			SSL_CTX_set_psk_client_callback(ctx_psk, zbx_psk_client_cb);
 		}
 
-		if (0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY | ZBX_PROGRAM_TYPE_AGENTD)))
+		if (0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY | TRX_PROGRAM_TYPE_AGENTD)))
 			SSL_CTX_set_psk_server_callback(ctx_psk, zbx_psk_server_cb);
 
 		SSL_CTX_set_mode(ctx_psk, SSL_MODE_AUTO_RETRY);
@@ -3544,13 +3544,13 @@ void	zbx_tls_init_child(void)
 		SSL_CTX_clear_options(ctx_psk, SSL_OP_LEGACY_SERVER_CONNECT);
 		SSL_CTX_set_session_cache_mode(ctx_psk, SSL_SESS_CACHE_OFF);
 
-		if ('\0' != *ZBX_CIPHERS_PSK_ECDHE && SUCCEED == zbx_set_ecdhe_parameters(ctx_psk))
-			ciphers = ZBX_CIPHERS_PSK_ECDHE ZBX_CIPHERS_PSK;
+		if ('\0' != *TRX_CIPHERS_PSK_ECDHE && SUCCEED == zbx_set_ecdhe_parameters(ctx_psk))
+			ciphers = TRX_CIPHERS_PSK_ECDHE TRX_CIPHERS_PSK;
 		else
-			ciphers = ZBX_CIPHERS_PSK;
+			ciphers = TRX_CIPHERS_PSK;
 
 #if OPENSSL_VERSION_NUMBER >= 0x1010100fL	/* OpenSSL 1.1.1 or newer */
-		if (1 != SSL_CTX_set_ciphersuites(ctx_psk, ZBX_CIPHERS_PSK_TLS13))
+		if (1 != SSL_CTX_set_ciphersuites(ctx_psk, TRX_CIPHERS_PSK_TLS13))
 		{
 			zbx_snprintf_alloc(&error, &error_alloc, &error_offset, "cannot set list of PSK TLS 1.3"
 					"  ciphersuites:");
@@ -3572,7 +3572,7 @@ void	zbx_tls_init_child(void)
 
 		SSL_CTX_set_info_callback(ctx_all, zbx_openssl_info_cb);
 
-		if (0 != (program_type & (ZBX_PROGRAM_TYPE_SERVER | ZBX_PROGRAM_TYPE_PROXY | ZBX_PROGRAM_TYPE_AGENTD)))
+		if (0 != (program_type & (TRX_PROGRAM_TYPE_SERVER | TRX_PROGRAM_TYPE_PROXY | TRX_PROGRAM_TYPE_AGENTD)))
 			SSL_CTX_set_psk_server_callback(ctx_all, zbx_psk_server_cb);
 
 		SSL_CTX_set_mode(ctx_all, SSL_MODE_AUTO_RETRY);
@@ -3581,9 +3581,9 @@ void	zbx_tls_init_child(void)
 		SSL_CTX_set_session_cache_mode(ctx_all, SSL_SESS_CACHE_OFF);
 
 		if (SUCCEED == zbx_set_ecdhe_parameters(ctx_all))
-			ciphers = ZBX_CIPHERS_CERT_ECDHE ZBX_CIPHERS_CERT ":" ZBX_CIPHERS_PSK_ECDHE ZBX_CIPHERS_PSK;
+			ciphers = TRX_CIPHERS_CERT_ECDHE TRX_CIPHERS_CERT ":" TRX_CIPHERS_PSK_ECDHE TRX_CIPHERS_PSK;
 		else
-			ciphers = ZBX_CIPHERS_CERT ":" ZBX_CIPHERS_PSK;
+			ciphers = TRX_CIPHERS_CERT ":" TRX_CIPHERS_PSK;
 
 		if (1 != SSL_CTX_set_cipher_list(ctx_all, ciphers))
 		{
@@ -3613,11 +3613,11 @@ out1:
 	zbx_tls_free();
 	exit(EXIT_FAILURE);
 
-#undef ZBX_CIPHERS_CERT_ECDHE
-#undef ZBX_CIPHERS_CERT
-#undef ZBX_CIPHERS_PSK_ECDHE
-#undef ZBX_CIPHERS_PSK
-#undef ZBX_CIPHERS_PSK_TLS13
+#undef TRX_CIPHERS_CERT_ECDHE
+#undef TRX_CIPHERS_CERT
+#undef TRX_CIPHERS_PSK_ECDHE
+#undef TRX_CIPHERS_PSK
+#undef TRX_CIPHERS_PSK_TLS13
 }
 #endif
 
@@ -3755,7 +3755,7 @@ void	zbx_tls_free(void)
  *     s           - [IN] socket with opened connection                       *
  *     error       - [OUT] dynamically allocated memory with error message    *
  *     tls_connect - [IN] how to connect. Allowed values:                     *
- *                        ZBX_TCP_SEC_TLS_CERT, ZBX_TCP_SEC_TLS_PSK.          *
+ *                        TRX_TCP_SEC_TLS_CERT, TRX_TCP_SEC_TLS_PSK.          *
  *     tls_arg1    - [IN] required issuer of peer certificate (may be NULL    *
  *                        or empty string if not important) or PSK identity   *
  *                        to connect with depending on value of               *
@@ -3778,10 +3778,10 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 #if defined(_WINDOWS)
 	double		sec;
 #endif
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "In %s(): issuer:\"%s\" subject:\"%s\"", __func__,
-				ZBX_NULL2EMPTY_STR(tls_arg1), ZBX_NULL2EMPTY_STR(tls_arg2));
+				TRX_NULL2EMPTY_STR(tls_arg1), TRX_NULL2EMPTY_STR(tls_arg2));
 
 		if (NULL == ciphersuites_cert)
 		{
@@ -3790,9 +3790,9 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 			goto out1;
 		}
 	}
-	else if (ZBX_TCP_SEC_TLS_PSK == tls_connect)
+	else if (TRX_TCP_SEC_TLS_PSK == tls_connect)
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, ZBX_NULL2EMPTY_STR(tls_arg1));
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, TRX_NULL2EMPTY_STR(tls_arg1));
 
 		if (NULL == ciphersuites_psk)
 		{
@@ -3830,7 +3830,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 		goto out;
 	}
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 	{
 		/* Set our own debug callback function. The 3rd parameter of ssl_set_dbg() we set to NULL. It will be */
 		/* passed as the 1st parameter to our callback function and will be ignored there. */
@@ -3846,10 +3846,10 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 	ssl_set_bio(s->tls_ctx->ctx, net_recv, &s->socket, net_send, &s->socket);
 
 	/* set protocol version to TLS 1.2 */
-	ssl_set_min_version(s->tls_ctx->ctx, ZBX_TLS_MIN_MAJOR_VER, ZBX_TLS_MIN_MINOR_VER);
-	ssl_set_max_version(s->tls_ctx->ctx, ZBX_TLS_MAX_MAJOR_VER, ZBX_TLS_MAX_MINOR_VER);
+	ssl_set_min_version(s->tls_ctx->ctx, TRX_TLS_MIN_MAJOR_VER, TRX_TLS_MIN_MINOR_VER);
+	ssl_set_max_version(s->tls_ctx->ctx, TRX_TLS_MAX_MAJOR_VER, TRX_TLS_MAX_MINOR_VER);
 
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)	/* use certificates */
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect)	/* use certificates */
 	{
 		ssl_set_authmode(s->tls_ctx->ctx, SSL_VERIFY_REQUIRED);
 		ssl_set_ciphersuites(s->tls_ctx->ctx, ciphersuites_cert);
@@ -3940,7 +3940,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 		}
 	}
 
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect)
 	{
 		/* log peer certificate information for debugging */
 		zbx_log_peer_cert(__func__, s->tls_ctx);
@@ -3974,7 +3974,7 @@ out:	/* an error occurred */
 	zbx_free(s->tls_ctx);
 out1:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
-			ZBX_NULL2EMPTY_STR(*error));
+			TRX_NULL2EMPTY_STR(*error));
 	return ret;
 }
 #elif defined(HAVE_GNUTLS)
@@ -3986,14 +3986,14 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 	double	sec;
 #endif
 
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "In %s(): issuer:\"%s\" subject:\"%s\"", __func__,
-				ZBX_NULL2EMPTY_STR(tls_arg1), ZBX_NULL2EMPTY_STR(tls_arg2));
+				TRX_NULL2EMPTY_STR(tls_arg1), TRX_NULL2EMPTY_STR(tls_arg2));
 	}
-	else if (ZBX_TCP_SEC_TLS_PSK == tls_connect)
+	else if (TRX_TCP_SEC_TLS_PSK == tls_connect)
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, ZBX_NULL2EMPTY_STR(tls_arg1));
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, TRX_NULL2EMPTY_STR(tls_arg1));
 	}
 	else
 	{
@@ -4017,7 +4017,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 		goto out;
 	}
 
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect)
 	{
 		if (NULL == ciphersuites_cert)
 		{
@@ -4114,7 +4114,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 		}
 	}
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 	{
 		/* set our own debug callback function */
 		gnutls_global_set_log_function(zbx_gnutls_debug_cb);
@@ -4129,7 +4129,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 	/* set our own callback function to log issues into Treegix log */
 	gnutls_global_set_audit_log_function(zbx_gnutls_audit_cb);
 
-	gnutls_transport_set_int(s->tls_ctx->ctx, ZBX_SOCKET_TO_INT(s->socket));
+	gnutls_transport_set_int(s->tls_ctx->ctx, TRX_SOCKET_TO_INT(s->socket));
 
 	/* TLS handshake */
 
@@ -4184,7 +4184,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 			/* log "peer has closed connection" case with debug level */
 			level = (GNUTLS_E_PREMATURE_TERMINATION == res ? LOG_LEVEL_DEBUG : LOG_LEVEL_WARNING);
 
-			if (SUCCEED == ZBX_CHECK_LOG_LEVEL(level))
+			if (SUCCEED == TRX_CHECK_LOG_LEVEL(level))
 			{
 				treegix_log(level, "%s() gnutls_handshake() returned: %d %s",
 						__func__, res, gnutls_strerror(res));
@@ -4199,7 +4199,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 		}
 	}
 
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect)
 	{
 		/* log peer certificate information for debugging */
 		zbx_log_peer_cert(__func__, s->tls_ctx);
@@ -4221,7 +4221,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 
 	s->connection_type = tls_connect;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s-%s-%s-" ZBX_FS_SIZE_T ")", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s-%s-%s-" TRX_FS_SIZE_T ")", __func__,
 			gnutls_protocol_get_name(gnutls_protocol_get_version(s->tls_ctx->ctx)),
 			gnutls_kx_get_name(gnutls_kx_get(s->tls_ctx->ctx)),
 			gnutls_cipher_get_name(gnutls_cipher_get(s->tls_ctx->ctx)),
@@ -4243,7 +4243,7 @@ out:	/* an error occurred */
 	zbx_free(s->tls_ctx);
 out1:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
-			ZBX_NULL2EMPTY_STR(*error));
+			TRX_NULL2EMPTY_STR(*error));
 	return ret;
 }
 #elif defined(HAVE_OPENSSL)
@@ -4262,10 +4262,10 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 	s->tls_ctx = zbx_malloc(s->tls_ctx, sizeof(zbx_tls_context_t));
 	s->tls_ctx->ctx = NULL;
 
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "In %s(): issuer:\"%s\" subject:\"%s\"", __func__,
-				ZBX_NULL2EMPTY_STR(tls_arg1), ZBX_NULL2EMPTY_STR(tls_arg2));
+				TRX_NULL2EMPTY_STR(tls_arg1), TRX_NULL2EMPTY_STR(tls_arg2));
 
 		if (NULL == ctx_cert)
 		{
@@ -4281,9 +4281,9 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 			goto out;
 		}
 	}
-	else if (ZBX_TCP_SEC_TLS_PSK == tls_connect)
+	else if (TRX_TCP_SEC_TLS_PSK == tls_connect)
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, ZBX_NULL2EMPTY_STR(tls_arg1));
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): psk_identity:\"%s\"", __func__, TRX_NULL2EMPTY_STR(tls_arg1));
 
 #if defined(HAVE_OPENSSL_WITH_PSK)
 		if (NULL == ctx_psk)
@@ -4305,7 +4305,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 			/* active proxy connects to server). Here we set it only in case of active proxy */
 			/* because for other programs it has already been set in zbx_tls_init_child(). */
 
-			if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY_ACTIVE))
+			if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY_ACTIVE))
 			{
 				psk_identity_for_cb = my_psk_identity;
 				psk_identity_len_for_cb = my_psk_identity_len;
@@ -4375,7 +4375,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 			goto out;
 		}
 
-		if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
+		if (TRX_TCP_SEC_TLS_CERT == tls_connect)
 		{
 			long	verify_result;
 
@@ -4443,7 +4443,7 @@ int	zbx_tls_connect(zbx_socket_t *s, unsigned int tls_connect, const char *tls_a
 		}
 	}
 
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect)
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect)
 	{
 		long	verify_result;
 
@@ -4481,7 +4481,7 @@ out:	/* an error occurred */
 	zbx_free(s->tls_ctx);
 out1:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
-			ZBX_NULL2EMPTY_STR(*error));
+			TRX_NULL2EMPTY_STR(*error));
 	return ret;
 }
 #endif
@@ -4496,7 +4496,7 @@ out1:
  *     s          - [IN] socket with opened connection                        *
  *     error      - [OUT] dynamically allocated memory with error message     *
  *     tls_accept - [IN] type of connection to accept. Can be be either       *
- *                       ZBX_TCP_SEC_TLS_CERT or ZBX_TCP_SEC_TLS_PSK, or      *
+ *                       TRX_TCP_SEC_TLS_CERT or TRX_TCP_SEC_TLS_PSK, or      *
  *                       a bitwise 'OR' of both.                              *
  *                                                                            *
  * Return value:                                                              *
@@ -4537,7 +4537,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		goto out;
 	}
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 	{
 		/* Set our own debug callback function. The 3rd parameter of ssl_set_dbg() we set to NULL. It will be */
 		/* passed as the 1st parameter to our callback function and will be ignored there. */
@@ -4553,12 +4553,12 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 	ssl_set_bio(s->tls_ctx->ctx, net_recv, &s->socket, net_send, &s->socket);
 
 	/* set protocol version to TLS 1.2 */
-	ssl_set_min_version(s->tls_ctx->ctx, ZBX_TLS_MIN_MAJOR_VER, ZBX_TLS_MIN_MINOR_VER);
-	ssl_set_max_version(s->tls_ctx->ctx, ZBX_TLS_MAX_MAJOR_VER, ZBX_TLS_MAX_MINOR_VER);
+	ssl_set_min_version(s->tls_ctx->ctx, TRX_TLS_MIN_MAJOR_VER, TRX_TLS_MIN_MINOR_VER);
+	ssl_set_max_version(s->tls_ctx->ctx, TRX_TLS_MAX_MAJOR_VER, TRX_TLS_MAX_MINOR_VER);
 
 	/* prepare to accept with certificate */
 
-	if (0 != (tls_accept & ZBX_TCP_SEC_TLS_CERT))
+	if (0 != (tls_accept & TRX_TCP_SEC_TLS_CERT))
 	{
 		ssl_set_authmode(s->tls_ctx->ctx, SSL_VERIFY_REQUIRED);
 
@@ -4575,17 +4575,17 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 
 	/* prepare to accept with pre-shared key */
 
-	if (0 != (tls_accept & ZBX_TCP_SEC_TLS_PSK))
+	if (0 != (tls_accept & TRX_TCP_SEC_TLS_PSK))
 	{
 		/* for agentd the only possibility is a PSK from configuration file */
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_AGENTD) &&
+		if (0 != (program_type & TRX_PROGRAM_TYPE_AGENTD) &&
 				0 != (res = ssl_set_psk(s->tls_ctx->ctx, (const unsigned char *)my_psk, my_psk_len,
 				(const unsigned char *)my_psk_identity, my_psk_identity_len)))
 		{
 			zbx_tls_error_msg(res, "ssl_set_psk(): ", error);
 			goto out;
 		}
-		else if (0 != (program_type & (ZBX_PROGRAM_TYPE_PROXY | ZBX_PROGRAM_TYPE_SERVER)))
+		else if (0 != (program_type & (TRX_PROGRAM_TYPE_PROXY | TRX_PROGRAM_TYPE_SERVER)))
 		{
 			/* For server or proxy a PSK can come from configuration file or database. */
 			/* Set up a callback function for finding the requested PSK. */
@@ -4595,7 +4595,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 
 	/* set up ciphersuites */
 
-	if ((ZBX_TCP_SEC_TLS_CERT | ZBX_TCP_SEC_TLS_PSK) == (tls_accept & (ZBX_TCP_SEC_TLS_CERT | ZBX_TCP_SEC_TLS_PSK)))
+	if ((TRX_TCP_SEC_TLS_CERT | TRX_TCP_SEC_TLS_PSK) == (tls_accept & (TRX_TCP_SEC_TLS_CERT | TRX_TCP_SEC_TLS_PSK)))
 	{
 		/* common case in trapper - be ready for all types of incoming connections */
 		if (NULL != my_cert)
@@ -4610,9 +4610,9 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 			ssl_set_ciphersuites(s->tls_ctx->ctx, ciphersuites_psk);
 		}
 	}
-	else if (0 != (tls_accept & ZBX_TCP_SEC_TLS_CERT) && NULL != my_cert)
+	else if (0 != (tls_accept & TRX_TCP_SEC_TLS_CERT) && NULL != my_cert)
 		ssl_set_ciphersuites(s->tls_ctx->ctx, ciphersuites_cert);
-	else if (0 != (tls_accept & ZBX_TCP_SEC_TLS_PSK))
+	else if (0 != (tls_accept & TRX_TCP_SEC_TLS_PSK))
 		ssl_set_ciphersuites(s->tls_ctx->ctx, ciphersuites_psk);
 
 	/* TLS handshake */
@@ -4663,7 +4663,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 			POLARSSL_KEY_EXCHANGE_ECDHE_PSK == info->key_exchange ||
 			POLARSSL_KEY_EXCHANGE_RSA_PSK == info->key_exchange)
 	{
-		s->connection_type = ZBX_TCP_SEC_TLS_PSK;
+		s->connection_type = TRX_TCP_SEC_TLS_PSK;
 
 		/* special print: s->tls_ctx->ctx->psk_identity is not '\0'-terminated */
 		treegix_log(LOG_LEVEL_DEBUG, "%s() PSK identity: \"%.*s\"", __func__,
@@ -4671,7 +4671,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 	}
 	else
 	{
-		s->connection_type = ZBX_TCP_SEC_TLS_CERT;
+		s->connection_type = TRX_TCP_SEC_TLS_CERT;
 
 		/* log peer certificate information for debugging */
 		zbx_log_peer_cert(__func__, s->tls_ctx);
@@ -4692,7 +4692,7 @@ out:	/* an error occurred */
 	zbx_free(s->tls_ctx);
 out1:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
-			ZBX_NULL2EMPTY_STR(*error));
+			TRX_NULL2EMPTY_STR(*error));
 	return ret;
 }
 #elif defined(HAVE_GNUTLS)
@@ -4720,7 +4720,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 
 	/* prepare to accept with certificate */
 
-	if (0 != (tls_accept & ZBX_TCP_SEC_TLS_CERT))
+	if (0 != (tls_accept & TRX_TCP_SEC_TLS_CERT))
 	{
 		if (NULL != my_cert_creds && GNUTLS_E_SUCCESS != (res = gnutls_credentials_set(s->tls_ctx->ctx,
 				GNUTLS_CRD_CERTIFICATE, my_cert_creds)))
@@ -4736,10 +4736,10 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 
 	/* prepare to accept with pre-shared key */
 
-	if (0 != (tls_accept & ZBX_TCP_SEC_TLS_PSK))
+	if (0 != (tls_accept & TRX_TCP_SEC_TLS_PSK))
 	{
 		/* for agentd the only possibility is a PSK from configuration file */
-		if (0 != (program_type & ZBX_PROGRAM_TYPE_AGENTD) &&
+		if (0 != (program_type & TRX_PROGRAM_TYPE_AGENTD) &&
 				GNUTLS_E_SUCCESS != (res = gnutls_credentials_set(s->tls_ctx->ctx, GNUTLS_CRD_PSK,
 				my_psk_server_creds)))
 		{
@@ -4747,7 +4747,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 					res, gnutls_strerror(res));
 			goto out;
 		}
-		else if (0 != (program_type & (ZBX_PROGRAM_TYPE_PROXY | ZBX_PROGRAM_TYPE_SERVER)))
+		else if (0 != (program_type & (TRX_PROGRAM_TYPE_PROXY | TRX_PROGRAM_TYPE_SERVER)))
 		{
 			/* For server or proxy a PSK can come from configuration file or database. */
 			/* Set up a callback function for finding the requested PSK. */
@@ -4773,7 +4773,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 
 	/* set up ciphersuites */
 
-	if ((ZBX_TCP_SEC_TLS_CERT | ZBX_TCP_SEC_TLS_PSK) == (tls_accept & (ZBX_TCP_SEC_TLS_CERT | ZBX_TCP_SEC_TLS_PSK)))
+	if ((TRX_TCP_SEC_TLS_CERT | TRX_TCP_SEC_TLS_PSK) == (tls_accept & (TRX_TCP_SEC_TLS_CERT | TRX_TCP_SEC_TLS_PSK)))
 	{
 		/* common case in trapper - be ready for all types of incoming connections */
 		if (NULL != my_cert_creds)
@@ -4798,7 +4798,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 			}
 		}
 	}
-	else if (0 != (tls_accept & ZBX_TCP_SEC_TLS_CERT) && NULL != my_cert_creds)
+	else if (0 != (tls_accept & TRX_TCP_SEC_TLS_CERT) && NULL != my_cert_creds)
 	{
 		if (GNUTLS_E_SUCCESS != (res = gnutls_priority_set(s->tls_ctx->ctx, ciphersuites_cert)))
 		{
@@ -4807,7 +4807,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 			goto out;
 		}
 	}
-	else if (0 != (tls_accept & ZBX_TCP_SEC_TLS_PSK))
+	else if (0 != (tls_accept & TRX_TCP_SEC_TLS_PSK))
 	{
 		if (GNUTLS_E_SUCCESS != (res = gnutls_priority_set(s->tls_ctx->ctx, ciphersuites_psk)))
 		{
@@ -4817,7 +4817,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		}
 	}
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 	{
 		/* set our own debug callback function */
 		gnutls_global_set_log_function(zbx_gnutls_debug_cb);
@@ -4832,7 +4832,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 	/* set our own callback function to log issues into Treegix log */
 	gnutls_global_set_audit_log_function(zbx_gnutls_audit_cb);
 
-	gnutls_transport_set_int(s->tls_ctx->ctx, ZBX_SOCKET_TO_INT(s->socket));
+	gnutls_transport_set_int(s->tls_ctx->ctx, TRX_SOCKET_TO_INT(s->socket));
 
 	/* TLS handshake */
 
@@ -4906,7 +4906,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 
 	if (GNUTLS_CRD_CERTIFICATE == (creds = gnutls_auth_get_type(s->tls_ctx->ctx)))
 	{
-		s->connection_type = ZBX_TCP_SEC_TLS_CERT;
+		s->connection_type = TRX_TCP_SEC_TLS_CERT;
 
 		/* log peer certificate information for debugging */
 		zbx_log_peer_cert(__func__, s->tls_ctx);
@@ -4922,9 +4922,9 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 	}
 	else if (GNUTLS_CRD_PSK == creds)
 	{
-		s->connection_type = ZBX_TCP_SEC_TLS_PSK;
+		s->connection_type = TRX_TCP_SEC_TLS_PSK;
 
-		if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+		if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 		{
 			const char	*psk_identity;
 
@@ -4941,7 +4941,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		return FAIL;
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s-%s-%s-" ZBX_FS_SIZE_T ")", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():SUCCEED (established %s %s-%s-%s-" TRX_FS_SIZE_T ")", __func__,
 			gnutls_protocol_get_name(gnutls_protocol_get_version(s->tls_ctx->ctx)),
 			gnutls_kx_get_name(gnutls_kx_get(s->tls_ctx->ctx)),
 			gnutls_cipher_get_name(gnutls_cipher_get(s->tls_ctx->ctx)),
@@ -4963,7 +4963,7 @@ out:	/* an error occurred */
 	zbx_free(s->tls_ctx);
 out1:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
-			ZBX_NULL2EMPTY_STR(*error));
+			TRX_NULL2EMPTY_STR(*error));
 	return ret;
 }
 #elif defined(HAVE_OPENSSL)
@@ -4987,7 +4987,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 #if defined(HAVE_OPENSSL_WITH_PSK)
 	incoming_connection_has_psk = 0;	/* assume certificate-based connection by default */
 #endif
-	if ((ZBX_TCP_SEC_TLS_CERT | ZBX_TCP_SEC_TLS_PSK) == (tls_accept & (ZBX_TCP_SEC_TLS_CERT | ZBX_TCP_SEC_TLS_PSK)))
+	if ((TRX_TCP_SEC_TLS_CERT | TRX_TCP_SEC_TLS_PSK) == (tls_accept & (TRX_TCP_SEC_TLS_CERT | TRX_TCP_SEC_TLS_PSK)))
 	{
 #if defined(HAVE_OPENSSL_WITH_PSK)
 		/* common case in trapper - be ready for all types of incoming connections but possible also in */
@@ -5004,7 +5004,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 			}
 		}
 #else
-		if (0 != (program_type & (ZBX_PROGRAM_TYPE_PROXY | ZBX_PROGRAM_TYPE_SERVER)))
+		if (0 != (program_type & (TRX_PROGRAM_TYPE_PROXY | TRX_PROGRAM_TYPE_SERVER)))
 		{
 			/* server or proxy running with OpenSSL or LibreSSL without PSK support */
 			if (NULL != ctx_cert)
@@ -5025,7 +5025,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 			}
 		}
 #endif
-		else if (0 != (program_type & ZBX_PROGRAM_TYPE_AGENTD))
+		else if (0 != (program_type & TRX_PROGRAM_TYPE_AGENTD))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			goto out;
@@ -5051,7 +5051,7 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 		}
 #endif
 	}
-	else if (0 != (tls_accept & ZBX_TCP_SEC_TLS_CERT))
+	else if (0 != (tls_accept & TRX_TCP_SEC_TLS_CERT))
 	{
 		if (NULL != ctx_cert)
 		{
@@ -5163,12 +5163,12 @@ int	zbx_tls_accept(zbx_socket_t *s, unsigned int tls_accept, char **error)
 #if defined(HAVE_OPENSSL_WITH_PSK)
 	if (1 == incoming_connection_has_psk)
 	{
-		s->connection_type = ZBX_TCP_SEC_TLS_PSK;
+		s->connection_type = TRX_TCP_SEC_TLS_PSK;
 	}
-	else if (0 != strncmp("(NONE)", cipher_name, ZBX_CONST_STRLEN("(NONE)")))
+	else if (0 != strncmp("(NONE)", cipher_name, TRX_CONST_STRLEN("(NONE)")))
 #endif
 	{
-		s->connection_type = ZBX_TCP_SEC_TLS_CERT;
+		s->connection_type = TRX_TCP_SEC_TLS_CERT;
 
 		/* log peer certificate information for debugging */
 		zbx_log_peer_cert(__func__, s->tls_ctx);
@@ -5204,32 +5204,32 @@ out:	/* an error occurred */
 	zbx_free(s->tls_ctx);
 out1:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s error:'%s'", __func__, zbx_result_string(ret),
-			ZBX_NULL2EMPTY_STR(*error));
+			TRX_NULL2EMPTY_STR(*error));
 	return ret;
 }
 #endif
 
 #if defined(HAVE_POLARSSL)
-#	define ZBX_TLS_WRITE(ctx, buf, len)	ssl_write(ctx, (const unsigned char *)(buf), len)
-#	define ZBX_TLS_READ(ctx, buf, len)	ssl_read(ctx, (unsigned char *)(buf), len)
-#	define ZBX_TLS_WRITE_FUNC_NAME		"ssl_write"
-#	define ZBX_TLS_READ_FUNC_NAME		"ssl_read"
-#	define ZBX_TLS_WANT_WRITE(res)		(POLARSSL_ERR_NET_WANT_WRITE == (res) ? SUCCEED : FAIL)
-#	define ZBX_TLS_WANT_READ(res)		(POLARSSL_ERR_NET_WANT_READ == (res) ? SUCCEED : FAIL)
+#	define TRX_TLS_WRITE(ctx, buf, len)	ssl_write(ctx, (const unsigned char *)(buf), len)
+#	define TRX_TLS_READ(ctx, buf, len)	ssl_read(ctx, (unsigned char *)(buf), len)
+#	define TRX_TLS_WRITE_FUNC_NAME		"ssl_write"
+#	define TRX_TLS_READ_FUNC_NAME		"ssl_read"
+#	define TRX_TLS_WANT_WRITE(res)		(POLARSSL_ERR_NET_WANT_WRITE == (res) ? SUCCEED : FAIL)
+#	define TRX_TLS_WANT_READ(res)		(POLARSSL_ERR_NET_WANT_READ == (res) ? SUCCEED : FAIL)
 #elif defined(HAVE_GNUTLS)
-#	define ZBX_TLS_WRITE(ctx, buf, len)	gnutls_record_send(ctx, buf, len)
-#	define ZBX_TLS_READ(ctx, buf, len)	gnutls_record_recv(ctx, buf, len)
-#	define ZBX_TLS_WRITE_FUNC_NAME		"gnutls_record_send"
-#	define ZBX_TLS_READ_FUNC_NAME		"gnutls_record_recv"
-#	define ZBX_TLS_WANT_WRITE(res)		(GNUTLS_E_INTERRUPTED == (res) || GNUTLS_E_AGAIN == (res) ? SUCCEED : FAIL)
-#	define ZBX_TLS_WANT_READ(res)		(GNUTLS_E_INTERRUPTED == (res) || GNUTLS_E_AGAIN == (res) ? SUCCEED : FAIL)
+#	define TRX_TLS_WRITE(ctx, buf, len)	gnutls_record_send(ctx, buf, len)
+#	define TRX_TLS_READ(ctx, buf, len)	gnutls_record_recv(ctx, buf, len)
+#	define TRX_TLS_WRITE_FUNC_NAME		"gnutls_record_send"
+#	define TRX_TLS_READ_FUNC_NAME		"gnutls_record_recv"
+#	define TRX_TLS_WANT_WRITE(res)		(GNUTLS_E_INTERRUPTED == (res) || GNUTLS_E_AGAIN == (res) ? SUCCEED : FAIL)
+#	define TRX_TLS_WANT_READ(res)		(GNUTLS_E_INTERRUPTED == (res) || GNUTLS_E_AGAIN == (res) ? SUCCEED : FAIL)
 #elif defined(HAVE_OPENSSL)
-#	define ZBX_TLS_WRITE(ctx, buf, len)	SSL_write(ctx, buf, (int)(len))
-#	define ZBX_TLS_READ(ctx, buf, len)	SSL_read(ctx, buf, (int)(len))
-#	define ZBX_TLS_WRITE_FUNC_NAME		"SSL_write"
-#	define ZBX_TLS_READ_FUNC_NAME		"SSL_read"
-#	define ZBX_TLS_WANT_WRITE(res)		FAIL
-#	define ZBX_TLS_WANT_READ(res)		FAIL
+#	define TRX_TLS_WRITE(ctx, buf, len)	SSL_write(ctx, buf, (int)(len))
+#	define TRX_TLS_READ(ctx, buf, len)	SSL_read(ctx, buf, (int)(len))
+#	define TRX_TLS_WRITE_FUNC_NAME		"SSL_write"
+#	define TRX_TLS_READ_FUNC_NAME		"SSL_read"
+#	define TRX_TLS_WANT_WRITE(res)		FAIL
+#	define TRX_TLS_WANT_READ(res)		FAIL
 /* SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE should not be returned here because we set */
 /* SSL_MODE_AUTO_RETRY flag in zbx_tls_init_child() */
 #endif
@@ -5256,18 +5256,18 @@ ssize_t	zbx_tls_write(zbx_socket_t *s, const char *buf, size_t len, char **error
 #endif
 	do
 	{
-		res = ZBX_TLS_WRITE(s->tls_ctx->ctx, buf, len);
+		res = TRX_TLS_WRITE(s->tls_ctx->ctx, buf, len);
 #if defined(_WINDOWS)
 		if (s->timeout < zbx_time() - sec)
 			zbx_alarm_flag_set();
 #endif
 		if (SUCCEED == zbx_alarm_timed_out())
 		{
-			*error = zbx_strdup(*error, ZBX_TLS_WRITE_FUNC_NAME "() timed out");
-			return ZBX_PROTO_ERROR;
+			*error = zbx_strdup(*error, TRX_TLS_WRITE_FUNC_NAME "() timed out");
+			return TRX_PROTO_ERROR;
 		}
 	}
-	while (SUCCEED == ZBX_TLS_WANT_WRITE(res));
+	while (SUCCEED == TRX_TLS_WANT_WRITE(res));
 
 #if defined(HAVE_POLARSSL)
 	if (0 > res)
@@ -5277,15 +5277,15 @@ ssize_t	zbx_tls_write(zbx_socket_t *s, const char *buf, size_t len, char **error
 		polarssl_strerror(res, err, sizeof(err));
 		*error = zbx_dsprintf(*error, "ssl_write() failed: %s", err);
 
-		return ZBX_PROTO_ERROR;
+		return TRX_PROTO_ERROR;
 	}
 #elif defined(HAVE_GNUTLS)
 	if (0 > res)
 	{
-		*error = zbx_dsprintf(*error, "gnutls_record_send() failed: " ZBX_FS_SSIZE_T " %s",
+		*error = zbx_dsprintf(*error, "gnutls_record_send() failed: " TRX_FS_SSIZE_T " %s",
 				(zbx_fs_ssize_t)res, gnutls_strerror(res));
 
-		return ZBX_PROTO_ERROR;
+		return TRX_PROTO_ERROR;
 	}
 #elif defined(HAVE_OPENSSL)
 	if (0 >= res)
@@ -5310,7 +5310,7 @@ ssize_t	zbx_tls_write(zbx_socket_t *s, const char *buf, size_t len, char **error
 			zbx_free(err);
 		}
 
-		return ZBX_PROTO_ERROR;
+		return TRX_PROTO_ERROR;
 	}
 #endif
 
@@ -5339,18 +5339,18 @@ ssize_t	zbx_tls_read(zbx_socket_t *s, char *buf, size_t len, char **error)
 #endif
 	do
 	{
-		res = ZBX_TLS_READ(s->tls_ctx->ctx, buf, len);
+		res = TRX_TLS_READ(s->tls_ctx->ctx, buf, len);
 #if defined(_WINDOWS)
 		if (s->timeout < zbx_time() - sec)
 			zbx_alarm_flag_set();
 #endif
 		if (SUCCEED == zbx_alarm_timed_out())
 		{
-			*error = zbx_strdup(*error, ZBX_TLS_READ_FUNC_NAME "() timed out");
-			return ZBX_PROTO_ERROR;
+			*error = zbx_strdup(*error, TRX_TLS_READ_FUNC_NAME "() timed out");
+			return TRX_PROTO_ERROR;
 		}
 	}
-	while (SUCCEED == ZBX_TLS_WANT_READ(res));
+	while (SUCCEED == TRX_TLS_WANT_READ(res));
 
 #if defined(HAVE_POLARSSL)
 	if (0 > res)
@@ -5360,16 +5360,16 @@ ssize_t	zbx_tls_read(zbx_socket_t *s, char *buf, size_t len, char **error)
 		polarssl_strerror(res, err, sizeof(err));
 		*error = zbx_dsprintf(*error, "ssl_read() failed: %s", err);
 
-		return ZBX_PROTO_ERROR;
+		return TRX_PROTO_ERROR;
 	}
 #elif defined(HAVE_GNUTLS)
 	if (0 > res)
 	{
 		/* in case of rehandshake a GNUTLS_E_REHANDSHAKE will be returned, deal with it as with error */
-		*error = zbx_dsprintf(*error, "gnutls_record_recv() failed: " ZBX_FS_SSIZE_T " %s",
+		*error = zbx_dsprintf(*error, "gnutls_record_recv() failed: " TRX_FS_SSIZE_T " %s",
 				(zbx_fs_ssize_t)res, gnutls_strerror(res));
 
-		return ZBX_PROTO_ERROR;
+		return TRX_PROTO_ERROR;
 	}
 #elif defined(HAVE_OPENSSL)
 	if (0 >= res)
@@ -5394,7 +5394,7 @@ ssize_t	zbx_tls_read(zbx_socket_t *s, char *buf, size_t len, char **error)
 			zbx_free(err);
 		}
 
-		return ZBX_PROTO_ERROR;
+		return TRX_PROTO_ERROR;
 	}
 #endif
 
@@ -5497,7 +5497,7 @@ void	zbx_tls_close(zbx_socket_t *s)
 			result_code = SSL_get_error(s->tls_ctx->ctx, res);
 			zbx_tls_error_msg(&error, &error_alloc, &error_offset);
 			treegix_log(LOG_LEVEL_WARNING, "SSL_shutdown() with %s set result code to %d:%s%s",
-					s->peer, result_code, ZBX_NULL2EMPTY_STR(error), info_buf);
+					s->peer, result_code, TRX_NULL2EMPTY_STR(error), info_buf);
 			zbx_free(error);
 		}
 
@@ -5653,7 +5653,7 @@ int	zbx_tls_get_attr_psk(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
 #elif defined(HAVE_OPENSSL) && defined(HAVE_OPENSSL_WITH_PSK)
 int	zbx_tls_get_attr_psk(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
 {
-	ZBX_UNUSED(s);
+	TRX_UNUSED(s);
 
 	/* SSL_get_psk_identity() is not used here. It works with TLS 1.2, */
 	/* but returns NULL with TLS 1.3 in OpenSSL 1.1.1 */
@@ -5676,7 +5676,7 @@ int	zbx_tls_get_attr_psk(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr)
  * Comments: used in Treegix sender on MS Windows                              *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tls_pass_vars(ZBX_THREAD_SENDVAL_TLS_ARGS *args)
+void	zbx_tls_pass_vars(TRX_THREAD_SENDVAL_TLS_ARGS *args)
 {
 #if defined(HAVE_POLARSSL)
 	args->my_psk = my_psk;
@@ -5717,7 +5717,7 @@ void	zbx_tls_pass_vars(ZBX_THREAD_SENDVAL_TLS_ARGS *args)
  * Comments: used in Treegix sender on MS Windows                              *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tls_take_vars(ZBX_THREAD_SENDVAL_TLS_ARGS *args)
+void	zbx_tls_take_vars(TRX_THREAD_SENDVAL_TLS_ARGS *args)
 {
 #if defined(HAVE_POLARSSL)
 	my_psk = args->my_psk;

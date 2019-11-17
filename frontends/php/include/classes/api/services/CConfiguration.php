@@ -27,7 +27,7 @@ class CConfiguration extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $params, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$export = new CConfigurationExport($params['options']);
@@ -39,7 +39,7 @@ class CConfiguration extends CApiService {
 		$export_data = $export->export();
 
 		if ($export_data === false) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		return $export_data;
@@ -126,7 +126,7 @@ class CConfiguration extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $params, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$importReader = CImportReaderFactory::getReader($params['format']);

@@ -241,7 +241,7 @@ class CLineGraphDraw extends CGraphDraw {
 			}
 
 			$item['source'] = ($item['trends'] == 0 || ($item['history'] > time() - ($this->from_time + $this->period / 2)
-					&& $this->period / $this->sizeX <= ZBX_MAX_TREND_DIFF / ZBX_GRAPH_MAX_SKIP_CELL))
+					&& $this->period / $this->sizeX <= TRX_MAX_TREND_DIFF / TRX_GRAPH_MAX_SKIP_CELL))
 					? 'history' : 'trends';
 
 			$items[] = $item;
@@ -450,7 +450,7 @@ class CLineGraphDraw extends CGraphDraw {
 				$trigger['expression'] = CMacrosResolverHelper::resolveTriggerExpressionUserMacro($trigger);
 
 				if (!preg_match(
-					'/^\{([0-9]+)\}\s*?([<>=]|[<>][=])\s*?([\-0-9\.]+)(['.ZBX_BYTE_SUFFIXES.ZBX_TIME_SUFFIXES.']?)$/',
+					'/^\{([0-9]+)\}\s*?([<>=]|[<>][=])\s*?([\-0-9\.]+)(['.TRX_BYTE_SUFFIXES.TRX_TIME_SUFFIXES.']?)$/',
 						$trigger['expression'], $arr)) {
 					continue;
 				}
@@ -1552,9 +1552,9 @@ class CLineGraphDraw extends CGraphDraw {
 
 			$newPow = false;
 			if ($byteStep) {
-				$maxYPow = convertToBase1024($maxY, ZBX_KIBIBYTE);
-				$minYPow = convertToBase1024($minY, ZBX_KIBIBYTE);
-				$powStep = ZBX_KIBIBYTE;
+				$maxYPow = convertToBase1024($maxY, TRX_KIBIBYTE);
+				$minYPow = convertToBase1024($minY, TRX_KIBIBYTE);
+				$powStep = TRX_KIBIBYTE;
 			} else {
 				$maxYPow = convertToBase1024($maxY);
 				$minYPow = convertToBase1024($minY);
@@ -2411,7 +2411,7 @@ class CLineGraphDraw extends CGraphDraw {
 				$this->fullSizeY += $h_legend_items;
 				$this->drawItemsLegend = true;
 
-				if ($this->sizeY >= ZBX_GRAPH_LEGEND_HEIGHT) {
+				if ($this->sizeY >= TRX_GRAPH_LEGEND_HEIGHT) {
 					$this->fullSizeY += $h_legend_triggers + $h_legend_percentile;
 					$this->drawExLegend = true;
 				}
@@ -2616,10 +2616,10 @@ class CLineGraphDraw extends CGraphDraw {
 					$cell = ($this->to_time - $this->from_time) / $this->sizeX;
 
 					if ($cell > $delay) {
-						$draw = ($diff < (ZBX_GRAPH_MAX_SKIP_CELL * $cell));
+						$draw = ($diff < (TRX_GRAPH_MAX_SKIP_CELL * $cell));
 					}
 					else {
-						$draw = ($diff < (ZBX_GRAPH_MAX_SKIP_DELAY * $delay));
+						$draw = ($diff < (TRX_GRAPH_MAX_SKIP_DELAY * $delay));
 					}
 				}
 

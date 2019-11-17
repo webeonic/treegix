@@ -532,7 +532,7 @@ static void	zbx_got_thresh_reading_cb(ipmi_sensor_t *sensor, int err, enum ipmi_
 	zbx_ipmi_host_t		*h = (zbx_ipmi_host_t *)cb_data;
 	zbx_ipmi_sensor_t	*s;
 
-	ZBX_UNUSED(raw_value);
+	TRX_UNUSED(raw_value);
 
 	RETURN_IF_CB_DATA_NULL(cb_data, __func__);
 
@@ -574,7 +574,7 @@ static void	zbx_got_thresh_reading_cb(ipmi_sensor_t *sensor, int err, enum ipmi_
 		case IPMI_BOTH_VALUES_PRESENT:
 			s->value.threshold = val;
 
-			if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+			if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 			{
 				const char	*percent = "", *base, *mod_use = "", *modifier = "", *rate;
 				const char	*e_string, *s_type_string, *s_reading_type_string;
@@ -604,7 +604,7 @@ static void	zbx_got_thresh_reading_cb(ipmi_sensor_t *sensor, int err, enum ipmi_
 				}
 				rate = ipmi_sensor_get_rate_unit_string(sensor);
 
-				treegix_log(LOG_LEVEL_DEBUG, "Value [%s | %s | %s | %s | " ZBX_FS_DBL "%s %s%s%s%s]",
+				treegix_log(LOG_LEVEL_DEBUG, "Value [%s | %s | %s | %s | " TRX_FS_DBL "%s %s%s%s%s]",
 						zbx_sensor_id_to_str(id_str, sizeof(id_str), s->id, s->id_type,
 						s->id_sz), e_string, s_type_string, s_reading_type_string, val, percent,
 						base, mod_use, modifier, rate);
@@ -1095,7 +1095,7 @@ static void	zbx_entity_change_cb(enum ipmi_update_e op, ipmi_domain_t *domain, i
 
 	RETURN_IF_CB_DATA_NULL(cb_data, __func__);
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
 		char	entity_name[IPMI_ENTITY_NAME_LEN];
 
@@ -1196,7 +1196,7 @@ static void	zbx_vlog(os_handler_t *handler, const char *format, enum ipmi_log_ty
 {
 	char	type[8], str[MAX_STRING_LEN];
 
-	ZBX_UNUSED(handler);
+	TRX_UNUSED(handler);
 
 	switch (log_type)
 	{
@@ -1507,26 +1507,26 @@ void	zbx_delete_inactive_ipmi_hosts(time_t last_check)
  ******************************************************************************/
 static int	has_name_prefix(const char *str, size_t *prefix_len)
 {
-#define ZBX_ID_PREFIX	"id:"
-#define ZBX_NAME_PREFIX	"name:"
+#define TRX_ID_PREFIX	"id:"
+#define TRX_NAME_PREFIX	"name:"
 
-	const size_t	id_len = sizeof(ZBX_ID_PREFIX) - 1, name_len = sizeof(ZBX_NAME_PREFIX) - 1;
+	const size_t	id_len = sizeof(TRX_ID_PREFIX) - 1, name_len = sizeof(TRX_NAME_PREFIX) - 1;
 
-	if (0 == strncmp(str, ZBX_NAME_PREFIX, name_len))
+	if (0 == strncmp(str, TRX_NAME_PREFIX, name_len))
 	{
 		*prefix_len = name_len;
 		return 1;
 	}
 
-	if (0 == strncmp(str, ZBX_ID_PREFIX, id_len))
+	if (0 == strncmp(str, TRX_ID_PREFIX, id_len))
 		*prefix_len = id_len;
 	else
 		*prefix_len = 0;
 
 	return 0;
 
-#undef ZBX_ID_PREFIX
-#undef ZBX_NAME_PREFIX
+#undef TRX_ID_PREFIX
+#undef TRX_NAME_PREFIX
 }
 
 int	get_value_ipmi(zbx_uint64_t itemid, const char *addr, unsigned short port, signed char authtype,
@@ -1537,7 +1537,7 @@ int	get_value_ipmi(zbx_uint64_t itemid, const char *addr, unsigned short port, s
 	zbx_ipmi_control_t	*c = NULL;
 	size_t			offset;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" ZBX_FS_UI64, __func__, itemid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" TRX_FS_UI64, __func__, itemid);
 
 	if (NULL == os_hnd)
 	{
@@ -1590,16 +1590,16 @@ int	get_value_ipmi(zbx_uint64_t itemid, const char *addr, unsigned short port, s
 	if (NULL != s)
 	{
 		if (IPMI_EVENT_READING_TYPE_THRESHOLD == s->reading_type)
-			*value = zbx_dsprintf(*value, ZBX_FS_DBL, s->value.threshold);
+			*value = zbx_dsprintf(*value, TRX_FS_DBL, s->value.threshold);
 		else
-			*value = zbx_dsprintf(*value, ZBX_FS_UI64, s->value.discrete);
+			*value = zbx_dsprintf(*value, TRX_FS_UI64, s->value.discrete);
 	}
 
 	if (NULL != c)
 		*value = zbx_dsprintf(*value, "%d", c->val[0]);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s value:%s", __func__, zbx_result_string(h->ret),
-			ZBX_NULL2EMPTY_STR(*value));
+			TRX_NULL2EMPTY_STR(*value));
 
 	return h->ret;
 }
@@ -1662,7 +1662,7 @@ int	zbx_set_ipmi_control_value(zbx_uint64_t hostid, const char *addr, unsigned s
 	zbx_ipmi_control_t	*c;
 	size_t			offset;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" ZBX_FS_UI64 "control:%s value:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" TRX_FS_UI64 "control:%s value:%d",
 			__func__, hostid, sensor, value);
 
 	if (NULL == os_hnd)

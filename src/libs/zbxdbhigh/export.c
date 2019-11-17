@@ -17,7 +17,7 @@ static char	*problems_file_name;
 static FILE	*problems_file;
 static char	*export_dir;
 
-#define ZBX_EXPORT_WAIT_FAIL 10
+#define TRX_EXPORT_WAIT_FAIL 10
 
 int	zbx_is_export_enabled(void)
 {
@@ -110,15 +110,15 @@ static	void	file_write(const char *buf, size_t count, FILE **file, const char *n
 		while (0 != rename(name, filename_old))
 		{
 			treegix_log(LOG_LEVEL_ERR, "cannot rename export file '%s': %s: retrying in %d seconds",
-					name, zbx_strerror(errno), ZBX_EXPORT_WAIT_FAIL);
-			sleep(ZBX_EXPORT_WAIT_FAIL);
+					name, zbx_strerror(errno), TRX_EXPORT_WAIT_FAIL);
+			sleep(TRX_EXPORT_WAIT_FAIL);
 		}
 
 		while (NULL == (*file = fopen(name, "a")))
 		{
 			treegix_log(LOG_LEVEL_ERR, "cannot open export file '%s': %s: retrying in %d seconds",
-					name, zbx_strerror(errno), ZBX_EXPORT_WAIT_FAIL);
-			sleep(ZBX_EXPORT_WAIT_FAIL);
+					name, zbx_strerror(errno), TRX_EXPORT_WAIT_FAIL);
+			sleep(TRX_EXPORT_WAIT_FAIL);
 		}
 	}
 
@@ -127,8 +127,8 @@ static	void	file_write(const char *buf, size_t count, FILE **file, const char *n
 		if (count != (ret = (fwrite(buf, 1, count, *file))))
 		{
 			treegix_log(LOG_LEVEL_ERR, "cannot write to export file '%s': %s: retrying in %d seconds",
-					name, zbx_strerror(errno), ZBX_EXPORT_WAIT_FAIL);
-			sleep(ZBX_EXPORT_WAIT_FAIL);
+					name, zbx_strerror(errno), TRX_EXPORT_WAIT_FAIL);
+			sleep(TRX_EXPORT_WAIT_FAIL);
 		}
 
 		buf += ret;
@@ -138,8 +138,8 @@ static	void	file_write(const char *buf, size_t count, FILE **file, const char *n
 	while ('\n' != fputc('\n', *file))
 	{
 		treegix_log(LOG_LEVEL_ERR, "cannot write to export file '%s': %s: retrying in %d seconds",
-				name, zbx_strerror(errno), ZBX_EXPORT_WAIT_FAIL);
-		sleep(ZBX_EXPORT_WAIT_FAIL);
+				name, zbx_strerror(errno), TRX_EXPORT_WAIT_FAIL);
+		sleep(TRX_EXPORT_WAIT_FAIL);
 	}
 }
 

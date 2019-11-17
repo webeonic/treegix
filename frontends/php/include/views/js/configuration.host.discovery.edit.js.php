@@ -17,8 +17,8 @@ include dirname(__FILE__).'/editabletable.js.php';
 				new CVar('conditions[#{rowNum}][formulaid]', '#{formulaId}')
 			],
 			(new CTextBox('conditions[#{rowNum}][macro]', '', false, 64))
-				->setWidth(ZBX_TEXTAREA_MACRO_WIDTH)
-				->addClass(ZBX_STYLE_UPPERCASE)
+				->setWidth(TRX_TEXTAREA_MACRO_WIDTH)
+				->addClass(TRX_STYLE_UPPERCASE)
 				->addClass('macro')
 				->setAttribute('placeholder', '{#MACRO}')
 				->setAttribute('data-formulaid', '#{formulaId}'),
@@ -27,13 +27,13 @@ include dirname(__FILE__).'/editabletable.js.php';
 				CONDITION_OPERATOR_NOT_REGEXP => _('does not match')
 			]))->addClass('operator'),
 			(new CTextBox('conditions[#{rowNum}][value]', '', false, 255))
-				->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+				->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 				->setAttribute('placeholder', _('regular expression')),
 			(new CCol(
 				(new CButton('conditions_#{rowNum}_remove', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('form_row')
 			->toString()
@@ -46,20 +46,20 @@ include dirname(__FILE__).'/editabletable.js.php';
 					'add_post_js' => false,
 					'maxlength' => DB::getFieldLength('lld_macro_path', 'lld_macro')
 				]))
-					->setWidth(ZBX_TEXTAREA_MACRO_WIDTH)
-					->addClass(ZBX_STYLE_UPPERCASE)
+					->setWidth(TRX_TEXTAREA_MACRO_WIDTH)
+					->addClass(TRX_STYLE_UPPERCASE)
 					->setAttribute('placeholder', '{#MACRO}')
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			(new CCol(
 				(new CTextAreaFlexible('lld_macro_paths[#{rowNum}][path]', '', [
 					'add_post_js' => false,
 					'maxlength' => DB::getFieldLength('lld_macro_path', 'path')
 				]))
-					->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 					->setAttribute('placeholder', _('$.path.to.node'))
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			(new CButton('lld_macro_paths[#{rowNum}][remove]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
 		]))
 			->addClass('form_row')
@@ -125,7 +125,7 @@ include dirname(__FILE__).'/editabletable.js.php';
 
 			$('#type').change(function() {
 				var type = parseInt($('#type').val()),
-					asterisk = '<?= ZBX_STYLE_FIELD_LABEL_ASTERISK ?>';
+					asterisk = '<?= TRX_STYLE_FIELD_LABEL_ASTERISK ?>';
 
 				if (type == <?= ITEM_TYPE_SSH ?> || type == <?= ITEM_TYPE_TELNET ?>) {
 					$('label[for=username]').addClass(asterisk);
@@ -140,7 +140,7 @@ include dirname(__FILE__).'/editabletable.js.php';
 			$('#lld_macro_paths')
 				.dynamicRows({template: '#lld_macro_path-row'})
 				.on('click', 'button.element-table-add', function() {
-					$('#lld_macro_paths .<?= ZBX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
+					$('#lld_macro_paths .<?= TRX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
 				});
 		});
 	})(jQuery);

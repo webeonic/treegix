@@ -8,6 +8,6 @@
 
 extern char	*CONFIG_ALERT_SCRIPTS_PATH;
 
-ZBX_THREAD_ENTRY(alerter_thread, args);
+TRX_THREAD_ENTRY(alerter_thread, args);
 
 #endif

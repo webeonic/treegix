@@ -10,7 +10,7 @@
  */
 function getUserTheme($userData)
 {
-    $css = ZBX_DEFAULT_THEME;
+    $css = TRX_DEFAULT_THEME;
     return $css;
 }
 
@@ -202,7 +202,7 @@ function collapseHostGroupRights(array $groups_rights)
         $groups[$group_rights['name']] = $groupid;
     }
 
-    CArrayHelper::sort($groups_rights, [['field' => 'name', 'order' => ZBX_SORT_DOWN]]);
+    CArrayHelper::sort($groups_rights, [['field' => 'name', 'order' => TRX_SORT_DOWN]]);
 
     $permissions = [];
 
@@ -238,7 +238,7 @@ function collapseHostGroupRights(array $groups_rights)
         $groups_rights[0]['permission'] = key($permissions);
     }
 
-    CArrayHelper::sort($groups_rights, [['field' => 'name', 'order' => ZBX_SORT_UP]]);
+    CArrayHelper::sort($groups_rights, [['field' => 'name', 'order' => TRX_SORT_UP]]);
 
     return $groups_rights;
 }
@@ -388,7 +388,7 @@ function applyHostGroupRights(array $groups_rights, array $groupids = [], array 
     }
     unset($ex_group_rights);
 
-    CArrayHelper::sort($ex_groups_rights, [['field' => 'name', 'order' => ZBX_SORT_UP]]);
+    CArrayHelper::sort($ex_groups_rights, [['field' => 'name', 'order' => TRX_SORT_UP]]);
 
     return $ex_groups_rights;
 }

@@ -8,11 +8,11 @@ $data['backurl'] = (new CUrl('treegix.php'))
 
 if ($data['filter']['show_type'] == WIDGET_PROBLEMS_BY_SV_SHOW_TOTALS) {
 	$table = makeSeverityTotals($data)
-		->addClass(ZBX_STYLE_BY_SEVERITY_WIDGET)
-		->addClass(ZBX_STYLE_TOTALS_LIST)
+		->addClass(TRX_STYLE_BY_SEVERITY_WIDGET)
+		->addClass(TRX_STYLE_TOTALS_LIST)
 		->addClass(($data['filter']['layout'] == STYLE_HORIZONTAL)
-			? ZBX_STYLE_TOTALS_LIST_HORIZONTAL
-			: ZBX_STYLE_TOTALS_LIST_VERTICAL
+			? TRX_STYLE_TOTALS_LIST_HORIZONTAL
+			: TRX_STYLE_TOTALS_LIST_VERTICAL
 		);
 }
 else {
@@ -20,7 +20,7 @@ else {
 		? $data['filter']['severities']
 		: range(TRIGGER_SEVERITY_NOT_CLASSIFIED, TRIGGER_SEVERITY_COUNT - 1);
 
-	$header = [[_('Host group'), (new CSpan())->addClass(ZBX_STYLE_ARROW_UP)]];
+	$header = [[_('Host group'), (new CSpan())->addClass(TRX_STYLE_ARROW_UP)]];
 
 	for ($severity = TRIGGER_SEVERITY_COUNT - 1; $severity >= TRIGGER_SEVERITY_NOT_CLASSIFIED; $severity--) {
 		if (in_array($severity, $filter_severities)) {
@@ -46,7 +46,7 @@ else {
 		);
 
 	$table = makeSeverityTable($data, $hide_empty_groups, $groupurl)
-		->addClass(ZBX_STYLE_BY_SEVERITY_WIDGET)
+		->addClass(TRX_STYLE_BY_SEVERITY_WIDGET)
 		->setHeader($header)
 		->setHeadingColumn(0);
 }

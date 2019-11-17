@@ -16,7 +16,7 @@ $proxyForm = (new CForm())
 	->setId('proxyForm')
 	->addVar('proxyid', $data['proxyid'])
 	->addVar('tls_accept', $data['tls_accept'])
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE);
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE);
 
 if ($data['status'] == HOST_STATUS_PROXY_PASSIVE && array_key_exists('interfaceid', $data)) {
 	$proxyForm->addVar('interfaceid', $data['interfaceid']);
@@ -25,22 +25,22 @@ if ($data['status'] == HOST_STATUS_PROXY_PASSIVE && array_key_exists('interfacei
 $interfaceTable = (new CTable())
 	->setHeader([_('IP address'), _('DNS name'), _('Connect to'), _('Port')])
 	->addRow([
-		(new CTextBox('ip', $data['ip'], false, 64))->setWidth(ZBX_TEXTAREA_INTERFACE_IP_WIDTH),
+		(new CTextBox('ip', $data['ip'], false, 64))->setWidth(TRX_TEXTAREA_INTERFACE_IP_WIDTH),
 		(new CTextBox('dns', $data['dns'], false, DB::getFieldLength('interface', 'dns')))
-			->setWidth(ZBX_TEXTAREA_INTERFACE_DNS_WIDTH),
+			->setWidth(TRX_TEXTAREA_INTERFACE_DNS_WIDTH),
 		(new CRadioButtonList('useip', (int) $data['useip']))
 			->addValue(_('IP'), INTERFACE_USE_IP)
 			->addValue(_('DNS'), INTERFACE_USE_DNS)
 			->setModern(true),
 		(new CTextBox('port', $data['port'], false, 64))
-			->setWidth(ZBX_TEXTAREA_INTERFACE_PORT_WIDTH)
+			->setWidth(TRX_TEXTAREA_INTERFACE_PORT_WIDTH)
 			->setAriaRequired()
 	]);
 
 $proxy_form_list = (new CFormList('proxyFormList'))
 	->addRow((new CLabel(_('Proxy name'), 'host'))->setAsteriskMark(),
 		(new CTextBox('host', $data['host'], false, 128))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAttribute('autofocus', 'autofocus')
 			->setAriaRequired()
 	)
@@ -52,14 +52,14 @@ $proxy_form_list = (new CFormList('proxyFormList'))
 	)
 	->addRow((new CLabel(_('Interface'), 'proxy_interface'))->setAsteriskMark(),
 		(new CDiv($interfaceTable))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setId('proxy_interface')
 	)
 	->addRow(_('Proxy address'),
-		(new CTextBox('proxy_address', $data['proxy_address'], false, 255))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('proxy_address', $data['proxy_address'], false, 255))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('Description'),
-		(new CTextArea('description', $data['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('description', $data['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 // append tabs to form
@@ -76,26 +76,26 @@ $encryption_form_list = (new CFormList('encryption'))
 	)
 	->addRow(_('Connections from proxy'),
 		(new CList())
-			->addClass(ZBX_STYLE_LIST_CHECK_RADIO)
+			->addClass(TRX_STYLE_LIST_CHECK_RADIO)
 			->addItem((new CCheckBox('tls_in_none'))->setLabel(_('No encryption')))
 			->addItem((new CCheckBox('tls_in_psk'))->setLabel(_('PSK')))
 			->addItem((new CCheckBox('tls_in_cert'))->setLabel(_('Certificate')))
 	)
 	->addRow((new CLabel(_('PSK identity'), 'tls_psk_identity'))->setAsteriskMark(),
 		(new CTextBox('tls_psk_identity', $data['tls_psk_identity'], false, 128))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('PSK'), 'tls_psk'))->setAsteriskMark(),
 		(new CTextBox('tls_psk', $data['tls_psk'], false, 512))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow(_('Issuer'),
-		(new CTextBox('tls_issuer', $data['tls_issuer'], false, 1024))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('tls_issuer', $data['tls_issuer'], false, 1024))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_x('Subject', 'encryption certificate'),
-		(new CTextBox('tls_subject', $data['tls_subject'], false, 1024))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('tls_subject', $data['tls_subject'], false, 1024))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 $tabs->addTab('proxyTab', _('Proxy'), $proxy_form_list);

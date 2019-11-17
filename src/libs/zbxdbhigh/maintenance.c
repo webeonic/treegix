@@ -34,7 +34,7 @@ int	zbx_db_lock_maintenanceids(zbx_vector_uint64_t *maintenanceids)
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	zbx_vector_uint64_sort(maintenanceids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(maintenanceids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "select maintenanceid from maintenances where");
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "maintenanceid", maintenanceids->values,
@@ -56,7 +56,7 @@ int	zbx_db_lock_maintenanceids(zbx_vector_uint64_t *maintenanceids)
 
 	for (i = 0; NULL != (row = DBfetch(result)); i++)
 	{
-		ZBX_STR2UINT64(maintenanceid, row[0]);
+		TRX_STR2UINT64(maintenanceid, row[0]);
 
 		while (maintenanceid != maintenanceids->values[i])
 			zbx_vector_uint64_remove(maintenanceids, i);

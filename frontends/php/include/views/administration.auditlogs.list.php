@@ -8,11 +8,11 @@ $auditWidget = (new CWidget())->setTitle(_('Audit log'));
 $filterColumn = new CFormList();
 $filterColumn->addRow(_('User'), [
 	(new CTextBox('alias', $this->data['alias']))
-		->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 		->setAttribute('autofocus', 'autofocus'),
-	(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+	(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 	(new CButton('btn1', _('Select')))
-		->addClass(ZBX_STYLE_BTN_GREY)
+		->addClass(TRX_STYLE_BTN_GREY)
 		->onClick('return PopUp("popup.generic",'.
 			CJs::encodeJson([
 				'srctbl' => 'users',

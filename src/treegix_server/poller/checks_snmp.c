@@ -92,11 +92,11 @@ static zbx_hash_t	__snmpidx_main_key_hash(const void *data)
 
 	zbx_hash_t			hash;
 
-	hash = ZBX_DEFAULT_STRING_HASH_FUNC(main_key->addr);
-	hash = ZBX_DEFAULT_STRING_HASH_ALGO(&main_key->port, sizeof(main_key->port), hash);
-	hash = ZBX_DEFAULT_STRING_HASH_ALGO(main_key->oid, strlen(main_key->oid), hash);
-	hash = ZBX_DEFAULT_STRING_HASH_ALGO(main_key->community_context, strlen(main_key->community_context), hash);
-	hash = ZBX_DEFAULT_STRING_HASH_ALGO(main_key->security_name, strlen(main_key->security_name), hash);
+	hash = TRX_DEFAULT_STRING_HASH_FUNC(main_key->addr);
+	hash = TRX_DEFAULT_STRING_HASH_ALGO(&main_key->port, sizeof(main_key->port), hash);
+	hash = TRX_DEFAULT_STRING_HASH_ALGO(main_key->oid, strlen(main_key->oid), hash);
+	hash = TRX_DEFAULT_STRING_HASH_ALGO(main_key->community_context, strlen(main_key->community_context), hash);
+	hash = TRX_DEFAULT_STRING_HASH_ALGO(main_key->security_name, strlen(main_key->security_name), hash);
 
 	return hash;
 }
@@ -111,7 +111,7 @@ static int	__snmpidx_main_key_compare(const void *d1, const void *d2)
 	if (0 != (ret = strcmp(main_key1->addr, main_key2->addr)))
 		return ret;
 
-	ZBX_RETURN_IF_NOT_EQUAL(main_key1->port, main_key2->port);
+	TRX_RETURN_IF_NOT_EQUAL(main_key1->port, main_key2->port);
 
 	if (0 != (ret = strcmp(main_key1->community_context, main_key2->community_context)))
 		return ret;
@@ -138,7 +138,7 @@ static zbx_hash_t	__snmpidx_mapping_hash(const void *data)
 {
 	const zbx_snmpidx_mapping_t	*mapping = (const zbx_snmpidx_mapping_t *)data;
 
-	return ZBX_DEFAULT_STRING_HASH_FUNC(mapping->value);
+	return TRX_DEFAULT_STRING_HASH_FUNC(mapping->value);
 }
 
 static int	__snmpidx_mapping_compare(const void *d1, const void *d2)
@@ -257,7 +257,7 @@ static void	cache_put_snmp_index(const DC_ITEM *item, const char *snmp_oid, cons
 	{
 		zbx_hashset_create_ext(&snmpidx, 100,
 				__snmpidx_main_key_hash, __snmpidx_main_key_compare, __snmpidx_main_key_clean,
-				ZBX_DEFAULT_MEM_MALLOC_FUNC, ZBX_DEFAULT_MEM_REALLOC_FUNC, ZBX_DEFAULT_MEM_FREE_FUNC);
+				TRX_DEFAULT_MEM_MALLOC_FUNC, TRX_DEFAULT_MEM_REALLOC_FUNC, TRX_DEFAULT_MEM_FREE_FUNC);
 	}
 
 	main_key_local.addr = item->interface.addr;
@@ -278,7 +278,7 @@ static void	cache_put_snmp_index(const DC_ITEM *item, const char *snmp_oid, cons
 		main_key_local.mappings = (zbx_hashset_t *)zbx_malloc(NULL, sizeof(zbx_hashset_t));
 		zbx_hashset_create_ext(main_key_local.mappings, 100,
 				__snmpidx_mapping_hash, __snmpidx_mapping_compare, __snmpidx_mapping_clean,
-				ZBX_DEFAULT_MEM_MALLOC_FUNC, ZBX_DEFAULT_MEM_REALLOC_FUNC, ZBX_DEFAULT_MEM_FREE_FUNC);
+				TRX_DEFAULT_MEM_MALLOC_FUNC, TRX_DEFAULT_MEM_REALLOC_FUNC, TRX_DEFAULT_MEM_FREE_FUNC);
 
 		main_key = (zbx_snmpidx_main_key_t *)zbx_hashset_insert(&snmpidx, &main_key_local, sizeof(main_key_local));
 	}
@@ -639,7 +639,7 @@ static char	*zbx_snmp_get_octet_string(const struct variable_list *var)
 	if (-1 == snprint_value(buffer, sizeof(buffer), var->name, var->name_length, var))
 		goto end;
 
-	treegix_log(LOG_LEVEL_DEBUG, "%s() full value:'%s' hint:'%s'", __func__, buffer, ZBX_NULL2STR(hint));
+	treegix_log(LOG_LEVEL_DEBUG, "%s() full value:'%s' hint:'%s'", __func__, buffer, TRX_NULL2STR(hint));
 
 	if (0 == strncmp(buffer, "Hex-STRING: ", 12))
 	{
@@ -668,7 +668,7 @@ static char	*zbx_snmp_get_octet_string(const struct variable_list *var)
 	}
 
 end:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():'%s'", __func__, ZBX_NULL2STR(strval_dyn));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():'%s'", __func__, TRX_NULL2STR(strval_dyn));
 
 	return strval_dyn;
 }
@@ -763,8 +763,8 @@ static void	zbx_snmp_dump_oid(char *buffer, size_t buffer_len, const oid *objid,
 		offset += zbx_snprintf(buffer + offset, buffer_len - offset, ".%lu", (unsigned long)objid[i]);
 }
 
-#define ZBX_OID_INDEX_STRING	0
-#define ZBX_OID_INDEX_NUMERIC	1
+#define TRX_OID_INDEX_STRING	0
+#define TRX_OID_INDEX_NUMERIC	1
 
 static int	zbx_snmp_print_oid(char *buffer, size_t buffer_len, const oid *objid, size_t objid_len, int format)
 {
@@ -841,7 +841,7 @@ static int	zbx_snmp_choose_index(char *buffer, size_t buffer_len, const oid *obj
 	/*                                                                                                            */
 	/**************************************************************************************************************/
 
-	if (-1 == zbx_snmp_print_oid(printed_oid, sizeof(printed_oid), objid, objid_len, ZBX_OID_INDEX_STRING))
+	if (-1 == zbx_snmp_print_oid(printed_oid, sizeof(printed_oid), objid, objid_len, TRX_OID_INDEX_STRING))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "%s(): cannot print OID with string indices", __func__);
 		goto numeric;
@@ -865,7 +865,7 @@ static int	zbx_snmp_choose_index(char *buffer, size_t buffer_len, const oid *obj
 		return SUCCEED;
 	}
 numeric:
-	if (-1 == zbx_snmp_print_oid(printed_oid, sizeof(printed_oid), objid, objid_len, ZBX_OID_INDEX_NUMERIC))
+	if (-1 == zbx_snmp_print_oid(printed_oid, sizeof(printed_oid), objid, objid_len, TRX_OID_INDEX_NUMERIC))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "%s(): cannot print OID with numeric indices", __func__);
 		return FAIL;
@@ -880,7 +880,7 @@ numeric:
  * Functions for detecting looping in SNMP OID sequence using hashset         *
  *                                                                            *
  * Once there is a possibility of looping we start putting OIDs into hashset. *
- * We do it until a duplicate OID shows up or ZBX_OIDS_MAX_NUM OIDs have been *
+ * We do it until a duplicate OID shows up or TRX_OIDS_MAX_NUM OIDs have been *
  * collected.                                                                 *
  *                                                                            *
  * The hashset key is array of elements of type 'oid'. Element 0 holds the    *
@@ -900,7 +900,7 @@ static zbx_hash_t	__oids_seen_key_hash(const void *data)
 {
 	const oid	*key = (const oid *)data;
 
-	return ZBX_DEFAULT_HASH_ALGO(key, (key[0] + 1) * sizeof(oid), ZBX_DEFAULT_HASH_SEED);
+	return TRX_DEFAULT_HASH_ALGO(key, (key[0] + 1) * sizeof(oid), TRX_DEFAULT_HASH_SEED);
 }
 
 static int	__oids_seen_key_compare(const void *d1, const void *d2)
@@ -916,16 +916,16 @@ static int	__oids_seen_key_compare(const void *d1, const void *d2)
 
 static void	zbx_detect_loop_init(zbx_hashset_t *hs)
 {
-#define ZBX_OIDS_SEEN_INIT_SIZE	500		/* minimum initial number of slots in hashset */
+#define TRX_OIDS_SEEN_INIT_SIZE	500		/* minimum initial number of slots in hashset */
 
-	zbx_hashset_create(hs, ZBX_OIDS_SEEN_INIT_SIZE, __oids_seen_key_hash, __oids_seen_key_compare);
+	zbx_hashset_create(hs, TRX_OIDS_SEEN_INIT_SIZE, __oids_seen_key_hash, __oids_seen_key_compare);
 
-#undef ZBX_OIDS_SEEN_INIT_SIZE
+#undef TRX_OIDS_SEEN_INIT_SIZE
 }
 
 static int	zbx_oid_is_new(zbx_hashset_t *hs, size_t root_len, const oid *p_oid, size_t oid_len)
 {
-#define ZBX_OIDS_MAX_NUM	1000000		/* max number of OIDs to store for checking duplicates */
+#define TRX_OIDS_MAX_NUM	1000000		/* max number of OIDs to store for checking duplicates */
 
 	const oid	*var_oid;		/* points to the first element in the variable part */
 	size_t		var_len;		/* number of elements in the variable part */
@@ -936,7 +936,7 @@ static int	zbx_oid_is_new(zbx_hashset_t *hs, size_t root_len, const oid *p_oid, 
 	var_oid = p_oid + root_len;
 	var_len = oid_len - root_len;
 
-	if (ZBX_OIDS_MAX_NUM == hs->num_data)
+	if (TRX_OIDS_MAX_NUM == hs->num_data)
 		return FAIL;
 
 	oid_k[0] = var_len;
@@ -951,7 +951,7 @@ static int	zbx_oid_is_new(zbx_hashset_t *hs, size_t root_len, const oid *p_oid, 
 	THIS_SHOULD_NEVER_HAPPEN;
 	return FAIL;						/* hashset fail */
 
-#undef ZBX_OIDS_MAX_NUM
+#undef TRX_OIDS_MAX_NUM
 }
 
 /******************************************************************************
@@ -1007,7 +1007,7 @@ static int	zbx_snmp_walk(struct snmp_session *ss, const DC_ITEM *item, const cha
 		goto out;
 	}
 
-	if (-1 == zbx_snmp_print_oid(oid_index, sizeof(oid_index), rootOID, rootOID_len, ZBX_OID_INDEX_STRING))
+	if (-1 == zbx_snmp_print_oid(oid_index, sizeof(oid_index), rootOID, rootOID_len, TRX_OID_INDEX_STRING))
 	{
 		zbx_snprintf(error, max_error_len, "zbx_snmp_print_oid(): cannot print OID \"%s\" with string indices.",
 				snmp_oid);
@@ -1017,7 +1017,7 @@ static int	zbx_snmp_walk(struct snmp_session *ss, const DC_ITEM *item, const cha
 
 	root_string_len = strlen(oid_index);
 
-	if (-1 == zbx_snmp_print_oid(oid_index, sizeof(oid_index), rootOID, rootOID_len, ZBX_OID_INDEX_NUMERIC))
+	if (-1 == zbx_snmp_print_oid(oid_index, sizeof(oid_index), rootOID, rootOID_len, TRX_OID_INDEX_NUMERIC))
 	{
 		zbx_snprintf(error, max_error_len, "zbx_snmp_print_oid(): cannot print OID \"%s\""
 				" with numeric indices.", snmp_oid);
@@ -1504,7 +1504,7 @@ static void	zbx_snmp_translate(char *oid_translated, const char *snmp_oid, size_
 	}
 	zbx_mib_norm_t;
 
-#define LEN_STR(x)	ZBX_CONST_STRLEN(x), x
+#define LEN_STR(x)	TRX_CONST_STRLEN(x), x
 	static zbx_mib_norm_t mibs[] =
 	{
 		/* the most popular items first */
@@ -1585,7 +1585,7 @@ static zbx_hash_t	zbx_snmp_dobject_hash(const void *data)
 {
 	const char	*index = *(const char **)data;
 
-	return ZBX_DEFAULT_STRING_HASH_ALGO(index, strlen(index), ZBX_DEFAULT_HASH_SEED);
+	return TRX_DEFAULT_STRING_HASH_ALGO(index, strlen(index), TRX_DEFAULT_HASH_SEED);
 }
 
 static int	zbx_snmp_dobject_compare(const void *d1, const void *d2)
@@ -1705,7 +1705,7 @@ static void	zbx_snmp_walk_discovery_cb(void *arg, const char *snmp_oid, const ch
 	zbx_snmp_ddata_t	*data = (zbx_snmp_ddata_t *)arg;
 	zbx_snmp_dobject_t	*obj;
 
-	ZBX_UNUSED(snmp_oid);
+	TRX_UNUSED(snmp_oid);
 
 	if (NULL == (obj = (zbx_snmp_dobject_t *)zbx_hashset_search(&data->objects, &index)))
 	{
@@ -1748,21 +1748,21 @@ static int	zbx_snmp_process_discovery(struct snmp_session *ss, const DC_ITEM *it
 		}
 	}
 
-	zbx_json_initarray(&js, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&js, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < data.index.values_num; i++)
 	{
 		obj = (zbx_snmp_dobject_t *)data.index.values[i];
 
 		zbx_json_addobject(&js, NULL);
-		zbx_json_addstring(&js, "{#SNMPINDEX}", obj->index, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&js, "{#SNMPINDEX}", obj->index, TRX_JSON_TYPE_STRING);
 
 		for (j = 0; j < data.request.nparam / 2; j++)
 		{
 			if (NULL == obj->values[j])
 				continue;
 
-			zbx_json_addstring(&js, data.request.params[j * 2], obj->values[j], ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&js, data.request.params[j * 2], obj->values[j], TRX_JSON_TYPE_STRING);
 		}
 		zbx_json_close(&js);
 	}
@@ -2055,7 +2055,7 @@ void	get_values_snmp(const DC_ITEM *items, AGENT_RESULT *results, int *errcodes,
 		goto exit;
 	}
 
-	if (0 != (ZBX_FLAG_DISCOVERY_RULE & items[j].flags) || 0 == strncmp(items[j].snmp_oid, "discovery[", 10))
+	if (0 != (TRX_FLAG_DISCOVERY_RULE & items[j].flags) || 0 == strncmp(items[j].snmp_oid, "discovery[", 10))
 	{
 		int	max_vars;
 

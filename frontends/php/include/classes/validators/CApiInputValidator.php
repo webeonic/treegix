@@ -425,7 +425,7 @@ class CApiInputValidator {
 			return false;
 		}
 
-		if (bccomp($data, ZBX_MIN_INT32) < 0 || bccomp($data, ZBX_MAX_INT32) > 0) {
+		if (bccomp($data, TRX_MIN_INT32) < 0 || bccomp($data, TRX_MAX_INT32) > 0) {
 			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('a number is too large'));
 			return false;
 		}
@@ -464,7 +464,7 @@ class CApiInputValidator {
 			return false;
 		}
 
-		if (bccomp($data, ZBX_MAX_UINT64) > 0) {
+		if (bccomp($data, TRX_MAX_UINT64) > 0) {
 			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('a number is too large'));
 			return false;
 		}
@@ -731,7 +731,7 @@ class CApiInputValidator {
 			return false;
 		}
 
-		if (bccomp($data, ZBX_DB_MAX_ID) > 0) {
+		if (bccomp($data, TRX_DB_MAX_ID) > 0) {
 			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('a number is too large'));
 			return false;
 		}
@@ -1158,16 +1158,16 @@ class CApiInputValidator {
 			return true;
 		}
 
-		$pattern = '/^(-?)0*(0|[1-9][0-9]*)(\.?[0-9]+)?(['.ZBX_BYTE_SUFFIXES.ZBX_TIME_SUFFIXES.'])?$/';
+		$pattern = '/^(-?)0*(0|[1-9][0-9]*)(\.?[0-9]+)?(['.TRX_BYTE_SUFFIXES.TRX_TIME_SUFFIXES.'])?$/';
 
 		if (preg_match($pattern, strval($data)) !== 1) {
 			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('a number is expected'));
 			return false;
 		}
 
-		$value = convertFunctionValue($data, ZBX_UNITS_ROUNDOFF_LOWER_LIMIT);
+		$value = convertFunctionValue($data, TRX_UNITS_ROUNDOFF_LOWER_LIMIT);
 
-		if (bccomp($value, ZBX_MIN_INT64) < 0 || bccomp($value, ZBX_MAX_INT64) > 0) {
+		if (bccomp($value, TRX_MIN_INT64) < 0 || bccomp($value, TRX_MAX_INT64) > 0) {
 			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('a number is too large'));
 			return false;
 		}
@@ -1424,7 +1424,7 @@ class CApiInputValidator {
 
 		$seconds = timeUnitToSeconds($data);
 
-		if (bccomp(ZBX_MIN_INT32, $seconds) > 0 || bccomp($seconds, ZBX_MAX_INT32) > 0) {
+		if (bccomp(TRX_MIN_INT32, $seconds) > 0 || bccomp($seconds, TRX_MAX_INT32) > 0) {
 			$error = _s('Invalid parameter "%1$s": %2$s.', $path, _('a number is too large'));
 			return false;
 		}

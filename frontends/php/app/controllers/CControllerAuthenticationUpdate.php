@@ -26,24 +26,24 @@ class CControllerAuthenticationUpdate extends CController {
 			'ldap_test' => 'in 1',
 			'db_authentication_type' => 'int32',
 			'change_bind_password' => 'in 0,1',
-			'authentication_type' => 'in '.ZBX_AUTH_INTERNAL.','.ZBX_AUTH_LDAP,
-			'http_case_sensitive' => 'in '.ZBX_AUTH_CASE_INSENSITIVE.','.ZBX_AUTH_CASE_SENSITIVE,
-			'ldap_case_sensitive' => 'in '.ZBX_AUTH_CASE_INSENSITIVE.','.ZBX_AUTH_CASE_SENSITIVE,
-			'ldap_configured' => 'in '.ZBX_AUTH_LDAP_DISABLED.','.ZBX_AUTH_LDAP_ENABLED,
+			'authentication_type' => 'in '.TRX_AUTH_INTERNAL.','.TRX_AUTH_LDAP,
+			'http_case_sensitive' => 'in '.TRX_AUTH_CASE_INSENSITIVE.','.TRX_AUTH_CASE_SENSITIVE,
+			'ldap_case_sensitive' => 'in '.TRX_AUTH_CASE_INSENSITIVE.','.TRX_AUTH_CASE_SENSITIVE,
+			'ldap_configured' => 'in '.TRX_AUTH_LDAP_DISABLED.','.TRX_AUTH_LDAP_ENABLED,
 			'ldap_host' => 'db config.ldap_host',
 			'ldap_port' => 'int32',
 			'ldap_base_dn' => 'db config.ldap_base_dn',
 			'ldap_bind_dn' => 'db config.ldap_bind_dn',
 			'ldap_search_attribute' => 'db config.ldap_search_attribute',
 			'ldap_bind_password' => 'db config.ldap_bind_password',
-			'http_auth_enabled' => 'in '.ZBX_AUTH_HTTP_DISABLED.','.ZBX_AUTH_HTTP_ENABLED,
-			'http_login_form' => 'in '.ZBX_AUTH_FORM_TREEGIX.','.ZBX_AUTH_FORM_HTTP,
+			'http_auth_enabled' => 'in '.TRX_AUTH_HTTP_DISABLED.','.TRX_AUTH_HTTP_ENABLED,
+			'http_login_form' => 'in '.TRX_AUTH_FORM_TREEGIX.','.TRX_AUTH_FORM_HTTP,
 			'http_strip_domains' => 'db config.http_strip_domains'
 		];
 
 		$ret = $this->validateInput($fields);
 
-		if ($ret && $this->getInput('ldap_configured', '') == ZBX_AUTH_LDAP_ENABLED) {
+		if ($ret && $this->getInput('ldap_configured', '') == TRX_AUTH_LDAP_ENABLED) {
 			$ret = $this->validateLdap();
 		}
 		else {
@@ -66,13 +66,13 @@ class CControllerAuthenticationUpdate extends CController {
 	 */
 	private function validateDefaultAuth() {
 		$data = [
-			'ldap_configured' => ZBX_AUTH_LDAP_DISABLED,
-			'authentication_type' => ZBX_AUTH_INTERNAL
+			'ldap_configured' => TRX_AUTH_LDAP_DISABLED,
+			'authentication_type' => TRX_AUTH_INTERNAL
 		];
 		$this->getInputs($data, array_keys($data));
 
-		$is_valid = ($data['authentication_type'] != ZBX_AUTH_LDAP
-				|| $data['ldap_configured'] == ZBX_AUTH_LDAP_ENABLED);
+		$is_valid = ($data['authentication_type'] != TRX_AUTH_LDAP
+				|| $data['ldap_configured'] == TRX_AUTH_LDAP_ENABLED);
 
 		if (!$is_valid) {
 			$this->response->setMessageError(_s('Incorrect value for field "%1$s": %2$s.', 'authentication_type',
@@ -114,10 +114,10 @@ class CControllerAuthenticationUpdate extends CController {
 			}
 		}
 
-		if ($is_valid && ($config['ldap_port'] < ZBX_MIN_PORT_NUMBER || $config['ldap_port'] > ZBX_MAX_PORT_NUMBER)) {
+		if ($is_valid && ($config['ldap_port'] < TRX_MIN_PORT_NUMBER || $config['ldap_port'] > TRX_MAX_PORT_NUMBER)) {
 			$this->response->setMessageError(_s(
 				'Incorrect value "%1$s" for "%2$s" field: must be between %3$s and %4$s.', $this->getInput('ldap_port'),
-				'ldap_port', ZBX_MIN_PORT_NUMBER, ZBX_MAX_PORT_NUMBER
+				'ldap_port', TRX_MIN_PORT_NUMBER, TRX_MAX_PORT_NUMBER
 			));
 			$is_valid = false;
 		}
@@ -162,7 +162,7 @@ class CControllerAuthenticationUpdate extends CController {
 	}
 
 	protected function doAction() {
-		// Only ZBX_AUTH_LDAP have 'Test' option.
+		// Only TRX_AUTH_LDAP have 'Test' option.
 		if ($this->hasInput('ldap_test')) {
 			$this->response->setMessageOk(_('LDAP login successful'));
 			$this->response->setFormData($this->getInputAll());
@@ -172,12 +172,12 @@ class CControllerAuthenticationUpdate extends CController {
 
 		$config = select_config();
 		$fields = [
-			'authentication_type' => ZBX_AUTH_INTERNAL,
-			'ldap_configured' => ZBX_AUTH_LDAP_DISABLED,
-			'http_auth_enabled' => ZBX_AUTH_HTTP_DISABLED
+			'authentication_type' => TRX_AUTH_INTERNAL,
+			'ldap_configured' => TRX_AUTH_LDAP_DISABLED,
+			'http_auth_enabled' => TRX_AUTH_HTTP_DISABLED
 		];
 
-		if ($this->getInput('http_auth_enabled', ZBX_AUTH_HTTP_DISABLED) == ZBX_AUTH_HTTP_ENABLED) {
+		if ($this->getInput('http_auth_enabled', TRX_AUTH_HTTP_DISABLED) == TRX_AUTH_HTTP_ENABLED) {
 			$fields += [
 				'http_case_sensitive' => 0,
 				'http_login_form' => 0,
@@ -185,7 +185,7 @@ class CControllerAuthenticationUpdate extends CController {
 			];
 		}
 
-		if ($this->getInput('ldap_configured', ZBX_AUTH_LDAP_DISABLED) == ZBX_AUTH_LDAP_ENABLED) {
+		if ($this->getInput('ldap_configured', TRX_AUTH_LDAP_DISABLED) == TRX_AUTH_LDAP_ENABLED) {
 			$fields += [
 				'ldap_host' => '',
 				'ldap_port' => '',
@@ -232,7 +232,7 @@ class CControllerAuthenticationUpdate extends CController {
 	}
 
 	/**
-	 * Mark all active GROUP_GUI_ACCESS_INTERNAL sessions, except current user sessions, as ZBX_SESSION_PASSIVE.
+	 * Mark all active GROUP_GUI_ACCESS_INTERNAL sessions, except current user sessions, as TRX_SESSION_PASSIVE.
 	 *
 	 * @return bool
 	 */
@@ -256,7 +256,7 @@ class CControllerAuthenticationUpdate extends CController {
 		if ($internal_auth_users) {
 			DBstart();
 			$result = DB::update('sessions', [
-				'values' => ['status' => ZBX_SESSION_PASSIVE],
+				'values' => ['status' => TRX_SESSION_PASSIVE],
 				'where' => ['userid' => array_keys($internal_auth_users)]
 			]);
 			$result = DBend($result);

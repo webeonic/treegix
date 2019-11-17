@@ -12,10 +12,10 @@ class CWidgetFormGraph extends CWidgetForm {
 
 		// Select graph type field.
 		$field_source = (new CWidgetFieldRadioButtonList('source_type', _('Source'), [
-			ZBX_WIDGET_FIELD_RESOURCE_GRAPH => _('Graph'),
-			ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH => _('Simple graph'),
+			TRX_WIDGET_FIELD_RESOURCE_GRAPH => _('Graph'),
+			TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH => _('Simple graph'),
 		]))
-			->setDefault(ZBX_WIDGET_FIELD_RESOURCE_GRAPH)
+			->setDefault(TRX_WIDGET_FIELD_RESOURCE_GRAPH)
 			->setAction('updateWidgetConfigDialogue()')
 			->setModern(true);
 
@@ -26,7 +26,7 @@ class CWidgetFormGraph extends CWidgetForm {
 		$this->fields[$field_source->getName()] = $field_source;
 
 		if (array_key_exists('source_type', $this->data)
-				&& $this->data['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH) {
+				&& $this->data['source_type'] == TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH) {
 			// Select simple graph field.
 			$field_item = (new CWidgetFieldMsItem('itemid', _('Item')))
 				->setFlags(CWidgetField::FLAG_NOT_EMPTY | CWidgetField::FLAG_LABEL_ASTERISK)

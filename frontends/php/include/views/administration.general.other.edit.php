@@ -30,7 +30,7 @@ foreach ($data['alert_usrgrps'] as $usrgrp) {
 $otherTab
 	->addRow((new CLabel(_('Refresh unsupported items'), 'refresh_unsupported'))->setAsteriskMark(),
 		(new CTextBox('refresh_unsupported', $data['refresh_unsupported']))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	)
@@ -49,7 +49,7 @@ $otherTab
 
 $otherForm = (new CForm())
 	->setName('otherForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addItem(
 		(new CTabView())
 			->addTab('other', _('Other parameters'), $otherTab)

@@ -12,25 +12,25 @@ require_once dirname(__FILE__).'/include/page_header.php';
 $themes = array_keys(Z::getThemes());
 
 $fields = [
-	'default_theme'				=> [T_ZBX_STR, O_OPT, null, IN('"'.implode('","', $themes).'"'), 'isset({update})',
+	'default_theme'				=> [T_TRX_STR, O_OPT, null, IN('"'.implode('","', $themes).'"'), 'isset({update})',
 		_('Default theme')
 	],
-	'dropdown_first_entry'		=> [T_ZBX_INT, O_OPT, null, IN('0,1,2'), 'isset({update})',
+	'dropdown_first_entry'		=> [T_TRX_INT, O_OPT, null, IN('0,1,2'), 'isset({update})',
 		_('Dropdown first entry')
 	],
-	'dropdown_first_remember'	=> [T_ZBX_INT, O_OPT, null, IN('1'), null, _('remember selected')],
-	'search_limit'				=> [T_ZBX_INT, O_OPT, null, BETWEEN(1, 999999), 'isset({update})',
+	'dropdown_first_remember'	=> [T_TRX_INT, O_OPT, null, IN('1'), null, _('remember selected')],
+	'search_limit'				=> [T_TRX_INT, O_OPT, null, BETWEEN(1, 999999), 'isset({update})',
 		_('Limit for search and filter results')
 	],
-	'max_in_table'				=> [T_ZBX_INT, O_OPT, null, BETWEEN(1, 99999), 'isset({update})',
+	'max_in_table'				=> [T_TRX_INT, O_OPT, null, BETWEEN(1, 99999), 'isset({update})',
 		_('Max count of elements to show inside table cell')
 	],
-	'server_check_interval'		=> [T_ZBX_INT, O_OPT, null, IN(SERVER_CHECK_INTERVAL), null,
+	'server_check_interval'		=> [T_TRX_INT, O_OPT, null, IN(SERVER_CHECK_INTERVAL), null,
 		_('Show warning if Treegix server is down')
 	],
 	// actions
-	'update'					=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT, null, null],
-	'form_refresh'				=> [T_ZBX_INT, O_OPT, null, null, null]
+	'update'					=> [T_TRX_STR, O_OPT, P_SYS|P_ACT, null, null],
+	'form_refresh'				=> [T_TRX_INT, O_OPT, null, null, null]
 ];
 check_fields($fields);
 

@@ -53,7 +53,7 @@ class CActionButtonList extends CObject {
 
 		foreach ($buttons_data as $action => $button_data) {
 			$button = (new CSubmit($action_name, $button_data['name']))
-				->addClass(ZBX_STYLE_BTN_ALT)
+				->addClass(TRX_STYLE_BTN_ALT)
 				->removeAttribute('id');
 
 			if (array_key_exists('redirect', $button_data)) {
@@ -98,7 +98,7 @@ class CActionButtonList extends CObject {
 		if (!$this->selected_count_element) {
 			$this->selected_count_element = (new CSpan('0 '._('selected')))
 				->setId('selected_count')
-				->addClass(ZBX_STYLE_SELECTED_ITEM_COUNT);
+				->addClass(TRX_STYLE_SELECTED_ITEM_COUNT);
 		}
 
 		return $this->selected_count_element;
@@ -117,7 +117,7 @@ class CActionButtonList extends CObject {
 
 		$this->items[] = (new CDiv([$this->getSelectedCountElement(), $this->buttons]))
 			->setId('action_buttons')
-			->addClass(ZBX_STYLE_ACTION_BUTTONS);
+			->addClass(TRX_STYLE_ACTION_BUTTONS);
 
 		return parent::toString($destroy);
 	}

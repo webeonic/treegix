@@ -31,7 +31,7 @@ $column1 = (new CFormList())
 	);
 
 $statusChangeDays = (new CNumericBox('status_change_days', $filter['statusChangeDays'], 3, false, false, false))
-	->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH);
+	->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH);
 if (!$filter['statusChange']) {
 	$statusChangeDays->setAttribute('disabled', 'disabled');
 }
@@ -41,19 +41,19 @@ $column1
 		(new CCheckBox('status_change'))
 			->setChecked($filter['statusChange'] == 1)
 			->onClick('javascript: this.checked ? $("status_change_days").enable() : $("status_change_days").disable()'),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		$statusChangeDays,
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		_('days')
 	])
 	->addRow(_('Name'),
-		(new CTextBox('txt_select', $filter['txtSelect']))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+		(new CTextBox('txt_select', $filter['txtSelect']))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 	)
 	->addRow(_('Application'), [
-		(new CTextBox('application', $filter['application']))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CTextBox('application', $filter['application']))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		(new CButton('application_name', _('Select')))
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->onClick('return PopUp("popup.generic",'.
 				CJs::encodeJson([
 					'srctbl' => 'applications',
@@ -84,12 +84,12 @@ $i = 0;
 foreach ($inventoryFilters as $field) {
 	$inventoryFilterTable->addRow([
 		new CComboBox('inventory['.$i.'][field]', $field['field'], null, $inventoryFields),
-		(new CTextBox('inventory['.$i.'][value]', $field['value']))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+		(new CTextBox('inventory['.$i.'][value]', $field['value']))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		(new CCol(
 			(new CButton('inventory['.$i.'][remove]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	], 'form_row');
 
 	$i++;
@@ -97,7 +97,7 @@ foreach ($inventoryFilters as $field) {
 $inventoryFilterTable->addRow(
 	(new CCol(
 		(new CButton('inventory_add', _('Add')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-add')
 	))->setColSpan(2)
 );
@@ -110,7 +110,7 @@ $column2 = (new CFormList())
 			->setUncheckedValue(0)
 	)
 	->addRow(_('Show suppressed problems'),
-		(new CCheckBox('show_suppressed'))->setChecked($filter['show_suppressed'] == ZBX_PROBLEM_SUPPRESSED_TRUE)
+		(new CCheckBox('show_suppressed'))->setChecked($filter['show_suppressed'] == TRX_PROBLEM_SUPPRESSED_TRUE)
 	);
 
 $filterForm->addFilterTab(_('Filter'), [$column1, $column2]);

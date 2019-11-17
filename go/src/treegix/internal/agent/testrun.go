@@ -15,7 +15,7 @@ func CheckMetric(metric string) (err error) {
 
 	defer func() {
 		if err != nil {
-			fmt.Printf("%-46s[m|ZBX_NOTSUPPORTED] [%s]\n", metric, err.Error())
+			fmt.Printf("%-46s[m|TRX_NOTSUPPORTED] [%s]\n", metric, err.Error())
 		}
 	}()
 

@@ -17,7 +17,7 @@
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
 
-#define ZBX_PREPROC_VALUE_PREVIEW_LEN		100
+#define TRX_PREPROC_VALUE_PREVIEW_LEN		100
 
 zbx_es_t	es_engine;
 
@@ -31,7 +31,7 @@ zbx_es_t	es_engine;
  *             value_str - [OUT] the formatted value                          *
  *                                                                            *
  * Comments: Control characters are replaced with '.' and truncated if it's   *
- *           larger than ZBX_PREPROC_VALUE_PREVIEW_LEN characters.            *
+ *           larger than TRX_PREPROC_VALUE_PREVIEW_LEN characters.            *
  *                                                                            *
  ******************************************************************************/
 static void	worker_format_value(const zbx_variant_t *value, char **value_str)
@@ -41,13 +41,13 @@ static void	worker_format_value(const zbx_variant_t *value, char **value_str)
 
 	value_desc = zbx_variant_value_desc(value);
 
-	if (ZBX_PREPROC_VALUE_PREVIEW_LEN < zbx_strlen_utf8(value_desc))
+	if (TRX_PREPROC_VALUE_PREVIEW_LEN < zbx_strlen_utf8(value_desc))
 	{
 		/* truncate value and append '...' */
-		len = zbx_strlen_utf8_nchars(value_desc, ZBX_PREPROC_VALUE_PREVIEW_LEN - ZBX_CONST_STRLEN("..."));
-		*value_str = zbx_malloc(NULL, len + ZBX_CONST_STRLEN("...") + 1);
+		len = zbx_strlen_utf8_nchars(value_desc, TRX_PREPROC_VALUE_PREVIEW_LEN - TRX_CONST_STRLEN("..."));
+		*value_str = zbx_malloc(NULL, len + TRX_CONST_STRLEN("...") + 1);
 		memcpy(*value_str, value_desc, len);
-		memcpy(*value_str + len, "...", ZBX_CONST_STRLEN("...") + 1);
+		memcpy(*value_str + len, "...", TRX_CONST_STRLEN("...") + 1);
 	}
 	else
 	{
@@ -90,7 +90,7 @@ static void	worker_format_result(int step, const zbx_preproc_result_t *result, c
 	else
 	{
 		*out = zbx_dsprintf(NULL, "%d. Failed%s: %s\n", step, actions[result->action], error);
-		zbx_rtrim(*out, ZBX_WHITESPACE);
+		zbx_rtrim(*out, TRX_WHITESPACE);
 	}
 }
 
@@ -124,7 +124,7 @@ static void	worker_format_error(const zbx_variant_t *value, zbx_preproc_result_t
 	zbx_snprintf_alloc(error, &error_alloc, &error_offset, "Preprocessing failed for: %s\n", value_str);
 	zbx_free(value_str);
 
-	zbx_db_mock_field_init(&field, ZBX_TYPE_CHAR, ITEM_ERROR_LEN);
+	zbx_db_mock_field_init(&field, TRX_TYPE_CHAR, ITEM_ERROR_LEN);
 
 	zbx_db_mock_field_append(&field, *error);
 	zbx_db_mock_field_append(&field, "...\n");
@@ -215,7 +215,7 @@ static int	worker_item_preproc_execute(unsigned char value_type, zbx_variant_t *
 			zbx_variant_clear(&history_value);
 		}
 		else
-			results[i].action = ZBX_PREPROC_FAIL_DEFAULT;
+			results[i].action = TRX_PREPROC_FAIL_DEFAULT;
 
 		if (SUCCEED == ret)
 		{
@@ -231,7 +231,7 @@ static int	worker_item_preproc_execute(unsigned char value_type, zbx_variant_t *
 			else
 			{
 				/* preprocessing step successfully extracted error, set it */
-				results[i].action = ZBX_PREPROC_FAIL_FORCE_ERROR;
+				results[i].action = TRX_PREPROC_FAIL_FORCE_ERROR;
 				ret = FAIL;
 			}
 		}
@@ -241,13 +241,13 @@ static int	worker_item_preproc_execute(unsigned char value_type, zbx_variant_t *
 			break;
 		}
 
-		if (ZBX_VARIANT_NONE != history_value.type)
+		if (TRX_VARIANT_NONE != history_value.type)
 		{
 			/* the value is byte copied to history_out vector and doesn't have to be cleared */
 			zbx_preproc_history_add_value(history_out, i, &history_value, &history_ts);
 		}
 
-		if (ZBX_VARIANT_NONE == value->type)
+		if (TRX_VARIANT_NONE == value->type)
 			break;
 	}
 
@@ -294,7 +294,7 @@ static void	worker_preprocess_value(zbx_ipc_socket_t *socket, zbx_ipc_message_t 
 	{
 		int action = results[results_num - 1].action;
 
-		if (ZBX_PREPROC_FAIL_SET_ERROR != action && ZBX_PREPROC_FAIL_FORCE_ERROR != action)
+		if (TRX_PREPROC_FAIL_SET_ERROR != action && TRX_PREPROC_FAIL_FORCE_ERROR != action)
 		{
 			worker_format_error(&value_start, results, results_num, errmsg, &error);
 			zbx_free(errmsg);
@@ -303,7 +303,7 @@ static void	worker_preprocess_value(zbx_ipc_socket_t *socket, zbx_ipc_message_t 
 			error = errmsg;
 	}
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
 		const char	*result;
 
@@ -318,7 +318,7 @@ static void	worker_preprocess_value(zbx_ipc_socket_t *socket, zbx_ipc_message_t 
 	zbx_free(ts);
 	zbx_free(steps);
 
-	if (FAIL == zbx_ipc_socket_write(socket, ZBX_IPC_PREPROCESSOR_RESULT, data, size))
+	if (FAIL == zbx_ipc_socket_write(socket, TRX_IPC_PREPROCESSOR_RESULT, data, size))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot send preprocessing result");
 		exit(EXIT_FAILURE);
@@ -378,7 +378,7 @@ static void	worker_test_value(zbx_ipc_socket_t *socket, zbx_ipc_message_t *messa
 
 	size = zbx_preprocessor_pack_test_result(&data, results, results_num, &history_out, error);
 
-	if (FAIL == zbx_ipc_socket_write(socket, ZBX_IPC_PREPROCESSOR_TEST_RESULT, data, size))
+	if (FAIL == zbx_ipc_socket_write(socket, TRX_IPC_PREPROCESSOR_TEST_RESULT, data, size))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot send preprocessing result");
 		exit(EXIT_FAILURE);
@@ -405,7 +405,7 @@ static void	worker_test_value(zbx_ipc_socket_t *socket, zbx_ipc_message_t *messa
 	zbx_vector_ptr_destroy(&history_in);
 }
 
-ZBX_THREAD_ENTRY(preprocessing_worker_thread, args)
+TRX_THREAD_ENTRY(preprocessing_worker_thread, args)
 {
 	pid_t			ppid;
 	char			*error = NULL;
@@ -422,7 +422,7 @@ ZBX_THREAD_ENTRY(preprocessing_worker_thread, args)
 
 	zbx_ipc_message_init(&message);
 
-	if (FAIL == zbx_ipc_socket_open(&socket, ZBX_IPC_SERVICE_PREPROCESSING, SEC_PER_MIN, &error))
+	if (FAIL == zbx_ipc_socket_open(&socket, TRX_IPC_SERVICE_PREPROCESSING, SEC_PER_MIN, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot connect to preprocessing service: %s", error);
 		zbx_free(error);
@@ -430,18 +430,18 @@ ZBX_THREAD_ENTRY(preprocessing_worker_thread, args)
 	}
 
 	ppid = getppid();
-	zbx_ipc_socket_write(&socket, ZBX_IPC_PREPROCESSOR_WORKER, (unsigned char *)&ppid, sizeof(ppid));
+	zbx_ipc_socket_write(&socket, TRX_IPC_PREPROCESSOR_WORKER, (unsigned char *)&ppid, sizeof(ppid));
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
 	zbx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
 
-	update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
-		update_selfmon_counter(ZBX_PROCESS_STATE_IDLE);
+		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
 
 		if (SUCCEED != zbx_ipc_socket_read(&socket, &message))
 		{
@@ -449,15 +449,15 @@ ZBX_THREAD_ENTRY(preprocessing_worker_thread, args)
 			exit(EXIT_FAILURE);
 		}
 
-		update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+		update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 		zbx_update_env(zbx_time());
 
 		switch (message.code)
 		{
-			case ZBX_IPC_PREPROCESSOR_REQUEST:
+			case TRX_IPC_PREPROCESSOR_REQUEST:
 				worker_preprocess_value(&socket, &message);
 				break;
-			case ZBX_IPC_PREPROCESSOR_TEST_REQUEST:
+			case TRX_IPC_PREPROCESSOR_TEST_REQUEST:
 				worker_test_value(&socket, &message);
 				break;
 		}

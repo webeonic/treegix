@@ -19,7 +19,7 @@ static int	hk_period;
 
 static void	zbx_housekeeper_sigusr_handler(int flags)
 {
-	if (ZBX_RTC_HOUSEKEEPER_EXECUTE == ZBX_RTC_GET_MSG(flags))
+	if (TRX_RTC_HOUSEKEEPER_EXECUTE == TRX_RTC_GET_MSG(flags))
 	{
 		if (0 < zbx_sleep_get_remainder())
 		{
@@ -67,7 +67,7 @@ static int	delete_history(const char *table, const char *fieldname, int now)
 	if (NULL == (row = DBfetch(result)))
 		goto rollback;
 
-	ZBX_STR2UINT64(lastid, row[0]);
+	TRX_STR2UINT64(lastid, row[0]);
 	DBfree_result(result);
 
 	result = DBselect("select min(clock) from %s",
@@ -85,14 +85,14 @@ static int	delete_history(const char *table, const char *fieldname, int now)
 	if (NULL == (row = DBfetch(result)) || SUCCEED == DBis_null(row[0]))
 		goto rollback;
 
-	ZBX_STR2UINT64(maxid, row[0]);
+	TRX_STR2UINT64(maxid, row[0]);
 	DBfree_result(result);
 
 	records = DBexecute(
 			"delete from %s"
-			" where id<" ZBX_FS_UI64
+			" where id<" TRX_FS_UI64
 				" and (clock<%d"
-					" or (id<=" ZBX_FS_UI64 " and clock<%d))",
+					" or (id<=" TRX_FS_UI64 " and clock<%d))",
 			table, maxid,
 			now - CONFIG_PROXY_OFFLINE_BUFFER * SEC_PER_HOUR,
 			lastid,
@@ -149,7 +149,7 @@ static int	get_housekeeper_period(double time_slept)
 		return (int)time_slept;
 }
 
-ZBX_THREAD_ENTRY(housekeeper_thread, args)
+TRX_THREAD_ENTRY(housekeeper_thread, args)
 {
 	int	records, start, sleeptime;
 	double	sec, time_slept, time_now;
@@ -177,7 +177,7 @@ ZBX_THREAD_ENTRY(housekeeper_thread, args)
 
 	zbx_set_sigusr_handler(zbx_housekeeper_sigusr_handler);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 
@@ -186,7 +186,7 @@ ZBX_THREAD_ENTRY(housekeeper_thread, args)
 		else
 			zbx_sleep_loop(sleeptime);
 
-		if (!ZBX_IS_RUNNING())
+		if (!TRX_IS_RUNNING())
 			break;
 
 		time_now = zbx_time();
@@ -201,7 +201,7 @@ ZBX_THREAD_ENTRY(housekeeper_thread, args)
 
 		zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
-		DBconnect(ZBX_DB_CONNECT_NORMAL);
+		DBconnect(TRX_DB_CONNECT_NORMAL);
 
 		zbx_setproctitle("%s [removing old history]", get_process_type_string(process_type));
 
@@ -213,10 +213,10 @@ ZBX_THREAD_ENTRY(housekeeper_thread, args)
 
 		zbx_dc_cleanup_data_sessions();
 
-		treegix_log(LOG_LEVEL_WARNING, "%s [deleted %d records in " ZBX_FS_DBL " sec, %s]",
+		treegix_log(LOG_LEVEL_WARNING, "%s [deleted %d records in " TRX_FS_DBL " sec, %s]",
 				get_process_type_string(process_type), records, sec, sleeptext);
 
-		zbx_setproctitle("%s [deleted %d records in " ZBX_FS_DBL " sec, %s]",
+		zbx_setproctitle("%s [deleted %d records in " TRX_FS_DBL " sec, %s]",
 				get_process_type_string(process_type), records, sec, sleeptext);
 
 		if (0 != CONFIG_HOUSEKEEPING_FREQUENCY)

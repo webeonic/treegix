@@ -40,44 +40,44 @@ void	zbx_tm_get_remote_tasks(zbx_vector_ptr_t *tasks, zbx_uint64_t proxy_hostid)
 			" left join task_check_now cn"
 				" on t.taskid=cn.taskid"
 			" where t.status=%d"
-				" and t.proxy_hostid=" ZBX_FS_UI64
-				" and (t.ttl=0 or t.clock+t.ttl>" ZBX_FS_TIME_T ")"
+				" and t.proxy_hostid=" TRX_FS_UI64
+				" and (t.ttl=0 or t.clock+t.ttl>" TRX_FS_TIME_T ")"
 			" order by t.taskid",
-			ZBX_TM_STATUS_NEW, proxy_hostid, (zbx_fs_time_t)time(NULL));
+			TRX_TM_STATUS_NEW, proxy_hostid, (zbx_fs_time_t)time(NULL));
 
 	while (NULL != (row = DBfetch(result)))
 	{
 		zbx_uint64_t	taskid, alertid, parent_taskid, hostid, itemid;
 		zbx_tm_task_t	*task;
 
-		ZBX_STR2UINT64(taskid, row[0]);
+		TRX_STR2UINT64(taskid, row[0]);
 
-		task = zbx_tm_task_create(taskid, atoi(row[1]), ZBX_TM_STATUS_NEW, atoi(row[2]), atoi(row[3]), 0);
+		task = zbx_tm_task_create(taskid, atoi(row[1]), TRX_TM_STATUS_NEW, atoi(row[2]), atoi(row[3]), 0);
 
 		switch (task->type)
 		{
-			case ZBX_TM_TASK_REMOTE_COMMAND:
+			case TRX_TM_TASK_REMOTE_COMMAND:
 				if (SUCCEED == DBis_null(row[4]))
 				{
 					zbx_free(task);
 					continue;
 				}
 
-				ZBX_DBROW2UINT64(alertid, row[13]);
-				ZBX_DBROW2UINT64(parent_taskid, row[14]);
-				ZBX_DBROW2UINT64(hostid, row[15]);
+				TRX_DBROW2UINT64(alertid, row[13]);
+				TRX_DBROW2UINT64(parent_taskid, row[14]);
+				TRX_DBROW2UINT64(hostid, row[15]);
 				task->data = (void *)zbx_tm_remote_command_create(atoi(row[4]), row[12], atoi(row[5]),
 						atoi(row[6]), atoi(row[7]), row[8], row[9], row[10], row[11],
 						parent_taskid, hostid, alertid);
 				break;
-			case ZBX_TM_TASK_CHECK_NOW:
+			case TRX_TM_TASK_CHECK_NOW:
 				if (SUCCEED == DBis_null(row[16]))
 				{
 					zbx_free(task);
 					continue;
 				}
 
-				ZBX_STR2UINT64(itemid, row[16]);
+				TRX_STR2UINT64(itemid, row[16]);
 				task->data = (void *)zbx_tm_check_now_create(itemid);
 				break;
 		}

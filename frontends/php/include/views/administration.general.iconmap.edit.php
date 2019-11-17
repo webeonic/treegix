@@ -19,14 +19,14 @@ $widget = (new CWidget())
 $iconMapTab = new CFormList();
 
 $name = (new CTextBox('iconmap[name]', $this->data['iconmap']['name']))
-	->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	->setAttribute('maxlength', 64)
 	->setAriaRequired()
 	->setAttribute('autofocus', 'autofocus');
 $iconMapTab->addRow((new CLabel(_('Name'), 'iconmap[name]'))->setAsteriskMark(), $name);
 
 $iconMapForm = (new CForm())
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', 1);
 if (isset($this->data['iconmapid'])) {
 	$iconMapForm->addVar('iconmapid', $this->data['iconmap']['iconmapid']);
@@ -43,32 +43,32 @@ foreach ($this->data['iconmap']['mappings'] as $mapping) {
 	$iconMapTable->addRow(
 		(new CRow([
 			(new CCol(
-				(new CDiv())->addClass(ZBX_STYLE_DRAG_ICON)
-			))->addClass(ZBX_STYLE_TD_DRAG_ICON),
+				(new CDiv())->addClass(TRX_STYLE_DRAG_ICON)
+			))->addClass(TRX_STYLE_TD_DRAG_ICON),
 			(new CSpan(($i + 1).':'))->addClass('rowNum'),
 			(new CComboBox('iconmap[mappings]['.$i.'][inventory_link]', $mapping['inventory_link'],
 				null, $data['inventoryList']
 			)),
 			(new CTextBox('iconmap[mappings]['.$i.'][expression]', $mapping['expression']))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				->setAriaRequired()
 				->setAttribute('maxlength', 64),
 			(new CComboBox('iconmap[mappings]['.$i.'][iconid]', $mapping['iconid'], null, $data['iconList']))
 				->addClass('mappingIcon'),
 			(new CCol(
-				(new CImg('imgstore.php?iconid='.$mapping['iconid'].'&width='.ZBX_ICON_PREVIEW_WIDTH.
-					'&height='.ZBX_ICON_PREVIEW_HEIGHT, _('Preview'), null, null
+				(new CImg('imgstore.php?iconid='.$mapping['iconid'].'&width='.TRX_ICON_PREVIEW_WIDTH.
+					'&height='.TRX_ICON_PREVIEW_HEIGHT, _('Preview'), null, null
 				))
 					->addClass('preview')
-					->addClass(ZBX_STYLE_CURSOR_POINTER)
+					->addClass(TRX_STYLE_CURSOR_POINTER)
 					->setAttribute('data-image-full', 'imgstore.php?iconid='.$mapping['iconid'])
 			))->setAttribute('style', 'vertical-align: middle;'),
 			(new CCol(
 				(new CButton('remove', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('remove_mapping')
 					->removeId()
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('sortable')
 			->setId('iconmapidRow_'.$i)
@@ -81,7 +81,7 @@ foreach ($this->data['iconmap']['mappings'] as $mapping) {
 $iconMapTable
 	->addRow((new CRow([
 		(new CCol(
-			(new CButton('addMapping', _('Add')))->addClass(ZBX_STYLE_BTN_LINK)
+			(new CButton('addMapping', _('Add')))->addClass(TRX_STYLE_BTN_LINK)
 		))->setColSpan(7)
 	]))->setId('iconMapListFooter'))
 	->addRow([
@@ -90,9 +90,9 @@ $iconMapTable
 			->addClass('mappingIcon'),
 		(new CCol(
 			(new CImg('imgstore.php?iconid='.$data['iconmap']['default_iconid'].
-				'&width='.ZBX_ICON_PREVIEW_WIDTH.'&height='.ZBX_ICON_PREVIEW_HEIGHT, _('Preview'), null, null
+				'&width='.TRX_ICON_PREVIEW_WIDTH.'&height='.TRX_ICON_PREVIEW_HEIGHT, _('Preview'), null, null
 			))
-				->addClass(ZBX_STYLE_CURSOR_POINTER)
+				->addClass(TRX_STYLE_CURSOR_POINTER)
 				->addClass('preview')
 				->setAttribute('data-image-full', 'imgstore.php?iconid='.$data['iconmap']['default_iconid'])
 		))->setAttribute('style', 'vertical-align: middle;')
@@ -102,8 +102,8 @@ $iconMapTable
 $iconMapTab->addRow(
 	(new CLabel(_('Mappings'), 'iconmap_list'))->setAsteriskMark(),
 	(new CDiv($iconMapTable))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 		->setId('iconmap_list')
 );
 $iconMapView = new CTabView();

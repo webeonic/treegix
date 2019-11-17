@@ -771,8 +771,8 @@ class CHttpTestManager {
 	 */
 	private function updateHttpTestFields(array $httptests, $method) {
 		$fields = [
-			ZBX_HTTPFIELD_VARIABLE => 'variables',
-			ZBX_HTTPFIELD_HEADER => 'headers'
+			TRX_HTTPFIELD_VARIABLE => 'variables',
+			TRX_HTTPFIELD_HEADER => 'headers'
 		];
 		$httptest_fields = [];
 
@@ -866,10 +866,10 @@ class CHttpTestManager {
 	 */
 	private function updateHttpStepFields(array $httpsteps, $method) {
 		$fields = [
-			ZBX_HTTPFIELD_VARIABLE => 'variables',
-			ZBX_HTTPFIELD_HEADER => 'headers',
-			ZBX_HTTPFIELD_POST_FIELD => 'post_fields',
-			ZBX_HTTPFIELD_QUERY_FIELD => 'query_fields'
+			TRX_HTTPFIELD_VARIABLE => 'variables',
+			TRX_HTTPFIELD_HEADER => 'headers',
+			TRX_HTTPFIELD_POST_FIELD => 'post_fields',
+			TRX_HTTPFIELD_QUERY_FIELD => 'query_fields'
 		];
 		$httpstep_fields = [];
 
@@ -964,11 +964,11 @@ class CHttpTestManager {
 				if (is_array($webstep['posts'])) {
 					$webstep['post_fields'] = $webstep['posts'];
 					$webstep['posts'] = '';
-					$webstep['post_type'] = ZBX_POSTTYPE_FORM;
+					$webstep['post_type'] = TRX_POSTTYPE_FORM;
 				}
 				else {
 					$webstep['post_fields'] = [];
-					$webstep['post_type'] = ZBX_POSTTYPE_RAW;
+					$webstep['post_type'] = TRX_POSTTYPE_RAW;
 				}
 			}
 		}
@@ -1099,11 +1099,11 @@ class CHttpTestManager {
 				if (is_array($webstep['posts'])) {
 					$webstep['post_fields'] = $webstep['posts'];
 					$webstep['posts'] = '';
-					$webstep['post_type'] = ZBX_POSTTYPE_FORM;
+					$webstep['post_type'] = TRX_POSTTYPE_FORM;
 				}
 				else {
 					$webstep['post_fields'] = [];
-					$webstep['post_type'] = ZBX_POSTTYPE_RAW;
+					$webstep['post_type'] = TRX_POSTTYPE_RAW;
 				}
 			}
 		}
@@ -1265,7 +1265,7 @@ class CHttpTestManager {
 	 * - lastfailedstep - number of the last failed step
 	 * - error          - error message
 	 *
-	 * If a HTTP test has not been executed in last ZBX_HISTORY_PERIOD, no value will be returned.
+	 * If a HTTP test has not been executed in last TRX_HISTORY_PERIOD, no value will be returned.
 	 *
 	 * @param array $httpTestIds
 	 *
@@ -1280,7 +1280,7 @@ class CHttpTestManager {
 				' AND '.dbConditionInt('hti.httptestid', $httpTestIds)
 		));
 
-		$history = Manager::History()->getLastValues($httpItems, 1, ZBX_HISTORY_PERIOD);
+		$history = Manager::History()->getLastValues($httpItems, 1, TRX_HISTORY_PERIOD);
 
 		$data = [];
 

@@ -49,10 +49,10 @@ class CControllerWidgetSvgGraphView extends CControllerWidget {
 			'left_y_axis' => [
 				'show' => $fields['lefty'],
 				'min' => ($fields['lefty_min'] !== '')
-					? convertFunctionValue($fields['lefty_min'], ZBX_UNITS_ROUNDOFF_LOWER_LIMIT)
+					? convertFunctionValue($fields['lefty_min'], TRX_UNITS_ROUNDOFF_LOWER_LIMIT)
 					: '',
 				'max' => ($fields['lefty_max'] !== '')
-					? convertFunctionValue($fields['lefty_max'], ZBX_UNITS_ROUNDOFF_LOWER_LIMIT)
+					? convertFunctionValue($fields['lefty_max'], TRX_UNITS_ROUNDOFF_LOWER_LIMIT)
 					: '',
 				'units' => ($fields['lefty_units'] == SVG_GRAPH_AXIS_UNITS_STATIC)
 					? $fields['lefty_static_units']
@@ -61,10 +61,10 @@ class CControllerWidgetSvgGraphView extends CControllerWidget {
 			'right_y_axis' => [
 				'show' => $fields['righty'],
 				'min' => ($fields['righty_min'] !== '')
-					? convertFunctionValue($fields['righty_min'], ZBX_UNITS_ROUNDOFF_LOWER_LIMIT)
+					? convertFunctionValue($fields['righty_min'], TRX_UNITS_ROUNDOFF_LOWER_LIMIT)
 					: '',
 				'max' => ($fields['righty_max'] !== '')
-					? convertFunctionValue($fields['righty_max'], ZBX_UNITS_ROUNDOFF_LOWER_LIMIT)
+					? convertFunctionValue($fields['righty_max'], TRX_UNITS_ROUNDOFF_LOWER_LIMIT)
 					: '',
 				'units' => ($fields['righty_units'] == SVG_GRAPH_AXIS_UNITS_STATIC)
 					? $fields['righty_static_units']
@@ -128,7 +128,7 @@ class CControllerWidgetSvgGraphView extends CControllerWidget {
 				'sbox' => ($graph_data['dashboard_time'] && !$edit_mode),
 				'show_problems' => ($fields['show_problems'] == SVG_GRAPH_PROBLEMS_SHOW),
 				'time_from' => $graph_data['time_period']['time_from'],
-				'hint_max_rows' => ZBX_WIDGET_ROWS
+				'hint_max_rows' => TRX_WIDGET_ROWS
 			]);
 
 			$script_inline .=

@@ -8,6 +8,6 @@
 extern char		*CONFIG_SNMPTRAP_FILE;
 extern unsigned char	process_type;
 
-ZBX_THREAD_ENTRY(snmptrapper_thread, args);
+TRX_THREAD_ENTRY(snmptrapper_thread, args);
 
 #endif

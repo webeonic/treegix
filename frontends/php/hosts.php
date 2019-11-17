@@ -14,115 +14,115 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'hosts' =>					[T_ZBX_INT, O_OPT, P_SYS,			DB_ID,		null],
-	'groups' =>					[T_ZBX_STR, O_OPT, null,			NOT_EMPTY,	'isset({add}) || isset({update})'],
-	'mass_update_groups' =>		[T_ZBX_INT, O_OPT, null,
-									IN([ZBX_ACTION_ADD, ZBX_ACTION_REPLACE, ZBX_ACTION_REMOVE]),
+	'hosts' =>					[T_TRX_INT, O_OPT, P_SYS,			DB_ID,		null],
+	'groups' =>					[T_TRX_STR, O_OPT, null,			NOT_EMPTY,	'isset({add}) || isset({update})'],
+	'mass_update_groups' =>		[T_TRX_INT, O_OPT, null,
+									IN([TRX_ACTION_ADD, TRX_ACTION_REPLACE, TRX_ACTION_REMOVE]),
 									null
 								],
-	'hostids' =>				[T_ZBX_INT, O_OPT, P_SYS,			DB_ID,		null],
-	'groupids' =>				[T_ZBX_INT, O_OPT, P_SYS,			DB_ID,		null],
-	'applications' =>			[T_ZBX_INT, O_OPT, P_SYS,			DB_ID,		null],
-	'groupid' =>				[T_ZBX_INT, O_OPT, P_SYS,			DB_ID,		null],
-	'hostid' =>					[T_ZBX_INT, O_OPT, P_SYS,			DB_ID,		'isset({form}) && {form} == "update"'],
-	'clone_hostid' =>			[T_ZBX_INT, O_OPT, P_SYS,			DB_ID,
+	'hostids' =>				[T_TRX_INT, O_OPT, P_SYS,			DB_ID,		null],
+	'groupids' =>				[T_TRX_INT, O_OPT, P_SYS,			DB_ID,		null],
+	'applications' =>			[T_TRX_INT, O_OPT, P_SYS,			DB_ID,		null],
+	'groupid' =>				[T_TRX_INT, O_OPT, P_SYS,			DB_ID,		null],
+	'hostid' =>					[T_TRX_INT, O_OPT, P_SYS,			DB_ID,		'isset({form}) && {form} == "update"'],
+	'clone_hostid' =>			[T_TRX_INT, O_OPT, P_SYS,			DB_ID,
 									'isset({form}) && {form} == "full_clone"'
 								],
-	'host' =>					[T_ZBX_STR, O_OPT, null,			NOT_EMPTY,	'isset({add}) || isset({update})',
+	'host' =>					[T_TRX_STR, O_OPT, null,			NOT_EMPTY,	'isset({add}) || isset({update})',
 									_('Host name')
 								],
-	'visiblename' =>			[T_ZBX_STR, O_OPT, null,			null,		'isset({add}) || isset({update})'],
-	'description' =>			[T_ZBX_STR, O_OPT, null,			null,		null],
-	'proxy_hostid' =>			[T_ZBX_INT, O_OPT, P_SYS,		    DB_ID,		null],
-	'status' =>					[T_ZBX_INT, O_OPT, null,
+	'visiblename' =>			[T_TRX_STR, O_OPT, null,			null,		'isset({add}) || isset({update})'],
+	'description' =>			[T_TRX_STR, O_OPT, null,			null,		null],
+	'proxy_hostid' =>			[T_TRX_INT, O_OPT, P_SYS,		    DB_ID,		null],
+	'status' =>					[T_TRX_INT, O_OPT, null,
 									IN([HOST_STATUS_MONITORED, HOST_STATUS_NOT_MONITORED]), null
 								],
-	'interfaces' =>				[T_ZBX_STR, O_OPT, null,			NOT_EMPTY,
+	'interfaces' =>				[T_TRX_STR, O_OPT, null,			NOT_EMPTY,
 									'isset({add}) || isset({update})', _('Agent or SNMP or JMX or IPMI interface')
 								],
-	'mainInterfaces' =>			[T_ZBX_INT, O_OPT, null,			DB_ID,		null],
-	'tags' =>					[T_ZBX_STR, O_OPT, null,			null,		null],
-	'mass_update_tags' =>		[T_ZBX_INT, O_OPT, null,
-									IN([ZBX_ACTION_ADD, ZBX_ACTION_REPLACE, ZBX_ACTION_REMOVE]),
+	'mainInterfaces' =>			[T_TRX_INT, O_OPT, null,			DB_ID,		null],
+	'tags' =>					[T_TRX_STR, O_OPT, null,			null,		null],
+	'mass_update_tags' =>		[T_TRX_INT, O_OPT, null,
+									IN([TRX_ACTION_ADD, TRX_ACTION_REPLACE, TRX_ACTION_REMOVE]),
 									null
 								],
-	'templates' =>				[T_ZBX_INT, O_OPT, null,			DB_ID,		null],
-	'add_template' =>			[T_ZBX_STR, O_OPT, null,			null,		null],
-	'add_templates' =>			[T_ZBX_INT, O_OPT, null,			DB_ID,		null],
-	'templates_rem' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
-	'clear_templates' =>		[T_ZBX_INT, O_OPT, null,			DB_ID,		null],
-	'ipmi_authtype' =>			[T_ZBX_INT, O_OPT, null,			BETWEEN(-1, 6), null],
-	'ipmi_privilege' =>			[T_ZBX_INT, O_OPT, null,			BETWEEN(0, 5), null],
-	'ipmi_username' =>			[T_ZBX_STR, O_OPT, null,			null,		null],
-	'ipmi_password' =>			[T_ZBX_STR, O_OPT, null,			null,		null],
-	'tls_connect' =>			[T_ZBX_INT, O_OPT, null,
+	'templates' =>				[T_TRX_INT, O_OPT, null,			DB_ID,		null],
+	'add_template' =>			[T_TRX_STR, O_OPT, null,			null,		null],
+	'add_templates' =>			[T_TRX_INT, O_OPT, null,			DB_ID,		null],
+	'templates_rem' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
+	'clear_templates' =>		[T_TRX_INT, O_OPT, null,			DB_ID,		null],
+	'ipmi_authtype' =>			[T_TRX_INT, O_OPT, null,			BETWEEN(-1, 6), null],
+	'ipmi_privilege' =>			[T_TRX_INT, O_OPT, null,			BETWEEN(0, 5), null],
+	'ipmi_username' =>			[T_TRX_STR, O_OPT, null,			null,		null],
+	'ipmi_password' =>			[T_TRX_STR, O_OPT, null,			null,		null],
+	'tls_connect' =>			[T_TRX_INT, O_OPT, null,
 									IN([HOST_ENCRYPTION_NONE, HOST_ENCRYPTION_PSK, HOST_ENCRYPTION_CERTIFICATE]),
 									null
 								],
-	'tls_accept' =>				[T_ZBX_INT, O_OPT, null,
+	'tls_accept' =>				[T_TRX_INT, O_OPT, null,
 									BETWEEN(0,
 										(HOST_ENCRYPTION_NONE | HOST_ENCRYPTION_PSK | HOST_ENCRYPTION_CERTIFICATE)
 									),
 									null
 								],
-	'tls_subject' =>			[T_ZBX_STR, O_OPT, null,			null,		null],
-	'tls_issuer' =>				[T_ZBX_STR, O_OPT, null,			null,		null],
-	'tls_psk_identity' =>		[T_ZBX_STR, O_OPT, null,			null,		null],
-	'tls_psk' =>				[T_ZBX_STR, O_OPT, null,			null,		null],
-	'flags' =>					[T_ZBX_INT, O_OPT, null,
-									IN([ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]), null
+	'tls_subject' =>			[T_TRX_STR, O_OPT, null,			null,		null],
+	'tls_issuer' =>				[T_TRX_STR, O_OPT, null,			null,		null],
+	'tls_psk_identity' =>		[T_TRX_STR, O_OPT, null,			null,		null],
+	'tls_psk' =>				[T_TRX_STR, O_OPT, null,			null,		null],
+	'flags' =>					[T_TRX_INT, O_OPT, null,
+									IN([TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]), null
 								],
-	'mass_replace_tpls' =>		[T_ZBX_STR, O_OPT, null,			null,		null],
-	'mass_clear_tpls' =>		[T_ZBX_STR, O_OPT, null,			null,		null],
-	'inventory_mode' =>			[T_ZBX_INT, O_OPT, null,
+	'mass_replace_tpls' =>		[T_TRX_STR, O_OPT, null,			null,		null],
+	'mass_clear_tpls' =>		[T_TRX_STR, O_OPT, null,			null,		null],
+	'inventory_mode' =>			[T_TRX_INT, O_OPT, null,
 									IN(HOST_INVENTORY_DISABLED.','.HOST_INVENTORY_MANUAL.','.HOST_INVENTORY_AUTOMATIC),
 									null
 								],
-	'host_inventory' =>			[T_ZBX_STR, O_OPT, P_UNSET_EMPTY,	null,		null],
-	'macros' =>					[T_ZBX_STR, O_OPT, P_SYS,			null,		null],
-	'visible' =>				[T_ZBX_STR, O_OPT, null,			null,		null],
-	'show_inherited_macros' =>	[T_ZBX_INT, O_OPT, null, IN([0,1]), null],
+	'host_inventory' =>			[T_TRX_STR, O_OPT, P_UNSET_EMPTY,	null,		null],
+	'macros' =>					[T_TRX_STR, O_OPT, P_SYS,			null,		null],
+	'visible' =>				[T_TRX_STR, O_OPT, null,			null,		null],
+	'show_inherited_macros' =>	[T_TRX_INT, O_OPT, null, IN([0,1]), null],
 	// actions
-	'action' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 									IN('"host.export","host.massdelete","host.massdisable",'.
 										'"host.massenable","host.massupdate","host.massupdateform"'
 									),
 									null
 								],
-	'add_to_group' =>			[T_ZBX_INT, O_OPT, P_SYS|P_ACT,		DB_ID,		null],
-	'delete_from_group' =>		[T_ZBX_INT, O_OPT, P_SYS|P_ACT,		DB_ID,		null],
-	'unlink' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
-	'unlink_and_clear' =>		[T_ZBX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
-	'add' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
-	'update' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
-	'masssave' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
-	'clone' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
-	'full_clone' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
-	'delete' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
-	'cancel' =>					[T_ZBX_STR, O_OPT, P_SYS,			null,		null],
-	'form' =>					[T_ZBX_STR, O_OPT, P_SYS,			null,		null],
-	'form_refresh' =>			[T_ZBX_INT, O_OPT, null,			null,		null],
+	'add_to_group' =>			[T_TRX_INT, O_OPT, P_SYS|P_ACT,		DB_ID,		null],
+	'delete_from_group' =>		[T_TRX_INT, O_OPT, P_SYS|P_ACT,		DB_ID,		null],
+	'unlink' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
+	'unlink_and_clear' =>		[T_TRX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
+	'add' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
+	'update' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
+	'masssave' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
+	'clone' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
+	'full_clone' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
+	'delete' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT,		null,		null],
+	'cancel' =>					[T_TRX_STR, O_OPT, P_SYS,			null,		null],
+	'form' =>					[T_TRX_STR, O_OPT, P_SYS,			null,		null],
+	'form_refresh' =>			[T_TRX_INT, O_OPT, null,			null,		null],
 	// filter
-	'filter_set' =>				[T_ZBX_STR, O_OPT, P_SYS,			null,		null],
-	'filter_rst' =>				[T_ZBX_STR, O_OPT, P_SYS,			null,		null],
-	'filter_host' =>			[T_ZBX_STR, O_OPT, null,			null,		null],
-	'filter_templates' =>		[T_ZBX_INT, O_OPT, null,			DB_ID,		null],
-	'filter_ip' =>				[T_ZBX_STR, O_OPT, null,			null,		null],
-	'filter_dns' =>				[T_ZBX_STR, O_OPT, null,			null,		null],
-	'filter_port' =>			[T_ZBX_STR, O_OPT, null,			null,		null],
-	'filter_monitored_by' =>	[T_ZBX_INT, O_OPT, null,
-									IN([ZBX_MONITORED_BY_ANY, ZBX_MONITORED_BY_SERVER, ZBX_MONITORED_BY_PROXY]),
+	'filter_set' =>				[T_TRX_STR, O_OPT, P_SYS,			null,		null],
+	'filter_rst' =>				[T_TRX_STR, O_OPT, P_SYS,			null,		null],
+	'filter_host' =>			[T_TRX_STR, O_OPT, null,			null,		null],
+	'filter_templates' =>		[T_TRX_INT, O_OPT, null,			DB_ID,		null],
+	'filter_ip' =>				[T_TRX_STR, O_OPT, null,			null,		null],
+	'filter_dns' =>				[T_TRX_STR, O_OPT, null,			null,		null],
+	'filter_port' =>			[T_TRX_STR, O_OPT, null,			null,		null],
+	'filter_monitored_by' =>	[T_TRX_INT, O_OPT, null,
+									IN([TRX_MONITORED_BY_ANY, TRX_MONITORED_BY_SERVER, TRX_MONITORED_BY_PROXY]),
 									null
 								],
-	'filter_proxyids' =>		[T_ZBX_INT, O_OPT, null,			DB_ID,		null],
-	'filter_evaltype' =>		[T_ZBX_INT, O_OPT, null,
+	'filter_proxyids' =>		[T_TRX_INT, O_OPT, null,			DB_ID,		null],
+	'filter_evaltype' =>		[T_TRX_INT, O_OPT, null,
 									IN([TAG_EVAL_TYPE_AND_OR, TAG_EVAL_TYPE_OR]),
 									null
 								],
-	'filter_tags' =>			[T_ZBX_STR, O_OPT, null,			null,		null],
+	'filter_tags' =>			[T_TRX_STR, O_OPT, null,			null,		null],
 	// sort and sortorder
-	'sort' =>					[T_ZBX_STR, O_OPT, P_SYS, IN('"name","status"'),						null],
-	'sortorder' =>				[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>					[T_TRX_STR, O_OPT, P_SYS, IN('"name","status"'),						null],
+	'sortorder' =>				[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -152,7 +152,7 @@ if (hasRequest('filter_set')) {
 	CProfile::update('web.hosts.filter_dns', getRequest('filter_dns', ''), PROFILE_TYPE_STR);
 	CProfile::update('web.hosts.filter_host', getRequest('filter_host', ''), PROFILE_TYPE_STR);
 	CProfile::update('web.hosts.filter_port', getRequest('filter_port', ''), PROFILE_TYPE_STR);
-	CProfile::update('web.hosts.filter_monitored_by', getRequest('filter_monitored_by', ZBX_MONITORED_BY_ANY),
+	CProfile::update('web.hosts.filter_monitored_by', getRequest('filter_monitored_by', TRX_MONITORED_BY_ANY),
 		PROFILE_TYPE_INT
 	);
 	CProfile::updateArray('web.hosts.filter_templates', getRequest('filter_templates', []), PROFILE_TYPE_ID);
@@ -197,7 +197,7 @@ $filter = [
 	'host' => CProfile::get('web.hosts.filter_host', ''),
 	'templates' => CProfile::getArray('web.hosts.filter_templates', []),
 	'port' => CProfile::get('web.hosts.filter_port', ''),
-	'monitored_by' => CProfile::get('web.hosts.filter_monitored_by', ZBX_MONITORED_BY_ANY),
+	'monitored_by' => CProfile::get('web.hosts.filter_monitored_by', TRX_MONITORED_BY_ANY),
 	'proxyids' => CProfile::getArray('web.hosts.filter_proxyids', []),
 	'evaltype' => CProfile::get('web.hosts.filter.evaltype', TAG_EVAL_TYPE_AND_OR),
 	'tags' => []
@@ -220,7 +220,7 @@ foreach ($tags as $key => $tag) {
 	}
 
 	// remove inherited tags
-	if (array_key_exists('type', $tag) && !($tag['type'] & ZBX_PROPERTY_OWN)) {
+	if (array_key_exists('type', $tag) && !($tag['type'] & TRX_PROPERTY_OWN)) {
 		unset($tags[$key]);
 	}
 	else {
@@ -328,7 +328,7 @@ elseif (hasRequest('action') && getRequest('action') === 'host.massupdate' && ha
 		$options = [
 			'output' => ['hostid', 'inventory_mode'],
 			'hostids' => $hostids,
-			'filter' => ['flags' => [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]]
+			'filter' => ['flags' => [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]]
 		];
 
 		if (array_key_exists('groups', $visible)) {
@@ -340,9 +340,9 @@ elseif (hasRequest('action') && getRequest('action') === 'host.massupdate' && ha
 		}
 
 		if (array_key_exists('tags', $visible)) {
-			$mass_update_tags = getRequest('mass_update_tags', ZBX_ACTION_ADD);
+			$mass_update_tags = getRequest('mass_update_tags', TRX_ACTION_ADD);
 
-			if ($mass_update_tags == ZBX_ACTION_ADD || $mass_update_tags == ZBX_ACTION_REMOVE) {
+			if ($mass_update_tags == TRX_ACTION_ADD || $mass_update_tags == TRX_ACTION_REMOVE) {
 				$options['selectTags'] = ['tag', 'value'];
 			}
 
@@ -360,9 +360,9 @@ elseif (hasRequest('action') && getRequest('action') === 'host.massupdate' && ha
 		if (array_key_exists('groups', $visible)) {
 			$new_groupids = [];
 			$remove_groupids = [];
-			$mass_update_groups = getRequest('mass_update_groups', ZBX_ACTION_ADD);
+			$mass_update_groups = getRequest('mass_update_groups', TRX_ACTION_ADD);
 
-			if ($mass_update_groups == ZBX_ACTION_ADD || $mass_update_groups == ZBX_ACTION_REPLACE) {
+			if ($mass_update_groups == TRX_ACTION_ADD || $mass_update_groups == TRX_ACTION_REPLACE) {
 				if (CWebUser::getType() == USER_TYPE_SUPER_ADMIN) {
 					$ins_groups = [];
 
@@ -387,7 +387,7 @@ elseif (hasRequest('action') && getRequest('action') === 'host.massupdate' && ha
 					$new_groupids = getRequest('groups', []);
 				}
 			}
-			elseif ($mass_update_groups == ZBX_ACTION_REMOVE) {
+			elseif ($mass_update_groups == TRX_ACTION_REMOVE) {
 				$remove_groupids = getRequest('groups', []);
 			}
 		}
@@ -457,13 +457,13 @@ elseif (hasRequest('action') && getRequest('action') === 'host.massupdate' && ha
 
 		foreach ($hosts as &$host) {
 			if (array_key_exists('groups', $visible)) {
-				if ($new_groupids && $mass_update_groups == ZBX_ACTION_ADD) {
+				if ($new_groupids && $mass_update_groups == TRX_ACTION_ADD) {
 					$current_groupids = zbx_objectValues($host['groups'], 'groupid');
 					$host['groups'] = zbx_toObject(array_unique(array_merge($current_groupids, $new_groupids)),
 						'groupid'
 					);
 				}
-				elseif ($new_groupids && $mass_update_groups == ZBX_ACTION_REPLACE) {
+				elseif ($new_groupids && $mass_update_groups == TRX_ACTION_REPLACE) {
 					$host['groups'] = zbx_toObject($new_groupids, 'groupid');
 				}
 				elseif ($remove_groupids) {
@@ -489,7 +489,7 @@ elseif (hasRequest('action') && getRequest('action') === 'host.massupdate' && ha
 			}
 
 			if (array_key_exists('tags', $visible)) {
-				if ($tags && $mass_update_tags == ZBX_ACTION_ADD) {
+				if ($tags && $mass_update_tags == TRX_ACTION_ADD) {
 					$unique_tags = [];
 
 					foreach (array_merge($host['tags'], $tags) as $tag) {
@@ -498,10 +498,10 @@ elseif (hasRequest('action') && getRequest('action') === 'host.massupdate' && ha
 
 					$host['tags'] = array_values($unique_tags);
 				}
-				elseif ($mass_update_tags == ZBX_ACTION_REPLACE) {
+				elseif ($mass_update_tags == TRX_ACTION_REPLACE) {
 					$host['tags'] = $tags;
 				}
-				elseif ($tags && $mass_update_tags == ZBX_ACTION_REMOVE) {
+				elseif ($tags && $mass_update_tags == TRX_ACTION_REMOVE) {
 					$diff_tags = [];
 
 					foreach ($host['tags'] as $a) {
@@ -570,7 +570,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 		}
 
 		// host data
-		if (!$create && $dbHost['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+		if (!$create && $dbHost['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 			$host = [
 				'hostid' => $hostId,
 				'status' => getRequest('status', HOST_STATUS_NOT_MONITORED),
@@ -736,7 +736,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 				'output' => ['triggerid'],
 				'hostids' => $srcHostId,
 				'inherited' => false,
-				'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL]
+				'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 			]);
 
 			if ($dbTriggers && !copyTriggersToHosts(zbx_objectValues($dbTriggers, 'triggerid'), $hostId, $srcHostId)) {
@@ -767,7 +767,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 				'selectHosts' => ['hostid'],
 				'selectItems' => ['type'],
 				'hostids' => $srcHostId,
-				'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+				'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 				'inherited' => false
 			]);
 
@@ -942,7 +942,7 @@ elseif (hasRequest('form')) {
 		'form' => getRequest('form', ''),
 		'hostid' => getRequest('hostid', 0),
 		'clone_hostid' => getRequest('clone_hostid', 0),
-		'flags' => getRequest('flags', ZBX_FLAG_DISCOVERY_NORMAL),
+		'flags' => getRequest('flags', TRX_FLAG_DISCOVERY_NORMAL),
 
 		// Host
 		'host' => getRequest('host', ''),
@@ -1008,7 +1008,7 @@ elseif (hasRequest('form')) {
 			$dbHost = reset($dbHosts);
 
 			$data['flags'] = $dbHost['flags'];
-			if ($data['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+			if ($data['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 				$data['discoveryRule'] = $dbHost['discoveryRule'];
 				$data['hostDiscovery'] = $dbHost['hostDiscovery'];
 			}
@@ -1044,7 +1044,7 @@ elseif (hasRequest('form')) {
 
 			// Interfaces
 			foreach ($data['interfaces'] as &$interface) {
-				if ($data['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+				if ($data['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 					$interface['locked'] = true;
 				}
 				else {
@@ -1102,7 +1102,7 @@ elseif (hasRequest('form')) {
 			$dbHost = reset($dbHosts);
 
 			$data['flags'] = $dbHost['flags'];
-			if ($data['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+			if ($data['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 				$data['discoveryRule'] = $dbHost['discoveryRule'];
 				$data['hostDiscovery'] = $dbHost['hostDiscovery'];
 			}
@@ -1133,7 +1133,7 @@ elseif (hasRequest('form')) {
 		$data['inventory_items'] = CMacrosResolverHelper::resolveItemNames($data['inventory_items']);
 	}
 
-	if ($data['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+	if ($data['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 		if ($data['proxy_hostid'] != 0) {
 			$data['proxies'] = API::Proxy()->get([
 				'output' => ['host'],
@@ -1172,10 +1172,10 @@ elseif (hasRequest('form')) {
 	}
 	$data['macros'] = array_values(order_macros($data['macros'], 'macro'));
 
-	if (!$data['macros'] && $data['flags'] != ZBX_FLAG_DISCOVERY_CREATED) {
+	if (!$data['macros'] && $data['flags'] != TRX_FLAG_DISCOVERY_CREATED) {
 		$macro = ['macro' => '', 'value' => '', 'description' => ''];
 		if ($data['show_inherited_macros']) {
-			$macro['type'] = ZBX_PROPERTY_OWN;
+			$macro['type'] = TRX_PROPERTY_OWN;
 		}
 		$data['macros'][] = $macro;
 	}
@@ -1249,7 +1249,7 @@ elseif (hasRequest('form')) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);
@@ -1266,11 +1266,11 @@ else {
 	$hosts = [];
 	if ($pageFilter->groupsSelected) {
 		switch ($filter['monitored_by']) {
-			case ZBX_MONITORED_BY_ANY:
+			case TRX_MONITORED_BY_ANY:
 				$proxyids = null;
 				break;
 
-			case ZBX_MONITORED_BY_PROXY:
+			case TRX_MONITORED_BY_PROXY:
 				$proxyids = $filter['proxyids']
 					? $filter['proxyids']
 					: array_keys(API::Proxy()->get([
@@ -1279,7 +1279,7 @@ else {
 					]));
 				break;
 
-			case ZBX_MONITORED_BY_SERVER:
+			case TRX_MONITORED_BY_SERVER:
 				$proxyids = 0;
 				break;
 		}
@@ -1367,7 +1367,7 @@ else {
 	foreach ($hosts as &$host) {
 		// Sort interfaces to be listed starting with one selected as 'main'.
 		CArrayHelper::sort($host['interfaces'], [
-			['field' => 'main', 'order' => ZBX_SORT_DOWN]
+			['field' => 'main', 'order' => TRX_SORT_DOWN]
 		]);
 
 		if ($host['proxy_hostid']) {
@@ -1426,7 +1426,7 @@ else {
 		'proxies_ms' => $proxies_ms,
 		'profileIdx' => 'web.hosts.filter',
 		'active_tab' => CProfile::get('web.hosts.filter.active', 1),
-		'tags' => makeTags($hosts, true, 'hostid', ZBX_TAG_COUNT_DEFAULT, $filter['tags'])
+		'tags' => makeTags($hosts, true, 'hostid', TRX_TAG_COUNT_DEFAULT, $filter['tags'])
 	];
 
 	$hostView = new CView('configuration.host.list', $data);

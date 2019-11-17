@@ -10,7 +10,7 @@ $widget = (new CWidget())
 
 $form = (new CForm())
 	->setName('itemForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $data['form'])
 	->addVar('hostid', $data['hostid']);
 
@@ -26,7 +26,7 @@ if (!empty($data['templates'])) {
 $form_list->addRow(
 	(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 	(new CTextBox('name', $data['name'], $data['limited']))
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		->setAriaRequired()
 		->setAttribute('autofocus', 'autofocus')
 );
@@ -35,7 +35,7 @@ $form_list->addRow(
 if ($data['limited']) {
 	$form->addVar('type', $data['type']);
 	$form_list->addRow((new CLabel(_('Type'), 'typename')),
-		(new CTextBox('typename', item_type2str($data['type']), true))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+		(new CTextBox('typename', item_type2str($data['type']), true))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	);
 }
 else {
@@ -49,7 +49,7 @@ $form_list
 	->addRow(
 		(new CLabel(_('Key'), 'key'))->setAsteriskMark(),
 		(new CTextBox('key', $data['key'], $data['limited']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	// Append ITEM_TYPE_HTTPAGENT URL field to form list.
@@ -57,11 +57,11 @@ $form_list
 		(new CLabel(_('URL'), 'url'))->setAsteriskMark(),
 		[
 			(new CTextBox('url', $data['url'], $data['limited'], DB::getFieldLength('items', 'url')))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAriaRequired(),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CButton('httpcheck_parseurl', _('Parse')))
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 				->setEnabled(!$data['limited'])
 				->setAttribute('data-action', 'parse_url')
 		],
@@ -94,7 +94,7 @@ $form_list
 				->setFooter(new CRow(
 					(new CCol(
 						(new CButton(null, _('Add')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->setEnabled(!$data['limited'])
 							->setAttribute('data-row-action', 'add_row')
 					))->setColSpan(5)
@@ -102,25 +102,25 @@ $form_list
 			(new CTag('script', true))
 				->setAttribute('type', 'text/x-jquery-tmpl')
 				->addItem(new CRow([
-					(new CCol((new CDiv)->addClass(ZBX_STYLE_DRAG_ICON)))->addClass(ZBX_STYLE_TD_DRAG_ICON),
+					(new CCol((new CDiv)->addClass(TRX_STYLE_DRAG_ICON)))->addClass(TRX_STYLE_TD_DRAG_ICON),
 					(new CTextBox('query_fields[name][#{index}]', '#{name}', $data['limited']))
 						->setAttribute('placeholder', _('name'))
-						->setWidth(ZBX_TEXTAREA_HTTP_PAIR_NAME_WIDTH),
+						->setWidth(TRX_TEXTAREA_HTTP_PAIR_NAME_WIDTH),
 					'&rArr;',
 					(new CTextBox('query_fields[value][#{index}]', '#{value}', $data['limited']))
 						->setAttribute('placeholder', _('value'))
-						->setWidth(ZBX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH),
+						->setWidth(TRX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH),
 					(new CButton(null, _('Remove')))
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 						->setEnabled(!$data['limited'])
 						->setAttribute('data-row-action', 'remove_row')
 				])),
 			$query_fields
 		]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setId('query_fields_pairs')
 			->setAttribute('data-sortable-pairs-table',  $data['limited'] ? '0' : '1')
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH . 'px;'),
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH . 'px;'),
 		'query_fields_row'
 	)
 	// Append ITEM_TYPE_HTTPAGENT Request type to form list.
@@ -140,16 +140,16 @@ $form_list
 	// Append ITEM_TYPE_HTTPAGENT Timeout field to form list.
 	->addRow(
 		new CLabel(_('Timeout'), 'timeout'),
-		(new CTextBox('timeout', $data['timeout'], $data['limited']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
+		(new CTextBox('timeout', $data['timeout'], $data['limited']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
 		'timeout_row'
 	)
 	// Append ITEM_TYPE_HTTPAGENT Request body type to form list.
 	->addRow(
 		new CLabel(_('Request body type'), 'post_type'),
 		(new CRadioButtonList('post_type', (int) $data['post_type']))
-			->addValue(_('Raw data'), ZBX_POSTTYPE_RAW)
-			->addValue(_('JSON data'), ZBX_POSTTYPE_JSON)
-			->addValue(_('XML data'), ZBX_POSTTYPE_XML)
+			->addValue(_('Raw data'), TRX_POSTTYPE_RAW)
+			->addValue(_('JSON data'), TRX_POSTTYPE_JSON)
+			->addValue(_('XML data'), TRX_POSTTYPE_XML)
 			->setEnabled(!$data['limited'])
 			->setModern(true),
 		'post_type_row'
@@ -157,7 +157,7 @@ $form_list
 	// Append ITEM_TYPE_HTTPAGENT Request body to form list.
 	->addRow(
 		new CLabel(_('Request body'), 'posts'),
-		(new CTextArea('posts', $data['posts'], ['readonly' =>  $data['limited']]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+		(new CTextArea('posts', $data['posts'], ['readonly' =>  $data['limited']]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'posts_row'
 	);
 
@@ -186,7 +186,7 @@ $form_list
 				->setFooter(new CRow(
 					(new CCol(
 						(new CButton(null, _('Add')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->setEnabled(!$data['limited'])
 							->setAttribute('data-row-action', 'add_row')
 					))->setColSpan(5)
@@ -194,32 +194,32 @@ $form_list
 			(new CTag('script', true))
 				->setAttribute('type', 'text/x-jquery-tmpl')
 				->addItem(new CRow([
-					(new CCol((new CDiv)->addClass(ZBX_STYLE_DRAG_ICON)))->addClass(ZBX_STYLE_TD_DRAG_ICON),
+					(new CCol((new CDiv)->addClass(TRX_STYLE_DRAG_ICON)))->addClass(TRX_STYLE_TD_DRAG_ICON),
 					(new CTextBox('headers[name][#{index}]', '#{name}', $data['limited']))
 						->setAttribute('placeholder', _('name'))
-						->setWidth(ZBX_TEXTAREA_HTTP_PAIR_NAME_WIDTH),
+						->setWidth(TRX_TEXTAREA_HTTP_PAIR_NAME_WIDTH),
 					'&rArr;',
 					(new CTextBox('headers[value][#{index}]', '#{value}', $data['limited'], 2000))
 						->setAttribute('placeholder', _('value'))
-						->setWidth(ZBX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH),
+						->setWidth(TRX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH),
 					(new CButton(null, _('Remove')))
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 						->setEnabled(!$data['limited'])
 						->setAttribute('data-row-action', 'remove_row')
 				])),
 			$headers
 		]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setId('headers_pairs')
 			->setAttribute('data-sortable-pairs-table', $data['limited'] ? '0' : '1')
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH . 'px;'),
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH . 'px;'),
 		'headers_row'
 	)
 	// Append ITEM_TYPE_HTTPAGENT Required status codes to form list.
 	->addRow(
 		new CLabel(_('Required status codes'), 'status_codes'),
 		(new CTextBox('status_codes', $data['status_codes'], $data['limited']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'status_codes_row'
 	)
 	// Append ITEM_TYPE_HTTPAGENT Follow redirects to form list.
@@ -245,7 +245,7 @@ $form_list
 	->addRow(
 		new CLabel(_('HTTP proxy'), 'http_proxy'),
 		(new CTextBox('http_proxy', $data['http_proxy'], $data['limited'], DB::getFieldLength('items', 'http_proxy')))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAttribute('placeholder', '[protocol://][user[:password]@]proxy.example.com[:port]'),
 		'http_proxy_row'
 	)
@@ -268,7 +268,7 @@ $form_list
 		new CLabel(_('User name'), 'http_username'),
 		(new CTextBox('http_username', $data['http_username'], $data['limited'],
 			DB::getFieldLength('items', 'username')
-		))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+		))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'http_username_row'
 		)
 	// Append ITEM_TYPE_HTTPAGENT Password to form list.
@@ -276,7 +276,7 @@ $form_list
 		new CLabel(_('Password'), 'http_password'),
 		(new CTextBox('http_password', $data['http_password'], $data['limited'],
 				DB::getFieldLength('items', 'password')
-		))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+		))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'http_password_row'
 	)
 	// Append ITEM_TYPE_HTTPAGENT SSL verify peer to form list.
@@ -300,14 +300,14 @@ $form_list
 		new CLabel(_('SSL certificate file'), 'ssl_cert_file'),
 		(new CTextBox('ssl_cert_file', $data['ssl_cert_file'], $data['limited'],
 			DB::getFieldLength('items', 'ssl_cert_file')
-		))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+		))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'ssl_cert_file_row'
 	)
 	// Append ITEM_TYPE_HTTPAGENT SSL key file to form list.
 	->addRow(
 		new CLabel(_('SSL key file'), 'ssl_key_file'),
 		(new CTextBox('ssl_key_file', $data['ssl_key_file'], $data['limited'], DB::getFieldLength('items', 'ssl_key_file')))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'ssl_key_file_row'
 	)
 	// Append ITEM_TYPE_HTTPAGENT SSL key password to form list.
@@ -315,7 +315,7 @@ $form_list
 		new CLabel(_('SSL key password'), 'ssl_key_password'),
 		(new CTextBox('ssl_key_password', $data['ssl_key_password'], $data['limited'],
 			DB::getFieldLength('items', 'ssl_key_password')
-		))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+		))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'ssl_key_password_row'
 	)
 	// Append master item select to form list.
@@ -347,7 +347,7 @@ $form_list
 				]
 			]
 		]))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
 		'row_master_item'
 	);
@@ -383,7 +383,7 @@ if (!empty($data['interfaces'])) {
 	$form_list->addRow((new CLabel(_('Host interface'), 'interfaceid'))->setAsteriskMark(),
 		[$interfaces_combobox,
 			(new CSpan(_('No interface found')))
-				->addClass(ZBX_STYLE_RED)
+				->addClass(TRX_STYLE_RED)
 				->setId('interface_not_defined')
 				->setAttribute('style', 'display: none;')
 		], 'interface_row'
@@ -394,25 +394,25 @@ $form_list
 	->addRow(
 		(new CLabel(_('SNMP OID'), 'snmp_oid'))->setAsteriskMark(),
 		(new CTextBox('snmp_oid', $data['snmp_oid'], $data['limited'], 512))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAttribute('placeholder', '[IF-MIB::]ifInOctets.1')
 			->setAriaRequired(),
 		'row_snmp_oid'
 	)
 	->addRow(_('Context name'),
-		(new CTextBox('snmpv3_contextname', $data['snmpv3_contextname']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+		(new CTextBox('snmpv3_contextname', $data['snmpv3_contextname']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'row_snmpv3_contextname'
 	)
 	->addRow(
 		(new CLabel(_('SNMP community'), 'snmp_community'))->setAsteriskMark(),
 		(new CTextBox('snmp_community', $data['snmp_community'], false, 64))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
 		'row_snmp_community'
 	)
 	->addRow(_('Security name'),
 		(new CTextBox('snmpv3_securityname', $data['snmpv3_securityname'], false, 64))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'row_snmpv3_securityname'
 	);
 
@@ -435,7 +435,7 @@ $form_list
 	)
 	->addRow(_('Authentication passphrase'),
 		(new CTextBox('snmpv3_authpassphrase', $data['snmpv3_authpassphrase'], false, 64))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'row_snmpv3_authpassphrase'
 	)
 	->addRow((new CLabel(_('Privacy protocol'), 'snmpv3_privprotocol')),
@@ -447,16 +447,16 @@ $form_list
 	)
 	->addRow(_('Privacy passphrase'),
 		(new CTextBox('snmpv3_privpassphrase', $data['snmpv3_privpassphrase'], false, 64))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'row_snmpv3_privpassphrase'
 	)
 	->addRow(_('Port'),
-		(new CTextBox('port', $data['port'], false, 64))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH), 'row_port'
+		(new CTextBox('port', $data['port'], false, 64))->setWidth(TRX_TEXTAREA_SMALL_WIDTH), 'row_port'
 	)
 	->addRow(
 		(new CLabel(_('IPMI sensor'), 'ipmi_sensor'))->setAsteriskMark(),
 		(new CTextBox('ipmi_sensor', $data['ipmi_sensor'], $data['limited'], 128))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
 		'row_ipmi_sensor'
 	)
@@ -470,51 +470,51 @@ $form_list
 	)
 	->addRow((new CLabel(_('JMX endpoint'), 'jmx_endpoint'))->setAsteriskMark(),
 		(new CTextBox('jmx_endpoint', $data['jmx_endpoint'], false, 255))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
 		'row_jmx_endpoint'
 	)
 	->addRow(_('User name'),
-		(new CTextBox('username', $data['username'], false, 64))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
+		(new CTextBox('username', $data['username'], false, 64))->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
 		'row_username'
 	)
 	->addRow(
 		(new CLabel(_('Public key file'), 'publickey'))->setAsteriskMark(),
 		(new CTextBox('publickey', $data['publickey'], false, 64))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			->setAriaRequired(),
 		'row_publickey'
 	)
 	->addRow(
 		(new CLabel(_('Private key file'), 'privatekey'))->setAsteriskMark(),
 		(new CTextBox('privatekey', $data['privatekey'], false, 64))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			->setAriaRequired(),
 		'row_privatekey'
 	)
 	->addRow(_('Password'),
-		(new CTextBox('password', $data['password'], false, 64))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
+		(new CTextBox('password', $data['password'], false, 64))->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
 		'row_password'
 	)
 	->addRow(
 		(new CLabel(_('Executed script'), 'params_es'))->setAsteriskMark(),
 		(new CTextArea('params_es', $data['params']))
-			->addClass(ZBX_STYLE_MONOSPACE_FONT)
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->addClass(TRX_STYLE_MONOSPACE_FONT)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
 		'label_executed_script'
 	)
 	->addRow(
 		(new CLabel(_('SQL query'), 'params_ap'))->setAsteriskMark(),
 		(new CTextArea('params_ap', $data['params']))
-			->addClass(ZBX_STYLE_MONOSPACE_FONT)
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->addClass(TRX_STYLE_MONOSPACE_FONT)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
 		'label_params'
 	)
 	->addRow((new CLabel(_('Update interval'), 'delay'))->setAsteriskMark(),
 		(new CTextBox('delay', $data['delay']))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			->setAriaRequired(),
 		'row_delay'
 	);
@@ -533,46 +533,46 @@ foreach ($data['delay_flex'] as $i => $delay_flex) {
 
 	if ($delay_flex['type'] == ITEM_DELAY_FLEXIBLE) {
 		$delay_input = (new CTextBox('delay_flex['.$i.'][delay]', $delay_flex['delay']))
-			->setAttribute('placeholder', ZBX_ITEM_FLEXIBLE_DELAY_DEFAULT);
+			->setAttribute('placeholder', TRX_ITEM_FLEXIBLE_DELAY_DEFAULT);
 		$period_input = (new CTextBox('delay_flex['.$i.'][period]', $delay_flex['period']))
-			->setAttribute('placeholder', ZBX_DEFAULT_INTERVAL);
+			->setAttribute('placeholder', TRX_DEFAULT_INTERVAL);
 		$schedule_input = (new CTextBox('delay_flex['.$i.'][schedule]', ''))
-			->setAttribute('placeholder', ZBX_ITEM_SCHEDULING_DEFAULT)
+			->setAttribute('placeholder', TRX_ITEM_SCHEDULING_DEFAULT)
 			->setAttribute('style', 'display: none;');
 	}
 	else {
 		$delay_input = (new CTextBox('delay_flex['.$i.'][delay]', ''))
-			->setAttribute('placeholder', ZBX_ITEM_FLEXIBLE_DELAY_DEFAULT)
+			->setAttribute('placeholder', TRX_ITEM_FLEXIBLE_DELAY_DEFAULT)
 			->setAttribute('style', 'display: none;');
 		$period_input = (new CTextBox('delay_flex['.$i.'][period]', ''))
-			->setAttribute('placeholder', ZBX_DEFAULT_INTERVAL)
+			->setAttribute('placeholder', TRX_DEFAULT_INTERVAL)
 			->setAttribute('style', 'display: none;');
 		$schedule_input = (new CTextBox('delay_flex['.$i.'][schedule]', $delay_flex['schedule']))
-			->setAttribute('placeholder', ZBX_ITEM_SCHEDULING_DEFAULT);
+			->setAttribute('placeholder', TRX_ITEM_SCHEDULING_DEFAULT);
 	}
 
 	$button = (new CButton('delay_flex['.$i.'][remove]', _('Remove')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->addClass('element-table-remove');
 
 	$delayFlexTable->addRow([$type_input, [$delay_input, $schedule_input], $period_input, $button], 'form_row');
 }
 
 $delayFlexTable->addRow([(new CButton('interval_add', _('Add')))
-	->addClass(ZBX_STYLE_BTN_LINK)
+	->addClass(TRX_STYLE_BTN_LINK)
 	->addClass('element-table-add')
 ]);
 
 $form_list
 	->addRow(_('Custom intervals'),
 		(new CDiv($delayFlexTable))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;'),
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;'),
 		'row_flex_intervals'
 	)
 	->addRow((new CLabel(_('Keep lost resources period'), 'lifetime'))->setAsteriskMark(),
 		(new CTextBox('lifetime', $data['lifetime']))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow(
@@ -582,11 +582,11 @@ $form_list
 		'allow_traps_row'
 	)
 	->addRow(_('Allowed hosts'),
-		(new CTextBox('trapper_hosts', $data['trapper_hosts']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+		(new CTextBox('trapper_hosts', $data['trapper_hosts']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'row_trapper_hosts'
 	)
 	->addRow(_('Description'),
-		(new CTextArea('description', $data['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('description', $data['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('Enabled'),
 		(new CCheckBox('status', ITEM_STATUS_ACTIVE))->setChecked($data['status'] == ITEM_STATUS_ACTIVE)
@@ -606,11 +606,11 @@ $conditionFormList->addRow(_('Type of calculation'),
 			CONDITION_EVAL_TYPE_OR => _('Or'),
 			CONDITION_EVAL_TYPE_EXPRESSION => _('Custom expression')
 		]),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		(new CSpan(''))
 			->setId('expression'),
 		(new CTextBox('formula', $data['formula']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setId('formula')
 			->setAttribute('placeholder', 'A or (B and C) &hellip;')
 	],
@@ -651,42 +651,42 @@ foreach ($conditions as $i => $condition) {
 
 	// macro
 	$macro = (new CTextBox('conditions['.$i.'][macro]', $condition['macro'], false, 64))
-		->setWidth(ZBX_TEXTAREA_MACRO_WIDTH)
-		->addClass(ZBX_STYLE_UPPERCASE)
+		->setWidth(TRX_TEXTAREA_MACRO_WIDTH)
+		->addClass(TRX_STYLE_UPPERCASE)
 		->addClass('macro')
 		->setAttribute('placeholder', '{#MACRO}')
 		->setAttribute('data-formulaid', $condition['formulaid']);
 
 	// value
 	$value = (new CTextBox('conditions['.$i.'][value]', $condition['value'], false, 255))
-		->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+		->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 		->setAttribute('placeholder', _('regular expression'));
 
 	// delete button
 	$deleteButtonCell = [
 		(new CButton('conditions_'.$i.'_remove', _('Remove')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-remove')
 	];
 
 	$row = [$formulaId, $macro,
 		(new CComboBox('conditions['.$i.'][operator]', $condition['operator'], null, $operators))->addClass('operator'),
 		$value,
-		(new CCol($deleteButtonCell))->addClass(ZBX_STYLE_NOWRAP)
+		(new CCol($deleteButtonCell))->addClass(TRX_STYLE_NOWRAP)
 	];
 	$conditionTable->addRow($row, 'form_row');
 }
 
 $conditionTable->setFooter(new CCol(
 	(new CButton('macro_add', _('Add')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->addClass('element-table-add')
 ));
 
 $conditionFormList->addRow(_('Filters'),
 	(new CDiv($conditionTable))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 /*
@@ -696,7 +696,7 @@ $lld_macro_paths_form_list = new CFormList();
 
 $lld_macro_paths_table = (new CTable())
 	->setId('lld_macro_paths')
-	->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER)
+	->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER)
 	->addStyle('width: 100%;')
 	->setHeader([_('LLD macro'), _('JSONPath'), '']);
 
@@ -724,42 +724,42 @@ foreach ($lld_macro_paths as $i => $lld_macro_path) {
 		'readonly' => $templated,
 		'maxlength' => DB::getFieldLength('lld_macro_path', 'lld_macro')
 	]))
-		->setWidth(ZBX_TEXTAREA_MACRO_WIDTH)
-		->addClass(ZBX_STYLE_UPPERCASE)
+		->setWidth(TRX_TEXTAREA_MACRO_WIDTH)
+		->addClass(TRX_STYLE_UPPERCASE)
 		->setAttribute('placeholder', '{#MACRO}');
 
 	$path = (new CTextAreaFlexible('lld_macro_paths['.$i.'][path]', $lld_macro_path['path'], [
 		'readonly' => $templated,
 		'maxlength' => DB::getFieldLength('lld_macro_path', 'path')
 	]))
-		->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+		->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 		->setAttribute('placeholder', _('$.path.to.node'));
 
 	$remove = [
 		(new CButton('lld_macro_paths['.$i.'][remove]', _('Remove')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-remove')
 			->setEnabled(!$templated)
 	];
 
 	$lld_macro_paths_table->addRow([
-		(new CCol($lld_macro))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
-		(new CCol($path))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
-		(new CCol($remove))->addClass(ZBX_STYLE_NOWRAP)
+		(new CCol($lld_macro))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+		(new CCol($path))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+		(new CCol($remove))->addClass(TRX_STYLE_NOWRAP)
 	],'form_row');
 }
 
 $lld_macro_paths_table->setFooter((new CCol(
 	(new CButton('lld_macro_add', _('Add')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->addClass('element-table-add')
 		->setEnabled(!$templated)
 ))->setColSpan(3));
 
 $lld_macro_paths_form_list->addRow(_('LLD macros'),
 	(new CDiv($lld_macro_paths_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 // Append tabs to form.

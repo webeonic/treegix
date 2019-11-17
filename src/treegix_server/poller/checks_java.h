@@ -6,8 +6,8 @@
 #include "dbcache.h"
 #include "sysinfo.h"
 
-#define ZBX_JAVA_GATEWAY_REQUEST_INTERNAL	0
-#define ZBX_JAVA_GATEWAY_REQUEST_JMX		1
+#define TRX_JAVA_GATEWAY_REQUEST_INTERNAL	0
+#define TRX_JAVA_GATEWAY_REQUEST_JMX		1
 
 extern char	*CONFIG_SOURCE_IP;
 extern char	*CONFIG_JAVA_GATEWAY;

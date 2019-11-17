@@ -6,40 +6,40 @@ include dirname(__FILE__).'/js/monitoring.sysmaps.js.php';
 
 // create menu
 $menu = (new CList())
-	->addClass(ZBX_STYLE_OBJECT_GROUP)
+	->addClass(TRX_STYLE_OBJECT_GROUP)
 	->addItem([
 		_('Map element').':&nbsp;',
-		(new CButton('selementAdd', _('Add')))->addClass(ZBX_STYLE_BTN_LINK),
+		(new CButton('selementAdd', _('Add')))->addClass(TRX_STYLE_BTN_LINK),
 		'&nbsp;/&nbsp;',
-		(new CButton('selementRemove', _('Remove')))->addClass(ZBX_STYLE_BTN_LINK)
+		(new CButton('selementRemove', _('Remove')))->addClass(TRX_STYLE_BTN_LINK)
 	])
 	->addItem([
 		_('Shape').':&nbsp;',
-		(new CButton('shapeAdd', _('Add')))->addClass(ZBX_STYLE_BTN_LINK),
+		(new CButton('shapeAdd', _('Add')))->addClass(TRX_STYLE_BTN_LINK),
 		'&nbsp;/&nbsp;',
-		(new CButton('shapesRemove', _('Remove')))->addClass(ZBX_STYLE_BTN_LINK)
+		(new CButton('shapesRemove', _('Remove')))->addClass(TRX_STYLE_BTN_LINK)
 	])
 	->addItem([
 		_('Link').':&nbsp;',
-		(new CButton('linkAdd', _('Add')))->addClass(ZBX_STYLE_BTN_LINK),
+		(new CButton('linkAdd', _('Add')))->addClass(TRX_STYLE_BTN_LINK),
 		'&nbsp;/&nbsp;',
-		(new CButton('linkRemove', _('Remove')))->addClass(ZBX_STYLE_BTN_LINK)
+		(new CButton('linkRemove', _('Remove')))->addClass(TRX_STYLE_BTN_LINK)
 	])
 	->addItem([
 		_('Expand macros').':&nbsp;',
 		(new CButton('expand_macros',
 			($this->data['sysmap']['expand_macros'] == SYSMAP_EXPAND_MACROS_ON) ? _('On') : _('Off')
-		))->addClass(ZBX_STYLE_BTN_LINK)
+		))->addClass(TRX_STYLE_BTN_LINK)
 	])
 	->addItem([
 		_('Grid').':&nbsp;',
 		(new CButton('gridshow',
 			($data['sysmap']['grid_show'] == SYSMAP_GRID_SHOW_ON) ? _('Shown') : _('Hidden')
-		))->addClass(ZBX_STYLE_BTN_LINK),
+		))->addClass(TRX_STYLE_BTN_LINK),
 		'&nbsp;/&nbsp;',
 		(new CButton('gridautoalign',
 			($data['sysmap']['grid_align'] == SYSMAP_GRID_ALIGN_ON) ? _('On') : _('Off')
-		))->addClass(ZBX_STYLE_BTN_LINK)
+		))->addClass(TRX_STYLE_BTN_LINK)
 	])
 	->addItem(new CComboBox('gridsize', $data['sysmap']['grid_size'], null, [
 		20 => '20x20',
@@ -48,13 +48,13 @@ $menu = (new CList())
 		75 => '75x75',
 		100 => '100x100'
 	]))
-	->addItem((new CButton('gridalignall', _('Align map elements')))->addClass(ZBX_STYLE_BTN_LINK))
+	->addItem((new CButton('gridalignall', _('Align map elements')))->addClass(TRX_STYLE_BTN_LINK))
 	->addItem((new CSubmit('update', _('Update')))->setId('sysmap_update'));
 
-$container = (new CDiv())->setId(ZBX_STYLE_MAP_AREA);
+$container = (new CDiv())->setId(TRX_STYLE_MAP_AREA);
 
 // create elements
-zbx_add_post_js('TREEGIX.apps.map.run("'.ZBX_STYLE_MAP_AREA.'", '.CJs::encodeJson([
+zbx_add_post_js('TREEGIX.apps.map.run("'.TRX_STYLE_MAP_AREA.'", '.CJs::encodeJson([
 	'theme' => $data['theme'],
 	'sysmap' => $data['sysmap'],
 	'iconList' => $data['iconList'],
@@ -69,7 +69,7 @@ return (new CWidget())
 	->addItem(
 		(new CDiv(
 			(new CDiv())
-				->addClass(ZBX_STYLE_TABLE_FORMS_CONTAINER)
+				->addClass(TRX_STYLE_TABLE_FORMS_CONTAINER)
 				->addItem($container)
 		))->addClass('sysmap-scroll-container')
 	);

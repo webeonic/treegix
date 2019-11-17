@@ -10,10 +10,10 @@ class CConfigFile {
 	const CONFIG_FILE_PATH = '/conf/treegix.conf.php';
 
 	private static $supported_db_types = [
-		ZBX_DB_DB2 => true,
-		ZBX_DB_MYSQL => true,
-		ZBX_DB_ORACLE => true,
-		ZBX_DB_POSTGRESQL => true
+		TRX_DB_DB2 => true,
+		TRX_DB_MYSQL => true,
+		TRX_DB_ORACLE => true,
+		TRX_DB_POSTGRESQL => true
 	];
 
 	public $configFile = null;
@@ -96,14 +96,14 @@ class CConfigFile {
 			$this->config['DB']['SCHEMA'] = $DB['SCHEMA'];
 		}
 
-		if (isset($ZBX_SERVER)) {
-			$this->config['ZBX_SERVER'] = $ZBX_SERVER;
+		if (isset($TRX_SERVER)) {
+			$this->config['TRX_SERVER'] = $TRX_SERVER;
 		}
-		if (isset($ZBX_SERVER_PORT)) {
-			$this->config['ZBX_SERVER_PORT'] = $ZBX_SERVER_PORT;
+		if (isset($TRX_SERVER_PORT)) {
+			$this->config['TRX_SERVER_PORT'] = $TRX_SERVER_PORT;
 		}
-		if (isset($ZBX_SERVER_NAME)) {
-			$this->config['ZBX_SERVER_NAME'] = $ZBX_SERVER_NAME;
+		if (isset($TRX_SERVER_NAME)) {
+			$this->config['TRX_SERVER_NAME'] = $TRX_SERVER_NAME;
 		}
 
 		$this->makeGlobal();
@@ -112,12 +112,12 @@ class CConfigFile {
 	}
 
 	public function makeGlobal() {
-		global $DB, $ZBX_SERVER, $ZBX_SERVER_PORT, $ZBX_SERVER_NAME;
+		global $DB, $TRX_SERVER, $TRX_SERVER_PORT, $TRX_SERVER_NAME;
 
 		$DB = $this->config['DB'];
-		$ZBX_SERVER = $this->config['ZBX_SERVER'];
-		$ZBX_SERVER_PORT = $this->config['ZBX_SERVER_PORT'];
-		$ZBX_SERVER_NAME = $this->config['ZBX_SERVER_NAME'];
+		$TRX_SERVER = $this->config['TRX_SERVER'];
+		$TRX_SERVER_PORT = $this->config['TRX_SERVER_PORT'];
+		$TRX_SERVER_NAME = $this->config['TRX_SERVER_NAME'];
 	}
 
 	public function save() {
@@ -163,9 +163,9 @@ $DB[\'PASSWORD\'] = \''.addcslashes($this->config['DB']['PASSWORD'], "'\\").'\';
 // Schema name. Used for IBM DB2 and PostgreSQL.
 $DB[\'SCHEMA\'] = \''.addcslashes($this->config['DB']['SCHEMA'], "'\\").'\';
 
-$ZBX_SERVER      = \''.addcslashes($this->config['ZBX_SERVER'], "'\\").'\';
-$ZBX_SERVER_PORT = \''.addcslashes($this->config['ZBX_SERVER_PORT'], "'\\").'\';
-$ZBX_SERVER_NAME = \''.addcslashes($this->config['ZBX_SERVER_NAME'], "'\\").'\';
+$TRX_SERVER      = \''.addcslashes($this->config['TRX_SERVER'], "'\\").'\';
+$TRX_SERVER_PORT = \''.addcslashes($this->config['TRX_SERVER_PORT'], "'\\").'\';
+$TRX_SERVER_NAME = \''.addcslashes($this->config['TRX_SERVER_NAME'], "'\\").'\';
 
 $IMAGE_FORMAT_DEFAULT = IMAGE_FORMAT_PNG;
 ';
@@ -181,9 +181,9 @@ $IMAGE_FORMAT_DEFAULT = IMAGE_FORMAT_PNG;
 			'PASSWORD' => '',
 			'SCHEMA' => ''
 		];
-		$this->config['ZBX_SERVER'] = 'localhost';
-		$this->config['ZBX_SERVER_PORT'] = '10051';
-		$this->config['ZBX_SERVER_NAME'] = '';
+		$this->config['TRX_SERVER'] = 'localhost';
+		$this->config['TRX_SERVER_PORT'] = '10051';
+		$this->config['TRX_SERVER_NAME'] = '';
 	}
 
 	protected function check() {

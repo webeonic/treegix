@@ -24,7 +24,7 @@ abstract class CControllerUserUpdateGeneral extends CController {
 	 */
 	private static function hasInternalAuth($usrgrps) {
 		$config = select_config();
-		$system_gui_access = ($config['authentication_type'] == ZBX_AUTH_INTERNAL)
+		$system_gui_access = ($config['authentication_type'] == TRX_AUTH_INTERNAL)
 			? GROUP_GUI_ACCESS_INTERNAL
 			: GROUP_GUI_ACCESS_LDAP;
 

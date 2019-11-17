@@ -22,7 +22,7 @@ if (!hasRequest('form_refresh')) {
 $frmHost = (new CForm())
 	->setId('hostPrototypeForm')
 	->setName('hostPrototypeForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', getRequest('form', 1))
 	->addVar('parent_discoveryid', $discoveryRule['itemid'])
 	->addVar('tls_accept', $parentHost['tls_accept']);
@@ -38,7 +38,7 @@ if ($data['templates']) {
 }
 
 $hostTB = (new CTextBox('host', $hostPrototype['host'], (bool) $hostPrototype['templateid']))
-	->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	->setAttribute('maxlength', 128)
 	->setAriaRequired()
 	->setAttribute('autofocus', 'autofocus');
@@ -46,7 +46,7 @@ $hostList->addRow((new CLabel(_('Host name'), 'host'))->setAsteriskMark(), $host
 
 $name = ($hostPrototype['name'] != $hostPrototype['host']) ? $hostPrototype['name'] : '';
 $visiblenameTB = (new CTextBox('name', $name, (bool) $hostPrototype['templateid']))
-	->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	->setAttribute('maxlength', 128);
 $hostList->addRow(_('Visible name'), $visiblenameTB);
 
@@ -81,9 +81,9 @@ if ($parentHost['status'] != HOST_STATUS_TEMPLATE) {
 
 	$hostList->addRow(_('Agent interfaces'),
 		(new CDiv($ifTab))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setAttribute('data-type', 'agent')
-			->setWidth(ZBX_HOST_INTERFACE_WIDTH)
+			->setWidth(TRX_HOST_INTERFACE_WIDTH)
 	);
 
 	// SNMP interfaces
@@ -98,9 +98,9 @@ if ($parentHost['status'] != HOST_STATUS_TEMPLATE) {
 
 	$hostList->addRow(_('SNMP interfaces'),
 		(new CDiv($ifTab))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setAttribute('data-type', 'snmp')
-			->setWidth(ZBX_HOST_INTERFACE_WIDTH)
+			->setWidth(TRX_HOST_INTERFACE_WIDTH)
 	);
 
 	// JMX interfaces
@@ -115,9 +115,9 @@ if ($parentHost['status'] != HOST_STATUS_TEMPLATE) {
 
 	$hostList->addRow(_('JMX interfaces'),
 		(new CDiv($ifTab))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setAttribute('data-type', 'jmx')
-			->setWidth(ZBX_HOST_INTERFACE_WIDTH)
+			->setWidth(TRX_HOST_INTERFACE_WIDTH)
 	);
 
 	// IPMI interfaces
@@ -133,16 +133,16 @@ if ($parentHost['status'] != HOST_STATUS_TEMPLATE) {
 	$hostList->addRow(
 		_('IPMI interfaces'),
 		(new CDiv($ifTab))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setAttribute('data-type', 'ipmi')
-			->setWidth(ZBX_HOST_INTERFACE_WIDTH)
+			->setWidth(TRX_HOST_INTERFACE_WIDTH)
 	);
 
 	// proxy
 	$proxyTb = (new CTextBox('proxy_hostid',
 		$parentHost['proxy_hostid'] != 0 ? $this->data['proxy']['host'] : _('(no proxy)'), true
 	))
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH);
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH);
 	$hostList->addRow(_('Monitored by proxy'), $proxyTb);
 }
 
@@ -183,7 +183,7 @@ $groupList->addRow(
 			]
 		]
 	]))
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		->setAriaRequired()
 );
 
@@ -192,7 +192,7 @@ $customGroupTable = (new CTable())->setId('tbl_group_prototypes');
 
 // buttons
 $buttonColumn = (new CCol(
-	(new CButton('group_prototype_add', _('Add')))->addClass(ZBX_STYLE_BTN_LINK)
+	(new CButton('group_prototype_add', _('Add')))->addClass(TRX_STYLE_BTN_LINK)
 ))->setAttribute('colspan', 5);
 
 $buttonRow = (new CRow())
@@ -200,7 +200,7 @@ $buttonRow = (new CRow())
 	->addItem($buttonColumn);
 
 $customGroupTable->addRow($buttonRow);
-$groupList->addRow(_('Group prototypes'), (new CDiv($customGroupTable))->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR));
+$groupList->addRow(_('Group prototypes'), (new CDiv($customGroupTable))->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR));
 
 $divTabs->addTab('groupTab', _('Groups'), $groupList);
 
@@ -229,8 +229,8 @@ if ($hostPrototype['templateid']) {
 
 	$tmplList->addRow(_('Linked templates'),
 		(new CDiv($linkedTemplateTable))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 }
 else {
@@ -259,8 +259,8 @@ else {
 					->onClick('javascript: submitFormWithParam('.
 						'"'.$frmHost->getName().'", "unlink['.$template['templateid'].']", "1"'.
 					');')
-					->addClass(ZBX_STYLE_BTN_LINK)
-			))->addClass(ZBX_STYLE_NOWRAP)
+					->addClass(TRX_STYLE_BTN_LINK)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]);
 
 		$disableids[] = $template['templateid'];
@@ -278,13 +278,13 @@ else {
 				'multiselect' => 1,
 				'disableids' => $disableids
 			]).', null, this);')
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 	]);
 
 	$tmplList->addRow(_('Linked templates'),
 		(new CDiv($linkedTemplateTable))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 }
 
@@ -297,17 +297,17 @@ if ($parentHost['status'] != HOST_STATUS_TEMPLATE) {
 
 	$ipmiList->addRow(_('Authentication algorithm'),
 		(new CTextBox('ipmi_authtype', ipmiAuthTypes($parentHost['ipmi_authtype']), true))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	);
 	$ipmiList->addRow(_('Privilege level'),
 		(new CTextBox('ipmi_privilege', ipmiPrivileges($parentHost['ipmi_privilege']), true))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	);
 	$ipmiList->addRow(_('Username'),
-		(new CTextBox('ipmi_username', $parentHost['ipmi_username'], true))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+		(new CTextBox('ipmi_username', $parentHost['ipmi_username'], true))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	);
 	$ipmiList->addRow(_('Password'),
-		(new CTextBox('ipmi_password', $parentHost['ipmi_password'], true))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+		(new CTextBox('ipmi_password', $parentHost['ipmi_password'], true))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	);
 
 	$divTabs->addTab('ipmiTab', _('IPMI'), $ipmiList);
@@ -354,7 +354,7 @@ $encryption_form_list = (new CFormList('encryption'))
 	)
 	->addRow(_('Connections from host'),
 		(new CList())
-			->addClass(ZBX_STYLE_LIST_CHECK_RADIO)
+			->addClass(TRX_STYLE_LIST_CHECK_RADIO)
 			->addItem((new CCheckBox('tls_in_none'))
 				->setLabel(_('No encryption'))
 				->setAttribute('disabled', 'disabled')
@@ -370,22 +370,22 @@ $encryption_form_list = (new CFormList('encryption'))
 	)
 	->addRow(_('PSK identity'),
 		(new CTextBox('tls_psk_identity', $parentHost['tls_psk_identity'], false, 128))
-			->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+			->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			->setAttribute('disabled', 'disabled')
 	)
 	->addRow(_('PSK'),
 		(new CTextBox('tls_psk', $parentHost['tls_psk'], false, 512))
-			->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+			->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			->setAttribute('disabled', 'disabled')
 	)
 	->addRow(_('Issuer'),
 		(new CTextBox('tls_issuer', $parentHost['tls_issuer'], false, 1024))
-			->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+			->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			->setAttribute('disabled', 'disabled')
 	)
 	->addRow(_x('Subject', 'encryption certificate'),
 		(new CTextBox('tls_subject', $parentHost['tls_subject'], false, 1024))
-			->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+			->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			->setAttribute('disabled', 'disabled')
 	);
 

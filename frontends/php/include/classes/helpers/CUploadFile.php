@@ -107,9 +107,9 @@ class CUploadFile {
 	 * @throws Exception if image size is 1MB or greater.
 	 */
 	public function validateImageSize() {
-		if ($this->error === UPLOAD_ERR_INI_SIZE || (bccomp($this->size, ZBX_MAX_IMAGE_SIZE) == 1)) {
+		if ($this->error === UPLOAD_ERR_INI_SIZE || (bccomp($this->size, TRX_MAX_IMAGE_SIZE) == 1)) {
 			throw new Exception(_s('Image size must be less than %s.', convert_units([
-					'value' => ZBX_MAX_IMAGE_SIZE,
+					'value' => TRX_MAX_IMAGE_SIZE,
 					'units' => 'B'
 				])));
 		}

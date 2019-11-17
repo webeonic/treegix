@@ -59,7 +59,7 @@ class CControllerPopupMedia extends CController {
 			'sendto' => $this->getInput('sendto', ''),
 			'mediatypeid' => $this->getInput('mediatypeid', 0),
 			'active' => $this->getInput('active', MEDIA_STATUS_ACTIVE),
-			'period' => $this->getInput('period', ZBX_DEFAULT_INTERVAL),
+			'period' => $this->getInput('period', TRX_DEFAULT_INTERVAL),
 			'sendto_emails' => array_values($this->getInput('sendto_emails', ['']))
 		];
 

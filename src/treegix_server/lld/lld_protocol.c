@@ -91,7 +91,7 @@ void	zbx_lld_process_value(zbx_uint64_t itemid, const char *value, const zbx_tim
 	zbx_uint32_t		data_len;
 
 	/* each process has a permanent connection to manager */
-	if (0 == socket.fd && FAIL == zbx_ipc_socket_open(&socket, ZBX_IPC_SERVICE_LLD, SEC_PER_MIN, &errmsg))
+	if (0 == socket.fd && FAIL == zbx_ipc_socket_open(&socket, TRX_IPC_SERVICE_LLD, SEC_PER_MIN, &errmsg))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot connect to LLD manager service: %s", errmsg);
 		exit(EXIT_FAILURE);
@@ -99,7 +99,7 @@ void	zbx_lld_process_value(zbx_uint64_t itemid, const char *value, const zbx_tim
 
 	data_len = zbx_lld_serialize_item_value(&data, itemid, value, ts, meta, lastlogsize, mtime, error);
 
-	if (FAIL == zbx_ipc_socket_write(&socket, ZBX_IPC_LLD_REQUEST, data, data_len))
+	if (FAIL == zbx_ipc_socket_write(&socket, TRX_IPC_LLD_REQUEST, data, data_len))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot send data to LLD manager service");
 		exit(EXIT_FAILURE);
@@ -163,12 +163,12 @@ int	zbx_lld_get_queue_size(zbx_uint64_t *size, char **error)
 	zbx_ipc_socket_t	lld_socket;
 	int			ret = FAIL;
 
-	if (FAIL == zbx_ipc_socket_open(&lld_socket, ZBX_IPC_SERVICE_LLD, SEC_PER_MIN, error))
+	if (FAIL == zbx_ipc_socket_open(&lld_socket, TRX_IPC_SERVICE_LLD, SEC_PER_MIN, error))
 		return FAIL;
 
 	zbx_ipc_message_init(&message);
 
-	if (FAIL == zbx_ipc_socket_write(&lld_socket, ZBX_IPC_LLD_QUEUE, NULL, 0))
+	if (FAIL == zbx_ipc_socket_write(&lld_socket, TRX_IPC_LLD_QUEUE, NULL, 0))
 	{
 		*error = zbx_strdup(NULL, "cannot send queue request to LLD manager service");
 		goto out;

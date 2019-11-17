@@ -2,7 +2,7 @@
 
 
 jQuery(function($) {
-	var ZBX_STYLE_CLASS = 'multiselect-control',
+	var TRX_STYLE_CLASS = 'multiselect-control',
 		KEY = {
 			ARROW_DOWN: 40,
 			ARROW_LEFT: 37,
@@ -148,7 +148,7 @@ jQuery(function($) {
 		disable: function() {
 			return this.each(function() {
 				var $obj = $(this),
-					$wrapper = $obj.parent('.' + ZBX_STYLE_CLASS),
+					$wrapper = $obj.parent('.' + TRX_STYLE_CLASS),
 					ms = $obj.data('multiSelect');
 
 				if (ms.options.disabled === false) {
@@ -172,7 +172,7 @@ jQuery(function($) {
 		enable: function() {
 			return this.each(function() {
 				var $obj = $(this),
-					$wrapper = $obj.parent('.' + ZBX_STYLE_CLASS),
+					$wrapper = $obj.parent('.' + TRX_STYLE_CLASS),
 					ms = $obj.data('multiSelect');
 
 				if (ms.options.disabled === true) {
@@ -340,7 +340,7 @@ jQuery(function($) {
 
 			// add wrap
 			$obj.wrap($('<div>', {
-				'class': ZBX_STYLE_CLASS,
+				'class': TRX_STYLE_CLASS,
 				css: options.styles
 			}));
 

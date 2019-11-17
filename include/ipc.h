@@ -8,7 +8,7 @@
 
 #include "mutexs.h"
 
-#define ZBX_NONEXISTENT_SHMID		(-1)
+#define TRX_NONEXISTENT_SHMID		(-1)
 
 int	zbx_shm_create(size_t size);
 int	zbx_shm_destroy(int shmid);

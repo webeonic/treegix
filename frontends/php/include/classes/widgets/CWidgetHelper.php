@@ -21,7 +21,7 @@ class CWidgetHelper {
 	 *
 	 * @param string $dialogue_name
 	 * @param string $type
-	 * @param int $view_mode (ZBX_WIDGET_VIEW_MODE_NORMAL|ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER)
+	 * @param int $view_mode (TRX_WIDGET_VIEW_MODE_NORMAL|TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER)
 	 * @param array $known_widget_types
 	 * @param CWidgetFieldComboBox $field_rf_rate
 	 *
@@ -35,14 +35,14 @@ class CWidgetHelper {
 						->setLabel(_('Show header'))
 						->setLabelPosition(CCheckBox::LABEL_POSITION_LEFT)
 						->setId('show_header')
-						->setChecked($view_mode == ZBX_WIDGET_VIEW_MODE_NORMAL)
-					))->addClass(ZBX_STYLE_TABLE_FORMS_SECOND_COLUMN)
+						->setChecked($view_mode == TRX_WIDGET_VIEW_MODE_NORMAL)
+					))->addClass(TRX_STYLE_TABLE_FORMS_SECOND_COLUMN)
 				]
 			)
 			->addRow(_('Name'),
 				(new CTextBox('name', $dialogue_name))
 					->setAttribute('placeholder', _('default'))
-					->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			)
 			->addRow(self::getLabel($field_rf_rate), self::getComboBox($field_rf_rate));
 	}
@@ -106,7 +106,7 @@ class CWidgetHelper {
 	public static function getUrlBox($field) {
 		return (new CTextBox($field->getName(), $field->getValue()))
 			->setAriaRequired(self::isAriaRequired($field))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH);
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH);
 	}
 
 	/**
@@ -117,7 +117,7 @@ class CWidgetHelper {
 	public static function getRangeControl($field) {
 		return (new CRangeControl($field->getName(), (int) $field->getValue()))
 			->setEnabled(!($field->getFlags() & CWidgetField::FLAG_DISABLED))
-			->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+			->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 			->setStep($field->getStep())
 			->setMin($field->getMin())
 			->setMax($field->getMax());
@@ -147,7 +147,7 @@ class CWidgetHelper {
 			->setEnabled(!($field->getFlags() & CWidgetField::FLAG_DISABLED))
 			->setAttribute('placeholder', $field->getPlaceholder())
 			->setAriaRequired(self::isAriaRequired($field))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH);
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH);
 	}
 
 	/**
@@ -208,7 +208,7 @@ class CWidgetHelper {
 			],
 			'add_post_js' => false
 		]))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(self::isAriaRequired($field));
 	}
 
@@ -310,11 +310,11 @@ class CWidgetHelper {
 	public static function getSelectResource($field, $caption, $form_name) {
 		return [
 			(new CTextBox($field->getName().'_caption', $caption, true))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAriaRequired(self::isAriaRequired($field)),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CButton('select', _('Select')))
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 				->onClick('return PopUp("popup.generic",'.
 					CJs::encodeJson($field->getPopupOptions($form_name)).', null, this);')
 		];
@@ -329,7 +329,7 @@ class CWidgetHelper {
 	 */
 	public static function getEmptyComboBox($field) {
 		return (new CComboBox($field->getName(), [], $field->getAction(), []))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(self::isAriaRequired($field));
 	}
 
@@ -340,7 +340,7 @@ class CWidgetHelper {
 	 */
 	public static function getIntegerBox($field) {
 		return (new CNumericBox($field->getName(), $field->getValue(), $field->getMaxLength()))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 			->setAriaRequired(self::isAriaRequired($field));
 	}
 
@@ -399,10 +399,10 @@ class CWidgetHelper {
 	 * @return CList
 	 */
 	public static function getCheckBoxList($field, array $config) {
-		$checkbox_list = (new CList())->addClass(ZBX_STYLE_LIST_CHECK_RADIO);
+		$checkbox_list = (new CList())->addClass(TRX_STYLE_LIST_CHECK_RADIO);
 
 		if ($field->getOrientation() == CWidgetFieldCheckBoxList::ORIENTATION_HORIZONTAL) {
-			$checkbox_list->addClass(ZBX_STYLE_HOR_LIST);
+			$checkbox_list->addClass(TRX_STYLE_HOR_LIST);
 		}
 
 		foreach ($config as $key => $label) {
@@ -438,7 +438,7 @@ class CWidgetHelper {
 			$tags_table->addRow([
 				(new CTextBox($field->getName().'['.$i.'][tag]', $tag['tag']))
 					->setAttribute('placeholder', _('tag'))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAriaRequired(self::isAriaRequired($field))
 					->setEnabled($enabled),
 				(new CRadioButtonList($field->getName().'['.$i.'][operator]', (int) $tag['operator']))
@@ -448,15 +448,15 @@ class CWidgetHelper {
 					->setEnabled($enabled),
 				(new CTextBox($field->getName().'['.$i.'][value]', $tag['value']))
 					->setAttribute('placeholder', _('value'))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAriaRequired(self::isAriaRequired($field))
 					->setEnabled($enabled),
 				(new CCol(
 					(new CButton($field->getName().'['.$i.'][remove]', _('Remove')))
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 						->addClass('element-table-remove')
 						->setEnabled($enabled)
-				))->addClass(ZBX_STYLE_NOWRAP)
+				))->addClass(TRX_STYLE_NOWRAP)
 			], 'form_row');
 
 			$i++;
@@ -465,7 +465,7 @@ class CWidgetHelper {
 		$tags_table->addRow(
 			(new CCol(
 				(new CButton('tags_add', _('Add')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-add')
 					->setEnabled($enabled)
 			))->setColSpan(3)
@@ -485,7 +485,7 @@ class CWidgetHelper {
 		return (new CRow([
 			(new CTextBox($field->getName().'[#{rowNum}][tag]'))
 				->setAttribute('placeholder', _('tag'))
-				->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 				->setAriaRequired(self::isAriaRequired($field)),
 			(new CRadioButtonList($field->getName().'[#{rowNum}][operator]', TAG_OPERATOR_LIKE))
 				->addValue(_('Contains'), TAG_OPERATOR_LIKE)
@@ -493,13 +493,13 @@ class CWidgetHelper {
 				->setModern(true),
 			(new CTextBox($field->getName().'[#{rowNum}][value]'))
 				->setAttribute('placeholder', _('value'))
-				->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 				->setAriaRequired(self::isAriaRequired($field)),
 			(new CCol(
 				(new CButton($field->getName().'[#{rowNum}][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('form_row')
 			->toString();
@@ -524,12 +524,12 @@ class CWidgetHelper {
 	public static function getApplicationSelector($field) {
 		return [
 			(new CTextBox($field->getName(), $field->getValue()))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAriaRequired(self::isAriaRequired($field))
 				->addClass('simple-textbox'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CButton($field->getName().'_select', _('Select')))
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 				->onClick(
 					'return PopUp("popup.generic", '.CJs::encodeJson($field->getFilterParameters()).', null, this);'
 				)
@@ -565,7 +565,7 @@ class CWidgetHelper {
 			 */
 			(new CDiv([
 				(new CDiv())
-					->addClass(ZBX_STYLE_DRAG_ICON)
+					->addClass(TRX_STYLE_DRAG_ICON)
 					->addStyle('position: absolute; margin-left: -25px;'),
 				(new CDiv([
 					(new CDiv(
@@ -586,8 +586,8 @@ class CWidgetHelper {
 							->setEnabled(!($field->getFlags() & CWidgetField::FLAG_DISABLED))
 							->setAttribute('placeholder', _('host pattern'))
 							->setAriaRequired(self::isAriaRequired($field))
-							->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
-					))->addClass(ZBX_STYLE_COLUMN_50),
+							->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
+					))->addClass(TRX_STYLE_COLUMN_50),
 					(new CDiv(
 						(new CPatternSelect([
 							'name' => $field->getName().'['.$row_num.'][items][]',
@@ -611,33 +611,33 @@ class CWidgetHelper {
 							->setEnabled(!($field->getFlags() & CWidgetField::FLAG_DISABLED))
 							->setAttribute('placeholder', _('host pattern'))
 							->setAriaRequired(self::isAriaRequired($field))
-							->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
-					))->addClass(ZBX_STYLE_COLUMN_50)
+							->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
+					))->addClass(TRX_STYLE_COLUMN_50)
 				]))
-					->addClass(ZBX_STYLE_COLUMN_95)
-					->addClass(ZBX_STYLE_COLUMNS),
+					->addClass(TRX_STYLE_COLUMN_95)
+					->addClass(TRX_STYLE_COLUMNS),
 
 				(new CDiv(
 					(new CButton())
 						->setAttribute('title', _('Delete'))
-						->addClass(ZBX_STYLE_REMOVE_BTN)
+						->addClass(TRX_STYLE_REMOVE_BTN)
 				))
-					->addClass(ZBX_STYLE_COLUMN_5)
+					->addClass(TRX_STYLE_COLUMN_5)
 			]))
-				->addClass(ZBX_STYLE_COLUMNS),
+				->addClass(TRX_STYLE_COLUMNS),
 
 			// Selected override options.
 			(new CList($inputs))
-				->addClass(ZBX_STYLE_OVERRIDES_OPTIONS_LIST)
+				->addClass(TRX_STYLE_OVERRIDES_OPTIONS_LIST)
 				->addItem((new CButton(null, (new CSpan())
-							->addClass(ZBX_STYLE_PLUS_ICON)
+							->addClass(TRX_STYLE_PLUS_ICON)
 							->addStyle('margin-right: 0px;')
 					))
 						->setAttribute('data-row', $row_num)
-						->addClass(ZBX_STYLE_BTN_ALT)
+						->addClass(TRX_STYLE_BTN_ALT)
 				)
 		]))
-			->addClass(ZBX_STYLE_OVERRIDES_LIST_ITEM);
+			->addClass(TRX_STYLE_OVERRIDES_LIST_ITEM);
 	}
 
 	/**
@@ -661,7 +661,7 @@ class CWidgetHelper {
 	 */
 	public static function getGraphOverride($field, $form_name) {
 		$list = (new CList())
-			->addClass(ZBX_STYLE_OVERRIDES_LIST)
+			->addClass(TRX_STYLE_OVERRIDES_LIST)
 			->setId('overrides');
 
 		$values = $field->getValue();
@@ -681,8 +681,8 @@ class CWidgetHelper {
 		// Add 'Add' button under the list.
 		$list->addItem(
 			(new CDiv(
-				(new CButton('override_add', [(new CSpan())->addClass(ZBX_STYLE_PLUS_ICON), _('Add new override')]))
-					->addClass(ZBX_STYLE_BTN_ALT)
+				(new CButton('override_add', [(new CSpan())->addClass(TRX_STYLE_PLUS_ICON), _('Add new override')]))
+					->addClass(TRX_STYLE_BTN_ALT)
 					->setId('override-add')
 			)),
 			'overrides-foot'
@@ -809,8 +809,8 @@ class CWidgetHelper {
 		$scripts = [
 			// Define it as function to avoid redundancy.
 			'function initializeOverrides() {'.
-				'jQuery("#overrides .'.ZBX_STYLE_OVERRIDES_OPTIONS_LIST.'").overrides({'.
-					'add: ".'.ZBX_STYLE_BTN_ALT.'",'.
+				'jQuery("#overrides .'.TRX_STYLE_OVERRIDES_OPTIONS_LIST.'").overrides({'.
+					'add: ".'.TRX_STYLE_BTN_ALT.'",'.
 					'options: "input[type=hidden]",'.
 					'captions: '.CJs::encodeJson(self::getGraphOverrideOptionNames()).','.
 					'makeName: function(option, row_id) {'.
@@ -821,8 +821,8 @@ class CWidgetHelper {
 							'/.*\[('.implode('|', CWidgetFieldGraphOverride::getOverrideOptions()).')\]/'.
 						')[1];'.
 					'},'.
-					'override: ".'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'",'.
-					'overridesList: ".'.ZBX_STYLE_OVERRIDES_LIST.'",'.
+					'override: ".'.TRX_STYLE_OVERRIDES_LIST_ITEM.'",'.
+					'overridesList: ".'.TRX_STYLE_OVERRIDES_LIST.'",'.
 					'onUpdate: onGraphConfigChange,'.
 					'menu: '.CJs::encodeJson(self::getGraphOverrideMenu()).
 				'});'.
@@ -833,9 +833,9 @@ class CWidgetHelper {
 				'.dynamicRows({'.
 					'template: "#overrides-row",'.
 					'beforeRow: ".overrides-foot",'.
-					'remove: ".'.ZBX_STYLE_REMOVE_BTN.'",'.
+					'remove: ".'.TRX_STYLE_REMOVE_BTN.'",'.
 					'add: "#override-add",'.
-					'row: ".'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'"'.
+					'row: ".'.TRX_STYLE_OVERRIDES_LIST_ITEM.'"'.
 				'})'.
 				'.bind("afteradd.dynamicRows", function(event, options) {'.
 					'var container = jQuery(".overlay-dialogue-body");'.
@@ -844,17 +844,17 @@ class CWidgetHelper {
 					'jQuery(".multiselect", jQuery("#overrides")).each(function() {'.
 						'jQuery(this).multiSelect(jQuery(this).data("params"));'.
 					'});'.
-					'updateVariableOrder(jQuery("#overrides"), ".'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'", "or");'.
+					'updateVariableOrder(jQuery("#overrides"), ".'.TRX_STYLE_OVERRIDES_LIST_ITEM.'", "or");'.
 					'onGraphConfigChange();'.
 				'})'.
 				'.bind("afterremove.dynamicRows", function(event, options) {'.
-					'updateVariableOrder(jQuery("#overrides"), ".'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'", "or");'.
+					'updateVariableOrder(jQuery("#overrides"), ".'.TRX_STYLE_OVERRIDES_LIST_ITEM.'", "or");'.
 					'onGraphConfigChange();'.
 				'})'.
 				'.bind("tableupdate.dynamicRows", function(event, options) {'.
-					'updateVariableOrder(jQuery("#overrides"), ".'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'", "or");'.
+					'updateVariableOrder(jQuery("#overrides"), ".'.TRX_STYLE_OVERRIDES_LIST_ITEM.'", "or");'.
 					'initializeOverrides();'.
-					'if (jQuery("#overrides .'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'").length > 1) {'.
+					'if (jQuery("#overrides .'.TRX_STYLE_OVERRIDES_LIST_ITEM.'").length > 1) {'.
 						'jQuery("#overrides .drag-icon").removeClass("disabled");'.
 						'jQuery("#overrides").sortable("enable");'.
 					'}'.
@@ -873,11 +873,11 @@ class CWidgetHelper {
 			'});',
 
 			// Make overrides sortable.
-			'if (jQuery("#overrides .'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'").length < 2) {'.
+			'if (jQuery("#overrides .'.TRX_STYLE_OVERRIDES_LIST_ITEM.'").length < 2) {'.
 				'jQuery("#overrides .drag-icon").addClass("disabled");'.
 			'}'.
 			'jQuery("#overrides").sortable({'.
-				'items: ".'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'",'.
+				'items: ".'.TRX_STYLE_OVERRIDES_LIST_ITEM.'",'.
 				'containment: "parent",'.
 				'handle: ".drag-icon",'.
 				'tolerance: "pointer",'.
@@ -886,14 +886,14 @@ class CWidgetHelper {
 				'opacity: 0.6,'.
 				'axis: "y",'.
 				'disabled: function() {'.
-					'return jQuery("#overrides .'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'").length < 2;'.
+					'return jQuery("#overrides .'.TRX_STYLE_OVERRIDES_LIST_ITEM.'").length < 2;'.
 				'}(),'.
 				'start: function() {'. // Workaround to fix wrong scrolling at initial sort.
 					'jQuery(this).sortable("refreshPositions");'.
 				'},'.
 				'stop: onGraphConfigChange,'.
 				'update: function() {'.
-					'updateVariableOrder(jQuery("#overrides"), ".'.ZBX_STYLE_OVERRIDES_LIST_ITEM.'", "or");'.
+					'updateVariableOrder(jQuery("#overrides"), ".'.TRX_STYLE_OVERRIDES_LIST_ITEM.'", "or");'.
 				'}'.
 			'});'
 		];
@@ -919,12 +919,12 @@ class CWidgetHelper {
 			// Accordion head - data set selection fields and tools.
 			(new CDiv([
 				(new CDiv())
-					->addClass(ZBX_STYLE_DRAG_ICON)
+					->addClass(TRX_STYLE_DRAG_ICON)
 					->addStyle('position: absolute; margin-left: -25px;'),
 				(new CDiv([
 					(new CDiv([
 						(new CButton())
-							->addClass(ZBX_STYLE_COLOR_PREVIEW_BOX)
+							->addClass(TRX_STYLE_COLOR_PREVIEW_BOX)
 							->addStyle('background-color: #'.$value['color'].';')
 							->setAttribute('title', $is_opened ? _('Collapse') : _('Expand')),
 						(new CPatternSelect([
@@ -940,8 +940,8 @@ class CWidgetHelper {
 								]
 							],
 							'add_post_js' => false
-						]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
-					]))->addClass(ZBX_STYLE_COLUMN_50),
+						]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
+					]))->addClass(TRX_STYLE_COLUMN_50),
 					(new CDiv(
 						(new CPatternSelect([
 							'name' => $field_name.'['.$row_num.'][items][]',
@@ -960,19 +960,19 @@ class CWidgetHelper {
 								]
 							],
 							'add_post_js' => false
-						]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
-					))->addClass(ZBX_STYLE_COLUMN_50),
+						]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
+					))->addClass(TRX_STYLE_COLUMN_50),
 				]))
-					->addClass(ZBX_STYLE_COLUMN_95)
-					->addClass(ZBX_STYLE_COLUMNS),
+					->addClass(TRX_STYLE_COLUMN_95)
+					->addClass(TRX_STYLE_COLUMNS),
 				(new CDiv([
 					(new CButton())
 						->setAttribute('title', _('Delete'))
-						->addClass(ZBX_STYLE_REMOVE_BTN)
-				]))->addClass(ZBX_STYLE_COLUMN_5)
+						->addClass(TRX_STYLE_REMOVE_BTN)
+				]))->addClass(TRX_STYLE_COLUMN_5)
 			]))
-				->addClass(ZBX_STYLE_LIST_ACCORDION_ITEM_HEAD)
-				->addClass(ZBX_STYLE_COLUMNS),
+				->addClass(TRX_STYLE_LIST_ACCORDION_ITEM_HEAD)
+				->addClass(TRX_STYLE_COLUMNS),
 
 			// Accordion body - data set configuration options.
 			(new CDiv(
@@ -996,7 +996,7 @@ class CWidgetHelper {
 							->addRow(_('Width'),
 								(new CRangeControl($field_name.'['.$row_num.'][width]', (int) $value['width']))
 									->setEnabled(!in_array($value['type'], [SVG_GRAPH_TYPE_POINTS, SVG_GRAPH_TYPE_BAR]))
-									->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+									->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 									->setStep(1)
 									->setMin(0)
 									->setMax(10)
@@ -1004,7 +1004,7 @@ class CWidgetHelper {
 							->addRow(_('Point size'),
 								(new CRangeControl($field_name.'['.$row_num.'][pointsize]', (int) $value['pointsize']))
 									->setEnabled($value['type'] == SVG_GRAPH_TYPE_POINTS)
-									->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+									->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 									->setStep(1)
 									->setMin(1)
 									->setMax(10)
@@ -1013,7 +1013,7 @@ class CWidgetHelper {
 								(new CRangeControl($field_name.'['.$row_num.'][transparency]',
 										(int) $value['transparency'])
 									)
-									->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+									->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 									->setStep(1)
 									->setMin(0)
 									->setMax(10)
@@ -1021,14 +1021,14 @@ class CWidgetHelper {
 							->addRow(_('Fill'),
 								(new CRangeControl($field_name.'['.$row_num.'][fill]', (int) $value['fill']))
 									->setEnabled(!in_array($value['type'], [SVG_GRAPH_TYPE_POINTS, SVG_GRAPH_TYPE_BAR]))
-									->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+									->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 									->setStep(1)
 									->setMin(0)
 									->setMax(10)
 							)
 						)
 					)
-						->addClass(ZBX_STYLE_COLUMN_50),
+						->addClass(TRX_STYLE_COLUMN_50),
 
 					// Right column fields.
 					(new CDiv(
@@ -1056,7 +1056,7 @@ class CWidgetHelper {
 							->addRow(_('Time shift'),
 								(new CTextBox($field_name.'['.$row_num.'][timeshift]', $value['timeshift']))
 									->setAttribute('placeholder', _('none'))
-									->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+									->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 							)
 							->addRow(_('Aggregation function'),
 								(new CComboBox(
@@ -1073,7 +1073,7 @@ class CWidgetHelper {
 										GRAPH_AGGREGATE_LAST => graph_item_aggr_fnc2str(GRAPH_AGGREGATE_LAST)
 									]
 								))
-									->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+									->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 									->onChange('changeDataSetAggregateFunction(this);')
 							)
 							->addRow(_('Aggregation interval'),
@@ -1083,7 +1083,7 @@ class CWidgetHelper {
 								))
 									->setEnabled($value['aggregate_function'] != GRAPH_AGGREGATE_NONE)
 									->setAttribute('placeholder', GRAPH_AGGREGATE_DEFAULT_INTERVAL)
-									->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+									->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 							)
 							->addRow(_('Aggregate'),
 								(new CRadioButtonList(
@@ -1096,16 +1096,16 @@ class CWidgetHelper {
 									->setModern(true)
 							)
 					))
-						->addClass(ZBX_STYLE_COLUMN_50),
+						->addClass(TRX_STYLE_COLUMN_50),
 				]))
-					->addClass(ZBX_STYLE_COLUMNS)
-					->addClass(ZBX_STYLE_COLUMN_95)
+					->addClass(TRX_STYLE_COLUMNS)
+					->addClass(TRX_STYLE_COLUMN_95)
 			))
-				->addClass(ZBX_STYLE_LIST_ACCORDION_ITEM_BODY)
-				->addClass(ZBX_STYLE_COLUMNS)
+				->addClass(TRX_STYLE_LIST_ACCORDION_ITEM_BODY)
+				->addClass(TRX_STYLE_COLUMNS)
 		]))
-			->addClass(ZBX_STYLE_LIST_ACCORDION_ITEM)
-			->addClass($is_opened ? ZBX_STYLE_LIST_ACCORDION_ITEM_OPENED : ZBX_STYLE_LIST_ACCORDION_ITEM_CLOSED);
+			->addClass(TRX_STYLE_LIST_ACCORDION_ITEM)
+			->addClass($is_opened ? TRX_STYLE_LIST_ACCORDION_ITEM_OPENED : TRX_STYLE_LIST_ACCORDION_ITEM_CLOSED);
 	}
 
 	/**
@@ -1129,7 +1129,7 @@ class CWidgetHelper {
 	 */
 	public static function getGraphDataSet($field, $form_name) {
 		$list = (new CList())
-			->addClass(ZBX_STYLE_LIST_VERTICAL_ACCORDION)
+			->addClass(TRX_STYLE_LIST_VERTICAL_ACCORDION)
 			->setId('data_sets');
 
 		$values = $field->getValue();
@@ -1145,11 +1145,11 @@ class CWidgetHelper {
 		// Add 'Add' button under accordion.
 		$list->addItem(
 			(new CDiv(
-				(new CButton('data_sets_add', [(new CSpan())->addClass(ZBX_STYLE_PLUS_ICON), _('Add new data set')]))
-					->addClass(ZBX_STYLE_BTN_ALT)
+				(new CButton('data_sets_add', [(new CSpan())->addClass(TRX_STYLE_PLUS_ICON), _('Add new data set')]))
+					->addClass(TRX_STYLE_BTN_ALT)
 					->setId('dataset-add')
 			)),
-			ZBX_STYLE_LIST_ACCORDION_FOOT
+			TRX_STYLE_LIST_ACCORDION_FOOT
 		);
 
 		return $list;
@@ -1207,10 +1207,10 @@ class CWidgetHelper {
 			'jQuery("#data_sets")'.
 				'.dynamicRows({'.
 					'template: "#dataset-row",'.
-					'beforeRow: ".'.ZBX_STYLE_LIST_ACCORDION_FOOT.'",'.
-					'remove: ".'.ZBX_STYLE_REMOVE_BTN.'",'.
+					'beforeRow: ".'.TRX_STYLE_LIST_ACCORDION_FOOT.'",'.
+					'remove: ".'.TRX_STYLE_REMOVE_BTN.'",'.
 					'add: "#dataset-add",'.
-					'row: ".'.ZBX_STYLE_LIST_ACCORDION_ITEM.'",'.
+					'row: ".'.TRX_STYLE_LIST_ACCORDION_ITEM.'",'.
 					'dataCallback: function(data) {'.
 						'data.color = function(num) {'.
 							'var palete = '.CWidgetFieldGraphDataSet::DEFAULT_COLOR_PALETE.';'.
@@ -1227,24 +1227,24 @@ class CWidgetHelper {
 					'container.scrollTop(container[0].scrollHeight);'.
 
 					'jQuery(".input-color-picker input").colorpicker({onUpdate: function(color) {'.
-						'var ds = jQuery(this).closest(".'.ZBX_STYLE_LIST_ACCORDION_ITEM.'");'.
-						'jQuery(".'.ZBX_STYLE_COLOR_PREVIEW_BOX.'", ds).css("background-color", "#"+color);'.
+						'var ds = jQuery(this).closest(".'.TRX_STYLE_LIST_ACCORDION_ITEM.'");'.
+						'jQuery(".'.TRX_STYLE_COLOR_PREVIEW_BOX.'", ds).css("background-color", "#"+color);'.
 					'}, appendTo: "#overlay_dialogue"});'.
 
 					'jQuery(".multiselect", jQuery("#data_sets")).each(function() {'.
 						'jQuery(this).multiSelect(jQuery(this).data("params"));'.
 					'});'.
-					'updateVariableOrder(jQuery("#data_sets"), ".'.ZBX_STYLE_LIST_ACCORDION_ITEM.'", "ds");'.
+					'updateVariableOrder(jQuery("#data_sets"), ".'.TRX_STYLE_LIST_ACCORDION_ITEM.'", "ds");'.
 					'onGraphConfigChange();'.
 				'})'.
 				'.bind("afterremove.dynamicRows", function(event, options) {'.
-					'updateVariableOrder(jQuery("#data_sets"), ".'.ZBX_STYLE_LIST_ACCORDION_ITEM.'", "ds");'.
+					'updateVariableOrder(jQuery("#data_sets"), ".'.TRX_STYLE_LIST_ACCORDION_ITEM.'", "ds");'.
 					'onGraphConfigChange();'.
 				'})'.
 				'.bind("tableupdate.dynamicRows", function(event, options) {'.
-					'updateVariableOrder(jQuery("#data_sets"), ".'.ZBX_STYLE_LIST_ACCORDION_ITEM.'", "ds");'.
-					'jQuery(".'.CRangeControl::ZBX_STYLE_CLASS.'[data-options]").rangeControl();'.
-					'if (jQuery("#data_sets .'.ZBX_STYLE_LIST_ACCORDION_ITEM.'").length > 1) {'.
+					'updateVariableOrder(jQuery("#data_sets"), ".'.TRX_STYLE_LIST_ACCORDION_ITEM.'", "ds");'.
+					'jQuery(".'.CRangeControl::TRX_STYLE_CLASS.'[data-options]").rangeControl();'.
+					'if (jQuery("#data_sets .'.TRX_STYLE_LIST_ACCORDION_ITEM.'").length > 1) {'.
 						'jQuery("#data_sets .drag-icon").removeClass("disabled");'.
 						'jQuery("#data_sets").sortable("enable");'.
 					'}'.
@@ -1256,18 +1256,18 @@ class CWidgetHelper {
 
 			// Intialize vertical accordion.
 			'jQuery("#data_sets").zbx_vertical_accordion({'.
-				'handler: ".'.ZBX_STYLE_COLOR_PREVIEW_BOX.'"'.
+				'handler: ".'.TRX_STYLE_COLOR_PREVIEW_BOX.'"'.
 			'});',
 
 			// Initialize rangeControl UI elements.
-			'jQuery(".'.CRangeControl::ZBX_STYLE_CLASS.'", jQuery("#data_sets")).rangeControl();',
+			'jQuery(".'.CRangeControl::TRX_STYLE_CLASS.'", jQuery("#data_sets")).rangeControl();',
 
 			// Expand dataset when click in pattern fields.
 			'jQuery("#data_sets").on("click", "'.implode(', ', [
-				'.'.ZBX_STYLE_LIST_ACCORDION_ITEM_CLOSED.' .'.CPatternSelect::ZBX_STYLE_CLASS,
-				'.'.ZBX_STYLE_LIST_ACCORDION_ITEM_CLOSED.' .'.ZBX_STYLE_BTN_GREY
+				'.'.TRX_STYLE_LIST_ACCORDION_ITEM_CLOSED.' .'.CPatternSelect::TRX_STYLE_CLASS,
+				'.'.TRX_STYLE_LIST_ACCORDION_ITEM_CLOSED.' .'.TRX_STYLE_BTN_GREY
 			]).'", function() {'.
-				'var index = jQuery(this).closest(".'.ZBX_STYLE_LIST_ACCORDION_ITEM.'").index();'.
+				'var index = jQuery(this).closest(".'.TRX_STYLE_LIST_ACCORDION_ITEM.'").index();'.
 				'jQuery("#data_sets").zbx_vertical_accordion("expandNth", index);'.
 			'});',
 
@@ -1278,16 +1278,16 @@ class CWidgetHelper {
 
 			// Initialize color-picker UI elements.
 			'jQuery(".input-color-picker input").colorpicker({onUpdate: function(color){'.
-				'var ds = jQuery(this).closest(".'.ZBX_STYLE_LIST_ACCORDION_ITEM.'");'.
-				'jQuery(".'.ZBX_STYLE_COLOR_PREVIEW_BOX.'", ds).css("background-color", "#"+color);'.
+				'var ds = jQuery(this).closest(".'.TRX_STYLE_LIST_ACCORDION_ITEM.'");'.
+				'jQuery(".'.TRX_STYLE_COLOR_PREVIEW_BOX.'", ds).css("background-color", "#"+color);'.
 			'}, appendTo: "#overlay_dialogue"});',
 
 			// Initialize sortability.
-			'if (jQuery("#data_sets .'.ZBX_STYLE_LIST_ACCORDION_ITEM.'").length < 2) {'.
+			'if (jQuery("#data_sets .'.TRX_STYLE_LIST_ACCORDION_ITEM.'").length < 2) {'.
 				'jQuery("#data_sets .drag-icon").addClass("disabled");'.
 			'}'.
 			'jQuery("#data_sets").sortable({'.
-				'items: ".'.ZBX_STYLE_LIST_ACCORDION_ITEM.'",'.
+				'items: ".'.TRX_STYLE_LIST_ACCORDION_ITEM.'",'.
 				'containment: "parent",'.
 				'handle: ".drag-icon",'.
 				'tolerance: "pointer",'.
@@ -1296,14 +1296,14 @@ class CWidgetHelper {
 				'opacity: 0.6,'.
 				'axis: "y",'.
 				'disabled: function() {'.
-					'return jQuery("#data_sets .'.ZBX_STYLE_LIST_ACCORDION_ITEM.'").length < 2;'.
+					'return jQuery("#data_sets .'.TRX_STYLE_LIST_ACCORDION_ITEM.'").length < 2;'.
 				'}(),'.
 				'start: function() {'. // Workaround to fix wrong scrolling at initial sort.
 					'jQuery(this).sortable("refreshPositions");'.
 				'},'.
 				'stop: onGraphConfigChange,'.
 				'update: function() {'.
-					'updateVariableOrder(jQuery("#data_sets"), ".'.ZBX_STYLE_LIST_ACCORDION_ITEM.'", "ds");'.
+					'updateVariableOrder(jQuery("#data_sets"), ".'.TRX_STYLE_LIST_ACCORDION_ITEM.'", "ds");'.
 				'}'.
 			'});'
 		];

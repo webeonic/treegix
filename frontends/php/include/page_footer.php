@@ -14,7 +14,7 @@ if (!defined('PAGE_HEADER_LOADED')) {
 }
 
 // last page
-if (!defined('ZBX_PAGE_NO_MENU')) {
+if (!defined('TRX_PAGE_NO_MENU')) {
 	CProfile::update('web.paging.lastpage', $page['file'], PROFILE_TYPE_STR);
 }
 

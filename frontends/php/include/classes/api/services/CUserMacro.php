@@ -246,7 +246,7 @@ class CUserMacro extends CApiService {
 	 */
 	private function validateCreateGlobal(array &$globalmacros) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['macro']], 'fields' => [
@@ -255,7 +255,7 @@ class CUserMacro extends CApiService {
 			'description' =>	['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('globalmacro', 'description')]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $globalmacros, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$this->checkDuplicates(zbx_objectValues($globalmacros, 'macro'));
@@ -331,7 +331,7 @@ class CUserMacro extends CApiService {
 	 */
 	private function validateUpdateGlobal(array &$globalmacros, array &$db_globalmacros = null) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['globalmacroid'], ['macro']], 'fields' => [
@@ -341,7 +341,7 @@ class CUserMacro extends CApiService {
 			'description' =>	['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('globalmacro', 'description')]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $globalmacros, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_globalmacros = DB::select('globalmacro', [
@@ -354,7 +354,7 @@ class CUserMacro extends CApiService {
 
 		foreach ($globalmacros as $globalmacro) {
 			if (!array_key_exists($globalmacro['globalmacroid'], $db_globalmacros)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -397,7 +397,7 @@ class CUserMacro extends CApiService {
 			$macro = $this->trimMacro($macro);
 
 			if (array_key_exists($macro, $uniq_macros)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Macro "%1$s" already exists.', $macro_orig));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Macro "%1$s" already exists.', $macro_orig));
 			}
 			$uniq_macros[$macro] = true;
 		}
@@ -425,12 +425,12 @@ class CUserMacro extends CApiService {
 	 */
 	private function validateDeleteGlobal(array &$globalmacroids, array &$db_globalmacros = null) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $globalmacroids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_globalmacros = DB::select('globalmacro', [
@@ -441,7 +441,7 @@ class CUserMacro extends CApiService {
 
 		foreach ($globalmacroids as $globalmacroid) {
 			if (!array_key_exists($globalmacroid, $db_globalmacros)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -504,7 +504,7 @@ class CUserMacro extends CApiService {
 			$missing_keys = array_diff($required_fields, array_keys($hostmacro));
 
 			if ($missing_keys) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('User macro missing parameters: %1$s', implode(', ', $missing_keys))
 				);
 			}
@@ -582,7 +582,7 @@ class CUserMacro extends CApiService {
 	 */
 	protected function validateDelete(array $hostmacroids) {
 		if (!$hostmacroids) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$db_hostmacros = API::getApiService()->select('hostmacro', [
@@ -688,7 +688,7 @@ class CUserMacro extends CApiService {
 		$missing_keys = array_diff(['macro'], array_keys($macro));
 
 		if ($missing_keys) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('User macro missing parameters: %1$s', implode(', ', $missing_keys))
 			);
 		}
@@ -696,7 +696,7 @@ class CUserMacro extends CApiService {
 		$user_macro_parser = new CUserMacroParser();
 
 		if ($user_macro_parser->parse($macro['macro']) != CParser::PARSE_SUCCESS) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Invalid macro "%1$s": %2$s.', $macro['macro'], $user_macro_parser->getError())
 			);
 		}
@@ -711,11 +711,11 @@ class CUserMacro extends CApiService {
 	 */
 	protected function checkHostId(array $hostmacro) {
 		if (!array_key_exists('hostid', $hostmacro) || zbx_empty($hostmacro['hostid'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('No host given for macro "%1$s".', $hostmacro['macro']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('No host given for macro "%1$s".', $hostmacro['macro']));
 		}
 
 		if (!is_numeric($hostmacro['hostid'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Invalid hostid for macro "%1$s".', $hostmacro['macro']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Invalid hostid for macro "%1$s".', $hostmacro['macro']));
 		}
 	}
 
@@ -747,7 +747,7 @@ class CUserMacro extends CApiService {
 			]);
 
 			if ($count != count($hostids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -784,7 +784,7 @@ class CUserMacro extends CApiService {
 			 */
 			if (array_key_exists($hostid, $existing_macros) && array_key_exists($macro_name, $existing_macros[$hostid])
 					&& in_array($context, $existing_macros[$hostid][$macro_name], true)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Macro "%1$s" is not unique.', $macro['macro']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Macro "%1$s" is not unique.', $macro['macro']));
 			}
 
 			$existing_macros[$hostid][$macro_name][] = $context;
@@ -867,7 +867,7 @@ class CUserMacro extends CApiService {
 							'hostids' => $hostmacro['hostid']
 						]);
 
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Macro "%1$s" already exists on "%2$s".', $hostmacro['macro'], $hosts[0]['name'])
 						);
 					}
@@ -890,7 +890,7 @@ class CUserMacro extends CApiService {
 
 		foreach ($hostmacroids as $hostmacroid) {
 			if (!array_key_exists($hostmacroid, $db_hostmacros)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Macro with hostmacroid "%1$s" does not exist.', $hostmacroid)
 				);
 			}

@@ -3,7 +3,7 @@
 
 
 // indicator of sort field
-$sort_div = (new CSpan())->addClass(ZBX_STYLE_ARROW_UP);
+$sort_div = (new CSpan())->addClass(TRX_STYLE_ARROW_UP);
 
 $table = (new CTableInfo())
 	->setHeader([[_('Host group'), $sort_div], _('Ok'), _('Failed'), _('Unknown')])
@@ -19,9 +19,9 @@ foreach ($data['groups'] as $group) {
 
 	$table->addRow([
 		new CLink($group['name'], $url->getUrl()),
-		($group['ok'] != 0) ? (new CSpan($group['ok']))->addClass(ZBX_STYLE_GREEN) : '',
-		($group['failed'] != 0) ? (new CSpan($group['failed']))->addClass(ZBX_STYLE_RED) : '',
-		($group['unknown'] != 0) ? (new CSpan($group['unknown']))->addClass(ZBX_STYLE_GREY) : ''
+		($group['ok'] != 0) ? (new CSpan($group['ok']))->addClass(TRX_STYLE_GREEN) : '',
+		($group['failed'] != 0) ? (new CSpan($group['failed']))->addClass(TRX_STYLE_RED) : '',
+		($group['unknown'] != 0) ? (new CSpan($group['unknown']))->addClass(TRX_STYLE_GREY) : ''
 	]);
 }
 

@@ -177,7 +177,7 @@ class CProfiler {
 			$sql = [
 				'SQL ('.$time.'): ',
 				(new CSpan($query[1]))
-					->addClass(substr($query[1], 0, 6) === 'SELECT' ? ZBX_STYLE_GREEN : ZBX_STYLE_BLUE),
+					->addClass(substr($query[1], 0, 6) === 'SELECT' ? TRX_STYLE_GREEN : TRX_STYLE_BLUE),
 				BR()
 			];
 
@@ -199,10 +199,10 @@ class CProfiler {
 			$record = [
 				'Elasticsearch ('.$time.'): ',
 				$query[1].' ',
-				(new CSpan($query[2]))->addClass(ZBX_STYLE_BLUE),
+				(new CSpan($query[2]))->addClass(TRX_STYLE_BLUE),
 				BR(),
 				'Request: ',
-				(new CSpan($query[3]))->addClass(ZBX_STYLE_GREEN),
+				(new CSpan($query[3]))->addClass(TRX_STYLE_GREEN),
 				BR()
 			];
 
@@ -217,7 +217,7 @@ class CProfiler {
 		}
 
 		return (new CPre())
-			->addClass(ZBX_STYLE_DEBUG_OUTPUT)
+			->addClass(TRX_STYLE_DEBUG_OUTPUT)
 			->setAttribute('name', 'zbx_debug_info')
 			->addItem($debug);
 	}

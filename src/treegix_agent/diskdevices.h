@@ -31,25 +31,25 @@ typedef struct c_single_diskdevice_data
 	zbx_uint64_t	w_sect[MAX_COLLECTOR_HISTORY];
 	zbx_uint64_t	w_oper[MAX_COLLECTOR_HISTORY];
 	zbx_uint64_t	w_byte[MAX_COLLECTOR_HISTORY];
-	double		r_sps[ZBX_AVG_COUNT];
-	double		r_ops[ZBX_AVG_COUNT];
-	double		r_bps[ZBX_AVG_COUNT];
-	double		w_sps[ZBX_AVG_COUNT];
-	double		w_ops[ZBX_AVG_COUNT];
-	double		w_bps[ZBX_AVG_COUNT];
-} ZBX_SINGLE_DISKDEVICE_DATA;
+	double		r_sps[TRX_AVG_COUNT];
+	double		r_ops[TRX_AVG_COUNT];
+	double		r_bps[TRX_AVG_COUNT];
+	double		w_sps[TRX_AVG_COUNT];
+	double		w_ops[TRX_AVG_COUNT];
+	double		w_bps[TRX_AVG_COUNT];
+} TRX_SINGLE_DISKDEVICE_DATA;
 
 typedef struct c_diskdevices_data
 {
 	int				count;		/* number of disks to collect statistics for */
 	int				max_diskdev;	/* number of "slots" for disk statistics */
-	ZBX_SINGLE_DISKDEVICE_DATA	device[1];	/* more "slots" for disk statistics added dynamically */
-} ZBX_DISKDEVICES_DATA;
+	TRX_SINGLE_DISKDEVICE_DATA	device[1];	/* more "slots" for disk statistics added dynamically */
+} TRX_DISKDEVICES_DATA;
 
-#define DISKDEVICE_COLLECTOR_STARTED(collector)	((collector) && (collector)->diskstat_shmid != ZBX_NONEXISTENT_SHMID)
+#define DISKDEVICE_COLLECTOR_STARTED(collector)	((collector) && (collector)->diskstat_shmid != TRX_NONEXISTENT_SHMID)
 
-ZBX_SINGLE_DISKDEVICE_DATA	*collector_diskdevice_get(const char *devname);
-ZBX_SINGLE_DISKDEVICE_DATA	*collector_diskdevice_add(const char *devname);
+TRX_SINGLE_DISKDEVICE_DATA	*collector_diskdevice_get(const char *devname);
+TRX_SINGLE_DISKDEVICE_DATA	*collector_diskdevice_add(const char *devname);
 void				collect_stats_diskdevices(void);
 
 #endif

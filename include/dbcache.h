@@ -8,28 +8,28 @@
 #include "zbxalgo.h"
 #include "zbxjson.h"
 
-#define ZBX_SYNC_DONE		0
-#define	ZBX_SYNC_MORE		1
+#define TRX_SYNC_DONE		0
+#define	TRX_SYNC_MORE		1
 
-#define	ZBX_NO_POLLER			255
-#define	ZBX_POLLER_TYPE_NORMAL		0
-#define	ZBX_POLLER_TYPE_UNREACHABLE	1
-#define	ZBX_POLLER_TYPE_IPMI		2
-#define	ZBX_POLLER_TYPE_PINGER		3
-#define	ZBX_POLLER_TYPE_JAVA		4
-#define	ZBX_POLLER_TYPE_COUNT		5	/* number of poller types */
+#define	TRX_NO_POLLER			255
+#define	TRX_POLLER_TYPE_NORMAL		0
+#define	TRX_POLLER_TYPE_UNREACHABLE	1
+#define	TRX_POLLER_TYPE_IPMI		2
+#define	TRX_POLLER_TYPE_PINGER		3
+#define	TRX_POLLER_TYPE_JAVA		4
+#define	TRX_POLLER_TYPE_COUNT		5	/* number of poller types */
 
 #define MAX_JAVA_ITEMS		32
 #define MAX_SNMP_ITEMS		128
 #define MAX_POLLER_ITEMS	128	/* MAX(MAX_JAVA_ITEMS, MAX_SNMP_ITEMS) */
 #define MAX_PINGER_ITEMS	128
 
-#define ZBX_TRIGGER_DEPENDENCY_LEVELS_MAX	32
+#define TRX_TRIGGER_DEPENDENCY_LEVELS_MAX	32
 
-#define ZBX_TRIGGER_DEPENDENCY_FAIL		1
-#define ZBX_TRIGGER_DEPENDENCY_UNRESOLVED	2
+#define TRX_TRIGGER_DEPENDENCY_FAIL		1
+#define TRX_TRIGGER_DEPENDENCY_UNRESOLVED	2
 
-#define ZBX_SNMPTRAP_LOGGING_ENABLED	1
+#define TRX_SNMPTRAP_LOGGING_ENABLED	1
 
 extern int	CONFIG_TIMEOUT;
 
@@ -83,7 +83,7 @@ typedef struct
 	zbx_uint64_t	hostid;
 	zbx_uint64_t	proxy_hostid;
 	char		host[HOST_HOST_LEN_MAX];
-	char		name[HOST_NAME_LEN * ZBX_MAX_BYTES_IN_UTF8_CHAR + 1];
+	char		name[HOST_NAME_LEN * TRX_MAX_BYTES_IN_UTF8_CHAR + 1];
 	unsigned char	maintenance_status;
 	unsigned char	maintenance_type;
 	int		maintenance_from;
@@ -147,7 +147,7 @@ typedef struct
 	unsigned char		verify_peer;
 	unsigned char		verify_host;
 	unsigned char		allow_traps;
-	char			key_orig[ITEM_KEY_LEN * ZBX_MAX_BYTES_IN_UTF8_CHAR + 1], *key;
+	char			key_orig[ITEM_KEY_LEN * TRX_MAX_BYTES_IN_UTF8_CHAR + 1], *key;
 	char			*units;
 	char			*delay;
 	int			history_sec;
@@ -208,7 +208,7 @@ typedef struct
 }
 zbx_item_tag_t;
 
-#define ZBX_DC_TRIGGER_PROBLEM_EXPRESSION	0x1	/* this flag shows that trigger value recalculation is  */
+#define TRX_DC_TRIGGER_PROBLEM_EXPRESSION	0x1	/* this flag shows that trigger value recalculation is  */
 							/* initiated by a time-based function or a new value of */
 							/* an item in problem expression */
 
@@ -283,10 +283,10 @@ typedef struct
 }
 DC_PROXY;
 
-#define ZBX_ACTION_OPCLASS_NONE			0
-#define ZBX_ACTION_OPCLASS_NORMAL		1
-#define ZBX_ACTION_OPCLASS_RECOVERY		2
-#define ZBX_ACTION_OPCLASS_ACKNOWLEDGE		4
+#define TRX_ACTION_OPCLASS_NONE			0
+#define TRX_ACTION_OPCLASS_NORMAL		1
+#define TRX_ACTION_OPCLASS_RECOVERY		2
+#define TRX_ACTION_OPCLASS_ACKNOWLEDGE		4
 
 typedef struct
 {
@@ -333,7 +333,7 @@ zbx_config_hk_t;
 /* global configuration data (loaded from config table) */
 typedef struct
 {
-	/* the fields set by zbx_config_get() function, see ZBX_CONFIG_FLAGS_ defines */
+	/* the fields set by zbx_config_get() function, see TRX_CONFIG_FLAGS_ defines */
 	zbx_uint64_t	flags;
 
 	char		**severity_name;
@@ -349,17 +349,17 @@ typedef struct
 }
 zbx_config_t;
 
-#define ZBX_CONFIG_FLAGS_SEVERITY_NAME			__UINT64_C(0x0000000000000001)
-#define ZBX_CONFIG_FLAGS_DISCOVERY_GROUPID		__UINT64_C(0x0000000000000002)
-#define ZBX_CONFIG_FLAGS_DEFAULT_INVENTORY_MODE		__UINT64_C(0x0000000000000004)
-#define ZBX_CONFIG_FLAGS_REFRESH_UNSUPPORTED		__UINT64_C(0x0000000000000008)
-#define ZBX_CONFIG_FLAGS_SNMPTRAP_LOGGING		__UINT64_C(0x0000000000000010)
-#define ZBX_CONFIG_FLAGS_HOUSEKEEPER			__UINT64_C(0x0000000000000020)
-#define ZBX_CONFIG_FLAGS_DB_EXTENSION			__UINT64_C(0x0000000000000040)
-#define ZBX_CONFIG_FLAGS_AUTOREG_TLS_ACCEPT		__UINT64_C(0x0000000000000080)
+#define TRX_CONFIG_FLAGS_SEVERITY_NAME			__UINT64_C(0x0000000000000001)
+#define TRX_CONFIG_FLAGS_DISCOVERY_GROUPID		__UINT64_C(0x0000000000000002)
+#define TRX_CONFIG_FLAGS_DEFAULT_INVENTORY_MODE		__UINT64_C(0x0000000000000004)
+#define TRX_CONFIG_FLAGS_REFRESH_UNSUPPORTED		__UINT64_C(0x0000000000000008)
+#define TRX_CONFIG_FLAGS_SNMPTRAP_LOGGING		__UINT64_C(0x0000000000000010)
+#define TRX_CONFIG_FLAGS_HOUSEKEEPER			__UINT64_C(0x0000000000000020)
+#define TRX_CONFIG_FLAGS_DB_EXTENSION			__UINT64_C(0x0000000000000040)
+#define TRX_CONFIG_FLAGS_AUTOREG_TLS_ACCEPT		__UINT64_C(0x0000000000000080)
 
-/* possible values for database extensions (if flag ZBX_CONFIG_FLAGS_DB_EXTENSION set) */
-#define ZBX_CONFIG_DB_EXTENSION_TIMESCALE		"timescaledb"
+/* possible values for database extensions (if flag TRX_CONFIG_FLAGS_DB_EXTENSION set) */
+#define TRX_CONFIG_DB_EXTENSION_TIMESCALE		"timescaledb"
 
 typedef struct
 {
@@ -471,7 +471,7 @@ typedef struct
 	int		disable_from;
 	unsigned char	value_type;
 }
-ZBX_DC_TREND;
+TRX_DC_TREND;
 
 typedef struct
 {
@@ -481,11 +481,11 @@ typedef struct
 	zbx_timespec_t	ts;
 	int		mtime;
 	unsigned char	value_type;
-	unsigned char	flags;		/* see ZBX_DC_FLAG_* */
+	unsigned char	flags;		/* see TRX_DC_FLAG_* */
 	unsigned char	state;
 	int		ttl;		/* time-to-live of the history value */
 }
-ZBX_DC_HISTORY;
+TRX_DC_HISTORY;
 
 /* item queue data */
 typedef struct
@@ -513,8 +513,8 @@ zbx_proxy_counter_t;
 
 typedef enum
 {
-	ZBX_COUNTER_TYPE_UI64,
-	ZBX_COUNTER_TYPE_DBL
+	TRX_COUNTER_TYPE_UI64,
+	TRX_COUNTER_TYPE_DBL
 }
 zbx_counter_type_t;
 
@@ -562,12 +562,12 @@ typedef struct
 	zbx_uint64_t	history_text_counter;	/* the number of processed text values */
 	zbx_uint64_t	notsupported_counter;	/* the number of processed not supported items */
 }
-ZBX_DC_STATS;
+TRX_DC_STATS;
 
 /* the write cache statistics */
 typedef struct
 {
-	ZBX_DC_STATS	stats;
+	TRX_DC_STATS	stats;
 	zbx_uint64_t	history_free;
 	zbx_uint64_t	history_total;
 	zbx_uint64_t	index_free;
@@ -589,37 +589,37 @@ void	zbx_log_sync_history_cache_progress(void);
 int	init_database_cache(char **error);
 void	free_database_cache(void);
 
-#define ZBX_STATS_HISTORY_COUNTER	0
-#define ZBX_STATS_HISTORY_FLOAT_COUNTER	1
-#define ZBX_STATS_HISTORY_UINT_COUNTER	2
-#define ZBX_STATS_HISTORY_STR_COUNTER	3
-#define ZBX_STATS_HISTORY_LOG_COUNTER	4
-#define ZBX_STATS_HISTORY_TEXT_COUNTER	5
-#define ZBX_STATS_NOTSUPPORTED_COUNTER	6
-#define ZBX_STATS_HISTORY_TOTAL		7
-#define ZBX_STATS_HISTORY_USED		8
-#define ZBX_STATS_HISTORY_FREE		9
-#define ZBX_STATS_HISTORY_PUSED		10
-#define ZBX_STATS_HISTORY_PFREE		11
-#define ZBX_STATS_TREND_TOTAL		12
-#define ZBX_STATS_TREND_USED		13
-#define ZBX_STATS_TREND_FREE		14
-#define ZBX_STATS_TREND_PUSED		15
-#define ZBX_STATS_TREND_PFREE		16
-#define ZBX_STATS_HISTORY_INDEX_TOTAL	17
-#define ZBX_STATS_HISTORY_INDEX_USED	18
-#define ZBX_STATS_HISTORY_INDEX_FREE	19
-#define ZBX_STATS_HISTORY_INDEX_PUSED	20
-#define ZBX_STATS_HISTORY_INDEX_PFREE	21
+#define TRX_STATS_HISTORY_COUNTER	0
+#define TRX_STATS_HISTORY_FLOAT_COUNTER	1
+#define TRX_STATS_HISTORY_UINT_COUNTER	2
+#define TRX_STATS_HISTORY_STR_COUNTER	3
+#define TRX_STATS_HISTORY_LOG_COUNTER	4
+#define TRX_STATS_HISTORY_TEXT_COUNTER	5
+#define TRX_STATS_NOTSUPPORTED_COUNTER	6
+#define TRX_STATS_HISTORY_TOTAL		7
+#define TRX_STATS_HISTORY_USED		8
+#define TRX_STATS_HISTORY_FREE		9
+#define TRX_STATS_HISTORY_PUSED		10
+#define TRX_STATS_HISTORY_PFREE		11
+#define TRX_STATS_TREND_TOTAL		12
+#define TRX_STATS_TREND_USED		13
+#define TRX_STATS_TREND_FREE		14
+#define TRX_STATS_TREND_PUSED		15
+#define TRX_STATS_TREND_PFREE		16
+#define TRX_STATS_HISTORY_INDEX_TOTAL	17
+#define TRX_STATS_HISTORY_INDEX_USED	18
+#define TRX_STATS_HISTORY_INDEX_FREE	19
+#define TRX_STATS_HISTORY_INDEX_PUSED	20
+#define TRX_STATS_HISTORY_INDEX_PFREE	21
 void	*DCget_stats(int request);
 void	DCget_stats_all(zbx_wcache_info_t *wcache_info);
 
 zbx_uint64_t	DCget_nextid(const char *table_name, int num);
 
 /* initial sync, get all data */
-#define ZBX_DBSYNC_INIT		0
+#define TRX_DBSYNC_INIT		0
 /* update sync, get changed data */
-#define ZBX_DBSYNC_UPDATE	1
+#define TRX_DBSYNC_UPDATE	1
 
 void	DCsync_configuration(unsigned char mode);
 int	init_configuration_cache(char **error);
@@ -655,17 +655,17 @@ int	DCconfig_get_ipmi_poller_items(int now, DC_ITEM *items, int items_num, int *
 int	DCconfig_get_snmp_interfaceids_by_addr(const char *addr, zbx_uint64_t **interfaceids);
 size_t	DCconfig_get_snmp_items_by_interfaceid(zbx_uint64_t interfaceid, DC_ITEM **items);
 
-#define ZBX_HK_OPTION_DISABLED		0
-#define ZBX_HK_OPTION_ENABLED		1
+#define TRX_HK_OPTION_DISABLED		0
+#define TRX_HK_OPTION_ENABLED		1
 
 /* options for hk.history_mode, trends_mode */
-#define ZBX_HK_MODE_DISABLED		ZBX_HK_OPTION_DISABLED
-#define ZBX_HK_MODE_REGULAR		ZBX_HK_OPTION_ENABLED
-#define ZBX_HK_MODE_PARTITION		2
+#define TRX_HK_MODE_DISABLED		TRX_HK_OPTION_DISABLED
+#define TRX_HK_MODE_REGULAR		TRX_HK_OPTION_ENABLED
+#define TRX_HK_MODE_PARTITION		2
 
-#define ZBX_HK_HISTORY_MIN	SEC_PER_HOUR
-#define ZBX_HK_TRENDS_MIN	SEC_PER_DAY
-#define ZBX_HK_PERIOD_MAX	(25 * SEC_PER_YEAR)
+#define TRX_HK_HISTORY_MIN	SEC_PER_HOUR
+#define TRX_HK_TRENDS_MIN	SEC_PER_DAY
+#define TRX_HK_PERIOD_MAX	(25 * SEC_PER_YEAR)
 
 void	DCrequeue_items(const zbx_uint64_t *itemids, const unsigned char *states, const int *lastclocks,
 		const int *errcodes, size_t num);
@@ -684,20 +684,20 @@ void	DCconfig_update_inventory_values(const zbx_vector_ptr_t *inventory_values);
 int	DCget_host_inventory_value_by_itemid(zbx_uint64_t itemid, char **replace_to, int value_idx);
 int	DCget_host_inventory_value_by_hostid(zbx_uint64_t hostid, char **replace_to, int value_idx);
 
-#define ZBX_CONFSTATS_BUFFER_TOTAL	1
-#define ZBX_CONFSTATS_BUFFER_USED	2
-#define ZBX_CONFSTATS_BUFFER_FREE	3
-#define ZBX_CONFSTATS_BUFFER_PUSED	4
-#define ZBX_CONFSTATS_BUFFER_PFREE	5
+#define TRX_CONFSTATS_BUFFER_TOTAL	1
+#define TRX_CONFSTATS_BUFFER_USED	2
+#define TRX_CONFSTATS_BUFFER_FREE	3
+#define TRX_CONFSTATS_BUFFER_PUSED	4
+#define TRX_CONFSTATS_BUFFER_PFREE	5
 void	*DCconfig_get_stats(int request);
 
 int	DCconfig_get_last_sync_time(void);
 int	DCconfig_get_proxypoller_hosts(DC_PROXY *proxies, int max_hosts);
 int	DCconfig_get_proxypoller_nextcheck(void);
 
-#define ZBX_PROXY_CONFIG_NEXTCHECK	0x01
-#define ZBX_PROXY_DATA_NEXTCHECK	0x02
-#define ZBX_PROXY_TASKS_NEXTCHECK	0x04
+#define TRX_PROXY_CONFIG_NEXTCHECK	0x01
+#define TRX_PROXY_DATA_NEXTCHECK	0x02
+#define TRX_PROXY_TASKS_NEXTCHECK	0x04
 void	DCrequeue_proxy(zbx_uint64_t hostid, unsigned char update_nextcheck, int proxy_conn_err);
 int	DCcheck_proxy_permissions(const char *host, const zbx_socket_t *sock, zbx_uint64_t *hostid, char **error);
 
@@ -716,8 +716,8 @@ int	DChost_activate(zbx_uint64_t hostid, unsigned char agent_type, const zbx_tim
 int	DChost_deactivate(zbx_uint64_t hostid, unsigned char agent, const zbx_timespec_t *ts,
 		zbx_agent_availability_t *in, zbx_agent_availability_t *out, const char *error);
 
-#define ZBX_QUEUE_FROM_DEFAULT	6	/* default lower limit for delay (in seconds) */
-#define ZBX_QUEUE_TO_INFINITY	-1	/* no upper limit for delay */
+#define TRX_QUEUE_FROM_DEFAULT	6	/* default lower limit for delay (in seconds) */
+#define TRX_QUEUE_TO_INFINITY	-1	/* no upper limit for delay */
 void	DCfree_item_queue(zbx_vector_ptr_t *queue);
 int	DCget_item_queue(zbx_vector_ptr_t *queue, int from, int to);
 
@@ -743,7 +743,7 @@ void	DCget_hostids_by_functionids(zbx_vector_uint64_t *functionids, zbx_vector_u
 void	DCget_hosts_by_functionids(const zbx_vector_uint64_t *functionids, zbx_hashset_t *hosts);
 
 /* global configuration support */
-#define ZBX_DISCOVERY_GROUPID_UNDEFINED	0
+#define TRX_DISCOVERY_GROUPID_UNDEFINED	0
 void	zbx_config_get(zbx_config_t *cfg, zbx_uint64_t flags);
 void	zbx_config_clean(zbx_config_t *cfg);
 
@@ -776,15 +776,15 @@ void	zbx_dc_get_nested_hostgroupids(zbx_uint64_t *groupids, int groupids_num, zb
 void	zbx_dc_get_nested_hostgroupids_by_names(char **names, int names_num,
 		zbx_vector_uint64_t *nested_groupids);
 
-#define ZBX_HC_ITEM_STATUS_NORMAL	0
-#define ZBX_HC_ITEM_STATUS_BUSY		1
+#define TRX_HC_ITEM_STATUS_NORMAL	0
+#define TRX_HC_ITEM_STATUS_BUSY		1
 
-#define ZBX_DC_FLAG_META	0x01	/* contains meta information (lastlogsize and mtime) */
-#define ZBX_DC_FLAG_NOVALUE	0x02	/* entry contains no value */
-#define ZBX_DC_FLAG_LLD		0x04	/* low-level discovery value */
-#define ZBX_DC_FLAG_UNDEF	0x08	/* unsupported or undefined (delta calculation failed) value */
-#define ZBX_DC_FLAG_NOHISTORY	0x10	/* values should not be kept in history */
-#define ZBX_DC_FLAG_NOTRENDS	0x20	/* values should not be kept in trends */
+#define TRX_DC_FLAG_META	0x01	/* contains meta information (lastlogsize and mtime) */
+#define TRX_DC_FLAG_NOVALUE	0x02	/* entry contains no value */
+#define TRX_DC_FLAG_LLD		0x04	/* low-level discovery value */
+#define TRX_DC_FLAG_UNDEF	0x08	/* unsupported or undefined (delta calculation failed) value */
+#define TRX_DC_FLAG_NOHISTORY	0x10	/* values should not be kept in history */
+#define TRX_DC_FLAG_NOTRENDS	0x20	/* values should not be kept in trends */
 
 typedef struct zbx_hc_data
 {
@@ -881,10 +881,10 @@ typedef struct
 	unsigned char	maintenance_status;
 
 	unsigned int	flags;
-#define ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCEID		0x0001
-#define ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_FROM	0x0002
-#define ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_TYPE	0x0003
-#define ZBX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_STATUS	0x0004
+#define TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCEID		0x0001
+#define TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_FROM	0x0002
+#define TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_TYPE	0x0003
+#define TRX_FLAG_HOST_MAINTENANCE_UPDATE_MAINTENANCE_STATUS	0x0004
 }
 zbx_host_maintenance_diff_t;
 
@@ -901,8 +901,8 @@ typedef struct
 }
 zbx_event_suppress_query_t;
 
-#define ZBX_MAINTENANCE_UPDATE_TRUE	1
-#define ZBX_MAINTENANCE_UPDATE_FALSE	0
+#define TRX_MAINTENANCE_UPDATE_TRUE	1
+#define TRX_MAINTENANCE_UPDATE_FALSE	0
 
 void	zbx_event_suppress_query_free(zbx_event_suppress_query_t *query);
 int	zbx_dc_update_maintenances(void);

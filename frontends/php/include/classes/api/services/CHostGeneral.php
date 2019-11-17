@@ -35,7 +35,7 @@ abstract class CHostGeneral extends CHostBase {
 			]);
 
 			if ($count != count($hostids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -229,8 +229,8 @@ abstract class CHostGeneral extends CHostBase {
 	 */
 	protected function unlink($templateids, $targetids = null, $clear = false) {
 		$flags = ($clear)
-			? [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_RULE]
-			: [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_RULE, ZBX_FLAG_DISCOVERY_PROTOTYPE];
+			? [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_RULE]
+			: [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_RULE, TRX_FLAG_DISCOVERY_PROTOTYPE];
 
 		// check that all triggers on templates that we unlink, don't have items from another templates
 		$sql = 'SELECT DISTINCT t.description'.
@@ -245,10 +245,10 @@ abstract class CHostGeneral extends CHostBase {
 			' AND ff.triggerid=t.triggerid'.
 			' AND '.dbConditionInt('ii.hostid', $templateids, true).
 			')'.
-			' AND t.flags='.ZBX_FLAG_DISCOVERY_NORMAL;
+			' AND t.flags='.TRX_FLAG_DISCOVERY_NORMAL;
 		if ($dbTrigger = DBfetch(DBSelect($sql, 1))) {
 			self::exception(
-				ZBX_API_ERROR_PARAMETERS,
+				TRX_API_ERROR_PARAMETERS,
 				_s('Cannot unlink trigger "%s", it has items from template that is left linked to host.', $dbTrigger['description'])
 			);
 		}
@@ -266,7 +266,7 @@ abstract class CHostGeneral extends CHostBase {
 			$templ_triggerids[] = $db_trigger['triggerid'];
 		}
 
-		$triggerids = [ZBX_FLAG_DISCOVERY_NORMAL => [], ZBX_FLAG_DISCOVERY_PROTOTYPE => []];
+		$triggerids = [TRX_FLAG_DISCOVERY_NORMAL => [], TRX_FLAG_DISCOVERY_PROTOTYPE => []];
 
 		if ($templ_triggerids) {
 			$sql_distinct = ($targetids !== null) ? ' DISTINCT' : '';
@@ -290,26 +290,26 @@ abstract class CHostGeneral extends CHostBase {
 			}
 		}
 
-		if ($triggerids[ZBX_FLAG_DISCOVERY_NORMAL]) {
+		if ($triggerids[TRX_FLAG_DISCOVERY_NORMAL]) {
 			if ($clear) {
-				CTriggerManager::delete($triggerids[ZBX_FLAG_DISCOVERY_NORMAL]);
+				CTriggerManager::delete($triggerids[TRX_FLAG_DISCOVERY_NORMAL]);
 			}
 			else {
 				DB::update('triggers', [
 					'values' => ['templateid' => 0],
-					'where' => ['triggerid' => $triggerids[ZBX_FLAG_DISCOVERY_NORMAL]]
+					'where' => ['triggerid' => $triggerids[TRX_FLAG_DISCOVERY_NORMAL]]
 				]);
 			}
 		}
 
-		if ($triggerids[ZBX_FLAG_DISCOVERY_PROTOTYPE]) {
+		if ($triggerids[TRX_FLAG_DISCOVERY_PROTOTYPE]) {
 			if ($clear) {
-				CTriggerPrototypeManager::delete($triggerids[ZBX_FLAG_DISCOVERY_PROTOTYPE]);
+				CTriggerPrototypeManager::delete($triggerids[TRX_FLAG_DISCOVERY_PROTOTYPE]);
 			}
 			else {
 				DB::update('triggers', [
 					'values' => ['templateid' => 0],
-					'where' => ['triggerid' => $triggerids[ZBX_FLAG_DISCOVERY_PROTOTYPE]]
+					'where' => ['triggerid' => $triggerids[TRX_FLAG_DISCOVERY_PROTOTYPE]]
 				]);
 			}
 		}
@@ -345,33 +345,33 @@ abstract class CHostGeneral extends CHostBase {
 			$db_graphs = DBSelect($sql);
 
 			$graphs = [
-				ZBX_FLAG_DISCOVERY_NORMAL => [],
-				ZBX_FLAG_DISCOVERY_PROTOTYPE => []
+				TRX_FLAG_DISCOVERY_NORMAL => [],
+				TRX_FLAG_DISCOVERY_PROTOTYPE => []
 			];
 			while ($db_graph = DBfetch($db_graphs)) {
 				$graphs[$db_graph['flags']][] = $db_graph['graphid'];
 			}
 
-			if ($graphs[ZBX_FLAG_DISCOVERY_PROTOTYPE]) {
+			if ($graphs[TRX_FLAG_DISCOVERY_PROTOTYPE]) {
 				if ($clear) {
-					CGraphPrototypeManager::delete($graphs[ZBX_FLAG_DISCOVERY_PROTOTYPE]);
+					CGraphPrototypeManager::delete($graphs[TRX_FLAG_DISCOVERY_PROTOTYPE]);
 				}
 				else {
 					DB::update('graphs', [
 						'values' => ['templateid' => 0],
-						'where' => ['graphid' => $graphs[ZBX_FLAG_DISCOVERY_PROTOTYPE]]
+						'where' => ['graphid' => $graphs[TRX_FLAG_DISCOVERY_PROTOTYPE]]
 					]);
 				}
 			}
 
-			if ($graphs[ZBX_FLAG_DISCOVERY_NORMAL]) {
+			if ($graphs[TRX_FLAG_DISCOVERY_NORMAL]) {
 				if ($clear) {
-					CGraphManager::delete($graphs[ZBX_FLAG_DISCOVERY_NORMAL]);
+					CGraphManager::delete($graphs[TRX_FLAG_DISCOVERY_NORMAL]);
 				}
 				else {
 					DB::update('graphs', [
 						'values' => ['templateid' => 0],
-						'where' => ['graphid' => $graphs[ZBX_FLAG_DISCOVERY_NORMAL]]
+						'where' => ['graphid' => $graphs[TRX_FLAG_DISCOVERY_NORMAL]]
 					]);
 				}
 			}
@@ -393,9 +393,9 @@ abstract class CHostGeneral extends CHostBase {
 			' WHERE '.$sqlWhere;
 		$dbItems = DBSelect($sql);
 		$items = [
-			ZBX_FLAG_DISCOVERY_NORMAL => [],
-			ZBX_FLAG_DISCOVERY_RULE => [],
-			ZBX_FLAG_DISCOVERY_PROTOTYPE => []
+			TRX_FLAG_DISCOVERY_NORMAL => [],
+			TRX_FLAG_DISCOVERY_RULE => [],
+			TRX_FLAG_DISCOVERY_PROTOTYPE => []
 		];
 		while ($item = DBfetch($dbItems)) {
 			$items[$item['flags']][$item['itemid']] = [
@@ -404,41 +404,41 @@ abstract class CHostGeneral extends CHostBase {
 			];
 		}
 
-		if (!empty($items[ZBX_FLAG_DISCOVERY_RULE])) {
+		if (!empty($items[TRX_FLAG_DISCOVERY_RULE])) {
 			if ($clear) {
-				$result = API::DiscoveryRule()->delete(array_keys($items[ZBX_FLAG_DISCOVERY_RULE]), true);
-				if (!$result) self::exception(ZBX_API_ERROR_INTERNAL, _('Cannot unlink and clear discovery rules'));
+				$result = API::DiscoveryRule()->delete(array_keys($items[TRX_FLAG_DISCOVERY_RULE]), true);
+				if (!$result) self::exception(TRX_API_ERROR_INTERNAL, _('Cannot unlink and clear discovery rules'));
 			}
 			else{
 				DB::update('items', [
 					'values' => ['templateid' => 0],
-					'where' => ['itemid' => array_keys($items[ZBX_FLAG_DISCOVERY_RULE])]
+					'where' => ['itemid' => array_keys($items[TRX_FLAG_DISCOVERY_RULE])]
 				]);
 
-				foreach ($items[ZBX_FLAG_DISCOVERY_RULE] as $discoveryRule) {
+				foreach ($items[TRX_FLAG_DISCOVERY_RULE] as $discoveryRule) {
 					info(_s('Unlinked: Discovery rule "%1$s" on "%2$s".', $discoveryRule['name'], $discoveryRule['host']));
 				}
 			}
 		}
 
-		if (!empty($items[ZBX_FLAG_DISCOVERY_NORMAL])) {
+		if (!empty($items[TRX_FLAG_DISCOVERY_NORMAL])) {
 			if ($clear) {
-				CItemManager::delete(array_keys($items[ZBX_FLAG_DISCOVERY_NORMAL]));
+				CItemManager::delete(array_keys($items[TRX_FLAG_DISCOVERY_NORMAL]));
 			}
 			else{
 				DB::update('items', [
 					'values' => ['templateid' => 0],
-					'where' => ['itemid' => array_keys($items[ZBX_FLAG_DISCOVERY_NORMAL])]
+					'where' => ['itemid' => array_keys($items[TRX_FLAG_DISCOVERY_NORMAL])]
 				]);
 
-				foreach ($items[ZBX_FLAG_DISCOVERY_NORMAL] as $item) {
+				foreach ($items[TRX_FLAG_DISCOVERY_NORMAL] as $item) {
 					info(_s('Unlinked: Item "%1$s" on "%2$s".', $item['name'], $item['host']));
 				}
 			}
 		}
 
-		if (!empty($items[ZBX_FLAG_DISCOVERY_PROTOTYPE])) {
-			$item_prototypeids = array_keys($items[ZBX_FLAG_DISCOVERY_PROTOTYPE]);
+		if (!empty($items[TRX_FLAG_DISCOVERY_PROTOTYPE])) {
+			$item_prototypeids = array_keys($items[TRX_FLAG_DISCOVERY_PROTOTYPE]);
 
 			if ($clear) {
 				// This will include deletion of linked application prototypes.
@@ -450,7 +450,7 @@ abstract class CHostGeneral extends CHostBase {
 					'where' => ['itemid' => $item_prototypeids]
 				]);
 
-				foreach ($items[ZBX_FLAG_DISCOVERY_PROTOTYPE] as $item) {
+				foreach ($items[TRX_FLAG_DISCOVERY_PROTOTYPE] as $item) {
 					info(_s('Unlinked: Item prototype "%1$s" on "%2$s".', $item['name'], $item['host']));
 				}
 
@@ -483,8 +483,8 @@ abstract class CHostGeneral extends CHostBase {
 
 		// host prototypes
 		// we need only to unlink host prototypes. in case of unlink and clear they will be deleted together with LLD rules.
-		if (!$clear && isset($items[ZBX_FLAG_DISCOVERY_RULE])) {
-			$discoveryRuleIds = array_keys($items[ZBX_FLAG_DISCOVERY_RULE]);
+		if (!$clear && isset($items[TRX_FLAG_DISCOVERY_RULE])) {
+			$discoveryRuleIds = array_keys($items[TRX_FLAG_DISCOVERY_RULE]);
 
 			$hostPrototypes = DBfetchArrayAssoc(DBSelect(
 				'SELECT DISTINCT h.hostid,h.host,h3.host AS parent_host'.
@@ -535,7 +535,7 @@ abstract class CHostGeneral extends CHostBase {
 			if ($clear) {
 				$result = API::HttpTest()->delete(array_keys($httpTests), true);
 				if (!$result) {
-					self::exception(ZBX_API_ERROR_INTERNAL, _('Cannot unlink and clear Web scenarios.'));
+					self::exception(TRX_API_ERROR_INTERNAL, _('Cannot unlink and clear Web scenarios.'));
 				}
 			}
 			else {
@@ -596,7 +596,7 @@ abstract class CHostGeneral extends CHostBase {
 				if ($applications) {
 					$result = API::Application()->delete(zbx_objectValues($applications, 'applicationid'), true);
 					if (!$result) {
-						self::exception(ZBX_API_ERROR_INTERNAL, _('Cannot unlink and clear applications.'));
+						self::exception(TRX_API_ERROR_INTERNAL, _('Cannot unlink and clear applications.'));
 					}
 				}
 			}
@@ -615,7 +615,7 @@ abstract class CHostGeneral extends CHostBase {
 			$discovered_applications = API::Application()->get([
 				'output' => ['applicationid'],
 				'hostids' => $targetids,
-				'filter' => ['flags' => ZBX_FLAG_DISCOVERY_CREATED],
+				'filter' => ['flags' => TRX_FLAG_DISCOVERY_CREATED],
 				'preservekeys' => true
 			]);
 
@@ -624,7 +624,7 @@ abstract class CHostGeneral extends CHostBase {
 					'output' => ['applicationid'],
 					'selectItems' => ['itemid'],
 					'applicationids' => array_keys($discovered_applications),
-					'filter' => ['flags' => ZBX_FLAG_DISCOVERY_CREATED]
+					'filter' => ['flags' => TRX_FLAG_DISCOVERY_CREATED]
 				]);
 
 				$applications_to_delete = [];
@@ -1046,7 +1046,7 @@ abstract class CHostGeneral extends CHostBase {
 		$host = array_intersect_key($host, $api_input_rules['fields']);
 
 		if (!CApiInputValidator::validate($api_input_rules, $host, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 	}
 }

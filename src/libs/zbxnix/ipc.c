@@ -24,7 +24,7 @@ int	zbx_shm_create(size_t size)
 
 	if (-1 == (shm_id = shmget(IPC_PRIVATE, size, IPC_CREAT | IPC_EXCL | 0600)))
 	{
-		treegix_log(LOG_LEVEL_CRIT, "cannot allocate shared memory of size " ZBX_FS_SIZE_T ": %s",
+		treegix_log(LOG_LEVEL_CRIT, "cannot allocate shared memory of size " TRX_FS_SIZE_T ": %s",
 				(zbx_fs_size_t)size, zbx_strerror(errno));
 		return -1;
 	}

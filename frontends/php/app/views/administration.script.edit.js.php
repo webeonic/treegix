@@ -7,7 +7,7 @@
 					command_ipmi = jQuery('#commandipmi'),
 					command = jQuery('#command');
 
-				if (type == <?= ZBX_SCRIPT_TYPE_IPMI ?>) {
+				if (type == <?= TRX_SCRIPT_TYPE_IPMI ?>) {
 					if (command.val() !== '') {
 						command_ipmi.val(command.val());
 						command.val('');

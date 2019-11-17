@@ -102,7 +102,7 @@ class CActionCondValidator extends CValidator {
 				break;
 
 			case CONDITION_TYPE_DHOST_IP:
-				$ip_range_parser = new CIPRangeParser(['v6' => ZBX_HAVE_IPV6, 'dns' => false, 'max_ipv4_cidr' => 30]);
+				$ip_range_parser = new CIPRangeParser(['v6' => TRX_HAVE_IPV6, 'dns' => false, 'max_ipv4_cidr' => 30]);
 				if (zbx_empty($conditionValue)) {
 					$this->setError(_('Empty action condition.'));
 				}

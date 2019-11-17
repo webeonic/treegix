@@ -235,7 +235,7 @@ class CConfigurationExport {
 			$hosts = API::Host()->get([
 				'output' => ['hostid'],
 				'hostids' => $options['hosts'],
-				'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL]
+				'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 			]);
 
 			$options['hosts'] = zbx_objectValues($hosts, 'hostid');
@@ -412,7 +412,7 @@ class CConfigurationExport {
 		$applications = API::Application()->get([
 			'output' => ['hostid', 'name'],
 			'hostids' => array_keys($hosts),
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 			'inherited' => false,
 			'preservekeys' => true
 		]);
@@ -439,7 +439,7 @@ class CConfigurationExport {
 			'hostids' => array_keys($hosts),
 			'inherited' => false,
 			'webitems' => true,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 			'preservekeys' => true
 		]);
 
@@ -485,7 +485,7 @@ class CConfigurationExport {
 		foreach ($items as $idx => $item) {
 			// Remove items linked to discovered applications.
 			foreach ($item['applications'] as $application) {
-				if ($application['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+				if ($application['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 					unset($items[$idx]);
 					continue 2;
 				}
@@ -627,7 +627,7 @@ class CConfigurationExport {
 			$master_items = API::Item()->get([
 				'output' => ['itemid', 'key_'],
 				'itemids' => array_keys($unresolved_master_itemids),
-				'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+				'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 				'webitems' => true,
 				'preservekeys' => true
 			]);
@@ -838,7 +838,7 @@ class CConfigurationExport {
 
 		$graphs = API::Graph()->get([
 			'hostids' => $hostIds,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 			'selectGraphItems' => API_OUTPUT_EXTEND,
 			'inherited' => false,
 			'output' => API_OUTPUT_EXTEND,
@@ -886,14 +886,14 @@ class CConfigurationExport {
 			if ($graph['ymin_itemid'] && isset($graphItems[$graph['ymin_itemid']])) {
 				$axisItem = $graphItems[$graph['ymin_itemid']];
 
-				if ($axisItem['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+				if ($axisItem['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 					unset($graphs[$gnum]);
 					continue;
 				}
 
 				// Remove graphs with items that are linked to discovered applications.
 				foreach ($axisItem['applications'] as $application) {
-					if ($application['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+					if ($application['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 						unset($graphs[$gnum]);
 						continue 2;
 					}
@@ -910,14 +910,14 @@ class CConfigurationExport {
 			if ($graph['ymax_itemid'] && isset($graphItems[$graph['ymax_itemid']])) {
 				$axisItem = $graphItems[$graph['ymax_itemid']];
 
-				if ($axisItem['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+				if ($axisItem['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 					unset($graphs[$gnum]);
 					continue;
 				}
 
 				// Remove graphs with items that are linked to discovered applications.
 				foreach ($axisItem['applications'] as $application) {
-					if ($application['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+					if ($application['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 						unset($graphs[$gnum]);
 						continue 2;
 					}
@@ -934,14 +934,14 @@ class CConfigurationExport {
 			foreach ($graph['gitems'] as $ginum => $gItem) {
 				$item = $graphItems[$gItem['itemid']];
 
-				if ($item['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+				if ($item['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 					unset($graphs[$gnum]);
 					continue 2;
 				}
 
 				// Remove graphs with items that are linked to discovered applications.
 				foreach ($item['applications'] as $application) {
-					if ($application['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+					if ($application['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 						unset($graphs[$gnum]);
 						continue 3;
 					}
@@ -976,7 +976,7 @@ class CConfigurationExport {
 			'selectItems' => ['itemid', 'flags', 'type', 'templateid'],
 			'selectTags' => ['tag', 'value'],
 			'hostids' => $hostIds,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 			'inherited' => false,
 			'preservekeys' => true
 		]);
@@ -1007,7 +1007,7 @@ class CConfigurationExport {
 
 		foreach ($triggers as $idx => &$trigger) {
 			foreach ($trigger['items'] as $item) {
-				if ($item['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+				if ($item['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 					unset($triggers[$idx]);
 					continue 2;
 				}
@@ -1019,7 +1019,7 @@ class CConfigurationExport {
 				 */
 				if (array_key_exists($item['itemid'], $items)) {
 					foreach ($items[$item['itemid']]['applications'] as $application) {
-						if ($application['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+						if ($application['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 							unset($triggers[$idx]);
 							continue 3;
 						}

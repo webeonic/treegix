@@ -23,7 +23,7 @@ $http_popup_form_list = (new CFormList())
 		(new CLabel(_('Name'), 'step_name'))->setAsteriskMark(),
 		(new CTextBox('name', $options['name'], (bool) $options['templated'], 64))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setId('step_name')
 	)
 	->addRow(
@@ -31,11 +31,11 @@ $http_popup_form_list = (new CFormList())
 		new CDiv([
 			(new CTextBox('url', $options['url'], false, null))
 				->setAriaRequired()
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CButton('parse', _('Parse')))
 				->onClick('httpconf.steps.edit_form.parseUrl();')
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 		])
 	);
 
@@ -50,18 +50,18 @@ $http_popup_form_list->addRow(_('Query fields'),
 				(new CCol(
 					(new CButton(null, _('Add')))
 						->addClass('element-table-add')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 				))->setColSpan(5)
 			])))
 	))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH . 'px;'),
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH . 'px;'),
 		'query-fields-row'
 );
 
 $http_popup_form_list->addRow(_('Post type'), (new CRadioButtonList('post_type', (int) $options['post_type']))
-	->addValue(_('Form data'), ZBX_POSTTYPE_FORM)
-	->addValue(_('Raw data'), ZBX_POSTTYPE_RAW)
+	->addValue(_('Form data'), TRX_POSTTYPE_FORM)
+	->addValue(_('Raw data'), TRX_POSTTYPE_RAW)
 	->setModern(true)
 );
 
@@ -76,17 +76,17 @@ $http_popup_form_list->addRow(_('Post fields'),
 				(new CCol(
 					(new CButton(null, _('Add')))
 						->addClass('element-table-add')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 				))->setColSpan(5)
 			])))
 	))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH . 'px;'),
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH . 'px;'),
 		'post-fields-row'
 );
 
 $http_popup_form_list->addRow(_('Raw post'), (new CTextArea('posts', $options['posts']))
-	->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH), 'post-raw-row'
+	->setWidth(TRX_TEXTAREA_STANDARD_WIDTH), 'post-raw-row'
 );
 
 $http_popup_form_list->addRow(_('Variables'),
@@ -100,12 +100,12 @@ $http_popup_form_list->addRow(_('Variables'),
 				(new CCol(
 					(new CButton(null, _('Add')))
 						->addClass('element-table-add')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 				))->setColSpan(5)
 			])))
 	))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH . 'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH . 'px;')
 );
 
 $http_popup_form_list->addRow(_('Headers'),
@@ -119,12 +119,12 @@ $http_popup_form_list->addRow(_('Headers'),
 				(new CCol(
 					(new CButton(null, _('Add')))
 						->addClass('element-table-add')
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 				))->setColSpan(5)
 			])))
 	))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH . 'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH . 'px;')
 );
 
 $http_popup_form_list
@@ -143,15 +143,15 @@ $http_popup_form_list
 	->addRow((new CLabel(_('Timeout'), 'timeout'))->setAsteriskMark(),
 		(new CTextBox('timeout', $options['timeout']))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	)
 	->addRow(_('Required string'),
 		(new CTextBox('required', $options['required']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAttribute('placeholder', _('pattern'))
 	)
 	->addRow(_('Required status codes'),
-		(new CTextBox('status_codes', $options['status_codes']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('status_codes', $options['status_codes']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 $output['buttons'] = [

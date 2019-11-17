@@ -3,7 +3,7 @@
 
 
 $options = $data['options'];
-$severity_row = (new CList())->addClass(ZBX_STYLE_LIST_CHECK_RADIO);
+$severity_row = (new CList())->addClass(TRX_STYLE_LIST_CHECK_RADIO);
 
 foreach ($data['severities'] as $severity => $severity_name) {
 	$severity_row->addItem(
@@ -20,16 +20,16 @@ foreach ($options['sendto_emails'] as $i => $email) {
 	$email_send_to_table->addRow([
 		(new CTextBox('sendto_emails['.$i.']', $email))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 			(new CButton('sendto_emails['.$i.'][remove]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
 	], 'form_row');
 }
 
 $email_send_to_table->setFooter(new CCol(
 	(new CButton('email_send_to_add', _('Add')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->addClass('element-table-add')
 ));
 
@@ -40,7 +40,7 @@ $media_form = (new CFormList(_('Media')))
 		(new CLabel(_('Send to'), 'sendto'))->setAsteriskMark(),
 		(new CTextBox('sendto', $options['sendto'], false, 1024))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		'mediatype_send_to'
 	)
 	->addRow(
@@ -51,7 +51,7 @@ $media_form = (new CFormList(_('Media')))
 	->addRow((new CLabel(_('When active'), 'period'))->setAsteriskMark(),
 		(new CTextBox('period', $options['period'], false, 1024))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('Use if severity'), $severity_row)
 	->addRow(_('Enabled'),
@@ -73,10 +73,10 @@ $form = (new CForm())
 			->addItem((new CRow([
 				(new CCol((new CTextBox('sendto_emails[#{rowNum}]', ''))
 					->setAriaRequired()
-					->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				)),
 				(new CCol((new CButton('sendto_emails[#{rowNum}][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
 				)),
 			]))

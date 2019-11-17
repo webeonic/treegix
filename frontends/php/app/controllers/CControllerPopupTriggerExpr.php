@@ -38,13 +38,13 @@ class CControllerPopupTriggerExpr extends CController {
 		$this->param1SecCount = [
 			'last' => [
 				'C' => _('Last of').' (T)',
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'M' => $this->metrics,
 				'A' => true
 			],
 			'shift' => [
 				'C' => _('Time shift'),
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'A' => false
 			]
 		];
@@ -52,7 +52,7 @@ class CControllerPopupTriggerExpr extends CController {
 		$this->param1Sec = [
 			'last' => [
 				'C' => _('Last of').' (T)',
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'A' => true
 			]
 		];
@@ -60,7 +60,7 @@ class CControllerPopupTriggerExpr extends CController {
 		$this->param1Str = [
 			'pattern' => [
 				'C' => 'T',
-				'T' => T_ZBX_STR,
+				'T' => T_TRX_STR,
 				'A' => false
 			]
 		];
@@ -68,12 +68,12 @@ class CControllerPopupTriggerExpr extends CController {
 		$this->param2SecCount = [
 			'pattern' => [
 				'C' => 'V',
-				'T' => T_ZBX_STR,
+				'T' => T_TRX_STR,
 				'A' => false
 			],
 			'last' => [
 				'C' => _('Last of').' (T)',
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'M' => $this->metrics,
 				'A' => false
 			]
@@ -82,23 +82,23 @@ class CControllerPopupTriggerExpr extends CController {
 		$this->param3SecVal = [
 			'last' => [
 				'C' => _('Last of').' (T)',
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'M' => $this->metrics,
 				'A' => true
 			],
 			'v' => [
 				'C' => 'V',
-				'T' => T_ZBX_STR,
+				'T' => T_TRX_STR,
 				'A' => false
 			],
 			'o' => [
 				'C' => 'O',
-				'T' => T_ZBX_STR,
+				'T' => T_TRX_STR,
 				'A' => false
 			],
 			'shift' => [
 				'C' => _('Time shift'),
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'A' => false
 			]
 		];
@@ -106,18 +106,18 @@ class CControllerPopupTriggerExpr extends CController {
 		$this->param3SecPercent = [
 			'last' => [
 				'C' => _('Last of').' (T)',
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'M' => $this->metrics,
 				'A' => true
 			],
 			'shift' => [
 				'C' => _('Time shift'),
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'A' => false
 			],
 			'p' => [
 				'C' => _('Percentage').' (P)',
-				'T' => T_ZBX_DBL,
+				'T' => T_TRX_DBL,
 				'A' => true
 			]
 		];
@@ -125,18 +125,18 @@ class CControllerPopupTriggerExpr extends CController {
 		$this->paramSecIntCount = [
 			'last' => [
 				'C' => _('Last of').' (T)',
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'M' => $this->metrics,
 				'A' => true
 			],
 			'mask' => [
 				'C' => _('Mask'),
-				'T' => T_ZBX_STR,
+				'T' => T_TRX_STR,
 				'A' => true
 			],
 			'shift' => [
 				'C' => _('Time shift'),
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'A' => false
 			]
 		];
@@ -144,28 +144,28 @@ class CControllerPopupTriggerExpr extends CController {
 		$this->paramForecast = [
 			'last' => [
 				'C' => _('Last of').' (T)',
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'M' => $this->metrics,
 				'A' => true
 			],
 			'shift' => [
 				'C' => _('Time shift'),
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'A' => false
 			],
 			'time' => [
 				'C' => _('Time').' (t)',
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'A' => true
 			],
 			'fit' => [
 				'C' => _('Fit'),
-				'T' => T_ZBX_STR,
+				'T' => T_TRX_STR,
 				'A' => false
 			],
 			'mode' => [
 				'C' => _('Mode'),
-				'T' => T_ZBX_STR,
+				'T' => T_TRX_STR,
 				'A' => false
 			]
 		];
@@ -173,23 +173,23 @@ class CControllerPopupTriggerExpr extends CController {
 		$this->paramTimeleft = [
 			'last' => [
 				'C' => _('Last of').' (T)',
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'M' => $this->metrics,
 				'A' => true
 			],
 			'shift' => [
 				'C' => _('Time shift'),
-				'T' => T_ZBX_INT,
+				'T' => T_TRX_INT,
 				'A' => false
 			],
 			't' => [
 				'C' => _('Threshold'),
-				'T' => T_ZBX_DBL,
+				'T' => T_TRX_DBL,
 				'A' => true
 			],
 			'fit' => [
 				'C' => _('Fit'),
-				'T' => T_ZBX_STR,
+				'T' => T_TRX_STR,
 				'A' => false
 			]
 		];

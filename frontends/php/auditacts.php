@@ -17,11 +17,11 @@ require_once dirname(__FILE__).'/include/page_header.php';
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
 	// filter
-	'filter_rst' =>	[T_ZBX_STR,			O_OPT, P_SYS,	null,	null],
-	'filter_set' =>	[T_ZBX_STR,			O_OPT, P_SYS,	null,	null],
-	'alias' =>		[T_ZBX_STR,			O_OPT, P_SYS,	null,	null],
-	'from' =>		[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,	null],
-	'to' =>			[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,	null]
+	'filter_rst' =>	[T_TRX_STR,			O_OPT, P_SYS,	null,	null],
+	'filter_set' =>	[T_TRX_STR,			O_OPT, P_SYS,	null,	null],
+	'alias' =>		[T_TRX_STR,			O_OPT, P_SYS,	null,	null],
+	'from' =>		[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,	null],
+	'to' =>			[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,	null]
 ];
 check_fields($fields);
 validateTimeSelectorPeriod(getRequest('from'), getRequest('to'));
@@ -96,19 +96,19 @@ if (!$data['alias'] || $data['users']) {
 			'eventsource' => $eventSource['source'],
 			'eventobject' => $eventSource['object'],
 			'sortfield' => 'alertid',
-			'sortorder' => ZBX_SORT_DOWN,
+			'sortorder' => TRX_SORT_DOWN,
 			'limit' => $config['search_limit'] + 1
 		]));
 	}
 
 	CArrayHelper::sort($data['alerts'], [
-		['field' => 'alertid', 'order' => ZBX_SORT_DOWN]
+		['field' => 'alertid', 'order' => TRX_SORT_DOWN]
 	]);
 
 	$data['alerts'] = array_slice($data['alerts'], 0, $config['search_limit'] + 1);
 
 	// paging
-	$data['paging'] = getPagingLine($data['alerts'], ZBX_SORT_DOWN, new CUrl('auditacts.php'));
+	$data['paging'] = getPagingLine($data['alerts'], TRX_SORT_DOWN, new CUrl('auditacts.php'));
 
 	// get users
 	if (!$data['alias']) {

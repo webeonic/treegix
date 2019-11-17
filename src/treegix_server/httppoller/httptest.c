@@ -41,7 +41,7 @@ static size_t	curl_write_cb(void *ptr, size_t size, size_t nmemb, void *userdata
 {
 	size_t	r_size = size * nmemb;
 
-	ZBX_UNUSED(userdata);
+	TRX_UNUSED(userdata);
 
 	/* first piece of data */
 	if (NULL == page.data)
@@ -58,8 +58,8 @@ static size_t	curl_write_cb(void *ptr, size_t size, size_t nmemb, void *userdata
 
 static size_t	curl_ignore_cb(void *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	ZBX_UNUSED(ptr);
-	ZBX_UNUSED(userdata);
+	TRX_UNUSED(ptr);
+	TRX_UNUSED(userdata);
 
 	return size * nmemb;
 }
@@ -106,7 +106,7 @@ static void	process_test_data(zbx_uint64_t httptestid, int lastfailedstep, doubl
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	result = DBselect("select type,itemid from httptestitem where httptestid=" ZBX_FS_UI64, httptestid);
+	result = DBselect("select type,itemid from httptestitem where httptestid=" TRX_FS_UI64, httptestid);
 
 	while (NULL != (row = DBfetch(result)))
 	{
@@ -118,10 +118,10 @@ static void	process_test_data(zbx_uint64_t httptestid, int lastfailedstep, doubl
 
 		switch (types[num] = (unsigned char)atoi(row[0]))
 		{
-			case ZBX_HTTPITEM_TYPE_SPEED:
-			case ZBX_HTTPITEM_TYPE_LASTSTEP:
+			case TRX_HTTPITEM_TYPE_SPEED:
+			case TRX_HTTPITEM_TYPE_LASTSTEP:
 				break;
-			case ZBX_HTTPITEM_TYPE_LASTERROR:
+			case TRX_HTTPITEM_TYPE_LASTERROR:
 				if (NULL == err_str)
 					continue;
 				break;
@@ -130,7 +130,7 @@ static void	process_test_data(zbx_uint64_t httptestid, int lastfailedstep, doubl
 				continue;
 		}
 
-		ZBX_STR2UINT64(itemids[num], row[1]);
+		TRX_STR2UINT64(itemids[num], row[1]);
 		num++;
 	}
 	DBfree_result(result);
@@ -160,13 +160,13 @@ static void	process_test_data(zbx_uint64_t httptestid, int lastfailedstep, doubl
 
 			switch (types[i])
 			{
-				case ZBX_HTTPITEM_TYPE_SPEED:
+				case TRX_HTTPITEM_TYPE_SPEED:
 					SET_UI64_RESULT(&value, speed_download);
 					break;
-				case ZBX_HTTPITEM_TYPE_LASTSTEP:
+				case TRX_HTTPITEM_TYPE_LASTSTEP:
 					SET_UI64_RESULT(&value, lastfailedstep);
 					break;
-				case ZBX_HTTPITEM_TYPE_LASTERROR:
+				case TRX_HTTPITEM_TYPE_LASTERROR:
 					SET_STR_RESULT(&value, zbx_strdup(NULL, err_str));
 					break;
 			}
@@ -253,10 +253,10 @@ static void	process_step_data(zbx_uint64_t httpstepid, zbx_httpstat_t *stat, zbx
 	size_t		i, num = 0;
 	AGENT_RESULT	value;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() rspcode:%ld time:" ZBX_FS_DBL " speed:" ZBX_FS_DBL,
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() rspcode:%ld time:" TRX_FS_DBL " speed:" TRX_FS_DBL,
 			__func__, stat->rspcode, stat->total_time, stat->speed_download);
 
-	result = DBselect("select type,itemid from httpstepitem where httpstepid=" ZBX_FS_UI64, httpstepid);
+	result = DBselect("select type,itemid from httpstepitem where httpstepid=" TRX_FS_UI64, httpstepid);
 
 	while (NULL != (row = DBfetch(result)))
 	{
@@ -266,14 +266,14 @@ static void	process_step_data(zbx_uint64_t httpstepid, zbx_httpstat_t *stat, zbx
 			break;
 		}
 
-		if (ZBX_HTTPITEM_TYPE_RSPCODE != (types[num] = (unsigned char)atoi(row[0])) &&
-				ZBX_HTTPITEM_TYPE_TIME != types[num] && ZBX_HTTPITEM_TYPE_SPEED != types[num])
+		if (TRX_HTTPITEM_TYPE_RSPCODE != (types[num] = (unsigned char)atoi(row[0])) &&
+				TRX_HTTPITEM_TYPE_TIME != types[num] && TRX_HTTPITEM_TYPE_SPEED != types[num])
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
 		}
 
-		ZBX_STR2UINT64(itemids[num], row[1]);
+		TRX_STR2UINT64(itemids[num], row[1]);
 		num++;
 	}
 	DBfree_result(result);
@@ -303,13 +303,13 @@ static void	process_step_data(zbx_uint64_t httpstepid, zbx_httpstat_t *stat, zbx
 
 			switch (types[i])
 			{
-				case ZBX_HTTPITEM_TYPE_RSPCODE:
+				case TRX_HTTPITEM_TYPE_RSPCODE:
 					SET_UI64_RESULT(&value, stat->rspcode);
 					break;
-				case ZBX_HTTPITEM_TYPE_TIME:
+				case TRX_HTTPITEM_TYPE_TIME:
 					SET_DBL_RESULT(&value, stat->total_time);
 					break;
-				case ZBX_HTTPITEM_TYPE_SPEED:
+				case TRX_HTTPITEM_TYPE_SPEED:
 					SET_DBL_RESULT(&value, stat->speed_download);
 					break;
 			}
@@ -362,7 +362,7 @@ static int	httpstep_load_pairs(DC_HOST *host, zbx_httpstep_t *httpstep)
 	result = DBselect(
 			"select name,value,type"
 			" from httpstep_field"
-			" where httpstepid=" ZBX_FS_UI64
+			" where httpstepid=" TRX_FS_UI64
 			" order by httpstep_fieldid",
 			httpstep->httpstep->httpstepid);
 
@@ -384,7 +384,7 @@ static int	httpstep_load_pairs(DC_HOST *host, zbx_httpstep_t *httpstep)
 
 		/* variable names cannot contain macros, and both variable names and variable values cannot contain */
 		/* another variables */
-		if (ZBX_HTTPFIELD_VARIABLE != type && (SUCCEED != (ret = substitute_simple_macros(NULL, NULL, NULL,
+		if (TRX_HTTPFIELD_VARIABLE != type && (SUCCEED != (ret = substitute_simple_macros(NULL, NULL, NULL,
 				NULL, NULL, host, NULL, NULL, NULL, &key, MACRO_TYPE_HTTPTEST_FIELD, NULL, 0)) ||
 				SUCCEED != (ret = http_substitute_variables(httpstep->httptest, &key)) ||
 				SUCCEED != (ret = http_substitute_variables(httpstep->httptest, &value))))
@@ -396,7 +396,7 @@ static int	httpstep_load_pairs(DC_HOST *host, zbx_httpstep_t *httpstep)
 		}
 
 		/* keys and values of query fields / post fields should be encoded */
-		if (ZBX_HTTPFIELD_QUERY_FIELD == type || ZBX_HTTPFIELD_POST_FIELD == type)
+		if (TRX_HTTPFIELD_QUERY_FIELD == type || TRX_HTTPFIELD_POST_FIELD == type)
 		{
 			zbx_http_url_encode(key, &key);
 			zbx_http_url_encode(value, &value);
@@ -404,16 +404,16 @@ static int	httpstep_load_pairs(DC_HOST *host, zbx_httpstep_t *httpstep)
 
 		switch (type)
 		{
-			case ZBX_HTTPFIELD_HEADER:
+			case TRX_HTTPFIELD_HEADER:
 				vector = &headers;
 				break;
-			case ZBX_HTTPFIELD_VARIABLE:
+			case TRX_HTTPFIELD_VARIABLE:
 				vector = &httpstep->variables;
 				break;
-			case ZBX_HTTPFIELD_QUERY_FIELD:
+			case TRX_HTTPFIELD_QUERY_FIELD:
 				vector = &query_fields;
 				break;
-			case ZBX_HTTPFIELD_POST_FIELD:
+			case TRX_HTTPFIELD_POST_FIELD:
 				vector = &post_fields;
 				break;
 			default:
@@ -465,7 +465,7 @@ static int	httpstep_load_pairs(DC_HOST *host, zbx_httpstep_t *httpstep)
 	httpstep->url = url;
 
 	/* POST data can be saved as raw data or as form data */
-	if (ZBX_POSTTYPE_FORM == httpstep->httpstep->post_type)
+	if (TRX_POSTTYPE_FORM == httpstep->httpstep->post_type)
 		httpstep_pairs_join(&httpstep->posts, &alloc_len, &offset, "=", "&", &post_fields);
 	else
 		httpstep->posts = httpstep->httpstep->posts;	/* post data in raw format */
@@ -494,7 +494,7 @@ out:
 static void	add_http_headers(char *headers, struct curl_slist **headers_slist, char **header_cookie)
 {
 #define COOKIE_HEADER_STR	"Cookie:"
-#define COOKIE_HEADER_STR_LEN	ZBX_CONST_STRLEN(COOKIE_HEADER_STR)
+#define COOKIE_HEADER_STR_LEN	TRX_CONST_STRLEN(COOKIE_HEADER_STR)
 
 	char	*line;
 
@@ -543,7 +543,7 @@ static int	httptest_load_pairs(DC_HOST *host, zbx_httptest_t *httptest)
 	result = DBselect(
 			"select name,value,type"
 			" from httptest_field"
-			" where httptestid=" ZBX_FS_UI64
+			" where httptestid=" TRX_FS_UI64
 			" order by httptest_fieldid",
 			httptest->httptest.httptestid);
 
@@ -564,7 +564,7 @@ static int	httptest_load_pairs(DC_HOST *host, zbx_httptest_t *httptest)
 
 		/* variable names cannot contain macros, and both variable names and variable values cannot contain */
 		/* another variables */
-		if (ZBX_HTTPFIELD_VARIABLE != type && SUCCEED != (ret = substitute_simple_macros(NULL, NULL, NULL,
+		if (TRX_HTTPFIELD_VARIABLE != type && SUCCEED != (ret = substitute_simple_macros(NULL, NULL, NULL,
 				NULL, NULL, host, NULL, NULL, NULL, &key, MACRO_TYPE_HTTPTEST_FIELD, NULL, 0)))
 		{
 			httppairs_free(&httptest->variables);
@@ -575,10 +575,10 @@ static int	httptest_load_pairs(DC_HOST *host, zbx_httptest_t *httptest)
 
 		switch (type)
 		{
-			case ZBX_HTTPFIELD_HEADER:
+			case TRX_HTTPFIELD_HEADER:
 				vector = &headers;
 				break;
-			case ZBX_HTTPFIELD_VARIABLE:
+			case TRX_HTTPFIELD_VARIABLE:
 				vector = &httptest->variables;
 				break;
 			default:
@@ -636,14 +636,14 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 	zbx_httpstep_t	httpstep;
 #endif
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() httptestid:" ZBX_FS_UI64 " name:'%s'",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() httptestid:" TRX_FS_UI64 " name:'%s'",
 			__func__, httptest->httptest.httptestid, httptest->httptest.name);
 
 	result = DBselect(
 			"select httpstepid,no,name,url,timeout,posts,required,status_codes,post_type,follow_redirects,"
 				"retrieve_mode"
 			" from httpstep"
-			" where httptestid=" ZBX_FS_UI64
+			" where httptestid=" TRX_FS_UI64
 			" order by no",
 			httptest->httptest.httptestid);
 
@@ -656,7 +656,7 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 	/* 2) update interval is invalid */
 	db_httpstep.name = NULL;
 
-	if (SUCCEED != is_time_suffix(buffer, &delay, ZBX_LENGTH_UNLIMITED))
+	if (SUCCEED != is_time_suffix(buffer, &delay, TRX_LENGTH_UNLIMITED))
 	{
 		err_str = zbx_dsprintf(err_str, "update interval \"%s\" is invalid", buffer);
 		lastfailedstep = -1;
@@ -689,7 +689,7 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 	httpstep.httptest = httptest;
 	httpstep.httpstep = &db_httpstep;
 
-	while (NULL != (row = DBfetch(result)) && ZBX_IS_RUNNING())
+	while (NULL != (row = DBfetch(result)) && TRX_IS_RUNNING())
 	{
 		struct curl_slist	*headers_slist = NULL;
 		char			*header_cookie = NULL;
@@ -699,7 +699,7 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 		/* NOTE: do not break or return from this block! */
 		/*       process_step_data() call is required! */
 
-		ZBX_STR2UINT64(db_httpstep.httpstepid, row[0]);
+		TRX_STR2UINT64(db_httpstep.httpstepid, row[0]);
 		db_httpstep.httptestid = httptest->httptest.httptestid;
 		db_httpstep.no = atoi(row[1]);
 		db_httpstep.name = row[2];
@@ -719,7 +719,7 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 
 		db_httpstep.post_type = atoi(row[8]);
 
-		if (ZBX_POSTTYPE_RAW == db_httpstep.post_type)
+		if (TRX_POSTTYPE_RAW == db_httpstep.post_type)
 		{
 			db_httpstep.posts = zbx_strdup(NULL, row[5]);
 			substitute_simple_macros(NULL, NULL, NULL, NULL, NULL, host, NULL, NULL, NULL,
@@ -739,7 +739,7 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 		substitute_simple_macros(NULL, NULL, NULL, NULL, &host->hostid, NULL, NULL, NULL, NULL, &buffer,
 				MACRO_TYPE_COMMON, NULL, 0);
 
-		if (SUCCEED != is_time_suffix(buffer, &db_httpstep.timeout, ZBX_LENGTH_UNLIMITED))
+		if (SUCCEED != is_time_suffix(buffer, &db_httpstep.timeout, TRX_LENGTH_UNLIMITED))
 		{
 			err_str = zbx_dsprintf(err_str, "timeout \"%s\" is invalid", buffer);
 			goto httpstep_error;
@@ -756,7 +756,7 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 		memset(&stat, 0, sizeof(stat));
 
 		treegix_log(LOG_LEVEL_DEBUG, "%s() use step \"%s\"", __func__, db_httpstep.name);
-		treegix_log(LOG_LEVEL_DEBUG, "%s() use post \"%s\"", __func__, ZBX_NULL2EMPTY_STR(httpstep.posts));
+		treegix_log(LOG_LEVEL_DEBUG, "%s() use post \"%s\"", __func__, TRX_NULL2EMPTY_STR(httpstep.posts));
 
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_POSTFIELDS, httpstep.posts)))
 		{
@@ -780,7 +780,7 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 
 		if (0 != db_httpstep.follow_redirects)
 		{
-			if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_MAXREDIRS, ZBX_CURLOPT_MAXREDIRS)))
+			if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_MAXREDIRS, TRX_CURLOPT_MAXREDIRS)))
 			{
 				err_str = zbx_strdup(err_str, curl_easy_strerror(err));
 				goto httpstep_error;
@@ -810,14 +810,14 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 
 		switch (db_httpstep.retrieve_mode)
 		{
-			case ZBX_RETRIEVE_MODE_CONTENT:
+			case TRX_RETRIEVE_MODE_CONTENT:
 				curl_header_cb = curl_ignore_cb;
 				curl_body_cb = curl_write_cb;
 				break;
-			case ZBX_RETRIEVE_MODE_BOTH:
+			case TRX_RETRIEVE_MODE_BOTH:
 				curl_header_cb = curl_body_cb = curl_write_cb;
 				break;
-			case ZBX_RETRIEVE_MODE_HEADERS:
+			case TRX_RETRIEVE_MODE_HEADERS:
 				curl_header_cb = curl_write_cb;
 				curl_body_cb = curl_ignore_cb;
 				break;
@@ -836,7 +836,7 @@ static void	process_httptest(DC_HOST *host, zbx_httptest_t *httptest)
 
 		/* enable/disable fetching the body */
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_NOBODY,
-				ZBX_RETRIEVE_MODE_HEADERS == db_httpstep.retrieve_mode ? 1L : 0L)))
+				TRX_RETRIEVE_MODE_HEADERS == db_httpstep.retrieve_mode ? 1L : 0L)))
 		{
 			err_str = zbx_strdup(err_str, curl_easy_strerror(err));
 			goto httpstep_error;
@@ -964,7 +964,7 @@ httpstep_error:
 
 		httppairs_free(&httpstep.variables);
 
-		if (ZBX_POSTTYPE_FORM == httpstep.httpstep->post_type)
+		if (TRX_POSTTYPE_FORM == httpstep.httpstep->post_type)
 			zbx_free(httpstep.posts);
 
 		zbx_free(httpstep.url);
@@ -989,22 +989,22 @@ httptest_error:
 	{
 		zbx_config_t	cfg;
 
-		zbx_config_get(&cfg, ZBX_CONFIG_FLAGS_REFRESH_UNSUPPORTED);
-		DBexecute("update httptest set nextcheck=%d where httptestid=" ZBX_FS_UI64,
+		zbx_config_get(&cfg, TRX_CONFIG_FLAGS_REFRESH_UNSUPPORTED);
+		DBexecute("update httptest set nextcheck=%d where httptestid=" TRX_FS_UI64,
 				(0 == cfg.refresh_unsupported || 0 > ts.sec + cfg.refresh_unsupported ?
-				ZBX_JAN_2038 : ts.sec + cfg.refresh_unsupported), httptest->httptest.httptestid);
+				TRX_JAN_2038 : ts.sec + cfg.refresh_unsupported), httptest->httptest.httptestid);
 		zbx_config_clean(&cfg);
 	}
 	else if (0 > ts.sec + delay)
 	{
 		treegix_log(LOG_LEVEL_WARNING, "nextcheck update causes overflow for web scenario \"%s\" on host \"%s\"",
 				httptest->httptest.name, host->name);
-		DBexecute("update httptest set nextcheck=%d where httptestid=" ZBX_FS_UI64,
-				ZBX_JAN_2038, httptest->httptest.httptestid);
+		DBexecute("update httptest set nextcheck=%d where httptestid=" TRX_FS_UI64,
+				TRX_JAN_2038, httptest->httptest.httptestid);
 	}
 	else
 	{
-		DBexecute("update httptest set nextcheck=%d where httptestid=" ZBX_FS_UI64,
+		DBexecute("update httptest set nextcheck=%d where httptestid=" TRX_FS_UI64,
 				ts.sec + delay, httptest->httptest.httptestid);
 	}
 
@@ -1073,7 +1073,7 @@ int	process_httptests(int httppoller_num, int now)
 			" from httptest t,hosts h"
 			" where t.hostid=h.hostid"
 				" and t.nextcheck<=%d"
-				" and " ZBX_SQL_MOD(t.httptestid,%d) "=%d"
+				" and " TRX_SQL_MOD(t.httptestid,%d) "=%d"
 				" and t.status=%d"
 				" and h.proxy_hostid is null"
 				" and h.status=%d"
@@ -1084,13 +1084,13 @@ int	process_httptests(int httppoller_num, int now)
 			HOST_STATUS_MONITORED,
 			HOST_MAINTENANCE_STATUS_OFF, MAINTENANCE_TYPE_NORMAL);
 
-	while (NULL != (row = DBfetch(result)) && ZBX_IS_RUNNING())
+	while (NULL != (row = DBfetch(result)) && TRX_IS_RUNNING())
 	{
-		ZBX_STR2UINT64(host.hostid, row[0]);
+		TRX_STR2UINT64(host.hostid, row[0]);
 		strscpy(host.host, row[1]);
 		zbx_strlcpy_utf8(host.name, row[2], sizeof(host.name));
 
-		ZBX_STR2UINT64(httptest.httptest.httptestid, row[3]);
+		TRX_STR2UINT64(httptest.httptest.httptestid, row[3]);
 		httptest.httptest.name = row[4];
 
 		if (SUCCEED != httptest_load_pairs(&host, &httptest))

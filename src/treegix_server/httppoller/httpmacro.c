@@ -9,7 +9,7 @@
 #include "httpmacro.h"
 
 #define REGEXP_PREFIX		"regex:"
-#define REGEXP_PREFIX_SIZE	ZBX_CONST_STRLEN(REGEXP_PREFIX)
+#define REGEXP_PREFIX_SIZE	TRX_CONST_STRLEN(REGEXP_PREFIX)
 
 /******************************************************************************
  *                                                                            *
@@ -210,14 +210,14 @@ int	http_substitute_variables(const zbx_httptest_t *httptest, char **data)
 
 			len = right - offset;
 
-			if (ZBX_CONST_STRLEN("urlencode()") == len && 0 == strncmp(*data + offset, "urlencode()", len))
+			if (TRX_CONST_STRLEN("urlencode()") == len && 0 == strncmp(*data + offset, "urlencode()", len))
 			{
 				/* http_variable_urlencode cannot fail (except for "out of memory") */
 				/* so no check is needed */
 				substitute = NULL;
 				zbx_http_url_encode((char *)httptest->macros.values[index].second, &substitute);
 			}
-			else if (ZBX_CONST_STRLEN("urldecode()") == len &&
+			else if (TRX_CONST_STRLEN("urldecode()") == len &&
 					0 == strncmp(*data + offset, "urldecode()", len))
 			{
 				/* on error substitute will remain unchanged */

@@ -28,8 +28,8 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 		$fields = [
 			'hostid' => 'db hosts.hostid',
 			'value_type' => 'in '.implode(',', [ITEM_VALUE_TYPE_UINT64, ITEM_VALUE_TYPE_FLOAT, ITEM_VALUE_TYPE_STR, ITEM_VALUE_TYPE_LOG, ITEM_VALUE_TYPE_TEXT]),
-			'test_type' => 'in '.implode(',', [self::ZBX_TEST_TYPE_ITEM, self::ZBX_TEST_TYPE_ITEM_PROTOTYPE, self::ZBX_TEST_TYPE_LLD]),
-			'eol' => 'in '.implode(',', [ZBX_EOL_LF, ZBX_EOL_CRLF]),
+			'test_type' => 'in '.implode(',', [self::TRX_TEST_TYPE_ITEM, self::TRX_TEST_TYPE_ITEM_PROTOTYPE, self::TRX_TEST_TYPE_LLD]),
+			'eol' => 'in '.implode(',', [TRX_EOL_LF, TRX_EOL_CRLF]),
 			'steps' => 'required|array',
 			'macros' => 'array',
 			'value' => 'string',
@@ -70,7 +70,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 							_('only one time unit is allowed')
 						));
 					}
-					elseif ($tokens && $tokens[0]['type'] == CRelativeTimeParser::ZBX_TOKEN_PRECISION) {
+					elseif ($tokens && $tokens[0]['type'] == CRelativeTimeParser::TRX_TOKEN_PRECISION) {
 						error(_s('Incorrect value for field "%1$s": %2$s.', _('Prev. time'),
 							_('a relative time is expected')
 						));
@@ -108,7 +108,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 	}
 
 	protected function doAction() {
-		global $ZBX_SERVER, $ZBX_SERVER_PORT;
+		global $TRX_SERVER, $TRX_SERVER_PORT;
 
 		$data = [
 			'value' => $this->getInput('value', ''),
@@ -161,7 +161,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 		];
 
 		// Send test details to Treegix server.
-		$server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
+		$server = new CTreegixServer($TRX_SERVER, $TRX_SERVER_PORT, TRX_SOCKET_TIMEOUT, TRX_SOCKET_BYTES_LIMIT);
 		$result = $server->testPreprocessingSteps($data, get_cookie('zbx_sessionid'));
 
 		if ($result === false) {
@@ -181,7 +181,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 
 					if (array_key_exists('error', $step)) {
 						// If error happened and no value is set, frontend shows label 'No value'.
-						if (!array_key_exists('action', $step) || $step['action'] != ZBX_PREPROC_FAIL_SET_VALUE) {
+						if (!array_key_exists('action', $step) || $step['action'] != TRX_PREPROC_FAIL_SET_VALUE) {
 							unset($step['result']);
 							$test_failed = true;
 						}
@@ -194,7 +194,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 				unset($step['error_handler_params']);
 
 				// Latest executed step due to the error or end of preprocessing.
-				$test_outcome = $step + ['action' => ZBX_PREPROC_FAIL_DEFAULT];
+				$test_outcome = $step + ['action' => TRX_PREPROC_FAIL_DEFAULT];
 			}
 			unset($step);
 
@@ -210,7 +210,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 				}
 				elseif (array_key_exists('error', $result)) {
 					$output['final'] = [
-						'action' => ($test_outcome['action'] == ZBX_PREPROC_FAIL_SET_ERROR)
+						'action' => ($test_outcome['action'] == TRX_PREPROC_FAIL_SET_ERROR)
 							? _('Set error to')
 							: '',
 						'error' => $result['error']
@@ -219,7 +219,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 
 				if ($output['final']['action'] !== '') {
 					$output['final']['action'] = (new CSpan($output['final']['action']))
-						->addClass(ZBX_STYLE_GREY)
+						->addClass(TRX_STYLE_GREY)
 						->toString();
 				}
 			}
@@ -239,7 +239,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 		if ($var === 'value' || $var === 'prev_value') {
 			$value = str_replace("\r\n", "\n", $value);
 
-			if (parent::getInput('eol', ZBX_EOL_LF) == ZBX_EOL_CRLF) {
+			if (parent::getInput('eol', TRX_EOL_LF) == TRX_EOL_CRLF) {
 				$value = str_replace("\n", "\r\n", $value);
 			}
 		}

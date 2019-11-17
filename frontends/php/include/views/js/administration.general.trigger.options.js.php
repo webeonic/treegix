@@ -8,7 +8,7 @@ $schema = DB::getSchema('config');
 			var checked = jQuery(this).is(':checked');
 			jQuery(".input-color-picker").each(function() {
 				var $field = jQuery(this);
-				$field.toggleClass('<?= ZBX_STYLE_DISABLED ?>', !checked);
+				$field.toggleClass('<?= TRX_STYLE_DISABLED ?>', !checked);
 				jQuery("input", $field).prop('disabled', !checked);
 			});
 		});
@@ -20,7 +20,7 @@ $schema = DB::getSchema('config');
 					{
 						'title': <?= CJs::encodeJson(_('Cancel')) ?>,
 						'cancel': true,
-						'class': '<?= ZBX_STYLE_BTN_ALT ?>',
+						'class': '<?= TRX_STYLE_BTN_ALT ?>',
 						'action': function() {}
 					},
 					{

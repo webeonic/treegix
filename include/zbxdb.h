@@ -1,28 +1,28 @@
 
-#ifndef TREEGIX_ZBXDB_H
-#define TREEGIX_ZBXDB_H
+#ifndef TREEGIX_TRXDB_H
+#define TREEGIX_TRXDB_H
 
 #include "common.h"
 
-#define ZBX_DB_OK	0
-#define ZBX_DB_FAIL	-1
-#define ZBX_DB_DOWN	-2
+#define TRX_DB_OK	0
+#define TRX_DB_FAIL	-1
+#define TRX_DB_DOWN	-2
 
-#define ZBX_DB_WAIT_DOWN	10
+#define TRX_DB_WAIT_DOWN	10
 
-#define ZBX_MAX_SQL_SIZE	262144	/* 256KB */
-#ifndef ZBX_MAX_OVERFLOW_SQL_SIZE
+#define TRX_MAX_SQL_SIZE	262144	/* 256KB */
+#ifndef TRX_MAX_OVERFLOW_SQL_SIZE
 #	ifdef HAVE_ORACLE
 		/* Do not use "overflowing" (multi-statement) queries for Oracle. */
 		/* Treegix benefits from cursor_sharing=force Oracle parameter */
 		/* which doesn't apply to PL/SQL blocks. */
-#		define ZBX_MAX_OVERFLOW_SQL_SIZE	0
+#		define TRX_MAX_OVERFLOW_SQL_SIZE	0
 #	else
-#		define ZBX_MAX_OVERFLOW_SQL_SIZE	ZBX_MAX_SQL_SIZE
+#		define TRX_MAX_OVERFLOW_SQL_SIZE	TRX_MAX_SQL_SIZE
 #	endif
-#elif 0 != ZBX_MAX_OVERFLOW_SQL_SIZE && \
-		(1024 > ZBX_MAX_OVERFLOW_SQL_SIZE || ZBX_MAX_OVERFLOW_SQL_SIZE > ZBX_MAX_SQL_SIZE)
-#error ZBX_MAX_OVERFLOW_SQL_SIZE is out of range
+#elif 0 != TRX_MAX_OVERFLOW_SQL_SIZE && \
+		(1024 > TRX_MAX_OVERFLOW_SQL_SIZE || TRX_MAX_OVERFLOW_SQL_SIZE > TRX_MAX_SQL_SIZE)
+#error TRX_MAX_OVERFLOW_SQL_SIZE is out of range
 #endif
 
 typedef char	**DB_ROW;
@@ -40,21 +40,21 @@ zbx_db_value_t;
 
 #ifdef HAVE_SQLITE3
 	/* we have to put double % here for sprintf */
-#	define ZBX_SQL_MOD(x, y) #x "%%" #y
+#	define TRX_SQL_MOD(x, y) #x "%%" #y
 #else
-#	define ZBX_SQL_MOD(x, y) "mod(" #x "," #y ")"
+#	define TRX_SQL_MOD(x, y) "mod(" #x "," #y ")"
 #endif
 
 #ifdef HAVE_SQLITE3
-#	define ZBX_FOR_UPDATE	""	/* SQLite3 does not support "select ... for update" */
+#	define TRX_FOR_UPDATE	""	/* SQLite3 does not support "select ... for update" */
 #else
-#	define ZBX_FOR_UPDATE	" for update"
+#	define TRX_FOR_UPDATE	" for update"
 #endif
 
 #ifdef HAVE_MULTIROW_INSERT
-#	define ZBX_ROW_DL	","
+#	define TRX_ROW_DL	","
 #else
-#	define ZBX_ROW_DL	";\n"
+#	define TRX_ROW_DL	";\n"
 #endif
 
 int	zbx_db_init(const char *dbname, const char *const db_schema, char **error);
@@ -78,7 +78,7 @@ typedef struct
 {
 	/* the parameter position, starting with 0 */
 	int			position;
-	/* the parameter type (ZBX_TYPE_* ) */
+	/* the parameter type (TRX_TYPE_* ) */
 	unsigned char		type;
 	/* the maximum parameter size */
 	size_t			size_max;
@@ -111,7 +111,7 @@ typedef enum
 zbx_escape_sequence_t;
 char		*zbx_db_dyn_escape_string(const char *src, size_t max_bytes, size_t max_chars,
 		zbx_escape_sequence_t flag);
-#define ZBX_SQL_LIKE_ESCAPE_CHAR '!'
+#define TRX_SQL_LIKE_ESCAPE_CHAR '!'
 char		*zbx_db_dyn_escape_like_pattern(const char *src);
 
 int		zbx_db_strlen_n(const char *text, size_t maxlen);

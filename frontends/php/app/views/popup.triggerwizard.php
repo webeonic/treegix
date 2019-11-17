@@ -51,19 +51,19 @@ $form->addItem(
 			(new CLabel(_('Name'), 'description'))->setAsteriskMark(),
 			(new CTextBox('description', $options['description']))
 				->setAriaRequired()
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		)
 		->addRow(
 			new CLabel(_('Operational data'), 'opdata'),
-			(new CTextBox('opdata', $options['opdata']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			(new CTextBox('opdata', $options['opdata']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		)
 		->addRow(_('Item'), [
 			(new CTextBox('item', $options['item_name']))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAttribute('disabled', 'disabled'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CButton(null, _('Select')))
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 				->onClick('return PopUp("popup.generic",'.
 					CJs::encodeJson([
 						'srctbl' => 'items',
@@ -81,22 +81,22 @@ $form->addItem(
 		]))
 		->addRow((new CLabel(_('Expression'), $expression_table->getId()))->setAsteriskMark(),
 			(new CTextBox('expression'))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setId('logexpr')
 		)
 		->addRow(null, [
 			(new CCheckBox('iregexp'))->setLabel('iregexp'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-			(new CButton('add_key_and', _('AND')))->addClass(ZBX_STYLE_BTN_GREY),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-			(new CButton('add_key_or', _('OR')))->addClass(ZBX_STYLE_BTN_GREY),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+			(new CButton('add_key_and', _('AND')))->addClass(TRX_STYLE_BTN_GREY),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+			(new CButton('add_key_or', _('OR')))->addClass(TRX_STYLE_BTN_GREY),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CComboBox('expr_type', null, null, [
 				CTextTriggerConstructor::EXPRESSION_TYPE_MATCH => _('Include'),
 				CTextTriggerConstructor::EXPRESSION_TYPE_NO_MATCH => _('Exclude')
 			]))->setId('expr_type'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-			(new CButton('add_exp', _('Add')))->addClass(ZBX_STYLE_BTN_GREY)
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+			(new CButton('add_exp', _('Add')))->addClass(TRX_STYLE_BTN_GREY)
 		])
 		->addRow(null,
 			(new CDiv((new CTable())
@@ -108,17 +108,17 @@ $form->addItem(
 					_('Action')
 				])
 			))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 		)
 		->addRow(null,
 			(new CDiv($expression_table))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 		)
-		->addRow(_('URL'), (new CTextBox('url', $options['url']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH))
+		->addRow(_('URL'), (new CTextBox('url', $options['url']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH))
 		->addRow(_('Description'),
-			(new CTextArea('comments', $options['comments']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			(new CTextArea('comments', $options['comments']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		)
 		->addRow(_('Enabled'),
 			(new CCheckBox('status'))->setChecked($options['status'] == TRIGGER_STATUS_ENABLED)

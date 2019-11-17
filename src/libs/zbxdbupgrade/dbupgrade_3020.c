@@ -42,7 +42,7 @@ int	DBpatch_3020001(void)
 
 		while (NULL != (row = DBfetch(result)))
 		{
-			ZBX_STR2UINT64(eventid, row[0]);
+			TRX_STR2UINT64(eventid, row[0]);
 			zbx_vector_uint64_append(&eventids, eventid);
 		}
 		DBfree_result(result);
@@ -62,13 +62,13 @@ int	DBpatch_3020001(void)
 
 		while (NULL != (row = DBfetch(result)))
 		{
-			ZBX_STR2UINT64(eventid, row[0]);
+			TRX_STR2UINT64(eventid, row[0]);
 			zbx_vector_uint64_append(&eventids, eventid);
 		}
 		DBfree_result(result);
 	}
 
-	zbx_vector_uint64_sort(&eventids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	if (0 != eventids.values_num)
 		DBexecute_multiple_query("delete from problem where", "eventid", &eventids);

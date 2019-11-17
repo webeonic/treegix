@@ -14,7 +14,7 @@ class CControllerPopupHttpStep extends CController {
 			'httpstepid' =>			'int32',
 			'name' =>				'string|not_empty',
 			'url' =>				'string|not_empty',
-			'post_type' =>			'in '.implode(',', [ZBX_POSTTYPE_RAW, ZBX_POSTTYPE_FORM]),
+			'post_type' =>			'in '.implode(',', [TRX_POSTTYPE_RAW, TRX_POSTTYPE_FORM]),
 			'posts' =>				'string',
 			'retrieve_mode' =>		'in '.implode(',', [HTTPTEST_STEP_RETRIEVE_MODE_CONTENT, HTTPTEST_STEP_RETRIEVE_MODE_HEADERS, HTTPTEST_STEP_RETRIEVE_MODE_BOTH]),
 			'follow_redirects' =>	'in '.implode(',', [HTTPTEST_STEP_FOLLOW_REDIRECTS_ON, HTTPTEST_STEP_FOLLOW_REDIRECTS_OFF]),
@@ -51,7 +51,7 @@ class CControllerPopupHttpStep extends CController {
 		$page_options = [
 			'name' => $this->getInput('name', ''),
 			'templated' => $this->getInput('templated', 0),
-			'post_type' => $this->getInput('post_type', ZBX_POSTTYPE_FORM),
+			'post_type' => $this->getInput('post_type', TRX_POSTTYPE_FORM),
 			'posts' => $this->getInput('posts', ''),
 			'url' => $this->getInput('url', ''),
 			'timeout' => $this->getInput('timeout', DB::getDefault('httpstep', 'timeout')),

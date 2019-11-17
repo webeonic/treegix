@@ -191,12 +191,12 @@ class CWidgetConfig {
 	 *
 	 * @param string $type       Widget type
 	 * @param array  $fields     Widget form fields
-	 * @param int    $view_mode  Widget view mode. ZBX_WIDGET_VIEW_MODE_NORMAL by default
+	 * @param int    $view_mode  Widget view mode. TRX_WIDGET_VIEW_MODE_NORMAL by default
 	 *
 	 * @return bool
 	 */
 	private static function hasPadding($type, $fields, $view_mode) {
-		if ($view_mode == ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER) {
+		if ($view_mode == TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER) {
 			switch ($type) {
 				case WIDGET_CLOCK:
 				case WIDGET_GRAPH:

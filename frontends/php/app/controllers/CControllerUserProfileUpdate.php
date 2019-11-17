@@ -69,7 +69,7 @@ class CControllerUserProfileUpdate extends CControllerUserUpdateGeneral {
 		$user['userid'] = CWebUser::$data['userid'];
 
 		if ($this->getInput('password1', '') !== ''
-				|| ($this->hasInput('password1') && $this->auth_type == ZBX_AUTH_INTERNAL)) {
+				|| ($this->hasInput('password1') && $this->auth_type == TRX_AUTH_INTERNAL)) {
 			$user['passwd'] = $this->getInput('password1');
 		}
 
@@ -93,7 +93,7 @@ class CControllerUserProfileUpdate extends CControllerUserUpdateGeneral {
 		$result = DBend($result);
 
 		if ($result) {
-			$response = new CControllerResponseRedirect(ZBX_DEFAULT_URL);
+			$response = new CControllerResponseRedirect(TRX_DEFAULT_URL);
 			$response->setMessageOk(_('User updated'));
 		}
 		else {

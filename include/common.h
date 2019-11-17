@@ -19,53 +19,53 @@
 #ifdef snprintf
 #	undef snprintf
 #endif
-#define snprintf	ERROR_DO_NOT_USE_SNPRINTF_FUNCTION_TRY_TO_USE_ZBX_SNPRINTF
+#define snprintf	ERROR_DO_NOT_USE_SNPRINTF_FUNCTION_TRY_TO_USE_TRX_SNPRINTF
 
 #ifdef sprintf
 #	undef sprintf
 #endif
-#define sprintf		ERROR_DO_NOT_USE_SPRINTF_FUNCTION_TRY_TO_USE_ZBX_SNPRINTF
+#define sprintf		ERROR_DO_NOT_USE_SPRINTF_FUNCTION_TRY_TO_USE_TRX_SNPRINTF
 
 #ifdef strncpy
 #	undef strncpy
 #endif
-#define strncpy		ERROR_DO_NOT_USE_STRNCPY_FUNCTION_TRY_TO_USE_ZBX_STRLCPY
+#define strncpy		ERROR_DO_NOT_USE_STRNCPY_FUNCTION_TRY_TO_USE_TRX_STRLCPY
 
 #ifdef strcpy
 #	undef strcpy
 #endif
-#define strcpy		ERROR_DO_NOT_USE_STRCPY_FUNCTION_TRY_TO_USE_ZBX_STRLCPY
+#define strcpy		ERROR_DO_NOT_USE_STRCPY_FUNCTION_TRY_TO_USE_TRX_STRLCPY
 
 #ifdef vsprintf
 #	undef vsprintf
 #endif
-#define vsprintf	ERROR_DO_NOT_USE_VSPRINTF_FUNCTION_TRY_TO_USE_ZBX_VSNPRINTF
+#define vsprintf	ERROR_DO_NOT_USE_VSPRINTF_FUNCTION_TRY_TO_USE_TRX_VSNPRINTF
 
 #ifdef strncat
 #	undef strncat
 #endif
-#define strncat		ERROR_DO_NOT_USE_STRNCAT_FUNCTION_TRY_TO_USE_ZBX_STRLCAT
+#define strncat		ERROR_DO_NOT_USE_STRNCAT_FUNCTION_TRY_TO_USE_TRX_STRLCAT
 
 #ifdef strncasecmp
 #	undef strncasecmp
 #endif
-#define strncasecmp	ERROR_DO_NOT_USE_STRNCASECMP_FUNCTION_TRY_TO_USE_ZBX_STRNCASECMP
+#define strncasecmp	ERROR_DO_NOT_USE_STRNCASECMP_FUNCTION_TRY_TO_USE_TRX_STRNCASECMP
 
 #define ON	1
 #define OFF	0
 
 #if defined(_WINDOWS)
-#	define	ZBX_SERVICE_NAME_LEN	64
-extern char TREEGIX_SERVICE_NAME[ZBX_SERVICE_NAME_LEN];
-extern char TREEGIX_EVENT_SOURCE[ZBX_SERVICE_NAME_LEN];
+#	define	TRX_SERVICE_NAME_LEN	64
+extern char TREEGIX_SERVICE_NAME[TRX_SERVICE_NAME_LEN];
+extern char TREEGIX_EVENT_SOURCE[TRX_SERVICE_NAME_LEN];
 
 #	pragma warning (disable: 4996)	/* warning C4996: <function> was declared deprecated */
 #endif
 
 #if defined(__GNUC__) && __GNUC__ >= 7
-#	define ZBX_FALLTHROUGH	__attribute__ ((fallthrough))
+#	define TRX_FALLTHROUGH	__attribute__ ((fallthrough))
 #else
-#	define ZBX_FALLTHROUGH
+#	define TRX_FALLTHROUGH
 #endif
 
 #define	SUCCEED		0
@@ -84,16 +84,16 @@ const char	*zbx_result_string(int result);
 #define MAX_ID_LEN		21
 #define MAX_STRING_LEN		2048
 #define MAX_BUFFER_LEN		65536
-#define MAX_ZBX_HOSTNAME_LEN	128
-#define MAX_ZBX_DNSNAME_LEN	255	/* maximum host DNS name length from RFC 1035 (without terminating '\0') */
-#define MAX_EXECUTE_OUTPUT_LEN	(512 * ZBX_KIBIBYTE)
+#define MAX_TRX_HOSTNAME_LEN	128
+#define MAX_TRX_DNSNAME_LEN	255	/* maximum host DNS name length from RFC 1035 (without terminating '\0') */
+#define MAX_EXECUTE_OUTPUT_LEN	(512 * TRX_KIBIBYTE)
 
-#define ZBX_MAX_UINT64		(~__UINT64_C(0))
-#define ZBX_MAX_UINT64_LEN	21
+#define TRX_MAX_UINT64		(~__UINT64_C(0))
+#define TRX_MAX_UINT64_LEN	21
 
 /******************************************************************************
  *                                                                            *
- * Macro: ZBX_UNUSED                                                          *
+ * Macro: TRX_UNUSED                                                          *
  *                                                                            *
  * Purpose: silences compiler warning about unused function parameter         *
  *                                                                            *
@@ -103,7 +103,7 @@ const char	*zbx_result_string(int result);
  * Comments: Use only on unused, non-volatile function parameters!            *
  *                                                                            *
  ******************************************************************************/
-#define ZBX_UNUSED(var) (void)(var)
+#define TRX_UNUSED(var) (void)(var)
 
 typedef struct
 {
@@ -124,7 +124,7 @@ zbx_timezone_t;
 #define zbx_timespec_compare(t1, t2)	\
 	((t1)->sec == (t2)->sec ? (t1)->ns - (t2)->ns : (t1)->sec - (t2)->sec)
 
-#define ZBX_DOUBLE_EPSILON	0.000001
+#define TRX_DOUBLE_EPSILON	0.000001
 int	zbx_double_compare(double a, double b);
 
 /* item types */
@@ -172,10 +172,10 @@ extern const int	INTERFACE_TYPE_PRIORITY[INTERFACE_TYPE_COUNT];
 #define SNMP_BULK_DISABLED	0
 #define SNMP_BULK_ENABLED	1
 
-#define ZBX_FLAG_DISCOVERY_NORMAL	0x00
-#define ZBX_FLAG_DISCOVERY_RULE		0x01
-#define ZBX_FLAG_DISCOVERY_PROTOTYPE	0x02
-#define ZBX_FLAG_DISCOVERY_CREATED	0x04
+#define TRX_FLAG_DISCOVERY_NORMAL	0x00
+#define TRX_FLAG_DISCOVERY_RULE		0x01
+#define TRX_FLAG_DISCOVERY_PROTOTYPE	0x02
+#define TRX_FLAG_DISCOVERY_CREATED	0x04
 
 typedef enum
 {
@@ -346,8 +346,8 @@ const char	*zbx_dservice_type_string(zbx_dservice_type_t service);
 #define CONDITION_OPERATOR_NO			11
 
 /* maintenance tag operators */
-#define ZBX_MAINTENANCE_TAG_OPERATOR_EQUAL	0
-#define ZBX_MAINTENANCE_TAG_OPERATOR_LIKE	2
+#define TRX_MAINTENANCE_TAG_OPERATOR_EQUAL	0
+#define TRX_MAINTENANCE_TAG_OPERATOR_LIKE	2
 
 /* maintenance tag evaluation types */
 #define MAINTENANCE_TAG_EVAL_TYPE_AND_OR	0
@@ -405,18 +405,18 @@ zbx_graph_yaxis_types_t;
 #define SERVER_ICMPPINGLOSS_KEY	"icmppingloss"
 
 /* runtime control options */
-#define ZBX_CONFIG_CACHE_RELOAD	"config_cache_reload"
-#define ZBX_HOUSEKEEPER_EXECUTE	"housekeeper_execute"
-#define ZBX_LOG_LEVEL_INCREASE	"log_level_increase"
-#define ZBX_LOG_LEVEL_DECREASE	"log_level_decrease"
+#define TRX_CONFIG_CACHE_RELOAD	"config_cache_reload"
+#define TRX_HOUSEKEEPER_EXECUTE	"housekeeper_execute"
+#define TRX_LOG_LEVEL_INCREASE	"log_level_increase"
+#define TRX_LOG_LEVEL_DECREASE	"log_level_decrease"
 
 /* value for not supported items */
-#define ZBX_NOTSUPPORTED	"ZBX_NOTSUPPORTED"
+#define TRX_NOTSUPPORTED	"TRX_NOTSUPPORTED"
 /* the error message for not supported items when reason is unknown */
-#define ZBX_NOTSUPPORTED_MSG	"Unknown error."
+#define TRX_NOTSUPPORTED_MSG	"Unknown error."
 
 /* Treegix Agent non-critical error (agents older than 2.0) */
-#define ZBX_ERROR		"ZBX_ERROR"
+#define TRX_ERROR		"TRX_ERROR"
 
 /* media types */
 typedef enum
@@ -477,52 +477,52 @@ typedef enum
 zbx_group_status_type_t;
 
 /* group internal flag */
-#define ZBX_INTERNAL_GROUP		1
+#define TRX_INTERNAL_GROUP		1
 
 /* program type */
-#define ZBX_PROGRAM_TYPE_SERVER		0x01
-#define ZBX_PROGRAM_TYPE_PROXY_ACTIVE	0x02
-#define ZBX_PROGRAM_TYPE_PROXY_PASSIVE	0x04
-#define ZBX_PROGRAM_TYPE_PROXY		0x06	/* ZBX_PROGRAM_TYPE_PROXY_ACTIVE | ZBX_PROGRAM_TYPE_PROXY_PASSIVE */
-#define ZBX_PROGRAM_TYPE_AGENTD		0x08
-#define ZBX_PROGRAM_TYPE_SENDER		0x10
-#define ZBX_PROGRAM_TYPE_GET		0x20
+#define TRX_PROGRAM_TYPE_SERVER		0x01
+#define TRX_PROGRAM_TYPE_PROXY_ACTIVE	0x02
+#define TRX_PROGRAM_TYPE_PROXY_PASSIVE	0x04
+#define TRX_PROGRAM_TYPE_PROXY		0x06	/* TRX_PROGRAM_TYPE_PROXY_ACTIVE | TRX_PROGRAM_TYPE_PROXY_PASSIVE */
+#define TRX_PROGRAM_TYPE_AGENTD		0x08
+#define TRX_PROGRAM_TYPE_SENDER		0x10
+#define TRX_PROGRAM_TYPE_GET		0x20
 const char	*get_program_type_string(unsigned char program_type);
 
 /* process type */
-#define ZBX_PROCESS_TYPE_POLLER		0
-#define ZBX_PROCESS_TYPE_UNREACHABLE	1
-#define ZBX_PROCESS_TYPE_IPMIPOLLER	2
-#define ZBX_PROCESS_TYPE_PINGER		3
-#define ZBX_PROCESS_TYPE_JAVAPOLLER	4
-#define ZBX_PROCESS_TYPE_HTTPPOLLER	5
-#define ZBX_PROCESS_TYPE_TRAPPER	6
-#define ZBX_PROCESS_TYPE_SNMPTRAPPER	7
-#define ZBX_PROCESS_TYPE_PROXYPOLLER	8
-#define ZBX_PROCESS_TYPE_ESCALATOR	9
-#define ZBX_PROCESS_TYPE_HISTSYNCER	10
-#define ZBX_PROCESS_TYPE_DISCOVERER	11
-#define ZBX_PROCESS_TYPE_ALERTER	12
-#define ZBX_PROCESS_TYPE_TIMER		13
-#define ZBX_PROCESS_TYPE_HOUSEKEEPER	14
-#define ZBX_PROCESS_TYPE_DATASENDER	15
-#define ZBX_PROCESS_TYPE_CONFSYNCER	16
-#define ZBX_PROCESS_TYPE_HEARTBEAT	17
-#define ZBX_PROCESS_TYPE_SELFMON	18
-#define ZBX_PROCESS_TYPE_VMWARE		19
-#define ZBX_PROCESS_TYPE_COLLECTOR	20
-#define ZBX_PROCESS_TYPE_LISTENER	21
-#define ZBX_PROCESS_TYPE_ACTIVE_CHECKS	22
-#define ZBX_PROCESS_TYPE_TASKMANAGER	23
-#define ZBX_PROCESS_TYPE_IPMIMANAGER	24
-#define ZBX_PROCESS_TYPE_ALERTMANAGER	25
-#define ZBX_PROCESS_TYPE_PREPROCMAN	26
-#define ZBX_PROCESS_TYPE_PREPROCESSOR	27
-#define ZBX_PROCESS_TYPE_LLDMANAGER	28
-#define ZBX_PROCESS_TYPE_LLDWORKER	29
-#define ZBX_PROCESS_TYPE_ALERTSYNCER	30
-#define ZBX_PROCESS_TYPE_COUNT		31	/* number of process types */
-#define ZBX_PROCESS_TYPE_UNKNOWN	255
+#define TRX_PROCESS_TYPE_POLLER		0
+#define TRX_PROCESS_TYPE_UNREACHABLE	1
+#define TRX_PROCESS_TYPE_IPMIPOLLER	2
+#define TRX_PROCESS_TYPE_PINGER		3
+#define TRX_PROCESS_TYPE_JAVAPOLLER	4
+#define TRX_PROCESS_TYPE_HTTPPOLLER	5
+#define TRX_PROCESS_TYPE_TRAPPER	6
+#define TRX_PROCESS_TYPE_SNMPTRAPPER	7
+#define TRX_PROCESS_TYPE_PROXYPOLLER	8
+#define TRX_PROCESS_TYPE_ESCALATOR	9
+#define TRX_PROCESS_TYPE_HISTSYNCER	10
+#define TRX_PROCESS_TYPE_DISCOVERER	11
+#define TRX_PROCESS_TYPE_ALERTER	12
+#define TRX_PROCESS_TYPE_TIMER		13
+#define TRX_PROCESS_TYPE_HOUSEKEEPER	14
+#define TRX_PROCESS_TYPE_DATASENDER	15
+#define TRX_PROCESS_TYPE_CONFSYNCER	16
+#define TRX_PROCESS_TYPE_HEARTBEAT	17
+#define TRX_PROCESS_TYPE_SELFMON	18
+#define TRX_PROCESS_TYPE_VMWARE		19
+#define TRX_PROCESS_TYPE_COLLECTOR	20
+#define TRX_PROCESS_TYPE_LISTENER	21
+#define TRX_PROCESS_TYPE_ACTIVE_CHECKS	22
+#define TRX_PROCESS_TYPE_TASKMANAGER	23
+#define TRX_PROCESS_TYPE_IPMIMANAGER	24
+#define TRX_PROCESS_TYPE_ALERTMANAGER	25
+#define TRX_PROCESS_TYPE_PREPROCMAN	26
+#define TRX_PROCESS_TYPE_PREPROCESSOR	27
+#define TRX_PROCESS_TYPE_LLDMANAGER	28
+#define TRX_PROCESS_TYPE_LLDWORKER	29
+#define TRX_PROCESS_TYPE_ALERTSYNCER	30
+#define TRX_PROCESS_TYPE_COUNT		31	/* number of process types */
+#define TRX_PROCESS_TYPE_UNKNOWN	255
 const char	*get_process_type_string(unsigned char process_type);
 int		get_process_type_by_name(const char *proc_type_str);
 
@@ -551,8 +551,8 @@ zbx_maintenance_type_t;
 #define EXPRESSION_TYPE_TRUE		3
 #define EXPRESSION_TYPE_FALSE		4
 
-#define ZBX_IGNORE_CASE			0
-#define ZBX_CASE_SENSITIVE		1
+#define TRX_IGNORE_CASE			0
+#define TRX_CASE_SENSITIVE		1
 
 /* HTTP tests statuses */
 #define HTTPTEST_STATUS_MONITORED	0
@@ -675,9 +675,9 @@ const char	*zbx_item_logtype_string(unsigned char logtype);
 #define OPERATION_TYPE_ACK_MESSAGE	12
 
 /* normal and recovery operations */
-#define ZBX_OPERATION_MODE_NORMAL	0
-#define ZBX_OPERATION_MODE_RECOVERY	1
-#define ZBX_OPERATION_MODE_ACK		2
+#define TRX_OPERATION_MODE_NORMAL	0
+#define TRX_OPERATION_MODE_RECOVERY	1
+#define TRX_OPERATION_MODE_ACK		2
 
 /* algorithms for service status calculation */
 #define SERVICE_ALGORITHM_NONE	0
@@ -685,11 +685,11 @@ const char	*zbx_item_logtype_string(unsigned char logtype);
 #define SERVICE_ALGORITHM_MIN	2
 
 /* HTTP item types */
-#define ZBX_HTTPITEM_TYPE_RSPCODE	0
-#define ZBX_HTTPITEM_TYPE_TIME		1
-#define ZBX_HTTPITEM_TYPE_SPEED		2
-#define ZBX_HTTPITEM_TYPE_LASTSTEP	3
-#define ZBX_HTTPITEM_TYPE_LASTERROR	4
+#define TRX_HTTPITEM_TYPE_RSPCODE	0
+#define TRX_HTTPITEM_TYPE_TIME		1
+#define TRX_HTTPITEM_TYPE_SPEED		2
+#define TRX_HTTPITEM_TYPE_LASTSTEP	3
+#define TRX_HTTPITEM_TYPE_LASTERROR	4
 
 /* proxy_history flags */
 #define PROXY_HISTORY_FLAG_META		0x01
@@ -698,33 +698,33 @@ const char	*zbx_item_logtype_string(unsigned char logtype);
 #define PROXY_HISTORY_MASK_NOVALUE	(PROXY_HISTORY_FLAG_META | PROXY_HISTORY_FLAG_NOVALUE)
 
 /* global correlation constants */
-#define ZBX_CORRELATION_ENABLED				0
-#define ZBX_CORRELATION_DISABLED			1
+#define TRX_CORRELATION_ENABLED				0
+#define TRX_CORRELATION_DISABLED			1
 
-#define ZBX_CORR_CONDITION_OLD_EVENT_TAG		0
-#define ZBX_CORR_CONDITION_NEW_EVENT_TAG		1
-#define ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP		2
-#define ZBX_CORR_CONDITION_EVENT_TAG_PAIR		3
-#define ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE		4
-#define ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE		5
+#define TRX_CORR_CONDITION_OLD_EVENT_TAG		0
+#define TRX_CORR_CONDITION_NEW_EVENT_TAG		1
+#define TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP		2
+#define TRX_CORR_CONDITION_EVENT_TAG_PAIR		3
+#define TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE		4
+#define TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE		5
 
-#define ZBX_CORR_OPERATION_CLOSE_OLD			0
-#define ZBX_CORR_OPERATION_CLOSE_NEW			1
+#define TRX_CORR_OPERATION_CLOSE_OLD			0
+#define TRX_CORR_OPERATION_CLOSE_NEW			1
 
 /* trigger correlation modes */
-#define ZBX_TRIGGER_CORRELATION_NONE	0
-#define ZBX_TRIGGER_CORRELATION_TAG	1
+#define TRX_TRIGGER_CORRELATION_NONE	0
+#define TRX_TRIGGER_CORRELATION_TAG	1
 
 /* acknowledgement actions (flags) */
-#define ZBX_PROBLEM_UPDATE_CLOSE	0x0001
-#define ZBX_PROBLEM_UPDATE_ACKNOWLEDGE	0x0002
-#define ZBX_PROBLEM_UPDATE_MESSAGE	0x0004
-#define ZBX_PROBLEM_UPDATE_SEVERITY	0x0008
+#define TRX_PROBLEM_UPDATE_CLOSE	0x0001
+#define TRX_PROBLEM_UPDATE_ACKNOWLEDGE	0x0002
+#define TRX_PROBLEM_UPDATE_MESSAGE	0x0004
+#define TRX_PROBLEM_UPDATE_SEVERITY	0x0008
 
-#define ZBX_PROBLEM_UPDATE_ACTION_COUNT	4
+#define TRX_PROBLEM_UPDATE_ACTION_COUNT	4
 
 
-#define ZBX_USER_ONLINE_TIME	600
+#define TRX_USER_ONLINE_TIME	600
 
 /* user permissions */
 typedef enum
@@ -768,15 +768,15 @@ typedef struct
 }
 zbx_script_t;
 
-#define ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT	0
-#define ZBX_SCRIPT_TYPE_IPMI		1
-#define ZBX_SCRIPT_TYPE_SSH		2
-#define ZBX_SCRIPT_TYPE_TELNET		3
-#define ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT	4
+#define TRX_SCRIPT_TYPE_CUSTOM_SCRIPT	0
+#define TRX_SCRIPT_TYPE_IPMI		1
+#define TRX_SCRIPT_TYPE_SSH		2
+#define TRX_SCRIPT_TYPE_TELNET		3
+#define TRX_SCRIPT_TYPE_GLOBAL_SCRIPT	4
 
-#define ZBX_SCRIPT_EXECUTE_ON_AGENT	0
-#define ZBX_SCRIPT_EXECUTE_ON_SERVER	1
-#define ZBX_SCRIPT_EXECUTE_ON_PROXY	2	/* fall back to execution on server if target not monitored by proxy */
+#define TRX_SCRIPT_EXECUTE_ON_AGENT	0
+#define TRX_SCRIPT_EXECUTE_ON_SERVER	1
+#define TRX_SCRIPT_EXECUTE_ON_PROXY	2	/* fall back to execution on server if target not monitored by proxy */
 
 #define POLLER_DELAY		5
 #define DISCOVERER_DELAY	60
@@ -798,7 +798,7 @@ zbx_script_t;
 #define zbx_realloc(src, size)		zbx_realloc2(__FILE__, __LINE__, src, size)
 #define zbx_strdup(old, str)		zbx_strdup2(__FILE__, __LINE__, old, str)
 
-#define ZBX_STRDUP(var, str)	(var = zbx_strdup(var, str))
+#define TRX_STRDUP(var, str)	(var = zbx_strdup(var, str))
 
 void	*zbx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_t size);
 void	*zbx_malloc2(const char *filename, int line, void *old, size_t size);
@@ -856,27 +856,27 @@ const char	*get_program_name(const char *path);
 
 typedef enum
 {
-	ZBX_TASK_START = 0,
-	ZBX_TASK_PRINT_SUPPORTED,
-	ZBX_TASK_TEST_METRIC,
-	ZBX_TASK_SHOW_USAGE,
-	ZBX_TASK_SHOW_VERSION,
-	ZBX_TASK_SHOW_HELP,
+	TRX_TASK_START = 0,
+	TRX_TASK_PRINT_SUPPORTED,
+	TRX_TASK_TEST_METRIC,
+	TRX_TASK_SHOW_USAGE,
+	TRX_TASK_SHOW_VERSION,
+	TRX_TASK_SHOW_HELP,
 #ifdef _WINDOWS
-	ZBX_TASK_INSTALL_SERVICE,
-	ZBX_TASK_UNINSTALL_SERVICE,
-	ZBX_TASK_START_SERVICE,
-	ZBX_TASK_STOP_SERVICE
+	TRX_TASK_INSTALL_SERVICE,
+	TRX_TASK_UNINSTALL_SERVICE,
+	TRX_TASK_START_SERVICE,
+	TRX_TASK_STOP_SERVICE
 #else
-	ZBX_TASK_RUNTIME_CONTROL
+	TRX_TASK_RUNTIME_CONTROL
 #endif
 }
 zbx_task_t;
 
-#define ZBX_RTC_LOG_LEVEL_INCREASE	1
-#define ZBX_RTC_LOG_LEVEL_DECREASE	2
-#define ZBX_RTC_HOUSEKEEPER_EXECUTE	3
-#define ZBX_RTC_CONFIG_CACHE_RELOAD	8
+#define TRX_RTC_LOG_LEVEL_INCREASE	1
+#define TRX_RTC_LOG_LEVEL_DECREASE	2
+#define TRX_RTC_HOUSEKEEPER_EXECUTE	3
+#define TRX_RTC_CONFIG_CACHE_RELOAD	8
 
 typedef enum
 {
@@ -887,8 +887,8 @@ typedef enum
 }
 zbx_httptest_auth_t;
 
-#define ZBX_TASK_FLAG_MULTIPLE_AGENTS	0x01
-#define ZBX_TASK_FLAG_FOREGROUND	0x02
+#define TRX_TASK_FLAG_MULTIPLE_AGENTS	0x01
+#define TRX_TASK_FLAG_FOREGROUND	0x02
 
 typedef struct
 {
@@ -896,56 +896,56 @@ typedef struct
 	int		flags;
 	int		data;
 }
-ZBX_TASK_EX;
+TRX_TASK_EX;
 
-#define ZBX_RTC_MSG_SHIFT	0
-#define ZBX_RTC_SCOPE_SHIFT	8
-#define ZBX_RTC_DATA_SHIFT	16
+#define TRX_RTC_MSG_SHIFT	0
+#define TRX_RTC_SCOPE_SHIFT	8
+#define TRX_RTC_DATA_SHIFT	16
 
-#define ZBX_RTC_MSG_MASK	0x000000ff
-#define ZBX_RTC_SCOPE_MASK	0x0000ff00
-#define ZBX_RTC_DATA_MASK	0xffff0000
+#define TRX_RTC_MSG_MASK	0x000000ff
+#define TRX_RTC_SCOPE_MASK	0x0000ff00
+#define TRX_RTC_DATA_MASK	0xffff0000
 
-#define ZBX_RTC_GET_MSG(task)	(int)((task & ZBX_RTC_MSG_MASK) >> ZBX_RTC_MSG_SHIFT)
-#define ZBX_RTC_GET_SCOPE(task)	(int)((task & ZBX_RTC_SCOPE_MASK) >> ZBX_RTC_SCOPE_SHIFT)
-#define ZBX_RTC_GET_DATA(task)	(int)((task & ZBX_RTC_DATA_MASK) >> ZBX_RTC_DATA_SHIFT)
+#define TRX_RTC_GET_MSG(task)	(int)((task & TRX_RTC_MSG_MASK) >> TRX_RTC_MSG_SHIFT)
+#define TRX_RTC_GET_SCOPE(task)	(int)((task & TRX_RTC_SCOPE_MASK) >> TRX_RTC_SCOPE_SHIFT)
+#define TRX_RTC_GET_DATA(task)	(int)((task & TRX_RTC_DATA_MASK) >> TRX_RTC_DATA_SHIFT)
 
-#define ZBX_RTC_MAKE_MESSAGE(msg, scope, data)	((msg << ZBX_RTC_MSG_SHIFT) | (scope << ZBX_RTC_SCOPE_SHIFT) | \
-	(data << ZBX_RTC_DATA_SHIFT))
+#define TRX_RTC_MAKE_MESSAGE(msg, scope, data)	((msg << TRX_RTC_MSG_SHIFT) | (scope << TRX_RTC_SCOPE_SHIFT) | \
+	(data << TRX_RTC_DATA_SHIFT))
 
 char	*string_replace(const char *str, const char *sub_str1, const char *sub_str2);
 
-#define ZBX_FLAG_DOUBLE_PLAIN	0x00
-#define ZBX_FLAG_DOUBLE_SUFFIX	0x01
+#define TRX_FLAG_DOUBLE_PLAIN	0x00
+#define TRX_FLAG_DOUBLE_SUFFIX	0x01
 int	is_double_suffix(const char *str, unsigned char flags);
 int	is_double(const char *c);
-#define ZBX_LENGTH_UNLIMITED	0x7fffffff
+#define TRX_LENGTH_UNLIMITED	0x7fffffff
 int	is_time_suffix(const char *c, int *value, int length);
 int	is_uint_n_range(const char *str, size_t n, void *value, size_t size, zbx_uint64_t min, zbx_uint64_t max);
 int	is_hex_n_range(const char *str, size_t n, void *value, size_t size, zbx_uint64_t min, zbx_uint64_t max);
 
-#define ZBX_SIZE_T_MAX	(~(size_t)0)
+#define TRX_SIZE_T_MAX	(~(size_t)0)
 
 #define is_ushort(str, value) \
-	is_uint_n_range(str, ZBX_SIZE_T_MAX, value, sizeof(unsigned short), 0x0, 0xFFFF)
+	is_uint_n_range(str, TRX_SIZE_T_MAX, value, sizeof(unsigned short), 0x0, 0xFFFF)
 
 #define is_uint32(str, value) \
-	is_uint_n_range(str, ZBX_SIZE_T_MAX, value, 4, 0x0, 0xFFFFFFFF)
+	is_uint_n_range(str, TRX_SIZE_T_MAX, value, 4, 0x0, 0xFFFFFFFF)
 
 #define is_uint64(str, value) \
-	is_uint_n_range(str, ZBX_SIZE_T_MAX, value, 8, 0x0, __UINT64_C(0xFFFFFFFFFFFFFFFF))
+	is_uint_n_range(str, TRX_SIZE_T_MAX, value, 8, 0x0, __UINT64_C(0xFFFFFFFFFFFFFFFF))
 
 #define is_uint64_n(str, n, value) \
 	is_uint_n_range(str, n, value, 8, 0x0, __UINT64_C(0xFFFFFFFFFFFFFFFF))
 
 #define is_uint31(str, value) \
-	is_uint_n_range(str, ZBX_SIZE_T_MAX, value, 4, 0x0, 0x7FFFFFFF)
+	is_uint_n_range(str, TRX_SIZE_T_MAX, value, 4, 0x0, 0x7FFFFFFF)
 
 #define is_uint31_1(str, value) \
-	is_uint_n_range(str, ZBX_SIZE_T_MAX, value, 4, 0x0, 0x7FFFFFFE)
+	is_uint_n_range(str, TRX_SIZE_T_MAX, value, 4, 0x0, 0x7FFFFFFE)
 
 #define is_uint_range(str, value, min, max) \
-	is_uint_n_range(str, ZBX_SIZE_T_MAX, value, sizeof(unsigned int), min, max)
+	is_uint_n_range(str, TRX_SIZE_T_MAX, value, sizeof(unsigned int), min, max)
 
 int	is_boolean(const char *str, zbx_uint64_t *value);
 int	is_uoct(const char *str);
@@ -958,8 +958,8 @@ void	zbx_lrtrim(char *str, const char *charlist);
 void	zbx_trim_integer(char *str);
 void	zbx_trim_float(char *str);
 void	zbx_remove_chars(char *str, const char *charlist);
-#define ZBX_WHITESPACE			" \t\r\n"
-#define zbx_remove_whitespace(str)	zbx_remove_chars(str, ZBX_WHITESPACE)
+#define TRX_WHITESPACE			" \t\r\n"
+#define zbx_remove_whitespace(str)	zbx_remove_chars(str, TRX_WHITESPACE)
 void	del_zeros(char *s);
 int	get_param(const char *param, int num, char *buf, size_t max_len);
 int	num_param(const char *param);
@@ -971,7 +971,7 @@ char	*get_param_dyn(const char *param, int num);
  *                                                                            *
  * Parameters:                                                                *
  *      data      - [IN] an item key, SNMP OID or their parameter             *
- *      key_type  - [IN] ZBX_KEY_TYPE_*                                       *
+ *      key_type  - [IN] TRX_KEY_TYPE_*                                       *
  *      level     - [IN] for item keys and OIDs the level will be 0;          *
  *                       for their parameters - 1 or higher (for arrays)      *
  *      num       - [IN] parameter number; for item keys and OIDs the level   *
@@ -990,8 +990,8 @@ char	*get_param_dyn(const char *param, int num);
  ******************************************************************************/
 typedef int	(*replace_key_param_f)(const char *data, int key_type, int level, int num, int quoted, void *cb_data,
 		char **param);
-#define ZBX_KEY_TYPE_ITEM	0
-#define ZBX_KEY_TYPE_OID	1
+#define TRX_KEY_TYPE_ITEM	0
+#define TRX_KEY_TYPE_OID	1
 int	replace_key_params_dyn(char **data, int key_type, replace_key_param_f cb, void *cb_data, char *error,
 		size_t maxerrlen);
 
@@ -1027,10 +1027,10 @@ void	zbx_strarr_free(char **arr);
 
 void	zbx_setproctitle(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
 
-#define ZBX_KIBIBYTE		1024
-#define ZBX_MEBIBYTE		1048576
-#define ZBX_GIBIBYTE		1073741824
-#define ZBX_TEBIBYTE		__UINT64_C(1099511627776)
+#define TRX_KIBIBYTE		1024
+#define TRX_MEBIBYTE		1048576
+#define TRX_GIBIBYTE		1073741824
+#define TRX_TEBIBYTE		__UINT64_C(1099511627776)
 
 #define SEC_PER_MIN		60
 #define SEC_PER_HOUR		3600
@@ -1038,13 +1038,13 @@ void	zbx_setproctitle(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
 #define SEC_PER_WEEK		(7 * SEC_PER_DAY)
 #define SEC_PER_MONTH		(30 * SEC_PER_DAY)
 #define SEC_PER_YEAR		(365 * SEC_PER_DAY)
-#define ZBX_JAN_2038		2145916800
-#define ZBX_JAN_1970_IN_SEC	2208988800.0	/* 1970 - 1900 in seconds */
+#define TRX_JAN_2038		2145916800
+#define TRX_JAN_1970_IN_SEC	2208988800.0	/* 1970 - 1900 in seconds */
 
-#define ZBX_MAX_RECV_DATA_SIZE	(1 * ZBX_GIBIBYTE)
+#define TRX_MAX_RECV_DATA_SIZE	(1 * TRX_GIBIBYTE)
 
 /* max length of base64 data */
-#define ZBX_MAX_B64_LEN		(16 * ZBX_KIBIBYTE)
+#define TRX_MAX_B64_LEN		(16 * TRX_KIBIBYTE)
 
 double	zbx_time(void);
 void	zbx_timespec(zbx_timespec_t *ts);
@@ -1107,11 +1107,11 @@ int	int_in_list(char *list, int value);
 int	ip_in_list(const char *list, const char *ip);
 
 /* IP range support */
-#define ZBX_IPRANGE_V4	0
-#define ZBX_IPRANGE_V6	1
+#define TRX_IPRANGE_V4	0
+#define TRX_IPRANGE_V6	1
 
-#define ZBX_IPRANGE_GROUPS_V4	4
-#define ZBX_IPRANGE_GROUPS_V6	8
+#define TRX_IPRANGE_GROUPS_V4	4
+#define TRX_IPRANGE_GROUPS_V6	8
 
 typedef struct
 {
@@ -1122,12 +1122,12 @@ zbx_range_t;
 
 typedef struct
 {
-	/* contains groups of ranges for either ZBX_IPRANGE_V4 or ZBX_IPRANGE_V6 */
+	/* contains groups of ranges for either TRX_IPRANGE_V4 or TRX_IPRANGE_V6 */
 	/* ex. 127-127.0-0.0-0.2-254 (from-to.from-to.from-to.from-to)           */
 	/*                                  0       1       2       3            */
-	zbx_range_t	range[ZBX_IPRANGE_GROUPS_V6];
+	zbx_range_t	range[TRX_IPRANGE_GROUPS_V6];
 
-	/* range type - ZBX_IPRANGE_V4 or ZBX_IPRANGE_V6 */
+	/* range type - TRX_IPRANGE_V4 or TRX_IPRANGE_V6 */
 	unsigned char	type;
 
 	/* 1 if the range was defined with network mask, 0 otherwise */
@@ -1146,8 +1146,8 @@ char	*zbx_age2str(int age);
 char	*zbx_date2str(time_t date);
 char	*zbx_time2str(time_t time);
 
-#define ZBX_NULL2STR(str)	(NULL != str ? str : "(null)")
-#define ZBX_NULL2EMPTY_STR(str)	(NULL != (str) ? (str) : "")
+#define TRX_NULL2STR(str)	(NULL != str ? str : "(null)")
+#define TRX_NULL2EMPTY_STR(str)	(NULL != (str) ? (str) : "")
 
 char	*zbx_strcasestr(const char *haystack, const char *needle);
 int	cmp_key_id(const char *key_1, const char *key_2);
@@ -1176,14 +1176,14 @@ void	zbx_strupper(char *str);
 #if defined(_WINDOWS) || defined(HAVE_ICONV)
 char	*convert_to_utf8(char *in, size_t in_size, const char *encoding);
 #endif	/* HAVE_ICONV */
-#define ZBX_MAX_BYTES_IN_UTF8_CHAR	4
+#define TRX_MAX_BYTES_IN_UTF8_CHAR	4
 size_t	zbx_utf8_char_len(const char *text);
 size_t	zbx_strlen_utf8(const char *text);
 size_t	zbx_strlen_utf8_nchars(const char *text, size_t utf8_maxlen);
 size_t	zbx_strlen_utf8_nbytes(const char *text, size_t maxlen);
 
 int	zbx_is_utf8(const char *text);
-#define ZBX_UTF8_REPLACE_CHAR	'?'
+#define TRX_UTF8_REPLACE_CHAR	'?'
 void	zbx_replace_invalid_utf8(char *text);
 
 void	dos2unix(char *str);
@@ -1191,7 +1191,7 @@ int	str2uint64(const char *str, const char *suffixes, zbx_uint64_t *value);
 double	str2double(const char *str);
 
 /* time and memory size suffixes */
-#define ZBX_UNIT_SYMBOLS	"KMGTsmhdw"
+#define TRX_UNIT_SYMBOLS	"KMGTsmhdw"
 zbx_uint64_t	suffix2factor(char c);
 
 #if defined(_WINDOWS)
@@ -1254,13 +1254,13 @@ int	zbx_user_macro_parse_dyn(const char *macro, char **name, char **context, int
 char	*zbx_user_macro_unquote_context_dyn(const char *context, int len);
 char	*zbx_user_macro_quote_context_dyn(const char *context, int force_quote);
 
-#define ZBX_SESSION_ACTIVE	0
-#define ZBX_SESSION_PASSIVE	1
+#define TRX_SESSION_ACTIVE	0
+#define TRX_SESSION_PASSIVE	1
 
 char	*zbx_dyn_escape_shell_single_quote(const char *text);
 
-#define ZBX_DO_NOT_SEND_RESPONSE	0
-#define ZBX_SEND_RESPONSE		1
+#define TRX_DO_NOT_SEND_RESPONSE	0
+#define TRX_SEND_RESPONSE		1
 
 /* Do not forget to synchronize HOST_TLS_* definitions with DB schema ! */
 #define HOST_TLS_ISSUER_LEN		4096				/* for up to 1024 UTF-8 characters */
@@ -1273,9 +1273,9 @@ char	*zbx_dyn_escape_shell_single_quote(const char *text);
 #define HOST_TLS_PSK_LEN_MAX		(HOST_TLS_PSK_LEN + 1)
 #define HOST_TLS_PSK_LEN_MIN		32				/* for 16 hex-encoded bytes (128-bit PSK) */
 
-#define ZBX_PSK_FOR_HOST		0x01				/* PSK can be used for a known host */
-#define ZBX_PSK_FOR_AUTOREG		0x02				/* PSK can be used for host autoregistration */
-#define ZBX_PSK_FOR_PROXY		0x04				/* PSK is configured on proxy */
+#define TRX_PSK_FOR_HOST		0x01				/* PSK can be used for a known host */
+#define TRX_PSK_FOR_AUTOREG		0x02				/* PSK can be used for host autoregistration */
+#define TRX_PSK_FOR_PROXY		0x04				/* PSK is configured on proxy */
 
 void	zbx_function_param_parse(const char *expr, size_t *param_pos, size_t *length, size_t *sep_pos);
 char	*zbx_function_param_unquote_dyn(const char *param, size_t len, int *quoted);
@@ -1303,23 +1303,23 @@ int	zbx_alarm_timed_out(void);
 int	zbx_strcmp_natural(const char *s1, const char *s2);
 
 /* tokens used in expressions */
-#define ZBX_TOKEN_OBJECTID		0x00001
-#define ZBX_TOKEN_MACRO			0x00002
-#define ZBX_TOKEN_LLD_MACRO		0x00004
-#define ZBX_TOKEN_USER_MACRO		0x00008
-#define ZBX_TOKEN_FUNC_MACRO		0x00010
-#define ZBX_TOKEN_SIMPLE_MACRO		0x00020
-#define ZBX_TOKEN_REFERENCE		0x00040
-#define ZBX_TOKEN_LLD_FUNC_MACRO	0x00080
+#define TRX_TOKEN_OBJECTID		0x00001
+#define TRX_TOKEN_MACRO			0x00002
+#define TRX_TOKEN_LLD_MACRO		0x00004
+#define TRX_TOKEN_USER_MACRO		0x00008
+#define TRX_TOKEN_FUNC_MACRO		0x00010
+#define TRX_TOKEN_SIMPLE_MACRO		0x00020
+#define TRX_TOKEN_REFERENCE		0x00040
+#define TRX_TOKEN_LLD_FUNC_MACRO	0x00080
 
 /* additional token flags */
-#define ZBX_TOKEN_NUMERIC	0x008000
-#define ZBX_TOKEN_JSON		0x010000
-#define ZBX_TOKEN_XML		0x020000
-#define ZBX_TOKEN_REGEXP	0x040000
-#define ZBX_TOKEN_XPATH		0x080000
-#define ZBX_TOKEN_REGEXP_OUTPUT	0x100000
-#define ZBX_TOKEN_PROMETHEUS	0x200000
+#define TRX_TOKEN_NUMERIC	0x008000
+#define TRX_TOKEN_JSON		0x010000
+#define TRX_TOKEN_XML		0x020000
+#define TRX_TOKEN_REGEXP	0x040000
+#define TRX_TOKEN_XPATH		0x080000
+#define TRX_TOKEN_REGEXP_OUTPUT	0x100000
+#define TRX_TOKEN_PROMETHEUS	0x200000
 
 /* location of a substring */
 typedef struct
@@ -1399,7 +1399,7 @@ zbx_token_data_t;
 /* {} token data */
 typedef struct
 {
-	/* token type, see ZBX_TOKEN_ defines */
+	/* token type, see TRX_TOKEN_ defines */
 	int			type;
 	/* the token location in expression including opening and closing brackets {} */
 	zbx_strloc_t		loc;
@@ -1410,8 +1410,8 @@ zbx_token_t;
 
 typedef enum
 {
-	ZBX_TOKEN_SEARCH_BASIC,
-	ZBX_TOKEN_SEARCH_REFERENCES
+	TRX_TOKEN_SEARCH_BASIC,
+	TRX_TOKEN_SEARCH_REFERENCES
 }
 zbx_token_search_t;
 
@@ -1419,57 +1419,57 @@ int	zbx_token_find(const char *expression, int pos, zbx_token_t *token, zbx_toke
 int	zbx_number_find(const char *str, size_t pos, zbx_strloc_t *number_loc);
 int	zbx_strmatch_condition(const char *value, const char *pattern, unsigned char op);
 
-#define ZBX_COMPONENT_VERSION(major, minor)	((major << 16) | minor)
-#define ZBX_COMPONENT_VERSION_MAJOR(version)	(version >> 16)
-#define ZBX_COMPONENT_VERSION_MINOR(version)	(version & 0xFFFF)
+#define TRX_COMPONENT_VERSION(major, minor)	((major << 16) | minor)
+#define TRX_COMPONENT_VERSION_MAJOR(version)	(version >> 16)
+#define TRX_COMPONENT_VERSION_MINOR(version)	(version & 0xFFFF)
 
-#define ZBX_PREPROC_MULTIPLIER			1
-#define ZBX_PREPROC_RTRIM			2
-#define ZBX_PREPROC_LTRIM			3
-#define ZBX_PREPROC_TRIM			4
-#define ZBX_PREPROC_REGSUB			5
-#define ZBX_PREPROC_BOOL2DEC			6
-#define ZBX_PREPROC_OCT2DEC			7
-#define ZBX_PREPROC_HEX2DEC			8
-#define ZBX_PREPROC_DELTA_VALUE			9
-#define ZBX_PREPROC_DELTA_SPEED			10
-#define ZBX_PREPROC_XPATH			11
-#define ZBX_PREPROC_JSONPATH			12
-#define ZBX_PREPROC_VALIDATE_RANGE		13
-#define ZBX_PREPROC_VALIDATE_REGEX		14
-#define ZBX_PREPROC_VALIDATE_NOT_REGEX		15
-#define ZBX_PREPROC_ERROR_FIELD_JSON		16
-#define ZBX_PREPROC_ERROR_FIELD_XML		17
-#define ZBX_PREPROC_ERROR_FIELD_REGEX		18
-#define ZBX_PREPROC_THROTTLE_VALUE		19
-#define ZBX_PREPROC_THROTTLE_TIMED_VALUE	20
-#define ZBX_PREPROC_SCRIPT			21
-#define ZBX_PREPROC_PROMETHEUS_PATTERN		22
-#define ZBX_PREPROC_PROMETHEUS_TO_JSON		23
-#define ZBX_PREPROC_CSV_TO_JSON			24
+#define TRX_PREPROC_MULTIPLIER			1
+#define TRX_PREPROC_RTRIM			2
+#define TRX_PREPROC_LTRIM			3
+#define TRX_PREPROC_TRIM			4
+#define TRX_PREPROC_REGSUB			5
+#define TRX_PREPROC_BOOL2DEC			6
+#define TRX_PREPROC_OCT2DEC			7
+#define TRX_PREPROC_HEX2DEC			8
+#define TRX_PREPROC_DELTA_VALUE			9
+#define TRX_PREPROC_DELTA_SPEED			10
+#define TRX_PREPROC_XPATH			11
+#define TRX_PREPROC_JSONPATH			12
+#define TRX_PREPROC_VALIDATE_RANGE		13
+#define TRX_PREPROC_VALIDATE_REGEX		14
+#define TRX_PREPROC_VALIDATE_NOT_REGEX		15
+#define TRX_PREPROC_ERROR_FIELD_JSON		16
+#define TRX_PREPROC_ERROR_FIELD_XML		17
+#define TRX_PREPROC_ERROR_FIELD_REGEX		18
+#define TRX_PREPROC_THROTTLE_VALUE		19
+#define TRX_PREPROC_THROTTLE_TIMED_VALUE	20
+#define TRX_PREPROC_SCRIPT			21
+#define TRX_PREPROC_PROMETHEUS_PATTERN		22
+#define TRX_PREPROC_PROMETHEUS_TO_JSON		23
+#define TRX_PREPROC_CSV_TO_JSON			24
 
 /* custom on fail actions */
-#define ZBX_PREPROC_FAIL_DEFAULT	0
-#define ZBX_PREPROC_FAIL_DISCARD_VALUE	1
-#define ZBX_PREPROC_FAIL_SET_VALUE	2
-#define ZBX_PREPROC_FAIL_SET_ERROR	3
+#define TRX_PREPROC_FAIL_DEFAULT	0
+#define TRX_PREPROC_FAIL_DISCARD_VALUE	1
+#define TRX_PREPROC_FAIL_SET_VALUE	2
+#define TRX_PREPROC_FAIL_SET_ERROR	3
 
 /* internal on fail actions */
-#define ZBX_PREPROC_FAIL_FORCE_ERROR	4
+#define TRX_PREPROC_FAIL_FORCE_ERROR	4
 
-#define ZBX_HTTPFIELD_HEADER		0
-#define ZBX_HTTPFIELD_VARIABLE		1
-#define ZBX_HTTPFIELD_POST_FIELD	2
-#define ZBX_HTTPFIELD_QUERY_FIELD	3
+#define TRX_HTTPFIELD_HEADER		0
+#define TRX_HTTPFIELD_VARIABLE		1
+#define TRX_HTTPFIELD_POST_FIELD	2
+#define TRX_HTTPFIELD_QUERY_FIELD	3
 
-#define ZBX_POSTTYPE_RAW		0
-#define ZBX_POSTTYPE_FORM		1
-#define ZBX_POSTTYPE_JSON		2
-#define ZBX_POSTTYPE_XML		3
+#define TRX_POSTTYPE_RAW		0
+#define TRX_POSTTYPE_FORM		1
+#define TRX_POSTTYPE_JSON		2
+#define TRX_POSTTYPE_XML		3
 
-#define ZBX_RETRIEVE_MODE_CONTENT	0
-#define ZBX_RETRIEVE_MODE_HEADERS	1
-#define ZBX_RETRIEVE_MODE_BOTH		2
+#define TRX_RETRIEVE_MODE_CONTENT	0
+#define TRX_RETRIEVE_MODE_HEADERS	1
+#define TRX_RETRIEVE_MODE_BOTH		2
 
 zbx_log_value_t	*zbx_log_value_dup(const zbx_log_value_t *src);
 
@@ -1493,11 +1493,11 @@ typedef struct
 }
 zbx_variant_t;
 
-#define ZBX_VARIANT_NONE	0
-#define ZBX_VARIANT_STR		1
-#define ZBX_VARIANT_DBL		2
-#define ZBX_VARIANT_UI64	3
-#define ZBX_VARIANT_BIN		4
+#define TRX_VARIANT_NONE	0
+#define TRX_VARIANT_STR		1
+#define TRX_VARIANT_DBL		2
+#define TRX_VARIANT_UI64	3
+#define TRX_VARIANT_BIN		4
 
 void	zbx_variant_clear(zbx_variant_t *value);
 void	zbx_variant_set_none(zbx_variant_t *value);
@@ -1525,19 +1525,19 @@ void	zbx_update_env(double time_now);
 int	zbx_get_agent_item_nextcheck(zbx_uint64_t itemid, const char *delay, unsigned char state, int now,
 		int refresh_unsupported, int *nextcheck, char **error);
 
-#define ZBX_DATA_SESSION_TOKEN_SIZE	(MD5_DIGEST_SIZE * 2)
+#define TRX_DATA_SESSION_TOKEN_SIZE	(MD5_DIGEST_SIZE * 2)
 char	*zbx_create_token(zbx_uint64_t seed);
 
-#define ZBX_MAINTENANCE_IDLE		0
-#define ZBX_MAINTENANCE_RUNNING		1
+#define TRX_MAINTENANCE_IDLE		0
+#define TRX_MAINTENANCE_RUNNING		1
 
-#define ZBX_PROBLEM_SUPPRESSED_FALSE	0
-#define ZBX_PROBLEM_SUPPRESSED_TRUE	1
+#define TRX_PROBLEM_SUPPRESSED_FALSE	0
+#define TRX_PROBLEM_SUPPRESSED_TRUE	1
 
 int	zbx_variant_to_value_type(zbx_variant_t *value, unsigned char value_type, char **errmsg);
 
 #ifdef _WINDOWS
-#define ZBX_PCRE_RECURSION_LIMIT	2000	/* assume ~1 MB stack and ~500 bytes per recursion */
+#define TRX_PCRE_RECURSION_LIMIT	2000	/* assume ~1 MB stack and ~500 bytes per recursion */
 #endif
 
 #endif

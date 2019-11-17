@@ -133,7 +133,7 @@ css_icons:
 css: css_theme_blue css_theme_dark css_hc_light css_hc_dark css_icons
 
 ## cmocka test support
-if ZBXCMOCKA
+if TRXCMOCKA
 WRAP_DB_FUNCS = \
 	-Wl,--wrap=zbx_db_vselect \
 	-Wl,--wrap=zbx_db_select_n \

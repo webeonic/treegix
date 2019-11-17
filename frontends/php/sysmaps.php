@@ -16,57 +16,57 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'maps' =>					[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,			null],
-	'sysmapid' =>				[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,
+	'maps' =>					[T_TRX_INT, O_OPT, P_SYS,	DB_ID,			null],
+	'sysmapid' =>				[T_TRX_INT, O_OPT, P_SYS,	DB_ID,
 		'isset({form}) && ({form} === "update" || {form} === "full_clone")'
 	],
-	'name' =>					[T_ZBX_STR, O_OPT, null,	NOT_EMPTY, 'isset({add}) || isset({update})', _('Name')],
-	'width' =>					[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 65535), 'isset({add}) || isset({update})', _('Width')],
-	'height' =>					[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 65535), 'isset({add}) || isset({update})', _('Height')],
-	'backgroundid' =>			[T_ZBX_INT, O_OPT, null,	DB_ID,			'isset({add}) || isset({update})'],
-	'iconmapid' =>				[T_ZBX_INT, O_OPT, null,	DB_ID,			'isset({add}) || isset({update})'],
-	'expandproblem' =>			[T_ZBX_INT, O_OPT, null,
+	'name' =>					[T_TRX_STR, O_OPT, null,	NOT_EMPTY, 'isset({add}) || isset({update})', _('Name')],
+	'width' =>					[T_TRX_INT, O_OPT, null,	BETWEEN(0, 65535), 'isset({add}) || isset({update})', _('Width')],
+	'height' =>					[T_TRX_INT, O_OPT, null,	BETWEEN(0, 65535), 'isset({add}) || isset({update})', _('Height')],
+	'backgroundid' =>			[T_TRX_INT, O_OPT, null,	DB_ID,			'isset({add}) || isset({update})'],
+	'iconmapid' =>				[T_TRX_INT, O_OPT, null,	DB_ID,			'isset({add}) || isset({update})'],
+	'expandproblem' =>			[T_TRX_INT, O_OPT, null,
 		IN([SYSMAP_PROBLEMS_NUMBER, SYSMAP_SINGLE_PROBLEM, SYSMAP_PROBLEMS_NUMBER_CRITICAL]),	null
 	],
-	'markelements' =>			[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
-	'show_unack' =>				[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 2),	null],
-	'highlight' =>				[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
-	'label_format' =>			[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
-	'label_type_host' =>		[T_ZBX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
-	'label_type_hostgroup' =>	[T_ZBX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
-	'label_type_trigger' =>		[T_ZBX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
-	'label_type_map' =>			[T_ZBX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
-	'label_type_image' =>		[T_ZBX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
-	'label_string_host' =>		[T_ZBX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
-	'label_string_hostgroup' =>	[T_ZBX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
-	'label_string_trigger' =>	[T_ZBX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
-	'label_string_map' =>		[T_ZBX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
-	'label_string_image' =>		[T_ZBX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
-	'label_type' =>				[T_ZBX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL,MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
-	'label_location' =>			[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 3),	'isset({add}) || isset({update})'],
-	'urls' =>					[T_ZBX_STR, O_OPT, null,	null,			null],
-	'severity_min' =>			[T_ZBX_INT, O_OPT, null,	IN('0,1,2,3,4,5'), null],
-	'show_suppressed' =>		[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
-	'userid' =>					[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,			null],
-	'private' =>				[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
-	'users' =>					[T_ZBX_INT, O_OPT, null,	null,			null],
-	'userGroups' =>				[T_ZBX_INT, O_OPT, null,	null,			null],
+	'markelements' =>			[T_TRX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
+	'show_unack' =>				[T_TRX_INT, O_OPT, null,	BETWEEN(0, 2),	null],
+	'highlight' =>				[T_TRX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
+	'label_format' =>			[T_TRX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
+	'label_type_host' =>		[T_TRX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
+	'label_type_hostgroup' =>	[T_TRX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
+	'label_type_trigger' =>		[T_TRX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
+	'label_type_map' =>			[T_TRX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
+	'label_type_image' =>		[T_TRX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL, MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
+	'label_string_host' =>		[T_TRX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
+	'label_string_hostgroup' =>	[T_TRX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
+	'label_string_trigger' =>	[T_TRX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
+	'label_string_map' =>		[T_TRX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
+	'label_string_image' =>		[T_TRX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
+	'label_type' =>				[T_TRX_INT, O_OPT, null,	BETWEEN(MAP_LABEL_TYPE_LABEL,MAP_LABEL_TYPE_CUSTOM), 'isset({add}) || isset({update})'],
+	'label_location' =>			[T_TRX_INT, O_OPT, null,	BETWEEN(0, 3),	'isset({add}) || isset({update})'],
+	'urls' =>					[T_TRX_STR, O_OPT, null,	null,			null],
+	'severity_min' =>			[T_TRX_INT, O_OPT, null,	IN('0,1,2,3,4,5'), null],
+	'show_suppressed' =>		[T_TRX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
+	'userid' =>					[T_TRX_INT, O_OPT, P_SYS,	DB_ID,			null],
+	'private' =>				[T_TRX_INT, O_OPT, null,	BETWEEN(0, 1),	null],
+	'users' =>					[T_TRX_INT, O_OPT, null,	null,			null],
+	'userGroups' =>				[T_TRX_INT, O_OPT, null,	null,			null],
 	// actions
-	'action' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, IN('"map.export","map.massdelete"'),		null],
-	'add' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,		null],
-	'update' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,		null],
-	'delete' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,		null],
-	'cancel' =>					[T_ZBX_STR, O_OPT, P_SYS,	null,			null],
+	'action' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, IN('"map.export","map.massdelete"'),		null],
+	'add' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,		null],
+	'update' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,		null],
+	'delete' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,		null],
+	'cancel' =>					[T_TRX_STR, O_OPT, P_SYS,	null,			null],
 	// form
-	'form' =>					[T_ZBX_STR, O_OPT, P_SYS,	null,			null],
-	'form_refresh' =>			[T_ZBX_INT, O_OPT, null,	null,			null],
+	'form' =>					[T_TRX_STR, O_OPT, P_SYS,	null,			null],
+	'form_refresh' =>			[T_TRX_INT, O_OPT, null,	null,			null],
 	// filter
-	'filter_set' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,			null],
-	'filter_rst' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,			null],
-	'filter_name' =>			[T_ZBX_STR, O_OPT, null,	null,			null],
+	'filter_set' =>				[T_TRX_STR, O_OPT, P_SYS,	null,			null],
+	'filter_rst' =>				[T_TRX_STR, O_OPT, P_SYS,	null,			null],
+	'filter_name' =>			[T_TRX_STR, O_OPT, null,	null,			null],
 	// sort and sortorder
-	'sort' =>					[T_ZBX_STR, O_OPT, P_SYS, IN('"height","name","width"'),				null],
-	'sortorder' =>				[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>					[T_TRX_STR, O_OPT, P_SYS, IN('"height","name","width"'),				null],
+	'sortorder' =>				[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -362,7 +362,7 @@ else {
 	CProfile::delete('web.maps.sysmapid');
 
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

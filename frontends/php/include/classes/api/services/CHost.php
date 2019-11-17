@@ -51,7 +51,7 @@ class CHost extends CHostGeneral {
 		$sqlParts = [
 			'select'	=> ['hosts' => 'h.hostid'],
 			'from'		=> ['hosts' => 'hosts h'],
-			'where'		=> ['flags' => 'h.flags IN ('.ZBX_FLAG_DISCOVERY_NORMAL.','.ZBX_FLAG_DISCOVERY_CREATED.')'],
+			'where'		=> ['flags' => 'h.flags IN ('.TRX_FLAG_DISCOVERY_NORMAL.','.TRX_FLAG_DISCOVERY_CREATED.')'],
 			'group'		=> [],
 			'order'		=> [],
 			'limit'		=> null
@@ -288,16 +288,16 @@ class CHost extends CHostGeneral {
 
 			if ($options['with_items'] !== null) {
 				$where_and =
-					' AND '.dbConditionInt('i.flags', [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]);
+					' AND '.dbConditionInt('i.flags', [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]);
 			}
 			elseif ($options['with_monitored_items'] !== null) {
 				$where_and =
-					' AND '.dbConditionInt('i.flags', [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]).
+					' AND '.dbConditionInt('i.flags', [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]).
 					' AND '.dbConditionInt('i.status', [ITEM_STATUS_ACTIVE]);
 			}
 			elseif ($options['with_simple_graph_items'] !== null) {
 				$where_and =
-					' AND '.dbConditionInt('i.flags', [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]).
+					' AND '.dbConditionInt('i.flags', [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]).
 					' AND '.dbConditionInt('i.status', [ITEM_STATUS_ACTIVE]).
 					' AND '.dbConditionInt('i.value_type', [ITEM_VALUE_TYPE_FLOAT, ITEM_VALUE_TYPE_UINT64]);
 			}
@@ -314,11 +314,11 @@ class CHost extends CHostGeneral {
 		if ($options['with_item_prototypes'] !== null || $options['with_simple_graph_item_prototypes'] !== null) {
 			if ($options['with_item_prototypes'] !== null) {
 				$where_and =
-					' AND '.dbConditionInt('i.flags', [ZBX_FLAG_DISCOVERY_PROTOTYPE]);
+					' AND '.dbConditionInt('i.flags', [TRX_FLAG_DISCOVERY_PROTOTYPE]);
 			}
 			elseif ($options['with_simple_graph_item_prototypes'] !== null) {
 				$where_and =
-					' AND '.dbConditionInt('i.flags', [ZBX_FLAG_DISCOVERY_PROTOTYPE]).
+					' AND '.dbConditionInt('i.flags', [TRX_FLAG_DISCOVERY_PROTOTYPE]).
 					' AND '.dbConditionInt('i.status', [ITEM_STATUS_ACTIVE]).
 					' AND '.dbConditionInt('i.value_type', [ITEM_VALUE_TYPE_FLOAT, ITEM_VALUE_TYPE_UINT64]);
 			}
@@ -339,7 +339,7 @@ class CHost extends CHostGeneral {
 					' WHERE h.hostid=i.hostid'.
 						' AND i.itemid=f.itemid'.
 						' AND f.triggerid=t.triggerid'.
-						' AND t.flags IN ('.ZBX_FLAG_DISCOVERY_NORMAL.','.ZBX_FLAG_DISCOVERY_CREATED.')'.
+						' AND t.flags IN ('.TRX_FLAG_DISCOVERY_NORMAL.','.TRX_FLAG_DISCOVERY_CREATED.')'.
 					')';
 		}
 		elseif (!is_null($options['with_monitored_triggers'])) {
@@ -351,7 +351,7 @@ class CHost extends CHostGeneral {
 						' AND f.triggerid=t.triggerid'.
 						' AND i.status='.ITEM_STATUS_ACTIVE.
 						' AND t.status='.TRIGGER_STATUS_ENABLED.
-						' AND t.flags IN ('.ZBX_FLAG_DISCOVERY_NORMAL.','.ZBX_FLAG_DISCOVERY_CREATED.')'.
+						' AND t.flags IN ('.TRX_FLAG_DISCOVERY_NORMAL.','.TRX_FLAG_DISCOVERY_CREATED.')'.
 					')';
 		}
 
@@ -376,7 +376,7 @@ class CHost extends CHostGeneral {
 				' WHERE i.hostid=h.hostid'.
 					' AND i.itemid=gi.itemid '.
 					' AND gi.graphid=g.graphid'.
-					' AND '.dbConditionInt('g.flags', [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]).
+					' AND '.dbConditionInt('g.flags', [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]).
 				')';
 		}
 
@@ -388,7 +388,7 @@ class CHost extends CHostGeneral {
 				' WHERE i.hostid=h.hostid'.
 					' AND i.itemid=gi.itemid '.
 					' AND gi.graphid=g.graphid'.
-					' AND '.dbConditionInt('g.flags', [ZBX_FLAG_DISCOVERY_PROTOTYPE]).
+					' AND '.dbConditionInt('g.flags', [TRX_FLAG_DISCOVERY_PROTOTYPE]).
 				')';
 		}
 
@@ -759,7 +759,7 @@ class CHost extends CHostGeneral {
 			$result = $this->massUpdate($data);
 
 			if (!$result) {
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Host update failed.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Host update failed.'));
 			}
 		}
 
@@ -830,7 +830,7 @@ class CHost extends CHostGeneral {
 	 */
 	public function massUpdate($data) {
 		if (!array_key_exists('hosts', $data) || !is_array($data['hosts'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'hosts'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'hosts'));
 		}
 
 		$hosts = zbx_toArray($data['hosts']);
@@ -848,7 +848,7 @@ class CHost extends CHostGeneral {
 
 		foreach ($hosts as $host) {
 			if (!array_key_exists($host['hostid'], $db_hosts)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 			}
 		}
 
@@ -868,7 +868,7 @@ class CHost extends CHostGeneral {
 				|| array_key_exists('tls_psk_identity', $data) || array_key_exists('tls_psk', $data)
 				|| array_key_exists('tls_issuer', $data) || array_key_exists('tls_subject', $data)) {
 			if (!array_key_exists('tls_connect', $data) || !array_key_exists('tls_accept', $data)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _(
+				self::exception(TRX_API_ERROR_PERMISSIONS, _(
 					'Cannot update host encryption settings. Connection settings for both directions should be specified.'
 				));
 			}
@@ -892,14 +892,14 @@ class CHost extends CHostGeneral {
 		if (array_key_exists('groups', $data) && !$data['groups'] && $db_hosts) {
 			$host = reset($db_hosts);
 
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Host "%1$s" cannot be without host group.', $host['host'])
 			);
 		}
 
 		// Property 'auto_compress' is not supported for hosts.
 		if (array_key_exists('auto_compress', $data)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 		}
 
 		/*
@@ -907,7 +907,7 @@ class CHost extends CHostGeneral {
 		 */
 		if (isset($data['name'])) {
 			if (count($hosts) > 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot mass update visible host name.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot mass update visible host name.'));
 			}
 		}
 
@@ -915,13 +915,13 @@ class CHost extends CHostGeneral {
 			$host_name_parser = new CHostNameParser();
 
 			if ($host_name_parser->parse($data['host']) != CParser::PARSE_SUCCESS) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect characters used for host name "%s".', $data['host'])
 				);
 			}
 
 			if (count($hosts) > 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot mass update host name.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot mass update host name.'));
 			}
 
 			$curHost = reset($hosts);
@@ -934,7 +934,7 @@ class CHost extends CHostGeneral {
 			]);
 			$sameHostnameHost = reset($sameHostnameHost);
 			if ($sameHostnameHost && (bccomp($sameHostnameHost['hostid'], $curHost['hostid']) != 0)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Host "%1$s" already exists.', $data['host']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Host "%1$s" already exists.', $data['host']));
 			}
 
 			// can't add host with the same name as existing template
@@ -945,7 +945,7 @@ class CHost extends CHostGeneral {
 				'limit' => 1
 			]);
 			if ($sameHostnameTemplate) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Template "%1$s" already exists.', $data['host']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Template "%1$s" already exists.', $data['host']));
 			}
 		}
 
@@ -972,7 +972,7 @@ class CHost extends CHostGeneral {
 		// second check is necessary, because import incorrectly inputs unset 'inventory' as empty string rather than null
 		if (isset($data['inventory']) && $data['inventory']) {
 			if (isset($data['inventory_mode']) && $data['inventory_mode'] == HOST_INVENTORY_DISABLED) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot set inventory fields for disabled inventory.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot set inventory fields for disabled inventory.'));
 			}
 
 			$updateInventory = $data['inventory'];
@@ -1038,7 +1038,7 @@ class CHost extends CHostGeneral {
 					'templateids' => $templatesToDel
 				]);
 				if (!$result) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot unlink template'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot unlink template'));
 				}
 			}
 		}
@@ -1063,7 +1063,7 @@ class CHost extends CHostGeneral {
 			]);
 
 			if (!$result) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot link template'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot link template'));
 			}
 		}
 
@@ -1085,7 +1085,7 @@ class CHost extends CHostGeneral {
 			if ($updateInventory['inventory_mode'] == HOST_INVENTORY_DISABLED) {
 				$sql = 'DELETE FROM host_inventory WHERE '.dbConditionInt('hostid', $hostids);
 				if (!DBexecute($sql)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot delete inventory.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot delete inventory.'));
 				}
 			}
 			// changing inventory mode or setting inventory fields
@@ -1103,7 +1103,7 @@ class CHost extends CHostGeneral {
 						// if inventory is disabled for one of the updated hosts, throw an exception
 						if (!isset($existingInventoriesDb[$hostid])) {
 							$host = get_host_by_hostid($hostid);
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Inventory disabled for host "%1$s".', $host['host']
 							));
 						}
@@ -1244,7 +1244,7 @@ class CHost extends CHostGeneral {
 	 */
 	protected function validateDelete(array $hostIds, $nopermissions = false) {
 		if (!$hostIds) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		if (!$nopermissions) {
@@ -1279,7 +1279,7 @@ class CHost extends CHostGeneral {
 		));
 
 		if ($maintenance) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _n(
+			self::exception(TRX_API_ERROR_PARAMETERS, _n(
 				'Cannot delete host because maintenance "%1$s" must contain at least one host or host group.',
 				'Cannot delete selected hosts because maintenance "%1$s" must contain at least one host or host group.',
 				$maintenance['name'],
@@ -1479,7 +1479,7 @@ class CHost extends CHostGeneral {
 				]);
 
 				// we need to order interfaces for proper linkage and viewing
-				order_result($interfaces, 'interfaceid', ZBX_SORT_UP);
+				order_result($interfaces, 'interfaceid', TRX_SORT_UP);
 
 				$relationMap = $this->createRelationMap($interfaces, 'hostid', 'interfaceid');
 
@@ -1597,7 +1597,7 @@ class CHost extends CHostGeneral {
 			]);
 
 			if ($count != count($hostids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -1636,13 +1636,13 @@ class CHost extends CHostGeneral {
 			}
 
 			if (!in_array($tls_connect, $available_connect_types)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_connect',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_connect',
 					_s('unexpected value "%1$s"', $tls_connect)
 				));
 			}
 
 			if ($tls_accept < $min_accept_type || $tls_accept > $max_accept_type) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_accept',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_accept',
 					_s('unexpected value "%1$s"', $tls_accept)
 				));
 			}
@@ -1656,38 +1656,38 @@ class CHost extends CHostGeneral {
 			// PSK validation.
 			if ($tls_connect == HOST_ENCRYPTION_PSK || ($tls_accept & HOST_ENCRYPTION_PSK)) {
 				if ($tls_psk_identity === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_psk_identity', _('cannot be empty'))
 					);
 				}
 
 				if ($tls_psk === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_psk', _('cannot be empty'))
 					);
 				}
 
 				if (!preg_match('/^([0-9a-f]{2})+$/i', $tls_psk)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_psk',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_psk',
 						_('an even number of hexadecimal characters is expected')
 					));
 				}
 
 				if (strlen($tls_psk) < PSK_MIN_LEN) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_psk',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_psk',
 						_s('minimum length is %1$s characters', PSK_MIN_LEN)
 					));
 				}
 			}
 			else {
 				if ($tls_psk_identity !== '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_psk_identity', _('should be empty'))
 					);
 				}
 
 				if ($tls_psk !== '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_psk', _('should be empty'))
 					);
 				}
@@ -1696,13 +1696,13 @@ class CHost extends CHostGeneral {
 			// Certificate validation.
 			if ($tls_connect != HOST_ENCRYPTION_CERTIFICATE && !($tls_accept & HOST_ENCRYPTION_CERTIFICATE)) {
 				if ($tls_issuer !== '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_issuer', _('should be empty'))
 					);
 				}
 
 				if ($tls_subject !== '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_subject', _('should be empty'))
 					);
 				}
@@ -1727,19 +1727,19 @@ class CHost extends CHostGeneral {
 		foreach ($hosts as &$host) {
 			// Validate mandatory fields.
 			if (!check_db_fields($host_db_fields, $host)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Wrong fields for host "%1$s".', array_key_exists('host', $host) ? $host['host'] : '')
 				);
 			}
 
 			// Property 'auto_compress' is not supported for hosts.
 			if (array_key_exists('auto_compress', $host)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 
 			// Validate "host" field.
 			if ($host_name_parser->parse($host['host']) != CParser::PARSE_SUCCESS) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect characters used for host name "%s".', $host['host'])
 				);
 			}
@@ -1751,7 +1751,7 @@ class CHost extends CHostGeneral {
 
 			// Validate "groups" field.
 			if (!array_key_exists('groups', $host) || !is_array($host['groups']) || !$host['groups']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Host "%1$s" cannot be without host group.', $host['host'])
 				);
 			}
@@ -1768,14 +1768,14 @@ class CHost extends CHostGeneral {
 		// Check for duplicate "host" and "name" fields.
 		$duplicate = CArrayHelper::findDuplicate($hosts, 'host');
 		if ($duplicate) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Duplicate host. Host with the same host name "%s" already exists in data.', $duplicate['host'])
 			);
 		}
 
 		$duplicate = CArrayHelper::findDuplicate($hosts, 'name');
 		if ($duplicate) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Duplicate host. Host with the same visible name "%s" already exists in data.', $duplicate['name'])
 			);
 		}
@@ -1793,7 +1793,7 @@ class CHost extends CHostGeneral {
 		foreach ($hosts as $host) {
 			foreach ($host['groups'] as $group) {
 				if (!array_key_exists($group['groupid'], $db_groups)) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS,
+					self::exception(TRX_API_ERROR_PERMISSIONS,
 						_('No permissions to referred object or it does not exist!')
 					);
 				}
@@ -1818,7 +1818,7 @@ class CHost extends CHostGeneral {
 
 		foreach ($hosts as $host) {
 			if (!array_key_exists('interfaces', $host) || !is_array($host['interfaces']) || !$host['interfaces']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('No interfaces for host "%s".', $host['host']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('No interfaces for host "%s".', $host['host']));
 			}
 
 			if (array_key_exists('status', $host)) {
@@ -1833,13 +1833,13 @@ class CHost extends CHostGeneral {
 
 			if (array_key_exists('inventory', $host) && $host['inventory']) {
 				if (array_key_exists('inventory_mode', $host) && $host['inventory_mode'] == HOST_INVENTORY_DISABLED) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot set inventory fields for disabled inventory.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot set inventory fields for disabled inventory.'));
 				}
 
 				$fields = array_keys($host['inventory']);
 				foreach ($fields as $field) {
 					if (!in_array($field, $inventory_fields)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect inventory field "%s".', $field));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect inventory field "%s".', $field));
 					}
 				}
 			}
@@ -1863,13 +1863,13 @@ class CHost extends CHostGeneral {
 
 		foreach ($hosts_exists as $host_exists) {
 			if (array_key_exists($host_exists['host'], $host_names['host'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Host with the same name "%s" already exists.', $host_exists['host'])
 				);
 			}
 
 			if (array_key_exists($host_exists['name'], $host_names['name'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Host with the same visible name "%s" already exists.', $host_exists['name'])
 				);
 			}
@@ -1884,13 +1884,13 @@ class CHost extends CHostGeneral {
 
 		foreach ($templates_exists as $template_exists) {
 			if (array_key_exists($template_exists['host'], $host_names['host'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Template with the same name "%s" already exists.', $template_exists['host'])
 				);
 			}
 
 			if (array_key_exists($template_exists['name'], $host_names['name'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Template with the same visible name "%s" already exists.', $template_exists['name'])
 				);
 			}
@@ -1913,26 +1913,26 @@ class CHost extends CHostGeneral {
 		foreach ($hosts as $host) {
 			// Validate mandatory fields.
 			if (!check_db_fields($host_db_fields, $host)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Wrong fields for host "%1$s".', array_key_exists('host', $host) ? $host['host'] : '')
 				);
 			}
 
 			// Property 'auto_compress' is not supported for hosts.
 			if (array_key_exists('auto_compress', $host)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 
 			// Validate host permissions.
 			if (!array_key_exists($host['hostid'], $db_hosts)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _(
+				self::exception(TRX_API_ERROR_PARAMETERS, _(
 					'No permissions to referred object or it does not exist!'
 				));
 			}
 
 			// Validate "groups" field.
 			if (array_key_exists('groups', $host) && (!is_array($host['groups']) || !$host['groups'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Host "%1$s" cannot be without host group.', $db_hosts[$host['hostid']]['host'])
 				);
 			}
@@ -1979,13 +1979,13 @@ class CHost extends CHostGeneral {
 
 			if (array_key_exists('inventory', $host) && $host['inventory']) {
 				if (array_key_exists('inventory_mode', $host) && $host['inventory_mode'] == HOST_INVENTORY_DISABLED) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot set inventory fields for disabled inventory.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot set inventory fields for disabled inventory.'));
 				}
 
 				$fields = array_keys($host['inventory']);
 				foreach ($fields as $field) {
 					if (!in_array($field, $inventory_fields)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect inventory field "%s".', $field));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect inventory field "%s".', $field));
 					}
 				}
 			}
@@ -1996,19 +1996,19 @@ class CHost extends CHostGeneral {
 
 			if (array_key_exists('interfaces', $host)) {
 				if (!is_array($host['interfaces']) || !$host['interfaces']) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('No interfaces for host "%s".', $host['host']));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('No interfaces for host "%s".', $host['host']));
 				}
 			}
 
 			if (array_key_exists('host', $host)) {
 				if ($host_name_parser->parse($host['host']) != CParser::PARSE_SUCCESS) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect characters used for host name "%s".', $host['host'])
 					);
 				}
 
 				if (array_key_exists('host', $host_names) && array_key_exists($host['host'], $host_names['host'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Duplicate host. Host with the same host name "%s" already exists in data.', $host['host'])
 					);
 				}
@@ -2020,7 +2020,7 @@ class CHost extends CHostGeneral {
 				// if visible name is empty replace it with host name
 				if (zbx_empty(trim($host['name']))) {
 					if (!array_key_exists('host', $host)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Visible name cannot be empty if host name is missing.')
 						);
 					}
@@ -2028,7 +2028,7 @@ class CHost extends CHostGeneral {
 				}
 
 				if (array_key_exists('name', $host_names) && array_key_exists($host['name'], $host_names['name'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Duplicate host. Host with the same visible name "%s" already exists in data.', $host['name'])
 					);
 				}
@@ -2089,14 +2089,14 @@ class CHost extends CHostGeneral {
 			foreach ($hosts_exists as $host_exists) {
 				if (array_key_exists('host', $host_names) && array_key_exists($host_exists['host'], $host_names['host'])
 						&& bccomp($host_exists['hostid'], $host_names['host'][$host_exists['host']]) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Host with the same name "%s" already exists.', $host_exists['host'])
 					);
 				}
 
 				if (array_key_exists('name', $host_names) && array_key_exists($host_exists['name'], $host_names['name'])
 						&& bccomp($host_exists['hostid'], $host_names['name'][$host_exists['name']]) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Host with the same visible name "%s" already exists.', $host_exists['name'])
 					);
 				}
@@ -2114,7 +2114,7 @@ class CHost extends CHostGeneral {
 				if (array_key_exists('host', $host_names)
 						&& array_key_exists($template_exists['host'], $host_names['host'])
 						&& bccomp($template_exists['templateid'], $host_names['host'][$template_exists['host']]) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Template with the same name "%s" already exists.', $template_exists['host'])
 					);
 				}
@@ -2122,7 +2122,7 @@ class CHost extends CHostGeneral {
 				if (array_key_exists('name', $host_names)
 						&& array_key_exists($template_exists['name'], $host_names['name'])
 						&& bccomp($template_exists['templateid'], $host_names['name'][$template_exists['name']]) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Template with the same visible name "%s" already exists.', $template_exists['name'])
 					);
 				}

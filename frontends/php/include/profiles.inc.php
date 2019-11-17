@@ -245,8 +245,8 @@ function update_config($config) {
 			$msg[] = _s('Group for discovered hosts "%1$s".', $hostGroups[0]['name']);
 
 			if (bccomp($config['discovery_groupid'], $configOrig['discovery_groupid']) != 0) {
-				setHostGroupInternal($configOrig['discovery_groupid'], ZBX_NOT_INTERNAL_GROUP);
-				setHostGroupInternal($config['discovery_groupid'], ZBX_INTERNAL_GROUP);
+				setHostGroupInternal($configOrig['discovery_groupid'], TRX_NOT_INTERNAL_GROUP);
+				setHostGroupInternal($config['discovery_groupid'], TRX_INTERNAL_GROUP);
 			}
 		}
 		if (array_key_exists('alert_usrgrpid', $config)) {

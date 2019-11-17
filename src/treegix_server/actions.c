@@ -108,7 +108,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 		char			*sql = NULL;
 		size_t			sql_alloc = 0, sql_offset = 0;
 
-		ZBX_STR2UINT64(condition_value, condition->value);
+		TRX_STR2UINT64(condition_value, condition->value);
 
 		zbx_vector_uint64_create(&groupids);
 		zbx_dc_get_nested_hostgroupids(&condition_value, 1, &groupids);
@@ -120,7 +120,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 					" and h.hostid=i.hostid"
 					" and i.itemid=f.itemid"
 					" and f.triggerid=t.triggerid"
-					" and t.triggerid=" ZBX_FS_UI64
+					" and t.triggerid=" TRX_FS_UI64
 					" and",
 				event->objectid);
 
@@ -150,7 +150,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 	{
 		zbx_uint64_t	hostid, triggerid;
 
-		ZBX_STR2UINT64(condition_value, condition->value);
+		TRX_STR2UINT64(condition_value, condition->value);
 
 		switch (condition->op)
 		{
@@ -162,15 +162,15 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 				result = DBselect(
 						"select parent_triggerid"
 						" from trigger_discovery"
-						" where triggerid=" ZBX_FS_UI64,
+						" where triggerid=" TRX_FS_UI64,
 						triggerid);
 
 				if (NULL != (row = DBfetch(result)))
 				{
-					ZBX_STR2UINT64(triggerid, row[0]);
+					TRX_STR2UINT64(triggerid, row[0]);
 
 					treegix_log(LOG_LEVEL_DEBUG, "%s() check host template condition,"
-							" selecting parent triggerid:" ZBX_FS_UI64,
+							" selecting parent triggerid:" TRX_FS_UI64,
 							__func__, triggerid);
 				}
 				DBfree_result(result);
@@ -182,15 +182,15 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 							" from items i,functions f,triggers t"
 							" where i.itemid=f.itemid"
 								" and f.triggerid=t.templateid"
-								" and t.triggerid=" ZBX_FS_UI64,
+								" and t.triggerid=" TRX_FS_UI64,
 							triggerid);
 
 					triggerid = 0;
 
 					while (NULL != (row = DBfetch(result)))
 					{
-						ZBX_STR2UINT64(hostid, row[0]);
-						ZBX_STR2UINT64(triggerid, row[1]);
+						TRX_STR2UINT64(hostid, row[0]);
+						TRX_STR2UINT64(triggerid, row[1]);
 
 						if (hostid == condition_value)
 						{
@@ -211,7 +211,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 	}
 	else if (CONDITION_TYPE_HOST == condition->conditiontype)
 	{
-		ZBX_STR2UINT64(condition_value, condition->value);
+		TRX_STR2UINT64(condition_value, condition->value);
 
 		switch (condition->op)
 		{
@@ -222,8 +222,8 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 						" from items i,functions f,triggers t"
 						" where i.itemid=f.itemid"
 							" and f.triggerid=t.triggerid"
-							" and t.triggerid=" ZBX_FS_UI64
-							" and i.hostid=" ZBX_FS_UI64,
+							" and t.triggerid=" TRX_FS_UI64
+							" and i.hostid=" TRX_FS_UI64,
 						event->objectid,
 						condition_value);
 
@@ -242,7 +242,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 	{
 		zbx_uint64_t	triggerid;
 
-		ZBX_STR2UINT64(condition_value, condition->value);
+		TRX_STR2UINT64(condition_value, condition->value);
 
 		switch (condition->op)
 		{
@@ -261,14 +261,14 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 						result = DBselect(
 								"select templateid"
 								" from triggers"
-								" where triggerid=" ZBX_FS_UI64,
+								" where triggerid=" TRX_FS_UI64,
 								triggerid);
 
 						if (NULL == (row = DBfetch(result)))
 							triggerid = 0;
 						else
 						{
-							ZBX_DBROW2UINT64(triggerid, row[0]);
+							TRX_DBROW2UINT64(triggerid, row[0]);
 							if (triggerid == condition_value)
 								ret = SUCCEED;
 						}
@@ -358,7 +358,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 		}
 		else
 		{
-			treegix_log(LOG_LEVEL_WARNING, "Invalid time period \"%s\" for condition id [" ZBX_FS_UI64 "]",
+			treegix_log(LOG_LEVEL_WARNING, "Invalid time period \"%s\" for condition id [" TRX_FS_UI64 "]",
 					period, condition->conditionid);
 		}
 
@@ -369,11 +369,11 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 		switch (condition->op)
 		{
 			case CONDITION_OPERATOR_YES:
-				if (ZBX_PROBLEM_SUPPRESSED_TRUE == event->suppressed)
+				if (TRX_PROBLEM_SUPPRESSED_TRUE == event->suppressed)
 					ret = SUCCEED;
 				break;
 			case CONDITION_OPERATOR_NO:
-				if (ZBX_PROBLEM_SUPPRESSED_FALSE == event->suppressed)
+				if (TRX_PROBLEM_SUPPRESSED_FALSE == event->suppressed)
 					ret = SUCCEED;
 				break;
 			default:
@@ -386,7 +386,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 				"select acknowledged"
 				" from events"
 				" where acknowledged=%d"
-					" and eventid=" ZBX_FS_UI64,
+					" and eventid=" TRX_FS_UI64,
 				atoi(condition->value),
 				event->eventid);
 
@@ -409,7 +409,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 				" where a.applicationid=i.applicationid"
 					" and i.itemid=f.itemid"
 					" and f.triggerid=t.triggerid"
-					" and t.triggerid=" ZBX_FS_UI64,
+					" and t.triggerid=" TRX_FS_UI64,
 				event->objectid);
 
 		switch (condition->op)
@@ -460,13 +460,13 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 	}
 	else
 	{
-		treegix_log(LOG_LEVEL_ERR, "unsupported condition type [%d] for condition id [" ZBX_FS_UI64 "]",
+		treegix_log(LOG_LEVEL_ERR, "unsupported condition type [%d] for condition id [" TRX_FS_UI64 "]",
 				(int)condition->conditiontype, condition->conditionid);
 	}
 
 	if (NOTSUPPORTED == ret)
 	{
-		treegix_log(LOG_LEVEL_ERR, "unsupported operator [%d] for condition id [" ZBX_FS_UI64 "]",
+		treegix_log(LOG_LEVEL_ERR, "unsupported operator [%d] for condition id [" TRX_FS_UI64 "]",
 				(int)condition->op, condition->conditionid);
 		ret = FAIL;
 	}
@@ -502,15 +502,15 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 
 	if (CONDITION_TYPE_DRULE == condition->conditiontype)
 	{
-		ZBX_STR2UINT64(condition_value, condition->value);
+		TRX_STR2UINT64(condition_value, condition->value);
 
 		if (EVENT_OBJECT_DHOST == event->object)
 		{
 			result = DBselect(
 					"select druleid"
 					" from dhosts"
-					" where druleid=" ZBX_FS_UI64
-						" and dhostid=" ZBX_FS_UI64,
+					" where druleid=" TRX_FS_UI64
+						" and dhostid=" TRX_FS_UI64,
 					condition_value,
 					event->objectid);
 		}
@@ -520,8 +520,8 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 					"select h.druleid"
 					" from dhosts h,dservices s"
 					" where h.dhostid=s.dhostid"
-						" and h.druleid=" ZBX_FS_UI64
-						" and s.dserviceid=" ZBX_FS_UI64,
+						" and h.druleid=" TRX_FS_UI64
+						" and s.dserviceid=" TRX_FS_UI64,
 					condition_value,
 					event->objectid);
 		}
@@ -545,13 +545,13 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 	{
 		if (EVENT_OBJECT_DSERVICE == event->object)
 		{
-			ZBX_STR2UINT64(condition_value, condition->value);
+			TRX_STR2UINT64(condition_value, condition->value);
 
 			result = DBselect(
 					"select dcheckid"
 					" from dservices"
-					" where dcheckid=" ZBX_FS_UI64
-						" and dserviceid=" ZBX_FS_UI64,
+					" where dcheckid=" TRX_FS_UI64
+						" and dserviceid=" TRX_FS_UI64,
 					condition_value,
 					event->objectid);
 
@@ -587,7 +587,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 	}
 	else if (CONDITION_TYPE_PROXY == condition->conditiontype)
 	{
-		ZBX_STR2UINT64(condition_value, condition->value);
+		TRX_STR2UINT64(condition_value, condition->value);
 
 		if (EVENT_OBJECT_DHOST == event->object)
 		{
@@ -595,8 +595,8 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 					"select r.proxy_hostid"
 					" from drules r,dhosts h"
 					" where r.druleid=h.druleid"
-						" and r.proxy_hostid=" ZBX_FS_UI64
-						" and h.dhostid=" ZBX_FS_UI64,
+						" and r.proxy_hostid=" TRX_FS_UI64
+						" and h.dhostid=" TRX_FS_UI64,
 					condition_value,
 					event->objectid);
 		}
@@ -607,8 +607,8 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 					" from drules r,dhosts h,dservices s"
 					" where r.druleid=h.druleid"
 						" and h.dhostid=s.dhostid"
-						" and r.proxy_hostid=" ZBX_FS_UI64
-						" and s.dserviceid=" ZBX_FS_UI64,
+						" and r.proxy_hostid=" TRX_FS_UI64
+						" and s.dserviceid=" TRX_FS_UI64,
 					condition_value,
 					event->objectid);
 		}
@@ -635,7 +635,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 			result = DBselect(
 					"select value"
 					" from dservices"
-					" where dserviceid=" ZBX_FS_UI64,
+					" where dserviceid=" TRX_FS_UI64,
 					event->objectid);
 
 			if (NULL != (row = DBfetch(result)))
@@ -680,7 +680,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 			result = DBselect(
 					"select distinct ip"
 					" from dservices"
-					" where dhostid=" ZBX_FS_UI64,
+					" where dhostid=" TRX_FS_UI64,
 					event->objectid);
 		}
 		else
@@ -688,7 +688,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 			result = DBselect(
 					"select ip"
 					" from dservices"
-					" where dserviceid=" ZBX_FS_UI64,
+					" where dserviceid=" TRX_FS_UI64,
 					event->objectid);
 		}
 
@@ -720,7 +720,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 					"select dc.type"
 					" from dservices ds,dchecks dc"
 					" where ds.dcheckid=dc.dcheckid"
-						" and ds.dserviceid=" ZBX_FS_UI64,
+						" and ds.dserviceid=" TRX_FS_UI64,
 					event->objectid);
 
 			if (NULL != (row = DBfetch(result)))
@@ -771,7 +771,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 			result = DBselect(
 					"select status,lastup,lastdown"
 					" from dhosts"
-					" where dhostid=" ZBX_FS_UI64,
+					" where dhostid=" TRX_FS_UI64,
 					event->objectid);
 		}
 		else
@@ -779,7 +779,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 			result = DBselect(
 					"select status,lastup,lastdown"
 					" from dservices"
-					" where dserviceid=" ZBX_FS_UI64,
+					" where dserviceid=" TRX_FS_UI64,
 					event->objectid);
 		}
 
@@ -813,7 +813,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 			result = DBselect(
 					"select port"
 					" from dservices"
-					" where dserviceid=" ZBX_FS_UI64,
+					" where dserviceid=" TRX_FS_UI64,
 					event->objectid);
 
 			if (NULL != (row = DBfetch(result)))
@@ -837,13 +837,13 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 	}
 	else
 	{
-		treegix_log(LOG_LEVEL_ERR, "unsupported condition type [%d] for condition id [" ZBX_FS_UI64 "]",
+		treegix_log(LOG_LEVEL_ERR, "unsupported condition type [%d] for condition id [" TRX_FS_UI64 "]",
 				(int)condition->conditiontype, condition->conditionid);
 	}
 
 	if (NOTSUPPORTED == ret)
 	{
-		treegix_log(LOG_LEVEL_ERR, "unsupported operator [%d] for condition id [" ZBX_FS_UI64 "]",
+		treegix_log(LOG_LEVEL_ERR, "unsupported operator [%d] for condition id [" TRX_FS_UI64 "]",
 				(int)condition->op, condition->conditionid);
 		ret = FAIL;
 	}
@@ -890,7 +890,7 @@ static int	check_auto_registration_condition(const DB_EVENT *event, DB_CONDITION
 			result = DBselect(
 					"select %s"
 					" from autoreg_host"
-					" where autoreg_hostid=" ZBX_FS_UI64,
+					" where autoreg_hostid=" TRX_FS_UI64,
 					condition_field, event->objectid);
 
 			if (NULL != (row = DBfetch(result)))
@@ -921,17 +921,17 @@ static int	check_auto_registration_condition(const DB_EVENT *event, DB_CONDITION
 
 			break;
 		case CONDITION_TYPE_PROXY:
-			ZBX_STR2UINT64(condition_value, condition->value);
+			TRX_STR2UINT64(condition_value, condition->value);
 
 			result = DBselect(
 					"select proxy_hostid"
 					" from autoreg_host"
-					" where autoreg_hostid=" ZBX_FS_UI64,
+					" where autoreg_hostid=" TRX_FS_UI64,
 					event->objectid);
 
 			if (NULL != (row = DBfetch(result)))
 			{
-				ZBX_DBROW2UINT64(id, row[0]);
+				TRX_DBROW2UINT64(id, row[0]);
 
 				switch (condition->op)
 				{
@@ -951,13 +951,13 @@ static int	check_auto_registration_condition(const DB_EVENT *event, DB_CONDITION
 
 			break;
 		default:
-			treegix_log(LOG_LEVEL_ERR, "unsupported condition type [%d] for condition id [" ZBX_FS_UI64 "]",
+			treegix_log(LOG_LEVEL_ERR, "unsupported condition type [%d] for condition id [" TRX_FS_UI64 "]",
 					(int)condition->conditiontype, condition->conditionid);
 	}
 
 	if (NOTSUPPORTED == ret)
 	{
-		treegix_log(LOG_LEVEL_ERR, "unsupported operator [%d] for condition id [" ZBX_FS_UI64 "]",
+		treegix_log(LOG_LEVEL_ERR, "unsupported operator [%d] for condition id [" TRX_FS_UI64 "]",
 				(int)condition->op, condition->conditionid);
 		ret = FAIL;
 	}
@@ -992,7 +992,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 	if (EVENT_OBJECT_TRIGGER != event->object && EVENT_OBJECT_ITEM != event->object &&
 			EVENT_OBJECT_LLDRULE != event->object)
 	{
-		treegix_log(LOG_LEVEL_ERR, "unsupported event object [%d] for condition id [" ZBX_FS_UI64 "]",
+		treegix_log(LOG_LEVEL_ERR, "unsupported event object [%d] for condition id [" TRX_FS_UI64 "]",
 				event->object, condition->conditionid);
 		goto out;
 	}
@@ -1025,7 +1025,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 		char			*sqlcond = NULL;
 		size_t			sqlcond_alloc = 0, sqlcond_offset = 0;
 
-		ZBX_STR2UINT64(condition_value, condition->value);
+		TRX_STR2UINT64(condition_value, condition->value);
 
 		zbx_vector_uint64_create(&groupids);
 		zbx_dc_get_nested_hostgroupids(&condition_value, 1, &groupids);
@@ -1040,7 +1040,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 							" and h.hostid=i.hostid"
 							" and i.itemid=f.itemid"
 							" and f.triggerid=t.triggerid"
-							" and t.triggerid=" ZBX_FS_UI64
+							" and t.triggerid=" TRX_FS_UI64
 							" and",
 						event->objectid);
 				break;
@@ -1050,7 +1050,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 						" from hosts_groups hg,hosts h,items i"
 						" where hg.hostid=h.hostid"
 							" and h.hostid=i.hostid"
-							" and i.itemid=" ZBX_FS_UI64
+							" and i.itemid=" TRX_FS_UI64
 							" and",
 						event->objectid);
 		}
@@ -1082,7 +1082,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 	{
 		zbx_uint64_t	hostid, objectid;
 
-		ZBX_STR2UINT64(condition_value, condition->value);
+		TRX_STR2UINT64(condition_value, condition->value);
 
 		switch (condition->op)
 		{
@@ -1097,7 +1097,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 						result = DBselect(
 								"select parent_triggerid"
 								" from trigger_discovery"
-								" where triggerid=" ZBX_FS_UI64,
+								" where triggerid=" TRX_FS_UI64,
 								objectid);
 						break;
 					default:
@@ -1105,17 +1105,17 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 								"select id.parent_itemid"
 								" from item_discovery id,items i"
 								" where id.itemid=i.itemid"
-									" and i.itemid=" ZBX_FS_UI64
+									" and i.itemid=" TRX_FS_UI64
 									" and i.flags=%d",
-								objectid, ZBX_FLAG_DISCOVERY_CREATED);
+								objectid, TRX_FLAG_DISCOVERY_CREATED);
 				}
 
 				if (NULL != (row = DBfetch(result)))
 				{
-					ZBX_STR2UINT64(objectid, row[0]);
+					TRX_STR2UINT64(objectid, row[0]);
 
 					treegix_log(LOG_LEVEL_DEBUG, "%s() check host template condition,"
-							" selecting parent objectid:" ZBX_FS_UI64, __func__, objectid);
+							" selecting parent objectid:" TRX_FS_UI64, __func__, objectid);
 				}
 				DBfree_result(result);
 
@@ -1129,7 +1129,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 									" from items i,functions f,triggers t"
 									" where i.itemid=f.itemid"
 										" and f.triggerid=t.templateid"
-										" and t.triggerid=" ZBX_FS_UI64,
+										" and t.triggerid=" TRX_FS_UI64,
 									objectid);
 							break;
 						default:
@@ -1137,7 +1137,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 									"select t.hostid,t.itemid"
 									" from items t,items h"
 									" where t.itemid=h.templateid"
-										" and h.itemid=" ZBX_FS_UI64,
+										" and h.itemid=" TRX_FS_UI64,
 									objectid);
 					}
 
@@ -1145,8 +1145,8 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 
 					while (NULL != (row = DBfetch(result)))
 					{
-						ZBX_STR2UINT64(hostid, row[0]);
-						ZBX_STR2UINT64(objectid, row[1]);
+						TRX_STR2UINT64(hostid, row[0]);
+						TRX_STR2UINT64(objectid, row[1]);
 
 						if (hostid == condition_value)
 						{
@@ -1167,7 +1167,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 	}
 	else if (CONDITION_TYPE_HOST == condition->conditiontype)
 	{
-		ZBX_STR2UINT64(condition_value, condition->value);
+		TRX_STR2UINT64(condition_value, condition->value);
 
 		switch (event->object)
 		{
@@ -1177,16 +1177,16 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 						" from items i,functions f,triggers t"
 						" where i.itemid=f.itemid"
 							" and f.triggerid=t.triggerid"
-							" and t.triggerid=" ZBX_FS_UI64
-							" and i.hostid=" ZBX_FS_UI64,
+							" and t.triggerid=" TRX_FS_UI64
+							" and i.hostid=" TRX_FS_UI64,
 						event->objectid, condition_value);
 				break;
 			default:
 				zbx_snprintf(sql, sizeof(sql),
 						"select null"
 						" from items"
-						" where itemid=" ZBX_FS_UI64
-							" and hostid=" ZBX_FS_UI64,
+						" where itemid=" TRX_FS_UI64
+							" and hostid=" TRX_FS_UI64,
 						event->objectid, condition_value);
 		}
 
@@ -1218,7 +1218,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 						" where a.applicationid=i.applicationid"
 							" and i.itemid=f.itemid"
 							" and f.triggerid=t.triggerid"
-							" and t.triggerid=" ZBX_FS_UI64,
+							" and t.triggerid=" TRX_FS_UI64,
 						event->objectid);
 				break;
 			default:
@@ -1226,7 +1226,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 						"select distinct a.name"
 						" from applications a,items_applications i"
 						" where a.applicationid=i.applicationid"
-							" and i.itemid=" ZBX_FS_UI64,
+							" and i.itemid=" TRX_FS_UI64,
 						event->objectid);
 		}
 
@@ -1270,13 +1270,13 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 	}
 	else
 	{
-		treegix_log(LOG_LEVEL_ERR, "unsupported condition type [%d] for condition id [" ZBX_FS_UI64 "]",
+		treegix_log(LOG_LEVEL_ERR, "unsupported condition type [%d] for condition id [" TRX_FS_UI64 "]",
 				(int)condition->conditiontype, condition->conditionid);
 	}
 
 	if (NOTSUPPORTED == ret)
 	{
-		treegix_log(LOG_LEVEL_ERR, "unsupported operator [%d] for condition id [" ZBX_FS_UI64 "]",
+		treegix_log(LOG_LEVEL_ERR, "unsupported operator [%d] for condition id [" TRX_FS_UI64 "]",
 				(int)condition->op, condition->conditionid);
 		ret = FAIL;
 	}
@@ -1304,9 +1304,9 @@ int	check_action_condition(const DB_EVENT *event, DB_CONDITION *condition)
 {
 	int	ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() actionid:" ZBX_FS_UI64 " conditionid:" ZBX_FS_UI64 " cond.value:'%s'"
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() actionid:" TRX_FS_UI64 " conditionid:" TRX_FS_UI64 " cond.value:'%s'"
 			" cond.value2:'%s'", __func__, condition->actionid, condition->conditionid,
-			ZBX_NULL2STR(condition->value), ZBX_NULL2STR(condition->value2));
+			TRX_NULL2STR(condition->value), TRX_NULL2STR(condition->value2));
 
 	switch (event->source)
 	{
@@ -1323,7 +1323,7 @@ int	check_action_condition(const DB_EVENT *event, DB_CONDITION *condition)
 			ret = check_internal_condition(event, condition);
 			break;
 		default:
-			treegix_log(LOG_LEVEL_ERR, "unsupported event source [%d] for condition id [" ZBX_FS_UI64 "]",
+			treegix_log(LOG_LEVEL_ERR, "unsupported event source [%d] for condition id [" TRX_FS_UI64 "]",
 					event->source, condition->conditionid);
 	}
 
@@ -1351,10 +1351,10 @@ static int	check_action_conditions(zbx_action_eval_t *action)
 	DB_CONDITION	*condition;
 	int		condition_result, ret = SUCCEED, id_len, i;
 	unsigned char	old_type = 0xff;
-	char		*expression = NULL, tmp[ZBX_MAX_UINT64_LEN + 2], *ptr, error[256];
+	char		*expression = NULL, tmp[TRX_MAX_UINT64_LEN + 2], *ptr, error[256];
 	double		eval_result;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() actionid:" ZBX_FS_UI64, __func__, action->actionid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() actionid:" TRX_FS_UI64, __func__, action->actionid);
 
 	if (CONDITION_EVAL_TYPE_EXPRESSION == action->evaltype)
 		expression = zbx_strdup(expression, action->formula);
@@ -1407,7 +1407,7 @@ static int	check_action_conditions(zbx_action_eval_t *action)
 
 				break;
 			case CONDITION_EVAL_TYPE_EXPRESSION:
-				zbx_snprintf(tmp, sizeof(tmp), "{" ZBX_FS_UI64 "}", condition->conditionid);
+				zbx_snprintf(tmp, sizeof(tmp), "{" TRX_FS_UI64 "}", condition->conditionid);
 				id_len = strlen(tmp);
 
 				for (ptr = expression; NULL != (ptr = strstr(ptr, tmp)); ptr += id_len)
@@ -1460,7 +1460,7 @@ static void	execute_operations(const DB_EVENT *event, zbx_uint64_t actionid)
 	zbx_vector_uint64_t	lnk_templateids, del_templateids,
 				new_groupids, del_groupids;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() actionid:" ZBX_FS_UI64, __func__, actionid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() actionid:" TRX_FS_UI64, __func__, actionid);
 
 	zbx_vector_uint64_create(&lnk_templateids);
 	zbx_vector_uint64_create(&del_templateids);
@@ -1473,7 +1473,7 @@ static void	execute_operations(const DB_EVENT *event, zbx_uint64_t actionid)
 				" left join opgroup g on g.operationid=o.operationid"
 				" left join optemplate t on t.operationid=o.operationid"
 				" left join opinventory oi on oi.operationid=o.operationid"
-			" where o.actionid=" ZBX_FS_UI64,
+			" where o.actionid=" TRX_FS_UI64,
 			actionid);
 
 	while (NULL != (row = DBfetch(result)))
@@ -1482,8 +1482,8 @@ static void	execute_operations(const DB_EVENT *event, zbx_uint64_t actionid)
 		unsigned char	operationtype;
 
 		operationtype = (unsigned char)atoi(row[0]);
-		ZBX_DBROW2UINT64(groupid, row[1]);
-		ZBX_DBROW2UINT64(templateid, row[2]);
+		TRX_DBROW2UINT64(groupid, row[1]);
+		TRX_DBROW2UINT64(templateid, row[2]);
 		inventory_mode = (SUCCEED == DBis_null(row[3]) ? 0 : atoi(row[3]));
 
 		switch (operationtype)
@@ -1527,29 +1527,29 @@ static void	execute_operations(const DB_EVENT *event, zbx_uint64_t actionid)
 
 	if (0 != lnk_templateids.values_num)
 	{
-		zbx_vector_uint64_sort(&lnk_templateids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&lnk_templateids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_sort(&lnk_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_uniq(&lnk_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		op_template_add(event, &lnk_templateids);
 	}
 
 	if (0 != del_templateids.values_num)
 	{
-		zbx_vector_uint64_sort(&del_templateids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&del_templateids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_sort(&del_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_uniq(&del_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		op_template_del(event, &del_templateids);
 	}
 
 	if (0 != new_groupids.values_num)
 	{
-		zbx_vector_uint64_sort(&new_groupids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&new_groupids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_sort(&new_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_uniq(&new_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		op_groups_add(event, &new_groupids);
 	}
 
 	if (0 != del_groupids.values_num)
 	{
-		zbx_vector_uint64_sort(&del_groupids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&del_groupids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_sort(&del_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_uniq(&del_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		op_groups_del(event, &del_groupids);
 	}
 
@@ -1629,8 +1629,8 @@ static int	uniq_conditions_compare_func(const void *d1, const void *d2)
 	const DB_CONDITION	*condition1 = (const DB_CONDITION *)d1, *condition2 = (const DB_CONDITION *)d2;
 	int			ret;
 
-	ZBX_RETURN_IF_NOT_EQUAL(condition1->conditiontype, condition2->conditiontype);
-	ZBX_RETURN_IF_NOT_EQUAL(condition1->op, condition2->op);
+	TRX_RETURN_IF_NOT_EQUAL(condition1->conditiontype, condition2->conditiontype);
+	TRX_RETURN_IF_NOT_EQUAL(condition1->op, condition2->op);
 
 	if (0 != (ret = strcmp(condition1->value, condition2->value)))
 		return ret;
@@ -1658,10 +1658,10 @@ static zbx_hash_t	uniq_conditions_hash_func(const void *data)
 	const DB_CONDITION	*condition = (const DB_CONDITION *)data;
 	zbx_hash_t		hash;
 
-	hash = ZBX_DEFAULT_STRING_HASH_ALGO(condition->value, strlen(condition->value), ZBX_DEFAULT_HASH_SEED);
-	hash = ZBX_DEFAULT_STRING_HASH_ALGO(condition->value2, strlen(condition->value2), hash);
-	hash = ZBX_DEFAULT_STRING_HASH_ALGO((char *)&condition->conditiontype, 1, hash);
-	hash = ZBX_DEFAULT_STRING_HASH_ALGO((char *)&condition->op, 1, hash);
+	hash = TRX_DEFAULT_STRING_HASH_ALGO(condition->value, strlen(condition->value), TRX_DEFAULT_HASH_SEED);
+	hash = TRX_DEFAULT_STRING_HASH_ALGO(condition->value2, strlen(condition->value2), hash);
+	hash = TRX_DEFAULT_STRING_HASH_ALGO((char *)&condition->conditiontype, 1, hash);
+	hash = TRX_DEFAULT_STRING_HASH_ALGO((char *)&condition->op, 1, hash);
 
 	return hash;
 }
@@ -1714,7 +1714,7 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 	zbx_vector_uint64_pair_t	rec_escalations;
 	zbx_hashset_t			uniq_conditions[EVENT_SOURCE_COUNT];
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() events_num:" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)events->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() events_num:" TRX_FS_SIZE_T, __func__, (zbx_fs_size_t)events->values_num);
 
 	zbx_vector_ptr_create(&new_escalations);
 	zbx_vector_uint64_pair_create(&rec_escalations);
@@ -1723,7 +1723,7 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 		zbx_hashset_create(&uniq_conditions[i], 0, uniq_conditions_hash_func, uniq_conditions_compare_func);
 
 	zbx_vector_ptr_create(&actions);
-	zbx_dc_get_actions_eval(&actions, uniq_conditions, ZBX_ACTION_OPCLASS_NORMAL | ZBX_ACTION_OPCLASS_RECOVERY);
+	zbx_dc_get_actions_eval(&actions, uniq_conditions, TRX_ACTION_OPCLASS_NORMAL | TRX_ACTION_OPCLASS_RECOVERY);
 
 	/* 1. All event sources: match PROBLEM events to action conditions, add them to 'new_escalations' list.      */
 	/* 2. EVENT_SOURCE_DISCOVERY, EVENT_SOURCE_AUTO_REGISTRATION: execute operations (except command and message */
@@ -1739,8 +1739,8 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 		if (SUCCEED == is_recovery_event(event))
 			continue;
 
-		if (0 != (event->flags & ZBX_FLAGS_DB_EVENT_NO_ACTION) ||
-				0 == (event->flags & ZBX_FLAGS_DB_EVENT_CREATE))
+		if (0 != (event->flags & TRX_FLAGS_DB_EVENT_NO_ACTION) ||
+				0 == (event->flags & TRX_FLAGS_DB_EVENT_CREATE))
 		{
 			continue;
 		}
@@ -1801,7 +1801,7 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 			zbx_vector_uint64_append(&eventids, closed_events->values[j].first);
 
 		/* 3.2. Select escalations that must be recovered. */
-		zbx_vector_uint64_sort(&eventids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_sort(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
 				"select eventid,escalationid"
 				" from escalations"
@@ -1817,17 +1817,17 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 		{
 			zbx_uint64_pair_t	pair;
 
-			ZBX_STR2UINT64(pair.first, row[0]);
+			TRX_STR2UINT64(pair.first, row[0]);
 
 			if (FAIL == (index = zbx_vector_uint64_pair_bsearch(closed_events, pair,
-					ZBX_DEFAULT_UINT64_COMPARE_FUNC)))
+					TRX_DEFAULT_UINT64_COMPARE_FUNC)))
 			{
 				THIS_SHOULD_NEVER_HAPPEN;
 				continue;
 			}
 
 			pair.second = closed_events->values[index].second;
-			ZBX_DBROW2UINT64(pair.first, row[1]);
+			TRX_DBROW2UINT64(pair.first, row[1]);
 			zbx_vector_uint64_pair_append(&rec_escalations, pair);
 		}
 
@@ -1882,15 +1882,15 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 		size_t	sql_alloc = 0, sql_offset = 0;
 		int	j;
 
-		zbx_vector_uint64_pair_sort(&rec_escalations, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_pair_sort(&rec_escalations, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 
 		for (j = 0; j < rec_escalations.values_num; j++)
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
-					"update escalations set r_eventid=" ZBX_FS_UI64 ",nextcheck=0"
-					" where escalationid=" ZBX_FS_UI64 ";\n",
+					"update escalations set r_eventid=" TRX_FS_UI64 ",nextcheck=0"
+					" where escalationid=" TRX_FS_UI64 ";\n",
 					rec_escalations.values[j].second, rec_escalations.values[j].first);
 
 			DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset);
@@ -1937,7 +1937,7 @@ int	process_actions_by_acknowledgements(const zbx_vector_ptr_t *ack_tasks)
 		zbx_hashset_create(&uniq_conditions[i], 0, uniq_conditions_hash_func, uniq_conditions_compare_func);
 
 	zbx_vector_ptr_create(&actions);
-	zbx_dc_get_actions_eval(&actions, uniq_conditions, ZBX_ACTION_OPCLASS_ACKNOWLEDGE);
+	zbx_dc_get_actions_eval(&actions, uniq_conditions, TRX_ACTION_OPCLASS_ACKNOWLEDGE);
 
 	if (0 == actions.values_num)
 		goto out;
@@ -1950,8 +1950,8 @@ int	process_actions_by_acknowledgements(const zbx_vector_ptr_t *ack_tasks)
 		zbx_vector_uint64_append(&eventids, ack_task->eventid);
 	}
 
-	zbx_vector_uint64_sort(&eventids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(&eventids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_uniq(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	zbx_vector_ptr_create(&events);
 
@@ -2008,7 +2008,7 @@ int	process_actions_by_acknowledgements(const zbx_vector_ptr_t *ack_tasks)
 		zbx_db_insert_prepare(&db_insert, "escalations", "escalationid", "actionid", "status", "triggerid",
 						"itemid", "eventid", "r_eventid", "acknowledgeid", NULL);
 
-		zbx_vector_ptr_sort(&ack_escalations, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+		zbx_vector_ptr_sort(&ack_escalations, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 		for (i = 0; i < ack_escalations.values_num; i++)
 		{
@@ -2068,8 +2068,8 @@ void	get_db_actions_info(zbx_vector_uint64_t *actionids, zbx_vector_ptr_t *actio
 	size_t		filter_alloc = 0, filter_offset = 0;
 	DB_ACTION	*action;
 
-	zbx_vector_uint64_sort(actionids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(actionids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(actionids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_uniq(actionids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	DBadd_condition_alloc(&filter, &filter_alloc, &filter_offset, "actionid", actionids->values,
 			actionids->values_num);
@@ -2084,14 +2084,14 @@ void	get_db_actions_info(zbx_vector_uint64_t *actionids, zbx_vector_ptr_t *actio
 		char	*tmp;
 
 		action = (DB_ACTION *)zbx_malloc(NULL, sizeof(DB_ACTION));
-		ZBX_STR2UINT64(action->actionid, row[0]);
-		ZBX_STR2UCHAR(action->status, row[2]);
-		ZBX_STR2UCHAR(action->eventsource, row[3]);
+		TRX_STR2UINT64(action->actionid, row[0]);
+		TRX_STR2UCHAR(action->status, row[2]);
+		TRX_STR2UCHAR(action->eventsource, row[3]);
 
 		tmp = zbx_strdup(NULL, row[4]);
 		substitute_simple_macros(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &tmp, MACRO_TYPE_COMMON,
 				NULL, 0);
-		if (SUCCEED != is_time_suffix(tmp, &action->esc_period, ZBX_LENGTH_UNLIMITED))
+		if (SUCCEED != is_time_suffix(tmp, &action->esc_period, TRX_LENGTH_UNLIMITED))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "Invalid default operation step duration \"%s\" for action"
 					" \"%s\", using default value of 1 hour", tmp, row[1]);
@@ -2103,29 +2103,29 @@ void	get_db_actions_info(zbx_vector_uint64_t *actionids, zbx_vector_ptr_t *actio
 		action->longdata = zbx_strdup(NULL, row[6]);
 		action->r_shortdata = zbx_strdup(NULL, row[7]);
 		action->r_longdata = zbx_strdup(NULL, row[8]);
-		ZBX_STR2UCHAR(action->pause_suppressed, row[9]);
+		TRX_STR2UCHAR(action->pause_suppressed, row[9]);
 		action->ack_shortdata = zbx_strdup(NULL, row[10]);
 		action->ack_longdata = zbx_strdup(NULL, row[11]);
 		action->name = zbx_strdup(NULL, row[1]);
-		action->recovery = ZBX_ACTION_RECOVERY_NONE;
+		action->recovery = TRX_ACTION_RECOVERY_NONE;
 
 		zbx_vector_ptr_append(actions, action);
 	}
 	DBfree_result(result);
 
 	result = DBselect("select actionid from operations where recovery=%d and%s",
-			ZBX_OPERATION_MODE_RECOVERY, filter);
+			TRX_OPERATION_MODE_RECOVERY, filter);
 
 	while (NULL != (row = DBfetch(result)))
 	{
 		zbx_uint64_t	actionid;
 		int		index;
 
-		ZBX_STR2UINT64(actionid, row[0]);
-		if (FAIL != (index = zbx_vector_ptr_bsearch(actions, &actionid, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+		TRX_STR2UINT64(actionid, row[0]);
+		if (FAIL != (index = zbx_vector_ptr_bsearch(actions, &actionid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 		{
 			action = (DB_ACTION *)actions->values[index];
-			action->recovery = ZBX_ACTION_RECOVERY_OPERATIONS;
+			action->recovery = TRX_ACTION_RECOVERY_OPERATIONS;
 		}
 	}
 	DBfree_result(result);

@@ -5,6 +5,6 @@
 
 #include "threads.h"
 
-ZBX_THREAD_ENTRY(discoverer_thread, args);
+TRX_THREAD_ENTRY(discoverer_thread, args);
 
 #endif

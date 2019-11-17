@@ -88,7 +88,7 @@ class CControllerPopupMediatypeTestSend extends CController {
 	}
 
 	protected function doAction() {
-		global $ZBX_SERVER, $ZBX_SERVER_PORT;
+		global $TRX_SERVER, $TRX_SERVER_PORT;
 
 		if ($this->mediatype['type'] == MEDIA_TYPE_WEBHOOK ) {
 			$params = [];
@@ -108,7 +108,7 @@ class CControllerPopupMediatypeTestSend extends CController {
 		}
 
 		$params['mediatypeid'] = $this->getInput('mediatypeid');
-		$server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
+		$server = new CTreegixServer($TRX_SERVER, $TRX_SERVER_PORT, TRX_SOCKET_TIMEOUT, TRX_SOCKET_BYTES_LIMIT);
 		$result = $server->testMediaType($params, CWebUser::getSessionCookie());
 
 		if ($result) {

@@ -9,7 +9,7 @@ class CTableInfo extends CTable {
 	public function __construct() {
 		parent::__construct();
 
-		$this->addClass(ZBX_STYLE_LIST_TABLE);
+		$this->addClass(TRX_STYLE_LIST_TABLE);
 		$this->setNoDataMessage(_('No data found.'));
 		$this->addMakeVerticalRotationJs = false;
 	}
@@ -63,7 +63,7 @@ class CTableInfo extends CTable {
 	protected function endToString() {
 		$ret = '';
 		if ($this->rownum == 0 && $this->message !== null) {
-			$ret .= $this->prepareRow(new CCol($this->message), ZBX_STYLE_NOTHING_TO_SHOW)->toString();
+			$ret .= $this->prepareRow(new CCol($this->message), TRX_STYLE_NOTHING_TO_SHOW)->toString();
 		}
 		$ret .= parent::endToString();
 

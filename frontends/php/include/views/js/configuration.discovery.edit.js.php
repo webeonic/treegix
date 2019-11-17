@@ -1,16 +1,16 @@
 <script type="text/x-jquery-tmpl" id="dcheckRowTPL">
 	<?= (new CRow([
 			(new CCol(
-				(new CDiv('#{name}'))->addClass(ZBX_STYLE_WORDWRAP)
+				(new CDiv('#{name}'))->addClass(TRX_STYLE_WORDWRAP)
 			))->setId('dcheckCell_#{dcheckid}'),
 			(new CHorList([
 				(new CButton(null, _('Edit')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->onClick("javascript: showNewCheckForm(null, '#{dcheckid}');"),
 				(new CButton(null, _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->onClick("javascript: removeDCheckRow('#{dcheckid}');")
-			]))->addClass(ZBX_STYLE_NOWRAP)
+			]))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->setId('dcheckRow_#{dcheckid}')
 			->toString()
@@ -19,10 +19,10 @@
 <script type="text/x-jquery-tmpl" id="uniqRowTPL">
 	<?=	(new CListItem([
 			(new CInput('radio', 'uniqueness_criteria', '#{dcheckid}'))
-				->addClass(ZBX_STYLE_CHECKBOX_RADIO)
+				->addClass(TRX_STYLE_CHECKBOX_RADIO)
 				->setId('uniqueness_criteria_#{dcheckid}'),
 			(new CLabel([new CSpan(), '#{name}'], 'uniqueness_criteria_#{dcheckid}'))
-				->addClass(ZBX_STYLE_WORDWRAP)
+				->addClass(TRX_STYLE_WORDWRAP)
 		]))
 			->setId('uniqueness_criteria_row_#{dcheckid}')
 			->toString()
@@ -31,7 +31,7 @@
 <script type="text/x-jquery-tmpl" id="hostSourceRowTPL">
 	<?=	(new CListItem([
 			(new CInput('radio', 'host_source', '_#{dcheckid}'))
-				->addClass(ZBX_STYLE_CHECKBOX_RADIO)
+				->addClass(TRX_STYLE_CHECKBOX_RADIO)
 				->setAttribute('data-id', '#{dcheckid}')
 				->setId('host_source_#{dcheckid}'),
 			new CLabel([new CSpan(), '#{name}'], 'host_source_#{dcheckid}')
@@ -43,7 +43,7 @@
 <script type="text/x-jquery-tmpl" id="nameSourceRowTPL">
 	<?=	(new CListItem([
 			(new CInput('radio', 'name_source', '_#{dcheckid}'))
-				->addClass(ZBX_STYLE_CHECKBOX_RADIO)
+				->addClass(TRX_STYLE_CHECKBOX_RADIO)
 				->setAttribute('data-id', '#{dcheckid}')
 				->setId('name_source_#{dcheckid}'),
 			new CLabel([new CSpan(), '#{name}'], 'name_source_#{dcheckid}')
@@ -64,28 +64,28 @@
 				->addRow(
 					(new CLabel(_('Port range'), 'ports'))->setAsteriskMark(),
 					(new CTextBox('ports'))
-						->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+						->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 						->setAriaRequired(),
 					'newCheckPortsRow'
 				)
 				->addRow(
 					(new CLabel(_('SNMP community'), 'snmp_community'))->setAsteriskMark(),
 					(new CTextBox('snmp_community'))
-						->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+						->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 						->setAriaRequired(),
 					'newCheckCommunityRow'
 				)
 				->addRow(
 					(new CLabel(_('Key'), 'key_'))->setAsteriskMark(),
 					(new CTextBox('key_'))
-						->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+						->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 						->setAriaRequired(),
 					'newCheckKeyRow'
 				)
 				->addRow(
 					(new CLabel(_('SNMP OID'), 'snmp_oid'))->setAsteriskMark(),
 					(new CTextBox('snmp_oid'))
-						->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+						->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 						->setAriaRequired()
 						->setAttribute('maxlength', 512),
 					'new_check_snmp_oid_row'
@@ -93,13 +93,13 @@
 				->addRow(
 					(new CLabel(_('Context name'), 'snmpv3_contextname')),
 					(new CTextBox('snmpv3_contextname'))
-						->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH),
+						->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH),
 					'newCheckContextRow'
 				)
 				->addRow(
 					(new CLabel(_('Security name'), 'snmpv3_securityname')),
 					(new CTextBox('snmpv3_securityname'))
-						->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+						->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 						->setAttribute('maxlength', 64),
 					'newCheckSecNameRow'
 				)
@@ -123,7 +123,7 @@
 				->addRow(
 					(new CLabel(_('Authentication passphrase'), 'snmpv3_authpassphrase')),
 					(new CTextBox('snmpv3_authpassphrase'))
-						->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+						->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 						->setAttribute('maxlength', 64),
 					'newCheckAuthPassRow'
 				)
@@ -138,23 +138,23 @@
 				->addRow(
 					(new CLabel(_('Privacy passphrase'), 'snmpv3_privpassphrase'))->setAsteriskMark(),
 					(new CTextBox('snmpv3_privpassphrase'))
-						->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+						->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 						->setAriaRequired()
 						->setAttribute('maxlength', 64),
 					'newCheckPrivPassRow'
 				),
 			(new CHorList([
-				(new CButton('add_new_dcheck', _('Add')))->addClass(ZBX_STYLE_BTN_LINK),
-				(new CButton('cancel_new_dcheck', _('Cancel')))->addClass(ZBX_STYLE_BTN_LINK)
+				(new CButton('add_new_dcheck', _('Add')))->addClass(TRX_STYLE_BTN_LINK),
+				(new CButton('cancel_new_dcheck', _('Cancel')))->addClass(TRX_STYLE_BTN_LINK)
 			]))
 		]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->addStyle('width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addStyle('width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px')
 	))->setId('new_check_form')
 ?>
 </script>
 <script type="text/javascript">
-	var ZBX_SVC = {
+	var TRX_SVC = {
 		ssh: <?= SVC_SSH ?>,
 		ldap: <?= SVC_LDAP ?>,
 		smtp: <?= SVC_SMTP ?>,
@@ -173,26 +173,26 @@
 		telnet: <?= SVC_TELNET ?>
 	};
 
-	var ZBX_CHECKLIST = {};
+	var TRX_CHECKLIST = {};
 
 	function discoveryCheckDefaultPort(service) {
 		var defPorts = {};
-		defPorts[ZBX_SVC.ssh] = '22';
-		defPorts[ZBX_SVC.ldap] = '389';
-		defPorts[ZBX_SVC.smtp] = '25';
-		defPorts[ZBX_SVC.ftp] = '21';
-		defPorts[ZBX_SVC.http] = '80';
-		defPorts[ZBX_SVC.pop] = '110';
-		defPorts[ZBX_SVC.nntp] = '119';
-		defPorts[ZBX_SVC.imap] = '143';
-		defPorts[ZBX_SVC.tcp] = '0';
-		defPorts[ZBX_SVC.icmp] = '0';
-		defPorts[ZBX_SVC.agent] = '10050';
-		defPorts[ZBX_SVC.snmpv1] = '161';
-		defPorts[ZBX_SVC.snmpv2] = '161';
-		defPorts[ZBX_SVC.snmpv3] = '161';
-		defPorts[ZBX_SVC.https] = '443';
-		defPorts[ZBX_SVC.telnet] = '23';
+		defPorts[TRX_SVC.ssh] = '22';
+		defPorts[TRX_SVC.ldap] = '389';
+		defPorts[TRX_SVC.smtp] = '25';
+		defPorts[TRX_SVC.ftp] = '21';
+		defPorts[TRX_SVC.http] = '80';
+		defPorts[TRX_SVC.pop] = '110';
+		defPorts[TRX_SVC.nntp] = '119';
+		defPorts[TRX_SVC.imap] = '143';
+		defPorts[TRX_SVC.tcp] = '0';
+		defPorts[TRX_SVC.icmp] = '0';
+		defPorts[TRX_SVC.agent] = '10050';
+		defPorts[TRX_SVC.snmpv1] = '161';
+		defPorts[TRX_SVC.snmpv2] = '161';
+		defPorts[TRX_SVC.snmpv3] = '161';
+		defPorts[TRX_SVC.https] = '443';
+		defPorts[TRX_SVC.telnet] = '23';
 
 		service = service.toString();
 
@@ -201,22 +201,22 @@
 
 	function discoveryCheckTypeToString(svcPort) {
 		var defPorts = {};
-		defPorts[ZBX_SVC.ftp] = <?= CJs::encodeJson(_('FTP')) ?>;
-		defPorts[ZBX_SVC.http] = <?= CJs::encodeJson(_('HTTP')) ?>;
-		defPorts[ZBX_SVC.https] = <?= CJs::encodeJson(_('HTTPS')) ?>;
-		defPorts[ZBX_SVC.icmp] = <?= CJs::encodeJson(_('ICMP ping')) ?>;
-		defPorts[ZBX_SVC.imap] = <?= CJs::encodeJson(_('IMAP')) ?>;
-		defPorts[ZBX_SVC.tcp] = <?= CJs::encodeJson(_('TCP')) ?>;
-		defPorts[ZBX_SVC.ldap] = <?= CJs::encodeJson(_('LDAP')) ?>;
-		defPorts[ZBX_SVC.nntp] = <?= CJs::encodeJson(_('NNTP')) ?>;
-		defPorts[ZBX_SVC.pop] = <?= CJs::encodeJson(_('POP')) ?>;
-		defPorts[ZBX_SVC.snmpv1] = <?= CJs::encodeJson(_('SNMPv1 agent')) ?>;
-		defPorts[ZBX_SVC.snmpv2] = <?= CJs::encodeJson(_('SNMPv2 agent')) ?>;
-		defPorts[ZBX_SVC.snmpv3] = <?= CJs::encodeJson(_('SNMPv3 agent')) ?>;
-		defPorts[ZBX_SVC.smtp] = <?= CJs::encodeJson(_('SMTP')) ?>;
-		defPorts[ZBX_SVC.ssh] = <?= CJs::encodeJson(_('SSH')) ?>;
-		defPorts[ZBX_SVC.telnet] = <?= CJs::encodeJson(_('Telnet')) ?>;
-		defPorts[ZBX_SVC.agent] = <?= CJs::encodeJson(_('Treegix agent')) ?>;
+		defPorts[TRX_SVC.ftp] = <?= CJs::encodeJson(_('FTP')) ?>;
+		defPorts[TRX_SVC.http] = <?= CJs::encodeJson(_('HTTP')) ?>;
+		defPorts[TRX_SVC.https] = <?= CJs::encodeJson(_('HTTPS')) ?>;
+		defPorts[TRX_SVC.icmp] = <?= CJs::encodeJson(_('ICMP ping')) ?>;
+		defPorts[TRX_SVC.imap] = <?= CJs::encodeJson(_('IMAP')) ?>;
+		defPorts[TRX_SVC.tcp] = <?= CJs::encodeJson(_('TCP')) ?>;
+		defPorts[TRX_SVC.ldap] = <?= CJs::encodeJson(_('LDAP')) ?>;
+		defPorts[TRX_SVC.nntp] = <?= CJs::encodeJson(_('NNTP')) ?>;
+		defPorts[TRX_SVC.pop] = <?= CJs::encodeJson(_('POP')) ?>;
+		defPorts[TRX_SVC.snmpv1] = <?= CJs::encodeJson(_('SNMPv1 agent')) ?>;
+		defPorts[TRX_SVC.snmpv2] = <?= CJs::encodeJson(_('SNMPv2 agent')) ?>;
+		defPorts[TRX_SVC.snmpv3] = <?= CJs::encodeJson(_('SNMPv3 agent')) ?>;
+		defPorts[TRX_SVC.smtp] = <?= CJs::encodeJson(_('SMTP')) ?>;
+		defPorts[TRX_SVC.ssh] = <?= CJs::encodeJson(_('SSH')) ?>;
+		defPorts[TRX_SVC.telnet] = <?= CJs::encodeJson(_('Telnet')) ?>;
+		defPorts[TRX_SVC.agent] = <?= CJs::encodeJson(_('Treegix agent')) ?>;
 
 		if (typeof svcPort === 'undefined') {
 			return defPorts;
@@ -236,9 +236,9 @@
 	 */
 	function typeOfSnmp(type) {
 		var types = {};
-		types[ZBX_SVC.snmpv1] = true;
-		types[ZBX_SVC.snmpv2] = true;
-		types[ZBX_SVC.snmpv3] = true;
+		types[TRX_SVC.snmpv1] = true;
+		types[TRX_SVC.snmpv2] = true;
+		types[TRX_SVC.snmpv3] = true;
 
 		return (typeof types[type] != 'undefined');
 	}
@@ -276,8 +276,8 @@
 			}
 
 			// add
-			if (typeof ZBX_CHECKLIST[value.dcheckid] === 'undefined') {
-				ZBX_CHECKLIST[value.dcheckid] = value;
+			if (typeof TRX_CHECKLIST[value.dcheckid] === 'undefined') {
+				TRX_CHECKLIST[value.dcheckid] = value;
 
 				jQuery('#dcheckListFooter').before(dcheckRowTpl.evaluate(value));
 
@@ -296,7 +296,7 @@
 
 			// update
 			else {
-				ZBX_CHECKLIST[value.dcheckid] = value;
+				TRX_CHECKLIST[value.dcheckid] = value;
 
 				var ignoreNames = ['druleid', 'dcheckid', 'name', 'ports', 'type', 'uniq'];
 
@@ -336,7 +336,7 @@
 				jQuery('#dcheckCell_' + value.dcheckid + ' .wordwrap').text(value['name']);
 			}
 
-			var availableDeviceTypes = [ZBX_SVC.agent, ZBX_SVC.snmpv1, ZBX_SVC.snmpv2, ZBX_SVC.snmpv3],
+			var availableDeviceTypes = [TRX_SVC.agent, TRX_SVC.snmpv1, TRX_SVC.snmpv2, TRX_SVC.snmpv3],
 				elements = {
 					uniqueness_criteria: ['ip', uniqRowTpl.evaluate(value)],
 					host_source: ['chk_dns', hostSourceRowTPL.evaluate(value)],
@@ -370,7 +370,7 @@
 	function removeDCheckRow(dcheckid) {
 		jQuery('#dcheckRow_' + dcheckid).remove();
 
-		delete(ZBX_CHECKLIST[dcheckid]);
+		delete(TRX_CHECKLIST[dcheckid]);
 
 		var elements = {
 			uniqueness_criteria_: 'ip',
@@ -491,14 +491,14 @@
 		var dcheckType = parseInt(jQuery('#type').val(), 10);
 
 		var comRowTypes = {};
-		comRowTypes[ZBX_SVC.snmpv1] = true;
-		comRowTypes[ZBX_SVC.snmpv2] = true;
+		comRowTypes[TRX_SVC.snmpv1] = true;
+		comRowTypes[TRX_SVC.snmpv2] = true;
 
 		var secNameRowTypes = {};
-		secNameRowTypes[ZBX_SVC.snmpv3] = true;
+		secNameRowTypes[TRX_SVC.snmpv3] = true;
 
-		toggleInputs('newCheckPortsRow', (ZBX_SVC.icmp != dcheckType));
-		toggleInputs('newCheckKeyRow', dcheckType == ZBX_SVC.agent);
+		toggleInputs('newCheckPortsRow', (TRX_SVC.icmp != dcheckType));
+		toggleInputs('newCheckKeyRow', dcheckType == TRX_SVC.agent);
 		toggleInputs('new_check_snmp_oid_row', typeOfSnmp(dcheckType));
 		toggleInputs('newCheckCommunityRow', isset(dcheckType, comRowTypes));
 		toggleInputs('newCheckSecNameRow', isset(dcheckType, secNameRowTypes));
@@ -511,9 +511,9 @@
 		jQuery('#type').data('oldType', dcheckType);
 
 		// type is changed
-		if (ZBX_SVC.icmp != dcheckType && typeof oldType !== 'undefined' && dcheckType != oldType) {
+		if (TRX_SVC.icmp != dcheckType && typeof oldType !== 'undefined' && dcheckType != oldType) {
 			// reset values
-			var snmpTypes = [ZBX_SVC.snmpv1, ZBX_SVC.snmpv2, ZBX_SVC.snmpv3],
+			var snmpTypes = [TRX_SVC.snmpv1, TRX_SVC.snmpv2, TRX_SVC.snmpv3],
 				ignoreNames = ['druleid', 'name', 'ports', 'type'];
 
 			if (jQuery.inArray(dcheckType, snmpTypes) !== -1 && jQuery.inArray(oldType, snmpTypes) !== -1) {
@@ -546,7 +546,7 @@
 			dcheckSecLevType = parseInt(jQuery('#snmpv3_securitylevel').val(), 10);
 
 		var secNameRowTypes = {};
-		secNameRowTypes[ZBX_SVC.snmpv3] = true;
+		secNameRowTypes[TRX_SVC.snmpv3] = true;
 
 		var showAuthProtocol = (isset(dcheckType, secNameRowTypes)
 			&& (dcheckSecLevType == <?= ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV ?>
@@ -576,29 +576,29 @@
 		dCheck.dcheckid = (typeof dcheckId === 'undefined') ? getUniqueId() : dcheckId;
 
 		// check for duplicates
-		for (var zbxDcheckId in ZBX_CHECKLIST) {
+		for (var zbxDcheckId in TRX_CHECKLIST) {
 			if (typeof dcheckId === 'undefined' || (typeof dcheckId !== 'undefined') && dcheckId != zbxDcheckId) {
-				if ((typeof dCheck['key_'] === 'undefined' || ZBX_CHECKLIST[zbxDcheckId]['key_'] === dCheck['key_'])
+				if ((typeof dCheck['key_'] === 'undefined' || TRX_CHECKLIST[zbxDcheckId]['key_'] === dCheck['key_'])
 						&& (typeof dCheck['type'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['type'] === dCheck['type'])
+							|| TRX_CHECKLIST[zbxDcheckId]['type'] === dCheck['type'])
 						&& (typeof dCheck['ports'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['ports'] === dCheck['ports'])
+							|| TRX_CHECKLIST[zbxDcheckId]['ports'] === dCheck['ports'])
 						&& (typeof dCheck['snmp_community'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['snmp_community'] === dCheck['snmp_community'])
+							|| TRX_CHECKLIST[zbxDcheckId]['snmp_community'] === dCheck['snmp_community'])
 						&& (typeof dCheck['snmpv3_authprotocol'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['snmpv3_authprotocol'] === dCheck['snmpv3_authprotocol'])
+							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_authprotocol'] === dCheck['snmpv3_authprotocol'])
 						&& (typeof dCheck['snmpv3_authpassphrase'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['snmpv3_authpassphrase'] === dCheck['snmpv3_authpassphrase'])
+							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_authpassphrase'] === dCheck['snmpv3_authpassphrase'])
 						&& (typeof dCheck['snmpv3_privprotocol'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['snmpv3_privprotocol'] === dCheck['snmpv3_privprotocol'])
+							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_privprotocol'] === dCheck['snmpv3_privprotocol'])
 						&& (typeof dCheck['snmpv3_privpassphrase'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['snmpv3_privpassphrase'] === dCheck['snmpv3_privpassphrase'])
+							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_privpassphrase'] === dCheck['snmpv3_privpassphrase'])
 						&& (typeof dCheck['snmpv3_securitylevel'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['snmpv3_securitylevel'] === dCheck['snmpv3_securitylevel'])
+							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_securitylevel'] === dCheck['snmpv3_securitylevel'])
 						&& (typeof dCheck['snmpv3_securityname'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['snmpv3_securityname'] === dCheck['snmpv3_securityname'])
+							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_securityname'] === dCheck['snmpv3_securityname'])
 						&& (typeof dCheck['snmpv3_contextname'] === 'undefined'
-							|| ZBX_CHECKLIST[zbxDcheckId]['snmpv3_contextname'] === dCheck['snmpv3_contextname'])) {
+							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_contextname'] === dCheck['snmpv3_contextname'])) {
 
 					overlayDialogue({
 						'title': <?= CJs::encodeJson(_('Discovery check error')) ?>,
@@ -626,25 +626,25 @@
 			};
 
 		switch (parseInt(dCheck.type, 10)) {
-			case ZBX_SVC.agent:
+			case TRX_SVC.agent:
 				ajaxChecks.ajaxdata.push({
 					field: 'itemKey',
 					value: dCheck.key_
 				});
 				break;
-			case ZBX_SVC.snmpv1:
-			case ZBX_SVC.snmpv2:
+			case TRX_SVC.snmpv1:
+			case TRX_SVC.snmpv2:
 				if (dCheck.snmp_community == '') {
 					validationErrors.push(<?= CJs::encodeJson(_('Incorrect SNMP community.')) ?>);
 				}
-			case ZBX_SVC.snmpv3:
+			case TRX_SVC.snmpv3:
 				if (dCheck.key_ == '') {
 					validationErrors.push(<?= CJs::encodeJson(_('Incorrect SNMP OID.')) ?>);
 				}
 				break;
 		}
 
-		if (dCheck.type != ZBX_SVC.icmp) {
+		if (dCheck.type != TRX_SVC.icmp) {
 			ajaxChecks.ajaxdata.push({
 				field: 'port',
 				value: dCheck.ports
@@ -725,9 +725,9 @@
 				}
 
 				dCheck.host_source = jQuery('[name=host_source]:checked:not([data-id])').val()
-					|| '<?= ZBX_DISCOVERY_DNS ?>';
+					|| '<?= TRX_DISCOVERY_DNS ?>';
 				dCheck.name_source = jQuery('[name=name_source]:checked:not([data-id])').val()
-					|| '<?= ZBX_DISCOVERY_UNSPEC ?>';
+					|| '<?= TRX_DISCOVERY_UNSPEC ?>';
 
 				addPopupValues([dCheck]);
 
@@ -759,8 +759,8 @@
 
 			if (elm.data('id')) {
 				jQuery('[name^=dchecks][name$="[' + name + ']"]')
-					.val((name === 'name_source') ? <?= ZBX_DISCOVERY_UNSPEC ?> : <?= ZBX_DISCOVERY_DNS ?>);
-				jQuery('[name="dchecks[' + elm.data('id') + '][' + name + ']"]').val(<?= ZBX_DISCOVERY_VALUE ?>);
+					.val((name === 'name_source') ? <?= TRX_DISCOVERY_UNSPEC ?> : <?= TRX_DISCOVERY_DNS ?>);
+				jQuery('[name="dchecks[' + elm.data('id') + '][' + name + ']"]').val(<?= TRX_DISCOVERY_VALUE ?>);
 			}
 			else {
 				jQuery('[name^=dchecks][name$="[' + name + ']"]').val(elm.val());

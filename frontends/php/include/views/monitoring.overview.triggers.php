@@ -6,22 +6,22 @@ zbx_add_post_js('jqBlink.blink();');
 
 // hint table
 $help_hint = (new CList())
-	->addClass(ZBX_STYLE_NOTIF_BODY)
-	->addStyle('min-width: '.ZBX_OVERVIEW_HELP_MIN_WIDTH.'px')
+	->addClass(TRX_STYLE_NOTIF_BODY)
+	->addStyle('min-width: '.TRX_OVERVIEW_HELP_MIN_WIDTH.'px')
 	->addItem([
 		(new CDiv())
-			->addClass(ZBX_STYLE_NOTIF_INDIC)
+			->addClass(TRX_STYLE_NOTIF_INDIC)
 			->addClass(getSeverityStyle(null, false)),
 		new CTag('h4', true, _('OK')),
-		(new CTag('p', true, ''))->addClass(ZBX_STYLE_GREY)
+		(new CTag('p', true, ''))->addClass(TRX_STYLE_GREY)
 	]);
 for ($severity = TRIGGER_SEVERITY_NOT_CLASSIFIED; $severity < TRIGGER_SEVERITY_COUNT; $severity++) {
 	$help_hint->addItem([
 		(new CDiv())
-			->addClass(ZBX_STYLE_NOTIF_INDIC)
+			->addClass(TRX_STYLE_NOTIF_INDIC)
 			->addClass(getSeverityStyle($severity)),
 		new CTag('h4', true, getSeverityName($severity, $data['config'])),
-		(new CTag('p', true, _('PROBLEM')))->addClass(ZBX_STYLE_GREY)
+		(new CTag('p', true, _('PROBLEM')))->addClass(TRX_STYLE_GREY)
 	]);
 }
 
@@ -29,25 +29,25 @@ for ($severity = TRIGGER_SEVERITY_NOT_CLASSIFIED; $severity < TRIGGER_SEVERITY_C
 $blink_period = timeUnitToSeconds($data['config']['blink_period']);
 if ($blink_period > 0) {
 	$indic_container = (new CDiv())
-		->addClass(ZBX_STYLE_NOTIF_INDIC_CONTAINER)
+		->addClass(TRX_STYLE_NOTIF_INDIC_CONTAINER)
 		->addItem(
 			(new CDiv())
-				->addClass(ZBX_STYLE_NOTIF_INDIC)
+				->addClass(TRX_STYLE_NOTIF_INDIC)
 				->addClass(getSeverityStyle(null, false))
 				->addClass('blink')
-				->setAttribute('data-toggle-class', ZBX_STYLE_BLINK_HIDDEN)
+				->setAttribute('data-toggle-class', TRX_STYLE_BLINK_HIDDEN)
 		);
 	for ($severity = TRIGGER_SEVERITY_NOT_CLASSIFIED; $severity < TRIGGER_SEVERITY_COUNT; $severity++) {
 		$indic_container->addItem(
 			(new CDiv())
-				->addClass(ZBX_STYLE_NOTIF_INDIC)
+				->addClass(TRX_STYLE_NOTIF_INDIC)
 				->addClass(getSeverityStyle($severity))
 				->addClass('blink')
-				->setAttribute('data-toggle-class', ZBX_STYLE_BLINK_HIDDEN)
+				->setAttribute('data-toggle-class', TRX_STYLE_BLINK_HIDDEN)
 			);
 	}
 	$indic_container->addItem(
-		(new CTag('p', true, _s('Age less than %s', convertUnitsS($blink_period))))->addClass(ZBX_STYLE_GREY)
+		(new CTag('p', true, _s('Age less than %s', convertUnitsS($blink_period))))->addClass(TRX_STYLE_GREY)
 	);
 
 	$help_hint->addItem($indic_container);
@@ -66,12 +66,12 @@ $widget = (new CWidget())
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Group'), 'groupid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$this->data['pageFilter']->getGroupsCB()
 				])
 				->addItem([
 					new CLabel(_('Type'), 'type'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					new CComboBox('type', $this->data['type'], 'submit()', [
 						SHOW_TRIGGERS => _('Triggers'),
 						SHOW_DATA => _('Data')
@@ -79,7 +79,7 @@ $widget = (new CWidget())
 				])
 				->addItem([
 					new CLabel(_('Hosts location'), 'view_style'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					new CComboBox('view_style', $this->data['view_style'], 'submit()', [
 						STYLE_TOP => _('Top'),
 						STYLE_LEFT => _('Left')
@@ -93,7 +93,7 @@ $widget = (new CWidget())
 			->setAttribute('aria-label', _('Content controls'))
 	]));
 
-if (in_array($web_layout_mode, [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN])) {
+if (in_array($web_layout_mode, [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN])) {
 	// filter
 	$filter = $data['filter'];
 	$filterFormView = new CView('common.filter.trigger', [

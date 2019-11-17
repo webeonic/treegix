@@ -46,5 +46,5 @@ void	lld_field_uint64_rollback(zbx_uint64_t *field, zbx_uint64_t *field_orig, zb
  ******************************************************************************/
 int	lld_end_of_life(int lastcheck, int lifetime)
 {
-	return ZBX_JAN_2038 - lastcheck > lifetime ? lastcheck + lifetime : ZBX_JAN_2038;
+	return TRX_JAN_2038 - lastcheck > lifetime ? lastcheck + lifetime : TRX_JAN_2038;
 }

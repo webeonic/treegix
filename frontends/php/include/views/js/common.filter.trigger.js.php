@@ -8,10 +8,10 @@
 			</select>
 		</td>
 		<td>
-			<input type="text" id="inventory_#{rowNum}_value" name="inventory[#{rowNum}][value]" style="width: <?= ZBX_TEXTAREA_FILTER_SMALL_WIDTH ?>px" maxlength="255">
+			<input type="text" id="inventory_#{rowNum}_value" name="inventory[#{rowNum}][value]" style="width: <?= TRX_TEXTAREA_FILTER_SMALL_WIDTH ?>px" maxlength="255">
 		</td>
-		<td class="<?= ZBX_STYLE_NOWRAP ?>">
-			<button type="button" class="<?= ZBX_STYLE_BTN_LINK ?> element-table-remove" id="inventory_#{rowNum}_remove" name="inventory_#{rowNum}_remove"><?= _('Remove') ?></button>
+		<td class="<?= TRX_STYLE_NOWRAP ?>">
+			<button type="button" class="<?= TRX_STYLE_BTN_LINK ?> element-table-remove" id="inventory_#{rowNum}_remove" name="inventory_#{rowNum}_remove"><?= _('Remove') ?></button>
 		</td>
 	</tr>
 </script>

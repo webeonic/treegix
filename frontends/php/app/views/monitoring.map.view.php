@@ -20,7 +20,7 @@ $this->addJsFile('layout.mode.js');
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Minimum severity'), 'severity_min'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$data['pageFilter']->getSeveritiesMinCB()
 				])
 			),
@@ -46,7 +46,7 @@ $this->addJsFile('layout.mode.js');
 	)
 	->addItem(
 		(new CDiv())
-			->addClass(ZBX_STYLE_TABLE_FORMS_CONTAINER)
+			->addClass(TRX_STYLE_TABLE_FORMS_CONTAINER)
 			->addStyle('padding: 0;')
 			->addItem(
 				CScreenBuilder::getScreen([

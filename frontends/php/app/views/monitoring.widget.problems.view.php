@@ -3,7 +3,7 @@
 
 
 // indicator of sort field
-$sort_div = (new CSpan())->addClass(($data['sortorder'] === ZBX_SORT_DOWN) ? ZBX_STYLE_ARROW_DOWN : ZBX_STYLE_ARROW_UP);
+$sort_div = (new CSpan())->addClass(($data['sortorder'] === TRX_SORT_DOWN) ? TRX_STYLE_ARROW_DOWN : TRX_STYLE_ARROW_UP);
 
 $backurl = (new CUrl('treegix.php'))
 	->setArgument('action', 'dashboard.view')
@@ -20,9 +20,9 @@ $header_time = new CColHeader(($data['sortfield'] === 'clock') ? [_('Time'), $so
 
 if ($show_timeline) {
 	$header = [
-		$header_time->addClass(ZBX_STYLE_RIGHT),
-		(new CColHeader())->addClass(ZBX_STYLE_TIMELINE_TH),
-		(new CColHeader())->addClass(ZBX_STYLE_TIMELINE_TH)
+		$header_time->addClass(TRX_STYLE_RIGHT),
+		(new CColHeader())->addClass(TRX_STYLE_TIMELINE_TH),
+		(new CColHeader())->addClass(TRX_STYLE_TIMELINE_TH)
 	];
 }
 else {
@@ -68,7 +68,7 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 		$in_closing = false;
 
 		foreach ($problem['acknowledges'] as $acknowledge) {
-			if (($acknowledge['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE) {
+			if (($acknowledge['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE) {
 				$in_closing = true;
 				break;
 			}
@@ -96,8 +96,8 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 				? zbx_date2str(TIME_FORMAT_SECONDS, $problem['r_clock'])
 				: zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock']);
 			$cell_r_clock = (new CCol(new CLink($cell_r_clock, $url_details)))
-				->addClass(ZBX_STYLE_NOWRAP)
-				->addClass(ZBX_STYLE_RIGHT);
+				->addClass(TRX_STYLE_NOWRAP)
+				->addClass(TRX_STYLE_RIGHT);
 		}
 		else {
 			$cell_r_clock = '';
@@ -160,7 +160,7 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 			if ($show_opdata == OPERATIONAL_DATA_SHOW_SEPARATELY) {
 				$opdata = (new CCol($opdata))
 					->addClass('opdata')
-					->addClass(ZBX_STYLE_WORDWRAP);
+					->addClass(TRX_STYLE_WORDWRAP);
 			}
 		}
 	}
@@ -199,7 +199,7 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 			$description
 				->addClass('blink')
 				->setAttribute('data-time-to-blink', $data['config']['blink_period'] - $duration)
-				->setAttribute('data-toggle-class', ZBX_STYLE_BLINK_HIDDEN);
+				->setAttribute('data-toggle-class', TRX_STYLE_BLINK_HIDDEN);
 		}
 	}
 
@@ -210,18 +210,18 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 		$last_clock = $problem['clock'];
 
 		$row = [
-			$cell_clock->addClass(ZBX_STYLE_TIMELINE_DATE),
+			$cell_clock->addClass(TRX_STYLE_TIMELINE_DATE),
 			(new CCol())
-				->addClass(ZBX_STYLE_TIMELINE_AXIS)
-				->addClass(ZBX_STYLE_TIMELINE_DOT),
-			(new CCol())->addClass(ZBX_STYLE_TIMELINE_TD)
+				->addClass(TRX_STYLE_TIMELINE_AXIS)
+				->addClass(TRX_STYLE_TIMELINE_DOT),
+			(new CCol())->addClass(TRX_STYLE_TIMELINE_TD)
 		];
 	}
 	else {
 		$row = [
 			$cell_clock
-				->addClass(ZBX_STYLE_NOWRAP)
-				->addClass(ZBX_STYLE_RIGHT)
+				->addClass(TRX_STYLE_NOWRAP)
+				->addClass(TRX_STYLE_RIGHT)
 		];
 	}
 
@@ -240,10 +240,10 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 		$description,
 		($show_opdata == OPERATIONAL_DATA_SHOW_SEPARATELY ) ? $opdata : null,
 		(new CCol(zbx_date2age($problem['clock'], ($problem['r_eventid'] != 0) ? $problem['r_clock'] : 0)))
-			->addClass(ZBX_STYLE_NOWRAP),
+			->addClass(TRX_STYLE_NOWRAP),
 		(new CLink($problem['acknowledged'] == EVENT_ACKNOWLEDGED ? _('Yes') : _('No'), $problem_update_url))
-			->addClass($problem['acknowledged'] == EVENT_ACKNOWLEDGED ? ZBX_STYLE_GREEN : ZBX_STYLE_RED)
-			->addClass(ZBX_STYLE_LINK_ALT),
+			->addClass($problem['acknowledged'] == EVENT_ACKNOWLEDGED ? TRX_STYLE_GREEN : TRX_STYLE_RED)
+			->addClass(TRX_STYLE_LINK_ALT),
 		makeEventActionsIcons($problem['eventid'], $data['data']['actions'], $data['data']['mediatypes'],
 			$data['data']['users'], $data['config']
 		),
@@ -255,7 +255,7 @@ if ($data['info'] !== '') {
 	$table->setFooter([
 		(new CCol($data['info']))
 			->setColSpan($table->getNumCols())
-			->addClass(ZBX_STYLE_LIST_TABLE_FOOTER)
+			->addClass(TRX_STYLE_LIST_TABLE_FOOTER)
 	]);
 }
 

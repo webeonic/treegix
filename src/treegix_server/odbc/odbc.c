@@ -26,8 +26,8 @@ struct zbx_odbc_query_result
 	char		**row;
 };
 
-#define ZBX_FLAG_ODBC_NONE	0x00
-#define ZBX_FLAG_ODBC_LLD	0x01
+#define TRX_FLAG_ODBC_NONE	0x00
+#define TRX_FLAG_ODBC_LLD	0x01
 
 /******************************************************************************
  *                                                                            *
@@ -107,20 +107,20 @@ static int	zbx_odbc_diag(SQLSMALLINT h_type, SQLHANDLE h, SQLRETURN rc, char **d
 		if (NULL == (rc_str = zbx_odbc_rc_str(rc)))
 		{
 			treegix_log(LOG_LEVEL_TRACE, "%s(): [%d (unknown SQLRETURN code)]%s", __func__,
-					(int)rc, ZBX_NULL2EMPTY_STR(buffer));
+					(int)rc, TRX_NULL2EMPTY_STR(buffer));
 		}
 		else
-			treegix_log(LOG_LEVEL_TRACE, "%s(): [%s]%s", __func__, rc_str, ZBX_NULL2EMPTY_STR(buffer));
+			treegix_log(LOG_LEVEL_TRACE, "%s(): [%s]%s", __func__, rc_str, TRX_NULL2EMPTY_STR(buffer));
 	}
 	else
 	{
 		if (NULL == (rc_str = zbx_odbc_rc_str(rc)))
 		{
 			*diag = zbx_dsprintf(*diag, "[%d (unknown SQLRETURN code)]%s",
-					(int)rc, ZBX_NULL2EMPTY_STR(buffer));
+					(int)rc, TRX_NULL2EMPTY_STR(buffer));
 		}
 		else
-			*diag = zbx_dsprintf(*diag, "[%s]%s", rc_str, ZBX_NULL2EMPTY_STR(buffer));
+			*diag = zbx_dsprintf(*diag, "[%s]%s", rc_str, TRX_NULL2EMPTY_STR(buffer));
 
 		treegix_log(LOG_LEVEL_TRACE, "%s(): %s", __func__, *diag);
 	}
@@ -142,7 +142,7 @@ static int	zbx_odbc_diag(SQLSMALLINT h_type, SQLHANDLE h, SQLRETURN rc, char **d
  ******************************************************************************/
 static void	zbx_log_odbc_connection_info(const char *function, SQLHDBC hdbc)
 {
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
 		char		driver_name[MAX_STRING_LEN + 1], driver_ver[MAX_STRING_LEN + 1],
 				db_name[MAX_STRING_LEN + 1], db_ver[MAX_STRING_LEN + 1], *diag = NULL;
@@ -460,7 +460,7 @@ static const char	*const *zbx_odbc_fetch(zbx_odbc_query_result_t *query_result)
 		if (NULL != query_result->row[i])
 			zbx_rtrim(query_result->row[i], " ");
 
-		treegix_log(LOG_LEVEL_DEBUG, "column #%d value:'%s'", (int)i + 1, ZBX_NULL2STR(query_result->row[i]));
+		treegix_log(LOG_LEVEL_DEBUG, "column #%d value:'%s'", (int)i + 1, TRX_NULL2STR(query_result->row[i]));
 	}
 
 	row = (const char *const *)query_result->row;
@@ -567,7 +567,7 @@ static int	odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, int 
 
 		treegix_log(LOG_LEVEL_DEBUG, "column #%d name:'%s'", i + 1, str);
 
-		if (flags & ZBX_FLAG_ODBC_LLD)
+		if (flags & TRX_FLAG_ODBC_LLD)
 		{
 			for (p = str; '\0' != *p; p++)
 			{
@@ -601,7 +601,7 @@ static int	odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, int 
 		}
 	}
 
-	zbx_json_initarray(&json, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&json, TRX_JSON_STAT_BUF_LEN);
 
 	while (NULL != (row = zbx_odbc_fetch(query_result)))
 	{
@@ -617,7 +617,7 @@ static int	odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, int 
 				zbx_replace_invalid_utf8(value);
 			}
 
-			zbx_json_addstring(&json, names.values[i], value, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json, names.values[i], value, TRX_JSON_TYPE_STRING);
 			zbx_free(value);
 		}
 
@@ -649,7 +649,7 @@ out:
  *****************************************************************************/
 int	zbx_odbc_query_result_to_lld_json(zbx_odbc_query_result_t *query_result, char **lld_json, char **error)
 {
-	return odbc_query_result_to_json(query_result, ZBX_FLAG_ODBC_LLD, lld_json, error);
+	return odbc_query_result_to_json(query_result, TRX_FLAG_ODBC_LLD, lld_json, error);
 }
 
 /******************************************************************************
@@ -661,7 +661,7 @@ int	zbx_odbc_query_result_to_lld_json(zbx_odbc_query_result_t *query_result, cha
  *****************************************************************************/
 int	zbx_odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, char **out_json, char **error)
 {
-	return odbc_query_result_to_json(query_result, ZBX_FLAG_ODBC_NONE, out_json, error);
+	return odbc_query_result_to_json(query_result, TRX_FLAG_ODBC_NONE, out_json, error);
 }
 
 #endif	/* HAVE_UNIXODBC */

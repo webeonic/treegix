@@ -7,7 +7,7 @@ import (
 )
 
 func TestFormatError(t *testing.T) {
-	const notsupported = "ZBX_NOTSUPPORTED"
+	const notsupported = "TRX_NOTSUPPORTED"
 	const message = "error message"
 	pc := &passiveCheck{}
 	result := pc.formatError(message)
@@ -18,7 +18,7 @@ func TestFormatError(t *testing.T) {
 		return
 	}
 	if result[len(notsupported)] != 0 {
-		t.Errorf("Expected terminating zero after ZBX_NOTSUPPORTED error prefix")
+		t.Errorf("Expected terminating zero after TRX_NOTSUPPORTED error prefix")
 		return
 	}
 

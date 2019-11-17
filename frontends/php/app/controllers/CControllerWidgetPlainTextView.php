@@ -79,8 +79,8 @@ class CControllerWidgetPlainTextView extends CControllerWidget {
 			}
 
 			CArrayHelper::sort($histories, [
-				['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-				['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+				['field' => 'clock', 'order' => TRX_SORT_DOWN],
+				['field' => 'ns', 'order' => TRX_SORT_DOWN]
 			]);
 
 			$host_name = '';

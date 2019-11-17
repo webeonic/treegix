@@ -113,7 +113,7 @@ static int	unpack_ntp(ntp_data *data, const unsigned char *request, const unsign
 
 	if (0 == data->transmit)
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "invalid transmit timestamp in the response: " ZBX_FS_DBL, data->transmit);
+		treegix_log(LOG_LEVEL_DEBUG, "invalid transmit timestamp in the response: " TRX_FS_DBL, data->transmit);
 		goto out;
 	}
 

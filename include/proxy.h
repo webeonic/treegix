@@ -7,14 +7,14 @@
 #include "comms.h"
 #include "dbcache.h"
 
-#define ZBX_PROXYMODE_ACTIVE	0
-#define ZBX_PROXYMODE_PASSIVE	1
+#define TRX_PROXYMODE_ACTIVE	0
+#define TRX_PROXYMODE_PASSIVE	1
 
-#define ZBX_MAX_HRECORDS	1000
-#define ZBX_MAX_HRECORDS_TOTAL	10000
+#define TRX_MAX_HRECORDS	1000
+#define TRX_MAX_HRECORDS_TOTAL	10000
 
-#define ZBX_PROXY_DATA_DONE	0
-#define ZBX_PROXY_DATA_MORE	1
+#define TRX_PROXY_DATA_DONE	0
+#define TRX_PROXY_DATA_MORE	1
 
 int	get_active_proxy_from_request(struct zbx_json_parse *jp, DC_PROXY *proxy, char **error);
 int	zbx_proxy_check_permissions(const DC_PROXY *proxy, const zbx_socket_t *sock, char **error);

@@ -143,7 +143,7 @@ class CProxy extends CApiService {
 	 */
 	public function create(array $proxies) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		$proxies = zbx_toArray($proxies);
@@ -214,7 +214,7 @@ class CProxy extends CApiService {
 				$proxy['interface']['hostid'] = $proxyids[$key];
 
 				if (!API::HostInterface()->create($proxy['interface'])) {
-					self::exception(ZBX_API_ERROR_INTERNAL, _('Proxy interface creation failed.'));
+					self::exception(TRX_API_ERROR_INTERNAL, _('Proxy interface creation failed.'));
 				}
 			}
 		}
@@ -233,7 +233,7 @@ class CProxy extends CApiService {
 	 */
 	public function update(array $proxies) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		$proxies = zbx_toArray($proxies);
@@ -313,7 +313,7 @@ class CProxy extends CApiService {
 					'values' => ['proxy_hostid' => 0],
 					'where' => [
 						'proxy_hostid' => $proxy['proxyid'],
-						'flags' => ZBX_FLAG_DISCOVERY_NORMAL
+						'flags' => TRX_FLAG_DISCOVERY_NORMAL
 					]
 				];
 
@@ -346,7 +346,7 @@ class CProxy extends CApiService {
 					: API::HostInterface()->create($proxy['interface']);
 
 				if (!$result) {
-					self::exception(ZBX_API_ERROR_INTERNAL, _('Proxy interface update failed.'));
+					self::exception(TRX_API_ERROR_INTERNAL, _('Proxy interface update failed.'));
 				}
 			}
 		}
@@ -382,7 +382,7 @@ class CProxy extends CApiService {
 	private function validateDelete(array &$proxyids, array &$db_proxies = null) {
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $proxyids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_proxies = $this->get([
@@ -394,7 +394,7 @@ class CProxy extends CApiService {
 
 		foreach ($proxyids as $proxyid) {
 			if (!array_key_exists($proxyid, $db_proxies)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -419,7 +419,7 @@ class CProxy extends CApiService {
 		]);
 
 		if ($db_drules) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Proxy "%1$s" is used by discovery rule "%2$s".',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Proxy "%1$s" is used by discovery rule "%2$s".',
 				$proxies[$db_drules[0]['proxy_hostid']]['host'], $db_drules[0]['name']
 			));
 		}
@@ -439,7 +439,7 @@ class CProxy extends CApiService {
 		]);
 
 		if ($db_hosts) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Host "%1$s" is monitored with proxy "%2$s".',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Host "%1$s" is monitored with proxy "%2$s".',
 				$db_hosts[0]['name'], $proxies[$db_hosts[0]['proxy_hostid']]['host']
 			));
 		}
@@ -462,7 +462,7 @@ class CProxy extends CApiService {
 		));
 
 		if ($db_actions) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Proxy "%1$s" is used by action "%2$s".',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Proxy "%1$s" is used by action "%2$s".',
 				$proxies[$db_actions[0]['proxy_hostid']]['host'], $db_actions[0]['name']
 			));
 		}
@@ -538,14 +538,14 @@ class CProxy extends CApiService {
 
 			if ($proxy['status'] == HOST_STATUS_PROXY_PASSIVE && array_key_exists('tls_connect', $proxy)
 					&& !in_array($proxy['tls_connect'], $available_connect_types)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_connect',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_connect',
 					_s('unexpected value "%1$s"', $proxy['tls_connect'])
 				));
 			}
 
 			if ($proxy['status'] == HOST_STATUS_PROXY_ACTIVE && array_key_exists('tls_accept', $proxy)
 					&& !in_array($proxy['tls_accept'], $available_accept_types)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_accept',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'tls_accept',
 					_s('unexpected value "%1$s"', $proxy['tls_accept'])
 				));
 			}
@@ -557,25 +557,25 @@ class CProxy extends CApiService {
 							&& ($proxy['tls_accept'] & HOST_ENCRYPTION_PSK) == HOST_ENCRYPTION_PSK
 							&& $proxy['status'] == HOST_STATUS_PROXY_ACTIVE)) {
 				if (!array_key_exists('tls_psk_identity', $proxy) || zbx_empty($proxy['tls_psk_identity'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_psk_identity', _('cannot be empty'))
 					);
 				}
 
 				if (!array_key_exists('tls_psk', $proxy) || zbx_empty($proxy['tls_psk'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_psk', _('cannot be empty'))
 					);
 				}
 
 				if (!preg_match('/^([0-9a-f]{2})+$/i', $proxy['tls_psk'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _(
+					self::exception(TRX_API_ERROR_PARAMETERS, _(
 						'Incorrect value used for PSK field. It should consist of an even number of hexadecimal characters.'
 					));
 				}
 
 				if (strlen($proxy['tls_psk']) < PSK_MIN_LEN) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('PSK is too short. Minimum is %1$s hex-digits.', PSK_MIN_LEN)
 					);
 				}
@@ -594,16 +594,16 @@ class CProxy extends CApiService {
 		$proxy_db_fields = ['host' => null, 'status' => null];
 		$names = [];
 
-		$ip_range_parser = new CIPRangeParser(['v6' => ZBX_HAVE_IPV6, 'ranges' => false]);
+		$ip_range_parser = new CIPRangeParser(['v6' => TRX_HAVE_IPV6, 'ranges' => false]);
 		$host_name_parser = new CHostNameParser();
 
 		foreach ($proxies as $proxy) {
 			if (!check_db_fields($proxy_db_fields, $proxy)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 
 			if ($host_name_parser->parse($proxy['host']) != CParser::PARSE_SUCCESS) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect characters used for proxy name "%1$s".', $proxy['host'])
 				);
 			}
@@ -618,14 +618,14 @@ class CProxy extends CApiService {
 		]);
 
 		if ($proxy_exists) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Proxy "%s" already exists.', $proxy_exists[0]['host']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Proxy "%s" already exists.', $proxy_exists[0]['host']));
 		}
 
 		$hostids = [];
 
 		foreach ($proxies as $proxy) {
 			if ($proxy['status'] != HOST_STATUS_PROXY_ACTIVE && $proxy['status'] != HOST_STATUS_PROXY_PASSIVE) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value used for proxy status "%1$s".', $proxy['status'])
 				);
 			}
@@ -634,14 +634,14 @@ class CProxy extends CApiService {
 			if ($proxy['status'] == HOST_STATUS_PROXY_PASSIVE
 					&& (!array_key_exists('interface', $proxy)
 						|| !is_array($proxy['interface']) || !$proxy['interface'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('No interface provided for proxy "%s".', $proxy['host']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('No interface provided for proxy "%s".', $proxy['host']));
 			}
 
 			if (array_key_exists('proxy_address', $proxy)) {
 				switch ($proxy['status']) {
 					case HOST_STATUS_PROXY_PASSIVE:
 						if ($proxy['proxy_address'] !== '') {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'proxy_address', _('should be empty')
 							));
 						}
@@ -649,7 +649,7 @@ class CProxy extends CApiService {
 
 					case HOST_STATUS_PROXY_ACTIVE:
 						if ($proxy['proxy_address'] !== '' && !$ip_range_parser->parse($proxy['proxy_address'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'proxy_address', $ip_range_parser->getError()
 							));
 						}
@@ -663,7 +663,7 @@ class CProxy extends CApiService {
 
 			// Propery 'auto_compress' is read-only.
 			if (array_key_exists('auto_compress', $proxy)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 		}
 
@@ -676,7 +676,7 @@ class CProxy extends CApiService {
 			]);
 
 			if (!$hosts) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -702,22 +702,22 @@ class CProxy extends CApiService {
 		$proxy_db_fields = ['proxyid' => null];
 		$names = [];
 
-		$ip_range_parser = new CIPRangeParser(['v6' => ZBX_HAVE_IPV6, 'ranges' => false]);
+		$ip_range_parser = new CIPRangeParser(['v6' => TRX_HAVE_IPV6, 'ranges' => false]);
 		$host_name_parser = new CHostNameParser();
 
 		foreach ($proxies as $proxy) {
 			if (!check_db_fields($proxy_db_fields, $proxy)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 
 			if (!array_key_exists($proxy['proxyid'], $db_proxies)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 
 			// host
 			if (array_key_exists('host', $proxy)) {
 				if ($host_name_parser->parse($proxy['host']) != CParser::PARSE_SUCCESS) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect characters used for proxy name "%1$s".', $proxy['host'])
 					);
 				}
@@ -729,7 +729,7 @@ class CProxy extends CApiService {
 
 			// Propery 'auto_compress' is read-only.
 			if (array_key_exists('auto_compress', $proxy)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 		}
 
@@ -744,7 +744,7 @@ class CProxy extends CApiService {
 				if (array_key_exists('host', $proxy) && $proxy['host'] !== $db_proxies[$proxy['proxyid']]['host']) {
 					foreach ($proxies_exists as $proxy_exists) {
 						if (bccomp($proxy_exists['proxyid'], $proxy['proxyid']) != 0) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Proxy "%s" already exists.', $proxy['host']));
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Proxy "%s" already exists.', $proxy['host']));
 						}
 					}
 				}
@@ -756,7 +756,7 @@ class CProxy extends CApiService {
 		foreach ($proxies as $proxy) {
 			if (array_key_exists('status', $proxy) && ($proxy['status'] != HOST_STATUS_PROXY_ACTIVE
 					&& $proxy['status'] != HOST_STATUS_PROXY_PASSIVE)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value used for proxy status "%1$s".', $proxy['status'])
 				);
 			}
@@ -765,7 +765,7 @@ class CProxy extends CApiService {
 				switch (array_key_exists('status', $proxy) ? $proxy['status'] : $db_proxy['status']) {
 					case HOST_STATUS_PROXY_PASSIVE:
 						if ($proxy['proxy_address'] !== '') {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'proxy_address', _('should be empty')
 							));
 						}
@@ -773,7 +773,7 @@ class CProxy extends CApiService {
 
 					case HOST_STATUS_PROXY_ACTIVE:
 						if ($proxy['proxy_address'] !== '' && !$ip_range_parser->parse($proxy['proxy_address'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 								'proxy_address', $ip_range_parser->getError()
 							));
 						}
@@ -795,7 +795,7 @@ class CProxy extends CApiService {
 			]);
 
 			if (!$hosts) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -811,7 +811,7 @@ class CProxy extends CApiService {
 		// interface
 		if ($status == HOST_STATUS_PROXY_PASSIVE && array_key_exists('interface', $proxy)
 				&& (!is_array($proxy['interface']) || !$proxy['interface'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('No interface provided for proxy "%s".', $proxy['host'])
 			);
 		}

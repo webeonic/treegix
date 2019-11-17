@@ -17,7 +17,7 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			),
 			(new CFormList())->addRow(_('Status'),
@@ -38,7 +38,7 @@ $userGroupTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_groups'))->onClick("checkAll('".$userGroupsForm->getName()."','all_groups','group_groupid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'], 'usergrps.php'),
 		'#',
 		_('Members'),
@@ -52,12 +52,12 @@ foreach ($this->data['usergroups'] as $usrgrp) {
 
 	$debugMode = ($usrgrp['debug_mode'] == GROUP_DEBUG_MODE_ENABLED)
 		? (new CLink(_('Enabled'), 'usergrps.php?action=usergroup.massdisabledebug&usrgrpid='.$userGroupId))
-			->addClass(ZBX_STYLE_LINK_ACTION)
-			->addClass(ZBX_STYLE_ORANGE)
+			->addClass(TRX_STYLE_LINK_ACTION)
+			->addClass(TRX_STYLE_ORANGE)
 			->addSID()
 		: (new CLink(_('Disabled'), 'usergrps.php?action=usergroup.massenabledebug&usrgrpid='.$userGroupId))
-			->addClass(ZBX_STYLE_LINK_ACTION)
-			->addClass(ZBX_STYLE_GREEN)
+			->addClass(TRX_STYLE_LINK_ACTION)
+			->addClass(TRX_STYLE_GREEN)
 			->addSID();
 
 	// gui access
@@ -72,34 +72,34 @@ foreach ($this->data['usergroups'] as $usrgrp) {
 			$guiAccess,
 			'usergrps.php?action=usergroup.set_gui_access&set_gui_access='.$nextGuiAuth.'&usrgrpid='.$userGroupId
 		))
-			->addClass(ZBX_STYLE_LINK_ACTION)
+			->addClass(TRX_STYLE_LINK_ACTION)
 			->addSID();
 
 		$usersStatus = ($usrgrp['users_status'] == GROUP_STATUS_ENABLED)
 			? (new CLink(_('Enabled'), 'usergrps.php?action=usergroup.massdisable&usrgrpid='.$userGroupId))
-				->addClass(ZBX_STYLE_LINK_ACTION)
-				->addClass(ZBX_STYLE_GREEN)
+				->addClass(TRX_STYLE_LINK_ACTION)
+				->addClass(TRX_STYLE_GREEN)
 				->addSID()
 			: (new CLink(_('Disabled'), 'usergrps.php?action=usergroup.massenable&usrgrpid='.$userGroupId))
-				->addClass(ZBX_STYLE_LINK_ACTION)
-				->addClass(ZBX_STYLE_RED)
+				->addClass(TRX_STYLE_LINK_ACTION)
+				->addClass(TRX_STYLE_RED)
 				->addSID();
 	}
 	else {
 		$guiAccess = new CSpan($guiAccess);
 		$usersStatus = ($usrgrp['users_status'] == GROUP_STATUS_ENABLED)
-			? (new CSpan(_('Enabled')))->addClass(ZBX_STYLE_GREEN)
-			: (new CSpan(_('Disabled')))->addClass(ZBX_STYLE_RED);
+			? (new CSpan(_('Enabled')))->addClass(TRX_STYLE_GREEN)
+			: (new CSpan(_('Disabled')))->addClass(TRX_STYLE_RED);
 	}
 
 	if ($usrgrp['gui_access'] == GROUP_GUI_ACCESS_INTERNAL) {
-		$guiAccess->addClass(ZBX_STYLE_ORANGE);
+		$guiAccess->addClass(TRX_STYLE_ORANGE);
 	}
 	elseif ($usrgrp['gui_access'] == GROUP_GUI_ACCESS_DISABLED) {
-		$guiAccess->addClass(ZBX_STYLE_RED);
+		$guiAccess->addClass(TRX_STYLE_RED);
 	}
 	else {
-		$guiAccess->addClass(ZBX_STYLE_GREEN);
+		$guiAccess->addClass(TRX_STYLE_GREEN);
 	}
 
 	if (isset($usrgrp['users'])) {
@@ -123,10 +123,10 @@ foreach ($this->data['usergroups'] as $usrgrp) {
 			}
 
 			$users[] = (new CLink(getUserFullname($user), 'treegix.php?action=user.edit&userid='.$user['userid']))
-					->addClass(ZBX_STYLE_LINK_ALT)
+					->addClass(TRX_STYLE_LINK_ALT)
 					->addClass($user['gui_access'] == GROUP_GUI_ACCESS_DISABLED || $user['users_status'] == GROUP_STATUS_DISABLED
-						? ZBX_STYLE_RED
-						: ZBX_STYLE_GREEN);
+						? TRX_STYLE_RED
+						: TRX_STYLE_GREEN);
 		}
 	}
 
@@ -134,7 +134,7 @@ foreach ($this->data['usergroups'] as $usrgrp) {
 
 	$userGroupTable->addRow([
 		new CCheckBox('group_groupid['.$userGroupId.']', $userGroupId),
-		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol($name))->addClass(TRX_STYLE_NOWRAP),
 		[new CLink(_('Users'), 'treegix.php?action=user.list&filter_usrgrpid='.$userGroupId),
 			CViewHelper::showNum(count($usrgrp['users']))
 		],

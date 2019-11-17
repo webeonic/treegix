@@ -15,71 +15,71 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'groupid'			=> [T_ZBX_INT, O_OPT, P_SYS,	DB_ID,				null],
-	'new_httpstep'		=> [T_ZBX_STR, O_OPT, P_NO_TRIM,	null,				null],
-	'group_httptestid'	=> [T_ZBX_INT, O_OPT, null,	DB_ID,				null],
+	'groupid'			=> [T_TRX_INT, O_OPT, P_SYS,	DB_ID,				null],
+	'new_httpstep'		=> [T_TRX_STR, O_OPT, P_NO_TRIM,	null,				null],
+	'group_httptestid'	=> [T_TRX_INT, O_OPT, null,	DB_ID,				null],
 	// form
-	'hostid'          => [T_ZBX_INT, O_OPT, P_SYS, DB_ID.NOT_ZERO,          'isset({form}) || isset({add}) || isset({update})'],
-	'applicationid'   => [T_ZBX_INT, O_OPT, null,  DB_ID,                   null, _('Application')],
-	'httptestid'      => [T_ZBX_INT, O_NO,  P_SYS, DB_ID,                   'isset({form}) && {form} == "update"'],
-	'name'            => [T_ZBX_STR, O_OPT, null,  NOT_EMPTY,               'isset({add}) || isset({update})', _('Name')],
-	'delay'           => [T_ZBX_STR, O_OPT, null,  null,					'isset({add}) || isset({update})'],
-	'retries'         => [T_ZBX_INT, O_OPT, null,  BETWEEN(1, 10),          'isset({add}) || isset({update})',
+	'hostid'          => [T_TRX_INT, O_OPT, P_SYS, DB_ID.NOT_ZERO,          'isset({form}) || isset({add}) || isset({update})'],
+	'applicationid'   => [T_TRX_INT, O_OPT, null,  DB_ID,                   null, _('Application')],
+	'httptestid'      => [T_TRX_INT, O_NO,  P_SYS, DB_ID,                   'isset({form}) && {form} == "update"'],
+	'name'            => [T_TRX_STR, O_OPT, null,  NOT_EMPTY,               'isset({add}) || isset({update})', _('Name')],
+	'delay'           => [T_TRX_STR, O_OPT, null,  null,					'isset({add}) || isset({update})'],
+	'retries'         => [T_TRX_INT, O_OPT, null,  BETWEEN(1, 10),          'isset({add}) || isset({update})',
 		_('Attempts')
 	],
-	'status'          => [T_ZBX_STR, O_OPT, null,  null,                    null],
-	'agent'           => [T_ZBX_STR, O_OPT, null, null,                     'isset({add}) || isset({update})'],
-	'agent_other'     => [T_ZBX_STR, O_OPT, null, null,
-		'(isset({add}) || isset({update})) && {agent} == '.ZBX_AGENT_OTHER
+	'status'          => [T_TRX_STR, O_OPT, null,  null,                    null],
+	'agent'           => [T_TRX_STR, O_OPT, null, null,                     'isset({add}) || isset({update})'],
+	'agent_other'     => [T_TRX_STR, O_OPT, null, null,
+		'(isset({add}) || isset({update})) && {agent} == '.TRX_AGENT_OTHER
 	],
-	'pairs'           => [T_ZBX_STR, O_OPT, P_NO_TRIM,  null,                    null],
-	'steps'           => [T_ZBX_STR, O_OPT, P_NO_TRIM,  null,                    'isset({add}) || isset({update})', _('Steps')],
-	'authentication'  => [T_ZBX_INT, O_OPT, null,  IN('0,1,2,3'),             'isset({add}) || isset({update})'],
-	'http_user'       => [T_ZBX_STR, O_OPT, null,  null,
+	'pairs'           => [T_TRX_STR, O_OPT, P_NO_TRIM,  null,                    null],
+	'steps'           => [T_TRX_STR, O_OPT, P_NO_TRIM,  null,                    'isset({add}) || isset({update})', _('Steps')],
+	'authentication'  => [T_TRX_INT, O_OPT, null,  IN('0,1,2,3'),             'isset({add}) || isset({update})'],
+	'http_user'       => [T_TRX_STR, O_OPT, null,  null,
 		'(isset({add}) || isset({update})) && isset({authentication}) && ({authentication}=='.HTTPTEST_AUTH_BASIC.
 			' || {authentication}=='.HTTPTEST_AUTH_NTLM.' || {authentication}=='.HTTPTEST_AUTH_KERBEROS.
 		')',
 		_('User')
 	],
-	'http_password'		=> [T_ZBX_STR, O_OPT, P_NO_TRIM, null,
+	'http_password'		=> [T_TRX_STR, O_OPT, P_NO_TRIM, null,
 		'(isset({add}) || isset({update})) && isset({authentication}) && ({authentication}=='.HTTPTEST_AUTH_BASIC.
 			' || {authentication}=='.HTTPTEST_AUTH_NTLM.' || {authentication}=='.HTTPTEST_AUTH_KERBEROS.
 		')',
 		_('Password')
 	],
-	'http_proxy'		=> [T_ZBX_STR, O_OPT, null,	null,				'isset({add}) || isset({update})'],
-	'new_application'	=> [T_ZBX_STR, O_OPT, null,	null,				null],
-	'hostname'			=> [T_ZBX_STR, O_OPT, null,	null,				null],
-	'templated'			=> [T_ZBX_STR, O_OPT, null,	null,				null],
-	'verify_host'		=> [T_ZBX_STR, O_OPT, null,	null,				null],
-	'verify_peer'		=> [T_ZBX_STR, O_OPT, null,	null,				null],
-	'ssl_cert_file'		=> [T_ZBX_STR, O_OPT, null, null,					'isset({add}) || isset({update})'],
-	'ssl_key_file'		=> [T_ZBX_STR, O_OPT, null, null,					'isset({add}) || isset({update})'],
-	'ssl_key_password'	=> [T_ZBX_STR, O_OPT, P_NO_TRIM, null,				'isset({add}) || isset({update})'],
+	'http_proxy'		=> [T_TRX_STR, O_OPT, null,	null,				'isset({add}) || isset({update})'],
+	'new_application'	=> [T_TRX_STR, O_OPT, null,	null,				null],
+	'hostname'			=> [T_TRX_STR, O_OPT, null,	null,				null],
+	'templated'			=> [T_TRX_STR, O_OPT, null,	null,				null],
+	'verify_host'		=> [T_TRX_STR, O_OPT, null,	null,				null],
+	'verify_peer'		=> [T_TRX_STR, O_OPT, null,	null,				null],
+	'ssl_cert_file'		=> [T_TRX_STR, O_OPT, null, null,					'isset({add}) || isset({update})'],
+	'ssl_key_file'		=> [T_TRX_STR, O_OPT, null, null,					'isset({add}) || isset({update})'],
+	'ssl_key_password'	=> [T_TRX_STR, O_OPT, P_NO_TRIM, null,				'isset({add}) || isset({update})'],
 	// filter
-	'filter_set' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_rst' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_status' =>		[T_ZBX_INT, O_OPT, null,
+	'filter_set' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_rst' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_status' =>		[T_TRX_INT, O_OPT, null,
 		IN([-1, HTTPTEST_STATUS_ACTIVE, HTTPTEST_STATUS_DISABLED]), null
 	],
 	// actions
-	'action'			=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action'			=> [T_TRX_STR, O_OPT, P_SYS|P_ACT,
 								IN('"httptest.massclearhistory","httptest.massdelete","httptest.massdisable",'.
 									'"httptest.massenable"'
 								),
 								null
 							],
-	'clone'				=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'del_history'		=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'add'				=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'update'			=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'delete'			=> [T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'cancel'			=> [T_ZBX_STR, O_OPT, P_SYS,	null,				null],
-	'form'				=> [T_ZBX_STR, O_OPT, P_SYS,	null,				null],
-	'form_refresh'		=> [T_ZBX_INT, O_OPT, null,	null,				null],
+	'clone'				=> [T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'del_history'		=> [T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'add'				=> [T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'update'			=> [T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'delete'			=> [T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'cancel'			=> [T_TRX_STR, O_OPT, P_SYS,	null,				null],
+	'form'				=> [T_TRX_STR, O_OPT, P_SYS,	null,				null],
+	'form_refresh'		=> [T_TRX_INT, O_OPT, null,	null,				null],
 	// sort and sortorder
-	'sort'				=> [T_ZBX_STR, O_OPT, P_SYS, IN('"hostname","name","status"'),				null],
-	'sortorder'			=> [T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort'				=> [T_TRX_STR, O_OPT, P_SYS, IN('"hostname","name","status"'),				null],
+	'sortorder'			=> [T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 
 check_fields($fields);
@@ -232,7 +232,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 			}
 			unset($variable);
 
-			if ($step['post_type'] == ZBX_POSTTYPE_FORM) {
+			if ($step['post_type'] == TRX_POSTTYPE_FORM) {
 				$step['posts'] = $step['post_fields'];
 			}
 			unset($step['post_fields'], $step['post_type']);
@@ -290,7 +290,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 			 * a normal application, assign it to web scenario. Otherwise create new application.
 			 */
 			if ($exApp) {
-				if ($exApp[0]['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+				if ($exApp[0]['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 					throw new Exception(_s('Application "%1$s" already exists.', $new_application));
 				}
 				else {
@@ -556,7 +556,7 @@ if (isset($_REQUEST['form'])) {
 			getHttpTestParentTemplates($db_httptests)
 		);
 
-		$data['agent'] = ZBX_AGENT_OTHER;
+		$data['agent'] = TRX_AGENT_OTHER;
 		$data['agent_other'] = $db_httptest['agent'];
 
 		foreach (userAgents() as $userAgents) {
@@ -616,7 +616,7 @@ if (isset($_REQUEST['form'])) {
 			CArrayHelper::sort($step['variables'], ['name']);
 
 			foreach ($fields as $type => $field_name) {
-				if ($field_name !== 'posts' || $step['post_type'] == ZBX_POSTTYPE_FORM) {
+				if ($field_name !== 'posts' || $step['post_type'] == TRX_POSTTYPE_FORM) {
 					foreach ($step[$field_name] as $pair) {
 						$step['pairs'][] = [
 							'id' => $id++,
@@ -652,10 +652,10 @@ if (isset($_REQUEST['form'])) {
 		$data['delay'] = getRequest('delay', DB::getDefault('httptest', 'delay'));
 		$data['retries'] = getRequest('retries', 1);
 
-		$data['agent'] = getRequest('agent', ZBX_DEFAULT_AGENT);
+		$data['agent'] = getRequest('agent', TRX_DEFAULT_AGENT);
 		$data['agent_other'] = getRequest('agent_other');
 
-		if ($data['agent'] == ZBX_AGENT_OTHER) {
+		if ($data['agent'] == TRX_AGENT_OTHER) {
 			foreach (userAgents() as $userAgents) {
 				if (array_key_exists($data['agent_other'], $userAgents)) {
 					$data['agent'] = $data['agent_other'];
@@ -684,7 +684,7 @@ if (isset($_REQUEST['form'])) {
 		$db_applications = API::Application()->get([
 			'output' => ['name'],
 			'hostids' => $data['hostid'],
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 			'preservekeys' => true
 		]);
 
@@ -717,7 +717,7 @@ if (isset($_REQUEST['form'])) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

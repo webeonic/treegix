@@ -17,6 +17,6 @@ typedef struct
 	const char	*list_cmd;	/* this command lists the installed packages */
 	int		(*parser)(const char *line, char *package, size_t max_package_len);	/* for non-standard list (package per line), add a parser function */
 }
-ZBX_PACKAGE_MANAGER;
+TRX_PACKAGE_MANAGER;
 
 #endif	/* TREEGIX_SOFTWARE_H */

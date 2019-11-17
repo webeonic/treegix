@@ -15,7 +15,7 @@ class CAPIInfo extends CApiService {
 	public function version(array $request) {
 		$api_input_rules = ['type' => API_OBJECT, 'fields' =>[]];
 		if (!CApiInputValidator::validate($api_input_rules, $request, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		return TREEGIX_API_VERSION;

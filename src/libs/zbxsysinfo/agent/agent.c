@@ -9,7 +9,7 @@ static int	AGENT_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	AGENT_PING(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	AGENT_VERSION(AGENT_REQUEST *request, AGENT_RESULT *result);
 
-ZBX_METRIC	parameters_agent[] =
+TRX_METRIC	parameters_agent[] =
 /*	KEY			FLAG		FUNCTION	TEST PARAMETERS */
 {
 	{"agent.hostname",	0,		AGENT_HOSTNAME,	NULL},
@@ -20,7 +20,7 @@ ZBX_METRIC	parameters_agent[] =
 
 static int	AGENT_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	SET_STR_RESULT(result, zbx_strdup(NULL, CONFIG_HOSTNAME));
 
@@ -29,7 +29,7 @@ static int	AGENT_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 static int	AGENT_PING(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	SET_UI64_RESULT(result, 1);
 
@@ -38,7 +38,7 @@ static int	AGENT_PING(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 static int	AGENT_VERSION(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	SET_STR_RESULT(result, zbx_strdup(NULL, TREEGIX_VERSION));
 

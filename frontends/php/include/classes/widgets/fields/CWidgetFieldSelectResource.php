@@ -26,7 +26,7 @@ class CWidgetFieldSelectResource extends CWidgetField {
 
 		switch ($resource_type) {
 			case WIDGET_FIELD_SELECT_RES_SYSMAP:
-				$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_MAP);
+				$this->setSaveType(TRX_WIDGET_FIELD_TYPE_MAP);
 				$this->srctbl = 'sysmaps';
 				$this->srcfld1 = 'sysmapid';
 				$this->srcfld2 = 'name';

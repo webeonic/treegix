@@ -13,16 +13,16 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 //		VAR			TYPE	OPTIONAL FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'groupid' =>	[T_ZBX_INT, O_OPT,	P_SYS,	DB_ID,	null],
-	'groupby' =>	[T_ZBX_STR, O_OPT,	P_SYS,	null,	null],
+	'groupid' =>	[T_TRX_INT, O_OPT,	P_SYS,	DB_ID,	null],
+	'groupby' =>	[T_TRX_STR, O_OPT,	P_SYS,	null,	null],
 	// sort and sortorder
-	'sort' =>		[T_ZBX_STR, O_OPT, P_SYS, IN('"host_count","inventory_field"'),		null],
-	'sortorder' =>	[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>		[T_TRX_STR, O_OPT, P_SYS, IN('"host_count","inventory_field"'),		null],
+	'sortorder' =>	[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
 $sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'host_count'));
-$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_DOWN));
+$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_DOWN));
 
 CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);
@@ -73,12 +73,12 @@ $hostinvent_wdgt->setControls(
 		->addItem((new CList())
 			->addItem([
 				new CLabel(_('Group'), 'groupid'),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				$pageFilter->getGroupsCB()
 			])
 			->addItem([
 				new CLabel(_('Grouping by'), 'groupby'),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				$inventoryFieldsComboBox
 			])
 		)

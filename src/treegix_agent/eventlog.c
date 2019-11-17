@@ -77,7 +77,7 @@ static int	zbx_open_eventlog(LPCTSTR wsource, HANDLE *eventlog_handle, zbx_uint6
 	*FirstID = dwOldestRecord;
 	*LastID = dwOldestRecord + dwNumRecords - 1;
 
-	treegix_log(LOG_LEVEL_DEBUG, "FirstID:" ZBX_FS_UI64 " LastID:" ZBX_FS_UI64 " numIDs:%lu",
+	treegix_log(LOG_LEVEL_DEBUG, "FirstID:" TRX_FS_UI64 " LastID:" TRX_FS_UI64 " numIDs:%lu",
 			*FirstID, *LastID, dwNumRecords);
 
 	ret = SUCCEED;
@@ -362,7 +362,7 @@ static int	zbx_open_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlogsize,
 	if (*lastlogsize >= *LastID)
 	{
 		*lastlogsize = *FirstID - 1;
-		treegix_log(LOG_LEVEL_DEBUG, "lastlogsize is too big. It is set to:" ZBX_FS_UI64, *lastlogsize);
+		treegix_log(LOG_LEVEL_DEBUG, "lastlogsize is too big. It is set to:" TRX_FS_UI64, *lastlogsize);
 	}
 
 	ret = SUCCEED;
@@ -375,7 +375,7 @@ out:
 		EvtClose(event_bookmark);
 	zbx_free(tmp_str);
 	zbx_free(renderedContent);
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s FirstID:" ZBX_FS_UI64 " LastID:" ZBX_FS_UI64 " numIDs:" ZBX_FS_UI64,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s FirstID:" TRX_FS_UI64 " LastID:" TRX_FS_UI64 " numIDs:" TRX_FS_UI64,
 			__func__, zbx_result_string(ret), *FirstID, *LastID, numIDs);
 
 	return ret;
@@ -390,10 +390,10 @@ static int	zbx_get_handle_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlo
 	char	*tmp_str = NULL;
 	int	ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s(), previous lastlogsize:" ZBX_FS_UI64, __func__, *lastlogsize);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s(), previous lastlogsize:" TRX_FS_UI64, __func__, *lastlogsize);
 
 	/* start building the query */
-	tmp_str = zbx_dsprintf(NULL, "Event/System[EventRecordID>" ZBX_FS_UI64 "]", *lastlogsize);
+	tmp_str = zbx_dsprintf(NULL, "Event/System[EventRecordID>" TRX_FS_UI64 "]", *lastlogsize);
 	event_query = zbx_utf8_to_unicode(tmp_str);
 
 	/* create massive query for an event on a local computer*/
@@ -424,7 +424,7 @@ int	initialize_eventlog6(const char *source, zbx_uint64_t *lastlogsize, zbx_uint
 	wchar_t	*wsource = NULL;
 	int	ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() source:'%s' previous lastlogsize:" ZBX_FS_UI64,
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() source:'%s' previous lastlogsize:" TRX_FS_UI64,
 			__func__, source, *lastlogsize);
 
 	if (NULL == source || '\0' == *source)
@@ -551,7 +551,7 @@ static int	zbx_parse_eventlog_message6(const wchar_t *wsource, EVT_HANDLE *rende
 	const zbx_uint64_t	failure_audit = 0x10000000000000;
 	int			ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() EventRecordID:" ZBX_FS_UI64, __func__, *which);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() EventRecordID:" TRX_FS_UI64, __func__, *which);
 
 	/* obtain the information from the selected events */
 
@@ -597,8 +597,8 @@ static int	zbx_parse_eventlog_message6(const wchar_t *wsource, EVT_HANDLE *rende
 
 	if (VAR_RECORD_NUMBER(renderedContent) != *which)
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "%s() Overwriting expected EventRecordID:" ZBX_FS_UI64 " with the real"
-				" EventRecordID:" ZBX_FS_UI64 " in eventlog '%s'", __func__, *which,
+		treegix_log(LOG_LEVEL_DEBUG, "%s() Overwriting expected EventRecordID:" TRX_FS_UI64 " with the real"
+				" EventRecordID:" TRX_FS_UI64 " in eventlog '%s'", __func__, *which,
 				VAR_RECORD_NUMBER(renderedContent), tmp_str);
 		*which = VAR_RECORD_NUMBER(renderedContent);
 	}
@@ -695,7 +695,7 @@ out:
 int	process_eventslog6(const char *server, unsigned short port, const char *eventlog_name, EVT_HANDLE *render_context,
 		EVT_HANDLE *query, zbx_uint64_t lastlogsize, zbx_uint64_t FirstID, zbx_uint64_t LastID,
 		zbx_vector_ptr_t *regexps, const char *pattern, const char *key_severity, const char *key_source,
-		const char *key_logeventid, int rate, zbx_process_value_t process_value_cb, ZBX_ACTIVE_METRIC *metric,
+		const char *key_logeventid, int rate, zbx_process_value_t process_value_cb, TRX_ACTIVE_METRIC *metric,
 		zbx_uint64_t *lastlogsize_sent, char **error)
 {
 #	define EVT_ARRAY_SIZE	100
@@ -711,8 +711,8 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 	unsigned short	evt_severity;
 	EVT_HANDLE	event_bookmarks[EVT_ARRAY_SIZE];
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() source: '%s' previous lastlogsize: " ZBX_FS_UI64 ", FirstID: "
-			ZBX_FS_UI64 ", LastID: " ZBX_FS_UI64, __func__, eventlog_name, lastlogsize, FirstID,
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() source: '%s' previous lastlogsize: " TRX_FS_UI64 ", FirstID: "
+			TRX_FS_UI64 ", LastID: " TRX_FS_UI64, __func__, eventlog_name, lastlogsize, FirstID,
 			LastID);
 
 	/* update counters */
@@ -720,7 +720,7 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 	{
 		metric->lastlogsize = LastID - 1;
 		metric->skip_old_data = 0;
-		treegix_log(LOG_LEVEL_DEBUG, "skipping existing data: lastlogsize:" ZBX_FS_UI64, lastlogsize);
+		treegix_log(LOG_LEVEL_DEBUG, "skipping existing data: lastlogsize:" TRX_FS_UI64, lastlogsize);
 		goto finish;
 	}
 
@@ -752,7 +752,7 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 			if (ERROR_NO_MORE_ITEMS == (error_code = GetLastError()))
 				continue;
 
-			*error = zbx_dsprintf(*error, "EvtNext failed: %s, EventRecordID:" ZBX_FS_UI64,
+			*error = zbx_dsprintf(*error, "EvtNext failed: %s, EventRecordID:" TRX_FS_UI64,
 					strerror_from_system(error_code), lastlogsize + 1);
 			goto out;
 		}
@@ -813,28 +813,28 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 				int	ret1, ret2, ret3, ret4;
 
 				if (FAIL == (ret1 = regexp_match_ex(regexps, evt_message, pattern,
-						ZBX_CASE_SENSITIVE)))
+						TRX_CASE_SENSITIVE)))
 				{
 					*error = zbx_strdup(*error,
 							"Invalid regular expression in the second parameter.");
 					match = FAIL;
 				}
 				else if (FAIL == (ret2 = regexp_match_ex(regexps, str_severity, key_severity,
-						ZBX_IGNORE_CASE)))
+						TRX_IGNORE_CASE)))
 				{
 					*error = zbx_strdup(*error,
 							"Invalid regular expression in the third parameter.");
 					match = FAIL;
 				}
 				else if (FAIL == (ret3 = regexp_match_ex(regexps, evt_provider, key_source,
-						ZBX_IGNORE_CASE)))
+						TRX_IGNORE_CASE)))
 				{
 					*error = zbx_strdup(*error,
 							"Invalid regular expression in the fourth parameter.");
 					match = FAIL;
 				}
 				else if (FAIL == (ret4 = regexp_match_ex(regexps, str_logeventid,
-						key_logeventid, ZBX_CASE_SENSITIVE)))
+						key_logeventid, TRX_CASE_SENSITIVE)))
 				{
 					*error = zbx_strdup(*error,
 							"Invalid regular expression in the fifth parameter.");
@@ -851,19 +851,19 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 					break;
 				}
 
-				match = ZBX_REGEXP_MATCH == ret1 && ZBX_REGEXP_MATCH == ret2 &&
-						ZBX_REGEXP_MATCH == ret3 && ZBX_REGEXP_MATCH == ret4;
+				match = TRX_REGEXP_MATCH == ret1 && TRX_REGEXP_MATCH == ret2 &&
+						TRX_REGEXP_MATCH == ret3 && TRX_REGEXP_MATCH == ret4;
 			}
 			else
 			{
-				match = ZBX_REGEXP_MATCH == regexp_match_ex(regexps, evt_message, pattern,
-							ZBX_CASE_SENSITIVE) &&
-						ZBX_REGEXP_MATCH == regexp_match_ex(regexps, str_severity,
-							key_severity, ZBX_IGNORE_CASE) &&
-						ZBX_REGEXP_MATCH == regexp_match_ex(regexps, evt_provider,
-							key_source, ZBX_IGNORE_CASE) &&
-						ZBX_REGEXP_MATCH == regexp_match_ex(regexps, str_logeventid,
-							key_logeventid, ZBX_CASE_SENSITIVE);
+				match = TRX_REGEXP_MATCH == regexp_match_ex(regexps, evt_message, pattern,
+							TRX_CASE_SENSITIVE) &&
+						TRX_REGEXP_MATCH == regexp_match_ex(regexps, str_severity,
+							key_severity, TRX_IGNORE_CASE) &&
+						TRX_REGEXP_MATCH == regexp_match_ex(regexps, evt_provider,
+							key_source, TRX_IGNORE_CASE) &&
+						TRX_REGEXP_MATCH == regexp_match_ex(regexps, str_logeventid,
+							key_logeventid, TRX_CASE_SENSITIVE);
 			}
 
 			if (1 == match)
@@ -871,7 +871,7 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 				send_err = process_value_cb(server, port, CONFIG_HOSTNAME, metric->key_orig,
 						evt_message, ITEM_STATE_NORMAL, &lastlogsize, NULL, &evt_timestamp,
 						evt_provider, &evt_severity, &evt_eventid,
-						metric->flags | ZBX_METRIC_FLAG_PERSISTENT);
+						metric->flags | TRX_METRIC_FLAG_PERSISTENT);
 
 				if (SUCCEED == send_err)
 				{
@@ -1032,7 +1032,7 @@ static int	seek_eventlog(HANDLE *eventlog_handle, zbx_uint64_t FirstID, DWORD Re
 		else
 			skip_count = LastID - FirstID;
 
-		treegix_log(LOG_LEVEL_DEBUG, "In %s(): fallback error_code=%d skip_count="ZBX_FS_UI64, __func__,
+		treegix_log(LOG_LEVEL_DEBUG, "In %s(): fallback error_code=%d skip_count="TRX_FS_UI64, __func__,
 				*error_code, skip_count);
 	}
 
@@ -1220,14 +1220,14 @@ static void	zbx_parse_eventlog_message(const wchar_t *wsource, const EVENTLOGREC
  ******************************************************************************/
 int	process_eventslog(const char *server, unsigned short port, const char *eventlog_name, zbx_vector_ptr_t *regexps,
 		const char *pattern, const char *key_severity, const char *key_source, const char *key_logeventid,
-		int rate, zbx_process_value_t process_value_cb, ZBX_ACTIVE_METRIC *metric,
+		int rate, zbx_process_value_t process_value_cb, TRX_ACTIVE_METRIC *metric,
 		zbx_uint64_t *lastlogsize_sent, char **error)
 {
 	int		ret = FAIL;
 	HANDLE		eventlog_handle = NULL;
 	wchar_t 	*eventlog_name_w;
 	zbx_uint64_t	FirstID, LastID, lastlogsize;
-	int		buffer_size = 64 * ZBX_KIBIBYTE;
+	int		buffer_size = 64 * TRX_KIBIBYTE;
 	DWORD		num_bytes_read = 0, required_buf_size, ReadDirection, error_code;
 	BYTE		*pELRs = NULL;
 	int		s_count, p_count, send_err = SUCCEED, match = SUCCEED;
@@ -1235,7 +1235,7 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 	char		*source;
 
 	lastlogsize = metric->lastlogsize;
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() source:'%s' lastlogsize:" ZBX_FS_UI64, __func__, eventlog_name,
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() source:'%s' lastlogsize:" TRX_FS_UI64, __func__, eventlog_name,
 			lastlogsize);
 
 	/* From MSDN documentation:                                                                         */
@@ -1266,7 +1266,7 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 	{
 		metric->lastlogsize = LastID;
 		metric->skip_old_data = 0;
-		treegix_log(LOG_LEVEL_DEBUG, "skipping existing data: lastlogsize:" ZBX_FS_UI64, metric->lastlogsize);
+		treegix_log(LOG_LEVEL_DEBUG, "skipping existing data: lastlogsize:" TRX_FS_UI64, metric->lastlogsize);
 		goto finish;
 	}
 
@@ -1305,7 +1305,7 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 	}
 
 	treegix_log(LOG_LEVEL_TRACE, "%s(): state before EventLog reading: num_bytes_read=%u error=%s FirstID="
-			ZBX_FS_UI64 " LastID=" ZBX_FS_UI64 " lastlogsize=" ZBX_FS_UI64, __func__,
+			TRX_FS_UI64 " LastID=" TRX_FS_UI64 " lastlogsize=" TRX_FS_UI64, __func__,
 			(unsigned int)num_bytes_read, strerror_from_system(error_code), FirstID, LastID, lastlogsize);
 
 	if (ERROR_HANDLE_EOF == error_code)
@@ -1345,7 +1345,7 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 		pEndOfRecords = pELR + num_bytes_read;
 
 		treegix_log(LOG_LEVEL_TRACE, "%s(): state before buffer parsing: num_bytes_read = %u RecordNumber = %d"
-				"FirstID = "ZBX_FS_UI64" LastID = "ZBX_FS_UI64" lastlogsize="ZBX_FS_UI64,
+				"FirstID = "TRX_FS_UI64" LastID = "TRX_FS_UI64" lastlogsize="TRX_FS_UI64,
 				__func__, (unsigned int)num_bytes_read, ((PEVENTLOGRECORD)pELR)->RecordNumber,
 				FirstID, LastID, lastlogsize);
 		num_bytes_read = 0;
@@ -1403,28 +1403,28 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 					int	ret1, ret2, ret3, ret4;
 
 					if (FAIL == (ret1 = regexp_match_ex(regexps, value, pattern,
-							ZBX_CASE_SENSITIVE)))
+							TRX_CASE_SENSITIVE)))
 					{
 						*error = zbx_strdup(*error,
 								"Invalid regular expression in the second parameter.");
 						match = FAIL;
 					}
 					else if (FAIL == (ret2 = regexp_match_ex(regexps, str_severity, key_severity,
-							ZBX_IGNORE_CASE)))
+							TRX_IGNORE_CASE)))
 					{
 						*error = zbx_strdup(*error,
 								"Invalid regular expression in the third parameter.");
 						match = FAIL;
 					}
 					else if (FAIL == (ret3 = regexp_match_ex(regexps, source, key_source,
-							ZBX_IGNORE_CASE)))
+							TRX_IGNORE_CASE)))
 					{
 						*error = zbx_strdup(*error,
 								"Invalid regular expression in the fourth parameter.");
 						match = FAIL;
 					}
 					else if (FAIL == (ret4 = regexp_match_ex(regexps, str_logeventid,
-							key_logeventid, ZBX_CASE_SENSITIVE)))
+							key_logeventid, TRX_CASE_SENSITIVE)))
 					{
 						*error = zbx_strdup(*error,
 								"Invalid regular expression in the fifth parameter.");
@@ -1440,19 +1440,19 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 						break;
 					}
 
-					match = ZBX_REGEXP_MATCH == ret1 && ZBX_REGEXP_MATCH == ret2 &&
-							ZBX_REGEXP_MATCH == ret3 && ZBX_REGEXP_MATCH == ret4;
+					match = TRX_REGEXP_MATCH == ret1 && TRX_REGEXP_MATCH == ret2 &&
+							TRX_REGEXP_MATCH == ret3 && TRX_REGEXP_MATCH == ret4;
 				}
 				else
 				{
-					match = ZBX_REGEXP_MATCH == regexp_match_ex(regexps, value, pattern,
-								ZBX_CASE_SENSITIVE) &&
-							ZBX_REGEXP_MATCH == regexp_match_ex(regexps, str_severity,
-								key_severity, ZBX_IGNORE_CASE) &&
-							ZBX_REGEXP_MATCH == regexp_match_ex(regexps, source,
-								key_source, ZBX_IGNORE_CASE) &&
-							ZBX_REGEXP_MATCH == regexp_match_ex(regexps, str_logeventid,
-								key_logeventid, ZBX_CASE_SENSITIVE);
+					match = TRX_REGEXP_MATCH == regexp_match_ex(regexps, value, pattern,
+								TRX_CASE_SENSITIVE) &&
+							TRX_REGEXP_MATCH == regexp_match_ex(regexps, str_severity,
+								key_severity, TRX_IGNORE_CASE) &&
+							TRX_REGEXP_MATCH == regexp_match_ex(regexps, source,
+								key_source, TRX_IGNORE_CASE) &&
+							TRX_REGEXP_MATCH == regexp_match_ex(regexps, str_logeventid,
+								key_logeventid, TRX_CASE_SENSITIVE);
 				}
 
 				if (1 == match)
@@ -1460,7 +1460,7 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 					send_err = process_value_cb(server, port, CONFIG_HOSTNAME, metric->key_orig,
 							value, ITEM_STATE_NORMAL, &lastlogsize, NULL, &timestamp,
 							source, &severity, &logeventid,
-							metric->flags | ZBX_METRIC_FLAG_PERSISTENT);
+							metric->flags | TRX_METRIC_FLAG_PERSISTENT);
 
 					if (SUCCEED == send_err)
 					{

@@ -42,7 +42,7 @@ class CControllerNotificationsRead extends CController {
 		}
 
 		CArrayHelper::sort($events, [
-			['field' => 'clock', 'order' => ZBX_SORT_DOWN]
+			['field' => 'clock', 'order' => TRX_SORT_DOWN]
 		]);
 
 		$last_event = reset($events);

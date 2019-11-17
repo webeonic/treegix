@@ -35,7 +35,7 @@ zbx_subarray_push($this->data['valueTypeVisibility'], ITEM_VALUE_TYPE_UINT64, 'r
 		function typeChangeHandler() {
 			// selected item type
 			var type = parseInt($('#type').val()),
-				asterisk = '<?= ZBX_STYLE_FIELD_LABEL_ASTERISK ?>';
+				asterisk = '<?= TRX_STYLE_FIELD_LABEL_ASTERISK ?>';
 
 			$('#keyButton').prop('disabled',
 				type != <?= ITEM_TYPE_TREEGIX ?>

@@ -9,22 +9,22 @@ $controls = (new CForm('get'))
 	->addItem((new CList())
 		->addItem([
 			new CLabel(_('Group'), 'groupid'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$this->data['pageFilter']->getGroupsCB()
 		])
 		->addItem([
 			new CLabel(_('Host'), 'hostid'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$this->data['pageFilter']->getHostsCB()
 		])
 		->addItem([
 			new CLabel(_('Graph'), 'graphid'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$this->data['pageFilter']->getGraphsCB()
 		])
 		->addItem([
 			new CLabel(_('View as'), 'action'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CComboBox('action', $data['action'], 'submit()', $data['actions']))->setEnabled((bool) $data['graphid'])
 		])
 	);
@@ -51,7 +51,7 @@ $chartsWidget = (new CWidget())
 			->setProfile($data['timeline']['profileIdx'], $data['timeline']['profileIdx2'])
 			->setActiveTab($data['active_tab'])
 			->addTimeSelector($data['timeline']['from'], $data['timeline']['to'],
-				$web_layout_mode != ZBX_LAYOUT_KIOSKMODE)
+				$web_layout_mode != TRX_LAYOUT_KIOSKMODE)
 	);
 
 if (!empty($this->data['graphid'])) {

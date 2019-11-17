@@ -15,7 +15,7 @@ if ($data['readonly'] && !$data['macros']) {
 else {
 	$table = (new CTable())
 		->setId('tbl_macros')
-		->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER);
+		->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER);
 
 	$actions_col = $data['readonly'] ? null : '';
 	if ($data['show_inherited_macros']) {
@@ -39,11 +39,11 @@ else {
 	foreach ($data['macros'] as $i => $macro) {
 		$macro_input = (new CTextAreaFlexible('macros['.$i.'][macro]', $macro['macro'], [
 			'readonly' => (
-				$data['readonly'] || ($data['show_inherited_macros'] && ($macro['type'] & ZBX_PROPERTY_INHERITED))
+				$data['readonly'] || ($data['show_inherited_macros'] && ($macro['type'] & TRX_PROPERTY_INHERITED))
 			)
 		]))
 			->addClass('macro')
-			->setWidth(ZBX_TEXTAREA_MACRO_WIDTH)
+			->setWidth(TRX_TEXTAREA_MACRO_WIDTH)
 			->setAttribute('placeholder', '{$MACRO}');
 
 		$macro_cell = [$macro_input];
@@ -52,7 +52,7 @@ else {
 				$macro_cell[] = new CVar('macros['.$i.'][hostmacroid]', $macro['hostmacroid']);
 			}
 
-			if ($data['show_inherited_macros'] && ($macro['type'] & ZBX_PROPERTY_INHERITED)) {
+			if ($data['show_inherited_macros'] && ($macro['type'] & TRX_PROPERTY_INHERITED)) {
 				if (array_key_exists('template', $macro)) {
 					$macro_cell[] = new CVar('macros['.$i.'][inherited][value]', $macro['template']['value']);
 					$macro_cell[] = new CVar('macros['.$i.'][inherited][description]',
@@ -74,58 +74,58 @@ else {
 
 		$value_input = (new CTextAreaFlexible('macros['.$i.'][value]', $macro['value'], [
 			'readonly' => (
-				$data['readonly'] || ($data['show_inherited_macros'] && !($macro['type'] & ZBX_PROPERTY_OWN))
+				$data['readonly'] || ($data['show_inherited_macros'] && !($macro['type'] & TRX_PROPERTY_OWN))
 			)
 		]))
-			->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+			->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 			->setAttribute('placeholder', _('value'));
 
 		$row = [
-			(new CCol($macro_cell))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			(new CCol($macro_cell))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			'&rArr;',
-			(new CCol($value_input))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT)
+			(new CCol($value_input))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT)
 		];
 
 		if (!$data['show_inherited_macros']) {
 			$row[] = (new CCol(
 				(new CTextAreaFlexible('macros['.$i.'][description]', $macro['description']))
-					->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 					->setMaxlength(DB::getFieldLength('hostmacro', 'description'))
 					->setReadonly($data['readonly'])
 					->setAttribute('placeholder', _('description'))
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT);
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT);
 		}
 
 		if (!$data['readonly']) {
 			if ($data['show_inherited_macros']) {
-				if (($macro['type'] & ZBX_PROPERTY_BOTH) == ZBX_PROPERTY_BOTH) {
+				if (($macro['type'] & TRX_PROPERTY_BOTH) == TRX_PROPERTY_BOTH) {
 					$row[] = (new CCol(
 						(new CButton('macros['.$i.'][change]', _('Remove')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->addClass('element-table-change')
-					))->addClass(ZBX_STYLE_NOWRAP);
+					))->addClass(TRX_STYLE_NOWRAP);
 				}
-				elseif ($macro['type'] & ZBX_PROPERTY_INHERITED) {
+				elseif ($macro['type'] & TRX_PROPERTY_INHERITED) {
 					$row[] = (new CCol(
 						(new CButton('macros['.$i.'][change]', _x('Change', 'verb')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->addClass('element-table-change')
-					))->addClass(ZBX_STYLE_NOWRAP);
+					))->addClass(TRX_STYLE_NOWRAP);
 				}
 				else {
 					$row[] = (new CCol(
 						(new CButton('macros['.$i.'][remove]', _('Remove')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->addClass('element-table-remove')
-					))->addClass(ZBX_STYLE_NOWRAP);
+					))->addClass(TRX_STYLE_NOWRAP);
 				}
 			}
 			else {
 				$row[] = (new CCol(
 					(new CButton('macros['.$i.'][remove]', _('Remove')))
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 						->addClass('element-table-remove')
-				))->addClass(ZBX_STYLE_NOWRAP);
+				))->addClass(TRX_STYLE_NOWRAP);
 			}
 		}
 
@@ -144,28 +144,28 @@ else {
 
 				$row[] = '&lArr;';
 				$row[] = (new CDiv([$link, NAME_DELIMITER, '"'.$macro['template']['value'].'"']))
-					->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-					->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH);
+					->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+					->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH);
 			}
 			else {
 				array_push($row, '',
 					(new CDiv())
-						->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-						->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+						->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+						->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 				);
 			}
 
 			if (array_key_exists('global', $macro)) {
 				$row[] = '&lArr;';
 				$row[] = (new CDiv('"'.$macro['global']['value'].'"'))
-					->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-					->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH);
+					->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+					->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH);
 			}
 			else {
 				array_push($row, '',
 					(new CDiv())
-						->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-						->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+						->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+						->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 				);
 			}
 		}
@@ -177,11 +177,11 @@ else {
 				(new CCol(
 					(new CTextAreaFlexible('macros['.$i.'][description]', $macro['description']))
 						->setMaxlength(DB::getFieldLength('hostmacro' , 'description'))
-						->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 						->setAttribute('placeholder', _('description'))
-						->setReadonly($data['readonly'] || !($macro['type'] & ZBX_PROPERTY_OWN))
+						->setReadonly($data['readonly'] || !($macro['type'] & TRX_PROPERTY_OWN))
 				))
-					->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT)
+					->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT)
 					->setColSpan(8)
 			]))->addClass('form_row'));
 		}
@@ -191,7 +191,7 @@ else {
 	if (!$data['readonly']) {
 		$table->setFooter(new CCol(
 			(new CButton('macro_add', _('Add')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-add')
 		));
 	}

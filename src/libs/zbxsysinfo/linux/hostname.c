@@ -7,7 +7,7 @@
 #	include <sys/utsname.h>
 #endif
 
-ZBX_METRIC	parameter_hostname =
+TRX_METRIC	parameter_hostname =
 /*	KEY			FLAG		FUNCTION		TEST PARAMETERS */
 	{"system.hostname",     0,              SYSTEM_HOSTNAME,        NULL};
 
@@ -15,7 +15,7 @@ int	SYSTEM_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	struct utsname	name;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (-1 == uname(&name))
 	{

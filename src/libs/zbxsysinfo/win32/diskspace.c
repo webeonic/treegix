@@ -12,7 +12,7 @@ static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE time
 
 	/* 'timeout_event' argument is here to make the vfs_fs_size() prototype as required by */
 	/* zbx_execute_threaded_metric() on MS Windows */
-	ZBX_UNUSED(timeout_event);
+	TRX_UNUSED(timeout_event);
 
 	if (2 < request->nparam)
 	{
@@ -100,7 +100,7 @@ static void	add_fs_to_json(wchar_t *path, struct zbx_json *j)
 		utf8[sz] = '\0';
 
 	zbx_json_addobject(j, NULL);
-	zbx_json_addstring(j, "{#FSNAME}", utf8, ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(j, "{#FSNAME}", utf8, TRX_JSON_TYPE_STRING);
 	zbx_free(utf8);
 
 	/* add \\?\ prefix if path exceeds MAX_PATH */
@@ -121,14 +121,14 @@ static void	add_fs_to_json(wchar_t *path, struct zbx_json *j)
 	if (FALSE != GetVolumeInformation(path, NULL, 0, NULL, NULL, NULL, fs_name, ARRSIZE(fs_name)))
 	{
 		utf8 = zbx_unicode_to_utf8(fs_name);
-		zbx_json_addstring(j, "{#FSTYPE}", utf8, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(j, "{#FSTYPE}", utf8, TRX_JSON_TYPE_STRING);
 		zbx_free(utf8);
 	}
 	else
-		zbx_json_addstring(j, "{#FSTYPE}", "UNKNOWN", ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(j, "{#FSTYPE}", "UNKNOWN", TRX_JSON_TYPE_STRING);
 
 	zbx_json_addstring(j, "{#FSDRIVETYPE}", get_drive_type_string(GetDriveType(path)),
-			ZBX_JSON_TYPE_STRING);
+			TRX_JSON_TYPE_STRING);
 	zbx_json_close(j);
 
 	zbx_free(long_path);
@@ -150,7 +150,7 @@ int	VFS_FS_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	buffer = (wchar_t *)zbx_malloc(buffer, (size_dw + 1) * sizeof(wchar_t));
 

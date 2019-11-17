@@ -8,9 +8,9 @@
 
 static perfstat_memory_total_t	m;
 
-#define ZBX_PERFSTAT_PAGE_SHIFT	12	/* 4 KB */
+#define TRX_PERFSTAT_PAGE_SHIFT	12	/* 4 KB */
 
-#define ZBX_PERFSTAT_MEMORY_TOTAL()									\
+#define TRX_PERFSTAT_MEMORY_TOTAL()									\
 													\
 	if (-1 == perfstat_memory_total(NULL, &m, sizeof(m), 1))					\
 	{												\
@@ -21,43 +21,43 @@ static perfstat_memory_total_t	m;
 
 static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 {
-	ZBX_PERFSTAT_MEMORY_TOTAL();
+	TRX_PERFSTAT_MEMORY_TOTAL();
 
-	SET_UI64_RESULT(result, m.real_total << ZBX_PERFSTAT_PAGE_SHIFT);	/* total real memory in pages */
+	SET_UI64_RESULT(result, m.real_total << TRX_PERFSTAT_PAGE_SHIFT);	/* total real memory in pages */
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_PINNED(AGENT_RESULT *result)
 {
-	ZBX_PERFSTAT_MEMORY_TOTAL();
+	TRX_PERFSTAT_MEMORY_TOTAL();
 
-	SET_UI64_RESULT(result, m.real_pinned << ZBX_PERFSTAT_PAGE_SHIFT);	/* real memory which is pinned in pages */
+	SET_UI64_RESULT(result, m.real_pinned << TRX_PERFSTAT_PAGE_SHIFT);	/* real memory which is pinned in pages */
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 {
-	ZBX_PERFSTAT_MEMORY_TOTAL();
+	TRX_PERFSTAT_MEMORY_TOTAL();
 
-	SET_UI64_RESULT(result, m.real_free << ZBX_PERFSTAT_PAGE_SHIFT);	/* free real memory in pages */
+	SET_UI64_RESULT(result, m.real_free << TRX_PERFSTAT_PAGE_SHIFT);	/* free real memory in pages */
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_USED(AGENT_RESULT *result)
 {
-	ZBX_PERFSTAT_MEMORY_TOTAL();
+	TRX_PERFSTAT_MEMORY_TOTAL();
 
-	SET_UI64_RESULT(result, m.real_inuse << ZBX_PERFSTAT_PAGE_SHIFT);	/* real memory which is in use in pages */
+	SET_UI64_RESULT(result, m.real_inuse << TRX_PERFSTAT_PAGE_SHIFT);	/* real memory which is in use in pages */
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 {
-	ZBX_PERFSTAT_MEMORY_TOTAL();
+	TRX_PERFSTAT_MEMORY_TOTAL();
 
 	if (0 == m.real_total)
 	{
@@ -72,16 +72,16 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 {
-	ZBX_PERFSTAT_MEMORY_TOTAL();
+	TRX_PERFSTAT_MEMORY_TOTAL();
 
-	SET_UI64_RESULT(result, (m.real_free + m.numperm) << ZBX_PERFSTAT_PAGE_SHIFT);
+	SET_UI64_RESULT(result, (m.real_free + m.numperm) << TRX_PERFSTAT_PAGE_SHIFT);
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 {
-	ZBX_PERFSTAT_MEMORY_TOTAL();
+	TRX_PERFSTAT_MEMORY_TOTAL();
 
 	if (0 == m.real_total)
 	{
@@ -96,9 +96,9 @@ static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_CACHED(AGENT_RESULT *result)
 {
-	ZBX_PERFSTAT_MEMORY_TOTAL();
+	TRX_PERFSTAT_MEMORY_TOTAL();
 
-	SET_UI64_RESULT(result, m.numperm << ZBX_PERFSTAT_PAGE_SHIFT);	/* number of pages used for files */
+	SET_UI64_RESULT(result, m.numperm << TRX_PERFSTAT_PAGE_SHIFT);	/* number of pages used for files */
 
 	return SYSINFO_RET_OK;
 }

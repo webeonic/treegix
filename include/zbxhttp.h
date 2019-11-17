@@ -1,6 +1,6 @@
 
-#ifndef TREEGIX_ZBXHTTP_H
-#define TREEGIX_ZBXHTTP_H
+#ifndef TREEGIX_TRXHTTP_H
+#define TREEGIX_TRXHTTP_H
 
 #include "common.h"
 

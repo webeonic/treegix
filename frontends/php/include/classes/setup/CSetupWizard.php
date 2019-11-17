@@ -78,17 +78,17 @@ class CSetupWizard extends CForm {
 	protected function bodyToString($destroy = true) {
 		$setup_left = (new CDiv([
 			(new CDiv())
-				->addClass(ZBX_STYLE_SIGNIN_LOGO)
+				->addClass(TRX_STYLE_SIGNIN_LOGO)
 				->addStyle(CBrandHelper::getLogoStyle()),
 			$this->getList()
-		]))->addClass(ZBX_STYLE_SETUP_LEFT);
+		]))->addClass(TRX_STYLE_SETUP_LEFT);
 
-		$setup_right = (new CDiv($this->getStage()))->addClass(ZBX_STYLE_SETUP_RIGHT);
+		$setup_right = (new CDiv($this->getStage()))->addClass(TRX_STYLE_SETUP_RIGHT);
 
 		if (CWebUser::$data && CWebUser::getType() == USER_TYPE_SUPER_ADMIN) {
 			$cancel_button = (new CSubmit('cancel', _('Cancel')))
-				->addClass(ZBX_STYLE_BTN_ALT)
-				->addClass(ZBX_STYLE_FLOAT_LEFT);
+				->addClass(TRX_STYLE_BTN_ALT)
+				->addClass(TRX_STYLE_FLOAT_LEFT);
 			if ($this->DISABLE_CANCEL_BUTTON) {
 				$cancel_button->setEnabled(false);
 			}
@@ -105,17 +105,17 @@ class CSetupWizard extends CForm {
 		}
 
 		$back_button = (new CSubmit('back['.$this->getStep().']', _('Back')))
-			->addClass(ZBX_STYLE_BTN_ALT)
-			->addClass(ZBX_STYLE_FLOAT_LEFT);
+			->addClass(TRX_STYLE_BTN_ALT)
+			->addClass(TRX_STYLE_FLOAT_LEFT);
 
 		if ($this->getStep() == 0 || $this->DISABLE_BACK_BUTTON) {
 			$back_button->setEnabled(false);
 		}
 
 		$setup_footer = (new CDiv([new CDiv([$next_button, $back_button]), $cancel_button]))
-			->addClass(ZBX_STYLE_SETUP_FOOTER);
+			->addClass(TRX_STYLE_SETUP_FOOTER);
 
-		$setup_container = (new CDiv([$setup_left, $setup_right, $setup_footer]))->addClass(ZBX_STYLE_SETUP_CONTAINER);
+		$setup_container = (new CDiv([$setup_left, $setup_right, $setup_footer]))->addClass(TRX_STYLE_SETUP_CONTAINER);
 
 		return parent::bodyToString($destroy).$setup_container->toString();
 	}
@@ -124,7 +124,7 @@ class CSetupWizard extends CForm {
 		$list = new CList();
 
 		foreach ($this->stage as $id => $data) {
-			$list->addItem($data['title'], ($id <= $this->getStep()) ? ZBX_STYLE_SETUP_LEFT_CURRENT : null);
+			$list->addItem($data['title'], ($id <= $this->getStep()) ? TRX_STYLE_SETUP_LEFT_CURRENT : null);
 		}
 
 		return $list;
@@ -137,14 +137,14 @@ class CSetupWizard extends CForm {
 
 	function stage0() {
 		preg_match('/^\d+\.\d+/', TREEGIX_VERSION, $version);
-		$setup_title = (new CDiv([new CSpan(_('Welcome to')), 'Treegix '.$version[0]]))->addClass(ZBX_STYLE_SETUP_TITLE);
+		$setup_title = (new CDiv([new CSpan(_('Welcome to')), 'Treegix '.$version[0]]))->addClass(TRX_STYLE_SETUP_TITLE);
 
-		return (new CDiv($setup_title))->addClass(ZBX_STYLE_SETUP_RIGHT_BODY);
+		return (new CDiv($setup_title))->addClass(TRX_STYLE_SETUP_RIGHT_BODY);
 	}
 
 	function stage1() {
 		$table = (new CTable())
-			->addClass(ZBX_STYLE_LIST_TABLE)
+			->addClass(TRX_STYLE_LIST_TABLE)
 			->setHeader(['', _('Current value'), _('Required'), '']);
 
 		$messages = [];
@@ -152,15 +152,15 @@ class CSetupWizard extends CForm {
 
 		foreach ($this->frontendSetup->checkRequirements() as $req) {
 			if ($req['result'] == CFrontendSetup::CHECK_OK) {
-				$class = ZBX_STYLE_GREEN;
+				$class = TRX_STYLE_GREEN;
 				$result = 'OK';
 			}
 			elseif ($req['result'] == CFrontendSetup::CHECK_WARNING) {
-				$class = ZBX_STYLE_ORANGE;
+				$class = TRX_STYLE_ORANGE;
 				$result = new CSpan(_x('Warning', 'setup'));
 			}
 			else {
-				$class = ZBX_STYLE_RED;
+				$class = TRX_STYLE_RED;
 				$result = new CSpan(_('Fail'));
 				$messages[] = ['type' => 'error', 'message' => $req['error']];
 			}
@@ -188,7 +188,7 @@ class CSetupWizard extends CForm {
 
 		return [
 			new CTag('h1', true, _('Check of pre-requisites')),
-			(new CDiv([$message_box, $table]))->addClass(ZBX_STYLE_SETUP_RIGHT_BODY)
+			(new CDiv([$message_box, $table]))->addClass(TRX_STYLE_SETUP_RIGHT_BODY)
 		];
 	}
 
@@ -203,39 +203,39 @@ class CSetupWizard extends CForm {
 
 		$table->addRow(_('Database host'),
 			(new CTextBox('server', $this->getConfig('DB_SERVER', 'localhost')))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 
 		$table->addRow(_('Database port'), [
 			(new CNumericBox('port', $this->getConfig('DB_PORT', '0'), 5, false, false, false))
 				->removeAttribute('style')
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-			(new CSpan(_('0 - use default port')))->addClass(ZBX_STYLE_GREY)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+			(new CSpan(_('0 - use default port')))->addClass(TRX_STYLE_GREY)
 		]);
 
 		$table->addRow(_('Database name'),
 			(new CTextBox('database', $this->getConfig('DB_DATABASE', 'treegix')))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 
-		if ($DB['TYPE'] == ZBX_DB_DB2 || $DB['TYPE'] == ZBX_DB_POSTGRESQL) {
+		if ($DB['TYPE'] == TRX_DB_DB2 || $DB['TYPE'] == TRX_DB_POSTGRESQL) {
 			$table->addRow(_('Database schema'),
-				(new CTextBox('schema', $this->getConfig('DB_SCHEMA', '')))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				(new CTextBox('schema', $this->getConfig('DB_SCHEMA', '')))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			);
 		}
 
 		$table->addRow(_('User'),
-			(new CTextBox('user', $this->getConfig('DB_USER', 'treegix')))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			(new CTextBox('user', $this->getConfig('DB_USER', 'treegix')))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 		$table->addRow(_('Password'),
-			(new CPassBox('password', $this->getConfig('DB_PASSWORD')))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			(new CPassBox('password', $this->getConfig('DB_PASSWORD')))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 
 		if ($this->STEP_FAILED) {
-			global $ZBX_MESSAGES;
+			global $TRX_MESSAGES;
 
-			$message_box = makeMessageBox(false, $ZBX_MESSAGES, _('Cannot connect to the database.'), false, true);
+			$message_box = makeMessageBox(false, $TRX_MESSAGES, _('Cannot connect to the database.'), false, true);
 		}
 		else {
 			$message_box = null;
@@ -247,7 +247,7 @@ class CSetupWizard extends CForm {
 				new CTag('p', true, _s('Please create database manually, and set the configuration parameters for connection to this database. Press "%1$s" button when done.', _('Next step'))),
 				$message_box,
 				$table
-			]))->addClass(ZBX_STYLE_SETUP_RIGHT_BODY)
+			]))->addClass(TRX_STYLE_SETUP_RIGHT_BODY)
 		];
 	}
 
@@ -255,19 +255,19 @@ class CSetupWizard extends CForm {
 		$table = new CFormList();
 
 		$table->addRow(_('Host'),
-			(new CTextBox('zbx_server', $this->getConfig('ZBX_SERVER', 'localhost')))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			(new CTextBox('zbx_server', $this->getConfig('TRX_SERVER', 'localhost')))
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 
 		$table->addRow(_('Port'),
-			(new CNumericBox('zbx_server_port', $this->getConfig('ZBX_SERVER_PORT', '10051'), 5, false, false, false))
+			(new CNumericBox('zbx_server_port', $this->getConfig('TRX_SERVER_PORT', '10051'), 5, false, false, false))
 				->removeAttribute('style')
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 
 		$table->addRow('Name',
-			(new CTextBox('zbx_server_name', $this->getConfig('ZBX_SERVER_NAME', '')))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			(new CTextBox('zbx_server_name', $this->getConfig('TRX_SERVER_NAME', '')))
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 
 		return [
@@ -275,7 +275,7 @@ class CSetupWizard extends CForm {
 			(new CDiv([
 				new CTag('p', true, _('Please enter the host name or host IP address and port number of the Treegix server, as well as the name of the installation (optional).')),
 				$table
-			]))->addClass(ZBX_STYLE_SETUP_RIGHT_BODY)
+			]))->addClass(TRX_STYLE_SETUP_RIGHT_BODY)
 		];
 	}
 
@@ -284,37 +284,37 @@ class CSetupWizard extends CForm {
 		$databases = CFrontendSetup::getSupportedDatabases();
 
 		$table = new CFormList();
-		$table->addRow((new CSpan(_('Database type')))->addClass(ZBX_STYLE_GREY), $databases[$db_type]);
+		$table->addRow((new CSpan(_('Database type')))->addClass(TRX_STYLE_GREY), $databases[$db_type]);
 
 		$db_port = ($this->getConfig('DB_PORT') == 0) ? _('default') : $this->getConfig('DB_PORT');
 		$db_password = preg_replace('/./', '*', $this->getConfig('DB_PASSWORD'));
 
-		$table->addRow((new CSpan(_('Database server')))->addClass(ZBX_STYLE_GREY), $this->getConfig('DB_SERVER'));
-		$table->addRow((new CSpan(_('Database port')))->addClass(ZBX_STYLE_GREY), $db_port);
-		$table->addRow((new CSpan(_('Database name')))->addClass(ZBX_STYLE_GREY), $this->getConfig('DB_DATABASE'));
-		$table->addRow((new CSpan(_('Database user')))->addClass(ZBX_STYLE_GREY), $this->getConfig('DB_USER'));
-		$table->addRow((new CSpan(_('Database password')))->addClass(ZBX_STYLE_GREY), $db_password);
-		if ($db_type == ZBX_DB_DB2 || $db_type == ZBX_DB_POSTGRESQL) {
-			$table->addRow((new CSpan(_('Database schema')))->addClass(ZBX_STYLE_GREY), $this->getConfig('DB_SCHEMA'));
+		$table->addRow((new CSpan(_('Database server')))->addClass(TRX_STYLE_GREY), $this->getConfig('DB_SERVER'));
+		$table->addRow((new CSpan(_('Database port')))->addClass(TRX_STYLE_GREY), $db_port);
+		$table->addRow((new CSpan(_('Database name')))->addClass(TRX_STYLE_GREY), $this->getConfig('DB_DATABASE'));
+		$table->addRow((new CSpan(_('Database user')))->addClass(TRX_STYLE_GREY), $this->getConfig('DB_USER'));
+		$table->addRow((new CSpan(_('Database password')))->addClass(TRX_STYLE_GREY), $db_password);
+		if ($db_type == TRX_DB_DB2 || $db_type == TRX_DB_POSTGRESQL) {
+			$table->addRow((new CSpan(_('Database schema')))->addClass(TRX_STYLE_GREY), $this->getConfig('DB_SCHEMA'));
 		}
 
 		$table->addRow(null, null);
 
-		$table->addRow((new CSpan(_('Treegix server')))->addClass(ZBX_STYLE_GREY), $this->getConfig('ZBX_SERVER'));
-		$table->addRow((new CSpan(_('Treegix server port')))->addClass(ZBX_STYLE_GREY), $this->getConfig('ZBX_SERVER_PORT'));
-		$table->addRow((new CSpan(_('Treegix server name')))->addClass(ZBX_STYLE_GREY), $this->getConfig('ZBX_SERVER_NAME'));
+		$table->addRow((new CSpan(_('Treegix server')))->addClass(TRX_STYLE_GREY), $this->getConfig('TRX_SERVER'));
+		$table->addRow((new CSpan(_('Treegix server port')))->addClass(TRX_STYLE_GREY), $this->getConfig('TRX_SERVER_PORT'));
+		$table->addRow((new CSpan(_('Treegix server name')))->addClass(TRX_STYLE_GREY), $this->getConfig('TRX_SERVER_NAME'));
 
 		return [
 			new CTag('h1', true, _('Pre-installation summary')),
 			(new CDiv([
 				new CTag('p', true, _s('Please check configuration parameters. If all is correct, press "%1$s" button, or "%2$s" button to change configuration parameters.', _('Next step'), _('Back'))),
 				$table
-			]))->addClass(ZBX_STYLE_SETUP_RIGHT_BODY)
+			]))->addClass(TRX_STYLE_SETUP_RIGHT_BODY)
 		];
 	}
 
 	function stage5() {
-		$this->setConfig('ZBX_CONFIG_FILE_CORRECT', true);
+		$this->setConfig('TRX_CONFIG_FILE_CORRECT', true);
 
 		$config_file_name = Z::getInstance()->getRootDir().CConfigFile::CONFIG_FILE_PATH;
 		$config = new CConfigFile($config_file_name);
@@ -328,9 +328,9 @@ class CSetupWizard extends CForm {
 				'PASSWORD' => $this->getConfig('DB_PASSWORD'),
 				'SCHEMA' => $this->getConfig('DB_SCHEMA')
 			],
-			'ZBX_SERVER' => $this->getConfig('ZBX_SERVER'),
-			'ZBX_SERVER_PORT' => $this->getConfig('ZBX_SERVER_PORT'),
-			'ZBX_SERVER_NAME' => $this->getConfig('ZBX_SERVER_NAME')
+			'TRX_SERVER' => $this->getConfig('TRX_SERVER'),
+			'TRX_SERVER_PORT' => $this->getConfig('TRX_SERVER_PORT'),
+			'TRX_SERVER_NAME' => $this->getConfig('TRX_SERVER_NAME')
 		];
 
 		$error = false;
@@ -346,7 +346,7 @@ class CSetupWizard extends CForm {
 		if ($error) {
 			$this->SHOW_RETRY_BUTTON = true;
 
-			$this->setConfig('ZBX_CONFIG_FILE_CORRECT', false);
+			$this->setConfig('TRX_CONFIG_FILE_CORRECT', false);
 
 			$message_box = makeMessageBox(false, $messages, _('Cannot create the configuration file.'), false, true);
 			$message = [
@@ -364,14 +364,14 @@ class CSetupWizard extends CForm {
 			$message_box = null;
 			$message = [
 				(new CTag('h1', true, _('Congratulations! You have successfully installed Treegix frontend.')))
-					->addClass(ZBX_STYLE_GREEN),
+					->addClass(TRX_STYLE_GREEN),
 				new CTag('p', true, _s('Configuration file "%1$s" created.', $config_file_name))
 			];
 		}
 
 		return [
 			new CTag('h1', true, _('Install')),
-			(new CDiv([$message_box, $message]))->addClass(ZBX_STYLE_SETUP_RIGHT_BODY)
+			(new CDiv([$message_box, $message]))->addClass(TRX_STYLE_SETUP_RIGHT_BODY)
 		];
 	}
 
@@ -402,12 +402,12 @@ class CSetupWizard extends CForm {
 		}
 		else {
 			$result = true;
-			if (!zbx_empty($DB['SCHEMA']) && $DB['TYPE'] == ZBX_DB_DB2) {
+			if (!zbx_empty($DB['SCHEMA']) && $DB['TYPE'] == TRX_DB_DB2) {
 				$db_schema = DBselect('SELECT schemaname FROM syscat.schemata WHERE schemaname=\''.db2_escape_string($DB['SCHEMA']).'\'');
 				$result = DBfetch($db_schema);
 			}
 
-			if (!zbx_empty($DB['SCHEMA']) && $DB['TYPE'] == ZBX_DB_POSTGRESQL) {
+			if (!zbx_empty($DB['SCHEMA']) && $DB['TYPE'] == TRX_DB_POSTGRESQL) {
 				$db_schema = DBselect('SELECT schema_name FROM information_schema.schemata WHERE schema_name = \''.pg_escape_string($DB['SCHEMA']).'\';');
 				$result = DBfetch($db_schema);
 			}
@@ -467,9 +467,9 @@ class CSetupWizard extends CForm {
 			}
 		}
 		elseif ($this->getStep() == 3) {
-			$this->setConfig('ZBX_SERVER', getRequest('zbx_server', $this->getConfig('ZBX_SERVER', 'localhost')));
-			$this->setConfig('ZBX_SERVER_PORT', getRequest('zbx_server_port', $this->getConfig('ZBX_SERVER_PORT', '10051')));
-			$this->setConfig('ZBX_SERVER_NAME', getRequest('zbx_server_name', $this->getConfig('ZBX_SERVER_NAME', '')));
+			$this->setConfig('TRX_SERVER', getRequest('zbx_server', $this->getConfig('TRX_SERVER', 'localhost')));
+			$this->setConfig('TRX_SERVER_PORT', getRequest('zbx_server_port', $this->getConfig('TRX_SERVER_PORT', '10051')));
+			$this->setConfig('TRX_SERVER_NAME', getRequest('zbx_server_name', $this->getConfig('TRX_SERVER_NAME', '')));
 
 			if (hasRequest('next') && array_key_exists(3, getRequest('next'))) {
 				$this->doNext();
@@ -496,9 +496,9 @@ class CSetupWizard extends CForm {
 						'PASSWORD' => $this->getConfig('DB_PASSWORD'),
 						'SCHEMA' => $this->getConfig('DB_SCHEMA')
 					],
-					'ZBX_SERVER' => $this->getConfig('ZBX_SERVER'),
-					'ZBX_SERVER_PORT' => $this->getConfig('ZBX_SERVER_PORT'),
-					'ZBX_SERVER_NAME' => $this->getConfig('ZBX_SERVER_NAME')
+					'TRX_SERVER' => $this->getConfig('TRX_SERVER'),
+					'TRX_SERVER_PORT' => $this->getConfig('TRX_SERVER_PORT'),
+					'TRX_SERVER_NAME' => $this->getConfig('TRX_SERVER_NAME')
 				];
 				die($config->getString());
 			}

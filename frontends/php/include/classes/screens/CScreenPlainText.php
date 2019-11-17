@@ -39,7 +39,7 @@ class CScreenPlainText extends CScreenBase {
 			'history' => $item['value_type'],
 			'itemids' => $this->screenitem['resourceid'],
 			'output' => API_OUTPUT_EXTEND,
-			'sortorder' => ZBX_SORT_DOWN,
+			'sortorder' => TRX_SORT_DOWN,
 			'sortfield' => ['itemid', 'clock'],
 			'limit' => $this->screenitem['elements'],
 			'time_from' => $this->timeline['from_ts'],
@@ -73,7 +73,7 @@ class CScreenPlainText extends CScreenBase {
 
 		$footer = (new CList())
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(
 			(new CUiWidget(uniqid(), [$table, $footer]))

@@ -21,13 +21,13 @@ if ($data['host']['maintenance_status'] == HOST_MAINTENANCE_STATUS_ON) {
 		);
 	}
 
-	$host_name = (new CSpan([$host_name, $maintenance_icon]))->addClass(ZBX_STYLE_REL_CONTAINER);
+	$host_name = (new CSpan([$host_name, $maintenance_icon]))->addClass(TRX_STYLE_REL_CONTAINER);
 }
 
-$overviewFormList->addRow(_('Host name'), (new CDiv($host_name))->setWidth(ZBX_TEXTAREA_BIG_WIDTH));
+$overviewFormList->addRow(_('Host name'), (new CDiv($host_name))->setWidth(TRX_TEXTAREA_BIG_WIDTH));
 
 if ($data['host']['host'] !== $data['host']['name']) {
-	$overviewFormList->addRow(_('Visible name'), (new CDiv($data['host']['name']))->setWidth(ZBX_TEXTAREA_BIG_WIDTH));
+	$overviewFormList->addRow(_('Visible name'), (new CDiv($data['host']['name']))->setWidth(TRX_TEXTAREA_BIG_WIDTH));
 }
 
 $interfaces = [
@@ -61,14 +61,14 @@ foreach ([INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_JMX, INTERFA
 
 		foreach ($interfaces[$type] as $interface) {
 			$ifTab->addRow([
-				(new CTextBox('ip', $interface['ip'], true, 64))->setWidth(ZBX_TEXTAREA_INTERFACE_IP_WIDTH),
-				(new CTextBox('dns', $interface['dns'], true, 64))->setWidth(ZBX_TEXTAREA_INTERFACE_DNS_WIDTH),
+				(new CTextBox('ip', $interface['ip'], true, 64))->setWidth(TRX_TEXTAREA_INTERFACE_IP_WIDTH),
+				(new CTextBox('dns', $interface['dns'], true, 64))->setWidth(TRX_TEXTAREA_INTERFACE_DNS_WIDTH),
 				(new CRadioButtonList('useip['.$interface['interfaceid'].']', (int) $interface['useip']))
 					->addValue(_('IP'), INTERFACE_USE_IP)
 					->addValue(_('DNS'), INTERFACE_USE_DNS)
 					->setModern(true)
 					->setEnabled(false),
-				(new CTextBox('port', $interface['port'], true, 64))->setWidth(ZBX_TEXTAREA_INTERFACE_PORT_WIDTH),
+				(new CTextBox('port', $interface['port'], true, 64))->setWidth(TRX_TEXTAREA_INTERFACE_PORT_WIDTH),
 				(new CRadioButtonList('main['.$interface['type'].']', (int) $interface['main']))
 					->addValue(null, INTERFACE_PRIMARY)
 					->setEnabled(false)
@@ -77,8 +77,8 @@ foreach ([INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_JMX, INTERFA
 
 		$overviewFormList->addRow($interface_names[$type],
 			(new CDiv($ifTab))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setWidth(ZBX_HOST_INTERFACE_WIDTH)
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setWidth(TRX_HOST_INTERFACE_WIDTH)
 		);
 	}
 }
@@ -88,7 +88,7 @@ foreach (['os', 'hardware', 'software'] as $key) {
 	if (array_key_exists($key, $data['host']['inventory'])) {
 		if ($data['host']['inventory'][$key] !== '') {
 			$overviewFormList->addRow($data['tableTitles'][$key]['title'],
-				(new CDiv(zbx_str2links($data['host']['inventory'][$key])))->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+				(new CDiv(zbx_str2links($data['host']['inventory'][$key])))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			);
 		}
 	}
@@ -97,7 +97,7 @@ foreach (['os', 'hardware', 'software'] as $key) {
 // description
 if ($data['host']['description'] !== '') {
 	$overviewFormList->addRow(_('Description'),
-		(new CDiv(zbx_str2links($data['host']['description'])))->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+		(new CDiv(zbx_str2links($data['host']['description'])))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 	);
 }
 
@@ -186,7 +186,7 @@ $inventoryValues = false;
 foreach ($data['host']['inventory'] as $key => $value) {
 	if ($value !== '') {
 		$detailsFormList->addRow($data['tableTitles'][$key]['title'],
-			(new CDiv(zbx_str2links($value)))->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+			(new CDiv(zbx_str2links($value)))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 		);
 
 		$inventoryValues = true;
@@ -207,6 +207,6 @@ return (new CWidget())
 	->setWebLayoutMode(CView::getLayoutMode())
 	->setControls((new CList())->addItem(get_icon('fullscreen')))
 	->addItem((new CForm())
-		->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+		->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 		->addItem($hostInventoriesTab)
 	);

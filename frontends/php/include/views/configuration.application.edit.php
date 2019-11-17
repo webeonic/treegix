@@ -8,7 +8,7 @@ $widget = (new CWidget())
 
 // create form
 $applicationForm = (new CForm())
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $this->data['form'])
 	->addVar('hostid', $this->data['hostid']);
 if (!empty($this->data['applicationid'])) {
@@ -21,7 +21,7 @@ $applicationTab = (new CTabView())
 		(new CFormList())
 			->addRow((new CLabel(_('Name'), 'appname'))->setAsteriskMark(),
 				(new CTextBox('appname', $this->data['appname']))
-					->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 					->setAriaRequired()
 					->setAttribute('autofocus', 'autofocus')
 			)

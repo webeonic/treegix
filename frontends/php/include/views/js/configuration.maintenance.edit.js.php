@@ -2,19 +2,19 @@
 	<?= (new CRow([
 		(new CTextBox('tags[#{rowNum}][tag]'))
 			->setAttribute('placeholder', _('tag'))
-			->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		(new CRadioButtonList('tags[#{rowNum}][operator]', MAINTENANCE_TAG_OPERATOR_LIKE))
 			->addValue(_('Contains'), MAINTENANCE_TAG_OPERATOR_LIKE)
 			->addValue(_('Equals'), MAINTENANCE_TAG_OPERATOR_EQUAL)
 			->setModern(true),
 		(new CTextBox('tags[#{rowNum}][value]'))
 			->setAttribute('placeholder', _('value'))
-			->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		(new CCol(
 			(new CButton('tags[#{rowNum}][remove]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	]))
 		->addClass('form_row')
 		->toString()

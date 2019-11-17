@@ -34,7 +34,7 @@ $widget = (new CWidget())
 								'dstfld1' => 'filter_druleids_'
 							]
 						]
-					]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+					]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 				)
 		])
 		->addVar('action', 'discovery.view')

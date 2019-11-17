@@ -37,10 +37,10 @@ class CWidgetFieldRangeControl extends CWidgetField {
 	 * @param int    $max    maximal allowed value (this included)
 	 * @param int    $step   step value
 	 */
-	public function __construct($name, $label, $min = 0, $max = ZBX_MAX_INT32, $step = 1) {
+	public function __construct($name, $label, $min = 0, $max = TRX_MAX_INT32, $step = 1) {
 		parent::__construct($name, $label);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_INT32);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_INT32);
 		$this->min = $min;
 		$this->max = $max;
 		$this->step = $step;

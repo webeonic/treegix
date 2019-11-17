@@ -22,15 +22,15 @@ while(0)
 static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 #ifdef HAVE_SYS_STATVFS_H
-#	define ZBX_STATFS	statvfs
-#	define ZBX_FFREE	f_favail
+#	define TRX_STATFS	statvfs
+#	define TRX_FFREE	f_favail
 #else
-#	define ZBX_STATFS	statfs
-#	define ZBX_FFREE	f_ffree
+#	define TRX_STATFS	statfs
+#	define TRX_FFREE	f_ffree
 #endif
 	char			*fsname, *mode;
 	zbx_uint64_t		total;
-	struct ZBX_STATFS	s;
+	struct TRX_STATFS	s;
 
 	if (2 < request->nparam)
 	{
@@ -47,7 +47,7 @@ static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	if (0 != ZBX_STATFS(fsname, &s))
+	if (0 != TRX_STATFS(fsname, &s))
 	{
 		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain filesystem information: %s",
 				zbx_strerror(errno)));
@@ -61,8 +61,8 @@ static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else if (0 == strcmp(mode, "free"))
 	{
-		validate(result, s, ZBX_FFREE);
-		SET_UI64_RESULT(result, s.ZBX_FFREE);
+		validate(result, s, TRX_FFREE);
+		SET_UI64_RESULT(result, s.TRX_FFREE);
 	}
 	else if (0 == strcmp(mode, "used"))
 	{
@@ -79,11 +79,11 @@ static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 		validate(result, s, f_favail);
 		total -= s.f_ffree - s.f_favail;
 #endif
-		validate(result, s, ZBX_FFREE);
+		validate(result, s, TRX_FFREE);
 
 		if (0 != total)
 		{
-			SET_DBL_RESULT(result, (100.0 * s.ZBX_FFREE) / total);
+			SET_DBL_RESULT(result, (100.0 * s.TRX_FFREE) / total);
 		}
 		else
 		{
@@ -100,11 +100,11 @@ static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 		validate(result, s, f_favail);
 		total -= s.f_ffree - s.f_favail;
 #endif
-		validate(result, s, ZBX_FFREE);
+		validate(result, s, TRX_FFREE);
 
 		if (0 != total)
 		{
-			SET_DBL_RESULT(result, (100.0 * (total - s.ZBX_FFREE)) / total);
+			SET_DBL_RESULT(result, (100.0 * (total - s.TRX_FFREE)) / total);
 		}
 		else
 		{

@@ -355,26 +355,26 @@ class CProblem extends CApiService {
 			'values' => [EVENT_SOURCE_TRIGGERS, EVENT_SOURCE_INTERNAL]
 		]);
 		if (!$sourceValidator->validate($options['source'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect source value.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect source value.'));
 		}
 
 		$objectValidator = new CLimitedSetValidator([
 			'values' => [EVENT_OBJECT_TRIGGER, EVENT_OBJECT_ITEM, EVENT_OBJECT_LLDRULE]
 		]);
 		if (!$objectValidator->validate($options['object'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect object value.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect object value.'));
 		}
 
 		$sourceObjectValidator = new CEventSourceObjectValidator();
 		if (!$sourceObjectValidator->validate(['source' => $options['source'], 'object' => $options['object']])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $sourceObjectValidator->getError());
+			self::exception(TRX_API_ERROR_PARAMETERS, $sourceObjectValidator->getError());
 		}
 
 		$evaltype_validator = new CLimitedSetValidator([
 			'values' => [TAG_EVAL_TYPE_AND_OR, TAG_EVAL_TYPE_OR]
 		]);
 		if (!$evaltype_validator->validate($options['evaltype'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect evaltype value.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect evaltype value.'));
 		}
 	}
 
@@ -451,8 +451,8 @@ class CProblem extends CApiService {
 			foreach ($result as &$problem) {
 				if (array_key_exists('suppression_data', $problem)) {
 					$problem['suppressed'] = $problem['suppression_data']
-						? (string) ZBX_PROBLEM_SUPPRESSED_TRUE
-						: (string) ZBX_PROBLEM_SUPPRESSED_FALSE;
+						? (string) TRX_PROBLEM_SUPPRESSED_TRUE
+						: (string) TRX_PROBLEM_SUPPRESSED_FALSE;
 				}
 				else {
 					$suppressed_eventids[] = $problem['eventid'];
@@ -468,8 +468,8 @@ class CProblem extends CApiService {
 				$suppressed_eventids = array_flip(zbx_objectValues($suppressed_events, 'eventid'));
 				foreach ($result as &$problem) {
 					$problem['suppressed'] = array_key_exists($problem['eventid'], $suppressed_eventids)
-						? (string) ZBX_PROBLEM_SUPPRESSED_TRUE
-						: (string) ZBX_PROBLEM_SUPPRESSED_FALSE;
+						? (string) TRX_PROBLEM_SUPPRESSED_TRUE
+						: (string) TRX_PROBLEM_SUPPRESSED_FALSE;
 				}
 				unset($problem);
 			}
@@ -510,7 +510,7 @@ class CProblem extends CApiService {
 				'filter' => [
 					'type' => MEDIA_TYPE_WEBHOOK,
 					'status' => MEDIA_TYPE_STATUS_ACTIVE,
-					'show_event_menu' => ZBX_EVENT_MENU_SHOW
+					'show_event_menu' => TRX_EVENT_MENU_SHOW
 				]
 			]);
 

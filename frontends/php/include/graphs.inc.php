@@ -162,8 +162,8 @@ function getGraphByGraphId($graphId) {
  * @param $array $graphs                  An array of graphs.
  * @param string $graphs[]['graphid']     ID of a graph.
  * @param string $graphs[]['templateid']  ID of parent template graph.
- * @param int    $flag                    Origin of the graph (ZBX_FLAG_DISCOVERY_NORMAL or
- *                                        ZBX_FLAG_DISCOVERY_PROTOTYPE).
+ * @param int    $flag                    Origin of the graph (TRX_FLAG_DISCOVERY_NORMAL or
+ *                                        TRX_FLAG_DISCOVERY_PROTOTYPE).
  *
  * @return array
  */
@@ -187,12 +187,12 @@ function getGraphParentTemplates(array $graphs, $flag) {
 
 	$all_parent_graphids = [];
 	$hostids = [];
-	if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+	if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 		$lld_ruleids = [];
 	}
 
 	do {
-		if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+		if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 			$db_graphs = API::GraphPrototype()->get([
 				'output' => ['graphid', 'templateid'],
 				'selectHosts' => ['hostid'],
@@ -200,7 +200,7 @@ function getGraphParentTemplates(array $graphs, $flag) {
 				'graphids' => array_keys($parent_graphids)
 			]);
 		}
-		// ZBX_FLAG_DISCOVERY_NORMAL
+		// TRX_FLAG_DISCOVERY_NORMAL
 		else {
 			$db_graphs = API::Graph()->get([
 				'output' => ['graphid', 'templateid'],
@@ -216,7 +216,7 @@ function getGraphParentTemplates(array $graphs, $flag) {
 			$data['templates'][$db_graph['hosts'][0]['hostid']] = [];
 			$hostids[$db_graph['graphid']] = $db_graph['hosts'][0]['hostid'];
 
-			if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+			if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 				$lld_ruleids[$db_graph['graphid']] = $db_graph['discoveryRule']['itemid'];
 			}
 
@@ -236,7 +236,7 @@ function getGraphParentTemplates(array $graphs, $flag) {
 			? $hostids[$parent_graph['graphid']]
 			: 0;
 
-		if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+		if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 			$parent_graph['lld_ruleid'] = array_key_exists($parent_graph['graphid'], $lld_ruleids)
 				? $lld_ruleids[$parent_graph['graphid']]
 				: 0;
@@ -286,7 +286,7 @@ function getGraphParentTemplates(array $graphs, $flag) {
  *
  * @param string $graphid
  * @param array  $parent_templates  The list of the templates, prepared by getGraphParentTemplates() function.
- * @param int    $flag              Origin of the graph (ZBX_FLAG_DISCOVERY_NORMAL or ZBX_FLAG_DISCOVERY_PROTOTYPE).
+ * @param int    $flag              Origin of the graph (TRX_FLAG_DISCOVERY_NORMAL or TRX_FLAG_DISCOVERY_PROTOTYPE).
  *
  * @return array|null
  */
@@ -304,21 +304,21 @@ function makeGraphTemplatePrefix($graphid, array $parent_templates, $flag) {
 	if ($template['permission'] == PERM_READ_WRITE) {
 		$url = (new CUrl('graphs.php'));
 
-		if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+		if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 			$url->setArgument('parent_discoveryid', $parent_templates['links'][$graphid]['lld_ruleid']);
 		}
-		// ZBX_FLAG_DISCOVERY_NORMAL
+		// TRX_FLAG_DISCOVERY_NORMAL
 		else {
 			$url->setArgument('hostid', $template['hostid']);
 		}
 
-		$name = (new CLink(CHtml::encode($template['name']), $url))->addClass(ZBX_STYLE_LINK_ALT);
+		$name = (new CLink(CHtml::encode($template['name']), $url))->addClass(TRX_STYLE_LINK_ALT);
 	}
 	else {
 		$name = new CSpan(CHtml::encode($template['name']));
 	}
 
-	return [$name->addClass(ZBX_STYLE_GREY), NAME_DELIMITER];
+	return [$name->addClass(TRX_STYLE_GREY), NAME_DELIMITER];
 }
 
 /**
@@ -326,7 +326,7 @@ function makeGraphTemplatePrefix($graphid, array $parent_templates, $flag) {
  *
  * @param string $graphid
  * @param array  $parent_templates  The list of the templates, prepared by getGraphParentTemplates() function.
- * @param int    $flag              Origin of the item (ZBX_FLAG_DISCOVERY_NORMAL or ZBX_FLAG_DISCOVERY_PROTOTYPE).
+ * @param int    $flag              Origin of the item (TRX_FLAG_DISCOVERY_NORMAL or TRX_FLAG_DISCOVERY_PROTOTYPE).
  *
  * @return array
  */
@@ -339,20 +339,20 @@ function makeGraphTemplatesHtml($graphid, array $parent_templates, $flag) {
 		if ($template['permission'] == PERM_READ_WRITE) {
 			$url = (new CUrl('graphs.php'))->setArgument('form', 'update');
 
-			if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+			if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 				$url->setArgument('parent_discoveryid', $parent_templates['links'][$graphid]['lld_ruleid']);
 			}
 
 			$url->setArgument('graphid', $parent_templates['links'][$graphid]['graphid']);
 
-			if ($flag == ZBX_FLAG_DISCOVERY_NORMAL) {
+			if ($flag == TRX_FLAG_DISCOVERY_NORMAL) {
 				$url->setArgument('hostid', $template['hostid']);
 			}
 
 			$name = new CLink(CHtml::encode($template['name']), $url);
 		}
 		else {
-			$name = (new CSpan(CHtml::encode($template['name'])))->addClass(ZBX_STYLE_GREY);
+			$name = (new CSpan(CHtml::encode($template['name'])))->addClass(TRX_STYLE_GREY);
 		}
 
 		array_unshift($list, $name, '&nbsp;&rArr;&nbsp;');
@@ -445,7 +445,7 @@ function copyGraphToHost($graphid, $hostid) {
 		$graph['gitems'],
 		$hostid,
 		true,
-		[ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]
+		[TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]
 	);
 
 	if (!$graph['gitems']) {
@@ -671,16 +671,16 @@ function imageVerticalMarks($im, $x, $y, $offset, $color, $marks) {
  * @param string	$string
  */
 function imageText($image, $fontsize, $angle, $x, $y, $color, $string) {
-	if ((preg_match(ZBX_PREG_DEF_FONT_STRING, $string) && $angle != 0) || ZBX_FONT_NAME == ZBX_GRAPH_FONT_NAME) {
-		$ttf = ZBX_FONTPATH.'/'.ZBX_FONT_NAME.'.ttf';
+	if ((preg_match(TRX_PREG_DEF_FONT_STRING, $string) && $angle != 0) || TRX_FONT_NAME == TRX_GRAPH_FONT_NAME) {
+		$ttf = TRX_FONTPATH.'/'.TRX_FONT_NAME.'.ttf';
 		imagettftext($image, $fontsize, $angle, $x, $y, $color, $ttf, $string);
 	}
 	elseif ($angle == 0) {
-		$ttf = ZBX_FONTPATH.'/'.ZBX_GRAPH_FONT_NAME.'.ttf';
+		$ttf = TRX_FONTPATH.'/'.TRX_GRAPH_FONT_NAME.'.ttf';
 		imagettftext($image, $fontsize, $angle, $x, $y, $color, $ttf, $string);
 	}
 	else {
-		$ttf = ZBX_FONTPATH.'/'.ZBX_GRAPH_FONT_NAME.'.ttf';
+		$ttf = TRX_FONTPATH.'/'.TRX_GRAPH_FONT_NAME.'.ttf';
 		$size = imageTextSize($fontsize, 0, $string);
 
 		$imgg = imagecreatetruecolor($size['width'] + 1, $size['height']);
@@ -711,11 +711,11 @@ function imageText($image, $fontsize, $angle, $x, $y, $color, $string) {
  * @return array
  */
 function imageTextSize($fontsize, $angle, $string) {
-	if (preg_match(ZBX_PREG_DEF_FONT_STRING, $string) && $angle != 0) {
-		$ttf = ZBX_FONTPATH.'/'.ZBX_FONT_NAME.'.ttf';
+	if (preg_match(TRX_PREG_DEF_FONT_STRING, $string) && $angle != 0) {
+		$ttf = TRX_FONTPATH.'/'.TRX_FONT_NAME.'.ttf';
 	}
 	else {
-		$ttf = ZBX_FONTPATH.'/'.ZBX_GRAPH_FONT_NAME.'.ttf';
+		$ttf = TRX_FONTPATH.'/'.TRX_GRAPH_FONT_NAME.'.ttf';
 	}
 
 	$ar = imagettfbbox($fontsize, $angle, $ttf, $string);
@@ -885,10 +885,10 @@ function convertToBase1024($value, $step = '1000') {
 	if ($valData['pow'] >= 0) {
 		if ($valData['value'] != 0) {
 			$valData['value'] = bcdiv(sprintf('%.10f',$value), sprintf('%.10f', $valData['value']),
-				ZBX_PRECISION_10);
+				TRX_PRECISION_10);
 
-			$valData['value'] = sprintf('%.10f', round(bcmul($valData['value'], bcpow(ZBX_KIBIBYTE, $valData['pow'])),
-				ZBX_PRECISION_10));
+			$valData['value'] = sprintf('%.10f', round(bcmul($valData['value'], bcpow(TRX_KIBIBYTE, $valData['pow'])),
+				TRX_PRECISION_10));
 		}
 	}
 	else {
@@ -946,7 +946,7 @@ function getBase1024Interval($interval, $minY, $maxY) {
 			$interval = sprintf('%.10f', bcmul($interval, 1.024, 10));
 		}
 		else {
-			$interval = sprintf('%.6f', round(bcmul($interval, 1.024), ZBX_UNITS_ROUNDOFF_UPPER_LIMIT));
+			$interval = sprintf('%.6f', round(bcmul($interval, 1.024), TRX_UNITS_ROUNDOFF_UPPER_LIMIT));
 		}
 	}
 

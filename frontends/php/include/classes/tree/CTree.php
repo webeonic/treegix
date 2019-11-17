@@ -91,7 +91,7 @@ class CTree {
 
 		if ($id != 0 && array_key_exists('childnodes', $this->tree[$id])) {
 			$caption->addItem((new CSimpleButton((new CSpan())->addClass('arrow-right')))
-				->addClass(ZBX_STYLE_TREEVIEW)
+				->addClass(TRX_STYLE_TREEVIEW)
 				->onClick($this->treename.'.closeSNodeX("'.$id.'", this.getElementsByTagName(\'span\')[0]);')
 				->setId('idi_'.$id)
 			);

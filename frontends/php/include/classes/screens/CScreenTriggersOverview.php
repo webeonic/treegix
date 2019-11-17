@@ -18,7 +18,7 @@ class CScreenTriggersOverview extends CScreenBase {
 		$header = (new CDiv([
 			new CTag('h4', true, _('Trigger overview')),
 			(new CList())->addItem([_('Group'), ':', SPACE, $groups[0]['name']])
-		]))->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD);
+		]))->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD);
 
 		list($hosts, $triggers) = getTriggersOverviewData((array) $this->screenitem['resourceid'],
 			$this->screenitem['application']
@@ -28,7 +28,7 @@ class CScreenTriggersOverview extends CScreenBase {
 
 		$footer = (new CList())
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(new CUiWidget(uniqid(), [$header, $table, $footer]));
 	}

@@ -21,19 +21,19 @@ function prepareSubfilterOutput($label, $data, $subfilter, $subfilterName) {
 				' ',
 				new CSup($element['count'])
 			]))
-				->addClass(ZBX_STYLE_NOWRAP)
-				->addClass(ZBX_STYLE_SUBFILTER)
-				->addClass(ZBX_STYLE_SUBFILTER_ENABLED);
+				->addClass(TRX_STYLE_NOWRAP)
+				->addClass(TRX_STYLE_SUBFILTER)
+				->addClass(TRX_STYLE_SUBFILTER_ENABLED);
 		}
 		// isn't activated
 		else {
 			// subfilter has 0 items
 			if ($element['count'] == 0) {
 				$output[] = (new CSpan([
-					(new CSpan($element['name']))->addClass(ZBX_STYLE_GREY),
+					(new CSpan($element['name']))->addClass(TRX_STYLE_GREY),
 					' ',
 					new CSup($element['count'])
-				]))->addClass(ZBX_STYLE_SUBFILTER);
+				]))->addClass(TRX_STYLE_SUBFILTER);
 			}
 			else {
 				$link = (new CLinkAction($element['name']))
@@ -51,8 +51,8 @@ function prepareSubfilterOutput($label, $data, $subfilter, $subfilterName) {
 					' ',
 					new CSup(($subfilter ? '+' : '').$element['count'])
 				]))
-					->addClass(ZBX_STYLE_NOWRAP)
-					->addClass(ZBX_STYLE_SUBFILTER);
+					->addClass(TRX_STYLE_NOWRAP)
+					->addClass(TRX_STYLE_SUBFILTER);
 			}
 		}
 	}
@@ -170,7 +170,7 @@ function getItemFilterForm(&$items) {
 					'editable' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 	);
 
 	$filterColumn2->addRow(_('Type'), $cmbType);
@@ -217,11 +217,11 @@ function getItemFilterForm(&$items) {
 					'templated_hosts' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 	);
 
 	$filterColumn2->addRow(_('Update interval'),
-		(new CTextBox('filter_delay', $filter_delay))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+		(new CTextBox('filter_delay', $filter_delay))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		'filter_delay_row'
 	);
 	$filterColumn4->addRow(_('Status'),
@@ -235,10 +235,10 @@ function getItemFilterForm(&$items) {
 	// row 3
 	$filterColumn1->addRow(_('Application'),
 		[
-			(new CTextBox('filter_application', $filter_application))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CTextBox('filter_application', $filter_application))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CButton(null, _('Select')))
-				->addClass(ZBX_STYLE_BTN_GREY)
+				->addClass(TRX_STYLE_BTN_GREY)
 				->onClick('return PopUp("popup.generic",jQuery.extend('.
 					CJs::encodeJson([
 						'srctbl' => 'applications',
@@ -255,17 +255,17 @@ function getItemFilterForm(&$items) {
 		]
 	);
 	$filterColumn2->addRow(_('SNMP community'),
-		(new CTextBox('filter_snmp_community', $filter_snmp_community))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+		(new CTextBox('filter_snmp_community', $filter_snmp_community))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		'filter_snmp_community_row'
 	);
 	$filterColumn2->addRow(_('Security name'),
 		(new CTextBox('filter_snmpv3_securityname', $filter_snmpv3_securityname))
-			->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		'filter_snmpv3_securityname_row'
 	);
 
 	$filterColumn3->addRow(_('History'),
-		(new CTextBox('filter_history', $filter_history))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+		(new CTextBox('filter_history', $filter_history))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 	);
 	$filterColumn4->addRow(_('Triggers'),
 		new CComboBox('filter_with_triggers', $filter_with_triggers, null, [
@@ -277,14 +277,14 @@ function getItemFilterForm(&$items) {
 
 	// row 4
 	$filterColumn1->addRow(_('Name'),
-		(new CTextBox('filter_name', $filter_name))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+		(new CTextBox('filter_name', $filter_name))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 	);
 	$filterColumn2->addRow(_('SNMP OID'),
-		(new CTextBox('filter_snmp_oid', $filter_snmp_oid, '', 255))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+		(new CTextBox('filter_snmp_oid', $filter_snmp_oid, '', 255))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		'filter_snmp_oid_row'
 	);
 	$filterColumn3->addRow(_('Trends'),
-		(new CTextBox('filter_trends', $filter_trends))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+		(new CTextBox('filter_trends', $filter_trends))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 	);
 	$filterColumn4->addRow(_('Template'),
 		new CComboBox('filter_templated_items', $filter_templated_items, null, [
@@ -296,17 +296,17 @@ function getItemFilterForm(&$items) {
 
 	// row 5
 	$filterColumn1->addRow(_('Key'),
-		(new CTextBox('filter_key', $filter_key))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+		(new CTextBox('filter_key', $filter_key))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 	);
 	$filterColumn2->addRow(_('Port'),
-		(new CNumericBox('filter_port', $filter_port, 5, false, true))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+		(new CNumericBox('filter_port', $filter_port, 5, false, true))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
 		'filter_port_row'
 	);
 	$filterColumn4->addRow(_('Discovery'),
 		new CComboBox('filter_discovery', $filter_discovery, null, [
 			-1 => _('all'),
-			ZBX_FLAG_DISCOVERY_CREATED => _('Discovered items'),
-			ZBX_FLAG_DISCOVERY_NORMAL => _('Regular items')
+			TRX_FLAG_DISCOVERY_CREATED => _('Discovered items'),
+			TRX_FLAG_DISCOVERY_NORMAL => _('Regular items')
 		])
 	);
 
@@ -314,7 +314,7 @@ function getItemFilterForm(&$items) {
 	$table_subfilter = (new CTableInfo())
 		->addRow([
 			new CTag('h4', true, [
-				_('Subfilter'), SPACE, (new CSpan(_('affects only filtered data')))->addClass(ZBX_STYLE_GREY)
+				_('Subfilter'), SPACE, (new CSpan(_('affects only filtered data')))->addClass(TRX_STYLE_GREY)
 			])
 		]);
 
@@ -520,10 +520,10 @@ function getItemFilterForm(&$items) {
 
 		// discovery
 		if ($filter_discovery == -1) {
-			if ($item['flags'] == ZBX_FLAG_DISCOVERY_NORMAL && !isset($item_params['discovery'][0])) {
+			if ($item['flags'] == TRX_FLAG_DISCOVERY_NORMAL && !isset($item_params['discovery'][0])) {
 				$item_params['discovery'][0] = ['name' => _('Regular'), 'count' => 0];
 			}
-			elseif ($item['flags'] == ZBX_FLAG_DISCOVERY_CREATED && !isset($item_params['discovery'][1])) {
+			elseif ($item['flags'] == TRX_FLAG_DISCOVERY_CREATED && !isset($item_params['discovery'][1])) {
 				$item_params['discovery'][1] = ['name' => _('Discovered'), 'count' => 0];
 			}
 			$show_item = true;
@@ -534,7 +534,7 @@ function getItemFilterForm(&$items) {
 				$show_item &= $value;
 			}
 			if ($show_item) {
-				if ($item['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) {
+				if ($item['flags'] == TRX_FLAG_DISCOVERY_NORMAL) {
 					$item_params['discovery'][0]['count']++;
 				}
 				else {
@@ -790,7 +790,7 @@ function getItemFormData(array $item = [], array $options = []) {
 		'key' => getRequest('key', ''),
 		'master_itemid' => getRequest('master_itemid', 0),
 		'hostname' => getRequest('hostname'),
-		'delay' => getRequest('delay', ZBX_ITEM_DELAY_DEFAULT),
+		'delay' => getRequest('delay', TRX_ITEM_DELAY_DEFAULT),
 		'history' => getRequest('history', DB::getDefault('items', 'history')),
 		'status' => getRequest('status', isset($_REQUEST['form_refresh']) ? 1 : 0),
 		'type' => getRequest('type', 0),
@@ -825,7 +825,7 @@ function getItemFormData(array $item = [], array $options = []) {
 		'alreadyPopulated' => null,
 		'initial_item_type' => null,
 		'templates' => [],
-		'jmx_endpoint' => getRequest('jmx_endpoint', ZBX_DEFAULT_JMX_ENDPOINT),
+		'jmx_endpoint' => getRequest('jmx_endpoint', TRX_DEFAULT_JMX_ENDPOINT),
 		'timeout' => getRequest('timeout', DB::getDefault('items', 'timeout')),
 		'url' => getRequest('url'),
 		'query_fields' => getRequest('query_fields', []),
@@ -902,7 +902,7 @@ function getItemFormData(array $item = [], array $options = []) {
 
 	foreach ($data['preprocessing'] as &$step) {
 		$step += [
-			'error_handler' => ZBX_PREPROC_FAIL_DEFAULT,
+			'error_handler' => TRX_PREPROC_FAIL_DEFAULT,
 			'error_handler_params' => ''
 		];
 	}
@@ -926,15 +926,15 @@ function getItemFormData(array $item = [], array $options = []) {
 
 		// discovery rule
 		if ($data['is_discovery_rule']) {
-			$flag = ZBX_FLAG_DISCOVERY_RULE;
+			$flag = TRX_FLAG_DISCOVERY_RULE;
 		}
 		// item prototype
 		elseif ($data['parent_discoveryid'] != 0) {
-			$flag = ZBX_FLAG_DISCOVERY_PROTOTYPE;
+			$flag = TRX_FLAG_DISCOVERY_PROTOTYPE;
 		}
 		// plain item
 		else {
-			$flag = ZBX_FLAG_DISCOVERY_NORMAL;
+			$flag = TRX_FLAG_DISCOVERY_NORMAL;
 		}
 
 		$data['templates'] = makeItemTemplatesHtml($item['itemid'], getItemParentTemplates([$item], $flag), $flag);
@@ -1057,7 +1057,7 @@ function getItemFormData(array $item = [], array $options = []) {
 
 					if ($delay == 0 && ($data['type'] == ITEM_TYPE_TRAPPER || $data['type'] == ITEM_TYPE_SNMPTRAP
 							|| $data['type'] == ITEM_TYPE_DEPENDENT)) {
-						$data['delay'] = ZBX_ITEM_DELAY_DEFAULT;
+						$data['delay'] = TRX_ITEM_DELAY_DEFAULT;
 					}
 				}
 
@@ -1078,7 +1078,7 @@ function getItemFormData(array $item = [], array $options = []) {
 				}
 			}
 			else {
-				$data['delay'] = ZBX_ITEM_DELAY_DEFAULT;
+				$data['delay'] = TRX_ITEM_DELAY_DEFAULT;
 			}
 
 			$data['history'] = $data['item']['history'];
@@ -1120,7 +1120,7 @@ function getItemFormData(array $item = [], array $options = []) {
 		'SELECT DISTINCT a.applicationid,a.name'.
 		' FROM applications a'.
 		' WHERE a.hostid='.zbx_dbstr($data['hostid']).
-			(($data['parent_discoveryid'] != 0) ? ' AND a.flags='.ZBX_FLAG_DISCOVERY_NORMAL : '')
+			(($data['parent_discoveryid'] != 0) ? ' AND a.flags='.TRX_FLAG_DISCOVERY_NORMAL : '')
 	));
 	order_result($data['db_applications'], 'name');
 
@@ -1146,7 +1146,7 @@ function getItemFormData(array $item = [], array $options = []) {
 	]);
 
 	if ($data['limited'] || (array_key_exists('item', $data) && $data['parent_discoveryid'] == 0
-			&& $data['item']['flags'] == ZBX_FLAG_DISCOVERY_CREATED)) {
+			&& $data['item']['flags'] == TRX_FLAG_DISCOVERY_CREATED)) {
 		if ($data['valuemapid'] != 0) {
 			$valuemaps = API::ValueMap()->get([
 				'output' => ['name'],
@@ -1272,57 +1272,57 @@ function getItemPreprocessing(CForm $form, array $preprocessing, $readonly, arra
 
 		// Add corresponding placeholders and show or hide text boxes.
 		switch ($step['type']) {
-			case ZBX_PREPROC_MULTIPLIER:
+			case TRX_PREPROC_MULTIPLIER:
 				$params = $step_param_0
 					->setAttribute('placeholder', _('number'))
-					->setWidth(ZBX_TEXTAREA_NUMERIC_BIG_WIDTH);
+					->setWidth(TRX_TEXTAREA_NUMERIC_BIG_WIDTH);
 				break;
 
-			case ZBX_PREPROC_RTRIM:
-			case ZBX_PREPROC_LTRIM:
-			case ZBX_PREPROC_TRIM:
+			case TRX_PREPROC_RTRIM:
+			case TRX_PREPROC_LTRIM:
+			case TRX_PREPROC_TRIM:
 				$params = $step_param_0
 					->setAttribute('placeholder', _('list of characters'))
-					->setWidth(ZBX_TEXTAREA_SMALL_WIDTH);
+					->setWidth(TRX_TEXTAREA_SMALL_WIDTH);
 				break;
 
-			case ZBX_PREPROC_XPATH:
-			case ZBX_PREPROC_ERROR_FIELD_XML:
+			case TRX_PREPROC_XPATH:
+			case TRX_PREPROC_ERROR_FIELD_XML:
 				$params = $step_param_0->setAttribute('placeholder', _('XPath'));
 				break;
 
-			case ZBX_PREPROC_JSONPATH:
-			case ZBX_PREPROC_ERROR_FIELD_JSON:
+			case TRX_PREPROC_JSONPATH:
+			case TRX_PREPROC_ERROR_FIELD_JSON:
 				$params = $step_param_0->setAttribute('placeholder', _('$.path.to.node'));
 				break;
 
-			case ZBX_PREPROC_REGSUB:
-			case ZBX_PREPROC_ERROR_FIELD_REGEX:
+			case TRX_PREPROC_REGSUB:
+			case TRX_PREPROC_ERROR_FIELD_REGEX:
 				$params = [
 					$step_param_0->setAttribute('placeholder', _('pattern')),
 					$step_param_1->setAttribute('placeholder', _('output'))
 				];
 				break;
 
-			case ZBX_PREPROC_VALIDATE_RANGE:
+			case TRX_PREPROC_VALIDATE_RANGE:
 				$params = [
 					$step_param_0->setAttribute('placeholder', _('min')),
 					$step_param_1->setAttribute('placeholder', _('max'))
 				];
 				break;
 
-			case ZBX_PREPROC_VALIDATE_REGEX:
-			case ZBX_PREPROC_VALIDATE_NOT_REGEX:
+			case TRX_PREPROC_VALIDATE_REGEX:
+			case TRX_PREPROC_VALIDATE_NOT_REGEX:
 				$params = $step_param_0->setAttribute('placeholder', _('pattern'));
 				break;
 
-			case ZBX_PREPROC_THROTTLE_TIMED_VALUE:
+			case TRX_PREPROC_THROTTLE_TIMED_VALUE:
 				$params = $step_param_0
 					->setAttribute('placeholder', _('seconds'))
-					->setWidth(ZBX_TEXTAREA_NUMERIC_BIG_WIDTH);
+					->setWidth(TRX_TEXTAREA_NUMERIC_BIG_WIDTH);
 				break;
 
-			case ZBX_PREPROC_SCRIPT:
+			case TRX_PREPROC_SCRIPT:
 				$params = new CMultilineInput($step_param_0->getName(), $step_param_0_value, [
 					'title' => _('JavaScript'),
 					'placeholder' => _('script'),
@@ -1336,7 +1336,7 @@ function getItemPreprocessing(CForm $form, array $preprocessing, $readonly, arra
 				]);
 				break;
 
-			case ZBX_PREPROC_PROMETHEUS_PATTERN:
+			case TRX_PREPROC_PROMETHEUS_PATTERN:
 				$params = [
 					$step_param_0->setAttribute('placeholder',
 						_('<metric name>{<label name>="<label value>", ...} == <value>')
@@ -1345,30 +1345,30 @@ function getItemPreprocessing(CForm $form, array $preprocessing, $readonly, arra
 				];
 				break;
 
-			case ZBX_PREPROC_PROMETHEUS_TO_JSON:
+			case TRX_PREPROC_PROMETHEUS_TO_JSON:
 				$params = $step_param_0->setAttribute('placeholder',
 					_('<metric name>{<label name>="<label value>", ...} == <value>')
 				);
 				break;
 
-			// ZBX-16642
-			case ZBX_PREPROC_CSV_TO_JSON:
+			// TRX-16642
+			case TRX_PREPROC_CSV_TO_JSON:
 				$step_param_2_value = (array_key_exists('params', $step) && array_key_exists(2, $step['params']))
 					? $step['params'][2]
-					: ZBX_PREPROC_CSV_NO_HEADER;
+					: TRX_PREPROC_CSV_NO_HEADER;
 
 				$params = [
 					$step_param_0
 						->setAttribute('placeholder', ',')
-						->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 						->setAttribute('maxlength', 1),
 					$step_param_1
 						->setAttribute('placeholder', '"')
-						->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 						->setAttribute('maxlength', 1),
-					(new CCheckBox('preprocessing['.$i.'][params][2]', ZBX_PREPROC_CSV_HEADER))
+					(new CCheckBox('preprocessing['.$i.'][params][2]', TRX_PREPROC_CSV_HEADER))
 						->setLabel(_('With header row'))
-						->setChecked($step_param_2_value == ZBX_PREPROC_CSV_HEADER)
+						->setChecked($step_param_2_value == TRX_PREPROC_CSV_HEADER)
 						->setReadonly($readonly)
 				];
 				break;
@@ -1378,44 +1378,44 @@ function getItemPreprocessing(CForm $form, array $preprocessing, $readonly, arra
 		$on_fail = new CCheckBox('preprocessing['.$i.'][on_fail]');
 
 		switch ($step['type']) {
-			case ZBX_PREPROC_RTRIM:
-			case ZBX_PREPROC_LTRIM:
-			case ZBX_PREPROC_TRIM:
-			case ZBX_PREPROC_THROTTLE_VALUE:
-			case ZBX_PREPROC_THROTTLE_TIMED_VALUE:
-			case ZBX_PREPROC_SCRIPT:
+			case TRX_PREPROC_RTRIM:
+			case TRX_PREPROC_LTRIM:
+			case TRX_PREPROC_TRIM:
+			case TRX_PREPROC_THROTTLE_VALUE:
+			case TRX_PREPROC_THROTTLE_TIMED_VALUE:
+			case TRX_PREPROC_SCRIPT:
 				$on_fail->setEnabled(false);
 				break;
 
 			default:
 				$on_fail->setEnabled(!$readonly);
 
-				if ($step['error_handler'] != ZBX_PREPROC_FAIL_DEFAULT) {
+				if ($step['error_handler'] != TRX_PREPROC_FAIL_DEFAULT) {
 					$on_fail->setChecked(true);
 				}
 				break;
 		}
 
 		$error_handler = (new CRadioButtonList('preprocessing['.$i.'][error_handler]',
-			($step['error_handler'] == ZBX_PREPROC_FAIL_DEFAULT)
-				? ZBX_PREPROC_FAIL_DISCARD_VALUE
+			($step['error_handler'] == TRX_PREPROC_FAIL_DEFAULT)
+				? TRX_PREPROC_FAIL_DISCARD_VALUE
 				: (int) $step['error_handler']
 		))
-			->addValue(_('Discard value'), ZBX_PREPROC_FAIL_DISCARD_VALUE)
-			->addValue(_('Set value to'), ZBX_PREPROC_FAIL_SET_VALUE)
-			->addValue(_('Set error to'), ZBX_PREPROC_FAIL_SET_ERROR)
+			->addValue(_('Discard value'), TRX_PREPROC_FAIL_DISCARD_VALUE)
+			->addValue(_('Set value to'), TRX_PREPROC_FAIL_SET_VALUE)
+			->addValue(_('Set error to'), TRX_PREPROC_FAIL_SET_ERROR)
 			->setModern(true);
 
 		$error_handler_params = (new CTextBox('preprocessing['.$i.'][error_handler_params]',
 			$step['error_handler_params'])
 		)->setTitle($step['error_handler_params']);
 
-		if ($step['error_handler'] == ZBX_PREPROC_FAIL_DEFAULT) {
+		if ($step['error_handler'] == TRX_PREPROC_FAIL_DEFAULT) {
 			$error_handler->setEnabled(false);
 		}
 
-		if ($step['error_handler'] == ZBX_PREPROC_FAIL_DEFAULT
-				|| $step['error_handler'] == ZBX_PREPROC_FAIL_DISCARD_VALUE) {
+		if ($step['error_handler'] == TRX_PREPROC_FAIL_DEFAULT
+				|| $step['error_handler'] == TRX_PREPROC_FAIL_DISCARD_VALUE) {
 			$error_handler_params
 				->setEnabled(false)
 				->addStyle('display: none;');
@@ -1427,7 +1427,7 @@ function getItemPreprocessing(CForm $form, array $preprocessing, $readonly, arra
 			$error_handler_params->setReadonly($readonly)
 		]))->addClass('on-fail-options');
 
-		if ($step['error_handler'] == ZBX_PREPROC_FAIL_DEFAULT) {
+		if ($step['error_handler'] == TRX_PREPROC_FAIL_DEFAULT) {
 			$on_fail_options->addStyle('display: none;');
 		}
 
@@ -1435,8 +1435,8 @@ function getItemPreprocessing(CForm $form, array $preprocessing, $readonly, arra
 			(new CListItem([
 				(new CDiv([
 					(new CDiv())
-						->addClass(ZBX_STYLE_DRAG_ICON)
-						->addClass(!$sortable ? ZBX_STYLE_DISABLED : null),
+						->addClass(TRX_STYLE_DRAG_ICON)
+						->addClass(!$sortable ? TRX_STYLE_DISABLED : null),
 					(new CDiv($preproc_types_cbbox))
 						->addClass('list-numbered-item')
 						->addClass('step-name'),
@@ -1444,11 +1444,11 @@ function getItemPreprocessing(CForm $form, array $preprocessing, $readonly, arra
 					(new CDiv($on_fail))->addClass('step-on-fail'),
 					(new CDiv([
 						(new CButton('preprocessing['.$i.'][test]', _('Test')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->addClass('preprocessing-step-test')
 							->removeId(),
 						(new CButton('preprocessing['.$i.'][remove]', _('Remove')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->addClass('element-table-remove')
 							->setEnabled(!$readonly)
 							->removeId()
@@ -1468,13 +1468,13 @@ function getItemPreprocessing(CForm $form, array $preprocessing, $readonly, arra
 		(new CListItem([
 			(new CDiv(
 				(new CButton('param_add', _('Add')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-add')
 					->setEnabled(!$readonly)
 			))->addClass('step-action'),
 			(new CDiv(
 				(new CButton('preproc_test_all', _('Test all steps')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addStyle(($i > 0) ? null : 'display: none')
 			))->addClass('step-action')
 		]))->addClass('preprocessing-list-foot')
@@ -1542,7 +1542,7 @@ function getTriggerMassupdateFormData() {
 		'visible' => getRequest('visible', []),
 		'dependencies' => getRequest('dependencies', []),
 		'tags' => getRequest('tags', []),
-		'manual_close' => getRequest('manual_close', ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED),
+		'manual_close' => getRequest('manual_close', TRX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED),
 		'massupdate' => getRequest('massupdate', 1),
 		'parent_discoveryid' => getRequest('parent_discoveryid'),
 		'g_triggerid' => getRequest('g_triggerid', []),
@@ -1574,11 +1574,11 @@ function getTriggerMassupdateFormData() {
 	}
 
 	foreach ($data['dependencies'] as &$dependency) {
-		order_result($dependency['hosts'], 'name', ZBX_SORT_UP);
+		order_result($dependency['hosts'], 'name', TRX_SORT_UP);
 	}
 	unset($dependency);
 
-	order_result($data['dependencies'], 'description', ZBX_SORT_UP);
+	order_result($data['dependencies'], 'description', TRX_SORT_UP);
 
 	if (!$data['tags']) {
 		$data['tags'][] = ['tag' => '', 'value' => ''];
@@ -1639,11 +1639,11 @@ function getTriggerFormData(array $data) {
 			$options['selectDiscoveryRule'] = ['itemid', 'name', 'templateid'];
 			$options['selectTriggerDiscovery'] = ['parent_triggerid'];
 			$triggers = API::Trigger()->get($options);
-			$flag = ZBX_FLAG_DISCOVERY_NORMAL;
+			$flag = TRX_FLAG_DISCOVERY_NORMAL;
 		}
 		else {
 			$triggers = API::TriggerPrototype()->get($options);
-			$flag = ZBX_FLAG_DISCOVERY_PROTOTYPE;
+			$flag = TRX_FLAG_DISCOVERY_PROTOTYPE;
 		}
 
 		$triggers = CMacrosResolverHelper::resolveTriggerExpressions($triggers,
@@ -1665,12 +1665,12 @@ function getTriggerFormData(array $data) {
 			if ($data['parent_discoveryid'] === null) {
 				if ($trigger['discoveryRule']) {
 					$item_parent_templates = getItemParentTemplates([$trigger['discoveryRule']],
-						ZBX_FLAG_DISCOVERY_RULE
+						TRX_FLAG_DISCOVERY_RULE
 					)['templates'];
 				}
 				else {
 					$item_parent_templates = getItemParentTemplates($trigger['items'],
-						ZBX_FLAG_DISCOVERY_NORMAL
+						TRX_FLAG_DISCOVERY_NORMAL
 					)['templates'];
 				}
 			}
@@ -1679,7 +1679,7 @@ function getTriggerFormData(array $data) {
 				$item_prototypes = [];
 
 				foreach ($trigger['items'] as $item) {
-					if ($item['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) {
+					if ($item['flags'] == TRX_FLAG_DISCOVERY_NORMAL) {
 						$items[] = $item;
 					}
 					else {
@@ -1687,8 +1687,8 @@ function getTriggerFormData(array $data) {
 					}
 				}
 
-				$item_parent_templates = getItemParentTemplates($items, ZBX_FLAG_DISCOVERY_NORMAL)['templates']
-					+ getItemParentTemplates($item_prototypes, ZBX_FLAG_DISCOVERY_PROTOTYPE)['templates'];
+				$item_parent_templates = getItemParentTemplates($items, TRX_FLAG_DISCOVERY_NORMAL)['templates']
+					+ getItemParentTemplates($item_prototypes, TRX_FLAG_DISCOVERY_PROTOTYPE)['templates'];
 			}
 			unset($item_parent_templates[0]);
 
@@ -1709,7 +1709,7 @@ function getTriggerFormData(array $data) {
 						if (!array_key_exists($tag['tag'].':'.$tag['value'], $inherited_tags)) {
 							$inherited_tags[$tag['tag'].':'.$tag['value']] = $tag + [
 								'parent_templates' => [$templateid => $template],
-								'type' => ZBX_PROPERTY_INHERITED
+								'type' => TRX_PROPERTY_INHERITED
 							];
 						}
 						else {
@@ -1723,10 +1723,10 @@ function getTriggerFormData(array $data) {
 
 			foreach ($data['tags'] as $tag) {
 				if (!array_key_exists($tag['tag'].':'.$tag['value'], $inherited_tags)) {
-					$inherited_tags[$tag['tag'].':'.$tag['value']] = $tag + ['type' => ZBX_PROPERTY_OWN];
+					$inherited_tags[$tag['tag'].':'.$tag['value']] = $tag + ['type' => TRX_PROPERTY_OWN];
 				}
 				else {
-					$inherited_tags[$tag['tag'].':'.$tag['value']]['type'] = ZBX_PROPERTY_BOTH;
+					$inherited_tags[$tag['tag'].':'.$tag['value']]['type'] = TRX_PROPERTY_BOTH;
 				}
 			}
 
@@ -1804,7 +1804,7 @@ function getTriggerFormData(array $data) {
 			$data['triggerDiscovery'] = $trigger['triggerDiscovery'];
 		}
 
-		if ($trigger['flags'] == ZBX_FLAG_DISCOVERY_CREATED || $data['limited']) {
+		if ($trigger['flags'] == TRX_FLAG_DISCOVERY_CREATED || $data['limited']) {
 			$readonly = true;
 		}
 	}
@@ -1929,7 +1929,7 @@ function getTriggerFormData(array $data) {
 	}
 
 	foreach ($data['db_dependencies'] as &$dependency) {
-		order_result($dependency['hosts'], 'name', ZBX_SORT_UP);
+		order_result($dependency['hosts'], 'name', TRX_SORT_UP);
 	}
 	unset($dependency);
 
@@ -2077,7 +2077,7 @@ function getTimeperiodForm(array $data) {
 			->addRow(
 				(new CLabel(_('Every day(s)'), 'new_timeperiod[every]'))->setAsteriskMark(),
 				(new CNumericBox('new_timeperiod[every]', $new_timeperiod['every'], 3))
-					->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 					->setAriaRequired()
 			);
 	}
@@ -2090,7 +2090,7 @@ function getTimeperiodForm(array $data) {
 			->addRow(
 				(new CLabel(_('Every week(s)'), 'new_timeperiod[every]'))->setAsteriskMark(),
 				(new CNumericBox('new_timeperiod[every]', $new_timeperiod['every'], 2))
-					->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 					->setAriaRequired()
 			)
 			->addRow(
@@ -2255,7 +2255,7 @@ function getTimeperiodForm(array $data) {
 				->addRow(
 					(new CLabel(_('Day of month'), 'new_timeperiod[day]'))->setAsteriskMark(),
 					(new CNumericBox('new_timeperiod[day]', $new_timeperiod['day'], 2))
-						->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 						->setAriaRequired()
 				);
 		}
@@ -2271,13 +2271,13 @@ function getTimeperiodForm(array $data) {
 			->addItem(new CVar('new_timeperiod[dayofweek]', bindec($bit_dayofweek)));
 
 		$new_timeperiod['start_date'] = ($data['new_timeperiod_start_date'] === null)
-			? date(ZBX_DATE_TIME, time())
+			? date(TRX_DATE_TIME, time())
 			: $data['new_timeperiod_start_date'];
 
 		$form->addRow(
 			(new CLabel(_('Date'), 'new_timeperiod_start_date'))->setAsteriskMark(),
 			(new CDateSelector('new_timeperiod_start_date', $new_timeperiod['start_date']))
-				->setDateFormat(ZBX_DATE_TIME)
+				->setDateFormat(TRX_DATE_TIME)
 				->setPlaceholder(_('YYYY-MM-DD hh:mm'))
 				->setAriaRequired()
 		);
@@ -2286,12 +2286,12 @@ function getTimeperiodForm(array $data) {
 	if ($new_timeperiod['timeperiod_type'] != TIMEPERIOD_TYPE_ONETIME) {
 		$form->addRow(_('At (hour:minute)'), [
 			(new CNumericBox('new_timeperiod[hour]', $new_timeperiod['hour'], 2))
-				->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			':',
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CNumericBox('new_timeperiod[minute]', $new_timeperiod['minute'], 2))
-				->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 		]);
 	}
 
@@ -2301,7 +2301,7 @@ function getTimeperiodForm(array $data) {
 		(new CLabel(_('Maintenance period length'), 'new_timeperiod'))->setAsteriskMark(),
 		(new CDiv([
 			(new CNumericBox('new_timeperiod[period_days]', $new_timeperiod['period_days'], 3))
-				->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+				->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
 			_('Days').SPACE.SPACE,
 			$perHours,
 			_('Hours').SPACE.SPACE,
@@ -2329,16 +2329,16 @@ function renderTagTableRow($index, $tag = '', $value = '', array $options = []) 
 	return (new CRow([
 		(new CCol(
 			(new CTextAreaFlexible('tags['.$index.'][tag]', $tag, $options))
-				->setWidth(ZBX_TEXTAREA_TAG_WIDTH)
+				->setWidth(TRX_TEXTAREA_TAG_WIDTH)
 				->setAttribute('placeholder', _('tag'))
-		))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+		))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 		(new CCol(
 			(new CTextAreaFlexible('tags['.$index.'][value]', $value, $options))
-				->setWidth(ZBX_TEXTAREA_TAG_VALUE_WIDTH)
+				->setWidth(TRX_TEXTAREA_TAG_VALUE_WIDTH)
 				->setAttribute('placeholder', _('value'))
-		))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+		))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 		(new CButton('tags['.$index.'][remove]', _('Remove')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-remove')
 			->setEnabled(!$options['readonly'])
 	]))->addClass('form_row');
@@ -2355,7 +2355,7 @@ function renderTagTableRow($index, $tag = '', $value = '', array $options = []) 
  * @return CTable
  */
 function renderTagTable(array $tags, $readonly = false) {
-	$table = (new CTable())->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER);
+	$table = (new CTable())->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER);
 
 	foreach ($tags as $index => $tag) {
 		$table->addRow(renderTagTableRow($index, $tag['tag'], $tag['value'], ['readonly' => $readonly]));
@@ -2363,7 +2363,7 @@ function renderTagTable(array $tags, $readonly = false) {
 
 	return $table->setFooter(new CCol(
 		(new CButton('tag_add', _('Add')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-add')
 			->setEnabled(!$readonly)
 	));

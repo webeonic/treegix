@@ -5,8 +5,8 @@
 		<input name="#{field}[opmessage_grp][#{usrgrpid}][usrgrpid]" type="hidden" value="#{usrgrpid}" />
 		<span>#{name}</span>
 	</td>
-	<td class="<?= ZBX_STYLE_NOWRAP ?>">
-		<button type="button" class="<?= ZBX_STYLE_BTN_LINK ?>" name="remove" onclick="removeRow('#{row}#{usrgrpid}');"><?= _('Remove') ?></button>
+	<td class="<?= TRX_STYLE_NOWRAP ?>">
+		<button type="button" class="<?= TRX_STYLE_BTN_LINK ?>" name="remove" onclick="removeRow('#{row}#{usrgrpid}');"><?= _('Remove') ?></button>
 	</td>
 </tr>
 </script>
@@ -17,8 +17,8 @@
 		<input name="#{field}[opmessage_usr][#{id}][userid]" type="hidden" value="#{id}" />
 		<span>#{name}</span>
 	</td>
-	<td class="<?= ZBX_STYLE_NOWRAP ?>">
-		<button type="button" class="<?= ZBX_STYLE_BTN_LINK ?>" name="remove" onclick="removeRow('#{row}#{id}');"><?= _('Remove') ?></button>
+	<td class="<?= TRX_STYLE_NOWRAP ?>">
+		<button type="button" class="<?= TRX_STYLE_BTN_LINK ?>" name="remove" onclick="removeRow('#{row}#{id}');"><?= _('Remove') ?></button>
 	</td>
 </tr>
 </script>
@@ -31,8 +31,8 @@
 		#{objectCaption}
 		<span>#{name}</span>
 	</td>
-	<td class="<?= ZBX_STYLE_NOWRAP ?>">
-		<button type="button" class="<?= ZBX_STYLE_BTN_LINK ?>" name="remove" onclick="removeRow('#{row}#{groupid}');"><?= _('Remove') ?></button>
+	<td class="<?= TRX_STYLE_NOWRAP ?>">
+		<button type="button" class="<?= TRX_STYLE_BTN_LINK ?>" name="remove" onclick="removeRow('#{row}#{groupid}');"><?= _('Remove') ?></button>
 	</td>
 </tr>
 </script>
@@ -45,42 +45,42 @@
 		#{objectCaption}
 		<span>#{name}</span>
 	</td>
-	<td class="<?= ZBX_STYLE_NOWRAP ?>">
-		<button type="button" class="<?= ZBX_STYLE_BTN_LINK ?>" name="remove" onclick="removeRow('#{row}#{hostid}');"><?= _('Remove') ?></button>
+	<td class="<?= TRX_STYLE_NOWRAP ?>">
+		<button type="button" class="<?= TRX_STYLE_BTN_LINK ?>" name="remove" onclick="removeRow('#{row}#{hostid}');"><?= _('Remove') ?></button>
 	</td>
 </tr>
 </script>
 
 <script type="text/x-jquery-tmpl" id="opcmdEditFormTPL">
 <li>
-	<div class="<?= ZBX_STYLE_TABLE_FORMS_TD_LEFT ?>"></div>
-	<div class="<?= ZBX_STYLE_TABLE_FORMS_TD_RIGHT ?>">
+	<div class="<?= TRX_STYLE_TABLE_FORMS_TD_LEFT ?>"></div>
+	<div class="<?= TRX_STYLE_TABLE_FORMS_TD_RIGHT ?>">
 		<?= (new CDiv(
 			(new CTable())
 				->addRow([
 					[
 						_('Target'),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						new CComboBox('opCmdTarget', null, null, [
 							'current' => _('Current host'),
 							'host' => _('Host'),
 							'hostGroup' => _('Host group')
 						]),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						new CVar('opCmdId', '#{opcmdid}')
 					]
 				])
 				->addRow([
 					new CHorList([
-						(new CButton('save', '#{operationName}'))->addClass(ZBX_STYLE_BTN_LINK),
-						(new CButton('cancel', _('Cancel')))->addClass(ZBX_STYLE_BTN_LINK)
+						(new CButton('save', '#{operationName}'))->addClass(TRX_STYLE_BTN_LINK),
+						(new CButton('cancel', _('Cancel')))->addClass(TRX_STYLE_BTN_LINK)
 					])
 				])
 				->setAttribute('style', 'width: 100%;')
 			))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->addClass(ZBX_STYLE_NOWRAP)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->addClass(TRX_STYLE_NOWRAP)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 				->setId('opcmdEditForm')
 				->toString()
 		?>
@@ -89,12 +89,12 @@
 </script>
 
 <script type="text/javascript">
-	var ZBX_SCRIPT_TYPES = {
-		script: <?= ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT ?>,
-		ipmi: <?= ZBX_SCRIPT_TYPE_IPMI ?>,
-		telnet: <?= ZBX_SCRIPT_TYPE_TELNET ?>,
-		ssh: <?= ZBX_SCRIPT_TYPE_SSH ?>,
-		userscript: <?= ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT ?>
+	var TRX_SCRIPT_TYPES = {
+		script: <?= TRX_SCRIPT_TYPE_CUSTOM_SCRIPT ?>,
+		ipmi: <?= TRX_SCRIPT_TYPE_IPMI ?>,
+		telnet: <?= TRX_SCRIPT_TYPE_TELNET ?>,
+		ssh: <?= TRX_SCRIPT_TYPE_SSH ?>,
+		userscript: <?= TRX_SCRIPT_TYPE_GLOBAL_SCRIPT ?>
 	};
 
 	/**
@@ -397,7 +397,7 @@
 			opCmdTargetVal = opCmdTarget.val();
 
 		if (jQuery('#opCmdTargetObject').length > 0) {
-			jQuery('.<?= CMultiSelect::ZBX_STYLE_CLASS ?>').remove();
+			jQuery('.<?= CMultiSelect::TRX_STYLE_CLASS ?>').remove();
 		}
 
 		// multiselect
@@ -406,7 +406,7 @@
 				id: 'opCmdTargetObject',
 				'class': 'multiselect',
 				css: {
-					width: '<?= ZBX_TEXTAREA_MEDIUM_WIDTH ?>px'
+					width: '<?= TRX_TEXTAREA_MEDIUM_WIDTH ?>px'
 				},
 				'aria-required': 'true'
 			});
@@ -481,13 +481,13 @@
 
 		current_op_type = opcommand_type.val();
 
-		optype_fieldids[opcommand_script] = [ZBX_SCRIPT_TYPES.userscript];
-		optype_fieldids[opcommand_execute_on] = [ZBX_SCRIPT_TYPES.script];
-		optype_fieldids[opcommand_port] = [ZBX_SCRIPT_TYPES.ssh, ZBX_SCRIPT_TYPES.telnet];
-		optype_fieldids[opcommand_command] = [ZBX_SCRIPT_TYPES.script, ZBX_SCRIPT_TYPES.ssh, ZBX_SCRIPT_TYPES.telnet];
-		optype_fieldids[opcommand_command_ipmi] = [ZBX_SCRIPT_TYPES.ipmi];
-		optype_fieldids[opcommand_authtype] = [ZBX_SCRIPT_TYPES.ssh];
-		optype_fieldids[opcommand_username] = [ZBX_SCRIPT_TYPES.ssh, ZBX_SCRIPT_TYPES.telnet];
+		optype_fieldids[opcommand_script] = [TRX_SCRIPT_TYPES.userscript];
+		optype_fieldids[opcommand_execute_on] = [TRX_SCRIPT_TYPES.script];
+		optype_fieldids[opcommand_port] = [TRX_SCRIPT_TYPES.ssh, TRX_SCRIPT_TYPES.telnet];
+		optype_fieldids[opcommand_command] = [TRX_SCRIPT_TYPES.script, TRX_SCRIPT_TYPES.ssh, TRX_SCRIPT_TYPES.telnet];
+		optype_fieldids[opcommand_command_ipmi] = [TRX_SCRIPT_TYPES.ipmi];
+		optype_fieldids[opcommand_authtype] = [TRX_SCRIPT_TYPES.ssh];
+		optype_fieldids[opcommand_username] = [TRX_SCRIPT_TYPES.ssh, TRX_SCRIPT_TYPES.telnet];
 
 		for (fieldId in optype_fieldids) {
 			var show = false;
@@ -537,13 +537,13 @@
 				opcommand_passphrase = 'new_ack_operation_opcommand_passphrase';
 		}
 
-		if (current_op_type === <?= ZBX_SCRIPT_TYPE_SSH ?>) {
+		if (current_op_type === <?= TRX_SCRIPT_TYPE_SSH ?>) {
 			var current_op_type_auth = parseInt(jQuery('#' + opcommand_authtype).val(), 10);
 
 			show_password = (current_op_type_auth === <?= ITEM_AUTHTYPE_PASSWORD ?>);
 			show_publickey = !show_password;
 		}
-		else if (current_op_type === <?= ZBX_SCRIPT_TYPE_TELNET ?>) {
+		else if (current_op_type === <?= TRX_SCRIPT_TYPE_TELNET ?>) {
 			show_password = true;
 		}
 

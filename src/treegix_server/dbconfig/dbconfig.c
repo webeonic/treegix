@@ -15,7 +15,7 @@ extern int		server_num, process_num;
 
 static void	zbx_dbconfig_sigusr_handler(int flags)
 {
-	if (ZBX_RTC_CONFIG_CACHE_RELOAD == ZBX_RTC_GET_MSG(flags))
+	if (TRX_RTC_CONFIG_CACHE_RELOAD == TRX_RTC_GET_MSG(flags))
 	{
 		if (0 < zbx_sleep_get_remainder())
 		{
@@ -42,7 +42,7 @@ static void	zbx_dbconfig_sigusr_handler(int flags)
  * Comments: never returns                                                    *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(dbconfig_thread, args)
+TRX_THREAD_ENTRY(dbconfig_thread, args)
 {
 	double	sec = 0.0;
 
@@ -63,21 +63,21 @@ ZBX_THREAD_ENTRY(dbconfig_thread, args)
 
 	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
-		zbx_setproctitle("%s [synced configuration in " ZBX_FS_DBL " sec, syncing configuration]",
+		zbx_setproctitle("%s [synced configuration in " TRX_FS_DBL " sec, syncing configuration]",
 				get_process_type_string(process_type), sec);
 
 		sec = zbx_time();
 		zbx_update_env(sec);
 
-		DCsync_configuration(ZBX_DBSYNC_UPDATE);
+		DCsync_configuration(TRX_DBSYNC_UPDATE);
 		DCupdate_hosts_availability();
 		sec = zbx_time() - sec;
 
-		zbx_setproctitle("%s [synced configuration in " ZBX_FS_DBL " sec, idle %d sec]",
+		zbx_setproctitle("%s [synced configuration in " TRX_FS_DBL " sec, idle %d sec]",
 				get_process_type_string(process_type), sec, CONFIG_CONFSYNCER_FREQUENCY);
 
 		zbx_sleep_loop(CONFIG_CONFSYNCER_FREQUENCY);

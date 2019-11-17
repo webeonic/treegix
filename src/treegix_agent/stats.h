@@ -17,32 +17,32 @@
 #	include "vmstats.h"
 #endif
 
-#ifdef ZBX_PROCSTAT_COLLECTOR
+#ifdef TRX_PROCSTAT_COLLECTOR
 #	include "procstat.h"
 #endif
 
 typedef struct
 {
-	ZBX_CPUS_STAT_DATA	cpus;
+	TRX_CPUS_STAT_DATA	cpus;
 #ifndef _WINDOWS
 	int 			diskstat_shmid;
 #endif
-#ifdef ZBX_PROCSTAT_COLLECTOR
+#ifdef TRX_PROCSTAT_COLLECTOR
 	zbx_dshm_t		procstat;
 #endif
 #ifdef _AIX
-	ZBX_VMSTAT_DATA		vmstat;
+	TRX_VMSTAT_DATA		vmstat;
 #endif
 }
-ZBX_COLLECTOR_DATA;
+TRX_COLLECTOR_DATA;
 
-extern ZBX_COLLECTOR_DATA	*collector;
+extern TRX_COLLECTOR_DATA	*collector;
 #ifndef _WINDOWS
-extern ZBX_DISKDEVICES_DATA	*diskdevices;
+extern TRX_DISKDEVICES_DATA	*diskdevices;
 extern int			my_diskstat_shmid;
 #endif
 
-ZBX_THREAD_ENTRY(collector_thread, pSemColectorStarted);
+TRX_THREAD_ENTRY(collector_thread, pSemColectorStarted);
 
 int	init_collector_data(char **error);
 void	free_collector_data(void);

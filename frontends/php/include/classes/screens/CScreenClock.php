@@ -98,8 +98,8 @@ class CScreenClock extends CScreenBase {
 		}
 
 		if ($error === null) {
-			if (!defined('ZBX_CLOCK')) {
-				define('ZBX_CLOCK', 1);
+			if (!defined('TRX_CLOCK')) {
+				define('TRX_CLOCK', 1);
 				insert_js(file_get_contents($clock->getScriptFile()));
 			}
 			zbx_add_post_js($clock->getScriptRun());
@@ -107,11 +107,11 @@ class CScreenClock extends CScreenBase {
 
 		$item = [];
 		$item[] = $clock->getTimeDiv()
-			->addClass(ZBX_STYLE_TIME_ZONE);
+			->addClass(TRX_STYLE_TIME_ZONE);
 		$item[] = $clock;
 		$item[] = (new CDiv($title))
-			->addClass(ZBX_STYLE_LOCAL_CLOCK)
-			->addClass(ZBX_STYLE_GREY);
+			->addClass(TRX_STYLE_LOCAL_CLOCK)
+			->addClass(TRX_STYLE_GREY);
 
 		return $this->getOutput($item);
 	}

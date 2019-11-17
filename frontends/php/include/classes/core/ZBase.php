@@ -262,11 +262,11 @@ class ZBase {
 	protected function setMaintenanceMode() {
 		require_once $this->getRootDir().'/conf/maintenance.inc.php';
 
-		if (defined('ZBX_DENY_GUI_ACCESS')) {
+		if (defined('TRX_DENY_GUI_ACCESS')) {
 			$user_ip = (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 					? $_SERVER['HTTP_X_FORWARDED_FOR']
 					: $_SERVER['REMOTE_ADDR'];
-			if (!isset($ZBX_GUI_ACCESS_IP_RANGE) || !in_array($user_ip, $ZBX_GUI_ACCESS_IP_RANGE)) {
+			if (!isset($TRX_GUI_ACCESS_IP_RANGE) || !in_array($user_ip, $TRX_GUI_ACCESS_IP_RANGE)) {
 				throw new Exception($_REQUEST['warning_msg']);
 			}
 		}
@@ -403,9 +403,9 @@ class ZBase {
 			if ($response->getMessageError() !== null) {
 				CSession::setValue('messageError', $response->getMessageError());
 			}
-			global $ZBX_MESSAGES;
-			if (isset($ZBX_MESSAGES)) {
-				CSession::setValue('messages', $ZBX_MESSAGES);
+			global $TRX_MESSAGES;
+			if (isset($TRX_MESSAGES)) {
+				CSession::setValue('messages', $TRX_MESSAGES);
 			}
 			if ($response->getFormData() !== null) {
 				CSession::setValue('formData', $response->getFormData());
@@ -417,8 +417,8 @@ class ZBase {
 		else if ($response instanceof CControllerResponseFatal) {
 			header('Content-Type: text/html; charset=UTF-8');
 
-			global $ZBX_MESSAGES;
-			$messages = (isset($ZBX_MESSAGES) && $ZBX_MESSAGES) ? filter_messages($ZBX_MESSAGES) : [];
+			global $TRX_MESSAGES;
+			$messages = (isset($TRX_MESSAGES) && $TRX_MESSAGES) ? filter_messages($TRX_MESSAGES) : [];
 			foreach ($messages as $message) {
 				$response->addMessage($message['message']);
 			}
@@ -442,10 +442,10 @@ class ZBase {
 	 */
 	private function setLayoutModeByUrl() {
 		if (array_key_exists('kiosk', $_GET) && $_GET['kiosk'] === '1') {
-			CView::setLayoutMode(ZBX_LAYOUT_KIOSKMODE);
+			CView::setLayoutMode(TRX_LAYOUT_KIOSKMODE);
 		}
 		elseif (array_key_exists('fullscreen', $_GET)) {
-			CView::setLayoutMode($_GET['fullscreen'] === '1' ? ZBX_LAYOUT_FULLSCREEN : ZBX_LAYOUT_NORMAL);
+			CView::setLayoutMode($_GET['fullscreen'] === '1' ? TRX_LAYOUT_FULLSCREEN : TRX_LAYOUT_NORMAL);
 		}
 
 		// Remove $_GET arguments to prevent CUrl from generating URL with 'fullscreen'/'kiosk' arguments.

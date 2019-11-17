@@ -5,6 +5,6 @@
 
 #include "threads.h"
 
-ZBX_THREAD_ENTRY(selfmon_thread, args);
+TRX_THREAD_ENTRY(selfmon_thread, args);
 
 #endif

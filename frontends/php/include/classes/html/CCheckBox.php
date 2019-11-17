@@ -63,7 +63,7 @@ class CCheckBox extends CInput {
 		parent::__construct('checkbox', $this->name, $this->value);
 
 		$this->setChecked(false);
-		$this->addClass(ZBX_STYLE_CHECKBOX_RADIO);
+		$this->addClass(TRX_STYLE_CHECKBOX_RADIO);
 	}
 
 	/**

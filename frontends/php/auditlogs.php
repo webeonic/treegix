@@ -30,13 +30,13 @@ $resourcetype = [-1, AUDIT_RESOURCE_USER, AUDIT_RESOURCE_TREEGIX_CONFIG, AUDIT_R
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'action' =>			[T_ZBX_INT,			O_OPT, P_SYS,	IN($action), null],
-	'resourcetype' =>	[T_ZBX_INT,			O_OPT, P_SYS,	IN($resourcetype), null],
-	'filter_rst' =>		[T_ZBX_STR,			O_OPT, P_SYS,	null,	null],
-	'filter_set' =>		[T_ZBX_STR,			O_OPT, P_SYS,	null,	null],
-	'alias' =>			[T_ZBX_STR,			O_OPT, P_SYS,	null,	null],
-	'from' =>			[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,	null],
-	'to' =>				[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,	null]
+	'action' =>			[T_TRX_INT,			O_OPT, P_SYS,	IN($action), null],
+	'resourcetype' =>	[T_TRX_INT,			O_OPT, P_SYS,	IN($resourcetype), null],
+	'filter_rst' =>		[T_TRX_STR,			O_OPT, P_SYS,	null,	null],
+	'filter_set' =>		[T_TRX_STR,			O_OPT, P_SYS,	null,	null],
+	'alias' =>			[T_TRX_STR,			O_OPT, P_SYS,	null,	null],
+	'from' =>			[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,	null],
+	'to' =>				[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,	null]
 ];
 check_fields($fields);
 validateTimeSelectorPeriod(getRequest('from'), getRequest('to'));
@@ -145,11 +145,11 @@ while ($audit = DBfetch($dbAudit)) {
 	$data['actions'][$audit['auditid']] = $audit;
 }
 if (!empty($data['actions'])) {
-	order_result($data['actions'], 'clock', ZBX_SORT_DOWN);
+	order_result($data['actions'], 'clock', TRX_SORT_DOWN);
 }
 
 // get paging
-$data['paging'] = getPagingLine($data['actions'], ZBX_SORT_UP, new CUrl('auditlogs.php'));
+$data['paging'] = getPagingLine($data['actions'], TRX_SORT_UP, new CUrl('auditlogs.php'));
 
 // render view
 $auditView = new CView('administration.auditlogs.list', $data);

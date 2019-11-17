@@ -7,11 +7,11 @@ $auditWidget = (new CWidget())->setTitle(_('Action log'));
 $filterColumn = new CFormList();
 $filterColumn->addRow(_('Recipient'), [
 	(new CTextBox('alias', $this->data['alias']))
-		->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 		->setAttribute('autofocus', 'autofocus'),
-	(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+	(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 	(new CButton('btn1', _('Select')))
-		->addClass(ZBX_STYLE_BTN_GREY)
+		->addClass(TRX_STYLE_BTN_GREY)
 		->onClick('return PopUp("popup.generic",'.
 			CJs::encodeJson([
 				'srctbl' => 'users',
@@ -50,18 +50,18 @@ foreach ($this->data['alerts'] as $alert) {
 
 	if ($alert['status'] == ALERT_STATUS_SENT) {
 		$status = ($alert['alerttype'] == ALERT_TYPE_MESSAGE)
-			? (new CSpan(_('Sent')))->addClass(ZBX_STYLE_GREEN)
-			: (new CSpan(_('Executed')))->addClass(ZBX_STYLE_GREEN);
+			? (new CSpan(_('Sent')))->addClass(TRX_STYLE_GREEN)
+			: (new CSpan(_('Executed')))->addClass(TRX_STYLE_GREEN);
 	}
 	elseif ($alert['status'] == ALERT_STATUS_NOT_SENT || $alert['status'] == ALERT_STATUS_NEW) {
 		$status = (new CSpan([
 			_('In progress').':',
 			BR(),
 			_n('%1$s retry left', '%1$s retries left', $mediatype['maxattempts'] - $alert['retries']),
-		]))->addClass(ZBX_STYLE_YELLOW);
+		]))->addClass(TRX_STYLE_YELLOW);
 	}
 	else {
-		$status = (new CSpan(_('Failed')))->addClass(ZBX_STYLE_RED);
+		$status = (new CSpan(_('Failed')))->addClass(TRX_STYLE_RED);
 	}
 
 	$message = ($alert['alerttype'] == ALERT_TYPE_MESSAGE)
@@ -87,7 +87,7 @@ foreach ($this->data['alerts'] as $alert) {
 	}
 
 	$recipient = (isset($alert['userid']) && $alert['userid'])
-		? makeEventDetailsTableUser($alert + ['action_type' => ZBX_EVENT_HISTORY_ALERT], $data['users'])
+		? makeEventDetailsTableUser($alert + ['action_type' => TRX_EVENT_HISTORY_ALERT], $data['users'])
 		: zbx_nl2br($alert['sendto']);
 
 	$auditTable->addRow([

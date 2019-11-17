@@ -18,7 +18,7 @@ $table_user_groups = (new CTable())
 							'multiselect' => '1'
 						]).', null, this);'
 					)
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 			))->setColSpan(3)
 		))->setId('user_group_list_footer')
 	)
@@ -39,7 +39,7 @@ $table_users = (new CTable())
 							'multiselect' => '1'
 						]).', null, this);'
 					)
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 			))->setColSpan(3)
 		))->setId('user_list_footer')
 	)
@@ -61,13 +61,13 @@ $form
 		)
 		->addRow(_('List of user group shares'),
 			(new CDiv($table_user_groups))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->addStyle('min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->addStyle('min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 		)
 		->addRow(_('List of user shares'),
 			(new CDiv($table_users))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->addStyle('min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->addStyle('min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 		)
 	);
 

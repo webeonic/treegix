@@ -28,7 +28,7 @@ if ($data['form_refresh'] == 0) {
 // Create form.
 $user_form = (new CForm())
 	->setName('user_form')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('action', $data['action'])
 	->addVar('userid', $data['userid']);
 
@@ -39,20 +39,20 @@ if ($data['action'] === 'user.edit') {
 	$user_form_list
 		->addRow((new CLabel(_('Alias'), 'alias'))->setAsteriskMark(),
 			(new CTextBox('alias', $data['alias']))
-				->setReadonly($data['db_user']['alias'] === ZBX_GUEST_USER)
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setReadonly($data['db_user']['alias'] === TRX_GUEST_USER)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAriaRequired()
 				->setAttribute('autofocus', 'autofocus')
 				->setAttribute('maxlength', DB::getFieldLength('users', 'alias'))
 		)
 		->addRow(_x('Name', 'user first name'),
 			(new CTextBox('name', $data['name']))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAttribute('maxlength', DB::getFieldLength('users', 'name'))
 		)
 		->addRow(_('Surname'),
 			(new CTextBox('surname', $data['surname']))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAttribute('maxlength', DB::getFieldLength('users', 'surname'))
 		)
 		->addRow(
@@ -70,7 +70,7 @@ if ($data['action'] === 'user.edit') {
 					]
 				]
 			]))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAriaRequired()
 		);
 }
@@ -79,7 +79,7 @@ if ($data['change_password']) {
 	$user_form->disablePasswordAutofill();
 
 	$password1 = (new CPassBox('password1', $data['password1']))
-		->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+		->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		->setAriaRequired();
 
 	if ($data['action'] !== 'user.edit') {
@@ -90,7 +90,7 @@ if ($data['change_password']) {
 		->addRow((new CLabel(_('Password'), 'password1'))->setAsteriskMark(), $password1)
 		->addRow((new CLabel(_('Password (once again)'), 'password2'))->setAsteriskMark(),
 			(new CPassBox('password2', $data['password2']))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				->setAriaRequired()
 		)
 		->addRow('', _('Password is not mandatory for non internal authentication type.'));
@@ -98,10 +98,10 @@ if ($data['change_password']) {
 else {
 	$user_form_list->addRow(_('Password'),
 		(new CSimpleButton(_('Change password')))
-			->setEnabled($data['action'] === 'userprofile.edit' || $data['db_user']['alias'] !== ZBX_GUEST_USER)
+			->setEnabled($data['action'] === 'userprofile.edit' || $data['db_user']['alias'] !== TRX_GUEST_USER)
 			->setAttribute('autofocus', 'autofocus')
 			->onClick('javascript: submitFormWithParam("'.$user_form->getName().'", "change_password", "1");')
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 	);
 }
 
@@ -141,7 +141,7 @@ elseif ($all_locales_available == 0) {
 $user_form_list
 	->addRow(_('Language'),
 		($language_error !== '')
-			? [$lang, (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			? [$lang, (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				(new CSpan($language_error))
 					->addClass('red')
 					->addClass('wrap')
@@ -153,7 +153,7 @@ $user_form_list
 	);
 
 // Append auto-login & auto-logout to form list.
-if ($data['action'] === 'userprofile.edit' || $data['db_user']['alias'] !== ZBX_GUEST_USER) {
+if ($data['action'] === 'userprofile.edit' || $data['db_user']['alias'] !== TRX_GUEST_USER) {
 	$autologout = ($data['autologout'] !== '0') ? $data['autologout'] : DB::getDefault('users', 'autologout');
 
 	$user_form_list->addRow(_('Auto-login'),
@@ -165,24 +165,24 @@ if ($data['action'] === 'userprofile.edit' || $data['db_user']['alias'] !== ZBX_
 		(new CCheckBox(null))
 			->setId('autologout_visible')
 			->setChecked($data['autologout'] !== '0'),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
-		(new CTextBox('autologout', $autologout))->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
+		(new CTextBox('autologout', $autologout))->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 	]);
 }
 
 $user_form_list
 	->addRow((new CLabel(_('Refresh'), 'refresh'))->setAsteriskMark(),
 		(new CTextBox('refresh', $data['refresh']))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('Rows per page'), 'rows_per_page'))->setAsteriskMark(),
 		(new CNumericBox('rows_per_page', $data['rows_per_page'], 6))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow(_('URL (after login)'),
-		(new CTextBox('url', $data['url']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('url', $data['url']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 $tabs->addTab('userTab', _('User'), $user_form_list);
@@ -200,14 +200,14 @@ if ($data['action'] === 'user.edit' || CWebUser::$data['type'] > USER_TYPE_TREEG
 		if ($media['active'] == MEDIA_STATUS_ACTIVE) {
 			$status = (new CLink(_('Enabled'), '#'))
 				->onClick('return create_var("'.$user_form->getName().'","disable_media",'.$index.', true);')
-				->addClass(ZBX_STYLE_LINK_ACTION)
-				->addClass(ZBX_STYLE_GREEN);
+				->addClass(TRX_STYLE_LINK_ACTION)
+				->addClass(TRX_STYLE_GREEN);
 		}
 		else {
 			$status = (new CLink(_('Disabled'), '#'))
 				->onClick('return create_var("'.$user_form->getName().'","enable_media",'.$index.', true);')
-				->addClass(ZBX_STYLE_LINK_ACTION)
-				->addClass(ZBX_STYLE_RED);
+				->addClass(TRX_STYLE_LINK_ACTION)
+				->addClass(TRX_STYLE_RED);
 		}
 
 		$popup_options = [
@@ -230,7 +230,7 @@ if ($data['action'] === 'user.edit' || CWebUser::$data['type'] > USER_TYPE_TREEG
 
 			$media_severity[$severity] = (new CSpan(mb_substr($severity_name, 0, 1)))
 				->setHint($severity_name.' ('.($media_active ? _('on') : _('off')).')', '', false)
-				->addClass($media_active ? getSeverityStatusStyle($severity) : ZBX_STYLE_STATUS_DISABLED_BG);
+				->addClass($media_active ? getSeverityStatusStyle($severity) : TRX_STYLE_STATUS_DISABLED_BG);
 		}
 
 		if ($media['mediatype'] == MEDIA_TYPE_EMAIL) {
@@ -246,20 +246,20 @@ if ($data['action'] === 'user.edit' || CWebUser::$data['type'] > USER_TYPE_TREEG
 				$media['name'],
 				$media['sendto'],
 				(new CDiv($media['period']))
-					->setAttribute('style', 'max-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
-					->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS),
-				(new CDiv($media_severity))->addClass(ZBX_STYLE_STATUS_CONTAINER),
+					->setAttribute('style', 'max-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
+					->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS),
+				(new CDiv($media_severity))->addClass(TRX_STYLE_STATUS_CONTAINER),
 				$status,
 				(new CCol(
 					new CHorList([
 						(new CButton(null, _('Edit')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->onClick('return PopUp("popup.media",'.CJs::encodeJson($popup_options).', null, this);'),
 						(new CButton(null, _('Remove')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->onClick('javascript: removeMedia('.$index.');')
 					])
-				))->addClass(ZBX_STYLE_NOWRAP)
+				))->addClass(TRX_STYLE_NOWRAP)
 			]))->setId('user_medias_'.$index)
 		);
 	}
@@ -273,10 +273,10 @@ if ($data['action'] === 'user.edit' || CWebUser::$data['type'] > USER_TYPE_TREEG
 						'dstfrm' => $user_form->getName()
 					]).', null, this);'
 				)
-				->addClass(ZBX_STYLE_BTN_LINK),
+				->addClass(TRX_STYLE_BTN_LINK),
 		]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 
 	$tabs->addTab('mediaTab', _('Media'), $media_form_list);
@@ -322,8 +322,8 @@ if ($data['action'] === 'user.edit') {
 	$permissions_form_list
 		->addRow(_('Permissions'),
 			(new CDiv($permissions_table))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 		)
 		->addInfo(_('Permissions can be assigned for user groups only.'));
 
@@ -339,7 +339,7 @@ if ($data['action'] !== 'user.edit') {
 				->setUncheckedValue(0)
 		)
 		->addRow(_('Message timeout'),
-			(new CTextBox('messages[timeout]', $data['messages']['timeout']))->setWidth(ZBX_TEXTAREA_TINY_WIDTH),
+			(new CTextBox('messages[timeout]', $data['messages']['timeout']))->setWidth(TRX_TEXTAREA_TINY_WIDTH),
 			'timeout_row'
 		)
 		->addRow(_('Play sound'),
@@ -361,14 +361,14 @@ if ($data['action'] !== 'user.edit') {
 				->setUncheckedValue(0),
 			[
 				new CComboBox('messages[sounds.recovery]', $data['messages']['sounds.recovery'], null, $zbx_sounds),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				(new CButton('start', _('Play')))
-					->addClass(ZBX_STYLE_BTN_GREY)
+					->addClass(TRX_STYLE_BTN_GREY)
 					->onClick("javascript: testUserSound('messages_sounds.recovery');")
 					->removeId(),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				(new CButton('stop', _('Stop')))
-					->addClass(ZBX_STYLE_BTN_GREY)
+					->addClass(TRX_STYLE_BTN_GREY)
 					->onClick('javascript: AudioControl.stop();')
 					->removeId()
 			]
@@ -393,14 +393,14 @@ if ($data['action'] !== 'user.edit') {
 				->setUncheckedValue(0),
 			[
 				new CComboBox('messages[sounds.'.$severity.']', $data['messages']['sounds.'.$severity], null, $zbx_sounds),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				(new CButton('start', _('Play')))
-					->addClass(ZBX_STYLE_BTN_GREY)
+					->addClass(TRX_STYLE_BTN_GREY)
 					->onClick("javascript: testUserSound('messages_sounds.".$severity."');")
 					->removeId(),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				(new CButton('stop', _('Stop')))
-					->addClass(ZBX_STYLE_BTN_GREY)
+					->addClass(TRX_STYLE_BTN_GREY)
 					->onClick('javascript: AudioControl.stop();')
 					->removeId()
 			]
@@ -414,8 +414,8 @@ if ($data['action'] !== 'user.edit') {
 		->addRow(_('Trigger severity'), $triggers_table, 'triggers_row')
 		->addRow(_('Show suppressed problems'),
 			(new CCheckBox('messages[show_suppressed]'))
-				->setChecked($data['messages']['show_suppressed'] == ZBX_PROBLEM_SUPPRESSED_TRUE)
-				->setUncheckedValue(ZBX_PROBLEM_SUPPRESSED_FALSE)
+				->setChecked($data['messages']['show_suppressed'] == TRX_PROBLEM_SUPPRESSED_TRUE)
+				->setUncheckedValue(TRX_PROBLEM_SUPPRESSED_FALSE)
 		);
 
 	$tabs->addTab('messagingTab', _('Messaging'), $messaging_form_list);
@@ -447,7 +447,7 @@ if ($data['action'] === 'user.edit') {
 else {
 	$tabs->setFooter(makeFormFooter(
 		(new CSubmitButton(_('Update'), 'action', 'userprofile.update'))->setId('update'),
-		[(new CRedirectButton(_('Cancel'), ZBX_DEFAULT_URL))->setId('cancel')]
+		[(new CRedirectButton(_('Cancel'), TRX_DEFAULT_URL))->setId('cancel')]
 	));
 }
 

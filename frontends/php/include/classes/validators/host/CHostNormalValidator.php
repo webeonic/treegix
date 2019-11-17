@@ -22,7 +22,7 @@ class CHostNormalValidator extends CValidator {
 		$hosts = API::Host()->get([
 			'output' => ['host'],
 			'hostids' => $hostIds,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_CREATED],
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_CREATED],
 			'limit' => 1
 		]);
 

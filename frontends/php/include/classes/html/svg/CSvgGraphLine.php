@@ -35,16 +35,16 @@ class CSvgGraphLine extends CSvgPath {
 
 	public function makeStyles() {
 		$this
-			->addClass(CSvgTag::ZBX_STYLE_GRAPH_LINE)
-			->addClass(CSvgTag::ZBX_STYLE_GRAPH_LINE.'-'.$this->itemid.'-'.$this->options['order']);
+			->addClass(CSvgTag::TRX_STYLE_GRAPH_LINE)
+			->addClass(CSvgTag::TRX_STYLE_GRAPH_LINE.'-'.$this->itemid.'-'.$this->options['order']);
 
 		$line_style = ($this->options['type'] == SVG_GRAPH_TYPE_LINE) ? ['stroke-linejoin' => 'round'] : [];
 
 		return [
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_LINE => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_LINE => [
 				'fill' => 'none'
 			],
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_LINE.'-'.$this->itemid.'-'.$this->options['order'] => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_LINE.'-'.$this->itemid.'-'.$this->options['order'] => [
 				'opacity' => $this->options['transparency'] * 0.1,
 				'stroke' => $this->options['color'],
 				'stroke-width' => $this->options['width']

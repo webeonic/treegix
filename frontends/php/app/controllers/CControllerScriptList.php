@@ -11,7 +11,7 @@ class CControllerScriptList extends CController {
 	protected function checkInput() {
 		$fields = [
 			'sort' =>			'in name,command',
-			'sortorder' =>		'in '.ZBX_SORT_DOWN.','.ZBX_SORT_UP,
+			'sortorder' =>		'in '.TRX_SORT_DOWN.','.TRX_SORT_UP,
 			'uncheck' =>		'in 1',
 			'filter_set' =>		'in 1',
 			'filter_rst' =>		'in 1',
@@ -33,7 +33,7 @@ class CControllerScriptList extends CController {
 
 	protected function doAction() {
 		$sortField = $this->getInput('sort', CProfile::get('web.scripts.php.sort', 'name'));
-		$sortOrder = $this->getInput('sortorder', CProfile::get('web.scripts.php.sortorder', ZBX_SORT_UP));
+		$sortOrder = $this->getInput('sortorder', CProfile::get('web.scripts.php.sortorder', TRX_SORT_UP));
 
 		CProfile::update('web.scripts.php.sort', $sortField, PROFILE_TYPE_STR);
 		CProfile::update('web.scripts.php.sortorder', $sortOrder, PROFILE_TYPE_STR);

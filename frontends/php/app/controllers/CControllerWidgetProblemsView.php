@@ -109,29 +109,29 @@ class CControllerWidgetProblemsView extends CControllerWidget {
 	{
 		switch ($sort_triggers) {
 			case SCREEN_SORT_TRIGGERS_TIME_ASC:
-				return ['clock', ZBX_SORT_UP];
+				return ['clock', TRX_SORT_UP];
 
 			case SCREEN_SORT_TRIGGERS_TIME_DESC:
 			default:
-				return ['clock', ZBX_SORT_DOWN];
+				return ['clock', TRX_SORT_DOWN];
 
 			case SCREEN_SORT_TRIGGERS_SEVERITY_ASC:
-				return ['severity', ZBX_SORT_UP];
+				return ['severity', TRX_SORT_UP];
 
 			case SCREEN_SORT_TRIGGERS_SEVERITY_DESC:
-				return ['severity', ZBX_SORT_DOWN];
+				return ['severity', TRX_SORT_DOWN];
 
 			case SCREEN_SORT_TRIGGERS_HOST_NAME_ASC:
-				return ['host', ZBX_SORT_UP];
+				return ['host', TRX_SORT_UP];
 
 			case SCREEN_SORT_TRIGGERS_HOST_NAME_DESC:
-				return ['host', ZBX_SORT_DOWN];
+				return ['host', TRX_SORT_DOWN];
 
 			case SCREEN_SORT_TRIGGERS_NAME_ASC:
-				return ['name', ZBX_SORT_UP];
+				return ['name', TRX_SORT_UP];
 
 			case SCREEN_SORT_TRIGGERS_NAME_DESC:
-				return ['name', ZBX_SORT_DOWN];
+				return ['name', TRX_SORT_DOWN];
 		}
 	}
 }

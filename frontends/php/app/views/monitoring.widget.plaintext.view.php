@@ -7,7 +7,7 @@ if ($data['error'] != null) {
 	$table->setNoDataMessage($data['error']);
 }
 else {
-	$table_header = [(new CColHeader(_('Timestamp')))->addClass(ZBX_STYLE_CELL_WIDTH)];
+	$table_header = [(new CColHeader(_('Timestamp')))->addClass(TRX_STYLE_CELL_WIDTH)];
 	$names_at_top = ($data['style'] == STYLE_TOP && count($data['items']) > 1);
 
 	if ($names_at_top) {
@@ -37,7 +37,7 @@ else {
 
 		if ($history_item !== null && !$names_at_top) {
 			$table_row = [
-				(new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $history_item['clock'])))->addClass(ZBX_STYLE_NOWRAP)
+				(new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $history_item['clock'])))->addClass(TRX_STYLE_NOWRAP)
 			];
 			if ($data['style'] == STYLE_LEFT) {
 				$table->setHeadingColumn(1);
@@ -54,7 +54,7 @@ else {
 					|| ($clock != 0 && $history_item['clock'] != $clock)
 					|| array_key_exists($history_item['itemid'], $row_values)) {
 				$table_row = [
-					(new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $clock)))->addClass(ZBX_STYLE_NOWRAP)
+					(new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $clock)))->addClass(TRX_STYLE_NOWRAP)
 				];
 				foreach ($data['items'] as $item) {
 					$table_row[] = array_key_exists($item['itemid'], $row_values)

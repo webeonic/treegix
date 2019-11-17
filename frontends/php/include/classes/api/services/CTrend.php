@@ -54,12 +54,12 @@ class CTrend extends CApiService {
 			}
 		}
 
-		foreach ([ZBX_HISTORY_SOURCE_ELASTIC, ZBX_HISTORY_SOURCE_SQL] as $source) {
+		foreach ([TRX_HISTORY_SOURCE_ELASTIC, TRX_HISTORY_SOURCE_SQL] as $source) {
 			if (array_key_exists($source, $storage_items)) {
 				$options['itemids'] = $storage_items[$source];
 
 				switch ($source) {
-					case ZBX_HISTORY_SOURCE_ELASTIC:
+					case TRX_HISTORY_SOURCE_ELASTIC:
 						$data = $this->getFromElasticsearch($options);
 						break;
 

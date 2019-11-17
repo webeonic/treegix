@@ -9,13 +9,13 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 		zbx_uint64_t *used, double *pfree, double *pused, char **error)
 {
 #ifdef HAVE_SYS_STATVFS_H
-#	define ZBX_STATFS	statvfs
-#	define ZBX_BSIZE	f_frsize
+#	define TRX_STATFS	statvfs
+#	define TRX_BSIZE	f_frsize
 #else
-#	define ZBX_STATFS	statfs
-#	define ZBX_BSIZE	f_bsize
+#	define TRX_STATFS	statfs
+#	define TRX_BSIZE	f_bsize
 #endif
-	struct ZBX_STATFS	s;
+	struct TRX_STATFS	s;
 
 	if (NULL == fs || '\0' == *fs)
 	{
@@ -23,7 +23,7 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 		return SYSINFO_RET_FAIL;
 	}
 
-	if (0 != ZBX_STATFS(fs, &s))
+	if (0 != TRX_STATFS(fs, &s))
 	{
 		*error = zbx_dsprintf(NULL, "Cannot obtain filesystem information: %s", zbx_strerror(errno));
 		return SYSINFO_RET_FAIL;
@@ -31,17 +31,17 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 
 	/* Available space could be negative (top bit set) if we hit disk space */
 	/* reserved for non-privileged users. Treat it as 0.                    */
-	if (0 != ZBX_IS_TOP_BIT_SET(s.f_bavail))
+	if (0 != TRX_IS_TOP_BIT_SET(s.f_bavail))
 		s.f_bavail = 0;
 
 	if (NULL != total)
-		*total = (zbx_uint64_t)s.f_blocks * s.ZBX_BSIZE;
+		*total = (zbx_uint64_t)s.f_blocks * s.TRX_BSIZE;
 
 	if (NULL != free)
-		*free = (zbx_uint64_t)s.f_bavail * s.ZBX_BSIZE;
+		*free = (zbx_uint64_t)s.f_bavail * s.TRX_BSIZE;
 
 	if (NULL != used)
-		*used = (zbx_uint64_t)(s.f_blocks - s.f_bfree) * s.ZBX_BSIZE;
+		*used = (zbx_uint64_t)(s.f_blocks - s.f_bfree) * s.TRX_BSIZE;
 
 	if (NULL != pfree)
 	{
@@ -113,7 +113,7 @@ int	VFS_FS_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 	FILE		*f;
 	struct zbx_json	j;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (NULL == (f = fopen("/proc/mounts", "r")))
 	{
@@ -121,7 +121,7 @@ int	VFS_FS_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	while (NULL != fgets(line, sizeof(line), f))
 	{
@@ -143,8 +143,8 @@ int	VFS_FS_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		*p = '\0';
 
 		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#FSNAME}", mpoint, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&j, "{#FSTYPE}", mtype, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#FSNAME}", mpoint, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#FSTYPE}", mtype, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&j);
 	}
 

@@ -6,7 +6,7 @@
 #include "sysinfo.h"
 
 extern char		*CONFIG_SOURCE_IP;
-extern ZBX_METRIC	parameters_simple[];
+extern TRX_METRIC	parameters_simple[];
 
 int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT *result, int perf);
 

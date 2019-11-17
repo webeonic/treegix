@@ -95,7 +95,7 @@ static zbx_hash_t	worker_hash_func(const void *d)
 {
 	const zbx_lld_worker_t	*worker = *(const zbx_lld_worker_t **)d;
 
-	zbx_hash_t hash =  ZBX_DEFAULT_PTR_HASH_FUNC(&worker->client);
+	zbx_hash_t hash =  TRX_DEFAULT_PTR_HASH_FUNC(&worker->client);
 
 	return hash;
 }
@@ -105,7 +105,7 @@ static int	worker_compare_func(const void *d1, const void *d2)
 	const zbx_lld_worker_t	*p1 = *(const zbx_lld_worker_t **)d1;
 	const zbx_lld_worker_t	*p2 = *(const zbx_lld_worker_t **)d2;
 
-	ZBX_RETURN_IF_NOT_EQUAL(p1->client, p2->client);
+	TRX_RETURN_IF_NOT_EQUAL(p1->client, p2->client);
 	return 0;
 }
 
@@ -187,11 +187,11 @@ static void	lld_manager_init(zbx_lld_manager_t *manager)
 	zbx_queue_ptr_create(&manager->free_workers);
 	zbx_hashset_create(&manager->workers_client, 0, worker_hash_func, worker_compare_func);
 
-	zbx_hashset_create_ext(&manager->rule_index, 0, ZBX_DEFAULT_UINT64_HASH_FUNC, ZBX_DEFAULT_UINT64_COMPARE_FUNC,
+	zbx_hashset_create_ext(&manager->rule_index, 0, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC,
 			(zbx_clean_func_t)lld_rule_clear,
-			ZBX_DEFAULT_MEM_MALLOC_FUNC, ZBX_DEFAULT_MEM_REALLOC_FUNC, ZBX_DEFAULT_MEM_FREE_FUNC);
+			TRX_DEFAULT_MEM_MALLOC_FUNC, TRX_DEFAULT_MEM_REALLOC_FUNC, TRX_DEFAULT_MEM_FREE_FUNC);
 
-	zbx_binary_heap_create(&manager->rule_queue, rule_elem_compare_func, ZBX_BINARY_HEAP_OPTION_EMPTY);
+	zbx_binary_heap_create(&manager->rule_queue, rule_elem_compare_func, TRX_BINARY_HEAP_OPTION_EMPTY);
 
 	manager->next_worker_index = 0;
 
@@ -340,7 +340,7 @@ static void	lld_queue_request(zbx_lld_manager_t *manager, const zbx_ipc_message_
 	zbx_lld_deserialize_item_value(message->data, &itemid, &data->value, &data->ts, &data->meta, &data->lastlogsize,
 			&data->mtime, &data->error);
 
-	treegix_log(LOG_LEVEL_DEBUG, "queuing discovery rule:" ZBX_FS_UI64, itemid);
+	treegix_log(LOG_LEVEL_DEBUG, "queuing discovery rule:" TRX_FS_UI64, itemid);
 
 	if (NULL == (rule = zbx_hashset_search(&manager->rule_index, &itemid)))
 	{
@@ -384,7 +384,7 @@ static void	lld_process_next_request(zbx_lld_manager_t *manager, zbx_lld_worker_
 	data = worker->rule->head;
 	buf_len = zbx_lld_serialize_item_value(&buf, worker->rule->itemid, data->value, &data->ts, data->meta,
 			data->lastlogsize, data->mtime, data->error);
-	zbx_ipc_client_send(worker->client, ZBX_IPC_LLD_TASK, buf, buf_len);
+	zbx_ipc_client_send(worker->client, TRX_IPC_LLD_TASK, buf, buf_len);
 	zbx_free(buf);
 }
 
@@ -430,7 +430,7 @@ static void	lld_process_result(zbx_lld_manager_t *manager, zbx_ipc_client_t *cli
 
 	worker = lld_get_worker_by_client(manager, client);
 
-	treegix_log(LOG_LEVEL_DEBUG, "discovery rule:" ZBX_FS_UI64 " has been processed", worker->rule->itemid);
+	treegix_log(LOG_LEVEL_DEBUG, "discovery rule:" TRX_FS_UI64 " has been processed", worker->rule->itemid);
 
 	rule = worker->rule;
 	worker->rule = NULL;
@@ -460,7 +460,7 @@ static void	lld_process_result(zbx_lld_manager_t *manager, zbx_ipc_client_t *cli
  * Purpose: main processing loop                                              *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(lld_manager_thread, args)
+TRX_THREAD_ENTRY(lld_manager_thread, args)
 {
 #define	STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
@@ -482,7 +482,7 @@ ZBX_THREAD_ENTRY(lld_manager_thread, args)
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
-	if (FAIL == zbx_ipc_service_start(&lld_service, ZBX_IPC_SERVICE_LLD, &error))
+	if (FAIL == zbx_ipc_service_start(&lld_service, TRX_IPC_SERVICE_LLD, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot start LLD manager service: %s", error);
 		zbx_free(error);
@@ -496,15 +496,15 @@ ZBX_THREAD_ENTRY(lld_manager_thread, args)
 
 	zbx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
 
-	update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		time_now = zbx_time();
 
 		if (STAT_INTERVAL < time_now - time_stat)
 		{
-			zbx_setproctitle("%s #%d [processed " ZBX_FS_UI64 " LLD rules during " ZBX_FS_DBL " sec]",
+			zbx_setproctitle("%s #%d [processed " TRX_FS_UI64 " LLD rules during " TRX_FS_DBL " sec]",
 					get_process_type_string(process_type), process_num, processed_num,
 					time_now - time_stat);
 
@@ -512,9 +512,9 @@ ZBX_THREAD_ENTRY(lld_manager_thread, args)
 			processed_num = 0;
 		}
 
-		update_selfmon_counter(ZBX_PROCESS_STATE_IDLE);
+		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
 		zbx_ipc_service_recv(&lld_service, 1, &client, &message);
-		update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+		update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
 		sec = zbx_time();
 		zbx_update_env(sec);
@@ -523,19 +523,19 @@ ZBX_THREAD_ENTRY(lld_manager_thread, args)
 		{
 			switch (message->code)
 			{
-				case ZBX_IPC_LLD_REGISTER:
+				case TRX_IPC_LLD_REGISTER:
 					lld_register_worker(&manager, client, message);
 					break;
-				case ZBX_IPC_LLD_REQUEST:
+				case TRX_IPC_LLD_REQUEST:
 					lld_queue_request(&manager, message);
 					lld_process_queue(&manager);
 					break;
-				case ZBX_IPC_LLD_DONE:
+				case TRX_IPC_LLD_DONE:
 					lld_process_result(&manager, client);
 					processed_num++;
 					manager.queued_num--;
 					break;
-				case ZBX_IPC_LLD_QUEUE:
+				case TRX_IPC_LLD_QUEUE:
 					zbx_ipc_client_send(client, message->code, (unsigned char *)&manager.queued_num,
 							sizeof(zbx_uint64_t));
 					break;

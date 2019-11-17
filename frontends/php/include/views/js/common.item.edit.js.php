@@ -1,7 +1,7 @@
 <script type="text/x-jquery-tmpl" id="delayFlexRow">
 	<tr class="form_row">
 		<td>
-			<ul class="<?= CRadioButtonList::ZBX_STYLE_CLASS ?>" id="delay_flex_#{rowNum}_type">
+			<ul class="<?= CRadioButtonList::TRX_STYLE_CLASS ?>" id="delay_flex_#{rowNum}_type">
 				<li>
 					<input type="radio" id="delay_flex_#{rowNum}_type_0" name="delay_flex[#{rowNum}][type]" value="0" checked="checked">
 					<label for="delay_flex_#{rowNum}_type_0"><?= _('Flexible') ?></label>
@@ -12,14 +12,14 @@
 			</ul>
 		</td>
 		<td>
-			<input type="text" id="delay_flex_#{rowNum}_delay" name="delay_flex[#{rowNum}][delay]" maxlength="255" placeholder="<?= ZBX_ITEM_FLEXIBLE_DELAY_DEFAULT ?>">
-			<input type="text" id="delay_flex_#{rowNum}_schedule" name="delay_flex[#{rowNum}][schedule]" maxlength="255" placeholder="<?= ZBX_ITEM_SCHEDULING_DEFAULT ?>" style="display: none;">
+			<input type="text" id="delay_flex_#{rowNum}_delay" name="delay_flex[#{rowNum}][delay]" maxlength="255" placeholder="<?= TRX_ITEM_FLEXIBLE_DELAY_DEFAULT ?>">
+			<input type="text" id="delay_flex_#{rowNum}_schedule" name="delay_flex[#{rowNum}][schedule]" maxlength="255" placeholder="<?= TRX_ITEM_SCHEDULING_DEFAULT ?>" style="display: none;">
 		</td>
 		<td>
-			<input type="text" id="delay_flex_#{rowNum}_period" name="delay_flex[#{rowNum}][period]" maxlength="255" placeholder="<?= ZBX_DEFAULT_INTERVAL ?>">
+			<input type="text" id="delay_flex_#{rowNum}_period" name="delay_flex[#{rowNum}][period]" maxlength="255" placeholder="<?= TRX_DEFAULT_INTERVAL ?>">
 		</td>
 		<td>
-			<button type="button" id="delay_flex_#{rowNum}_remove" name="delay_flex[#{rowNum}][remove]" class="<?= ZBX_STYLE_BTN_LINK ?> element-table-remove"><?= _('Remove') ?></button>
+			<button type="button" id="delay_flex_#{rowNum}_remove" name="delay_flex[#{rowNum}][remove]" class="<?= TRX_STYLE_BTN_LINK ?> element-table-remove"><?= _('Remove') ?></button>
 		</td>
 	</tr>
 </script>
@@ -157,20 +157,20 @@ foreach ($this->data['types'] as $type => $label) {
 	switch ($type) {
 		case ITEM_TYPE_DB_MONITOR:
 			$defaultKey = $this->data['is_discovery_rule']
-				? ZBX_DEFAULT_KEY_DB_MONITOR_DISCOVERY
-				: ZBX_DEFAULT_KEY_DB_MONITOR;
+				? TRX_DEFAULT_KEY_DB_MONITOR_DISCOVERY
+				: TRX_DEFAULT_KEY_DB_MONITOR;
 			zbx_subarray_push($this->data['typeVisibility'], $type,
 				['id' => 'key', 'defaultValue' => $defaultKey]
 			);
 			break;
 		case ITEM_TYPE_SSH:
 			zbx_subarray_push($this->data['typeVisibility'], $type,
-				['id' => 'key', 'defaultValue' => ZBX_DEFAULT_KEY_SSH]
+				['id' => 'key', 'defaultValue' => TRX_DEFAULT_KEY_SSH]
 			);
 			break;
 		case ITEM_TYPE_TELNET:
 			zbx_subarray_push($this->data['typeVisibility'], $type,
-				['id' => 'key', 'defaultValue' => ZBX_DEFAULT_KEY_TELNET]
+				['id' => 'key', 'defaultValue' => TRX_DEFAULT_KEY_TELNET]
 			);
 			break;
 		default:

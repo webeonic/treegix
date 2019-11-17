@@ -21,20 +21,20 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 //		VAR			TYPE	OPTIONAL FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'groupid' =>			[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
-	'hostid' =>				[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'groupid' =>			[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'hostid' =>				[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
 	// filter
-	'filter_set' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_rst' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_field' =>		[T_ZBX_STR, O_OPT, null,	null,		null],
-	'filter_field_value' =>	[T_ZBX_STR, O_OPT, null,	null,		null],
-	'filter_exact' =>		[T_ZBX_INT, O_OPT, null,	'IN(0,1)',	null],
+	'filter_set' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_rst' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_field' =>		[T_TRX_STR, O_OPT, null,	null,		null],
+	'filter_field_value' =>	[T_TRX_STR, O_OPT, null,	null,		null],
+	'filter_exact' =>		[T_TRX_INT, O_OPT, null,	'IN(0,1)',	null],
 	// sort and sortorder
-	'sort' =>				[T_ZBX_STR, O_OPT, P_SYS,
+	'sort' =>				[T_TRX_STR, O_OPT, P_SYS,
 								IN('"name","pr_macaddress_a","pr_name","pr_os","pr_serialno_a","pr_tag","pr_type"'),
 								null
 							],
-	'sortorder' =>			[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sortorder' =>			[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -49,7 +49,7 @@ if (getRequest('hostid') && !isReadableHosts([getRequest('hostid')])) {
 }
 
 $sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);
@@ -229,7 +229,7 @@ else {
 
 			order_result($data['hosts'], $sortField, $sortOrder);
 
-			if ($sortOrder == ZBX_SORT_UP) {
+			if ($sortOrder == TRX_SORT_UP) {
 				$data['hosts'] = array_slice($data['hosts'], 0, $limit);
 			}
 			else {

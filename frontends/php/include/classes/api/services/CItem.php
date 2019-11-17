@@ -18,13 +18,13 @@ class CItem extends CItemGeneral {
 	 *
 	 * 5.6 would allow this to be defined constant.
 	 */
-	public static $supported_preprocessing_types = [ZBX_PREPROC_REGSUB, ZBX_PREPROC_TRIM, ZBX_PREPROC_RTRIM,
-		ZBX_PREPROC_LTRIM, ZBX_PREPROC_XPATH, ZBX_PREPROC_JSONPATH, ZBX_PREPROC_MULTIPLIER, ZBX_PREPROC_DELTA_VALUE,
-		ZBX_PREPROC_DELTA_SPEED, ZBX_PREPROC_BOOL2DEC, ZBX_PREPROC_OCT2DEC, ZBX_PREPROC_HEX2DEC,
-		ZBX_PREPROC_VALIDATE_RANGE, ZBX_PREPROC_VALIDATE_REGEX, ZBX_PREPROC_VALIDATE_NOT_REGEX,
-		ZBX_PREPROC_ERROR_FIELD_JSON, ZBX_PREPROC_ERROR_FIELD_XML, ZBX_PREPROC_ERROR_FIELD_REGEX,
-		ZBX_PREPROC_THROTTLE_VALUE, ZBX_PREPROC_THROTTLE_TIMED_VALUE, ZBX_PREPROC_SCRIPT,
-		ZBX_PREPROC_PROMETHEUS_PATTERN, ZBX_PREPROC_PROMETHEUS_TO_JSON, ZBX_PREPROC_CSV_TO_JSON
+	public static $supported_preprocessing_types = [TRX_PREPROC_REGSUB, TRX_PREPROC_TRIM, TRX_PREPROC_RTRIM,
+		TRX_PREPROC_LTRIM, TRX_PREPROC_XPATH, TRX_PREPROC_JSONPATH, TRX_PREPROC_MULTIPLIER, TRX_PREPROC_DELTA_VALUE,
+		TRX_PREPROC_DELTA_SPEED, TRX_PREPROC_BOOL2DEC, TRX_PREPROC_OCT2DEC, TRX_PREPROC_HEX2DEC,
+		TRX_PREPROC_VALIDATE_RANGE, TRX_PREPROC_VALIDATE_REGEX, TRX_PREPROC_VALIDATE_NOT_REGEX,
+		TRX_PREPROC_ERROR_FIELD_JSON, TRX_PREPROC_ERROR_FIELD_XML, TRX_PREPROC_ERROR_FIELD_REGEX,
+		TRX_PREPROC_THROTTLE_VALUE, TRX_PREPROC_THROTTLE_TIMED_VALUE, TRX_PREPROC_SCRIPT,
+		TRX_PREPROC_PROMETHEUS_PATTERN, TRX_PREPROC_PROMETHEUS_TO_JSON, TRX_PREPROC_CSV_TO_JSON
 	];
 
 	public function __construct() {
@@ -62,7 +62,7 @@ class CItem extends CItemGeneral {
 		$sqlParts = [
 			'select'	=> ['items' => 'i.itemid'],
 			'from'		=> ['items' => 'items i'],
-			'where'		=> ['webtype' => 'i.type<>'.ITEM_TYPE_HTTPTEST, 'flags' => 'i.flags IN ('.ZBX_FLAG_DISCOVERY_NORMAL.','.ZBX_FLAG_DISCOVERY_CREATED.')'],
+			'where'		=> ['webtype' => 'i.type<>'.ITEM_TYPE_HTTPTEST, 'flags' => 'i.flags IN ('.TRX_FLAG_DISCOVERY_NORMAL.','.TRX_FLAG_DISCOVERY_CREATED.')'],
 			'group'		=> [],
 			'order'		=> [],
 			'limit'		=> null
@@ -351,7 +351,7 @@ class CItem extends CItemGeneral {
 					' FROM functions ff,triggers t'.
 					' WHERE i.itemid=ff.itemid'.
 						' AND ff.triggerid=t.triggerid'.
-						' AND t.flags IN ('.ZBX_FLAG_DISCOVERY_NORMAL.','.ZBX_FLAG_DISCOVERY_CREATED.')'.
+						' AND t.flags IN ('.TRX_FLAG_DISCOVERY_NORMAL.','.TRX_FLAG_DISCOVERY_CREATED.')'.
 					')';
 			}
 			else {
@@ -360,7 +360,7 @@ class CItem extends CItemGeneral {
 					' FROM functions ff,triggers t'.
 					' WHERE i.itemid=ff.itemid'.
 						' AND ff.triggerid=t.triggerid'.
-						' AND t.flags IN ('.ZBX_FLAG_DISCOVERY_NORMAL.','.ZBX_FLAG_DISCOVERY_CREATED.')'.
+						' AND t.flags IN ('.TRX_FLAG_DISCOVERY_NORMAL.','.TRX_FLAG_DISCOVERY_CREATED.')'.
 					')';
 			}
 		}
@@ -433,7 +433,7 @@ class CItem extends CItemGeneral {
 		self::validateInventoryLinks($items);
 
 		foreach ($items as &$item) {
-			$item['flags'] = ZBX_FLAG_DISCOVERY_NORMAL;
+			$item['flags'] = TRX_FLAG_DISCOVERY_NORMAL;
 			unset($item['itemid']);
 		}
 		unset($item);
@@ -717,7 +717,7 @@ class CItem extends CItemGeneral {
 	private function validateDelete(array &$itemids, array &$db_items = null) {
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $itemids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_items = $this->get([
@@ -729,7 +729,7 @@ class CItem extends CItemGeneral {
 
 		foreach ($itemids as $itemid) {
 			if (!array_key_exists($itemid, $db_items)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -737,7 +737,7 @@ class CItem extends CItemGeneral {
 			$db_item = $db_items[$itemid];
 
 			if ($db_item['templateid'] != 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot delete templated item.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot delete templated item.'));
 			}
 		}
 	}
@@ -758,7 +758,7 @@ class CItem extends CItemGeneral {
 			'selectApplications' => ['applicationid'],
 			'selectPreprocessing' => ['type', 'params', 'error_handler', 'error_handler_params'],
 			'hostids' => $data['templateids'],
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 			'preservekeys' => true
 		]);
 
@@ -804,7 +804,7 @@ class CItem extends CItemGeneral {
 		if (array_key_exists('history', $item)
 				&& !validateTimeUnit($item['history'], SEC_PER_HOUR, 25 * SEC_PER_YEAR, true, $error,
 					['usermacros' => true])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'history', $error)
 			);
 		}
@@ -812,7 +812,7 @@ class CItem extends CItemGeneral {
 		if (array_key_exists('trends', $item)
 				&& !validateTimeUnit($item['trends'], SEC_PER_DAY, 25 * SEC_PER_YEAR, true, $error,
 					['usermacros' => true])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'trends', $error)
 			);
 		}
@@ -921,7 +921,7 @@ class CItem extends CItemGeneral {
 				if (!isset($possibleHostInventories[$item['inventory_link']])) {
 					$maxVar = max(array_keys($possibleHostInventories));
 					self::exception(
-						ZBX_API_ERROR_PARAMETERS,
+						TRX_API_ERROR_PARAMETERS,
 						_s('Item "%1$s" cannot populate a missing host inventory field number "%2$d". Choices are: from 0 (do not populate) to %3$d.', $item['name'], $item['inventory_link'], $maxVar)
 					);
 				}
@@ -981,7 +981,7 @@ class CItem extends CItemGeneral {
 				$originalItemName = $originalItem[0]['name'];
 
 				self::exception(
-					ZBX_API_ERROR_PARAMETERS,
+					TRX_API_ERROR_PARAMETERS,
 					_s(
 						'Two items ("%1$s" and "%2$s") cannot populate one host inventory field "%3$s", this would lead to a conflict.',
 						$beingSavedItemName,
@@ -1095,7 +1095,7 @@ class CItem extends CItemGeneral {
 					' WHERE '.dbConditionInt('id1.itemid', $itemids).
 					' AND id1.parent_itemid=id2.itemid'.
 					' AND i.itemid=id1.itemid'.
-					' AND i.flags='.ZBX_FLAG_DISCOVERY_CREATED
+					' AND i.flags='.TRX_FLAG_DISCOVERY_CREATED
 			);
 			while ($rule = DBfetch($dbRules)) {
 				$relationMap->addRelation($rule['itemid'], $rule['parent_itemid']);
@@ -1108,7 +1108,7 @@ class CItem extends CItemGeneral {
 					' FROM item_discovery id,items i'.
 					' WHERE '.dbConditionInt('id.itemid', $itemids).
 					' AND i.itemid=id.itemid'.
-					' AND i.flags='.ZBX_FLAG_DISCOVERY_PROTOTYPE
+					' AND i.flags='.TRX_FLAG_DISCOVERY_PROTOTYPE
 			);
 			while ($rule = DBfetch($dbRules)) {
 				$relationMap->addRelation($rule['itemid'], $rule['parent_itemid']);
@@ -1153,7 +1153,7 @@ class CItem extends CItemGeneral {
 			$requestedOutput['prevvalue'] = true;
 		}
 		if ($requestedOutput) {
-			$history = Manager::History()->getLastValues($result, 2, ZBX_HISTORY_PERIOD);
+			$history = Manager::History()->getLastValues($result, 2, TRX_HISTORY_PERIOD);
 			foreach ($result as &$item) {
 				$lastHistory = isset($history[$item['itemid']][0]) ? $history[$item['itemid']][0] : null;
 				$prevHistory = isset($history[$item['itemid']][1]) ? $history[$item['itemid']][1] : null;

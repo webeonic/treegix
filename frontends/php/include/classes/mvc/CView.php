@@ -288,17 +288,17 @@ class CView {
 	 */
 	public static function getLayoutMode() {
 		if (self::$has_web_layout_mode) {
-			return (int) CProfile::get('web.layout.mode', ZBX_LAYOUT_NORMAL);
+			return (int) CProfile::get('web.layout.mode', TRX_LAYOUT_NORMAL);
 		}
 		else {
-			return ZBX_LAYOUT_NORMAL;
+			return TRX_LAYOUT_NORMAL;
 		}
 	}
 
 	/**
 	 * Update layout mode setting
 	 *
-	 * @param int $layout_mode  Possible values ZBX_LAYOUT_NORMAL|ZBX_LAYOUT_FULLSCREEN|ZBX_LAYOUT_KIOSKMODE.
+	 * @param int $layout_mode  Possible values TRX_LAYOUT_NORMAL|TRX_LAYOUT_FULLSCREEN|TRX_LAYOUT_KIOSKMODE.
 	 */
 	public static function setLayoutMode($layout_mode) {
 		CProfile::update('web.layout.mode', $layout_mode, PROFILE_TYPE_INT);

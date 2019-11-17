@@ -6,10 +6,10 @@
 
 /* scheduler support */
 
-#define ZBX_SCHEDULER_FILTER_DAY	1
-#define ZBX_SCHEDULER_FILTER_HOUR	2
-#define ZBX_SCHEDULER_FILTER_MINUTE	3
-#define ZBX_SCHEDULER_FILTER_SECOND	4
+#define TRX_SCHEDULER_FILTER_DAY	1
+#define TRX_SCHEDULER_FILTER_HOUR	2
+#define TRX_SCHEDULER_FILTER_MINUTE	3
+#define TRX_SCHEDULER_FILTER_SECOND	4
 
 typedef struct
 {
@@ -59,12 +59,12 @@ struct zbx_custom_interval
 	zbx_scheduler_interval_t	*scheduling;
 };
 
-static ZBX_THREAD_LOCAL volatile sig_atomic_t	zbx_timed_out;	/* 0 - no timeout occurred, 1 - SIGALRM took place */
+static TRX_THREAD_LOCAL volatile sig_atomic_t	zbx_timed_out;	/* 0 - no timeout occurred, 1 - SIGALRM took place */
 
 #ifdef _WINDOWS
 
-char	TREEGIX_SERVICE_NAME[ZBX_SERVICE_NAME_LEN] = APPLICATION_NAME;
-char	TREEGIX_EVENT_SOURCE[ZBX_SERVICE_NAME_LEN] = APPLICATION_NAME;
+char	TREEGIX_SERVICE_NAME[TRX_SERVICE_NAME_LEN] = APPLICATION_NAME;
+char	TREEGIX_EVENT_SOURCE[TRX_SERVICE_NAME_LEN] = APPLICATION_NAME;
 
 int	__zbx_stat(const char *path, zbx_stat_t *buf)
 {
@@ -137,10 +137,10 @@ const char	*get_program_name(const char *path)
  ******************************************************************************/
 void	zbx_timespec(zbx_timespec_t *ts)
 {
-	static ZBX_THREAD_LOCAL zbx_timespec_t	last_ts = {0, 0};
-	static ZBX_THREAD_LOCAL int		corr = 0;
+	static TRX_THREAD_LOCAL zbx_timespec_t	last_ts = {0, 0};
+	static TRX_THREAD_LOCAL int		corr = 0;
 #ifdef _WINDOWS
-	static ZBX_THREAD_LOCAL LARGE_INTEGER	tickPerSecond = {0};
+	static TRX_THREAD_LOCAL LARGE_INTEGER	tickPerSecond = {0};
 	struct _timeb				tb;
 #else
 	struct timeval	tv;
@@ -165,7 +165,7 @@ void	zbx_timespec(zbx_timespec_t *ts)
 
 		if (TRUE == QueryPerformanceCounter(&tick))
 		{
-			static ZBX_THREAD_LOCAL LARGE_INTEGER	last_tick = {0};
+			static TRX_THREAD_LOCAL LARGE_INTEGER	last_tick = {0};
 
 			if (0 < last_tick.QuadPart)
 			{
@@ -282,7 +282,7 @@ double	zbx_time(void)
  ******************************************************************************/
 double	zbx_current_time(void)
 {
-	return zbx_time() + ZBX_JAN_1970_IN_SEC;
+	return zbx_time() + TRX_JAN_1970_IN_SEC;
 }
 
 /******************************************************************************
@@ -337,9 +337,9 @@ void	zbx_get_time(struct tm *tm, long *milliseconds, zbx_timezone_t *tz)
 	if (NULL != tz)
 	{
 #ifdef HAVE_TM_TM_GMTOFF
-#	define ZBX_UTC_OFF	tm->tm_gmtoff
+#	define TRX_UTC_OFF	tm->tm_gmtoff
 #else
-#	define ZBX_UTC_OFF	offset
+#	define TRX_UTC_OFF	offset
 		long		offset;
 		struct tm	tm_utc;
 #ifdef _WINDOWS
@@ -356,11 +356,11 @@ void	zbx_get_time(struct tm *tm, long *milliseconds, zbx_timezone_t *tz)
 		while (tm->tm_year < tm_utc.tm_year)
 			offset -= (SUCCEED == is_leap_year(--tm_utc.tm_year) ? SEC_PER_YEAR + SEC_PER_DAY : SEC_PER_YEAR);
 #endif
-		tz->tz_sign = (0 <= ZBX_UTC_OFF ? '+' : '-');
-		tz->tz_hour = labs(ZBX_UTC_OFF) / SEC_PER_HOUR;
-		tz->tz_min = (labs(ZBX_UTC_OFF) - tz->tz_hour * SEC_PER_HOUR) / SEC_PER_MIN;
+		tz->tz_sign = (0 <= TRX_UTC_OFF ? '+' : '-');
+		tz->tz_hour = labs(TRX_UTC_OFF) / SEC_PER_HOUR;
+		tz->tz_min = (labs(TRX_UTC_OFF) - tz->tz_hour * SEC_PER_HOUR) / SEC_PER_MIN;
 		/* assuming no remaining seconds like in historic Asia/Riyadh87, Asia/Riyadh88 and Asia/Riyadh89 */
-#undef ZBX_UTC_OFF
+#undef TRX_UTC_OFF
 	}
 }
 
@@ -386,7 +386,7 @@ void	zbx_get_time(struct tm *tm, long *milliseconds, zbx_timezone_t *tz)
 int	zbx_utc_time(int year, int mon, int mday, int hour, int min, int sec, int *t)
 {
 /* number of leap years before but not including year */
-#define ZBX_LEAP_YEARS(year)	(((year) - 1) / 4 - ((year) - 1) / 100 + ((year) - 1) / 400)
+#define TRX_LEAP_YEARS(year)	(((year) - 1) / 4 - ((year) - 1) / 100 + ((year) - 1) / 400)
 
 	/* days since the beginning of non-leap year till the beginning of the month */
 	static const int	month_day[12] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
@@ -395,14 +395,14 @@ int	zbx_utc_time(int year, int mon, int mday, int hour, int min, int sec, int *t
 	if (epoch_year <= year && 1 <= mon && mon <= 12 && 1 <= mday && mday <= zbx_day_in_month(year, mon) &&
 			0 <= hour && hour <= 23 && 0 <= min && min <= 59 && 0 <= sec && sec <= 61 &&
 			0 <= (*t = (year - epoch_year) * SEC_PER_YEAR +
-			(ZBX_LEAP_YEARS(2 < mon ? year + 1 : year) - ZBX_LEAP_YEARS(epoch_year)) * SEC_PER_DAY +
+			(TRX_LEAP_YEARS(2 < mon ? year + 1 : year) - TRX_LEAP_YEARS(epoch_year)) * SEC_PER_DAY +
 			(month_day[mon - 1] + mday - 1) * SEC_PER_DAY + hour * SEC_PER_HOUR + min * SEC_PER_MIN + sec))
 	{
 		return SUCCEED;
 	}
 
 	return FAIL;
-#undef ZBX_LEAP_YEARS
+#undef TRX_LEAP_YEARS
 }
 
 /******************************************************************************
@@ -465,7 +465,7 @@ void	*zbx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_
 	if (NULL != ptr)
 		return ptr;
 
-	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_calloc: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_calloc: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
 			filename, line, (zbx_fs_size_t)size);
 
 	exit(EXIT_FAILURE);
@@ -504,7 +504,7 @@ void	*zbx_malloc2(const char *filename, int line, void *old, size_t size)
 	if (NULL != ptr)
 		return ptr;
 
-	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_malloc: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_malloc: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
 			filename, line, (zbx_fs_size_t)size);
 
 	exit(EXIT_FAILURE);
@@ -536,7 +536,7 @@ void	*zbx_realloc2(const char *filename, int line, void *old, size_t size)
 	if (NULL != ptr)
 		return ptr;
 
-	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_realloc: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_realloc: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
 			filename, line, (zbx_fs_size_t)size);
 
 	exit(EXIT_FAILURE);
@@ -555,7 +555,7 @@ char	*zbx_strdup2(const char *filename, int line, char *old, const char *str)
 	if (NULL != ptr)
 		return ptr;
 
-	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_strdup: out of memory. Requested " ZBX_FS_SIZE_T " bytes.",
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_strdup: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
 			filename, line, (zbx_fs_size_t)(strlen(str) + 1));
 
 	exit(EXIT_FAILURE);
@@ -1210,37 +1210,37 @@ static int	scheduler_interval_parse(zbx_scheduler_interval_t *interval, const ch
 			case '\0':
 				return FAIL;
 			case 'h':
-				if (ZBX_SCHEDULER_FILTER_HOUR < interval->filter_level)
+				if (TRX_SCHEDULER_FILTER_HOUR < interval->filter_level)
 					return FAIL;
 
 				ret = scheduler_parse_filter(&interval->hours, text + 1, &len, 0, 23, 2);
-				interval->filter_level = ZBX_SCHEDULER_FILTER_HOUR;
+				interval->filter_level = TRX_SCHEDULER_FILTER_HOUR;
 
 				break;
 			case 's':
-				if (ZBX_SCHEDULER_FILTER_SECOND < interval->filter_level)
+				if (TRX_SCHEDULER_FILTER_SECOND < interval->filter_level)
 					return FAIL;
 
 				ret = scheduler_parse_filter(&interval->seconds, text + 1, &len, 0, 59, 2);
-				interval->filter_level = ZBX_SCHEDULER_FILTER_SECOND;
+				interval->filter_level = TRX_SCHEDULER_FILTER_SECOND;
 
 				break;
 			case 'w':
 				if ('d' != text[1])
 					return FAIL;
 
-				if (ZBX_SCHEDULER_FILTER_DAY < interval->filter_level)
+				if (TRX_SCHEDULER_FILTER_DAY < interval->filter_level)
 					return FAIL;
 
 				len--;
 				ret = scheduler_parse_filter(&interval->wdays, text + 2, &len, 1, 7, 1);
-				interval->filter_level = ZBX_SCHEDULER_FILTER_DAY;
+				interval->filter_level = TRX_SCHEDULER_FILTER_DAY;
 
 				break;
 			case 'm':
 				if ('d' == text[1])
 				{
-					if (ZBX_SCHEDULER_FILTER_DAY < interval->filter_level ||
+					if (TRX_SCHEDULER_FILTER_DAY < interval->filter_level ||
 							NULL != interval->wdays)
 					{
 						return FAIL;
@@ -1248,15 +1248,15 @@ static int	scheduler_interval_parse(zbx_scheduler_interval_t *interval, const ch
 
 					len--;
 					ret = scheduler_parse_filter(&interval->mdays, text + 2, &len, 1, 31, 2);
-					interval->filter_level = ZBX_SCHEDULER_FILTER_DAY;
+					interval->filter_level = TRX_SCHEDULER_FILTER_DAY;
 				}
 				else
 				{
-					if (ZBX_SCHEDULER_FILTER_MINUTE < interval->filter_level)
+					if (TRX_SCHEDULER_FILTER_MINUTE < interval->filter_level)
 						return FAIL;
 
 					ret = scheduler_parse_filter(&interval->minutes, text + 1, &len, 0, 59, 2);
-					interval->filter_level = ZBX_SCHEDULER_FILTER_MINUTE;
+					interval->filter_level = TRX_SCHEDULER_FILTER_MINUTE;
 				}
 
 				break;
@@ -1467,7 +1467,7 @@ static int	scheduler_get_day_nextcheck(const zbx_scheduler_interval_t *interval,
  * Purpose: calculates the time/day that satisfies the specified filter       *
  *                                                                            *
  * Parameters: interval - [IN] the scheduler interval                         *
- *             level    - [IN] the filter level, see ZBX_SCHEDULER_FILTER_*   *
+ *             level    - [IN] the filter level, see TRX_SCHEDULER_FILTER_*   *
  *                        defines                                             *
  *             tm       - [IN/OUT] the input/output date & time               *
  *                                                                            *
@@ -1484,19 +1484,19 @@ static int	scheduler_get_filter_nextcheck(const zbx_scheduler_interval_t *interv
 	/* initialize data depending on filter level */
 	switch (level)
 	{
-		case ZBX_SCHEDULER_FILTER_DAY:
+		case TRX_SCHEDULER_FILTER_DAY:
 			return scheduler_get_day_nextcheck(interval, tm);
-		case ZBX_SCHEDULER_FILTER_HOUR:
+		case TRX_SCHEDULER_FILTER_HOUR:
 			max = 23;
 			filter = interval->hours;
 			value = &tm->tm_hour;
 			break;
-		case ZBX_SCHEDULER_FILTER_MINUTE:
+		case TRX_SCHEDULER_FILTER_MINUTE:
 			max = 59;
 			filter = interval->minutes;
 			value = &tm->tm_min;
 			break;
-		case ZBX_SCHEDULER_FILTER_SECOND:
+		case TRX_SCHEDULER_FILTER_SECOND:
 			max = 59;
 			filter = interval->seconds;
 			value = &tm->tm_sec;
@@ -1542,7 +1542,7 @@ static void	scheduler_apply_day_filter(zbx_scheduler_interval_t *interval, struc
 {
 	int	day = tm->tm_mday, mon = tm->tm_mon, year = tm->tm_year;
 
-	while (SUCCEED != scheduler_get_filter_nextcheck(interval, ZBX_SCHEDULER_FILTER_DAY, tm))
+	while (SUCCEED != scheduler_get_filter_nextcheck(interval, TRX_SCHEDULER_FILTER_DAY, tm))
 	{
 		if (11 < ++tm->tm_mon)
 		{
@@ -1577,7 +1577,7 @@ static void	scheduler_apply_hour_filter(zbx_scheduler_interval_t *interval, stru
 {
 	int	hour = tm->tm_hour;
 
-	while (SUCCEED != scheduler_get_filter_nextcheck(interval, ZBX_SCHEDULER_FILTER_HOUR, tm))
+	while (SUCCEED != scheduler_get_filter_nextcheck(interval, TRX_SCHEDULER_FILTER_HOUR, tm))
 	{
 		tm->tm_mday++;
 		tm->tm_hour = 0;
@@ -1609,7 +1609,7 @@ static void	scheduler_apply_minute_filter(zbx_scheduler_interval_t *interval, st
 {
 	int	min = tm->tm_min;
 
-	while (SUCCEED != scheduler_get_filter_nextcheck(interval, ZBX_SCHEDULER_FILTER_MINUTE, tm))
+	while (SUCCEED != scheduler_get_filter_nextcheck(interval, TRX_SCHEDULER_FILTER_MINUTE, tm))
 	{
 		tm->tm_hour++;
 		tm->tm_min = 0;
@@ -1636,7 +1636,7 @@ static void	scheduler_apply_minute_filter(zbx_scheduler_interval_t *interval, st
  ******************************************************************************/
 static void	scheduler_apply_second_filter(zbx_scheduler_interval_t *interval, struct tm *tm)
 {
-	while (SUCCEED != scheduler_get_filter_nextcheck(interval, ZBX_SCHEDULER_FILTER_SECOND, tm))
+	while (SUCCEED != scheduler_get_filter_nextcheck(interval, TRX_SCHEDULER_FILTER_SECOND, tm))
 	{
 		tm->tm_min++;
 		tm->tm_sec = 0;
@@ -1840,7 +1840,7 @@ static int	parse_simple_interval(const char *str, int *len, char sep, int *value
 	const char	*delim;
 
 	if (SUCCEED != is_time_suffix(str, value,
-			(int)(NULL == (delim = strchr(str, sep)) ? ZBX_LENGTH_UNLIMITED : delim - str)))
+			(int)(NULL == (delim = strchr(str, sep)) ? TRX_LENGTH_UNLIMITED : delim - str)))
 	{
 		return FAIL;
 	}
@@ -1998,7 +1998,7 @@ int	zbx_interval_preproc(const char *interval_str, int *simple_interval, zbx_cus
 	const char			*delim, *interval_type;
 
 	if (SUCCEED != is_time_suffix(interval_str, simple_interval,
-			(int)(NULL == (delim = strchr(interval_str, ';')) ? ZBX_LENGTH_UNLIMITED : delim - interval_str)))
+			(int)(NULL == (delim = strchr(interval_str, ';')) ? TRX_LENGTH_UNLIMITED : delim - interval_str)))
 	{
 		interval_type = "update";
 		goto fail;
@@ -2127,7 +2127,7 @@ int	calculate_item_nextcheck(zbx_uint64_t seed, int item_type, int simple_interv
 		if (0 != simple_interval)
 			nextcheck = (int)now + simple_interval;
 		else
-			nextcheck = ZBX_JAN_2038;
+			nextcheck = TRX_JAN_2038;
 	}
 	else
 	{
@@ -2170,7 +2170,7 @@ int	calculate_item_nextcheck(zbx_uint64_t seed, int item_type, int simple_interv
 				}
 			}
 			else
-				nextcheck = ZBX_JAN_2038;
+				nextcheck = TRX_JAN_2038;
 
 			if (NULL == custom_intervals)
 				break;
@@ -2234,7 +2234,7 @@ int	calculate_item_nextcheck_unreachable(int simple_interval, const zbx_custom_i
 			/* find the flexible interval change */
 			if (FAIL == get_next_delay_interval(custom_intervals->flexible, nextcheck, &next_interval))
 			{
-				nextcheck = ZBX_JAN_2038;
+				nextcheck = TRX_JAN_2038;
 				break;
 			}
 			nextcheck = next_interval;
@@ -2456,7 +2456,7 @@ int	is_ip(const char *ip)
 int	zbx_validate_hostname(const char *hostname)
 {
 	int		component;	/* periods ('.') are only allowed when they serve to delimit components */
-	int		len = MAX_ZBX_DNSNAME_LEN;
+	int		len = MAX_TRX_DNSNAME_LEN;
 	const char	*p;
 
 	/* the first character must be an alphanumeric character */
@@ -2508,7 +2508,7 @@ int	ip_in_list(const char *list, const char *ip)
 	if (SUCCEED != iprange_parse(&iprange, ip))
 		goto out;
 #ifndef HAVE_IPV6
-	if (ZBX_IPRANGE_V6 == iprange.type)
+	if (TRX_IPRANGE_V6 == iprange.type)
 		goto out;
 #endif
 	iprange_first(&iprange, ipaddress);
@@ -2524,7 +2524,7 @@ int	ip_in_list(const char *list, const char *ip)
 		if (SUCCEED != iprange_parse(&iprange, address))
 			continue;
 #ifndef HAVE_IPV6
-		if (ZBX_IPRANGE_V6 == iprange.type)
+		if (TRX_IPRANGE_V6 == iprange.type)
 			continue;
 #endif
 		if (SUCCEED == iprange_validate(&iprange, ipaddress))
@@ -2606,7 +2606,7 @@ int	int_in_list(char *list, int value)
 
 int	zbx_double_compare(double a, double b)
 {
-	return fabs(a - b) <= ZBX_DOUBLE_EPSILON ? SUCCEED : FAIL;
+	return fabs(a - b) <= TRX_DOUBLE_EPSILON ? SUCCEED : FAIL;
 }
 
 /******************************************************************************
@@ -2617,7 +2617,7 @@ int	zbx_double_compare(double a, double b)
  *                                                                            *
  * Parameters: str   - string to check                                        *
  *             flags - extra options including:                               *
- *                       ZBX_FLAG_DOUBLE_SUFFIX - allow suffixes              *
+ *                       TRX_FLAG_DOUBLE_SUFFIX - allow suffixes              *
  *                                                                            *
  * Return value:  SUCCEED - the string is double                              *
  *                FAIL - otherwise                                            *
@@ -2638,7 +2638,7 @@ int	is_double_suffix(const char *str, unsigned char flags)
 	if (FAIL == zbx_number_parse(str, &len))
 		return FAIL;
 
-	if ('\0' != *(str += len) && 0 != (flags & ZBX_FLAG_DOUBLE_SUFFIX) && NULL != strchr(ZBX_UNIT_SYMBOLS, *str))
+	if ('\0' != *(str += len) && 0 != (flags & TRX_FLAG_DOUBLE_SUFFIX) && NULL != strchr(TRX_UNIT_SYMBOLS, *str))
 		str++;		/* allow valid suffix if flag is enabled */
 
 	return '\0' == *str ? SUCCEED : FAIL;
@@ -2697,7 +2697,7 @@ int	is_double(const char *str)
  * Parameters: str    - [IN] string to check                                  *
  *             value  - [OUT] a pointer to converted value (optional)         *
  *             length - [IN] number of characters to validate, pass           *
- *                      ZBX_LENGTH_UNLIMITED to validate full string          *
+ *                      TRX_LENGTH_UNLIMITED to validate full string          *
  *                                                                            *
  * Return value: SUCCEED - the string is valid and within reasonable limits   *
  *               FAIL    - otherwise                                          *
@@ -2755,7 +2755,7 @@ int	is_time_suffix(const char *str, int *value, int length)
 		len--;
 	}
 
-	if ((ZBX_LENGTH_UNLIMITED == length && '\0' != *str) || (ZBX_LENGTH_UNLIMITED != length && 0 != len))
+	if ((TRX_LENGTH_UNLIMITED == length && '\0' != *str) || (TRX_LENGTH_UNLIMITED != length && 0 != len))
 		return FAIL;
 
 	if (max / factor < value_tmp)
@@ -2797,7 +2797,7 @@ int	_wis_uint(const wchar_t *wide_string)
  *          range and optionally store it into value parameter                *
  *                                                                            *
  * Parameters: str   - [IN] string to check                                   *
- *             n     - [IN] string length or ZBX_MAX_UINT64_LEN               *
+ *             n     - [IN] string length or TRX_MAX_UINT64_LEN               *
  *             value - [OUT] a pointer to output buffer where the converted   *
  *                     value is to be written (optional, can be NULL)         *
  *             size  - [IN] size of the output buffer (optional)              *
@@ -3206,13 +3206,13 @@ zbx_uint64_t	suffix2factor(char c)
 	switch (c)
 	{
 		case 'K':
-			return ZBX_KIBIBYTE;
+			return TRX_KIBIBYTE;
 		case 'M':
-			return ZBX_MEBIBYTE;
+			return TRX_MEBIBYTE;
 		case 'G':
-			return ZBX_GIBIBYTE;
+			return TRX_GIBIBYTE;
 		case 'T':
-			return ZBX_TEBIBYTE;
+			return TRX_TEBIBYTE;
 		case 's':
 			return 1;
 		case 'm':
@@ -3660,7 +3660,7 @@ int	zbx_alarm_timed_out(void)
  * Return value: Hexadecimal token string, must be freed by caller            *
  *                                                                            *
  * Comments: if you change token creation algorithm do not forget to adjust   *
- *           ZBX_DATA_SESSION_TOKEN_SIZE definition                           *
+ *           TRX_DATA_SESSION_TOKEN_SIZE definition                           *
  *                                                                            *
  ******************************************************************************/
 char	*zbx_create_token(zbx_uint64_t seed)
@@ -3672,7 +3672,7 @@ char	*zbx_create_token(zbx_uint64_t seed)
 	int		i;
 	char		*token, *ptr;
 
-	ptr = token = (char *)zbx_malloc(NULL, ZBX_DATA_SESSION_TOKEN_SIZE + 1);
+	ptr = token = (char *)zbx_malloc(NULL, TRX_DATA_SESSION_TOKEN_SIZE + 1);
 
 	zbx_timespec(&ts);
 
@@ -3734,7 +3734,7 @@ int	zbx_get_agent_item_nextcheck(zbx_uint64_t itemid, const char *delay, unsigne
 
 		if (SUCCEED != zbx_interval_preproc(delay, &simple_interval, &custom_intervals, error))
 		{
-			*nextcheck = ZBX_JAN_2038;
+			*nextcheck = TRX_JAN_2038;
 			return FAIL;
 		}
 

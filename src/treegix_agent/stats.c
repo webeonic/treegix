@@ -21,16 +21,16 @@ extern int get_cpu_num_win32(void);
 #	include "ipc.h"
 #endif
 
-ZBX_COLLECTOR_DATA	*collector = NULL;
+TRX_COLLECTOR_DATA	*collector = NULL;
 
-extern ZBX_THREAD_LOCAL unsigned char	process_type;
-extern ZBX_THREAD_LOCAL int		server_num, process_num;
+extern TRX_THREAD_LOCAL unsigned char	process_type;
+extern TRX_THREAD_LOCAL int		server_num, process_num;
 
 #ifndef _WINDOWS
 static int		shm_id;
-int 			my_diskstat_shmid = ZBX_NONEXISTENT_SHMID;
-ZBX_DISKDEVICES_DATA	*diskdevices = NULL;
-zbx_mutex_t		diskstats_lock = ZBX_MUTEX_NULL;
+int 			my_diskstat_shmid = TRX_NONEXISTENT_SHMID;
+TRX_DISKDEVICES_DATA	*diskdevices = NULL;
+zbx_mutex_t		diskstats_lock = TRX_MUTEX_NULL;
 #endif
 
 /******************************************************************************
@@ -126,10 +126,10 @@ int	init_collector_data(char **error)
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	cpu_count = zbx_get_cpu_num();
-	sz = ZBX_SIZE_T_ALIGN8(sizeof(ZBX_COLLECTOR_DATA));
+	sz = TRX_SIZE_T_ALIGN8(sizeof(TRX_COLLECTOR_DATA));
 
 #ifdef _WINDOWS
-	ZBX_UNUSED(error);
+	TRX_UNUSED(error);
 
 	sz_cpu = sizeof(zbx_perf_counter_data_t *) * (cpu_count + 1);
 	collector = zbx_malloc(collector, sz + sz_cpu);
@@ -138,7 +138,7 @@ int	init_collector_data(char **error)
 	collector->cpus.cpu_counter = (zbx_perf_counter_data_t **)((char *)collector + sz);
 	collector->cpus.count = cpu_count;
 #else
-	sz_cpu = sizeof(ZBX_SINGLE_CPU_STAT_DATA) * (cpu_count + 1);
+	sz_cpu = sizeof(TRX_SINGLE_CPU_STAT_DATA) * (cpu_count + 1);
 
 	if (-1 == (shm_id = zbx_shm_create(sz + sz_cpu)))
 	{
@@ -146,7 +146,7 @@ int	init_collector_data(char **error)
 		goto out;
 	}
 
-	if ((void *)(-1) == (collector = (ZBX_COLLECTOR_DATA *)shmat(shm_id, NULL, 0)))
+	if ((void *)(-1) == (collector = (TRX_COLLECTOR_DATA *)shmat(shm_id, NULL, 0)))
 	{
 		*error = zbx_dsprintf(*error, "cannot attach shared memory for collector: %s", zbx_strerror(errno));
 		goto out;
@@ -159,15 +159,15 @@ int	init_collector_data(char **error)
 		goto out;
 	}
 
-	collector->cpus.cpu = (ZBX_SINGLE_CPU_STAT_DATA *)((char *)collector + sz);
+	collector->cpus.cpu = (TRX_SINGLE_CPU_STAT_DATA *)((char *)collector + sz);
 	collector->cpus.count = cpu_count;
-	collector->diskstat_shmid = ZBX_NONEXISTENT_SHMID;
+	collector->diskstat_shmid = TRX_NONEXISTENT_SHMID;
 
-#ifdef ZBX_PROCSTAT_COLLECTOR
+#ifdef TRX_PROCSTAT_COLLECTOR
 	zbx_procstat_init();
 #endif
 
-	if (SUCCEED != zbx_mutex_create(&diskstats_lock, ZBX_MUTEX_DISKSTATS, error))
+	if (SUCCEED != zbx_mutex_create(&diskstats_lock, TRX_MUTEX_DISKSTATS, error))
 		goto out;
 #endif
 
@@ -202,17 +202,17 @@ void	free_collector_data(void)
 	if (NULL == collector)
 		return;
 
-#ifdef ZBX_PROCSTAT_COLLECTOR
+#ifdef TRX_PROCSTAT_COLLECTOR
 	zbx_procstat_destroy();
 #endif
 
-	if (ZBX_NONEXISTENT_SHMID != collector->diskstat_shmid)
+	if (TRX_NONEXISTENT_SHMID != collector->diskstat_shmid)
 	{
 		if (-1 == shmctl(collector->diskstat_shmid, IPC_RMID, 0))
 			treegix_log(LOG_LEVEL_WARNING, "cannot remove shared memory for disk statistics collector: %s",
 					zbx_strerror(errno));
 		diskdevices = NULL;
-		collector->diskstat_shmid = ZBX_NONEXISTENT_SHMID;
+		collector->diskstat_shmid = TRX_NONEXISTENT_SHMID;
 	}
 
 	if (-1 == shmctl(shm_id, IPC_RMID, 0))
@@ -236,7 +236,7 @@ void	diskstat_shm_init(void)
 	size_t	shm_size;
 
 	/* initially allocate memory for collecting statistics for only 1 disk */
-	shm_size = sizeof(ZBX_DISKDEVICES_DATA);
+	shm_size = sizeof(TRX_DISKDEVICES_DATA);
 
 	if (-1 == (collector->diskstat_shmid = zbx_shm_create(shm_size)))
 	{
@@ -244,7 +244,7 @@ void	diskstat_shm_init(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if ((void *)(-1) == (diskdevices = (ZBX_DISKDEVICES_DATA *)shmat(collector->diskstat_shmid, NULL, 0)))
+	if ((void *)(-1) == (diskdevices = (TRX_DISKDEVICES_DATA *)shmat(collector->diskstat_shmid, NULL, 0)))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot attach shared memory for disk statistics collector: %s",
 				zbx_strerror(errno));
@@ -276,7 +276,7 @@ void	diskstat_shm_reattach(void)
 
 		old_shmid = my_diskstat_shmid;
 
-		if (ZBX_NONEXISTENT_SHMID != my_diskstat_shmid)
+		if (TRX_NONEXISTENT_SHMID != my_diskstat_shmid)
 		{
 			if (-1 == shmdt((void *) diskdevices))
 			{
@@ -285,10 +285,10 @@ void	diskstat_shm_reattach(void)
 				exit(EXIT_FAILURE);
 			}
 			diskdevices = NULL;
-			my_diskstat_shmid = ZBX_NONEXISTENT_SHMID;
+			my_diskstat_shmid = TRX_NONEXISTENT_SHMID;
 		}
 
-		if ((void *)(-1) == (diskdevices = (ZBX_DISKDEVICES_DATA *)shmat(collector->diskstat_shmid, NULL, 0)))
+		if ((void *)(-1) == (diskdevices = (TRX_DISKDEVICES_DATA *)shmat(collector->diskstat_shmid, NULL, 0)))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "cannot attach shared memory for disk statistics collector: %s",
 					zbx_strerror(errno));
@@ -315,7 +315,7 @@ void	diskstat_shm_extend(void)
 #ifndef _WINDOWS
 	size_t			old_shm_size, new_shm_size;
 	int			old_shmid, new_shmid, old_max, new_max;
-	ZBX_DISKDEVICES_DATA	*new_diskdevices;
+	TRX_DISKDEVICES_DATA	*new_diskdevices;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -329,8 +329,8 @@ void	diskstat_shm_extend(void)
 	else
 		new_max = old_max + 256;
 
-	old_shm_size = sizeof(ZBX_DISKDEVICES_DATA) + sizeof(ZBX_SINGLE_DISKDEVICE_DATA) * (old_max - 1);
-	new_shm_size = sizeof(ZBX_DISKDEVICES_DATA) + sizeof(ZBX_SINGLE_DISKDEVICE_DATA) * (new_max - 1);
+	old_shm_size = sizeof(TRX_DISKDEVICES_DATA) + sizeof(TRX_SINGLE_DISKDEVICE_DATA) * (old_max - 1);
+	new_shm_size = sizeof(TRX_DISKDEVICES_DATA) + sizeof(TRX_SINGLE_DISKDEVICE_DATA) * (new_max - 1);
 
 	if (-1 == (new_shmid = zbx_shm_create(new_shm_size)))
 	{
@@ -338,7 +338,7 @@ void	diskstat_shm_extend(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if ((void *)(-1) == (new_diskdevices = (ZBX_DISKDEVICES_DATA *)shmat(new_shmid, NULL, 0)))
+	if ((void *)(-1) == (new_diskdevices = (TRX_DISKDEVICES_DATA *)shmat(new_shmid, NULL, 0)))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot attach shared memory for extending disk statistics collector: %s",
 				zbx_strerror(errno));
@@ -369,7 +369,7 @@ void	diskstat_shm_extend(void)
 	diskdevices = new_diskdevices;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s() extended diskstat shared memory: old_max:%d new_max:%d old_size:"
-			ZBX_FS_SIZE_T " new_size:" ZBX_FS_SIZE_T " old_shmid:%d new_shmid:%d", __func__, old_max,
+			TRX_FS_SIZE_T " new_size:" TRX_FS_SIZE_T " old_shmid:%d new_shmid:%d", __func__, old_max,
 			new_max, (zbx_fs_size_t)old_shm_size, (zbx_fs_size_t)new_shm_size, old_shmid,
 			collector->diskstat_shmid);
 #endif
@@ -384,7 +384,7 @@ void	diskstat_shm_extend(void)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(collector_thread, args)
+TRX_THREAD_ENTRY(collector_thread, args)
 {
 	assert(args);
 
@@ -404,7 +404,7 @@ ZBX_THREAD_ENTRY(collector_thread, args)
 	if (SUCCEED != init_cpu_collector(&(collector->cpus)))
 		free_cpu_collector(&(collector->cpus));
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		zbx_update_env(zbx_time());
 
@@ -418,7 +418,7 @@ ZBX_THREAD_ENTRY(collector_thread, args)
 		if (0 != DISKDEVICE_COLLECTOR_STARTED(collector))
 			collect_stats_diskdevices();
 
-#ifdef ZBX_PROCSTAT_COLLECTOR
+#ifdef TRX_PROCSTAT_COLLECTOR
 		zbx_procstat_collect();
 #endif
 
@@ -435,7 +435,7 @@ ZBX_THREAD_ENTRY(collector_thread, args)
 	if (0 != CPU_COLLECTOR_STARTED(collector))
 		free_cpu_collector(&(collector->cpus));
 
-	ZBX_DO_EXIT();
+	TRX_DO_EXIT();
 
 	zbx_thread_exit(EXIT_SUCCESS);
 #else

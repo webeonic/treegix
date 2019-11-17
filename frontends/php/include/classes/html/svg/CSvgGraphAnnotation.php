@@ -40,21 +40,21 @@ class CSvgGraphAnnotation extends CSvgTag {
 
 	public function makeStyles() {
 		return [
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_DASHED => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_DASHED => [
 				'stroke-dasharray' => '2,2'
 			],
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_PROBLEM_HANDLE => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_PROBLEM_HANDLE => [
 				'fill' => $this->color,
 				'stroke' => $this->color
 			],
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_PROBLEM_BOX => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_PROBLEM_BOX => [
 				'fill' => $this->color,
 				'opacity' => '0.1'
 			],
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_PROBLEMS.' line' => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_PROBLEMS.' line' => [
 				'stroke' => $this->color
 			],
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_PROBLEM_ARROW => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_PROBLEM_ARROW => [
 				'stroke' => $this->color,
 				'fill' => $this->color,
 				'stroke-width' => 3
@@ -96,13 +96,13 @@ class CSvgGraphAnnotation extends CSvgTag {
 
 		return [
 			(new CSvgLine($this->x, $this->y, $this->x, $this->y + $this->height))
-				->addClass(CSvgTag::ZBX_STYLE_GRAPH_DASHED),
+				->addClass(CSvgTag::TRX_STYLE_GRAPH_DASHED),
 			(new CSvgPolygon([
 				[$this->x, $y + 1],
 				[$this->x - $offset, $y + 5],
 				[$this->x + $offset, $y + 5]
 			]))
-				->addClass(CSvgTag::ZBX_STYLE_GRAPH_PROBLEM_ARROW)
+				->addClass(CSvgTag::TRX_STYLE_GRAPH_PROBLEM_ARROW)
 				->setAttribute('x', $this->x - $offset)
 				->setAttribute('width', $arrow_width)
 				->setAttribute('data-info', $this->data_info)
@@ -119,20 +119,20 @@ class CSvgGraphAnnotation extends CSvgTag {
 		$end_line = new CSvgLine($this->x + $this->width, $this->y, $this->x + $this->width, $this->y + $this->height);
 
 		if ($this->type & self::DASH_LINE_START) {
-			$start_line->addClass(CSvgTag::ZBX_STYLE_GRAPH_DASHED);
+			$start_line->addClass(CSvgTag::TRX_STYLE_GRAPH_DASHED);
 		}
 
 		if ($this->type & self::DASH_LINE_END) {
-			$end_line->addClass(CSvgTag::ZBX_STYLE_GRAPH_DASHED);
+			$end_line->addClass(CSvgTag::TRX_STYLE_GRAPH_DASHED);
 		}
 
 		return [
 			$start_line,
 			(new CSvgRect($this->x, $this->y, $this->width, $this->height))
-				->addClass(CSvgTag::ZBX_STYLE_GRAPH_PROBLEM_BOX),
+				->addClass(CSvgTag::TRX_STYLE_GRAPH_PROBLEM_BOX),
 			$end_line,
 			(new CSvgRect($this->x, $this->y + $this->height, $this->width, 4))
-				->addClass(CSvgTag::ZBX_STYLE_GRAPH_PROBLEM_HANDLE)
+				->addClass(CSvgTag::TRX_STYLE_GRAPH_PROBLEM_HANDLE)
 				->setAttribute('data-info', $this->data_info)
 		];
 	}

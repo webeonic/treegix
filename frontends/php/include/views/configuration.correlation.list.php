@@ -19,7 +19,7 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			),
 			(new CFormList())->addRow(_('Status'),
@@ -39,7 +39,7 @@ $table = (new CTableInfo())
 		(new CColHeader(
 			(new CCheckBox('all_items'))
 				->onClick("checkAll('".$form->getName()."', 'all_items', 'g_correlationid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'], 'correlation.php'),
 		_('Conditions'),
 		_('Operations'),
@@ -57,7 +57,7 @@ if ($data['correlations']) {
 		$conditions = [];
 		$operations = [];
 
-		order_result($correlation['filter']['conditions'], 'type', ZBX_SORT_DOWN);
+		order_result($correlation['filter']['conditions'], 'type', TRX_SORT_DOWN);
 
 		foreach ($correlation['filter']['conditions'] as $j => $condition) {
 			if (!array_key_exists('operator', $condition)) {
@@ -75,20 +75,20 @@ if ($data['correlations']) {
 			$operations[] = BR();
 		}
 
-		if ($correlation['status'] == ZBX_CORRELATION_DISABLED) {
+		if ($correlation['status'] == TRX_CORRELATION_DISABLED) {
 			$status = (new CLink(_('Disabled'),
 				'correlation.php?action=correlation.massenable&g_correlationid[]='.$correlation['correlationid'])
 			)
-				->addClass(ZBX_STYLE_LINK_ACTION)
-				->addClass(ZBX_STYLE_RED)
+				->addClass(TRX_STYLE_LINK_ACTION)
+				->addClass(TRX_STYLE_RED)
 				->addSID();
 		}
 		else {
 			$status = (new CLink(_('Enabled'),
 				'correlation.php?action=correlation.massdisable&g_correlationid[]='.$correlation['correlationid'])
 			)
-				->addClass(ZBX_STYLE_LINK_ACTION)
-				->addClass(ZBX_STYLE_GREEN)
+				->addClass(TRX_STYLE_LINK_ACTION)
+				->addClass(TRX_STYLE_GREEN)
 				->addSID();
 		}
 
