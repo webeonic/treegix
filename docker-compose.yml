@@ -22,6 +22,8 @@ treegix_server:
 
 treegix_agent:
   image: treegix_server:latest
+  links:
+    - treegix_server
   ports:
     - 10050:10050
   command: ["treegix_agentd", "-f"]
