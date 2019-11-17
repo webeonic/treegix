@@ -637,8 +637,8 @@ PROXY_CONFIG_FILE
 SERVER_CONFIG_FILE
 SENDER_LIBS
 SENDER_LDFLAGS
-ZBXGET_LIBS
-ZBXGET_LDFLAGS
+TRXGET_LIBS
+TRXGET_LDFLAGS
 CGO_LDFLAGS
 AGENT_LIBS
 AGENT_LDFLAGS
@@ -729,8 +729,8 @@ MYSQL_LDFLAGS
 MYSQL_CFLAGS
 MYSQL_VERSION
 MYSQL_CONFIG
-ZBXCMOCKA_FALSE
-ZBXCMOCKA_TRUE
+TRXCMOCKA_FALSE
+TRXCMOCKA_TRUE
 DBSCHEMA_FALSE
 DBSCHEMA_TRUE
 IPV6_FALSE
@@ -6045,7 +6045,7 @@ if test "x$zbx_socklen_t" != "x"; then
 $as_echo "$zbx_socklen_t" >&6; }
 
 cat >>confdefs.h <<_ACEOF
-#define ZBX_SOCKLEN_T $zbx_socklen_t
+#define TRX_SOCKLEN_T $zbx_socklen_t
 _ACEOF
 
 else
@@ -6088,7 +6088,7 @@ if test "x$zbx_sival_int" != "x"; then
 $as_echo "$zbx_sival_int" >&6; }
 
 cat >>confdefs.h <<_ACEOF
-#define ZBX_SIVAL_INT $zbx_sival_int
+#define TRX_SIVAL_INT $zbx_sival_int
 _ACEOF
 
 else
@@ -7381,14 +7381,14 @@ $as_echo_n "checking for macro __VA_ARGS__... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-#define ZBX_CONST_STRING(str)   str
+#define TRX_CONST_STRING(str)   str
 int test(const char *fmt, ...) { return 0; }
 
 int
 main ()
 {
 
-#define TEST(fmt, ...) test(ZBX_CONST_STRING(fmt), ##__VA_ARGS__)
+#define TEST(fmt, ...) test(TRX_CONST_STRING(fmt), ##__VA_ARGS__)
 TEST("%s","test");
 TEST("test");
 
@@ -8093,11 +8093,11 @@ fi
 
 
  if (test -d tests/) && (test "x$server" = "xyes" || test "x$proxy" = "xyes" || test "x$agent" = "xyes"); then
-  ZBXCMOCKA_TRUE=
-  ZBXCMOCKA_FALSE='#'
+  TRXCMOCKA_TRUE=
+  TRXCMOCKA_FALSE='#'
 else
-  ZBXCMOCKA_TRUE='#'
-  ZBXCMOCKA_FALSE=
+  TRXCMOCKA_TRUE='#'
+  TRXCMOCKA_FALSE=
 fi
 
 
@@ -10483,8 +10483,8 @@ PROXY_LIBS="$PROXY_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
 AGENT_LDFLAGS="$AGENT_LDFLAGS $ZLIB_LDFLAGS $LIBPTHREAD_LDFLAGS"
 AGENT_LIBS="$AGENT_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
 
-ZBXGET_LDFLAGS="$ZBXGET_LDFLAGS $ZLIB_LDFLAGS $LIBPTHREAD_LDFLAGS"
-ZBXGET_LIBS="$ZBXGET_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
+TRXGET_LDFLAGS="$TRXGET_LDFLAGS $ZLIB_LDFLAGS $LIBPTHREAD_LDFLAGS"
+TRXGET_LIBS="$TRXGET_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
 
 SENDER_LDFLAGS="$SENDER_LDFLAGS $ZLIB_LDFLAGS $LIBPTHREAD_LDFLAGS"
 SENDER_LIBS="$SENDER_LIBS $ZLIB_LIBS $LIBPTHREAD_LIBS"
@@ -11306,8 +11306,8 @@ PROXY_LIBS="$PROXY_LIBS $TLS_LIBS"
 AGENT_LDFLAGS="$AGENT_LDFLAGS $TLS_LDFLAGS"
 AGENT_LIBS="$AGENT_LIBS $TLS_LIBS"
 
-ZBXGET_LDFLAGS="$ZBXGET_LDFLAGS $TLS_LDFLAGS"
-ZBXGET_LIBS="$ZBXGET_LIBS $TLS_LIBS"
+TRXGET_LDFLAGS="$TRXGET_LDFLAGS $TLS_LDFLAGS"
+TRXGET_LIBS="$TRXGET_LIBS $TLS_LIBS"
 
 SENDER_LDFLAGS="$SENDER_LDFLAGS $TLS_LDFLAGS"
 SENDER_LIBS="$SENDER_LIBS $TLS_LIBS"
@@ -12591,7 +12591,7 @@ $as_echo "ok (${MKDIR_P})" >&6; }
 case "x$ARCH" in
 	xlinux|xsolaris)
 
-$as_echo "#define ZBX_PROCSTAT_COLLECTOR 1 " >>confdefs.h
+$as_echo "#define TRX_PROCSTAT_COLLECTOR 1 " >>confdefs.h
 
 		;;
 esac
@@ -12761,8 +12761,8 @@ if test -z "${DBSCHEMA_TRUE}" && test -z "${DBSCHEMA_FALSE}"; then
   as_fn_error $? "conditional \"DBSCHEMA\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${ZBXCMOCKA_TRUE}" && test -z "${ZBXCMOCKA_FALSE}"; then
-  as_fn_error $? "conditional \"ZBXCMOCKA\" was never defined.
+if test -z "${TRXCMOCKA_TRUE}" && test -z "${TRXCMOCKA_FALSE}"; then
+  as_fn_error $? "conditional \"TRXCMOCKA\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_IPMI_TRUE}" && test -z "${HAVE_IPMI_FALSE}"; then
@@ -14407,8 +14407,5 @@ echo "
 echo
 echo "***********************************************************"
 echo "*            Now run '${am_make} install'                       *"
-echo "*                                                         *"
-echo "*            Thank you for using Treegix!                  *"
-echo "*              <http://www.treegix.com>                    *"
 echo "***********************************************************"
 echo

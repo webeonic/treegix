@@ -20,5 +20,6 @@ RUN ./configure --enable-server --enable-agent --with-postgresql
 RUN make install
 
 RUN cp treegix_server.conf /usr/local/etc/treegix_server.conf
+RUN cp treegix_agentd.conf /usr/local/etc/treegix_agentd.conf
 
 CMD ["treegix_server", "-f"]
