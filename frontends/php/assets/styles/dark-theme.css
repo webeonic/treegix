@@ -788,15 +788,15 @@ output {
 .logo {
     float: left;
     display: block;
-    width: 95px;
-    height: 25px;
-    background: url(../img/icon-sprite.svg) no-repeat 0 -903px;
+    width: 40px;
+    height: 40px;
+    background: url(../img/logo-40x40.png) ;
 }
 
 .header-logo {
     float: left;
     display: block;
-    margin: 10px 10px 0 0;
+    margin: 3px 3px 0 0;
 }
 
 .header-logo:focus {
@@ -3273,9 +3273,9 @@ button.icon-cal[disabled] {
 .signin-logo {
     margin: 0 auto;
     margin-bottom: 21px;
-    width: 114px;
-    height: 30px;
-    background: url(../img/icon-sprite.svg) no-repeat 0 -864px;
+    width: 180px;
+    height: 180px;
+    background: url(../img/apple-touch-icon-180x180-precomposed.png);
 }
 
 .signin-links {
