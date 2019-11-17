@@ -15,9 +15,6 @@ if ($data['error']) {
 	$error = (new CDiv($message))->addClass(ZBX_STYLE_RED);
 }
 
-$guest = $data['guest_login_url']
-	? (new CListItem(['or ', new CLink('sign in as guest', $data['guest_login_url'])]))->addClass(ZBX_STYLE_SIGN_IN_TXT)
-	: null;
 $http_login_link = $data['http_login_url']
 	? (new CListItem(new CLink(_('Sign in with HTTP'), $data['http_login_url'])))->addClass(ZBX_STYLE_SIGN_IN_TXT)
 	: null;
@@ -51,26 +48,10 @@ global $ZBX_SERVER_NAME;
 							->setChecked($data['autologin'])
 					)
 					->addItem(new CSubmit('enter', _('Sign in')))
-					->addItem($guest)
 					->addItem($http_login_link)
 			)
 	]))->addClass(ZBX_STYLE_SIGNIN_CONTAINER),
-	(new CDiv([
-		(new CLink(_('Help'), CBrandHelper::getHelpUrl()))
-			->setTarget('_blank')
-			->addClass(ZBX_STYLE_GREY)
-			->addClass(ZBX_STYLE_LINK_ALT),
-		CBrandHelper::isRebranded() ? null : '&nbsp;&nbsp;•&nbsp;&nbsp;',
-		CBrandHelper::isRebranded()
-			? null
-            //todo tip
-			: (new CLink(_('Support'),'' /*'http://www.treegix.com/support.php'*/))
-				->setTarget('_blank')
-				->addClass(ZBX_STYLE_GREY)
-				->addClass(ZBX_STYLE_LINK_ALT)
-	]))->addClass(ZBX_STYLE_SIGNIN_LINKS)
 ]))->show();
 
-makePageFooter(false)->show();
 ?>
 </body>

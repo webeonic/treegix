@@ -35,9 +35,6 @@ show_messages();
 if ($page['type'] == PAGE_TYPE_HTML) {
 	// end of article div
 	echo '</main>'."\n";
-	if (!defined('ZBX_PAGE_NO_MENU')) {
-		makePageFooter()->show();
-	}
 	insertPagePostJs();
 	require_once 'include/views/js/common.init.js.php';
 

@@ -3,9 +3,6 @@
 
 show_messages();
 
-if ($data['web_layout_mode'] === ZBX_LAYOUT_NORMAL) {
-	makePageFooter()->show();
-}
 
 if ($data['user']['debug_mode'] == GROUP_DEBUG_MODE_ENABLED) {
 	CProfiler::getInstance()->stop();

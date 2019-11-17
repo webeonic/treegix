@@ -723,16 +723,6 @@ function getItemLifetimeIndicator($current_time, $ts_delete) {
 	return makeWarningIcon($warning);
 }
 
-/**
- * Renders a page footer.
- *
- * @param bool $with_version
- *
- * @return CDiv
- */
-function makePageFooter($with_version = true) {
-	return (new CTag('footer', true, CBrandHelper::getFooterContent($with_version)))->setAttribute('role', 'contentinfo');
-}
 
 /**
  * Renders a drop-down menu for the Administration->General section.

@@ -56,9 +56,5 @@
 			</div>
 		</main>
 
-		<?php
-			$footer = makePageFooter(false);
-			echo $footer->toString();
-		?>
 	</body>
 </html>

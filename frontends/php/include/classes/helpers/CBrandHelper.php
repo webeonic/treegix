@@ -57,17 +57,6 @@ class CBrandHelper {
 		return self::getValue('IS_REBRANDED');
 	}
 
-	/**
-	 * Get help URL.
-	 *
-	 * @return string
-	 */
-	public static function getHelpUrl() {
-	    //todo tip
-		return self::getValue('BRAND_HELP_URL', ''/*'https://www.treegix.com/documentation/'*/.
-			(preg_match('/^\d+\.\d+/', TREEGIX_VERSION, $version) ? $version[0].'/' : '')
-		);
-	}
 
 	/**
 	 * Get logo style.
@@ -81,31 +70,4 @@ class CBrandHelper {
 			: null;
 	}
 
-	/**
-	 * Get footer content.
-	 *
-	 * @param boolean $with_version
-	 *
-	 * @return array
-	 */
-	public static function getFooterContent($with_version) {
-		$footer = self::getValue(
-			'BRAND_FOOTER',
-			[
-				$with_version ? 'Treegix '.TREEGIX_VERSION.'. ' : null,
-				'',
-				//todo tip
-				(new CLink('', ''/*'http://www.treegix.com/'*/))
-					->addClass(ZBX_STYLE_GREY)
-					->addClass(ZBX_STYLE_LINK_ALT)
-					->setAttribute('target', '_blank')
-			]
-		);
-
-		if (!is_array($footer)) {
-			$footer = [$footer];
-		}
-
-		return $footer;
-	}
 }

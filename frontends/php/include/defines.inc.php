@@ -4,10 +4,7 @@
 define('TREEGIX_VERSION',		'3.0');
 define('TREEGIX_API_VERSION',	'3.0');
 define('TREEGIX_EXPORT_VERSION',	'3.0');
-define('TREEGIX_DB_VERSION',		10);
-
-define('TREEGIX_COPYRIGHT_FROM',	'2001');
-define('TREEGIX_COPYRIGHT_TO',	'2019');
+define('TREEGIX_DB_VERSION',		4040000);
 
 define('ZBX_LOGIN_ATTEMPTS',	5);
 define('ZBX_LOGIN_BLOCK',		30); // sec
@@ -1435,7 +1432,7 @@ define('ZBX_VALID_WARNING',	2);
 define('THEME_DEFAULT', 'default');
 
 // the default theme
-define('ZBX_DEFAULT_THEME', 'blue-theme');
+define('ZBX_DEFAULT_THEME', 'dark-theme');
 
 define('ZBX_DEFAULT_URL', 'treegix.php?action=dashboard.view');
 

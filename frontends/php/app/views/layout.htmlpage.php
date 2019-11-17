@@ -73,7 +73,6 @@ function local_generateHeader($data) {
 				'name' => CWebUser::$data['name'],
 				'surname' => CWebUser::$data['surname']
 			],
-			'support_url' => getSupportUrl(CWebUser::getLang())
 		]);
 		echo $pageMenu->getOutput();
 	}

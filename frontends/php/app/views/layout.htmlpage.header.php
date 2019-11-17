@@ -41,14 +41,12 @@ $pageHeader
 	->addJsFile((new CUrl('js/browsers.js'))->getUrl())
 	->addJsFile((new CUrl('jsLoader.php'))
 		->setArgument('lang', $data['user']['lang'])
-		->setArgument('ver', TREEGIX_VERSION)
 		->setArgument('showGuiMessaging', $show_gui_messaging)
 		->getUrl()
 	);
 
 if ($scripts) {
 	$pageHeader->addJsFile((new CUrl('jsLoader.php'))
-		->setArgument('ver', TREEGIX_VERSION)
 		->setArgument('lang', $data['user']['lang'])
 		->setArgument('files', $scripts)
 		->getUrl()
