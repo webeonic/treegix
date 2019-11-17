@@ -286,7 +286,7 @@ class CNewValidator {
 		}
 
 		// between 0 and _I64_MAX
-		return (bccomp($value, '0') >= 0 && bccomp($value, ZBX_DB_MAX_ID) <= 0);
+		return (bccomp($value, '0') >= 0 && bccomp($value, TRX_DB_MAX_ID) <= 0);
 	}
 
 	public static function is_int32($value) {
@@ -295,7 +295,7 @@ class CNewValidator {
 		}
 
 		// between INT_MIN and INT_MAX
-		return (bccomp($value, ZBX_MIN_INT32) >= 0 && bccomp($value, ZBX_MAX_INT32) <= 0);
+		return (bccomp($value, TRX_MIN_INT32) >= 0 && bccomp($value, TRX_MAX_INT32) <= 0);
 	}
 
 	public static function is_uint64($value) {

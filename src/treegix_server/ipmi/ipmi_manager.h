@@ -9,7 +9,7 @@
 
 #include "threads.h"
 
-ZBX_THREAD_ENTRY(ipmi_manager_thread, args);
+TRX_THREAD_ENTRY(ipmi_manager_thread, args);
 
 #endif
 

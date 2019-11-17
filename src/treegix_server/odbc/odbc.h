@@ -1,7 +1,7 @@
 
 
-#ifndef TREEGIX_ZBXODBC_H
-#define TREEGIX_ZBXODBC_H
+#ifndef TREEGIX_TRXODBC_H
+#define TREEGIX_TRXODBC_H
 
 typedef struct zbx_odbc_data_source	zbx_odbc_data_source_t;
 typedef struct zbx_odbc_query_result	zbx_odbc_query_result_t;

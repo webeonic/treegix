@@ -3,14 +3,14 @@
 #ifndef TREEGIX_PROCSTAT_H
 #define TREEGIX_PROCSTAT_H
 
-#ifdef ZBX_PROCSTAT_COLLECTOR
+#ifdef TRX_PROCSTAT_COLLECTOR
 
-#define ZBX_PROCSTAT_CPU_USER			0x01
-#define ZBX_PROCSTAT_CPU_SYSTEM			0x02
-#define ZBX_PROCSTAT_CPU_TOTAL			(ZBX_PROCSTAT_CPU_USER | ZBX_PROCSTAT_CPU_SYSTEM)
+#define TRX_PROCSTAT_CPU_USER			0x01
+#define TRX_PROCSTAT_CPU_SYSTEM			0x02
+#define TRX_PROCSTAT_CPU_TOTAL			(TRX_PROCSTAT_CPU_USER | TRX_PROCSTAT_CPU_SYSTEM)
 
-#define ZBX_PROCSTAT_FLAGS_ZONE_CURRENT		0
-#define ZBX_PROCSTAT_FLAGS_ZONE_ALL		1
+#define TRX_PROCSTAT_FLAGS_ZONE_CURRENT		0
+#define TRX_PROCSTAT_FLAGS_ZONE_ALL		1
 
 /* process cpu utilization data */
 typedef struct
@@ -43,6 +43,6 @@ void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *p
 void	zbx_proc_get_process_stats(zbx_procstat_util_t *procs, int procs_num);
 void	zbx_proc_free_processes(zbx_vector_ptr_t *processes);
 
-#endif	/* ZBX_PROCSTAT_COLLECTOR */
+#endif	/* TRX_PROCSTAT_COLLECTOR */
 
 #endif	/* TREEGIX_PROCSTAT_H */

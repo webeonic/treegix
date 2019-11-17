@@ -13,7 +13,7 @@ class CNavigationTree extends CDiv {
 		$this->error = null;
 
 		$this->setId(uniqid());
-		$this->addClass(ZBX_STYLE_NAVIGATIONTREE);
+		$this->addClass(TRX_STYLE_NAVIGATIONTREE);
 	}
 
 	public function setError($value) {
@@ -41,7 +41,7 @@ class CNavigationTree extends CDiv {
 
 	private function build() {
 		if ($this->error !== null) {
-			$span->addClass(ZBX_STYLE_DISABLED);
+			$span->addClass(TRX_STYLE_DISABLED);
 		}
 
 		$this->addItem((new CDiv())->addClass('tree'));

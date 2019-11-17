@@ -1,9 +1,9 @@
 
-#ifndef TREEGIX_ZBXEXEC_H
-#define TREEGIX_ZBXEXEC_H
+#ifndef TREEGIX_TRXEXEC_H
+#define TREEGIX_TRXEXEC_H
 
-#define ZBX_EXIT_CODE_CHECKS_DISABLED	0
-#define ZBX_EXIT_CODE_CHECKS_ENABLED	1
+#define TRX_EXIT_CODE_CHECKS_DISABLED	0
+#define TRX_EXIT_CODE_CHECKS_ENABLED	1
 
 int	zbx_execute(const char *command, char **buffer, char *error, size_t max_error_len, int timeout,
 		unsigned char flag);

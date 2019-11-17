@@ -18,7 +18,7 @@ $widget = (new CWidget())
 
 $form = (new CForm())
 	->setId('treegixRegExpForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', 1)
 	->addVar('regexpid', $data['regexpid']);
 
@@ -50,7 +50,7 @@ foreach ($data['expressions'] as $i => $expression) {
 			expression_type2str()
 		))->onChange('onChangeExpressionType(this, '.$i.')'),
 		(new CTextBox('expressions['.$i.'][expression]', $expression['expression'], false, 255))
-			->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+			->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 			->setAriaRequired(),
 		$exp_delimiter,
 		(new CCheckBox('expressions['.$i.'][case_sensitive]', '1'))->setChecked($expression['case_sensitive'] == 1)
@@ -58,14 +58,14 @@ foreach ($data['expressions'] as $i => $expression) {
 
 	$button_cell = [
 		(new CButton('expressions['.$i.'][remove]', _('Remove')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-remove')
 	];
 	if (array_key_exists('expressionid', $expression)) {
 		$button_cell[] = new CVar('expressions['.$i.'][expressionid]', $expression['expressionid']);
 	}
 
-	$row[] = (new CCol($button_cell))->addClass(ZBX_STYLE_NOWRAP);
+	$row[] = (new CCol($button_cell))->addClass(TRX_STYLE_NOWRAP);
 
 	$exprTable->addRow(
 		(new CRow($row))
@@ -76,7 +76,7 @@ foreach ($data['expressions'] as $i => $expression) {
 
 $exprTable->setFooter(
 	(new CButton('expression_add', _('Add')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->addClass('element-table-add')
 );
 
@@ -84,15 +84,15 @@ $exprTab = (new CFormList('exprTab'))
 	->addRow(
 		(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $data['name'], false, 128))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAttribute('autofocus', 'autofocus')
 			->setAriaRequired()
 	)
 	->addRow(
 		(new CLabel(_('Expressions'), 'tbl_expr'))->setAsteriskMark(),
 		(new CDiv($exprTable))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 
 /*
@@ -100,9 +100,9 @@ $exprTab = (new CFormList('exprTab'))
  */
 $testTab = (new CFormList())
 	->addRow(_('Test string'),
-		(new CTextArea('test_string', $data['test_string']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('test_string', $data['test_string']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
-	->addRow('', (new CButton('testExpression', _('Test expressions')))->addClass(ZBX_STYLE_BTN_ALT))
+	->addRow('', (new CButton('testExpression', _('Test expressions')))->addClass(TRX_STYLE_BTN_ALT))
 	->addRow(_('Result'),
 		(new CDiv(
 			(new CTable())
@@ -110,8 +110,8 @@ $testTab = (new CFormList())
 				->setAttribute('style', 'width: 100%;')
 				->setHeader([_('Expression type'), _('Expression'), _('Result')])
 		))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 
 $regExpView = new CTabView();

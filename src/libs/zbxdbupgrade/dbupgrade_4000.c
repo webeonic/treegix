@@ -48,11 +48,11 @@ static int	str_rename_macro(const char *in, const char *oldmacro, const char *ne
 	zbx_strcpy_alloc(out, out_alloc, &out_offset, in);
 	out_offset++;
 
-	for (; SUCCEED == zbx_token_find(*out, pos, &token, ZBX_TOKEN_SEARCH_BASIC); pos++)
+	for (; SUCCEED == zbx_token_find(*out, pos, &token, TRX_TOKEN_SEARCH_BASIC); pos++)
 	{
 		switch (token.type)
 		{
-			case ZBX_TOKEN_MACRO:
+			case TRX_TOKEN_MACRO:
 				pos = token.loc.r;
 				if (0 == strncmp(*out + token.loc.l, oldmacro, token.loc.r - token.loc.l + 1))
 				{
@@ -62,8 +62,8 @@ static int	str_rename_macro(const char *in, const char *oldmacro, const char *ne
 				}
 				break;
 
-			case ZBX_TOKEN_USER_MACRO:
-			case ZBX_TOKEN_SIMPLE_MACRO:
+			case TRX_TOKEN_USER_MACRO:
+			case TRX_TOKEN_SIMPLE_MACRO:
 				pos = token.loc.r;
 				break;
 		}
@@ -134,7 +134,7 @@ static int	db_rename_macro(DB_RESULT result, const char *table, const char *pkey
 
 	DBend_multiple_update(&sql, &sql_alloc, &sql_offset);
 
-	if (16 < sql_offset && ZBX_DB_OK > DBexecute("%s", sql))
+	if (16 < sql_offset && TRX_DB_OK > DBexecute("%s", sql))
 		ret = FAIL;
 out:
 	zbx_free(field);

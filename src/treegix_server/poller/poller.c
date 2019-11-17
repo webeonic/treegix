@@ -82,29 +82,29 @@ static int	host_get_availability(const DC_HOST *dc_host, unsigned char agent, zb
 {
 	zbx_agent_availability_t	*availability = &ha->agents[agent];
 
-	availability->flags = ZBX_FLAGS_AGENT_STATUS;
+	availability->flags = TRX_FLAGS_AGENT_STATUS;
 
 	switch (agent)
 	{
-		case ZBX_AGENT_TREEGIX:
+		case TRX_AGENT_TREEGIX:
 			availability->available = dc_host->available;
 			availability->error = zbx_strdup(NULL, dc_host->error);
 			availability->errors_from = dc_host->errors_from;
 			availability->disable_until = dc_host->disable_until;
 			break;
-		case ZBX_AGENT_SNMP:
+		case TRX_AGENT_SNMP:
 			availability->available = dc_host->snmp_available;
 			availability->error = zbx_strdup(NULL, dc_host->snmp_error);
 			availability->errors_from = dc_host->snmp_errors_from;
 			availability->disable_until = dc_host->snmp_disable_until;
 			break;
-		case ZBX_AGENT_IPMI:
+		case TRX_AGENT_IPMI:
 			availability->available = dc_host->ipmi_available;
 			availability->error = zbx_strdup(NULL, dc_host->ipmi_error);
 			availability->errors_from = dc_host->ipmi_errors_from;
 			availability->disable_until = dc_host->ipmi_disable_until;
 			break;
-		case ZBX_AGENT_JMX:
+		case TRX_AGENT_JMX:
 			availability->available = dc_host->jmx_available;
 			availability->error = zbx_strdup(NULL, dc_host->jmx_error);
 			availability->disable_until = dc_host->jmx_disable_until;
@@ -143,25 +143,25 @@ static int	host_set_availability(DC_HOST *dc_host, unsigned char agent, const zb
 
 	switch (agent)
 	{
-		case ZBX_AGENT_TREEGIX:
+		case TRX_AGENT_TREEGIX:
 			pavailable = &dc_host->available;
 			perror = dc_host->error;
 			perrors_from = &dc_host->errors_from;
 			pdisable_until = &dc_host->disable_until;
 			break;
-		case ZBX_AGENT_SNMP:
+		case TRX_AGENT_SNMP:
 			pavailable = &dc_host->snmp_available;
 			perror = dc_host->snmp_error;
 			perrors_from = &dc_host->snmp_errors_from;
 			pdisable_until = &dc_host->snmp_disable_until;
 			break;
-		case ZBX_AGENT_IPMI:
+		case TRX_AGENT_IPMI:
 			pavailable = &dc_host->ipmi_available;
 			perror = dc_host->ipmi_error;
 			perrors_from = &dc_host->ipmi_errors_from;
 			pdisable_until = &dc_host->ipmi_disable_until;
 			break;
-		case ZBX_AGENT_JMX:
+		case TRX_AGENT_JMX:
 			pavailable = &dc_host->jmx_available;
 			perror = dc_host->jmx_error;
 			pdisable_until = &dc_host->jmx_disable_until;
@@ -171,16 +171,16 @@ static int	host_set_availability(DC_HOST *dc_host, unsigned char agent, const zb
 			return FAIL;
 	}
 
-	if (0 != (availability->flags & ZBX_FLAGS_AGENT_STATUS_AVAILABLE))
+	if (0 != (availability->flags & TRX_FLAGS_AGENT_STATUS_AVAILABLE))
 		*pavailable = availability->available;
 
-	if (0 != (availability->flags & ZBX_FLAGS_AGENT_STATUS_ERROR))
+	if (0 != (availability->flags & TRX_FLAGS_AGENT_STATUS_ERROR))
 		zbx_strlcpy(perror, availability->error, HOST_ERROR_LEN_MAX);
 
-	if (0 != (availability->flags & ZBX_FLAGS_AGENT_STATUS_ERRORS_FROM))
+	if (0 != (availability->flags & TRX_FLAGS_AGENT_STATUS_ERRORS_FROM))
 		*perrors_from = availability->errors_from;
 
-	if (0 != (availability->flags & ZBX_FLAGS_AGENT_STATUS_DISABLE_UNTIL))
+	if (0 != (availability->flags & TRX_FLAGS_AGENT_STATUS_DISABLE_UNTIL))
 		*pdisable_until = availability->disable_until;
 
 	return SUCCEED;
@@ -191,21 +191,21 @@ static unsigned char	host_availability_agent_by_item_type(unsigned char type)
 	switch (type)
 	{
 		case ITEM_TYPE_TREEGIX:
-			return ZBX_AGENT_TREEGIX;
+			return TRX_AGENT_TREEGIX;
 			break;
 		case ITEM_TYPE_SNMPv1:
 		case ITEM_TYPE_SNMPv2c:
 		case ITEM_TYPE_SNMPv3:
-			return ZBX_AGENT_SNMP;
+			return TRX_AGENT_SNMP;
 			break;
 		case ITEM_TYPE_IPMI:
-			return ZBX_AGENT_IPMI;
+			return TRX_AGENT_IPMI;
 			break;
 		case ITEM_TYPE_JMX:
-			return ZBX_AGENT_JMX;
+			return TRX_AGENT_JMX;
 			break;
 		default:
-			return ZBX_AGENT_UNKNOWN;
+			return TRX_AGENT_UNKNOWN;
 	}
 }
 
@@ -214,13 +214,13 @@ void	zbx_activate_item_host(DC_ITEM *item, zbx_timespec_t *ts)
 	zbx_host_availability_t	in, out;
 	unsigned char		agent_type;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" ZBX_FS_UI64 " itemid:" ZBX_FS_UI64 " type:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" TRX_FS_UI64 " itemid:" TRX_FS_UI64 " type:%d",
 			__func__, item->host.hostid, item->itemid, (int)item->type);
 
 	zbx_host_availability_init(&in, item->host.hostid);
 	zbx_host_availability_init(&out, item->host.hostid);
 
-	if (ZBX_AGENT_UNKNOWN == (agent_type = host_availability_agent_by_item_type(item->type)))
+	if (TRX_AGENT_UNKNOWN == (agent_type = host_availability_agent_by_item_type(item->type)))
 		goto out;
 
 	if (FAIL == host_get_availability(&item->host, agent_type, &in))
@@ -256,13 +256,13 @@ void	zbx_deactivate_item_host(DC_ITEM *item, zbx_timespec_t *ts, const char *err
 	zbx_host_availability_t	in, out;
 	unsigned char		agent_type;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" ZBX_FS_UI64 " itemid:" ZBX_FS_UI64 " type:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" TRX_FS_UI64 " itemid:" TRX_FS_UI64 " type:%d",
 			__func__, item->host.hostid, item->itemid, (int)item->type);
 
 	zbx_host_availability_init(&in, item->host.hostid);
 	zbx_host_availability_init(&out,item->host.hostid);
 
-	if (ZBX_AGENT_UNKNOWN == (agent_type = host_availability_agent_by_item_type(item->type)))
+	if (TRX_AGENT_UNKNOWN == (agent_type = host_availability_agent_by_item_type(item->type)))
 		goto out;
 
 	if (FAIL == host_get_availability(&item->host, agent_type, &in))
@@ -391,7 +391,7 @@ static int	get_value(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 	if (SUCCEED != res)
 	{
 		if (!ISSET_MSG(result))
-			SET_MSG_RESULT(result, zbx_strdup(NULL, ZBX_NOTSUPPORTED_MSG));
+			SET_MSG_RESULT(result, zbx_strdup(NULL, TRX_NOTSUPPORTED_MSG));
 
 		treegix_log(LOG_LEVEL_DEBUG, "Item [%s:%s] error: %s", item->host.host, item->key_orig, result->msg);
 	}
@@ -410,7 +410,7 @@ static int	parse_query_fields(const DC_ITEM *item, char **query_fields)
 
 	if ('\0' == *item->query_fields_orig)
 	{
-		ZBX_STRDUP(*query_fields, item->query_fields_orig);
+		TRX_STRDUP(*query_fields, item->query_fields_orig);
 		return SUCCEED;
 	}
 
@@ -469,7 +469,7 @@ static int	parse_query_fields(const DC_ITEM *item, char **query_fields)
  *                                                                            *
  * Purpose: retrieve values of metrics from monitored hosts                   *
  *                                                                            *
- * Parameters: poller_type - [IN] poller type (ZBX_POLLER_TYPE_...)           *
+ * Parameters: poller_type - [IN] poller type (TRX_POLLER_TYPE_...)           *
  *                                                                            *
  * Return value: number of items processed                                    *
  *                                                                            *
@@ -505,7 +505,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 		init_result(&results[i]);
 		errcodes[i] = SUCCEED;
 
-		ZBX_STRDUP(items[i].key, items[i].key_orig);
+		TRX_STRDUP(items[i].key, items[i].key_orig);
 		if (SUCCEED != substitute_key_macros(&items[i].key, NULL, &items[i], NULL, NULL,
 				MACRO_TYPE_ITEM_KEY, error, sizeof(error)))
 		{
@@ -521,7 +521,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 			case ITEM_TYPE_SNMPv2c:
 			case ITEM_TYPE_SNMPv3:
 			case ITEM_TYPE_JMX:
-				ZBX_STRDUP(port, items[i].interface.port_orig);
+				TRX_STRDUP(port, items[i].interface.port_orig);
 				substitute_simple_macros(NULL, NULL, NULL, NULL, &items[i].host.hostid, NULL,
 						NULL, NULL, NULL, &port, MACRO_TYPE_COMMON, NULL, 0);
 				if (FAIL == is_ushort(port, &items[i].interface.port))
@@ -537,10 +537,10 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 		switch (items[i].type)
 		{
 			case ITEM_TYPE_SNMPv3:
-				ZBX_STRDUP(items[i].snmpv3_securityname, items[i].snmpv3_securityname_orig);
-				ZBX_STRDUP(items[i].snmpv3_authpassphrase, items[i].snmpv3_authpassphrase_orig);
-				ZBX_STRDUP(items[i].snmpv3_privpassphrase, items[i].snmpv3_privpassphrase_orig);
-				ZBX_STRDUP(items[i].snmpv3_contextname, items[i].snmpv3_contextname_orig);
+				TRX_STRDUP(items[i].snmpv3_securityname, items[i].snmpv3_securityname_orig);
+				TRX_STRDUP(items[i].snmpv3_authpassphrase, items[i].snmpv3_authpassphrase_orig);
+				TRX_STRDUP(items[i].snmpv3_privpassphrase, items[i].snmpv3_privpassphrase_orig);
+				TRX_STRDUP(items[i].snmpv3_contextname, items[i].snmpv3_contextname_orig);
 
 				substitute_simple_macros(NULL, NULL, NULL, NULL, &items[i].host.hostid, NULL,
 						NULL, NULL, NULL, &items[i].snmpv3_securityname,
@@ -554,11 +554,11 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 				substitute_simple_macros(NULL, NULL, NULL, NULL, &items[i].host.hostid, NULL,
 						NULL, NULL, NULL, &items[i].snmpv3_contextname,
 						MACRO_TYPE_COMMON, NULL, 0);
-				ZBX_FALLTHROUGH;
+				TRX_FALLTHROUGH;
 			case ITEM_TYPE_SNMPv1:
 			case ITEM_TYPE_SNMPv2c:
-				ZBX_STRDUP(items[i].snmp_community, items[i].snmp_community_orig);
-				ZBX_STRDUP(items[i].snmp_oid, items[i].snmp_oid_orig);
+				TRX_STRDUP(items[i].snmp_community, items[i].snmp_community_orig);
+				TRX_STRDUP(items[i].snmp_oid, items[i].snmp_oid_orig);
 
 				substitute_simple_macros(NULL, NULL, NULL, NULL, &items[i].host.hostid, NULL,
 						NULL, NULL, NULL, &items[i].snmp_community, MACRO_TYPE_COMMON, NULL, 0);
@@ -571,19 +571,19 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 				}
 				break;
 			case ITEM_TYPE_SSH:
-				ZBX_STRDUP(items[i].publickey, items[i].publickey_orig);
-				ZBX_STRDUP(items[i].privatekey, items[i].privatekey_orig);
+				TRX_STRDUP(items[i].publickey, items[i].publickey_orig);
+				TRX_STRDUP(items[i].privatekey, items[i].privatekey_orig);
 
 				substitute_simple_macros(NULL, NULL, NULL, NULL, &items[i].host.hostid, NULL,
 						NULL, NULL, NULL, &items[i].publickey, MACRO_TYPE_COMMON, NULL, 0);
 				substitute_simple_macros(NULL, NULL, NULL, NULL, &items[i].host.hostid, NULL,
 						NULL, NULL, NULL, &items[i].privatekey, MACRO_TYPE_COMMON, NULL, 0);
-				ZBX_FALLTHROUGH;
+				TRX_FALLTHROUGH;
 			case ITEM_TYPE_TELNET:
 			case ITEM_TYPE_DB_MONITOR:
 				substitute_simple_macros(NULL, NULL, NULL, NULL, NULL, NULL, &items[i],
 						NULL, NULL, &items[i].params, MACRO_TYPE_PARAMS_FIELD, NULL, 0);
-				ZBX_FALLTHROUGH;
+				TRX_FALLTHROUGH;
 			case ITEM_TYPE_SIMPLE:
 				items[i].username = zbx_strdup(items[i].username, items[i].username_orig);
 				items[i].password = zbx_strdup(items[i].password, items[i].password_orig);
@@ -606,15 +606,15 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 						NULL, NULL, &items[i].jmx_endpoint, MACRO_TYPE_JMX_ENDPOINT, NULL, 0);
 				break;
 			case ITEM_TYPE_HTTPAGENT:
-				ZBX_STRDUP(items[i].timeout, items[i].timeout_orig);
-				ZBX_STRDUP(items[i].url, items[i].url_orig);
-				ZBX_STRDUP(items[i].status_codes, items[i].status_codes_orig);
-				ZBX_STRDUP(items[i].http_proxy, items[i].http_proxy_orig);
-				ZBX_STRDUP(items[i].ssl_cert_file, items[i].ssl_cert_file_orig);
-				ZBX_STRDUP(items[i].ssl_key_file, items[i].ssl_key_file_orig);
-				ZBX_STRDUP(items[i].ssl_key_password, items[i].ssl_key_password_orig);
-				ZBX_STRDUP(items[i].username, items[i].username_orig);
-				ZBX_STRDUP(items[i].password, items[i].password_orig);
+				TRX_STRDUP(items[i].timeout, items[i].timeout_orig);
+				TRX_STRDUP(items[i].url, items[i].url_orig);
+				TRX_STRDUP(items[i].status_codes, items[i].status_codes_orig);
+				TRX_STRDUP(items[i].http_proxy, items[i].http_proxy_orig);
+				TRX_STRDUP(items[i].ssl_cert_file, items[i].ssl_cert_file_orig);
+				TRX_STRDUP(items[i].ssl_key_file, items[i].ssl_key_file_orig);
+				TRX_STRDUP(items[i].ssl_key_password, items[i].ssl_key_password_orig);
+				TRX_STRDUP(items[i].username, items[i].username_orig);
+				TRX_STRDUP(items[i].password, items[i].password_orig);
 
 				substitute_simple_macros(NULL, NULL, NULL, NULL, &items[i].host.hostid, NULL,
 						NULL, NULL, NULL, &items[i].timeout, MACRO_TYPE_COMMON, NULL, 0);
@@ -637,7 +637,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 
 				switch (items[i].post_type)
 				{
-					case ZBX_POSTTYPE_XML:
+					case TRX_POSTTYPE_XML:
 						if (SUCCEED != substitute_macros_xml(&items[i].posts, &items[i], NULL,
 								NULL, error, sizeof(error)))
 						{
@@ -646,7 +646,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 							continue;
 						}
 						break;
-					case ZBX_POSTTYPE_JSON:
+					case TRX_POSTTYPE_JSON:
 						substitute_simple_macros(NULL, NULL, NULL,NULL, NULL, &items[i].host,
 								&items[i], NULL, NULL, &items[i].posts,
 								MACRO_TYPE_HTTP_JSON, NULL, 0);
@@ -702,7 +702,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 	else if (ITEM_TYPE_JMX == items[0].type)
 	{
 		zbx_alarm_on(CONFIG_TIMEOUT);
-		get_values_java(ZBX_JAVA_GATEWAY_REQUEST_JMX, items, results, errcodes, num);
+		get_values_java(TRX_JAVA_GATEWAY_REQUEST_JMX, items, results, errcodes, num);
 		zbx_alarm_off();
 	}
 	else if (1 == num)
@@ -808,7 +808,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 				zbx_free(items[i].snmpv3_authpassphrase);
 				zbx_free(items[i].snmpv3_privpassphrase);
 				zbx_free(items[i].snmpv3_contextname);
-				ZBX_FALLTHROUGH;
+				TRX_FALLTHROUGH;
 			case ITEM_TYPE_SNMPv1:
 			case ITEM_TYPE_SNMPv2c:
 				zbx_free(items[i].snmp_community);
@@ -829,7 +829,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 			case ITEM_TYPE_SSH:
 				zbx_free(items[i].publickey);
 				zbx_free(items[i].privatekey);
-				ZBX_FALLTHROUGH;
+				TRX_FALLTHROUGH;
 			case ITEM_TYPE_TELNET:
 			case ITEM_TYPE_DB_MONITOR:
 			case ITEM_TYPE_SIMPLE:
@@ -857,7 +857,7 @@ exit:
 	return num;
 }
 
-ZBX_THREAD_ENTRY(poller_thread, args)
+TRX_THREAD_ENTRY(poller_thread, args)
 {
 	int		nextcheck, sleeptime = -1, processed = 0, old_processed = 0;
 	double		sec, total_sec = 0.0, old_total_sec = 0.0;
@@ -876,7 +876,7 @@ ZBX_THREAD_ENTRY(poller_thread, args)
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 #ifdef HAVE_NETSNMP
-	if (ZBX_POLLER_TYPE_NORMAL == poller_type || ZBX_POLLER_TYPE_UNREACHABLE == poller_type)
+	if (TRX_POLLER_TYPE_NORMAL == poller_type || TRX_POLLER_TYPE_UNREACHABLE == poller_type)
 		zbx_init_snmp();
 #endif
 
@@ -886,16 +886,16 @@ ZBX_THREAD_ENTRY(poller_thread, args)
 	zbx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
 	last_stat_time = time(NULL);
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 		zbx_update_env(sec);
 
 		if (0 != sleeptime)
 		{
-			zbx_setproctitle("%s #%d [got %d values in " ZBX_FS_DBL " sec, getting values]",
+			zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
 					get_process_type_string(process_type), process_num, old_processed,
 					old_total_sec);
 		}
@@ -909,12 +909,12 @@ ZBX_THREAD_ENTRY(poller_thread, args)
 		{
 			if (0 == sleeptime)
 			{
-				zbx_setproctitle("%s #%d [got %d values in " ZBX_FS_DBL " sec, getting values]",
+				zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
 					get_process_type_string(process_type), process_num, processed, total_sec);
 			}
 			else
 			{
-				zbx_setproctitle("%s #%d [got %d values in " ZBX_FS_DBL " sec, idle %d sec]",
+				zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, idle %d sec]",
 					get_process_type_string(process_type), process_num, processed, total_sec,
 					sleeptime);
 				old_processed = processed;

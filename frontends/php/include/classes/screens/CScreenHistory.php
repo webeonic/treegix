@@ -138,7 +138,7 @@ class CScreenHistory extends CScreenBase {
 				'itemids' => $this->itemids,
 				'output' => API_OUTPUT_EXTEND,
 				'sortfield' => ['clock'],
-				'sortorder' => ZBX_SORT_DOWN
+				'sortorder' => TRX_SORT_DOWN
 			];
 			if ($this->action == HISTORY_LATEST) {
 				$options['limit'] = 500;
@@ -192,8 +192,8 @@ class CScreenHistory extends CScreenBase {
 				}
 
 				CArrayHelper::sort($history_data, [
-					['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-					['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+					['field' => 'clock', 'order' => TRX_SORT_DOWN],
+					['field' => 'ns', 'order' => TRX_SORT_DOWN]
 				]);
 
 				foreach ($history_data as $history_row) {
@@ -231,17 +231,17 @@ class CScreenHistory extends CScreenBase {
 
 				$history_table = (new CTableInfo())
 					->setHeader([
-						(new CColHeader(_('Timestamp')))->addClass(ZBX_STYLE_CELL_WIDTH),
+						(new CColHeader(_('Timestamp')))->addClass(TRX_STYLE_CELL_WIDTH),
 						$isManyItems ? _('Item') : null,
-						$useLogItem ? (new CColHeader(_('Local time')))->addClass(ZBX_STYLE_CELL_WIDTH) : null,
+						$useLogItem ? (new CColHeader(_('Local time')))->addClass(TRX_STYLE_CELL_WIDTH) : null,
 						($useEventLogItem && $useLogItem)
-							? (new CColHeader(_('Source')))->addClass(ZBX_STYLE_CELL_WIDTH)
+							? (new CColHeader(_('Source')))->addClass(TRX_STYLE_CELL_WIDTH)
 							: null,
 						($useEventLogItem && $useLogItem)
-							? (new CColHeader(_('Severity')))->addClass(ZBX_STYLE_CELL_WIDTH)
+							? (new CColHeader(_('Severity')))->addClass(TRX_STYLE_CELL_WIDTH)
 							: null,
 						($useEventLogItem && $useLogItem)
-							? (new CColHeader(_('Event ID')))->addClass(ZBX_STYLE_CELL_WIDTH)
+							? (new CColHeader(_('Event ID')))->addClass(TRX_STYLE_CELL_WIDTH)
 							: null,
 						_('Value')
 					]);
@@ -255,8 +255,8 @@ class CScreenHistory extends CScreenBase {
 
 				$history_data = API::History()->get($options);
 				CArrayHelper::sort($history_data, [
-					['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-					['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+					['field' => 'clock', 'order' => TRX_SORT_DOWN],
+					['field' => 'ns', 'order' => TRX_SORT_DOWN]
 				]);
 
 				foreach ($history_data as $data) {
@@ -280,13 +280,13 @@ class CScreenHistory extends CScreenBase {
 
 						switch ($color) {
 							case MARK_COLOR_RED:
-								$color = ZBX_STYLE_RED;
+								$color = TRX_STYLE_RED;
 								break;
 							case MARK_COLOR_GREEN:
-								$color = ZBX_STYLE_GREEN;
+								$color = TRX_STYLE_GREEN;
 								break;
 							case MARK_COLOR_BLUE:
-								$color = ZBX_STYLE_BLUE;
+								$color = TRX_STYLE_BLUE;
 								break;
 						}
 					}
@@ -294,7 +294,7 @@ class CScreenHistory extends CScreenBase {
 					$row = [];
 
 					$row[] = (new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $data['clock'])))
-						->addClass(ZBX_STYLE_NOWRAP)
+						->addClass(TRX_STYLE_NOWRAP)
 						->addClass($color);
 
 					if ($isManyItems) {
@@ -305,22 +305,22 @@ class CScreenHistory extends CScreenBase {
 					if ($useLogItem) {
 						$row[] = ($data['timestamp'] != 0)
 							? (new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $data['timestamp'])))
-								->addClass(ZBX_STYLE_NOWRAP)
+								->addClass(TRX_STYLE_NOWRAP)
 								->addClass($color)
 							: '';
 
 						// If this is a eventLog item, showing additional info.
 						if ($useEventLogItem) {
 							$row[] = (new CCol($data['source']))
-								->addClass(ZBX_STYLE_NOWRAP)
+								->addClass(TRX_STYLE_NOWRAP)
 								->addClass($color);
 							$row[] = ($data['severity'] != 0)
 								? (new CCol(get_item_logtype_description($data['severity'])))
-									->addClass(ZBX_STYLE_NOWRAP)
+									->addClass(TRX_STYLE_NOWRAP)
 									->addClass(get_item_logtype_style($data['severity']))
 								: '';
 							$row[] = (new CCol($data['logeventid']))
-								->addClass(ZBX_STYLE_NOWRAP)
+								->addClass(TRX_STYLE_NOWRAP)
 								->addClass($color);
 						}
 					}
@@ -339,14 +339,14 @@ class CScreenHistory extends CScreenBase {
 			elseif ($this->action === HISTORY_LATEST) {
 				$history_table = (new CTableInfo())->makeVerticalRotation()->setHeader([
 					(new CColHeader(_('Timestamp')))
-						->addClass(ZBX_STYLE_CELL_WIDTH),
+						->addClass(TRX_STYLE_CELL_WIDTH),
 					_('Value')
 				]);
 
 				$history_data = API::History()->get($options);
 				CArrayHelper::sort($history_data, [
-					['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-					['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+					['field' => 'clock', 'order' => TRX_SORT_DOWN],
+					['field' => 'ns', 'order' => TRX_SORT_DOWN]
 				]);
 
 				foreach ($history_data as $history_row) {
@@ -363,7 +363,7 @@ class CScreenHistory extends CScreenBase {
 
 					$history_table->addRow([
 						(new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $history_row['clock'])))
-							->addClass(ZBX_STYLE_NOWRAP),
+							->addClass(TRX_STYLE_NOWRAP),
 						new CPre(zbx_nl2br($value))
 					]);
 				}
@@ -376,9 +376,9 @@ class CScreenHistory extends CScreenBase {
 			 */
 			else {
 				CArrayHelper::sort($items, [
-					['field' => 'name_expanded', 'order' => ZBX_SORT_UP]
+					['field' => 'name_expanded', 'order' => TRX_SORT_UP]
 				]);
-				$table_header = [(new CColHeader(_('Timestamp')))->addClass(ZBX_STYLE_CELL_WIDTH)];
+				$table_header = [(new CColHeader(_('Timestamp')))->addClass(TRX_STYLE_CELL_WIDTH)];
 				$history_data = [];
 
 				foreach ($items as $item) {
@@ -387,8 +387,8 @@ class CScreenHistory extends CScreenBase {
 					$item_data = API::History()->get($options);
 
 					CArrayHelper::sort($item_data, [
-						['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-						['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+						['field' => 'clock', 'order' => TRX_SORT_DOWN],
+						['field' => 'ns', 'order' => TRX_SORT_DOWN]
 					]);
 
 					$table_header[] = (new CColHeader($item['name_expanded']))
@@ -430,7 +430,7 @@ class CScreenHistory extends CScreenBase {
 
 				foreach ($history_data as $history_data_row) {
 					$row = [(new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $history_data_row['clock'])))
-						->addClass(ZBX_STYLE_NOWRAP)
+						->addClass(TRX_STYLE_NOWRAP)
 					];
 					$values = $history_data_row['values'];
 

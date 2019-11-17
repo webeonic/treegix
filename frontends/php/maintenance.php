@@ -15,51 +15,51 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'hostids' =>							[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
-	'groupids' =>							[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
-	'groupid' =>							[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'hostids' =>							[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'groupids' =>							[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'groupid' =>							[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
 	// maintenance
-	'maintenanceid' =>						[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
-	'maintenanceids' =>						[T_ZBX_INT, O_OPT, P_SYS,	DB_ID, 		null],
-	'mname' =>								[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('Name')],
-	'maintenance_type' =>					[T_ZBX_INT, O_OPT, null,	null,		'isset({add}) || isset({update})'],
-	'description' =>						[T_ZBX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
-	'active_since' =>						[T_ZBX_ABS_TIME, O_OPT, null, NOT_EMPTY,
+	'maintenanceid' =>						[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
+	'maintenanceids' =>						[T_TRX_INT, O_OPT, P_SYS,	DB_ID, 		null],
+	'mname' =>								[T_TRX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('Name')],
+	'maintenance_type' =>					[T_TRX_INT, O_OPT, null,	null,		'isset({add}) || isset({update})'],
+	'description' =>						[T_TRX_STR, O_OPT, null,	null,		'isset({add}) || isset({update})'],
+	'active_since' =>						[T_TRX_ABS_TIME, O_OPT, null, NOT_EMPTY,
 												'isset({add}) || isset({update})', _('Active since')
 											],
-	'active_till' =>						[T_ZBX_ABS_TIME, O_OPT, null, NOT_EMPTY,
+	'active_till' =>						[T_TRX_ABS_TIME, O_OPT, null, NOT_EMPTY,
 												'isset({add}) || isset({update})', _('Active till')
 											],
-	'new_timeperiod_start_date' =>			[T_ZBX_ABS_TIME, O_OPT, null, 	NOT_EMPTY,	null, _('Date')],
-	'new_timeperiod' =>						[T_ZBX_STR, O_OPT, null,	null,		'isset({add_timeperiod})'],
-	'timeperiods' =>						[T_ZBX_STR, O_OPT, null,	null,		null],
-	'del_timeperiodid' =>					[T_ZBX_STR, O_OPT, P_ACT,	null,		null],
-	'edit_timeperiodid' =>					[T_ZBX_STR, O_OPT, P_ACT,	null,		null],
-	'tags_evaltype' =>						[T_ZBX_INT, O_OPT, null,	null,		null],
-	'tags' =>								[T_ZBX_STR, O_OPT, null,	null,		null],
+	'new_timeperiod_start_date' =>			[T_TRX_ABS_TIME, O_OPT, null, 	NOT_EMPTY,	null, _('Date')],
+	'new_timeperiod' =>						[T_TRX_STR, O_OPT, null,	null,		'isset({add_timeperiod})'],
+	'timeperiods' =>						[T_TRX_STR, O_OPT, null,	null,		null],
+	'del_timeperiodid' =>					[T_TRX_STR, O_OPT, P_ACT,	null,		null],
+	'edit_timeperiodid' =>					[T_TRX_STR, O_OPT, P_ACT,	null,		null],
+	'tags_evaltype' =>						[T_TRX_INT, O_OPT, null,	null,		null],
+	'tags' =>								[T_TRX_STR, O_OPT, null,	null,		null],
 	// actions
-	'action' =>								[T_ZBX_STR, O_OPT, P_SYS|P_ACT, IN('"maintenance.massdelete"'), null],
-	'add_timeperiod' =>						[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel_new_timeperiod' =>				[T_ZBX_STR, O_OPT, P_SYS, null,	null],
-	'add' =>								[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>								[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'clone' =>								[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'delete' =>								[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel' =>								[T_ZBX_STR, O_OPT, P_SYS,		 null,	null],
+	'action' =>								[T_TRX_STR, O_OPT, P_SYS|P_ACT, IN('"maintenance.massdelete"'), null],
+	'add_timeperiod' =>						[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel_new_timeperiod' =>				[T_TRX_STR, O_OPT, P_SYS, null,	null],
+	'add' =>								[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>								[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'clone' =>								[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'delete' =>								[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel' =>								[T_TRX_STR, O_OPT, P_SYS,		 null,	null],
 	// form
-	'form' =>								[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'form_refresh' =>						[T_ZBX_INT, O_OPT, null,	null,		null],
+	'form' =>								[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'form_refresh' =>						[T_TRX_INT, O_OPT, null,	null,		null],
 	// filter
-	'filter_set' =>							[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_rst' =>							[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_name' =>						[T_ZBX_STR, O_OPT, null,	null,		null],
-	'filter_status' =>						[T_ZBX_INT, O_OPT, null,	IN([-1, MAINTENANCE_STATUS_ACTIVE, MAINTENANCE_STATUS_APPROACH, MAINTENANCE_STATUS_EXPIRED]), null],
+	'filter_set' =>							[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_rst' =>							[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_name' =>						[T_TRX_STR, O_OPT, null,	null,		null],
+	'filter_status' =>						[T_TRX_INT, O_OPT, null,	IN([-1, MAINTENANCE_STATUS_ACTIVE, MAINTENANCE_STATUS_APPROACH, MAINTENANCE_STATUS_EXPIRED]), null],
 	// sort and sortorder
-	'sort' =>								[T_ZBX_STR, O_OPT, P_SYS,
+	'sort' =>								[T_TRX_STR, O_OPT, P_SYS,
 												IN('"active_since","active_till","maintenance_type","name"'),
 												null
 											],
-	'sortorder' =>							[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),
+	'sortorder' =>							[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),
 												null
 											]
 ];
@@ -274,7 +274,7 @@ elseif (hasRequest('add_timeperiod') && hasRequest('new_timeperiod')) {
 		$absolute_time_parser = new CAbsoluteTimeParser();
 		$absolute_time_parser->parse($new_timeperiod['start_date']);
 		$start_date = $absolute_time_parser->getDateTime(true);
-		$new_timeperiod['start_date'] = $start_date->format(ZBX_DATE_TIME);
+		$new_timeperiod['start_date'] = $start_date->format(TRX_DATE_TIME);
 
 		if (!validateDateInterval($start_date->format('Y'), $start_date->format('m'), $start_date->format('d'))) {
 			error(_('Incorrect maintenance - date must be between 1970.01.01 and 2038.01.18'));
@@ -369,8 +369,8 @@ if (!empty($data['form'])) {
 		$dbMaintenance = reset($dbMaintenance);
 		$data['mname'] = $dbMaintenance['name'];
 		$data['maintenance_type'] = $dbMaintenance['maintenance_type'];
-		$data['active_since'] = date(ZBX_DATE_TIME, $dbMaintenance['active_since']);
-		$data['active_till'] = date(ZBX_DATE_TIME, $dbMaintenance['active_till']);
+		$data['active_since'] = date(TRX_DATE_TIME, $dbMaintenance['active_since']);
+		$data['active_till'] = date(TRX_DATE_TIME, $dbMaintenance['active_till']);
 		$data['description'] = $dbMaintenance['description'];
 
 		// time periods
@@ -378,7 +378,7 @@ if (!empty($data['form'])) {
 		CArrayHelper::sort($data['timeperiods'], ['timeperiod_type', 'start_date']);
 
 		foreach ($data['timeperiods'] as &$timeperiod) {
-			$timeperiod['start_date'] = date(ZBX_DATE_TIME, $timeperiod['start_date']);
+			$timeperiod['start_date'] = date(TRX_DATE_TIME, $timeperiod['start_date']);
 		}
 		unset($timeperiod);
 
@@ -411,8 +411,8 @@ if (!empty($data['form'])) {
 		$data += [
 			'mname' => getRequest('mname', ''),
 			'maintenance_type' => getRequest('maintenance_type', 0),
-			'active_since' => getRequest('active_since', date(ZBX_DATE_TIME, strtotime('today'))),
-			'active_till' => getRequest('active_till', date(ZBX_DATE_TIME, strtotime('tomorrow'))),
+			'active_since' => getRequest('active_since', date(TRX_DATE_TIME, strtotime('today'))),
+			'active_till' => getRequest('active_till', date(TRX_DATE_TIME, strtotime('tomorrow'))),
 			'description' => getRequest('description', ''),
 			'timeperiods' => getRequest('timeperiods', []),
 			'tags_evaltype' => getRequest('tags_evaltype', MAINTENANCE_TAG_EVAL_TYPE_AND_OR),
@@ -453,7 +453,7 @@ if (!empty($data['form'])) {
 else {
 	// get maintenances
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

@@ -12,7 +12,7 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'triggerid' => [T_ZBX_INT, O_MAND, P_SYS, DB_ID, null]
+	'triggerid' => [T_TRX_INT, O_MAND, P_SYS, DB_ID, null]
 ];
 if (!check_fields($fields)) {
 	exit();

@@ -165,7 +165,7 @@ class CScreenDiscovery extends CScreenBase {
 					}
 
 					if ($dservice['status'] == DSVC_STATUS_DISABLED) {
-						$class = ZBX_STYLE_INACTIVE_BG;
+						$class = TRX_STYLE_INACTIVE_BG;
 						$time = 'lastdown';
 					}
 					else {

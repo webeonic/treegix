@@ -53,7 +53,7 @@ switch ($data['method']) {
 		CSession::start();
 		if (!CSession::keyExists('serverCheckResult')
 				|| (CSession::getValue('serverCheckTime') + SERVER_CHECK_INTERVAL) <= time()) {
-			$treegixServer = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, 0);
+			$treegixServer = new CTreegixServer($TRX_SERVER, $TRX_SERVER_PORT, TRX_SOCKET_TIMEOUT, 0);
 			CSession::setValue('serverCheckResult', $treegixServer->isRunning(CWebUser::getSessionCookie()));
 			CSession::setValue('serverCheckTime', time());
 		}
@@ -93,7 +93,7 @@ switch ($data['method']) {
 
 		if ($triggers) {
 			CArrayHelper::sort($triggers, [
-				['field' => 'priority', 'order' => ZBX_SORT_DOWN]
+				['field' => 'priority', 'order' => TRX_SORT_DOWN]
 			]);
 
 			foreach ($triggers as $trigger) {
@@ -136,7 +136,7 @@ switch ($data['method']) {
 					}
 
 					CArrayHelper::sort($hostGroups, [
-						['field' => 'name', 'order' => ZBX_SORT_UP]
+						['field' => 'name', 'order' => TRX_SORT_UP]
 					]);
 
 					if (isset($data['limit'])) {
@@ -159,7 +159,7 @@ switch ($data['method']) {
 
 				if ($hosts) {
 					CArrayHelper::sort($hosts, [
-						['field' => 'name', 'order' => ZBX_SORT_UP]
+						['field' => 'name', 'order' => TRX_SORT_UP]
 					]);
 
 					if (isset($data['limit'])) {
@@ -255,7 +255,7 @@ switch ($data['method']) {
 
 				if ($templates) {
 					CArrayHelper::sort($templates, [
-						['field' => 'name', 'order' => ZBX_SORT_UP]
+						['field' => 'name', 'order' => TRX_SORT_UP]
 					]);
 
 					if (isset($data['limit'])) {
@@ -294,7 +294,7 @@ switch ($data['method']) {
 
 				if ($applications) {
 					CArrayHelper::sort($applications, [
-						['field' => 'name', 'order' => ZBX_SORT_UP]
+						['field' => 'name', 'order' => TRX_SORT_UP]
 					]);
 
 					if (isset($data['limit'])) {
@@ -327,7 +327,7 @@ switch ($data['method']) {
 							}
 						}
 
-						CArrayHelper::sort($result, [['field' => 'name', 'order' => ZBX_SORT_UP]]);
+						CArrayHelper::sort($result, [['field' => 'name', 'order' => TRX_SORT_UP]]);
 
 						if (array_key_exists('limit', $data)) {
 							$result = array_slice($result, 0, $data['limit']);
@@ -365,7 +365,7 @@ switch ($data['method']) {
 					}
 
 					CArrayHelper::sort($triggers, [
-						['field' => 'description', 'order' => ZBX_SORT_UP]
+						['field' => 'description', 'order' => TRX_SORT_UP]
 					]);
 
 					if (isset($data['limit'])) {
@@ -406,7 +406,7 @@ switch ($data['method']) {
 
 				if ($users) {
 					CArrayHelper::sort($users, [
-						['field' => 'alias', 'order' => ZBX_SORT_UP]
+						['field' => 'alias', 'order' => TRX_SORT_UP]
 					]);
 
 					if (array_key_exists('limit', $data)) {
@@ -431,7 +431,7 @@ switch ($data['method']) {
 
 				if ($groups) {
 					CArrayHelper::sort($groups, [
-						['field' => 'name', 'order' => ZBX_SORT_UP]
+						['field' => 'name', 'order' => TRX_SORT_UP]
 					]);
 
 					if (array_key_exists('limit', $data)) {
@@ -452,7 +452,7 @@ switch ($data['method']) {
 
 				if ($drules) {
 					CArrayHelper::sort($drules, [
-						['field' => 'name', 'order' => ZBX_SORT_UP]
+						['field' => 'name', 'order' => TRX_SORT_UP]
 					]);
 
 					if (array_key_exists('limit', $data)) {
@@ -492,7 +492,7 @@ switch ($data['method']) {
 					'searchWildcardsEnabled' => $wildcard_enabled,
 					'filter' => [
 						'value_type' => [ITEM_VALUE_TYPE_UINT64, ITEM_VALUE_TYPE_FLOAT],
-						'flags' => ZBX_FLAG_DISCOVERY_NORMAL
+						'flags' => TRX_FLAG_DISCOVERY_NORMAL
 					],
 					'templated' => array_key_exists('real_hosts', $data) ? false : null,
 					'webitems' => array_key_exists('webitems', $data) ? $data['webitems'] : null,

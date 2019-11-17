@@ -38,29 +38,29 @@
  */
 
 /* the period of low memory warning messages */
-#define ZBX_VC_LOW_MEMORY_WARNING_PERIOD	(5 * SEC_PER_MIN)
+#define TRX_VC_LOW_MEMORY_WARNING_PERIOD	(5 * SEC_PER_MIN)
 
 /* time period after which value cache will switch back to normal mode */
-#define ZBX_VC_LOW_MEMORY_RESET_PERIOD		SEC_PER_DAY
+#define TRX_VC_LOW_MEMORY_RESET_PERIOD		SEC_PER_DAY
 
 static zbx_mem_info_t	*vc_mem = NULL;
 
-static zbx_mutex_t	vc_lock = ZBX_MUTEX_NULL;
+static zbx_mutex_t	vc_lock = TRX_MUTEX_NULL;
 
 /* flag indicating that the cache was explicitly locked by this process */
 static int	vc_locked = 0;
 
 /* value cache enable/disable flags */
-#define ZBX_VC_DISABLED		0
-#define ZBX_VC_ENABLED		1
+#define TRX_VC_DISABLED		0
+#define TRX_VC_ENABLED		1
 
 /* value cache state, after initialization value cache is always disabled */
-static int	vc_state = ZBX_VC_DISABLED;
+static int	vc_state = TRX_VC_DISABLED;
 
 /* the value cache size */
 extern zbx_uint64_t	CONFIG_VALUE_CACHE_SIZE;
 
-ZBX_MEM_FUNC_IMPL(__vc, vc_mem)
+TRX_MEM_FUNC_IMPL(__vc, vc_mem)
 
 #define VC_STRPOOL_INIT_SIZE	(1000)
 #define VC_ITEMS_INIT_SIZE	(1000)
@@ -70,9 +70,9 @@ ZBX_MEM_FUNC_IMPL(__vc, vc_mem)
 #define VC_MIN_RANGE			SEC_PER_MIN
 
 /* the range synchronization period in hours */
-#define ZBX_VC_RANGE_SYNC_PERIOD	24
+#define TRX_VC_RANGE_SYNC_PERIOD	24
 
-#define ZBX_VC_ITEM_EXPIRE_PERIOD	SEC_PER_DAY
+#define TRX_VC_ITEM_EXPIRE_PERIOD	SEC_PER_DAY
 
 /* the data chunk used to store data fragment */
 typedef struct zbx_vc_chunk
@@ -99,15 +99,15 @@ zbx_vc_chunk_t;
 
 /* min/max number number of item history values to store in chunk */
 
-#define ZBX_VC_MIN_CHUNK_RECORDS	2
+#define TRX_VC_MIN_CHUNK_RECORDS	2
 
 /* the maximum number is calculated so that the chunk size does not exceed 64KB */
-#define ZBX_VC_MAX_CHUNK_RECORDS	((64 * ZBX_KIBIBYTE - sizeof(zbx_vc_chunk_t)) / \
+#define TRX_VC_MAX_CHUNK_RECORDS	((64 * TRX_KIBIBYTE - sizeof(zbx_vc_chunk_t)) / \
 		sizeof(zbx_history_record_t) + 1)
 
 /* the item operational state flags */
-#define ZBX_ITEM_STATE_CLEAN_PENDING	1
-#define ZBX_ITEM_STATE_REMOVE_PENDING	2
+#define TRX_ITEM_STATE_CLEAN_PENDING	1
+#define TRX_ITEM_STATE_REMOVE_PENDING	2
 
 /* the value cache item data */
 typedef struct
@@ -118,10 +118,10 @@ typedef struct
 	/* the item value type */
 	unsigned char	value_type;
 
-	/* the item operational state flags (ZBX_ITEM_STATE_*)        */
+	/* the item operational state flags (TRX_ITEM_STATE_*)        */
 	unsigned char	state;
 
-	/* the item status flags (ZBX_ITEM_STATUS_*)                  */
+	/* the item status flags (TRX_ITEM_STATUS_*)                  */
 	unsigned char	status;
 
 	/* the hour when the current/global range sync was done       */
@@ -179,7 +179,7 @@ typedef struct
 	/* the number of cache misses, used for statistics */
 	zbx_uint64_t	misses;
 
-	/* value cache operating mode - see ZBX_VC_MODE_* defines */
+	/* value cache operating mode - see TRX_VC_MODE_* defines */
 	int		mode;
 
 	/* time when cache operating mode was changed */
@@ -210,8 +210,8 @@ typedef struct
 }
 zbx_vc_item_weight_t;
 
-ZBX_VECTOR_DECL(vc_itemweight, zbx_vc_item_weight_t)
-ZBX_VECTOR_IMPL(vc_itemweight, zbx_vc_item_weight_t)
+TRX_VECTOR_DECL(vc_itemweight, zbx_vc_item_weight_t)
+TRX_VECTOR_IMPL(vc_itemweight, zbx_vc_item_weight_t)
 
 /* the value cache */
 static zbx_vc_cache_t	*vc_cache = NULL;
@@ -235,7 +235,7 @@ static void	vch_item_clean_cache(zbx_vc_item_t *item);
  ******************************************************************************/
 static void	vc_try_lock(void)
 {
-	if (ZBX_VC_ENABLED == vc_state && 0 == vc_locked)
+	if (TRX_VC_ENABLED == vc_state && 0 == vc_locked)
 		zbx_mutex_lock(vc_lock);
 }
 
@@ -249,7 +249,7 @@ static void	vc_try_lock(void)
  ******************************************************************************/
 static void	vc_try_unlock(void)
 {
-	if (ZBX_VC_ENABLED == vc_state && 0 == vc_locked)
+	if (TRX_VC_ENABLED == vc_state && 0 == vc_locked)
 		zbx_mutex_unlock(vc_lock);
 }
 
@@ -513,7 +513,7 @@ static int	vc_db_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_hist
 
 static zbx_hash_t	vc_strpool_hash_func(const void *data)
 {
-	return ZBX_DEFAULT_STRING_HASH_FUNC((char *)data + REFCOUNT_FIELD_SIZE);
+	return TRX_DEFAULT_STRING_HASH_FUNC((char *)data + REFCOUNT_FIELD_SIZE);
 }
 
 static int	vc_strpool_compare_func(const void *d1, const void *d2)
@@ -533,7 +533,7 @@ static int	vc_strpool_compare_func(const void *d1, const void *d2)
  ******************************************************************************/
 static int	vc_item_weight_compare_func(const zbx_vc_item_weight_t *d1, const zbx_vc_item_weight_t *d2)
 {
-	ZBX_RETURN_IF_NOT_EQUAL(d1->weight, d2->weight);
+	TRX_RETURN_IF_NOT_EQUAL(d1->weight, d2->weight);
 
 	return 0;
 }
@@ -633,7 +633,7 @@ static void	vc_update_statistics(zbx_vc_item_t *item, int hits, int misses)
 		item->last_accessed = time(NULL);
 	}
 
-	if (ZBX_VC_ENABLED == vc_state)
+	if (TRX_VC_ENABLED == vc_state)
 	{
 		vc_cache->hits += hits;
 		vc_cache->misses += misses;
@@ -656,14 +656,14 @@ static void	vc_warn_low_memory(void)
 
 	now = time(NULL);
 
-	if (now - vc_cache->mode_time > ZBX_VC_LOW_MEMORY_RESET_PERIOD)
+	if (now - vc_cache->mode_time > TRX_VC_LOW_MEMORY_RESET_PERIOD)
 	{
-		vc_cache->mode = ZBX_VC_MODE_NORMAL;
+		vc_cache->mode = TRX_VC_MODE_NORMAL;
 		vc_cache->mode_time = now;
 
 		treegix_log(LOG_LEVEL_WARNING, "value cache has been switched from low memory to normal operation mode");
 	}
-	else if (now - vc_cache->last_warning_time > ZBX_VC_LOW_MEMORY_WARNING_PERIOD)
+	else if (now - vc_cache->last_warning_time > TRX_VC_LOW_MEMORY_WARNING_PERIOD)
 	{
 		vc_cache->last_warning_time = now;
 
@@ -697,7 +697,7 @@ static void	vc_release_space(zbx_vc_item_t *source_item, size_t space)
 	size_t				freed = 0;
 	zbx_vector_vc_itemweight_t	items;
 
-	timestamp = time(NULL) - ZBX_VC_ITEM_EXPIRE_PERIOD;
+	timestamp = time(NULL) - TRX_VC_ITEM_EXPIRE_PERIOD;
 
 	/* reserve at least min_free_request bytes to avoid spamming with free space requests */
 	if (space < vc_cache->min_free_request)
@@ -719,7 +719,7 @@ static void	vc_release_space(zbx_vc_item_t *source_item, size_t space)
 		return;
 
 	/* failed to free enough space by removing old items, entering low memory mode */
-	vc_cache->mode = ZBX_VC_MODE_LOWMEM;
+	vc_cache->mode = TRX_VC_MODE_LOWMEM;
 	vc_cache->mode_time = time(NULL);
 
 	vc_warn_low_memory();
@@ -884,7 +884,7 @@ static char	*vc_item_strdup(zbx_vc_item_t *item, const char *str)
 			/* If there is not enough space - free enough to store string + hashset entry overhead */
 			/* and try inserting one more time. If it fails again, then fail the function.         */
 			if (0 == tries++)
-				vc_release_space(item, len + REFCOUNT_FIELD_SIZE + sizeof(ZBX_HASHSET_ENTRY_T));
+				vc_release_space(item, len + REFCOUNT_FIELD_SIZE + sizeof(TRX_HASHSET_ENTRY_T));
 			else
 				return NULL;
 		}
@@ -1093,13 +1093,13 @@ static void	vc_item_release(zbx_vc_item_t *item)
 {
 	if (0 == (--item->refcount))
 	{
-		if (0 != (item->state & ZBX_ITEM_STATE_REMOVE_PENDING))
+		if (0 != (item->state & TRX_ITEM_STATE_REMOVE_PENDING))
 		{
 			vc_remove_item(item);
 			return;
 		}
 
-		if (0 != (item->state & ZBX_ITEM_STATE_CLEAN_PENDING))
+		if (0 != (item->state & TRX_ITEM_STATE_CLEAN_PENDING))
 			vch_item_clean_cache(item);
 
 		item->state = 0;
@@ -1190,7 +1190,7 @@ static void	vch_item_update_range(zbx_vc_item_t *item, int range, int now)
 	if (0 > (diff = hour - item->range_sync_hour))
 		diff += 0xff;
 
-	if (item->active_range < item->daily_range || ZBX_VC_RANGE_SYNC_PERIOD < diff)
+	if (item->active_range < item->daily_range || TRX_VC_RANGE_SYNC_PERIOD < diff)
 	{
 		item->active_range = item->daily_range;
 		item->daily_range = range;
@@ -1227,10 +1227,10 @@ static int	vch_item_chunk_slot_count(zbx_vc_item_t *item, int values_new)
 	if ((values + nslots - 1) / nslots + 1 > 32)
 		nslots = values / 32;
 
-	if (nslots > (int)ZBX_VC_MAX_CHUNK_RECORDS)
-		nslots = ZBX_VC_MAX_CHUNK_RECORDS;
-	if (nslots < (int)ZBX_VC_MIN_CHUNK_RECORDS)
-		nslots = ZBX_VC_MIN_CHUNK_RECORDS;
+	if (nslots > (int)TRX_VC_MAX_CHUNK_RECORDS)
+		nslots = TRX_VC_MAX_CHUNK_RECORDS;
+	if (nslots < (int)TRX_VC_MIN_CHUNK_RECORDS)
+		nslots = TRX_VC_MIN_CHUNK_RECORDS;
 
 	return nslots;
 }
@@ -1635,7 +1635,7 @@ static void	vch_item_remove_values(zbx_vc_item_t *item, int timestamp)
 {
 	zbx_vc_chunk_t	*chunk = item->tail;
 
-	if (ZBX_ITEM_STATUS_CACHED_ALL == item->status)
+	if (TRX_ITEM_STATUS_CACHED_ALL == item->status)
 		item->status = 0;
 
 	/* try to remove chunks with all history values older than the timestamp */
@@ -1664,7 +1664,7 @@ static void	vch_item_remove_values(zbx_vc_item_t *item, int timestamp)
 		/* while other values with matching timestamp seconds are not cached                 */
 		if (NULL == next)
 		{
-			item->state |= ZBX_ITEM_STATE_REMOVE_PENDING;
+			item->state |= TRX_ITEM_STATE_REMOVE_PENDING;
 			break;
 		}
 
@@ -1776,7 +1776,7 @@ static int	vch_item_add_value_at_head(zbx_vc_item_t *item, const zbx_history_rec
 
 	/* try to remove old (unused) chunks if a new chunk was added */
 	if (head != item->head)
-		item->state |= ZBX_ITEM_STATE_CLEAN_PENDING;
+		item->state |= TRX_ITEM_STATE_CLEAN_PENDING;
 
 	ret = SUCCEED;
 out:
@@ -1867,7 +1867,7 @@ static int	vch_item_cache_values_by_time(zbx_vc_item_t *item, int range_start)
 {
 	int	ret = SUCCEED, range_end;
 
-	if (ZBX_ITEM_STATUS_CACHED_ALL == item->status)
+	if (TRX_ITEM_STATUS_CACHED_ALL == item->status)
 		return SUCCEED;
 
 	/* check if the requested period is in the cached range */
@@ -1881,7 +1881,7 @@ static int	vch_item_cache_values_by_time(zbx_vc_item_t *item, int range_start)
 		range_end = item->tail->slots[item->tail->first_value].timestamp.sec - 1;
 	}
 	else
-		range_end = ZBX_JAN_2038;
+		range_end = TRX_JAN_2038;
 
 	/* update cache if necessary */
 	if (range_start < range_end)
@@ -1947,7 +1947,7 @@ static int	vch_item_cache_values_by_time_and_count(zbx_vc_item_t *item, int rang
 {
 	int	ret = SUCCEED, cached_records = 0, range_end;
 
-	if (ZBX_ITEM_STATUS_CACHED_ALL == item->status)
+	if (TRX_ITEM_STATUS_CACHED_ALL == item->status)
 		return SUCCEED;
 
 	/* check if the requested period is in the cached range */
@@ -1978,7 +1978,7 @@ static int	vch_item_cache_values_by_time_and_count(zbx_vc_item_t *item, int rang
 		if (NULL != item->head)
 			range_end = item->tail->slots[item->tail->first_value].timestamp.sec - 1;
 		else
-			range_end = ZBX_JAN_2038;
+			range_end = TRX_JAN_2038;
 
 		vc_try_unlock();
 
@@ -2048,7 +2048,7 @@ static void	vch_item_get_values_by_time(zbx_vc_item_t *item, zbx_vector_history_
 	/* Check if maximum request range is not set and all data are cached.  */
 	/* Because that indicates there was a count based request with unknown */
 	/* range which might be greater than the current request range.        */
-	if (0 != item->active_range || ZBX_ITEM_STATUS_CACHED_ALL != item->status)
+	if (0 != item->active_range || TRX_ITEM_STATUS_CACHED_ALL != item->status)
 	{
 		now = time(NULL);
 		/* add another second to include nanosecond shifts */
@@ -2143,7 +2143,7 @@ out:
 			/* not enough data in db to fulfill a count based request request */
 			item->active_range = 0;
 			item->daily_range = 0;
-			item->status = ZBX_ITEM_STATUS_CACHED_ALL;
+			item->status = TRX_ITEM_STATUS_CACHED_ALL;
 			return;
 		}
 		/* not enough data in the requested period, set the range equal to the period plus */
@@ -2289,7 +2289,7 @@ int	zbx_vc_init(char **error)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != zbx_mutex_create(&vc_lock, ZBX_MUTEX_VALUECACHE, error))
+	if (SUCCEED != zbx_mutex_create(&vc_lock, TRX_MUTEX_VALUECACHE, error))
 		goto out;
 
 	size_reserved = zbx_mem_required_size(1, "value cache size", "ValueCacheSize");
@@ -2309,7 +2309,7 @@ int	zbx_vc_init(char **error)
 	memset(vc_cache, 0, sizeof(zbx_vc_cache_t));
 
 	zbx_hashset_create_ext(&vc_cache->items, VC_ITEMS_INIT_SIZE,
-			ZBX_DEFAULT_UINT64_HASH_FUNC, ZBX_DEFAULT_UINT64_COMPARE_FUNC, NULL,
+			TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC, NULL,
 			__vc_mem_malloc_func, __vc_mem_realloc_func, __vc_mem_free_func);
 
 	if (NULL == vc_cache->items.slots)
@@ -2330,8 +2330,8 @@ int	zbx_vc_init(char **error)
 
 	/* the free space request should be 5% of cache size, but no more than 128KB */
 	vc_cache->min_free_request = (CONFIG_VALUE_CACHE_SIZE / 100) * 5;
-	if (vc_cache->min_free_request > 128 * ZBX_KIBIBYTE)
-		vc_cache->min_free_request = 128 * ZBX_KIBIBYTE;
+	if (vc_cache->min_free_request > 128 * TRX_KIBIBYTE)
+		vc_cache->min_free_request = 128 * TRX_KIBIBYTE;
 
 	ret = SUCCEED;
 out:
@@ -2398,7 +2398,7 @@ void	zbx_vc_reset(void)
 		vc_cache->hits = 0;
 		vc_cache->misses = 0;
 		vc_cache->min_free_request = 0;
-		vc_cache->mode = ZBX_VC_MODE_NORMAL;
+		vc_cache->mode = TRX_VC_MODE_NORMAL;
 		vc_cache->mode_time = 0;
 		vc_cache->last_warning_time = 0;
 
@@ -2424,28 +2424,28 @@ int	zbx_vc_add_values(zbx_vector_ptr_t *history)
 {
 	zbx_vc_item_t		*item;
 	int 			i;
-	ZBX_DC_HISTORY		*h;
+	TRX_DC_HISTORY		*h;
 	time_t			expire_timestamp;
 
 	if (FAIL == zbx_history_add_values(history))
 		return FAIL;
 
-	if (ZBX_VC_DISABLED == vc_state)
+	if (TRX_VC_DISABLED == vc_state)
 		return SUCCEED;
 
-	expire_timestamp = time(NULL) - ZBX_VC_ITEM_EXPIRE_PERIOD;
+	expire_timestamp = time(NULL) - TRX_VC_ITEM_EXPIRE_PERIOD;
 
 	vc_try_lock();
 
 	for (i = 0; i < history->values_num; i++)
 	{
-		h = (ZBX_DC_HISTORY *)history->values[i];
+		h = (TRX_DC_HISTORY *)history->values[i];
 
 		if (NULL != (item = (zbx_vc_item_t *)zbx_hashset_search(&vc_cache->items, &h->itemid)))
 		{
 			zbx_history_record_t	record = {h->ts, h->value};
 
-			if (0 == (item->state & ZBX_ITEM_STATE_REMOVE_PENDING))
+			if (0 == (item->state & TRX_ITEM_STATE_REMOVE_PENDING))
 			{
 				vc_item_addref(item);
 
@@ -2459,7 +2459,7 @@ int	zbx_vc_add_values(zbx_vector_ptr_t *history)
 				if (item->value_type != h->value_type || item->last_accessed < expire_timestamp ||
 						FAIL == vch_item_add_value_at_head(item, &record))
 				{
-					item->state |= ZBX_ITEM_STATE_REMOVE_PENDING;
+					item->state |= TRX_ITEM_STATE_REMOVE_PENDING;
 				}
 
 				vc_item_release(item);
@@ -2503,20 +2503,20 @@ int	zbx_vc_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_history_re
 	zbx_vc_item_t	*item = NULL;
 	int 		ret = FAIL, cache_used = 1;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" ZBX_FS_UI64 " value_type:%d seconds:%d count:%d sec:%d ns:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" TRX_FS_UI64 " value_type:%d seconds:%d count:%d sec:%d ns:%d",
 			__func__, itemid, value_type, seconds, count, ts->sec, ts->ns);
 
 	vc_try_lock();
 
-	if (ZBX_VC_DISABLED == vc_state)
+	if (TRX_VC_DISABLED == vc_state)
 		goto out;
 
-	if (ZBX_VC_MODE_LOWMEM == vc_cache->mode)
+	if (TRX_VC_MODE_LOWMEM == vc_cache->mode)
 		vc_warn_low_memory();
 
 	if (NULL == (item = (zbx_vc_item_t *)zbx_hashset_search(&vc_cache->items, &itemid)))
 	{
-		if (ZBX_VC_MODE_NORMAL == vc_cache->mode)
+		if (TRX_VC_MODE_NORMAL == vc_cache->mode)
 		{
 			zbx_vc_item_t   new_item = {.itemid = itemid, .value_type = value_type};
 
@@ -2529,7 +2529,7 @@ int	zbx_vc_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_history_re
 
 	vc_item_addref(item);
 
-	if (0 != (item->state & ZBX_ITEM_STATE_REMOVE_PENDING) || item->value_type != value_type)
+	if (0 != (item->state & TRX_ITEM_STATE_REMOVE_PENDING) || item->value_type != value_type)
 		goto out;
 
 	ret = vch_item_get_values(item, values, seconds, count, ts);
@@ -2537,7 +2537,7 @@ out:
 	if (FAIL == ret)
 	{
 		if (NULL != item)
-			item->state |= ZBX_ITEM_STATE_REMOVE_PENDING;
+			item->state |= TRX_ITEM_STATE_REMOVE_PENDING;
 
 		cache_used = 0;
 
@@ -2619,7 +2619,7 @@ out:
  ******************************************************************************/
 int	zbx_vc_get_statistics(zbx_vc_stats_t *stats)
 {
-	if (ZBX_VC_DISABLED == vc_state)
+	if (TRX_VC_DISABLED == vc_state)
 		return FAIL;
 
 	vc_try_lock();
@@ -2679,7 +2679,7 @@ void	zbx_vc_unlock(void)
 void	zbx_vc_enable(void)
 {
 	if (NULL != vc_cache)
-		vc_state = ZBX_VC_ENABLED;
+		vc_state = TRX_VC_ENABLED;
 }
 
 /******************************************************************************
@@ -2691,7 +2691,7 @@ void	zbx_vc_enable(void)
  ******************************************************************************/
 void	zbx_vc_disable(void)
 {
-	vc_state = ZBX_VC_DISABLED;
+	vc_state = TRX_VC_DISABLED;
 }
 
 #ifdef HAVE_TESTS

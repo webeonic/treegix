@@ -35,7 +35,7 @@ static int	get_minnextcheck(void)
 			"select min(t.nextcheck)"
 			" from httptest t,hosts h"
 			" where t.hostid=h.hostid"
-				" and " ZBX_SQL_MOD(t.httptestid,%d) "=%d"
+				" and " TRX_SQL_MOD(t.httptestid,%d) "=%d"
 				" and t.status=%d"
 				" and h.proxy_hostid is null"
 				" and h.status=%d"
@@ -73,7 +73,7 @@ static int	get_minnextcheck(void)
  * Comments: never returns                                                    *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(httppoller_thread, args)
+TRX_THREAD_ENTRY(httppoller_thread, args)
 {
 	int	now, nextcheck, sleeptime = -1, httptests_count = 0, old_httptests_count = 0;
 	double	sec, total_sec = 0.0, old_total_sec = 0.0;
@@ -92,16 +92,16 @@ ZBX_THREAD_ENTRY(httppoller_thread, args)
 	zbx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
 	last_stat_time = time(NULL);
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 		zbx_update_env(sec);
 
 		if (0 != sleeptime)
 		{
-			zbx_setproctitle("%s #%d [got %d values in " ZBX_FS_DBL " sec, getting values]",
+			zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
 					get_process_type_string(process_type), process_num, old_httptests_count,
 					old_total_sec);
 		}
@@ -117,13 +117,13 @@ ZBX_THREAD_ENTRY(httppoller_thread, args)
 		{
 			if (0 == sleeptime)
 			{
-				zbx_setproctitle("%s #%d [got %d values in " ZBX_FS_DBL " sec, getting values]",
+				zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
 						get_process_type_string(process_type), process_num, httptests_count,
 						total_sec);
 			}
 			else
 			{
-				zbx_setproctitle("%s #%d [got %d values in " ZBX_FS_DBL " sec, idle %d sec]",
+				zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, idle %d sec]",
 						get_process_type_string(process_type), process_num, httptests_count,
 						total_sec, sleeptime);
 				old_httptests_count = httptests_count;

@@ -20,7 +20,7 @@ typedef struct
 }
 zbx_es_httprequest_t;
 
-#define ZBX_CURL_SETOPT(ctx, handle, opt, value, err)							\
+#define TRX_CURL_SETOPT(ctx, handle, opt, value, err)							\
 	if (CURLE_OK != (err = curl_easy_setopt(handle, opt, value)))					\
 	{												\
 		return duk_error(ctx, DUK_RET_TYPE_ERROR, "cannot set cURL option " #opt ": %s.",	\
@@ -115,14 +115,14 @@ static duk_ret_t	es_httprequest_ctor(duk_context *ctx)
 	if (NULL == (request->handle = curl_easy_init()))
 		return duk_error(ctx, DUK_RET_TYPE_ERROR, "cannot initialize cURL library");
 
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_COOKIEFILE, "", err);
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_FOLLOWLOCATION, 1L, err);
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_WRITEFUNCTION, curl_write_cb, err);
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_WRITEDATA, request, err);
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_PRIVATE, request, err);
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_SSL_VERIFYPEER, 0L, err);
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_TIMEOUT, (long)env->timeout, err);
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_SSL_VERIFYHOST, 0L, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_COOKIEFILE, "", err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_FOLLOWLOCATION, 1L, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_WRITEFUNCTION, curl_write_cb, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_WRITEDATA, request, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_PRIVATE, request, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_SSL_VERIFYPEER, 0L, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_TIMEOUT, (long)env->timeout, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_SSL_VERIFYHOST, 0L, err);
 
 	duk_push_pointer(ctx, request);
 	duk_put_prop_string(ctx, -2, "\xff""\xff""d");
@@ -149,7 +149,7 @@ static duk_ret_t	es_httprequest_add_header(duk_context *ctx)
 		return duk_error(ctx, DUK_RET_TYPE_ERROR, "internal scripting error: null object");
 
 	request->headers = curl_slist_append(request->headers, duk_to_string(ctx, 0));
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_HTTPHEADER, request->headers, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_HTTPHEADER, request->headers, err);
 	request->custom_header = 1;
 
 	return 0;
@@ -199,7 +199,7 @@ static duk_ret_t	es_httprequest_query(duk_context *ctx, const char *http_request
 	if (NULL == (request = es_httprequest(ctx)))
 		return duk_error(ctx, DUK_RET_TYPE_ERROR, "internal scripting error: null object");
 
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_URL, url, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_URL, url, err);
 
 	if (0 == request->custom_header)
 	{
@@ -217,9 +217,9 @@ static duk_ret_t	es_httprequest_query(duk_context *ctx, const char *http_request
 		}
 	}
 
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_HTTPHEADER, request->headers, err);
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_CUSTOMREQUEST, http_request, err);
-	ZBX_CURL_SETOPT(ctx, request->handle, CURLOPT_POSTFIELDS, contents, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_HTTPHEADER, request->headers, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_CUSTOMREQUEST, http_request, err);
+	TRX_CURL_SETOPT(ctx, request->handle, CURLOPT_POSTFIELDS, contents, err);
 
 	request->data_offset = 0;
 

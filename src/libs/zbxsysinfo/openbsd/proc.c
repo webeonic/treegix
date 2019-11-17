@@ -20,21 +20,21 @@
 #endif
 
 #ifdef KERN_PROC2
-#	define ZBX_P_COMM	p_comm
-#	define ZBX_P_FLAG	p_flag
-#	define ZBX_P_PID	p_pid
-#	define ZBX_P_STAT	p_stat
-#	define ZBX_P_VM_TSIZE	p_vm_tsize
-#	define ZBX_P_VM_DSIZE	p_vm_dsize
-#	define ZBX_P_VM_SSIZE	p_vm_ssize
+#	define TRX_P_COMM	p_comm
+#	define TRX_P_FLAG	p_flag
+#	define TRX_P_PID	p_pid
+#	define TRX_P_STAT	p_stat
+#	define TRX_P_VM_TSIZE	p_vm_tsize
+#	define TRX_P_VM_DSIZE	p_vm_dsize
+#	define TRX_P_VM_SSIZE	p_vm_ssize
 #else
-#	define ZBX_P_COMM	kp_proc.p_comm
-#	define ZBX_P_FLAG	kp_proc.p_flag
-#	define ZBX_P_PID	kp_proc.p_pid
-#	define ZBX_P_STAT	kp_proc.p_stat
-#	define ZBX_P_VM_TSIZE	kp_eproc.e_vm.vm_tsize
-#	define ZBX_P_VM_DSIZE	kp_eproc.e_vm.vm_dsize
-#	define ZBX_P_VM_SSIZE	kp_eproc.e_vm.vm_ssize
+#	define TRX_P_COMM	kp_proc.p_comm
+#	define TRX_P_FLAG	kp_proc.p_flag
+#	define TRX_P_PID	kp_proc.p_pid
+#	define TRX_P_STAT	kp_proc.p_stat
+#	define TRX_P_VM_TSIZE	kp_eproc.e_vm.vm_tsize
+#	define TRX_P_VM_DSIZE	kp_eproc.e_vm.vm_dsize
+#	define TRX_P_VM_SSIZE	kp_eproc.e_vm.vm_ssize
 #endif
 
 static int	proc_argv(pid_t pid, char ***argv, size_t *argv_alloc, int *argc)
@@ -142,13 +142,13 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "sum"))
-		do_task = ZBX_DO_SUM;
+		do_task = TRX_DO_SUM;
 	else if (0 == strcmp(param, "avg"))
-		do_task = ZBX_DO_AVG;
+		do_task = TRX_DO_AVG;
 	else if (0 == strcmp(param, "max"))
-		do_task = ZBX_DO_MAX;
+		do_task = TRX_DO_MAX;
 	else if (0 == strcmp(param, "min"))
-		do_task = ZBX_DO_MIN;
+		do_task = TRX_DO_MIN;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -225,12 +225,12 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		proc_ok = 0;
 		comm_ok = 0;
 
-		if (NULL == procname || '\0' == *procname || 0 == strcmp(procname, proc[i].ZBX_P_COMM))
+		if (NULL == procname || '\0' == *procname || 0 == strcmp(procname, proc[i].TRX_P_COMM))
 			proc_ok = 1;
 
 		if (NULL != proccomm && '\0' != *proccomm)
 		{
-			if (SUCCEED == proc_argv(proc[i].ZBX_P_PID, &argv, &argv_alloc, &argc))
+			if (SUCCEED == proc_argv(proc[i].TRX_P_PID, &argv, &argv_alloc, &argc))
 			{
 				collect_args(argv, argc, &args, &args_alloc);
 				if (NULL != zbx_regexp_match(args, proccomm, NULL))
@@ -242,16 +242,16 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		if (proc_ok && comm_ok)
 		{
-			value = proc[i].ZBX_P_VM_TSIZE + proc[i].ZBX_P_VM_DSIZE + proc[i].ZBX_P_VM_SSIZE;
+			value = proc[i].TRX_P_VM_TSIZE + proc[i].TRX_P_VM_DSIZE + proc[i].TRX_P_VM_SSIZE;
 			value *= pagesize;
 
 			if (0 == proccount++)
 				memsize = value;
 			else
 			{
-				if (ZBX_DO_MAX == do_task)
+				if (TRX_DO_MAX == do_task)
 					memsize = MAX(memsize, value);
-				else if (ZBX_DO_MIN == do_task)
+				else if (TRX_DO_MIN == do_task)
 					memsize = MIN(memsize, value);
 				else
 					memsize += value;
@@ -262,7 +262,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	zbx_free(argv);
 	zbx_free(args);
 out:
-	if (ZBX_DO_AVG == do_task)
+	if (TRX_DO_AVG == do_task)
 		SET_DBL_RESULT(result, 0 == proccount ? 0 : memsize / proccount);
 	else
 		SET_UI64_RESULT(result, memsize);
@@ -318,17 +318,17 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = ZBX_PROC_STAT_ALL;
+		zbx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = ZBX_PROC_STAT_RUN;
+		zbx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = ZBX_PROC_STAT_SLEEP;
+		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = ZBX_PROC_STAT_ZOMB;
+		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else if (0 == strcmp(param, "disk"))
-		zbx_proc_stat = ZBX_PROC_STAT_DISK;
+		zbx_proc_stat = TRX_PROC_STAT_DISK;
 	else if (0 == strcmp(param, "trace"))
-		zbx_proc_stat = ZBX_PROC_STAT_TRACE;
+		zbx_proc_stat = TRX_PROC_STAT_TRACE;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -405,31 +405,31 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		stat_ok = 0;
 		comm_ok = 0;
 
-		if (NULL == procname || '\0' == *procname || 0 == strcmp(procname, proc[i].ZBX_P_COMM))
+		if (NULL == procname || '\0' == *procname || 0 == strcmp(procname, proc[i].TRX_P_COMM))
 			proc_ok = 1;
 
-		if (ZBX_PROC_STAT_ALL != zbx_proc_stat)
+		if (TRX_PROC_STAT_ALL != zbx_proc_stat)
 		{
 			switch (zbx_proc_stat)
 			{
-				case ZBX_PROC_STAT_RUN:
-					if (SRUN == proc[i].ZBX_P_STAT || SONPROC == proc[i].ZBX_P_STAT)
+				case TRX_PROC_STAT_RUN:
+					if (SRUN == proc[i].TRX_P_STAT || SONPROC == proc[i].TRX_P_STAT)
 						stat_ok = 1;
 					break;
-				case ZBX_PROC_STAT_SLEEP:
-					if (SSLEEP == proc[i].ZBX_P_STAT && 0 != (proc[i].ZBX_P_FLAG & P_SINTR))
+				case TRX_PROC_STAT_SLEEP:
+					if (SSLEEP == proc[i].TRX_P_STAT && 0 != (proc[i].TRX_P_FLAG & P_SINTR))
 						stat_ok = 1;
 					break;
-				case ZBX_PROC_STAT_ZOMB:
-					if (SZOMB == proc[i].ZBX_P_STAT || SDEAD == proc[i].ZBX_P_STAT)
+				case TRX_PROC_STAT_ZOMB:
+					if (SZOMB == proc[i].TRX_P_STAT || SDEAD == proc[i].TRX_P_STAT)
 						stat_ok = 1;
 					break;
-				case ZBX_PROC_STAT_DISK:
-					if (SSLEEP == proc[i].ZBX_P_STAT && 0 == (proc[i].ZBX_P_FLAG & P_SINTR))
+				case TRX_PROC_STAT_DISK:
+					if (SSLEEP == proc[i].TRX_P_STAT && 0 == (proc[i].TRX_P_FLAG & P_SINTR))
 						stat_ok = 1;
 					break;
-				case ZBX_PROC_STAT_TRACE:
-					if (SSTOP == proc[i].ZBX_P_STAT)
+				case TRX_PROC_STAT_TRACE:
+					if (SSTOP == proc[i].TRX_P_STAT)
 						stat_ok = 1;
 					break;
 			}
@@ -439,7 +439,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		if (NULL != proccomm && '\0' != *proccomm)
 		{
-			if (SUCCEED == proc_argv(proc[i].ZBX_P_PID, &argv, &argv_alloc, &argc))
+			if (SUCCEED == proc_argv(proc[i].TRX_P_PID, &argv, &argv_alloc, &argc))
 			{
 				collect_args(argv, argc, &args, &args_alloc);
 				if (NULL != zbx_regexp_match(args, proccomm, NULL))

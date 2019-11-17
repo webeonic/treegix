@@ -5,6 +5,6 @@
 
 #include "threads.h"
 
-ZBX_THREAD_ENTRY(pinger_thread, args);
+TRX_THREAD_ENTRY(pinger_thread, args);
 
 #endif

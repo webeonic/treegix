@@ -6,6 +6,6 @@
 #include "common.h"
 #include "threads.h"
 
-ZBX_THREAD_ENTRY(preprocessing_manager_thread, args);
+TRX_THREAD_ENTRY(preprocessing_manager_thread, args);
 
 #endif

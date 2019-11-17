@@ -5,6 +5,6 @@
 
 #include "threads.h"
 
-ZBX_THREAD_ENTRY(dbconfig_thread, args);
+TRX_THREAD_ENTRY(dbconfig_thread, args);
 
 #endif

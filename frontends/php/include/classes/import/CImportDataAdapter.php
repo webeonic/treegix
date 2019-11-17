@@ -464,7 +464,7 @@ class CImportDataAdapter {
 			}
 		}
 
-		if ($simple_trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION
+		if ($simple_trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION
 				&& $expression_data->parse($simple_trigger['recovery_expression'])) {
 			foreach (array_reverse($expression_data->expressions) as $expression) {
 				if ($expression['host'] === '' && $expression['item'] === '') {

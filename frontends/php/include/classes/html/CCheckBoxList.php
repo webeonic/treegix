@@ -20,7 +20,7 @@ class CCheckBoxList extends CList {
 	public function __construct($name) {
 		parent::__construct();
 
-		$this->addClass(ZBX_STYLE_CHECKBOX_LIST);
+		$this->addClass(TRX_STYLE_CHECKBOX_LIST);
 		$this->name = $name;
 		$this->values = [];
 	}

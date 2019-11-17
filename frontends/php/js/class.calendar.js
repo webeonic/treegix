@@ -47,7 +47,7 @@ calendar.prototype = {
 		t('S_SATURDAY')
 	),
 	sections: new Array('.calendar-year', '.calendar-month', '.calendar-date'),
-	date_time_format: PHP_ZBX_FULL_DATE_TIME,
+	date_time_format: PHP_TRX_FULL_DATE_TIME,
 	trigger_elmnt: null,		// Calendar visibility trigger element.
 
 	initialize: function(timeobject, trigger_elmnt, date_time_format) {
@@ -319,7 +319,7 @@ calendar.prototype = {
 
 	setSDateFromOuterObj: function() {
 		var val = this.timeobject.value,
-			// Date and Time separator must be synced with ZBX_FULL_DATE_TIME and ZBX_DATE_TIME in defines.inc.php.
+			// Date and Time separator must be synced with TRX_FULL_DATE_TIME and TRX_DATE_TIME in defines.inc.php.
 			datetime = val.split(' '),
 			date = datetime[0].split('-'),
 			time = (datetime.length > 1) ? datetime[1].split(':') : new Array();

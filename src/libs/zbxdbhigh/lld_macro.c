@@ -43,7 +43,7 @@ int	zbx_lld_macro_paths_get(zbx_uint64_t lld_ruleid, zbx_vector_ptr_t *lld_macro
 	result = DBselect(
 			"select lld_macro,path"
 			" from lld_macro_path"
-			" where itemid=" ZBX_FS_UI64
+			" where itemid=" TRX_FS_UI64
 			" order by lld_macro",
 			lld_ruleid);
 

@@ -657,13 +657,13 @@
 #undef VERSION
 
 /* Define to 1 on linux and solaris platforms */
-#undef ZBX_PROCSTAT_COLLECTOR
+#undef TRX_PROCSTAT_COLLECTOR
 
 /* Define integer field name in union 'sigval' of struct 'siginfo_t' */
-#undef ZBX_SIVAL_INT
+#undef TRX_SIVAL_INT
 
 /* Define actual socklen_t parameter type in socket functions. */
-#undef ZBX_SOCKLEN_T
+#undef TRX_SOCKLEN_T
 
 /* Enable large inode numbers on Mac OS X 10.5.  */
 #ifndef _DARWIN_USE_64_BIT_INODE

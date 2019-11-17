@@ -13,13 +13,13 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 //	VAR					TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'groupids' =>	[T_ZBX_INT,			O_OPT,	P_SYS,	DB_ID,	null],
-	'hostids' =>	[T_ZBX_INT,			O_OPT,	P_SYS,	DB_ID,	null],
-	'severities' =>	[T_ZBX_INT,			O_OPT,	P_SYS,	null,	null],
-	'from' =>		[T_ZBX_RANGE_TIME,	O_OPT,	P_SYS,	null,	null],
-	'to' =>			[T_ZBX_RANGE_TIME,	O_OPT,	P_SYS,	null,	null],
-	'filter_rst' =>	[T_ZBX_STR,			O_OPT,	P_SYS,	null,	null],
-	'filter_set' =>	[T_ZBX_STR,			O_OPT,	P_SYS,	null,	null]
+	'groupids' =>	[T_TRX_INT,			O_OPT,	P_SYS,	DB_ID,	null],
+	'hostids' =>	[T_TRX_INT,			O_OPT,	P_SYS,	DB_ID,	null],
+	'severities' =>	[T_TRX_INT,			O_OPT,	P_SYS,	null,	null],
+	'from' =>		[T_TRX_RANGE_TIME,	O_OPT,	P_SYS,	null,	null],
+	'to' =>			[T_TRX_RANGE_TIME,	O_OPT,	P_SYS,	null,	null],
+	'filter_rst' =>	[T_TRX_STR,			O_OPT,	P_SYS,	null,	null],
+	'filter_set' =>	[T_TRX_STR,			O_OPT,	P_SYS,	null,	null]
 ];
 check_fields($fields);
 validateTimeSelectorPeriod(getRequest('from'), getRequest('to'));
@@ -145,7 +145,7 @@ elseif (CWebUser::getType() != USER_TYPE_SUPER_ADMIN) {
 				' HAVING MIN(r.permission)>'.PERM_DENY.
 			')';
 }
-$sql .= ' AND '.dbConditionInt('t.flags', [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]).
+$sql .= ' AND '.dbConditionInt('t.flags', [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]).
 		' GROUP BY e.objectid'.
 		' ORDER BY cnt_event DESC';
 $result = DBselect($sql, 100);
@@ -171,7 +171,7 @@ foreach ($data['triggers'] as $triggerId => $trigger) {
 }
 
 CArrayHelper::sort($data['triggers'], [
-	['field' => 'cnt_event', 'order' => ZBX_SORT_DOWN],
+	['field' => 'cnt_event', 'order' => TRX_SORT_DOWN],
 	'host', 'description', 'priority'
 ]);
 

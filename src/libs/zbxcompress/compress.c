@@ -7,7 +7,7 @@
 #ifdef HAVE_ZLIB
 #include "zlib.h"
 
-#define ZBX_COMPRESS_STRERROR_LEN	512
+#define TRX_COMPRESS_STRERROR_LEN	512
 
 static int	zbx_zlib_errno = 0;
 
@@ -20,7 +20,7 @@ static int	zbx_zlib_errno = 0;
  ******************************************************************************/
 const char	*zbx_compress_strerror(void)
 {
-	static char	message[ZBX_COMPRESS_STRERROR_LEN];
+	static char	message[TRX_COMPRESS_STRERROR_LEN];
 
 	switch (zbx_zlib_errno)
 	{
@@ -113,19 +113,19 @@ int	zbx_uncompress(const char *in, size_t size_in, char *out, size_t *size_out)
 
 int zbx_compress(const char *in, size_t size_in, char **out, size_t *size_out)
 {
-	ZBX_UNUSED(in);
-	ZBX_UNUSED(size_in);
-	ZBX_UNUSED(out);
-	ZBX_UNUSED(size_out);
+	TRX_UNUSED(in);
+	TRX_UNUSED(size_in);
+	TRX_UNUSED(out);
+	TRX_UNUSED(size_out);
 	return FAIL;
 }
 
 int zbx_uncompress(const char *in, size_t size_in, char *out, size_t *size_out)
 {
-	ZBX_UNUSED(in);
-	ZBX_UNUSED(size_in);
-	ZBX_UNUSED(out);
-	ZBX_UNUSED(size_out);
+	TRX_UNUSED(in);
+	TRX_UNUSED(size_in);
+	TRX_UNUSED(out);
+	TRX_UNUSED(size_out);
 	return FAIL;
 }
 

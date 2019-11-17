@@ -9,7 +9,7 @@
 
 typedef int	(*vmfunc_t)(AGENT_REQUEST *, const char *, const char *, AGENT_RESULT *);
 
-#define ZBX_VMWARE_PREFIX	"vmware."
+#define TRX_VMWARE_PREFIX	"vmware."
 
 typedef struct
 {
@@ -115,12 +115,12 @@ static int	get_vmware_function(const char *key, vmfunc_t *vmfunc)
 {
 	zbx_vmcheck_t	*check;
 
-	if (0 != strncmp(key, ZBX_VMWARE_PREFIX, ZBX_CONST_STRLEN(ZBX_VMWARE_PREFIX)))
+	if (0 != strncmp(key, TRX_VMWARE_PREFIX, TRX_CONST_STRLEN(TRX_VMWARE_PREFIX)))
 		return FAIL;
 
 	for (check = vmchecks; NULL != check->key; check++)
 	{
-		if (0 == strcmp(key + ZBX_CONST_STRLEN(ZBX_VMWARE_PREFIX), check->key))
+		if (0 == strcmp(key + TRX_CONST_STRLEN(TRX_VMWARE_PREFIX), check->key))
 		{
 			*vmfunc = check->func;
 			return SUCCEED;
@@ -162,7 +162,7 @@ int	get_value_simple(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 	{
 		if (NULL != vmfunc)
 		{
-			if (0 == get_process_type_forks(ZBX_PROCESS_TYPE_VMWARE))
+			if (0 == get_process_type_forks(TRX_PROCESS_TYPE_VMWARE))
 			{
 				SET_MSG_RESULT(result, zbx_strdup(NULL, "No \"vmware collector\" processes started."));
 				goto out;
@@ -174,13 +174,13 @@ int	get_value_simple(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 		else
 			SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for VMware checks was not compiled in."));
 	}
-	else if (0 == strcmp(request.key, ZBX_VMWARE_PREFIX "eventlog"))
+	else if (0 == strcmp(request.key, TRX_VMWARE_PREFIX "eventlog"))
 	{
 #if defined(HAVE_LIBXML2) && defined(HAVE_LIBCURL)
 		if (SYSINFO_RET_OK == check_vcenter_eventlog(&request, item, result, add_results))
 			ret = SUCCEED;
 #else
-		ZBX_UNUSED(add_results);
+		TRX_UNUSED(add_results);
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for VMware checks was not compiled in."));
 #endif
 	}

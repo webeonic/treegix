@@ -20,8 +20,8 @@ foreach ($data['data_table_rows'] as $row) {
 $form_list = (new CFormList())
 	->addRow(_('Test data'),
 		(new CDiv($data_table))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	);
 
 $result_table = (new CTable())
@@ -38,18 +38,18 @@ foreach ($data['eHTMLTree'] as $e) {
 	if ($allowed_testing && $test && array_key_exists('expression', $e)) {
 		if (evalExpressionData($e['expression']['value'], $data['macros_data'])) {
 			$result = 'TRUE';
-			$style = ZBX_STYLE_GREEN;
+			$style = TRX_STYLE_GREEN;
 		}
 		else {
 			$result = 'FALSE';
-			$style = ZBX_STYLE_RED;
+			$style = TRX_STYLE_RED;
 		}
 	}
 
 	$result_table->addRow([
 		(new CCol($e['list']))
-			->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-			->addStyle('max-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;'),
+			->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+			->addStyle('max-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;'),
 		(new CCol($result))->addClass($style)
 	]);
 }
@@ -58,26 +58,26 @@ $result = '';
 if ($allowed_testing && $test) {
 	if (evalExpressionData($data['expression'], $data['macros_data'])) {
 		$result = 'TRUE';
-		$style = ZBX_STYLE_GREEN;
+		$style = TRX_STYLE_GREEN;
 	}
 	else {
 		$result = 'FALSE';
-		$style = ZBX_STYLE_RED;
+		$style = TRX_STYLE_RED;
 	}
 }
 
 $result_table->setFooter([
 	(new CCol($data['outline']))
 		->setAttribute('title', $data['outline'])
-		->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-		->addStyle('max-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;'),
+		->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+		->addStyle('max-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;'),
 	(new CCol($result))->addClass($style)
 ]);
 
 $form_list->addRow(_('Result'),
 	(new CDiv($result_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 $output = [

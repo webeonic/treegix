@@ -29,7 +29,7 @@ $triggersTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_triggers'))->onClick("checkAll('".$triggersForm->getName()."', 'all_triggers', 'g_triggerid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Severity'), 'priority', $data['sort'], $data['sortorder'], $url),
 		make_sorting_header(_('Name'), 'description', $data['sort'], $data['sortorder'], $url),
 		_('Operational data'),
@@ -50,7 +50,7 @@ foreach ($this->data['triggers'] as $trigger) {
 	// description
 	$description = [];
 	$description[] = makeTriggerTemplatePrefix($trigger['triggerid'], $data['parent_templates'],
-		ZBX_FLAG_DISCOVERY_PROTOTYPE
+		TRX_FLAG_DISCOVERY_PROTOTYPE
 	);
 
 	$description[] = new CLink(
@@ -72,14 +72,14 @@ foreach ($this->data['triggers'] as $trigger) {
 				implode(', ', zbx_objectValues($depTrigger['hosts'], 'name')).NAME_DELIMITER.$depTrigger['description']
 			);
 
-			if ($depTrigger['flags'] == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+			if ($depTrigger['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 				$triggerDependencies[] = (new CLink(
 					$depTriggerDescription,
 					'trigger_prototypes.php?form=update'.url_param('parent_discoveryid').
 						'&triggerid='.$depTrigger['triggerid']))
 					->addClass(triggerIndicatorStyle($depTrigger['status']));
 			}
-			elseif ($depTrigger['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) {
+			elseif ($depTrigger['flags'] == TRX_FLAG_DISCOVERY_NORMAL) {
 				$triggerDependencies[] = (new CLink(
 					$depTriggerDescription,
 					'triggers.php?form=update&triggerid='.$depTrigger['triggerid']))
@@ -104,11 +104,11 @@ foreach ($this->data['triggers'] as $trigger) {
 			'&g_triggerid='.$triggerid.
 			'&parent_discoveryid='.$this->data['parent_discoveryid']
 	))
-		->addClass(ZBX_STYLE_LINK_ACTION)
+		->addClass(TRX_STYLE_LINK_ACTION)
 		->addClass(triggerIndicatorStyle($trigger['status']))
 		->addSID();
 
-	if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+	if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 		$expression = [
 			_('Problem'), ': ', $trigger['expression'], BR(),
 			_('Recovery'), ': ', $trigger['recovery_expression']

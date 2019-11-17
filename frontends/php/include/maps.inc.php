@@ -889,7 +889,7 @@ function getSelementsInfo(array $sysmap, array $options = []) {
 		'output' => ['eventid', 'objectid', 'name', 'acknowledged', 'clock', 'r_clock', 'severity'],
 		'objectids' => array_keys($triggerids),
 		'recent' => true,
-		'suppressed' => ($sysmap['show_suppressed'] == ZBX_PROBLEM_SUPPRESSED_FALSE) ? false : null
+		'suppressed' => ($sysmap['show_suppressed'] == TRX_PROBLEM_SUPPRESSED_FALSE) ? false : null
 	]);
 
 	foreach ($selements as $snum => $selement) {

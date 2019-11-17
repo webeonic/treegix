@@ -20,14 +20,14 @@ class CHistoryManager {
 		$results = [];
 		$grouped_items = self::getItemsGroupedByStorage($items);
 
-		if (array_key_exists(ZBX_HISTORY_SOURCE_ELASTIC, $grouped_items)) {
-			$results += $this->getLastValuesFromElasticsearch($grouped_items[ZBX_HISTORY_SOURCE_ELASTIC], $limit,
+		if (array_key_exists(TRX_HISTORY_SOURCE_ELASTIC, $grouped_items)) {
+			$results += $this->getLastValuesFromElasticsearch($grouped_items[TRX_HISTORY_SOURCE_ELASTIC], $limit,
 					$period
 			);
 		}
 
-		if (array_key_exists(ZBX_HISTORY_SOURCE_SQL, $grouped_items)) {
-			$results += $this->getLastValuesFromSql($grouped_items[ZBX_HISTORY_SOURCE_SQL], $limit, $period);
+		if (array_key_exists(TRX_HISTORY_SOURCE_SQL, $grouped_items)) {
+			$results += $this->getLastValuesFromSql($grouped_items[TRX_HISTORY_SOURCE_SQL], $limit, $period);
 		}
 
 		return $results;
@@ -58,7 +58,7 @@ class CHistoryManager {
 							'top_hits' => [
 								'size' => $limit,
 								'sort' => [
-									'clock' => ZBX_SORT_DOWN
+									'clock' => TRX_SORT_DOWN
 								]
 							]
 						]
@@ -200,8 +200,8 @@ class CHistoryManager {
 					}
 
 					CArrayHelper::sort($values, [
-						['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-						['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+						['field' => 'clock', 'order' => TRX_SORT_DOWN],
+						['field' => 'ns', 'order' => TRX_SORT_DOWN]
 					]);
 
 					$values = array_values($values);
@@ -234,7 +234,7 @@ class CHistoryManager {
 	 */
 	public function getValueAt(array $item, $clock, $ns) {
 		switch (self::getDataSourceType($item['value_type'])) {
-			case ZBX_HISTORY_SOURCE_ELASTIC:
+			case TRX_HISTORY_SOURCE_ELASTIC:
 				return $this->getValueAtFromElasticsearch($item, $clock, $ns);
 
 			default:
@@ -250,8 +250,8 @@ class CHistoryManager {
 	private function getValueAtFromElasticsearch(array $item, $clock, $ns) {
 		$query = [
 			'sort' => [
-				'clock' => ZBX_SORT_DOWN,
-				'ns' => ZBX_SORT_DOWN
+				'clock' => TRX_SORT_DOWN,
+				'ns' => TRX_SORT_DOWN
 			],
 			'size' => 1
 		];
@@ -286,7 +286,7 @@ class CHistoryManager {
 					'range' => [
 						'clock' => [
 							'lt' => $clock
-						] + (ZBX_HISTORY_PERIOD ? ['gte' => $clock - ZBX_HISTORY_PERIOD] : [])
+						] + (TRX_HISTORY_PERIOD ? ['gte' => $clock - TRX_HISTORY_PERIOD] : [])
 					]
 				]
 			]
@@ -349,7 +349,7 @@ class CHistoryManager {
 					' FROM '.$table.
 					' WHERE itemid='.zbx_dbstr($item['itemid']).
 						' AND clock<'.zbx_dbstr($clock).
-						(ZBX_HISTORY_PERIOD ? ' AND clock>='.zbx_dbstr($clock - ZBX_HISTORY_PERIOD) : '');
+						(TRX_HISTORY_PERIOD ? ' AND clock>='.zbx_dbstr($clock - TRX_HISTORY_PERIOD) : '');
 
 			if (($row = DBfetch(DBselect($sql))) !== false) {
 				$max_clock = $row['clock'];
@@ -399,14 +399,14 @@ class CHistoryManager {
 		$grouped_items = self::getItemsGroupedByStorage($items);
 
 		$results = [];
-		if (array_key_exists(ZBX_HISTORY_SOURCE_ELASTIC, $grouped_items)) {
-			$results = $this->getGraphAggregationByIntervalFromElasticsearch($grouped_items[ZBX_HISTORY_SOURCE_ELASTIC],
+		if (array_key_exists(TRX_HISTORY_SOURCE_ELASTIC, $grouped_items)) {
+			$results = $this->getGraphAggregationByIntervalFromElasticsearch($grouped_items[TRX_HISTORY_SOURCE_ELASTIC],
 				$time_from, $time_to, $function, $interval
 			);
 		}
 
-		if (array_key_exists(ZBX_HISTORY_SOURCE_SQL, $grouped_items)) {
-			$results += $this->getGraphAggregationByIntervalFromSql($grouped_items[ZBX_HISTORY_SOURCE_SQL],
+		if (array_key_exists(TRX_HISTORY_SOURCE_SQL, $grouped_items)) {
+			$results += $this->getGraphAggregationByIntervalFromSql($grouped_items[TRX_HISTORY_SOURCE_SQL],
 				$time_from, $time_to, $function, $interval
 			);
 		}
@@ -652,14 +652,14 @@ class CHistoryManager {
 		$grouped_items = self::getItemsGroupedByStorage($items);
 
 		$results = [];
-		if (array_key_exists(ZBX_HISTORY_SOURCE_ELASTIC, $grouped_items)) {
-			$results += $this->getGraphAggregationByWidthFromElasticsearch($grouped_items[ZBX_HISTORY_SOURCE_ELASTIC],
+		if (array_key_exists(TRX_HISTORY_SOURCE_ELASTIC, $grouped_items)) {
+			$results += $this->getGraphAggregationByWidthFromElasticsearch($grouped_items[TRX_HISTORY_SOURCE_ELASTIC],
 					$time_from, $time_to, $width
 			);
 		}
 
-		if (array_key_exists(ZBX_HISTORY_SOURCE_SQL, $grouped_items)) {
-			$results += $this->getGraphAggregationByWidthFromSql($grouped_items[ZBX_HISTORY_SOURCE_SQL],
+		if (array_key_exists(TRX_HISTORY_SOURCE_SQL, $grouped_items)) {
+			$results += $this->getGraphAggregationByWidthFromSql($grouped_items[TRX_HISTORY_SOURCE_SQL],
 				$time_from, $time_to, $width
 			);
 		}
@@ -898,7 +898,7 @@ class CHistoryManager {
 	 */
 	public function getAggregatedValue(array $item, $aggregation, $time_from) {
 		switch (self::getDataSourceType($item['value_type'])) {
-			case ZBX_HISTORY_SOURCE_ELASTIC:
+			case TRX_HISTORY_SOURCE_ELASTIC:
 				return $this->getAggregatedValueFromElasticsearch($item, $aggregation, $time_from);
 
 			default:
@@ -1099,11 +1099,11 @@ class CHistoryManager {
 
 			if (is_array($HISTORY) && array_key_exists('types', $HISTORY) && is_array($HISTORY['types'])) {
 				$cache[$value_type] = in_array(self::getTypeNameByTypeId($value_type), $HISTORY['types'])
-						? ZBX_HISTORY_SOURCE_ELASTIC : ZBX_HISTORY_SOURCE_SQL;
+						? TRX_HISTORY_SOURCE_ELASTIC : TRX_HISTORY_SOURCE_SQL;
 			}
 			else {
 				// SQL is a fallback data source.
-				$cache[$value_type] = ZBX_HISTORY_SOURCE_SQL;
+				$cache[$value_type] = TRX_HISTORY_SOURCE_SQL;
 			}
 		}
 
@@ -1167,7 +1167,7 @@ class CHistoryManager {
 		$endponts = [];
 
 		foreach (array_unique($value_types) as $type) {
-			if (self::getDataSourceType($type) === ZBX_HISTORY_SOURCE_ELASTIC) {
+			if (self::getDataSourceType($type) === TRX_HISTORY_SOURCE_ELASTIC) {
 				$indices[$type] = self::getTypeNameByTypeId($type);
 			}
 		}

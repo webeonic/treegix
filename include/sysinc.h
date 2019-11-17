@@ -273,7 +273,7 @@
 
 #ifdef HAVE_LIBPERFSTAT
 #	ifdef HAVE_SYS_PROTOSW_H
-#		include <sys/protosw.h>		/* workaround for /usr/include/netinet/in6_var.h bug, see ZBX-6565 */
+#		include <sys/protosw.h>		/* workaround for /usr/include/netinet/in6_var.h bug, see TRX-6565 */
 #	endif
 #	include <libperfstat.h>
 #endif
@@ -374,7 +374,7 @@
 #	if 0x071400 <= LIBCURL_VERSION_NUM	/* version 7.20.0 */
 #		define HAVE_SMTP_AUTHENTICATION	1
 #	endif
-#	define ZBX_CURLOPT_MAXREDIRS	10L
+#	define TRX_CURLOPT_MAXREDIRS	10L
 #endif
 
 /* Required for advanced sigaction */

@@ -1,18 +1,18 @@
 
 
-#ifndef TREEGIX_ZBXIPCSERVICE_H
-#define TREEGIX_ZBXIPCSERVICE_H
+#ifndef TREEGIX_TRXIPCSERVICE_H
+#define TREEGIX_TRXIPCSERVICE_H
 
 #include "common.h"
 #include "zbxalgo.h"
 
-#define ZBX_IPC_SOCKET_BUFFER_SIZE	4096
+#define TRX_IPC_SOCKET_BUFFER_SIZE	4096
 
-#define ZBX_IPC_RECV_IMMEDIATE	0
-#define ZBX_IPC_RECV_WAIT	1
-#define ZBX_IPC_RECV_TIMEOUT	2
+#define TRX_IPC_RECV_IMMEDIATE	0
+#define TRX_IPC_RECV_WAIT	1
+#define TRX_IPC_RECV_TIMEOUT	2
 
-#define ZBX_IPC_WAIT_FOREVER	-1
+#define TRX_IPC_WAIT_FOREVER	-1
 
 typedef struct
 {
@@ -35,7 +35,7 @@ typedef struct
 	int		fd;
 
 	/* incoming data buffer */
-	unsigned char	rx_buffer[ZBX_IPC_SOCKET_BUFFER_SIZE];
+	unsigned char	rx_buffer[TRX_IPC_SOCKET_BUFFER_SIZE];
 	zbx_uint32_t	rx_buffer_bytes;
 	zbx_uint32_t	rx_buffer_offset;
 }

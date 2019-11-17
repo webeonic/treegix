@@ -5,7 +5,7 @@ include dirname(__FILE__).'/editabletable.js.php';
 <script type="text/x-jquery-tmpl" id="custom_intervals_row">
 	<tr class="form_row">
 		<td>
-			<ul class="<?= CRadioButtonList::ZBX_STYLE_CLASS ?>" id="delay_flex_#{rowNum}_type">
+			<ul class="<?= CRadioButtonList::TRX_STYLE_CLASS ?>" id="delay_flex_#{rowNum}_type">
 				<li>
 					<input type="radio" id="delay_flex_#{rowNum}_type_0" name="delay_flex[#{rowNum}][type]" value="0" checked="checked">
 					<label for="delay_flex_#{rowNum}_type_0"><?= _('Flexible') ?></label>
@@ -16,14 +16,14 @@ include dirname(__FILE__).'/editabletable.js.php';
 			</ul>
 		</td>
 		<td>
-			<input type="text" id="delay_flex_#{rowNum}_delay" name="delay_flex[#{rowNum}][delay]" maxlength="255" placeholder="<?= ZBX_ITEM_FLEXIBLE_DELAY_DEFAULT ?>">
-			<input type="text" id="delay_flex_#{rowNum}_schedule" name="delay_flex[#{rowNum}][schedule]" maxlength="255" placeholder="<?= ZBX_ITEM_SCHEDULING_DEFAULT ?>" style="display: none;">
+			<input type="text" id="delay_flex_#{rowNum}_delay" name="delay_flex[#{rowNum}][delay]" maxlength="255" placeholder="<?= TRX_ITEM_FLEXIBLE_DELAY_DEFAULT ?>">
+			<input type="text" id="delay_flex_#{rowNum}_schedule" name="delay_flex[#{rowNum}][schedule]" maxlength="255" placeholder="<?= TRX_ITEM_SCHEDULING_DEFAULT ?>" style="display: none;">
 		</td>
 		<td>
-			<input type="text" id="delay_flex_#{rowNum}_period" name="delay_flex[#{rowNum}][period]" maxlength="255" placeholder="<?= ZBX_DEFAULT_INTERVAL ?>">
+			<input type="text" id="delay_flex_#{rowNum}_period" name="delay_flex[#{rowNum}][period]" maxlength="255" placeholder="<?= TRX_DEFAULT_INTERVAL ?>">
 		</td>
 		<td>
-			<button type="button" id="delay_flex_#{rowNum}_remove" name="delay_flex[#{rowNum}][remove]" class="<?= ZBX_STYLE_BTN_LINK ?> element-table-remove"><?= _('Remove') ?></button>
+			<button type="button" id="delay_flex_#{rowNum}_remove" name="delay_flex[#{rowNum}][remove]" class="<?= TRX_STYLE_BTN_LINK ?> element-table-remove"><?= _('Remove') ?></button>
 		</td>
 	</tr>
 </script>
@@ -91,14 +91,14 @@ include dirname(__FILE__).'/editabletable.js.php';
 
 		$('input[name=massupdate_app_action]').on('change', function() {
 			$('#applications_').multiSelect('modify', {
-				'addNew': ($(this).val() == <?= ZBX_ACTION_ADD ?> || $(this).val() == <?= ZBX_ACTION_REPLACE ?>)
+				'addNew': ($(this).val() == <?= TRX_ACTION_ADD ?> || $(this).val() == <?= TRX_ACTION_REPLACE ?>)
 			});
 		});
 
 		<?php if (array_key_exists('parent_discoveryid', $data)): ?>
 			$('input[name=massupdate_app_prot_action]').on('change', function() {
 				$('#application_prototypes_').multiSelect('modify', {
-					'addNew': ($(this).val() == <?= ZBX_ACTION_ADD ?> || $(this).val() == <?= ZBX_ACTION_REPLACE ?>)
+					'addNew': ($(this).val() == <?= TRX_ACTION_ADD ?> || $(this).val() == <?= TRX_ACTION_REPLACE ?>)
 				});
 			});
 		<?php endif ?>

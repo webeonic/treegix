@@ -18,8 +18,8 @@
 #define IPV4_MAX_CIDR_PREFIX	32	/* max number of bits in IPv4 CIDR prefix */
 #define IPV6_MAX_CIDR_PREFIX	128	/* max number of bits in IPv6 CIDR prefix */
 
-#ifndef ZBX_SOCKLEN_T
-#	define ZBX_SOCKLEN_T socklen_t
+#ifndef TRX_SOCKLEN_T
+#	define TRX_SOCKLEN_T socklen_t
 #endif
 
 #ifndef SOCK_CLOEXEC
@@ -27,7 +27,7 @@
 #endif
 
 #ifdef HAVE_OPENSSL
-extern ZBX_THREAD_LOCAL char	info_buf[256];
+extern TRX_THREAD_LOCAL char	info_buf[256];
 #endif
 
 extern int	CONFIG_TIMEOUT;
@@ -44,13 +44,13 @@ extern int	CONFIG_TIMEOUT;
  *                                                                            *
  ******************************************************************************/
 
-#define ZBX_SOCKET_STRERROR_LEN	512
+#define TRX_SOCKET_STRERROR_LEN	512
 
-static char	zbx_socket_strerror_message[ZBX_SOCKET_STRERROR_LEN];
+static char	zbx_socket_strerror_message[TRX_SOCKET_STRERROR_LEN];
 
 const char	*zbx_socket_strerror(void)
 {
-	zbx_socket_strerror_message[ZBX_SOCKET_STRERROR_LEN - 1] = '\0';	/* force null termination */
+	zbx_socket_strerror_message[TRX_SOCKET_STRERROR_LEN - 1] = '\0';	/* force null termination */
 	return zbx_socket_strerror_message;
 }
 
@@ -79,11 +79,11 @@ static void	zbx_set_socket_strerror(const char *fmt, ...)
  ******************************************************************************/
 static int	zbx_socket_peer_ip_save(zbx_socket_t *s)
 {
-	ZBX_SOCKADDR	sa;
-	ZBX_SOCKLEN_T	sz = sizeof(sa);
+	TRX_SOCKADDR	sa;
+	TRX_SOCKLEN_T	sz = sizeof(sa);
 	char		*error_message = NULL;
 
-	if (ZBX_PROTO_ERROR == getpeername(s->socket, (struct sockaddr *)&sa, &sz))
+	if (TRX_PROTO_ERROR == getpeername(s->socket, (struct sockaddr *)&sa, &sz))
 	{
 		error_message = strerror_from_system(zbx_socket_last_error());
 		zbx_set_socket_strerror("connection rejected, getpeername() failed: %s", error_message);
@@ -304,7 +304,7 @@ static void	zbx_socket_clean(zbx_socket_t *s)
 {
 	memset(s, 0, sizeof(zbx_socket_t));
 
-	s->buf_type = ZBX_BUF_TYPE_STAT;
+	s->buf_type = TRX_BUF_TYPE_STAT;
 }
 
 /******************************************************************************
@@ -318,7 +318,7 @@ static void	zbx_socket_clean(zbx_socket_t *s)
  ******************************************************************************/
 static void	zbx_socket_free(zbx_socket_t *s)
 {
-	if (ZBX_BUF_TYPE_DYN == s->buf_type)
+	if (TRX_BUF_TYPE_DYN == s->buf_type)
 		zbx_free(s->buffer);
 }
 
@@ -340,13 +340,13 @@ static void	zbx_socket_timeout_set(zbx_socket_t *s, int timeout)
 #ifdef _WINDOWS
 	timeout *= 1000;
 
-	if (ZBX_PROTO_ERROR == setsockopt(s->socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout)))
+	if (TRX_PROTO_ERROR == setsockopt(s->socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout)))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "setsockopt() failed for SO_RCVTIMEO: %s",
 				strerror_from_system(zbx_socket_last_error()));
 	}
 
-	if (ZBX_PROTO_ERROR == setsockopt(s->socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&timeout, sizeof(timeout)))
+	if (TRX_PROTO_ERROR == setsockopt(s->socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&timeout, sizeof(timeout)))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "setsockopt() failed for SO_SNDTIMEO: %s",
 				strerror_from_system(zbx_socket_last_error()));
@@ -433,7 +433,7 @@ static int	zbx_socket_connect(zbx_socket_t *s, const struct sockaddr *addr, sock
 	else
 		ptv = NULL;
 
-	if (ZBX_PROTO_ERROR == connect(s->socket, addr, addrlen) && WSAEWOULDBLOCK != zbx_socket_last_error())
+	if (TRX_PROTO_ERROR == connect(s->socket, addr, addrlen) && WSAEWOULDBLOCK != zbx_socket_last_error())
 	{
 		*error = zbx_strdup(*error, strerror_from_system(zbx_socket_last_error()));
 		return FAIL;
@@ -452,7 +452,7 @@ static int	zbx_socket_connect(zbx_socket_t *s, const struct sockaddr *addr, sock
 			int socket_error = 0;
 			int socket_error_len = sizeof(int);
 
-			if (ZBX_PROTO_ERROR != getsockopt(s->socket, SOL_SOCKET,
+			if (TRX_PROTO_ERROR != getsockopt(s->socket, SOL_SOCKET,
 				SO_ERROR, (char *)&socket_error, &socket_error_len))
 			{
 				if (socket_error == WSAECONNREFUSED)
@@ -479,13 +479,13 @@ static int	zbx_socket_connect(zbx_socket_t *s, const struct sockaddr *addr, sock
 		return FAIL;
 	}
 #else
-	if (ZBX_PROTO_ERROR == connect(s->socket, addr, addrlen))
+	if (TRX_PROTO_ERROR == connect(s->socket, addr, addrlen))
 	{
 		*error = zbx_strdup(*error, strerror_from_system(zbx_socket_last_error()));
 		return FAIL;
 	}
 #endif
-	s->connection_type = ZBX_TCP_SEC_UNENCRYPTED;
+	s->connection_type = TRX_TCP_SEC_UNENCRYPTED;
 
 	return SUCCEED;
 }
@@ -514,19 +514,19 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 	char		service[8], *error = NULL;
 	void		(*func_socket_close)(zbx_socket_t *s);
 
-	if (SOCK_DGRAM == type && (ZBX_TCP_SEC_TLS_CERT == tls_connect || ZBX_TCP_SEC_TLS_PSK == tls_connect))
+	if (SOCK_DGRAM == type && (TRX_TCP_SEC_TLS_CERT == tls_connect || TRX_TCP_SEC_TLS_PSK == tls_connect))
 	{
 		THIS_SHOULD_NEVER_HAPPEN;
 		return FAIL;
 	}
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	if (ZBX_TCP_SEC_TLS_PSK == tls_connect && '\0' == *tls_arg1)
+	if (TRX_TCP_SEC_TLS_PSK == tls_connect && '\0' == *tls_arg1)
 	{
 		zbx_set_socket_strerror("cannot connect with PSK: PSK not available");
 		return FAIL;
 	}
 #else
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect || ZBX_TCP_SEC_TLS_PSK == tls_connect)
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect || TRX_TCP_SEC_TLS_PSK == tls_connect)
 	{
 		zbx_set_socket_strerror("support for TLS was not compiled in");
 		return FAIL;
@@ -545,7 +545,7 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 		goto out;
 	}
 
-	if (ZBX_SOCKET_ERROR == (s->socket = socket(ai->ai_family, ai->ai_socktype | SOCK_CLOEXEC, ai->ai_protocol)))
+	if (TRX_SOCKET_ERROR == (s->socket = socket(ai->ai_family, ai->ai_socktype | SOCK_CLOEXEC, ai->ai_protocol)))
 	{
 		zbx_set_socket_strerror("cannot create socket [[%s]:%hu]: %s",
 				ip, port, strerror_from_system(zbx_socket_last_error()));
@@ -572,7 +572,7 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 			goto out;
 		}
 
-		if (ZBX_PROTO_ERROR == zbx_bind(s->socket, ai_bind->ai_addr, ai_bind->ai_addrlen))
+		if (TRX_PROTO_ERROR == zbx_bind(s->socket, ai_bind->ai_addr, ai_bind->ai_addrlen))
 		{
 			zbx_set_socket_strerror("bind() failed: %s", strerror_from_system(zbx_socket_last_error()));
 			func_socket_close(s);
@@ -589,7 +589,7 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 	}
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	if ((ZBX_TCP_SEC_TLS_CERT == tls_connect || ZBX_TCP_SEC_TLS_PSK == tls_connect) &&
+	if ((TRX_TCP_SEC_TLS_CERT == tls_connect || TRX_TCP_SEC_TLS_PSK == tls_connect) &&
 			SUCCEED != zbx_tls_connect(s, tls_connect, tls_arg1, tls_arg2, &error))
 	{
 		zbx_tcp_close(s);
@@ -598,8 +598,8 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 		goto out;
 	}
 #else
-	ZBX_UNUSED(tls_arg1);
-	ZBX_UNUSED(tls_arg2);
+	TRX_UNUSED(tls_arg1);
+	TRX_UNUSED(tls_arg2);
 #endif
 	zbx_strlcpy(s->peer, ip, sizeof(s->peer));
 
@@ -617,24 +617,24 @@ out:
 static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, const char *ip, unsigned short port,
 		int timeout, unsigned int tls_connect, const char *tls_arg1, const char *tls_arg2)
 {
-	ZBX_SOCKADDR	servaddr_in;
+	TRX_SOCKADDR	servaddr_in;
 	struct hostent	*hp;
 	char		*error = NULL;
 	void		(*func_socket_close)(zbx_socket_t *s);
 
-	if (SOCK_DGRAM == type && (ZBX_TCP_SEC_TLS_CERT == tls_connect || ZBX_TCP_SEC_TLS_PSK == tls_connect))
+	if (SOCK_DGRAM == type && (TRX_TCP_SEC_TLS_CERT == tls_connect || TRX_TCP_SEC_TLS_PSK == tls_connect))
 	{
 		THIS_SHOULD_NEVER_HAPPEN;
 		return FAIL;
 	}
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	if (ZBX_TCP_SEC_TLS_PSK == tls_connect && '\0' == *tls_arg1)
+	if (TRX_TCP_SEC_TLS_PSK == tls_connect && '\0' == *tls_arg1)
 	{
 		zbx_set_socket_strerror("cannot connect with PSK: PSK not available");
 		return FAIL;
 	}
 #else
-	if (ZBX_TCP_SEC_TLS_CERT == tls_connect || ZBX_TCP_SEC_TLS_PSK == tls_connect)
+	if (TRX_TCP_SEC_TLS_CERT == tls_connect || TRX_TCP_SEC_TLS_PSK == tls_connect)
 	{
 		zbx_set_socket_strerror("support for TLS was not compiled in");
 		return FAIL;
@@ -663,7 +663,7 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 	servaddr_in.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
 	servaddr_in.sin_port = htons(port);
 
-	if (ZBX_SOCKET_ERROR == (s->socket = socket(AF_INET, type | SOCK_CLOEXEC, 0)))
+	if (TRX_SOCKET_ERROR == (s->socket = socket(AF_INET, type | SOCK_CLOEXEC, 0)))
 	{
 		zbx_set_socket_strerror("cannot create socket [[%s]:%hu]: %s",
 				ip, port, strerror_from_system(zbx_socket_last_error()));
@@ -677,7 +677,7 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 
 	if (NULL != source_ip)
 	{
-		ZBX_SOCKADDR	source_addr;
+		TRX_SOCKADDR	source_addr;
 
 		memset(&source_addr, 0, sizeof(source_addr));
 
@@ -685,7 +685,7 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 		source_addr.sin_addr.s_addr = inet_addr(source_ip);
 		source_addr.sin_port = 0;
 
-		if (ZBX_PROTO_ERROR == bind(s->socket, (struct sockaddr *)&source_addr, sizeof(source_addr)))
+		if (TRX_PROTO_ERROR == bind(s->socket, (struct sockaddr *)&source_addr, sizeof(source_addr)))
 		{
 			zbx_set_socket_strerror("bind() failed: %s", strerror_from_system(zbx_socket_last_error()));
 			func_socket_close(s);
@@ -702,7 +702,7 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 	}
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	if ((ZBX_TCP_SEC_TLS_CERT == tls_connect || ZBX_TCP_SEC_TLS_PSK == tls_connect) &&
+	if ((TRX_TCP_SEC_TLS_CERT == tls_connect || TRX_TCP_SEC_TLS_PSK == tls_connect) &&
 			SUCCEED != zbx_tls_connect(s, tls_connect, tls_arg1, tls_arg2, &error))
 	{
 		zbx_tcp_close(s);
@@ -711,8 +711,8 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 		return FAIL;
 	}
 #else
-	ZBX_UNUSED(tls_arg1);
-	ZBX_UNUSED(tls_arg2);
+	TRX_UNUSED(tls_arg1);
+	TRX_UNUSED(tls_arg2);
 #endif
 	zbx_strlcpy(s->peer, ip, sizeof(s->peer));
 
@@ -723,8 +723,8 @@ static int	zbx_socket_create(zbx_socket_t *s, int type, const char *source_ip, c
 int	zbx_tcp_connect(zbx_socket_t *s, const char *source_ip, const char *ip, unsigned short port, int timeout,
 		unsigned int tls_connect, const char *tls_arg1, const char *tls_arg2)
 {
-	if (ZBX_TCP_SEC_UNENCRYPTED != tls_connect && ZBX_TCP_SEC_TLS_CERT != tls_connect &&
-			ZBX_TCP_SEC_TLS_PSK != tls_connect)
+	if (TRX_TCP_SEC_UNENCRYPTED != tls_connect && TRX_TCP_SEC_TLS_CERT != tls_connect &&
+			TRX_TCP_SEC_TLS_PSK != tls_connect)
 	{
 		THIS_SHOULD_NEVER_HAPPEN;
 		return FAIL;
@@ -746,7 +746,7 @@ static ssize_t	zbx_tcp_write(zbx_socket_t *s, const char *buf, size_t len)
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	if (NULL != s->tls_ctx)	/* TLS connection */
 	{
-		if (ZBX_PROTO_ERROR == (res = zbx_tls_write(s, buf, len, &error)))
+		if (TRX_PROTO_ERROR == (res = zbx_tls_write(s, buf, len, &error)))
 		{
 			zbx_set_socket_strerror("%s", error);
 			zbx_free(error);
@@ -761,21 +761,21 @@ static ssize_t	zbx_tcp_write(zbx_socket_t *s, const char *buf, size_t len)
 #endif
 	do
 	{
-		res = ZBX_TCP_WRITE(s->socket, buf, len);
+		res = TRX_TCP_WRITE(s->socket, buf, len);
 #ifdef _WINDOWS
 		if (s->timeout < zbx_time() - sec)
 			zbx_alarm_flag_set();
 #endif
 		if (SUCCEED == zbx_alarm_timed_out())
 		{
-			zbx_set_socket_strerror("ZBX_TCP_WRITE() timed out");
-			return ZBX_PROTO_ERROR;
+			zbx_set_socket_strerror("TRX_TCP_WRITE() timed out");
+			return TRX_PROTO_ERROR;
 		}
 	}
-	while (ZBX_PROTO_ERROR == res && ZBX_PROTO_AGAIN == (err = zbx_socket_last_error()));
+	while (TRX_PROTO_ERROR == res && TRX_PROTO_AGAIN == (err = zbx_socket_last_error()));
 
-	if (ZBX_PROTO_ERROR == res)
-		zbx_set_socket_strerror("ZBX_TCP_WRITE() failed: %s", strerror_from_system(err));
+	if (TRX_PROTO_ERROR == res)
+		zbx_set_socket_strerror("TRX_TCP_WRITE() failed: %s", strerror_from_system(err));
 
 	return res;
 }
@@ -803,12 +803,12 @@ static ssize_t	zbx_tcp_write(zbx_socket_t *s, const char *buf, size_t len)
  *                                                                            *
  ******************************************************************************/
 
-#define ZBX_TCP_HEADER_DATA	"ZBXD"
-#define ZBX_TCP_HEADER_LEN	ZBX_CONST_STRLEN(ZBX_TCP_HEADER_DATA)
+#define TRX_TCP_HEADER_DATA	"TRXD"
+#define TRX_TCP_HEADER_LEN	TRX_CONST_STRLEN(TRX_TCP_HEADER_DATA)
 
 int	zbx_tcp_send_ext(zbx_socket_t *s, const char *data, size_t len, unsigned char flags, int timeout)
 {
-#define ZBX_TLS_MAX_REC_LEN	16384
+#define TRX_TLS_MAX_REC_LEN	16384
 
 	ssize_t		bytes_sent, written = 0;
 	size_t		send_bytes, offset, send_len = len, reserved = 0;
@@ -819,14 +819,14 @@ int	zbx_tcp_send_ext(zbx_socket_t *s, const char *data, size_t len, unsigned cha
 	if (0 != timeout)
 		zbx_socket_timeout_set(s, timeout);
 
-	if (0 != (flags & ZBX_TCP_PROTOCOL))
+	if (0 != (flags & TRX_TCP_PROTOCOL))
 	{
 		size_t	take_bytes;
-		char	header_buf[ZBX_TLS_MAX_REC_LEN];	/* Buffer is allocated on stack with a hope that it   */
+		char	header_buf[TRX_TLS_MAX_REC_LEN];	/* Buffer is allocated on stack with a hope that it   */
 								/* will be short-lived in CPU cache. Static buffer is */
 								/* not used on purpose.				      */
 
-		if (0 != (flags & ZBX_TCP_COMPRESS))
+		if (0 != (flags & TRX_TCP_COMPRESS))
 		{
 			if (SUCCEED != zbx_compress(data, len, &compressed_data, &send_len))
 			{
@@ -839,8 +839,8 @@ int	zbx_tcp_send_ext(zbx_socket_t *s, const char *data, size_t len, unsigned cha
 			reserved = len;
 		}
 
-		memcpy(header_buf, ZBX_TCP_HEADER_DATA, ZBX_CONST_STRLEN(ZBX_TCP_HEADER_DATA));
-		offset = ZBX_CONST_STRLEN(ZBX_TCP_HEADER_DATA);
+		memcpy(header_buf, TRX_TCP_HEADER_DATA, TRX_CONST_STRLEN(TRX_TCP_HEADER_DATA));
+		offset = TRX_CONST_STRLEN(TRX_TCP_HEADER_DATA);
 
 		header_buf[offset++] = flags;
 
@@ -852,14 +852,14 @@ int	zbx_tcp_send_ext(zbx_socket_t *s, const char *data, size_t len, unsigned cha
 		memcpy(header_buf + offset, &len32_le, sizeof(len32_le));
 		offset += sizeof(len32_le);
 
-		take_bytes = MIN(send_len, ZBX_TLS_MAX_REC_LEN - offset);
+		take_bytes = MIN(send_len, TRX_TLS_MAX_REC_LEN - offset);
 		memcpy(header_buf + offset, data, take_bytes);
 
 		send_bytes = offset + take_bytes;
 
 		while (written < (ssize_t)send_bytes)
 		{
-			if (ZBX_PROTO_ERROR == (bytes_sent = zbx_tcp_write(s, header_buf + written,
+			if (TRX_PROTO_ERROR == (bytes_sent = zbx_tcp_write(s, header_buf + written,
 					send_bytes - (size_t)written)))
 			{
 				ret = FAIL;
@@ -873,12 +873,12 @@ int	zbx_tcp_send_ext(zbx_socket_t *s, const char *data, size_t len, unsigned cha
 
 	while (written < (ssize_t)send_len)
 	{
-		if (ZBX_TCP_SEC_UNENCRYPTED == s->connection_type)
+		if (TRX_TCP_SEC_UNENCRYPTED == s->connection_type)
 			send_bytes = send_len - (size_t)written;
 		else
-			send_bytes = MIN(ZBX_TLS_MAX_REC_LEN, send_len - (size_t)written);
+			send_bytes = MIN(TRX_TLS_MAX_REC_LEN, send_len - (size_t)written);
 
-		if (ZBX_PROTO_ERROR == (bytes_sent = zbx_tcp_write(s, data + written, send_bytes)))
+		if (TRX_PROTO_ERROR == (bytes_sent = zbx_tcp_write(s, data + written, send_bytes)))
 		{
 			ret = FAIL;
 			goto cleanup;
@@ -893,7 +893,7 @@ cleanup:
 
 	return ret;
 
-#undef ZBX_TLS_MAX_REC_LEN
+#undef TRX_TLS_MAX_REC_LEN
 }
 
 /******************************************************************************
@@ -1022,7 +1022,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 
 		for (current_ai = ai; NULL != current_ai; current_ai = current_ai->ai_next)
 		{
-			if (ZBX_SOCKET_COUNT == s->num_socks)
+			if (TRX_SOCKET_COUNT == s->num_socks)
 			{
 				zbx_set_socket_strerror("not enough space for socket [[%s]:%s]",
 						ip ? ip : "-", port);
@@ -1041,13 +1041,13 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 					current_ai->ai_protocol, NULL, 0,
 					(0 != no_inherit_wsapi ? WSA_FLAG_NO_HANDLE_INHERIT : 0) |
 					WSA_FLAG_OVERLAPPED);
-			if (ZBX_SOCKET_ERROR == s->sockets[s->num_socks])
+			if (TRX_SOCKET_ERROR == s->sockets[s->num_socks])
 			{
 				zbx_set_socket_strerror("WSASocket() for [[%s]:%s] failed: %s",
 						ip ? ip : "-", port, strerror_from_system(zbx_socket_last_error()));
 				if (WSAEAFNOSUPPORT == zbx_socket_last_error())
 #else
-			if (ZBX_SOCKET_ERROR == (s->sockets[s->num_socks] =
+			if (TRX_SOCKET_ERROR == (s->sockets[s->num_socks] =
 					socket(current_ai->ai_family, current_ai->ai_socktype | SOCK_CLOEXEC,
 					current_ai->ai_protocol)))
 			{
@@ -1081,7 +1081,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 			/* SO_EXCLUSIVEADDRUSE is mutually exclusive with SO_REUSEADDR */
 			/* on Windows SO_REUSEADDR has different semantics than on Unix */
 			/* https://msdn.microsoft.com/en-us/library/windows/desktop/ms740621(v=vs.85).aspx */
-			if (ZBX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
+			if (TRX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
 					(void *)&on, sizeof(on)))
 			{
 				zbx_set_socket_strerror("setsockopt() with %s for [[%s]:%s] failed: %s",
@@ -1092,7 +1092,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 			/* enable address reuse */
 			/* this is to immediately use the address even if it is in TIME_WAIT state */
 			/* http://www-128.ibm.com/developerworks/linux/library/l-sockpit/index.html */
-			if (ZBX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], SOL_SOCKET, SO_REUSEADDR,
+			if (TRX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], SOL_SOCKET, SO_REUSEADDR,
 					(void *)&on, sizeof(on)))
 			{
 				zbx_set_socket_strerror("setsockopt() with %s for [[%s]:%s] failed: %s",
@@ -1103,7 +1103,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 
 #if defined(IPPROTO_IPV6) && defined(IPV6_V6ONLY)
 			if (PF_INET6 == current_ai->ai_family &&
-					ZBX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], IPPROTO_IPV6,
+					TRX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], IPPROTO_IPV6,
 					IPV6_V6ONLY, (void *)&on, sizeof(on)))
 			{
 				zbx_set_socket_strerror("setsockopt() with %s for [[%s]:%s] failed: %s",
@@ -1111,7 +1111,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 						strerror_from_system(zbx_socket_last_error()));
 			}
 #endif
-			if (ZBX_PROTO_ERROR == zbx_bind(s->sockets[s->num_socks], current_ai->ai_addr,
+			if (TRX_PROTO_ERROR == zbx_bind(s->sockets[s->num_socks], current_ai->ai_addr,
 					current_ai->ai_addrlen))
 			{
 				zbx_set_socket_strerror("bind() for [[%s]:%s] failed: %s",
@@ -1127,7 +1127,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 					goto out;
 			}
 
-			if (ZBX_PROTO_ERROR == listen(s->sockets[s->num_socks], SOMAXCONN))
+			if (TRX_PROTO_ERROR == listen(s->sockets[s->num_socks], SOMAXCONN))
 			{
 				zbx_set_socket_strerror("listen() for [[%s]:%s] failed: %s",
 						ip ? ip : "-", port, strerror_from_system(zbx_socket_last_error()));
@@ -1177,7 +1177,7 @@ out:
 #else
 int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen_port)
 {
-	ZBX_SOCKADDR	serv_addr;
+	TRX_SOCKADDR	serv_addr;
 	char		*ip, *ips, *delim;
 	int		i, on, ret = FAIL;
 #ifdef _WINDOWS
@@ -1209,7 +1209,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 			goto out;
 		}
 
-		if (ZBX_SOCKET_COUNT == s->num_socks)
+		if (TRX_SOCKET_COUNT == s->num_socks)
 		{
 			zbx_set_socket_strerror("not enough space for socket [[%s]:%hu]",
 					ip ? ip : "-", listen_port);
@@ -1223,12 +1223,12 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 		/* recommended for every socket */
 		s->sockets[s->num_socks] = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0,
 				(0 != no_inherit_wsapi ? WSA_FLAG_NO_HANDLE_INHERIT : 0) | WSA_FLAG_OVERLAPPED);
-		if (ZBX_SOCKET_ERROR == s->sockets[s->num_socks])
+		if (TRX_SOCKET_ERROR == s->sockets[s->num_socks])
 		{
 			zbx_set_socket_strerror("WSASocket() for [[%s]:%hu] failed: %s",
 					ip ? ip : "-", listen_port, strerror_from_system(zbx_socket_last_error()));
 #else
-		if (ZBX_SOCKET_ERROR == (s->sockets[s->num_socks] = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0)))
+		if (TRX_SOCKET_ERROR == (s->sockets[s->num_socks] = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0)))
 		{
 			zbx_set_socket_strerror("socket() for [[%s]:%hu] failed: %s",
 					ip ? ip : "-", listen_port, strerror_from_system(zbx_socket_last_error()));
@@ -1257,7 +1257,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 		/* SO_EXCLUSIVEADDRUSE is mutually exclusive with SO_REUSEADDR */
 		/* on Windows SO_REUSEADDR has different semantics than on Unix */
 		/* https://msdn.microsoft.com/en-us/library/windows/desktop/ms740621(v=vs.85).aspx */
-		if (ZBX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
+		if (TRX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
 				(void *)&on, sizeof(on)))
 		{
 			zbx_set_socket_strerror("setsockopt() with %s for [[%s]:%hu] failed: %s", "SO_EXCLUSIVEADDRUSE",
@@ -1267,7 +1267,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 		/* enable address reuse */
 		/* this is to immediately use the address even if it is in TIME_WAIT state */
 		/* http://www-128.ibm.com/developerworks/linux/library/l-sockpit/index.html */
-		if (ZBX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], SOL_SOCKET, SO_REUSEADDR,
+		if (TRX_PROTO_ERROR == setsockopt(s->sockets[s->num_socks], SOL_SOCKET, SO_REUSEADDR,
 				(void *)&on, sizeof(on)))
 		{
 			zbx_set_socket_strerror("setsockopt() with %s for [[%s]:%hu] failed: %s", "SO_REUSEADDR",
@@ -1280,7 +1280,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 		serv_addr.sin_addr.s_addr = (NULL != ip ? inet_addr(ip) : htonl(INADDR_ANY));
 		serv_addr.sin_port = htons((unsigned short)listen_port);
 
-		if (ZBX_PROTO_ERROR == bind(s->sockets[s->num_socks], (struct sockaddr *)&serv_addr, sizeof(serv_addr)))
+		if (TRX_PROTO_ERROR == bind(s->sockets[s->num_socks], (struct sockaddr *)&serv_addr, sizeof(serv_addr)))
 		{
 			zbx_set_socket_strerror("bind() for [[%s]:%hu] failed: %s",
 					ip ? ip : "-", listen_port, strerror_from_system(zbx_socket_last_error()));
@@ -1288,7 +1288,7 @@ int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen
 			goto out;
 		}
 
-		if (ZBX_PROTO_ERROR == listen(s->sockets[s->num_socks], SOMAXCONN))
+		if (TRX_PROTO_ERROR == listen(s->sockets[s->num_socks], SOMAXCONN))
 		{
 			zbx_set_socket_strerror("listen() for [[%s]:%hu] failed: %s",
 					ip ? ip : "-", listen_port, strerror_from_system(zbx_socket_last_error()));
@@ -1340,10 +1340,10 @@ out:
  ******************************************************************************/
 int	zbx_tcp_accept(zbx_socket_t *s, unsigned int tls_accept)
 {
-	ZBX_SOCKADDR	serv_addr;
+	TRX_SOCKADDR	serv_addr;
 	fd_set		sock_set;
-	ZBX_SOCKET	accepted_socket;
-	ZBX_SOCKLEN_T	nlen;
+	TRX_SOCKET	accepted_socket;
+	TRX_SOCKLEN_T	nlen;
 	int		i, n = 0, ret = FAIL;
 	ssize_t		res;
 	unsigned char	buf;	/* 1 byte buffer */
@@ -1361,7 +1361,7 @@ int	zbx_tcp_accept(zbx_socket_t *s, unsigned int tls_accept)
 #endif
 	}
 
-	if (ZBX_PROTO_ERROR == select(n + 1, &sock_set, NULL, NULL, NULL))
+	if (TRX_PROTO_ERROR == select(n + 1, &sock_set, NULL, NULL, NULL))
 	{
 		zbx_set_socket_strerror("select() failed: %s", strerror_from_system(zbx_socket_last_error()));
 		return ret;
@@ -1376,7 +1376,7 @@ int	zbx_tcp_accept(zbx_socket_t *s, unsigned int tls_accept)
 	/* Since this socket was returned by select(), we know we have */
 	/* a connection waiting and that this accept() will not block. */
 	nlen = sizeof(serv_addr);
-	if (ZBX_SOCKET_ERROR == (accepted_socket = (ZBX_SOCKET)accept(s->sockets[i], (struct sockaddr *)&serv_addr,
+	if (TRX_SOCKET_ERROR == (accepted_socket = (TRX_SOCKET)accept(s->sockets[i], (struct sockaddr *)&serv_addr,
 			&nlen)))
 	{
 		zbx_set_socket_strerror("accept() failed: %s", strerror_from_system(zbx_socket_last_error()));
@@ -1396,7 +1396,7 @@ int	zbx_tcp_accept(zbx_socket_t *s, unsigned int tls_accept)
 
 	zbx_socket_timeout_set(s, CONFIG_TIMEOUT);
 
-	if (ZBX_SOCKET_ERROR == (res = recv(s->socket, &buf, 1, MSG_PEEK)))
+	if (TRX_SOCKET_ERROR == (res = recv(s->socket, &buf, 1, MSG_PEEK)))
 	{
 		zbx_set_socket_strerror("from %s: reading first byte from connection failed: %s", s->peer,
 				strerror_from_system(zbx_socket_last_error()));
@@ -1408,7 +1408,7 @@ int	zbx_tcp_accept(zbx_socket_t *s, unsigned int tls_accept)
 	if (1 == res && '\x16' == buf)
 	{
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		if (0 != (tls_accept & (ZBX_TCP_SEC_TLS_CERT | ZBX_TCP_SEC_TLS_PSK)))
+		if (0 != (tls_accept & (TRX_TCP_SEC_TLS_CERT | TRX_TCP_SEC_TLS_PSK)))
 		{
 			char	*error = NULL;
 
@@ -1434,14 +1434,14 @@ int	zbx_tcp_accept(zbx_socket_t *s, unsigned int tls_accept)
 	}
 	else
 	{
-		if (0 == (tls_accept & ZBX_TCP_SEC_UNENCRYPTED))
+		if (0 == (tls_accept & TRX_TCP_SEC_UNENCRYPTED))
 		{
 			zbx_set_socket_strerror("from %s: unencrypted connections are not allowed", s->peer);
 			zbx_tcp_unaccept(s);
 			goto out;
 		}
 
-		s->connection_type = ZBX_TCP_SEC_UNENCRYPTED;
+		s->connection_type = TRX_TCP_SEC_UNENCRYPTED;
 	}
 
 	ret = SUCCEED;
@@ -1472,7 +1472,7 @@ void	zbx_tcp_unaccept(zbx_socket_t *s)
 	zbx_socket_close(s->socket);
 
 	s->socket = s->socket_orig;	/* restore main socket */
-	s->socket_orig = ZBX_SOCKET_ERROR;
+	s->socket_orig = TRX_SOCKET_ERROR;
 	s->accepted = 0;
 }
 
@@ -1526,9 +1526,9 @@ static const char	*zbx_socket_find_line(zbx_socket_t *s)
  ******************************************************************************/
 const char	*zbx_tcp_recv_line(zbx_socket_t *s)
 {
-#define ZBX_TCP_LINE_LEN	(64 * ZBX_KIBIBYTE)
+#define TRX_TCP_LINE_LEN	(64 * TRX_KIBIBYTE)
 
-	char		buffer[ZBX_STAT_BUF_LEN], *ptr = NULL;
+	char		buffer[TRX_STAT_BUF_LEN], *ptr = NULL;
 	const char	*line;
 	ssize_t		nbytes;
 	size_t		alloc = 0, offset = 0, line_length, left;
@@ -1539,7 +1539,7 @@ const char	*zbx_tcp_recv_line(zbx_socket_t *s)
 
 	/* Find the size of leftover data from the last read line operation and copy */
 	/* the leftover data to the static buffer and reset the dynamic buffer.      */
-	/* Because we are reading data in ZBX_STAT_BUF_LEN chunks the leftover       */
+	/* Because we are reading data in TRX_STAT_BUF_LEN chunks the leftover       */
 	/* data will always fit the static buffer.                                   */
 	if (NULL != s->next_line)
 	{
@@ -1553,11 +1553,11 @@ const char	*zbx_tcp_recv_line(zbx_socket_t *s)
 	s->next_line = s->buf_stat;
 
 	zbx_socket_free(s);
-	s->buf_type = ZBX_BUF_TYPE_STAT;
+	s->buf_type = TRX_BUF_TYPE_STAT;
 	s->buffer = s->buf_stat;
 
 	/* read more data into static buffer */
-	if (ZBX_PROTO_ERROR == (nbytes = ZBX_TCP_READ(s->socket, s->buf_stat + left, ZBX_STAT_BUF_LEN - left - 1)))
+	if (TRX_PROTO_ERROR == (nbytes = TRX_TCP_READ(s->socket, s->buf_stat + left, TRX_STAT_BUF_LEN - left - 1)))
 		goto out;
 
 	s->buf_stat[left + nbytes] = '\0';
@@ -1579,16 +1579,16 @@ const char	*zbx_tcp_recv_line(zbx_socket_t *s)
 		goto out;
 
 	/* copy the static buffer data into dynamic buffer */
-	s->buf_type = ZBX_BUF_TYPE_DYN;
+	s->buf_type = TRX_BUF_TYPE_DYN;
 	s->buffer = NULL;
 	zbx_strncpy_alloc(&s->buffer, &alloc, &offset, s->buf_stat, s->read_bytes);
 	line_length = s->read_bytes;
 
 	/* Read data into dynamic buffer until newline has been found. */
-	/* Lines larger than ZBX_TCP_LINE_LEN bytes will be truncated. */
+	/* Lines larger than TRX_TCP_LINE_LEN bytes will be truncated. */
 	do
 	{
-		if (ZBX_PROTO_ERROR == (nbytes = ZBX_TCP_READ(s->socket, buffer, ZBX_STAT_BUF_LEN - 1)))
+		if (TRX_PROTO_ERROR == (nbytes = TRX_TCP_READ(s->socket, buffer, TRX_STAT_BUF_LEN - 1)))
 			goto out;
 
 		if (0 == nbytes)
@@ -1603,14 +1603,14 @@ const char	*zbx_tcp_recv_line(zbx_socket_t *s)
 		buffer[nbytes] = '\0';
 		ptr = strchr(buffer, '\n');
 
-		if (s->read_bytes + nbytes < ZBX_TCP_LINE_LEN && s->read_bytes == line_length)
+		if (s->read_bytes + nbytes < TRX_TCP_LINE_LEN && s->read_bytes == line_length)
 		{
 			zbx_strncpy_alloc(&s->buffer, &alloc, &offset, buffer, nbytes);
 			s->read_bytes += nbytes;
 		}
 		else
 		{
-			if (0 != (left = MIN(ZBX_TCP_LINE_LEN - s->read_bytes, (size_t)(ptr - buffer))))
+			if (0 != (left = MIN(TRX_TCP_LINE_LEN - s->read_bytes, (size_t)(ptr - buffer))))
 			{
 				/* fill the string to the defined limit */
 				zbx_strncpy_alloc(&s->buffer, &alloc, &offset, buffer, left);
@@ -1648,7 +1648,7 @@ static ssize_t	zbx_tcp_read(zbx_socket_t *s, char *buf, size_t len)
 	{
 		char	*error = NULL;
 
-		if (ZBX_PROTO_ERROR == (res = zbx_tls_read(s, buf, len, &error)))
+		if (TRX_PROTO_ERROR == (res = zbx_tls_read(s, buf, len, &error)))
 		{
 			zbx_set_socket_strerror("%s", error);
 			zbx_free(error);
@@ -1663,21 +1663,21 @@ static ssize_t	zbx_tcp_read(zbx_socket_t *s, char *buf, size_t len)
 #endif
 	do
 	{
-		res = ZBX_TCP_READ(s->socket, buf, len);
+		res = TRX_TCP_READ(s->socket, buf, len);
 #ifdef _WINDOWS
 		if (s->timeout < zbx_time() - sec)
 			zbx_alarm_flag_set();
 #endif
 		if (SUCCEED == zbx_alarm_timed_out())
 		{
-			zbx_set_socket_strerror("ZBX_TCP_READ() timed out");
-			return ZBX_PROTO_ERROR;
+			zbx_set_socket_strerror("TRX_TCP_READ() timed out");
+			return TRX_PROTO_ERROR;
 		}
 	}
-	while (ZBX_PROTO_ERROR == res && ZBX_PROTO_AGAIN == (err = zbx_socket_last_error()));
+	while (TRX_PROTO_ERROR == res && TRX_PROTO_AGAIN == (err = zbx_socket_last_error()));
 
-	if (ZBX_PROTO_ERROR == res)
-		zbx_set_socket_strerror("ZBX_TCP_READ() failed: %s", strerror_from_system(err));
+	if (TRX_PROTO_ERROR == res)
+		zbx_set_socket_strerror("TRX_TCP_READ() failed: %s", strerror_from_system(err));
 
 	return res;
 }
@@ -1696,16 +1696,16 @@ static ssize_t	zbx_tcp_read(zbx_socket_t *s, char *buf, size_t len)
  ******************************************************************************/
 ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 {
-#define ZBX_TCP_EXPECT_HEADER		1
-#define ZBX_TCP_EXPECT_VERSION		2
-#define ZBX_TCP_EXPECT_VERSION_VALIDATE	3
-#define ZBX_TCP_EXPECT_LENGTH		4
-#define ZBX_TCP_EXPECT_SIZE		5
+#define TRX_TCP_EXPECT_HEADER		1
+#define TRX_TCP_EXPECT_VERSION		2
+#define TRX_TCP_EXPECT_VERSION_VALIDATE	3
+#define TRX_TCP_EXPECT_LENGTH		4
+#define TRX_TCP_EXPECT_SIZE		5
 
 	ssize_t		nbytes;
 	size_t		buf_dyn_bytes = 0, buf_stat_bytes = 0, offset = 0;
-	zbx_uint32_t	expected_len = 16 * ZBX_MEBIBYTE, reserved = 0;
-	unsigned char	expect = ZBX_TCP_EXPECT_HEADER;
+	zbx_uint32_t	expected_len = 16 * TRX_MEBIBYTE, reserved = 0;
+	unsigned char	expect = TRX_TCP_EXPECT_HEADER;
 	int		protocol_version;
 
 	if (0 != timeout)
@@ -1713,15 +1713,15 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 
 	zbx_socket_free(s);
 
-	s->buf_type = ZBX_BUF_TYPE_STAT;
+	s->buf_type = TRX_BUF_TYPE_STAT;
 	s->buffer = s->buf_stat;
 
 	while (0 != (nbytes = zbx_tcp_read(s, s->buf_stat + buf_stat_bytes, sizeof(s->buf_stat) - buf_stat_bytes)))
 	{
-		if (ZBX_PROTO_ERROR == nbytes)
+		if (TRX_PROTO_ERROR == nbytes)
 			goto out;
 
-		if (ZBX_BUF_TYPE_STAT == s->buf_type)
+		if (TRX_BUF_TYPE_STAT == s->buf_type)
 			buf_stat_bytes += nbytes;
 		else
 		{
@@ -1733,48 +1733,48 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 		if (buf_stat_bytes + buf_dyn_bytes >= expected_len)
 			break;
 
-		if (ZBX_TCP_EXPECT_HEADER == expect)
+		if (TRX_TCP_EXPECT_HEADER == expect)
 		{
-			if (ZBX_TCP_HEADER_LEN > buf_stat_bytes)
+			if (TRX_TCP_HEADER_LEN > buf_stat_bytes)
 			{
-				if (0 == strncmp(s->buf_stat, ZBX_TCP_HEADER_DATA, buf_stat_bytes))
+				if (0 == strncmp(s->buf_stat, TRX_TCP_HEADER_DATA, buf_stat_bytes))
 					continue;
 
 				break;
 			}
 			else
 			{
-				if (0 != strncmp(s->buf_stat, ZBX_TCP_HEADER_DATA, ZBX_TCP_HEADER_LEN))
+				if (0 != strncmp(s->buf_stat, TRX_TCP_HEADER_DATA, TRX_TCP_HEADER_LEN))
 				{
 					/* invalid header, abort receiving */
 					break;
 				}
 
-				expect = ZBX_TCP_EXPECT_VERSION;
-				offset += ZBX_TCP_HEADER_LEN;
+				expect = TRX_TCP_EXPECT_VERSION;
+				offset += TRX_TCP_HEADER_LEN;
 			}
 		}
 
-		if (ZBX_TCP_EXPECT_VERSION == expect)
+		if (TRX_TCP_EXPECT_VERSION == expect)
 		{
 			if (offset + 1 > buf_stat_bytes)
 				continue;
 
-			expect = ZBX_TCP_EXPECT_VERSION_VALIDATE;
-			protocol_version = s->buf_stat[ZBX_TCP_HEADER_LEN];
+			expect = TRX_TCP_EXPECT_VERSION_VALIDATE;
+			protocol_version = s->buf_stat[TRX_TCP_HEADER_LEN];
 
-			if (0 == (protocol_version & ZBX_TCP_PROTOCOL) ||
-					protocol_version > (ZBX_TCP_PROTOCOL | ZBX_TCP_COMPRESS))
+			if (0 == (protocol_version & TRX_TCP_PROTOCOL) ||
+					protocol_version > (TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS))
 			{
 				/* invalid protocol version, abort receiving */
 				break;
 			}
 			s->protocol = protocol_version;
-			expect = ZBX_TCP_EXPECT_LENGTH;
+			expect = TRX_TCP_EXPECT_LENGTH;
 			offset++;
 		}
 
-		if (ZBX_TCP_EXPECT_LENGTH == expect)
+		if (TRX_TCP_EXPECT_LENGTH == expect)
 		{
 			if (offset + 2 * sizeof(zbx_uint32_t) > buf_stat_bytes)
 				continue;
@@ -1787,24 +1787,24 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 			offset += sizeof(zbx_uint32_t);
 			reserved = zbx_letoh_uint32(reserved);
 
-			if (ZBX_MAX_RECV_DATA_SIZE < expected_len)
+			if (TRX_MAX_RECV_DATA_SIZE < expected_len)
 			{
-				treegix_log(LOG_LEVEL_WARNING, "Message size " ZBX_FS_UI64 " from %s exceeds the "
-						"maximum size " ZBX_FS_UI64 " bytes. Message ignored.",
+				treegix_log(LOG_LEVEL_WARNING, "Message size " TRX_FS_UI64 " from %s exceeds the "
+						"maximum size " TRX_FS_UI64 " bytes. Message ignored.",
 						(zbx_uint64_t)expected_len, s->peer,
-						(zbx_uint64_t)ZBX_MAX_RECV_DATA_SIZE);
-				nbytes = ZBX_PROTO_ERROR;
+						(zbx_uint64_t)TRX_MAX_RECV_DATA_SIZE);
+				nbytes = TRX_PROTO_ERROR;
 				goto out;
 			}
 
 			/* compressed protocol stores uncompressed packet size in the reserved data */
-			if (0 != (protocol_version & ZBX_TCP_COMPRESS) && ZBX_MAX_RECV_DATA_SIZE < reserved)
+			if (0 != (protocol_version & TRX_TCP_COMPRESS) && TRX_MAX_RECV_DATA_SIZE < reserved)
 			{
-				treegix_log(LOG_LEVEL_WARNING, "Uncompressed message size " ZBX_FS_UI64
-						" from %s exceeds the maximum size " ZBX_FS_UI64
+				treegix_log(LOG_LEVEL_WARNING, "Uncompressed message size " TRX_FS_UI64
+						" from %s exceeds the maximum size " TRX_FS_UI64
 						" bytes. Message ignored.", (zbx_uint64_t)reserved, s->peer,
-						(zbx_uint64_t)ZBX_MAX_RECV_DATA_SIZE);
-				nbytes = ZBX_PROTO_ERROR;
+						(zbx_uint64_t)TRX_MAX_RECV_DATA_SIZE);
+				nbytes = TRX_PROTO_ERROR;
 				goto out;
 			}
 
@@ -1815,25 +1815,25 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 			}
 			else
 			{
-				s->buf_type = ZBX_BUF_TYPE_DYN;
+				s->buf_type = TRX_BUF_TYPE_DYN;
 				s->buffer = (char *)zbx_malloc(NULL, expected_len + 1);
 				buf_dyn_bytes = buf_stat_bytes - offset;
 				buf_stat_bytes = 0;
 				memcpy(s->buffer, s->buf_stat + offset, buf_dyn_bytes);
 			}
 
-			expect = ZBX_TCP_EXPECT_SIZE;
+			expect = TRX_TCP_EXPECT_SIZE;
 
 			if (buf_stat_bytes + buf_dyn_bytes >= expected_len)
 				break;
 		}
 	}
 
-	if (ZBX_TCP_EXPECT_SIZE == expect)
+	if (TRX_TCP_EXPECT_SIZE == expect)
 	{
 		if (buf_stat_bytes + buf_dyn_bytes == expected_len)
 		{
-			if (0 != (protocol_version & ZBX_TCP_COMPRESS))
+			if (0 != (protocol_version & TRX_TCP_COMPRESS))
 			{
 				char	*out;
 				size_t	out_size = reserved;
@@ -1843,7 +1843,7 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 				{
 					zbx_free(out);
 					zbx_set_socket_strerror("cannot uncompress data: %s", zbx_compress_strerror());
-					nbytes = ZBX_PROTO_ERROR;
+					nbytes = TRX_PROTO_ERROR;
 					goto out;
 				}
 
@@ -1851,18 +1851,18 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 				{
 					zbx_free(out);
 					zbx_set_socket_strerror("size of uncompressed data is less than expected");
-					nbytes = ZBX_PROTO_ERROR;
+					nbytes = TRX_PROTO_ERROR;
 					goto out;
 				}
 
-				if (ZBX_BUF_TYPE_DYN == s->buf_type)
+				if (TRX_BUF_TYPE_DYN == s->buf_type)
 					zbx_free(s->buffer);
 
-				s->buf_type = ZBX_BUF_TYPE_DYN;
+				s->buf_type = TRX_BUF_TYPE_DYN;
 				s->buffer = out;
 				s->read_bytes = reserved;
 
-				treegix_log(LOG_LEVEL_TRACE, "%s(): received " ZBX_FS_SIZE_T " bytes with"
+				treegix_log(LOG_LEVEL_TRACE, "%s(): received " TRX_FS_SIZE_T " bytes with"
 						" compression ratio %.1f", __func__,
 						(zbx_fs_size_t)(buf_stat_bytes + buf_dyn_bytes),
 						(double)reserved / (buf_stat_bytes + buf_dyn_bytes));
@@ -1876,39 +1876,39 @@ ssize_t	zbx_tcp_recv_ext(zbx_socket_t *s, int timeout)
 		{
 			if (buf_stat_bytes + buf_dyn_bytes < expected_len)
 			{
-				treegix_log(LOG_LEVEL_WARNING, "Message from %s is shorter than expected " ZBX_FS_UI64
+				treegix_log(LOG_LEVEL_WARNING, "Message from %s is shorter than expected " TRX_FS_UI64
 						" bytes. Message ignored.", s->peer, (zbx_uint64_t)expected_len);
 			}
 			else
 			{
-				treegix_log(LOG_LEVEL_WARNING, "Message from %s is longer than expected " ZBX_FS_UI64
+				treegix_log(LOG_LEVEL_WARNING, "Message from %s is longer than expected " TRX_FS_UI64
 						" bytes. Message ignored.", s->peer, (zbx_uint64_t)expected_len);
 			}
 
-			nbytes = ZBX_PROTO_ERROR;
+			nbytes = TRX_PROTO_ERROR;
 		}
 	}
-	else if (ZBX_TCP_EXPECT_LENGTH == expect)
+	else if (TRX_TCP_EXPECT_LENGTH == expect)
 	{
 		treegix_log(LOG_LEVEL_WARNING, "Message from %s is missing data length. Message ignored.", s->peer);
-		nbytes = ZBX_PROTO_ERROR;
+		nbytes = TRX_PROTO_ERROR;
 	}
-	else if (ZBX_TCP_EXPECT_VERSION == expect)
+	else if (TRX_TCP_EXPECT_VERSION == expect)
 	{
 		treegix_log(LOG_LEVEL_WARNING, "Message from %s is missing protocol version. Message ignored.",
 				s->peer);
-		nbytes = ZBX_PROTO_ERROR;
+		nbytes = TRX_PROTO_ERROR;
 	}
-	else if (ZBX_TCP_EXPECT_VERSION_VALIDATE == expect)
+	else if (TRX_TCP_EXPECT_VERSION_VALIDATE == expect)
 	{
 		treegix_log(LOG_LEVEL_WARNING, "Message from %s is using unsupported protocol version \"%d\"."
 				" Message ignored.", s->peer, protocol_version);
-		nbytes = ZBX_PROTO_ERROR;
+		nbytes = TRX_PROTO_ERROR;
 	}
 	else if (0 != buf_stat_bytes)
 	{
 		treegix_log(LOG_LEVEL_WARNING, "Message from %s is missing header. Message ignored.", s->peer);
-		nbytes = ZBX_PROTO_ERROR;
+		nbytes = TRX_PROTO_ERROR;
 	}
 	else
 	{
@@ -1919,11 +1919,11 @@ out:
 	if (0 != timeout)
 		zbx_socket_timeout_cleanup(s);
 
-	return (ZBX_PROTO_ERROR == nbytes ? FAIL : (ssize_t)(s->read_bytes + offset));
+	return (TRX_PROTO_ERROR == nbytes ? FAIL : (ssize_t)(s->read_bytes + offset));
 
-#undef ZBX_TCP_EXPECT_HEADER
-#undef ZBX_TCP_EXPECT_LENGTH
-#undef ZBX_TCP_EXPECT_SIZE
+#undef TRX_TCP_EXPECT_HEADER
+#undef TRX_TCP_EXPECT_LENGTH
+#undef TRX_TCP_EXPECT_SIZE
 }
 
 /******************************************************************************
@@ -1939,23 +1939,23 @@ out:
 ssize_t	zbx_tcp_recv_raw_ext(zbx_socket_t *s, int timeout)
 {
 	ssize_t		nbytes;
-	size_t		allocated = 8 * ZBX_STAT_BUF_LEN, buf_dyn_bytes = 0, buf_stat_bytes = 0;
-	zbx_uint64_t	expected_len = 16 * ZBX_MEBIBYTE;
+	size_t		allocated = 8 * TRX_STAT_BUF_LEN, buf_dyn_bytes = 0, buf_stat_bytes = 0;
+	zbx_uint64_t	expected_len = 16 * TRX_MEBIBYTE;
 
 	if (0 != timeout)
 		zbx_socket_timeout_set(s, timeout);
 
 	zbx_socket_free(s);
 
-	s->buf_type = ZBX_BUF_TYPE_STAT;
+	s->buf_type = TRX_BUF_TYPE_STAT;
 	s->buffer = s->buf_stat;
 
 	while (0 != (nbytes = zbx_tcp_read(s, s->buf_stat + buf_stat_bytes, sizeof(s->buf_stat) - buf_stat_bytes)))
 	{
-		if (ZBX_PROTO_ERROR == nbytes)
+		if (TRX_PROTO_ERROR == nbytes)
 			goto out;
 
-		if (ZBX_BUF_TYPE_STAT == s->buf_type)
+		if (TRX_BUF_TYPE_STAT == s->buf_type)
 			buf_stat_bytes += nbytes;
 		else
 		{
@@ -1975,7 +1975,7 @@ ssize_t	zbx_tcp_recv_raw_ext(zbx_socket_t *s, int timeout)
 
 		if (sizeof(s->buf_stat) == buf_stat_bytes)
 		{
-			s->buf_type = ZBX_BUF_TYPE_DYN;
+			s->buf_type = TRX_BUF_TYPE_DYN;
 			s->buffer = (char *)zbx_malloc(NULL, allocated);
 			buf_dyn_bytes = sizeof(s->buf_stat);
 			buf_stat_bytes = 0;
@@ -1985,9 +1985,9 @@ ssize_t	zbx_tcp_recv_raw_ext(zbx_socket_t *s, int timeout)
 
 	if (buf_stat_bytes + buf_dyn_bytes >= expected_len)
 	{
-		treegix_log(LOG_LEVEL_WARNING, "Message from %s is longer than " ZBX_FS_UI64 " bytes allowed for"
+		treegix_log(LOG_LEVEL_WARNING, "Message from %s is longer than " TRX_FS_UI64 " bytes allowed for"
 				" plain text. Message ignored.", s->peer, expected_len);
-		nbytes = ZBX_PROTO_ERROR;
+		nbytes = TRX_PROTO_ERROR;
 		goto out;
 	}
 
@@ -1997,7 +1997,7 @@ out:
 	if (0 != timeout)
 		zbx_socket_timeout_cleanup(s);
 
-	return (ZBX_PROTO_ERROR == nbytes ? FAIL : (ssize_t)(s->read_bytes));
+	return (TRX_PROTO_ERROR == nbytes ? FAIL : (ssize_t)(s->read_bytes));
 }
 
 static int	subnet_match(int af, unsigned int prefix_size, const void *address1, const void *address2)
@@ -2037,7 +2037,7 @@ static int	subnet_match(int af, unsigned int prefix_size, const void *address1, 
 }
 
 #ifdef HAVE_IPV6
-static int	zbx_ip_cmp(unsigned int prefix_size, const struct addrinfo *current_ai, ZBX_SOCKADDR name)
+static int	zbx_ip_cmp(unsigned int prefix_size, const struct addrinfo *current_ai, TRX_SOCKADDR name)
 {
 	/* Network Byte Order is ensured */
 	/* IPv4-compatible, the first 96 bits are zeros */
@@ -2284,11 +2284,11 @@ const char	*zbx_tcp_connection_type_name(unsigned int type)
 {
 	switch (type)
 	{
-		case ZBX_TCP_SEC_UNENCRYPTED:
+		case TRX_TCP_SEC_UNENCRYPTED:
 			return "unencrypted";
-		case ZBX_TCP_SEC_TLS_CERT:
+		case TRX_TCP_SEC_TLS_CERT:
 			return "TLS with certificate";
-		case ZBX_TCP_SEC_TLS_PSK:
+		case TRX_TCP_SEC_TLS_PSK:
 			return "TLS with PSK";
 		default:
 			return "unknown";
@@ -2297,7 +2297,7 @@ const char	*zbx_tcp_connection_type_name(unsigned int type)
 
 int	zbx_udp_connect(zbx_socket_t *s, const char *source_ip, const char *ip, unsigned short port, int timeout)
 {
-	return zbx_socket_create(s, SOCK_DGRAM, source_ip, ip, port, timeout, ZBX_TCP_SEC_UNENCRYPTED, NULL, NULL);
+	return zbx_socket_create(s, SOCK_DGRAM, source_ip, ip, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL, NULL);
 }
 
 int	zbx_udp_send(zbx_socket_t *s, const char *data, size_t data_len, int timeout)
@@ -2307,7 +2307,7 @@ int	zbx_udp_send(zbx_socket_t *s, const char *data, size_t data_len, int timeout
 	if (0 != timeout)
 		zbx_socket_timeout_set(s, timeout);
 
-	if (ZBX_PROTO_ERROR == zbx_sendto(s->socket, data, data_len, 0, NULL, 0))
+	if (TRX_PROTO_ERROR == zbx_sendto(s->socket, data, data_len, 0, NULL, 0))
 	{
 		zbx_set_socket_strerror("sendto() failed: %s", strerror_from_system(zbx_socket_last_error()));
 		ret = FAIL;
@@ -2329,23 +2329,23 @@ int	zbx_udp_recv(zbx_socket_t *s, int timeout)
 	if (0 != timeout)
 		zbx_socket_timeout_set(s, timeout);
 
-	if (ZBX_PROTO_ERROR == (read_bytes = recvfrom(s->socket, buffer, sizeof(buffer) - 1, 0, NULL, NULL)))
+	if (TRX_PROTO_ERROR == (read_bytes = recvfrom(s->socket, buffer, sizeof(buffer) - 1, 0, NULL, NULL)))
 		zbx_set_socket_strerror("recvfrom() failed: %s", strerror_from_system(zbx_socket_last_error()));
 
 	if (0 != timeout)
 		zbx_socket_timeout_cleanup(s);
 
-	if (ZBX_PROTO_ERROR == read_bytes)
+	if (TRX_PROTO_ERROR == read_bytes)
 		return FAIL;
 
 	if (sizeof(s->buf_stat) > (size_t)read_bytes)
 	{
-		s->buf_type = ZBX_BUF_TYPE_STAT;
+		s->buf_type = TRX_BUF_TYPE_STAT;
 		s->buffer = s->buf_stat;
 	}
 	else
 	{
-		s->buf_type = ZBX_BUF_TYPE_DYN;
+		s->buf_type = TRX_BUF_TYPE_DYN;
 		s->buffer = (char *)zbx_malloc(s->buffer, read_bytes + 1);
 	}
 
@@ -2380,12 +2380,12 @@ void	zbx_udp_close(zbx_socket_t *s)
  ******************************************************************************/
 void	zbx_update_resolver_conf(void)
 {
-#define ZBX_RESOLV_CONF_FILE	"/etc/resolv.conf"
+#define TRX_RESOLV_CONF_FILE	"/etc/resolv.conf"
 
 	static time_t	mtime = 0;
 	zbx_stat_t	buf;
 
-	if (0 == zbx_stat(ZBX_RESOLV_CONF_FILE, &buf) && mtime != buf.st_mtime)
+	if (0 == zbx_stat(TRX_RESOLV_CONF_FILE, &buf) && mtime != buf.st_mtime)
 	{
 		mtime = buf.st_mtime;
 
@@ -2393,6 +2393,6 @@ void	zbx_update_resolver_conf(void)
 			treegix_log(LOG_LEVEL_WARNING, "zbx_update_resolver_conf(): res_init() failed");
 	}
 
-#undef ZBX_RESOLV_CONF_FILE
+#undef TRX_RESOLV_CONF_FILE
 }
 #endif

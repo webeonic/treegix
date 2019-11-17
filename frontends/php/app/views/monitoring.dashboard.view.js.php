@@ -12,9 +12,9 @@
 	),
 	(new CCol(
 		(new CButton('remove', _('Remove')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->onClick('removeUserGroupShares("#{usrgrpid}");')
-	))->addClass(ZBX_STYLE_NOWRAP)
+	))->addClass(TRX_STYLE_NOWRAP)
 ]))
 	->setId('user_group_shares_#{usrgrpid}')
 	->toString()
@@ -35,9 +35,9 @@
 	),
 	(new CCol(
 		(new CButton('remove', _('Remove')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->onClick('removeUserShares("#{id}");')
-	))->addClass(ZBX_STYLE_NOWRAP)
+	))->addClass(TRX_STYLE_NOWRAP)
 ]))
 	->setId('user_shares_#{id}')
 	->toString()
@@ -95,7 +95,7 @@
 						userid: form_data['userid']
 					});
 
-					jQuery('#<?= ZBX_STYLE_PAGE_TITLE ?>').text(form_data['name']);
+					jQuery('#<?= TRX_STYLE_PAGE_TITLE ?>').text(form_data['name']);
 					jQuery('#dashboard-direct-link').text(form_data['name']);
 
 					overlayDialogueDestroy('dashboard_properties');

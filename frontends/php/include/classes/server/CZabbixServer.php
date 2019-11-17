@@ -36,8 +36,8 @@ class CTreegixServer {
 	/**
 	 * Auxiliary constants for request() method.
 	 */
-	const ZBX_TCP_EXPECT_HEADER = 1;
-	const ZBX_TCP_EXPECT_DATA = 2;
+	const TRX_TCP_EXPECT_HEADER = 1;
+	const TRX_TCP_EXPECT_DATA = 2;
 
 	/**
 	 * Max number of bytes to read from the response for each each iteration.
@@ -221,14 +221,14 @@ class CTreegixServer {
 
 		$api_input_rules = ['type' => API_OBJECT, 'fields' => [
 			'template stats' =>			['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'fields' => [
-				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.ZBX_MAX_INT32]
+				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.TRX_MAX_INT32]
 			]],
 			'host stats' =>				['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'fields' => [
 				'attributes' =>				['type' => API_OBJECT, 'flags' => API_REQUIRED, 'fields' => [
 					'proxyid' =>				['type' => API_ID, 'flags' => API_REQUIRED],
 					'status' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [HOST_STATUS_MONITORED, HOST_STATUS_NOT_MONITORED])]
 				]],
-				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.ZBX_MAX_INT32]
+				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.TRX_MAX_INT32]
 			]],
 			'item stats' =>				['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'fields' => [
 				'attributes' =>				['type' => API_OBJECT, 'flags' => API_REQUIRED, 'fields' => [
@@ -236,20 +236,20 @@ class CTreegixServer {
 					'status' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [ITEM_STATUS_ACTIVE, ITEM_STATUS_DISABLED])],
 					'state' =>					['type' => API_INT32, 'in' => implode(',', [ITEM_STATE_NORMAL, ITEM_STATE_NOTSUPPORTED])]
 				]],
-				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.ZBX_MAX_INT32]
+				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.TRX_MAX_INT32]
 			]],
 			'trigger stats' =>			['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'fields' => [
 				'attributes' =>				['type' => API_OBJECT, 'flags' => API_REQUIRED, 'fields' => [
 					'status' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [TRIGGER_STATUS_ENABLED, TRIGGER_STATUS_DISABLED])],
 					'value' =>					['type' => API_INT32, 'in' => implode(',', [TRIGGER_VALUE_FALSE, TRIGGER_VALUE_TRUE])]
 				]],
-				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.ZBX_MAX_INT32]
+				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.TRX_MAX_INT32]
 			]],
 			'user stats' =>				['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'fields' => [
 				'attributes' =>				['type' => API_OBJECT, 'flags' => API_REQUIRED, 'fields' => [
-					'status' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [ZBX_SESSION_ACTIVE, ZBX_SESSION_PASSIVE])]
+					'status' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [TRX_SESSION_ACTIVE, TRX_SESSION_PASSIVE])]
 				]],
-				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.ZBX_MAX_INT32]
+				'count' =>					['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => '0:'.TRX_MAX_INT32]
 			]],
 			// only for super-admins 'required performance' is available
 			'required performance' =>	['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY, 'fields' => [
@@ -329,12 +329,12 @@ class CTreegixServer {
 
 		// Send the command.
 		$json = CJs::encodeJson($params);
-		if (fwrite($this->socket, ZBX_TCP_HEADER.pack('V', strlen($json))."\x00\x00\x00\x00".$json) === false) {
+		if (fwrite($this->socket, TRX_TCP_HEADER.pack('V', strlen($json))."\x00\x00\x00\x00".$json) === false) {
 			$this->error = _s('Cannot send command, check connection with Treegix server "%1$s".', $this->host);
 			return false;
 		}
 
-		$expect = self::ZBX_TCP_EXPECT_HEADER;
+		$expect = self::TRX_TCP_EXPECT_HEADER;
 		$response = '';
 		$response_len = 0;
 		$expected_len = null;
@@ -353,30 +353,30 @@ class CTreegixServer {
 				$response_len += strlen($buffer);
 				$response .= $buffer;
 
-				if ($expect == self::ZBX_TCP_EXPECT_HEADER) {
-					if (strncmp($response, ZBX_TCP_HEADER, min($response_len, ZBX_TCP_HEADER_LEN)) != 0) {
+				if ($expect == self::TRX_TCP_EXPECT_HEADER) {
+					if (strncmp($response, TRX_TCP_HEADER, min($response_len, TRX_TCP_HEADER_LEN)) != 0) {
 						$this->error = _s('Incorrect response received from Treegix server "%1$s".', $this->host);
 						return false;
 					}
 
-					if ($response_len < ZBX_TCP_HEADER_LEN) {
+					if ($response_len < TRX_TCP_HEADER_LEN) {
 						continue;
 					}
 
-					$expect = self::ZBX_TCP_EXPECT_DATA;
+					$expect = self::TRX_TCP_EXPECT_DATA;
 				}
 
-				if ($response_len < ZBX_TCP_HEADER_LEN + ZBX_TCP_DATALEN_LEN) {
+				if ($response_len < TRX_TCP_HEADER_LEN + TRX_TCP_DATALEN_LEN) {
 					continue;
 				}
 
 				if ($expected_len === null) {
-					$expected_len = unpack('Vlen', substr($response, ZBX_TCP_HEADER_LEN, 4))['len'];
-					$expected_len += ZBX_TCP_HEADER_LEN + ZBX_TCP_DATALEN_LEN;
+					$expected_len = unpack('Vlen', substr($response, TRX_TCP_HEADER_LEN, 4))['len'];
+					$expected_len += TRX_TCP_HEADER_LEN + TRX_TCP_DATALEN_LEN;
 
 					if ($this->totalBytesLimit != 0 && $expected_len >= $this->totalBytesLimit) {
 						$this->error = _s(
-							'Size of the response received from Treegix server "%1$s" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php.',
+							'Size of the response received from Treegix server "%1$s" exceeds the allowed size of %2$s bytes. This value can be increased in the TRX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php.',
 							$this->host, $this->totalBytesLimit
 						);
 						return false;
@@ -401,7 +401,7 @@ class CTreegixServer {
 			return false;
 		}
 
-		$response = CJs::decodeJson(substr($response, ZBX_TCP_HEADER_LEN + ZBX_TCP_DATALEN_LEN));
+		$response = CJs::decodeJson(substr($response, TRX_TCP_HEADER_LEN + TRX_TCP_DATALEN_LEN));
 
 		if (!$response || !$this->normalizeResponse($response)) {
 			$this->error = _s('Incorrect response received from Treegix server "%1$s".', $this->host);

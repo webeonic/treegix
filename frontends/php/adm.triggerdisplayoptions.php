@@ -11,30 +11,30 @@ $page['scripts'] = ['colorpicker.js'];
 require_once dirname(__FILE__).'/include/page_header.php';
 
 $fields = [
-	'custom_color' =>			[T_ZBX_INT, O_OPT, null, IN('1'), null, _('Use custom event status colours')],
-	'problem_unack_color' =>	[T_ZBX_CLR, O_OPT, null, null, 'isset({update}) && isset({custom_color})',
+	'custom_color' =>			[T_TRX_INT, O_OPT, null, IN('1'), null, _('Use custom event status colours')],
+	'problem_unack_color' =>	[T_TRX_CLR, O_OPT, null, null, 'isset({update}) && isset({custom_color})',
 		_('Unacknowledged PROBLEM events')
 	],
-	'problem_ack_color' =>		[T_ZBX_CLR, O_OPT, null, null, 'isset({update}) && isset({custom_color})',
+	'problem_ack_color' =>		[T_TRX_CLR, O_OPT, null, null, 'isset({update}) && isset({custom_color})',
 		_('Acknowledged PROBLEM events')
 	],
-	'ok_unack_color' =>			[T_ZBX_CLR, O_OPT, null, null, 'isset({update}) && isset({custom_color})',
+	'ok_unack_color' =>			[T_TRX_CLR, O_OPT, null, null, 'isset({update}) && isset({custom_color})',
 		_('Unacknowledged RESOLVED events')
 	],
-	'ok_ack_color' =>			[T_ZBX_CLR, O_OPT, null, null, 'isset({update}) && isset({custom_color})',
+	'ok_ack_color' =>			[T_TRX_CLR, O_OPT, null, null, 'isset({update}) && isset({custom_color})',
 		_('Acknowledged RESOLVED events')
 	],
-	'problem_unack_style' =>	[T_ZBX_INT, O_OPT, null, IN('1'), null, _('Blinking')],
-	'problem_ack_style' =>		[T_ZBX_INT, O_OPT, null, IN('1'), null, _('Blinking')],
-	'ok_unack_style' =>			[T_ZBX_INT, O_OPT, null, IN('1'), null, _('Blinking')],
-	'ok_ack_style' =>			[T_ZBX_INT, O_OPT, null, IN('1'), null, _('Blinking')],
-	'ok_period' =>				[T_ZBX_STR, O_OPT, null, null, 'isset({update})', _('Display OK triggers for')],
-	'blink_period' =>			[T_ZBX_STR, O_OPT, null, null, 'isset({update})',
+	'problem_unack_style' =>	[T_TRX_INT, O_OPT, null, IN('1'), null, _('Blinking')],
+	'problem_ack_style' =>		[T_TRX_INT, O_OPT, null, IN('1'), null, _('Blinking')],
+	'ok_unack_style' =>			[T_TRX_INT, O_OPT, null, IN('1'), null, _('Blinking')],
+	'ok_ack_style' =>			[T_TRX_INT, O_OPT, null, IN('1'), null, _('Blinking')],
+	'ok_period' =>				[T_TRX_STR, O_OPT, null, null, 'isset({update})', _('Display OK triggers for')],
+	'blink_period' =>			[T_TRX_STR, O_OPT, null, null, 'isset({update})',
 		_('On status change triggers blink for')
 	],
 	// actions
-	'update'=>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null, null],
-	'form_refresh' =>			[T_ZBX_INT, O_OPT, null, null, null]
+	'update'=>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null, null],
+	'form_refresh' =>			[T_TRX_INT, O_OPT, null, null, null]
 ];
 check_fields($fields);
 

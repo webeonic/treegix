@@ -48,7 +48,7 @@ static void	list_create_item(zbx_list_t *list, void *value, zbx_list_item_t **cr
 {
 	zbx_list_item_t *item;
 
-	ZBX_UNUSED(list);
+	TRX_UNUSED(list);
 
 	item = (zbx_list_item_t *)zbx_malloc(NULL, sizeof(zbx_list_item_t));
 	item->next = NULL;

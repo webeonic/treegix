@@ -71,7 +71,7 @@ class CControllerWidgetActionLogView extends CControllerWidget {
 			}
 			unset($alert['mediatypes']);
 
-			$alert['action_type'] = ZBX_EVENT_HISTORY_ALERT;
+			$alert['action_type'] = TRX_EVENT_HISTORY_ALERT;
 		}
 		unset($alert);
 
@@ -114,29 +114,29 @@ class CControllerWidgetActionLogView extends CControllerWidget {
 	private static function getSorting($sort_triggers) {
 		switch ($sort_triggers) {
 			case SCREEN_SORT_TRIGGERS_TIME_ASC:
-				return ['clock', ZBX_SORT_UP];
+				return ['clock', TRX_SORT_UP];
 
 			case SCREEN_SORT_TRIGGERS_TIME_DESC:
 			default:
-				return ['clock', ZBX_SORT_DOWN];
+				return ['clock', TRX_SORT_DOWN];
 
 			case SCREEN_SORT_TRIGGERS_TYPE_ASC:
-				return ['mediatypeid', ZBX_SORT_UP];
+				return ['mediatypeid', TRX_SORT_UP];
 
 			case SCREEN_SORT_TRIGGERS_TYPE_DESC:
-				return ['mediatypeid', ZBX_SORT_DOWN];
+				return ['mediatypeid', TRX_SORT_DOWN];
 
 			case SCREEN_SORT_TRIGGERS_STATUS_ASC:
-				return ['status', ZBX_SORT_UP];
+				return ['status', TRX_SORT_UP];
 
 			case SCREEN_SORT_TRIGGERS_STATUS_DESC:
-				return ['status', ZBX_SORT_DOWN];
+				return ['status', TRX_SORT_DOWN];
 
 			case SCREEN_SORT_TRIGGERS_RECIPIENT_ASC:
-				return ['sendto', ZBX_SORT_UP];
+				return ['sendto', TRX_SORT_UP];
 
 			case SCREEN_SORT_TRIGGERS_RECIPIENT_DESC:
-				return ['sendto', ZBX_SORT_DOWN];
+				return ['sendto', TRX_SORT_DOWN];
 		}
 	}
 }

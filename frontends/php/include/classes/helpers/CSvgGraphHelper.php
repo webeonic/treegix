@@ -392,7 +392,7 @@ class CSvgGraphHelper {
 				$period = $metric['time_period']['time_to'] - $time_from;
 
 				$metric['source'] = ($trends == 0 || (time() - $history < $time_from
-						&& $period / $width <= ZBX_MAX_TREND_DIFF / ZBX_GRAPH_MAX_SKIP_CELL))
+						&& $period / $width <= TRX_MAX_TREND_DIFF / TRX_GRAPH_MAX_SKIP_CELL))
 					? SVG_GRAPH_DATA_SOURCE_HISTORY
 					: SVG_GRAPH_DATA_SOURCE_TRENDS;
 			}
@@ -490,7 +490,7 @@ class CSvgGraphHelper {
 		}
 		unset($event);
 
-		CArrayHelper::sort($events, [['field' => 'clock', 'order' => ZBX_SORT_DOWN]]);
+		CArrayHelper::sort($events, [['field' => 'clock', 'order' => TRX_SORT_DOWN]]);
 
 		return $events;
 	}
@@ -538,7 +538,7 @@ class CSvgGraphHelper {
 					'searchWildcardsEnabled' => true,
 					'searchByAny' => true,
 					'sortfield' => 'name',
-					'sortorder' => ZBX_SORT_UP,
+					'sortorder' => TRX_SORT_UP,
 					'limit' => $max_metrics
 				]);
 

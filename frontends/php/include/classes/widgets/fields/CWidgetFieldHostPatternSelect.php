@@ -38,7 +38,7 @@ class CWidgetFieldHostPatternSelect extends CWidgetField {
 		if ($value !== $this->default) {
 			foreach ($value as $num => $val) {
 				$widget_fields[] = [
-					'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+					'type' => TRX_WIDGET_FIELD_TYPE_STR,
 					'name' => $this->name.'.'.$num,
 					'value' => $val
 				];

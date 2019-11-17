@@ -333,8 +333,8 @@ if (empty($_GET['files'])) {
 	if (isset($_GET['showGuiMessaging']) && $_GET['showGuiMessaging']) {
 		require_once dirname(__FILE__).'/include/defines.inc.php';
 
-		if (array_key_exists(ZBX_SESSION_NAME, $_COOKIE)) {
-			$js .= 'window.localstoragePath = "'.crc32($_COOKIE[ZBX_SESSION_NAME]).'";';
+		if (array_key_exists(TRX_SESSION_NAME, $_COOKIE)) {
+			$js .= 'window.localstoragePath = "'.crc32($_COOKIE[TRX_SESSION_NAME]).'";';
 		}
 
 		$files[] = 'class.promise.js';

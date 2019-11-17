@@ -4,7 +4,7 @@
 #include "sysinfo.h"
 #include "log.h"
 
-#define ZBX_PERFSTAT_PAGE_SHIFT	12	/* 4 KB */
+#define TRX_PERFSTAT_PAGE_SHIFT	12	/* 4 KB */
 
 int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
@@ -34,11 +34,11 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	if (NULL == mode || '\0' == *mode || 0 == strcmp(mode, "free"))
-		SET_UI64_RESULT(result, mem.pgsp_free << ZBX_PERFSTAT_PAGE_SHIFT);
+		SET_UI64_RESULT(result, mem.pgsp_free << TRX_PERFSTAT_PAGE_SHIFT);
 	else if (0 == strcmp(mode, "total"))
-		SET_UI64_RESULT(result, mem.pgsp_total << ZBX_PERFSTAT_PAGE_SHIFT);
+		SET_UI64_RESULT(result, mem.pgsp_total << TRX_PERFSTAT_PAGE_SHIFT);
 	else if (0 == strcmp(mode, "used"))
-		SET_UI64_RESULT(result, (mem.pgsp_total - mem.pgsp_free) << ZBX_PERFSTAT_PAGE_SHIFT);
+		SET_UI64_RESULT(result, (mem.pgsp_total - mem.pgsp_free) << TRX_PERFSTAT_PAGE_SHIFT);
 	else if (0 == strcmp(mode, "pfree"))
 		SET_DBL_RESULT(result, mem.pgsp_total ? 100.0 * (mem.pgsp_free / (double)mem.pgsp_total) : 0.0);
 	else if (0 == strcmp(mode, "pused"))

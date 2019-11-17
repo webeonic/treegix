@@ -8,7 +8,7 @@ int	SYSTEM_UPTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	struct sysinfo	info;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (0 != sysinfo(&info))
 	{

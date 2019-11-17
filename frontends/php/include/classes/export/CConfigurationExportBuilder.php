@@ -981,7 +981,7 @@ class CConfigurationExportBuilder {
 
 			$master_item = ($item['type'] == ITEM_TYPE_DEPENDENT) ? ['key' => $item['master_item']['key_']] : [];
 
-			if ($item['flags'] == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+			if ($item['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 				$data['application_prototypes'] = $this->formatApplications($item['applicationPrototypes']);
 			}
 
@@ -1030,7 +1030,7 @@ class CConfigurationExportBuilder {
 							}
 						}
 
-						if ($simple_trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION
+						if ($simple_trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION
 								&& $expression_data->parse($simple_trigger['recovery_expression'])) {
 							foreach (array_reverse($expression_data->expressions) as $expression) {
 								if ($expression['host'] === $item['host'] && $expression['item'] === $item['key_']) {

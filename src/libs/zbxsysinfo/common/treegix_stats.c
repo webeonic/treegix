@@ -30,16 +30,16 @@ static int	check_response(const char *response, AGENT_RESULT *result)
 		return FAIL;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_RESPONSE, buffer, sizeof(buffer)))
+	if (SUCCEED != zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, buffer, sizeof(buffer)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot find tag: %s.", ZBX_PROTO_TAG_RESPONSE));
+		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot find tag: %s.", TRX_PROTO_TAG_RESPONSE));
 		return FAIL;
 	}
 
-	if (0 != strcmp(buffer, ZBX_PROTO_VALUE_SUCCESS))
+	if (0 != strcmp(buffer, TRX_PROTO_VALUE_SUCCESS))
 	{
-		if (SUCCEED != zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_INFO, buffer, sizeof(buffer)))
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot find tag: %s.", ZBX_PROTO_TAG_INFO));
+		if (SUCCEED != zbx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, buffer, sizeof(buffer)))
+			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot find tag: %s.", TRX_PROTO_TAG_INFO));
 		else
 			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain internal statistics: %s", buffer));
 
@@ -66,7 +66,7 @@ static void	get_remote_treegix_stats(const struct zbx_json *json, const char *ip
 {
 	zbx_socket_t	s;
 
-	if (SUCCEED == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, ip, port, CONFIG_TIMEOUT, ZBX_TCP_SEC_UNENCRYPTED,
+	if (SUCCEED == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, ip, port, CONFIG_TIMEOUT, TRX_TCP_SEC_UNENCRYPTED,
 			NULL, NULL))
 	{
 		if (SUCCEED == zbx_tcp_send(&s, json->buffer))
@@ -120,8 +120,8 @@ int	zbx_get_remote_treegix_stats(const char *ip, unsigned short port, AGENT_RESU
 {
 	struct zbx_json	json;
 
-	zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_TREEGIX_STATS, ZBX_JSON_TYPE_STRING);
+	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	zbx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_TREEGIX_STATS, TRX_JSON_TYPE_STRING);
 
 	get_remote_treegix_stats(&json, ip, port, result);
 
@@ -151,16 +151,16 @@ int	zbx_get_remote_treegix_stats_queue(const char *ip, unsigned short port, cons
 {
 	struct zbx_json	json;
 
-	zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_TREEGIX_STATS, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(&json, ZBX_PROTO_TAG_TYPE, ZBX_PROTO_VALUE_TREEGIX_STATS_QUEUE, ZBX_JSON_TYPE_STRING);
+	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	zbx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_TREEGIX_STATS, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(&json, TRX_PROTO_TAG_TYPE, TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE, TRX_JSON_TYPE_STRING);
 
-	zbx_json_addobject(&json, ZBX_PROTO_TAG_PARAMS);
+	zbx_json_addobject(&json, TRX_PROTO_TAG_PARAMS);
 
 	if (NULL != from && '\0' != *from)
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_FROM, from, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_FROM, from, TRX_JSON_TYPE_STRING);
 	if (NULL != to && '\0' != *to)
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_TO, to, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_TO, to, TRX_JSON_TYPE_STRING);
 
 	zbx_json_close(&json);
 
@@ -187,7 +187,7 @@ int	TREEGIX_STATS(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == (port_str = get_rparam(request, 1)) || '\0' == *port_str)
 	{
-		port_number = ZBX_DEFAULT_SERVER_PORT;
+		port_number = TRX_DEFAULT_SERVER_PORT;
 	}
 	else if (SUCCEED != is_ushort(port_str, &port_number))
 	{
@@ -200,7 +200,7 @@ int	TREEGIX_STATS(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (SUCCEED != zbx_get_remote_treegix_stats(ip_str, port_number, result))
 			return SYSINFO_RET_FAIL;
 	}
-	else if (0 == strcmp((tmp = get_rparam(request, 2)), ZBX_PROTO_VALUE_TREEGIX_STATS_QUEUE))
+	else if (0 == strcmp((tmp = get_rparam(request, 2)), TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE))
 	{
 		if (SUCCEED != zbx_get_remote_treegix_stats_queue(ip_str, port_number, get_rparam(request, 3),
 				get_rparam(request, 4), result))

@@ -29,7 +29,7 @@ abstract class CHostBase extends CApiService {
 		]);
 
 		if ($count != count($templateIds)) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		// check if someone passed duplicate templates in the same query
@@ -40,7 +40,7 @@ abstract class CHostBase extends CApiService {
 				$duplicatesFound[] = _s('template ID "%1$s" is passed %2$s times', $value, $count);
 			}
 			self::exception(
-				ZBX_API_ERROR_PARAMETERS,
+				TRX_API_ERROR_PARAMETERS,
 				_s('Cannot pass duplicate template IDs for the linkage: %s.', implode(', ', $duplicatesFound))
 			);
 		}
@@ -88,7 +88,7 @@ abstract class CHostBase extends CApiService {
 				]);
 				$tmpTpl = reset($tmpTpls);
 
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Trigger in template "%1$s" has dependency with trigger in template "%2$s".', $tmpTpl['host'], $dbDepHost['host']));
 			}
 		}
@@ -132,7 +132,7 @@ abstract class CHostBase extends CApiService {
 			' AND EXISTS (SELECT 1 FROM functions ff,items ii WHERE ff.itemid=ii.itemid AND ff.triggerid=t.triggerid AND '.dbConditionInt('ii.hostid', $templateIds). ')';
 		if ($dbNotLinkedTpl = DBfetch(DBSelect($sql, 1))) {
 			self::exception(
-				ZBX_API_ERROR_PARAMETERS,
+				TRX_API_ERROR_PARAMETERS,
 				_s('Trigger has items from template "%1$s" that is not linked to host.', $dbNotLinkedTpl['host'])
 			);
 		}
@@ -180,7 +180,7 @@ abstract class CHostBase extends CApiService {
 
 		// there is still possible cycles without root
 		if (count($visited) < count($all)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Circular template linkage is not allowed.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Circular template linkage is not allowed.'));
 		}
 
 		return $hostsLinkageInserts;
@@ -237,10 +237,10 @@ abstract class CHostBase extends CApiService {
 	protected function checkCircularAndDoubleLinkage($graph, $current, &$path, &$visited) {
 		if (isset($path[$current])) {
 			if ($path[$current] == 1) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Circular template linkage is not allowed.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Circular template linkage is not allowed.'));
 			}
 			else {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Template cannot be linked to another template more than once even through other templates.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Template cannot be linked to another template more than once even through other templates.'));
 			}
 		}
 		$path[$current] = 1;

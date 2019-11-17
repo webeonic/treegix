@@ -29,16 +29,16 @@ int	connect_to_server(zbx_socket_t *sock, int timeout, int retry_interval)
 
 	switch (configured_tls_connect_mode)
 	{
-		case ZBX_TCP_SEC_UNENCRYPTED:
+		case TRX_TCP_SEC_UNENCRYPTED:
 			tls_arg1 = NULL;
 			tls_arg2 = NULL;
 			break;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		case ZBX_TCP_SEC_TLS_CERT:
+		case TRX_TCP_SEC_TLS_CERT:
 			tls_arg1 = CONFIG_TLS_SERVER_CERT_ISSUER;
 			tls_arg2 = CONFIG_TLS_SERVER_CERT_SUBJECT;
 			break;
-		case ZBX_TCP_SEC_TLS_PSK:
+		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = CONFIG_TLS_PSK_IDENTITY;
 			tls_arg2 = NULL;	/* zbx_tls_connect() will find PSK */
 			break;
@@ -64,7 +64,7 @@ int	connect_to_server(zbx_socket_t *sock, int timeout, int retry_interval)
 
 			lastlogtime = (int)time(NULL);
 
-			while (ZBX_IS_RUNNING() && FAIL == (res = zbx_tcp_connect(sock, CONFIG_SOURCE_IP,
+			while (TRX_IS_RUNNING() && FAIL == (res = zbx_tcp_connect(sock, CONFIG_SOURCE_IP,
 					CONFIG_SERVER, CONFIG_SERVER_PORT, timeout, configured_tls_connect_mode,
 					tls_arg1, tls_arg2)))
 			{
@@ -110,11 +110,11 @@ int	get_data_from_server(zbx_socket_t *sock, const char *request, char **error)
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() request:'%s'", __func__, request);
 
 	zbx_json_init(&j, 128);
-	zbx_json_addstring(&j, "request", request, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, "host", CONFIG_HOSTNAME, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, ZBX_PROTO_TAG_VERSION, TREEGIX_VERSION, ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, "request", request, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, "host", CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
 
-	if (SUCCEED != zbx_tcp_send_ext(sock, j.buffer, strlen(j.buffer), ZBX_TCP_PROTOCOL | ZBX_TCP_COMPRESS, 0))
+	if (SUCCEED != zbx_tcp_send_ext(sock, j.buffer, strlen(j.buffer), TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS, 0))
 	{
 		*error = zbx_strdup(*error, zbx_socket_strerror());
 		goto exit;
@@ -151,9 +151,9 @@ int	put_data_to_server(zbx_socket_t *sock, struct zbx_json *j, char **error)
 {
 	int	ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() datalen:" ZBX_FS_SIZE_T, __func__, (zbx_fs_size_t)j->buffer_size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() datalen:" TRX_FS_SIZE_T, __func__, (zbx_fs_size_t)j->buffer_size);
 
-	if (SUCCEED != zbx_tcp_send_ext(sock, j->buffer, strlen(j->buffer), ZBX_TCP_PROTOCOL | ZBX_TCP_COMPRESS, 0))
+	if (SUCCEED != zbx_tcp_send_ext(sock, j->buffer, strlen(j->buffer), TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS, 0))
 	{
 		*error = zbx_strdup(*error, zbx_socket_strerror());
 		goto out;

@@ -4,17 +4,17 @@
 
 #include "zbxtypes.h"
 
-#define ZBX_MODULE_OK	0
-#define ZBX_MODULE_FAIL	-1
+#define TRX_MODULE_OK	0
+#define TRX_MODULE_FAIL	-1
 
 /* zbx_module_api_version() MUST return this constant */
-#define ZBX_MODULE_API_VERSION	2
+#define TRX_MODULE_API_VERSION	2
 
 /* old name alias is kept for source compatibility only, SHOULD NOT be used */
-#define ZBX_MODULE_API_VERSION_ONE	ZBX_MODULE_API_VERSION
+#define TRX_MODULE_API_VERSION_ONE	TRX_MODULE_API_VERSION
 
 /* HINT: For conditional compilation with different module.h versions modules can use: */
-/* #if ZBX_MODULE_API_VERSION == X                                                     */
+/* #if TRX_MODULE_API_VERSION == X                                                     */
 /*         ...                                                                         */
 /* #endif                                                                              */
 
@@ -79,7 +79,7 @@ typedef struct
 	int		(*function)(AGENT_REQUEST *request, AGENT_RESULT *result);
 	char		*test_param;	/* item test parameters; user parameter items keep command here */
 }
-ZBX_METRIC;
+TRX_METRIC;
 
 /* SET RESULT */
 
@@ -133,7 +133,7 @@ typedef struct
 	int		ns;
 	double		value;
 }
-ZBX_HISTORY_FLOAT;
+TRX_HISTORY_FLOAT;
 
 typedef struct
 {
@@ -142,7 +142,7 @@ typedef struct
 	int		ns;
 	zbx_uint64_t	value;
 }
-ZBX_HISTORY_INTEGER;
+TRX_HISTORY_INTEGER;
 
 typedef struct
 {
@@ -151,7 +151,7 @@ typedef struct
 	int		ns;
 	const char	*value;
 }
-ZBX_HISTORY_STRING;
+TRX_HISTORY_STRING;
 
 typedef struct
 {
@@ -160,7 +160,7 @@ typedef struct
 	int		ns;
 	const char	*value;
 }
-ZBX_HISTORY_TEXT;
+TRX_HISTORY_TEXT;
 
 typedef struct
 {
@@ -173,23 +173,23 @@ typedef struct
 	int		logeventid;
 	int		severity;
 }
-ZBX_HISTORY_LOG;
+TRX_HISTORY_LOG;
 
 typedef struct
 {
-	void	(*history_float_cb)(const ZBX_HISTORY_FLOAT *history, int history_num);
-	void	(*history_integer_cb)(const ZBX_HISTORY_INTEGER *history, int history_num);
-	void	(*history_string_cb)(const ZBX_HISTORY_STRING *history, int history_num);
-	void	(*history_text_cb)(const ZBX_HISTORY_TEXT *history, int history_num);
-	void	(*history_log_cb)(const ZBX_HISTORY_LOG *history, int history_num);
+	void	(*history_float_cb)(const TRX_HISTORY_FLOAT *history, int history_num);
+	void	(*history_integer_cb)(const TRX_HISTORY_INTEGER *history, int history_num);
+	void	(*history_string_cb)(const TRX_HISTORY_STRING *history, int history_num);
+	void	(*history_text_cb)(const TRX_HISTORY_TEXT *history, int history_num);
+	void	(*history_log_cb)(const TRX_HISTORY_LOG *history, int history_num);
 }
-ZBX_HISTORY_WRITE_CBS;
+TRX_HISTORY_WRITE_CBS;
 
 int	zbx_module_api_version(void);
 int	zbx_module_init(void);
 int	zbx_module_uninit(void);
 void	zbx_module_item_timeout(int timeout);
-ZBX_METRIC	*zbx_module_item_list(void);
-ZBX_HISTORY_WRITE_CBS	zbx_module_history_write_cbs(void);
+TRX_METRIC	*zbx_module_item_list(void);
+TRX_HISTORY_WRITE_CBS	zbx_module_history_write_cbs(void);
 
 #endif

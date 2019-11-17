@@ -43,22 +43,22 @@ int	get_value_agent(DC_ITEM *item, AGENT_RESULT *result)
 
 	switch (item->host.tls_connect)
 	{
-		case ZBX_TCP_SEC_UNENCRYPTED:
+		case TRX_TCP_SEC_UNENCRYPTED:
 			tls_arg1 = NULL;
 			tls_arg2 = NULL;
 			break;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		case ZBX_TCP_SEC_TLS_CERT:
+		case TRX_TCP_SEC_TLS_CERT:
 			tls_arg1 = item->host.tls_issuer;
 			tls_arg2 = item->host.tls_subject;
 			break;
-		case ZBX_TCP_SEC_TLS_PSK:
+		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = item->host.tls_psk_identity;
 			tls_arg2 = item->host.tls_psk;
 			break;
 #else
-		case ZBX_TCP_SEC_TLS_CERT:
-		case ZBX_TCP_SEC_TLS_PSK:
+		case TRX_TCP_SEC_TLS_CERT:
+		case TRX_TCP_SEC_TLS_PSK:
 			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "A TLS connection is configured to be used with agent"
 					" but support for TLS was not compiled into %s.",
 					get_program_type_string(program_type)));
@@ -93,17 +93,17 @@ int	get_value_agent(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "get value from agent result: '%s'", s.buffer);
 
-		if (0 == strcmp(s.buffer, ZBX_NOTSUPPORTED))
+		if (0 == strcmp(s.buffer, TRX_NOTSUPPORTED))
 		{
-			/* 'ZBX_NOTSUPPORTED\0<error message>' */
-			if (sizeof(ZBX_NOTSUPPORTED) < s.read_bytes)
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "%s", s.buffer + sizeof(ZBX_NOTSUPPORTED)));
+			/* 'TRX_NOTSUPPORTED\0<error message>' */
+			if (sizeof(TRX_NOTSUPPORTED) < s.read_bytes)
+				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "%s", s.buffer + sizeof(TRX_NOTSUPPORTED)));
 			else
 				SET_MSG_RESULT(result, zbx_strdup(NULL, "Not supported by Treegix Agent"));
 
 			ret = NOTSUPPORTED;
 		}
-		else if (0 == strcmp(s.buffer, ZBX_ERROR))
+		else if (0 == strcmp(s.buffer, TRX_ERROR))
 		{
 			SET_MSG_RESULT(result, zbx_strdup(NULL, "Treegix Agent non-critical error"));
 			ret = AGENT_ERROR;

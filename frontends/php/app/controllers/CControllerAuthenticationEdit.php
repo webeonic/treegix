@@ -20,18 +20,18 @@ class CControllerAuthenticationEdit extends CController {
 			'ldap_test_password' => 'string',
 			'change_bind_password' => 'in 0,1',
 			'db_authentication_type' => 'string',
-			'authentication_type' => 'in '.ZBX_AUTH_INTERNAL.','.ZBX_AUTH_LDAP,
-			'http_case_sensitive' => 'in '.ZBX_AUTH_CASE_INSENSITIVE.','.ZBX_AUTH_CASE_SENSITIVE,
-			'ldap_case_sensitive' => 'in '.ZBX_AUTH_CASE_INSENSITIVE.','.ZBX_AUTH_CASE_SENSITIVE,
-			'ldap_configured' => 'in '.ZBX_AUTH_LDAP_DISABLED.','.ZBX_AUTH_LDAP_ENABLED,
+			'authentication_type' => 'in '.TRX_AUTH_INTERNAL.','.TRX_AUTH_LDAP,
+			'http_case_sensitive' => 'in '.TRX_AUTH_CASE_INSENSITIVE.','.TRX_AUTH_CASE_SENSITIVE,
+			'ldap_case_sensitive' => 'in '.TRX_AUTH_CASE_INSENSITIVE.','.TRX_AUTH_CASE_SENSITIVE,
+			'ldap_configured' => 'in '.TRX_AUTH_LDAP_DISABLED.','.TRX_AUTH_LDAP_ENABLED,
 			'ldap_host' => 'db config.ldap_host',
 			'ldap_port' => 'int32',
 			'ldap_base_dn' => 'db config.ldap_base_dn',
 			'ldap_bind_dn' => 'db config.ldap_bind_dn',
 			'ldap_search_attribute' => 'db config.ldap_search_attribute',
 			'ldap_bind_password' => 'db config.ldap_bind_password',
-			'http_auth_enabled' => 'in '.ZBX_AUTH_HTTP_DISABLED.','.ZBX_AUTH_HTTP_ENABLED,
-			'http_login_form' => 'in '.ZBX_AUTH_FORM_TREEGIX.','.ZBX_AUTH_FORM_HTTP,
+			'http_auth_enabled' => 'in '.TRX_AUTH_HTTP_DISABLED.','.TRX_AUTH_HTTP_ENABLED,
+			'http_login_form' => 'in '.TRX_AUTH_FORM_TREEGIX.','.TRX_AUTH_FORM_HTTP,
 			'http_strip_domains' => 'db config.http_strip_domains'
 		];
 
@@ -98,7 +98,7 @@ class CControllerAuthenticationEdit extends CController {
 		}
 
 		$data['ldap_enabled'] = ($ldap_status['result'] == CFrontendSetup::CHECK_OK
-				&& $data['ldap_configured'] == ZBX_AUTH_LDAP_ENABLED);
+				&& $data['ldap_configured'] == TRX_AUTH_LDAP_ENABLED);
 
 		$response = new CControllerResponseData($data);
 		$response->setTitle(_('Configuration of authentication'));

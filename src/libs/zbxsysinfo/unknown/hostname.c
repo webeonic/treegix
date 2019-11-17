@@ -2,7 +2,7 @@
 
 #include "sysinfo.h"
 
-ZBX_METRIC	parameter_hostname =
+TRX_METRIC	parameter_hostname =
 /*	KEY			FLAG		FUNCTION		TEST PARAMETERS */
 	{"system.hostname",     0,              SYSTEM_HOSTNAME,        NULL};
 

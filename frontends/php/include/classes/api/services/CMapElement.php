@@ -26,7 +26,7 @@ abstract class CMapElement extends CApiService {
 
 		foreach ($selements as &$selement) {
 			if (!is_array($selement)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			if ($create) {
@@ -34,7 +34,7 @@ abstract class CMapElement extends CApiService {
 				$missing_keys = array_diff(['sysmapid', 'elementtype', 'iconid_off'], array_keys($selement));
 
 				if ($missing_keys) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Map element is missing parameters: %1$s', implode(', ', $missing_keys))
 					);
 				}
@@ -54,7 +54,7 @@ abstract class CMapElement extends CApiService {
 
 				foreach ($selement['urls'] as $url_data) {
 					if (!CHtmlUrlValidator::validate($url_data['url'], $url_validate_options)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
 					}
 				}
 			}
@@ -65,7 +65,7 @@ abstract class CMapElement extends CApiService {
 			}
 
 			if (!$elementtype_validator->validate($selement['elementtype'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'elementtype', _s('value must be one of %1$s', implode(', ', $element_types))
 				));
 			}
@@ -75,17 +75,17 @@ abstract class CMapElement extends CApiService {
 			}
 			else {
 				if (!array_key_exists('elements', $selement)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Map element is missing parameters: %1$s', 'elements')
 					);
 				}
 
 				if (!is_array($selement['elements'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				if (!$selement['elements']) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'elements', _('cannot be empty'))
 					);
 				}
@@ -94,17 +94,17 @@ abstract class CMapElement extends CApiService {
 			if ($selement['elementtype'] == SYSMAP_ELEMENT_TYPE_TRIGGER) {
 				foreach ($selement['elements'] as $element) {
 					if (!array_key_exists('triggerid', $element)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Map element is missing parameters: %1$s', 'triggerid')
 						);
 					}
 
 					if (is_array($element['triggerid'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 					}
 					elseif ($element['triggerid'] === '' || $element['triggerid'] === null
 							|| $element['triggerid'] === false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'triggerid', _('cannot be empty'))
 						);
 					}
@@ -129,26 +129,26 @@ abstract class CMapElement extends CApiService {
 					$elements = reset($selement['elements']);
 
 					if (!is_array($elements)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 					}
 
 					if (!array_key_exists($field, $elements)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Map element is missing parameters: %1$s', $field)
 						);
 					}
 
 					if (is_array($elements[$field])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 					}
 					elseif ($elements[$field] === '' || $elements[$field] === null || $elements[$field] === false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', $field, _('cannot be empty'))
 						);
 					}
 
 					if (count($selement['elements']) > 1) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'elements', _('incorrect element count'))
 						);
 					}
@@ -156,7 +156,7 @@ abstract class CMapElement extends CApiService {
 			}
 
 			if (isset($selement['iconid_off']) && $selement['iconid_off'] == 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('No icon for map element "%s".', array_key_exists('label', $selement) ? $selement['label'] : '')
 				);
 			}
@@ -169,7 +169,7 @@ abstract class CMapElement extends CApiService {
 
 		// check permissions to used objects
 		if (!CMapHelper::checkSelementPermissions($selements)) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS,
+			self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 			);
 		}
@@ -192,7 +192,7 @@ abstract class CMapElement extends CApiService {
 			foreach ($fields as $field) {
 				if (array_key_exists($field, $shape) && $shape[$field] !== ''
 						&& !$color_validator->validate($shape[$field])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $color_validator->getError());
+					self::exception(TRX_API_ERROR_PARAMETERS, $color_validator->getError());
 				}
 			}
 		}
@@ -292,16 +292,16 @@ abstract class CMapElement extends CApiService {
 
 		foreach ($links as $link) {
 			if (!check_db_fields($linkDbFields, $link)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Wrong fields for map link.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Wrong fields for map link.'));
 			}
 
 			if (isset($link['color']) && !$colorValidator->validate($link['color'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $colorValidator->getError());
+				self::exception(TRX_API_ERROR_PARAMETERS, $colorValidator->getError());
 			}
 
 			if ($update || $delete) {
 				if (!isset($dbLinks[$link['linkid']])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 				}
 			}
 		}
@@ -718,11 +718,11 @@ abstract class CMapElement extends CApiService {
 
 		foreach ($linkTriggers as $linkTrigger) {
 			if (!check_db_fields($linkTriggerDbFields, $linkTrigger)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			if (isset($linkTrigger['color']) && !$colorValidator->validate($linkTrigger['color'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $colorValidator->getError());
+				self::exception(TRX_API_ERROR_PARAMETERS, $colorValidator->getError());
 			}
 		}
 	}
@@ -753,11 +753,11 @@ abstract class CMapElement extends CApiService {
 
 		foreach ($linkTriggers as $linkTrigger) {
 			if (!check_db_fields($linkTriggerDbFields, $linkTrigger)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			if (isset($linkTrigger['color']) && !$colorValidator->validate($linkTrigger['color'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $colorValidator->getError());
+				self::exception(TRX_API_ERROR_PARAMETERS, $colorValidator->getError());
 			}
 		}
 	}
@@ -778,7 +778,7 @@ abstract class CMapElement extends CApiService {
 
 		foreach ($linkTriggers as $linkTrigger) {
 			if (!check_db_fields($linktriggerDbFields, $linkTrigger)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 		}
 	}

@@ -8,7 +8,7 @@ $widget = (new CWidget())
 
 $form = (new CForm())
 	->setName('item_prototype_form')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('group_itemid', $data['item_prototypeids'])
 	->addVar('hostid', $data['hostid'])
 	->addVar('parent_discoveryid', $data['parent_discoveryid'])
@@ -55,7 +55,7 @@ if ($data['display_interfaces']) {
 	}
 
 	$span = (new CSpan(_('No interface found')))
-		->addClass(ZBX_STYLE_RED)
+		->addClass(TRX_STYLE_RED)
 		->setId('interface_not_defined')
 		->addStyle('display: none;');
 	$item_form_list->addRow(
@@ -75,7 +75,7 @@ $item_form_list
 		(new CVisibilityBox('visible[jmx_endpoint]', 'jmx_endpoint', _('Original')))
 			->setLabel(_('JMX endpoint'))
 			->setChecked(array_key_exists('jmx_endpoint', $data['visible'])),
-		(new CTextBox('jmx_endpoint', $data['jmx_endpoint']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('jmx_endpoint', $data['jmx_endpoint']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	// Append "URL" field required by item prototype type "ITEM_TYPE_HTTPAGENT".
 	->addRow(
@@ -83,7 +83,7 @@ $item_form_list
 			->setLabel(_('URL'))
 			->setChecked(array_key_exists('url', $data['visible'])),
 		(new CTextBox('url', $data['url'], false, DB::getFieldLength('items', 'url')))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	// Append "Request body type" field (optional) for item prototype type "ITEM_TYPE_HTTPAGENT".
 	->addRow(
@@ -92,9 +92,9 @@ $item_form_list
 			->setChecked(array_key_exists('post_type', $data['visible'])),
 		(new CDiv(
 			(new CRadioButtonList('post_type', (int) $data['post_type']))
-				->addValue(_('Raw data'), ZBX_POSTTYPE_RAW)
-				->addValue(_('JSON data'), ZBX_POSTTYPE_JSON)
-				->addValue(_('XML data'), ZBX_POSTTYPE_XML)
+				->addValue(_('Raw data'), TRX_POSTTYPE_RAW)
+				->addValue(_('JSON data'), TRX_POSTTYPE_JSON)
+				->addValue(_('XML data'), TRX_POSTTYPE_XML)
 				->setModern(true)
 		))->setId('post_type_container')
 	)
@@ -103,7 +103,7 @@ $item_form_list
 		(new CVisibilityBox('visible[posts]', 'posts', _('Original')))
 			->setLabel(_('Request body'))
 			->setChecked(array_key_exists('posts', $data['visible'])),
-		(new CTextArea('posts', $data['posts']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('posts', $data['posts']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 // Append "Headers" field (optional) for item prototype type "ITEM_TYPE_HTTPAGENT".
@@ -133,49 +133,49 @@ $item_form_list
 				->setFooter(new CRow(
 					(new CCol(
 						(new CButton(null, _('Add')))
-							->addClass(ZBX_STYLE_BTN_LINK)
+							->addClass(TRX_STYLE_BTN_LINK)
 							->setAttribute('data-row-action', 'add_row')
 					))->setColSpan(5)
 				)),
 			(new CTag('script', true))
 				->setAttribute('type', 'text/x-jquery-tmpl')
 				->addItem(new CRow([
-					(new CCol((new CDiv)->addClass(ZBX_STYLE_DRAG_ICON)))->addClass(ZBX_STYLE_TD_DRAG_ICON),
-					(new CTextBox('headers[name][#{index}]', '#{name}'))->setWidth(ZBX_TEXTAREA_HTTP_PAIR_NAME_WIDTH),
+					(new CCol((new CDiv)->addClass(TRX_STYLE_DRAG_ICON)))->addClass(TRX_STYLE_TD_DRAG_ICON),
+					(new CTextBox('headers[name][#{index}]', '#{name}'))->setWidth(TRX_TEXTAREA_HTTP_PAIR_NAME_WIDTH),
 					'&rArr;',
 					(new CTextBox('headers[value][#{index}]', '#{value}', false, 2000))
-						->setWidth(ZBX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH),
+						->setWidth(TRX_TEXTAREA_HTTP_PAIR_VALUE_WIDTH),
 					(new CButton(null, _('Remove')))
-						->addClass(ZBX_STYLE_BTN_LINK)
+						->addClass(TRX_STYLE_BTN_LINK)
 						->setAttribute('data-row-action', 'remove_row')
 				])),
 			$headers
 		]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setId('headers_pairs')
 			->setAttribute('data-sortable-pairs-table', '1')
-			->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	)
 	// Append SNMP community to form list.
 	->addRow(
 		(new CVisibilityBox('visible[snmp_community]', 'snmp_community', _('Original')))
 			->setLabel(_('SNMP community'))
 			->setChecked(array_key_exists('snmp_community', $data['visible'])),
-		(new CTextBox('snmp_community', $data['snmp_community']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('snmp_community', $data['snmp_community']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	// Append SNMPv3 contextname to form list.
 	->addRow(
 		(new CVisibilityBox('visible[snmpv3_contextname]', 'snmpv3_contextname', _('Original')))
 			->setLabel(_('Context name'))
 			->setChecked(array_key_exists('snmpv3_contextname', $data['visible'])),
-		(new CTextBox('snmpv3_contextname', $data['snmpv3_contextname']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('snmpv3_contextname', $data['snmpv3_contextname']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	// Append SNMPv3 securityname to form list.
 	->addRow(
 		(new CVisibilityBox('visible[snmpv3_securityname]', 'snmpv3_securityname', _('Original')))
 			->setLabel(_('Security name'))
 			->setChecked(array_key_exists('snmpv3_securityname', $data['visible'])),
-		(new CTextBox('snmpv3_securityname', $data['snmpv3_securityname']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('snmpv3_securityname', $data['snmpv3_securityname']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	// Append SNMPv3 securitylevel to form list.
 	->addRow(
@@ -206,7 +206,7 @@ $item_form_list
 			->setLabel(_('Authentication passphrase'))
 			->setChecked(array_key_exists('snmpv3_authpassphrase', $data['visible'])),
 		(new CTextBox('snmpv3_authpassphrase', $data['snmpv3_authpassphrase']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	// Append SNMPv3 privprotocol to form list.
 	->addRow(
@@ -226,14 +226,14 @@ $item_form_list
 			->setLabel(_('Privacy passphrase'))
 			->setChecked(array_key_exists('snmpv3_privpassphrase', $data['visible'])),
 		(new CTextBox('snmpv3_privpassphrase', $data['snmpv3_privpassphrase']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	// Append port to form list.
 	->addRow(
 		(new CVisibilityBox('visible[port]', 'port', _('Original')))
 			->setLabel(_('Port'))
 			->setChecked(array_key_exists('port', $data['visible'])),
-		(new CTextBox('port', $data['port']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+		(new CTextBox('port', $data['port']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	)
 	// Append value type to form list.
 	->addRow(
@@ -253,7 +253,7 @@ $item_form_list
 		(new CVisibilityBox('visible[units]', 'units', _('Original')))
 			->setLabel(_('Units'))
 			->setChecked(array_key_exists('units', $data['visible'])),
-		(new CTextBox('units', $data['units']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('units', $data['units']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	// Append authtype to form list.
 	->addRow(
@@ -270,28 +270,28 @@ $item_form_list
 		(new CVisibilityBox('visible[username]', 'username', _('Original')))
 			->setLabel(_('User name'))
 			->setChecked(array_key_exists('username', $data['visible'])),
-		(new CTextBox('username', $data['username']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+		(new CTextBox('username', $data['username']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	)
 	// Append publickey to form list.
 	->addRow(
 		(new CVisibilityBox('visible[publickey]', 'publickey', _('Original')))
 			->setLabel(_('Public key file'))
 			->setChecked(array_key_exists('publickey', $data['visible'])),
-		(new CTextBox('publickey', $data['publickey']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+		(new CTextBox('publickey', $data['publickey']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	)
 	// Append privatekey to form list.
 	->addRow(
 		(new CVisibilityBox('visible[privatekey]', 'privatekey', _('Original')))
 			->setLabel(_('Private key file'))
 			->setChecked(array_key_exists('privatekey', $data['visible'])),
-		(new CTextBox('privatekey', $data['privatekey']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+		(new CTextBox('privatekey', $data['privatekey']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	)
 	// Append password to form list.
 	->addRow(
 		(new CVisibilityBox('visible[password]', 'password', _('Original')))
 			->setLabel(_('Password'))
 			->setChecked(array_key_exists('password', $data['visible'])),
-		(new CTextBox('password', $data['password']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+		(new CTextBox('password', $data['password']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	);
 
 // Create preprocessing form list.
@@ -302,8 +302,8 @@ $preprocessing_form_list = (new CFormList('preprocessing-form-list'))
 			->setLabel(_('Preprocessing steps'))
 			->setChecked(array_key_exists('preprocessing', $data['visible'])),
 		(new CDiv(getItemPreprocessing($form, $data['preprocessing'], false, $data['preprocessing_types'])))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->addStyle('min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addStyle('min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 			->setId('preprocessing_div')
 	);
 
@@ -311,7 +311,7 @@ $preprocessing_form_list = (new CFormList('preprocessing-form-list'))
 $update_interval = (new CTable())
 	->setId('update_interval')
 	->addRow([_('Delay'),
-		(new CDiv((new CTextBox('delay', $data['delay']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)))
+		(new CDiv((new CTextBox('delay', $data['delay']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)))
 	]);
 
 $custom_intervals = (new CTable())
@@ -322,8 +322,8 @@ $custom_intervals = (new CTable())
 		new CColHeader(_('Period')),
 		(new CColHeader(_('Action')))->setWidth(50)
 	])
-	->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-	->addStyle('min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;');
+	->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+	->addStyle('min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;');
 
 foreach ($data['delay_flex'] as $i => $delay_flex) {
 	$type_input = (new CRadioButtonList('delay_flex['.$i.'][type]', (int) $delay_flex['type']))
@@ -333,33 +333,33 @@ foreach ($data['delay_flex'] as $i => $delay_flex) {
 
 	if ($delay_flex['type'] == ITEM_DELAY_FLEXIBLE) {
 		$delay_input = (new CTextBox('delay_flex['.$i.'][delay]', $delay_flex['delay']))
-			->setAttribute('placeholder', ZBX_ITEM_FLEXIBLE_DELAY_DEFAULT);
+			->setAttribute('placeholder', TRX_ITEM_FLEXIBLE_DELAY_DEFAULT);
 		$period_input = (new CTextBox('delay_flex['.$i.'][period]', $delay_flex['period']))
-			->setAttribute('placeholder', ZBX_DEFAULT_INTERVAL);
+			->setAttribute('placeholder', TRX_DEFAULT_INTERVAL);
 		$schedule_input = (new CTextBox('delay_flex['.$i.'][schedule]'))
-			->setAttribute('placeholder', ZBX_ITEM_SCHEDULING_DEFAULT)
+			->setAttribute('placeholder', TRX_ITEM_SCHEDULING_DEFAULT)
 			->addStyle('display: none;');
 	}
 	else {
 		$delay_input = (new CTextBox('delay_flex['.$i.'][delay]'))
-			->setAttribute('placeholder', ZBX_ITEM_FLEXIBLE_DELAY_DEFAULT)
+			->setAttribute('placeholder', TRX_ITEM_FLEXIBLE_DELAY_DEFAULT)
 			->addStyle('display: none;');
 		$period_input = (new CTextBox('delay_flex['.$i.'][period]'))
-			->setAttribute('placeholder', ZBX_DEFAULT_INTERVAL)
+			->setAttribute('placeholder', TRX_DEFAULT_INTERVAL)
 			->addStyle('display: none;');
 		$schedule_input = (new CTextBox('delay_flex['.$i.'][schedule]', $delay_flex['schedule']))
-			->setAttribute('placeholder', ZBX_ITEM_SCHEDULING_DEFAULT);
+			->setAttribute('placeholder', TRX_ITEM_SCHEDULING_DEFAULT);
 	}
 
 	$button = (new CButton('delay_flex['.$i.'][remove]', _('Remove')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->addClass('element-table-remove');
 
 	$custom_intervals->addRow([$type_input, [$delay_input, $schedule_input], $period_input, $button], 'form_row');
 }
 
 $custom_intervals->addRow([(new CButton('interval_add', _('Add')))
-	->addClass(ZBX_STYLE_BTN_LINK)
+	->addClass(TRX_STYLE_BTN_LINK)
 	->addClass('element-table-add')]);
 
 $update_interval->addRow(
@@ -387,9 +387,9 @@ $item_form_list
 				->addValue(_('Do not keep history'), ITEM_STORAGE_OFF)
 				->addValue(_('Storage period'), ITEM_STORAGE_CUSTOM)
 				->setModern(true),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CTextBox('history', $data['history']))
-				->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+				->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 				->setAriaRequired()
 		]))
 			->addClass('wrap-multiple-controls')
@@ -405,9 +405,9 @@ $item_form_list
 				->addValue(_('Do not keep trends'), ITEM_STORAGE_OFF)
 				->addValue(_('Storage period'), ITEM_STORAGE_CUSTOM)
 				->setModern(true),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			(new CTextBox('trends', $data['trends']))
-				->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+				->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 				->setAriaRequired()
 		]))
 			->addClass('wrap-multiple-controls')
@@ -433,7 +433,7 @@ $item_form_list
 		(new CVisibilityBox('visible[logtimefmt]', 'logtimefmt', _('Original')))
 			->setLabel(_('Log time format'))
 			->setChecked(array_key_exists('logtimefmt', $data['visible'])),
-		(new CTextBox('logtimefmt', $data['logtimefmt']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('logtimefmt', $data['logtimefmt']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 // append valuemap to form list
@@ -464,7 +464,7 @@ $item_form_list
 		(new CVisibilityBox('visible[trapper_hosts]', 'trapper_hosts', _('Original')))
 			->setLabel(_('Allowed hosts'))
 			->setChecked(array_key_exists('trapper_hosts', $data['visible'])),
-		(new CTextBox('trapper_hosts', $data['trapper_hosts']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('trapper_hosts', $data['trapper_hosts']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(
 		(new CVisibilityBox('visible[applications]', 'applications_div', _('Original')))
@@ -472,14 +472,14 @@ $item_form_list
 			->setChecked(array_key_exists('applications', $data['visible'])),
 		(new CDiv([
 			(new CRadioButtonList('massupdate_app_action', (int) $data['massupdate_app_action']))
-				->addValue(_('Add'), ZBX_ACTION_ADD)
-				->addValue(_('Replace'), ZBX_ACTION_REPLACE)
-				->addValue(_('Remove'), ZBX_ACTION_REMOVE)
+				->addValue(_('Add'), TRX_ACTION_ADD)
+				->addValue(_('Replace'), TRX_ACTION_REPLACE)
+				->addValue(_('Remove'), TRX_ACTION_REMOVE)
 				->setModern(true),
 			(new CMultiSelect([
 				'name' => 'applications[]',
 				'object_name' => 'applications',
-				'add_new' => !($data['massupdate_app_action'] == ZBX_ACTION_REMOVE),
+				'add_new' => !($data['massupdate_app_action'] == TRX_ACTION_REMOVE),
 				'data' => $data['applications'],
 				'popup' => [
 					'parameters' => [
@@ -491,9 +491,9 @@ $item_form_list
 						'noempty' => true
 					]
 				]
-			]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setId('applications_div')
 );
 
@@ -504,14 +504,14 @@ $master_itemname = ($data['master_itemid'] != 0)
 
 $master_item = [
 	(new CTextBox('master_itemname', $master_itemname, true))
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		->setAriaRequired(),
 	(new CVar('master_itemid', $data['master_itemid'], 'master_itemid'))
 ];
 
-$master_item[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+$master_item[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 $master_item[] = (new CButton('button', _('Select')))
-	->addClass(ZBX_STYLE_BTN_GREY)
+	->addClass(TRX_STYLE_BTN_GREY)
 	->onClick('return PopUp("popup.generic",'.
 		CJs::encodeJson([
 			'srctbl' => 'items',
@@ -525,9 +525,9 @@ $master_item[] = (new CButton('button', _('Select')))
 			'normal_only' => 1
 		]).', null, this);'
 	);
-$master_item[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+$master_item[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 $master_item[] = (new CButton('button', _('Select prototype')))
-	->addClass(ZBX_STYLE_BTN_GREY)
+	->addClass(TRX_STYLE_BTN_GREY)
 	->onClick('return PopUp("popup.generic",'.
 		CJs::encodeJson([
 			'srctbl' => 'item_prototypes',
@@ -547,14 +547,14 @@ $item_form_list
 			->setChecked(array_key_exists('applicationPrototypes', $data['visible'])),
 		(new CDiv([
 			(new CRadioButtonList('massupdate_app_prot_action', (int) $data['massupdate_app_prot_action']))
-				->addValue(_('Add'), ZBX_ACTION_ADD)
-				->addValue(_('Replace'), ZBX_ACTION_REPLACE)
-				->addValue(_('Remove'), ZBX_ACTION_REMOVE)
+				->addValue(_('Add'), TRX_ACTION_ADD)
+				->addValue(_('Replace'), TRX_ACTION_REPLACE)
+				->addValue(_('Remove'), TRX_ACTION_REMOVE)
 				->setModern(true),
 			(new CMultiSelect([
 				'name' => 'application_prototypes[]',
 				'object_name' => 'application_prototypes',
-				'add_new' => !($data['massupdate_app_prot_action'] == ZBX_ACTION_REMOVE),
+				'add_new' => !($data['massupdate_app_prot_action'] == TRX_ACTION_REMOVE),
 				'data' => $data['application_prototypes'],
 				'popup' => [
 					'parameters' => [
@@ -567,9 +567,9 @@ $item_form_list
 						'noempty' => true
 					]
 				]
-			]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 			->setId('application_prototypes_div')
 	)
 	// Append master item select.
@@ -587,7 +587,7 @@ $item_form_list
 		(new CVisibilityBox('visible[description]', 'description', _('Original')))
 			->setLabel(_('Description'))
 			->setChecked(array_key_exists('description', $data['visible'])),
-		(new CTextArea('description', $data['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('description', $data['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 $tabs = (new CTabView())

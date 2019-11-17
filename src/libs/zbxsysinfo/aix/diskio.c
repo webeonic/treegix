@@ -4,7 +4,7 @@
 #include "sysinfo.h"
 #include "log.h"
 
-#define ZBX_DEV_PFX	"/dev/"
+#define TRX_DEV_PFX	"/dev/"
 
 typedef struct
 {
@@ -148,8 +148,8 @@ int	VFS_DEV_READ(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == devname || 0 == strcmp("all", devname))
 		devname = "";
-	else if (0 == strncmp(ZBX_DEV_PFX, devname, ZBX_CONST_STRLEN(ZBX_DEV_PFX)))
-		devname += ZBX_CONST_STRLEN(ZBX_DEV_PFX);
+	else if (0 == strncmp(TRX_DEV_PFX, devname, TRX_CONST_STRLEN(TRX_DEV_PFX)))
+		devname += TRX_CONST_STRLEN(TRX_DEV_PFX);
 
 	type = get_rparam(request, 1);
 
@@ -181,8 +181,8 @@ int	VFS_DEV_WRITE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == devname || 0 == strcmp("all", devname))
 		devname = "";
-	else if (0 == strncmp(ZBX_DEV_PFX, devname, ZBX_CONST_STRLEN(ZBX_DEV_PFX)))
-		devname += ZBX_CONST_STRLEN(ZBX_DEV_PFX);
+	else if (0 == strncmp(TRX_DEV_PFX, devname, TRX_CONST_STRLEN(TRX_DEV_PFX)))
+		devname += TRX_CONST_STRLEN(TRX_DEV_PFX);
 
 	type = get_rparam(request, 1);
 

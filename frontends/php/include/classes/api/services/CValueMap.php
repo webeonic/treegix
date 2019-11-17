@@ -39,14 +39,14 @@ class CValueMap extends CApiService {
 			'countOutput' =>			['type' => API_FLAG, 'default' => false],
 			// sort and limit
 			'sortfield' =>				['type' => API_STRINGS_UTF8, 'flags' => API_NORMALIZE, 'in' => implode(',', $this->sortColumns), 'uniq' => true, 'default' => []],
-			'sortorder' =>				['type' => API_STRINGS_UTF8, 'flags' => API_NORMALIZE, 'in' => implode(',', [ZBX_SORT_UP, ZBX_SORT_DOWN]), 'default' => []],
-			'limit' =>					['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => '1:'.ZBX_MAX_INT32, 'default' => null],
+			'sortorder' =>				['type' => API_STRINGS_UTF8, 'flags' => API_NORMALIZE, 'in' => implode(',', [TRX_SORT_UP, TRX_SORT_DOWN]), 'default' => []],
+			'limit' =>					['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => '1:'.TRX_MAX_INT32, 'default' => null],
 			// flags
 			'editable' =>				['type' => API_BOOLEAN, 'default' => false],
 			'preservekeys' =>			['type' => API_BOOLEAN, 'default' => false]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $options, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		if ($options['editable'] && self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
@@ -203,12 +203,12 @@ class CValueMap extends CApiService {
 	 */
 	public function delete(array $valuemapids) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only super admins can delete value maps.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only super admins can delete value maps.'));
 		}
 
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $valuemapids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_valuemaps = DB::select('valuemaps', [
@@ -219,7 +219,7 @@ class CValueMap extends CApiService {
 
 		foreach ($valuemapids as $valuemapid) {
 			if (!array_key_exists($valuemapid, $db_valuemaps)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -254,7 +254,7 @@ class CValueMap extends CApiService {
 		]);
 
 		if ($db_valuemaps) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Value map "%1$s" already exists.', $db_valuemaps[0]['name'])
 			);
 		}
@@ -267,7 +267,7 @@ class CValueMap extends CApiService {
 	 */
 	private function validateCreate(array &$valuemaps) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only super admins can create value maps.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only super admins can create value maps.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['name']], 'fields' => [
@@ -278,7 +278,7 @@ class CValueMap extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $valuemaps, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$this->checkDuplicates(zbx_objectValues($valuemaps, 'name'));
@@ -292,7 +292,7 @@ class CValueMap extends CApiService {
 	 */
 	private function validateUpdate(array &$valuemaps, array &$db_valuemaps = null) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only super admins can update value maps.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only super admins can update value maps.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['valuemapid'], ['name']], 'fields' => [
@@ -304,7 +304,7 @@ class CValueMap extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $valuemaps, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		// Check value map names.
@@ -319,7 +319,7 @@ class CValueMap extends CApiService {
 		foreach ($valuemaps as $valuemap) {
 			// Check if this value map exists.
 			if (!array_key_exists($valuemap['valuemapid'], $db_valuemaps)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}

@@ -63,10 +63,10 @@ else {
 			->setProfile($data['profileIdx'], $data['profileIdx2'])
 			->setActiveTab($data['active_tab'])
 			->addTimeSelector($screen_builder->timeline['from'], $screen_builder->timeline['to'],
-				$web_layout_mode != ZBX_LAYOUT_KIOSKMODE)
+				$web_layout_mode != TRX_LAYOUT_KIOSKMODE)
 	);
 
-	$screen_widget->addItem((new CDiv($screen_builder->show()))->addClass(ZBX_STYLE_TABLE_FORMS_CONTAINER));
+	$screen_widget->addItem((new CDiv($screen_builder->show()))->addClass(TRX_STYLE_TABLE_FORMS_CONTAINER));
 
 	CScreenBuilder::insertScreenStandardJs($screen_builder->timeline);
 }

@@ -9,14 +9,14 @@ class CDateSelector extends CTag {
 	/**
 	 * Default CSS class name for HTML root element.
 	 */
-	const ZBX_STYLE_CLASS = 'calendar-control';
+	const TRX_STYLE_CLASS = 'calendar-control';
 
 	/**
 	 * Default date format.
 	 *
 	 * @var string
 	 */
-	private $date_format = ZBX_FULL_DATE_TIME;
+	private $date_format = TRX_FULL_DATE_TIME;
 
 	/**
 	 * Set aria-required to textbox.
@@ -59,7 +59,7 @@ class CDateSelector extends CTag {
 
 		$this->name = $name;
 		$this->value = $value;
-		$this->addClass(static::ZBX_STYLE_CLASS);
+		$this->addClass(static::TRX_STYLE_CLASS);
 	}
 
 	/**
@@ -131,7 +131,7 @@ class CDateSelector extends CTag {
 					->setEnabled($this->enabled)
 			)
 			->addItem((new CButton($this->name.'_calendar'))
-				->addClass(ZBX_STYLE_ICON_CAL)
+				->addClass(TRX_STYLE_ICON_CAL)
 				->setEnabled($this->enabled)
 				->onClick('toggleCalendar(this, "'.$this->name.'", "'.$this->date_format.'");'));
 

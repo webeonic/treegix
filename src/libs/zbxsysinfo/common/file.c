@@ -7,7 +7,7 @@
 #include "zbxregexp.h"
 #include "log.h"
 
-#define ZBX_MAX_DB_FILE_SIZE	64 * ZBX_KIBIBYTE	/* files larger than 64 KB cannot be stored in the database */
+#define TRX_MAX_DB_FILE_SIZE	64 * TRX_KIBIBYTE	/* files larger than 64 KB cannot be stored in the database */
 
 extern int	CONFIG_TIMEOUT;
 
@@ -171,7 +171,7 @@ int	VFS_FILE_CONTENTS(AGENT_REQUEST *request, AGENT_RESULT *result)
 		goto err;
 	}
 
-	if (ZBX_MAX_DB_FILE_SIZE < stat_buf.st_size)
+	if (TRX_MAX_DB_FILE_SIZE < stat_buf.st_size)
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "File is too large for this check."));
 		goto err;
@@ -199,7 +199,7 @@ int	VFS_FILE_CONTENTS(AGENT_REQUEST *request, AGENT_RESULT *result)
 			goto err;
 		}
 
-		if (ZBX_MAX_DB_FILE_SIZE < (flen += nbytes))
+		if (TRX_MAX_DB_FILE_SIZE < (flen += nbytes))
 		{
 			SET_MSG_RESULT(result, zbx_strdup(NULL, "File is too large for this check."));
 			goto err;
@@ -474,7 +474,7 @@ int	VFS_FILE_MD5SUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		*filename;
 	int		i, nbytes, f = -1, ret = SYSINFO_RET_FAIL;
 	md5_state_t	state;
-	u_char		buf[16 * ZBX_KIBIBYTE];
+	u_char		buf[16 * TRX_KIBIBYTE];
 	char		*hash_text = NULL;
 	size_t		sz;
 	md5_byte_t	hash[MD5_DIGEST_SIZE];
@@ -615,7 +615,7 @@ int	VFS_FILE_CKSUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		*filename;
 	int		i, nr, f = -1, ret = SYSINFO_RET_FAIL;
 	zbx_uint32_t	crc, flen;
-	u_char		buf[16 * ZBX_KIBIBYTE];
+	u_char		buf[16 * TRX_KIBIBYTE];
 	u_long		cval;
 	double		ts;
 

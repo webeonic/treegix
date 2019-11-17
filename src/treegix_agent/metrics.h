@@ -11,15 +11,15 @@
 #define	MAX_VALUE_LINES			1000
 #define	MAX_VALUE_LINES_MULTIPLIER	10
 
-/* NB! Next list must fit in unsigned char (see ZBX_ACTIVE_METRIC "flags" field below). */
-#define ZBX_METRIC_FLAG_PERSISTENT	0x01	/* do not overwrite old values when adding to the buffer */
-#define ZBX_METRIC_FLAG_NEW		0x02	/* new metric, just added */
-#define ZBX_METRIC_FLAG_LOG_LOG		0x04	/* log[ or log.count[, depending on ZBX_METRIC_FLAG_LOG_COUNT */
-#define ZBX_METRIC_FLAG_LOG_LOGRT	0x08	/* logrt[ or logrt.count[, depending on ZBX_METRIC_FLAG_LOG_COUNT */
-#define ZBX_METRIC_FLAG_LOG_EVENTLOG	0x10	/* eventlog[ */
-#define ZBX_METRIC_FLAG_LOG_COUNT	0x20	/* log.count[ or logrt.count[ */
-#define ZBX_METRIC_FLAG_LOG			/* item for log file monitoring, one of the above */	\
-		(ZBX_METRIC_FLAG_LOG_LOG | ZBX_METRIC_FLAG_LOG_LOGRT | ZBX_METRIC_FLAG_LOG_EVENTLOG)
+/* NB! Next list must fit in unsigned char (see TRX_ACTIVE_METRIC "flags" field below). */
+#define TRX_METRIC_FLAG_PERSISTENT	0x01	/* do not overwrite old values when adding to the buffer */
+#define TRX_METRIC_FLAG_NEW		0x02	/* new metric, just added */
+#define TRX_METRIC_FLAG_LOG_LOG		0x04	/* log[ or log.count[, depending on TRX_METRIC_FLAG_LOG_COUNT */
+#define TRX_METRIC_FLAG_LOG_LOGRT	0x08	/* logrt[ or logrt.count[, depending on TRX_METRIC_FLAG_LOG_COUNT */
+#define TRX_METRIC_FLAG_LOG_EVENTLOG	0x10	/* eventlog[ */
+#define TRX_METRIC_FLAG_LOG_COUNT	0x20	/* log.count[ or logrt.count[ */
+#define TRX_METRIC_FLAG_LOG			/* item for log file monitoring, one of the above */	\
+		(TRX_METRIC_FLAG_LOG_LOG | TRX_METRIC_FLAG_LOG_LOGRT | TRX_METRIC_FLAG_LOG_EVENTLOG)
 
 typedef struct
 {
@@ -46,6 +46,6 @@ typedef struct
 	zbx_uint64_t		processed_bytes;	/* number of processed bytes for log[], log.count[], logrt[], */
 							/* logrt.count[] items */
 }
-ZBX_ACTIVE_METRIC;
+TRX_ACTIVE_METRIC;
 
 #endif

@@ -28,8 +28,8 @@ function permission2str($permission) {
  */
 function authentication2str($type) {
 	$authentications = [
-		ZBX_AUTH_INTERNAL => _('Treegix internal authentication'),
-		ZBX_AUTH_LDAP => _('LDAP authentication')
+		TRX_AUTH_INTERNAL => _('Treegix internal authentication'),
+		TRX_AUTH_LDAP => _('LDAP authentication')
 	];
 
 	return $authentications[$type];
@@ -108,10 +108,10 @@ function getUserAuthenticationType($gui_access) {
 			return $config['authentication_type'];
 
 		case GROUP_GUI_ACCESS_INTERNAL:
-			return ZBX_AUTH_INTERNAL;
+			return TRX_AUTH_INTERNAL;
 
 		case GROUP_GUI_ACCESS_LDAP:
-			return ZBX_AUTH_LDAP;
+			return TRX_AUTH_LDAP;
 
 		default:
 			return $config['authentication_type'];
@@ -138,7 +138,7 @@ function get_accessible_hosts_by_rights(&$rights, $user_type, $perm) {
 	$where = [];
 
 	array_push($where, 'h.status in ('.HOST_STATUS_MONITORED.','.HOST_STATUS_NOT_MONITORED.','.HOST_STATUS_TEMPLATE.')');
-	array_push($where, dbConditionInt('h.flags', [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]));
+	array_push($where, dbConditionInt('h.flags', [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]));
 
 	$where = count($where) ? $where = ' WHERE '.implode(' AND ', $where) : '';
 
@@ -187,7 +187,7 @@ function get_accessible_hosts_by_rights(&$rights, $user_type, $perm) {
 	}
 
 	CArrayHelper::sort($result, [
-		['field' => 'host_name', 'order' => ZBX_SORT_UP]
+		['field' => 'host_name', 'order' => TRX_SORT_UP]
 	]);
 
 	return $result;
@@ -222,7 +222,7 @@ function get_accessible_groups_by_rights(&$rights, $user_type, $perm) {
 	}
 
 	CArrayHelper::sort($result, [
-		['field' => 'name', 'order' => ZBX_SORT_UP]
+		['field' => 'name', 'order' => TRX_SORT_UP]
 	]);
 
 	return $result;

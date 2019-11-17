@@ -24,11 +24,11 @@ typedef struct
 }
 zbx_wmi_prop_t;
 
-ZBX_VECTOR_DECL(wmi_prop, zbx_wmi_prop_t)
-ZBX_VECTOR_IMPL(wmi_prop, zbx_wmi_prop_t)
+TRX_VECTOR_DECL(wmi_prop, zbx_wmi_prop_t)
+TRX_VECTOR_IMPL(wmi_prop, zbx_wmi_prop_t)
 
-ZBX_PTR_VECTOR_DECL(wmi_instance, zbx_vector_wmi_prop_t *)
-ZBX_PTR_VECTOR_IMPL(wmi_instance, zbx_vector_wmi_prop_t *)
+TRX_PTR_VECTOR_DECL(wmi_instance, zbx_vector_wmi_prop_t *)
+TRX_PTR_VECTOR_IMPL(wmi_instance, zbx_vector_wmi_prop_t *)
 
 extern "C" static void	wmi_prop_clear(zbx_wmi_prop_t *prop)
 {
@@ -54,7 +54,7 @@ typedef int	(*zbx_parse_wmi_t)(IEnumWbemClassObject *pEnumerator, zbx_vector_wmi
 extern "C" int	put_variant_json(const char *prop_json, const char *prop_err, VARIANT *vtProp, struct zbx_json *jdoc,
 		char **error);
 
-static ZBX_THREAD_LOCAL int	com_initialized = 0;
+static TRX_THREAD_LOCAL int	com_initialized = 0;
 
 extern "C" int	zbx_co_initialize()
 {
@@ -797,7 +797,7 @@ extern "C" int	put_variant_json(const char *prop_json, const char *prop_err, VAR
 			{
 				str = zbx_unicode_to_utf8((wchar_t *)_bstr_t(V_BSTR(vtProp)));
 				zbx_json_escape(&str);
-				zbx_json_addstring(jdoc, prop_json, str, ZBX_JSON_TYPE_STRING);
+				zbx_json_addstring(jdoc, prop_json, str, TRX_JSON_TYPE_STRING);
 				zbx_free(str);
 			}
 

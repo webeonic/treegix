@@ -7,23 +7,23 @@
 
 #ifdef HAVE_OPENIPMI
 
-#define ZBX_IPC_SERVICE_IPMI	"ipmi"
+#define TRX_IPC_SERVICE_IPMI	"ipmi"
 
 /* poller -> manager */
-#define ZBX_IPC_IPMI_REGISTER		1
-#define ZBX_IPC_IPMI_VALUE_RESULT	2
-#define ZBX_IPC_IPMI_COMMAND_RESULT	3
+#define TRX_IPC_IPMI_REGISTER		1
+#define TRX_IPC_IPMI_VALUE_RESULT	2
+#define TRX_IPC_IPMI_COMMAND_RESULT	3
 
 /* manager -> poller */
-#define ZBX_IPC_IPMI_VALUE_REQUEST	101
-#define ZBX_IPC_IPMI_COMMAND_REQUEST	102
-#define ZBX_IPC_IPMI_CLEANUP_REQUEST	103
+#define TRX_IPC_IPMI_VALUE_REQUEST	101
+#define TRX_IPC_IPMI_COMMAND_REQUEST	102
+#define TRX_IPC_IPMI_CLEANUP_REQUEST	103
 
 /* client -> manager */
-#define ZBX_IPC_IPMI_SCRIPT_REQUEST	201
+#define TRX_IPC_IPMI_SCRIPT_REQUEST	201
 
 /* manager -> client */
-#define ZBX_IPC_IPMI_SCRIPT_RESULT	301
+#define TRX_IPC_IPMI_SCRIPT_RESULT	301
 
 
 zbx_uint32_t	zbx_ipmi_serialize_request(unsigned char **data, zbx_uint64_t objectid, const char *addr,

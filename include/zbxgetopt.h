@@ -15,8 +15,8 @@
    along with this program; if not, write to the Free Software
    Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.  */
 
-#ifndef ZBX_GETOPT_H
-#define ZBX_GETOPT_H 1
+#ifndef TRX_GETOPT_H
+#define TRX_GETOPT_H 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -99,4 +99,4 @@ int zbx_getopt_long(int argc, char **argv, const char *options,
 }
 #endif
 
-#endif /* ZBX_GETOPT_H */
+#endif /* TRX_GETOPT_H */

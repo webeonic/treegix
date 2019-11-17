@@ -425,7 +425,7 @@
 
 				return $.get(url.getUrl(), {'onlyHeight': 1}, 'json')
 					.done(function(response, status, xhr) {
-						cb(xhr.getResponseHeader('X-ZBX-SBOX-HEIGHT'))
+						cb(xhr.getResponseHeader('X-TRX-SBOX-HEIGHT'))
 					});
 			}
 

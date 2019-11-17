@@ -15,7 +15,7 @@ class CControllerDashboardList extends CControllerDashboardAbstract {
 	protected function checkInput() {
 		$fields = [
 			'sort' =>		'in name',
-			'sortorder' =>	'in '.ZBX_SORT_DOWN.','.ZBX_SORT_UP,
+			'sortorder' =>	'in '.TRX_SORT_DOWN.','.TRX_SORT_UP,
 			'uncheck' =>	'in 1'
 		];
 
@@ -37,7 +37,7 @@ class CControllerDashboardList extends CControllerDashboardAbstract {
 		CProfile::update('web.dashbrd.list_was_opened', 1, PROFILE_TYPE_INT);
 
 		$sort_field = $this->getInput('sort', CProfile::get('web.dashbrd.list.sort', 'name'));
-		$sort_order = $this->getInput('sortorder', CProfile::get('web.dashbrd.list.sortorder', ZBX_SORT_UP));
+		$sort_order = $this->getInput('sortorder', CProfile::get('web.dashbrd.list.sortorder', TRX_SORT_UP));
 
 		CProfile::update('web.dashbrd.list.sort', $sort_field, PROFILE_TYPE_STR);
 		CProfile::update('web.dashbrd.list.sortorder', $sort_order, PROFILE_TYPE_STR);

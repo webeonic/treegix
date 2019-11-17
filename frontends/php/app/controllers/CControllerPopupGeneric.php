@@ -697,7 +697,7 @@ class CControllerPopupGeneric extends CController {
 				}
 
 				if (array_key_exists('normal_only', $page_options)) {
-					$options['filter']['flags'] = ZBX_FLAG_DISCOVERY_NORMAL;
+					$options['filter']['flags'] = TRX_FLAG_DISCOVERY_NORMAL;
 				}
 
 				if (array_key_exists('writeonly', $page_options)) {
@@ -768,7 +768,7 @@ class CControllerPopupGeneric extends CController {
 					}
 
 					if (array_key_exists('normal_only', $page_options)) {
-						$options['filter']['flags'] = ZBX_FLAG_DISCOVERY_NORMAL;
+						$options['filter']['flags'] = TRX_FLAG_DISCOVERY_NORMAL;
 					}
 
 					$records = API::Trigger()->get($options);
@@ -816,7 +816,7 @@ class CControllerPopupGeneric extends CController {
 					}
 
 					if (array_key_exists('normal_only', $page_options)) {
-						$options['filter']['flags'] = ZBX_FLAG_DISCOVERY_NORMAL;
+						$options['filter']['flags'] = TRX_FLAG_DISCOVERY_NORMAL;
 					}
 
 					$records = API::Item()->get($options);
@@ -865,7 +865,7 @@ class CControllerPopupGeneric extends CController {
 
 					if ($discovery_rule['applicationPrototypes']) {
 						CArrayHelper::sort($discovery_rule['applicationPrototypes'], [
-							['field' => 'name', 'order' => ZBX_SORT_UP]
+							['field' => 'name', 'order' => TRX_SORT_UP]
 						]);
 
 						foreach ($discovery_rule['applicationPrototypes'] as $application_prototype) {

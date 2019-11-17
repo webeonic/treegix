@@ -86,18 +86,18 @@ static int	zbx_solaris_version_get(unsigned int *major_version, unsigned int *mi
  ******************************************************************************/
 static int	zbx_detect_zone_support(void)
 {
-#define ZBX_ZONE_SUPPORT_UNKNOWN	0
-#define ZBX_ZONE_SUPPORT_YES		1
-#define ZBX_ZONE_SUPPORT_NO		2
+#define TRX_ZONE_SUPPORT_UNKNOWN	0
+#define TRX_ZONE_SUPPORT_YES		1
+#define TRX_ZONE_SUPPORT_NO		2
 
-	static int	zone_support = ZBX_ZONE_SUPPORT_UNKNOWN;
+	static int	zone_support = TRX_ZONE_SUPPORT_UNKNOWN;
 	unsigned int	major, minor;
 
 	switch (zone_support)
 	{
-		case ZBX_ZONE_SUPPORT_NO:
+		case TRX_ZONE_SUPPORT_NO:
 			return FAIL;
-		case ZBX_ZONE_SUPPORT_YES:
+		case TRX_ZONE_SUPPORT_YES:
 			return SUCCEED;
 		default:
 			/* zones are supported in Solaris 10 and later (minimum version is "5.10") */
@@ -105,12 +105,12 @@ static int	zbx_detect_zone_support(void)
 			if (SUCCEED == zbx_solaris_version_get(&major, &minor) &&
 					((5 == major && 10 <= minor) || 5 < major))
 			{
-				zone_support = ZBX_ZONE_SUPPORT_YES;
+				zone_support = TRX_ZONE_SUPPORT_YES;
 				return SUCCEED;
 			}
 			else	/* failure to get Solaris version also results in "zones not supported" */
 			{
-				zone_support = ZBX_ZONE_SUPPORT_NO;
+				zone_support = TRX_ZONE_SUPPORT_NO;
 				return FAIL;
 			}
 	}
@@ -134,16 +134,16 @@ static void	zbx_sysinfo_proc_free(zbx_sysinfo_proc_t *proc)
 
 static int	check_procstate(psinfo_t *psinfo, int zbx_proc_stat)
 {
-	if (zbx_proc_stat == ZBX_PROC_STAT_ALL)
+	if (zbx_proc_stat == TRX_PROC_STAT_ALL)
 		return SUCCEED;
 
 	switch (zbx_proc_stat)
 	{
-		case ZBX_PROC_STAT_RUN:
+		case TRX_PROC_STAT_RUN:
 			return (psinfo->pr_lwp.pr_state == SRUN || psinfo->pr_lwp.pr_state == SONPROC) ? SUCCEED : FAIL;
-		case ZBX_PROC_STAT_SLEEP:
+		case TRX_PROC_STAT_SLEEP:
 			return (psinfo->pr_lwp.pr_state == SSLEEP) ? SUCCEED : FAIL;
-		case ZBX_PROC_STAT_ZOMB:
+		case TRX_PROC_STAT_ZOMB:
 			return (psinfo->pr_lwp.pr_state == SZOMB) ? SUCCEED : FAIL;
 	}
 
@@ -193,13 +193,13 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "sum"))
-		do_task = ZBX_DO_SUM;
+		do_task = TRX_DO_SUM;
 	else if (0 == strcmp(param, "avg"))
-		do_task = ZBX_DO_AVG;
+		do_task = TRX_DO_AVG;
 	else if (0 == strcmp(param, "max"))
-		do_task = ZBX_DO_MAX;
+		do_task = TRX_DO_MAX;
 	else if (0 == strcmp(param, "min"))
-		do_task = ZBX_DO_MIN;
+		do_task = TRX_DO_MIN;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -268,9 +268,9 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 			if (0 != proccount++)
 			{
-				if (ZBX_DO_MAX == do_task)
+				if (TRX_DO_MAX == do_task)
 					mem_size = MAX(mem_size, byte_value);
-				else if (ZBX_DO_MIN == do_task)
+				else if (TRX_DO_MIN == do_task)
 					mem_size = MIN(mem_size, byte_value);
 				else
 					mem_size += byte_value;
@@ -286,9 +286,9 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 			if (0 != proccount++)
 			{
-				if (ZBX_DO_MAX == do_task)
+				if (TRX_DO_MAX == do_task)
 					pct_size = MAX(pct_size, pct_value);
-				else if (ZBX_DO_MIN == do_task)
+				else if (TRX_DO_MIN == do_task)
 					pct_size = MIN(pct_size, pct_value);
 				else
 					pct_size += pct_value;
@@ -304,14 +304,14 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 out:
 	if (NULL != p_value)
 	{
-		if (ZBX_DO_AVG == do_task)
+		if (TRX_DO_AVG == do_task)
 			SET_DBL_RESULT(result, 0 == proccount ? 0.0 : (double)mem_size / (double)proccount);
 		else
 			SET_UI64_RESULT(result, mem_size);
 	}
 	else
 	{
-		if (ZBX_DO_AVG == do_task)
+		if (TRX_DO_AVG == do_task)
 			SET_DBL_RESULT(result, 0 == proccount ? 0.0 : pct_size / (double)proccount);
 		else
 			SET_DBL_RESULT(result, pct_size);
@@ -365,13 +365,13 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = ZBX_PROC_STAT_ALL;
+		zbx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = ZBX_PROC_STAT_RUN;
+		zbx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = ZBX_PROC_STAT_SLEEP;
+		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = ZBX_PROC_STAT_ZOMB;
+		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -384,7 +384,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			|| 0 == strcmp(zone_parameter, "current"))
 	{
 #ifdef HAVE_ZONE_H
-		zoneflag = ZBX_PROCSTAT_FLAGS_ZONE_CURRENT;
+		zoneflag = TRX_PROCSTAT_FLAGS_ZONE_CURRENT;
 #else
 		if (SUCCEED == zbx_detect_zone_support())
 		{
@@ -403,7 +403,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	else if (0 == strcmp(zone_parameter, "all"))
 	{
 #ifdef HAVE_ZONE_H
-		zoneflag = ZBX_PROCSTAT_FLAGS_ZONE_ALL;
+		zoneflag = TRX_PROCSTAT_FLAGS_ZONE_ALL;
 #endif
 	}
 	else
@@ -456,7 +456,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			continue;
 
 #ifdef HAVE_ZONE_H
-		if (ZBX_PROCSTAT_FLAGS_ZONE_CURRENT == zoneflag && zoneid != psinfo.pr_zoneid)
+		if (TRX_PROCSTAT_FLAGS_ZONE_CURRENT == zoneflag && zoneid != psinfo.pr_zoneid)
 			continue;
 #endif
 		proccount++;
@@ -535,7 +535,7 @@ static int	proc_match_cmdline(const zbx_sysinfo_proc_t *proc, const char *cmdlin
  ******************************************************************************/
 static int	proc_match_zone(const zbx_sysinfo_proc_t *proc, zbx_uint64_t flags, zoneid_t zoneid)
 {
-	if (0 != (ZBX_PROCSTAT_FLAGS_ZONE_ALL & flags))
+	if (0 != (TRX_PROCSTAT_FLAGS_ZONE_ALL & flags))
 		return SUCCEED;
 
 	if (proc->zoneid == zoneid)
@@ -682,13 +682,13 @@ int	zbx_proc_get_processes(zbx_vector_ptr_t *processes, unsigned int flags)
 
 		proc->pid = pid;
 
-		if (0 != (flags & ZBX_SYSINFO_PROC_NAME))
+		if (0 != (flags & TRX_SYSINFO_PROC_NAME))
 			proc->name = zbx_strdup(NULL, psinfo.pr_fname);
 
-		if (0 != (flags & ZBX_SYSINFO_PROC_USER))
+		if (0 != (flags & TRX_SYSINFO_PROC_USER))
 			proc->uid = psinfo.pr_uid;
 
-		if (0 != (flags & ZBX_SYSINFO_PROC_CMDLINE))
+		if (0 != (flags & TRX_SYSINFO_PROC_CMDLINE))
 			proc->cmdline = zbx_strdup(NULL, psinfo.pr_psargs);
 
 #ifdef HAVE_ZONE_H
@@ -748,7 +748,7 @@ void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *p
 #endif
 
 	treegix_log(LOG_LEVEL_TRACE, "In %s() procname:%s username:%s cmdline:%s zone:%d", __func__,
-			ZBX_NULL2EMPTY_STR(procname), ZBX_NULL2EMPTY_STR(username), ZBX_NULL2EMPTY_STR(cmdline), flags);
+			TRX_NULL2EMPTY_STR(procname), TRX_NULL2EMPTY_STR(username), TRX_NULL2EMPTY_STR(cmdline), flags);
 
 	if (NULL != username)
 	{
@@ -817,15 +817,15 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	/* utilization type parameter (user|system) */
 	if (NULL == (tmp = get_rparam(request, 2)) || '\0' == *tmp || 0 == strcmp(tmp, "total"))
 	{
-		type = ZBX_PROCSTAT_CPU_TOTAL;
+		type = TRX_PROCSTAT_CPU_TOTAL;
 	}
 	else if (0 == strcmp(tmp, "user"))
 	{
-		type = ZBX_PROCSTAT_CPU_USER;
+		type = TRX_PROCSTAT_CPU_USER;
 	}
 	else if (0 == strcmp(tmp, "system"))
 	{
-		type = ZBX_PROCSTAT_CPU_SYSTEM;
+		type = TRX_PROCSTAT_CPU_SYSTEM;
 	}
 	else
 	{
@@ -870,11 +870,11 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		/* zones are not supported, the agent can accept 6th parameter with default value "current" */
 #endif
-		zoneflag = ZBX_PROCSTAT_FLAGS_ZONE_CURRENT;
+		zoneflag = TRX_PROCSTAT_FLAGS_ZONE_CURRENT;
 	}
 	else if (0 == strcmp(flags, "all"))
 	{
-		zoneflag = ZBX_PROCSTAT_FLAGS_ZONE_ALL;
+		zoneflag = TRX_PROCSTAT_FLAGS_ZONE_ALL;
 	}
 	else
 	{

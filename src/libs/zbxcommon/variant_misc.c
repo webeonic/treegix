@@ -26,22 +26,22 @@ int	zbx_variant_to_value_type(zbx_variant_t *value, unsigned char value_type, ch
 	switch (value_type)
 	{
 		case ITEM_VALUE_TYPE_FLOAT:
-			if (SUCCEED == (ret = zbx_variant_convert(value, ZBX_VARIANT_DBL)))
+			if (SUCCEED == (ret = zbx_variant_convert(value, TRX_VARIANT_DBL)))
 			{
 				if (FAIL == (ret = zbx_validate_value_dbl(value->data.dbl)))
 				{
-					*errmsg = zbx_dsprintf(NULL, "Value " ZBX_FS_DBL " is too small or too large.",
+					*errmsg = zbx_dsprintf(NULL, "Value " TRX_FS_DBL " is too small or too large.",
 							value->data.dbl);
 				}
 			}
 			break;
 		case ITEM_VALUE_TYPE_UINT64:
-			ret = zbx_variant_convert(value, ZBX_VARIANT_UI64);
+			ret = zbx_variant_convert(value, TRX_VARIANT_UI64);
 			break;
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:
 		case ITEM_VALUE_TYPE_LOG:
-			ret = zbx_variant_convert(value, ZBX_VARIANT_STR);
+			ret = zbx_variant_convert(value, TRX_VARIANT_STR);
 			break;
 		default:
 			*errmsg = zbx_dsprintf(NULL, "Unknown value type \"%d\"", value_type);

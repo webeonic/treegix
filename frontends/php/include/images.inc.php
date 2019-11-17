@@ -30,7 +30,7 @@ function zbx_unescape_image($image) {
 	global $DB;
 
 	$result = $image ? $image : 0;
-	if ($DB['TYPE'] == ZBX_DB_POSTGRESQL) {
+	if ($DB['TYPE'] == TRX_DB_POSTGRESQL) {
 		$result = pg_unescape_bytea($image);
 	}
 	return $result;

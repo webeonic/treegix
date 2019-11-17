@@ -488,26 +488,26 @@ class CEvent extends CApiService {
 			'values' => array_keys(eventSource())
 		]);
 		if (!$sourceValidator->validate($options['source'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect source value.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect source value.'));
 		}
 
 		$objectValidator = new CLimitedSetValidator([
 			'values' => array_keys(eventObject())
 		]);
 		if (!$objectValidator->validate($options['object'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect object value.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect object value.'));
 		}
 
 		$sourceObjectValidator = new CEventSourceObjectValidator();
 		if (!$sourceObjectValidator->validate(['source' => $options['source'], 'object' => $options['object']])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $sourceObjectValidator->getError());
+			self::exception(TRX_API_ERROR_PARAMETERS, $sourceObjectValidator->getError());
 		}
 
 		$evaltype_validator = new CLimitedSetValidator([
 			'values' => [TAG_EVAL_TYPE_AND_OR, TAG_EVAL_TYPE_OR]
 		]);
 		if (!$evaltype_validator->validate($options['evaltype'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect evaltype value.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect evaltype value.'));
 		}
 	}
 
@@ -516,13 +516,13 @@ class CEvent extends CApiService {
 	 *
 	 * @param array  $data                  And array of operation data.
 	 * @param mixed  $data['eventids']      An event ID or an array of event IDs.
-	 * @param string $data['message']       Message if ZBX_PROBLEM_UPDATE_SEVERITY flag is passed.
-	 * @param string $data['severity']      New severity level if ZBX_PROBLEM_UPDATE_SEVERITY flag is passed.
+	 * @param string $data['message']       Message if TRX_PROBLEM_UPDATE_SEVERITY flag is passed.
+	 * @param string $data['severity']      New severity level if TRX_PROBLEM_UPDATE_SEVERITY flag is passed.
 	 * @param int    $data['action']        Flags of performed operations combined:
-	 *                                       - 0x01 - ZBX_PROBLEM_UPDATE_CLOSE
-	 *                                       - 0x02 - ZBX_PROBLEM_UPDATE_ACKNOWLEDGE
-	 *                                       - 0x04 - ZBX_PROBLEM_UPDATE_MESSAGE
-	 *                                       - 0x08 - ZBX_PROBLEM_UPDATE_SEVERITY
+	 *                                       - 0x01 - TRX_PROBLEM_UPDATE_CLOSE
+	 *                                       - 0x02 - TRX_PROBLEM_UPDATE_ACKNOWLEDGE
+	 *                                       - 0x04 - TRX_PROBLEM_UPDATE_MESSAGE
+	 *                                       - 0x08 - TRX_PROBLEM_UPDATE_SEVERITY
 	 *
 	 * @return array
 	 */
@@ -532,7 +532,7 @@ class CEvent extends CApiService {
 		$data['eventids'] = zbx_toArray($data['eventids']);
 		$data['eventids'] = array_keys(array_flip($data['eventids']));
 
-		$has_close_action = (($data['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE);
+		$has_close_action = (($data['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE);
 
 		$events = $this->get([
 			'output' => ['objectid', 'acknowledged', 'severity', 'r_eventid'],
@@ -550,40 +550,40 @@ class CEvent extends CApiService {
 		$time = time();
 
 		foreach ($events as $eventid => $event) {
-			$action = ZBX_PROBLEM_UPDATE_NONE;
+			$action = TRX_PROBLEM_UPDATE_NONE;
 			$old_severity = 0;
 			$new_severity = 0;
 			$message = '';
 
-			// Perform ZBX_PROBLEM_UPDATE_CLOSE action flag.
+			// Perform TRX_PROBLEM_UPDATE_CLOSE action flag.
 			if ($has_close_action && !$this->isEventClosed($event)) {
-				$action |= ZBX_PROBLEM_UPDATE_CLOSE;
+				$action |= TRX_PROBLEM_UPDATE_CLOSE;
 			}
 
-			// Perform ZBX_PROBLEM_UPDATE_ACKNOWLEDGE action flag.
-			if (($data['action'] & ZBX_PROBLEM_UPDATE_ACKNOWLEDGE) == ZBX_PROBLEM_UPDATE_ACKNOWLEDGE
+			// Perform TRX_PROBLEM_UPDATE_ACKNOWLEDGE action flag.
+			if (($data['action'] & TRX_PROBLEM_UPDATE_ACKNOWLEDGE) == TRX_PROBLEM_UPDATE_ACKNOWLEDGE
 					&& $event['acknowledged'] == EVENT_NOT_ACKNOWLEDGED) {
-				$action |= ZBX_PROBLEM_UPDATE_ACKNOWLEDGE;
+				$action |= TRX_PROBLEM_UPDATE_ACKNOWLEDGE;
 				$ack_eventids[] = $eventid;
 			}
 
-			// Perform ZBX_PROBLEM_UPDATE_MESSAGE action flag.
-			if (($data['action'] & ZBX_PROBLEM_UPDATE_MESSAGE) == ZBX_PROBLEM_UPDATE_MESSAGE) {
-				$action |= ZBX_PROBLEM_UPDATE_MESSAGE;
+			// Perform TRX_PROBLEM_UPDATE_MESSAGE action flag.
+			if (($data['action'] & TRX_PROBLEM_UPDATE_MESSAGE) == TRX_PROBLEM_UPDATE_MESSAGE) {
+				$action |= TRX_PROBLEM_UPDATE_MESSAGE;
 				$message = $data['message'];
 			}
 
-			// Perform ZBX_PROBLEM_UPDATE_MESSAGE action flag.
-			if (($data['action'] & ZBX_PROBLEM_UPDATE_SEVERITY) == ZBX_PROBLEM_UPDATE_SEVERITY
+			// Perform TRX_PROBLEM_UPDATE_MESSAGE action flag.
+			if (($data['action'] & TRX_PROBLEM_UPDATE_SEVERITY) == TRX_PROBLEM_UPDATE_SEVERITY
 					&& $data['severity'] != $event['severity']) {
-				$action |= ZBX_PROBLEM_UPDATE_SEVERITY;
+				$action |= TRX_PROBLEM_UPDATE_SEVERITY;
 				$old_severity = $event['severity'];
 				$new_severity = $data['severity'];
 				$sev_change_eventids[] = $eventid;
 			}
 
 			// For some of selected events action might not be performed, as event is already with given change.
-			if ($action != ZBX_PROBLEM_UPDATE_NONE) {
+			if ($action != TRX_PROBLEM_UPDATE_NONE) {
 				$acknowledges[] = [
 					'userid' => self::$userData['userid'],
 					'eventid' => $eventid,
@@ -634,10 +634,10 @@ class CEvent extends CApiService {
 			foreach ($acknowledgeids as $k => $id) {
 				$acknowledgement = $acknowledges[$k];
 
-				if (($acknowledgement['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE){
+				if (($acknowledgement['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE){
 					$tasks[$k] = [
-						'type' => ZBX_TM_TASK_CLOSE_PROBLEM,
-						'status' => ZBX_TM_STATUS_NEW,
+						'type' => TRX_TM_TASK_CLOSE_PROBLEM,
+						'status' => TRX_TM_STATUS_NEW,
 						'clock' => $time
 					];
 
@@ -662,8 +662,8 @@ class CEvent extends CApiService {
 
 				// Acknowledge task should be created for each acknowledge operation, regardless of it's action.
 				$tasks[$k] = [
-					'type' => ZBX_TM_TASK_ACKNOWLEDGE,
-					'status' => ZBX_TM_STATUS_NEW,
+					'type' => TRX_TM_TASK_ACKNOWLEDGE,
+					'status' => TRX_TM_STATUS_NEW,
 					'clock' => $time
 				];
 
@@ -687,13 +687,13 @@ class CEvent extends CApiService {
 	 *
 	 * @param array         $data              And array of operation data.
 	 * @param string|array  $data['eventids']  An event ID or an array of event IDs.
-	 * @param string        $data['message']   Message if ZBX_PROBLEM_UPDATE_SEVERITY flag is passed.
-	 * @param string        $data['severity']  New severity level if ZBX_PROBLEM_UPDATE_SEVERITY flag is passed.
+	 * @param string        $data['message']   Message if TRX_PROBLEM_UPDATE_SEVERITY flag is passed.
+	 * @param string        $data['severity']  New severity level if TRX_PROBLEM_UPDATE_SEVERITY flag is passed.
 	 * @param int           $data['action']    Flags of performed operations combined:
-	 *                                           - 0x01 - ZBX_PROBLEM_UPDATE_CLOSE
-	 *                                           - 0x02 - ZBX_PROBLEM_UPDATE_ACKNOWLEDGE
-	 *                                           - 0x04 - ZBX_PROBLEM_UPDATE_MESSAGE
-	 *                                           - 0x08 - ZBX_PROBLEM_UPDATE_SEVERITY
+	 *                                           - 0x01 - TRX_PROBLEM_UPDATE_CLOSE
+	 *                                           - 0x02 - TRX_PROBLEM_UPDATE_ACKNOWLEDGE
+	 *                                           - 0x04 - TRX_PROBLEM_UPDATE_MESSAGE
+	 *                                           - 0x08 - TRX_PROBLEM_UPDATE_SEVERITY
 	 *
 	 * @throws APIException                    If the input is invalid.
 	 */
@@ -706,25 +706,25 @@ class CEvent extends CApiService {
 		];
 
 		if (!check_db_fields($db_fields, $data)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 		}
 
 		$data['eventids'] = zbx_toArray($data['eventids']);
 		$data['eventids'] = array_keys(array_flip($data['eventids']));
 
 		// Chack that at least one valid flag is set.
-		$action_mask = ZBX_PROBLEM_UPDATE_CLOSE | ZBX_PROBLEM_UPDATE_ACKNOWLEDGE | ZBX_PROBLEM_UPDATE_MESSAGE
-				| ZBX_PROBLEM_UPDATE_SEVERITY;
+		$action_mask = TRX_PROBLEM_UPDATE_CLOSE | TRX_PROBLEM_UPDATE_ACKNOWLEDGE | TRX_PROBLEM_UPDATE_MESSAGE
+				| TRX_PROBLEM_UPDATE_SEVERITY;
 
 		if (($data['action'] & $action_mask) != $data['action']) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'action',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'action',
 				_s('unexpected value "%1$s"', $data['action'])
 			));
 		}
 
-		$has_close_action = (($data['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE);
-		$has_message_action = (($data['action'] & ZBX_PROBLEM_UPDATE_MESSAGE) == ZBX_PROBLEM_UPDATE_MESSAGE);
-		$has_severity_action = (($data['action'] & ZBX_PROBLEM_UPDATE_SEVERITY) == ZBX_PROBLEM_UPDATE_SEVERITY);
+		$has_close_action = (($data['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE);
+		$has_message_action = (($data['action'] & TRX_PROBLEM_UPDATE_MESSAGE) == TRX_PROBLEM_UPDATE_MESSAGE);
+		$has_severity_action = (($data['action'] & TRX_PROBLEM_UPDATE_SEVERITY) == TRX_PROBLEM_UPDATE_SEVERITY);
 
 		$events = $this->get([
 			'output' => [],
@@ -743,7 +743,7 @@ class CEvent extends CApiService {
 		 *   - unexisting eventid
 		 */
 		if (count($data['eventids']) != count($events)) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		$editable_events_count = $this->get([
@@ -759,7 +759,7 @@ class CEvent extends CApiService {
 		}
 
 		if ($has_message_action && $data['message'] === '') {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'message', _('cannot be empty'))
 			);
 		}
@@ -782,12 +782,12 @@ class CEvent extends CApiService {
 	 */
 	protected function checkCanBeManuallyClosed(array $events, $editable_events_count) {
 		if (count($events) != $editable_events_count) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		foreach ($events as $event) {
-			if ($event['relatedObject']['manual_close'] != ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+			if ($event['relatedObject']['manual_close'] != TRX_TRIGGER_MANUAL_CLOSE_ALLOWED) {
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_s('Cannot close problem: %1$s.', _('trigger does not allow manual closing'))
 				);
 			}
@@ -807,7 +807,7 @@ class CEvent extends CApiService {
 	 */
 	protected function checkCanChangeSeverity(array $events, $editable_events_count, $severity) {
 		if (count($events) != $editable_events_count) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		$validator = new CLimitedSetValidator([
@@ -817,7 +817,7 @@ class CEvent extends CApiService {
 		]);
 
 		if (!$validator->validate($severity)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'severity',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.', 'severity',
 				_s('unexpected value "%1$s"', $severity)
 			));
 		}
@@ -839,7 +839,7 @@ class CEvent extends CApiService {
 		}
 		else {
 			foreach ($event['acknowledges'] as $acknowledge) {
-				if (($acknowledge['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE) {
+				if (($acknowledge['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE) {
 					// If at least one manual close update was found, event is closing.
 					return true;
 				}
@@ -994,7 +994,7 @@ class CEvent extends CApiService {
 				'nopermissions' => true,
 				'preservekeys' => true,
 				'sortfield' => 'clock',
-				'sortorder' => ZBX_SORT_DOWN
+				'sortorder' => TRX_SORT_DOWN
 			]);
 			$result = $relationMap->mapMany($result, $alerts, 'alerts');
 		}
@@ -1077,8 +1077,8 @@ class CEvent extends CApiService {
 			foreach ($result as &$event) {
 				if (array_key_exists('suppression_data', $event)) {
 					$event['suppressed'] = $event['suppression_data']
-						? (string) ZBX_PROBLEM_SUPPRESSED_TRUE
-						: (string) ZBX_PROBLEM_SUPPRESSED_FALSE;
+						? (string) TRX_PROBLEM_SUPPRESSED_TRUE
+						: (string) TRX_PROBLEM_SUPPRESSED_FALSE;
 				}
 				else {
 					$suppressed_eventids[] = $event['eventid'];
@@ -1094,8 +1094,8 @@ class CEvent extends CApiService {
 				$suppressed_eventids = array_flip(zbx_objectValues($suppressed_events, 'eventid'));
 				foreach ($result as &$event) {
 					$event['suppressed'] = array_key_exists($event['eventid'], $suppressed_eventids)
-						? (string) ZBX_PROBLEM_SUPPRESSED_TRUE
-						: (string) ZBX_PROBLEM_SUPPRESSED_FALSE;
+						? (string) TRX_PROBLEM_SUPPRESSED_TRUE
+						: (string) TRX_PROBLEM_SUPPRESSED_FALSE;
 				}
 				unset($event);
 			}
@@ -1136,7 +1136,7 @@ class CEvent extends CApiService {
 				'filter' => [
 					'type' => MEDIA_TYPE_WEBHOOK,
 					'status' => MEDIA_TYPE_STATUS_ACTIVE,
-					'show_event_menu' => ZBX_EVENT_MENU_SHOW
+					'show_event_menu' => TRX_EVENT_MENU_SHOW
 				]
 			]);
 
@@ -1309,14 +1309,14 @@ class CEvent extends CApiService {
 		$fields = [];
 
 		foreach ((array) $sortfield as $i => $field) {
-			if (is_string($sortorder) && $sortorder === ZBX_SORT_DOWN) {
-				$order = ZBX_SORT_DOWN;
+			if (is_string($sortorder) && $sortorder === TRX_SORT_DOWN) {
+				$order = TRX_SORT_DOWN;
 			}
-			elseif (is_array($sortorder) && array_key_exists($i, $sortorder) && $sortorder[$i] === ZBX_SORT_DOWN) {
-				$order = ZBX_SORT_DOWN;
+			elseif (is_array($sortorder) && array_key_exists($i, $sortorder) && $sortorder[$i] === TRX_SORT_DOWN) {
+				$order = TRX_SORT_DOWN;
 			}
 			else {
-				$order = ZBX_SORT_UP;
+				$order = TRX_SORT_UP;
 			}
 
 			$fields[] = ['field' => $field, 'order' => $order];

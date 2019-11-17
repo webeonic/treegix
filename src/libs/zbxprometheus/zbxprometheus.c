@@ -8,20 +8,20 @@
 #include "zbxprometheus.h"
 
 /* Defines maximum row length to be written in error message in the case of parsing failure */
-#define ZBX_PROMEHTEUS_ERROR_MAX_ROW_LENGTH	50
+#define TRX_PROMEHTEUS_ERROR_MAX_ROW_LENGTH	50
 
-#define ZBX_PROMETHEUS_HINT_HELP	0
-#define ZBX_PROMETHEUS_HINT_TYPE	1
+#define TRX_PROMETHEUS_HINT_HELP	0
+#define TRX_PROMETHEUS_HINT_TYPE	1
 
-#define ZBX_PROMETHEUS_TYPE_UNTYPED	"untyped"
+#define TRX_PROMETHEUS_TYPE_UNTYPED	"untyped"
 
-#define ZBX_PROMETHEUS_ERROR_ROW_NUM	10
+#define TRX_PROMETHEUS_ERROR_ROW_NUM	10
 
 typedef enum
 {
-	ZBX_PROMETHEUS_CONDITION_OP_EQUAL,
-	ZBX_PROMETHEUS_CONDITION_OP_REGEX,
-	ZBX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE,
+	TRX_PROMETHEUS_CONDITION_OP_EQUAL,
+	TRX_PROMETHEUS_CONDITION_OP_REGEX,
+	TRX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE,
 }
 zbx_prometheus_condition_op_t;
 
@@ -82,7 +82,7 @@ static zbx_hash_t	prometheus_hint_hash(const void *d)
 {
 	const zbx_prometheus_hint_t	*hint = (zbx_prometheus_hint_t *)d;
 
-	return ZBX_DEFAULT_STRING_HASH_FUNC(hint->metric);
+	return TRX_DEFAULT_STRING_HASH_FUNC(hint->metric);
 }
 
 static int	prometheus_hint_compare(const void *d1, const void *d2)
@@ -231,7 +231,7 @@ static char	*str_loc_unescape_hint_dyn(const char *src, const zbx_strloc_t *loc)
  ******************************************************************************/
 static int	str_loc_cmp(const char *src, const zbx_strloc_t *loc, const char *text, size_t text_len)
 {
-	ZBX_RETURN_IF_NOT_EQUAL(loc->r - loc->l + 1, text_len);
+	TRX_RETURN_IF_NOT_EQUAL(loc->r - loc->l + 1, text_len);
 	return memcmp(src + loc->l, text, text_len);
 }
 
@@ -256,12 +256,12 @@ static zbx_prometheus_condition_op_t	str_loc_op(const char *data, const zbx_strl
 	/*   '=~' - ends with '~'                                   */
 
 	if (loc->l == loc->r)
-		return ZBX_PROMETHEUS_CONDITION_OP_EQUAL;
+		return TRX_PROMETHEUS_CONDITION_OP_EQUAL;
 
 	if ('~' == data[loc->r])
-		return ZBX_PROMETHEUS_CONDITION_OP_REGEX;
+		return TRX_PROMETHEUS_CONDITION_OP_REGEX;
 
-	return ZBX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE;
+	return TRX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE;
 }
 
 /******************************************************************************
@@ -529,7 +529,7 @@ static int	parse_metric_value(const char *data, size_t pos, zbx_strloc_t *loc)
 
 	loc->l = pos;
 
-	len = ZBX_CONST_STRLEN("nan");
+	len = TRX_CONST_STRLEN("nan");
 	if (len == str_copy_lowercase(buffer, sizeof(buffer), ptr, len) && 0 == memcmp(buffer, "nan", len))
 	{
 		loc->r = pos + 2;
@@ -539,7 +539,7 @@ static int	parse_metric_value(const char *data, size_t pos, zbx_strloc_t *loc)
 	if ('-' == *ptr || '+' == *ptr)
 		ptr++;
 
-	len = ZBX_CONST_STRLEN("inf");
+	len = TRX_CONST_STRLEN("inf");
 	if (len == str_copy_lowercase(buffer, sizeof(buffer), ptr, len) && 0 == memcmp(buffer, "inf", len))
 	{
 		loc->r = ptr - data + 2;
@@ -696,7 +696,7 @@ static int	prometheus_filter_parse_labels(zbx_prometheus_filter_t *filter, const
 			return FAIL;
 		}
 
-		if (0 == str_loc_cmp(data, &loc_key, "__name__", ZBX_CONST_STRLEN("__name__")))
+		if (0 == str_loc_cmp(data, &loc_key, "__name__", TRX_CONST_STRLEN("__name__")))
 		{
 			if (NULL != filter->metric)
 			{
@@ -765,7 +765,7 @@ static int	prometheus_filter_init(zbx_prometheus_filter_t *filter, const char *d
 	if (SUCCEED == parse_metric(data, pos, &loc))
 	{
 		filter->metric = prometheus_condition_create(NULL, str_loc_dup(data, &loc),
-				ZBX_PROMETHEUS_CONDITION_OP_EQUAL);
+				TRX_PROMETHEUS_CONDITION_OP_EQUAL);
 
 		pos = skip_spaces(data, loc.r + 1);
 	}
@@ -808,7 +808,7 @@ static int	prometheus_filter_init(zbx_prometheus_filter_t *filter, const char *d
 		}
 
 		filter->value = prometheus_condition_create(NULL, str_loc_dup(data, &loc_value),
-				ZBX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE);
+				TRX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE);
 		zbx_strlower(filter->value->pattern);
 	}
 
@@ -876,12 +876,12 @@ static int	condition_match_key_value(const zbx_prometheus_condition_t *condition
 	/* match value */
 	switch (condition->op)
 	{
-		case ZBX_PROMETHEUS_CONDITION_OP_EQUAL:
-		case ZBX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE:
+		case TRX_PROMETHEUS_CONDITION_OP_EQUAL:
+		case TRX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE:
 			if (0 != strcmp(value, condition->pattern))
 				return FAIL;
 			break;
-		case ZBX_PROMETHEUS_CONDITION_OP_REGEX:
+		case TRX_PROMETHEUS_CONDITION_OP_REGEX:
 			if (NULL == zbx_regexp_match(value, condition->pattern, NULL))
 				return FAIL;
 			break;
@@ -926,7 +926,7 @@ static int	condition_match_metric_value(const char *pattern, const char *value)
 	if (SUCCEED != is_double(value))
 		return FAIL;
 
-	if (ZBX_DOUBLE_EPSILON <= fabs(atof(pattern) - atof(value)))
+	if (TRX_DOUBLE_EPSILON <= fabs(atof(pattern) - atof(value)))
 		return FAIL;
 
 	return SUCCEED;
@@ -968,7 +968,7 @@ static int	prometheus_metric_parse_labels(const char *data, size_t pos, zbx_vect
 		}
 
 		op = str_loc_op(data, &loc_op);
-		if (ZBX_PROMETHEUS_CONDITION_OP_EQUAL != op)
+		if (TRX_PROMETHEUS_CONDITION_OP_EQUAL != op)
 		{
 			*error = zbx_strdup(*error, "invalid label assignment operator");
 			return FAIL;
@@ -1260,7 +1260,7 @@ static int	prometheus_register_hint(zbx_hashset_t *hints, const char *data, char
 	while ((' ' == data[loc.r] || '\t' == data[loc.r]) && loc.r > loc.l)
 		loc.r--;
 
-	if (ZBX_PROMETHEUS_HINT_HELP == hint_type)
+	if (TRX_PROMETHEUS_HINT_HELP == hint_type)
 	{
 		if (NULL != hint->help)
 		{
@@ -1269,7 +1269,7 @@ static int	prometheus_register_hint(zbx_hashset_t *hints, const char *data, char
 		}
 		hint->help = str_loc_unescape_hint_dyn(data, &loc);
 	}
-	else /* ZBX_PROMETHEUS_HINT_TYPE */
+	else /* TRX_PROMETHEUS_HINT_TYPE */
 	{
 		if (NULL != hint->type)
 		{
@@ -1318,13 +1318,13 @@ static int	prometheus_parse_hint(zbx_prometheus_filter_t *filter, const char *da
 	{
 		pos = skip_spaces(data, pos + 4);
 		ret = parse_help(data, pos, &loc_metric, &loc_hint);
-		hint_type = ZBX_PROMETHEUS_HINT_HELP;
+		hint_type = TRX_PROMETHEUS_HINT_HELP;
 	}
 	else if (0 == strncmp(data + pos, "TYPE", 4))
 	{
 		pos = skip_spaces(data, pos + 4);
 		ret = parse_type(data, pos, &loc_metric, &loc_hint);
-		hint_type = ZBX_PROMETHEUS_HINT_TYPE;
+		hint_type = TRX_PROMETHEUS_HINT_TYPE;
 	}
 	else
 	{
@@ -1428,9 +1428,9 @@ out:
 		else
 			len = strlen(data + pos);
 
-		if (ZBX_PROMEHTEUS_ERROR_MAX_ROW_LENGTH < len)
+		if (TRX_PROMEHTEUS_ERROR_MAX_ROW_LENGTH < len)
 		{
-			len = ZBX_PROMEHTEUS_ERROR_MAX_ROW_LENGTH;
+			len = TRX_PROMEHTEUS_ERROR_MAX_ROW_LENGTH;
 			suffix = "...";
 		}
 		*error = zbx_dsprintf(*error, "data parsing error at row %d \"%.*s%s\": %s", row_num, len, data + pos,
@@ -1470,7 +1470,7 @@ static int	prometheus_extract_value(zbx_vector_ptr_t *rows, const char *output, 
 
 	if (1 < rows->values_num)
 	{
-		int	i, rows_num = ZBX_PROMETHEUS_ERROR_ROW_NUM;
+		int	i, rows_num = TRX_PROMETHEUS_ERROR_ROW_NUM;
 		size_t	error_alloc, error_offset = 0;
 
 		error_alloc = (NULL == *error ? 0 : strlen(*error) + 1);
@@ -1629,18 +1629,18 @@ int	zbx_prometheus_to_json(const char *data, const char *filter_data, char **val
 		char			*hint_type;
 
 		zbx_json_addobject(&json, NULL);
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_NAME, row->metric, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_VALUE, row->value, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_LINE_RAW, row->raw, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_NAME, row->metric, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_VALUE, row->value, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_LINE_RAW, row->raw, TRX_JSON_TYPE_STRING);
 
 		if (0 != row->labels.values_num)
 		{
-			zbx_json_addobject(&json, ZBX_PROTO_TAG_LABELS);
+			zbx_json_addobject(&json, TRX_PROTO_TAG_LABELS);
 
 			for (j = 0; j < row->labels.values_num; j++)
 			{
 				zbx_prometheus_label_t	*label = (zbx_prometheus_label_t *)row->labels.values[j];
-				zbx_json_addstring(&json, label->name, label->value, ZBX_JSON_TYPE_STRING);
+				zbx_json_addstring(&json, label->name, label->value, TRX_JSON_TYPE_STRING);
 			}
 
 			zbx_json_close(&json);
@@ -1649,11 +1649,11 @@ int	zbx_prometheus_to_json(const char *data, const char *filter_data, char **val
 		hint_local.metric = row->metric;
 		hint = (zbx_prometheus_hint_t *)zbx_hashset_search(&hints, &hint_local);
 
-		hint_type = (NULL != hint && NULL != hint->type ? hint->type : ZBX_PROMETHEUS_TYPE_UNTYPED);
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_TYPE, hint_type, ZBX_JSON_TYPE_STRING);
+		hint_type = (NULL != hint && NULL != hint->type ? hint->type : TRX_PROMETHEUS_TYPE_UNTYPED);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_TYPE, hint_type, TRX_JSON_TYPE_STRING);
 
 		if (NULL != hint && NULL != hint->help)
-			zbx_json_addstring(&json, ZBX_PROTO_TAG_HELP, hint->help, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json, TRX_PROTO_TAG_HELP, hint->help, TRX_JSON_TYPE_STRING);
 
 		zbx_json_close(&json);
 	}

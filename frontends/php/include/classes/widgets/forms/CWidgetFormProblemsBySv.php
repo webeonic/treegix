@@ -109,7 +109,7 @@ class CWidgetFormProblemsBySv extends CWidgetForm {
 
 		// Show suppressed problems.
 		$field_show_suppressed = (new CWidgetFieldCheckBox('show_suppressed', _('Show suppressed problems')))
-			->setDefault(ZBX_PROBLEM_SUPPRESSED_FALSE);
+			->setDefault(TRX_PROBLEM_SUPPRESSED_FALSE);
 
 		if (array_key_exists('show_suppressed', $this->data)) {
 			$field_show_suppressed->setValue($this->data['show_suppressed']);

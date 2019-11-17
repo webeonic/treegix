@@ -26,43 +26,43 @@ if (count($data['hosts_types']) == 1) {
 	$counts = $data['hosts_count'][$data['hosts_types'][0]];
 
 	$table = (new CDiv())
-		->addClass(ZBX_STYLE_HOST_AVAIL_WIDGET)
-		->addClass(ZBX_STYLE_TOTALS_LIST)
+		->addClass(TRX_STYLE_HOST_AVAIL_WIDGET)
+		->addClass(TRX_STYLE_TOTALS_LIST)
 		->addClass(($data['layout'] == STYLE_HORIZONTAL)
-			? ZBX_STYLE_TOTALS_LIST_HORIZONTAL
-			: ZBX_STYLE_TOTALS_LIST_VERTICAL
+			? TRX_STYLE_TOTALS_LIST_HORIZONTAL
+			: TRX_STYLE_TOTALS_LIST_VERTICAL
 		);
 
 	$table->addItem((new CDiv([
-		(new CSpan($counts[HOST_AVAILABLE_TRUE]))->addClass(ZBX_STYLE_TOTALS_LIST_COUNT), _('Available')
-	]))->addClass(ZBX_STYLE_HOST_AVAIL_TRUE));
+		(new CSpan($counts[HOST_AVAILABLE_TRUE]))->addClass(TRX_STYLE_TOTALS_LIST_COUNT), _('Available')
+	]))->addClass(TRX_STYLE_HOST_AVAIL_TRUE));
 
 	$table->addItem((new CDiv([
-		(new CSpan($counts[HOST_AVAILABLE_FALSE]))->addClass(ZBX_STYLE_TOTALS_LIST_COUNT), _('Not available')
-	]))->addClass(ZBX_STYLE_HOST_AVAIL_FALSE));
+		(new CSpan($counts[HOST_AVAILABLE_FALSE]))->addClass(TRX_STYLE_TOTALS_LIST_COUNT), _('Not available')
+	]))->addClass(TRX_STYLE_HOST_AVAIL_FALSE));
 
 	$table->addItem((new CDiv([
-		(new CSpan($counts[HOST_AVAILABLE_UNKNOWN]))->addClass(ZBX_STYLE_TOTALS_LIST_COUNT), _('Unknown')
-	]))->addClass(ZBX_STYLE_HOST_AVAIL_UNKNOWN));
+		(new CSpan($counts[HOST_AVAILABLE_UNKNOWN]))->addClass(TRX_STYLE_TOTALS_LIST_COUNT), _('Unknown')
+	]))->addClass(TRX_STYLE_HOST_AVAIL_UNKNOWN));
 
 	$table->addItem((new CDiv([
-		(new CSpan($data['hosts_total'][$data['hosts_types'][0]]))->addClass(ZBX_STYLE_TOTALS_LIST_COUNT), _('Total')
-	]))->addClass(ZBX_STYLE_HOST_AVAIL_TOTAL));
+		(new CSpan($data['hosts_total'][$data['hosts_types'][0]]))->addClass(TRX_STYLE_TOTALS_LIST_COUNT), _('Total')
+	]))->addClass(TRX_STYLE_HOST_AVAIL_TOTAL));
 }
 else {
 	$table = (new CTableInfo)
 		->setHeader($header[$data['layout']])
 		->setHeadingColumn(0)
-		->addClass(ZBX_STYLE_HOST_AVAIL_WIDGET);
+		->addClass(TRX_STYLE_HOST_AVAIL_WIDGET);
 
 	foreach ($type_field_names as $key => $value) {
 		if (in_array($key, $data['hosts_types'])) {
 			$counts = $data['hosts_count'][$key];
 
-			$available_row = (new CCol($counts[HOST_AVAILABLE_TRUE]))->addClass(ZBX_STYLE_HOST_AVAIL_TRUE);
-			$not_available_row = (new CCol($counts[HOST_AVAILABLE_FALSE]))->addClass(ZBX_STYLE_HOST_AVAIL_FALSE);
-			$unknown_row = (new CCol($counts[HOST_AVAILABLE_UNKNOWN]))->addClass(ZBX_STYLE_HOST_AVAIL_UNKNOWN);
-			$total_row = (new CCol($data['hosts_total'][$key]))->addClass(ZBX_STYLE_HOST_AVAIL_TOTAL);
+			$available_row = (new CCol($counts[HOST_AVAILABLE_TRUE]))->addClass(TRX_STYLE_HOST_AVAIL_TRUE);
+			$not_available_row = (new CCol($counts[HOST_AVAILABLE_FALSE]))->addClass(TRX_STYLE_HOST_AVAIL_FALSE);
+			$unknown_row = (new CCol($counts[HOST_AVAILABLE_UNKNOWN]))->addClass(TRX_STYLE_HOST_AVAIL_UNKNOWN);
+			$total_row = (new CCol($data['hosts_total'][$key]))->addClass(TRX_STYLE_HOST_AVAIL_TOTAL);
 
 			if ($data['layout'] == STYLE_HORIZONTAL) {
 				$table->addRow([$value, $available_row, $not_available_row, $unknown_row, $total_row]);

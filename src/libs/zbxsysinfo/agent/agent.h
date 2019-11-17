@@ -5,6 +5,6 @@
 
 #include "sysinfo.h"
 
-extern ZBX_METRIC	parameters_agent[];
+extern TRX_METRIC	parameters_agent[];
 
 #endif /* TREEGIX_SYSINFO_AGENT_H */

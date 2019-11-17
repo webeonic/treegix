@@ -2,7 +2,7 @@
 
 
 $user_navigation = (new CList())
-    ->addClass(ZBX_STYLE_TOP_NAV_ICONS)
+    ->addClass(TRX_STYLE_TOP_NAV_ICONS)
     ->addItem(
         (new CForm('get', 'treegix.php'))
             ->cleanItems()
@@ -10,10 +10,10 @@ $user_navigation = (new CList())
                 (new CVar('action', 'search'))->removeId(),
                 (new CTextBox('search', getRequest('search', ''), false, 255))
                     ->setAttribute('autocomplete', 'off')
-                    ->addClass(ZBX_STYLE_SEARCH)
+                    ->addClass(TRX_STYLE_SEARCH)
                     ->setAttribute('aria-label', _('type here to search')),
                 (new CSubmitButton('&nbsp;'))
-                    ->addClass(ZBX_STYLE_BTN_SEARCH)
+                    ->addClass(TRX_STYLE_BTN_SEARCH)
                     ->setTitle(_('Search'))
             ])
             ->setAttribute('role', 'search')
@@ -34,7 +34,7 @@ $user_menu = (new CList())
 
 $user_menu->addItem(
     (new CLink(SPACE, 'javascript:;'))
-        ->addClass(ZBX_STYLE_TOP_NAV_SIGNOUT)
+        ->addClass(TRX_STYLE_TOP_NAV_SIGNOUT)
         ->setTitle(_('Sign out'))
         ->onClick('TREEGIX.logout()')
 );
@@ -46,30 +46,30 @@ $top_menu = (new CDiv())
     ->addItem(
         (new CLink(
             (new CDiv())
-                ->addClass(ZBX_STYLE_LOGO)
+                ->addClass(TRX_STYLE_LOGO)
                 ->addStyle(CBrandHelper::getLogoStyle()),
             'treegix.php?action=dashboard.view'
         ))
-            ->addClass(ZBX_STYLE_HEADER_LOGO)
+            ->addClass(TRX_STYLE_HEADER_LOGO)
     )
     ->addItem(
-        (new CTag('nav', true, (new CList($data['menu']['main_menu']))->addClass(ZBX_STYLE_TOP_NAV)))
+        (new CTag('ul', true, (new CList($data['menu']['main_menu']))->addClass(TRX_STYLE_TOP_NAV)))
             ->setAttribute('aria-label', _('Main navigation'))
     )
     ->addItem($user_navigation)
-    ->addClass(ZBX_STYLE_TOP_NAV_CONTAINER)
+    ->addClass(TRX_STYLE_TOP_NAV_CONTAINER)
     ->setId('mmenu');
 
 $sub_menu_div = (new CTag('nav', true))
     ->setAttribute('aria-label', _('Sub navigation'))
-    ->addClass(ZBX_STYLE_TOP_SUBNAV_CONTAINER)
+    ->addClass(TRX_STYLE_TOP_SUBNAV_CONTAINER)
     ->onMouseover('javascript: MMenu.submenu_mouseOver();')
     ->onMouseout('javascript: MMenu.mouseOut();');
 
 // 2nd level menu
 foreach ($data['menu']['sub_menus'] as $label => $sub_menu) {
     $sub_menu_row = (new CList())
-        ->addClass(ZBX_STYLE_TOP_SUBNAV)
+        ->addClass(TRX_STYLE_TOP_SUBNAV)
         ->setId('sub_' . $label);
 
     foreach ($sub_menu as $id => $sub_page) {
@@ -84,7 +84,7 @@ foreach ($data['menu']['sub_menus'] as $label => $sub_menu) {
 
         $sub_menu_item = (new CLink($sub_page['menu_text'], $url->getUrl()))->setAttribute('tabindex', 0);
         if ($sub_page['selected']) {
-            $sub_menu_item->addClass(ZBX_STYLE_SELECTED);
+            $sub_menu_item->addClass(TRX_STYLE_SELECTED);
         }
 
         $sub_menu_row->addItem($sub_menu_item);
@@ -101,7 +101,7 @@ foreach ($data['menu']['sub_menus'] as $label => $sub_menu) {
 
 if ($data['server_name'] !== '') {
     $sub_menu_div->addItem(
-        (new CDiv($data['server_name']))->addClass(ZBX_STYLE_SERVER_NAME)
+        (new CDiv($data['server_name']))->addClass(TRX_STYLE_SERVER_NAME)
     );
 }
 

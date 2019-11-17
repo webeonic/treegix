@@ -4,18 +4,18 @@
 /**
  * Default value in seconds, for poller interval.
  */
-ZBX_Notifications.POLL_INTERVAL = 30;
+TRX_Notifications.POLL_INTERVAL = 30;
 
-ZBX_Notifications.ALARM_SEVERITY_RESOLVED = -1;
-ZBX_Notifications.ALARM_INFINITE_SERVER = -1;
-ZBX_Notifications.ALARM_ONCE_PLAYER = -1;
-ZBX_Notifications.ALARM_ONCE_SERVER = 1;
+TRX_Notifications.ALARM_SEVERITY_RESOLVED = -1;
+TRX_Notifications.ALARM_INFINITE_SERVER = -1;
+TRX_Notifications.ALARM_ONCE_PLAYER = -1;
+TRX_Notifications.ALARM_ONCE_SERVER = 1;
 
 /**
  * Fetches and renders notifications. Server always returns full list of actual notifications that this class will
- * render into DOM. Last focused ZBX_BrowserTab instance is the active one. Active ZBX_BrowserTab instance is the only
+ * render into DOM. Last focused TRX_BrowserTab instance is the active one. Active TRX_BrowserTab instance is the only
  * one that polls server, meanwhile other instances are inactive. This is achieved by synchronizing state of active tab
- * via ZBX_LocalStorage and responding to it's change event.
+ * via TRX_LocalStorage and responding to it's change event.
  *
  * Only methods prefixed with <push> are the "action dispatchers", methods prefixed with <handlePushed> responds to
  * these "actions" by passing the new received state value through a method prefixed with <consume> that will adjust
@@ -28,23 +28,23 @@ ZBX_Notifications.ALARM_ONCE_SERVER = 1;
  *
  * Methods prefixed with <render> uses only consumed internal state and should not <push> any changes.
  *
- * @param {ZBX_LocalStorage} store
- * @param {ZBX_BrowserTab} tab
+ * @param {TRX_LocalStorage} store
+ * @param {TRX_BrowserTab} tab
  */
-function ZBX_Notifications(store, tab) {
-	if (!(store instanceof ZBX_LocalStorage) || !(tab instanceof ZBX_BrowserTab)) {
+function TRX_Notifications(store, tab) {
+	if (!(store instanceof TRX_LocalStorage) || !(tab instanceof TRX_BrowserTab)) {
 		throw 'Unmatched signature!';
 	}
 
 	this.active = false;
 
-	this.poll_interval = ZBX_Notifications.POLL_INTERVAL;
+	this.poll_interval = TRX_Notifications.POLL_INTERVAL;
 
 	this.store = store;
 	this.tab = tab;
 
-	this.collection = new ZBX_NotificationCollection();
-	this.alarm = new ZBX_NotificationsAlarm(new ZBX_NotificationsAudio());
+	this.collection = new TRX_NotificationCollection();
+	this.alarm = new TRX_NotificationsAlarm(new TRX_NotificationsAudio());
 
 	this.fetchUpdates();
 
@@ -83,7 +83,7 @@ function ZBX_Notifications(store, tab) {
 /**
  * Binds to click events, LS update events and tab events.
  */
-ZBX_Notifications.prototype.bindEventHandlers = function() {
+TRX_Notifications.prototype.bindEventHandlers = function() {
 	this.tab.onBeforeUnload(this.handleTabBeforeUnload.bind(this));
 	this.tab.onFocus(this.handleTabFocusIn.bind(this));
 	this.tab.onCrashed(this.handleTabFocusIn.bind(this));
@@ -103,10 +103,10 @@ ZBX_Notifications.prototype.bindEventHandlers = function() {
 /**
  * Reads all from store.
  */
-ZBX_Notifications.prototype.fetchUpdates = function() {
+TRX_Notifications.prototype.fetchUpdates = function() {
 	this._cached_list = this.store.readKey('notifications.list', []);
 	this._cached_user_settings = this.store.readKey('notifications.user_settings', {
-		msg_timeout: ZBX_Notifications.POLL_INTERVAL * 2
+		msg_timeout: TRX_Notifications.POLL_INTERVAL * 2
 	});
 	this._cached_active_tabid = this.store.readKey('notifications.active_tabid', '');
 	this._cached_alarm_state = this.store.readKey('notifications.alarm_state', this.alarm.produce());
@@ -115,7 +115,7 @@ ZBX_Notifications.prototype.fetchUpdates = function() {
 /**
  * @param {string} id
  */
-ZBX_Notifications.prototype.removeById = function(id) {
+TRX_Notifications.prototype.removeById = function(id) {
 	if (id.constructor != String) {
 		id += '';
 	}
@@ -126,16 +126,16 @@ ZBX_Notifications.prototype.removeById = function(id) {
 /**
  * @param {string} id
  *
- * @return {ZBX_Notification}
+ * @return {TRX_Notification}
  */
-ZBX_Notifications.prototype.getById = function(id) {
+TRX_Notifications.prototype.getById = function(id) {
 	return this.collection.getById(id);
 };
 
 /**
  * @param {object} alarm_state
  */
-ZBX_Notifications.prototype.consumeAlarmState = function(alarm_state) {
+TRX_Notifications.prototype.consumeAlarmState = function(alarm_state) {
 	this.alarm.consume(alarm_state, this.getById(alarm_state.start));
 };
 
@@ -147,14 +147,14 @@ ZBX_Notifications.prototype.consumeAlarmState = function(alarm_state) {
  *
  * @return {integer}
  */
-ZBX_Notifications.prototype.calcPollInterval = function(user_settings) {
+TRX_Notifications.prototype.calcPollInterval = function(user_settings) {
 	var min_timeout = Math.floor(user_settings.msg_timeout / 2);
 
 	if (min_timeout < 1) {
 		min_timeout = 1;
 	}
-	else if (min_timeout > ZBX_Notifications.POLL_INTERVAL) {
-		min_timeout = ZBX_Notifications.POLL_INTERVAL;
+	else if (min_timeout > TRX_Notifications.POLL_INTERVAL) {
+		min_timeout = TRX_Notifications.POLL_INTERVAL;
 	}
 
 	return min_timeout;
@@ -163,7 +163,7 @@ ZBX_Notifications.prototype.calcPollInterval = function(user_settings) {
 /**
  * @param {objects} user_settings
  */
-ZBX_Notifications.prototype.consumeUserSettings = function(user_settings) {
+TRX_Notifications.prototype.consumeUserSettings = function(user_settings) {
 	var poll_interval = this.calcPollInterval(user_settings);
 	if (this.poll_interval != poll_interval) {
 		this.poll_interval = poll_interval;
@@ -194,7 +194,7 @@ ZBX_Notifications.prototype.consumeUserSettings = function(user_settings) {
  *
  * @param {array} list  Ordered list of raw notification objects.
  */
-ZBX_Notifications.prototype.consumeList = function(list) {
+TRX_Notifications.prototype.consumeList = function(list) {
 	this.collection.consumeList(list);
 	this._cached_list = this.collection.getRawList();
 
@@ -214,7 +214,7 @@ ZBX_Notifications.prototype.consumeList = function(list) {
 /**
  * Stops ticking.
  */
-ZBX_Notifications.prototype.stopMainLoop = function() {
+TRX_Notifications.prototype.stopMainLoop = function() {
 	if (this._main_loop_id) {
 		clearInterval(this._main_loop_id);
 	}
@@ -223,7 +223,7 @@ ZBX_Notifications.prototype.stopMainLoop = function() {
 /**
  * Sets interval for main loop. Tick is immediately executed.
  */
-ZBX_Notifications.prototype.restartMainLoop = function() {
+TRX_Notifications.prototype.restartMainLoop = function() {
 	this.stopMainLoop();
 	this._main_loop_id = setInterval(this.mainLoop.bind(this), this.poll_interval * 1000);
 	this.mainLoop();
@@ -234,7 +234,7 @@ ZBX_Notifications.prototype.restartMainLoop = function() {
  *
  * @param {integer} ms  Optional milliseconds for debounce.
  */
-ZBX_Notifications.prototype.debounceRender = function(ms) {
+TRX_Notifications.prototype.debounceRender = function(ms) {
 	ms = ms || 50;
 	if (this._render_timeoutid) {
 		clearTimeout(this._render_timeoutid);
@@ -244,10 +244,10 @@ ZBX_Notifications.prototype.debounceRender = function(ms) {
 };
 
 /**
- * Write ZBX_LocalStorage only values that were updated by <consume> methods. For example, during a new user_settings
+ * Write TRX_LocalStorage only values that were updated by <consume> methods. For example, during a new user_settings
  * consumption it came clear that alarm has to be updated, only if that happened, alarm will be pushed.
  */
-ZBX_Notifications.prototype.pushUpdates = function() {
+TRX_Notifications.prototype.pushUpdates = function() {
 	if (this.active) {
 		this.pushActiveTabid(this.tab.uid);
 	}
@@ -260,28 +260,28 @@ ZBX_Notifications.prototype.pushUpdates = function() {
 /**
  * @param {array} list
  */
-ZBX_Notifications.prototype.pushList = function(list) {
+TRX_Notifications.prototype.pushList = function(list) {
 	this.store.writeKey('notifications.list', list);
 };
 
 /**
  * @param {object} user_settings
  */
-ZBX_Notifications.prototype.pushUserSettings = function(user_settings) {
+TRX_Notifications.prototype.pushUserSettings = function(user_settings) {
 	this.store.writeKey('notifications.user_settings', user_settings);
 };
 
 /**
  * @param {object} alarm
  */
-ZBX_Notifications.prototype.pushAlarmState = function(alarm_state) {
+TRX_Notifications.prototype.pushAlarmState = function(alarm_state) {
 	this.store.writeKey('notifications.alarm_state', alarm_state);
 };
 
 /**
  * @param {string} tabid
  */
-ZBX_Notifications.prototype.pushActiveTabid = function(tabid) {
+TRX_Notifications.prototype.pushActiveTabid = function(tabid) {
 	this.store.writeKey('notifications.active_tabid', tabid);
 };
 
@@ -289,7 +289,7 @@ ZBX_Notifications.prototype.pushActiveTabid = function(tabid) {
  * This logic is a response - if other instance writes this tabid into LS, when current tab receives focusIn event
  * or at new instance creation depending on context (for example single tab scenario without receiving focusIn event).
  */
-ZBX_Notifications.prototype.becomeActive = function() {
+TRX_Notifications.prototype.becomeActive = function() {
 	if (this.active) {
 		return;
 	}
@@ -307,7 +307,7 @@ ZBX_Notifications.prototype.becomeActive = function() {
  * Notification instance may only ever become inactive when another instance becomes active. At single tab unload case
  * various artifacts like seek position are transfered explicitly.
  */
-ZBX_Notifications.prototype.becomeInactive = function() {
+TRX_Notifications.prototype.becomeInactive = function() {
 	if (this.active) {
 		// No need to push everything.
 		this.pushAlarmState(this.alarm.produce());
@@ -322,7 +322,7 @@ ZBX_Notifications.prototype.becomeInactive = function() {
 /**
  * Backup store still remains, this is used mainly for single instance session case on tab unload event.
  */
-ZBX_Notifications.prototype.dropStore = function() {
+TRX_Notifications.prototype.dropStore = function() {
 	this.store.eachKeyRegex('^notifications\\.', function(key) {
 		key.truncatePrimary();
 	});
@@ -331,7 +331,7 @@ ZBX_Notifications.prototype.dropStore = function() {
 /**
  * @param {object} user_settings
  */
-ZBX_Notifications.prototype.handlePushedUserSettings = function(user_settings) {
+TRX_Notifications.prototype.handlePushedUserSettings = function(user_settings) {
 	this.consumeUserSettings(user_settings);
 	this.consumeList(this.collection.getRawList());
 	this.render();
@@ -340,7 +340,7 @@ ZBX_Notifications.prototype.handlePushedUserSettings = function(user_settings) {
 /**
  * @param {array} list
  */
-ZBX_Notifications.prototype.handlePushedList = function(list) {
+TRX_Notifications.prototype.handlePushedList = function(list) {
 	this.consumeList(list);
 	this.render();
 };
@@ -348,7 +348,7 @@ ZBX_Notifications.prototype.handlePushedList = function(list) {
 /**
  * @param {object} alarm_state
  */
-ZBX_Notifications.prototype.handlePushedAlarmState = function(alarm_state) {
+TRX_Notifications.prototype.handlePushedAlarmState = function(alarm_state) {
 	this.alarm.refresh();
 	this.consumeAlarmState(alarm_state);
 	this.render();
@@ -357,7 +357,7 @@ ZBX_Notifications.prototype.handlePushedAlarmState = function(alarm_state) {
 /**
  * @param {string} tabid
  */
-ZBX_Notifications.prototype.handlePushedActiveTabid = function(tabid) {
+TRX_Notifications.prototype.handlePushedActiveTabid = function(tabid) {
 	(tabid === this.tab.uid) ? this.becomeActive() : this.becomeInactive();
 };
 
@@ -367,12 +367,12 @@ ZBX_Notifications.prototype.handlePushedActiveTabid = function(tabid) {
  * Latter is always assumed, so when navigating active tab, focus is deligated onto to any tab if possible,
  * then this tab might reclaim focus again at construction if during during that time document has focus.
  * At slow connection during page navigation there will be another active tab polling for notifications (if multitab).
- * Here `tab` is refered as ZBX_Notifications instance and `focus` - wheather instance is `active` (not focused).
+ * Here `tab` is refered as TRX_Notifications instance and `focus` - wheather instance is `active` (not focused).
  *
- * @param {ZBX_BrowseTab} removed_tab  Current tab instance.
+ * @param {TRX_BrowseTab} removed_tab  Current tab instance.
  * @param {array} other_tabids  List of alive tab ids (wuthout current tabid).
  */
-ZBX_Notifications.prototype.handleTabBeforeUnload = function(removed_tab, other_tabids) {
+TRX_Notifications.prototype.handleTabBeforeUnload = function(removed_tab, other_tabids) {
 	if (this.active && other_tabids.length) {
 		this.pushActiveTabid(other_tabids[0]);
 		this.becomeInactive();
@@ -393,14 +393,14 @@ ZBX_Notifications.prototype.handleTabBeforeUnload = function(removed_tab, other_
 /**
  * Responds when this instance tab receives focus event.
  */
-ZBX_Notifications.prototype.handleTabFocusIn = function() {
+TRX_Notifications.prototype.handleTabFocusIn = function() {
 	this.becomeActive();
 };
 
 /**
  * @param {MouseEvent} e
  */
-ZBX_Notifications.prototype.handleCloseClicked = function(e) {
+TRX_Notifications.prototype.handleCloseClicked = function(e) {
 	this.fetch('notifications.read', {ids: this.getEventIds()})
 		.catch(console.error)
 		.then(function(resp) {
@@ -417,7 +417,7 @@ ZBX_Notifications.prototype.handleCloseClicked = function(e) {
 /**
  * @param {MouseEvent} e
  */
-ZBX_Notifications.prototype.handleSnoozeClicked = function(e) {
+TRX_Notifications.prototype.handleSnoozeClicked = function(e) {
 	if (this.alarm.isSnoozed(this._cached_list)) {
 		return;
 	}
@@ -435,7 +435,7 @@ ZBX_Notifications.prototype.handleSnoozeClicked = function(e) {
 /**
  * @param {MouseEvent} e
  */
-ZBX_Notifications.prototype.handleMuteClicked = function(e) {
+TRX_Notifications.prototype.handleMuteClicked = function(e) {
 	this.fetch('notifications.mute', {muted: this.alarm.muted ? 0 : 1})
 		.catch(console.error)
 		.then(function(resp) {
@@ -451,7 +451,7 @@ ZBX_Notifications.prototype.handleMuteClicked = function(e) {
  *
  * @param {object} resp  Server response object. Contains settings and list of notifications.
  */
-ZBX_Notifications.prototype.handleMainLoopResp = function(resp) {
+TRX_Notifications.prototype.handleMainLoopResp = function(resp) {
 	if (resp.error) {
 		this.stopMainLoop();
 		this.store.truncateBackup();
@@ -468,9 +468,9 @@ ZBX_Notifications.prototype.handleMainLoopResp = function(resp) {
 };
 
 /**
- * @param {ZBX_NotificationsAlarm} alarm_state
+ * @param {TRX_NotificationsAlarm} alarm_state
  */
-ZBX_Notifications.prototype.handleAlarmStateChanged = function(alarm_state) {
+TRX_Notifications.prototype.handleAlarmStateChanged = function(alarm_state) {
 	this.pushAlarmState(alarm_state.produce());
 };
 
@@ -479,14 +479,14 @@ ZBX_Notifications.prototype.handleAlarmStateChanged = function(alarm_state) {
  * Collection renders whole list of notifications and snooze, and mute buttons, not all state is passed down here, just
  * user configuration, the list state to be rendered, has been consumed by collection before.
  */
-ZBX_Notifications.prototype.renderCollection = function() {
+TRX_Notifications.prototype.renderCollection = function() {
 	this.collection.render(this._cached_user_settings.severity_styles, this.alarm);
 };
 
 /**
  * Render everything. Any painting optimization may be considered levels deeper.
  */
-ZBX_Notifications.prototype.render = function() {
+TRX_Notifications.prototype.render = function() {
 	this.renderCollection();
 	this.renderAudio();
 };
@@ -494,7 +494,7 @@ ZBX_Notifications.prototype.render = function() {
 /**
  * Alarm is stopped for inactive instance.
  */
-ZBX_Notifications.prototype.renderAudio = function() {
+TRX_Notifications.prototype.renderAudio = function() {
 	if (this.active) {
 		this.alarm.render(this._cached_user_settings, this._cached_list);
 	}
@@ -507,9 +507,9 @@ ZBX_Notifications.prototype.renderAudio = function() {
  * @param {string} resource  A value for 'action' parameter.
  * @param {object} params    Form data to be send.
  *
- * @return {Promise}  For IE11 ZBX_Promise poly-fill is returned.
+ * @return {Promise}  For IE11 TRX_Promise poly-fill is returned.
  */
-ZBX_Notifications.prototype.fetch = function(resource, params) {
+TRX_Notifications.prototype.fetch = function(resource, params) {
 	return new Promise(function(resolve, reject) {
 		sendAjaxData('treegix.php?action=' + resource, {
 			data: params || {},
@@ -522,7 +522,7 @@ ZBX_Notifications.prototype.fetch = function(resource, params) {
 /**
  * @return {array}
  */
-ZBX_Notifications.prototype.getEventIds = function() {
+TRX_Notifications.prototype.getEventIds = function() {
 	return this.collection.getIds();
 };
 
@@ -530,7 +530,7 @@ ZBX_Notifications.prototype.getEventIds = function() {
  * Main loop periodically executes at some interval. Only if this instance is 'active' notifications are fetched
  * and rendered.
  */
-ZBX_Notifications.prototype.mainLoop = function() {
+TRX_Notifications.prototype.mainLoop = function() {
 	if (!this.active) {
 		return;
 	}
@@ -543,14 +543,14 @@ ZBX_Notifications.prototype.mainLoop = function() {
 /**
  * Utilities.
  */
-ZBX_Notifications.util = {};
+TRX_Notifications.util = {};
 
 /**
  * @param {Node} node  Display none node.
  *
  * @return {Promise}
  */
-ZBX_Notifications.util.getNodeHeight = function(node) {
+TRX_Notifications.util.getNodeHeight = function(node) {
 	node.style.display = 'block';
 	node.style.position = 'absolute';
 	node.style.visibility = 'hidden';
@@ -580,12 +580,12 @@ ZBX_Notifications.util.getNodeHeight = function(node) {
  *
  * @return {Promise}  Resolved once animation should have finished.
  */
-ZBX_Notifications.util.slideDown = function(node, duration, delay) {
+TRX_Notifications.util.slideDown = function(node, duration, delay) {
 	delay = delay || 0;
 	duration = duration || 200;
 
 	return new Promise(function(resolved, failed) {
-		ZBX_Notifications.util.getNodeHeight(node).then(function(height) {
+		TRX_Notifications.util.getNodeHeight(node).then(function(height) {
 			var padding = window.getComputedStyle(node).padding;
 
 			node.style.height = '0px';
@@ -610,7 +610,7 @@ ZBX_Notifications.util.slideDown = function(node, duration, delay) {
 /**
  * @param {Node} node
  */
-ZBX_Notifications.util.fadeIn = function(node) {
+TRX_Notifications.util.fadeIn = function(node) {
 	node.style.opacity = 0;
 	node.style.display = 'inherit';
 
@@ -629,7 +629,7 @@ ZBX_Notifications.util.fadeIn = function(node) {
  *
  * @return {Promise}  Resolved once animation should have finished.
  */
-ZBX_Notifications.util.fadeOut = function(node) {
+TRX_Notifications.util.fadeOut = function(node) {
 	var opacity = 1,
 		intervalid;
 
@@ -661,7 +661,7 @@ ZBX_Notifications.util.fadeOut = function(node) {
  *
  * @return {Promise}  Resolved once animation should have finished.
  */
-ZBX_Notifications.util.slideUp = function(node, duration, delay) {
+TRX_Notifications.util.slideUp = function(node, duration, delay) {
 	delay = delay || 0;
 
 	node.style.overflow = 'hidden';
@@ -683,9 +683,9 @@ ZBX_Notifications.util.slideUp = function(node, duration, delay) {
 
 
 /**
- * @param {ZBX_NotificationsAudio} player
+ * @param {TRX_NotificationsAudio} player
  */
-function ZBX_NotificationsAlarm(player) {
+function TRX_NotificationsAlarm(player) {
 	this.player = player;
 
 	this.severity = -2;
@@ -704,7 +704,7 @@ function ZBX_NotificationsAlarm(player) {
  *
  * @return {string}
  */
-ZBX_NotificationsAlarm.prototype.getId = function() {
+TRX_NotificationsAlarm.prototype.getId = function() {
 	if (this.notif) {
 		return this.notif.getId() + '_' + this.severity;
 	}
@@ -715,7 +715,7 @@ ZBX_NotificationsAlarm.prototype.getId = function() {
 /**
  * Invokes callbacks.
  */
-ZBX_NotificationsAlarm.prototype.dispatchChanged = function() {
+TRX_NotificationsAlarm.prototype.dispatchChanged = function() {
 	this.on_changed_cbs.forEach(function(callback) {
 		callback(this);
 	}.bind(this));
@@ -724,28 +724,28 @@ ZBX_NotificationsAlarm.prototype.dispatchChanged = function() {
 /**
  * This mechanism exists to prevent or explicitly allow seek position to be applied at render.
  */
-ZBX_NotificationsAlarm.prototype.refresh = function() {
+TRX_NotificationsAlarm.prototype.refresh = function() {
 	this.old_id = '';
 };
 
 /**
  * Subscribes a callback.
  */
-ZBX_NotificationsAlarm.prototype.onChange = function(callback) {
+TRX_NotificationsAlarm.prototype.onChange = function(callback) {
 	this.on_changed_cbs.push(callback);
 };
 
 /**
  * Calculated property.
  */
-ZBX_NotificationsAlarm.prototype.markAsPlayed = function() {
+TRX_NotificationsAlarm.prototype.markAsPlayed = function() {
 	this.end = this.getId();
 };
 
 /**
  * @return {bool}
  */
-ZBX_NotificationsAlarm.prototype.isPlayed = function() {
+TRX_NotificationsAlarm.prototype.isPlayed = function() {
 	return (this.getId() === this.end);
 };
 
@@ -754,7 +754,7 @@ ZBX_NotificationsAlarm.prototype.isPlayed = function() {
  *
  * @return {bool}
  */
-ZBX_NotificationsAlarm.prototype.isSnoozed = function(list) {
+TRX_NotificationsAlarm.prototype.isSnoozed = function(list) {
 	for (var i = 0; i < list.length; i++) {
 		if (!list[i].snoozed) {
 			return false;
@@ -767,15 +767,15 @@ ZBX_NotificationsAlarm.prototype.isSnoozed = function(list) {
 /**
  * @return {bool}
  */
-ZBX_NotificationsAlarm.prototype.isStopped = function() {
+TRX_NotificationsAlarm.prototype.isStopped = function() {
 	return !this.getId();
 };
 
 /**
  * @param {object} alarm_state
- * @param {ZBX_Notification} notif
+ * @param {TRX_Notification} notif
  */
-ZBX_NotificationsAlarm.prototype.consume = function(alarm_state, notif) {
+TRX_NotificationsAlarm.prototype.consume = function(alarm_state, notif) {
 	if (notif) {
 		this.notif = notif;
 	}
@@ -788,17 +788,17 @@ ZBX_NotificationsAlarm.prototype.consume = function(alarm_state, notif) {
 /**
  * Does not update state, just renders player stopped.
  */
-ZBX_NotificationsAlarm.prototype.stop = function() {
+TRX_NotificationsAlarm.prototype.stop = function() {
 	this.notif = null;
 	this.player.stop();
 };
 
-ZBX_NotificationsAlarm.prototype.mute = function() {
+TRX_NotificationsAlarm.prototype.mute = function() {
 	this.muted = true;
 	this.player.mute();
 };
 
-ZBX_NotificationsAlarm.prototype.unmute = function() {
+TRX_NotificationsAlarm.prototype.unmute = function() {
 	this.muted = false;
 	this.player.unmute();
 };
@@ -807,7 +807,7 @@ ZBX_NotificationsAlarm.prototype.unmute = function() {
  * @param {object} user_settings
  * @param {array} list  List of raw notification objects.
  */
-ZBX_NotificationsAlarm.prototype.render = function(user_settings, list) {
+TRX_NotificationsAlarm.prototype.render = function(user_settings, list) {
 	user_settings.muted ? this.mute() : this.unmute();
 
 	if (this.isStopped() || this.isPlayed() || this.isSnoozed(list)) {
@@ -822,7 +822,7 @@ ZBX_NotificationsAlarm.prototype.render = function(user_settings, list) {
 	}
 
 	this.player.tune({
-		playOnce: (this.calcTimeout(user_settings) == ZBX_Notifications.ALARM_ONCE_PLAYER),
+		playOnce: (this.calcTimeout(user_settings) == TRX_Notifications.ALARM_ONCE_PLAYER),
 		messageTimeout: (this.notif.calcDisplayTimeout(user_settings) / 1000) >> 0,
 		callback: function() {
 			this.markAsPlayed();
@@ -839,13 +839,13 @@ ZBX_NotificationsAlarm.prototype.render = function(user_settings, list) {
  *
  * @return {integer}
  */
-ZBX_NotificationsAlarm.prototype.calcTimeout = function(user_settings) {
-	if (user_settings.alarm_timeout == ZBX_Notifications.ALARM_INFINITE_SERVER) {
+TRX_NotificationsAlarm.prototype.calcTimeout = function(user_settings) {
+	if (user_settings.alarm_timeout == TRX_Notifications.ALARM_INFINITE_SERVER) {
 		return (this.notif.calcDisplayTimeout(user_settings) / 1000) >> 0;
 	}
 
-	if (user_settings.alarm_timeout == ZBX_Notifications.ALARM_ONCE_SERVER) {
-		return ZBX_Notifications.ALARM_ONCE_PLAYER;
+	if (user_settings.alarm_timeout == TRX_Notifications.ALARM_ONCE_SERVER) {
+		return TRX_Notifications.ALARM_ONCE_PLAYER;
 	}
 
 	if (this.timeout == 0) {
@@ -858,7 +858,7 @@ ZBX_NotificationsAlarm.prototype.calcTimeout = function(user_settings) {
 /**
  * @return {object}
  */
-ZBX_NotificationsAlarm.prototype.produce = function() {
+TRX_NotificationsAlarm.prototype.produce = function() {
 	return {
 		start: this.start,
 		end: this.end,
@@ -872,7 +872,7 @@ ZBX_NotificationsAlarm.prototype.produce = function() {
 /*
  * Resets crucial fields to accept notifications.
  */
-ZBX_NotificationsAlarm.prototype.reset = function() {
+TRX_NotificationsAlarm.prototype.reset = function() {
 	this.old_id = this.getId();
 	this.start = '';
 	this.severity = -2;
@@ -882,11 +882,11 @@ ZBX_NotificationsAlarm.prototype.reset = function() {
 /**
  * Appends notification to state in context.
  *
- * @param {ZBX_Notification} notif
+ * @param {TRX_Notification} notif
  */
-ZBX_NotificationsAlarm.prototype.acceptNotification = function(notif) {
+TRX_NotificationsAlarm.prototype.acceptNotification = function(notif) {
 	var raw = notif.getRaw(),
-		severity = raw.resolved ? ZBX_Notifications.ALARM_SEVERITY_RESOLVED : raw.severity;
+		severity = raw.resolved ? TRX_Notifications.ALARM_SEVERITY_RESOLVED : raw.severity;
 
 	if (raw.snoozed) {
 		return;
@@ -902,7 +902,7 @@ ZBX_NotificationsAlarm.prototype.acceptNotification = function(notif) {
 /**
  * Registering instance.
  */
-TREEGIX.namespace('instances.notifications', new ZBX_Notifications(
+TREEGIX.namespace('instances.notifications', new TRX_Notifications(
 	TREEGIX.namespace('instances.localStorage'),
 	TREEGIX.namespace('instances.browserTab')
 ));

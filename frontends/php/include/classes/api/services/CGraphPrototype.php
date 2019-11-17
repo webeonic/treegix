@@ -36,7 +36,7 @@ class CGraphPrototype extends CGraphGeneral {
 		$sqlParts = [
 			'select'	=> ['graphs' => 'g.graphid'],
 			'from'		=> ['graphs' => 'graphs g'],
-			'where'		=> ['g.flags='.ZBX_FLAG_DISCOVERY_PROTOTYPE],
+			'where'		=> ['g.flags='.TRX_FLAG_DISCOVERY_PROTOTYPE],
 			'group'		=> [],
 			'order'		=> [],
 			'limit'		=> null
@@ -344,13 +344,13 @@ class CGraphPrototype extends CGraphGeneral {
 
 			$tmpGraph['gitems'] = getSameGraphItemsForHost($tmpGraph['gitems'], $chdHost['hostid']);
 			if (!$tmpGraph['gitems']) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Graph "%1$s" cannot inherit. No required items on "%2$s".', $tmpGraph['name'], $chdHost['host']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Graph "%1$s" cannot inherit. No required items on "%2$s".', $tmpGraph['name'], $chdHost['host']));
 			}
 
 			if ($tmpGraph['ymax_itemid'] > 0) {
 				$ymaxItemid = getSameGraphItemsForHost([['itemid' => $tmpGraph['ymax_itemid']]], $chdHost['hostid']);
 				if (!$ymaxItemid) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Graph "%1$s" cannot inherit. No required items on "%2$s" (Ymax value item).', $tmpGraph['name'], $chdHost['host']));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Graph "%1$s" cannot inherit. No required items on "%2$s" (Ymax value item).', $tmpGraph['name'], $chdHost['host']));
 				}
 				$ymaxItemid = reset($ymaxItemid);
 				$tmpGraph['ymax_itemid'] = $ymaxItemid['itemid'];
@@ -358,7 +358,7 @@ class CGraphPrototype extends CGraphGeneral {
 			if ($tmpGraph['ymin_itemid'] > 0) {
 				$yminItemid = getSameGraphItemsForHost([['itemid' => $tmpGraph['ymin_itemid']]], $chdHost['hostid']);
 				if (!$yminItemid) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Graph "%1$s" cannot inherit. No required items on "%2$s" (Ymin value item).',
 							$tmpGraph['name'],
 							$chdHost['host']
@@ -372,7 +372,7 @@ class CGraphPrototype extends CGraphGeneral {
 			$chdGraphs = $this->get([
 				'filter' => [
 					'templateid' => $tmpGraph['graphid'],
-					'flags' => [ZBX_FLAG_DISCOVERY_PROTOTYPE, ZBX_FLAG_DISCOVERY_NORMAL]
+					'flags' => [TRX_FLAG_DISCOVERY_PROTOTYPE, TRX_FLAG_DISCOVERY_NORMAL]
 				],
 				'output' => API_OUTPUT_EXTEND,
 				'selectGraphItems' => API_OUTPUT_EXTEND,
@@ -393,7 +393,7 @@ class CGraphPrototype extends CGraphGeneral {
 						'limit' => 1
 					]);
 					if ($graphExists) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Graph "%1$s" already exists on "%2$s".',
 							$tmpGraph['name'],
 							$chdHost['host']
@@ -401,7 +401,7 @@ class CGraphPrototype extends CGraphGeneral {
 					}
 				}
 				elseif ($chdGraph['flags'] != $tmpGraph['flags']) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Graph with same name but other type exist.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Graph with same name but other type exist.'));
 				}
 
 				$tmpGraph['graphid'] = $chdGraph['graphid'];
@@ -419,10 +419,10 @@ class CGraphPrototype extends CGraphGeneral {
 				]);
 				if ($chdGraph = reset($chdGraph)) {
 					if ($chdGraph['templateid'] != 0) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Graph "%1$s" already exists on "%2$s" (inherited from another template).', $tmpGraph['name'], $chdHost['host']));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Graph "%1$s" already exists on "%2$s" (inherited from another template).', $tmpGraph['name'], $chdHost['host']));
 					}
 					elseif ($chdGraph['flags'] != $tmpGraph['flags']) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Graph with same name but other type exist.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Graph with same name but other type exist.'));
 					}
 
 					$chdGraphItemItems = [];
@@ -445,14 +445,14 @@ class CGraphPrototype extends CGraphGeneral {
 								}
 							}
 
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Graph "%1$s" already exists on "%2$s" (items are not identical).', $tmpGraph['name'], $chdHost['host']));
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Graph "%1$s" already exists on "%2$s" (items are not identical).', $tmpGraph['name'], $chdHost['host']));
 						}
 
 						$tmpGraph['graphid'] = $chdGraph['graphid'];
 						$this->updateReal($tmpGraph, $chdGraph);
 					}
 					else {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Graph "%1$s" already exists on "%2$s" (items are not identical).', $tmpGraph['name'], $chdHost['host']));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Graph "%1$s" already exists on "%2$s" (items are not identical).', $tmpGraph['name'], $chdHost['host']));
 					}
 				}
 				else {
@@ -537,7 +537,7 @@ class CGraphPrototype extends CGraphGeneral {
 	private function validateDelete(array &$graphids, array &$db_graphs = null) {
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $graphids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_graphs = $this->get([
@@ -549,20 +549,20 @@ class CGraphPrototype extends CGraphGeneral {
 
 		foreach ($graphids as $graphid) {
 			if (!array_key_exists($graphid, $db_graphs)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
 
 			if ($db_graphs[$graphid]['templateid'] != 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot delete templated graph prototype.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot delete templated graph prototype.'));
 			}
 		}
 	}
 
 	protected function createReal($graph) {
 		// mark the graph as a graph prototype
-		$graph['flags'] = ZBX_FLAG_DISCOVERY_PROTOTYPE;
+		$graph['flags'] = TRX_FLAG_DISCOVERY_PROTOTYPE;
 
 		return parent::createReal($graph);
 	}
@@ -629,13 +629,13 @@ class CGraphPrototype extends CGraphGeneral {
 			'selectItemDiscovery' => ['parent_itemid'],
 			'preservekeys' => true,
 			'filter' => [
-				'flags' => [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_PROTOTYPE, ZBX_FLAG_DISCOVERY_CREATED]
+				'flags' => [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_PROTOTYPE, TRX_FLAG_DISCOVERY_CREATED]
 			]
 		]);
 
 		foreach ($itemIds as $itemid) {
 			if (!isset($allowedItems[$itemid])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -648,7 +648,7 @@ class CGraphPrototype extends CGraphGeneral {
 		foreach ($graphs as $graph) {
 			foreach ($graph['gitems'] as $gitem) {
 				if (!in_array($allowedItems[$gitem['itemid']]['value_type'], $allowedValueTypes)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Cannot add a non-numeric item "%1$s" to graph prototype "%2$s".',
 						$allowedItems[$gitem['itemid']]['name'],
 						$graph['name']
@@ -691,13 +691,13 @@ class CGraphPrototype extends CGraphGeneral {
 			'selectItemDiscovery' => ['parent_itemid'],
 			'preservekeys' => true,
 			'filter' => [
-				'flags' => [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_PROTOTYPE, ZBX_FLAG_DISCOVERY_CREATED]
+				'flags' => [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_PROTOTYPE, TRX_FLAG_DISCOVERY_CREATED]
 			]
 		]);
 
 		foreach ($itemIds as $itemId) {
 			if (!isset($allowedItems[$itemId])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -712,7 +712,7 @@ class CGraphPrototype extends CGraphGeneral {
 				foreach ($dbGraphs as $dbGraph) {
 					$itemIdsInGraphItems = zbx_objectValues($dbGraph['gitems'], 'itemid');
 					if (in_array($item['itemid'], $itemIdsInGraphItems)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Cannot add a non-numeric item "%1$s" to graph prototype "%2$s".',
 							$item['name'], $dbGraph['name']
 						));
@@ -739,19 +739,19 @@ class CGraphPrototype extends CGraphGeneral {
 				$itemDiscoveryIds = [];
 
 				foreach ($graph['gitems'] as $gitem) {
-					if ($items[$gitem['itemid']]['flags'] == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+					if ($items[$gitem['itemid']]['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 						$itemDiscoveryIds[$items[$gitem['itemid']]['itemDiscovery']['parent_itemid']] = true;
 					}
 				}
 
 				if (count($itemDiscoveryIds) > 1) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Graph prototype "%1$s" contains item prototypes from multiple discovery rules.',
 						$graph['name']
 					));
 				}
 				elseif (!$itemDiscoveryIds) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Graph prototype "%1$s" must have at least one item prototype.',
 						$graph['name']
 					));

@@ -4,19 +4,19 @@
 #define TREEGIX_TYPES_H
 
 #if defined(_WINDOWS)
-#	define ZBX_THREAD_LOCAL __declspec(thread)
+#	define TRX_THREAD_LOCAL __declspec(thread)
 #else
 #	if defined(__GNUC__) || defined(__clang__)
-#		define ZBX_THREAD_LOCAL __thread
+#		define TRX_THREAD_LOCAL __thread
 #	else
-#		define ZBX_THREAD_LOCAL
+#		define TRX_THREAD_LOCAL
 #	endif
 #endif
 
-#define	ZBX_FS_DBL		"%lf"
-#define	ZBX_FS_DBL_EXT(p)	"%." #p "lf"
+#define	TRX_FS_DBL		"%lf"
+#define	TRX_FS_DBL_EXT(p)	"%." #p "lf"
 
-#define ZBX_PTR_SIZE		sizeof(void *)
+#define TRX_PTR_SIZE		sizeof(void *)
 
 #if defined(_WINDOWS)
 #	include <strsafe.h>
@@ -33,14 +33,14 @@
 #	endif
 
 #	define zbx_uint64_t	unsigned __int64
-#	define ZBX_FS_UI64	"%I64u"
-#	define ZBX_FS_UO64	"%I64o"
-#	define ZBX_FS_UX64	"%I64x"
+#	define TRX_FS_UI64	"%I64u"
+#	define TRX_FS_UO64	"%I64o"
+#	define TRX_FS_UX64	"%I64x"
 
 #	define zbx_int64_t	__int64
-#	define ZBX_FS_I64	"%I64d"
-#	define ZBX_FS_O64	"%I64o"
-#	define ZBX_FS_X64	"%I64x"
+#	define TRX_FS_I64	"%I64d"
+#	define TRX_FS_O64	"%I64o"
+#	define TRX_FS_X64	"%I64x"
 
 #	define snprintf		_snprintf
 
@@ -85,46 +85,46 @@ typedef __int64	zbx_offset_t;
 #	define zbx_uint64_t	uint64_t
 #	if __WORDSIZE == 64
 #		if defined(__APPLE__) && defined(__MACH__)	/* OS X */
-#			define ZBX_FS_UI64	"%llu"
-#			define ZBX_FS_UO64	"%llo"
-#			define ZBX_FS_UX64	"%llx"
+#			define TRX_FS_UI64	"%llu"
+#			define TRX_FS_UO64	"%llo"
+#			define TRX_FS_UX64	"%llx"
 #		else
-#			define ZBX_FS_UI64	"%lu"
-#			define ZBX_FS_UO64	"%lo"
-#			define ZBX_FS_UX64	"%lx"
+#			define TRX_FS_UI64	"%lu"
+#			define TRX_FS_UO64	"%lo"
+#			define TRX_FS_UX64	"%lx"
 #		endif
 #	else
 #		ifdef HAVE_LONG_LONG_QU
-#			define ZBX_FS_UI64	"%qu"
-#			define ZBX_FS_UO64	"%qo"
-#			define ZBX_FS_UX64	"%qx"
+#			define TRX_FS_UI64	"%qu"
+#			define TRX_FS_UO64	"%qo"
+#			define TRX_FS_UX64	"%qx"
 #		else
-#			define ZBX_FS_UI64	"%llu"
-#			define ZBX_FS_UO64	"%llo"
-#			define ZBX_FS_UX64	"%llx"
+#			define TRX_FS_UI64	"%llu"
+#			define TRX_FS_UO64	"%llo"
+#			define TRX_FS_UX64	"%llx"
 #		endif
 #	endif
 
 #	define zbx_int64_t	int64_t
 #	if __WORDSIZE == 64
 #		if defined(__APPLE__) && defined(__MACH__)	/* OS X */
-#			define ZBX_FS_I64	"%lld"
-#			define ZBX_FS_O64	"%llo"
-#			define ZBX_FS_X64	"%llx"
+#			define TRX_FS_I64	"%lld"
+#			define TRX_FS_O64	"%llo"
+#			define TRX_FS_X64	"%llx"
 #		else
-#			define ZBX_FS_I64	"%ld"
-#			define ZBX_FS_O64	"%lo"
-#			define ZBX_FS_X64	"%lx"
+#			define TRX_FS_I64	"%ld"
+#			define TRX_FS_O64	"%lo"
+#			define TRX_FS_X64	"%lx"
 #		endif
 #	else
 #		ifdef HAVE_LONG_LONG_QU
-#			define ZBX_FS_I64	"%qd"
-#			define ZBX_FS_O64	"%qo"
-#			define ZBX_FS_X64	"%qx"
+#			define TRX_FS_I64	"%qd"
+#			define TRX_FS_O64	"%qo"
+#			define TRX_FS_X64	"%qx"
 #		else
-#			define ZBX_FS_I64	"%lld"
-#			define ZBX_FS_O64	"%llo"
-#			define ZBX_FS_X64	"%llx"
+#			define TRX_FS_I64	"%lld"
+#			define TRX_FS_O64	"%llo"
+#			define TRX_FS_X64	"%llx"
 #		endif
 #	endif
 
@@ -139,9 +139,9 @@ typedef off_t	zbx_offset_t;
 
 #endif	/* _WINDOWS */
 
-#define ZBX_FS_SIZE_T		ZBX_FS_UI64
-#define ZBX_FS_SSIZE_T		ZBX_FS_I64
-#define ZBX_FS_TIME_T		ZBX_FS_I64
+#define TRX_FS_SIZE_T		TRX_FS_UI64
+#define TRX_FS_SSIZE_T		TRX_FS_I64
+#define TRX_FS_TIME_T		TRX_FS_I64
 #define zbx_fs_size_t		zbx_uint64_t	/* use this type only in calls to printf() for formatting size_t */
 #define zbx_fs_ssize_t		zbx_int64_t	/* use this type only in calls to printf() for formatting ssize_t */
 #define zbx_fs_time_t		zbx_int64_t	/* use this type only in calls to printf() for formatting time_t */
@@ -154,14 +154,14 @@ typedef off_t	zbx_offset_t;
 #	define S_ISDIR(x) (((x) & S_IFMT) == S_IFDIR)
 #endif
 
-#define ZBX_STR2UINT64(uint, string) is_uint64(string, &uint)
-#define ZBX_OCT2UINT64(uint, string) sscanf(string, ZBX_FS_UO64, &uint)
-#define ZBX_HEX2UINT64(uint, string) sscanf(string, ZBX_FS_UX64, &uint)
+#define TRX_STR2UINT64(uint, string) is_uint64(string, &uint)
+#define TRX_OCT2UINT64(uint, string) sscanf(string, TRX_FS_UO64, &uint)
+#define TRX_HEX2UINT64(uint, string) sscanf(string, TRX_FS_UX64, &uint)
 
-#define ZBX_STR2UCHAR(var, string) var = (unsigned char)atoi(string)
+#define TRX_STR2UCHAR(var, string) var = (unsigned char)atoi(string)
 
-#define ZBX_CONST_STRING(str) "" str
-#define ZBX_CONST_STRLEN(str) (sizeof(ZBX_CONST_STRING(str)) - 1)
+#define TRX_CONST_STRING(str) "" str
+#define TRX_CONST_STRLEN(str) (sizeof(TRX_CONST_STRING(str)) - 1)
 
 typedef struct
 {
@@ -170,9 +170,9 @@ typedef struct
 }
 zbx_uint128_t;
 
-#define ZBX_SIZE_T_ALIGN8(size)	(((size) + 7) & ~(size_t)7)
+#define TRX_SIZE_T_ALIGN8(size)	(((size) + 7) & ~(size_t)7)
 
 /* macro to test if a signed value has been assigned to unsigned type (char, short, int, long long) */
-#define ZBX_IS_TOP_BIT_SET(x)	(0 != ((__UINT64_C(1) << ((sizeof(x) << 3) - 1)) & (x)))
+#define TRX_IS_TOP_BIT_SET(x)	(0 != ((__UINT64_C(1) << ((sizeof(x) << 3) - 1)) & (x)))
 
 #endif

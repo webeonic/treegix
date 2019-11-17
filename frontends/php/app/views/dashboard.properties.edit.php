@@ -22,7 +22,7 @@ $multiselect = (new CMultiSelect([
 		]
 	]
 ]))
-	->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	->setAriaRequired();
 
 $form
@@ -32,7 +32,7 @@ $form
 		->addRow((new CLabel(_('Owner'), 'userid_ms'))->setAsteriskMark(), $multiselect)
 		->addRow((new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 			(new CTextBox('name', $data['dashboard']['name'], false, DB::getFieldLength('dashboard', 'name')))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAriaRequired()
 				->setAttribute('autofocus', 'autofocus')
 		)

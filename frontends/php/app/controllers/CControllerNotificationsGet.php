@@ -69,7 +69,7 @@ class CControllerNotificationsGet extends CController {
 			'object' => EVENT_OBJECT_TRIGGER,
 			'severities' => array_keys($this->settings['triggers.severities']),
 			'suppressed' => $this->settings['show_suppressed'] ? null : false,
-			'sortorder' => ZBX_SORT_DOWN,
+			'sortorder' => TRX_SORT_DOWN,
 			'sortfield' => 'eventid',
 			'limit' => 15,
 			'preservekeys' => true
@@ -91,7 +91,7 @@ class CControllerNotificationsGet extends CController {
 				'output' => ['eventid', 'r_eventid', 'clock', 'severity'],
 				'eventids' => $resolved_events,
 				'sortfield' => 'clock',
-				'sortorder' => ZBX_SORT_DOWN,
+				'sortorder' => TRX_SORT_DOWN,
 				'preservekeys' => true
 			]);
 		}
@@ -189,9 +189,9 @@ class CControllerNotificationsGet extends CController {
 
 	protected function makeResponseData() {
 		CArrayHelper::sort($this->notifications, [
-			['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-			['field' => 'severity', 'order' => ZBX_SORT_DOWN],
-			['field' => 'eventid', 'order' => ZBX_SORT_DOWN]
+			['field' => 'clock', 'order' => TRX_SORT_DOWN],
+			['field' => 'severity', 'order' => TRX_SORT_DOWN],
+			['field' => 'eventid', 'order' => TRX_SORT_DOWN]
 		]);
 
 		$this->notifications = array_values($this->notifications);
@@ -214,13 +214,13 @@ class CControllerNotificationsGet extends CController {
 				'msg_timeout' => $this->settings['timeout'],
 				'muted' => (bool) $this->settings['sounds.mute'],
 				'severity_styles' => [
-					-1 => ZBX_STYLE_NORMAL_BG,
-					TRIGGER_SEVERITY_AVERAGE => ZBX_STYLE_AVERAGE_BG,
-					TRIGGER_SEVERITY_DISASTER => ZBX_STYLE_DISASTER_BG,
-					TRIGGER_SEVERITY_HIGH  => ZBX_STYLE_HIGH_BG,
-					TRIGGER_SEVERITY_INFORMATION => ZBX_STYLE_INFO_BG,
-					TRIGGER_SEVERITY_NOT_CLASSIFIED => ZBX_STYLE_NA_BG,
-					TRIGGER_SEVERITY_WARNING => ZBX_STYLE_WARNING_BG
+					-1 => TRX_STYLE_NORMAL_BG,
+					TRIGGER_SEVERITY_AVERAGE => TRX_STYLE_AVERAGE_BG,
+					TRIGGER_SEVERITY_DISASTER => TRX_STYLE_DISASTER_BG,
+					TRIGGER_SEVERITY_HIGH  => TRX_STYLE_HIGH_BG,
+					TRIGGER_SEVERITY_INFORMATION => TRX_STYLE_INFO_BG,
+					TRIGGER_SEVERITY_NOT_CLASSIFIED => TRX_STYLE_NA_BG,
+					TRIGGER_SEVERITY_WARNING => TRX_STYLE_WARNING_BG
 				],
 				'files' => [
 					-1 => $this->settings['sounds.recovery'],

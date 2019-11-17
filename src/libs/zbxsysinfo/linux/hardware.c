@@ -11,8 +11,8 @@
 #include "log.h"
 
 
-static ZBX_THREAD_LOCAL volatile char sigbus_handler_set;
-static ZBX_THREAD_LOCAL sigjmp_buf sigbus_jmp_buf;
+static TRX_THREAD_LOCAL volatile char sigbus_handler_set;
+static TRX_THREAD_LOCAL sigjmp_buf sigbus_jmp_buf;
 
 
 static void sigbus_handler(int signal)
@@ -317,7 +317,7 @@ static zbx_uint64_t	get_cpu_max_freq(int cpu_num)
 
 	if (NULL != f)
 	{
-		if (1 != fscanf(f, ZBX_FS_UI64, &freq))
+		if (1 != fscanf(f, TRX_FS_UI64, &freq))
 			freq = FAIL;
 
 		fclose(f);
@@ -333,24 +333,24 @@ static size_t	print_freq(char *buffer, size_t size, int filter, int cpu, zbx_uin
 	if (HW_CPU_SHOW_MAXFREQ == filter && FAIL != (int)maxfreq)
 	{
 		if (HW_CPU_ALL_CPUS == cpu)
-			offset += zbx_snprintf(buffer + offset, size - offset, " " ZBX_FS_UI64 "MHz", maxfreq / 1000);
+			offset += zbx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64 "MHz", maxfreq / 1000);
 		else
-			offset += zbx_snprintf(buffer + offset, size - offset, " " ZBX_FS_UI64, maxfreq * 1000);
+			offset += zbx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64, maxfreq * 1000);
 	}
 	else if (HW_CPU_SHOW_CURFREQ == filter && FAIL != (int)curfreq)
 	{
 		if (HW_CPU_ALL_CPUS == cpu)
-			offset += zbx_snprintf(buffer + offset, size - offset, " " ZBX_FS_UI64 "MHz", curfreq);
+			offset += zbx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64 "MHz", curfreq);
 		else
-			offset += zbx_snprintf(buffer + offset, size - offset, " " ZBX_FS_UI64, curfreq * 1000000);
+			offset += zbx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64, curfreq * 1000000);
 	}
 	else if (HW_CPU_SHOW_ALL == filter)
 	{
 		if (FAIL != (int)curfreq)
-			offset += zbx_snprintf(buffer + offset, size - offset, " working at " ZBX_FS_UI64 "MHz", curfreq);
+			offset += zbx_snprintf(buffer + offset, size - offset, " working at " TRX_FS_UI64 "MHz", curfreq);
 
 		if (FAIL != (int)maxfreq)
-			offset += zbx_snprintf(buffer + offset, size - offset, " (maximum " ZBX_FS_UI64 "MHz)", maxfreq / 1000);
+			offset += zbx_snprintf(buffer + offset, size - offset, " (maximum " TRX_FS_UI64 "MHz)", maxfreq / 1000);
 	}
 
 	return offset;
@@ -447,7 +447,7 @@ int     SYSTEM_HW_CPU(AGENT_REQUEST *request, AGENT_RESULT *result)
 		else if (0 == strncmp(name, "cpu MHz", 7) && (HW_CPU_SHOW_ALL == filter || HW_CPU_SHOW_CURFREQ == filter))
 		{
 			ret = SYSINFO_RET_OK;
-			sscanf(tmp, ZBX_FS_UI64, &curfreq);
+			sscanf(tmp, TRX_FS_UI64, &curfreq);
 		}
 	}
 
@@ -561,7 +561,7 @@ int     SYSTEM_HW_MACADDR(AGENT_REQUEST *request, AGENT_RESULT *result)
 					(unsigned short int)(unsigned char)ifr->ifr_hwaddr.sa_data[4],
 					(unsigned short int)(unsigned char)ifr->ifr_hwaddr.sa_data[5]);
 
-			if (0 == show_names && FAIL != zbx_vector_str_search(&addresses, address, ZBX_DEFAULT_STR_COMPARE_FUNC))
+			if (0 == show_names && FAIL != zbx_vector_str_search(&addresses, address, TRX_DEFAULT_STR_COMPARE_FUNC))
 				continue;
 
 			zbx_vector_str_append(&addresses, zbx_strdup(NULL, address));
@@ -572,7 +572,7 @@ int     SYSTEM_HW_MACADDR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 != addresses.values_num)
 	{
-		zbx_vector_str_sort(&addresses, ZBX_DEFAULT_STR_COMPARE_FUNC);
+		zbx_vector_str_sort(&addresses, TRX_DEFAULT_STR_COMPARE_FUNC);
 
 		for (i = 0; i < addresses.values_num; i++)
 		{

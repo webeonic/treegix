@@ -11,7 +11,7 @@ $triggersWidget = (new CWidget())
 // create form
 $triggersForm = (new CForm())
 	->setName('triggersForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $data['form'])
 	->addItem((new CVar('parent_discoveryid', $data['parent_discoveryid']))->removeId())
 	->addVar('expression_constructor', $data['expression_constructor'])
@@ -43,13 +43,13 @@ $triggersFormList
 	->addRow(
 		(new CLabel(_('Name'), 'description'))->setAsteriskMark(),
 		(new CTextBox('description', $data['description'], $data['limited']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	)
 	->addRow(
 		new CLabel(_('Operational data'), 'opdata'),
-		(new CTextBox('opdata', $data['opdata'], $data['limited']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextBox('opdata', $data['opdata'], $data['limited']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(
 		_('Severity'),
@@ -77,7 +77,7 @@ if ($data['groupid'] && $data['hostid']) {
 	$popup_options['hostid'] = $data['hostid'];
 }
 $add_expression_button = (new CButton('insert', ($data['expression_constructor'] == IM_TREE) ? _('Edit') : _('Add')))
-	->addClass(ZBX_STYLE_BTN_GREY)
+	->addClass(TRX_STYLE_BTN_GREY)
 	->onClick('return PopUp("popup.triggerexpr",jQuery.extend('.
 		CJs::encodeJson($popup_options).
 			',{expression: jQuery(\'[name="'.$data['expression_field_name'].'"]\').val()}), null, this);'
@@ -92,22 +92,22 @@ $expression_row = [
 		$data['expression_field_value'],
 		['readonly' => $data['expression_field_readonly']]
 	))
-		->addClass(ZBX_STYLE_MONOSPACE_FONT)
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		->addClass(TRX_STYLE_MONOSPACE_FONT)
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		->setAriaRequired(),
-	(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+	(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 	$add_expression_button
 ];
 
 if ($data['expression_constructor'] == IM_TREE) {
 	// insert macro button
 	$insertMacroButton = (new CButton('insert_macro', _('Insert expression')))
-		->addClass(ZBX_STYLE_BTN_GREY)
+		->addClass(TRX_STYLE_BTN_GREY)
 		->setMenuPopup(CMenuPopupHelper::getTriggerMacro());
 	if ($data['limited']) {
 		$insertMacroButton->setAttribute('disabled', 'disabled');
 	}
-	$expression_row[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+	$expression_row[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 	$expression_row[] = $insertMacroButton;
 	$expression_row[] = BR();
 
@@ -115,34 +115,34 @@ if ($data['expression_constructor'] == IM_TREE) {
 		// Append "Add" button.
 		$expression_row[] = (new CSimpleButton(_('Add')))
 			->onClick('javascript: submitFormWithParam("'.$triggersForm->getName().'", "add_expression", "1");')
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->setEnabled(!$data['limited']);
 	}
 	else {
 		// Append "And" button.
 		$expression_row[] = (new CSimpleButton(_('And')))
 			->onClick('javascript: submitFormWithParam("'.$triggersForm->getName().'", "and_expression", "1");')
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->setEnabled(!$data['limited']);
 
 		// Append "Or" button.
-		$expression_row[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$expression_row[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 		$expression_row[] = (new CSimpleButton(_('Or')))
 			->onClick('javascript: submitFormWithParam("'.$triggersForm->getName().'", "or_expression", "1");')
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->setEnabled(!$data['limited']);
 
 		// Append "Replace" button.
-		$expression_row[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$expression_row[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 		$expression_row[] = (new CSimpleButton(_('Replace')))
 			->onClick('javascript: submitFormWithParam("'.$triggersForm->getName().'", "replace_expression", "1");')
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->setEnabled(!$data['limited']);
 	}
 }
 elseif ($data['expression_constructor'] != IM_FORCED) {
 	$input_method_toggle = (new CSimpleButton(_('Expression constructor')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->onClick('javascript: '.
 			'document.getElementById("toggle_expression_constructor").value=1;'.
 			'document.getElementById("expression_constructor").value='.
@@ -192,7 +192,7 @@ if ($data['expression_constructor'] == IM_TREE) {
 			if ($data['limited']) {
 				// make all links inside inactive
 				foreach ($e['list'] as &$obj) {
-					if ($obj instanceof CLinkAction && $obj->getAttribute('class') == ZBX_STYLE_LINK_ACTION) {
+					if ($obj instanceof CLinkAction && $obj->getAttribute('class') == TRX_STYLE_LINK_ACTION) {
 						$obj = new CSpan($obj->items);
 					}
 				}
@@ -210,14 +210,14 @@ if ($data['expression_constructor'] == IM_TREE) {
 					!$data['limited']
 						? (new CCol(
 							(new CSimpleButton(_('Remove')))
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 								->onClick('javascript:'.
 									' if (confirm('.CJs::encodeJson(_('Delete expression?')).')) {'.
 										' delete_expression("'.$e['id'] .'", '.TRIGGER_EXPRESSION.');'.
 										' document.forms["'.$triggersForm->getName().'"].submit();'.
 									' }'
 								)
-						))->addClass(ZBX_STYLE_NOWRAP)
+						))->addClass(TRX_STYLE_NOWRAP)
 						: null,
 					makeInformationList($info_icons)
 				])
@@ -232,7 +232,7 @@ if ($data['expression_constructor'] == IM_TREE) {
 	$testButton = (new CButton('test_expression', _('Test')))
 		->onClick('return PopUp("popup.testtriggerexpr",{expression: this.form.elements["expression"].value}, null,'.
 					'this);')
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->removeId();
 	if (!$allowed_testing) {
 		$testButton->setAttribute('disabled', 'disabled');
@@ -247,12 +247,12 @@ if ($data['expression_constructor'] == IM_TREE) {
 		BR(),
 		BR(),
 		(new CDiv([$expressionTable, $testButton]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	]);
 
 	$input_method_toggle = (new CSimpleButton(_('Close expression constructor')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->onClick('javascript: '.
 			'document.getElementById("toggle_expression_constructor").value=1;'.
 			'document.getElementById("expression_constructor").value='.IM_ESTABLISHED.';'.
@@ -262,9 +262,9 @@ if ($data['expression_constructor'] == IM_TREE) {
 
 $triggersFormList->addRow(_('OK event generation'),
 	(new CRadioButtonList('recovery_mode', (int) $data['recovery_mode']))
-		->addValue(_('Expression'), ZBX_RECOVERY_MODE_EXPRESSION)
-		->addValue(_('Recovery expression'), ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION)
-		->addValue(_('None'), ZBX_RECOVERY_MODE_NONE)
+		->addValue(_('Expression'), TRX_RECOVERY_MODE_EXPRESSION)
+		->addValue(_('Recovery expression'), TRX_RECOVERY_MODE_RECOVERY_EXPRESSION)
+		->addValue(_('None'), TRX_RECOVERY_MODE_NONE)
 		->setModern(true)
 		->setEnabled(!$data['limited'])
 );
@@ -272,7 +272,7 @@ $triggersFormList->addRow(_('OK event generation'),
 $add_recovery_expression_button = (new CButton('insert',
 		($data['recovery_expression_constructor'] == IM_TREE) ? _('Edit') : _('Add'))
 	)
-	->addClass(ZBX_STYLE_BTN_GREY)
+	->addClass(TRX_STYLE_BTN_GREY)
 	->onClick('return PopUp("popup.triggerexpr",jQuery.extend('.
 		CJs::encodeJson([
 			'srctbl' => $data['recovery_expression_field_name'],
@@ -294,10 +294,10 @@ $recovery_expression_row = [
 		$data['recovery_expression_field_value'],
 		['readonly' => $data['recovery_expression_field_readonly']]
 	))
-		->addClass(ZBX_STYLE_MONOSPACE_FONT)
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		->addClass(TRX_STYLE_MONOSPACE_FONT)
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		->setAriaRequired(),
-	(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+	(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 	$add_recovery_expression_button
 ];
 
@@ -308,34 +308,34 @@ if ($data['recovery_expression_constructor'] == IM_TREE) {
 		// Append "Add" button.
 		$recovery_expression_row[] = (new CSimpleButton(_('Add')))
 			->onClick('javascript: submitFormWithParam("'.$triggersForm->getName().'", "add_recovery_expression", "1");')
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->setEnabled(!$data['limited']);
 	}
 	else {
 		// Append "And" button.
 		$recovery_expression_row[] = (new CSimpleButton(_('And')))
 			->onClick('javascript: submitFormWithParam("'.$triggersForm->getName().'", "and_recovery_expression", "1");')
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->setEnabled(!$data['limited']);
 
 		// Append "Or" button.
-		$recovery_expression_row[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$recovery_expression_row[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 		$recovery_expression_row[] = (new CSimpleButton(_('Or')))
 			->onClick('javascript: submitFormWithParam("'.$triggersForm->getName().'", "or_recovery_expression", "1");')
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->setEnabled(!$data['limited']);
 
 		// Append "Replace" button.
-		$recovery_expression_row[] = (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN);
+		$recovery_expression_row[] = (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN);
 		$recovery_expression_row[] = (new CSimpleButton(_('Replace')))
 			->onClick('javascript: submitFormWithParam("'.$triggersForm->getName().'", "replace_recovery_expression", "1");')
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->setEnabled(!$data['limited']);
 	}
 }
 elseif ($data['recovery_expression_constructor'] != IM_FORCED) {
 	$input_method_toggle = (new CSimpleButton(_('Expression constructor')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->onClick('javascript: '.
 			'document.getElementById("toggle_recovery_expression_constructor").value=1;'.
 			'document.getElementById("recovery_expression_constructor").value='.
@@ -388,7 +388,7 @@ if ($data['recovery_expression_constructor'] == IM_TREE) {
 			if ($data['limited']) {
 				// make all links inside inactive
 				foreach ($e['list'] as &$obj) {
-					if ($obj instanceof CLinkAction && $obj->getAttribute('class') == ZBX_STYLE_LINK_ACTION) {
+					if ($obj instanceof CLinkAction && $obj->getAttribute('class') == TRX_STYLE_LINK_ACTION) {
 						$obj = new CSpan($obj->items);
 					}
 				}
@@ -406,14 +406,14 @@ if ($data['recovery_expression_constructor'] == IM_TREE) {
 					!$data['limited']
 						? (new CCol(
 							(new CSimpleButton(_('Remove')))
-								->addClass(ZBX_STYLE_BTN_LINK)
+								->addClass(TRX_STYLE_BTN_LINK)
 								->onClick('javascript:'.
 									' if (confirm('.CJs::encodeJson(_('Delete expression?')).')) {'.
 										' delete_expression("'.$e['id'] .'", '.TRIGGER_RECOVERY_EXPRESSION.');'.
 										' document.forms["'.$triggersForm->getName().'"].submit();'.
 									' }'
 								)
-						))->addClass(ZBX_STYLE_NOWRAP)
+						))->addClass(TRX_STYLE_NOWRAP)
 						: null,
 					makeInformationList($info_icons)
 				])
@@ -428,7 +428,7 @@ if ($data['recovery_expression_constructor'] == IM_TREE) {
 	$testButton = (new CButton('test_expression', _('Test')))
 		->onClick('return PopUp("popup.testtriggerexpr",'.
 			'{expression: this.form.elements["recovery_expression"].value}, null, this);')
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->removeId();
 	if (!$allowed_testing) {
 		$testButton->setAttribute('disabled', 'disabled');
@@ -443,12 +443,12 @@ if ($data['recovery_expression_constructor'] == IM_TREE) {
 		BR(),
 		BR(),
 		(new CDiv([$recovery_expression_table, $testButton]))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 	], null, 'recovery_expression_constructor_row');
 
 	$input_method_toggle = (new CSimpleButton(_('Close expression constructor')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->onClick('javascript: '.
 			'document.getElementById("toggle_recovery_expression_constructor").value=1;'.
 			'document.getElementById("recovery_expression_constructor").value='.IM_ESTABLISHED.';'.
@@ -467,8 +467,8 @@ $triggersFormList
 	)
 	->addRow(_('OK event closes'),
 		(new CRadioButtonList('correlation_mode', (int) $data['correlation_mode']))
-			->addValue(_('All problems'), ZBX_TRIGGER_CORRELATION_NONE)
-			->addValue(_('All problems if tag values match'), ZBX_TRIGGER_CORRELATION_TAG)
+			->addValue(_('All problems'), TRX_TRIGGER_CORRELATION_NONE)
+			->addValue(_('All problems if tag values match'), TRX_TRIGGER_CORRELATION_TAG)
 			->setModern(true)
 			->setEnabled(!$data['limited']),
 		'correlation_mode_row'
@@ -476,13 +476,13 @@ $triggersFormList
 	->addRow(
 		(new CLabel(_('Tag for matching'), 'correlation_tag'))->setAsteriskMark(),
 		(new CTextBox('correlation_tag', $data['correlation_tag'], $data['limited']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
 		'correlation_tag_row'
 	)
 	->addRow(_('Allow manual close'),
 		(new CCheckBox('manual_close'))
-			->setChecked($data['manual_close'] == ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED)
+			->setChecked($data['manual_close'] == TRX_TRIGGER_MANUAL_CLOSE_ALLOWED)
 			->setEnabled(!$data['limited'])
 	);
 
@@ -495,9 +495,9 @@ else {
 }
 
 $triggersFormList
-	->addRow(_('URL'), (new CTextBox('url', $data['url']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH))
+	->addRow(_('URL'), (new CTextBox('url', $data['url']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH))
 	->addRow(_('Description'),
-		(new CTextArea('comments', $data['comments']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('comments', $data['comments']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('Create enabled'), (new CCheckBox('status'))->setChecked($status));
 
@@ -534,12 +534,12 @@ foreach ($data['db_dependencies'] as $dependency) {
 		implode(', ', zbx_objectValues($dependency['hosts'], 'name')).NAME_DELIMITER.$dependency['description']
 	);
 
-	if ($dependency['flags'] == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+	if ($dependency['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 		$description = (new CLink($depTriggerDescription,
 			'trigger_prototypes.php?form=update'.url_param('parent_discoveryid').'&triggerid='.$dependency['triggerid']
 		))->setAttribute('target', '_blank');
 	}
-	elseif ($dependency['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) {
+	elseif ($dependency['flags'] == TRX_FLAG_DISCOVERY_NORMAL) {
 		$description = (new CLink($depTriggerDescription,
 			'triggers.php?form=update&triggerid='.$dependency['triggerid']
 		))->setAttribute('target', '_blank');
@@ -549,9 +549,9 @@ foreach ($data['db_dependencies'] as $dependency) {
 		(new CCol(
 			(new CButton('remove', _('Remove')))
 				->onClick('javascript: removeDependency("'.$dependency['triggerid'].'");')
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->removeId()
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	]);
 
 	$row->setId('dependency_'.$dependency['triggerid']);
@@ -576,7 +576,7 @@ $dependenciesFormList->addRow(_('Dependencies'),
 						'groupid' => $data['groupid']
 					]).', null, this);'
 				)
-				->addClass(ZBX_STYLE_BTN_LINK),
+				->addClass(TRX_STYLE_BTN_LINK),
 			(new CButton('add_dep_trigger_prototype', _('Add prototype')))
 				->onClick('return PopUp("popup.generic",'.
 					CJs::encodeJson([
@@ -587,11 +587,11 @@ $dependenciesFormList->addRow(_('Dependencies'),
 						'parent_discoveryid' => $data['parent_discoveryid']
 					]).', null, this);'
 				)
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 		])
 	]))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 $triggersTab->addTab('dependenciesTab', _('Dependencies'), $dependenciesFormList);
 

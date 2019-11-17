@@ -7,12 +7,12 @@
 
 #include "checks_aggregate.h"
 
-#define ZBX_VALUE_FUNC_MIN	0
-#define ZBX_VALUE_FUNC_AVG	1
-#define ZBX_VALUE_FUNC_MAX	2
-#define ZBX_VALUE_FUNC_SUM	3
-#define ZBX_VALUE_FUNC_COUNT	4
-#define ZBX_VALUE_FUNC_LAST	5
+#define TRX_VALUE_FUNC_MIN	0
+#define TRX_VALUE_FUNC_AVG	1
+#define TRX_VALUE_FUNC_MAX	2
+#define TRX_VALUE_FUNC_SUM	3
+#define TRX_VALUE_FUNC_COUNT	4
+#define TRX_VALUE_FUNC_LAST	5
 
 /******************************************************************************
  *                                                                            *
@@ -176,9 +176,9 @@ static void	evaluate_history_func_last(zbx_vector_history_record_t *values, hist
  *             value_type  - [IN] the type of values. Only float/uint64       *
  *                           values are supported.                            *
  *             func        - [IN] the function to calculate. Only             *
- *                           ZBX_VALUE_FUNC_MIN, ZBX_VALUE_FUNC_AVG,          *
- *                           ZBX_VALUE_FUNC_MAX, ZBX_VALUE_FUNC_SUM,          *
- *                           ZBX_VALUE_FUNC_COUNT, ZBX_VALUE_FUNC_LAST        *
+ *                           TRX_VALUE_FUNC_MIN, TRX_VALUE_FUNC_AVG,          *
+ *                           TRX_VALUE_FUNC_MAX, TRX_VALUE_FUNC_SUM,          *
+ *                           TRX_VALUE_FUNC_COUNT, TRX_VALUE_FUNC_LAST        *
  *                           functions are supported.                         *
  *             result      - [OUT] the resulting value                        *
  *                                                                            *
@@ -188,22 +188,22 @@ static void	evaluate_history_func(zbx_vector_history_record_t *values, int value
 {
 	switch (func)
 	{
-		case ZBX_VALUE_FUNC_MIN:
+		case TRX_VALUE_FUNC_MIN:
 			evaluate_history_func_min(values, value_type, result);
 			break;
-		case ZBX_VALUE_FUNC_AVG:
+		case TRX_VALUE_FUNC_AVG:
 			evaluate_history_func_avg(values, value_type, result);
 			break;
-		case ZBX_VALUE_FUNC_MAX:
+		case TRX_VALUE_FUNC_MAX:
 			evaluate_history_func_max(values, value_type, result);
 			break;
-		case ZBX_VALUE_FUNC_SUM:
+		case TRX_VALUE_FUNC_SUM:
 			evaluate_history_func_sum(values, value_type, result);
 			break;
-		case ZBX_VALUE_FUNC_COUNT:
+		case TRX_VALUE_FUNC_COUNT:
 			evaluate_history_func_count(values, value_type, result);
 			break;
-		case ZBX_VALUE_FUNC_LAST:
+		case TRX_VALUE_FUNC_LAST:
 			evaluate_history_func_last(values, result);
 			break;
 	}
@@ -296,7 +296,7 @@ static int	aggregate_get_items(zbx_vector_uint64_t *itemids, const char *groups,
 	DB_ROW			row;
 	zbx_uint64_t		itemid;
 	char			*sql = NULL;
-	size_t			sql_alloc = ZBX_KIBIBYTE, sql_offset = 0, error_alloc = 0, error_offset = 0;
+	size_t			sql_alloc = TRX_KIBIBYTE, sql_offset = 0, error_alloc = 0, error_offset = 0;
 	int			num, n, ret = FAIL;
 	zbx_vector_uint64_t	groupids;
 	zbx_vector_str_t	group_names;
@@ -351,7 +351,7 @@ static int	aggregate_get_items(zbx_vector_uint64_t *itemids, const char *groups,
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(itemid, row[0]);
+		TRX_STR2UINT64(itemid, row[0]);
 		zbx_vector_uint64_append(itemids, itemid);
 	}
 	DBfree_result(result);
@@ -364,7 +364,7 @@ static int	aggregate_get_items(zbx_vector_uint64_t *itemids, const char *groups,
 		goto out;
 	}
 
-	zbx_vector_uint64_sort(itemids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(itemids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	ret = SUCCEED;
 
@@ -381,10 +381,10 @@ out:
  * Function: evaluate_aggregate                                               *
  *                                                                            *
  * Parameters: item      - [IN] aggregated item                               *
- *             grp_func  - [IN] one of ZBX_GRP_FUNC_*                         *
+ *             grp_func  - [IN] one of TRX_GRP_FUNC_*                         *
  *             groups    - [IN] list of comma-separated host groups           *
  *             itemkey   - [IN] item key to aggregate                         *
- *             item_func - [IN] one of ZBX_VALUE_FUNC_*                       *
+ *             item_func - [IN] one of TRX_VALUE_FUNC_*                       *
  *             param     - [IN] item_func parameter (optional)                *
  *                                                                            *
  * Return value: SUCCEED - aggregate item evaluated successfully              *
@@ -404,7 +404,7 @@ static int	evaluate_aggregate(DC_ITEM *item, AGENT_RESULT *res, int grp_func, co
 	zbx_timespec_t			ts;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() grp_func:%d groups:'%s' itemkey:'%s' item_func:%d param:'%s'",
-			__func__, grp_func, groups, itemkey, item_func, ZBX_NULL2STR(param));
+			__func__, grp_func, groups, itemkey, item_func, TRX_NULL2STR(param));
 
 	zbx_timespec(&ts);
 
@@ -423,14 +423,14 @@ static int	evaluate_aggregate(DC_ITEM *item, AGENT_RESULT *res, int grp_func, co
 
 	DCconfig_get_items_by_itemids(items, itemids.values, errcodes, itemids.values_num);
 
-	if (ZBX_VALUE_FUNC_LAST == item_func)
+	if (TRX_VALUE_FUNC_LAST == item_func)
 	{
 		count = 1;
 		seconds = 0;
 	}
 	else
 	{
-		if (FAIL == is_time_suffix(param, &seconds, ZBX_LENGTH_UNLIMITED))
+		if (FAIL == is_time_suffix(param, &seconds, TRX_LENGTH_UNLIMITED))
 		{
 			SET_MSG_RESULT(res, zbx_strdup(NULL, "Invalid fourth parameter."));
 			goto clean2;
@@ -549,19 +549,19 @@ int	get_value_aggregate(DC_ITEM *item, AGENT_RESULT *result)
 
 	if (0 == strcmp(get_rkey(&request), "grpmin"))
 	{
-		grp_func = ZBX_VALUE_FUNC_MIN;
+		grp_func = TRX_VALUE_FUNC_MIN;
 	}
 	else if (0 == strcmp(get_rkey(&request), "grpavg"))
 	{
-		grp_func = ZBX_VALUE_FUNC_AVG;
+		grp_func = TRX_VALUE_FUNC_AVG;
 	}
 	else if (0 == strcmp(get_rkey(&request), "grpmax"))
 	{
-		grp_func = ZBX_VALUE_FUNC_MAX;
+		grp_func = TRX_VALUE_FUNC_MAX;
 	}
 	else if (0 == strcmp(get_rkey(&request), "grpsum"))
 	{
-		grp_func = ZBX_VALUE_FUNC_SUM;
+		grp_func = TRX_VALUE_FUNC_SUM;
 	}
 	else
 	{
@@ -582,17 +582,17 @@ int	get_value_aggregate(DC_ITEM *item, AGENT_RESULT *result)
 	tmp = get_rparam(&request, 2);
 
 	if (0 == strcmp(tmp, "min"))
-		item_func = ZBX_VALUE_FUNC_MIN;
+		item_func = TRX_VALUE_FUNC_MIN;
 	else if (0 == strcmp(tmp, "avg"))
-		item_func = ZBX_VALUE_FUNC_AVG;
+		item_func = TRX_VALUE_FUNC_AVG;
 	else if (0 == strcmp(tmp, "max"))
-		item_func = ZBX_VALUE_FUNC_MAX;
+		item_func = TRX_VALUE_FUNC_MAX;
 	else if (0 == strcmp(tmp, "sum"))
-		item_func = ZBX_VALUE_FUNC_SUM;
+		item_func = TRX_VALUE_FUNC_SUM;
 	else if (0 == strcmp(tmp, "count"))
-		item_func = ZBX_VALUE_FUNC_COUNT;
+		item_func = TRX_VALUE_FUNC_COUNT;
 	else if (0 == strcmp(tmp, "last"))
-		item_func = ZBX_VALUE_FUNC_LAST;
+		item_func = TRX_VALUE_FUNC_LAST;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -603,7 +603,7 @@ int	get_value_aggregate(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		funcp = get_rparam(&request, 3);
 	}
-	else if (3 == params_num && ZBX_VALUE_FUNC_LAST != item_func)
+	else if (3 == params_num && TRX_VALUE_FUNC_LAST != item_func)
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
 		goto out;

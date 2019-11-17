@@ -1,7 +1,7 @@
 
 
 
-ZBX_LocalStorage.defines = {
+TRX_LocalStorage.defines = {
 	PREFIX_SEPARATOR: ':',
 	KEEP_ALIVE_INTERVAL: 30,
 	SYNC_INTERVAL_MS: 500,
@@ -15,19 +15,19 @@ ZBX_LocalStorage.defines = {
  * @param {string} version  Mandatory parameter.
  * @param {string} prefix   Used to distinct keys between sessions within same domain.
  */
-function ZBX_LocalStorage(version, prefix) {
+function TRX_LocalStorage(version, prefix) {
 	if (!version || !prefix) {
 		throw 'Local storage instantiation must be versioned, and prefixed.';
 	}
 
-	if (ZBX_LocalStorage.instance) {
-		return ZBX_LocalStorage.instance;
+	if (TRX_LocalStorage.instance) {
+		return TRX_LocalStorage.instance;
 	}
 
-	ZBX_LocalStorage.sessionid = prefix;
-	ZBX_LocalStorage.prefix = prefix + ZBX_LocalStorage.defines.PREFIX_SEPARATOR;
-	ZBX_LocalStorage.instance = this;
-	ZBX_LocalStorage.signature = (Math.random() % 9e6).toString(36).substr(2);
+	TRX_LocalStorage.sessionid = prefix;
+	TRX_LocalStorage.prefix = prefix + TRX_LocalStorage.defines.PREFIX_SEPARATOR;
+	TRX_LocalStorage.instance = this;
+	TRX_LocalStorage.signature = (Math.random() % 9e6).toString(36).substr(2);
 
 	this.abs_to_rel_keymap = {};
 	this.key_last_write = {};
@@ -55,7 +55,7 @@ function ZBX_LocalStorage(version, prefix) {
  *
  * @return {string}
  */
-ZBX_LocalStorage.prototype.onKeySync = function(key, callback) {
+TRX_LocalStorage.prototype.onKeySync = function(key, callback) {
 	this.rel_keys[key].subscribeSync(callback);
 };
 
@@ -65,7 +65,7 @@ ZBX_LocalStorage.prototype.onKeySync = function(key, callback) {
  *
  * @return {string}
  */
-ZBX_LocalStorage.prototype.onKeyUpdate = function(key, callback) {
+TRX_LocalStorage.prototype.onKeyUpdate = function(key, callback) {
 	this.rel_keys[key].subscribe(callback);
 };
 
@@ -76,17 +76,17 @@ ZBX_LocalStorage.prototype.onKeyUpdate = function(key, callback) {
  *
  * @return {string}
  */
-ZBX_LocalStorage.prototype.toAbsKey = function(key) {
-	return ZBX_LocalStorage.prefix + key;
+TRX_LocalStorage.prototype.toAbsKey = function(key) {
+	return TRX_LocalStorage.prefix + key;
 };
 
 /**
  * @param {string} relative_key
  */
-ZBX_LocalStorage.prototype.addKey = function(relative_key) {
+TRX_LocalStorage.prototype.addKey = function(relative_key) {
 	var absolute_key = this.toAbsKey(relative_key);
 
-	this.rel_keys[relative_key] = new ZBX_LocalStorageKey(relative_key);
+	this.rel_keys[relative_key] = new TRX_LocalStorageKey(relative_key);
 	this.abs_keys[absolute_key] = this.rel_keys[relative_key];
 	this.abs_to_rel_keymap[absolute_key] = relative_key;
 };
@@ -95,7 +95,7 @@ ZBX_LocalStorage.prototype.addKey = function(relative_key) {
  * @param {Store} store
  * @param {string} sessionid
  */
-ZBX_LocalStorage.prototype.freeSession = function(store, sessionid) {
+TRX_LocalStorage.prototype.freeSession = function(store, sessionid) {
 	var len = store.length,
 		mathces = [],
 		abs_key;
@@ -115,13 +115,13 @@ ZBX_LocalStorage.prototype.freeSession = function(store, sessionid) {
 /**
  * Keeps alive local storage sessions. Removes inactive session.
  */
-ZBX_LocalStorage.prototype.keepAlive = function() {
+TRX_LocalStorage.prototype.keepAlive = function() {
 	var store = localStorage,
-		lastseen = JSON.parse(store.getItem(ZBX_LocalStorage.defines.KEY_SESSIONS) || '{}'),
+		lastseen = JSON.parse(store.getItem(TRX_LocalStorage.defines.KEY_SESSIONS) || '{}'),
 		timestamp = (+new Date / 1000) >> 0,
-		expired_timestamp = timestamp - 2 * ZBX_LocalStorage.defines.KEEP_ALIVE_INTERVAL;
+		expired_timestamp = timestamp - 2 * TRX_LocalStorage.defines.KEEP_ALIVE_INTERVAL;
 
-	lastseen[ZBX_LocalStorage.sessionid] = (+new Date() / 1000) >> 0;
+	lastseen[TRX_LocalStorage.sessionid] = (+new Date() / 1000) >> 0;
 
 	for (var sessionid in lastseen) {
 		if (lastseen[sessionid] < expired_timestamp) {
@@ -130,14 +130,14 @@ ZBX_LocalStorage.prototype.keepAlive = function() {
 		}
 	}
 
-	store.setItem(ZBX_LocalStorage.defines.KEY_SESSIONS, JSON.stringify(lastseen));
+	store.setItem(TRX_LocalStorage.defines.KEY_SESSIONS, JSON.stringify(lastseen));
 };
 
 /**
  * @param {RegEx|string} regex
  * @param {callback} callback
  */
-ZBX_LocalStorage.prototype.eachKeyRegex = function(regex, callback) {
+TRX_LocalStorage.prototype.eachKeyRegex = function(regex, callback) {
 	this.eachKey(function(key) {
 		key.relative_key.match(regex) && callback(key);
 	});
@@ -146,7 +146,7 @@ ZBX_LocalStorage.prototype.eachKeyRegex = function(regex, callback) {
 /**
  * @param {callback}
  */
-ZBX_LocalStorage.prototype.eachKey = function(callback) {
+TRX_LocalStorage.prototype.eachKey = function(callback) {
 	for (var i in this.rel_keys) {
 		callback(this.rel_keys[i]);
 	}
@@ -159,7 +159,7 @@ ZBX_LocalStorage.prototype.eachKey = function(callback) {
  *
  * @return {bool}
  */
-ZBX_LocalStorage.prototype.hasKey = function(key) {
+TRX_LocalStorage.prototype.hasKey = function(key) {
 	return typeof this.rel_keys[key] !== 'undefined';
 };
 
@@ -168,7 +168,7 @@ ZBX_LocalStorage.prototype.hasKey = function(key) {
  *
  * @param {string} key  Key to test.
  */
-ZBX_LocalStorage.prototype.ensureKey = function(key) {
+TRX_LocalStorage.prototype.ensureKey = function(key) {
 	if (typeof key !== 'string') {
 		throw 'Key must be a string, ' + (typeof key) + ' given instead.';
 	}
@@ -188,7 +188,7 @@ ZBX_LocalStorage.prototype.ensureKey = function(key) {
  *
  * @return {string} Valid JSON string.
  */
-ZBX_LocalStorage.stringify = function(value) {
+TRX_LocalStorage.stringify = function(value) {
 	return window.Prototype ? Object.toJSON(value) : JSON.stringify(value);
 };
 
@@ -199,10 +199,10 @@ ZBX_LocalStorage.stringify = function(value) {
  *
  * @return {string}
  */
-ZBX_LocalStorage.prototype.wrap = function(value) {
-	return ZBX_LocalStorage.stringify({
+TRX_LocalStorage.prototype.wrap = function(value) {
+	return TRX_LocalStorage.stringify({
 		payload: value,
-		signature: ZBX_LocalStorage.signature
+		signature: TRX_LocalStorage.signature
 	});
 };
 
@@ -214,7 +214,7 @@ ZBX_LocalStorage.prototype.wrap = function(value) {
  *
  * @return {mixed}
  */
-ZBX_LocalStorage.prototype.unwrap = function(value) {
+TRX_LocalStorage.prototype.unwrap = function(value) {
 	if (value === null) {
 		throw "Expected JSON string";
 	}
@@ -225,7 +225,7 @@ ZBX_LocalStorage.prototype.unwrap = function(value) {
 /**
  * After this method call local storage will not perform any further writes.
  */
-ZBX_LocalStorage.prototype.destruct = function() {
+TRX_LocalStorage.prototype.destruct = function() {
 	this.writeKey = function() {};
 	this.truncate();
 	this.truncateBackup();
@@ -234,7 +234,7 @@ ZBX_LocalStorage.prototype.destruct = function() {
 /**
  * Backup keys are removed.
  */
-ZBX_LocalStorage.prototype.truncateBackup = function() {
+TRX_LocalStorage.prototype.truncateBackup = function() {
 	this.eachKey(function(key) {
 		key.truncateBackup();
 	});
@@ -243,7 +243,7 @@ ZBX_LocalStorage.prototype.truncateBackup = function() {
 /**
  * Removes all local storage and creates default objects. Backup keys are not removed.
  */
-ZBX_LocalStorage.prototype.truncate = function() {
+TRX_LocalStorage.prototype.truncate = function() {
 	this.eachKey(function(key) {
 		key.truncate();
 	});
@@ -256,7 +256,7 @@ ZBX_LocalStorage.prototype.truncate = function() {
  * new value, keep in mind that a key may hold native event subscription via `onKeyUpdate` and synthetic event is
  * provided via `onKeySync` method.
  */
-ZBX_LocalStorage.prototype.syncTick = function() {
+TRX_LocalStorage.prototype.syncTick = function() {
 	var key_last_write = this.fetchKeyWrites();
 
 	for (var abs_key in this.key_last_write) {
@@ -270,30 +270,30 @@ ZBX_LocalStorage.prototype.syncTick = function() {
 /**
  * Adds event handlers.
  */
-ZBX_LocalStorage.prototype.register = function() {
+TRX_LocalStorage.prototype.register = function() {
 	window.addEventListener('storage', this.handleStorageEvent.bind(this));
 	this.keepAlive();
-	setInterval(this.keepAlive.bind(this), ZBX_LocalStorage.defines.KEEP_ALIVE_INTERVAL * 1000);
+	setInterval(this.keepAlive.bind(this), TRX_LocalStorage.defines.KEEP_ALIVE_INTERVAL * 1000);
 
 	this.syncTick();
-	setInterval(this.syncTick.bind(this), ZBX_LocalStorage.defines.SYNC_INTERVAL_MS);
+	setInterval(this.syncTick.bind(this), TRX_LocalStorage.defines.SYNC_INTERVAL_MS);
 };
 
 /**
  * @param {StorageEvent} event
  */
-ZBX_LocalStorage.prototype.handleStorageEvent = function(event) {
+TRX_LocalStorage.prototype.handleStorageEvent = function(event) {
 	if (event.constructor != StorageEvent) {
 		throw 'Unmatched method signature!';
 	}
 
 	// Internal usage key.
-	if (event.key === ZBX_LocalStorage.defines.KEY_LAST_WRITE) {
+	if (event.key === TRX_LocalStorage.defines.KEY_LAST_WRITE) {
 		return;
 	}
 
 	// Internal usage key.
-	if (event.key === ZBX_LocalStorage.defines.KEY_SESSIONS) {
+	if (event.key === TRX_LocalStorage.defines.KEY_SESSIONS) {
 		return;
 	}
 
@@ -317,7 +317,7 @@ ZBX_LocalStorage.prototype.handleStorageEvent = function(event) {
 		return;
 	}
 
-	if (value.signature === ZBX_LocalStorage.signature) {
+	if (value.signature === TRX_LocalStorage.signature) {
 		// Internet explorer just dispatched storage event onto current instance.
 		return;
 	}
@@ -335,7 +335,7 @@ ZBX_LocalStorage.prototype.handleStorageEvent = function(event) {
  * @param {string} key
  * @param {string} value
  */
-ZBX_LocalStorage.prototype.writeKey = function(key, value) {
+TRX_LocalStorage.prototype.writeKey = function(key, value) {
 	if (typeof value === 'undefined') {
 		throw 'Value may not be undefined, use null instead: ' + key;
 	}
@@ -348,9 +348,9 @@ ZBX_LocalStorage.prototype.writeKey = function(key, value) {
 /**
  * @return {object}
  */
-ZBX_LocalStorage.prototype.fetchKeyWrites = function() {
-	var key_writes = JSON.parse(localStorage.getItem(ZBX_LocalStorage.defines.KEY_LAST_WRITE) || '{}'),
-		session_regex = '^' + ZBX_LocalStorage.prefix,
+TRX_LocalStorage.prototype.fetchKeyWrites = function() {
+	var key_writes = JSON.parse(localStorage.getItem(TRX_LocalStorage.defines.KEY_LAST_WRITE) || '{}'),
+		session_regex = '^' + TRX_LocalStorage.prefix,
 		session_key_writes = {};
 
 	for (var abs_key in key_writes) {
@@ -367,12 +367,12 @@ ZBX_LocalStorage.prototype.fetchKeyWrites = function() {
  *
  * @param {string} abs_key  Absolute key.
  */
-ZBX_LocalStorage.prototype.flushKeyWrite = function(abs_key) {
+TRX_LocalStorage.prototype.flushKeyWrite = function(abs_key) {
 	var key_last_write = this.fetchKeyWrites();
 
 	key_last_write[abs_key] = +new Date;
 
-	localStorage.setItem(ZBX_LocalStorage.defines.KEY_LAST_WRITE, ZBX_LocalStorage.stringify(key_last_write));
+	localStorage.setItem(TRX_LocalStorage.defines.KEY_LAST_WRITE, TRX_LocalStorage.stringify(key_last_write));
 
 	this.key_last_write = key_last_write;
 };
@@ -384,7 +384,7 @@ ZBX_LocalStorage.prototype.flushKeyWrite = function(abs_key) {
  *
  * @return {mixed}
  */
-ZBX_LocalStorage.prototype.readKey = function(key, fallback) {
+TRX_LocalStorage.prototype.readKey = function(key, fallback) {
 	this.ensureKey(key);
 
 	try {
@@ -409,12 +409,12 @@ ZBX_LocalStorage.prototype.readKey = function(key, fallback) {
 /**
  * @param {string} relative_key
  */
-function ZBX_LocalStorageKey(relative_key) {
+function TRX_LocalStorageKey(relative_key) {
 	this.backup_store = sessionStorage;
 	this.primary_store = localStorage;
 
 	this.relative_key = relative_key;
-	this.absolute_key = ZBX_LocalStorage.prefix + this.relative_key;
+	this.absolute_key = TRX_LocalStorage.prefix + this.relative_key;
 
 	this.on_update_cbs = [];
 	this.on_sync_cbs = [];
@@ -425,7 +425,7 @@ function ZBX_LocalStorageKey(relative_key) {
  *
  * @param {string} string
  */
-ZBX_LocalStorageKey.prototype.writePrimary = function(string) {
+TRX_LocalStorageKey.prototype.writePrimary = function(string) {
 	if (string.constructor != String || string[0] != '{') {
 		throw 'Corrupted input.';
 	}
@@ -437,7 +437,7 @@ ZBX_LocalStorageKey.prototype.writePrimary = function(string) {
  *
  * @param {string} string
  */
-ZBX_LocalStorageKey.prototype.writeBackup = function(string) {
+TRX_LocalStorageKey.prototype.writeBackup = function(string) {
 	if (string.constructor != String || string[0] != '{') {
 		throw 'Corrupted input.';
 	}
@@ -447,7 +447,7 @@ ZBX_LocalStorageKey.prototype.writeBackup = function(string) {
 /**
  * @param {string} string
  */
-ZBX_LocalStorageKey.prototype.write = function(string) {
+TRX_LocalStorageKey.prototype.write = function(string) {
 	this.writeBackup(string);
 	this.writePrimary(string);
 };
@@ -457,7 +457,7 @@ ZBX_LocalStorageKey.prototype.write = function(string) {
  *
  * @return {string|null}  Null is retuned if key is deleted.
  */
-ZBX_LocalStorageKey.prototype.fetchPrimary = function() {
+TRX_LocalStorageKey.prototype.fetchPrimary = function() {
 	return this.primary_store.getItem(this.absolute_key);
 };
 
@@ -466,7 +466,7 @@ ZBX_LocalStorageKey.prototype.fetchPrimary = function() {
  *
  * @return {string|null}  Null is retuned if key is deleted.
  */
-ZBX_LocalStorageKey.prototype.fetchBackup = function() {
+TRX_LocalStorageKey.prototype.fetchBackup = function() {
 	return this.backup_store.getItem(this.absolute_key);
 };
 
@@ -475,28 +475,28 @@ ZBX_LocalStorageKey.prototype.fetchBackup = function() {
  *
  * @return {string|null}  Null is retuned if key is deleted.
  */
-ZBX_LocalStorageKey.prototype.fetch = function() {
+TRX_LocalStorageKey.prototype.fetch = function() {
 	return this.fetchPrimary() || this.fetchBackup();
 };
 
 /**
  * Removes current key data from backup store.
  */
-ZBX_LocalStorageKey.prototype.truncateBackup = function() {
+TRX_LocalStorageKey.prototype.truncateBackup = function() {
 	this.backup_store.removeItem(this.absolute_key);
 };
 
 /**
  * Removes current key data from primary store.
  */
-ZBX_LocalStorageKey.prototype.truncatePrimary = function() {
+TRX_LocalStorageKey.prototype.truncatePrimary = function() {
 	this.primary_store.removeItem(this.absolute_key);
 };
 
 /**
  * Removes current key data from stores.
  */
-ZBX_LocalStorageKey.prototype.truncate = function() {
+TRX_LocalStorageKey.prototype.truncate = function() {
 	this.truncateBackup();
 	this.truncatePrimary();
 };
@@ -506,14 +506,14 @@ ZBX_LocalStorageKey.prototype.truncate = function() {
  *
  * @param {callable} callback
  */
-ZBX_LocalStorageKey.prototype.subscribeSync = function(callback) {
+TRX_LocalStorageKey.prototype.subscribeSync = function(callback) {
 	this.on_sync_cbs.push(callback);
 };
 
 /**
  * @param {object} payload
  */
-ZBX_LocalStorageKey.prototype.publishSync = function(payload) {
+TRX_LocalStorageKey.prototype.publishSync = function(payload) {
 	this.on_sync_cbs.forEach(function(callback) {
 		callback(payload);
 	});
@@ -522,14 +522,14 @@ ZBX_LocalStorageKey.prototype.publishSync = function(payload) {
 /**
  * @param {callable} callback
  */
-ZBX_LocalStorageKey.prototype.subscribe = function(callback) {
+TRX_LocalStorageKey.prototype.subscribe = function(callback) {
 	this.on_update_cbs.push(callback);
 };
 
 /**
  * @param {object} payload
  */
-ZBX_LocalStorageKey.prototype.publish = function(payload) {
+TRX_LocalStorageKey.prototype.publish = function(payload) {
 	this.on_update_cbs.forEach(function(callback) {
 		callback(payload);
 	});
@@ -537,5 +537,5 @@ ZBX_LocalStorageKey.prototype.publish = function(payload) {
 
 TREEGIX.namespace(
 	'instances.localStorage',
-	new ZBX_LocalStorage('1', window.localstoragePath)
+	new TRX_LocalStorage('1', window.localstoragePath)
 );

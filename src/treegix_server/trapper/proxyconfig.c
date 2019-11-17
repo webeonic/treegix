@@ -23,7 +23,7 @@ void	send_proxyconfig(zbx_socket_t *sock, struct zbx_json_parse *jp)
 	char		*error = NULL;
 	struct zbx_json	j;
 	DC_PROXY	proxy;
-	int		flags = ZBX_TCP_PROTOCOL;
+	int		flags = TRX_TCP_PROTOCOL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -42,12 +42,12 @@ void	send_proxyconfig(zbx_socket_t *sock, struct zbx_json_parse *jp)
 	}
 
 	zbx_update_proxy_data(&proxy, zbx_get_proxy_protocol_version(jp), time(NULL),
-			(0 != (sock->protocol & ZBX_TCP_COMPRESS) ? 1 : 0));
+			(0 != (sock->protocol & TRX_TCP_COMPRESS) ? 1 : 0));
 
 	if (0 != proxy.auto_compress)
-		flags |= ZBX_TCP_COMPRESS;
+		flags |= TRX_TCP_COMPRESS;
 
-	zbx_json_init(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_init(&j, TRX_JSON_STAT_BUF_LEN);
 
 	if (SUCCEED != get_proxyconfig_data(proxy.hostid, &j, &error))
 	{
@@ -57,7 +57,7 @@ void	send_proxyconfig(zbx_socket_t *sock, struct zbx_json_parse *jp)
 		goto clean;
 	}
 
-	treegix_log(LOG_LEVEL_WARNING, "sending configuration data to proxy \"%s\" at \"%s\", datalen " ZBX_FS_SIZE_T,
+	treegix_log(LOG_LEVEL_WARNING, "sending configuration data to proxy \"%s\" at \"%s\", datalen " TRX_FS_SIZE_T,
 			proxy.host, sock->peer, (zbx_fs_size_t)j.buffer_size);
 	treegix_log(LOG_LEVEL_DEBUG, "%s", j.buffer);
 
@@ -90,7 +90,7 @@ void	recv_proxyconfig(zbx_socket_t *sock, struct zbx_json_parse *jp)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != (ret = zbx_json_brackets_by_name(jp, ZBX_PROTO_TAG_DATA, &jp_data)))
+	if (SUCCEED != (ret = zbx_json_brackets_by_name(jp, TRX_PROTO_TAG_DATA, &jp_data)))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot parse proxy configuration data received from server at"
 				" \"%s\": %s", sock->peer, zbx_json_strerror());
@@ -98,7 +98,7 @@ void	recv_proxyconfig(zbx_socket_t *sock, struct zbx_json_parse *jp)
 		goto out;
 	}
 
-	if (SUCCEED != check_access_passive_proxy(sock, ZBX_SEND_RESPONSE, "configuration update"))
+	if (SUCCEED != check_access_passive_proxy(sock, TRX_SEND_RESPONSE, "configuration update"))
 		goto out;
 
 	process_proxyconfig(&jp_data);

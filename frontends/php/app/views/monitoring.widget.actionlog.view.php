@@ -4,7 +4,7 @@
 
 // indicator of sort field
 $sort_div = (new CSpan())
-	->addClass(($data['sortorder'] === ZBX_SORT_DOWN) ? ZBX_STYLE_ARROW_DOWN : ZBX_STYLE_ARROW_UP);
+	->addClass(($data['sortorder'] === TRX_SORT_DOWN) ? TRX_STYLE_ARROW_DOWN : TRX_STYLE_ARROW_UP);
 
 // create alert table
 $table = (new CTableInfo())

@@ -30,7 +30,7 @@ const char	*usage_message[] = {
 	NULL	/* end of text */
 };
 
-unsigned char	program_type	= ZBX_PROGRAM_TYPE_GET;
+unsigned char	program_type	= TRX_PROGRAM_TYPE_GET;
 
 const char	*help_message[] = {
 	"Get data from Treegix agent.",
@@ -38,7 +38,7 @@ const char	*help_message[] = {
 	"General options:",
 	"  -s --host host-name-or-IP  Specify host name or IP address of a host",
 	"  -p --port port-number      Specify port number of agent running on the host",
-	"                             (default: " ZBX_DEFAULT_AGENT_PORT_STR ")",
+	"                             (default: " TRX_DEFAULT_AGENT_PORT_STR ")",
 	"  -I --source-address IP-address   Specify source IP address",
 	"",
 	"  -k --key item-key          Specify key of the item to retrieve value for",
@@ -82,10 +82,10 @@ const char	*help_message[] = {
 #endif
 	"",
 	"Example(s):",
-	"  treegix_get -s 127.0.0.1 -p " ZBX_DEFAULT_AGENT_PORT_STR " -k \"system.cpu.load[all,avg1]\"",
+	"  treegix_get -s 127.0.0.1 -p " TRX_DEFAULT_AGENT_PORT_STR " -k \"system.cpu.load[all,avg1]\"",
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	"",
-	"  treegix_get -s 127.0.0.1 -p " ZBX_DEFAULT_AGENT_PORT_STR " -k \"system.cpu.load[all,avg1]\" \\",
+	"  treegix_get -s 127.0.0.1 -p " TRX_DEFAULT_AGENT_PORT_STR " -k \"system.cpu.load[all,avg1]\" \\",
 	"    --tls-connect cert --tls-ca-file /home/treegix/treegix_ca_file \\",
 	"    --tls-agent-cert-issuer \\",
 	"    \"CN=Signing CA,OU=IT operations,O=Example Corp,DC=example,DC=com\" \\",
@@ -94,7 +94,7 @@ const char	*help_message[] = {
 	"    --tls-cert-file /home/treegix/treegix_get.crt \\",
 	"    --tls-key-file /home/treegix/treegix_get.key",
 	"",
-	"  treegix_get -s 127.0.0.1 -p " ZBX_DEFAULT_AGENT_PORT_STR " -k \"system.cpu.load[all,avg1]\" \\",
+	"  treegix_get -s 127.0.0.1 -p " TRX_DEFAULT_AGENT_PORT_STR " -k \"system.cpu.load[all,avg1]\" \\",
 	"    --tls-connect psk --tls-psk-identity \"PSK ID Treegix agentd\" \\",
 	"    --tls-psk-file /home/treegix/treegix_agentd.psk",
 #endif
@@ -102,8 +102,8 @@ const char	*help_message[] = {
 };
 
 /* TLS parameters */
-unsigned int	configured_tls_connect_mode = ZBX_TCP_SEC_UNENCRYPTED;
-unsigned int	configured_tls_accept_modes = ZBX_TCP_SEC_UNENCRYPTED;	/* not used in treegix_get, just for linking */
+unsigned int	configured_tls_connect_mode = TRX_TCP_SEC_UNENCRYPTED;
+unsigned int	configured_tls_accept_modes = TRX_TCP_SEC_UNENCRYPTED;	/* not used in treegix_get, just for linking */
 									/* with tls.c */
 char	*CONFIG_TLS_CONNECT		= NULL;
 char	*CONFIG_TLS_ACCEPT		= NULL;	/* not used in treegix_get, just for linking with tls.c */
@@ -171,7 +171,7 @@ static void	get_signal_handler(int sig)
 		zbx_error("Timeout while executing operation");
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	if (ZBX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
+	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 		zbx_tls_free_on_signal();
 #endif
 	exit(EXIT_FAILURE);
@@ -199,16 +199,16 @@ static int	get_value(const char *source_ip, const char *host, unsigned short por
 
 	switch (configured_tls_connect_mode)
 	{
-		case ZBX_TCP_SEC_UNENCRYPTED:
+		case TRX_TCP_SEC_UNENCRYPTED:
 			tls_arg1 = NULL;
 			tls_arg2 = NULL;
 			break;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		case ZBX_TCP_SEC_TLS_CERT:
+		case TRX_TCP_SEC_TLS_CERT:
 			tls_arg1 = CONFIG_TLS_SERVER_CERT_ISSUER;
 			tls_arg2 = CONFIG_TLS_SERVER_CERT_SUBJECT;
 			break;
-		case ZBX_TCP_SEC_TLS_PSK:
+		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = CONFIG_TLS_PSK_IDENTITY;
 			tls_arg2 = NULL;	/* zbx_tls_connect() will find PSK */
 			break;
@@ -225,10 +225,10 @@ static int	get_value(const char *source_ip, const char *host, unsigned short por
 		{
 			if (0 < (bytes_received = zbx_tcp_recv_ext(&s, 0)))
 			{
-				if (0 == strcmp(s.buffer, ZBX_NOTSUPPORTED) && sizeof(ZBX_NOTSUPPORTED) < s.read_bytes)
+				if (0 == strcmp(s.buffer, TRX_NOTSUPPORTED) && sizeof(TRX_NOTSUPPORTED) < s.read_bytes)
 				{
-					zbx_rtrim(s.buffer + sizeof(ZBX_NOTSUPPORTED), "\r\n");
-					printf("%s: %s\n", s.buffer, s.buffer + sizeof(ZBX_NOTSUPPORTED));
+					zbx_rtrim(s.buffer + sizeof(TRX_NOTSUPPORTED), "\r\n");
+					printf("%s: %s\n", s.buffer, s.buffer + sizeof(TRX_NOTSUPPORTED));
 				}
 				else
 				{
@@ -275,7 +275,7 @@ int	main(int argc, char **argv)
 {
 	int		i, ret = SUCCEED;
 	char		*host = NULL, *key = NULL, *source_ip = NULL, ch;
-	unsigned short	opt_count[256] = {0}, port = ZBX_DEFAULT_AGENT_PORT;
+	unsigned short	opt_count[256] = {0}, port = TRX_DEFAULT_AGENT_PORT;
 #if defined(_WINDOWS)
 	char		*error = NULL;
 #endif
@@ -428,7 +428,7 @@ int	main(int argc, char **argv)
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 		zbx_tls_validate_config();
 
-		if (ZBX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
+		if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 		{
 #if defined(_WINDOWS)
 			zbx_tls_init_parent();
@@ -451,7 +451,7 @@ out:
 	zbx_free(key);
 	zbx_free(source_ip);
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	if (ZBX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
+	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 	{
 		zbx_tls_free();
 #if defined(_WINDOWS)

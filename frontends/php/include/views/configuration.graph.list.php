@@ -27,12 +27,12 @@ else {
 				->addItem((new CList())
 					->addItem([
 						new CLabel(_('Group'), 'groupid'),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						$this->data['pageFilter']->getGroupsCB()
 					])
 					->addItem([
 						new CLabel(_('Host'), 'hostid'),
-						(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+						(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 						$this->data['pageFilter']->getHostsCB()
 					])
 				),
@@ -65,7 +65,7 @@ $graphTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_graphs'))->onClick("checkAll('".$graphForm->getName()."', 'all_graphs', 'group_graphid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		!empty($this->data['hostid']) ? null : _('Hosts'),
 		make_sorting_header(_('Name'), 'name', $this->data['sort'], $this->data['sortorder']),
 		_('Width'),
@@ -91,8 +91,8 @@ foreach ($data['graphs'] as $graph) {
 
 	$name = [];
 	$name[] = makeGraphTemplatePrefix($graphid, $data['parent_templates'], ($data['parent_discoveryid'] === null)
-		? ZBX_FLAG_DISCOVERY_NORMAL
-		: ZBX_FLAG_DISCOVERY_PROTOTYPE
+		? TRX_FLAG_DISCOVERY_NORMAL
+		: TRX_FLAG_DISCOVERY_PROTOTYPE
 	);
 
 	if ($graph['discoveryRule'] && $data['parent_discoveryid'] === null) {
@@ -101,8 +101,8 @@ foreach ($data['graphs'] as $graph) {
 				->setArgument('form', 'update')
 				->setArgument('itemid', $graph['discoveryRule']['itemid'])
 		))
-			->addClass(ZBX_STYLE_LINK_ALT)
-			->addClass(ZBX_STYLE_ORANGE);
+			->addClass(TRX_STYLE_LINK_ALT)
+			->addClass(TRX_STYLE_ORANGE);
 		$name[] = NAME_DELIMITER;
 	}
 

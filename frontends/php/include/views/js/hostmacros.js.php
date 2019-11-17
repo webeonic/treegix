@@ -3,34 +3,34 @@
 			(new CCol([
 				(new CTextAreaFlexible('macros[#{rowNum}][macro]', '', ['add_post_js' => false]))
 					->addClass('macro')
-					->setWidth(ZBX_TEXTAREA_MACRO_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_WIDTH)
 					->setAttribute('placeholder', '{$MACRO}'),
 				$data['show_inherited_macros']
 					? new CInput('hidden', 'macros[#{rowNum}][type]', 2)
 					: null
-			]))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			]))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			'&rArr;',
 			(new CCol(
 				(new CTextAreaFlexible('macros[#{rowNum}][value]', '', ['add_post_js' => false]))
-					->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 					->setAttribute('placeholder', _('value'))
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			(new CCol(
 				(new CButton('macros[#{rowNum}][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP),
+			))->addClass(TRX_STYLE_NOWRAP),
 			[
 				new CCol(
 					(new CDiv())
-						->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-						->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+						->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+						->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 				),
 				new CCol(),
 				new CCol(
 					(new CDiv())
-						->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-						->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+						->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+						->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 				)
 			]
 		]))
@@ -40,9 +40,9 @@
 			(new CCol(
 				(new CTextAreaFlexible('macros[#{rowNum}][description]', '', ['add_post_js' => false]))
 					->setMaxlength(DB::getFieldLength('globalmacro' , 'description'))
-					->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 					->setAttribute('placeholder', _('description'))
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT)->setColSpan(8),
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT)->setColSpan(8),
 		]))
 			->addClass('form_row')
 			->toString()
@@ -53,29 +53,29 @@
 			(new CCol([
 				(new CTextAreaFlexible('macros[#{rowNum}][macro]', '', ['add_post_js' => false]))
 					->addClass('macro')
-					->setWidth(ZBX_TEXTAREA_MACRO_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_WIDTH)
 					->setAttribute('placeholder', '{$MACRO}'),
 				$data['show_inherited_macros']
 					? new CInput('hidden', 'macros[#{rowNum}][type]', 2)
 					: null
-			]))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			]))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			'&rArr;',
 			(new CCol(
 				(new CTextAreaFlexible('macros[#{rowNum}][value]', '', ['add_post_js' => false]))
-					->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 					->setAttribute('placeholder', _('value'))
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			(new CCol(
 				(new CTextAreaFlexible('macros[#{rowNum}][description]', '', ['add_post_js' => false]))
 					->setMaxlength(DB::getFieldLength('globalmacro' , 'description'))
-					->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+					->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 					->setAttribute('placeholder', _('description'))
-			))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+			))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 			(new CCol(
 				(new CButton('macros[#{rowNum}][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('form_row')
 			->toString()
@@ -88,21 +88,21 @@
 			.dynamicRows({remove_next_sibling: <?= (int) $data['show_inherited_macros'] ?>,
 				template: <?= $data['show_inherited_macros'] ? "'#macro-row-tmpl-inherited'" : "'#macro-row-tmpl'" ?>
 			})
-			.on('blur', '.<?= ZBX_STYLE_TEXTAREA_FLEXIBLE ?>', function() {
+			.on('blur', '.<?= TRX_STYLE_TEXTAREA_FLEXIBLE ?>', function() {
 				if ($(this).hasClass('macro')) {
 					macroToUpperCase(this);
 				}
 				$(this).trigger('input');
 			})
 			.on('click', 'button.element-table-add', function() {
-				$('#tbl_macros .<?= ZBX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
+				$('#tbl_macros .<?= TRX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
 			})
 			.on('click', 'button.element-table-change', function() {
 				var macroNum = $(this).attr('id').split('_')[1];
 
-				if ($('#macros_' + macroNum + '_type').val() & <?= ZBX_PROPERTY_OWN ?>) {
+				if ($('#macros_' + macroNum + '_type').val() & <?= TRX_PROPERTY_OWN ?>) {
 					$('#macros_' + macroNum + '_type')
-						.val($('#macros_' + macroNum + '_type').val() & (~<?= ZBX_PROPERTY_OWN ?>));
+						.val($('#macros_' + macroNum + '_type').val() & (~<?= TRX_PROPERTY_OWN ?>));
 					$('#macros_' + macroNum + '_value')
 						.prop('readonly', true)
 						.val($('#macros_' + macroNum + '_inherited_value').val());
@@ -114,7 +114,7 @@
 				}
 				else {
 					$('#macros_' + macroNum + '_type')
-						.val($('#macros_' + macroNum + '_type').val() | <?= ZBX_PROPERTY_OWN ?>);
+						.val($('#macros_' + macroNum + '_type').val() | <?= TRX_PROPERTY_OWN ?>);
 					$('#macros_' + macroNum + '_value')
 						.prop('readonly', false)
 						.focus();

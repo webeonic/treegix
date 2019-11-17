@@ -106,8 +106,8 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 		$caption = $field;
 	}
 
-	if (is_array($var) && $type != T_ZBX_RANGE_TIME) {
-		$err = ZBX_VALID_OK;
+	if (is_array($var) && $type != T_TRX_RANGE_TIME) {
+		$err = TRX_VALID_OK;
 
 		foreach ($var as $v) {
 			$err |= check_type($field, $flags, $v, $type);
@@ -119,13 +119,13 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 	$error = false;
 	$message = '';
 
-	if ($type == T_ZBX_INT) {
+	if ($type == T_TRX_INT) {
 		if (!zbx_is_int($var)) {
 			$error = true;
 			$message = _s('Field "%1$s" is not integer.', $caption);
 		}
 	}
-	elseif ($type == T_ZBX_DBL) {
+	elseif ($type == T_TRX_DBL) {
 		$decimalValidator = new CDecimalValidator([
 			'maxPrecision' => 16,
 			'maxScale' => 4,
@@ -150,7 +150,7 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 			$message = $decimalValidator->getError();
 		}
 	}
-	elseif ($type == T_ZBX_DBL_BIG) {
+	elseif ($type == T_TRX_DBL_BIG) {
 		$decimalValidator = new CDecimalValidator([
 			'maxScale' => 4,
 			'messageInvalid' => _('Value "%2$s" of "%1$s" has incorrect decimal format.'),
@@ -166,7 +166,7 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 			$message = $decimalValidator->getError();
 		}
 	}
-	elseif ($type == T_ZBX_DBL_STR) {
+	elseif ($type == T_TRX_DBL_STR) {
 		$decimalStringValidator = new CDecimalStringValidator([
 			'messageInvalid' => _('Value "%2$s" of "%1$s" has incorrect decimal format.')
 		]);
@@ -177,13 +177,13 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 			$message = $decimalStringValidator->getError();
 		}
 	}
-	elseif ($type == T_ZBX_STR) {
+	elseif ($type == T_TRX_STR) {
 		if (!is_string($var)) {
 			$error = true;
 			$message = _s('Field "%1$s" is not string.', $caption);
 		}
 	}
-	elseif ($type == T_ZBX_CLR) {
+	elseif ($type == T_TRX_CLR) {
 		$colorValidator = new CColorValidator();
 
 		if (!$colorValidator->validate($var)) {
@@ -191,7 +191,7 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 			$message = _s('Colour "%1$s" is not correct: expecting hexadecimal colour code (6 symbols).', $caption);
 		}
 	}
-	elseif ($type == T_ZBX_TP) {
+	elseif ($type == T_TRX_TP) {
 		$time_period_parser = new CTimePeriodsParser(['usermacros' => true]);
 
 		if ($time_period_parser->parse($var) != CParser::PARSE_SUCCESS) {
@@ -199,7 +199,7 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 			$message = _s('Field "%1$s" is not correct: %2$s', $caption, _('a time period is expected'));
 		}
 	}
-	elseif ($type == T_ZBX_TU) {
+	elseif ($type == T_TRX_TU) {
 		$simple_interval_parser = new CSimpleIntervalParser([
 			'usermacros' => ($flags & P_ALLOW_USER_MACRO),
 			'lldmacros' => ($flags & P_ALLOW_LLD_MACRO)
@@ -210,7 +210,7 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 			$message = _s('Field "%1$s" is not correct: %2$s', $caption, _('a time unit is expected'));
 		}
 	}
-	elseif ($type == T_ZBX_RANGE_TIME) {
+	elseif ($type == T_TRX_RANGE_TIME) {
 		$range_time_parser = new CRangeTimeParser();
 
 		if (!is_string($var) || $range_time_parser->parse($var) != CParser::PARSE_SUCCESS) {
@@ -218,7 +218,7 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 			$message = _s('Field "%1$s" is not correct: %2$s', $caption, _('a time range is expected'));
 		}
 	}
-	elseif ($type == T_ZBX_ABS_TIME) {
+	elseif ($type == T_TRX_ABS_TIME) {
 		$absolute_time_parser = new CAbsoluteTimeParser();
 
 		if (!is_string($var) || $absolute_time_parser->parse($var) != CParser::PARSE_SUCCESS) {
@@ -231,16 +231,16 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 		if ($flags & P_SYS) {
 			error($message);
 
-			return ZBX_VALID_ERROR;
+			return TRX_VALID_ERROR;
 		}
 		else {
 			info($message);
 
-			return ZBX_VALID_WARNING;
+			return TRX_VALID_WARNING;
 		}
 	}
 
-	return ZBX_VALID_OK;
+	return TRX_VALID_OK;
 }
 
 function check_trim(&$var) {
@@ -282,30 +282,30 @@ function check_field(&$fields, &$field, $checks) {
 		if (!isset($_REQUEST[$field])) {
 			info(_s('Field "%1$s" is mandatory.', $caption));
 
-			return ($flags & P_SYS) ? ZBX_VALID_ERROR : ZBX_VALID_WARNING;
+			return ($flags & P_SYS) ? TRX_VALID_ERROR : TRX_VALID_WARNING;
 		}
 	}
 	elseif ($opt == O_NO) {
 		if (!isset($_REQUEST[$field])) {
-			return ZBX_VALID_OK;
+			return TRX_VALID_OK;
 		}
 
 		unset_request($field);
 
 		info(_s('Field "%1$s" must be missing.', $caption));
 
-		return ($flags & P_SYS) ? ZBX_VALID_ERROR : ZBX_VALID_WARNING;
+		return ($flags & P_SYS) ? TRX_VALID_ERROR : TRX_VALID_WARNING;
 	}
 	elseif ($opt == O_OPT) {
 		if (!isset($_REQUEST[$field])) {
-			return ZBX_VALID_OK;
+			return TRX_VALID_OK;
 		}
 		elseif ($flags & P_ACT) {
 			if (!isset($_REQUEST['sid'])
-					|| (array_key_exists(ZBX_SESSION_NAME, $_COOKIE)
-							&& $_REQUEST['sid'] != substr($_COOKIE[ZBX_SESSION_NAME], 16, 16))) {
+					|| (array_key_exists(TRX_SESSION_NAME, $_COOKIE)
+							&& $_REQUEST['sid'] != substr($_COOKIE[TRX_SESSION_NAME], 16, 16))) {
 				info(_('Operation cannot be performed due to unauthorized request.'));
-				return ZBX_VALID_ERROR;
+				return TRX_VALID_ERROR;
 			}
 		}
 	}
@@ -320,7 +320,7 @@ function check_field(&$fields, &$field, $checks) {
 
 	$err = check_type($field, $flags, $_REQUEST[$field], $type, $caption);
 
-	if ($err != ZBX_VALID_OK) {
+	if ($err != TRX_VALID_OK) {
 		return $err;
 	}
 
@@ -341,10 +341,10 @@ function check_field(&$fields, &$field, $checks) {
 			info(_s('Incorrect value for "%1$s" field.', $caption));
 		}
 
-		return ($flags & P_SYS) ? ZBX_VALID_ERROR : ZBX_VALID_WARNING;
+		return ($flags & P_SYS) ? TRX_VALID_ERROR : TRX_VALID_WARNING;
 	}
 
-	return ZBX_VALID_OK;
+	return TRX_VALID_OK;
 }
 
 function invalid_url($msg = null) {
@@ -353,16 +353,16 @@ function invalid_url($msg = null) {
 	}
 
 	// required global parameters for correct including page_header.php
-	global $DB, $ZBX_MESSAGES;
+	global $DB, $TRX_MESSAGES;
 
 	// backup messages before including page_header.php
-	$temp = $ZBX_MESSAGES;
-	$ZBX_MESSAGES = [];
+	$temp = $TRX_MESSAGES;
+	$TRX_MESSAGES = [];
 
 	require_once dirname(__FILE__).'/page_header.php';
 
 	// rollback reseted messages
-	$ZBX_MESSAGES = $temp;
+	$TRX_MESSAGES = $temp;
 
 	unset_all();
 	show_error_message($msg);
@@ -374,20 +374,20 @@ function invalid_url($msg = null) {
  *
  * @param array $fields field schema together with validation rules
  *
- * @return integer appropriate result flags ZBX_VALID_OK | ZBX_VALID_ERROR | ZBX_VALID_WARNING
+ * @return integer appropriate result flags TRX_VALID_OK | TRX_VALID_ERROR | TRX_VALID_WARNING
  */
 function check_fields_raw(&$fields) {
 	// VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 	$system_fields = [
-		'sid' =>			[T_ZBX_STR, O_OPT, P_SYS, HEX(),		null],
-		'triggers_hash' =>	[T_ZBX_STR, O_OPT, P_SYS, NOT_EMPTY,	null],
-		'print' =>			[T_ZBX_INT, O_OPT, P_SYS, IN('1'),		null],
-		'page' =>			[T_ZBX_INT, O_OPT, P_SYS, null,		null], // paging
-		'ddreset' =>		[T_ZBX_INT, O_OPT, P_SYS, null,		null]
+		'sid' =>			[T_TRX_STR, O_OPT, P_SYS, HEX(),		null],
+		'triggers_hash' =>	[T_TRX_STR, O_OPT, P_SYS, NOT_EMPTY,	null],
+		'print' =>			[T_TRX_INT, O_OPT, P_SYS, IN('1'),		null],
+		'page' =>			[T_TRX_INT, O_OPT, P_SYS, null,		null], // paging
+		'ddreset' =>		[T_TRX_INT, O_OPT, P_SYS, null,		null]
 	];
 	$fields = zbx_array_merge($system_fields, $fields);
 
-	$err = ZBX_VALID_OK;
+	$err = TRX_VALID_OK;
 	foreach ($fields as $field => $checks) {
 		$err |= check_field($fields, $field, $checks);
 	}
@@ -395,7 +395,7 @@ function check_fields_raw(&$fields) {
 	unset_not_in_list($fields);
 	unset_if_zero($fields);
 
-	if ($err != ZBX_VALID_OK) {
+	if ($err != TRX_VALID_OK) {
 		unset_action_vars($fields);
 	}
 
@@ -415,15 +415,15 @@ function check_fields_raw(&$fields) {
 function check_fields(&$fields, $show_messages = true) {
 	$err = check_fields_raw($fields);
 
-	if ($err & ZBX_VALID_ERROR) {
+	if ($err & TRX_VALID_ERROR) {
 		invalid_url();
 	}
 
-	if ($show_messages && $err != ZBX_VALID_OK) {
+	if ($show_messages && $err != TRX_VALID_OK) {
 		show_messages(false, null, _('Page received incorrect data'));
 	}
 
-	return ($err == ZBX_VALID_OK);
+	return ($err == TRX_VALID_OK);
 }
 
 /**
@@ -447,16 +447,16 @@ function validateTimeSelectorPeriod($from, $to) {
 
 	$period = $ts['to'] - $ts['from'] + 1;
 
-	if ($period < ZBX_MIN_PERIOD) {
+	if ($period < TRX_MIN_PERIOD) {
 		error(_n('Minimum time period to display is %1$s minute.',
-			'Minimum time period to display is %1$s minutes.', (int) ZBX_MIN_PERIOD / SEC_PER_MIN
+			'Minimum time period to display is %1$s minutes.', (int) TRX_MIN_PERIOD / SEC_PER_MIN
 		));
 
 		invalid_url();
 	}
-	elseif ($period > ZBX_MAX_PERIOD) {
+	elseif ($period > TRX_MAX_PERIOD) {
 		error(_n('Maximum time period to display is %1$s day.',
-			'Maximum time period to display is %1$s days.', (int) ZBX_MAX_PERIOD / SEC_PER_DAY
+			'Maximum time period to display is %1$s days.', (int) TRX_MAX_PERIOD / SEC_PER_DAY
 		));
 
 		invalid_url();
@@ -468,7 +468,7 @@ function validatePortNumberOrMacro($port) {
 }
 
 function validatePortNumber($port) {
-	return validateNumber($port, ZBX_MIN_PORT_NUMBER, ZBX_MAX_PORT_NUMBER);
+	return validateNumber($port, TRX_MIN_PORT_NUMBER, TRX_MAX_PORT_NUMBER);
 }
 
 function validateNumber($value, $min = null, $max = null) {

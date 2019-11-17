@@ -8,7 +8,7 @@ class CControllerDashboardWidgetEdit extends CController {
 		$fields = [
 			'type' => 'in '.implode(',', array_keys(CWidgetConfig::getKnownWidgetTypes())),
 			'name' => 'string',
-			'view_mode' => 'in '.implode(',', [ZBX_WIDGET_VIEW_MODE_NORMAL, ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER]),
+			'view_mode' => 'in '.implode(',', [TRX_WIDGET_VIEW_MODE_NORMAL, TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER]),
 			'prev_type' => 'in '.implode(',', array_keys(CWidgetConfig::getKnownWidgetTypes())),
 			'fields' => 'json'
 		];
@@ -65,7 +65,7 @@ class CControllerDashboardWidgetEdit extends CController {
 			'dialogue' => [
 				'type' => $type,
 				'name' => $this->getInput('name', ''),
-				'view_mode' => $this->getInput('view_mode', ZBX_WIDGET_VIEW_MODE_NORMAL),
+				'view_mode' => $this->getInput('view_mode', TRX_WIDGET_VIEW_MODE_NORMAL),
 				'fields' => $form->getFields()
 			],
 			'known_widget_types' => $known_widget_types,

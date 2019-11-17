@@ -25,11 +25,11 @@ class CSvgGraphPoints extends CSvgGroup {
 
 	public function makeStyles() {
 		$this
-			->addClass(CSvgTag::ZBX_STYLE_GRAPH_POINTS)
-			->addClass(CSvgTag::ZBX_STYLE_GRAPH_POINTS.'-'.$this->itemid.'-'.$this->options['order']);
+			->addClass(CSvgTag::TRX_STYLE_GRAPH_POINTS)
+			->addClass(CSvgTag::TRX_STYLE_GRAPH_POINTS.'-'.$this->itemid.'-'.$this->options['order']);
 
 		return [
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_POINTS.'-'.$this->itemid.'-'.$this->options['order'] => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_POINTS.'-'.$this->itemid.'-'.$this->options['order'] => [
 				'fill-opacity' => $this->options['transparency'] * 0.1,
 				'fill' => $this->options['color']
 			]
@@ -50,7 +50,7 @@ class CSvgGraphPoints extends CSvgGroup {
 			->setAttribute('data-color', $this->options['color'])
 			->addItem(
 				(new CSvgCircle(-10, -10, $this->options['pointsize'] + 4))
-					->addClass(CSvgTag::ZBX_STYLE_GRAPH_HIGHLIGHTED_VALUE)
+					->addClass(CSvgTag::TRX_STYLE_GRAPH_HIGHLIGHTED_VALUE)
 			)
 			->draw();
 

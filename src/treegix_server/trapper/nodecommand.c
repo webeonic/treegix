@@ -40,7 +40,7 @@ static int	execute_remote_script(zbx_script_t *script, DC_HOST *host, char **inf
 				" from task t"
 				" left join task_remote_command_result tr"
 					" on tr.taskid=t.taskid"
-				" where tr.parent_taskid=" ZBX_FS_UI64,
+				" where tr.parent_taskid=" TRX_FS_UI64,
 				taskid);
 
 		if (NULL != (row = DBfetch(result)))
@@ -80,7 +80,7 @@ static int	execute_script(zbx_uint64_t scriptid, zbx_uint64_t hostid, const char
 	zbx_script_t	script;
 	zbx_user_t	user;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() scriptid:" ZBX_FS_UI64 " hostid:" ZBX_FS_UI64 " sessionid:%s",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() scriptid:" TRX_FS_UI64 " hostid:" TRX_FS_UI64 " sessionid:%s",
 			__func__, scriptid, hostid, sessionid);
 
 	*error = '\0';
@@ -99,12 +99,12 @@ static int	execute_script(zbx_uint64_t scriptid, zbx_uint64_t hostid, const char
 
 	zbx_script_init(&script);
 
-	script.type = ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT;
+	script.type = TRX_SCRIPT_TYPE_GLOBAL_SCRIPT;
 	script.scriptid = scriptid;
 
 	if (SUCCEED == (ret = zbx_script_prepare(&script, &host, &user, error, sizeof(error))))
 	{
-		if (0 == host.proxy_hostid || ZBX_SCRIPT_EXECUTE_ON_SERVER == script.execute_on)
+		if (0 == host.proxy_hostid || TRX_SCRIPT_EXECUTE_ON_SERVER == script.execute_on)
 			ret = zbx_script_execute(&script, &host, result, error, sizeof(error));
 		else
 			ret = execute_remote_script(&script, &host, result, error, sizeof(error));
@@ -139,40 +139,40 @@ int	node_process_command(zbx_socket_t *sock, const char *data, struct zbx_json_p
 
 	treegix_log(LOG_LEVEL_DEBUG, "In node_process_command()");
 
-	zbx_json_init(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_init(&j, TRX_JSON_STAT_BUF_LEN);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_SCRIPTID, tmp, sizeof(tmp)) ||
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_SCRIPTID, tmp, sizeof(tmp)) ||
 			FAIL == is_uint64(tmp, &scriptid))
 	{
-		result = zbx_dsprintf(result, "Failed to parse command request tag: %s.", ZBX_PROTO_TAG_SCRIPTID);
+		result = zbx_dsprintf(result, "Failed to parse command request tag: %s.", TRX_PROTO_TAG_SCRIPTID);
 		goto finish;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_HOSTID, tmp, sizeof(tmp)) ||
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_HOSTID, tmp, sizeof(tmp)) ||
 			FAIL == is_uint64(tmp, &hostid))
 	{
-		result = zbx_dsprintf(result, "Failed to parse command request tag: %s.", ZBX_PROTO_TAG_HOSTID);
+		result = zbx_dsprintf(result, "Failed to parse command request tag: %s.", TRX_PROTO_TAG_HOSTID);
 		goto finish;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_SID, sessionid, sizeof(sessionid)))
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_SID, sessionid, sizeof(sessionid)))
 	{
-		result = zbx_dsprintf(result, "Failed to parse command request tag: %s.", ZBX_PROTO_TAG_SID);
+		result = zbx_dsprintf(result, "Failed to parse command request tag: %s.", TRX_PROTO_TAG_SID);
 		goto finish;
 	}
 
 	if (SUCCEED == (ret = execute_script(scriptid, hostid, sessionid, &result)))
 	{
-		zbx_json_addstring(&j, ZBX_PROTO_TAG_RESPONSE, ZBX_PROTO_VALUE_SUCCESS, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&j, ZBX_PROTO_TAG_DATA, result, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, TRX_PROTO_TAG_DATA, result, TRX_JSON_TYPE_STRING);
 		send = j.buffer;
 	}
 finish:
 	if (SUCCEED != ret)
 	{
-		zbx_json_addstring(&j, ZBX_PROTO_TAG_RESPONSE, ZBX_PROTO_VALUE_FAILED, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&j, ZBX_PROTO_TAG_INFO, (NULL != result ? result : "Unknown error."),
-				ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_FAILED, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, TRX_PROTO_TAG_INFO, (NULL != result ? result : "Unknown error."),
+				TRX_JSON_TYPE_STRING);
 		send = j.buffer;
 	}
 

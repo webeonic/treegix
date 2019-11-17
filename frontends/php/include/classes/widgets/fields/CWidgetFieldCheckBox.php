@@ -15,7 +15,7 @@ class CWidgetFieldCheckBox extends CWidgetField {
 	public function __construct($name, $label, $caption = null) {
 		parent::__construct($name, $label);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_INT32);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_INT32);
 		$this->setDefault(0);
 		$this->caption = $caption;
 	}

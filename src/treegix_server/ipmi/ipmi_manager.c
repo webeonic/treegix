@@ -20,19 +20,19 @@
 
 #include "../poller/poller.h"
 
-#define ZBX_IPMI_MANAGER_DELAY	1
+#define TRX_IPMI_MANAGER_DELAY	1
 
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
 
 extern int	CONFIG_IPMIPOLLER_FORKS;
 
-#define ZBX_IPMI_POLLER_INIT		0
-#define ZBX_IPMI_POLLER_READY		1
-#define ZBX_IPMI_POLLER_BUSY		2
+#define TRX_IPMI_POLLER_INIT		0
+#define TRX_IPMI_POLLER_READY		1
+#define TRX_IPMI_POLLER_BUSY		2
 
-#define ZBX_IPMI_MANAGER_CLEANUP_DELAY		SEC_PER_HOUR
-#define ZBX_IPMI_MANAGER_HOST_TTL		SEC_PER_DAY
+#define TRX_IPMI_MANAGER_CLEANUP_DELAY		SEC_PER_HOUR
+#define TRX_IPMI_MANAGER_HOST_TTL		SEC_PER_DAY
 
 /* IPMI request queued by pollers */
 typedef struct
@@ -110,7 +110,7 @@ static zbx_hash_t	poller_hash_func(const void *d)
 {
 	const zbx_ipmi_poller_t	*poller = *(const zbx_ipmi_poller_t **)d;
 
-	zbx_hash_t hash =  ZBX_DEFAULT_PTR_HASH_FUNC(&poller->client);
+	zbx_hash_t hash =  TRX_DEFAULT_PTR_HASH_FUNC(&poller->client);
 
 	return hash;
 }
@@ -120,7 +120,7 @@ static int	poller_compare_func(const void *d1, const void *d2)
 	const zbx_ipmi_poller_t	*p1 = *(const zbx_ipmi_poller_t **)d1;
 	const zbx_ipmi_poller_t	*p2 = *(const zbx_ipmi_poller_t **)d2;
 
-	ZBX_RETURN_IF_NOT_EQUAL(p1->client, p2->client);
+	TRX_RETURN_IF_NOT_EQUAL(p1->client, p2->client);
 	return 0;
 }
 
@@ -143,16 +143,16 @@ static int	ipmi_request_priority(const zbx_ipmi_request_t *request)
 {
 	switch (request->message.code)
 	{
-		case ZBX_IPC_IPMI_VALUE_REQUEST:
+		case TRX_IPC_IPMI_VALUE_REQUEST:
 			return 1;
-		case ZBX_IPC_IPMI_SCRIPT_REQUEST:
+		case TRX_IPC_IPMI_SCRIPT_REQUEST:
 			return 0;
 		default:
 			return INT_MAX;
 	}
 }
 
-/* There can be two request types in the queue - ZBX_IPC_IPMI_VALUE_REQUEST and ZBX_IPC_IPMI_COMMAND_REQUEST. */
+/* There can be two request types in the queue - TRX_IPC_IPMI_VALUE_REQUEST and TRX_IPC_IPMI_COMMAND_REQUEST. */
 /* Prioritize command requests over value requests.                                                           */
 static int	ipmi_request_compare(const void *d1, const void *d2)
 {
@@ -162,8 +162,8 @@ static int	ipmi_request_compare(const void *d1, const void *d2)
 	const zbx_ipmi_request_t	*r1 = (const zbx_ipmi_request_t *)e1->data;
 	const zbx_ipmi_request_t	*r2 = (const zbx_ipmi_request_t *)e2->data;
 
-	ZBX_RETURN_IF_NOT_EQUAL(ipmi_request_priority(r1), ipmi_request_priority(r2));
-	ZBX_RETURN_IF_NOT_EQUAL(r1->requestid, r2->requestid);
+	TRX_RETURN_IF_NOT_EQUAL(ipmi_request_priority(r1), ipmi_request_priority(r2));
+	TRX_RETURN_IF_NOT_EQUAL(r1->requestid, r2->requestid);
 
 	return 0;
 }
@@ -363,7 +363,7 @@ static void	ipmi_manager_init(zbx_ipmi_manager_t *manager)
 		zbx_binary_heap_insert(&manager->pollers_load, &elem);
 	}
 
-	zbx_hashset_create(&manager->hosts, 0, ZBX_DEFAULT_UINT64_HASH_FUNC, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_hashset_create(&manager->hosts, 0, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -408,7 +408,7 @@ static void	ipmi_manager_host_cleanup(zbx_ipmi_manager_t *manager, int now)
 	zbx_hashset_iter_reset(&manager->hosts, &iter);
 	while (NULL != (host = (zbx_ipmi_manager_host_t *)zbx_hashset_iter_next(&iter)))
 	{
-		if (host->lastcheck + ZBX_IPMI_MANAGER_HOST_TTL <= now)
+		if (host->lastcheck + TRX_IPMI_MANAGER_HOST_TTL <= now)
 		{
 			host->poller->hosts_num--;
 			zbx_hashset_iter_remove(&iter);
@@ -420,7 +420,7 @@ static void	ipmi_manager_host_cleanup(zbx_ipmi_manager_t *manager, int now)
 		poller = (zbx_ipmi_poller_t *)manager->pollers.values[i];
 
 		if (NULL != poller->client)
-			zbx_ipc_client_send(poller->client, ZBX_IPC_IPMI_CLEANUP_REQUEST, NULL, 0);
+			zbx_ipc_client_send(poller->client, TRX_IPC_IPMI_CLEANUP_REQUEST, NULL, 0);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -552,10 +552,10 @@ static void	ipmi_manager_process_poller_queue(zbx_ipmi_manager_t *manager, zbx_i
 	{
 		switch (request->message.code)
 		{
-			case ZBX_IPC_IPMI_COMMAND_REQUEST:
-			case ZBX_IPC_IPMI_CLEANUP_REQUEST:
+			case TRX_IPC_IPMI_COMMAND_REQUEST:
+			case TRX_IPC_IPMI_CLEANUP_REQUEST:
 				break;
-			case ZBX_IPC_IPMI_VALUE_REQUEST:
+			case TRX_IPC_IPMI_VALUE_REQUEST:
 				if (NULL == (host = (zbx_ipmi_manager_host_t *)zbx_hashset_search(&manager->hosts, &request->hostid)))
 				{
 					THIS_SHOULD_NEVER_HAPPEN;
@@ -690,7 +690,7 @@ static void	ipmi_manager_deactivate_host(zbx_ipmi_manager_t *manager, zbx_uint64
  *                                                                            *
  * Parameters: manager   - [IN] the IPMI manager                              *
  *             client    - [IN] the client (IPMI poller)                      *
- *             message   - [IN] the received ZBX_IPC_IPMI_VALUE_RESULT message*
+ *             message   - [IN] the received TRX_IPC_IPMI_VALUE_RESULT message*
  *             now       - [IN] the current time                              *
  *                                                                            *
  ******************************************************************************/
@@ -771,7 +771,7 @@ static void	ipmi_manager_process_value_result(zbx_ipmi_manager_t *manager, zbx_i
  *                                                                            *
  * Function: ipmi_manager_serialize_request                                   *
  *                                                                            *
- * Purpose: serializes IPMI poll request (ZBX_IPC_IPMI_VALUE_REQUEST)         *
+ * Purpose: serializes IPMI poll request (TRX_IPC_IPMI_VALUE_REQUEST)         *
  *                                                                            *
  * Parameters: item      - [IN] the item to poll                              *
  *             command   - [IN] the command to execute                        *
@@ -786,7 +786,7 @@ static void	ipmi_manager_serialize_request(const DC_ITEM *item, int command, zbx
 			item->interface.port, item->host.ipmi_authtype, item->host.ipmi_privilege,
 			item->host.ipmi_username, item->host.ipmi_password, item->ipmi_sensor, command);
 
-	message->code = ZBX_IPC_IPMI_VALUE_REQUEST;
+	message->code = TRX_IPC_IPMI_VALUE_REQUEST;
 	message->size = size;
 }
 
@@ -890,7 +890,7 @@ static void	ipmi_manager_process_script_request(zbx_ipmi_manager_t *manager, zbx
 	request = ipmi_request_create(0);
 	request->client = client;
 	zbx_ipc_message_copy(&request->message, message);
-	request->message.code = ZBX_IPC_IPMI_COMMAND_REQUEST;
+	request->message.code = TRX_IPC_IPMI_COMMAND_REQUEST;
 
 	ipmi_manager_schedule_request(manager, hostid, request, now);
 }
@@ -921,7 +921,7 @@ static void	ipmi_manager_process_command_result(zbx_ipmi_manager_t *manager, zbx
 
 	if (SUCCEED == zbx_ipc_client_connected(poller->request->client))
 	{
-		zbx_ipc_client_send(poller->request->client, ZBX_IPC_IPMI_SCRIPT_RESULT, message->data, message->size);
+		zbx_ipc_client_send(poller->request->client, TRX_IPC_IPMI_SCRIPT_RESULT, message->data, message->size);
 		zbx_ipc_client_release(poller->request->client);
 	}
 
@@ -929,7 +929,7 @@ static void	ipmi_manager_process_command_result(zbx_ipmi_manager_t *manager, zbx
 	ipmi_manager_process_poller_queue(manager, poller, now);
 }
 
-ZBX_THREAD_ENTRY(ipmi_manager_thread, args)
+TRX_THREAD_ENTRY(ipmi_manager_thread, args)
 {
 	zbx_ipc_service_t	ipmi_service;
 	char			*error = NULL;
@@ -952,7 +952,7 @@ ZBX_THREAD_ENTRY(ipmi_manager_thread, args)
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
-	if (FAIL == zbx_ipc_service_start(&ipmi_service, ZBX_IPC_SERVICE_IPMI, &error))
+	if (FAIL == zbx_ipc_service_start(&ipmi_service, TRX_IPC_SERVICE_IPMI, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot start IPMI service: %s", error);
 		zbx_free(error);
@@ -961,25 +961,25 @@ ZBX_THREAD_ENTRY(ipmi_manager_thread, args)
 
 	ipmi_manager_init(&ipmi_manager);
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	nextcleanup = time(NULL) + ZBX_IPMI_MANAGER_CLEANUP_DELAY;
+	nextcleanup = time(NULL) + TRX_IPMI_MANAGER_CLEANUP_DELAY;
 
 	time_stat = zbx_time();
 
 	zbx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
 
-	update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		time_now = zbx_time();
 		now = time_now;
 
 		if (STAT_INTERVAL < time_now - time_stat)
 		{
-			zbx_setproctitle("%s #%d [scheduled %d, polled %d values, idle " ZBX_FS_DBL " sec during "
-					ZBX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
+			zbx_setproctitle("%s #%d [scheduled %d, polled %d values, idle " TRX_FS_DBL " sec during "
+					TRX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
 					scheduled_num, polled_num, time_idle, time_now - time_stat);
 
 			time_stat = time_now;
@@ -993,39 +993,39 @@ ZBX_THREAD_ENTRY(ipmi_manager_thread, args)
 		if (FAIL != nextcheck)
 			timeout = (nextcheck > now ? nextcheck - now : 0);
 		else
-			timeout = ZBX_IPMI_MANAGER_DELAY;
+			timeout = TRX_IPMI_MANAGER_DELAY;
 
-		if (ZBX_IPMI_MANAGER_DELAY < timeout)
-			timeout = ZBX_IPMI_MANAGER_DELAY;
+		if (TRX_IPMI_MANAGER_DELAY < timeout)
+			timeout = TRX_IPMI_MANAGER_DELAY;
 
-		update_selfmon_counter(ZBX_PROCESS_STATE_IDLE);
+		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
 		ret = zbx_ipc_service_recv(&ipmi_service, timeout, &client, &message);
-		update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+		update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 		sec = zbx_time();
 		zbx_update_env(sec);
 
-		if (ZBX_IPC_RECV_IMMEDIATE != ret)
+		if (TRX_IPC_RECV_IMMEDIATE != ret)
 			time_idle += sec - time_now;
 
 		if (NULL != message)
 		{
 			switch (message->code)
 			{
-				case ZBX_IPC_IPMI_REGISTER:
+				case TRX_IPC_IPMI_REGISTER:
 					if (NULL != (poller = ipmi_manager_register_poller(&ipmi_manager, client,
 							message)))
 					{
 						ipmi_manager_process_poller_queue(&ipmi_manager, poller, now);
 					}
 					break;
-				case ZBX_IPC_IPMI_VALUE_RESULT:
+				case TRX_IPC_IPMI_VALUE_RESULT:
 					ipmi_manager_process_value_result(&ipmi_manager, client, message, now);
 					polled_num++;
 					break;
-				case ZBX_IPC_IPMI_SCRIPT_REQUEST:
+				case TRX_IPC_IPMI_SCRIPT_REQUEST:
 					ipmi_manager_process_script_request(&ipmi_manager, client, message, now);
 					break;
-				case ZBX_IPC_IPMI_COMMAND_RESULT:
+				case TRX_IPC_IPMI_COMMAND_RESULT:
 					ipmi_manager_process_command_result(&ipmi_manager, client, message, now);
 			}
 
@@ -1038,7 +1038,7 @@ ZBX_THREAD_ENTRY(ipmi_manager_thread, args)
 		if (now >= nextcleanup)
 		{
 			ipmi_manager_host_cleanup(&ipmi_manager, now);
-			nextcleanup = now + ZBX_IPMI_MANAGER_CLEANUP_DELAY;
+			nextcleanup = now + TRX_IPMI_MANAGER_CLEANUP_DELAY;
 		}
 	}
 

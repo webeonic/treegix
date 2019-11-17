@@ -18,6 +18,6 @@
  ******************************************************************************/
 void	zbx_get_treegix_stats_ext(struct zbx_json *json)
 {
-	ZBX_UNUSED(json);
+	TRX_UNUSED(json);
 	return;
 }

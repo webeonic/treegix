@@ -29,7 +29,7 @@ class CWidgetField {
 		$this->name = $name;
 		$this->label = $label;
 		$this->value = null;
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_STR);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_STR);
 		$this->flags = 0x00;
 	}
 
@@ -60,24 +60,24 @@ class CWidgetField {
 
 	protected function setSaveType($save_type) {
 		switch ($save_type) {
-			case ZBX_WIDGET_FIELD_TYPE_INT32:
+			case TRX_WIDGET_FIELD_TYPE_INT32:
 				$this->validation_rules = ['type' => API_INT32];
 				break;
 
-			case ZBX_WIDGET_FIELD_TYPE_STR:
+			case TRX_WIDGET_FIELD_TYPE_STR:
 				$this->validation_rules = ['type' => API_STRING_UTF8, 'length' => 255];
 				break;
 
-			case ZBX_WIDGET_FIELD_TYPE_GROUP:
-			case ZBX_WIDGET_FIELD_TYPE_HOST:
-			case ZBX_WIDGET_FIELD_TYPE_ITEM:
-			case ZBX_WIDGET_FIELD_TYPE_ITEM_PROTOTYPE:
-			case ZBX_WIDGET_FIELD_TYPE_GRAPH:
-			case ZBX_WIDGET_FIELD_TYPE_GRAPH_PROTOTYPE:
+			case TRX_WIDGET_FIELD_TYPE_GROUP:
+			case TRX_WIDGET_FIELD_TYPE_HOST:
+			case TRX_WIDGET_FIELD_TYPE_ITEM:
+			case TRX_WIDGET_FIELD_TYPE_ITEM_PROTOTYPE:
+			case TRX_WIDGET_FIELD_TYPE_GRAPH:
+			case TRX_WIDGET_FIELD_TYPE_GRAPH_PROTOTYPE:
 				$this->validation_rules = ['type' => API_IDS];
 				break;
 
-			case ZBX_WIDGET_FIELD_TYPE_MAP:
+			case TRX_WIDGET_FIELD_TYPE_MAP:
 				$this->validation_rules = ['type' => API_ID];
 				break;
 

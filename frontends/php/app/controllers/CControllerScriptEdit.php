@@ -12,8 +12,8 @@ class CControllerScriptEdit extends CController {
 		$fields = [
 			'scriptid' =>				'db scripts.scriptid',
 			'name' =>					'db scripts.name',
-			'type' =>					'db scripts.type        |in '.ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT.','.ZBX_SCRIPT_TYPE_IPMI,
-			'execute_on' =>				'db scripts.execute_on  |in '.ZBX_SCRIPT_EXECUTE_ON_AGENT.','.ZBX_SCRIPT_EXECUTE_ON_SERVER.','.ZBX_SCRIPT_EXECUTE_ON_PROXY,
+			'type' =>					'db scripts.type        |in '.TRX_SCRIPT_TYPE_CUSTOM_SCRIPT.','.TRX_SCRIPT_TYPE_IPMI,
+			'execute_on' =>				'db scripts.execute_on  |in '.TRX_SCRIPT_EXECUTE_ON_AGENT.','.TRX_SCRIPT_EXECUTE_ON_SERVER.','.TRX_SCRIPT_EXECUTE_ON_PROXY,
 			'command' =>				'db scripts.command',
 			'commandipmi' =>			'db scripts.command',
 			'description' =>			'db scripts.description',
@@ -56,8 +56,8 @@ class CControllerScriptEdit extends CController {
 			'sid' => $this->getUserSID(),
 			'scriptid' => 0,
 			'name' => '',
-			'type' => ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT,
-			'execute_on' => ZBX_SCRIPT_EXECUTE_ON_AGENT,
+			'type' => TRX_SCRIPT_TYPE_CUSTOM_SCRIPT,
+			'execute_on' => TRX_SCRIPT_EXECUTE_ON_AGENT,
 			'command' => '',
 			'commandipmi' => '',
 			'description' => '',
@@ -83,8 +83,8 @@ class CControllerScriptEdit extends CController {
 			$data['name'] = $script['name'];
 			$data['type'] = $script['type'];
 			$data['execute_on'] = $script['execute_on'];
-			$data['command'] = ($script['type'] == ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT) ? $script['command'] : '';
-			$data['commandipmi'] = ($script['type'] == ZBX_SCRIPT_TYPE_IPMI) ? $script['command'] : '';
+			$data['command'] = ($script['type'] == TRX_SCRIPT_TYPE_CUSTOM_SCRIPT) ? $script['command'] : '';
+			$data['commandipmi'] = ($script['type'] == TRX_SCRIPT_TYPE_IPMI) ? $script['command'] : '';
 			$data['description'] = $script['description'];
 			$data['usrgrpid'] = $script['usrgrpid'];
 			$data['groupid'] = $script['groupid'];

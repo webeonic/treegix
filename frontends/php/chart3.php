@@ -11,31 +11,31 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'from' =>			[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,		null,				null],
-	'to' =>				[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,		null,				null],
-	'profileIdx' =>		[T_ZBX_STR,			O_OPT, null,		null,				null],
-	'profileIdx2' =>	[T_ZBX_STR,			O_OPT, null,		null,				null],
-	'httptestid' =>		[T_ZBX_INT,			O_OPT, P_NZERO,	null,				null],
-	'http_item_type' =>	[T_ZBX_INT,			O_OPT, null,		null,				null],
-	'name' =>			[T_ZBX_STR,			O_OPT, null,		null,				null],
-	'width' =>			[T_ZBX_INT,			O_OPT, null,	BETWEEN(CLineGraphDraw::GRAPH_WIDTH_MIN, 65535),	null],
-	'height' =>			[T_ZBX_INT,			O_OPT, null,	BETWEEN(CLineGraphDraw::GRAPH_HEIGHT_MIN, 65535),	null],
-	'ymin_type' =>		[T_ZBX_INT,			O_OPT, null,		IN('0,1,2'),		null],
-	'ymax_type' =>		[T_ZBX_INT,			O_OPT, null,		IN('0,1,2'),		null],
-	'ymin_itemid' =>	[T_ZBX_INT,			O_OPT, null,		DB_ID,				null],
-	'ymax_itemid' =>	[T_ZBX_INT,			O_OPT, null,		DB_ID,				null],
-	'legend' =>			[T_ZBX_INT,			O_OPT, null,		IN('0,1'),			null],
-	'showworkperiod' =>	[T_ZBX_INT,			O_OPT, null,		IN('0,1'),			null],
-	'showtriggers' =>	[T_ZBX_INT,			O_OPT, null,		IN('0,1'),			null],
-	'graphtype' =>		[T_ZBX_INT,			O_OPT, null,		IN('0,1'),			null],
-	'yaxismin' =>		[T_ZBX_DBL,			O_OPT, null,		null,				null],
-	'yaxismax' =>		[T_ZBX_DBL,			O_OPT, null,		null,				null],
-	'percent_left' =>	[T_ZBX_DBL,			O_OPT, null,		BETWEEN(0, 100),	null],
-	'percent_right' =>	[T_ZBX_DBL,			O_OPT, null,		BETWEEN(0, 100),	null],
-	'outer' =>			[T_ZBX_INT,			O_OPT, null,		IN('0,1'),			null],
-	'items' =>			[T_ZBX_STR,			O_OPT, null,		null,				null],
-	'onlyHeight' =>		[T_ZBX_INT,			O_OPT, null,		IN('0,1'),			null],
-	'widget_view' =>	[T_ZBX_INT,			O_OPT, null,		IN('0,1'),			null]
+	'from' =>			[T_TRX_RANGE_TIME,	O_OPT, P_SYS,		null,				null],
+	'to' =>				[T_TRX_RANGE_TIME,	O_OPT, P_SYS,		null,				null],
+	'profileIdx' =>		[T_TRX_STR,			O_OPT, null,		null,				null],
+	'profileIdx2' =>	[T_TRX_STR,			O_OPT, null,		null,				null],
+	'httptestid' =>		[T_TRX_INT,			O_OPT, P_NZERO,	null,				null],
+	'http_item_type' =>	[T_TRX_INT,			O_OPT, null,		null,				null],
+	'name' =>			[T_TRX_STR,			O_OPT, null,		null,				null],
+	'width' =>			[T_TRX_INT,			O_OPT, null,	BETWEEN(CLineGraphDraw::GRAPH_WIDTH_MIN, 65535),	null],
+	'height' =>			[T_TRX_INT,			O_OPT, null,	BETWEEN(CLineGraphDraw::GRAPH_HEIGHT_MIN, 65535),	null],
+	'ymin_type' =>		[T_TRX_INT,			O_OPT, null,		IN('0,1,2'),		null],
+	'ymax_type' =>		[T_TRX_INT,			O_OPT, null,		IN('0,1,2'),		null],
+	'ymin_itemid' =>	[T_TRX_INT,			O_OPT, null,		DB_ID,				null],
+	'ymax_itemid' =>	[T_TRX_INT,			O_OPT, null,		DB_ID,				null],
+	'legend' =>			[T_TRX_INT,			O_OPT, null,		IN('0,1'),			null],
+	'showworkperiod' =>	[T_TRX_INT,			O_OPT, null,		IN('0,1'),			null],
+	'showtriggers' =>	[T_TRX_INT,			O_OPT, null,		IN('0,1'),			null],
+	'graphtype' =>		[T_TRX_INT,			O_OPT, null,		IN('0,1'),			null],
+	'yaxismin' =>		[T_TRX_DBL,			O_OPT, null,		null,				null],
+	'yaxismax' =>		[T_TRX_DBL,			O_OPT, null,		null,				null],
+	'percent_left' =>	[T_TRX_DBL,			O_OPT, null,		BETWEEN(0, 100),	null],
+	'percent_right' =>	[T_TRX_DBL,			O_OPT, null,		BETWEEN(0, 100),	null],
+	'outer' =>			[T_TRX_INT,			O_OPT, null,		IN('0,1'),			null],
+	'items' =>			[T_TRX_STR,			O_OPT, null,		null,				null],
+	'onlyHeight' =>		[T_TRX_INT,			O_OPT, null,		IN('0,1'),			null],
+	'widget_view' =>	[T_TRX_INT,			O_OPT, null,		IN('0,1'),			null]
 ];
 if (!check_fields($fields)) {
 	exit();
@@ -92,7 +92,7 @@ elseif ($items = getRequest('items', [])) {
 		],
 		'selectHosts' => ['hostid', 'name', 'host'],
 		'filter' => [
-			'flags' => [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_PROTOTYPE, ZBX_FLAG_DISCOVERY_CREATED]
+			'flags' => [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_PROTOTYPE, TRX_FLAG_DISCOVERY_CREATED]
 		],
 		'webitems' => true,
 		'preservekeys' => true
@@ -163,7 +163,7 @@ foreach ($graph_items as $graph_item) {
 
 if (getRequest('onlyHeight', '0') === '1') {
 	$graph->drawDimensions();
-	header('X-ZBX-SBOX-HEIGHT: '.($graph->getHeight() + 1));
+	header('X-TRX-SBOX-HEIGHT: '.($graph->getHeight() + 1));
 }
 else {
 	$graph->draw();

@@ -7,7 +7,7 @@
 		$('#tags-table')
 			.dynamicRows({template: '#tag-row-tmpl'})
 			.on('click', 'button.element-table-add', function() {
-				$('#tags-table .<?= ZBX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
+				$('#tags-table .<?= TRX_STYLE_TEXTAREA_FLEXIBLE ?>').textareaFlexible();
 			});
 	});
 

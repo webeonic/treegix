@@ -9,46 +9,46 @@ $widget = (new CWidget())->setTitle(_('Scripts'));
 $scriptForm = (new CForm())
 	->setId('scriptForm')
 	->setName('scripts')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', 1)
 	->addVar('scriptid', $data['scriptid']);
 
 $scriptFormList = (new CFormList())
 	->addRow((new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $data['name']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAttribute('autofocus', 'autofocus')
 			->setAttribute('placeholder', _('<sub-menu/sub-menu/...>script'))
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('Type'), 'type')),
 		(new CRadioButtonList('type', (int) $data['type']))
-			->addValue(_('IPMI'), ZBX_SCRIPT_TYPE_IPMI)
-			->addValue(_('Script'), ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT)
+			->addValue(_('IPMI'), TRX_SCRIPT_TYPE_IPMI)
+			->addValue(_('Script'), TRX_SCRIPT_TYPE_CUSTOM_SCRIPT)
 			->setModern(true)
 	)
 	->addRow((new CLabel(_('Execute on'), 'execute_on')),
 		(new CRadioButtonList('execute_on', (int) $data['execute_on']))
-			->addValue(_('Treegix agent'), ZBX_SCRIPT_EXECUTE_ON_AGENT)
-			->addValue(_('Treegix server (proxy)'), ZBX_SCRIPT_EXECUTE_ON_PROXY)
-			->addValue(_('Treegix server'), ZBX_SCRIPT_EXECUTE_ON_SERVER)
+			->addValue(_('Treegix agent'), TRX_SCRIPT_EXECUTE_ON_AGENT)
+			->addValue(_('Treegix server (proxy)'), TRX_SCRIPT_EXECUTE_ON_PROXY)
+			->addValue(_('Treegix server'), TRX_SCRIPT_EXECUTE_ON_SERVER)
 			->setModern(true)
 	)
 	->addRow((new CLabel(_('Commands'), 'command'))->setAsteriskMark(),
 		(new CTextArea('command', $data['command']))
-			->addClass(ZBX_STYLE_MONOSPACE_FONT)
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->addClass(TRX_STYLE_MONOSPACE_FONT)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setMaxLength(255)
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('Command'), 'commandipmi'))->setAsteriskMark(),
 		(new CTextBox('commandipmi', $data['commandipmi']))
-			->addClass(ZBX_STYLE_MONOSPACE_FONT)
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->addClass(TRX_STYLE_MONOSPACE_FONT)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow(_('Description'),
-		(new CTextArea('description', $data['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('description', $data['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 $user_groups = [0 => _('All')];
@@ -77,7 +77,7 @@ $scriptFormList
 				'dstfld1' => 'groupid'
 			]
 		]
-	]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH), 'hostGroupSelection')
+	]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH), 'hostGroupSelection')
 	->addRow((new CLabel(_('Required host permissions'), 'host_access')),
 		(new CRadioButtonList('host_access', (int) $data['host_access']))
 			->addValue(_('Read'), PERM_READ)
@@ -89,9 +89,9 @@ $scriptFormList
 	);
 
 $scriptFormList->addRow(new CLabel(_('Confirmation text'), 'confirmation'), [
-	(new CTextBox('confirmation', $data['confirmation']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+	(new CTextBox('confirmation', $data['confirmation']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 	SPACE,
-	(new CButton('testConfirmation', _('Test confirmation')))->addClass(ZBX_STYLE_BTN_GREY)
+	(new CButton('testConfirmation', _('Test confirmation')))->addClass(TRX_STYLE_BTN_GREY)
 ]);
 
 $scriptView = (new CTabView())->addTab('scripts', _('Script'), $scriptFormList);

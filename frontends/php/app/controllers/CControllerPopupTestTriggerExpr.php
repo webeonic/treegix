@@ -21,7 +21,7 @@ class CControllerPopupTestTriggerExpr extends CController {
 	protected function init() {
 		$this->disableSIDvalidation();
 
-		define('ZBX_PAGE_NO_MENU', true);
+		define('TRX_PAGE_NO_MENU', true);
 		define('COMBO_PATTERN', 'str_in_array({},array(');
 		define('COMBO_PATTERN_LENGTH', strlen(COMBO_PATTERN));
 		define('NO_LINK_IN_TESTING', true);
@@ -53,8 +53,8 @@ class CControllerPopupTestTriggerExpr extends CController {
 
 				$row = (new CRow())->addItem(
 					(new CCol($token['value']))
-						->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-						->addStyle('max-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+						->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+						->addStyle('max-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 				);
 				$fname = 'test_data_'.md5($token['value']);
 				$this->macros_data[$token['value']] = array_key_exists($fname, $_REQUEST) ? $_REQUEST[$fname] : '';
@@ -64,7 +64,7 @@ class CControllerPopupTestTriggerExpr extends CController {
 					$this->allowed_testing = false;
 					$row->addItem(
 						(new CCol($this->defined_error_phrases[$info]))
-							->addClass(ZBX_STYLE_RED)
+							->addClass(TRX_STYLE_RED)
 							->setColspan(2)
 					);
 				}
@@ -82,7 +82,7 @@ class CControllerPopupTestTriggerExpr extends CController {
 					}
 					else {
 						$control = (new CTextBox($fname, $this->macros_data[$token['value']]))
-							->setWidth(ZBX_TEXTAREA_SMALL_WIDTH);
+							->setWidth(TRX_TEXTAREA_SMALL_WIDTH);
 					}
 
 					$this->fields[$fname] = [$info['type'], O_OPT, null, $info['validation'],

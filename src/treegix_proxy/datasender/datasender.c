@@ -19,17 +19,17 @@
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
 
-#define ZBX_DATASENDER_AVAILABILITY		0x0001
-#define ZBX_DATASENDER_HISTORY			0x0002
-#define ZBX_DATASENDER_DISCOVERY		0x0004
-#define ZBX_DATASENDER_AUTOREGISTRATION		0x0008
-#define ZBX_DATASENDER_TASKS			0x0010
-#define ZBX_DATASENDER_TASKS_RECV		0x0020
-#define ZBX_DATASENDER_TASKS_REQUEST		0x8000
+#define TRX_DATASENDER_AVAILABILITY		0x0001
+#define TRX_DATASENDER_HISTORY			0x0002
+#define TRX_DATASENDER_DISCOVERY		0x0004
+#define TRX_DATASENDER_AUTOREGISTRATION		0x0008
+#define TRX_DATASENDER_TASKS			0x0010
+#define TRX_DATASENDER_TASKS_RECV		0x0020
+#define TRX_DATASENDER_TASKS_REQUEST		0x8000
 
-#define ZBX_DATASENDER_DB_UPDATE	(ZBX_DATASENDER_HISTORY | ZBX_DATASENDER_DISCOVERY |		\
-					ZBX_DATASENDER_AUTOREGISTRATION | ZBX_DATASENDER_TASKS |	\
-					ZBX_DATASENDER_TASKS_RECV)
+#define TRX_DATASENDER_DB_UPDATE	(TRX_DATASENDER_HISTORY | TRX_DATASENDER_DISCOVERY |		\
+					TRX_DATASENDER_AUTOREGISTRATION | TRX_DATASENDER_TASKS |	\
+					TRX_DATASENDER_TASKS_RECV)
 
 /******************************************************************************
  *                                                                            *
@@ -55,32 +55,32 @@ static int	proxy_data_sender(int *more, int now)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	*more = ZBX_PROXY_DATA_DONE;
-	zbx_json_init(&j, 16 * ZBX_KIBIBYTE);
+	*more = TRX_PROXY_DATA_DONE;
+	zbx_json_init(&j, 16 * TRX_KIBIBYTE);
 
-	zbx_json_addstring(&j, ZBX_PROTO_TAG_REQUEST, ZBX_PROTO_VALUE_PROXY_DATA, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, ZBX_PROTO_TAG_HOST, CONFIG_HOSTNAME, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, ZBX_PROTO_TAG_SESSION, zbx_dc_get_session_token(), ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_PROXY_DATA, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, TRX_PROTO_TAG_HOST, CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, TRX_PROTO_TAG_SESSION, zbx_dc_get_session_token(), TRX_JSON_TYPE_STRING);
 
 	if (SUCCEED == upload_state && CONFIG_PROXYDATA_FREQUENCY <= now - data_timestamp)
 	{
 		if (SUCCEED == get_host_availability_data(&j, &availability_ts))
-			flags |= ZBX_DATASENDER_AVAILABILITY;
+			flags |= TRX_DATASENDER_AVAILABILITY;
 
 		history_records = proxy_get_hist_data(&j, &history_lastid, &more_history);
 		if (0 != history_lastid)
-			flags |= ZBX_DATASENDER_HISTORY;
+			flags |= TRX_DATASENDER_HISTORY;
 
 		discovery_records = proxy_get_dhis_data(&j, &discovery_lastid, &more_discovery);
 		if (0 != discovery_records)
-			flags |= ZBX_DATASENDER_DISCOVERY;
+			flags |= TRX_DATASENDER_DISCOVERY;
 
 		areg_records = proxy_get_areg_data(&j, &areg_lastid, &more_areg);
 		if (0 != areg_records)
-			flags |= ZBX_DATASENDER_AUTOREGISTRATION;
+			flags |= TRX_DATASENDER_AUTOREGISTRATION;
 
-		if (ZBX_PROXY_DATA_MORE != more_history && ZBX_PROXY_DATA_MORE != more_discovery &&
-						ZBX_PROXY_DATA_MORE != more_areg)
+		if (TRX_PROXY_DATA_MORE != more_history && TRX_PROXY_DATA_MORE != more_discovery &&
+						TRX_PROXY_DATA_MORE != more_areg)
 		{
 			data_timestamp = now;
 		}
@@ -88,7 +88,7 @@ static int	proxy_data_sender(int *more, int now)
 
 	zbx_vector_ptr_create(&tasks);
 
-	if (SUCCEED == upload_state && ZBX_TASK_UPDATE_FREQUENCY <= now - task_timestamp)
+	if (SUCCEED == upload_state && TRX_TASK_UPDATE_FREQUENCY <= now - task_timestamp)
 	{
 		task_timestamp = now;
 
@@ -97,75 +97,75 @@ static int	proxy_data_sender(int *more, int now)
 		if (0 != tasks.values_num)
 		{
 			zbx_tm_json_serialize_tasks(&j, &tasks);
-			flags |= ZBX_DATASENDER_TASKS;
+			flags |= TRX_DATASENDER_TASKS;
 		}
 
-		flags |= ZBX_DATASENDER_TASKS_REQUEST;
+		flags |= TRX_DATASENDER_TASKS_REQUEST;
 	}
 
 	if (SUCCEED != upload_state)
-		flags |= ZBX_DATASENDER_TASKS_REQUEST;
+		flags |= TRX_DATASENDER_TASKS_REQUEST;
 
 	if (0 != flags)
 	{
-		if (ZBX_PROXY_DATA_MORE == more_history || ZBX_PROXY_DATA_MORE == more_discovery ||
-				ZBX_PROXY_DATA_MORE == more_areg)
+		if (TRX_PROXY_DATA_MORE == more_history || TRX_PROXY_DATA_MORE == more_discovery ||
+				TRX_PROXY_DATA_MORE == more_areg)
 		{
-			zbx_json_adduint64(&j, ZBX_PROTO_TAG_MORE, ZBX_PROXY_DATA_MORE);
-			*more = ZBX_PROXY_DATA_MORE;
+			zbx_json_adduint64(&j, TRX_PROTO_TAG_MORE, TRX_PROXY_DATA_MORE);
+			*more = TRX_PROXY_DATA_MORE;
 		}
 
-		zbx_json_addstring(&j, ZBX_PROTO_TAG_VERSION, TREEGIX_VERSION, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
 
 		/* retry till have a connection */
 		if (FAIL == connect_to_server(&sock, 600, CONFIG_PROXYDATA_FREQUENCY))
 			goto clean;
 
 		zbx_timespec(&ts);
-		zbx_json_adduint64(&j, ZBX_PROTO_TAG_CLOCK, ts.sec);
-		zbx_json_adduint64(&j, ZBX_PROTO_TAG_NS, ts.ns);
+		zbx_json_adduint64(&j, TRX_PROTO_TAG_CLOCK, ts.sec);
+		zbx_json_adduint64(&j, TRX_PROTO_TAG_NS, ts.ns);
 
 		if (SUCCEED != (upload_state = put_data_to_server(&sock, &j, &error)))
 		{
-			*more = ZBX_PROXY_DATA_DONE;
+			*more = TRX_PROXY_DATA_DONE;
 			treegix_log(LOG_LEVEL_WARNING, "cannot send proxy data to server at \"%s\": %s",
 					sock.peer, error);
 			zbx_free(error);
 		}
 		else
 		{
-			if (0 != (flags & ZBX_DATASENDER_AVAILABILITY))
+			if (0 != (flags & TRX_DATASENDER_AVAILABILITY))
 				zbx_set_availability_diff_ts(availability_ts);
 
 			if (SUCCEED == zbx_json_open(sock.buffer, &jp))
 			{
-				if (SUCCEED == zbx_json_brackets_by_name(&jp, ZBX_PROTO_TAG_TASKS, &jp_tasks))
-					flags |= ZBX_DATASENDER_TASKS_RECV;
+				if (SUCCEED == zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_TASKS, &jp_tasks))
+					flags |= TRX_DATASENDER_TASKS_RECV;
 			}
 
-			if (0 != (flags & ZBX_DATASENDER_DB_UPDATE))
+			if (0 != (flags & TRX_DATASENDER_DB_UPDATE))
 			{
 				DBbegin();
 
-				if (0 != (flags & ZBX_DATASENDER_TASKS))
+				if (0 != (flags & TRX_DATASENDER_TASKS))
 				{
-					zbx_tm_update_task_status(&tasks, ZBX_TM_STATUS_DONE);
+					zbx_tm_update_task_status(&tasks, TRX_TM_STATUS_DONE);
 					zbx_vector_ptr_clear_ext(&tasks, (zbx_clean_func_t)zbx_tm_task_free);
 				}
 
-				if (0 != (flags & ZBX_DATASENDER_TASKS_RECV))
+				if (0 != (flags & TRX_DATASENDER_TASKS_RECV))
 				{
 					zbx_tm_json_deserialize_tasks(&jp_tasks, &tasks);
 					zbx_tm_save_tasks(&tasks);
 				}
 
-				if (0 != (flags & ZBX_DATASENDER_HISTORY))
+				if (0 != (flags & TRX_DATASENDER_HISTORY))
 					proxy_set_hist_lastid(history_lastid);
 
-				if (0 != (flags & ZBX_DATASENDER_DISCOVERY))
+				if (0 != (flags & TRX_DATASENDER_DISCOVERY))
 					proxy_set_dhis_lastid(discovery_lastid);
 
-				if (0 != (flags & ZBX_DATASENDER_AUTOREGISTRATION))
+				if (0 != (flags & TRX_DATASENDER_AUTOREGISTRATION))
 					proxy_set_areg_lastid(areg_lastid);
 
 				DBcommit();
@@ -180,7 +180,7 @@ clean:
 
 	zbx_json_free(&j);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s more:%d flags:0x" ZBX_FS_UX64, __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s more:%d flags:0x" TRX_FS_UX64, __func__,
 			zbx_result_string(upload_state), *more, flags);
 
 	return history_records + discovery_records + areg_records;
@@ -193,7 +193,7 @@ clean:
  * Purpose: periodically sends history and events to the server               *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(datasender_thread, args)
+TRX_THREAD_ENTRY(datasender_thread, args)
 {
 	int		records = 0, more;
 	double		time_start, time_diff = 0.0, time_now;
@@ -210,14 +210,14 @@ ZBX_THREAD_ENTRY(datasender_thread, args)
 #endif
 	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		time_now = zbx_time();
 		zbx_update_env(time_now);
 
-		zbx_setproctitle("%s [sent %d values in " ZBX_FS_DBL " sec, sending data]",
+		zbx_setproctitle("%s [sent %d values in " TRX_FS_DBL " sec, sending data]",
 				get_process_type_string(process_type), records, time_diff);
 
 		records = 0;
@@ -230,14 +230,14 @@ ZBX_THREAD_ENTRY(datasender_thread, args)
 			time_now = zbx_time();
 			time_diff = time_now - time_start;
 		}
-		while (ZBX_PROXY_DATA_MORE == more && time_diff < SEC_PER_MIN && ZBX_IS_RUNNING());
+		while (TRX_PROXY_DATA_MORE == more && time_diff < SEC_PER_MIN && TRX_IS_RUNNING());
 
-		zbx_setproctitle("%s [sent %d values in " ZBX_FS_DBL " sec, idle %d sec]",
+		zbx_setproctitle("%s [sent %d values in " TRX_FS_DBL " sec, idle %d sec]",
 				get_process_type_string(process_type), records, time_diff,
-				ZBX_PROXY_DATA_MORE != more ? ZBX_TASK_UPDATE_FREQUENCY : 0);
+				TRX_PROXY_DATA_MORE != more ? TRX_TASK_UPDATE_FREQUENCY : 0);
 
-		if (ZBX_PROXY_DATA_MORE != more)
-			zbx_sleep_loop(ZBX_TASK_UPDATE_FREQUENCY);
+		if (TRX_PROXY_DATA_MORE != more)
+			zbx_sleep_loop(TRX_TASK_UPDATE_FREQUENCY);
 	}
 
 	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);

@@ -4,30 +4,30 @@
 
 class CSvgTag extends CTag {
 
-	const ZBX_STYLE_GRAPH_DASHED = 'svg-graph-dashed';
+	const TRX_STYLE_GRAPH_DASHED = 'svg-graph-dashed';
 
-	const ZBX_STYLE_GRAPH_PROBLEMS = 'svg-graph-problems';
-	const ZBX_STYLE_GRAPH_PROBLEM_BOX = 'svg-graph-problem-box';
-	const ZBX_STYLE_GRAPH_PROBLEM_HANDLE = 'svg-graph-problem-handle';
-	const ZBX_STYLE_GRAPH_PROBLEM_ARROW = 'svg-graph-problem-arrow';
+	const TRX_STYLE_GRAPH_PROBLEMS = 'svg-graph-problems';
+	const TRX_STYLE_GRAPH_PROBLEM_BOX = 'svg-graph-problem-box';
+	const TRX_STYLE_GRAPH_PROBLEM_HANDLE = 'svg-graph-problem-handle';
+	const TRX_STYLE_GRAPH_PROBLEM_ARROW = 'svg-graph-problem-arrow';
 
-	const ZBX_STYLE_GRAPH_AXIS = 'svg-graph-axis';
-	const ZBX_STYLE_GRAPH_AXIS_LEFT = 'svg-graph-axis-left';
-	const ZBX_STYLE_GRAPH_AXIS_RIGHT = 'svg-graph-axis-right';
-	const ZBX_STYLE_GRAPH_AXIS_BOTTOM = 'svg-graph-axis-bottom';
+	const TRX_STYLE_GRAPH_AXIS = 'svg-graph-axis';
+	const TRX_STYLE_GRAPH_AXIS_LEFT = 'svg-graph-axis-left';
+	const TRX_STYLE_GRAPH_AXIS_RIGHT = 'svg-graph-axis-right';
+	const TRX_STYLE_GRAPH_AXIS_BOTTOM = 'svg-graph-axis-bottom';
 
-	const ZBX_STYLE_GRAPH_AREA = 'svg-graph-area';
-	const ZBX_STYLE_GRAPH_GRID = 'svg-graph-grid';
-	const ZBX_STYLE_GRAPH_LINE = 'svg-graph-line';
-	const ZBX_STYLE_GRAPH_POINTS = 'svg-graph-points';
-	const ZBX_STYLE_GRAPH_BAR = 'svg-graph-bar';
+	const TRX_STYLE_GRAPH_AREA = 'svg-graph-area';
+	const TRX_STYLE_GRAPH_GRID = 'svg-graph-grid';
+	const TRX_STYLE_GRAPH_LINE = 'svg-graph-line';
+	const TRX_STYLE_GRAPH_POINTS = 'svg-graph-points';
+	const TRX_STYLE_GRAPH_BAR = 'svg-graph-bar';
 
-	const ZBX_STYLE_GRAPH_LEGEND = 'svg-graph-legend';
-	const ZBX_STYLE_GRAPH_LEGEND_SINGLE_ITEM = 'svg-single-item-graph-legend';
-	const ZBX_STYLE_GRAPH_LEGEND_TWO_ITEMS = 'svg-single-two-items-graph-legend';
+	const TRX_STYLE_GRAPH_LEGEND = 'svg-graph-legend';
+	const TRX_STYLE_GRAPH_LEGEND_SINGLE_ITEM = 'svg-single-item-graph-legend';
+	const TRX_STYLE_GRAPH_LEGEND_TWO_ITEMS = 'svg-single-two-items-graph-legend';
 
-	const ZBX_STYLE_GRAPH_HIGHLIGHTED_VALUE = 'svg-point-highlight';
-	const ZBX_STYLE_GRAPH_HELPER = 'svg-helper';
+	const TRX_STYLE_GRAPH_HIGHLIGHTED_VALUE = 'svg-point-highlight';
+	const TRX_STYLE_GRAPH_HELPER = 'svg-helper';
 
 	/**
 	 * SVG styles array.

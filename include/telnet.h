@@ -15,8 +15,8 @@
 #define CMD_DONT	254
 #define OPT_SGA		3
 
-int	telnet_test_login(ZBX_SOCKET socket_fd);
-int	telnet_login(ZBX_SOCKET socket_fd, const char *username, const char *password, AGENT_RESULT *result);
-int	telnet_execute(ZBX_SOCKET socket_fd, const char *command, AGENT_RESULT *result, const char *encoding);
+int	telnet_test_login(TRX_SOCKET socket_fd);
+int	telnet_login(TRX_SOCKET socket_fd, const char *username, const char *password, AGENT_RESULT *result);
+int	telnet_execute(TRX_SOCKET socket_fd, const char *command, AGENT_RESULT *result, const char *encoding);
 
 #endif

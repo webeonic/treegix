@@ -10,7 +10,7 @@ class CFormList extends CList {
 	public function __construct($id = null) {
 		parent::__construct();
 
-		$this->addClass(ZBX_STYLE_TABLE_FORMS);
+		$this->addClass(TRX_STYLE_TABLE_FORMS);
 
 		if ($id) {
 			$this->setId(zbx_formatDomId($id));
@@ -39,14 +39,14 @@ class CFormList extends CList {
 
 		if ($description === null) {
 			$this->addItem([
-				(new CDiv(SPACE))->addClass(ZBX_STYLE_TABLE_FORMS_TD_LEFT),
-				(new CDiv($label))->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)],
+				(new CDiv(SPACE))->addClass(TRX_STYLE_TABLE_FORMS_TD_LEFT),
+				(new CDiv($label))->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)],
 				$class, $id);
 		}
 		else {
 			$this->addItem([
-				(new CDiv($label))->addClass(ZBX_STYLE_TABLE_FORMS_TD_LEFT),
-				(new CDiv($description))->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)],
+				(new CDiv($label))->addClass(TRX_STYLE_TABLE_FORMS_TD_LEFT),
+				(new CDiv($description))->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)],
 				$class, $id);
 		}
 
@@ -56,10 +56,10 @@ class CFormList extends CList {
 	public function addInfo($text) {
 		$this->addItem(
 			[
-				(new CDiv())->addClass(ZBX_STYLE_TABLE_FORMS_TD_LEFT),
+				(new CDiv())->addClass(TRX_STYLE_TABLE_FORMS_TD_LEFT),
 				(new CDiv(
-					(new CDiv($text))->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				))->addClass(ZBX_STYLE_TABLE_FORMS_TD_RIGHT)
+					(new CDiv($text))->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				))->addClass(TRX_STYLE_TABLE_FORMS_TD_RIGHT)
 			]
 		);
 		return $this;

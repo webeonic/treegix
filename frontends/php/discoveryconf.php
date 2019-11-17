@@ -14,41 +14,41 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'druleid' =>		[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
-	'name' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})'],
-	'proxy_hostid' =>	[T_ZBX_INT, O_OPT, null,	DB_ID,		'isset({add}) || isset({update})'],
-	'iprange' =>		[T_ZBX_STR, O_OPT, P_CRLF,	null,		'isset({add}) || isset({update})'],
-	'delay' =>			[T_ZBX_TU, O_OPT, P_ALLOW_USER_MACRO, null, 'isset({add}) || isset({update})',
+	'druleid' =>		[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
+	'name' =>			[T_TRX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})'],
+	'proxy_hostid' =>	[T_TRX_INT, O_OPT, null,	DB_ID,		'isset({add}) || isset({update})'],
+	'iprange' =>		[T_TRX_STR, O_OPT, P_CRLF,	null,		'isset({add}) || isset({update})'],
+	'delay' =>			[T_TRX_TU, O_OPT, P_ALLOW_USER_MACRO, null, 'isset({add}) || isset({update})',
 		_('Update interval')
 	],
-	'status' =>			[T_ZBX_INT, O_OPT, null,	IN('0,1'),	null],
-	'uniqueness_criteria' => [T_ZBX_STR, O_OPT, null, null,	'isset({add}) || isset({update})', _('Device uniqueness criteria')],
-	'host_source' =>	[T_ZBX_STR, O_OPT, null,	null,	null],
-	'name_source' =>	[T_ZBX_STR, O_OPT, null,	null,	null],
-	'g_druleid' =>		[T_ZBX_INT, O_OPT, null,	DB_ID,		null],
+	'status' =>			[T_TRX_INT, O_OPT, null,	IN('0,1'),	null],
+	'uniqueness_criteria' => [T_TRX_STR, O_OPT, null, null,	'isset({add}) || isset({update})', _('Device uniqueness criteria')],
+	'host_source' =>	[T_TRX_STR, O_OPT, null,	null,	null],
+	'name_source' =>	[T_TRX_STR, O_OPT, null,	null,	null],
+	'g_druleid' =>		[T_TRX_INT, O_OPT, null,	DB_ID,		null],
 	'dchecks' =>		[null, O_OPT, null,		null,		null],
 	// actions
-	'action' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 							IN('"drule.massdelete","drule.massdisable","drule.massenable"'),
 							null
 						],
-	'add' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'delete' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'form' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'form_refresh' =>	[T_ZBX_INT, O_OPT, null,	null,		null],
-	'output' =>			[T_ZBX_STR, O_OPT, P_ACT,	null,		null],
-	'ajaxaction' =>		[T_ZBX_STR, O_OPT, P_ACT,	null,		null],
-	'ajaxdata' =>		[T_ZBX_STR, O_OPT, P_ACT,	null,		null],
+	'add' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'delete' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'form' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'form_refresh' =>	[T_TRX_INT, O_OPT, null,	null,		null],
+	'output' =>			[T_TRX_STR, O_OPT, P_ACT,	null,		null],
+	'ajaxaction' =>		[T_TRX_STR, O_OPT, P_ACT,	null,		null],
+	'ajaxdata' =>		[T_TRX_STR, O_OPT, P_ACT,	null,		null],
 	// filter
-	'filter_set' =>		[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_rst' =>		[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_name' =>	[T_ZBX_STR, O_OPT, null,	null,		null],
-	'filter_status' =>	[T_ZBX_INT, O_OPT, null,	IN([-1, DRULE_STATUS_ACTIVE, DRULE_STATUS_DISABLED]),		null],
+	'filter_set' =>		[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_rst' =>		[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_name' =>	[T_TRX_STR, O_OPT, null,	null,		null],
+	'filter_status' =>	[T_TRX_INT, O_OPT, null,	IN([-1, DRULE_STATUS_ACTIVE, DRULE_STATUS_DISABLED]),		null],
 	// sort and sortorder
-	'sort' =>			[T_ZBX_STR, O_OPT, P_SYS, IN('"name"'),								null],
-	'sortorder' =>		[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>			[T_TRX_STR, O_OPT, P_SYS, IN('"name"'),								null],
+	'sortorder' =>		[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -237,8 +237,8 @@ if (isset($_REQUEST['form'])) {
 	if (isset($data['druleid']) && !isset($_REQUEST['form_refresh'])) {
 		$data['drule'] = reset($dbDRule);
 		$data['drule']['uniqueness_criteria'] = -1;
-		$data['drule']['host_source'] = ZBX_DISCOVERY_DNS;
-		$data['drule']['name_source'] = ZBX_DISCOVERY_UNSPEC;
+		$data['drule']['host_source'] = TRX_DISCOVERY_DNS;
+		$data['drule']['name_source'] = TRX_DISCOVERY_UNSPEC;
 
 		if (!empty($data['drule']['dchecks'])) {
 			$dcheck = reset($data['drule']['dchecks']);
@@ -250,11 +250,11 @@ if (isset($_REQUEST['form'])) {
 					$data['drule']['uniqueness_criteria'] = $dcheck['dcheckid'];
 				}
 
-				if ($dcheck['host_source'] == ZBX_DISCOVERY_VALUE) {
+				if ($dcheck['host_source'] == TRX_DISCOVERY_VALUE) {
 					$data['drule']['host_source'] = '_'.$dcheck['dcheckid'];
 				}
 
-				if ($dcheck['name_source'] == ZBX_DISCOVERY_VALUE) {
+				if ($dcheck['name_source'] == TRX_DISCOVERY_VALUE) {
 					$data['drule']['name_source'] = '_'.$dcheck['dcheckid'];
 				}
 			}
@@ -269,8 +269,8 @@ if (isset($_REQUEST['form'])) {
 		$data['drule']['dchecks'] = getRequest('dchecks', []);
 		$data['drule']['nextcheck'] = getRequest('nextcheck', 0);
 		$data['drule']['uniqueness_criteria'] = getRequest('uniqueness_criteria', -1);
-		$data['drule']['host_source'] = getRequest('host_source', ZBX_DISCOVERY_DNS);
-		$data['drule']['name_source'] = getRequest('name_source', ZBX_DISCOVERY_UNSPEC);
+		$data['drule']['host_source'] = getRequest('host_source', TRX_DISCOVERY_DNS);
+		$data['drule']['name_source'] = getRequest('name_source', TRX_DISCOVERY_UNSPEC);
 	}
 
 	if (!empty($data['drule']['dchecks'])) {
@@ -298,7 +298,7 @@ if (isset($_REQUEST['form'])) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

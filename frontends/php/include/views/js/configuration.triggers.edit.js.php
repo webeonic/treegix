@@ -16,15 +16,15 @@
 			var	recovery_mode = $('input[name=recovery_mode]:checked').val();
 
 			$('#expression_row').find('label').text(
-				(recovery_mode == <?= ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION ?>)
+				(recovery_mode == <?= TRX_RECOVERY_MODE_RECOVERY_EXPRESSION ?>)
 					? <?= CJs::encodeJson(_('Problem expression')) ?>
 					: <?= CJs::encodeJson(_('Expression')) ?>
 			);
 			$('.recovery_expression_constructor_row')
-				.toggle(recovery_mode == <?= ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION ?>);
+				.toggle(recovery_mode == <?= TRX_RECOVERY_MODE_RECOVERY_EXPRESSION ?>);
 			$('#correlation_mode_row')
-				.toggle(recovery_mode == <?= ZBX_RECOVERY_MODE_EXPRESSION ?>
-					|| recovery_mode == <?= ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION ?>
+				.toggle(recovery_mode == <?= TRX_RECOVERY_MODE_EXPRESSION ?>
+					|| recovery_mode == <?= TRX_RECOVERY_MODE_RECOVERY_EXPRESSION ?>
 				);
 
 			changeCorrelationMode();
@@ -35,9 +35,9 @@
 				correlation_mode = $('input[name=correlation_mode]:checked').val();
 
 			$('#correlation_tag_row')
-				.toggle((recovery_mode == <?= ZBX_RECOVERY_MODE_EXPRESSION ?>
-					|| recovery_mode == <?= ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION ?>)
-					&& correlation_mode == <?= ZBX_TRIGGER_CORRELATION_TAG ?>
+				.toggle((recovery_mode == <?= TRX_RECOVERY_MODE_EXPRESSION ?>
+					|| recovery_mode == <?= TRX_RECOVERY_MODE_RECOVERY_EXPRESSION ?>)
+					&& correlation_mode == <?= TRX_TRIGGER_CORRELATION_TAG ?>
 				);
 		}
 	});

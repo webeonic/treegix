@@ -3,16 +3,16 @@
 			(new CComboBox('expressions[#{rowNum}][expression_type]', null, null, expression_type2str()))
 				->onChange('onChangeExpressionType(this, #{rowNum})'),
 			(new CTextBox('expressions[#{rowNum}][expression]', '', false, 255))
-				->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+				->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 				->setAriaRequired(),
 			(new CComboBox('expressions[#{rowNum}][exp_delimiter]', null, null, expressionDelimiters()))
 				->addStyle('display: none;'),
 			new CCheckBox('expressions[#{rowNum}][case_sensitive]'),
 			(new CCol(
 				(new CButton('expressions[#{rowNum}][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('form_row')
 			->setAttribute('data-index', '#{rowNum}')
@@ -157,19 +157,19 @@
 						expression: $('#expressions_' + index + '_expression').val(),
 						type: expression_type_str,
 						result: result,
-						resultClass: expr_result ? '<?= ZBX_STYLE_GREEN ?>' : '<?= ZBX_STYLE_RED ?>'
+						resultClass: expr_result ? '<?= TRX_STYLE_GREEN ?>' : '<?= TRX_STYLE_RED ?>'
 					}));
 				});
 
 				if (hasErrors) {
 					tplData = {
-						resultClass: '<?= ZBX_STYLE_RED ?>',
+						resultClass: '<?= TRX_STYLE_RED ?>',
 						result: <?= CJs::encodeJson(_('UNKNOWN')) ?>
 					};
 				}
 				else {
 					tplData = {
-						resultClass: response.data.final ? '<?= ZBX_STYLE_GREEN ?>' : '<?= ZBX_STYLE_RED ?>',
+						resultClass: response.data.final ? '<?= TRX_STYLE_GREEN ?>' : '<?= TRX_STYLE_RED ?>',
 						result: response.data.final ? <?= CJs::encodeJson(_('TRUE')) ?> : <?= CJs::encodeJson(_('FALSE')) ?>
 					};
 				}

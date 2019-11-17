@@ -63,26 +63,26 @@ if ($map_ownerid != 0) {
 
 // Append multiselect to map tab.
 $multiselect_userid = (new CMultiSelect($multiselect_data))
-	->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	->setAriaRequired();
 
 $map_tab->addRow((new CLabel(_('Owner'), 'userid_ms'))->setAsteriskMark(), $multiselect_userid);
 
 $map_tab->addRow((new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $data['sysmap']['name']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 			->setAttribute('maxlength', DB::getFieldLength('sysmaps', 'name'))
 	)
 	->addRow((new CLabel(_('Width'), 'width'))->setAsteriskMark(),
 		(new CNumericBox('width', $data['sysmap']['width'], 5))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('Height'), 'height'))->setAsteriskMark(),
 		(new CNumericBox('height', $data['sysmap']['height'], 5))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 			->setAriaRequired()
 	);
 
@@ -131,7 +131,7 @@ $map_tab
 	)
 	->addRow(null,
 		(new CTextArea('label_string_hostgroup', $data['sysmap']['label_string_hostgroup']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 // Append host to form list.
@@ -141,7 +141,7 @@ $map_tab
 	)
 	->addRow(null,
 		(new CTextArea('label_string_host', $data['sysmap']['label_string_host']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 // Append trigger to form list.
@@ -151,7 +151,7 @@ $map_tab
 	)
 	->addRow(null,
 		(new CTextArea('label_string_trigger', $data['sysmap']['label_string_trigger']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 // Append map to form list.
@@ -161,7 +161,7 @@ $map_tab
 	)
 	->addRow(null,
 		(new CTextArea('label_string_map', $data['sysmap']['label_string_map']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 // Append image to form list.
@@ -171,7 +171,7 @@ $map_tab
 	)
 	->addRow(null,
 		(new CTextArea('label_string_image', $data['sysmap']['label_string_image']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 // Append map element label to form list.
@@ -204,7 +204,7 @@ $map_tab->addRow(_('Minimum severity'),
 );
 
 $map_tab->addRow(_('Show suppressed problems'),
-	(new CCheckBox('show_suppressed'))->setChecked($data['sysmap']['show_suppressed'] == ZBX_PROBLEM_SUPPRESSED_TRUE)
+	(new CCheckBox('show_suppressed'))->setChecked($data['sysmap']['show_suppressed'] == TRX_PROBLEM_SUPPRESSED_TRUE)
 );
 
 // Create url table.
@@ -218,14 +218,14 @@ $i = 0;
 foreach ($data['sysmap']['urls'] as $url) {
 	$url_table->addRow(
 		(new CRow([
-			(new CTextBox('urls['.$i.'][name]', $url['name']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
-			(new CTextBox('urls['.$i.'][url]', $url['url']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			(new CTextBox('urls['.$i.'][name]', $url['name']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
+			(new CTextBox('urls['.$i.'][url]', $url['url']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 			new CComboBox('urls['.$i.'][elementtype]', $url['elementtype'], null, sysmap_element_types()),
 			(new CCol(
 				(new CButton(null, _('Remove')))
 					->onClick('$("urlEntry_'.$i.'").remove();')
-					->addClass(ZBX_STYLE_BTN_LINK)
-			))->addClass(ZBX_STYLE_NOWRAP)
+					->addClass(TRX_STYLE_BTN_LINK)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))->setId('urlEntry_'.$i)
 	);
 	$i++;
@@ -233,21 +233,21 @@ foreach ($data['sysmap']['urls'] as $url) {
 
 // Append empty template row to url table.
 $template_url_label = (new CTextBox('urls[#{id}][name]', ''))
-	->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+	->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 	->setAttribute('disabled', 'disabled');
 $template_url_link = (new CTextBox('urls[#{id}][url]', ''))
-	->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	->setAttribute('disabled', 'disabled');
 $template_url_etype = new CComboBox('urls[#{id}][elementtype]', null, null, sysmap_element_types());
 $template_url_etype->setAttribute('disabled', 'disabled');
 $template_remove_button = (new CButton(null, _('Remove')))
 	->onClick('$("entry_#{id}").remove();')
-	->addClass(ZBX_STYLE_BTN_LINK);
+	->addClass(TRX_STYLE_BTN_LINK);
 $template_url_row = (new CRow([
 	$template_url_label,
 	$template_url_link,
 	$template_url_etype,
-	(new CCol($template_remove_button))->addClass(ZBX_STYLE_NOWRAP)
+	(new CCol($template_remove_button))->addClass(TRX_STYLE_NOWRAP)
 ]))
 	->addStyle('display: none')
 	->setId('urlEntryTpl');
@@ -256,15 +256,15 @@ $url_table->addRow($template_url_row);
 // Append "add" button to url table.
 $add_button = (new CButton(null, _('Add')))
 	->onClick('cloneRow("urlEntryTpl", '.$i.')')
-	->addClass(ZBX_STYLE_BTN_LINK);
+	->addClass(TRX_STYLE_BTN_LINK);
 $add_button_column = (new CCol($add_button))->setColSpan(4);
 $url_table->addRow($add_button_column);
 
 // Append url table to form list.
 $map_tab->addRow(_('URLs'),
 	(new CDiv($url_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 $tabs->addTab('sysmap_tab', _('Map'), $map_tab);
@@ -284,7 +284,7 @@ $add_user_group_btn = ([(new CButton(null, _('Add')))
 			'multiselect' => '1'
 		]).', null, this);'
 	)
-	->addClass(ZBX_STYLE_BTN_LINK)]);
+	->addClass(TRX_STYLE_BTN_LINK)]);
 
 $user_group_shares_table->addRow(
 	(new CRow(
@@ -320,7 +320,7 @@ $add_user_btn = ([(new CButton(null, _('Add')))
 			'multiselect' => '1'
 		]).', null, this);'
 	)
-	->addClass(ZBX_STYLE_BTN_LINK)]);
+	->addClass(TRX_STYLE_BTN_LINK)]);
 
 $user_shares_table->addRow(
 	(new CRow(
@@ -352,13 +352,13 @@ $sharing_tab = (new CFormList('sharing_form'))
 	)
 	->addRow(_('List of user group shares'),
 		(new CDiv($user_group_shares_table))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 	)
 	->addRow(_('List of user shares'),
 		(new CDiv($user_shares_table))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 	);
 
 // Append data to form.

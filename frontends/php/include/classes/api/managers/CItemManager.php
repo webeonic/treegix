@@ -36,9 +36,9 @@ class CItemManager {
 		// Selecting all dependent items.
 		// Note: We are not separating normal from discovered items at this point.
 		$dep_itemids = [
-			ZBX_FLAG_DISCOVERY_NORMAL => $del_itemids,
-			ZBX_FLAG_DISCOVERY_CREATED => [],
-			ZBX_FLAG_DISCOVERY_PROTOTYPE => []
+			TRX_FLAG_DISCOVERY_NORMAL => $del_itemids,
+			TRX_FLAG_DISCOVERY_CREATED => [],
+			TRX_FLAG_DISCOVERY_PROTOTYPE => []
 		];
 		$del_itemids = [];
 
@@ -48,44 +48,44 @@ class CItemManager {
 				' FROM items i'.
 				' WHERE i.type='.ITEM_TYPE_DEPENDENT.
 					' AND '.dbConditionInt('i.master_itemid',
-						array_keys($dep_itemids[ZBX_FLAG_DISCOVERY_NORMAL]
-							+ $dep_itemids[ZBX_FLAG_DISCOVERY_CREATED]
-							+ $dep_itemids[ZBX_FLAG_DISCOVERY_PROTOTYPE]
+						array_keys($dep_itemids[TRX_FLAG_DISCOVERY_NORMAL]
+							+ $dep_itemids[TRX_FLAG_DISCOVERY_CREATED]
+							+ $dep_itemids[TRX_FLAG_DISCOVERY_PROTOTYPE]
 						)
 					)
 			);
 
-			$del_itemids += $dep_itemids[ZBX_FLAG_DISCOVERY_NORMAL];
-			$del_itemids += $dep_itemids[ZBX_FLAG_DISCOVERY_CREATED];
-			$del_item_prototypeids += $dep_itemids[ZBX_FLAG_DISCOVERY_PROTOTYPE];
+			$del_itemids += $dep_itemids[TRX_FLAG_DISCOVERY_NORMAL];
+			$del_itemids += $dep_itemids[TRX_FLAG_DISCOVERY_CREATED];
+			$del_item_prototypeids += $dep_itemids[TRX_FLAG_DISCOVERY_PROTOTYPE];
 			$dep_itemids = [
-				ZBX_FLAG_DISCOVERY_NORMAL => [],
-				ZBX_FLAG_DISCOVERY_CREATED => [],
-				ZBX_FLAG_DISCOVERY_PROTOTYPE => []
+				TRX_FLAG_DISCOVERY_NORMAL => [],
+				TRX_FLAG_DISCOVERY_CREATED => [],
+				TRX_FLAG_DISCOVERY_PROTOTYPE => []
 			];
 
 			while ($db_item = DBfetch($db_items)) {
 				switch ($db_item['flags']) {
-					case ZBX_FLAG_DISCOVERY_NORMAL:
+					case TRX_FLAG_DISCOVERY_NORMAL:
 						if (!array_key_exists($db_item['itemid'], $del_itemids)) {
-							$dep_itemids[ZBX_FLAG_DISCOVERY_NORMAL][$db_item['itemid']] = true;
+							$dep_itemids[TRX_FLAG_DISCOVERY_NORMAL][$db_item['itemid']] = true;
 						}
 						break;
 
-					case ZBX_FLAG_DISCOVERY_CREATED:
+					case TRX_FLAG_DISCOVERY_CREATED:
 						if (!array_key_exists($db_item['itemid'], $del_itemids)) {
-							$dep_itemids[ZBX_FLAG_DISCOVERY_CREATED][$db_item['itemid']] = true;
+							$dep_itemids[TRX_FLAG_DISCOVERY_CREATED][$db_item['itemid']] = true;
 						}
 						break;
 
-					case ZBX_FLAG_DISCOVERY_PROTOTYPE:
-						$dep_itemids[ZBX_FLAG_DISCOVERY_PROTOTYPE][$db_item['itemid']] = true;
+					case TRX_FLAG_DISCOVERY_PROTOTYPE:
+						$dep_itemids[TRX_FLAG_DISCOVERY_PROTOTYPE][$db_item['itemid']] = true;
 						break;
 				}
 			}
-		} while ($dep_itemids[ZBX_FLAG_DISCOVERY_NORMAL]
-			|| $dep_itemids[ZBX_FLAG_DISCOVERY_CREATED]
-			|| $dep_itemids[ZBX_FLAG_DISCOVERY_PROTOTYPE]
+		} while ($dep_itemids[TRX_FLAG_DISCOVERY_NORMAL]
+			|| $dep_itemids[TRX_FLAG_DISCOVERY_CREATED]
+			|| $dep_itemids[TRX_FLAG_DISCOVERY_PROTOTYPE]
 		);
 
 		$del_itemids = array_keys($del_itemids);
@@ -143,24 +143,24 @@ class CItemManager {
 		);
 
 		$del_triggerids = [
-			ZBX_FLAG_DISCOVERY_NORMAL => [],
-			ZBX_FLAG_DISCOVERY_CREATED => [],
-			ZBX_FLAG_DISCOVERY_PROTOTYPE => []
+			TRX_FLAG_DISCOVERY_NORMAL => [],
+			TRX_FLAG_DISCOVERY_CREATED => [],
+			TRX_FLAG_DISCOVERY_PROTOTYPE => []
 		];
 
 		while ($db_trigger = DBfetch($db_triggers)) {
 			$del_triggerids[$db_trigger['flags']][] = $db_trigger['triggerid'];
 		}
 
-		if ($del_triggerids[ZBX_FLAG_DISCOVERY_NORMAL] || $del_triggerids[ZBX_FLAG_DISCOVERY_CREATED]) {
+		if ($del_triggerids[TRX_FLAG_DISCOVERY_NORMAL] || $del_triggerids[TRX_FLAG_DISCOVERY_CREATED]) {
 			CTriggerManager::delete(array_merge(
-				$del_triggerids[ZBX_FLAG_DISCOVERY_NORMAL],
-				$del_triggerids[ZBX_FLAG_DISCOVERY_CREATED]
+				$del_triggerids[TRX_FLAG_DISCOVERY_NORMAL],
+				$del_triggerids[TRX_FLAG_DISCOVERY_CREATED]
 			));
 		}
 
-		if ($del_triggerids[ZBX_FLAG_DISCOVERY_PROTOTYPE]) {
-			CTriggerPrototypeManager::delete($del_triggerids[ZBX_FLAG_DISCOVERY_PROTOTYPE]);
+		if ($del_triggerids[TRX_FLAG_DISCOVERY_PROTOTYPE]) {
+			CTriggerPrototypeManager::delete($del_triggerids[TRX_FLAG_DISCOVERY_PROTOTYPE]);
 		}
 
 		DB::delete('screens_items', [
@@ -188,7 +188,7 @@ class CItemManager {
 					'value' => $del_itemid
 				];
 
-				if (count($ins_housekeeper) == ZBX_DB_MAX_INSERTS) {
+				if (count($ins_housekeeper) == TRX_DB_MAX_INSERTS) {
 					DB::insertBatch('housekeeper', $ins_housekeeper);
 					$ins_housekeeper = [];
 				}

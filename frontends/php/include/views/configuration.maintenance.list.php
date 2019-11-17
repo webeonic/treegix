@@ -10,7 +10,7 @@ $widget = (new CWidget())
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Group'), 'groupid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$this->data['pageFilter']->getGroupsCB()
 				])
 			),
@@ -27,7 +27,7 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			),
 			(new CFormList())->addRow(_('State'),
@@ -49,7 +49,7 @@ $maintenanceTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_maintenances'))->onClick("checkAll('".$maintenanceForm->getName()."', 'all_maintenances', 'maintenanceids');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $this->data['sort'], $this->data['sortorder']),
 		make_sorting_header(_('Type'), 'maintenance_type', $this->data['sort'], $this->data['sortorder']),
 		make_sorting_header(_('Active since'), 'active_since', $this->data['sort'], $this->data['sortorder']),
@@ -63,13 +63,13 @@ foreach ($this->data['maintenances'] as $maintenance) {
 
 	switch ($maintenance['status']) {
 		case MAINTENANCE_STATUS_EXPIRED:
-			$maintenanceStatus = (new CSpan(_x('Expired', 'maintenance status')))->addClass(ZBX_STYLE_RED);
+			$maintenanceStatus = (new CSpan(_x('Expired', 'maintenance status')))->addClass(TRX_STYLE_RED);
 			break;
 		case MAINTENANCE_STATUS_APPROACH:
-			$maintenanceStatus = (new CSpan(_x('Approaching', 'maintenance status')))->addClass(ZBX_STYLE_ORANGE);
+			$maintenanceStatus = (new CSpan(_x('Approaching', 'maintenance status')))->addClass(TRX_STYLE_ORANGE);
 			break;
 		case MAINTENANCE_STATUS_ACTIVE:
-			$maintenanceStatus = (new CSpan(_x('Active', 'maintenance status')))->addClass(ZBX_STYLE_GREEN);
+			$maintenanceStatus = (new CSpan(_x('Active', 'maintenance status')))->addClass(TRX_STYLE_GREEN);
 			break;
 	}
 

@@ -11,7 +11,7 @@ class CControllerWidgetIteratorGraphPrototypeView extends CControllerWidgetItera
 		$this->setValidationRules([
 			'name' => 'string',
 			'fields' => 'json',
-			'view_mode' => 'in '.implode(',', [ZBX_WIDGET_VIEW_MODE_NORMAL, ZBX_WIDGET_VIEW_MODE_HIDDEN_HEADER]),
+			'view_mode' => 'in '.implode(',', [TRX_WIDGET_VIEW_MODE_NORMAL, TRX_WIDGET_VIEW_MODE_HIDDEN_HEADER]),
 			'dynamic_hostid' => 'db hosts.hostid'
 		]);
 	}
@@ -19,10 +19,10 @@ class CControllerWidgetIteratorGraphPrototypeView extends CControllerWidgetItera
 	protected function doAction() {
 		$fields = $this->getForm()->getFieldsData();
 
-		if ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_GRAPH_PROTOTYPE) {
+		if ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_GRAPH_PROTOTYPE) {
 			$return = $this->doGraphPrototype($fields);
 		}
-		elseif ($fields['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH_PROTOTYPE) {
+		elseif ($fields['source_type'] == TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH_PROTOTYPE) {
 			$return = $this->doSimpleGraphPrototype($fields);
 		}
 		else {
@@ -91,7 +91,7 @@ class CControllerWidgetIteratorGraphPrototypeView extends CControllerWidgetItera
 				'hostids' => [$graph_prototype['discoveryRule']['hostid']],
 				'selectGraphDiscovery' => ['graphid', 'parent_graphid'],
 				'selectHosts' => ['name'],
-				'filter' => ['flags' => ZBX_FLAG_DISCOVERY_CREATED],
+				'filter' => ['flags' => TRX_FLAG_DISCOVERY_CREATED],
 				'expandName' => true
 			]);
 
@@ -120,7 +120,7 @@ class CControllerWidgetIteratorGraphPrototypeView extends CControllerWidgetItera
 
 		foreach ($graphs_collected as $graphid => $name) {
 			$child_fields = [
-				'source_type' => ZBX_WIDGET_FIELD_RESOURCE_GRAPH,
+				'source_type' => TRX_WIDGET_FIELD_RESOURCE_GRAPH,
 				'graphid' => $graphid,
 				'show_legend' => $fields['show_legend']
 			];
@@ -198,7 +198,7 @@ class CControllerWidgetIteratorGraphPrototypeView extends CControllerWidgetItera
 				'output' => ['itemid', 'name', 'key_', 'hostid'],
 				'hostids' => [$item_prototype['discoveryRule']['hostid']],
 				'selectItemDiscovery' => ['itemid', 'parent_itemid'],
-				'filter' => ['flags' => ZBX_FLAG_DISCOVERY_CREATED]
+				'filter' => ['flags' => TRX_FLAG_DISCOVERY_CREATED]
 			]);
 
 			// Collect items based on the item prototype.
@@ -226,7 +226,7 @@ class CControllerWidgetIteratorGraphPrototypeView extends CControllerWidgetItera
 
 		foreach ($items_collected as $itemid => $name) {
 			$child_fields = [
-				'source_type' => ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH,
+				'source_type' => TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH,
 				'itemid' => $itemid,
 				'show_legend' => $fields['show_legend']
 			];

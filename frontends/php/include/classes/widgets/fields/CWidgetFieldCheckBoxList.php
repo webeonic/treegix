@@ -12,7 +12,7 @@ class CWidgetFieldCheckBoxList extends CWidgetField {
 	public function __construct($name, $label) {
 		parent::__construct($name, $label);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_INT32);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_INT32);
 		$this->setDefault([]);
 		$this->setValidationRules(['type' => API_INTS32]);
 		$this->orientation = self::ORIENTATION_VERTICAL;

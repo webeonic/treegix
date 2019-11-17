@@ -35,11 +35,11 @@ class CWidgetFormPlainText extends CWidgetForm {
 		$this->fields[$field_style->getName()] = $field_style;
 
 		// Number of records to display.
-		$field_lines = (new CWidgetFieldIntegerBox('show_lines', _('Show lines'), ZBX_MIN_WIDGET_LINES,
-			ZBX_MAX_WIDGET_LINES
+		$field_lines = (new CWidgetFieldIntegerBox('show_lines', _('Show lines'), TRX_MIN_WIDGET_LINES,
+			TRX_MAX_WIDGET_LINES
 		))
 			->setFlags(CWidgetField::FLAG_LABEL_ASTERISK)
-			->setDefault(ZBX_DEFAULT_WIDGET_LINES);
+			->setDefault(TRX_DEFAULT_WIDGET_LINES);
 
 		if (array_key_exists('show_lines', $this->data)) {
 			$field_lines->setValue($this->data['show_lines']);

@@ -6,19 +6,19 @@ $web_layout_mode = CView::getLayoutMode();
 
 $widget = (new CWidget())->setWebLayoutMode($web_layout_mode);
 
-if (in_array($web_layout_mode, [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN])) {
+if (in_array($web_layout_mode, [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN])) {
 	$widget
 		->setTitle(_('Slide shows'))
 		->addItem((new CList())
 			->setAttribute('role', 'navigation')
 			->setAttribute('aria-label', _x('Hierarchy', 'screen reader'))
-			->addClass(ZBX_STYLE_OBJECT_GROUP)
-			->addClass(ZBX_STYLE_FILTER_BREADCRUMB)
+			->addClass(TRX_STYLE_OBJECT_GROUP)
+			->addClass(TRX_STYLE_FILTER_BREADCRUMB)
 			->addItem([
 				(new CSpan())->addItem(new CLink(_('All slide shows'), 'slideconf.php')),
 				'/',
 				(new CSpan())
-					->addClass(ZBX_STYLE_SELECTED)
+					->addClass(TRX_STYLE_SELECTED)
 					->addItem(
 						new CLink($data['screen']['name'], (new CUrl('slides.php'))
 							->setArgument('elementid', $data['screen']['slideshowid'])
@@ -51,12 +51,12 @@ $refresh_icon->setMenuPopup(CMenuPopupHelper::getRefresh(WIDGET_SLIDESHOW, 'x'.$
 if (isset($this->data['isDynamicItems'])) {
 	$controls->addItem([
 		new CLabel(_('Group'), 'groupid'),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		$this->data['pageFilter']->getGroupsCB()
 	]);
 	$controls->addItem([
 		new CLabel(_('Host'), 'hostid'),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		$this->data['pageFilter']->getHostsCB()
 	]);
 }
@@ -85,7 +85,7 @@ $widget
 			->setProfile($data['timeline']['profileIdx'], $data['timeline']['profileIdx2'])
 			->setActiveTab($data['active_tab'])
 			->addTimeSelector($data['timeline']['from'], $data['timeline']['to'],
-				$web_layout_mode != ZBX_LAYOUT_KIOSKMODE)
+				$web_layout_mode != TRX_LAYOUT_KIOSKMODE)
 	)
 	->addItem(
 		(new CDiv((new CDiv())->addClass('preloader')))

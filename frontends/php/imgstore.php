@@ -2,7 +2,7 @@
 
 
 
-define('ZBX_PAGE_NO_AUTHERIZATION', 1);
+define('TRX_PAGE_NO_AUTHERIZATION', 1);
 
 require_once dirname(__FILE__).'/include/config.inc.php';
 require_once dirname(__FILE__).'/include/maps.inc.php';
@@ -14,12 +14,12 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 //	VAR		TYPE	OPTIONAL 	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'css' =>			[T_ZBX_INT, O_OPT, P_SYS, null,				null],
-	'imageid' =>		[T_ZBX_STR, O_OPT, P_SYS, null,				null],
-	'iconid' =>			[T_ZBX_INT, O_OPT, P_SYS, DB_ID,				null],
-	'width' =>			[T_ZBX_INT, O_OPT, P_SYS, BETWEEN(1, 2000),	null],
-	'height' =>			[T_ZBX_INT, O_OPT, P_SYS, BETWEEN(1, 2000),	null],
-	'unavailable' =>	[T_ZBX_INT, O_OPT, null, IN([0, 1]),		null],
+	'css' =>			[T_TRX_INT, O_OPT, P_SYS, null,				null],
+	'imageid' =>		[T_TRX_STR, O_OPT, P_SYS, null,				null],
+	'iconid' =>			[T_TRX_INT, O_OPT, P_SYS, DB_ID,				null],
+	'width' =>			[T_TRX_INT, O_OPT, P_SYS, BETWEEN(1, 2000),	null],
+	'height' =>			[T_TRX_INT, O_OPT, P_SYS, BETWEEN(1, 2000),	null],
+	'unavailable' =>	[T_TRX_INT, O_OPT, null, IN([0, 1]),		null],
 ];
 check_fields($fields);
 

@@ -11,19 +11,19 @@
 #include "log.h"
 #include "zbxipcservice.h"
 
-#define ZBX_IPC_PATH_MAX	sizeof(((struct sockaddr_un *)0)->sun_path)
+#define TRX_IPC_PATH_MAX	sizeof(((struct sockaddr_un *)0)->sun_path)
 
-#define ZBX_IPC_DATA_DUMP_SIZE		128
+#define TRX_IPC_DATA_DUMP_SIZE		128
 
-static char	ipc_path[ZBX_IPC_PATH_MAX] = {0};
+static char	ipc_path[TRX_IPC_PATH_MAX] = {0};
 static size_t	ipc_path_root_len = 0;
 
-#define ZBX_IPC_CLIENT_STATE_NONE	0
-#define ZBX_IPC_CLIENT_STATE_QUEUED	1
+#define TRX_IPC_CLIENT_STATE_NONE	0
+#define TRX_IPC_CLIENT_STATE_QUEUED	1
 
-#define ZBX_IPC_ASYNC_SOCKET_STATE_NONE		0
-#define ZBX_IPC_ASYNC_SOCKET_STATE_TIMEOUT	1
-#define ZBX_IPC_ASYNC_SOCKET_STATE_ERROR	2
+#define TRX_IPC_ASYNC_SOCKET_STATE_NONE		0
+#define TRX_IPC_ASYNC_SOCKET_STATE_TIMEOUT	1
+#define TRX_IPC_ASYNC_SOCKET_STATE_ERROR	2
 
 extern unsigned char	program_type;
 
@@ -55,10 +55,10 @@ struct zbx_ipc_client
  * Private API
  */
 
-#define ZBX_IPC_HEADER_SIZE	(int)(sizeof(zbx_uint32_t) * 2)
+#define TRX_IPC_HEADER_SIZE	(int)(sizeof(zbx_uint32_t) * 2)
 
-#define ZBX_IPC_MESSAGE_CODE	0
-#define ZBX_IPC_MESSAGE_SIZE	1
+#define TRX_IPC_MESSAGE_CODE	0
+#define TRX_IPC_MESSAGE_SIZE	1
 
 #if !defined(LIBEVENT_VERSION_NUMBER) || LIBEVENT_VERSION_NUMBER < 0x2000000
 typedef int evutil_socket_t;
@@ -93,13 +93,13 @@ static const char	*ipc_get_path(void)
 	return ipc_path;
 }
 
-#define ZBX_IPC_SOCKET_PREFIX	"/treegix_"
-#define ZBX_IPC_SOCKET_SUFFIX	".sock"
+#define TRX_IPC_SOCKET_PREFIX	"/treegix_"
+#define TRX_IPC_SOCKET_SUFFIX	".sock"
 
-#define ZBX_IPC_CLASS_PREFIX_NONE	""
-#define ZBX_IPC_CLASS_PREFIX_SERVER	"server_"
-#define ZBX_IPC_CLASS_PREFIX_PROXY	"proxy_"
-#define ZBX_IPC_CLASS_PREFIX_AGENT	"agent_"
+#define TRX_IPC_CLASS_PREFIX_NONE	""
+#define TRX_IPC_CLASS_PREFIX_SERVER	"server_"
+#define TRX_IPC_CLASS_PREFIX_PROXY	"proxy_"
+#define TRX_IPC_CLASS_PREFIX_AGENT	"agent_"
 
 /******************************************************************************
  *                                                                            *
@@ -123,42 +123,42 @@ static const char	*ipc_make_path(const char *service_name, char **error)
 
 	switch (program_type)
 	{
-		case ZBX_PROGRAM_TYPE_SERVER:
-			prefix = ZBX_IPC_CLASS_PREFIX_SERVER;
-			prefix_len = ZBX_CONST_STRLEN(ZBX_IPC_CLASS_PREFIX_SERVER);
+		case TRX_PROGRAM_TYPE_SERVER:
+			prefix = TRX_IPC_CLASS_PREFIX_SERVER;
+			prefix_len = TRX_CONST_STRLEN(TRX_IPC_CLASS_PREFIX_SERVER);
 			break;
-		case ZBX_PROGRAM_TYPE_PROXY_ACTIVE:
-		case ZBX_PROGRAM_TYPE_PROXY_PASSIVE:
-			prefix = ZBX_IPC_CLASS_PREFIX_PROXY;
-			prefix_len = ZBX_CONST_STRLEN(ZBX_IPC_CLASS_PREFIX_PROXY);
+		case TRX_PROGRAM_TYPE_PROXY_ACTIVE:
+		case TRX_PROGRAM_TYPE_PROXY_PASSIVE:
+			prefix = TRX_IPC_CLASS_PREFIX_PROXY;
+			prefix_len = TRX_CONST_STRLEN(TRX_IPC_CLASS_PREFIX_PROXY);
 			break;
-		case ZBX_PROGRAM_TYPE_AGENTD:
-			prefix = ZBX_IPC_CLASS_PREFIX_AGENT;
-			prefix_len = ZBX_CONST_STRLEN(ZBX_IPC_CLASS_PREFIX_AGENT);
+		case TRX_PROGRAM_TYPE_AGENTD:
+			prefix = TRX_IPC_CLASS_PREFIX_AGENT;
+			prefix_len = TRX_CONST_STRLEN(TRX_IPC_CLASS_PREFIX_AGENT);
 			break;
 		default:
-			prefix = ZBX_IPC_CLASS_PREFIX_NONE;
-			prefix_len = ZBX_CONST_STRLEN(ZBX_IPC_CLASS_PREFIX_NONE);
+			prefix = TRX_IPC_CLASS_PREFIX_NONE;
+			prefix_len = TRX_CONST_STRLEN(TRX_IPC_CLASS_PREFIX_NONE);
 			break;
 	}
 
-	if (ZBX_IPC_PATH_MAX < ipc_path_root_len + path_len + 1 + ZBX_CONST_STRLEN(ZBX_IPC_SOCKET_PREFIX) +
-			ZBX_CONST_STRLEN(ZBX_IPC_SOCKET_SUFFIX) + prefix_len)
+	if (TRX_IPC_PATH_MAX < ipc_path_root_len + path_len + 1 + TRX_CONST_STRLEN(TRX_IPC_SOCKET_PREFIX) +
+			TRX_CONST_STRLEN(TRX_IPC_SOCKET_SUFFIX) + prefix_len)
 	{
 		*error = zbx_dsprintf(*error,
 				"Socket path \"%s%s%s%s%s\" exceeds maximum length of unix domain socket path.",
-				ipc_path, ZBX_IPC_SOCKET_PREFIX, prefix, service_name, ZBX_IPC_SOCKET_SUFFIX);
+				ipc_path, TRX_IPC_SOCKET_PREFIX, prefix, service_name, TRX_IPC_SOCKET_SUFFIX);
 		return NULL;
 	}
 
 	offset = ipc_path_root_len;
-	memcpy(ipc_path + offset , ZBX_IPC_SOCKET_PREFIX, ZBX_CONST_STRLEN(ZBX_IPC_SOCKET_PREFIX));
-	offset += ZBX_CONST_STRLEN(ZBX_IPC_SOCKET_PREFIX);
+	memcpy(ipc_path + offset , TRX_IPC_SOCKET_PREFIX, TRX_CONST_STRLEN(TRX_IPC_SOCKET_PREFIX));
+	offset += TRX_CONST_STRLEN(TRX_IPC_SOCKET_PREFIX);
 	memcpy(ipc_path + offset, prefix, prefix_len);
 	offset += prefix_len;
 	memcpy(ipc_path + offset, service_name, path_len);
 	offset += path_len;
-	memcpy(ipc_path + offset, ZBX_IPC_SOCKET_SUFFIX, ZBX_CONST_STRLEN(ZBX_IPC_SOCKET_SUFFIX) + 1);
+	memcpy(ipc_path + offset, TRX_IPC_SOCKET_SUFFIX, TRX_CONST_STRLEN(TRX_IPC_SOCKET_SUFFIX) + 1);
 
 	return ipc_path;
 }
@@ -322,24 +322,24 @@ static int	ipc_socket_write_message(zbx_ipc_socket_t *csocket, zbx_uint32_t code
 		zbx_uint32_t size, zbx_uint32_t *tx_size)
 {
 	int		ret;
-	zbx_uint32_t	size_data, buffer[ZBX_IPC_SOCKET_BUFFER_SIZE / sizeof(zbx_uint32_t)];
+	zbx_uint32_t	size_data, buffer[TRX_IPC_SOCKET_BUFFER_SIZE / sizeof(zbx_uint32_t)];
 
 	buffer[0] = code;
 	buffer[1] = size;
 
-	if (ZBX_IPC_SOCKET_BUFFER_SIZE - ZBX_IPC_HEADER_SIZE >= size)
+	if (TRX_IPC_SOCKET_BUFFER_SIZE - TRX_IPC_HEADER_SIZE >= size)
 	{
 		if (0 != size)
 			memcpy(buffer + 2, data, size);
 
-		return ipc_write_data(csocket->fd, (unsigned char *)buffer, size + ZBX_IPC_HEADER_SIZE, tx_size);
+		return ipc_write_data(csocket->fd, (unsigned char *)buffer, size + TRX_IPC_HEADER_SIZE, tx_size);
 	}
 
-	if (FAIL == ipc_write_data(csocket->fd, (unsigned char *)buffer, ZBX_IPC_HEADER_SIZE, tx_size))
+	if (FAIL == ipc_write_data(csocket->fd, (unsigned char *)buffer, TRX_IPC_HEADER_SIZE, tx_size))
 		return FAIL;
 
 	/* in the case of non-blocking sockets only a part of the header might be sent */
-	if (ZBX_IPC_HEADER_SIZE != *tx_size)
+	if (TRX_IPC_HEADER_SIZE != *tx_size)
 		return SUCCEED;
 
 	ret = ipc_write_data(csocket->fd, data, size, &size_data);
@@ -373,16 +373,16 @@ static int	ipc_read_buffer(zbx_uint32_t *header, unsigned char **data, zbx_uint3
 
 	*read_size = 0;
 
-	if (ZBX_IPC_HEADER_SIZE > rx_bytes)
+	if (TRX_IPC_HEADER_SIZE > rx_bytes)
 	{
-		copy_size = MIN(ZBX_IPC_HEADER_SIZE - rx_bytes, size);
+		copy_size = MIN(TRX_IPC_HEADER_SIZE - rx_bytes, size);
 		memcpy((char *)header + rx_bytes, buffer, copy_size);
 		*read_size += copy_size;
 
-		if (ZBX_IPC_HEADER_SIZE > rx_bytes + copy_size)
+		if (TRX_IPC_HEADER_SIZE > rx_bytes + copy_size)
 			return FAIL;
 
-		data_size = header[ZBX_IPC_MESSAGE_SIZE];
+		data_size = header[TRX_IPC_MESSAGE_SIZE];
 
 		if (0 == data_size)
 		{
@@ -395,15 +395,15 @@ static int	ipc_read_buffer(zbx_uint32_t *header, unsigned char **data, zbx_uint3
 	}
 	else
 	{
-		data_size = header[ZBX_IPC_MESSAGE_SIZE];
-		data_offset = rx_bytes - ZBX_IPC_HEADER_SIZE;
+		data_size = header[TRX_IPC_MESSAGE_SIZE];
+		data_offset = rx_bytes - TRX_IPC_HEADER_SIZE;
 	}
 
 	copy_size = MIN(data_size - data_offset, size - *read_size);
 	memcpy(*data + data_offset, buffer + *read_size, copy_size);
 	*read_size += copy_size;
 
-	return (rx_bytes + *read_size == data_size + ZBX_IPC_HEADER_SIZE ? SUCCEED : FAIL);
+	return (rx_bytes + *read_size == data_size + TRX_IPC_HEADER_SIZE ? SUCCEED : FAIL);
 }
 
 /******************************************************************************
@@ -422,10 +422,10 @@ static int	ipc_read_buffer(zbx_uint32_t *header, unsigned char **data, zbx_uint3
  ******************************************************************************/
 static int	ipc_message_is_completed(const zbx_uint32_t *header, zbx_uint32_t rx_bytes)
 {
-	if (ZBX_IPC_HEADER_SIZE > rx_bytes)
+	if (TRX_IPC_HEADER_SIZE > rx_bytes)
 		return FAIL;
 
-	if (header[ZBX_IPC_MESSAGE_SIZE] + ZBX_IPC_HEADER_SIZE != rx_bytes)
+	if (header[TRX_IPC_MESSAGE_SIZE] + TRX_IPC_HEADER_SIZE != rx_bytes)
 		return FAIL;
 
 	return SUCCEED;
@@ -474,13 +474,13 @@ static int	ipc_socket_read_message(zbx_ipc_socket_t *csocket, zbx_uint32_t *head
 		csocket->rx_buffer_offset = 0;
 		csocket->rx_buffer_bytes = 0;
 
-		if (ZBX_IPC_HEADER_SIZE < *rx_bytes)
+		if (TRX_IPC_HEADER_SIZE < *rx_bytes)
 		{
-			offset = *rx_bytes - ZBX_IPC_HEADER_SIZE;
-			data_size = header[ZBX_IPC_MESSAGE_SIZE] - offset;
+			offset = *rx_bytes - TRX_IPC_HEADER_SIZE;
+			data_size = header[TRX_IPC_MESSAGE_SIZE] - offset;
 
 			/* long messages will be read directly into message buffer */
-			if (ZBX_IPC_SOCKET_BUFFER_SIZE * 0.75 < data_size)
+			if (TRX_IPC_SOCKET_BUFFER_SIZE * 0.75 < data_size)
 			{
 				ret = ipc_read_data_full(csocket->fd, *data + offset, data_size, &read_size);
 				*rx_bytes += read_size;
@@ -488,7 +488,7 @@ static int	ipc_socket_read_message(zbx_ipc_socket_t *csocket, zbx_uint32_t *head
 			}
 		}
 
-		if (FAIL == ipc_read_data(csocket->fd, csocket->rx_buffer, ZBX_IPC_SOCKET_BUFFER_SIZE, &read_size))
+		if (FAIL == ipc_read_data(csocket->fd, csocket->rx_buffer, TRX_IPC_SOCKET_BUFFER_SIZE, &read_size))
 			goto out;
 
 		/* it's possible that nothing will be read on non-blocking sockets, return success */
@@ -581,8 +581,8 @@ static void	ipc_client_push_rx_message(zbx_ipc_client_t *client)
 	zbx_ipc_message_t	*message;
 
 	message = (zbx_ipc_message_t *)zbx_malloc(NULL, sizeof(zbx_ipc_message_t));
-	message->code = client->rx_header[ZBX_IPC_MESSAGE_CODE];
-	message->size = client->rx_header[ZBX_IPC_MESSAGE_SIZE];
+	message->code = client->rx_header[TRX_IPC_MESSAGE_CODE];
+	message->size = client->rx_header[TRX_IPC_MESSAGE_SIZE];
 	message->data = client->rx_data;
 	zbx_queue_ptr_push(&client->rx_queue, message);
 
@@ -609,9 +609,9 @@ static void	ipc_client_pop_tx_message(zbx_ipc_client_t *client)
 	if (NULL == (message = (zbx_ipc_message_t *)zbx_queue_ptr_pop(&client->tx_queue)))
 		return;
 
-	client->tx_bytes = ZBX_IPC_HEADER_SIZE + message->size;
-	client->tx_header[ZBX_IPC_MESSAGE_CODE] = message->code;
-	client->tx_header[ZBX_IPC_MESSAGE_SIZE] = message->size;
+	client->tx_bytes = TRX_IPC_HEADER_SIZE + message->size;
+	client->tx_header[TRX_IPC_MESSAGE_CODE] = message->code;
+	client->tx_header[TRX_IPC_MESSAGE_SIZE] = message->size;
 	client->tx_data = message->data;
 	zbx_free(message);
 }
@@ -669,14 +669,14 @@ static int	ipc_client_write(zbx_ipc_client_t *client)
 {
 	zbx_uint32_t	data_size, write_size;
 
-	data_size = client->tx_header[ZBX_IPC_MESSAGE_SIZE];
+	data_size = client->tx_header[TRX_IPC_MESSAGE_SIZE];
 
 	if (data_size < client->tx_bytes)
 	{
 		zbx_uint32_t	size, offset;
 
 		size = client->tx_bytes - data_size;
-		offset = ZBX_IPC_HEADER_SIZE - size;
+		offset = TRX_IPC_HEADER_SIZE - size;
 
 		if (SUCCEED != ipc_write_data(client->csocket.fd, (unsigned char *)client->tx_header + offset, size,
 				&write_size))
@@ -726,7 +726,7 @@ static zbx_ipc_client_t	*ipc_service_pop_client(zbx_ipc_service_t *service)
 	zbx_ipc_client_t	*client;
 
 	if (NULL != (client = (zbx_ipc_client_t *)zbx_queue_ptr_pop(&service->clients_recv)))
-		client->state = ZBX_IPC_CLIENT_STATE_NONE;
+		client->state = TRX_IPC_CLIENT_STATE_NONE;
 
 	return client;
 }
@@ -747,13 +747,13 @@ static zbx_ipc_client_t	*ipc_service_pop_client(zbx_ipc_service_t *service)
  ******************************************************************************/
 static void	ipc_service_push_client(zbx_ipc_service_t *service, zbx_ipc_client_t *client)
 {
-	if (ZBX_IPC_CLIENT_STATE_QUEUED == client->state)
+	if (TRX_IPC_CLIENT_STATE_QUEUED == client->state)
 		return;
 
 	if (0 == zbx_queue_ptr_values_num(&client->rx_queue) && NULL != client->rx_event)
 		return;
 
-	client->state = ZBX_IPC_CLIENT_STATE_QUEUED;
+	client->state = TRX_IPC_CLIENT_STATE_QUEUED;
 	zbx_queue_ptr_push(&service->clients_recv, client);
 }
 
@@ -794,7 +794,7 @@ static void	ipc_service_add_client(zbx_ipc_service_t *service, int fd)
 	client->csocket.rx_buffer_bytes = 0;
 	client->csocket.rx_buffer_offset = 0;
 	client->id = next_clientid++;
-	client->state = ZBX_IPC_CLIENT_STATE_NONE;
+	client->state = TRX_IPC_CLIENT_STATE_NONE;
 	client->refcount = 1;
 
 	zbx_queue_ptr_create(&client->rx_queue);
@@ -807,7 +807,7 @@ static void	ipc_service_add_client(zbx_ipc_service_t *service, int fd)
 
 	zbx_vector_ptr_append(&service->clients, client);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s() clientid:" ZBX_FS_UI64, __func__, client->id);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() clientid:" TRX_FS_UI64, __func__, client->id);
 }
 
 /******************************************************************************
@@ -870,8 +870,8 @@ static void	ipc_client_read_event_cb(evutil_socket_t fd, short what, void *arg)
 {
 	zbx_ipc_client_t	*client = (zbx_ipc_client_t *)arg;
 
-	ZBX_UNUSED(fd);
-	ZBX_UNUSED(what);
+	TRX_UNUSED(fd);
+	TRX_UNUSED(what);
 
 	if (SUCCEED != ipc_client_read(client))
 	{
@@ -893,8 +893,8 @@ static void	ipc_client_write_event_cb(evutil_socket_t fd, short what, void *arg)
 {
 	zbx_ipc_client_t	*client = (zbx_ipc_client_t *)arg;
 
-	ZBX_UNUSED(fd);
-	ZBX_UNUSED(what);
+	TRX_UNUSED(fd);
+	TRX_UNUSED(what);
 
 	if (SUCCEED != ipc_client_write(client))
 	{
@@ -918,15 +918,15 @@ static void	ipc_async_socket_write_event_cb(evutil_socket_t fd, short what, void
 {
 	zbx_ipc_async_socket_t	*asocket = (zbx_ipc_async_socket_t *)arg;
 
-	ZBX_UNUSED(fd);
-	ZBX_UNUSED(what);
+	TRX_UNUSED(fd);
+	TRX_UNUSED(what);
 
 	if (SUCCEED != ipc_client_write(asocket->client))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot send data to IPC client");
 		ipc_client_free_events(asocket->client);
 		zbx_ipc_socket_close(&asocket->client->csocket);
-		asocket->state = ZBX_IPC_ASYNC_SOCKET_STATE_ERROR;
+		asocket->state = TRX_IPC_ASYNC_SOCKET_STATE_ERROR;
 		return;
 	}
 
@@ -945,13 +945,13 @@ static void	ipc_async_socket_read_event_cb(evutil_socket_t fd, short what, void 
 {
 	zbx_ipc_async_socket_t	*asocket = (zbx_ipc_async_socket_t *)arg;
 
-	ZBX_UNUSED(fd);
-	ZBX_UNUSED(what);
+	TRX_UNUSED(fd);
+	TRX_UNUSED(what);
 
 	if (SUCCEED != ipc_client_read(asocket->client))
 	{
 		ipc_client_free_events(asocket->client);
-		asocket->state = ZBX_IPC_ASYNC_SOCKET_STATE_ERROR;
+		asocket->state = TRX_IPC_ASYNC_SOCKET_STATE_ERROR;
 	}
 }
 
@@ -966,10 +966,10 @@ static void	ipc_async_socket_timer_cb(evutil_socket_t fd, short what, void *arg)
 {
 	zbx_ipc_async_socket_t	*asocket = (zbx_ipc_async_socket_t *)arg;
 
-	ZBX_UNUSED(fd);
-	ZBX_UNUSED(what);
+	TRX_UNUSED(fd);
+	TRX_UNUSED(what);
 
-	asocket->state = ZBX_IPC_ASYNC_SOCKET_STATE_TIMEOUT;
+	asocket->state = TRX_IPC_ASYNC_SOCKET_STATE_TIMEOUT;
 }
 
 /******************************************************************************
@@ -1103,8 +1103,8 @@ static void	ipc_service_client_connected_cb(evutil_socket_t fd, short what, void
 {
 	zbx_ipc_service_t	*service = (zbx_ipc_service_t *)arg;
 
-	ZBX_UNUSED(fd);
-	ZBX_UNUSED(what);
+	TRX_UNUSED(fd);
+	TRX_UNUSED(what);
 
 	ipc_service_accept(service);
 }
@@ -1118,9 +1118,9 @@ static void	ipc_service_client_connected_cb(evutil_socket_t fd, short what, void
  ******************************************************************************/
 static void	ipc_service_timer_cb(evutil_socket_t fd, short what, void *arg)
 {
-	ZBX_UNUSED(fd);
-	ZBX_UNUSED(what);
-	ZBX_UNUSED(arg);
+	TRX_UNUSED(fd);
+	TRX_UNUSED(what);
+	TRX_UNUSED(arg);
 }
 
 /******************************************************************************
@@ -1257,7 +1257,7 @@ int	zbx_ipc_socket_write(zbx_ipc_socket_t *csocket, zbx_uint32_t code, const uns
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (SUCCEED == ipc_socket_write_message(csocket, code, data, size, &size_sent) &&
-			size_sent == size + ZBX_IPC_HEADER_SIZE)
+			size_sent == size + TRX_IPC_HEADER_SIZE)
 	{
 		ret = SUCCEED;
 	}
@@ -1302,11 +1302,11 @@ int	zbx_ipc_socket_read(zbx_ipc_socket_t *csocket, zbx_ipc_message_t *message)
 		goto out;
 	}
 
-	message->code = header[ZBX_IPC_MESSAGE_CODE];
-	message->size = header[ZBX_IPC_MESSAGE_SIZE];
+	message->code = header[TRX_IPC_MESSAGE_CODE];
+	message->size = header[TRX_IPC_MESSAGE_SIZE];
 	message->data = data;
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 	{
 		char	*msg = NULL;
 
@@ -1382,7 +1382,7 @@ void	zbx_ipc_message_init(zbx_ipc_message_t *message)
  ******************************************************************************/
 void	zbx_ipc_message_format(const zbx_ipc_message_t *message, char **data)
 {
-	size_t		data_alloc = ZBX_IPC_DATA_DUMP_SIZE * 4 + 32, data_offset = 0;
+	size_t		data_alloc = TRX_IPC_DATA_DUMP_SIZE * 4 + 32, data_offset = 0;
 	zbx_uint32_t	i, data_num;
 
 	if (NULL == message)
@@ -1390,8 +1390,8 @@ void	zbx_ipc_message_format(const zbx_ipc_message_t *message, char **data)
 
 	data_num = message->size;
 
-	if (ZBX_IPC_DATA_DUMP_SIZE < data_num)
-		data_num = ZBX_IPC_DATA_DUMP_SIZE;
+	if (TRX_IPC_DATA_DUMP_SIZE < data_num)
+		data_num = TRX_IPC_DATA_DUMP_SIZE;
 
 	*data = (char *)zbx_malloc(*data, data_alloc);
 	zbx_snprintf_alloc(data, &data_alloc, &data_offset, "code:%u size:%u data:", message->code, message->size);
@@ -1476,7 +1476,7 @@ int	zbx_ipc_service_init_env(const char *path, char **error)
 	}
 
 	ipc_path_root_len = strlen(path);
-	if (ZBX_IPC_PATH_MAX < ipc_path_root_len + 3)
+	if (TRX_IPC_PATH_MAX < ipc_path_root_len + 3)
 	{
 		*error = zbx_dsprintf(*error, "The IPC root path \"%s\" is too long.", path);
 		goto out;
@@ -1636,7 +1636,7 @@ void	zbx_ipc_service_close(zbx_ipc_service_t *service)
  *                                                                            *
  * Parameters: service - [IN] the IPC service                                 *
  *             timeout - [IN] the timeout in seconds, 0 is used for           *
- *                            nonblocking call and ZBX_IPC_WAIT_FOREVER is    *
+ *                            nonblocking call and TRX_IPC_WAIT_FOREVER is    *
  *                            used for blocking call without timeout          *
  *             client  - [OUT] the client that sent the message or            *
  *                             NULL if there are no messages and the          *
@@ -1648,12 +1648,12 @@ void	zbx_ipc_service_close(zbx_ipc_service_t *service)
  *                             The message must be freed by caller with       *
  *                             ipc_message_free() function.                   *
  *                                                                            *
- * Return value: ZBX_IPC_RECV_IMMEDIATE - returned immediately without        *
+ * Return value: TRX_IPC_RECV_IMMEDIATE - returned immediately without        *
  *                                        waiting for socket events           *
  *                                        (pending events are processed)      *
- *               ZBX_IPC_RECV_WAIT      - returned after receiving socket     *
+ *               TRX_IPC_RECV_WAIT      - returned after receiving socket     *
  *                                        event                               *
- *               ZBX_IPC_RECV_TIMEOUT   - returned after timeout expired      *
+ *               TRX_IPC_RECV_TIMEOUT   - returned after timeout expired      *
  *                                                                            *
  ******************************************************************************/
 int	zbx_ipc_service_recv(zbx_ipc_service_t *service, int timeout, zbx_ipc_client_t **client,
@@ -1665,7 +1665,7 @@ int	zbx_ipc_service_recv(zbx_ipc_service_t *service, int timeout, zbx_ipc_client
 
 	if (timeout != 0 && SUCCEED == zbx_queue_ptr_empty(&service->clients_recv))
 	{
-		if (ZBX_IPC_WAIT_FOREVER != timeout)
+		if (TRX_IPC_WAIT_FOREVER != timeout)
 		{
 			struct timeval	tv = {timeout, 0};
 			evtimer_add(service->ev_timer, &tv);
@@ -1681,7 +1681,7 @@ int	zbx_ipc_service_recv(zbx_ipc_service_t *service, int timeout, zbx_ipc_client
 	{
 		if (NULL != (*message = (zbx_ipc_message_t *)zbx_queue_ptr_pop(&(*client)->rx_queue)))
 		{
-			if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
+			if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 			{
 				char	*data = NULL;
 
@@ -1695,10 +1695,10 @@ int	zbx_ipc_service_recv(zbx_ipc_service_t *service, int timeout, zbx_ipc_client
 			zbx_ipc_client_addref(*client);
 		}
 
-		ret = (EVLOOP_NONBLOCK == flags ? ZBX_IPC_RECV_IMMEDIATE : ZBX_IPC_RECV_WAIT);
+		ret = (EVLOOP_NONBLOCK == flags ? TRX_IPC_RECV_IMMEDIATE : TRX_IPC_RECV_WAIT);
 	}
 	else
-	{	ret = ZBX_IPC_RECV_TIMEOUT;
+	{	ret = TRX_IPC_RECV_TIMEOUT;
 		*client = NULL;
 		*message = NULL;
 	}
@@ -1732,7 +1732,7 @@ int	zbx_ipc_client_send(zbx_ipc_client_t *client, zbx_uint32_t code, const unsig
 	zbx_ipc_message_t	*message;
 	int			ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() clientid:" ZBX_FS_UI64, __func__, client->id);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() clientid:" TRX_FS_UI64, __func__, client->id);
 
 	if (0 != client->tx_bytes)
 	{
@@ -1745,13 +1745,13 @@ int	zbx_ipc_client_send(zbx_ipc_client_t *client, zbx_uint32_t code, const unsig
 	if (FAIL == ipc_socket_write_message(&client->csocket, code, data, size, &tx_size))
 		goto out;
 
-	if (tx_size != ZBX_IPC_HEADER_SIZE + size)
+	if (tx_size != TRX_IPC_HEADER_SIZE + size)
 	{
-		client->tx_header[ZBX_IPC_MESSAGE_CODE] = code;
-		client->tx_header[ZBX_IPC_MESSAGE_SIZE] = size;
+		client->tx_header[TRX_IPC_MESSAGE_CODE] = code;
+		client->tx_header[TRX_IPC_MESSAGE_SIZE] = size;
 		client->tx_data = (unsigned char *)zbx_malloc(NULL, size);
 		memcpy(client->tx_data, data, size);
-		client->tx_bytes = ZBX_IPC_HEADER_SIZE + size - tx_size;
+		client->tx_bytes = TRX_IPC_HEADER_SIZE + size - tx_size;
 		event_add(client->tx_event, NULL);
 	}
 
@@ -1857,7 +1857,7 @@ int	zbx_ipc_async_socket_open(zbx_ipc_async_socket_t *asocket, const char *servi
 			ipc_async_socket_write_event_cb, (void *)asocket);
 	event_add(asocket->client->rx_event, NULL);
 
-	asocket->state = ZBX_IPC_ASYNC_SOCKET_STATE_NONE;
+	asocket->state = TRX_IPC_ASYNC_SOCKET_STATE_NONE;
 
 	ret = SUCCEED;
 out:
@@ -1925,7 +1925,7 @@ int	zbx_ipc_async_socket_send(zbx_ipc_async_socket_t *asocket, zbx_uint32_t code
  *                                                                            *
  * Parameters: asocket - [IN] the asynchronous IPC socket                     *
  *             timeout - [IN] the timeout in seconds, 0 is used for           *
- *                            nonblocking call and ZBX_IPC_WAIT_FOREVER is    *
+ *                            nonblocking call and TRX_IPC_WAIT_FOREVER is    *
  *                            used for blocking call without timeout          *
  *             message - [OUT] the received message or NULL if the client     *
  *                             connection was closed.                         *
@@ -1949,7 +1949,7 @@ int	zbx_ipc_async_socket_recv(zbx_ipc_async_socket_t *asocket, int timeout, zbx_
 
 	if (timeout != 0 && SUCCEED == zbx_queue_ptr_empty(&asocket->client->rx_queue))
 	{
-		if (ZBX_IPC_WAIT_FOREVER != timeout)
+		if (TRX_IPC_WAIT_FOREVER != timeout)
 		{
 			struct timeval	tv = {timeout, 0};
 			evtimer_add(asocket->ev_timer, &tv);
@@ -1959,16 +1959,16 @@ int	zbx_ipc_async_socket_recv(zbx_ipc_async_socket_t *asocket, int timeout, zbx_
 	else
 		flags = EVLOOP_NONBLOCK;
 
-	asocket->state = ZBX_IPC_ASYNC_SOCKET_STATE_NONE;
+	asocket->state = TRX_IPC_ASYNC_SOCKET_STATE_NONE;
 
 	do
 	{
 		event_base_loop(asocket->ev, flags);
 		*message = (zbx_ipc_message_t *)zbx_queue_ptr_pop(&asocket->client->rx_queue);
 	}
-	while (NULL == *message && ZBX_IPC_ASYNC_SOCKET_STATE_NONE == asocket->state);
+	while (NULL == *message && TRX_IPC_ASYNC_SOCKET_STATE_NONE == asocket->state);
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE) && NULL != *message)
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE) && NULL != *message)
 	{
 		char	*data = NULL;
 
@@ -1978,7 +1978,7 @@ int	zbx_ipc_async_socket_recv(zbx_ipc_async_socket_t *asocket, int timeout, zbx_
 		zbx_free(data);
 	}
 
-	if (NULL != *message || ZBX_IPC_ASYNC_SOCKET_STATE_ERROR != asocket->state)
+	if (NULL != *message || TRX_IPC_ASYNC_SOCKET_STATE_ERROR != asocket->state)
 		ret = SUCCEED;
 	else
 		ret = FAIL;
@@ -1998,7 +1998,7 @@ int	zbx_ipc_async_socket_recv(zbx_ipc_async_socket_t *asocket, int timeout, zbx_
  *                                                                            *
  * Parameters: asocket - [IN] the asynchronous IPC service socket             *
  *             timeout - [IN] the timeout in seconds, 0 is used for           *
- *                            nonblocking call and ZBX_IPC_WAIT_FOREVER is    *
+ *                            nonblocking call and TRX_IPC_WAIT_FOREVER is    *
  *                            used for blocking call without timeout          *
  *                                                                            *
  * Return value: SUCCEED - the data was flushed successfully or timeout       *
@@ -2020,14 +2020,14 @@ int	zbx_ipc_async_socket_flush(zbx_ipc_async_socket_t *asocket, int timeout)
 		goto out;
 	}
 
-	if (ZBX_IPC_ASYNC_SOCKET_STATE_ERROR == asocket->state)
+	if (TRX_IPC_ASYNC_SOCKET_STATE_ERROR == asocket->state)
 		goto out;
 
-	asocket->state = ZBX_IPC_ASYNC_SOCKET_STATE_NONE;
+	asocket->state = TRX_IPC_ASYNC_SOCKET_STATE_NONE;
 
 	if (0 != timeout)
 	{
-		if (ZBX_IPC_WAIT_FOREVER != timeout)
+		if (TRX_IPC_WAIT_FOREVER != timeout)
 		{
 			struct timeval	tv = {timeout, 0};
 			evtimer_add(asocket->ev_timer, &tv);
@@ -2044,12 +2044,12 @@ int	zbx_ipc_async_socket_flush(zbx_ipc_async_socket_t *asocket, int timeout)
 		if (SUCCEED != zbx_ipc_client_connected(asocket->client))
 			goto out;
 	}
-	while (0 != timeout && 0 != asocket->client->tx_bytes && ZBX_IPC_ASYNC_SOCKET_STATE_NONE == asocket->state);
+	while (0 != timeout && 0 != asocket->client->tx_bytes && TRX_IPC_ASYNC_SOCKET_STATE_NONE == asocket->state);
 
-	if (ZBX_IPC_ASYNC_SOCKET_STATE_ERROR != asocket->state)
+	if (TRX_IPC_ASYNC_SOCKET_STATE_ERROR != asocket->state)
 	{
 		ret = SUCCEED;
-		asocket->state = ZBX_IPC_CLIENT_STATE_NONE;
+		asocket->state = TRX_IPC_CLIENT_STATE_NONE;
 	}
 out:
 	evtimer_del(asocket->ev_timer);

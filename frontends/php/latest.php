@@ -15,24 +15,24 @@ CView::$has_web_layout_mode = true;
 $page['web_layout_mode'] = CView::getLayoutMode();
 
 if (PAGE_TYPE_HTML == $page['type']) {
-	define('ZBX_PAGE_DO_REFRESH', 1);
+	define('TRX_PAGE_DO_REFRESH', 1);
 }
 
 require_once dirname(__FILE__).'/include/page_header.php';
 
 //	VAR						TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'groupids' =>			[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
-	'hostids' =>			[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
-	'select' =>				[T_ZBX_STR, O_OPT, null,	null,		null],
-	'show_without_data' =>	[T_ZBX_INT, O_OPT, null,	IN('0,1'),	null],
-	'show_details' =>		[T_ZBX_INT, O_OPT, null,	IN('0,1'),	null],
-	'application' =>		[T_ZBX_STR, O_OPT, null,	null,		null],
-	'filter_rst' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'filter_set' =>			[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
+	'groupids' =>			[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'hostids' =>			[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		null],
+	'select' =>				[T_TRX_STR, O_OPT, null,	null,		null],
+	'show_without_data' =>	[T_TRX_INT, O_OPT, null,	IN('0,1'),	null],
+	'show_details' =>		[T_TRX_INT, O_OPT, null,	IN('0,1'),	null],
+	'application' =>		[T_TRX_STR, O_OPT, null,	null,		null],
+	'filter_rst' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'filter_set' =>			[T_TRX_STR, O_OPT, P_SYS,	null,		null],
 	// sort and sortorder
-	'sort' =>				[T_ZBX_STR, O_OPT, P_SYS, IN('"host","lastclock","name"'),				null],
-	'sortorder' =>			[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>				[T_TRX_STR, O_OPT, P_SYS, IN('"host","lastclock","name"'),				null],
+	'sortorder' =>			[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -85,7 +85,7 @@ $filter = [
 ];
 
 $sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);
@@ -219,7 +219,7 @@ if ($items) {
 
 	if ($items) {
 		// get history
-		$history = Manager::History()->getLastValues($items, 2, ZBX_HISTORY_PERIOD);
+		$history = Manager::History()->getLastValues($items, 2, TRX_HISTORY_PERIOD);
 
 		// filter items without history
 		if (!$filter['showWithoutData']) {
@@ -296,7 +296,7 @@ $widget = (new CWidget())
 			->setAttribute('aria-label', _('Content controls'))
 	);
 
-if (in_array($page['web_layout_mode'], [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN])) {
+if (in_array($page['web_layout_mode'], [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN])) {
 	// Filter
 	$widget->addItem((new CFilter(new CUrl('latest.php')))
 		->setProfile('web.latest.filter')
@@ -318,7 +318,7 @@ if (in_array($page['web_layout_mode'], [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN
 								'enrich_parent_groups' => true
 							]
 						]
-					]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+					]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 				)
 				->addRow((new CLabel(_('Hosts'), 'hostids__ms')),
 					(new CMultiSelect([
@@ -333,13 +333,13 @@ if (in_array($page['web_layout_mode'], [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN
 								'dstfld1' => 'hostids_'
 							]
 						]
-					]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+					]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 				)
 				->addRow(_('Application'), [
-					(new CTextBox('application', $filter['application']))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CTextBox('application', $filter['application']))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					(new CButton('application_name', _('Select')))
-						->addClass(ZBX_STYLE_BTN_GREY)
+						->addClass(TRX_STYLE_BTN_GREY)
 						->onClick('return PopUp("popup.generic",'.
 							CJs::encodeJson([
 								'srctbl' => 'applications',
@@ -352,7 +352,7 @@ if (in_array($page['web_layout_mode'], [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN
 						)
 				]),
 			(new CFormList())
-				->addRow(_('Name'), (new CTextBox('select', $filter['select']))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH))
+				->addRow(_('Name'), (new CTextBox('select', $filter['select']))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH))
 				->addRow(_('Show items without data'),
 					(new CCheckBox('show_without_data'))->setChecked($filter['showWithoutData'] == 1)
 				)
@@ -365,14 +365,14 @@ $form = (new CForm('GET', 'history.php'))
 	->setName('items')
 	->addItem(new CVar('action', HISTORY_BATCH_GRAPH));
 // table
-$table = (new CTableInfo())->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS);
+$table = (new CTableInfo())->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS);
 if (!$filterSet) {
 	$table->setNoDataMessage(_('Specify some filter condition to see the values.'));
 }
 
 $toggle_all = (new CColHeader(
 	(new CSimpleButton())
-		->addClass(ZBX_STYLE_TREEVIEW)
+		->addClass(TRX_STYLE_TREEVIEW)
 		->addClass('app-list-toggle-all')
 		->addItem(new CSpan())
 ))->addStyle('width: 18px');
@@ -428,11 +428,11 @@ foreach ($items as &$item) {
 		$item['delay'] = $update_interval_parser->getDelay();
 
 		if ($item['delay'][0] === '{') {
-			$item['delay'] = (new CSpan($item['delay']))->addClass(ZBX_STYLE_RED);
+			$item['delay'] = (new CSpan($item['delay']))->addClass(TRX_STYLE_RED);
 		}
 	}
 	else {
-		$item['delay'] = (new CSpan($item['delay']))->addClass(ZBX_STYLE_RED);
+		$item['delay'] = (new CSpan($item['delay']))->addClass(TRX_STYLE_RED);
 	}
 
 	if ($config['hk_history_global']) {
@@ -444,7 +444,7 @@ foreach ($items as &$item) {
 	}
 	else {
 		$keep_history = 0;
-		$item['history'] = (new CSpan($item['history']))->addClass(ZBX_STYLE_RED);
+		$item['history'] = (new CSpan($item['history']))->addClass(TRX_STYLE_RED);
 	}
 
 	if ($item['value_type'] == ITEM_VALUE_TYPE_FLOAT || $item['value_type'] == ITEM_VALUE_TYPE_UINT64) {
@@ -457,7 +457,7 @@ foreach ($items as &$item) {
 		}
 		else {
 			$keep_trends = 0;
-			$item['trends'] = (new CSpan($item['trends']))->addClass(ZBX_STYLE_RED);
+			$item['trends'] = (new CSpan($item['trends']))->addClass(TRX_STYLE_RED);
 		}
 	}
 	else {
@@ -495,7 +495,7 @@ foreach ($items as $key => $item) {
 	}
 
 	// change
-	$digits = ($item['value_type'] == ITEM_VALUE_TYPE_FLOAT) ? ZBX_UNITS_ROUNDOFF_MIDDLE_LIMIT : 0;
+	$digits = ($item['value_type'] == ITEM_VALUE_TYPE_FLOAT) ? TRX_UNITS_ROUNDOFF_MIDDLE_LIMIT : 0;
 	if ($lastHistory && $prevHistory
 			&& ($item['value_type'] == ITEM_VALUE_TYPE_FLOAT || $item['value_type'] == ITEM_VALUE_TYPE_UINT64)
 			&& (bcsub($lastHistory['value'], $prevHistory['value'], $digits) != 0)) {
@@ -535,15 +535,15 @@ foreach ($items as $key => $item) {
 		($item['description'] !== '') ? makeDescriptionIcon($item['description']) : null
 	]))->addClass('action-container');
 
-	$state_css = ($item['state'] == ITEM_STATE_NOTSUPPORTED) ? ZBX_STYLE_GREY : null;
+	$state_css = ($item['state'] == ITEM_STATE_NOTSUPPORTED) ? TRX_STYLE_GREY : null;
 
 	if ($filter['showDetails']) {
 		// item key
 		$itemKey = ($item['type'] == ITEM_TYPE_HTTPTEST)
-			? (new CSpan($item['key_expanded']))->addClass(ZBX_STYLE_GREEN)
+			? (new CSpan($item['key_expanded']))->addClass(TRX_STYLE_GREEN)
 			: (new CLink($item['key_expanded'], 'items.php?form=update&itemid='.$item['itemid']))
-				->addClass(ZBX_STYLE_LINK_ALT)
-				->addClass(ZBX_STYLE_GREEN);
+				->addClass(TRX_STYLE_LINK_ALT)
+				->addClass(TRX_STYLE_GREEN);
 
 		$info_icons = [];
 		if ($item['status'] == ITEM_STATUS_ACTIVE && $item['error'] !== '') {
@@ -605,13 +605,13 @@ foreach ($applications as $appid => $dbApp) {
 
 	$hostName = (new CLinkAction($host['name']))->setMenuPopup(CMenuPopupHelper::getHost($dbApp['hostid']));
 	if ($host['status'] == HOST_STATUS_NOT_MONITORED) {
-		$hostName->addClass(ZBX_STYLE_RED);
+		$hostName->addClass(TRX_STYLE_RED);
 	}
 
 	// add toggle row
 	$table->addRow([
 		(new CSimpleButton())
-			->addClass(ZBX_STYLE_TREEVIEW)
+			->addClass(TRX_STYLE_TREEVIEW)
 			->addClass('app-list-toggle')
 			->setAttribute('data-app-id', $dbApp['applicationid'])
 			->setAttribute('data-open-state', $open_state)
@@ -653,7 +653,7 @@ foreach ($items as $item) {
 	}
 
 	// column "change"
-	$digits = ($item['value_type'] == ITEM_VALUE_TYPE_FLOAT) ? ZBX_UNITS_ROUNDOFF_MIDDLE_LIMIT : 0;
+	$digits = ($item['value_type'] == ITEM_VALUE_TYPE_FLOAT) ? TRX_UNITS_ROUNDOFF_MIDDLE_LIMIT : 0;
 	if (isset($lastHistory['value']) && isset($prevHistory['value'])
 			&& ($item['value_type'] == ITEM_VALUE_TYPE_FLOAT || $item['value_type'] == ITEM_VALUE_TYPE_UINT64)
 			&& (bcsub($lastHistory['value'], $prevHistory['value'], $digits) != 0)) {
@@ -692,16 +692,16 @@ foreach ($items as $item) {
 		($item['description'] !== '') ? makeDescriptionIcon($item['description']) : null
 	]))->addClass('action-container');
 
-	$state_css = ($item['state'] == ITEM_STATE_NOTSUPPORTED) ? ZBX_STYLE_GREY : null;
+	$state_css = ($item['state'] == ITEM_STATE_NOTSUPPORTED) ? TRX_STYLE_GREY : null;
 
 	$host = $hosts[$item['hostid']];
 	if ($filter['showDetails']) {
 		// item key
 		$itemKey = ($item['type'] == ITEM_TYPE_HTTPTEST)
-			? (new CSpan($item['key_expanded']))->addClass(ZBX_STYLE_GREEN)
+			? (new CSpan($item['key_expanded']))->addClass(TRX_STYLE_GREEN)
 			: (new CLink($item['key_expanded'], 'items.php?form=update&itemid='.$item['itemid']))
-				->addClass(ZBX_STYLE_LINK_ALT)
-				->addClass(ZBX_STYLE_GREEN);
+				->addClass(TRX_STYLE_LINK_ALT)
+				->addClass(TRX_STYLE_GREEN);
 
 		$info_icons = [];
 		if ($item['status'] == ITEM_STATUS_ACTIVE && $item['error'] !== '') {
@@ -753,13 +753,13 @@ foreach ($hosts as $hostId => $dbHost) {
 
 	$hostName = (new CLinkAction($host['name']))->setMenuPopup(CMenuPopupHelper::getHost($hostId));
 	if ($host['status'] == HOST_STATUS_NOT_MONITORED) {
-		$hostName->addClass(ZBX_STYLE_RED);
+		$hostName->addClass(TRX_STYLE_RED);
 	}
 
 	// add toggle row
 	$table->addRow([
 		(new CSimpleButton())
-			->addClass(ZBX_STYLE_TREEVIEW)
+			->addClass(TRX_STYLE_TREEVIEW)
 			->addClass('app-list-toggle')
 			->setAttribute('data-host-id', $host['hostid'])
 			->setAttribute('data-open-state', $open_state)

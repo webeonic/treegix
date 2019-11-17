@@ -156,5 +156,5 @@ function timer($timer = null) {
  * @param string $ex	exception text
  */
 function sdex($ex = 'My exception') {
-	throw new APIException(ZBX_API_ERROR_INTERNAL, $ex);
+	throw new APIException(TRX_API_ERROR_INTERNAL, $ex);
 }

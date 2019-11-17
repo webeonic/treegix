@@ -18,7 +18,7 @@ ob_start(); ?>
 		data = $expr_table.data('rows')||[];
 
 	// Expression parts table.
-	$expr_parts_table.on('click', '.<?= ZBX_STYLE_BTN_LINK ?>', function () {
+	$expr_parts_table.on('click', '.<?= TRX_STYLE_BTN_LINK ?>', function () {
 		var row = $(this).closest('tr');
 
 		if (!row.siblings().length) {
@@ -40,7 +40,7 @@ ob_start(); ?>
 		});
 
 		if (data.length == 1) {
-			$expr_table.find('td.<?= ZBX_STYLE_TD_DRAG_ICON ?>').addClass('<?= ZBX_STYLE_DISABLED ?>');
+			$expr_table.find('td.<?= TRX_STYLE_TD_DRAG_ICON ?>').addClass('<?= TRX_STYLE_DISABLED ?>');
 		}
 	}
 
@@ -50,16 +50,16 @@ ob_start(); ?>
 		items: 'tbody tr.sortable',
 		axis: 'y',
 		cursor: IE ? 'move' : 'grabbing',
-		handle: 'div.<?= ZBX_STYLE_DRAG_ICON ?>',
+		handle: 'div.<?= TRX_STYLE_DRAG_ICON ?>',
 		containment: '#expressions_list tbody',
 		tolerance: 'pointer',
 		opacity: 0.6
-	}).on('click', '.<?= ZBX_STYLE_BTN_LINK ?>', function() {
+	}).on('click', '.<?= TRX_STYLE_BTN_LINK ?>', function() {
 		var row = $(this).closest('tr');
 
 		if (row.siblings().length == 1) {
 			$expr_table.sortable('disable');
-			$expr_table.find('td.<?= ZBX_STYLE_TD_DRAG_ICON ?>').addClass('<?= ZBX_STYLE_DISABLED ?>');
+			$expr_table.find('td.<?= TRX_STYLE_TD_DRAG_ICON ?>').addClass('<?= TRX_STYLE_DISABLED ?>');
 		}
 
 		row.remove();
@@ -92,8 +92,8 @@ ob_start(); ?>
 				type: $('option:selected', $expt_type).val()
 			}));
 
-			var $icons = $expr_table.find('tbody td.<?= ZBX_STYLE_TD_DRAG_ICON ?>');
-			$icons.toggleClass('<?= ZBX_STYLE_DISABLED ?>', $icons.length == 1);
+			var $icons = $expr_table.find('tbody td.<?= TRX_STYLE_TD_DRAG_ICON ?>');
+			$icons.toggleClass('<?= TRX_STYLE_DISABLED ?>', $icons.length == 1);
 
 			$and_button.prop('disabled', false);
 			$or_button.prop('disabled', false);
@@ -143,7 +143,7 @@ function validateTriggerWizard(formname, dialogueid) {
 		url: url.getUrl(),
 		data: jQuery(form).serialize(),
 		success: function(ret) {
-			jQuery(form).parent().find('.<?= ZBX_STYLE_MSG_BAD ?>, .<?= ZBX_STYLE_MSG_GOOD ?>').remove();
+			jQuery(form).parent().find('.<?= TRX_STYLE_MSG_BAD ?>, .<?= TRX_STYLE_MSG_GOOD ?>').remove();
 
 			if (typeof ret.errors !== 'undefined') {
 				jQuery(ret.errors).insertBefore(jQuery(form));

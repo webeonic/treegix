@@ -20,11 +20,11 @@ int	tcp_expect(const char *host, unsigned short port, int timeout, const char *r
 {
 	zbx_socket_t	s;
 	const char	*buf;
-	int		net, val = ZBX_TCP_EXPECT_OK;
+	int		net, val = TRX_TCP_EXPECT_OK;
 
 	*value_int = 0;
 
-	if (SUCCEED != (net = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, ZBX_TCP_SEC_UNENCRYPTED, NULL,
+	if (SUCCEED != (net = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL,
 			NULL)))
 	{
 		goto out;
@@ -35,16 +35,16 @@ int	tcp_expect(const char *host, unsigned short port, int timeout, const char *r
 
 	if (NULL != validate_func && SUCCEED == net)
 	{
-		val = ZBX_TCP_EXPECT_FAIL;
+		val = TRX_TCP_EXPECT_FAIL;
 
 		while (NULL != (buf = zbx_tcp_recv_line(&s)))
 		{
 			val = validate_func(buf);
 
-			if (ZBX_TCP_EXPECT_OK == val)
+			if (TRX_TCP_EXPECT_OK == val)
 				break;
 
-			if (ZBX_TCP_EXPECT_FAIL == val)
+			if (TRX_TCP_EXPECT_FAIL == val)
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "TCP expect content error, received [%s]", buf);
 				break;
@@ -52,10 +52,10 @@ int	tcp_expect(const char *host, unsigned short port, int timeout, const char *r
 		}
 	}
 
-	if (NULL != sendtoclose && SUCCEED == net && ZBX_TCP_EXPECT_OK == val)
+	if (NULL != sendtoclose && SUCCEED == net && TRX_TCP_EXPECT_OK == val)
 		(void)zbx_tcp_send_raw(&s, sendtoclose);
 
-	if (SUCCEED == net && ZBX_TCP_EXPECT_OK == val)
+	if (SUCCEED == net && TRX_TCP_EXPECT_OK == val)
 		*value_int = 1;
 
 	zbx_tcp_close(&s);
@@ -70,7 +70,7 @@ int	NET_TCP_PORT(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	unsigned short	port;
 	int		value_int, ret;
-	char		*ip_str, ip[MAX_ZBX_DNSNAME_LEN + 1], *port_str;
+	char		*ip_str, ip[MAX_TRX_DNSNAME_LEN + 1], *port_str;
 
 	if (2 < request->nparam)
 	{
@@ -102,7 +102,7 @@ int	NET_TCP_PORT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 static const char	*decode_type(int q_type)
 {
-	static ZBX_THREAD_LOCAL char	buf[16];
+	static TRX_THREAD_LOCAL char	buf[16];
 
 	switch (q_type)
 	{
@@ -203,7 +203,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 #ifndef _WINDOWS
 #if defined(HAVE_RES_NINIT) && !defined(_AIX)
 	/* It seems that on some AIX systems with no updates installed res_ninit() can */
-	/* corrupt stack (see ZBX-14559). Use res_init() on AIX. */
+	/* corrupt stack (see TRX-14559). Use res_init() on AIX. */
 	struct __res_state	res_state_local;
 #else	/* thread-unsafe resolver API */
 	int			saved_retrans, saved_retry, saved_nscount = 0;
@@ -551,7 +551,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 #if defined(HAVE_RES_NINIT) && !defined(_AIX)
 		res_state_local.nsaddr_list[0].sin_addr = inaddr;
 		res_state_local.nsaddr_list[0].sin_family = AF_INET;
-		res_state_local.nsaddr_list[0].sin_port = htons(ZBX_DEFAULT_DNS_PORT);
+		res_state_local.nsaddr_list[0].sin_port = htons(TRX_DEFAULT_DNS_PORT);
 		res_state_local.nscount = 1;
 #else	/* thread-unsafe resolver API */
 		memcpy(&saved_ns, &(_res.nsaddr_list[0]), sizeof(struct sockaddr_in));
@@ -559,7 +559,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 
 		_res.nsaddr_list[0].sin_addr = inaddr;
 		_res.nsaddr_list[0].sin_family = AF_INET;
-		_res.nsaddr_list[0].sin_port = htons(ZBX_DEFAULT_DNS_PORT);
+		_res.nsaddr_list[0].sin_port = htons(TRX_DEFAULT_DNS_PORT);
 		_res.nscount = 1;
 #endif
 	}
@@ -577,7 +577,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 #endif
 		sockaddrin6.sin6_family = AF_INET6;
 		sockaddrin6.sin6_addr = in6addr;
-		sockaddrin6.sin6_port = htons(ZBX_DEFAULT_DNS_PORT);
+		sockaddrin6.sin6_port = htons(TRX_DEFAULT_DNS_PORT);
 #if defined(HAVE_RES_NINIT) && !defined(_AIX) && (defined(HAVE_RES_U_EXT) || defined(HAVE_RES_U_EXT_EXT))
 		memset(&res_state_local.nsaddr_list[0], '\0', sizeof(res_state_local.nsaddr_list[0]));
 #		ifdef HAVE_RES_U_EXT			/* Linux */
@@ -589,7 +589,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 		if (NULL != res_state_local._u._ext.ext)
 			memcpy(res_state_local._u._ext.ext, &sockaddrin6, sizeof(sockaddrin6));
 
-		res_state_local.nsaddr_list[0].sin_port = htons(ZBX_DEFAULT_DNS_PORT);
+		res_state_local.nsaddr_list[0].sin_port = htons(TRX_DEFAULT_DNS_PORT);
 #		endif
 		res_state_local.nscount = 1;
 #else
@@ -608,7 +608,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 		_res._u._ext.nscount6 = 1;
 #		elif defined(HAVE_RES_U_EXT_EXT)	/* thread-unsafe resolver API /BSD/ */
 		memcpy(&saved_ns6, _res._u._ext.ext, sizeof(saved_ns6));
-		_res.nsaddr_list[0].sin_port = htons(ZBX_DEFAULT_DNS_PORT);
+		_res.nsaddr_list[0].sin_port = htons(TRX_DEFAULT_DNS_PORT);
 
 		if (NULL != _res._u._ext.ext)
 			memcpy(_res._u._ext.ext, &sockaddrin6, sizeof(sockaddrin6));
@@ -939,7 +939,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	}
 #endif	/* _WINDOWS */
 
-	zbx_vector_str_sort(&answers, ZBX_DEFAULT_STR_COMPARE_FUNC);
+	zbx_vector_str_sort(&answers, TRX_DEFAULT_STR_COMPARE_FUNC);
 
 	for (i = 0; i < answers.values_num; i++)
 		offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%s", answers.values[i]);

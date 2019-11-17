@@ -31,7 +31,7 @@ $table = (new CTableInfo())
 		(new CColHeader(
 			(new CCheckBox('all_dashboards'))
 				->onClick("checkAll('".$form->getName()."', 'all_dashboards', 'dashboardids');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'])
 	]);
 

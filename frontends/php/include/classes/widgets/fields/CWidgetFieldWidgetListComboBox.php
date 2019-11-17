@@ -18,7 +18,7 @@ class CWidgetFieldWidgetListComboBox extends CWidgetField {
 	public function __construct($name, $label, $search_by_key, $search_by_value) {
 		parent::__construct($name, $label);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_STR);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_STR);
 		$this->search_by_key = $search_by_key;
 		$this->search_by_value = $search_by_value;
 	}

@@ -182,9 +182,9 @@ function zbx_date2str($format, $value = null) {
 	if ($value === null) {
 		$value = time();
 	}
-	elseif ($value > ZBX_MAX_DATE) {
+	elseif ($value > TRX_MAX_DATE) {
 		$prefix = '> ';
-		$value = ZBX_MAX_DATE;
+		$value = TRX_MAX_DATE;
 	}
 	elseif (!$value) {
 		return _('Never');
@@ -405,7 +405,7 @@ function zbx_num2bitstr($num, $rev = false) {
 	$strbin = '';
 
 	$len = 32;
-	if (bccomp($num, ZBX_MAX_INT32) > 0) {
+	if (bccomp($num, TRX_MAX_INT32) > 0) {
 		$len = 64;
 	}
 
@@ -437,13 +437,13 @@ function str2mem($val) {
 
 	switch ($last) {
 		case 'g':
-			$val *= ZBX_GIBIBYTE;
+			$val *= TRX_GIBIBYTE;
 			break;
 		case 'm':
-			$val *= ZBX_MEBIBYTE;
+			$val *= TRX_MEBIBYTE;
 			break;
 		case 'k':
-			$val *= ZBX_KIBIBYTE;
+			$val *= TRX_KIBIBYTE;
 			break;
 	}
 
@@ -459,16 +459,16 @@ function str2mem($val) {
  */
 function mem2str($size) {
 	$prefix = 'B';
-	if ($size > ZBX_MEBIBYTE) {
-		$size = $size / ZBX_MEBIBYTE;
+	if ($size > TRX_MEBIBYTE) {
+		$size = $size / TRX_MEBIBYTE;
 		$prefix = 'M';
 	}
-	elseif ($size > ZBX_KIBIBYTE) {
-		$size = $size / ZBX_KIBIBYTE;
+	elseif ($size > TRX_KIBIBYTE) {
+		$size = $size / TRX_KIBIBYTE;
 		$prefix = 'K';
 	}
 
-	return round($size, ZBX_UNITS_ROUNDOFF_LOWER_LIMIT).$prefix;
+	return round($size, TRX_UNITS_ROUNDOFF_LOWER_LIMIT).$prefix;
 }
 
 function convertUnitsUptime($value) {
@@ -513,7 +513,7 @@ function convertUnitsUptime($value) {
  * @return string
  */
 function convertUnitsS($value, $ignore_millisec = false) {
-	$secs = round($value * 1000, ZBX_UNITS_ROUNDOFF_UPPER_LIMIT) / 1000;
+	$secs = round($value * 1000, TRX_UNITS_ROUNDOFF_UPPER_LIMIT) / 1000;
 	if ($secs < 0) {
 		$secs = -$secs;
 		$str = '-';
@@ -586,13 +586,13 @@ function convertUnitsS($value, $ignore_millisec = false) {
 		}
 
 		if ($ignore_millisec) {
-			$n = round($secs, ZBX_UNITS_ROUNDOFF_UPPER_LIMIT);
+			$n = round($secs, TRX_UNITS_ROUNDOFF_UPPER_LIMIT);
 			if ($n_unit < 1 && $n != 0) {
 				$values['s'] += $n;
 			}
 		}
 		else {
-			$n = round($secs * 1000, ZBX_UNITS_ROUNDOFF_UPPER_LIMIT);
+			$n = round($secs * 1000, TRX_UNITS_ROUNDOFF_UPPER_LIMIT);
 			if ($n_unit < 1 && $n != 0) {
 				$values['ms'] = $n;
 			}
@@ -673,9 +673,9 @@ function convert_units($options = []) {
 	if (in_array($options['units'], $blackList) || (zbx_empty($options['units'])
 			&& ($options['convert'] == ITEM_CONVERT_WITH_UNITS))) {
 		if (preg_match('/\.\d+$/', $options['value'])) {
-			$format = (abs($options['value']) >= ZBX_UNITS_ROUNDOFF_THRESHOLD)
-				? '%.'.ZBX_UNITS_ROUNDOFF_MIDDLE_LIMIT.'f'
-				: '%.'.ZBX_UNITS_ROUNDOFF_LOWER_LIMIT.'f';
+			$format = (abs($options['value']) >= TRX_UNITS_ROUNDOFF_THRESHOLD)
+				? '%.'.TRX_UNITS_ROUNDOFF_MIDDLE_LIMIT.'f'
+				: '%.'.TRX_UNITS_ROUNDOFF_LOWER_LIMIT.'f';
 			$options['value'] = sprintf($format, $options['value']);
 		}
 		$options['value'] = preg_replace('/^([\-0-9]+)(\.)([0-9]*)[0]+$/U', '$1$2$3', $options['value']);
@@ -686,13 +686,13 @@ function convert_units($options = []) {
 
 	// if one or more items is B or Bps, then Y-scale use base 8 and calculated in bytes
 	if ($options['byteStep']) {
-		$step = ZBX_KIBIBYTE;
+		$step = TRX_KIBIBYTE;
 	}
 	else {
 		switch ($options['units']) {
 			case 'Bps':
 			case 'B':
-				$step = ZBX_KIBIBYTE;
+				$step = TRX_KIBIBYTE;
 				$options['convert'] = $options['convert'] ? $options['convert'] : ITEM_CONVERT_NO_UNITS;
 				break;
 			case 'b':
@@ -711,7 +711,7 @@ function convert_units($options = []) {
 	}
 
 	if (bccomp($abs, 1) == -1) {
-		$options['value'] = round($options['value'], ZBX_UNITS_ROUNDOFF_MIDDLE_LIMIT);
+		$options['value'] = round($options['value'], TRX_UNITS_ROUNDOFF_MIDDLE_LIMIT);
 		$options['value'] = ($options['length'] && $options['value'] != 0)
 			? sprintf('%.'.$options['length'].'f',$options['value']) : $options['value'];
 
@@ -765,9 +765,9 @@ function convert_units($options = []) {
 		}
 	}
 
-	if (round($valUnit['value'], ZBX_UNITS_ROUNDOFF_MIDDLE_LIMIT) > 0) {
+	if (round($valUnit['value'], TRX_UNITS_ROUNDOFF_MIDDLE_LIMIT) > 0) {
 		$valUnit['value'] = bcdiv(sprintf('%.10f',$options['value']), sprintf('%.10f', $valUnit['value'])
-			, ZBX_PRECISION_10);
+			, TRX_PRECISION_10);
 	}
 	else {
 		$valUnit['value'] = 0;
@@ -779,7 +779,7 @@ function convert_units($options = []) {
 	}
 
 	$options['value'] = preg_replace('/^([\-0-9]+)(\.)([0-9]*)[0]+$/U','$1$2$3', round($valUnit['value'],
-		ZBX_UNITS_ROUNDOFF_UPPER_LIMIT));
+		TRX_UNITS_ROUNDOFF_UPPER_LIMIT));
 
 	$options['value'] = rtrim($options['value'], '.');
 
@@ -808,7 +808,7 @@ function convert_units($options = []) {
 function timeUnitToSeconds($time, $with_year = false) {
 	preg_match(
 		'/^(?<sign>[\-+])?(?<number>(\d)+)(?<suffix>['.
-		($with_year ? ZBX_TIME_SUFFIXES_WITH_YEAR : ZBX_TIME_SUFFIXES).'])?$/',
+		($with_year ? TRX_TIME_SUFFIXES_WITH_YEAR : TRX_TIME_SUFFIXES).'])?$/',
 		$time, $matches
 	);
 
@@ -885,13 +885,13 @@ function convertFunctionValue($value, $scale = 0) {
 			return bcmul($value, '604800', $scale);
 
 		case 'K':
-			return bcmul($value, ZBX_KIBIBYTE, $scale);
+			return bcmul($value, TRX_KIBIBYTE, $scale);
 
 		case 'M':
-			return bcmul($value, ZBX_MEBIBYTE, $scale);
+			return bcmul($value, TRX_MEBIBYTE, $scale);
 
 		case 'G':
-			return bcmul($value, ZBX_GIBIBYTE, $scale);
+			return bcmul($value, TRX_GIBIBYTE, $scale);
 
 		case 'T':
 			return bcmul($value, '1099511627776', $scale);
@@ -902,7 +902,7 @@ function convertFunctionValue($value, $scale = 0) {
 	}
 }
 
-/************* ZBX MISC *************/
+/************* TRX MISC *************/
 
 /**
  * Swap two values.
@@ -1121,14 +1121,14 @@ function zbx_rksort(&$array, $flags = null) {
  *
  * @see order_macros()
  */
-function order_result(&$data, $sortfield = null, $sortorder = ZBX_SORT_UP) {
+function order_result(&$data, $sortfield = null, $sortorder = TRX_SORT_UP) {
 	if (empty($data)) {
 		return false;
 	}
 
 	if (is_null($sortfield)) {
 		natcasesort($data);
-		if ($sortorder != ZBX_SORT_UP) {
+		if ($sortorder != TRX_SORT_UP) {
 			$data = array_reverse($data, true);
 		}
 		return true;
@@ -1143,7 +1143,7 @@ function order_result(&$data, $sortfield = null, $sortorder = ZBX_SORT_UP) {
 	}
 	natcasesort($sort);
 
-	if ($sortorder != ZBX_SORT_UP) {
+	if ($sortorder != TRX_SORT_UP) {
 		$sort = array_reverse($sort, true);
 	}
 
@@ -1171,7 +1171,7 @@ function order_result(&$data, $sortfield = null, $sortorder = ZBX_SORT_UP) {
  *
  * @return array
  */
-function order_macros(array $macros, $sortfield, $order = ZBX_SORT_UP) {
+function order_macros(array $macros, $sortfield, $order = TRX_SORT_UP) {
 	$temp = [];
 	foreach ($macros as $key => $macro) {
 		$temp[$key] = substr($macro[$sortfield], 2, strlen($macro[$sortfield]) - 3);
@@ -1483,7 +1483,7 @@ function zbx_subarray_push(&$mainArray, $sIndex, $element = null, $key = null) {
  * @return CColHeader
  */
 function make_sorting_header($obj, $tabfield, $sortField, $sortOrder, $link = null) {
-	$sortorder = ($sortField == $tabfield && $sortOrder == ZBX_SORT_UP) ? ZBX_SORT_DOWN : ZBX_SORT_UP;
+	$sortorder = ($sortField == $tabfield && $sortOrder == TRX_SORT_UP) ? TRX_SORT_DOWN : TRX_SORT_UP;
 
 	$link = CUrlFactory::getContextUrl($link);
 
@@ -1494,11 +1494,11 @@ function make_sorting_header($obj, $tabfield, $sortField, $sortOrder, $link = nu
 
 	$arrow = null;
 	if ($tabfield == $sortField) {
-		if ($sortorder == ZBX_SORT_UP) {
-			$arrow = (new CSpan())->addClass(ZBX_STYLE_ARROW_DOWN);
+		if ($sortorder == TRX_SORT_UP) {
+			$arrow = (new CSpan())->addClass(TRX_STYLE_ARROW_DOWN);
 		}
 		else {
-			$arrow = (new CSpan())->addClass(ZBX_STYLE_ARROW_UP);
+			$arrow = (new CSpan())->addClass(TRX_STYLE_ARROW_UP);
 		}
 	}
 
@@ -1554,7 +1554,7 @@ function getPagingLine(&$items, $sortorder, CUrl $url) {
 	$offset = 0;
 
 	if ($limit_exceeded) {
-		if ($sortorder == ZBX_SORT_DOWN) {
+		if ($sortorder == TRX_SORT_DOWN) {
 			$offset = $itemsCount - $config['search_limit'];
 		}
 		$itemsCount = $config['search_limit'];
@@ -1604,7 +1604,7 @@ function getPagingLine(&$items, $sortorder, CUrl $url) {
 		if ($currentPage > 1) {
 			$url->setArgument('page', $currentPage - 1);
 			$tags[] = new CLink(
-				(new CSpan())->addClass(ZBX_STYLE_ARROW_LEFT), $url->getUrl()
+				(new CSpan())->addClass(TRX_STYLE_ARROW_LEFT), $url->getUrl()
 			);
 		}
 
@@ -1612,7 +1612,7 @@ function getPagingLine(&$items, $sortorder, CUrl $url) {
 			$url->setArgument('page', $p);
 			$link = new CLink($p, $url->getUrl());
 			if ($p == $currentPage) {
-				$link->addClass(ZBX_STYLE_PAGING_SELECTED);
+				$link->addClass(TRX_STYLE_PAGING_SELECTED);
 			}
 
 			$tags[] = $link;
@@ -1620,7 +1620,7 @@ function getPagingLine(&$items, $sortorder, CUrl $url) {
 
 		if ($currentPage < $pagesCount) {
 			$url->setArgument('page', $currentPage + 1);
-			$tags[] = new CLink((new CSpan())->addClass(ZBX_STYLE_ARROW_RIGHT), $url->getUrl());
+			$tags[] = new CLink((new CSpan())->addClass(TRX_STYLE_ARROW_RIGHT), $url->getUrl());
 		}
 
 		if ($p < $pagesCount) {
@@ -1648,14 +1648,14 @@ function getPagingLine(&$items, $sortorder, CUrl $url) {
 	$items = array_slice($items, $start + $offset, $end - $start, true);
 
 	return (new CDiv())
-		->addClass(ZBX_STYLE_TABLE_PAGING)
+		->addClass(TRX_STYLE_TABLE_PAGING)
 		->addItem(
 			(new CDiv())
-				->addClass(ZBX_STYLE_PAGING_BTN_CONTAINER)
+				->addClass(TRX_STYLE_PAGING_BTN_CONTAINER)
 				->addItem($tags)
 				->addItem(
 					(new CDiv())
-						->addClass(ZBX_STYLE_TABLE_STATS)
+						->addClass(TRX_STYLE_TABLE_STATS)
 						->addItem($table_stats)
 				)
 		);
@@ -1747,7 +1747,7 @@ function access_deny($mode = ACCESS_DENY_OBJECT) {
 		$url = (new CUrl(!empty($_REQUEST['request']) ? $_REQUEST['request'] : ''))->removeArgument('sid');
 		$config = select_config();
 
-		if ($config['http_login_form'] == ZBX_AUTH_FORM_HTTP && $config['http_auth_enabled'] == ZBX_AUTH_HTTP_ENABLED
+		if ($config['http_login_form'] == TRX_AUTH_FORM_HTTP && $config['http_auth_enabled'] == TRX_AUTH_HTTP_ENABLED
 				&& (!CWebUser::isLoggedIn() || CWebUser::isGuest())) {
 			$redirect_to = (new CUrl('index_http.php'))->setArgument('request', $url->toString());
 			redirect($redirect_to->toString());
@@ -1827,7 +1827,7 @@ function detect_page_type($default = PAGE_TYPE_HTML) {
 
 function makeMessageBox($good, array $messages, $title = null, $show_close_box = true, $show_details = false)
 {
-	$class = $good ? ZBX_STYLE_MSG_GOOD : ZBX_STYLE_MSG_BAD;
+	$class = $good ? TRX_STYLE_MSG_GOOD : TRX_STYLE_MSG_BAD;
 	$msg_details = null;
 	$link_details = null;
 
@@ -1838,20 +1838,20 @@ function makeMessageBox($good, array $messages, $title = null, $show_close_box =
 				->addItem(' ') // space
 				->addItem((new CSpan())
 					->setId('details-arrow')
-					->addClass($show_details ? ZBX_STYLE_ARROW_UP : ZBX_STYLE_ARROW_DOWN)
+					->addClass($show_details ? TRX_STYLE_ARROW_UP : TRX_STYLE_ARROW_DOWN)
 				)
 				->setAttribute('aria-expanded', $show_details ? 'true' : 'false')
 				->onClick('javascript: '.
-					'showHide(jQuery(this).siblings(\'.'.ZBX_STYLE_MSG_DETAILS.'\')'.
-						'.find(\'.'.ZBX_STYLE_MSG_DETAILS_BORDER.'\'));'.
-					'jQuery("#details-arrow", $(this)).toggleClass("'.ZBX_STYLE_ARROW_UP.' '.ZBX_STYLE_ARROW_DOWN.'");'.
-					'jQuery(this).attr(\'aria-expanded\', jQuery(this).find(\'.'.ZBX_STYLE_ARROW_DOWN.'\').length == 0)'
+					'showHide(jQuery(this).siblings(\'.'.TRX_STYLE_MSG_DETAILS.'\')'.
+						'.find(\'.'.TRX_STYLE_MSG_DETAILS_BORDER.'\'));'.
+					'jQuery("#details-arrow", $(this)).toggleClass("'.TRX_STYLE_ARROW_UP.' '.TRX_STYLE_ARROW_DOWN.'");'.
+					'jQuery(this).attr(\'aria-expanded\', jQuery(this).find(\'.'.TRX_STYLE_ARROW_DOWN.'\').length == 0)'
 				);
 		}
 
 		$list = new CList();
 		if ($title !== null) {
-			$list->addClass(ZBX_STYLE_MSG_DETAILS_BORDER);
+			$list->addClass(TRX_STYLE_MSG_DETAILS_BORDER);
 
 			if (!$show_details) {
 				$list->setAttribute('style', 'display: none;');
@@ -1862,7 +1862,7 @@ function makeMessageBox($good, array $messages, $title = null, $show_close_box =
 				$list->addItem($message_part);
 			}
 		}
-		$msg_details = (new CDiv())->addClass(ZBX_STYLE_MSG_DETAILS)->addItem($list);
+		$msg_details = (new CDiv())->addClass(TRX_STYLE_MSG_DETAILS)->addItem($list);
 	}
 
 	if ($title !== null) {
@@ -1877,7 +1877,7 @@ function makeMessageBox($good, array $messages, $title = null, $show_close_box =
 
 	if ($show_close_box) {
 		$msg_box->addItem((new CSimpleButton())
-			->addClass(ZBX_STYLE_OVERLAY_CLOSE_BTN)
+			->addClass(TRX_STYLE_OVERLAY_CLOSE_BTN)
 			->onClick('jQuery(this).closest(\'.'.$class.'\').remove();')
 			->setTitle(_('Close')));
 	}
@@ -1886,14 +1886,14 @@ function makeMessageBox($good, array $messages, $title = null, $show_close_box =
 }
 
 /**
- * Filters messages that can be displayed to user based on defines (see ZBX_SHOW_TECHNICAL_ERRORS) and user settings.
+ * Filters messages that can be displayed to user based on defines (see TRX_SHOW_TECHNICAL_ERRORS) and user settings.
  *
  * @param array $messages	List of messages to filter.
  *
  * @return array
  */
 function filter_messages(array $messages = []) {
-	if (!ZBX_SHOW_TECHNICAL_ERRORS && CWebUser::getType() != USER_TYPE_SUPER_ADMIN && !CWebUser::getDebugMode()) {
+	if (!TRX_SHOW_TECHNICAL_ERRORS && CWebUser::getType() != USER_TYPE_SUPER_ADMIN && !CWebUser::getDebugMode()) {
 		$filtered_messages = [];
 		$generic_exists = false;
 
@@ -1921,31 +1921,31 @@ function filter_messages(array $messages = []) {
  * @param  bool    $good            Parameter passed to makeMessageBox to specify message box style.
  * @param  string  $title           Message box title.
  * @param  bool    $show_close_box  Show or hide close button in error message box.
- * @global array   $ZBX_MESSAGES
+ * @global array   $TRX_MESSAGES
  *
  * @return CDiv|null
  */
 function getMessages($good = false, $title = null, $show_close_box = true) {
-	global $ZBX_MESSAGES;
+	global $TRX_MESSAGES;
 
-	$messages = (isset($ZBX_MESSAGES) && $ZBX_MESSAGES) ? filter_messages($ZBX_MESSAGES) : [];
+	$messages = (isset($TRX_MESSAGES) && $TRX_MESSAGES) ? filter_messages($TRX_MESSAGES) : [];
 
 	$message_box = ($title || $messages)
 		? makeMessageBox($good, $messages, $title, $show_close_box)
 		: null;
 
-	$ZBX_MESSAGES = [];
+	$TRX_MESSAGES = [];
 
 	return $message_box;
 }
 
 function show_messages($good = false, $okmsg = null, $errmsg = null) {
-	global $page, $ZBX_MESSAGES;
+	global $page, $TRX_MESSAGES;
 
 	if (!defined('PAGE_HEADER_LOADED')) {
 //		return null;
 	}
-	if (defined('ZBX_API_REQUEST')) {
+	if (defined('TRX_API_REQUEST')) {
 		return null;
 	}
 	if (!isset($page['type'])) {
@@ -1955,8 +1955,8 @@ function show_messages($good = false, $okmsg = null, $errmsg = null) {
 	$imageMessages = [];
 
 	$title = $good ? $okmsg : $errmsg;
-	$messages = isset($ZBX_MESSAGES) ? filter_messages($ZBX_MESSAGES) : [];
-	$ZBX_MESSAGES = [];
+	$messages = isset($TRX_MESSAGES) ? filter_messages($TRX_MESSAGES) : [];
+	$TRX_MESSAGES = [];
 
 	switch ($page['type']) {
 		case PAGE_TYPE_IMAGE:
@@ -2041,16 +2041,16 @@ function show_error_message($msg) {
 }
 
 function info($msgs) {
-	global $ZBX_MESSAGES;
+	global $TRX_MESSAGES;
 
-	if (!isset($ZBX_MESSAGES)) {
-		$ZBX_MESSAGES = [];
+	if (!isset($TRX_MESSAGES)) {
+		$TRX_MESSAGES = [];
 	}
 
 	zbx_value2array($msgs);
 
 	foreach ($msgs as $msg) {
-		$ZBX_MESSAGES[] = ['type' => 'info', 'message' => $msg];
+		$TRX_MESSAGES[] = ['type' => 'info', 'message' => $msg];
 	}
 }
 
@@ -2061,16 +2061,16 @@ function info($msgs) {
  * @param string		 $src	The source of error message.
  */
 function error($msgs, $src = '') {
-	global $ZBX_MESSAGES;
+	global $TRX_MESSAGES;
 
-	if (!isset($ZBX_MESSAGES)) {
-		$ZBX_MESSAGES = [];
+	if (!isset($TRX_MESSAGES)) {
+		$TRX_MESSAGES = [];
 	}
 
 	$msgs = zbx_toArray($msgs);
 
 	foreach ($msgs as $msg) {
-		$ZBX_MESSAGES[] = [
+		$TRX_MESSAGES[] = [
 			'type' => 'error',
 			'message' => $msg,
 			'src' => $src
@@ -2092,18 +2092,18 @@ function error_group($data) {
 }
 
 function clear_messages($count = null) {
-	global $ZBX_MESSAGES;
+	global $TRX_MESSAGES;
 
 	if ($count != null) {
 		$result = [];
 
 		while ($count-- > 0) {
-			array_unshift($result, array_pop($ZBX_MESSAGES));
+			array_unshift($result, array_pop($TRX_MESSAGES));
 		}
 	}
 	else {
-		$result = $ZBX_MESSAGES;
-		$ZBX_MESSAGES = [];
+		$result = $TRX_MESSAGES;
+		$TRX_MESSAGES = [];
 	}
 
 	return $result ? filter_messages($result) : $result;
@@ -2145,22 +2145,22 @@ function parse_period($str) {
 }
 
 function get_status() {
-	global $ZBX_SERVER, $ZBX_SERVER_PORT;
+	global $TRX_SERVER, $TRX_SERVER_PORT;
 
 	$status = [
 		'is_running' => false,
 		'has_status' => false
 	];
 
-	$server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SOCKET_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
-	$status['is_running'] = $server->isRunning(get_cookie(ZBX_SESSION_NAME));
+	$server = new CTreegixServer($TRX_SERVER, $TRX_SERVER_PORT, TRX_SOCKET_TIMEOUT, TRX_SOCKET_BYTES_LIMIT);
+	$status['is_running'] = $server->isRunning(get_cookie(TRX_SESSION_NAME));
 
 	if ($status['is_running'] === false) {
 		return $status;
 	}
 
-	$server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, 15, ZBX_SOCKET_BYTES_LIMIT);
-	$server_status = $server->getStatus(get_cookie(ZBX_SESSION_NAME));
+	$server = new CTreegixServer($TRX_SERVER, $TRX_SERVER_PORT, 15, TRX_SOCKET_BYTES_LIMIT);
+	$server_status = $server->getStatus(get_cookie(TRX_SESSION_NAME));
 	$status['has_status'] = (bool) $server_status;
 
 	if ($server_status === false) {
@@ -2258,11 +2258,11 @@ function get_status() {
 	// users
 	foreach ($server_status['user stats'] as $stats) {
 		switch ($stats['attributes']['status']) {
-			case ZBX_SESSION_ACTIVE:
+			case TRX_SESSION_ACTIVE:
 				$status['users_online'] += $stats['count'];
 				break;
 
-			case ZBX_SESSION_PASSIVE:
+			case TRX_SESSION_PASSIVE:
 				$status['users_count'] += $stats['count'];
 				break;
 		}
@@ -2352,15 +2352,15 @@ function imageOut(&$image, $format = null) {
 /**
  * Check if we have error messages to display.
  *
- * @global array $ZBX_MESSAGES
+ * @global array $TRX_MESSAGES
  *
  * @return bool
  */
 function hasErrorMesssages() {
-	global $ZBX_MESSAGES;
+	global $TRX_MESSAGES;
 
-	if (isset($ZBX_MESSAGES)) {
-		foreach ($ZBX_MESSAGES as $message) {
+	if (isset($TRX_MESSAGES)) {
+		foreach ($TRX_MESSAGES as $message) {
 			if ($message['type'] === 'error') {
 				return true;
 			}
@@ -2613,13 +2613,13 @@ function getTimeSelectorPeriod(array $options) {
 	$profileIdx2 = array_key_exists('profileIdx2', $options) ? $options['profileIdx2'] : null;
 
 	if ($profileIdx === null) {
-		$options['from'] = ZBX_PERIOD_DEFAULT_FROM;
-		$options['to'] = ZBX_PERIOD_DEFAULT_TO;
+		$options['from'] = TRX_PERIOD_DEFAULT_FROM;
+		$options['to'] = TRX_PERIOD_DEFAULT_TO;
 	}
 	elseif (!array_key_exists('from', $options) || !array_key_exists('to', $options)
 			|| $options['from'] === null || $options['to'] === null) {
-		$options['from'] = CProfile::get($profileIdx.'.from', ZBX_PERIOD_DEFAULT_FROM, $profileIdx2);
-		$options['to'] = CProfile::get($profileIdx.'.to', ZBX_PERIOD_DEFAULT_TO, $profileIdx2);
+		$options['from'] = CProfile::get($profileIdx.'.from', TRX_PERIOD_DEFAULT_FROM, $profileIdx2);
+		$options['to'] = CProfile::get($profileIdx.'.to', TRX_PERIOD_DEFAULT_TO, $profileIdx2);
 	}
 
 	$range_time_parser = new CRangeTimeParser();
@@ -2669,7 +2669,7 @@ function relativeDateToText($from, $to) {
 		if ($relative_time_parser->parse($from) == CParser::PARSE_SUCCESS) {
 			$tokens = $relative_time_parser->getTokens();
 
-			if (count($tokens) == 1 && $tokens[0]['type'] == CRelativeTimeParser::ZBX_TOKEN_OFFSET
+			if (count($tokens) == 1 && $tokens[0]['type'] == CRelativeTimeParser::TRX_TOKEN_OFFSET
 					&& $tokens[0]['sign'] === '-') {
 				$suffix = $tokens[0]['suffix'];
 				$value = (int) $tokens[0]['value'];

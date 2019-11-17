@@ -5,6 +5,6 @@
 
 #include "threads.h"
 
-ZBX_THREAD_ENTRY(listener_thread, pSock);
+TRX_THREAD_ENTRY(listener_thread, pSock);
 
 #endif

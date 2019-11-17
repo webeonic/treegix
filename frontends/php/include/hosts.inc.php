@@ -694,13 +694,13 @@ function makeApplicationTemplatePrefix($applicationid, array $parent_templates) 
 		if ($template['permission'] == PERM_READ_WRITE) {
 			$name = (new CLink(CHtml::encode($template['name']),
 				(new CUrl('applications.php'))->setArgument('hostid', $template['hostid'])
-			))->addClass(ZBX_STYLE_LINK_ALT);
+			))->addClass(TRX_STYLE_LINK_ALT);
 		}
 		else {
 			$name = new CSpan(CHtml::encode($template['name']));
 		}
 
-		$list[] = $name->addClass(ZBX_STYLE_GREY);
+		$list[] = $name->addClass(TRX_STYLE_GREY);
 		$list[] = ', ';
 	}
 
@@ -839,13 +839,13 @@ function makeHostPrototypeTemplatePrefix($host_prototypeid, array $parent_templa
 		$name = (new CLink(CHtml::encode($template['name']),
 			(new CUrl('host_prototypes.php'))
 				->setArgument('parent_discoveryid', $parent_templates['links'][$host_prototypeid]['lld_ruleid'])
-		))->addClass(ZBX_STYLE_LINK_ALT);
+		))->addClass(TRX_STYLE_LINK_ALT);
 	}
 	else {
 		$name = new CSpan(CHtml::encode($template['name']));
 	}
 
-	return [$name->addClass(ZBX_STYLE_GREY), NAME_DELIMITER];
+	return [$name->addClass(TRX_STYLE_GREY), NAME_DELIMITER];
 }
 
 /**
@@ -871,7 +871,7 @@ function makeHostPrototypeTemplatesHtml($host_prototypeid, array $parent_templat
 			);
 		}
 		else {
-			$name = (new CSpan(CHtml::encode($template['name'])))->addClass(ZBX_STYLE_GREY);
+			$name = (new CSpan(CHtml::encode($template['name'])))->addClass(TRX_STYLE_GREY);
 		}
 
 		array_unshift($list, $name, '&nbsp;&rArr;&nbsp;');
@@ -935,7 +935,7 @@ function getDeletableHostGroupIds(array $groupIds) {
 	$dbResult = DBselect(
 		'SELECT g.groupid'.
 		' FROM hstgrp g'.
-		' WHERE g.internal='.ZBX_NOT_INTERNAL_GROUP.
+		' WHERE g.internal='.TRX_NOT_INTERNAL_GROUP.
 			' AND '.dbConditionInt('g.groupid', $groupIds).
 			' AND NOT EXISTS ('.
 				'SELECT NULL'.
@@ -1178,7 +1178,7 @@ function getInheritedMacros(array $hostids) {
  *   array(
  *       '{$MACRO}' => array(
  *           'macro' => '{$MACRO}',
- *           'type' => 0x03,                        <- ZBX_PROPERTY_INHERITED, ZBX_PROPERTY_OWN or ZBX_PROPERTY_BOTH
+ *           'type' => 0x03,                        <- TRX_PROPERTY_INHERITED, TRX_PROPERTY_OWN or TRX_PROPERTY_BOTH
  *           'value' => 'effective value',
  *           'hostmacroid' => 7532,                 <- optional
  *           'template' => array(                   <- optional
@@ -1201,7 +1201,7 @@ function mergeInheritedMacros(array $host_macros, array $inherited_macros) {
 	$user_macro_parser = new CUserMacroParser();
 
 	foreach ($inherited_macros as &$inherited_macro) {
-		$inherited_macro['type'] = ZBX_PROPERTY_INHERITED;
+		$inherited_macro['type'] = TRX_PROPERTY_INHERITED;
 		if (array_key_exists('template', $inherited_macro)) {
 			$inherited_macro['value'] = $inherited_macro['template']['value'];
 			$inherited_macro['description'] = $inherited_macro['template']['description'];
@@ -1263,7 +1263,7 @@ function mergeInheritedMacros(array $host_macros, array $inherited_macros) {
 			}
 		}
 
-		$host_macro['type'] |= ZBX_PROPERTY_OWN;
+		$host_macro['type'] |= TRX_PROPERTY_OWN;
 	}
 	unset($host_macro);
 
@@ -1283,7 +1283,7 @@ function mergeInheritedMacros(array $host_macros, array $inherited_macros) {
  */
 function cleanInheritedMacros(array $macros) {
 	foreach ($macros as $idx => $macro) {
-		if (array_key_exists('type', $macro) && !($macro['type'] & ZBX_PROPERTY_OWN)) {
+		if (array_key_exists('type', $macro) && !($macro['type'] & TRX_PROPERTY_OWN)) {
 			unset($macros[$idx]);
 		}
 		else {

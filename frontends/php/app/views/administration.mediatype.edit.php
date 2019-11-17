@@ -20,33 +20,33 @@ $mediaTypeForm = (new CForm())
 	->addVar('mediatypeid', $data['mediatypeid'])
 	->addItem((new CVar('status', MEDIA_TYPE_STATUS_DISABLED))->removeId())
 	->disablePasswordAutofill()
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE);
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE);
 
 // Create form list.
 $mediatype_formlist = (new CFormList())
 	->addRow((new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $data['name'], false, 100))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	)
 	->addRow(new CLabel(_('Type'), 'type'), new CComboBox('type', $data['type'], null, media_type2str()))
 	->addRow((new CLabel(_('SMTP server'), 'smtp_server'))->setAsteriskMark(),
 		(new CTextBox('smtp_server', $data['smtp_server']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow(_('SMTP server port'),
-		(new CNumericBox('smtp_port', $data['smtp_port'], 5, false, false, false))->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+		(new CNumericBox('smtp_port', $data['smtp_port'], 5, false, false, false))->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 	)
 	->addRow((new CLabel(_('SMTP helo'), 'smtp_helo'))->setAsteriskMark(),
 		(new CTextBox('smtp_helo', $data['smtp_helo']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('SMTP email'), 'smtp_email'))->setAsteriskMark(),
 		(new CTextBox('smtp_email', $data['smtp_email']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow(new CLabel(_('Connection security'), 'smtp_security'),
@@ -64,10 +64,10 @@ $mediatype_formlist = (new CFormList())
 			->addValue(_('Username and password'), SMTP_AUTHENTICATION_NORMAL)
 			->setModern(true)
 	)
-	->addRow(_('Username'), (new CTextBox('smtp_username', $data['smtp_username']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH))
+	->addRow(_('Username'), (new CTextBox('smtp_username', $data['smtp_username']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH))
 	->addRow((new CLabel(_('Script name'), 'exec_path'))->setAsteriskMark(),
 		(new CTextBox('exec_path', $data['exec_path']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	);
 
@@ -79,9 +79,9 @@ $exec_params_table = (new CTable())
 foreach ($data['exec_params'] as $i => $exec_param) {
 	$exec_params_table->addRow([
 		(new CTextBox('exec_params['.$i.'][exec_param]', $exec_param['exec_param'], false, 255))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 		(new CButton('exec_params['.$i.'][remove]', _('Remove')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-remove')
 		],
 		'form_row'
@@ -89,19 +89,19 @@ foreach ($data['exec_params'] as $i => $exec_param) {
 }
 
 $exec_params_table->addRow([(new CButton('exec_param_add', _('Add')))
-	->addClass(ZBX_STYLE_BTN_LINK)
+	->addClass(TRX_STYLE_BTN_LINK)
 	->addClass('element-table-add')]);
 
 $mediatype_formlist->addRow(_('Script parameters'),
 	(new CDiv($exec_params_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;'),
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;'),
 	'row_exec_params'
 );
 
 $mediatype_formlist->addRow((new CLabel(_('GSM modem'), 'gsm_modem'))->setAsteriskMark(),
 	(new CTextBox('gsm_modem', $data['gsm_modem']))
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		->setAriaRequired()
 );
 
@@ -111,14 +111,14 @@ if ($data['passwd'] !== '' && !$data['change_passwd']) {
 	$passwd_field = [
 		(new CButton('chPass_btn', _('Change password'))),
 		(new CPassBox('passwd', ''))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			->setAriaRequired()
 			->addStyle('display: none;')
 			->setAttribute('disabled', 'disabled')
 	];
 }
 else {
-	$passwd_field = (new CPassBox('passwd', $data['passwd']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH);
+	$passwd_field = (new CPassBox('passwd', $data['passwd']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH);
 }
 
 // MEDIA_TYPE_WEBHOOK
@@ -144,7 +144,7 @@ foreach ($data['parameters'] as $parameter) {
 		(new CButton('', _('Remove')))
 			->removeId()
 			->onClick('jQuery(this).closest("tr").remove()')
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-remove')
 	]);
 }
@@ -162,14 +162,14 @@ $row_template = (new CTag('script', true))
 		(new CButton('', _('Remove')))
 			->removeId()
 			->onClick('jQuery(this).closest("tr").remove()')
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-remove')
 	]));
 
 $widget->addItem($row_template);
 
 $parameters_table->addRow([(new CButton('parameter_add', _('Add')))
-	->addClass(ZBX_STYLE_BTN_LINK)
+	->addClass(TRX_STYLE_BTN_LINK)
 	->addClass('element-table-add')]);
 
 // append password field to form list
@@ -183,8 +183,8 @@ $mediatype_formlist
 	)
 	->addRow(new CLabel(_('Parameters'), $parameters_table->getId()),
 		(new CDiv($parameters_table))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;'),
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;'),
 		'row_webhook_parameters'
 	)
 	->addRow((new CLabel(_('Script'), 'script'))->setAsteriskMark(),
@@ -196,32 +196,32 @@ $mediatype_formlist
 			'rows' => 0,
 			'maxlength' => DB::getFieldLength('media_type', 'script')
 		]))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
 		'row_webhook_script'
 	)
 	->addRow(new CLabel(_('Timeout'), 'timeout'),
-		(new CTextBox('timeout', $data['timeout']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
+		(new CTextBox('timeout', $data['timeout']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
 		'row_webhook_timeout'
 	)
 	->addRow(new CLabel(_('Process tags'), 'process_tags'),
-		(new CCheckBox('process_tags', ZBX_MEDIA_TYPE_TAGS_ENABLED))
-			->setChecked($data['process_tags'] == ZBX_MEDIA_TYPE_TAGS_ENABLED)
-			->setUncheckedValue(ZBX_MEDIA_TYPE_TAGS_DISABLED),
+		(new CCheckBox('process_tags', TRX_MEDIA_TYPE_TAGS_ENABLED))
+			->setChecked($data['process_tags'] == TRX_MEDIA_TYPE_TAGS_ENABLED)
+			->setUncheckedValue(TRX_MEDIA_TYPE_TAGS_DISABLED),
 		'row_webhook_tags'
 	)
 	->addRow(new CLabel(_('Include event menu entry'), 'show_event_menu'),
-		(new CCheckBox('show_event_menu', ZBX_EVENT_MENU_SHOW))
-			->setChecked($data['show_event_menu'] == ZBX_EVENT_MENU_SHOW)
-			->setUncheckedValue(ZBX_EVENT_MENU_HIDE),
+		(new CCheckBox('show_event_menu', TRX_EVENT_MENU_SHOW))
+			->setChecked($data['show_event_menu'] == TRX_EVENT_MENU_SHOW)
+			->setUncheckedValue(TRX_EVENT_MENU_HIDE),
 		'row_webhook_show_event_menu'
 	)
 	->addRow((new CLabel(_('Menu entry name'), 'event_menu_name'))->setAsteriskMark(),
 		(new CTextBox('event_menu_name', $data['event_menu_name'], false,
 			DB::getFieldLength('media_type', 'event_menu_name')
 		))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
-			->setEnabled($data['show_event_menu'] == ZBX_EVENT_MENU_SHOW)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
+			->setEnabled($data['show_event_menu'] == TRX_EVENT_MENU_SHOW)
 			->setAriaRequired(),
 		'row_webhook_url_name'
 	)
@@ -229,13 +229,13 @@ $mediatype_formlist
 		(new CTextBox('event_menu_url', $data['event_menu_url'], false,
 			DB::getFieldLength('media_type', 'event_menu_url')
 		))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
-			->setEnabled($data['show_event_menu'] == ZBX_EVENT_MENU_SHOW)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
+			->setEnabled($data['show_event_menu'] == TRX_EVENT_MENU_SHOW)
 			->setAriaRequired(),
 		'row_webhook_event_menu_url'
 	)
 	->addRow(_('Description'),
-		(new CTextArea('description', $data['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('description', $data['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	)
 	->addRow(_('Enabled'),
 		(new CCheckBox('status', MEDIA_TYPE_STATUS_ACTIVE))->setChecked($data['status'] == MEDIA_TYPE_STATUS_ACTIVE)
@@ -262,7 +262,7 @@ switch ($data['maxsessions']) {
 $mediaOptionsForm = (new CFormList('options'))
 	->addRow(new CLabel(_('Concurrent sessions'), 'maxsessions_type'),
 		(new CDiv())
-			->addClass(ZBX_STYLE_NOWRAP)
+			->addClass(TRX_STYLE_NOWRAP)
 			->addItem([
 				(new CDiv(
 					(new CRadioButtonList('maxsessions_type', $data['maxsessions_type']))
@@ -270,20 +270,20 @@ $mediaOptionsForm = (new CFormList('options'))
 						->addValue(_('Unlimited'), 'unlimited')
 						->addValue(_('Custom'), 'custom')
 						->setModern(true)
-				))->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				))->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				(new CNumericBox('maxsessions', $max_sessions, 3, false, false, false))
 					->setAriaRequired()
-					->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+					->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 			])
 	)
 	->addRow((new CLabel(_('Attempts'), 'maxattempts'))->setAsteriskMark(),
 		(new CNumericBox('maxattempts', $data['maxattempts'], 3, false, false, false))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('Attempt interval'), 'attempt_interval'))->setAsteriskMark(),
 		(new CTextBox('attempt_interval', $data['attempt_interval'], false, 12))
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 			->setAriaRequired()
 	);
 $tabs->addTab('optionsTab', _('Options'), $mediaOptionsForm);

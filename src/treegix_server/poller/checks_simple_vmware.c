@@ -10,15 +10,15 @@
 #include "checks_simple_vmware.h"
 #include"../vmware/vmware.h"
 
-#define ZBX_VMWARE_DATASTORE_SIZE_TOTAL		0
-#define ZBX_VMWARE_DATASTORE_SIZE_FREE		1
-#define ZBX_VMWARE_DATASTORE_SIZE_PFREE		2
-#define ZBX_VMWARE_DATASTORE_SIZE_UNCOMMITTED	3
+#define TRX_VMWARE_DATASTORE_SIZE_TOTAL		0
+#define TRX_VMWARE_DATASTORE_SIZE_FREE		1
+#define TRX_VMWARE_DATASTORE_SIZE_PFREE		2
+#define TRX_VMWARE_DATASTORE_SIZE_UNCOMMITTED	3
 
-#define ZBX_DATASTORE_TOTAL			""
-#define ZBX_DATASTORE_COUNTER_CAPACITY		0x01
-#define ZBX_DATASTORE_COUNTER_USED		0x02
-#define ZBX_DATASTORE_COUNTER_PROVISIONED	0x04
+#define TRX_DATASTORE_TOTAL			""
+#define TRX_DATASTORE_COUNTER_CAPACITY		0x01
+#define TRX_DATASTORE_COUNTER_USED		0x02
+#define TRX_DATASTORE_COUNTER_PROVISIONED	0x04
 
 static int	vmware_set_powerstate_result(AGENT_RESULT *result)
 {
@@ -211,7 +211,7 @@ static int	vmware_service_get_counter_value_by_id(zbx_vmware_service_t *service,
 	int				i, ret = SYSINFO_RET_FAIL;
 	zbx_uint64_t			value;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() type:%s id:%s counterid:" ZBX_FS_UI64 " instance:%s", __func__,
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() type:%s id:%s counterid:" TRX_FS_UI64 " instance:%s", __func__,
 			type, id, counterid, instance);
 
 	if (NULL == (entity = zbx_vmware_service_get_perf_entity(service, type, id)))
@@ -228,7 +228,7 @@ static int	vmware_service_get_counter_value_by_id(zbx_vmware_service_t *service,
 		goto out;
 	}
 
-	if (FAIL == (i = zbx_vector_ptr_bsearch(&entity->counters, &counterid, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+	if (FAIL == (i = zbx_vector_ptr_bsearch(&entity->counters, &counterid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Performance counter data was not found."));
 		goto out;
@@ -236,7 +236,7 @@ static int	vmware_service_get_counter_value_by_id(zbx_vmware_service_t *service,
 
 	perfcounter = (zbx_vmware_perf_counter_t *)entity->counters.values[i];
 
-	if (0 == (perfcounter->state & ZBX_VMWARE_COUNTER_READY))
+	if (0 == (perfcounter->state & TRX_VMWARE_COUNTER_READY))
 	{
 		ret = SYSINFO_RET_OK;
 		goto out;
@@ -263,7 +263,7 @@ static int	vmware_service_get_counter_value_by_id(zbx_vmware_service_t *service,
 	}
 
 	/* VMware returns -1 value if the performance data for the specified period is not ready - ignore it */
-	if (ZBX_MAX_UINT64 == perfvalue->value)
+	if (TRX_MAX_UINT64 == perfvalue->value)
 	{
 		ret = SYSINFO_RET_OK;
 		goto out;
@@ -386,7 +386,7 @@ static zbx_vmware_service_t	*get_vmware_service(const char *url, const char *use
 		goto out;
 	}
 
-	if (0 != (service->state & ZBX_VMWARE_STATE_FAILED))
+	if (0 != (service->state & TRX_VMWARE_STATE_FAILED))
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, NULL != service->data->error ? service->data->error :
 				"Unknown VMware service error."));
@@ -561,15 +561,15 @@ int	check_vcenter_cluster_discovery(AGENT_REQUEST *request, const char *username
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
-	zbx_json_initarray(&json_data, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < service->data->clusters.values_num; i++)
 	{
 		zbx_vmware_cluster_t	*cluster = (zbx_vmware_cluster_t *)service->data->clusters.values[i];
 
 		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#CLUSTER.ID}", cluster->id, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#CLUSTER.NAME}", cluster->name, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#CLUSTER.ID}", cluster->id, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#CLUSTER.NAME}", cluster->name, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&json_data);
 	}
 
@@ -650,7 +650,7 @@ static void	vmware_get_events(const zbx_vector_ptr_t *events, zbx_uint64_t event
 {
 	int	i;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() eventlog_last_key:" ZBX_FS_UI64, __func__, eventlog_last_key);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() eventlog_last_key:" TRX_FS_UI64, __func__, eventlog_last_key);
 
 	/* events were retrieved in reverse chronological order */
 	for (i = events->values_num - 1; i >= 0; i--)
@@ -718,7 +718,7 @@ int	check_vcenter_eventlog(AGENT_REQUEST *request, const DC_ITEM *item, AGENT_RE
 	if (NULL == (service = get_vmware_service(url, item->username, item->password, result, &ret)))
 		goto unlock;
 
-	if (ZBX_VMWARE_EVENT_KEY_UNINITIALIZED == service->eventlog.last_key)
+	if (TRX_VMWARE_EVENT_KEY_UNINITIALIZED == service->eventlog.last_key)
 	{
 		service->eventlog.last_key = request->lastlogsize;
 		service->eventlog.skip_old = skip_old;
@@ -875,7 +875,7 @@ int	check_vcenter_hv_cpu_usage(AGENT_REQUEST *request, const char *username, con
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_OVERALL_CPU_USAGE, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_OVERALL_CPU_USAGE, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * 1000000;
@@ -910,28 +910,28 @@ int	check_vcenter_hv_discovery(AGENT_REQUEST *request, const char *username, con
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
-	zbx_json_initarray(&json_data, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	zbx_hashset_iter_reset(&service->data->hvs, &iter);
 	while (NULL != (hv = (zbx_vmware_hv_t *)zbx_hashset_iter_next(&iter)))
 	{
 		zbx_vmware_cluster_t	*cluster = NULL;
 
-		if (NULL == (name = hv->props[ZBX_VMWARE_HVPROP_NAME]))
+		if (NULL == (name = hv->props[TRX_VMWARE_HVPROP_NAME]))
 			continue;
 
 		if (NULL != hv->clusterid)
 			cluster = cluster_get(&service->data->clusters, hv->clusterid);
 
 		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#HV.UUID}", hv->uuid, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#HV.ID}", hv->id, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#HV.NAME}", name, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#DATACENTER.NAME}", hv->datacenter_name, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#HV.UUID}", hv->uuid, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#HV.ID}", hv->id, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#HV.NAME}", name, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#DATACENTER.NAME}", hv->datacenter_name, TRX_JSON_TYPE_STRING);
 		zbx_json_addstring(&json_data, "{#CLUSTER.NAME}",
-				NULL != cluster ? cluster->name : "", ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#PARENT.NAME}", hv->parent_name, ZBX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#PARENT.TYPE}", hv->parent_type, ZBX_JSON_TYPE_STRING);
+				NULL != cluster ? cluster->name : "", TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#PARENT.NAME}", hv->parent_name, TRX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#PARENT.TYPE}", hv->parent_type, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&json_data);
 	}
 
@@ -957,7 +957,7 @@ int	check_vcenter_hv_fullname(AGENT_REQUEST *request, const char *username, cons
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_FULL_NAME, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_FULL_NAME, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -971,7 +971,7 @@ int	check_vcenter_hv_hw_cpu_num(AGENT_REQUEST *request, const char *username, co
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_HW_NUM_CPU_CORES, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_NUM_CPU_CORES, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -985,7 +985,7 @@ int	check_vcenter_hv_hw_cpu_freq(AGENT_REQUEST *request, const char *username, c
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_HW_CPU_MHZ, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_CPU_MHZ, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * 1000000;
@@ -1002,7 +1002,7 @@ int	check_vcenter_hv_hw_cpu_model(AGENT_REQUEST *request, const char *username, 
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_HW_CPU_MODEL, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_CPU_MODEL, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -1016,7 +1016,7 @@ int	check_vcenter_hv_hw_cpu_threads(AGENT_REQUEST *request, const char *username
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_HW_NUM_CPU_THREADS, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_NUM_CPU_THREADS, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -1030,7 +1030,7 @@ int	check_vcenter_hv_hw_memory(AGENT_REQUEST *request, const char *username, con
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_HW_MEMORY_SIZE, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_MEMORY_SIZE, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -1044,7 +1044,7 @@ int	check_vcenter_hv_hw_model(AGENT_REQUEST *request, const char *username, cons
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_HW_MODEL, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_MODEL, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -1058,7 +1058,7 @@ int	check_vcenter_hv_hw_uuid(AGENT_REQUEST *request, const char *username, const
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_HW_UUID, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_UUID, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -1072,7 +1072,7 @@ int	check_vcenter_hv_hw_vendor(AGENT_REQUEST *request, const char *username, con
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_HW_VENDOR, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_VENDOR, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -1122,7 +1122,7 @@ int	check_vcenter_hv_memory_size_ballooned(AGENT_REQUEST *request, const char *u
 		const char	*value_str;
 		zbx_vmware_vm_t	*vm = (zbx_vmware_vm_t *)hv->vms.values[i];
 
-		if (NULL == (value_str = vm->props[ZBX_VMWARE_VMPROP_MEMORY_SIZE_BALLOONED]))
+		if (NULL == (value_str = vm->props[TRX_VMWARE_VMPROP_MEMORY_SIZE_BALLOONED]))
 			continue;
 
 		if (SUCCEED != is_uint64(value_str, &mem))
@@ -1131,7 +1131,7 @@ int	check_vcenter_hv_memory_size_ballooned(AGENT_REQUEST *request, const char *u
 		value += mem;
 	}
 
-	value *= ZBX_MEBIBYTE;
+	value *= TRX_MEBIBYTE;
 	SET_UI64_RESULT(result, value);
 
 	ret = SYSINFO_RET_OK;
@@ -1150,10 +1150,10 @@ int	check_vcenter_hv_memory_used(AGENT_REQUEST *request, const char *username, c
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_MEMORY_USED, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_MEMORY_USED, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
-		result->ui64 = result->ui64 * ZBX_MEBIBYTE;
+		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -1167,7 +1167,7 @@ int	check_vcenter_hv_sensor_health_state(AGENT_REQUEST *request, const char *use
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_HEALTH_STATE, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HEALTH_STATE, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_STR_RESULT(result))
 	{
@@ -1197,7 +1197,7 @@ int	check_vcenter_hv_status(AGENT_REQUEST *request, const char *username, const 
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_STATUS, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_STATUS, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_STR_RESULT(result))
 	{
@@ -1227,7 +1227,7 @@ int	check_vcenter_hv_uptime(AGENT_REQUEST *request, const char *username, const 
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_UPTIME, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_UPTIME, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -1241,7 +1241,7 @@ int	check_vcenter_hv_version(AGENT_REQUEST *request, const char *username, const
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_hvprop(request, username, password, ZBX_VMWARE_HVPROP_VERSION, result);
+	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_VERSION, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -1332,7 +1332,7 @@ int	check_vcenter_hv_network_in(AGENT_REQUEST *request, const char *username, co
 	}
 
 	ret = vmware_service_get_counter_value_by_path(service, "HostSystem", hv->id, "net/received[average]", "",
-			ZBX_KIBIBYTE, result);
+			TRX_KIBIBYTE, result);
 unlock:
 	zbx_vmware_unlock();
 out:
@@ -1379,7 +1379,7 @@ int	check_vcenter_hv_network_out(AGENT_REQUEST *request, const char *username, c
 	}
 
 	ret = vmware_service_get_counter_value_by_path(service, "HostSystem", hv->id, "net/transmitted[average]", "",
-			ZBX_KIBIBYTE, result);
+			TRX_KIBIBYTE, result);
 unlock:
 	zbx_vmware_unlock();
 out:
@@ -1460,12 +1460,12 @@ int	check_vcenter_hv_datastore_discovery(AGENT_REQUEST *request, const char *use
 		goto unlock;
 	}
 
-	zbx_json_initarray(&json_data, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < hv->ds_names.values_num; i++)
 	{
 		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#DATASTORE}", hv->ds_names.values[i], ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#DATASTORE}", hv->ds_names.values[i], TRX_JSON_TYPE_STRING);
 		zbx_json_close(&json_data);
 	}
 
@@ -1531,7 +1531,7 @@ static int	check_vcenter_hv_datastore_latency(AGENT_REQUEST *request, const char
 		goto unlock;
 	}
 
-	if (FAIL == zbx_vector_str_bsearch(&hv->ds_names, datastore->name, ZBX_DEFAULT_STR_COMPARE_FUNC))
+	if (FAIL == zbx_vector_str_bsearch(&hv->ds_names, datastore->name, TRX_DEFAULT_STR_COMPARE_FUNC))
 	{
 		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Datastore \"%s\" not found on this hypervisor.",
 				datastore->name));
@@ -1573,37 +1573,37 @@ static int	check_vcenter_hv_datastore_size_vsphere(int mode, const zbx_vmware_da
 {
 	switch (mode)
 	{
-		case ZBX_VMWARE_DATASTORE_SIZE_TOTAL:
-			if (ZBX_MAX_UINT64 == datastore->capacity)
+		case TRX_VMWARE_DATASTORE_SIZE_TOTAL:
+			if (TRX_MAX_UINT64 == datastore->capacity)
 			{
 				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"capacity\" is not available."));
 				return SYSINFO_RET_FAIL;
 			}
 			SET_UI64_RESULT(result, datastore->capacity);
 			break;
-		case ZBX_VMWARE_DATASTORE_SIZE_FREE:
-			if (ZBX_MAX_UINT64 == datastore->free_space)
+		case TRX_VMWARE_DATASTORE_SIZE_FREE:
+			if (TRX_MAX_UINT64 == datastore->free_space)
 			{
 				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"free space\" is not available."));
 				return SYSINFO_RET_FAIL;
 			}
 			SET_UI64_RESULT(result, datastore->free_space);
 			break;
-		case ZBX_VMWARE_DATASTORE_SIZE_UNCOMMITTED:
-			if (ZBX_MAX_UINT64 == datastore->uncommitted)
+		case TRX_VMWARE_DATASTORE_SIZE_UNCOMMITTED:
+			if (TRX_MAX_UINT64 == datastore->uncommitted)
 			{
 				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"uncommitted\" is not available."));
 				return SYSINFO_RET_FAIL;
 			}
 			SET_UI64_RESULT(result, datastore->uncommitted);
 			break;
-		case ZBX_VMWARE_DATASTORE_SIZE_PFREE:
-			if (ZBX_MAX_UINT64 == datastore->capacity)
+		case TRX_VMWARE_DATASTORE_SIZE_PFREE:
+			if (TRX_MAX_UINT64 == datastore->capacity)
 			{
 				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"capacity\" is not available."));
 				return SYSINFO_RET_FAIL;
 			}
-			if (ZBX_MAX_UINT64 == datastore->free_space)
+			if (TRX_MAX_UINT64 == datastore->free_space)
 			{
 				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"free space\" is not available."));
 				return SYSINFO_RET_FAIL;
@@ -1625,19 +1625,19 @@ static int	check_vcenter_ds_param(const char *param, int *mode)
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "total"))
 	{
-		*mode = ZBX_VMWARE_DATASTORE_SIZE_TOTAL;
+		*mode = TRX_VMWARE_DATASTORE_SIZE_TOTAL;
 	}
 	else if (0 == strcmp(param, "free"))
 	{
-		*mode = ZBX_VMWARE_DATASTORE_SIZE_FREE;
+		*mode = TRX_VMWARE_DATASTORE_SIZE_FREE;
 	}
 	else if (0 == strcmp(param, "pfree"))
 	{
-		*mode = ZBX_VMWARE_DATASTORE_SIZE_PFREE;
+		*mode = TRX_VMWARE_DATASTORE_SIZE_PFREE;
 	}
 	else if (0 == strcmp(param, "uncommitted"))
 	{
-		*mode = ZBX_VMWARE_DATASTORE_SIZE_UNCOMMITTED;
+		*mode = TRX_VMWARE_DATASTORE_SIZE_UNCOMMITTED;
 	}
 	else
 		return FAIL;
@@ -1670,13 +1670,13 @@ static int	check_vcenter_ds_size(const char *url, const char *hv_uuid, const cha
 	}
 
 	if (NULL != hv_uuid &&
-			FAIL == zbx_vector_str_bsearch(&datastore->hv_uuids, hv_uuid, ZBX_DEFAULT_STR_COMPARE_FUNC))
+			FAIL == zbx_vector_str_bsearch(&datastore->hv_uuids, hv_uuid, TRX_DEFAULT_STR_COMPARE_FUNC))
 	{
 		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Hypervisor '%s' not found on this datastore.", hv_uuid));
 		goto unlock;
 	}
 
-	if (ZBX_VMWARE_TYPE_VSPHERE == service->type)
+	if (TRX_VMWARE_TYPE_VSPHERE == service->type)
 	{
 		ret = check_vcenter_hv_datastore_size_vsphere(mode, datastore, result);
 		goto unlock;
@@ -1684,24 +1684,24 @@ static int	check_vcenter_ds_size(const char *url, const char *hv_uuid, const cha
 
 	switch (mode)
 	{
-		case ZBX_VMWARE_DATASTORE_SIZE_TOTAL:
-			flags = ZBX_DATASTORE_COUNTER_CAPACITY;
+		case TRX_VMWARE_DATASTORE_SIZE_TOTAL:
+			flags = TRX_DATASTORE_COUNTER_CAPACITY;
 			break;
-		case ZBX_VMWARE_DATASTORE_SIZE_FREE:
-			flags = ZBX_DATASTORE_COUNTER_CAPACITY | ZBX_DATASTORE_COUNTER_USED;
+		case TRX_VMWARE_DATASTORE_SIZE_FREE:
+			flags = TRX_DATASTORE_COUNTER_CAPACITY | TRX_DATASTORE_COUNTER_USED;
 			break;
-		case ZBX_VMWARE_DATASTORE_SIZE_PFREE:
-			flags = ZBX_DATASTORE_COUNTER_CAPACITY | ZBX_DATASTORE_COUNTER_USED;
+		case TRX_VMWARE_DATASTORE_SIZE_PFREE:
+			flags = TRX_DATASTORE_COUNTER_CAPACITY | TRX_DATASTORE_COUNTER_USED;
 			break;
-		case ZBX_VMWARE_DATASTORE_SIZE_UNCOMMITTED:
-			flags = ZBX_DATASTORE_COUNTER_PROVISIONED | ZBX_DATASTORE_COUNTER_USED;
+		case TRX_VMWARE_DATASTORE_SIZE_UNCOMMITTED:
+			flags = TRX_DATASTORE_COUNTER_PROVISIONED | TRX_DATASTORE_COUNTER_USED;
 			break;
 	}
 
-	if (0 != (flags & ZBX_DATASTORE_COUNTER_PROVISIONED))
+	if (0 != (flags & TRX_DATASTORE_COUNTER_PROVISIONED))
 	{
 		ret = vmware_service_get_counter_value_by_path(service, "Datastore", datastore->id,
-				"disk/provisioned[latest]", ZBX_DATASTORE_TOTAL, ZBX_KIBIBYTE, result);
+				"disk/provisioned[latest]", TRX_DATASTORE_TOTAL, TRX_KIBIBYTE, result);
 
 		if (SYSINFO_RET_OK != ret || NULL == GET_UI64_RESULT(result))
 			goto unlock;
@@ -1710,10 +1710,10 @@ static int	check_vcenter_ds_size(const char *url, const char *hv_uuid, const cha
 		UNSET_UI64_RESULT(result);
 	}
 
-	if (0 != (flags & ZBX_DATASTORE_COUNTER_USED))
+	if (0 != (flags & TRX_DATASTORE_COUNTER_USED))
 	{
 		ret = vmware_service_get_counter_value_by_path(service, "Datastore", datastore->id,
-				"disk/used[latest]", ZBX_DATASTORE_TOTAL, ZBX_KIBIBYTE, result);
+				"disk/used[latest]", TRX_DATASTORE_TOTAL, TRX_KIBIBYTE, result);
 
 		if (SYSINFO_RET_OK != ret || NULL == GET_UI64_RESULT(result))
 			goto unlock;
@@ -1722,10 +1722,10 @@ static int	check_vcenter_ds_size(const char *url, const char *hv_uuid, const cha
 		UNSET_UI64_RESULT(result);
 	}
 
-	if (0 != (flags & ZBX_DATASTORE_COUNTER_CAPACITY))
+	if (0 != (flags & TRX_DATASTORE_COUNTER_CAPACITY))
 	{
 		ret = vmware_service_get_counter_value_by_path(service, "Datastore", datastore->id,
-				"disk/capacity[latest]", ZBX_DATASTORE_TOTAL, ZBX_KIBIBYTE, result);
+				"disk/capacity[latest]", TRX_DATASTORE_TOTAL, TRX_KIBIBYTE, result);
 
 		if (SYSINFO_RET_OK != ret || NULL == GET_UI64_RESULT(result))
 			goto unlock;
@@ -1736,16 +1736,16 @@ static int	check_vcenter_ds_size(const char *url, const char *hv_uuid, const cha
 
 	switch (mode)
 	{
-		case ZBX_VMWARE_DATASTORE_SIZE_TOTAL:
+		case TRX_VMWARE_DATASTORE_SIZE_TOTAL:
 			SET_UI64_RESULT(result, disk_capacity);
 			break;
-		case ZBX_VMWARE_DATASTORE_SIZE_FREE:
+		case TRX_VMWARE_DATASTORE_SIZE_FREE:
 			SET_UI64_RESULT(result, disk_capacity - disk_used);
 			break;
-		case ZBX_VMWARE_DATASTORE_SIZE_UNCOMMITTED:
+		case TRX_VMWARE_DATASTORE_SIZE_UNCOMMITTED:
 			SET_UI64_RESULT(result, disk_provisioned - disk_used);
 			break;
-		case ZBX_VMWARE_DATASTORE_SIZE_PFREE:
+		case TRX_VMWARE_DATASTORE_SIZE_PFREE:
 			SET_DBL_RESULT(result, 0 != disk_capacity ?
 					(double) (disk_capacity - disk_used) / disk_capacity * 100 : 0);
 			break;
@@ -1948,7 +1948,7 @@ int	check_vcenter_datastore_hv_list(AGENT_REQUEST *request, const char *username
 			goto unlock;
 		}
 
-		if (NULL == (hv_name = hv->props[ZBX_VMWARE_HVPROP_NAME]))
+		if (NULL == (hv_name = hv->props[TRX_VMWARE_HVPROP_NAME]))
 			hv_name = datastore->hv_uuids.values[i];
 
 		hv_list = zbx_strdcatf(hv_list, "%s\n", hv_name);
@@ -2021,14 +2021,14 @@ int	check_vcenter_datastore_discovery(AGENT_REQUEST *request, const char *userna
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
-	zbx_json_init(&json_data, ZBX_JSON_STAT_BUF_LEN);
-	zbx_json_addarray(&json_data, ZBX_PROTO_TAG_DATA);
+	zbx_json_init(&json_data, TRX_JSON_STAT_BUF_LEN);
+	zbx_json_addarray(&json_data, TRX_PROTO_TAG_DATA);
 
 	for (i = 0; i < service->data->datastores.values_num; i++)
 	{
 		zbx_vmware_datastore_t	*datastore = service->data->datastores.values[i];
 		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#DATASTORE}", datastore->name, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#DATASTORE}", datastore->name, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&json_data);
 	}
 
@@ -2165,7 +2165,7 @@ int	check_vcenter_vm_cpu_num(AGENT_REQUEST *request, const char *username, const
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_CPU_NUM, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_CPU_NUM, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2267,7 +2267,7 @@ int	check_vcenter_vm_cpu_usage(AGENT_REQUEST *request, const char *username, con
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_CPU_USAGE, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_CPU_USAGE, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * 1000000;
@@ -2349,7 +2349,7 @@ int	check_vcenter_vm_discovery(AGENT_REQUEST *request, const char *username, con
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
-	zbx_json_initarray(&json_data, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	zbx_hashset_iter_reset(&service->data->hvs, &iter);
 	while (NULL != (hv = (zbx_vmware_hv_t *)zbx_hashset_iter_next(&iter)))
@@ -2363,20 +2363,20 @@ int	check_vcenter_vm_discovery(AGENT_REQUEST *request, const char *username, con
 		{
 			vm = (zbx_vmware_vm_t *)hv->vms.values[i];
 
-			if (NULL == (vm_name = vm->props[ZBX_VMWARE_VMPROP_NAME]))
+			if (NULL == (vm_name = vm->props[TRX_VMWARE_VMPROP_NAME]))
 				continue;
 
-			if (NULL == (hv_name = hv->props[ZBX_VMWARE_HVPROP_NAME]))
+			if (NULL == (hv_name = hv->props[TRX_VMWARE_HVPROP_NAME]))
 				continue;
 
 			zbx_json_addobject(&json_data, NULL);
-			zbx_json_addstring(&json_data, "{#VM.UUID}", vm->uuid, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json_data, "{#VM.ID}", vm->id, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json_data, "{#VM.NAME}", vm_name, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json_data, "{#HV.NAME}", hv_name, ZBX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json_data, "{#DATACENTER.NAME}", hv->datacenter_name, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json_data, "{#VM.UUID}", vm->uuid, TRX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json_data, "{#VM.ID}", vm->id, TRX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json_data, "{#VM.NAME}", vm_name, TRX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json_data, "{#HV.NAME}", hv_name, TRX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json_data, "{#DATACENTER.NAME}", hv->datacenter_name, TRX_JSON_TYPE_STRING);
 			zbx_json_addstring(&json_data, "{#CLUSTER.NAME}",
-					NULL != cluster ? cluster->name : "", ZBX_JSON_TYPE_STRING);
+					NULL != cluster ? cluster->name : "", TRX_JSON_TYPE_STRING);
 			zbx_json_close(&json_data);
 		}
 	}
@@ -2433,7 +2433,7 @@ int	check_vcenter_vm_hv_name(AGENT_REQUEST *request, const char *username, const
 		goto unlock;
 	}
 
-	if (NULL == (name = hv->props[ZBX_VMWARE_HVPROP_NAME]))
+	if (NULL == (name = hv->props[TRX_VMWARE_HVPROP_NAME]))
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "No hypervisor name found."));
 		goto unlock;
@@ -2456,10 +2456,10 @@ int	check_vcenter_vm_memory_size(AGENT_REQUEST *request, const char *username, c
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_MEMORY_SIZE, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_MEMORY_SIZE, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
-		result->ui64 = result->ui64 * ZBX_MEBIBYTE;
+		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2473,10 +2473,10 @@ int	check_vcenter_vm_memory_size_ballooned(AGENT_REQUEST *request, const char *u
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_MEMORY_SIZE_BALLOONED, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_MEMORY_SIZE_BALLOONED, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
-		result->ui64 = result->ui64 * ZBX_MEBIBYTE;
+		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2490,10 +2490,10 @@ int	check_vcenter_vm_memory_size_compressed(AGENT_REQUEST *request, const char *
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_MEMORY_SIZE_COMPRESSED, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_MEMORY_SIZE_COMPRESSED, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
-		result->ui64 = result->ui64 * ZBX_MEBIBYTE;
+		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2507,10 +2507,10 @@ int	check_vcenter_vm_memory_size_swapped(AGENT_REQUEST *request, const char *use
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_MEMORY_SIZE_SWAPPED, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_MEMORY_SIZE_SWAPPED, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
-		result->ui64 = result->ui64 * ZBX_MEBIBYTE;
+		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2524,10 +2524,10 @@ int	check_vcenter_vm_memory_size_usage_guest(AGENT_REQUEST *request, const char 
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_MEMORY_SIZE_USAGE_GUEST, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_MEMORY_SIZE_USAGE_GUEST, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
-		result->ui64 = result->ui64 * ZBX_MEBIBYTE;
+		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2541,10 +2541,10 @@ int	check_vcenter_vm_memory_size_usage_host(AGENT_REQUEST *request, const char *
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_MEMORY_SIZE_USAGE_HOST, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_MEMORY_SIZE_USAGE_HOST, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
-		result->ui64 = result->ui64 * ZBX_MEBIBYTE;
+		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2558,10 +2558,10 @@ int	check_vcenter_vm_memory_size_private(AGENT_REQUEST *request, const char *use
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_MEMORY_SIZE_PRIVATE, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_MEMORY_SIZE_PRIVATE, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
-		result->ui64 = result->ui64 * ZBX_MEBIBYTE;
+		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2575,10 +2575,10 @@ int	check_vcenter_vm_memory_size_shared(AGENT_REQUEST *request, const char *user
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_MEMORY_SIZE_SHARED, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_MEMORY_SIZE_SHARED, result);
 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
-		result->ui64 = result->ui64 * ZBX_MEBIBYTE;
+		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2592,7 +2592,7 @@ int	check_vcenter_vm_powerstate(AGENT_REQUEST *request, const char *username, co
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_POWER_STATE, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_POWER_STATE, result);
 
 	if (SYSINFO_RET_OK == ret)
 		ret = vmware_set_powerstate_result(result);
@@ -2640,19 +2640,19 @@ int	check_vcenter_vm_net_if_discovery(AGENT_REQUEST *request, const char *userna
 		goto unlock;
 	}
 
-	zbx_json_initarray(&json_data, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < vm->devs.values_num; i++)
 	{
 		dev = (zbx_vmware_dev_t *)vm->devs.values[i];
 
-		if (ZBX_VMWARE_DEV_TYPE_NIC != dev->type)
+		if (TRX_VMWARE_DEV_TYPE_NIC != dev->type)
 			continue;
 
 		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#IFNAME}", dev->instance, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#IFNAME}", dev->instance, TRX_JSON_TYPE_STRING);
 		if (NULL != dev->label)
-			zbx_json_addstring(&json_data, "{#IFDESC}", dev->label, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json_data, "{#IFDESC}", dev->label, TRX_JSON_TYPE_STRING);
 
 		zbx_json_close(&json_data);
 	}
@@ -2713,7 +2713,7 @@ int	check_vcenter_vm_net_if_in(AGENT_REQUEST *request, const char *username, con
 	if (NULL == mode || '\0' == *mode || 0 == strcmp(mode, "bps"))
 	{
 		path = "net/received[average]";
-		coeff = ZBX_KIBIBYTE;
+		coeff = TRX_KIBIBYTE;
 	}
 	else if (0 == strcmp(mode, "pps"))
 	{
@@ -2776,7 +2776,7 @@ int	check_vcenter_vm_net_if_out(AGENT_REQUEST *request, const char *username, co
 	if (NULL == mode || '\0' == *mode || 0 == strcmp(mode, "bps"))
 	{
 		path = "net/transmitted[average]";
-		coeff = ZBX_KIBIBYTE;
+		coeff = TRX_KIBIBYTE;
 	}
 	else if (0 == strcmp(mode, "pps"))
 	{
@@ -2805,7 +2805,7 @@ int	check_vcenter_vm_storage_committed(AGENT_REQUEST *request, const char *usern
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_STORAGE_COMMITED, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_STORAGE_COMMITED, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2819,7 +2819,7 @@ int	check_vcenter_vm_storage_unshared(AGENT_REQUEST *request, const char *userna
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_STORAGE_UNSHARED, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_STORAGE_UNSHARED, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2833,7 +2833,7 @@ int	check_vcenter_vm_storage_uncommitted(AGENT_REQUEST *request, const char *use
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_STORAGE_UNCOMMITTED, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_STORAGE_UNCOMMITTED, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2847,7 +2847,7 @@ int	check_vcenter_vm_uptime(AGENT_REQUEST *request, const char *username, const 
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = get_vcenter_vmprop(request, username, password, ZBX_VMWARE_VMPROP_UPTIME, result);
+	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_UPTIME, result);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
 
@@ -2892,19 +2892,19 @@ int	check_vcenter_vm_vfs_dev_discovery(AGENT_REQUEST *request, const char *usern
 		goto unlock;
 	}
 
-	zbx_json_initarray(&json_data, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < vm->devs.values_num; i++)
 	{
 		dev = (zbx_vmware_dev_t *)vm->devs.values[i];
 
-		if (ZBX_VMWARE_DEV_TYPE_DISK != dev->type)
+		if (TRX_VMWARE_DEV_TYPE_DISK != dev->type)
 			continue;
 
 		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#DISKNAME}", dev->instance, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#DISKNAME}", dev->instance, TRX_JSON_TYPE_STRING);
 		if (NULL != dev->label)
-			zbx_json_addstring(&json_data, "{#DISKDESC}", dev->label, ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json_data, "{#DISKDESC}", dev->label, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&json_data);
 	}
 
@@ -2964,7 +2964,7 @@ int	check_vcenter_vm_vfs_dev_read(AGENT_REQUEST *request, const char *username, 
 	if (NULL == mode || '\0' == *mode || 0 == strcmp(mode, "bps"))
 	{
 		path = "virtualDisk/read[average]";
-		coeff = ZBX_KIBIBYTE;
+		coeff = TRX_KIBIBYTE;
 	}
 	else if (0 == strcmp(mode, "ops"))
 	{
@@ -3027,7 +3027,7 @@ int	check_vcenter_vm_vfs_dev_write(AGENT_REQUEST *request, const char *username,
 	if (NULL == mode || '\0' == *mode || 0 == strcmp(mode, "bps"))
 	{
 		path = "virtualDisk/write[average]";
-		coeff = ZBX_KIBIBYTE;
+		coeff = TRX_KIBIBYTE;
 	}
 	else if (0 == strcmp(mode, "ops"))
 	{
@@ -3086,14 +3086,14 @@ int	check_vcenter_vm_vfs_fs_discovery(AGENT_REQUEST *request, const char *userna
 		goto unlock;
 	}
 
-	zbx_json_initarray(&json_data, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < vm->file_systems.values_num; i++)
 	{
 		zbx_vmware_fs_t	*fs = (zbx_vmware_fs_t *)vm->file_systems.values[i];
 
 		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#FSNAME}", fs->path, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_data, "{#FSNAME}", fs->path, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&json_data);
 	}
 

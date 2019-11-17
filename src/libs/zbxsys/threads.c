@@ -63,7 +63,7 @@ void	zbx_child_fork(pid_t *pid)
 #else
 int	zbx_win_exception_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep);
 
-static ZBX_THREAD_ENTRY(zbx_win_thread_entry, args)
+static TRX_THREAD_ENTRY(zbx_win_thread_entry, args)
 {
 	__try
 	{
@@ -77,7 +77,7 @@ static ZBX_THREAD_ENTRY(zbx_win_thread_entry, args)
 	}
 }
 
-void CALLBACK	ZBXEndThread(ULONG_PTR dwParam)
+void CALLBACK	TRXEndThread(ULONG_PTR dwParam)
 {
 	_endthreadex(SUCCEED);
 }
@@ -99,17 +99,17 @@ void CALLBACK	ZBXEndThread(ULONG_PTR dwParam)
  * Comments: The zbx_thread_exit must be called from the handler!             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_thread_start(ZBX_THREAD_ENTRY_POINTER(handler), zbx_thread_args_t *thread_args, ZBX_THREAD_HANDLE *thread)
+void	zbx_thread_start(TRX_THREAD_ENTRY_POINTER(handler), zbx_thread_args_t *thread_args, TRX_THREAD_HANDLE *thread)
 {
 #ifdef _WINDOWS
 	unsigned		thrdaddr;
 
 	thread_args->entry = handler;
 	/* NOTE: _beginthreadex returns 0 on failure, rather than 1 */
-	if (0 == (*thread = (ZBX_THREAD_HANDLE)_beginthreadex(NULL, 0, zbx_win_thread_entry, thread_args, 0, &thrdaddr)))
+	if (0 == (*thread = (TRX_THREAD_HANDLE)_beginthreadex(NULL, 0, zbx_win_thread_entry, thread_args, 0, &thrdaddr)))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "failed to create a thread: %s", strerror_from_system(GetLastError()));
-		*thread = (ZBX_THREAD_HANDLE)ZBX_THREAD_ERROR;
+		*thread = (TRX_THREAD_HANDLE)TRX_THREAD_ERROR;
 	}
 #else
 	zbx_child_fork(thread);
@@ -126,7 +126,7 @@ void	zbx_thread_start(ZBX_THREAD_ENTRY_POINTER(handler), zbx_thread_args_t *thre
 	else if (-1 == *thread)
 	{
 		zbx_error("failed to fork: %s", zbx_strerror(errno));
-		*thread = (ZBX_THREAD_HANDLE)ZBX_THREAD_ERROR;
+		*thread = (TRX_THREAD_HANDLE)TRX_THREAD_ERROR;
 	}
 #endif
 }
@@ -144,7 +144,7 @@ void	zbx_thread_start(ZBX_THREAD_ENTRY_POINTER(handler), zbx_thread_args_t *thre
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_thread_wait(ZBX_THREAD_HANDLE thread)
+int	zbx_thread_wait(TRX_THREAD_HANDLE thread)
 {
 	int	status = 0;	/* significant 8 bits of the status */
 
@@ -153,19 +153,19 @@ int	zbx_thread_wait(ZBX_THREAD_HANDLE thread)
 	if (WAIT_OBJECT_0 != WaitForSingleObject(thread, INFINITE))
 	{
 		zbx_error("Error on thread waiting. [%s]", strerror_from_system(GetLastError()));
-		return ZBX_THREAD_ERROR;
+		return TRX_THREAD_ERROR;
 	}
 
 	if (0 == GetExitCodeThread(thread, &status))
 	{
 		zbx_error("Error on thread exit code receiving. [%s]", strerror_from_system(GetLastError()));
-		return ZBX_THREAD_ERROR;
+		return TRX_THREAD_ERROR;
 	}
 
 	if (0 == CloseHandle(thread))
 	{
 		zbx_error("Error on thread closing. [%s]", strerror_from_system(GetLastError()));
-		return ZBX_THREAD_ERROR;
+		return TRX_THREAD_ERROR;
 	}
 
 #else	/* not _WINDOWS */
@@ -173,7 +173,7 @@ int	zbx_thread_wait(ZBX_THREAD_HANDLE thread)
 	if (0 >= waitpid(thread, &status, 0))
 	{
 		zbx_error("Error waiting for process with PID %d: %s", (int)thread, zbx_strerror(errno));
-		return ZBX_THREAD_ERROR;
+		return TRX_THREAD_ERROR;
 	}
 
 	status = WEXITSTATUS(status);
@@ -195,7 +195,7 @@ int	zbx_thread_wait(ZBX_THREAD_HANDLE thread)
  *                                threads to exit immediately on FAIL         *
  *                                                                            *
  ******************************************************************************/
-static void	threads_kill(ZBX_THREAD_HANDLE *threads, int threads_num, int ret)
+static void	threads_kill(TRX_THREAD_HANDLE *threads, int threads_num, int ret)
 {
 	int	i;
 
@@ -221,7 +221,7 @@ static void	threads_kill(ZBX_THREAD_HANDLE *threads, int threads_num, int ret)
  *                                                                            *
  *                                                                            *
  ******************************************************************************/
-void	zbx_threads_wait(ZBX_THREAD_HANDLE *threads, const int *threads_flags, int threads_num, int ret)
+void	zbx_threads_wait(TRX_THREAD_HANDLE *threads, const int *threads_flags, int threads_num, int ret)
 {
 	int		i;
 #if !defined(_WINDOWS)
@@ -237,12 +237,12 @@ void	zbx_threads_wait(ZBX_THREAD_HANDLE *threads, const int *threads_flags, int 
 
 	for (i = 0; i < threads_num; i++)
 	{
-		if (!threads[i] || ZBX_THREAD_WAIT_EXIT != threads_flags[i])
+		if (!threads[i] || TRX_THREAD_WAIT_EXIT != threads_flags[i])
 			continue;
 
 		zbx_thread_wait(threads[i]);
 
-		threads[i] = ZBX_THREAD_HANDLE_NULL;
+		threads[i] = TRX_THREAD_HANDLE_NULL;
 	}
 
 	/* signal idle threads to exit */
@@ -260,7 +260,7 @@ void	zbx_threads_wait(ZBX_THREAD_HANDLE *threads, const int *threads_flags, int 
 
 		zbx_thread_wait(threads[i]);
 
-		threads[i] = ZBX_THREAD_HANDLE_NULL;
+		threads[i] = TRX_THREAD_HANDLE_NULL;
 	}
 }
 

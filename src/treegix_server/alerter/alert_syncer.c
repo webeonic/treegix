@@ -12,10 +12,10 @@
 #include "alert_syncer.h"
 #include "alerter_protocol.h"
 
-#define ZBX_POLL_INTERVAL	1
+#define TRX_POLL_INTERVAL	1
 
-#define ZBX_ALERT_BATCH_SIZE		1000
-#define ZBX_MEDIATYPE_CACHE_TTL		SEC_PER_DAY
+#define TRX_ALERT_BATCH_SIZE		1000
+#define TRX_MEDIATYPE_CACHE_TTL		SEC_PER_DAY
 
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
@@ -72,9 +72,9 @@ static zbx_am_db_alert_t	*am_db_create_alert(zbx_uint64_t alertid, zbx_uint64_t 
  ******************************************************************************/
 static int 	am_db_init(zbx_am_db_t *amdb, char **error)
 {
-	zbx_hashset_create(&amdb->mediatypes, 5, ZBX_DEFAULT_UINT64_HASH_FUNC, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_hashset_create(&amdb->mediatypes, 5, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
-	if (SUCCEED != zbx_ipc_socket_open(&amdb->am, ZBX_IPC_SERVICE_ALERTER, SEC_PER_MIN, error))
+	if (SUCCEED != zbx_ipc_socket_open(&amdb->am, TRX_IPC_SERVICE_ALERTER, SEC_PER_MIN, error))
 		return FAIL;
 
 	return SUCCEED;
@@ -149,9 +149,9 @@ static int	am_db_get_alerts(zbx_vector_ptr_t *alerts)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(alertid, row[0]);
-		ZBX_STR2UINT64(mediatypeid, row[1]);
-		ZBX_STR2UINT64(eventid, row[11]);
+		TRX_STR2UINT64(alertid, row[0]);
+		TRX_STR2UINT64(mediatypeid, row[1]);
+		TRX_STR2UINT64(eventid, row[11]);
 		status = atoi(row[5]);
 		attempts = atoi(row[6]);
 
@@ -167,7 +167,7 @@ static int	am_db_get_alerts(zbx_vector_ptr_t *alerts)
 
 		source = atoi(row[7]);
 		object = atoi(row[8]);
-		ZBX_STR2UINT64(objectid, row[9]);
+		TRX_STR2UINT64(objectid, row[9]);
 
 		alert = am_db_create_alert(alertid, mediatypeid, source, object, objectid, eventid, row[2], row[3],
 				row[4], row[10], status, attempts);
@@ -191,11 +191,11 @@ static int	am_db_get_alerts(zbx_vector_ptr_t *alerts)
 
 		}
 		if (16 < sql_offset)
-			ret = (ZBX_DB_OK <= DBexecute("%s", sql) ? SUCCEED : FAIL);
+			ret = (TRX_DB_OK <= DBexecute("%s", sql) ? SUCCEED : FAIL);
 	}
 	if (SUCCEED == ret)
 	{
-		if (ZBX_DB_OK != DBcommit())
+		if (TRX_DB_OK != DBcommit())
 			ret = FAIL;
 	}
 	else
@@ -214,14 +214,14 @@ static int	am_db_get_alerts(zbx_vector_ptr_t *alerts)
 	return ret;
 }
 
-#define ZBX_UPDATE_STR(dst, src, ret)			\
+#define TRX_UPDATE_STR(dst, src, ret)			\
 	if (NULL == dst || 0 != strcmp(dst, src))	\
 	{						\
 		dst = zbx_strdup(dst, src);		\
 		ret = SUCCEED;				\
 	}
 
-#define ZBX_UPDATE_VALUE(dst, src, ret)			\
+#define TRX_UPDATE_VALUE(dst, src, ret)			\
 	if (dst != src)					\
 	{						\
 		dst = src;				\
@@ -261,30 +261,30 @@ static zbx_am_db_mediatype_t	*am_db_update_mediatype(zbx_am_db_t *amdb, time_t n
 	}
 
 	mediatype->last_access = now;
-	ZBX_UPDATE_VALUE(mediatype->type, type, ret);
-	ZBX_UPDATE_STR(mediatype->smtp_server, smtp_server, ret);
-	ZBX_UPDATE_STR(mediatype->smtp_helo, smtp_helo, ret);
-	ZBX_UPDATE_STR(mediatype->smtp_email, smtp_email, ret);
-	ZBX_UPDATE_STR(mediatype->exec_path, exec_path, ret);
-	ZBX_UPDATE_STR(mediatype->exec_params, exec_params, ret);
-	ZBX_UPDATE_STR(mediatype->gsm_modem, gsm_modem, ret);
-	ZBX_UPDATE_STR(mediatype->username, username, ret);
-	ZBX_UPDATE_STR(mediatype->passwd, passwd, ret);
-	ZBX_UPDATE_STR(mediatype->script, script, ret);
-	ZBX_UPDATE_STR(mediatype->timeout, timeout, ret);
-	ZBX_UPDATE_STR(mediatype->attempt_interval, attempt_interval, ret);
+	TRX_UPDATE_VALUE(mediatype->type, type, ret);
+	TRX_UPDATE_STR(mediatype->smtp_server, smtp_server, ret);
+	TRX_UPDATE_STR(mediatype->smtp_helo, smtp_helo, ret);
+	TRX_UPDATE_STR(mediatype->smtp_email, smtp_email, ret);
+	TRX_UPDATE_STR(mediatype->exec_path, exec_path, ret);
+	TRX_UPDATE_STR(mediatype->exec_params, exec_params, ret);
+	TRX_UPDATE_STR(mediatype->gsm_modem, gsm_modem, ret);
+	TRX_UPDATE_STR(mediatype->username, username, ret);
+	TRX_UPDATE_STR(mediatype->passwd, passwd, ret);
+	TRX_UPDATE_STR(mediatype->script, script, ret);
+	TRX_UPDATE_STR(mediatype->timeout, timeout, ret);
+	TRX_UPDATE_STR(mediatype->attempt_interval, attempt_interval, ret);
 
-	ZBX_UPDATE_VALUE(mediatype->smtp_port, smtp_port, ret);
-	ZBX_UPDATE_VALUE(mediatype->smtp_security, smtp_security, ret);
-	ZBX_UPDATE_VALUE(mediatype->smtp_verify_peer, smtp_verify_peer, ret);
-	ZBX_UPDATE_VALUE(mediatype->smtp_verify_host, smtp_verify_host, ret);
-	ZBX_UPDATE_VALUE(mediatype->smtp_authentication, smtp_authentication, ret);
+	TRX_UPDATE_VALUE(mediatype->smtp_port, smtp_port, ret);
+	TRX_UPDATE_VALUE(mediatype->smtp_security, smtp_security, ret);
+	TRX_UPDATE_VALUE(mediatype->smtp_verify_peer, smtp_verify_peer, ret);
+	TRX_UPDATE_VALUE(mediatype->smtp_verify_host, smtp_verify_host, ret);
+	TRX_UPDATE_VALUE(mediatype->smtp_authentication, smtp_authentication, ret);
 
-	ZBX_UPDATE_VALUE(mediatype->maxsessions, maxsessions, ret);
-	ZBX_UPDATE_VALUE(mediatype->maxattempts, maxattempts, ret);
-	ZBX_UPDATE_VALUE(mediatype->content_type, content_type, ret);
+	TRX_UPDATE_VALUE(mediatype->maxsessions, maxsessions, ret);
+	TRX_UPDATE_VALUE(mediatype->maxattempts, maxattempts, ret);
+	TRX_UPDATE_VALUE(mediatype->content_type, content_type, ret);
 
-	ZBX_UPDATE_VALUE(mediatype->process_tags, process_tags, ret);
+	TRX_UPDATE_VALUE(mediatype->process_tags, process_tags, ret);
 
 	return SUCCEED == ret ? mediatype : NULL;
 }
@@ -339,15 +339,15 @@ static void	am_db_update_mediatypes(zbx_am_db_t *amdb, const zbx_uint64_t *media
 			continue;
 		}
 
-		ZBX_STR2UINT64(mediatypeid, row[0]);
+		TRX_STR2UINT64(mediatypeid, row[0]);
 		type = atoi(row[1]);
-		ZBX_STR2UCHAR(smtp_security, row[10]);
-		ZBX_STR2UCHAR(smtp_verify_peer, row[11]);
-		ZBX_STR2UCHAR(smtp_verify_host, row[12]);
-		ZBX_STR2UCHAR(smtp_authentication, row[13]);
+		TRX_STR2UCHAR(smtp_security, row[10]);
+		TRX_STR2UCHAR(smtp_verify_peer, row[11]);
+		TRX_STR2UCHAR(smtp_verify_host, row[12]);
+		TRX_STR2UCHAR(smtp_authentication, row[13]);
 		maxsessions = atoi(row[15]);
 		maxattempts = atoi(row[16]);
-		ZBX_STR2UCHAR(content_type, row[18]);
+		TRX_STR2UCHAR(content_type, row[18]);
 
 		mediatype = am_db_update_mediatype(amdb, now, mediatypeid, type,row[2], row[3], row[4], row[5],
 				row[6], row[7], row[8], smtp_port, smtp_security, smtp_verify_peer, smtp_verify_host,
@@ -392,8 +392,8 @@ static int	am_db_queue_alerts(zbx_am_db_t *amdb)
 		zbx_vector_uint64_append(&mediatypeids, alert->mediatypeid);
 	}
 
-	zbx_vector_uint64_sort(&mediatypeids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(&mediatypeids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&mediatypeids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_uniq(&mediatypeids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 	am_db_update_mediatypes(amdb, mediatypeids.values, mediatypeids.values_num, &mediatypes);
 
 	if (0 != mediatypes.values_num)
@@ -403,21 +403,21 @@ static int	am_db_queue_alerts(zbx_am_db_t *amdb)
 
 		data_len = zbx_alerter_serialize_mediatypes(&data, (zbx_am_db_mediatype_t **)mediatypes.values,
 				mediatypes.values_num);
-		zbx_ipc_socket_write(&amdb->am, ZBX_IPC_ALERTER_MEDIATYPES, data, data_len);
+		zbx_ipc_socket_write(&amdb->am, TRX_IPC_ALERTER_MEDIATYPES, data, data_len);
 		zbx_free(data);
 	}
 
-	for (i = 0; i < alerts.values_num; i += ZBX_ALERT_BATCH_SIZE)
+	for (i = 0; i < alerts.values_num; i += TRX_ALERT_BATCH_SIZE)
 	{
 		unsigned char	*data;
 		zbx_uint32_t	data_len;
-		int		to = i + ZBX_ALERT_BATCH_SIZE;
+		int		to = i + TRX_ALERT_BATCH_SIZE;
 
 		if (to >= alerts.values_num)
 			to = alerts.values_num;
 
 		data_len = zbx_alerter_serialize_alerts(&data, (zbx_am_db_alert_t **)&alerts.values[i], to - i);
-		zbx_ipc_socket_write(&amdb->am, ZBX_IPC_ALERTER_ALERTS, data, data_len);
+		zbx_ipc_socket_write(&amdb->am, TRX_IPC_ALERTER_ALERTS, data, data_len);
 		zbx_free(data);
 	}
 
@@ -464,16 +464,16 @@ static void	am_db_update_event_tags(zbx_db_insert_t *db_event, zbx_db_insert_t *
 	zbx_tag_t		*tag, tag_local = {.tag = key, .value = value};
 	int			i, index, problem = 0;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() eventid:" ZBX_FS_UI64 " tags:%s", __func__, eventid, params);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() eventid:" TRX_FS_UI64 " tags:%s", __func__, eventid, params);
 
 	result = DBselect("select e.source,p.eventid"
 			" from events e left join problem p"
 				" on p.eventid=e.eventid"
-			" where e.eventid=" ZBX_FS_UI64, eventid);
+			" where e.eventid=" TRX_FS_UI64, eventid);
 
 	if (NULL == (row = DBfetch(result)))
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "cannot add event tags: event " ZBX_FS_UI64 " was removed", eventid);
+		treegix_log(LOG_LEVEL_DEBUG, "cannot add event tags: event " TRX_FS_UI64 " was removed", eventid);
 		goto out;
 	}
 
@@ -492,7 +492,7 @@ static void	am_db_update_event_tags(zbx_db_insert_t *db_event, zbx_db_insert_t *
 		goto out;
 	}
 
-	if (FAIL == zbx_json_brackets_by_name(&jp, ZBX_PROTO_TAG_TAGS, &jp_tags))
+	if (FAIL == zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_TAGS, &jp_tags))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot process returned result: missing tags field");
 		goto out;
@@ -508,16 +508,16 @@ static void	am_db_update_event_tags(zbx_db_insert_t *db_event, zbx_db_insert_t *
 			continue;
 		}
 
-		zbx_ltrim(key, ZBX_WHITESPACE);
-		zbx_ltrim(value, ZBX_WHITESPACE);
+		zbx_ltrim(key, TRX_WHITESPACE);
+		zbx_ltrim(value, TRX_WHITESPACE);
 
 		if (TAG_NAME_LEN < zbx_strlen_utf8(key))
 			key[zbx_strlen_utf8_nchars(key, TAG_NAME_LEN)] = '\0';
 		if (TAG_VALUE_LEN < zbx_strlen_utf8(value))
 			value[zbx_strlen_utf8_nchars(value, TAG_VALUE_LEN)] = '\0';
 
-		zbx_rtrim(key, ZBX_WHITESPACE);
-		zbx_rtrim(value, ZBX_WHITESPACE);
+		zbx_rtrim(key, TRX_WHITESPACE);
+		zbx_rtrim(value, TRX_WHITESPACE);
 
 		if (FAIL == zbx_vector_ptr_search(&tags, &tag_local, am_db_compare_tags))
 		{
@@ -532,7 +532,7 @@ static void	am_db_update_event_tags(zbx_db_insert_t *db_event, zbx_db_insert_t *
 	if (0 != tags.values_num)
 	{
 		DBfree_result(result);
-		result = DBselect("select tag,value from event_tag where eventid=" ZBX_FS_UI64, eventid);
+		result = DBselect("select tag,value from event_tag where eventid=" TRX_FS_UI64, eventid);
 		while (NULL != (row = DBfetch(result)))
 		{
 			tag_local.tag = row[0];
@@ -580,7 +580,7 @@ static int	am_db_flush_results(zbx_am_db_t *amdb)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_ipc_socket_write(&amdb->am, ZBX_IPC_ALERTER_RESULTS, NULL, 0);
+	zbx_ipc_socket_write(&amdb->am, TRX_IPC_ALERTER_RESULTS, NULL, 0);
 	if (SUCCEED != zbx_ipc_socket_read(&amdb->am, &message))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot retrieve alert results");
@@ -620,7 +620,7 @@ static int	am_db_flush_results(zbx_am_db_t *amdb)
 			else
 				zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ",error=''");
 
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where alertid=" ZBX_FS_UI64 ";\n",
+			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where alertid=" TRX_FS_UI64 ";\n",
 					result->alertid);
 
 			if (NULL != (mediatype = zbx_hashset_search(&amdb->mediatypes, &result->mediatypeid)) &&
@@ -683,7 +683,7 @@ static void	am_db_remove_expired_mediatypes(zbx_am_db_t *amdb)
 	zbx_hashset_iter_reset(&amdb->mediatypes, &iter);
 	while (NULL != (mediatype = (zbx_am_db_mediatype_t *)zbx_hashset_iter_next(&iter)))
 	{
-		if (mediatype->last_access + ZBX_MEDIATYPE_CACHE_TTL <= now)
+		if (mediatype->last_access + TRX_MEDIATYPE_CACHE_TTL <= now)
 		{
 			zbx_vector_uint64_append(&dropids, mediatype->mediatypeid);
 			zbx_am_db_mediatype_clear(mediatype);
@@ -697,7 +697,7 @@ static void	am_db_remove_expired_mediatypes(zbx_am_db_t *amdb)
 		zbx_uint32_t	data_len;
 
 		data_len = zbx_alerter_serialize_ids(&data, dropids.values, dropids.values_num);
-		zbx_ipc_socket_write(&amdb->am, ZBX_IPC_ALERTER_DROP_MEDIATYPES, data, data_len);
+		zbx_ipc_socket_write(&amdb->am, TRX_IPC_ALERTER_DROP_MEDIATYPES, data, data_len);
 		zbx_free(data);
 	}
 
@@ -748,8 +748,8 @@ static void	am_db_update_watchdog(zbx_am_db_t *amdb)
 	while (NULL != (row = DBfetch(result)))
 	{
 		media = (zbx_am_media_t *)zbx_malloc(NULL, sizeof(zbx_am_media_t));
-		ZBX_STR2UINT64(media->mediaid, row[0]);
-		ZBX_STR2UINT64(media->mediatypeid, row[1]);
+		TRX_STR2UINT64(media->mediaid, row[0]);
+		TRX_STR2UINT64(media->mediatypeid, row[1]);
 		media->sendto = zbx_strdup(NULL, row[2]);
 		zbx_vector_ptr_append(&medias, media);
 		zbx_vector_uint64_append(&mediatypeids, media->mediatypeid);
@@ -761,20 +761,20 @@ static void	am_db_update_watchdog(zbx_am_db_t *amdb)
 
 	/* update media types used for watchdog alerts */
 
-	zbx_vector_uint64_sort(&mediatypeids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(&mediatypeids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&mediatypeids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_uniq(&mediatypeids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 	am_db_update_mediatypes(amdb, mediatypeids.values, mediatypeids.values_num, &mediatypes);
 
 	if (0 != mediatypes.values_num)
 	{
 		data_len = zbx_alerter_serialize_mediatypes(&data, (zbx_am_db_mediatype_t **)mediatypes.values,
 				mediatypes.values_num);
-		zbx_ipc_socket_write(&amdb->am, ZBX_IPC_ALERTER_MEDIATYPES, data, data_len);
+		zbx_ipc_socket_write(&amdb->am, TRX_IPC_ALERTER_MEDIATYPES, data, data_len);
 		zbx_free(data);
 	}
 
 	data_len = zbx_alerter_serialize_medias(&data, (zbx_am_media_t **)medias.values, medias.values_num);
-	zbx_ipc_socket_write(&amdb->am, ZBX_IPC_ALERTER_WATCHDOG, data, data_len);
+	zbx_ipc_socket_write(&amdb->am, TRX_IPC_ALERTER_WATCHDOG, data, data_len);
 	zbx_free(data);
 
 	medias_num = medias.values_num;
@@ -788,7 +788,7 @@ out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s() recipients:%d", __func__, medias_num);
 }
 
-ZBX_THREAD_ENTRY(alert_syncer_thread, args)
+TRX_THREAD_ENTRY(alert_syncer_thread, args)
 {
 	double		sec1, sec2;
 	int		alerts_num, sleeptime, nextcheck, freq_watchdog, time_watchdog = 0, time_cleanup = 0,
@@ -811,16 +811,16 @@ ZBX_THREAD_ENTRY(alert_syncer_thread, args)
 	}
 
 	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	sleeptime = ZBX_POLL_INTERVAL;
+	sleeptime = TRX_POLL_INTERVAL;
 
-	if (ZBX_WATCHDOG_ALERT_FREQUENCY < (freq_watchdog = CONFIG_CONFSYNCER_FREQUENCY))
-		freq_watchdog = ZBX_WATCHDOG_ALERT_FREQUENCY;
+	if (TRX_WATCHDOG_ALERT_FREQUENCY < (freq_watchdog = CONFIG_CONFSYNCER_FREQUENCY))
+		freq_watchdog = TRX_WATCHDOG_ALERT_FREQUENCY;
 
 	zbx_setproctitle("%s [started, idle %d sec]", get_process_type_string(process_type), sleeptime);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		zbx_sleep_loop(sleeptime);
 
@@ -846,12 +846,12 @@ ZBX_THREAD_ENTRY(alert_syncer_thread, args)
 
 		sec2 = zbx_time();
 
-		nextcheck = sec1 + ZBX_POLL_INTERVAL;
+		nextcheck = sec1 + TRX_POLL_INTERVAL;
 
 		if (0 > (sleeptime = nextcheck - (int)sec2))
 			sleeptime = 0;
 
-		zbx_setproctitle("%s [queued %d alerts(s), flushed %d result(s) in " ZBX_FS_DBL " sec, idle %d sec]",
+		zbx_setproctitle("%s [queued %d alerts(s), flushed %d result(s) in " TRX_FS_DBL " sec, idle %d sec]",
 				get_process_type_string(process_type), alerts_num, results_num, sec2 - sec1, sleeptime);
 	}
 

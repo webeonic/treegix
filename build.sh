@@ -14,4 +14,4 @@ docker build -t treegix_web:latest .
 cd ..
 
 #start containers
-docker-compose up -d frontend
+docker-compose up -d

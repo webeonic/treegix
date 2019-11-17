@@ -85,13 +85,13 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "sum"))
-		do_task = ZBX_DO_SUM;
+		do_task = TRX_DO_SUM;
 	else if (0 == strcmp(param, "avg"))
-		do_task = ZBX_DO_AVG;
+		do_task = TRX_DO_AVG;
 	else if (0 == strcmp(param, "max"))
-		do_task = ZBX_DO_MAX;
+		do_task = TRX_DO_MAX;
 	else if (0 == strcmp(param, "min"))
-		do_task = ZBX_DO_MIN;
+		do_task = TRX_DO_MIN;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -156,9 +156,9 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 				memsize = value;
 			else
 			{
-				if (ZBX_DO_MAX == do_task)
+				if (TRX_DO_MAX == do_task)
 					memsize = MAX(memsize, value);
-				else if (ZBX_DO_MIN == do_task)
+				else if (TRX_DO_MIN == do_task)
 					memsize = MIN(memsize, value);
 				else
 					memsize += value;
@@ -166,7 +166,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		}
 	}
 out:
-	if (ZBX_DO_AVG == do_task)
+	if (TRX_DO_AVG == do_task)
 		SET_DBL_RESULT(result, 0 == proccount ? 0 : memsize / proccount);
 	else
 		SET_UI64_RESULT(result, memsize);
@@ -214,17 +214,17 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = ZBX_PROC_STAT_ALL;
+		zbx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = ZBX_PROC_STAT_RUN;
+		zbx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = ZBX_PROC_STAT_SLEEP;
+		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = ZBX_PROC_STAT_ZOMB;
+		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else if (0 == strcmp(param, "disk"))
-		zbx_proc_stat = ZBX_PROC_STAT_DISK;
+		zbx_proc_stat = TRX_PROC_STAT_DISK;
 	else if (0 == strcmp(param, "trace"))
-		zbx_proc_stat = ZBX_PROC_STAT_TRACE;
+		zbx_proc_stat = TRX_PROC_STAT_TRACE;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -268,27 +268,27 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL == procname || '\0' == *procname || 0 == strcmp(procname, pproc->p_comm))
 			proc_ok = 1;
 
-		if (ZBX_PROC_STAT_ALL != zbx_proc_stat)
+		if (TRX_PROC_STAT_ALL != zbx_proc_stat)
 		{
 			switch (zbx_proc_stat)
 			{
-				case ZBX_PROC_STAT_RUN:
+				case TRX_PROC_STAT_RUN:
 					if (LSRUN == pproc->p_stat || LSONPROC == pproc->p_stat)
 						stat_ok = 1;
 					break;
-				case ZBX_PROC_STAT_SLEEP:
+				case TRX_PROC_STAT_SLEEP:
 					if (LSSLEEP == pproc->p_stat && 0 != (pproc->p_flag & L_SINTR))
 						stat_ok = 1;
 					break;
-				case ZBX_PROC_STAT_ZOMB:
+				case TRX_PROC_STAT_ZOMB:
 					if (SZOMB == pproc->p_stat || LSDEAD == pproc->p_stat)
 						stat_ok = 1;
 					break;
-				case ZBX_PROC_STAT_DISK:
+				case TRX_PROC_STAT_DISK:
 					if (LSSLEEP == pproc->p_stat && 0 == (pproc->p_flag & L_SINTR))
 						stat_ok = 1;
 					break;
-				case ZBX_PROC_STAT_TRACE:
+				case TRX_PROC_STAT_TRACE:
 					if (LSSTOP == pproc->p_stat)
 						stat_ok = 1;
 					break;

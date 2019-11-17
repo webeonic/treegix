@@ -277,12 +277,12 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; 0 != interfaces[i].if_index; i++)
 	{
 		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#IFNAME}", interfaces[i].if_name, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#IFNAME}", interfaces[i].if_name, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&j);
 	}
 

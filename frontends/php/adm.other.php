@@ -10,21 +10,21 @@ $page['file'] = 'adm.other.php';
 require_once dirname(__FILE__).'/include/page_header.php';
 
 $fields = [
-	'refresh_unsupported' =>	[T_ZBX_STR, O_OPT, null, null, 'isset({update})', _('Refresh unsupported items')],
-	'discovery_groupid' =>		[T_ZBX_INT, O_OPT, null, DB_ID, 'isset({update})',
+	'refresh_unsupported' =>	[T_TRX_STR, O_OPT, null, null, 'isset({update})', _('Refresh unsupported items')],
+	'discovery_groupid' =>		[T_TRX_INT, O_OPT, null, DB_ID, 'isset({update})',
 		_('Group for discovered hosts')
 	],
-	'default_inventory_mode' =>	[T_ZBX_INT, O_OPT, null,
+	'default_inventory_mode' =>	[T_TRX_INT, O_OPT, null,
 		IN(HOST_INVENTORY_DISABLED.','.HOST_INVENTORY_MANUAL.','.HOST_INVENTORY_AUTOMATIC), 'isset({update})',
 		_('Default host inventory mode')
 	],
-	'alert_usrgrpid' =>			[T_ZBX_INT, O_OPT, null, DB_ID, 'isset({update})',
+	'alert_usrgrpid' =>			[T_TRX_INT, O_OPT, null, DB_ID, 'isset({update})',
 		_('User group for database down message')
 	],
-	'snmptrap_logging' =>		[T_ZBX_INT, O_OPT, null, IN('1'), null, _('Log unmatched SNMP traps')],
+	'snmptrap_logging' =>		[T_TRX_INT, O_OPT, null, IN('1'), null, _('Log unmatched SNMP traps')],
 	// actions
-	'update' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null, null],
-	'form_refresh' =>			[T_ZBX_INT, O_OPT, null, null, null]
+	'update' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null, null],
+	'form_refresh' =>			[T_TRX_INT, O_OPT, null, null, null]
 ];
 check_fields($fields);
 
@@ -71,7 +71,7 @@ else {
 
 $data['discovery_groups'] = API::HostGroup()->get([
 	'output' => ['groupid', 'name'],
-	'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+	'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 	'editable' => true
 ]);
 order_result($data['discovery_groups'], 'name');

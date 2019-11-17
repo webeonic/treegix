@@ -27,7 +27,7 @@ void	zbx_tm_get_remote_tasks(zbx_vector_ptr_t *tasks, zbx_uint64_t proxy_hostid)
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	ZBX_UNUSED(proxy_hostid);
+	TRX_UNUSED(proxy_hostid);
 
 	result = DBselect(
 			"select t.taskid,t.type,t.clock,t.ttl,"
@@ -37,17 +37,17 @@ void	zbx_tm_get_remote_tasks(zbx_vector_ptr_t *tasks, zbx_uint64_t proxy_hostid)
 				" and t.status=%d"
 				" and t.type=%d"
 			" order by t.taskid",
-			ZBX_TM_STATUS_NEW, ZBX_TM_TASK_REMOTE_COMMAND_RESULT);
+			TRX_TM_STATUS_NEW, TRX_TM_TASK_REMOTE_COMMAND_RESULT);
 
 	while (NULL != (row = DBfetch(result)))
 	{
 		zbx_uint64_t	taskid, parent_taskid;
 		zbx_tm_task_t	*task;
 
-		ZBX_STR2UINT64(taskid, row[0]);
-		ZBX_DBROW2UINT64(parent_taskid, row[5]);
+		TRX_STR2UINT64(taskid, row[0]);
+		TRX_DBROW2UINT64(parent_taskid, row[5]);
 
-		task = zbx_tm_task_create(taskid, atoi(row[1]), ZBX_TM_STATUS_NEW, atoi(row[2]), atoi(row[3]), 0);
+		task = zbx_tm_task_create(taskid, atoi(row[1]), TRX_TM_STATUS_NEW, atoi(row[2]), atoi(row[3]), 0);
 
 		task->data = zbx_tm_remote_command_result_create(parent_taskid, atoi(row[4]), row[6]);
 

@@ -23,7 +23,7 @@ $widget = (new CWidget())
 			->addFilterTab(_('Filter'), [
 				(new CFormList())->addRow(_('Name'),
 					(new CTextBox('filter_name', $data['filter']['name']))
-						->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 						->setAttribute('autofocus', 'autofocus')
 				)
 			])
@@ -37,7 +37,7 @@ $sysmapTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_maps'))->onClick("checkAll('".$sysmapForm->getName()."', 'all_maps', 'maps');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $this->data['sort'], $this->data['sortorder']),
 		make_sorting_header(_('Width'), 'width', $this->data['sort'], $this->data['sortorder']),
 		make_sorting_header(_('Height'), 'height', $this->data['sort'], $this->data['sortorder']),

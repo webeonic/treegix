@@ -20,7 +20,7 @@ class CWidgetFieldNumericBox extends CWidgetField {
 	public function __construct($name, $label) {
 		parent::__construct($name, $label);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_STR);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_STR);
 		$this->setValidationRules(['type' => API_NUMERIC, 'length' => 255]);
 		$this->setDefault('');
 	}

@@ -40,20 +40,20 @@ function get_item_logtype_style($logtype) {
 		case ITEM_LOGTYPE_INFORMATION:
 		case ITEM_LOGTYPE_SUCCESS_AUDIT:
 		case ITEM_LOGTYPE_VERBOSE:
-			return ZBX_STYLE_LOG_INFO_BG;
+			return TRX_STYLE_LOG_INFO_BG;
 
 		case ITEM_LOGTYPE_WARNING:
-			return ZBX_STYLE_LOG_WARNING_BG;
+			return TRX_STYLE_LOG_WARNING_BG;
 
 		case ITEM_LOGTYPE_ERROR:
 		case ITEM_LOGTYPE_FAILURE_AUDIT:
-			return ZBX_STYLE_LOG_HIGH_BG;
+			return TRX_STYLE_LOG_HIGH_BG;
 
 		case ITEM_LOGTYPE_CRITICAL:
-			return ZBX_STYLE_LOG_DISASTER_BG;
+			return TRX_STYLE_LOG_DISASTER_BG;
 
 		default:
-			return ZBX_STYLE_LOG_NA_BG;
+			return TRX_STYLE_LOG_NA_BG;
 	}
 }
 
@@ -182,11 +182,11 @@ function itemIndicator($status, $state = null) {
 function itemIndicatorStyle($status, $state = null) {
 	if ($status == ITEM_STATUS_ACTIVE) {
 		return ($state == ITEM_STATE_NOTSUPPORTED) ?
-			ZBX_STYLE_GREY :
-			ZBX_STYLE_GREEN;
+			TRX_STYLE_GREY :
+			TRX_STYLE_GREEN;
 	}
 
-	return ZBX_STYLE_RED;
+	return TRX_STYLE_RED;
 }
 
 /**
@@ -292,7 +292,7 @@ function orderItemsByDelay(array &$items, $sortorder, array $options){
  * @param array  $items
  * @param string $sortorder
  */
-function orderItemsByStatus(array &$items, $sortorder = ZBX_SORT_UP) {
+function orderItemsByStatus(array &$items, $sortorder = TRX_SORT_UP) {
 	$sort = [];
 
 	foreach ($items as $key => $item) {
@@ -304,7 +304,7 @@ function orderItemsByStatus(array &$items, $sortorder = ZBX_SORT_UP) {
 		}
 	}
 
-	if ($sortorder == ZBX_SORT_UP) {
+	if ($sortorder == TRX_SORT_UP) {
 		asort($sort);
 	}
 	else {
@@ -556,7 +556,7 @@ function copyItems($srcHostId, $dstHostId) {
 		'selectPreprocessing' => ['type', 'params', 'error_handler', 'error_handler_params'],
 		'hostids' => $srcHostId,
 		'webitems' => true,
-		'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+		'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 		'preservekeys' => true
 	]);
 	$dstHosts = API::Host()->get([
@@ -681,7 +681,7 @@ function copyApplications($source_hostid, $destination_hostid) {
 		'output' => ['name'],
 		'hostids' => [$source_hostid],
 		'inherited' => false,
-		'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL]
+		'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 	]);
 
 	if (!$applications_to_create) {
@@ -761,8 +761,8 @@ function get_same_item_for_host($item, $dest_hostids) {
  * @param array  $items                  An array of items.
  * @param string $items[]['itemid']      ID of an item.
  * @param string $items[]['templateid']  ID of parent template item.
- * @param int    $flag                   Origin of the item (ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_RULE,
- *                                       ZBX_FLAG_DISCOVERY_PROTOTYPE).
+ * @param int    $flag                   Origin of the item (TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_RULE,
+ *                                       TRX_FLAG_DISCOVERY_PROTOTYPE).
  *
  * @return array
  */
@@ -786,25 +786,25 @@ function getItemParentTemplates(array $items, $flag) {
 
 	$all_parent_itemids = [];
 	$hostids = [];
-	if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+	if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 		$lld_ruleids = [];
 	}
 
 	do {
-		if ($flag == ZBX_FLAG_DISCOVERY_RULE) {
+		if ($flag == TRX_FLAG_DISCOVERY_RULE) {
 			$db_items = API::DiscoveryRule()->get([
 				'output' => ['itemid', 'hostid', 'templateid'],
 				'itemids' => array_keys($parent_itemids)
 			]);
 		}
-		elseif ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+		elseif ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 			$db_items = API::ItemPrototype()->get([
 				'output' => ['itemid', 'hostid', 'templateid'],
 				'itemids' => array_keys($parent_itemids),
 				'selectDiscoveryRule' => ['itemid']
 			]);
 		}
-		// ZBX_FLAG_DISCOVERY_NORMAL
+		// TRX_FLAG_DISCOVERY_NORMAL
 		else {
 			$db_items = API::Item()->get([
 				'output' => ['itemid', 'hostid', 'templateid'],
@@ -820,7 +820,7 @@ function getItemParentTemplates(array $items, $flag) {
 			$data['templates'][$db_item['hostid']] = [];
 			$hostids[$db_item['itemid']] = $db_item['hostid'];
 
-			if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+			if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 				$lld_ruleids[$db_item['itemid']] = $db_item['discoveryRule']['itemid'];
 			}
 
@@ -840,7 +840,7 @@ function getItemParentTemplates(array $items, $flag) {
 			? $hostids[$parent_item['itemid']]
 			: 0;
 
-		if ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+		if ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 			$parent_item['lld_ruleid'] = array_key_exists($parent_item['itemid'], $lld_ruleids)
 				? $lld_ruleids[$parent_item['itemid']]
 				: 0;
@@ -890,8 +890,8 @@ function getItemParentTemplates(array $items, $flag) {
  *
  * @param string $itemid
  * @param array  $parent_templates  The list of the templates, prepared by getItemParentTemplates() function.
- * @param int    $flag              Origin of the item (ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_RULE,
- *                                  ZBX_FLAG_DISCOVERY_PROTOTYPE).
+ * @param int    $flag              Origin of the item (TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_RULE,
+ *                                  TRX_FLAG_DISCOVERY_PROTOTYPE).
  *
  * @return array|null
  */
@@ -907,27 +907,27 @@ function makeItemTemplatePrefix($itemid, array $parent_templates, $flag) {
 	$template = $parent_templates['templates'][$parent_templates['links'][$itemid]['hostid']];
 
 	if ($template['permission'] == PERM_READ_WRITE) {
-		if ($flag == ZBX_FLAG_DISCOVERY_RULE) {
+		if ($flag == TRX_FLAG_DISCOVERY_RULE) {
 			$url = (new CUrl('host_discovery.php'))->setArgument('hostid', $template['hostid']);
 		}
-		elseif ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+		elseif ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 			$url = (new CUrl('disc_prototypes.php'))
 				->setArgument('parent_discoveryid', $parent_templates['links'][$itemid]['lld_ruleid']);
 		}
-		// ZBX_FLAG_DISCOVERY_NORMAL
+		// TRX_FLAG_DISCOVERY_NORMAL
 		else {
 			$url = (new CUrl('items.php'))
 				->setArgument('hostid', $template['hostid'])
 				->setArgument('filter_set', 1);
 		}
 
-		$name = (new CLink(CHtml::encode($template['name']), $url))->addClass(ZBX_STYLE_LINK_ALT);
+		$name = (new CLink(CHtml::encode($template['name']), $url))->addClass(TRX_STYLE_LINK_ALT);
 	}
 	else {
 		$name = new CSpan(CHtml::encode($template['name']));
 	}
 
-	return [$name->addClass(ZBX_STYLE_GREY), NAME_DELIMITER];
+	return [$name->addClass(TRX_STYLE_GREY), NAME_DELIMITER];
 }
 
 /**
@@ -935,8 +935,8 @@ function makeItemTemplatePrefix($itemid, array $parent_templates, $flag) {
  *
  * @param string $itemid
  * @param array  $parent_templates  The list of the templates, prepared by getItemParentTemplates() function.
- * @param int    $flag              Origin of the item (ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_RULE,
- *                                  ZBX_FLAG_DISCOVERY_PROTOTYPE).
+ * @param int    $flag              Origin of the item (TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_RULE,
+ *                                  TRX_FLAG_DISCOVERY_PROTOTYPE).
  *
  * @return array
  */
@@ -947,18 +947,18 @@ function makeItemTemplatesHtml($itemid, array $parent_templates, $flag) {
 		$template = $parent_templates['templates'][$parent_templates['links'][$itemid]['hostid']];
 
 		if ($template['permission'] == PERM_READ_WRITE) {
-			if ($flag == ZBX_FLAG_DISCOVERY_RULE) {
+			if ($flag == TRX_FLAG_DISCOVERY_RULE) {
 				$url = (new CUrl('host_discovery.php'))
 					->setArgument('form', 'update')
 					->setArgument('itemid', $parent_templates['links'][$itemid]['itemid']);
 			}
-			elseif ($flag == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+			elseif ($flag == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 				$url = (new CUrl('disc_prototypes.php'))
 					->setArgument('form', 'update')
 					->setArgument('itemid', $parent_templates['links'][$itemid]['itemid'])
 					->setArgument('parent_discoveryid', $parent_templates['links'][$itemid]['lld_ruleid']);
 			}
-			// ZBX_FLAG_DISCOVERY_NORMAL
+			// TRX_FLAG_DISCOVERY_NORMAL
 			else {
 				$url = (new CUrl('items.php'))
 					->setArgument('form', 'update')
@@ -968,7 +968,7 @@ function makeItemTemplatesHtml($itemid, array $parent_templates, $flag) {
 			$name = new CLink(CHtml::encode($template['name']), $url);
 		}
 		else {
-			$name = (new CSpan(CHtml::encode($template['name'])))->addClass(ZBX_STYLE_GREY);
+			$name = (new CSpan(CHtml::encode($template['name'])))->addClass(TRX_STYLE_GREY);
 		}
 
 		array_unshift($list, $name, '&nbsp;&rArr;&nbsp;');
@@ -995,7 +995,7 @@ function makeItemTemplatesHtml($itemid, array $parent_templates, $flag) {
  */
 
 function getItemsDataOverview(array $groupids, $application, $viewMode,
-		$show_suppressed = ZBX_PROBLEM_SUPPRESSED_TRUE) {
+		$show_suppressed = TRX_PROBLEM_SUPPRESSED_TRUE) {
 	// application filter
 	if ($application !== '') {
 		$applicationids = array_keys(API::Application()->get([
@@ -1055,12 +1055,12 @@ function getItemsDataOverview(array $groupids, $application, $viewMode,
 	$db_items = CMacrosResolverHelper::resolveItemNames($db_items);
 
 	CArrayHelper::sort($db_items, [
-		['field' => 'name_expanded', 'order' => ZBX_SORT_UP],
-		['field' => 'itemid', 'order' => ZBX_SORT_UP]
+		['field' => 'name_expanded', 'order' => TRX_SORT_UP],
+		['field' => 'itemid', 'order' => TRX_SORT_UP]
 	]);
 
 	// fetch latest values
-	$history = Manager::History()->getLastValues(zbx_toHash($db_items, 'itemid'), 1, ZBX_HISTORY_PERIOD);
+	$history = Manager::History()->getLastValues(zbx_toHash($db_items, 'itemid'), 1, TRX_HISTORY_PERIOD);
 
 	// fetch data for the host JS menu
 	$hosts = API::Host()->get([
@@ -1153,7 +1153,7 @@ function getItemsDataOverview(array $groupids, $application, $viewMode,
 
 		foreach ($items as $item_name => $item_data) {
 			foreach ($item_data as $ithosts) {
-				$tableRow = [(new CColHeader($item_name))->addClass(ZBX_STYLE_NOWRAP)];
+				$tableRow = [(new CColHeader($item_name))->addClass(TRX_STYLE_NOWRAP)];
 				foreach ($host_names as $host_name) {
 					$tableRow = getItemDataOverviewCells($tableRow, $ithosts, $host_name);
 				}
@@ -1177,7 +1177,7 @@ function getItemsDataOverview(array $groupids, $application, $viewMode,
 
 			$name = (new CLinkAction($host['name']))->setMenuPopup(CMenuPopupHelper::getHost($hostId));
 
-			$tableRow = [(new CColHeader($name))->addClass(ZBX_STYLE_NOWRAP)];
+			$tableRow = [(new CColHeader($name))->addClass(TRX_STYLE_NOWRAP)];
 			foreach ($items as $item_data) {
 				foreach ($item_data as $ithosts) {
 					$tableRow = getItemDataOverviewCells($tableRow, $ithosts, $host_name);
@@ -1200,7 +1200,7 @@ function getItemDataOverviewCells($tableRow, $ithosts, $hostName) {
 
 		if ($item['tr_value'] == TRIGGER_VALUE_TRUE) {
 			$css = getSeverityStyle($item['severity']);
-			$ack = ($item['acknowledged'] == 1) ? [' ', (new CSpan())->addClass(ZBX_STYLE_ICON_ACKN)] : null;
+			$ack = ($item['acknowledged'] == 1) ? [' ', (new CSpan())->addClass(TRX_STYLE_ICON_ACKN)] : null;
 		}
 
 		if ($item['value'] !== null) {
@@ -1217,8 +1217,8 @@ function getItemDataOverviewCells($tableRow, $ithosts, $hostName) {
 	if (isset($ithosts[$hostName])) {
 		$column
 			->setMenuPopup(CMenuPopupHelper::getHistory($item['itemid']))
-			->addClass(ZBX_STYLE_CURSOR_POINTER)
-			->addClass(ZBX_STYLE_NOWRAP);
+			->addClass(TRX_STYLE_CURSOR_POINTER)
+			->addClass(TRX_STYLE_NOWRAP);
 	}
 
 	$tableRow[] = $column;
@@ -1591,7 +1591,7 @@ function calculateItemNextCheck($seed, $delay, $flexible_intervals, $now) {
 			}
 		}
 		else {
-			$nextCheck = ZBX_JAN_2038;
+			$nextCheck = TRX_JAN_2038;
 		}
 
 		/*
@@ -1678,99 +1678,99 @@ function getParamFieldLabelByType($itemType) {
  */
 function get_preprocessing_types($type = null, $grouped = true, array $supported_types = []) {
 	$types = [
-		ZBX_PREPROC_REGSUB => [
+		TRX_PREPROC_REGSUB => [
 			'group' => _('Text'),
 			'name' => _('Regular expression')
 		],
-		ZBX_PREPROC_TRIM => [
+		TRX_PREPROC_TRIM => [
 			'group' => _('Text'),
 			'name' => _('Trim')
 		],
-		ZBX_PREPROC_RTRIM => [
+		TRX_PREPROC_RTRIM => [
 			'group' => _('Text'),
 			'name' => _('Right trim')
 		],
-		ZBX_PREPROC_LTRIM => [
+		TRX_PREPROC_LTRIM => [
 			'group' => _('Text'),
 			'name' => _('Left trim')
 		],
-		ZBX_PREPROC_XPATH => [
+		TRX_PREPROC_XPATH => [
 			'group' => _('Structured data'),
 			'name' => _('XML XPath')
 		],
-		ZBX_PREPROC_JSONPATH => [
+		TRX_PREPROC_JSONPATH => [
 			'group' => _('Structured data'),
 			'name' => _('JSONPath')
 		],
-		ZBX_PREPROC_CSV_TO_JSON => [
+		TRX_PREPROC_CSV_TO_JSON => [
 			'group' => _('Structured data'),
 			'name' => _('CSV to JSON')
 		],
-		ZBX_PREPROC_MULTIPLIER => [
+		TRX_PREPROC_MULTIPLIER => [
 			'group' => _('Arithmetic'),
 			'name' => _('Custom multiplier')
 		],
-		ZBX_PREPROC_DELTA_VALUE => [
+		TRX_PREPROC_DELTA_VALUE => [
 			'group' => _x('Change', 'noun'),
 			'name' => _('Simple change')
 		],
-		ZBX_PREPROC_DELTA_SPEED => [
+		TRX_PREPROC_DELTA_SPEED => [
 			'group' => _x('Change', 'noun'),
 			'name' => _('Change per second')
 		],
-		ZBX_PREPROC_BOOL2DEC => [
+		TRX_PREPROC_BOOL2DEC => [
 			'group' => _('Numeral systems'),
 			'name' => _('Boolean to decimal')
 		],
-		ZBX_PREPROC_OCT2DEC => [
+		TRX_PREPROC_OCT2DEC => [
 			'group' => _('Numeral systems'),
 			'name' => _('Octal to decimal')
 		],
-		ZBX_PREPROC_HEX2DEC => [
+		TRX_PREPROC_HEX2DEC => [
 			'group' => _('Numeral systems'),
 			'name' => _('Hexadecimal to decimal')
 		],
-		ZBX_PREPROC_SCRIPT => [
+		TRX_PREPROC_SCRIPT => [
 			'group' => _('Custom scripts'),
 			'name' => _('JavaScript')
 		],
-		ZBX_PREPROC_VALIDATE_RANGE => [
+		TRX_PREPROC_VALIDATE_RANGE => [
 			'group' => _('Validation'),
 			'name' => _('In range')
 		],
-		ZBX_PREPROC_VALIDATE_REGEX => [
+		TRX_PREPROC_VALIDATE_REGEX => [
 			'group' => _('Validation'),
 			'name' => _('Matches regular expression')
 		],
-		ZBX_PREPROC_VALIDATE_NOT_REGEX => [
+		TRX_PREPROC_VALIDATE_NOT_REGEX => [
 			'group' => _('Validation'),
 			'name' => _('Does not match regular expression')
 		],
-		ZBX_PREPROC_ERROR_FIELD_JSON => [
+		TRX_PREPROC_ERROR_FIELD_JSON => [
 			'group' => _('Validation'),
 			'name' => _('Check for error in JSON')
 		],
-		ZBX_PREPROC_ERROR_FIELD_XML => [
+		TRX_PREPROC_ERROR_FIELD_XML => [
 			'group' => _('Validation'),
 			'name' => _('Check for error in XML')
 		],
-		ZBX_PREPROC_ERROR_FIELD_REGEX => [
+		TRX_PREPROC_ERROR_FIELD_REGEX => [
 			'group' => _('Validation'),
 			'name' => _('Check for error using regular expression')
 		],
-		ZBX_PREPROC_THROTTLE_VALUE => [
+		TRX_PREPROC_THROTTLE_VALUE => [
 			'group' => _('Throttling'),
 			'name' => _('Discard unchanged')
 		],
-		ZBX_PREPROC_THROTTLE_TIMED_VALUE => [
+		TRX_PREPROC_THROTTLE_TIMED_VALUE => [
 			'group' => _('Throttling'),
 			'name' => _('Discard unchanged with heartbeat')
 		],
-		ZBX_PREPROC_PROMETHEUS_PATTERN => [
+		TRX_PREPROC_PROMETHEUS_PATTERN => [
 			'group' => _('Prometheus'),
 			'name' => _('Prometheus pattern')
 		],
-		ZBX_PREPROC_PROMETHEUS_TO_JSON => [
+		TRX_PREPROC_PROMETHEUS_TO_JSON => [
 			'group' => _('Prometheus'),
 			'name' => _('Prometheus to JSON')
 		]

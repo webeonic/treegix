@@ -19,7 +19,7 @@ if ($data['screen']['templateid']) {
 // create form
 $form = (new CForm())
 	->setName('screenForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $data['form']);
 
 if ($data['screen']['templateid'] != 0) {
@@ -76,7 +76,7 @@ if (!$data['screen']['templateid']) {
 	// Append multiselect to screen tab.
 	$screen_tab->addRow((new CLabel(_('Owner'), 'userid_ms'))->setAsteriskMark(),
 		(new CMultiSelect($multiselect_data))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	);
 }
@@ -84,18 +84,18 @@ if (!$data['screen']['templateid']) {
 $screen_tab->addRow(
 		(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $data['screen']['name']))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	)
 	->addRow((new CLabel(_('Columns'), 'hsize'))->setAsteriskMark(),
 		(new CNumericBox('hsize', $data['screen']['hsize'], 3))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow((new CLabel(_('Rows'), 'vsize'))->setAsteriskMark(),
 		(new CNumericBox('vsize', $data['screen']['vsize'], 3))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 			->setAriaRequired()
 	);
 
@@ -117,7 +117,7 @@ if (!$data['screen']['templateid']) {
 				'multiselect' => '1'
 			]).', null, this);'
 		)
-		->addClass(ZBX_STYLE_BTN_LINK)]);
+		->addClass(TRX_STYLE_BTN_LINK)]);
 
 	$user_group_shares_table->addRow(
 		(new CRow(
@@ -153,7 +153,7 @@ if (!$data['screen']['templateid']) {
 				'multiselect' => '1'
 			]).', null, this);'
 		)
-		->addClass(ZBX_STYLE_BTN_LINK)]);
+		->addClass(TRX_STYLE_BTN_LINK)]);
 
 	$user_shares_table->addRow(
 		(new CRow(
@@ -185,13 +185,13 @@ if (!$data['screen']['templateid']) {
 		)
 		->addRow(_('List of user group shares'),
 			(new CDiv($user_group_shares_table))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 		)
 		->addRow(_('List of user shares'),
 			(new CDiv($user_shares_table))
-				->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-				->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+				->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+				->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 		);
 
 	// Append data to form.

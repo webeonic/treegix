@@ -36,7 +36,7 @@ class CHostPrototype extends CHostBase {
 	 */
 	public function get(array $options) {
 		$options = zbx_array_merge($this->getOptions, $options);
-		$options['filter']['flags'] = ZBX_FLAG_DISCOVERY_PROTOTYPE;
+		$options['filter']['flags'] = TRX_FLAG_DISCOVERY_PROTOTYPE;
 
 		// build and execute query
 		$sql = $this->createSelectQuery($this->tableName(), $options);
@@ -126,7 +126,7 @@ class CHostPrototype extends CHostBase {
 				? _('Host prototype with host name "%1$s" already exists in discovery rule "%2$s".')
 				: _('Host prototype with visible name "%1$s" already exists in discovery rule "%2$s".');
 
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				sprintf($error, $db_host_prototypes[0][$field_name], $db_host_prototypes[0]['rule'])
 			);
 		}
@@ -157,7 +157,7 @@ class CHostPrototype extends CHostBase {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $host_prototypes, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$hosts_by_ruleid = [];
@@ -186,12 +186,12 @@ class CHostPrototype extends CHostBase {
 			' FROM items i,hosts h'.
 			' WHERE i.hostid=h.hostid'.
 				' AND '.dbConditionInt('i.itemid', $ruleids).
-				' AND h.flags='.ZBX_FLAG_DISCOVERY_CREATED,
+				' AND h.flags='.TRX_FLAG_DISCOVERY_CREATED,
 			1
 		));
 
 		if ($db_discovered_hosts) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Cannot create a host prototype on a discovered host "%1$s".', $db_discovered_hosts[0]['host'])
 			);
 		}
@@ -238,7 +238,7 @@ class CHostPrototype extends CHostBase {
 	 */
 	protected function createReal(array $hostPrototypes) {
 		foreach ($hostPrototypes as &$hostPrototype) {
-			$hostPrototype['flags'] = ZBX_FLAG_DISCOVERY_PROTOTYPE;
+			$hostPrototype['flags'] = TRX_FLAG_DISCOVERY_PROTOTYPE;
 		}
 		unset($hostPrototype);
 
@@ -329,7 +329,7 @@ class CHostPrototype extends CHostBase {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $host_prototypes, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_host_prototypes = $this->get([
@@ -348,7 +348,7 @@ class CHostPrototype extends CHostBase {
 		foreach ($host_prototypes as &$host_prototype) {
 			// Check if this host prototype exists.
 			if (!array_key_exists($host_prototype['hostid'], $db_host_prototypes)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -368,7 +368,7 @@ class CHostPrototype extends CHostBase {
 
 		$api_input_rules = ['type' => API_OBJECTS, 'uniq' => [['ruleid', 'host'], ['ruleid', 'name']]];
 		if (!CApiInputValidator::validateUniqueness($api_input_rules, $host_prototypes, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$groupids = [];
@@ -388,13 +388,13 @@ class CHostPrototype extends CHostBase {
 			if (array_key_exists('groupLinks', $host_prototype)) {
 				foreach ($host_prototype['groupLinks'] as $group_link) {
 					if (!$group_link) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 					}
 
 					// Don't allow invalid 'group_prototypeid' parameters which do not belong to this 'hostid'.
 					if (array_key_exists('group_prototypeid', $group_link)
 							&& !array_key_exists($group_link['group_prototypeid'], $db_group_links)) {
-						self::exception(ZBX_API_ERROR_PERMISSIONS,
+						self::exception(TRX_API_ERROR_PERMISSIONS,
 							_('No permissions to referred object or it does not exist!')
 						);
 					}
@@ -409,13 +409,13 @@ class CHostPrototype extends CHostBase {
 			if (array_key_exists('groupPrototypes', $host_prototype)) {
 				foreach ($host_prototype['groupPrototypes'] as $group_prototype) {
 					if (!$group_prototype) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 					}
 
 					// Don't allow invalid 'group_prototypeid' parameters which do not belong to this 'hostid'.
 					if (array_key_exists('group_prototypeid', $group_prototype)
 							&& !array_key_exists($group_prototype['group_prototypeid'], $db_group_prototypes)) {
-						self::exception(ZBX_API_ERROR_PERMISSIONS,
+						self::exception(TRX_API_ERROR_PERMISSIONS,
 							_('No permissions to referred object or it does not exist!')
 						);
 					}
@@ -661,7 +661,7 @@ class CHostPrototype extends CHostBase {
 			'hostids' => $hostIds,
 			'nopermissions' => true,
 			'templated_hosts' => true,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL]
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 		]);
 		if (empty($chdHosts)) {
 			return [];
@@ -737,7 +737,7 @@ class CHostPrototype extends CHostBase {
 							&& !idcmp($exHostPrototypesHosts[$parentHostPrototype['host']]['templateid'], $parentHostPrototype['hostid'])) {
 
 							$discoveryRule = DBfetch(DBselect('SELECT i.name FROM items i WHERE i.itemid='.zbx_dbstr($exHostPrototype['discoveryRule']['itemid'])));
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Host prototype "%1$s" already exists on "%2$s".', $parentHostPrototype['host'], $discoveryRule['name']));
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Host prototype "%1$s" already exists on "%2$s".', $parentHostPrototype['host'], $discoveryRule['name']));
 						}
 					}
 
@@ -749,7 +749,7 @@ class CHostPrototype extends CHostBase {
 						// check that this host prototype is not inherited from a different template
 						if ($exHostPrototype['templateid'] > 0 && !idcmp($exHostPrototype['templateid'], $parentHostPrototype['hostid'])) {
 							$discoveryRule = DBfetch(DBselect('SELECT i.name FROM items i WHERE i.itemid='.zbx_dbstr($exHostPrototype['discoveryRule']['itemid'])));
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Host prototype "%1$s" already exists on "%2$s", inherited from another template.', $parentHostPrototype['host'], $discoveryRule['name']));
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Host prototype "%1$s" already exists on "%2$s", inherited from another template.', $parentHostPrototype['host'], $discoveryRule['name']));
 						}
 					}
 				}
@@ -868,7 +868,7 @@ class CHostPrototype extends CHostBase {
 	 */
 	protected function validateDelete($hostPrototypeIds, $nopermissions) {
 		if (!$hostPrototypeIds) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		if (!$nopermissions) {
@@ -965,7 +965,7 @@ class CHostPrototype extends CHostBase {
 					'nopermissions' => true
 				]);
 
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Item "%1$s" already exists on "%2$s", inherited from another template.', $row['key_'],
 						$target_templates[0]['name']
 					)
@@ -991,7 +991,7 @@ class CHostPrototype extends CHostBase {
 		]);
 
 		if ($count != count($ruleids)) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 	}
 
@@ -1012,7 +1012,7 @@ class CHostPrototype extends CHostBase {
 
 		foreach ($groupids as $groupid) {
 			if (!array_key_exists($groupid, $db_groups)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -1020,8 +1020,8 @@ class CHostPrototype extends CHostBase {
 			$db_group = $db_groups[$groupid];
 
 			// Check if group prototypes use discovered host groups.
-			if ($db_group['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+			if ($db_group['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Group prototype cannot be based on a discovered host group "%1$s".', $db_group['name'])
 				);
 			}
@@ -1046,7 +1046,7 @@ class CHostPrototype extends CHostBase {
 			]);
 
 			if ($count != count($hostPrototypeIds)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -1064,7 +1064,7 @@ class CHostPrototype extends CHostBase {
 		$query = DBSelect('SELECT hostid FROM hosts h WHERE h.templateid>0 AND '.dbConditionInt('h.hostid', $hostPrototypeIds), 1);
 
 		if ($hostPrototype = DBfetch($query)) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Cannot delete templated host prototype.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Cannot delete templated host prototype.'));
 		}
 	}
 
@@ -1078,7 +1078,7 @@ class CHostPrototype extends CHostBase {
 		$sqlParts['where'][] = $this->fieldId('hostid').'=hd.hostid';
 		$sqlParts['where'][] = 'hd.parent_itemid=i.itemid';
 		$sqlParts['where'][] = 'i.hostid=ph.hostid';
-		$sqlParts['where'][] = 'ph.flags='.ZBX_FLAG_DISCOVERY_NORMAL;
+		$sqlParts['where'][] = 'ph.flags='.TRX_FLAG_DISCOVERY_NORMAL;
 
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
 			$permission = $options['editable'] ? PERM_READ_WRITE : PERM_READ;

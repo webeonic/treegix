@@ -12,77 +12,77 @@ if (!isset($page['file'])) {
 }
 
 if (!array_key_exists('web_layout_mode', $page)) {
-	$page['web_layout_mode'] = ZBX_LAYOUT_NORMAL;
+	$page['web_layout_mode'] = TRX_LAYOUT_NORMAL;
 }
 
-if (!defined('ZBX_PAGE_NO_MENU') && in_array($page['web_layout_mode'], [ZBX_LAYOUT_FULLSCREEN, ZBX_LAYOUT_KIOSKMODE])) {
-	define('ZBX_PAGE_NO_MENU', true);
+if (!defined('TRX_PAGE_NO_MENU') && in_array($page['web_layout_mode'], [TRX_LAYOUT_FULLSCREEN, TRX_LAYOUT_KIOSKMODE])) {
+	define('TRX_PAGE_NO_MENU', true);
 }
 
 require_once dirname(__FILE__).'/menu.inc.php';
 
-if (!defined('ZBX_PAGE_NO_THEME')) {
-	define('ZBX_PAGE_NO_THEME', false);
+if (!defined('TRX_PAGE_NO_THEME')) {
+	define('TRX_PAGE_NO_THEME', false);
 }
 
 switch ($page['type']) {
 	case PAGE_TYPE_IMAGE:
 		set_image_header();
-		if (!defined('ZBX_PAGE_NO_MENU')) {
-			define('ZBX_PAGE_NO_MENU', true);
+		if (!defined('TRX_PAGE_NO_MENU')) {
+			define('TRX_PAGE_NO_MENU', true);
 		}
 		break;
 	case PAGE_TYPE_XML:
 		header('Content-Type: text/xml');
 		header('Content-Disposition: attachment; filename="'.$page['file'].'"');
-		if (!defined('ZBX_PAGE_NO_MENU')) {
-			define('ZBX_PAGE_NO_MENU', true);
+		if (!defined('TRX_PAGE_NO_MENU')) {
+			define('TRX_PAGE_NO_MENU', true);
 		}
 		break;
 	case PAGE_TYPE_JS:
 		header('Content-Type: application/javascript; charset=UTF-8');
-		if (!defined('ZBX_PAGE_NO_MENU')) {
-			define('ZBX_PAGE_NO_MENU', true);
+		if (!defined('TRX_PAGE_NO_MENU')) {
+			define('TRX_PAGE_NO_MENU', true);
 		}
 		break;
 	case PAGE_TYPE_JSON:
 		header('Content-Type: application/json');
-		if (!defined('ZBX_PAGE_NO_MENU')) {
-			define('ZBX_PAGE_NO_MENU', true);
+		if (!defined('TRX_PAGE_NO_MENU')) {
+			define('TRX_PAGE_NO_MENU', true);
 		}
 		break;
 	case PAGE_TYPE_JSON_RPC:
 		header('Content-Type: application/json-rpc');
-		if(!defined('ZBX_PAGE_NO_MENU')) {
-			define('ZBX_PAGE_NO_MENU', true);
+		if(!defined('TRX_PAGE_NO_MENU')) {
+			define('TRX_PAGE_NO_MENU', true);
 		}
 		break;
 	case PAGE_TYPE_CSS:
 		header('Content-Type: text/css; charset=UTF-8');
-		if (!defined('ZBX_PAGE_NO_MENU')) {
-			define('ZBX_PAGE_NO_MENU', true);
+		if (!defined('TRX_PAGE_NO_MENU')) {
+			define('TRX_PAGE_NO_MENU', true);
 		}
 		break;
 	case PAGE_TYPE_TEXT:
 	case PAGE_TYPE_TEXT_RETURN_JSON:
 	case PAGE_TYPE_HTML_BLOCK:
 		header('Content-Type: text/plain; charset=UTF-8');
-		if (!defined('ZBX_PAGE_NO_MENU')) {
-			define('ZBX_PAGE_NO_MENU', true);
+		if (!defined('TRX_PAGE_NO_MENU')) {
+			define('TRX_PAGE_NO_MENU', true);
 		}
 		break;
 	case PAGE_TYPE_TEXT_FILE:
 		header('Content-Type: text/plain; charset=UTF-8');
 		header('Content-Disposition: attachment; filename="'.$page['file'].'"');
-		if (!defined('ZBX_PAGE_NO_MENU')) {
-			define('ZBX_PAGE_NO_MENU', true);
+		if (!defined('TRX_PAGE_NO_MENU')) {
+			define('TRX_PAGE_NO_MENU', true);
 		}
 		break;
 	case PAGE_TYPE_CSV:
 		header('Content-Type: text/csv; charset=UTF-8');
 		header('Content-Disposition: attachment; filename="'.$page['file'].'"');
-		if (!defined('ZBX_PAGE_NO_MENU')) {
-			define('ZBX_PAGE_NO_MENU', true);
+		if (!defined('TRX_PAGE_NO_MENU')) {
+			define('TRX_PAGE_NO_MENU', true);
 		}
 		break;
 	case PAGE_TYPE_HTML:
@@ -129,25 +129,25 @@ if ($denied_page_requested) {
 }
 
 if ($page['type'] == PAGE_TYPE_HTML) {
-	global $ZBX_SERVER_NAME;
+	global $TRX_SERVER_NAME;
 
 	// page title
 	$pageTitle = '';
-	if (isset($ZBX_SERVER_NAME) && $ZBX_SERVER_NAME !== '') {
-		$pageTitle = $ZBX_SERVER_NAME.NAME_DELIMITER;
+	if (isset($TRX_SERVER_NAME) && $TRX_SERVER_NAME !== '') {
+		$pageTitle = $TRX_SERVER_NAME.NAME_DELIMITER;
 	}
 	$pageTitle .= isset($page['title']) ? $page['title'] : _('Treegix');
 
-	if ((defined('ZBX_PAGE_DO_REFRESH') || defined('ZBX_PAGE_DO_JS_REFRESH')) && CWebUser::getRefresh() != 0) {
+	if ((defined('TRX_PAGE_DO_REFRESH') || defined('TRX_PAGE_DO_JS_REFRESH')) && CWebUser::getRefresh() != 0) {
 		$pageTitle .= ' ['._s('refreshed every %1$s sec.', CWebUser::getRefresh()).']';
 	}
 
 	$pageHeader = new CPageHeader($pageTitle);
-	$is_standard_page = (!defined('ZBX_PAGE_NO_MENU')
-		|| in_array($page['web_layout_mode'], [ZBX_LAYOUT_FULLSCREEN, ZBX_LAYOUT_KIOSKMODE]));
+	$is_standard_page = (!defined('TRX_PAGE_NO_MENU')
+		|| in_array($page['web_layout_mode'], [TRX_LAYOUT_FULLSCREEN, TRX_LAYOUT_KIOSKMODE]));
 
-	$theme = ZBX_DEFAULT_THEME;
-	if (!ZBX_PAGE_NO_THEME) {
+	$theme = TRX_DEFAULT_THEME;
+	if (!TRX_PAGE_NO_THEME) {
 		global $DB;
 
 		if (!empty($DB['DB'])) {
@@ -158,7 +158,7 @@ if ($page['type'] == PAGE_TYPE_HTML) {
 			$pageHeader->addStyle(getTriggerStatusCss($config));
 
 			// perform Treegix server check only for standard pages
-			if ($is_standard_page && $config['server_check_interval'] && !empty($ZBX_SERVER) && !empty($ZBX_SERVER_PORT)) {
+			if ($is_standard_page && $config['server_check_interval'] && !empty($TRX_SERVER) && !empty($TRX_SERVER_PORT)) {
 				$page['scripts'][] = 'servercheck.js';
 			}
 		}
@@ -173,7 +173,7 @@ if ($page['type'] == PAGE_TYPE_HTML) {
 		->addJsFile((new CUrl('js/browsers.js'))->getUrl())
 		->addJsBeforeScripts(
 			'var PHP_TZ_OFFSET = '.date('Z').','.
-				'PHP_ZBX_FULL_DATE_TIME = "'.ZBX_FULL_DATE_TIME.'";'
+				'PHP_TRX_FULL_DATE_TIME = "'.TRX_FULL_DATE_TIME.'";'
 		);
 
 	// Show GUI messages in pages with menus and in fullscreen mode.
@@ -198,13 +198,13 @@ if ($page['type'] == PAGE_TYPE_HTML) {
 	$pageHeader->display();
 ?>
 <body lang="<?= CWebUser::getLang() ?>">
-<output class="<?= ZBX_STYLE_MSG_GLOBAL_FOOTER.' '.ZBX_STYLE_MSG_WARNING ?>" id="msg-global-footer"></output>
+<output class="<?= TRX_STYLE_MSG_GLOBAL_FOOTER.' '.TRX_STYLE_MSG_WARNING ?>" id="msg-global-footer"></output>
 <?php
 }
 
 define('PAGE_HEADER_LOADED', 1);
 
-if (defined('ZBX_PAGE_NO_HEADER')) {
+if (defined('TRX_PAGE_NO_HEADER')) {
 	return null;
 }
 
@@ -233,9 +233,9 @@ if (CSession::keyExists('messageOk') || CSession::keyExists('messageError')) {
 	CSession::unsetValue(['messageOk', 'messageError']);
 }
 
-if (!defined('ZBX_PAGE_NO_MENU') && $page['web_layout_mode'] === ZBX_LAYOUT_NORMAL) {
+if (!defined('TRX_PAGE_NO_MENU') && $page['web_layout_mode'] === TRX_LAYOUT_NORMAL) {
 	$pageMenu = new CView('layout.htmlpage.menu', [
-		'server_name' => isset($ZBX_SERVER_NAME) ? $ZBX_SERVER_NAME : '',
+		'server_name' => isset($TRX_SERVER_NAME) ? $TRX_SERVER_NAME : '',
 		'menu' => [
 			'main_menu' => $main_menu,
 			'sub_menus' => $sub_menus,
@@ -279,8 +279,8 @@ show_messages();
 
 // this code show messages generated by MVC pages
 if ($message_good !== null) {
-	global $ZBX_MESSAGES;
+	global $TRX_MESSAGES;
 
-	$ZBX_MESSAGES = $messages;
+	$TRX_MESSAGES = $messages;
 	show_messages($message_good, $message_ok, $message_error);
 }

@@ -26,14 +26,14 @@
 #endif
 
 #ifdef WITH_HOSTNAME_METRIC
-extern ZBX_METRIC	parameter_hostname;
+extern TRX_METRIC	parameter_hostname;
 #endif
 
-static ZBX_METRIC	*commands = NULL;
+static TRX_METRIC	*commands = NULL;
 
-#define ZBX_COMMAND_ERROR		0
-#define ZBX_COMMAND_WITHOUT_PARAMS	1
-#define ZBX_COMMAND_WITH_PARAMS		2
+#define TRX_COMMAND_ERROR		0
+#define TRX_COMMAND_WITHOUT_PARAMS	1
+#define TRX_COMMAND_WITH_PARAMS		2
 
 /******************************************************************************
  *                                                                            *
@@ -41,9 +41,9 @@ static ZBX_METRIC	*commands = NULL;
  *                                                                            *
  * Purpose: parses item key and splits it into command and parameters         *
  *                                                                            *
- * Return value: ZBX_COMMAND_ERROR - error                                    *
- *               ZBX_COMMAND_WITHOUT_PARAMS - command without parameters      *
- *               ZBX_COMMAND_WITH_PARAMS - command with parameters            *
+ * Return value: TRX_COMMAND_ERROR - error                                    *
+ *               TRX_COMMAND_WITHOUT_PARAMS - command without parameters      *
+ *               TRX_COMMAND_WITH_PARAMS - command with parameters            *
  *                                                                            *
  ******************************************************************************/
 static int	parse_command_dyn(const char *command, char **cmd, char **param)
@@ -56,25 +56,25 @@ static int	parse_command_dyn(const char *command, char **cmd, char **param)
 		;
 
 	if (pl == command)
-		return ZBX_COMMAND_ERROR;
+		return TRX_COMMAND_ERROR;
 
 	zbx_strncpy_alloc(cmd, &cmd_alloc, &cmd_offset, command, pl - command);
 
 	if ('\0' == *pl)	/* no parameters specified */
-		return ZBX_COMMAND_WITHOUT_PARAMS;
+		return TRX_COMMAND_WITHOUT_PARAMS;
 
 	if ('[' != *pl)		/* unsupported character */
-		return ZBX_COMMAND_ERROR;
+		return TRX_COMMAND_ERROR;
 
 	for (pr = ++pl; '\0' != *pr; pr++)
 		;
 
 	if (']' != *--pr)
-		return ZBX_COMMAND_ERROR;
+		return TRX_COMMAND_ERROR;
 
 	zbx_strncpy_alloc(param, &param_alloc, &param_offset, pl, pr - pl);
 
-	return ZBX_COMMAND_WITH_PARAMS;
+	return TRX_COMMAND_WITH_PARAMS;
 }
 
 /******************************************************************************
@@ -84,7 +84,7 @@ static int	parse_command_dyn(const char *command, char **cmd, char **param)
  * Purpose: registers a new item key into the system                          *
  *                                                                            *
  ******************************************************************************/
-int	add_metric(ZBX_METRIC *metric, char *error, size_t max_error_len)
+int	add_metric(TRX_METRIC *metric, char *error, size_t max_error_len)
 {
 	int	i = 0;
 
@@ -103,8 +103,8 @@ int	add_metric(ZBX_METRIC *metric, char *error, size_t max_error_len)
 	commands[i].function = metric->function;
 	commands[i].test_param = (NULL == metric->test_param ? NULL : zbx_strdup(NULL, metric->test_param));
 
-	commands = (ZBX_METRIC *)zbx_realloc(commands, (i + 2) * sizeof(ZBX_METRIC));
-	memset(&commands[i + 1], 0, sizeof(ZBX_METRIC));
+	commands = (TRX_METRIC *)zbx_realloc(commands, (i + 2) * sizeof(TRX_METRIC));
+	memset(&commands[i + 1], 0, sizeof(TRX_METRIC));
 
 	return SUCCEED;
 }
@@ -113,7 +113,7 @@ int	add_user_parameter(const char *itemkey, char *command, char *error, size_t m
 {
 	int		ret;
 	unsigned	flags = CF_USERPARAMETER;
-	ZBX_METRIC	metric;
+	TRX_METRIC	metric;
 	AGENT_REQUEST	request;
 
 	init_request(&request);
@@ -148,7 +148,7 @@ void	init_metrics(void)
 	int	i;
 	char	error[MAX_STRING_LEN];
 
-	commands = (ZBX_METRIC *)zbx_malloc(commands, sizeof(ZBX_METRIC));
+	commands = (TRX_METRIC *)zbx_malloc(commands, sizeof(TRX_METRIC));
 	commands[0].key = NULL;
 
 #ifdef WITH_AGENT_METRICS
@@ -345,14 +345,14 @@ int	parse_item_key(const char *itemkey, AGENT_REQUEST *request)
 
 	switch (parse_command_dyn(itemkey, &key, &params))
 	{
-		case ZBX_COMMAND_WITH_PARAMS:
+		case TRX_COMMAND_WITH_PARAMS:
 			if (0 == (request->nparam = num_param(params)))
 				goto out;	/* key is badly formatted */
 			request->params = (char **)zbx_malloc(request->params, request->nparam * sizeof(char *));
 			for (i = 0; i < request->nparam; i++)
 				request->params[i] = get_param_dyn(params, i + 1);
 			break;
-		case ZBX_COMMAND_ERROR:
+		case TRX_COMMAND_ERROR:
 			goto out;	/* key is badly formatted */
 	}
 
@@ -369,21 +369,21 @@ out:
 
 void	test_parameter(const char *key)
 {
-#define ZBX_KEY_COLUMN_WIDTH	45
+#define TRX_KEY_COLUMN_WIDTH	45
 
 	AGENT_RESULT	result;
 
-	printf("%-*s", ZBX_KEY_COLUMN_WIDTH, key);
+	printf("%-*s", TRX_KEY_COLUMN_WIDTH, key);
 
 	init_result(&result);
 
 	if (SUCCEED == process(key, PROCESS_WITH_ALIAS, &result))
 	{
 		if (0 != ISSET_UI64(&result))
-			printf(" [u|" ZBX_FS_UI64 "]", result.ui64);
+			printf(" [u|" TRX_FS_UI64 "]", result.ui64);
 
 		if (0 != ISSET_DBL(&result))
-			printf(" [d|" ZBX_FS_DBL "]", result.dbl);
+			printf(" [d|" TRX_FS_DBL "]", result.dbl);
 
 		if (0 != ISSET_STR(&result))
 			printf(" [s|%s]", result.str);
@@ -397,9 +397,9 @@ void	test_parameter(const char *key)
 	else
 	{
 		if (0 != ISSET_MSG(&result))
-			printf(" [m|" ZBX_NOTSUPPORTED "] [%s]", result.msg);
+			printf(" [m|" TRX_NOTSUPPORTED "] [%s]", result.msg);
 		else
-			printf(" [m|" ZBX_NOTSUPPORTED "]");
+			printf(" [m|" TRX_NOTSUPPORTED "]");
 	}
 
 	free_result(&result);
@@ -408,7 +408,7 @@ void	test_parameter(const char *key)
 
 	fflush(stdout);
 
-#undef ZBX_KEY_COLUMN_WIDTH
+#undef TRX_KEY_COLUMN_WIDTH
 }
 
 void	test_parameters(void)
@@ -545,7 +545,7 @@ static int	replace_param(const char *cmd, const AGENT_REQUEST *request, char **o
 int	process(const char *in_command, unsigned flags, AGENT_RESULT *result)
 {
 	int		ret = NOTSUPPORTED;
-	ZBX_METRIC	*command = NULL;
+	TRX_METRIC	*command = NULL;
 	AGENT_REQUEST	request;
 
 	init_request(&request);
@@ -617,9 +617,9 @@ int	process(const char *in_command, unsigned flags, AGENT_RESULT *result)
 	if (SYSINFO_RET_OK != command->function(&request, result))
 	{
 		/* "return NOTSUPPORTED;" would be more appropriate here for preserving original error */
-		/* message in "result" but would break things relying on ZBX_NOTSUPPORTED message. */
+		/* message in "result" but would break things relying on TRX_NOTSUPPORTED message. */
 		if (0 != (command->flags & CF_MODULE) && 0 == ISSET_MSG(result))
-			SET_MSG_RESULT(result, zbx_strdup(NULL, ZBX_NOTSUPPORTED_MSG));
+			SET_MSG_RESULT(result, zbx_strdup(NULL, TRX_NOTSUPPORTED_MSG));
 
 		goto notsupported;
 	}
@@ -804,11 +804,11 @@ static char	**get_result_str_value(AGENT_RESULT *result)
 	}
 	else if (0 != ISSET_UI64(result))
 	{
-		SET_STR_RESULT(result, zbx_dsprintf(NULL, ZBX_FS_UI64, result->ui64));
+		SET_STR_RESULT(result, zbx_dsprintf(NULL, TRX_FS_UI64, result->ui64));
 	}
 	else if (0 != ISSET_DBL(result))
 	{
-		SET_STR_RESULT(result, zbx_dsprintf(NULL, ZBX_FS_DBL, result->dbl));
+		SET_STR_RESULT(result, zbx_dsprintf(NULL, TRX_FS_DBL, result->dbl));
 	}
 	/* skip AR_MESSAGE - it is information field */
 
@@ -832,11 +832,11 @@ static char	**get_result_text_value(AGENT_RESULT *result)
 	}
 	else if (0 != ISSET_UI64(result))
 	{
-		SET_TEXT_RESULT(result, zbx_dsprintf(NULL, ZBX_FS_UI64, result->ui64));
+		SET_TEXT_RESULT(result, zbx_dsprintf(NULL, TRX_FS_UI64, result->ui64));
 	}
 	else if (0 != ISSET_DBL(result))
 	{
-		SET_TEXT_RESULT(result, zbx_dsprintf(NULL, ZBX_FS_DBL, result->dbl));
+		SET_TEXT_RESULT(result, zbx_dsprintf(NULL, TRX_FS_DBL, result->dbl));
 	}
 	/* skip AR_MESSAGE - it is information field */
 
@@ -862,9 +862,9 @@ static zbx_log_t	*get_result_log_value(AGENT_RESULT *result)
 		else if (0 != ISSET_TEXT(result))
 			result->log->value = zbx_strdup(result->log->value, result->text);
 		else if (0 != ISSET_UI64(result))
-			result->log->value = zbx_dsprintf(result->log->value, ZBX_FS_UI64, result->ui64);
+			result->log->value = zbx_dsprintf(result->log->value, TRX_FS_UI64, result->ui64);
 		else if (0 != ISSET_DBL(result))
-			result->log->value = zbx_dsprintf(result->log->value, ZBX_FS_DBL, result->dbl);
+			result->log->value = zbx_dsprintf(result->log->value, TRX_FS_DBL, result->dbl);
 
 		result->type |= AR_LOG;
 
@@ -1136,7 +1136,7 @@ static int	deserialize_agent_result(char *data, AGENT_RESULT *result)
 
 	type = *data++;
 
-	if ('m' == type || 0 == strcmp(data, ZBX_NOTSUPPORTED))
+	if ('m' == type || 0 == strcmp(data, TRX_NOTSUPPORTED))
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, data));
 		return agent_ret;
@@ -1336,7 +1336,7 @@ out:
 }
 #else
 
-static ZBX_THREAD_LOCAL zbx_uint32_t	mutex_flag = ZBX_MUTEX_ALL_ALLOW;
+static TRX_THREAD_LOCAL zbx_uint32_t	mutex_flag = TRX_MUTEX_ALL_ALLOW;
 
 zbx_uint32_t get_thread_global_mutex_flag()
 {
@@ -1348,13 +1348,13 @@ typedef struct
 	zbx_metric_func_t	func;
 	AGENT_REQUEST		*request;
 	AGENT_RESULT		*result;
-	zbx_uint32_t		mutex_flag; /* in regular case should always be = ZBX_MUTEX_ALL_ALLOW */
+	zbx_uint32_t		mutex_flag; /* in regular case should always be = TRX_MUTEX_ALL_ALLOW */
 	HANDLE			timeout_event;
 	int			agent_ret;
 }
 zbx_metric_thread_args_t;
 
-ZBX_THREAD_ENTRY(agent_metric_thread, data)
+TRX_THREAD_ENTRY(agent_metric_thread, data)
 {
 	zbx_metric_thread_args_t	*args = (zbx_metric_thread_args_t *)((zbx_thread_args_t *)data)->args;
 	mutex_flag = args->mutex_flag;
@@ -1364,7 +1364,7 @@ ZBX_THREAD_ENTRY(agent_metric_thread, data)
 	if (SYSINFO_RET_FAIL == (args->agent_ret = args->func(args->request, args->result, args->timeout_event)))
 	{
 		if (NULL == GET_MSG_RESULT(args->result))
-			SET_MSG_RESULT(args->result, zbx_strdup(NULL, ZBX_NOTSUPPORTED));
+			SET_MSG_RESULT(args->result, zbx_strdup(NULL, TRX_NOTSUPPORTED));
 	}
 
 	zbx_thread_exit(0);
@@ -1387,10 +1387,10 @@ ZBX_THREAD_ENTRY(agent_metric_thread, data)
  ******************************************************************************/
 int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	ZBX_THREAD_HANDLE		thread;
+	TRX_THREAD_HANDLE		thread;
 	zbx_thread_args_t		thread_args;
-	zbx_metric_thread_args_t	metric_args = {metric_func, request, result, ZBX_MUTEX_THREAD_DENIED |
-							ZBX_MUTEX_LOGGING_DENIED};
+	zbx_metric_thread_args_t	metric_args = {metric_func, request, result, TRX_MUTEX_THREAD_DENIED |
+							TRX_MUTEX_LOGGING_DENIED};
 	DWORD				rc;
 	BOOL				terminate_thread = FALSE;
 
@@ -1407,7 +1407,7 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 
 	zbx_thread_start(agent_metric_thread, &thread_args, &thread);
 
-	if (ZBX_THREAD_ERROR == thread)
+	if (TRX_THREAD_ERROR == thread)
 	{
 		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot start data thread: %s",
 				strerror_from_system(GetLastError())));

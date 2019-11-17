@@ -30,8 +30,8 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 	zbx_vector_uint64_create(&trigger_eventids);
 	zbx_vector_uint64_create(&triggerids);
 
-	zbx_vector_uint64_sort(eventids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(eventids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_uniq(eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	/* read event data */
 
@@ -49,17 +49,17 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 		DB_EVENT	*event = NULL;
 
 		event = (DB_EVENT *)zbx_malloc(event, sizeof(DB_EVENT));
-		ZBX_STR2UINT64(event->eventid, row[0]);
+		TRX_STR2UINT64(event->eventid, row[0]);
 		event->source = atoi(row[1]);
 		event->object = atoi(row[2]);
-		ZBX_STR2UINT64(event->objectid, row[3]);
+		TRX_STR2UINT64(event->objectid, row[3]);
 		event->clock = atoi(row[4]);
 		event->value = atoi(row[5]);
 		event->acknowledged = atoi(row[6]);
 		event->ns = atoi(row[7]);
 		event->name = zbx_strdup(NULL, row[8]);
 		event->severity = atoi(row[9]);
-		event->suppressed = ZBX_PROBLEM_SUPPRESSED_FALSE;
+		event->suppressed = TRX_PROBLEM_SUPPRESSED_FALSE;
 
 		event->trigger.triggerid = 0;
 
@@ -89,15 +89,15 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 		DB_EVENT	*event;
 		zbx_uint64_t	eventid;
 
-		ZBX_STR2UINT64(eventid, row[0]);
-		if (FAIL == (index = zbx_vector_ptr_bsearch(events, &eventid, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+		TRX_STR2UINT64(eventid, row[0]);
+		if (FAIL == (index = zbx_vector_ptr_bsearch(events, &eventid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
 		}
 
 		event = (DB_EVENT *)events->values[index];
-		event->suppressed = ZBX_PROBLEM_SUPPRESSED_TRUE;
+		event->suppressed = TRX_PROBLEM_SUPPRESSED_TRUE;
 	}
 	DBfree_result(result);
 
@@ -116,12 +116,12 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 			zbx_uint64_t	eventid;
 			zbx_tag_t	*tag;
 
-			ZBX_STR2UINT64(eventid, row[0]);
+			TRX_STR2UINT64(eventid, row[0]);
 
 			if (NULL == event || eventid != event->eventid)
 			{
 				if (FAIL == (index = zbx_vector_ptr_bsearch(events, &eventid,
-						ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+						TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 				{
 					THIS_SHOULD_NEVER_HAPPEN;
 					continue;
@@ -140,8 +140,8 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 
 	if (0 != triggerids.values_num)	/* EVENT_OBJECT_TRIGGER */
 	{
-		zbx_vector_uint64_sort(&triggerids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&triggerids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_sort(&triggerids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_uniq(&triggerids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		sql_offset = 0;
 		DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "triggerid", triggerids.values,
@@ -158,7 +158,7 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 		{
 			zbx_uint64_t	triggerid;
 
-			ZBX_STR2UINT64(triggerid, row[0]);
+			TRX_STR2UINT64(triggerid, row[0]);
 
 			for (i = 0; i < events->values_num; i++)
 			{
@@ -172,12 +172,12 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 					event->trigger.triggerid = triggerid;
 					event->trigger.description = zbx_strdup(NULL, row[1]);
 					event->trigger.expression = zbx_strdup(NULL, row[2]);
-					ZBX_STR2UCHAR(event->trigger.priority, row[3]);
+					TRX_STR2UCHAR(event->trigger.priority, row[3]);
 					event->trigger.comments = zbx_strdup(NULL, row[4]);
 					event->trigger.url = zbx_strdup(NULL, row[5]);
 					event->trigger.recovery_expression = zbx_strdup(NULL, row[6]);
-					ZBX_STR2UCHAR(event->trigger.recovery_mode, row[7]);
-					ZBX_STR2UCHAR(event->trigger.value, row[8]);
+					TRX_STR2UCHAR(event->trigger.recovery_mode, row[7]);
+					TRX_STR2UCHAR(event->trigger.value, row[8]);
 					event->trigger.opdata = zbx_strdup(NULL, row[9]);
 				}
 			}
@@ -267,8 +267,8 @@ void	zbx_db_get_eventid_r_eventid_pairs(zbx_vector_uint64_t *eventids, zbx_vecto
 	{
 		zbx_uint64_pair_t	r_event;
 
-		ZBX_STR2UINT64(r_event.first, row[0]);
-		ZBX_STR2UINT64(r_event.second, row[1]);
+		TRX_STR2UINT64(r_event.first, row[0]);
+		TRX_STR2UINT64(r_event.second, row[1]);
 
 		zbx_vector_uint64_pair_append(event_pairs, r_event);
 		zbx_vector_uint64_append(r_eventids, r_event.second);

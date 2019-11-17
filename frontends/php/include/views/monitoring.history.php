@@ -61,7 +61,7 @@ elseif (count($data['items']) > 1) {
 $action_list = (new CList())
 	->addItem([
 		new CLabel(_('View as')),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		(new CComboBox('action', $data['action'], 'submit()', $actions))->setEnabled((bool) $data['items']),
 	]);
 
@@ -77,7 +77,7 @@ if ($data['action'] == HISTORY_GRAPH && count($data['items']) == 1) {
 	]));
 }
 
-$action_list->addItem([(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN), get_icon('fullscreen')]);
+$action_list->addItem([(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN), get_icon('fullscreen')]);
 
 $header['right']->addItem($action_list);
 
@@ -123,10 +123,10 @@ if ($data['action'] == HISTORY_LATEST || $data['action'] == HISTORY_VALUES) {
 								'value_types' => [ITEM_VALUE_TYPE_LOG, ITEM_VALUE_TYPE_TEXT]
 							]
 						]
-					]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				)
 				->addRow(_('Value'),
-					(new CTextBox('filter', getRequest('filter', '')))->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					(new CTextBox('filter', getRequest('filter', '')))->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 				);
 
 			$filterTask = getRequest('filter_task', 0);
@@ -193,7 +193,7 @@ else {
 
 	if ($data['itemids'] && $data['action'] !== HISTORY_LATEST) {
 		$filter_form->addTimeSelector($screen->timeline['from'], $screen->timeline['to'],
-			$web_layout_mode != ZBX_LAYOUT_KIOSKMODE);
+			$web_layout_mode != TRX_LAYOUT_KIOSKMODE);
 	}
 
 	if ($data['action'] == HISTORY_BATCH_GRAPH) {
@@ -240,8 +240,8 @@ else {
 		$historyWidget->addItem(
 			(new CTableInfo())
 				->setHeader([
-					(new CColHeader(_('Timestamp')))->addClass(ZBX_STYLE_CELL_WIDTH),
-					(new CColHeader(_('Local time')))->addClass(ZBX_STYLE_CELL_WIDTH),
+					(new CColHeader(_('Timestamp')))->addClass(TRX_STYLE_CELL_WIDTH),
+					(new CColHeader(_('Local time')))->addClass(TRX_STYLE_CELL_WIDTH),
 					_('Value')
 				])
 				->setNoDataMessage(_('Specify some filter condition to see the values.'))

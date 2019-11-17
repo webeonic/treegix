@@ -15,7 +15,7 @@
 #include "checks_ipmi.h"
 #include "ipmi_poller.h"
 
-#define ZBX_IPMI_MANAGER_CLEANUP_DELAY		SEC_PER_DAY
+#define TRX_IPMI_MANAGER_CLEANUP_DELAY		SEC_PER_DAY
 
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
@@ -35,7 +35,7 @@ static void	ipmi_poller_register(zbx_ipc_async_socket_t *socket)
 
 	ppid = getppid();
 
-	zbx_ipc_async_socket_send(socket, ZBX_IPC_IPMI_REGISTER, (unsigned char *)&ppid, sizeof(ppid));
+	zbx_ipc_async_socket_send(socket, TRX_IPC_IPMI_REGISTER, (unsigned char *)&ppid, sizeof(ppid));
 }
 
 /******************************************************************************
@@ -88,12 +88,12 @@ static void	ipmi_poller_process_value_request(zbx_ipc_async_socket_t *socket, zb
 	zbx_ipmi_deserialize_request(message->data, &itemid, &addr, &port, &authtype,
 			&privilege, &username, &password, &sensor, &command);
 
-	treegix_log(LOG_LEVEL_TRACE, "%s() itemid:" ZBX_FS_UI64 " addr:%s port:%d authtype:%d privilege:%d username:%s"
+	treegix_log(LOG_LEVEL_TRACE, "%s() itemid:" TRX_FS_UI64 " addr:%s port:%d authtype:%d privilege:%d username:%s"
 			" sensor:%s", __func__, itemid, addr, (int)port, (int)authtype, (int)privilege,
 			username, sensor);
 
 	errcode = get_value_ipmi(itemid, addr, port, authtype, privilege, username, password, sensor, &value);
-	ipmi_poller_send_result(socket, ZBX_IPC_IPMI_VALUE_RESULT, errcode, value);
+	ipmi_poller_send_result(socket, TRX_IPC_IPMI_VALUE_RESULT, errcode, value);
 
 	zbx_free(value);
 	zbx_free(addr);
@@ -128,14 +128,14 @@ static void	ipmi_poller_process_command_request(zbx_ipc_async_socket_t *socket, 
 	zbx_ipmi_deserialize_request(message->data, &itemid, &addr, &port, &authtype,
 			&privilege, &username, &password, &sensor, &command);
 
-	treegix_log(LOG_LEVEL_TRACE, "%s() hostid:" ZBX_FS_UI64 " addr:%s port:%d authtype:%d privilege:%d username:%s"
+	treegix_log(LOG_LEVEL_TRACE, "%s() hostid:" TRX_FS_UI64 " addr:%s port:%d authtype:%d privilege:%d username:%s"
 			" sensor:%s", __func__, itemid, addr, (int)port, (int)authtype, (int)privilege,
 			username, sensor);
 
 	errcode = zbx_set_ipmi_control_value(itemid, addr, port, authtype, privilege, username, password, sensor,
 			command, &error);
 
-	ipmi_poller_send_result(socket, ZBX_IPC_IPMI_COMMAND_RESULT, errcode, error);
+	ipmi_poller_send_result(socket, TRX_IPC_IPMI_COMMAND_RESULT, errcode, error);
 
 	zbx_free(error);
 	zbx_free(addr);
@@ -146,7 +146,7 @@ static void	ipmi_poller_process_command_request(zbx_ipc_async_socket_t *socket, 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
-ZBX_THREAD_ENTRY(ipmi_poller_thread, args)
+TRX_THREAD_ENTRY(ipmi_poller_thread, args)
 {
 	char			*error = NULL;
 	zbx_ipc_async_socket_t	ipmi_socket;
@@ -166,7 +166,7 @@ ZBX_THREAD_ENTRY(ipmi_poller_thread, args)
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
-	if (FAIL == zbx_ipc_async_socket_open(&ipmi_socket, ZBX_IPC_SERVICE_IPMI, SEC_PER_MIN, &error))
+	if (FAIL == zbx_ipc_async_socket_open(&ipmi_socket, TRX_IPC_SERVICE_IPMI, SEC_PER_MIN, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot connect to IPMI service: %s", error);
 		zbx_free(error);
@@ -181,9 +181,9 @@ ZBX_THREAD_ENTRY(ipmi_poller_thread, args)
 
 	zbx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
 
-	update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		zbx_ipc_message_t	*message = NULL;
 
@@ -191,8 +191,8 @@ ZBX_THREAD_ENTRY(ipmi_poller_thread, args)
 
 		if (STAT_INTERVAL < time_now - time_stat)
 		{
-			zbx_setproctitle("%s #%d [polled %d values, idle " ZBX_FS_DBL " sec during "
-					ZBX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
+			zbx_setproctitle("%s #%d [polled %d values, idle " TRX_FS_DBL " sec during "
+					TRX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
 					polled_num, time_idle, time_now - time_stat);
 
 			time_stat = time_now;
@@ -200,9 +200,9 @@ ZBX_THREAD_ENTRY(ipmi_poller_thread, args)
 			polled_num = 0;
 		}
 
-		update_selfmon_counter(ZBX_PROCESS_STATE_IDLE);
+		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
 
-		while (ZBX_IS_RUNNING())
+		while (TRX_IS_RUNNING())
 		{
 			const int ipc_timeout = 2;
 			const int ipmi_timeout = 1;
@@ -219,7 +219,7 @@ ZBX_THREAD_ENTRY(ipmi_poller_thread, args)
 			zbx_perform_all_openipmi_ops(ipmi_timeout);
 		}
 
-		update_selfmon_counter(ZBX_PROCESS_STATE_BUSY);
+		update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
 		if (NULL == message)
 			break;
@@ -230,14 +230,14 @@ ZBX_THREAD_ENTRY(ipmi_poller_thread, args)
 
 		switch (message->code)
 		{
-			case ZBX_IPC_IPMI_VALUE_REQUEST:
+			case TRX_IPC_IPMI_VALUE_REQUEST:
 				ipmi_poller_process_value_request(&ipmi_socket, message);
 				polled_num++;
 				break;
-			case ZBX_IPC_IPMI_COMMAND_REQUEST:
+			case TRX_IPC_IPMI_COMMAND_REQUEST:
 				ipmi_poller_process_command_request(&ipmi_socket, message);
 				break;
-			case ZBX_IPC_IPMI_CLEANUP_REQUEST:
+			case TRX_IPC_IPMI_CLEANUP_REQUEST:
 				zbx_delete_inactive_ipmi_hosts(time(NULL));
 				break;
 		}

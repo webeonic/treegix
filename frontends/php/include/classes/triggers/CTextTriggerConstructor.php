@@ -48,7 +48,7 @@ class CTextTriggerConstructor {
 		}
 
 		// regexp used to split an expressions into tokens
-		$ZBX_PREG_EXPESSION_FUNC_FORMAT = '^(['.ZBX_PREG_PRINT.']*) (and|or) (not )?(-)? ?[(]*(([a-zA-Z_.\$]{6,7})(\\((['.ZBX_PREG_PRINT.']+?){0,1}\\)))(['.ZBX_PREG_PRINT.']*)$';
+		$TRX_PREG_EXPESSION_FUNC_FORMAT = '^(['.TRX_PREG_PRINT.']*) (and|or) (not )?(-)? ?[(]*(([a-zA-Z_.\$]{6,7})(\\((['.TRX_PREG_PRINT.']+?){0,1}\\)))(['.TRX_PREG_PRINT.']*)$';
 		$functions = ['regexp' => 1, 'iregexp' => 1];
 		$expr_array = [];
 		$cexpor = 0;
@@ -90,7 +90,7 @@ class CTextTriggerConstructor {
 
 			// split an expression into separate tokens
 			// start from the first part of the expression, then move to the next one
-			while (preg_match('/'.$ZBX_PREG_EXPESSION_FUNC_FORMAT.'/i', $expr, $arr)) {
+			while (preg_match('/'.$TRX_PREG_EXPESSION_FUNC_FORMAT.'/i', $expr, $arr)) {
 				$arr[6] = strtolower($arr[6]);
 				if (!isset($functions[$arr[6]])) {
 					error(_('Incorrect function is used').'. ['.$expression['value'].']');

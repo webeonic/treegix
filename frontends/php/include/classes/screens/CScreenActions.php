@@ -11,47 +11,47 @@ class CScreenActions extends CScreenBase {
 	 */
 	public function get() {
 		$sortfield = 'clock';
-		$sortorder = ZBX_SORT_DOWN;
+		$sortorder = TRX_SORT_DOWN;
 
 		switch ($this->screenitem['sort_triggers']) {
 			case SCREEN_SORT_TRIGGERS_TIME_ASC:
 				$sortfield = 'clock';
-				$sortorder = ZBX_SORT_UP;
+				$sortorder = TRX_SORT_UP;
 				break;
 
 			case SCREEN_SORT_TRIGGERS_TIME_DESC:
 				$sortfield = 'clock';
-				$sortorder = ZBX_SORT_DOWN;
+				$sortorder = TRX_SORT_DOWN;
 				break;
 
 			case SCREEN_SORT_TRIGGERS_TYPE_ASC:
 				$sortfield = 'mediatypeid';
-				$sortorder = ZBX_SORT_UP;
+				$sortorder = TRX_SORT_UP;
 				break;
 
 			case SCREEN_SORT_TRIGGERS_TYPE_DESC:
 				$sortfield = 'mediatypeid';
-				$sortorder = ZBX_SORT_DOWN;
+				$sortorder = TRX_SORT_DOWN;
 				break;
 
 			case SCREEN_SORT_TRIGGERS_STATUS_ASC:
 				$sortfield = 'status';
-				$sortorder = ZBX_SORT_UP;
+				$sortorder = TRX_SORT_UP;
 				break;
 
 			case SCREEN_SORT_TRIGGERS_STATUS_DESC:
 				$sortfield = 'status';
-				$sortorder = ZBX_SORT_DOWN;
+				$sortorder = TRX_SORT_DOWN;
 				break;
 
 			case SCREEN_SORT_TRIGGERS_RECIPIENT_ASC:
 				$sortfield = 'sendto';
-				$sortorder = ZBX_SORT_UP;
+				$sortorder = TRX_SORT_UP;
 				break;
 
 			case SCREEN_SORT_TRIGGERS_RECIPIENT_DESC:
 				$sortfield = 'sendto';
-				$sortorder = ZBX_SORT_DOWN;
+				$sortorder = TRX_SORT_DOWN;
 				break;
 		}
 
@@ -86,7 +86,7 @@ class CScreenActions extends CScreenBase {
 			: [];
 
 		// indicator of sort field
-		$sort_div = (new CSpan())->addClass(($sortorder === ZBX_SORT_DOWN) ? ZBX_STYLE_ARROW_DOWN : ZBX_STYLE_ARROW_UP);
+		$sort_div = (new CSpan())->addClass(($sortorder === TRX_SORT_DOWN) ? TRX_STYLE_ARROW_DOWN : TRX_STYLE_ARROW_UP);
 
 		// create alert table
 		$table = (new CTableInfo())
@@ -120,7 +120,7 @@ class CScreenActions extends CScreenBase {
 				$info_icons = null;
 			}
 
-			$alert['action_type'] = ZBX_EVENT_HISTORY_ALERT;
+			$alert['action_type'] = TRX_EVENT_HISTORY_ALERT;
 
 			$action_type = '';
 			if ($alert['mediatypeid'] != 0 && array_key_exists(0, $alert['mediatypes'])) {
@@ -146,7 +146,7 @@ class CScreenActions extends CScreenBase {
 
 		$footer = (new CList())
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput((new CUiWidget(uniqid(), [$table, $footer]))->setHeader(_('Action log')));
 	}

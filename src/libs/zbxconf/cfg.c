@@ -227,7 +227,7 @@ static int	parse_cfg_dir(const char *path, const char *pattern, struct cfg_line 
 
 		zbx_free(file_name);
 
-		if (SUCCEED != __parse_cfg_file(file, cfg, level, ZBX_CFG_FILE_REQUIRED, strict))
+		if (SUCCEED != __parse_cfg_file(file, cfg, level, TRX_CFG_FILE_REQUIRED, strict))
 			goto close;
 	}
 
@@ -266,7 +266,7 @@ static int	parse_cfg_dir(const char *path, const char *pattern, struct cfg_line 
 		if (NULL != pattern && SUCCEED != match_glob(d->d_name, pattern))
 			continue;
 
-		if (SUCCEED != __parse_cfg_file(file, cfg, level, ZBX_CFG_FILE_REQUIRED, strict))
+		if (SUCCEED != __parse_cfg_file(file, cfg, level, TRX_CFG_FILE_REQUIRED, strict))
 			goto close;
 	}
 
@@ -318,7 +318,7 @@ static int	parse_cfg_object(const char *cfg_file, struct cfg_line *cfg, int leve
 	{
 		if (NULL == pattern)
 		{
-			ret = __parse_cfg_file(path, cfg, level, ZBX_CFG_FILE_REQUIRED, strict);
+			ret = __parse_cfg_file(path, cfg, level, TRX_CFG_FILE_REQUIRED, strict);
 			goto clean;
 		}
 
@@ -354,10 +354,10 @@ clean:
  ******************************************************************************/
 static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int level, int optional, int strict)
 {
-#define ZBX_MAX_INCLUDE_LEVEL	10
+#define TRX_MAX_INCLUDE_LEVEL	10
 
-#define ZBX_CFG_LTRIM_CHARS	"\t "
-#define ZBX_CFG_RTRIM_CHARS	ZBX_CFG_LTRIM_CHARS "\r\n"
+#define TRX_CFG_LTRIM_CHARS	"\t "
+#define TRX_CFG_RTRIM_CHARS	TRX_CFG_LTRIM_CHARS "\r\n"
 
 	FILE		*file;
 	int		i, lineno, param_valid;
@@ -367,7 +367,7 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 #ifdef _WINDOWS
 	wchar_t		*wcfg_file;
 #endif
-	if (++level > ZBX_MAX_INCLUDE_LEVEL)
+	if (++level > TRX_MAX_INCLUDE_LEVEL)
 	{
 		zbx_error("Recursion detected! Skipped processing of '%s'.", cfg_file);
 		return FAIL;
@@ -393,8 +393,8 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 			if (MAX_STRING_LEN < len && NULL == strchr("\r\n", line[MAX_STRING_LEN]))
 				goto line_too_long;
 
-			zbx_ltrim(line, ZBX_CFG_LTRIM_CHARS);
-			zbx_rtrim(line, ZBX_CFG_RTRIM_CHARS);
+			zbx_ltrim(line, TRX_CFG_LTRIM_CHARS);
+			zbx_rtrim(line, TRX_CFG_RTRIM_CHARS);
 
 			if ('#' == *line || '\0' == *line)
 				continue;
@@ -409,8 +409,8 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 
 			*value++ = '\0';
 
-			zbx_rtrim(parameter, ZBX_CFG_RTRIM_CHARS);
-			zbx_ltrim(value, ZBX_CFG_LTRIM_CHARS);
+			zbx_rtrim(parameter, TRX_CFG_RTRIM_CHARS);
+			zbx_ltrim(value, TRX_CFG_LTRIM_CHARS);
 
 			treegix_log(LOG_LEVEL_DEBUG, "cfg: para: [%s] val [%s]", parameter, value);
 
@@ -450,7 +450,7 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 						break;
 					case TYPE_STRING_LIST:
 						zbx_trim_str_list(value, ',');
-						ZBX_FALLTHROUGH;
+						TRX_FALLTHROUGH;
 					case TYPE_STRING:
 						*((char **)cfg[i].variable) =
 								zbx_strdup(*((char **)cfg[i].variable), value);
@@ -472,7 +472,7 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 				}
 			}
 
-			if (0 == param_valid && ZBX_CFG_STRICT == strict)
+			if (0 == param_valid && TRX_CFG_STRICT == strict)
 				goto unknown_parameter;
 		}
 		fclose(file);
@@ -504,7 +504,7 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 
 	return SUCCEED;
 cannot_open:
-	if (ZBX_CFG_FILE_REQUIRED != optional)
+	if (TRX_CFG_FILE_REQUIRED != optional)
 		return SUCCEED;
 	zbx_error("cannot open config file \"%s\": %s", cfg_file, zbx_strerror(errno));
 	goto error;
@@ -584,7 +584,7 @@ void	zbx_set_data_destination_hosts(char *active_hosts, add_serveractive_host_f 
 		if (NULL != (r = strchr(l, ',')))
 			*r = '\0';
 
-		if (SUCCEED != parse_serveractive_element(l, &host, &port, (unsigned short)ZBX_DEFAULT_SERVER_PORT))
+		if (SUCCEED != parse_serveractive_element(l, &host, &port, (unsigned short)TRX_DEFAULT_SERVER_PORT))
 		{
 			zbx_error("error parsing the \"ServerActive\" parameter: address \"%s\" is invalid", l);
 			exit(EXIT_FAILURE);

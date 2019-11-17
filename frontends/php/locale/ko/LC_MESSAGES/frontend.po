@@ -15239,8 +15239,8 @@ msgstr "사이즈"
 
 #: include/classes/server/CTreegixServer.php:397
 #, c-format
-msgid "Size of the response received from Treegix server \"%1$s\" exceeds the allowed size of %2$s bytes. This value can be increased in the ZBX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php."
-msgstr "Treegix서버\"%1$s\"에서 수신한 데이터의 사이즈가 상한치인 %2$s바이트를 넘었습니다. 상한치는 include/defines.inc.php의 ZBX_SOCKET_BYTES_LIMIT 파라미터에서 변경할 수 있습니다."
+msgid "Size of the response received from Treegix server \"%1$s\" exceeds the allowed size of %2$s bytes. This value can be increased in the TRX_SOCKET_BYTES_LIMIT constant in include/defines.inc.php."
+msgstr "Treegix서버\"%1$s\"에서 수신한 데이터의 사이즈가 상한치인 %2$s바이트를 넘었습니다. 상한치는 include/defines.inc.php의 TRX_SOCKET_BYTES_LIMIT 파라미터에서 변경할 수 있습니다."
 
 #: include/graphs.inc.php:471
 #, c-format

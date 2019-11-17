@@ -9,7 +9,7 @@ $widget = (new CWidget())->setTitle(_('Templates'));
 // Create form.
 $form = (new CForm())
 	->setName('templateForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('action', 'template.massupdate')
 	->setId('templateForm');
 
@@ -37,10 +37,10 @@ $template_form_list
 			->setChecked(array_key_exists('groups', $data['visible']))
 			->setAttribute('autofocus', 'autofocus'),
 		(new CDiv([
-			(new CRadioButtonList('mass_update_groups', ZBX_ACTION_ADD))
-				->addValue(_('Add'), ZBX_ACTION_ADD)
-				->addValue(_('Replace'), ZBX_ACTION_REPLACE)
-				->addValue(_('Remove'), ZBX_ACTION_REMOVE)
+			(new CRadioButtonList('mass_update_groups', TRX_ACTION_ADD))
+				->addValue(_('Add'), TRX_ACTION_ADD)
+				->addValue(_('Replace'), TRX_ACTION_REPLACE)
+				->addValue(_('Remove'), TRX_ACTION_REMOVE)
 				->setModern(true)
 				->addStyle('margin-bottom: 5px;'),
 			(new CMultiSelect([
@@ -57,14 +57,14 @@ $template_form_list
 						'editable' => true
 					]
 				]
-			]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		]))->setId('groups-div')
 	)
 	->addRow(
 		(new CVisibilityBox('visible[description]', 'description', _('Original')))
 			->setLabel(_('Description'))
 			->setChecked(array_key_exists('description', $data['visible'])),
-		(new CTextArea('description', $data['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		(new CTextArea('description', $data['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 
 /*
@@ -87,11 +87,11 @@ $new_template_table = (new CTable())
 					'dstfld1' => 'linked_templates_'
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	])
 	->addRow([
 		(new CList())
-			->addClass(ZBX_STYLE_LIST_CHECK_RADIO)
+			->addClass(TRX_STYLE_LIST_CHECK_RADIO)
 			->addItem((new CCheckBox('mass_replace_tpls'))
 				->setLabel(_('Replace'))
 				->setChecked($data['mass_replace_tpls'] == 1)
@@ -108,8 +108,8 @@ $linked_templates_form_list->addRow(
 		->setChecked(array_key_exists('linked_templates', $data['visible'])),
 	(new CDiv($new_template_table))
 		->setId('linked-templates-div')
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->addStyle('min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addStyle('min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 /*
@@ -121,10 +121,10 @@ $tags_form_list = (new CFormList('tags-form-list'))
 			->setLabel(_('Tags'))
 			->setChecked(array_key_exists('tags', $data['visible'])),
 		(new CDiv([
-			(new CRadioButtonList('mass_update_tags', ZBX_ACTION_ADD))
-				->addValue(_('Add'), ZBX_ACTION_ADD)
-				->addValue(_('Replace'), ZBX_ACTION_REPLACE)
-				->addValue(_('Remove'), ZBX_ACTION_REMOVE)
+			(new CRadioButtonList('mass_update_tags', TRX_ACTION_ADD))
+				->addValue(_('Add'), TRX_ACTION_ADD)
+				->addValue(_('Replace'), TRX_ACTION_REPLACE)
+				->addValue(_('Remove'), TRX_ACTION_REMOVE)
 				->setModern(true)
 				->addStyle('margin-bottom: 10px;'),
 			renderTagTable($data['tags'])

@@ -15,48 +15,48 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'parent_discoveryid' =>	[T_ZBX_INT, O_OPT, P_SYS,		DB_ID,			null],
-	'groupid' =>			[T_ZBX_INT, O_OPT, P_SYS,		DB_ID,			null],
-	'hostid' =>				[T_ZBX_INT, O_OPT, P_SYS,		DB_ID,			null],
-	'copy_type' =>			[T_ZBX_INT, O_OPT, P_SYS,
+	'parent_discoveryid' =>	[T_TRX_INT, O_OPT, P_SYS,		DB_ID,			null],
+	'groupid' =>			[T_TRX_INT, O_OPT, P_SYS,		DB_ID,			null],
+	'hostid' =>				[T_TRX_INT, O_OPT, P_SYS,		DB_ID,			null],
+	'copy_type' =>			[T_TRX_INT, O_OPT, P_SYS,
 								IN([COPY_TYPE_TO_HOST_GROUP, COPY_TYPE_TO_HOST, COPY_TYPE_TO_TEMPLATE]),
 								'isset({copy})'
 							],
-	'copy_mode' =>			[T_ZBX_INT, O_OPT, P_SYS,		IN('0'),		null],
-	'graphid' =>			[T_ZBX_INT, O_OPT, P_SYS,		DB_ID,			'isset({form}) && {form} == "update"'],
-	'name' =>				[T_ZBX_STR, O_OPT, null,		NOT_EMPTY,		'isset({add}) || isset({update})', _('Name')],
-	'width' =>				[T_ZBX_INT, O_OPT, null,		BETWEEN(20, 65535), 'isset({add}) || isset({update})', _('Width')],
-	'height' =>				[T_ZBX_INT, O_OPT, null,		BETWEEN(20, 65535), 'isset({add}) || isset({update})', _('Height')],
-	'graphtype' =>			[T_ZBX_INT, O_OPT, null,		IN('0,1,2,3'),	'isset({add}) || isset({update})'],
-	'show_3d' =>			[T_ZBX_INT, O_OPT, P_NZERO,	IN('0,1'),		null],
-	'show_legend' =>		[T_ZBX_INT, O_OPT, P_NZERO,	IN('0,1'),		null],
-	'ymin_type' =>			[T_ZBX_INT, O_OPT, null,		IN('0,1,2'),	null],
-	'ymax_type' =>			[T_ZBX_INT, O_OPT, null,		IN('0,1,2'),	null],
-	'yaxismin' =>			[T_ZBX_DBL, O_OPT, null,		null,			'(isset({add}) || isset({update})) && isset({graphtype}) && ({graphtype} == '.GRAPH_TYPE_NORMAL.' || {graphtype} == '.GRAPH_TYPE_STACKED.')'],
-	'yaxismax' =>			[T_ZBX_DBL, O_OPT, null,		null,			'(isset({add}) || isset({update})) && isset({graphtype}) && ({graphtype} == '.GRAPH_TYPE_NORMAL.' || {graphtype} == '.GRAPH_TYPE_STACKED.')'],
-	'ymin_itemid' =>		[T_ZBX_INT, O_OPT, null,		DB_ID,			'(isset({add}) || isset({update})) && isset({ymin_type}) && {ymin_type} == '.GRAPH_YAXIS_TYPE_ITEM_VALUE],
-	'ymax_itemid' =>		[T_ZBX_INT, O_OPT, null,		DB_ID,			'(isset({add}) || isset({update})) && isset({ymax_type}) && {ymax_type} == '.GRAPH_YAXIS_TYPE_ITEM_VALUE],
-	'percent_left' =>		[T_ZBX_DBL, O_OPT, null,		BETWEEN(0, 100), null, _('Percentile line (left)')],
-	'percent_right' =>		[T_ZBX_DBL, O_OPT, null,		BETWEEN(0, 100), null, _('Percentile line (right)')],
-	'visible' =>			[T_ZBX_INT, O_OPT, null,		BETWEEN(0, 1),	null],
-	'items' =>				[T_ZBX_STR, O_OPT, null,		null,			null],
-	'show_work_period' =>	[T_ZBX_INT, O_OPT, null,		IN('1'),		null],
-	'show_triggers' =>		[T_ZBX_INT, O_OPT, null,		IN('1'),		null],
-	'group_graphid' =>		[T_ZBX_INT, O_OPT, null,		DB_ID,			null],
-	'copy_targetids' =>		[T_ZBX_INT, O_OPT, null,		DB_ID,			null],
+	'copy_mode' =>			[T_TRX_INT, O_OPT, P_SYS,		IN('0'),		null],
+	'graphid' =>			[T_TRX_INT, O_OPT, P_SYS,		DB_ID,			'isset({form}) && {form} == "update"'],
+	'name' =>				[T_TRX_STR, O_OPT, null,		NOT_EMPTY,		'isset({add}) || isset({update})', _('Name')],
+	'width' =>				[T_TRX_INT, O_OPT, null,		BETWEEN(20, 65535), 'isset({add}) || isset({update})', _('Width')],
+	'height' =>				[T_TRX_INT, O_OPT, null,		BETWEEN(20, 65535), 'isset({add}) || isset({update})', _('Height')],
+	'graphtype' =>			[T_TRX_INT, O_OPT, null,		IN('0,1,2,3'),	'isset({add}) || isset({update})'],
+	'show_3d' =>			[T_TRX_INT, O_OPT, P_NZERO,	IN('0,1'),		null],
+	'show_legend' =>		[T_TRX_INT, O_OPT, P_NZERO,	IN('0,1'),		null],
+	'ymin_type' =>			[T_TRX_INT, O_OPT, null,		IN('0,1,2'),	null],
+	'ymax_type' =>			[T_TRX_INT, O_OPT, null,		IN('0,1,2'),	null],
+	'yaxismin' =>			[T_TRX_DBL, O_OPT, null,		null,			'(isset({add}) || isset({update})) && isset({graphtype}) && ({graphtype} == '.GRAPH_TYPE_NORMAL.' || {graphtype} == '.GRAPH_TYPE_STACKED.')'],
+	'yaxismax' =>			[T_TRX_DBL, O_OPT, null,		null,			'(isset({add}) || isset({update})) && isset({graphtype}) && ({graphtype} == '.GRAPH_TYPE_NORMAL.' || {graphtype} == '.GRAPH_TYPE_STACKED.')'],
+	'ymin_itemid' =>		[T_TRX_INT, O_OPT, null,		DB_ID,			'(isset({add}) || isset({update})) && isset({ymin_type}) && {ymin_type} == '.GRAPH_YAXIS_TYPE_ITEM_VALUE],
+	'ymax_itemid' =>		[T_TRX_INT, O_OPT, null,		DB_ID,			'(isset({add}) || isset({update})) && isset({ymax_type}) && {ymax_type} == '.GRAPH_YAXIS_TYPE_ITEM_VALUE],
+	'percent_left' =>		[T_TRX_DBL, O_OPT, null,		BETWEEN(0, 100), null, _('Percentile line (left)')],
+	'percent_right' =>		[T_TRX_DBL, O_OPT, null,		BETWEEN(0, 100), null, _('Percentile line (right)')],
+	'visible' =>			[T_TRX_INT, O_OPT, null,		BETWEEN(0, 1),	null],
+	'items' =>				[T_TRX_STR, O_OPT, null,		null,			null],
+	'show_work_period' =>	[T_TRX_INT, O_OPT, null,		IN('1'),		null],
+	'show_triggers' =>		[T_TRX_INT, O_OPT, null,		IN('1'),		null],
+	'group_graphid' =>		[T_TRX_INT, O_OPT, null,		DB_ID,			null],
+	'copy_targetids' =>		[T_TRX_INT, O_OPT, null,		DB_ID,			null],
 	// actions
-	'action' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, IN('"graph.masscopyto","graph.massdelete"'),	null],
-	'add' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'update' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'clone' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'copy' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'delete' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,			null],
-	'cancel' =>				[T_ZBX_STR, O_OPT, P_SYS,		null,			null],
-	'form' =>				[T_ZBX_STR, O_OPT, P_SYS,		null,			null],
-	'form_refresh' =>		[T_ZBX_INT, O_OPT, null,		null,			null],
+	'action' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, IN('"graph.masscopyto","graph.massdelete"'),	null],
+	'add' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'update' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'clone' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'copy' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'delete' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,			null],
+	'cancel' =>				[T_TRX_STR, O_OPT, P_SYS,		null,			null],
+	'form' =>				[T_TRX_STR, O_OPT, P_SYS,		null,			null],
+	'form_refresh' =>		[T_TRX_INT, O_OPT, null,		null,			null],
 	// sort and sortorder
-	'sort' =>				[T_ZBX_STR, O_OPT, P_SYS, IN('"graphtype","name"'),					null],
-	'sortorder' =>			[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>				[T_TRX_STR, O_OPT, P_SYS, IN('"graphtype","name"'),					null],
+	'sortorder' =>			[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 $percentVisible = getRequest('visible');
 if (!isset($percentVisible['percent_left'])) {
@@ -148,7 +148,7 @@ if (isset($_REQUEST['clone']) && isset($_REQUEST['graphid'])) {
 		'output' => API_OUTPUT_EXTEND
 	]);
 
-	if ($graph['templateid'] || $graph['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
+	if ($graph['templateid'] || $graph['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 		$_REQUEST = array_merge($_REQUEST, $graph);
 	}
 	else {
@@ -470,7 +470,7 @@ elseif (isset($_REQUEST['form'])) {
 		}
 
 		// templates
-		$flag = ($data['parent_discoveryid'] === null) ? ZBX_FLAG_DISCOVERY_NORMAL : ZBX_FLAG_DISCOVERY_PROTOTYPE;
+		$flag = ($data['parent_discoveryid'] === null) ? TRX_FLAG_DISCOVERY_NORMAL : TRX_FLAG_DISCOVERY_PROTOTYPE;
 		$data['templates'] = makeGraphTemplatesHtml($graph['graphid'], getGraphParentTemplates([$graph], $flag),
 			$flag
 		);
@@ -535,7 +535,7 @@ elseif (isset($_REQUEST['form'])) {
 			'selectHosts' => ['hostid', 'name'],
 			'itemids' => zbx_objectValues($data['items'], 'itemid'),
 			'filter' => [
-				'flags' => [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_PROTOTYPE, ZBX_FLAG_DISCOVERY_CREATED]
+				'flags' => [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_PROTOTYPE, TRX_FLAG_DISCOVERY_CREATED]
 			],
 			'webitems' => true,
 			'preservekeys' => true
@@ -601,7 +601,7 @@ elseif (isset($_REQUEST['form'])) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);
@@ -668,8 +668,8 @@ else {
 	}
 
 	$data['parent_templates'] = getGraphParentTemplates($data['graphs'], ($data['parent_discoveryid'] === null)
-		? ZBX_FLAG_DISCOVERY_NORMAL
-		: ZBX_FLAG_DISCOVERY_PROTOTYPE
+		? TRX_FLAG_DISCOVERY_NORMAL
+		: TRX_FLAG_DISCOVERY_PROTOTYPE
 	);
 
 	// render view

@@ -163,45 +163,45 @@ class CDRule extends CApiService {
 	protected function validateCreate(array $drules) {
 		// Check permissions.
 		if (self::$userData['type'] == USER_TYPE_TREEGIX_USER) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		if (!$drules) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$proxy_hostids = [];
 
-		$ip_range_parser = new CIPRangeParser(['v6' => ZBX_HAVE_IPV6, 'dns' => false, 'max_ipv4_cidr' => 30]);
+		$ip_range_parser = new CIPRangeParser(['v6' => TRX_HAVE_IPV6, 'dns' => false, 'max_ipv4_cidr' => 30]);
 
 		foreach ($drules as $drule) {
 			if (!array_key_exists('name', $drule)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'name'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'name'));
 			}
 			elseif (is_array($drule['name'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 			elseif ($drule['name'] === '' || $drule['name'] === null || $drule['name'] === false) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'name', _('cannot be empty'))
 				);
 			}
 
 			if (!array_key_exists('iprange', $drule) || $drule['iprange'] === '') {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'iprange', _('cannot be empty'))
 				);
 			}
 			elseif (!$ip_range_parser->parse($drule['iprange'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'iprange', $ip_range_parser->getError())
 				);
 			}
-			elseif (bccomp($ip_range_parser->getMaxIPCount(), ZBX_DISCOVERER_IPRANGE_LIMIT) > 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+			elseif (bccomp($ip_range_parser->getMaxIPCount(), TRX_DISCOVERER_IPRANGE_LIMIT) > 0) {
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'iprange',
 						_s('IP range "%1$s" exceeds "%2$s" address limit', $ip_range_parser->getMaxIPRange(),
-							ZBX_DISCOVERER_IPRANGE_LIMIT
+							TRX_DISCOVERER_IPRANGE_LIMIT
 						)
 					)
 				);
@@ -209,21 +209,21 @@ class CDRule extends CApiService {
 
 			if (array_key_exists('delay', $drule)
 					&& !validateTimeUnit($drule['delay'], 1, SEC_PER_WEEK, false, $error, ['usermacros' => true])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'delay', $error)
 				);
 			}
 
 			if (array_key_exists('status', $drule) && $drule['status'] != DRULE_STATUS_DISABLED
 					&& $drule['status'] != DRULE_STATUS_ACTIVE) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value "%1$s" for "%2$s" field.', $drule['status'], 'status')
 				);
 			}
 
 			if (array_key_exists('proxy_hostid', $drule)) {
 				if (!zbx_is_int($drule['proxy_hostid'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value "%1$s" for "%2$s" field.', $drule['proxy_hostid'], 'proxy_hostid')
 					);
 				}
@@ -237,14 +237,14 @@ class CDRule extends CApiService {
 				$this->validateDChecks($drule['dchecks']);
 			}
 			else {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot save discovery rule without checks.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot save discovery rule without checks.'));
 			}
 		}
 
 		// Check drule name duplicates in input data.
 		$duplicate = CArrayHelper::findDuplicate($drules, 'name');
 		if ($duplicate) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Discovery rule "%1$s" already exists.', $duplicate['name'])
 			);
 		}
@@ -257,7 +257,7 @@ class CDRule extends CApiService {
 		]);
 
 		if ($db_duplicate) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Discovery rule "%1$s" already exists.', $db_duplicate[0]['name'])
 			);
 		}
@@ -271,7 +271,7 @@ class CDRule extends CApiService {
 			]);
 			foreach ($proxy_hostids as $proxy_hostid) {
 				if (!array_key_exists($proxy_hostid, $db_proxies)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value "%1$s" for "%2$s" field.', $proxy_hostid, 'proxy_hostid')
 					);
 				}
@@ -289,11 +289,11 @@ class CDRule extends CApiService {
 	protected function validateUpdate(array $drules) {
 		// Check permissions.
 		if (self::$userData['type'] == USER_TYPE_TREEGIX_USER) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		if (!$drules) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		// Validate given IDs.
@@ -312,19 +312,19 @@ class CDRule extends CApiService {
 		$drule_names_changed = [];
 		$proxy_hostids = [];
 
-		$ip_range_parser = new CIPRangeParser(['v6' => ZBX_HAVE_IPV6, 'dns' => false, 'max_ipv4_cidr' => 30]);
+		$ip_range_parser = new CIPRangeParser(['v6' => TRX_HAVE_IPV6, 'dns' => false, 'max_ipv4_cidr' => 30]);
 
 		foreach ($drules as $drule) {
 			if (!array_key_exists($drule['druleid'], $db_drules)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 
 			if (array_key_exists('name', $drule)) {
 				if (is_array($drule['name'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 				elseif ($drule['name'] === '' || $drule['name'] === null || $drule['name'] === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'name', _('cannot be empty'))
 					);
 				}
@@ -336,20 +336,20 @@ class CDRule extends CApiService {
 
 			if (array_key_exists('iprange', $drule)) {
 				if ($drule['iprange'] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'iprange', _('cannot be empty'))
 					);
 				}
 				elseif (!$ip_range_parser->parse($drule['iprange'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'iprange', $ip_range_parser->getError())
 					);
 				}
-				elseif (bccomp($ip_range_parser->getMaxIPCount(), ZBX_DISCOVERER_IPRANGE_LIMIT) > 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+				elseif (bccomp($ip_range_parser->getMaxIPCount(), TRX_DISCOVERER_IPRANGE_LIMIT) > 0) {
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'iprange',
 							_s('IP range "%1$s" exceeds "%2$s" address limit', $ip_range_parser->getMaxIPRange(),
-								ZBX_DISCOVERER_IPRANGE_LIMIT
+								TRX_DISCOVERER_IPRANGE_LIMIT
 							)
 						)
 					);
@@ -358,21 +358,21 @@ class CDRule extends CApiService {
 
 			if (array_key_exists('delay', $drule)
 					&& !validateTimeUnit($drule['delay'], 1, SEC_PER_WEEK, false, $error, ['usermacros' => true])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'delay', $error)
 				);
 			}
 
 			if (array_key_exists('status', $drule) && $drule['status'] != DRULE_STATUS_DISABLED
 					&& $drule['status'] != DRULE_STATUS_ACTIVE) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value "%1$s" for "%2$s" field.', $drule['status'], 'status')
 				);
 			}
 
 			if (array_key_exists('proxy_hostid', $drule)) {
 				if (!zbx_is_int($drule['proxy_hostid'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value "%1$s" for "%2$s" field.', $drule['proxy_hostid'], 'proxy_hostid')
 					);
 				}
@@ -387,7 +387,7 @@ class CDRule extends CApiService {
 					$this->validateDChecks($drule['dchecks']);
 				}
 				else {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot save discovery rule without checks.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot save discovery rule without checks.'));
 				}
 			}
 		}
@@ -396,7 +396,7 @@ class CDRule extends CApiService {
 			// Check drule name duplicates in input data.
 			$duplicate = CArrayHelper::findDuplicate($drule_names_changed, 'name');
 			if ($duplicate) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Discovery rule "%1$s" already exists.', $duplicate['name'])
 				);
 			}
@@ -409,7 +409,7 @@ class CDRule extends CApiService {
 			]);
 
 			if ($db_duplicate) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Discovery rule "%1$s" already exists.', $db_duplicate[0]['name'])
 				);
 			}
@@ -424,7 +424,7 @@ class CDRule extends CApiService {
 			]);
 			foreach ($proxy_hostids as $proxy_hostid) {
 				if (!array_key_exists($proxy_hostid, $db_proxies)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value "%1$s" for "%2$s" field.', $proxy_hostid, 'proxy_hostid')
 					);
 				}
@@ -441,26 +441,26 @@ class CDRule extends CApiService {
 		$uniq = 0;
 		$item_key_parser = new CItemKey();
 		$source_values = [
-			'name_source' => [ZBX_DISCOVERY_UNSPEC, ZBX_DISCOVERY_DNS, ZBX_DISCOVERY_IP, ZBX_DISCOVERY_VALUE],
-			'host_source' => [ZBX_DISCOVERY_DNS, ZBX_DISCOVERY_IP, ZBX_DISCOVERY_VALUE]
+			'name_source' => [TRX_DISCOVERY_UNSPEC, TRX_DISCOVERY_DNS, TRX_DISCOVERY_IP, TRX_DISCOVERY_VALUE],
+			'host_source' => [TRX_DISCOVERY_DNS, TRX_DISCOVERY_IP, TRX_DISCOVERY_VALUE]
 		];
 
 		if (!is_array($dchecks)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'dchecks', _('an array is expected'))
 			);
 		}
 
 		foreach ($dchecks as $dcnum => $dcheck) {
 			if (!is_array($dcheck)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'dchecks', _('an array is expected'))
 				);
 			}
 
 			if (array_key_exists('uniq', $dcheck) && ($dcheck['uniq'] == 1)) {
 				if (!in_array($dcheck['type'], [SVC_AGENT, SVC_SNMPv1, SVC_SNMPv2c, SVC_SNMPv3])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_('Only Treegix agent, SNMPv1, SNMPv2 and SNMPv3 checks can be made unique.')
 					);
 				}
@@ -469,7 +469,7 @@ class CDRule extends CApiService {
 			}
 
 			if (array_key_exists('ports', $dcheck) && !validate_port_list($dcheck['ports'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect port range.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect port range.'));
 			}
 
 			foreach ($source_values as $field => $values) {
@@ -478,20 +478,20 @@ class CDRule extends CApiService {
 				}
 
 				if (!in_array($dcheck['type'], [SVC_AGENT, SVC_SNMPv1, SVC_SNMPv2c, SVC_SNMPv3])
-						&& $dcheck[$field] == ZBX_DISCOVERY_VALUE) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+						&& $dcheck[$field] == TRX_DISCOVERY_VALUE) {
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', $field, $dcheck[$field])
 					);
 				}
 
 				if (!in_array($dcheck[$field], $values)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', $field, $dcheck[$field])
 					);
 				}
 
-				// Only one check can be equal ZBX_DISCOVERY_VALUE for 'host_source' and 'name_source' fields.
-				if ($dcheck[$field] == ZBX_DISCOVERY_VALUE) {
+				// Only one check can be equal TRX_DISCOVERY_VALUE for 'host_source' and 'name_source' fields.
+				if ($dcheck[$field] == TRX_DISCOVERY_VALUE) {
 					array_pop($source_values[$field]);
 				}
 			}
@@ -501,32 +501,32 @@ class CDRule extends CApiService {
 			];
 
 			if (!array_key_exists('type', $dcheck)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'type'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'type'));
 			}
 			elseif (!is_numeric($dcheck['type']) || !in_array($dcheck['type'], $dcheck_types)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value "%1$s" for "%2$s" field.', $dcheck['type'], 'type')
 				);
 			}
 			switch ($dcheck['type']) {
 				case SVC_AGENT:
 					if (!array_key_exists('key_', $dcheck)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'key_'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'key_'));
 					}
 
 					if (is_array($dcheck['key_'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 					}
 
 					if ($dcheck['key_'] === '' || $dcheck['key_'] === null || $dcheck['key_'] === false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'key_', _('cannot be empty'))
 						);
 					}
 
 					$length = mb_strlen($dcheck['key_']);
 					if ($length > 255) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'key_',
 								_s('%1$d characters exceeds maximum length of %2$d characters', $length, 255)
 							)
@@ -534,7 +534,7 @@ class CDRule extends CApiService {
 					}
 
 					if ($item_key_parser->parse($dcheck['key_']) != CParser::PARSE_SUCCESS) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Invalid key "%1$s": %2$s.', $dcheck['key_'], $item_key_parser->getError())
 						);
 					}
@@ -545,13 +545,13 @@ class CDRule extends CApiService {
 				case SVC_SNMPv2c:
 					if (!array_key_exists('snmp_community', $dcheck) || $dcheck['snmp_community'] === null
 							|| $dcheck['snmp_community'] === false || $dcheck['snmp_community'] === '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect SNMP community.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect SNMP community.'));
 					}
 					// break; is not missing here
 				case SVC_SNMPv3:
 					if (!array_key_exists('key_', $dcheck) || $dcheck['key_'] === null || $dcheck['key_'] === false
 							|| $dcheck['key_'] === '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect SNMP OID.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect SNMP OID.'));
 					}
 					break;
 			}
@@ -565,7 +565,7 @@ class CDRule extends CApiService {
 					if (!array_key_exists('snmpv3_authprotocol', $dcheck)
 							|| $dcheck['snmpv3_authprotocol'] != ITEM_AUTHPROTOCOL_MD5
 								&& $dcheck['snmpv3_authprotocol'] != ITEM_AUTHPROTOCOL_SHA) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value "%1$s" for "%2$s" field.',
 								$dcheck['snmpv3_authprotocol'], 'snmpv3_authprotocol'
 							)
@@ -578,7 +578,7 @@ class CDRule extends CApiService {
 					if (!array_key_exists('snmpv3_privprotocol', $dcheck)
 							|| $dcheck['snmpv3_privprotocol'] != ITEM_PRIVPROTOCOL_DES
 								&& $dcheck['snmpv3_privprotocol'] != ITEM_PRIVPROTOCOL_AES) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value "%1$s" for "%2$s" field.',
 								$dcheck['snmpv3_privprotocol'], 'snmpv3_privprotocol'
 							)
@@ -591,7 +591,7 @@ class CDRule extends CApiService {
 		}
 
 		if ($uniq > 1) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Only one check can be unique.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Only one check can be unique.'));
 		}
 	}
 
@@ -632,7 +632,7 @@ class CDRule extends CApiService {
 					}
 				}
 				if ($equal) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Checks should be unique.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Checks should be unique.'));
 				}
 			}
 		}
@@ -786,7 +786,7 @@ class CDRule extends CApiService {
 	public function delete(array $druleids) {
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $druleids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_drules = $this->get([
@@ -798,7 +798,7 @@ class CDRule extends CApiService {
 
 		foreach ($druleids as $druleid) {
 			if (!array_key_exists($druleid, $db_drules)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -815,7 +815,7 @@ class CDRule extends CApiService {
 		);
 
 		if ($db_action = DBfetch($db_actions)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Discovery rule "%1$s" is used in "%2$s" action.',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Discovery rule "%1$s" is used in "%2$s" action.',
 				$db_drules[$db_action['value']]['name'], $db_action['name']
 			));
 		}
@@ -832,7 +832,7 @@ class CDRule extends CApiService {
 		);
 
 		if ($db_action = DBfetch($db_actions)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Discovery rule "%1$s" is used in "%2$s" action.',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Discovery rule "%1$s" is used in "%2$s" action.',
 				$db_drules[$db_action['druleid']]['name'], $db_action['name']
 			));
 		}

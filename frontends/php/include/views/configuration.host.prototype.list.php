@@ -32,7 +32,7 @@ $hostTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_hosts'))->onClick("checkAll('".$itemForm->getName()."', 'all_hosts', 'group_hostid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'], $url),
 		_('Templates'),
 		make_sorting_header(_('Create enabled'), 'status', $data['sort'], $data['sortorder'], $url)
@@ -64,11 +64,11 @@ foreach ($this->data['hostPrototypes'] as $hostPrototype) {
 				$caption[] = (new CLink($template['name'],
 					'templates.php?form=update&templateid='.$template['templateid']
 				))
-					->addClass(ZBX_STYLE_LINK_ALT)
-					->addClass(ZBX_STYLE_GREY);
+					->addClass(TRX_STYLE_LINK_ALT)
+					->addClass(TRX_STYLE_GREY);
 			}
 			else {
-				$caption[] = (new CSpan($template['name']))->addClass(ZBX_STYLE_GREY);
+				$caption[] = (new CSpan($template['name']))->addClass(TRX_STYLE_GREY);
 			}
 
 			$linkedTemplates = $this->data['linkedTemplates'][$template['templateid']]['parentTemplates'];
@@ -81,11 +81,11 @@ foreach ($this->data['hostPrototypes'] as $hostPrototype) {
 						$caption[] = (new CLink($tpl['name'],
 							'templates.php?form=update&templateid='.$tpl['templateid']
 						))
-							->addClass(ZBX_STYLE_LINK_ALT)
-							->addClass(ZBX_STYLE_GREY);
+							->addClass(TRX_STYLE_LINK_ALT)
+							->addClass(TRX_STYLE_GREY);
 					}
 					else {
-						$caption[] = (new CSpan($tpl['name']))->addClass(ZBX_STYLE_GREY);
+						$caption[] = (new CSpan($tpl['name']))->addClass(TRX_STYLE_GREY);
 					}
 
 					$caption[] = ', ';
@@ -114,7 +114,7 @@ foreach ($this->data['hostPrototypes'] as $hostPrototype) {
 				: 'hostprototype.massdisable'
 			)
 	))
-		->addClass(ZBX_STYLE_LINK_ACTION)
+		->addClass(TRX_STYLE_LINK_ACTION)
 		->addClass(itemIndicatorStyle($hostPrototype['status']))
 		->addSID();
 

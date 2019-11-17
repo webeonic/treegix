@@ -39,7 +39,7 @@ static void	exit_with_failure(void)
 static void	fatal_signal_handler(int sig, siginfo_t *siginfo, void *context)
 {
 	log_fatal_signal(sig, siginfo, context);
-	zbx_log_fatal_info(context, ZBX_FATAL_LOG_FULL_INFO);
+	zbx_log_fatal_info(context, TRX_FATAL_LOG_FULL_INFO);
 
 	exit_with_failure();
 }
@@ -55,7 +55,7 @@ static void	fatal_signal_handler(int sig, siginfo_t *siginfo, void *context)
 static void	metric_thread_signal_handler(int sig, siginfo_t *siginfo, void *context)
 {
 	log_fatal_signal(sig, siginfo, context);
-	zbx_log_fatal_info(context, (ZBX_FATAL_LOG_PC_REG_SF | ZBX_FATAL_LOG_BACKTRACE));
+	zbx_log_fatal_info(context, (TRX_FATAL_LOG_PC_REG_SF | TRX_FATAL_LOG_BACKTRACE));
 
 	exit_with_failure();
 }

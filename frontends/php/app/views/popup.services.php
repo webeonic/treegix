@@ -20,7 +20,7 @@ $services_table = (new CTableInfo())
 			? (new CColHeader(
 					(new CCheckBox('all_services'))
 						->onClick("javascript: checkAll('".$services_form->getName()."', 'all_services', 'services');")
-				))->addClass(ZBX_STYLE_CELL_WIDTH)
+				))->addClass(TRX_STYLE_CELL_WIDTH)
 			: null,
 		_('Service'),
 		_('Status calculation'),

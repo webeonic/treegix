@@ -12,7 +12,7 @@ typedef struct
 	int	cnt;
 	char	*status;	/* array of individual response statuses: 1 - valid, 0 - timeout */
 }
-ZBX_FPING_HOST;
+TRX_FPING_HOST;
 
 typedef enum
 {
@@ -43,4 +43,4 @@ typedef struct
 }
 icmpitem_t;
 
-int	do_ping(ZBX_FPING_HOST *hosts, int hosts_count, int count, int interval, int size, int timeout, char *error, int max_error_len);
+int	do_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int interval, int size, int timeout, char *error, int max_error_len);

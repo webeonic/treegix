@@ -11,12 +11,12 @@ $widget = (new CWidget())
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Group'), 'groupid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$this->data['pageFilter']->getGroupsCB()
 				])
 				->addItem([
 					new CLabel(_('Host'), 'hostid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$this->data['pageFilter']->getHostsCB()
 				])
 			),
@@ -41,7 +41,7 @@ $applicationTable = (new CTableInfo())
 		(new CColHeader(
 			(new CCheckBox('all_applications'))
 				->onClick("checkAll('".$form->getName()."', 'all_applications', 'applications');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		($this->data['hostid'] > 0) ? null : _('Host'),
 		make_sorting_header(_('Application'), 'name', $this->data['sort'], $this->data['sortorder']),
 		_('Items'),
@@ -58,11 +58,11 @@ foreach ($data['applications'] as $application) {
 		$name = makeApplicationTemplatePrefix($application['applicationid'], $data['parent_templates']);
 		$name[] = $application['name'];
 	}
-	elseif ($application['flags'] == ZBX_FLAG_DISCOVERY_CREATED && $application['discoveryRule']) {
+	elseif ($application['flags'] == TRX_FLAG_DISCOVERY_CREATED && $application['discoveryRule']) {
 		$name = [(new CLink(CHtml::encode($application['discoveryRule']['name']),
 						'disc_prototypes.php?parent_discoveryid='.$application['discoveryRule']['itemid']))
-					->addClass(ZBX_STYLE_LINK_ALT)
-					->addClass(ZBX_STYLE_ORANGE)
+					->addClass(TRX_STYLE_LINK_ALT)
+					->addClass(TRX_STYLE_ORANGE)
 		];
 		$name[] = NAME_DELIMITER.$application['name'];
 
@@ -85,7 +85,7 @@ foreach ($data['applications'] as $application) {
 	$applicationTable->addRow([
 		$checkBox,
 		($this->data['hostid'] > 0) ? null : $application['host']['name'],
-		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol($name))->addClass(TRX_STYLE_NOWRAP),
 		[
 			new CLink(
 				_('Items'),

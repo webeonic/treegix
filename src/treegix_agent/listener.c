@@ -11,8 +11,8 @@
 #include "log.h"
 
 extern unsigned char			program_type;
-extern ZBX_THREAD_LOCAL unsigned char	process_type;
-extern ZBX_THREAD_LOCAL int		server_num, process_num;
+extern TRX_THREAD_LOCAL unsigned char	process_type;
+extern TRX_THREAD_LOCAL int		server_num, process_num;
 
 #if defined(TREEGIX_SERVICE)
 #	include "service.h"
@@ -55,13 +55,13 @@ static void	process_listener(zbx_socket_t *s)
 				static size_t	buffer_alloc = 256;
 				size_t		buffer_offset = 0;
 
-				treegix_log(LOG_LEVEL_DEBUG, "Sending back [" ZBX_NOTSUPPORTED ": %s]", *value);
+				treegix_log(LOG_LEVEL_DEBUG, "Sending back [" TRX_NOTSUPPORTED ": %s]", *value);
 
 				if (NULL == buffer)
 					buffer = (char *)zbx_malloc(buffer, buffer_alloc);
 
 				zbx_strncpy_alloc(&buffer, &buffer_alloc, &buffer_offset,
-						ZBX_NOTSUPPORTED, ZBX_CONST_STRLEN(ZBX_NOTSUPPORTED));
+						TRX_NOTSUPPORTED, TRX_CONST_STRLEN(TRX_NOTSUPPORTED));
 				buffer_offset++;
 				zbx_strcpy_alloc(&buffer, &buffer_alloc, &buffer_offset, *value);
 
@@ -69,9 +69,9 @@ static void	process_listener(zbx_socket_t *s)
 			}
 			else
 			{
-				treegix_log(LOG_LEVEL_DEBUG, "Sending back [" ZBX_NOTSUPPORTED "]");
+				treegix_log(LOG_LEVEL_DEBUG, "Sending back [" TRX_NOTSUPPORTED "]");
 
-				ret = zbx_tcp_send_to(s, ZBX_NOTSUPPORTED, CONFIG_TIMEOUT);
+				ret = zbx_tcp_send_to(s, TRX_NOTSUPPORTED, CONFIG_TIMEOUT);
 			}
 		}
 
@@ -82,7 +82,7 @@ static void	process_listener(zbx_socket_t *s)
 		treegix_log(LOG_LEVEL_DEBUG, "Process listener error: %s", zbx_socket_strerror());
 }
 
-ZBX_THREAD_ENTRY(listener_thread, args)
+TRX_THREAD_ENTRY(listener_thread, args)
 {
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	char		*msg = NULL;
@@ -107,7 +107,7 @@ ZBX_THREAD_ENTRY(listener_thread, args)
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	zbx_tls_init_child();
 #endif
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		zbx_setproctitle("listener #%d [waiting for connection]", process_num);
 		ret = zbx_tcp_accept(&s, configured_tls_accept_modes);
@@ -121,7 +121,7 @@ ZBX_THREAD_ENTRY(listener_thread, args)
 					SUCCEED == (ret = zbx_tcp_check_allowed_peers(&s, CONFIG_HOSTS_ALLOWED)))
 			{
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-				if (ZBX_TCP_SEC_TLS_CERT != s.connection_type ||
+				if (TRX_TCP_SEC_TLS_CERT != s.connection_type ||
 						SUCCEED == (ret = zbx_check_server_issuer_subject(&s, &msg)))
 #endif
 				{
@@ -148,12 +148,12 @@ ZBX_THREAD_ENTRY(listener_thread, args)
 					zbx_socket_strerror());
 		}
 
-		if (ZBX_IS_RUNNING())
+		if (TRX_IS_RUNNING())
 			zbx_sleep(1);
 	}
 
 #ifdef _WINDOWS
-	ZBX_DO_EXIT();
+	TRX_DO_EXIT();
 
 	zbx_thread_exit(EXIT_SUCCESS);
 #else

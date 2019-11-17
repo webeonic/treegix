@@ -8,13 +8,13 @@
 #include "sysinfo.h"
 #include "zbxalgo.h"
 
-#define ZBX_MODULE_FUNC_INIT			"zbx_module_init"
-#define ZBX_MODULE_FUNC_API_VERSION		"zbx_module_api_version"
-#define ZBX_MODULE_FUNC_ITEM_LIST		"zbx_module_item_list"
-#define ZBX_MODULE_FUNC_ITEM_PROCESS		"zbx_module_item_process"
-#define ZBX_MODULE_FUNC_ITEM_TIMEOUT		"zbx_module_item_timeout"
-#define ZBX_MODULE_FUNC_UNINIT			"zbx_module_uninit"
-#define ZBX_MODULE_FUNC_HISTORY_WRITE_CBS	"zbx_module_history_write_cbs"
+#define TRX_MODULE_FUNC_INIT			"zbx_module_init"
+#define TRX_MODULE_FUNC_API_VERSION		"zbx_module_api_version"
+#define TRX_MODULE_FUNC_ITEM_LIST		"zbx_module_item_list"
+#define TRX_MODULE_FUNC_ITEM_PROCESS		"zbx_module_item_process"
+#define TRX_MODULE_FUNC_ITEM_TIMEOUT		"zbx_module_item_timeout"
+#define TRX_MODULE_FUNC_UNINIT			"zbx_module_uninit"
+#define TRX_MODULE_FUNC_HISTORY_WRITE_CBS	"zbx_module_history_write_cbs"
 
 static zbx_vector_ptr_t	modules;
 
@@ -38,7 +38,7 @@ zbx_history_log_cb_t		*history_log_cbs = NULL;
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_register_module_items(ZBX_METRIC *metrics, char *error, size_t max_error_len)
+static int	zbx_register_module_items(TRX_METRIC *metrics, char *error, size_t max_error_len)
 {
 	int	i;
 
@@ -85,7 +85,7 @@ static zbx_module_t	*zbx_register_module(void *lib, char *name)
  *             history_write_cbs - callbacks                                  *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_register_history_write_cbs(zbx_module_t *module, ZBX_HISTORY_WRITE_CBS history_write_cbs)
+static void	zbx_register_history_write_cbs(zbx_module_t *module, TRX_HISTORY_WRITE_CBS history_write_cbs)
 {
 	if (NULL != history_write_cbs.history_float_cb)
 	{
@@ -188,7 +188,7 @@ static int	zbx_module_compare_func(const void *d1, const void *d2)
 	const zbx_module_t	*m1 = *(const zbx_module_t **)d1;
 	const zbx_module_t	*m2 = *(const zbx_module_t **)d2;
 
-	ZBX_RETURN_IF_NOT_EQUAL(m1->lib, m2->lib);
+	TRX_RETURN_IF_NOT_EQUAL(m1->lib, m2->lib);
 
 	return 0;
 }
@@ -213,9 +213,9 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 	void			*lib;
 	char			full_name[MAX_STRING_LEN], error[MAX_STRING_LEN];
 	int			(*func_init)(void), (*func_version)(void), version;
-	ZBX_METRIC		*(*func_list)(void);
+	TRX_METRIC		*(*func_list)(void);
 	void			(*func_timeout)(int);
-	ZBX_HISTORY_WRITE_CBS	(*func_history_write_cbs)(void);
+	TRX_HISTORY_WRITE_CBS	(*func_history_write_cbs)(void);
 	zbx_module_t		*module, module_tmp;
 
 	if ('/' != *name)
@@ -238,33 +238,33 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 		return SUCCEED;
 	}
 
-	if (NULL == (func_version = (int (*)(void))dlsym(lib, ZBX_MODULE_FUNC_API_VERSION)))
+	if (NULL == (func_version = (int (*)(void))dlsym(lib, TRX_MODULE_FUNC_API_VERSION)))
 	{
-		treegix_log(LOG_LEVEL_CRIT, "cannot find \"" ZBX_MODULE_FUNC_API_VERSION "()\""
+		treegix_log(LOG_LEVEL_CRIT, "cannot find \"" TRX_MODULE_FUNC_API_VERSION "()\""
 				" function in module \"%s\": %s", name, dlerror());
 		goto fail;
 	}
 
-	if (ZBX_MODULE_API_VERSION != (version = func_version()))
+	if (TRX_MODULE_API_VERSION != (version = func_version()))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "unsupported module \"%s\" version: %d", name, version);
 		goto fail;
 	}
 
-	if (NULL == (func_init = (int (*)(void))dlsym(lib, ZBX_MODULE_FUNC_INIT)))
+	if (NULL == (func_init = (int (*)(void))dlsym(lib, TRX_MODULE_FUNC_INIT)))
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_INIT "()\""
+		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" TRX_MODULE_FUNC_INIT "()\""
 				" function in module \"%s\": %s", name, dlerror());
 	}
-	else if (ZBX_MODULE_OK != func_init())
+	else if (TRX_MODULE_OK != func_init())
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize module \"%s\"", name);
 		goto fail;
 	}
 
-	if (NULL == (func_list = (ZBX_METRIC *(*)(void))dlsym(lib, ZBX_MODULE_FUNC_ITEM_LIST)))
+	if (NULL == (func_list = (TRX_METRIC *(*)(void))dlsym(lib, TRX_MODULE_FUNC_ITEM_LIST)))
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_ITEM_LIST "()\""
+		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" TRX_MODULE_FUNC_ITEM_LIST "()\""
 				" function in module \"%s\": %s", name, dlerror());
 	}
 	else
@@ -275,9 +275,9 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 			goto fail;
 		}
 
-		if (NULL == (func_timeout = (void (*)(int))dlsym(lib, ZBX_MODULE_FUNC_ITEM_TIMEOUT)))
+		if (NULL == (func_timeout = (void (*)(int))dlsym(lib, TRX_MODULE_FUNC_ITEM_TIMEOUT)))
 		{
-			treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_ITEM_TIMEOUT "()\""
+			treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" TRX_MODULE_FUNC_ITEM_TIMEOUT "()\""
 					" function in module \"%s\": %s", name, dlerror());
 		}
 		else
@@ -287,10 +287,10 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 	/* module passed validation and can now be registered */
 	module = zbx_register_module(lib, name);
 
-	if (NULL == (func_history_write_cbs = (ZBX_HISTORY_WRITE_CBS (*)(void))dlsym(lib,
-			ZBX_MODULE_FUNC_HISTORY_WRITE_CBS)))
+	if (NULL == (func_history_write_cbs = (TRX_HISTORY_WRITE_CBS (*)(void))dlsym(lib,
+			TRX_MODULE_FUNC_HISTORY_WRITE_CBS)))
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_HISTORY_WRITE_CBS "()\""
+		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" TRX_MODULE_FUNC_HISTORY_WRITE_CBS "()\""
 				" function in module \"%s\": %s", name, dlerror());
 	}
 	else
@@ -371,12 +371,12 @@ static void	zbx_unload_module(void *data)
 	zbx_module_t	*module = (zbx_module_t *)data;
 	int		(*func_uninit)(void);
 
-	if (NULL == (func_uninit = (int (*)(void))dlsym(module->lib, ZBX_MODULE_FUNC_UNINIT)))
+	if (NULL == (func_uninit = (int (*)(void))dlsym(module->lib, TRX_MODULE_FUNC_UNINIT)))
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" ZBX_MODULE_FUNC_UNINIT "()\""
+		treegix_log(LOG_LEVEL_DEBUG, "cannot find \"" TRX_MODULE_FUNC_UNINIT "()\""
 				" function in module \"%s\": %s", module->name, dlerror());
 	}
-	else if (ZBX_MODULE_OK != func_uninit())
+	else if (TRX_MODULE_OK != func_uninit())
 		treegix_log(LOG_LEVEL_WARNING, "uninitialization of module \"%s\" failed", module->name);
 
 	dlclose(module->lib);

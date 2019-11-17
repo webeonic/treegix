@@ -80,7 +80,7 @@ class CScreenProblem extends CScreenBase {
 			'object' => EVENT_OBJECT_TRIGGER,
 			'value' => TRIGGER_VALUE_TRUE,
 			'sortfield' => ['eventid'],
-			'sortorder' => ZBX_SORT_DOWN,
+			'sortorder' => TRX_SORT_DOWN,
 			'preservekeys' => true
 		] + $options);
 	}
@@ -111,7 +111,7 @@ class CScreenProblem extends CScreenBase {
 			'source' => EVENT_SOURCE_TRIGGERS,
 			'object' => EVENT_OBJECT_TRIGGER,
 			'sortfield' => ['eventid'],
-			'sortorder' => ZBX_SORT_DOWN,
+			'sortorder' => TRX_SORT_DOWN,
 			'preservekeys' => true
 		] + $options);
 	}
@@ -440,16 +440,16 @@ class CScreenProblem extends CScreenBase {
 
 				$sort_fields = [
 					['field' => 'host', 'order' => $sortorder],
-					['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-					['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+					['field' => 'clock', 'order' => TRX_SORT_DOWN],
+					['field' => 'ns', 'order' => TRX_SORT_DOWN]
 				];
 				break;
 
 			case 'severity':
 				$sort_fields = [
 					['field' => 'severity', 'order' => $sortorder],
-					['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-					['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+					['field' => 'clock', 'order' => TRX_SORT_DOWN],
+					['field' => 'ns', 'order' => TRX_SORT_DOWN]
 				];
 				break;
 
@@ -457,8 +457,8 @@ class CScreenProblem extends CScreenBase {
 				$sort_fields = [
 					['field' => 'name', 'order' => $sortorder],
 					['field' => 'objectid', 'order' => $sortorder],
-					['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-					['field' => 'ns', 'order' => ZBX_SORT_DOWN]
+					['field' => 'clock', 'order' => TRX_SORT_DOWN],
+					['field' => 'ns', 'order' => TRX_SORT_DOWN]
 				];
 				break;
 
@@ -718,7 +718,7 @@ class CScreenProblem extends CScreenBase {
 	 * @static
 	 */
 	public static function addTimelineBreakpoint(CTableInfo $table, $last_clock, $clock, $sortorder) {
-		if ($sortorder === ZBX_SORT_UP) {
+		if ($sortorder === TRX_SORT_UP) {
 			list($clock, $last_clock) = [$last_clock, $clock];
 		}
 
@@ -749,13 +749,13 @@ class CScreenProblem extends CScreenBase {
 
 		if ($breakpoint !== null) {
 			$table->addRow((new CRow([
-				(new CCol(new CTag('h4', true, $breakpoint)))->addClass(ZBX_STYLE_TIMELINE_DATE),
+				(new CCol(new CTag('h4', true, $breakpoint)))->addClass(TRX_STYLE_TIMELINE_DATE),
 				(new CCol())
-					->addClass(ZBX_STYLE_TIMELINE_AXIS)
-					->addClass(ZBX_STYLE_TIMELINE_DOT_BIG),
-				(new CCol())->addClass(ZBX_STYLE_TIMELINE_TD),
+					->addClass(TRX_STYLE_TIMELINE_AXIS)
+					->addClass(TRX_STYLE_TIMELINE_DOT_BIG),
+				(new CCol())->addClass(TRX_STYLE_TIMELINE_TD),
 				(new CCol())->setColSpan($table->getNumCols() - 3)
-			]))->addClass(ZBX_STYLE_HOVER_NOBG));
+			]))->addClass(TRX_STYLE_HOVER_NOBG));
 		}
 	}
 
@@ -772,7 +772,7 @@ class CScreenProblem extends CScreenBase {
 		$data = self::getData($this->data['filter'], $this->config, true);
 		$data = self::sortData($data, $this->config, $this->data['sort'], $this->data['sortorder']);
 
-		$paging = getPagingLine($data['problems'], ZBX_SORT_UP, clone $url);
+		$paging = getPagingLine($data['problems'], TRX_SORT_UP, clone $url);
 
 		$data = self::makeData($data, $this->data['filter'], true);
 
@@ -822,7 +822,7 @@ class CScreenProblem extends CScreenBase {
 
 			$this->data['filter']['compact_view']
 				? $header_check_box->addStyle('width: 20px;')
-				: $header_check_box->addClass(ZBX_STYLE_CELL_WIDTH);
+				: $header_check_box->addClass(TRX_STYLE_CELL_WIDTH);
 
 			$link = $url
 				->setArgument('page', $this->data['page'])
@@ -840,13 +840,13 @@ class CScreenProblem extends CScreenBase {
 
 			$this->data['filter']['compact_view']
 				? $header_clock->addStyle('width: 115px;')
-				: $header_clock->addClass(ZBX_STYLE_CELL_WIDTH);
+				: $header_clock->addClass(TRX_STYLE_CELL_WIDTH);
 
 			if ($show_timeline) {
 				$header = [
-					$header_clock->addClass(ZBX_STYLE_RIGHT),
-					(new CColHeader())->addClass(ZBX_STYLE_TIMELINE_TH),
-					(new CColHeader())->addClass(ZBX_STYLE_TIMELINE_TH)
+					$header_clock->addClass(TRX_STYLE_RIGHT),
+					(new CColHeader())->addClass(TRX_STYLE_TIMELINE_TH),
+					(new CColHeader())->addClass(TRX_STYLE_TIMELINE_TH)
 				];
 			}
 			else {
@@ -863,13 +863,13 @@ class CScreenProblem extends CScreenBase {
 
 					switch ($this->data['filter']['show_tags']) {
 						case PROBLEMS_SHOW_TAGS_1:
-							$tags_header->addClass(ZBX_STYLE_COLUMN_TAGS_1);
+							$tags_header->addClass(TRX_STYLE_COLUMN_TAGS_1);
 							break;
 						case PROBLEMS_SHOW_TAGS_2:
-							$tags_header->addClass(ZBX_STYLE_COLUMN_TAGS_2);
+							$tags_header->addClass(TRX_STYLE_COLUMN_TAGS_2);
 							break;
 						case PROBLEMS_SHOW_TAGS_3:
-							$tags_header->addClass(ZBX_STYLE_COLUMN_TAGS_3);
+							$tags_header->addClass(TRX_STYLE_COLUMN_TAGS_3);
 							break;
 					}
 				}
@@ -892,8 +892,8 @@ class CScreenProblem extends CScreenBase {
 						(new CColHeader(_('Actions')))->addStyle('width: 64px;'),
 						$tags_header
 					]))
-						->addClass(ZBX_STYLE_COMPACT_VIEW)
-						->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS);
+						->addClass(TRX_STYLE_COMPACT_VIEW)
+						->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS);
 			}
 			else {
 				$table = (new CTableInfo())
@@ -903,7 +903,7 @@ class CScreenProblem extends CScreenBase {
 							$link
 						),
 						$show_recovery_data
-							? (new CColHeader(_('Recovery time')))->addClass(ZBX_STYLE_CELL_WIDTH)
+							? (new CColHeader(_('Recovery time')))->addClass(TRX_STYLE_CELL_WIDTH)
 							: null,
 						$show_recovery_data ? _('Status') : null,
 						_('Info'),
@@ -965,8 +965,8 @@ class CScreenProblem extends CScreenBase {
 							->setArgument('triggerid', $problem['objectid'])
 							->setArgument('eventid', $problem['eventid'])
 					)))
-						->addClass(ZBX_STYLE_NOWRAP)
-						->addClass(ZBX_STYLE_RIGHT);
+						->addClass(TRX_STYLE_NOWRAP)
+						->addClass(TRX_STYLE_RIGHT);
 				}
 				else {
 					$cell_r_clock = '';
@@ -981,7 +981,7 @@ class CScreenProblem extends CScreenBase {
 					$in_closing = false;
 
 					foreach ($problem['acknowledges'] as $acknowledge) {
-						if (($acknowledge['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE) {
+						if (($acknowledge['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE) {
 							$in_closing = true;
 							break;
 						}
@@ -1028,10 +1028,10 @@ class CScreenProblem extends CScreenBase {
 						&& count($info_icons) > 1)
 					? (new CSpan(
 							(new CButton(null))
-								->addClass(ZBX_STYLE_ICON_WZRD_ACTION)
+								->addClass(TRX_STYLE_ICON_WZRD_ACTION)
 								->addStyle('margin-left: -3px;')
-								->setHint((new CDiv($info_icons))->addClass(ZBX_STYLE_REL_CONTAINER))
-							))->addClass(ZBX_STYLE_REL_CONTAINER)
+								->setHint((new CDiv($info_icons))->addClass(TRX_STYLE_REL_CONTAINER))
+							))->addClass(TRX_STYLE_REL_CONTAINER)
 					: makeInformationList($info_icons);
 
 				$description = array_key_exists($trigger['triggerid'], $dependencies)
@@ -1063,7 +1063,7 @@ class CScreenProblem extends CScreenBase {
 							]
 						)))
 							->addClass('opdata')
-							->addClass(ZBX_STYLE_WORDWRAP);
+							->addClass(TRX_STYLE_WORDWRAP);
 
 						if ($show_opdata == OPERATIONAL_DATA_SHOW_WITH_PROBLEM) {
 							$description[] = ' (';
@@ -1078,7 +1078,7 @@ class CScreenProblem extends CScreenBase {
 				if ($this->data['filter']['details'] == 1) {
 					$description[] = BR();
 
-					if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+					if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 						$description[] = [_('Problem'), ': ', $trigger['expression_html'], BR()];
 						$description[] = [_('Recovery'), ': ', $trigger['recovery_expression_html']];
 					}
@@ -1094,18 +1094,18 @@ class CScreenProblem extends CScreenBase {
 					$last_clock = $problem['clock'];
 
 					$row = [
-						$cell_clock->addClass(ZBX_STYLE_TIMELINE_DATE),
+						$cell_clock->addClass(TRX_STYLE_TIMELINE_DATE),
 						(new CCol())
-							->addClass(ZBX_STYLE_TIMELINE_AXIS)
-							->addClass(ZBX_STYLE_TIMELINE_DOT),
-						(new CCol())->addClass(ZBX_STYLE_TIMELINE_TD)
+							->addClass(TRX_STYLE_TIMELINE_AXIS)
+							->addClass(TRX_STYLE_TIMELINE_DOT),
+						(new CCol())->addClass(TRX_STYLE_TIMELINE_TD)
 					];
 				}
 				else {
 					$row = [
 						$cell_clock
-							->addClass(ZBX_STYLE_NOWRAP)
-							->addClass(ZBX_STYLE_RIGHT)
+							->addClass(TRX_STYLE_NOWRAP)
+							->addClass(TRX_STYLE_RIGHT)
 					];
 				}
 
@@ -1113,8 +1113,8 @@ class CScreenProblem extends CScreenBase {
 				$problem_update_url->setArgument('eventids', [$problem['eventid']]);
 				$acknowledged = ($problem['acknowledged'] == EVENT_ACKNOWLEDGED);
 				$problem_update_link = (new CLink($acknowledged ? _('Yes') : _('No'), $problem_update_url->getUrl()))
-					->addClass($acknowledged ? ZBX_STYLE_GREEN : ZBX_STYLE_RED)
-					->addClass(ZBX_STYLE_LINK_ALT);
+					->addClass($acknowledged ? TRX_STYLE_GREEN : TRX_STYLE_RED)
+					->addClass(TRX_STYLE_LINK_ALT);
 
 				// Add table row.
 				$table->addRow(array_merge($row, [
@@ -1179,7 +1179,7 @@ class CScreenProblem extends CScreenBase {
 				$in_closing = false;
 
 				foreach ($problem['acknowledges'] as $acknowledge) {
-					if (($acknowledge['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE) {
+					if (($acknowledge['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE) {
 						$in_closing = true;
 						break;
 					}
@@ -1265,7 +1265,7 @@ class CScreenProblem extends CScreenBase {
 		$latest_values = [];
 
 		$items = zbx_toHash($items, 'itemid');
-		$history_values = Manager::History()->getLastValues($items, 1, ZBX_HISTORY_PERIOD);
+		$history_values = Manager::History()->getLastValues($items, 1, TRX_HISTORY_PERIOD);
 
 		if ($html) {
 			$hint_table = (new CTable())->addClass('list-table');

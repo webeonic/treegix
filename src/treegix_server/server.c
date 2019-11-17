@@ -81,11 +81,11 @@ const char	*help_message[] = {
 	"  -R --runtime-control runtime-option   Perform administrative functions",
 	"",
 	"    Runtime control options:",
-	"      " ZBX_CONFIG_CACHE_RELOAD "        Reload configuration cache",
-	"      " ZBX_HOUSEKEEPER_EXECUTE "        Execute the housekeeper",
-	"      " ZBX_LOG_LEVEL_INCREASE "=target  Increase log level, affects all processes if",
+	"      " TRX_CONFIG_CACHE_RELOAD "        Reload configuration cache",
+	"      " TRX_HOUSEKEEPER_EXECUTE "        Execute the housekeeper",
+	"      " TRX_LOG_LEVEL_INCREASE "=target  Increase log level, affects all processes if",
 	"                                 target is not specified",
-	"      " ZBX_LOG_LEVEL_DECREASE "=target  Decrease log level, affects all processes if",
+	"      " TRX_LOG_LEVEL_DECREASE "=target  Decrease log level, affects all processes if",
 	"                                 target is not specified",
 	"",
 	"      Log level control targets:",
@@ -139,8 +139,8 @@ int		threads_num = 0;
 pid_t		*threads = NULL;
 static int	*threads_flags;
 
-unsigned char	program_type		= ZBX_PROGRAM_TYPE_SERVER;
-unsigned char	process_type		= ZBX_PROCESS_TYPE_UNKNOWN;
+unsigned char	program_type		= TRX_PROGRAM_TYPE_SERVER;
+unsigned char	process_type		= TRX_PROCESS_TYPE_UNKNOWN;
 int		process_num		= 0;
 int		server_num		= 0;
 
@@ -172,7 +172,7 @@ int	CONFIG_LLDMANAGER_FORKS		= 1;
 int	CONFIG_LLDWORKER_FORKS		= 2;
 int	CONFIG_ALERTDB_FORKS		= 1;
 
-int	CONFIG_LISTEN_PORT		= ZBX_DEFAULT_SERVER_PORT;
+int	CONFIG_LISTEN_PORT		= TRX_DEFAULT_SERVER_PORT;
 char	*CONFIG_LISTEN_IP		= NULL;
 char	*CONFIG_SOURCE_IP		= NULL;
 int	CONFIG_TRAPPER_TIMEOUT		= 300;
@@ -190,13 +190,13 @@ int	CONFIG_VMWARE_FREQUENCY		= 60;
 int	CONFIG_VMWARE_PERF_FREQUENCY	= 60;
 int	CONFIG_VMWARE_TIMEOUT		= 10;
 
-zbx_uint64_t	CONFIG_CONF_CACHE_SIZE		= 8 * ZBX_MEBIBYTE;
-zbx_uint64_t	CONFIG_HISTORY_CACHE_SIZE	= 16 * ZBX_MEBIBYTE;
-zbx_uint64_t	CONFIG_HISTORY_INDEX_CACHE_SIZE	= 4 * ZBX_MEBIBYTE;
-zbx_uint64_t	CONFIG_TRENDS_CACHE_SIZE	= 4 * ZBX_MEBIBYTE;
-zbx_uint64_t	CONFIG_VALUE_CACHE_SIZE		= 8 * ZBX_MEBIBYTE;
-zbx_uint64_t	CONFIG_VMWARE_CACHE_SIZE	= 8 * ZBX_MEBIBYTE;
-zbx_uint64_t	CONFIG_EXPORT_FILE_SIZE		= ZBX_GIBIBYTE;
+zbx_uint64_t	CONFIG_CONF_CACHE_SIZE		= 8 * TRX_MEBIBYTE;
+zbx_uint64_t	CONFIG_HISTORY_CACHE_SIZE	= 16 * TRX_MEBIBYTE;
+zbx_uint64_t	CONFIG_HISTORY_INDEX_CACHE_SIZE	= 4 * TRX_MEBIBYTE;
+zbx_uint64_t	CONFIG_TRENDS_CACHE_SIZE	= 4 * TRX_MEBIBYTE;
+zbx_uint64_t	CONFIG_VALUE_CACHE_SIZE		= 8 * TRX_MEBIBYTE;
+zbx_uint64_t	CONFIG_VMWARE_CACHE_SIZE	= 8 * TRX_MEBIBYTE;
+zbx_uint64_t	CONFIG_EXPORT_FILE_SIZE		= TRX_GIBIBYTE;
 
 int	CONFIG_UNREACHABLE_PERIOD	= 45;
 int	CONFIG_UNREACHABLE_DELAY	= 15;
@@ -222,7 +222,7 @@ int	CONFIG_UNSAFE_USER_PARAMETERS	= 0;
 char	*CONFIG_SNMPTRAP_FILE		= NULL;
 
 char	*CONFIG_JAVA_GATEWAY		= NULL;
-int	CONFIG_JAVA_GATEWAY_PORT	= ZBX_DEFAULT_GATEWAY_PORT;
+int	CONFIG_JAVA_GATEWAY_PORT	= TRX_DEFAULT_GATEWAY_PORT;
 
 char	*CONFIG_SSH_KEY_LOCATION	= NULL;
 
@@ -247,9 +247,9 @@ char	*CONFIG_SSL_CERT_LOCATION	= NULL;
 char	*CONFIG_SSL_KEY_LOCATION	= NULL;
 
 /* TLS parameters */
-unsigned int	configured_tls_connect_mode = ZBX_TCP_SEC_UNENCRYPTED;	/* not used in server, defined for linking */
+unsigned int	configured_tls_connect_mode = TRX_TCP_SEC_UNENCRYPTED;	/* not used in server, defined for linking */
 									/* with tls.c */
-unsigned int	configured_tls_accept_modes = ZBX_TCP_SEC_UNENCRYPTED;	/* not used in server, defined for linking */
+unsigned int	configured_tls_accept_modes = TRX_TCP_SEC_UNENCRYPTED;	/* not used in server, defined for linking */
 									/* with tls.c */
 char	*CONFIG_TLS_CA_FILE		= NULL;
 char	*CONFIG_TLS_CRL_FILE		= NULL;
@@ -286,132 +286,132 @@ int	get_process_info_by_thread(int local_server_num, unsigned char *local_proces
 	}
 	else if (local_server_num <= (server_count += CONFIG_CONFSYNCER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_CONFSYNCER;
+		*local_process_type = TRX_PROCESS_TYPE_CONFSYNCER;
 		*local_process_num = local_server_num - server_count + CONFIG_CONFSYNCER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_IPMIMANAGER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_IPMIMANAGER;
+		*local_process_type = TRX_PROCESS_TYPE_IPMIMANAGER;
 		*local_process_num = local_server_num - server_count + CONFIG_TASKMANAGER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_HOUSEKEEPER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_HOUSEKEEPER;
+		*local_process_type = TRX_PROCESS_TYPE_HOUSEKEEPER;
 		*local_process_num = local_server_num - server_count + CONFIG_HOUSEKEEPER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_TIMER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_TIMER;
+		*local_process_type = TRX_PROCESS_TYPE_TIMER;
 		*local_process_num = local_server_num - server_count + CONFIG_TIMER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_HTTPPOLLER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_HTTPPOLLER;
+		*local_process_type = TRX_PROCESS_TYPE_HTTPPOLLER;
 		*local_process_num = local_server_num - server_count + CONFIG_HTTPPOLLER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_DISCOVERER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_DISCOVERER;
+		*local_process_type = TRX_PROCESS_TYPE_DISCOVERER;
 		*local_process_num = local_server_num - server_count + CONFIG_DISCOVERER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_HISTSYNCER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_HISTSYNCER;
+		*local_process_type = TRX_PROCESS_TYPE_HISTSYNCER;
 		*local_process_num = local_server_num - server_count + CONFIG_HISTSYNCER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_ESCALATOR_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_ESCALATOR;
+		*local_process_type = TRX_PROCESS_TYPE_ESCALATOR;
 		*local_process_num = local_server_num - server_count + CONFIG_ESCALATOR_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_IPMIPOLLER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_IPMIPOLLER;
+		*local_process_type = TRX_PROCESS_TYPE_IPMIPOLLER;
 		*local_process_num = local_server_num - server_count + CONFIG_IPMIPOLLER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_JAVAPOLLER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_JAVAPOLLER;
+		*local_process_type = TRX_PROCESS_TYPE_JAVAPOLLER;
 		*local_process_num = local_server_num - server_count + CONFIG_JAVAPOLLER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_SNMPTRAPPER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_SNMPTRAPPER;
+		*local_process_type = TRX_PROCESS_TYPE_SNMPTRAPPER;
 		*local_process_num = local_server_num - server_count + CONFIG_SNMPTRAPPER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_PROXYPOLLER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_PROXYPOLLER;
+		*local_process_type = TRX_PROCESS_TYPE_PROXYPOLLER;
 		*local_process_num = local_server_num - server_count + CONFIG_PROXYPOLLER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_SELFMON_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_SELFMON;
+		*local_process_type = TRX_PROCESS_TYPE_SELFMON;
 		*local_process_num = local_server_num - server_count + CONFIG_SELFMON_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_VMWARE_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_VMWARE;
+		*local_process_type = TRX_PROCESS_TYPE_VMWARE;
 		*local_process_num = local_server_num - server_count + CONFIG_VMWARE_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_TASKMANAGER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_TASKMANAGER;
+		*local_process_type = TRX_PROCESS_TYPE_TASKMANAGER;
 		*local_process_num = local_server_num - server_count + CONFIG_TASKMANAGER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_POLLER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_POLLER;
+		*local_process_type = TRX_PROCESS_TYPE_POLLER;
 		*local_process_num = local_server_num - server_count + CONFIG_POLLER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_UNREACHABLE_POLLER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_UNREACHABLE;
+		*local_process_type = TRX_PROCESS_TYPE_UNREACHABLE;
 		*local_process_num = local_server_num - server_count + CONFIG_UNREACHABLE_POLLER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_TRAPPER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_TRAPPER;
+		*local_process_type = TRX_PROCESS_TYPE_TRAPPER;
 		*local_process_num = local_server_num - server_count + CONFIG_TRAPPER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_PINGER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_PINGER;
+		*local_process_type = TRX_PROCESS_TYPE_PINGER;
 		*local_process_num = local_server_num - server_count + CONFIG_PINGER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_ALERTMANAGER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_ALERTMANAGER;
+		*local_process_type = TRX_PROCESS_TYPE_ALERTMANAGER;
 		*local_process_num = local_server_num - server_count + CONFIG_ALERTMANAGER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_ALERTER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_ALERTER;
+		*local_process_type = TRX_PROCESS_TYPE_ALERTER;
 		*local_process_num = local_server_num - server_count + CONFIG_ALERTER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_PREPROCMAN_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_PREPROCMAN;
+		*local_process_type = TRX_PROCESS_TYPE_PREPROCMAN;
 		*local_process_num = local_server_num - server_count + CONFIG_PREPROCMAN_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_PREPROCESSOR_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_PREPROCESSOR;
+		*local_process_type = TRX_PROCESS_TYPE_PREPROCESSOR;
 		*local_process_num = local_server_num - server_count + CONFIG_PREPROCESSOR_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_LLDMANAGER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_LLDMANAGER;
+		*local_process_type = TRX_PROCESS_TYPE_LLDMANAGER;
 		*local_process_num = local_server_num - server_count + CONFIG_LLDMANAGER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_LLDWORKER_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_LLDWORKER;
+		*local_process_type = TRX_PROCESS_TYPE_LLDWORKER;
 		*local_process_num = local_server_num - server_count + CONFIG_LLDWORKER_FORKS;
 	}
 	else if (local_server_num <= (server_count += CONFIG_ALERTDB_FORKS))
 	{
-		*local_process_type = ZBX_PROCESS_TYPE_ALERTSYNCER;
+		*local_process_type = TRX_PROCESS_TYPE_ALERTSYNCER;
 		*local_process_num = local_server_num - server_count + CONFIG_ALERTDB_FORKS;
 	}
 	else
@@ -475,7 +475,7 @@ static void	zbx_set_defaults(void)
 #endif
 
 	if (NULL == CONFIG_LOG_TYPE_STR)
-		CONFIG_LOG_TYPE_STR = zbx_strdup(CONFIG_LOG_TYPE_STR, ZBX_OPTION_LOGTYPE_FILE);
+		CONFIG_LOG_TYPE_STR = zbx_strdup(CONFIG_LOG_TYPE_STR, TRX_OPTION_LOGTYPE_FILE);
 
 	if (NULL == CONFIG_SOCKET_PATH)
 		CONFIG_SOCKET_PATH = zbx_strdup(CONFIG_SOCKET_PATH, "/tmp");
@@ -493,7 +493,7 @@ static void	zbx_set_defaults(void)
  * Author: Vladimir Levijev                                                   *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_validate_config(ZBX_TASK_EX *task)
+static void	zbx_validate_config(TRX_TASK_EX *task)
 {
 	char	*ch_error;
 	int	err = 0;
@@ -511,7 +511,7 @@ static void	zbx_validate_config(ZBX_TASK_EX *task)
 		err = 1;
 	}
 
-	if (0 != CONFIG_VALUE_CACHE_SIZE && 128 * ZBX_KIBIBYTE > CONFIG_VALUE_CACHE_SIZE)
+	if (0 != CONFIG_VALUE_CACHE_SIZE && 128 * TRX_KIBIBYTE > CONFIG_VALUE_CACHE_SIZE)
 	{
 		treegix_log(LOG_LEVEL_CRIT, "\"ValueCacheSize\" configuration parameter must be either 0"
 				" or greater than 128KB");
@@ -582,7 +582,7 @@ static void	zbx_validate_config(ZBX_TASK_EX *task)
  * Comments: will terminate process if parsing fails                          *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_load_config(ZBX_TASK_EX *task)
+static void	zbx_load_config(TRX_TASK_EX *task)
 {
 	static struct cfg_line	cfg[] =
 	{
@@ -619,15 +619,15 @@ static void	zbx_load_config(ZBX_TASK_EX *task)
 		{"StartSNMPTrapper",		&CONFIG_SNMPTRAPPER_FORKS,		TYPE_INT,
 			PARM_OPT,	0,			1},
 		{"CacheSize",			&CONFIG_CONF_CACHE_SIZE,		TYPE_UINT64,
-			PARM_OPT,	128 * ZBX_KIBIBYTE,	__UINT64_C(8) * ZBX_GIBIBYTE},
+			PARM_OPT,	128 * TRX_KIBIBYTE,	__UINT64_C(8) * TRX_GIBIBYTE},
 		{"HistoryCacheSize",		&CONFIG_HISTORY_CACHE_SIZE,		TYPE_UINT64,
-			PARM_OPT,	128 * ZBX_KIBIBYTE,	__UINT64_C(2) * ZBX_GIBIBYTE},
+			PARM_OPT,	128 * TRX_KIBIBYTE,	__UINT64_C(2) * TRX_GIBIBYTE},
 		{"HistoryIndexCacheSize",	&CONFIG_HISTORY_INDEX_CACHE_SIZE,	TYPE_UINT64,
-			PARM_OPT,	128 * ZBX_KIBIBYTE,	__UINT64_C(2) * ZBX_GIBIBYTE},
+			PARM_OPT,	128 * TRX_KIBIBYTE,	__UINT64_C(2) * TRX_GIBIBYTE},
 		{"TrendCacheSize",		&CONFIG_TRENDS_CACHE_SIZE,		TYPE_UINT64,
-			PARM_OPT,	128 * ZBX_KIBIBYTE,	__UINT64_C(2) * ZBX_GIBIBYTE},
+			PARM_OPT,	128 * TRX_KIBIBYTE,	__UINT64_C(2) * TRX_GIBIBYTE},
 		{"ValueCacheSize",		&CONFIG_VALUE_CACHE_SIZE,		TYPE_UINT64,
-			PARM_OPT,	0,			__UINT64_C(64) * ZBX_GIBIBYTE},
+			PARM_OPT,	0,			__UINT64_C(64) * TRX_GIBIBYTE},
 		{"CacheUpdateFrequency",	&CONFIG_CONFSYNCER_FREQUENCY,		TYPE_INT,
 			PARM_OPT,	1,			SEC_PER_HOUR},
 		{"HousekeepingFrequency",	&CONFIG_HOUSEKEEPING_FREQUENCY,		TYPE_INT,
@@ -705,7 +705,7 @@ static void	zbx_load_config(ZBX_TASK_EX *task)
 		{"VMwarePerfFrequency",		&CONFIG_VMWARE_PERF_FREQUENCY,		TYPE_INT,
 			PARM_OPT,	10,			SEC_PER_DAY},
 		{"VMwareCacheSize",		&CONFIG_VMWARE_CACHE_SIZE,		TYPE_UINT64,
-			PARM_OPT,	256 * ZBX_KIBIBYTE,	__UINT64_C(2) * ZBX_GIBIBYTE},
+			PARM_OPT,	256 * TRX_KIBIBYTE,	__UINT64_C(2) * TRX_GIBIBYTE},
 		{"VMwareTimeout",		&CONFIG_VMWARE_TIMEOUT,			TYPE_INT,
 			PARM_OPT,	1,			300},
 		{"AllowRoot",			&CONFIG_ALLOW_ROOT,			TYPE_INT,
@@ -741,7 +741,7 @@ static void	zbx_load_config(ZBX_TASK_EX *task)
 		{"ExportDir",			&CONFIG_EXPORT_DIR,			TYPE_STRING,
 			PARM_OPT,	0,			0},
 		{"ExportFileSize",		&CONFIG_EXPORT_FILE_SIZE,		TYPE_UINT64,
-			PARM_OPT,	ZBX_MEBIBYTE,	ZBX_GIBIBYTE},
+			PARM_OPT,	TRX_MEBIBYTE,	TRX_GIBIBYTE},
 		{"StartLLDProcessors",		&CONFIG_LLDWORKER_FORKS,		TYPE_INT,
 			PARM_OPT,	1,			100},
 		{"StatsAllowedIP",		&CONFIG_STATS_ALLOWED_IP,		TYPE_STRING_LIST,
@@ -752,7 +752,7 @@ static void	zbx_load_config(ZBX_TASK_EX *task)
 	/* initialize multistrings */
 	zbx_strarr_init(&CONFIG_LOAD_MODULE);
 
-	parse_cfg_file(CONFIG_FILE, cfg, ZBX_CFG_FILE_REQUIRED, ZBX_CFG_STRICT);
+	parse_cfg_file(CONFIG_FILE, cfg, TRX_CFG_FILE_REQUIRED, TRX_CFG_STRICT);
 
 	zbx_set_defaults();
 
@@ -787,7 +787,7 @@ static void	zbx_free_config(void)
  ******************************************************************************/
 int	main(int argc, char **argv)
 {
-	ZBX_TASK_EX	t = {ZBX_TASK_START};
+	TRX_TASK_EX	t = {TRX_TASK_START};
 	char		ch, *error = NULL;
 	int		opt_c = 0, opt_r = 0;
 
@@ -811,7 +811,7 @@ int	main(int argc, char **argv)
 				if (SUCCEED != parse_rtc_options(zbx_optarg, program_type, &t.data))
 					exit(EXIT_FAILURE);
 
-				t.task = ZBX_TASK_RUNTIME_CONTROL;
+				t.task = TRX_TASK_RUNTIME_CONTROL;
 				break;
 			case 'h':
 				help();
@@ -822,7 +822,7 @@ int	main(int argc, char **argv)
 				exit(EXIT_SUCCESS);
 				break;
 			case 'f':
-				t.flags |= ZBX_TASK_FLAG_FOREGROUND;
+				t.flags |= TRX_TASK_FLAG_FOREGROUND;
 				break;
 			default:
 				usage();
@@ -862,7 +862,7 @@ int	main(int argc, char **argv)
 
 	zbx_load_config(&t);
 
-	if (ZBX_TASK_RUNTIME_CONTROL == t.task)
+	if (TRX_TASK_RUNTIME_CONTROL == t.task)
 		exit(SUCCEED == zbx_sigusr_send(t.data) ? EXIT_SUCCESS : EXIT_FAILURE);
 
 	zbx_initialize_events();
@@ -883,7 +883,7 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	char		*error = NULL;
 	int		i, db_type;
 
-	if (0 != (flags & ZBX_TASK_FLAG_FOREGROUND))
+	if (0 != (flags & TRX_TASK_FLAG_FOREGROUND))
 	{
 		printf("Starting Treegix Server. Treegix %s (revision %s).\nPress Ctrl+C to exit.\n\n",
 				TREEGIX_VERSION, TREEGIX_REVISION);
@@ -1037,13 +1037,13 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 		exit(EXIT_FAILURE);
 	}
 
-	if (ZBX_DB_UNKNOWN == (db_type = zbx_db_get_database_type()))
+	if (TRX_DB_UNKNOWN == (db_type = zbx_db_get_database_type()))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot use database \"%s\": database is not a Treegix database",
 				CONFIG_DBNAME);
 		exit(EXIT_FAILURE);
 	}
-	else if (ZBX_DB_SERVER != db_type)
+	else if (TRX_DB_SERVER != db_type)
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot use database \"%s\": its \"users\" table is empty (is this the"
 				" Treegix proxy database?)", CONFIG_DBNAME);
@@ -1053,10 +1053,10 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	if (SUCCEED != DBcheck_version())
 		exit(EXIT_FAILURE);
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	/* make initial configuration sync before worker processes are forked */
-	DCsync_configuration(ZBX_DBSYNC_INIT);
+	DCsync_configuration(TRX_DBSYNC_INIT);
 
 	if (SUCCEED != zbx_check_postinit_tasks(&error))
 	{
@@ -1114,92 +1114,92 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 
 		switch (thread_args.process_type)
 		{
-			case ZBX_PROCESS_TYPE_CONFSYNCER:
+			case TRX_PROCESS_TYPE_CONFSYNCER:
 				zbx_thread_start(dbconfig_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_POLLER:
-				poller_type = ZBX_POLLER_TYPE_NORMAL;
+			case TRX_PROCESS_TYPE_POLLER:
+				poller_type = TRX_POLLER_TYPE_NORMAL;
 				thread_args.args = &poller_type;
 				zbx_thread_start(poller_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_UNREACHABLE:
-				poller_type = ZBX_POLLER_TYPE_UNREACHABLE;
+			case TRX_PROCESS_TYPE_UNREACHABLE:
+				poller_type = TRX_POLLER_TYPE_UNREACHABLE;
 				thread_args.args = &poller_type;
 				zbx_thread_start(poller_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_TRAPPER:
+			case TRX_PROCESS_TYPE_TRAPPER:
 				thread_args.args = &listen_sock;
 				zbx_thread_start(trapper_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_PINGER:
+			case TRX_PROCESS_TYPE_PINGER:
 				zbx_thread_start(pinger_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_ALERTER:
+			case TRX_PROCESS_TYPE_ALERTER:
 				zbx_thread_start(alerter_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_HOUSEKEEPER:
+			case TRX_PROCESS_TYPE_HOUSEKEEPER:
 				zbx_thread_start(housekeeper_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_TIMER:
+			case TRX_PROCESS_TYPE_TIMER:
 				zbx_thread_start(timer_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_HTTPPOLLER:
+			case TRX_PROCESS_TYPE_HTTPPOLLER:
 				zbx_thread_start(httppoller_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_DISCOVERER:
+			case TRX_PROCESS_TYPE_DISCOVERER:
 				zbx_thread_start(discoverer_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_HISTSYNCER:
-				threads_flags[i] = ZBX_THREAD_WAIT_EXIT;
+			case TRX_PROCESS_TYPE_HISTSYNCER:
+				threads_flags[i] = TRX_THREAD_WAIT_EXIT;
 				zbx_thread_start(dbsyncer_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_ESCALATOR:
+			case TRX_PROCESS_TYPE_ESCALATOR:
 				zbx_thread_start(escalator_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_JAVAPOLLER:
-				poller_type = ZBX_POLLER_TYPE_JAVA;
+			case TRX_PROCESS_TYPE_JAVAPOLLER:
+				poller_type = TRX_POLLER_TYPE_JAVA;
 				thread_args.args = &poller_type;
 				zbx_thread_start(poller_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_SNMPTRAPPER:
+			case TRX_PROCESS_TYPE_SNMPTRAPPER:
 				zbx_thread_start(snmptrapper_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_PROXYPOLLER:
+			case TRX_PROCESS_TYPE_PROXYPOLLER:
 				zbx_thread_start(proxypoller_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_SELFMON:
+			case TRX_PROCESS_TYPE_SELFMON:
 				zbx_thread_start(selfmon_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_VMWARE:
+			case TRX_PROCESS_TYPE_VMWARE:
 				zbx_thread_start(vmware_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_TASKMANAGER:
+			case TRX_PROCESS_TYPE_TASKMANAGER:
 				zbx_thread_start(taskmanager_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_PREPROCMAN:
+			case TRX_PROCESS_TYPE_PREPROCMAN:
 				zbx_thread_start(preprocessing_manager_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_PREPROCESSOR:
+			case TRX_PROCESS_TYPE_PREPROCESSOR:
 				zbx_thread_start(preprocessing_worker_thread, &thread_args, &threads[i]);
 				break;
 #ifdef HAVE_OPENIPMI
-			case ZBX_PROCESS_TYPE_IPMIMANAGER:
+			case TRX_PROCESS_TYPE_IPMIMANAGER:
 				zbx_thread_start(ipmi_manager_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_IPMIPOLLER:
+			case TRX_PROCESS_TYPE_IPMIPOLLER:
 				zbx_thread_start(ipmi_poller_thread, &thread_args, &threads[i]);
 				break;
 #endif
-			case ZBX_PROCESS_TYPE_ALERTMANAGER:
+			case TRX_PROCESS_TYPE_ALERTMANAGER:
 				zbx_thread_start(alert_manager_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_LLDMANAGER:
+			case TRX_PROCESS_TYPE_LLDMANAGER:
 				zbx_thread_start(lld_manager_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_LLDWORKER:
+			case TRX_PROCESS_TYPE_LLDWORKER:
 				zbx_thread_start(lld_worker_thread, &thread_args, &threads[i]);
 				break;
-			case ZBX_PROCESS_TYPE_ALERTSYNCER:
+			case TRX_PROCESS_TYPE_ALERTSYNCER:
 				zbx_thread_start(alert_syncer_thread, &thread_args, &threads[i]);
 				break;
 		}
@@ -1247,7 +1247,7 @@ void	zbx_on_exit(int ret)
 	free_metrics();
 	zbx_ipc_service_free_env();
 
-	DBconnect(ZBX_DB_CONNECT_EXIT);
+	DBconnect(TRX_DB_CONNECT_EXIT);
 
 	free_database_cache();
 

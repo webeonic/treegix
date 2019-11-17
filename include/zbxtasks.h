@@ -1,31 +1,31 @@
 
-#ifndef TREEGIX_ZBXTASKS_H
-#define TREEGIX_ZBXTASKS_H
+#ifndef TREEGIX_TRXTASKS_H
+#define TREEGIX_TRXTASKS_H
 
 #include "zbxalgo.h"
 #include "zbxjson.h"
 
-#define ZBX_TASK_UPDATE_FREQUENCY	1
+#define TRX_TASK_UPDATE_FREQUENCY	1
 
-#define ZBX_REMOTE_COMMAND_TTL		(SEC_PER_MIN * 10)
+#define TRX_REMOTE_COMMAND_TTL		(SEC_PER_MIN * 10)
 
 /* task manager task types */
-#define ZBX_TM_TASK_UNDEFINED				0
-#define ZBX_TM_TASK_CLOSE_PROBLEM			1
-#define ZBX_TM_TASK_REMOTE_COMMAND			2
-#define ZBX_TM_TASK_REMOTE_COMMAND_RESULT		3
-#define ZBX_TM_TASK_ACKNOWLEDGE				4
-#define ZBX_TM_TASK_UPDATE_EVENTNAMES			5
-#define ZBX_TM_TASK_CHECK_NOW				6
+#define TRX_TM_TASK_UNDEFINED				0
+#define TRX_TM_TASK_CLOSE_PROBLEM			1
+#define TRX_TM_TASK_REMOTE_COMMAND			2
+#define TRX_TM_TASK_REMOTE_COMMAND_RESULT		3
+#define TRX_TM_TASK_ACKNOWLEDGE				4
+#define TRX_TM_TASK_UPDATE_EVENTNAMES			5
+#define TRX_TM_TASK_CHECK_NOW				6
 
 /* task manager task states */
-#define ZBX_TM_STATUS_NEW			1
-#define ZBX_TM_STATUS_INPROGRESS		2
-#define ZBX_TM_STATUS_DONE			3
-#define ZBX_TM_STATUS_EXPIRED			4
+#define TRX_TM_STATUS_NEW			1
+#define TRX_TM_STATUS_INPROGRESS		2
+#define TRX_TM_STATUS_DONE			3
+#define TRX_TM_STATUS_EXPIRED			4
 
 /* the time period after which finished (done/expired) tasks are removed */
-#define ZBX_TM_CLEANUP_TASK_AGE			SEC_PER_DAY
+#define TRX_TM_CLEANUP_TASK_AGE			SEC_PER_DAY
 
 typedef struct
 {
@@ -64,9 +64,9 @@ typedef struct
 	zbx_uint64_t	taskid;
 	/* the target proxy hostid or 0 if the task must be on server, ignored by proxy */
 	zbx_uint64_t	proxy_hostid;
-	/* the task type (ZBX_TM_TASK_* defines) */
+	/* the task type (TRX_TM_TASK_* defines) */
 	unsigned char	type;
-	/* the task status (ZBX_TM_STATUS_* defines) */
+	/* the task status (TRX_TM_STATUS_* defines) */
 	unsigned char	status;
 	/* the task creation time */
 	int		clock;

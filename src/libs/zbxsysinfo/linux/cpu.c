@@ -55,7 +55,7 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == tmp || '\0' == *tmp || 0 == strcmp(tmp, "all"))
 	{
-		cpu_num = ZBX_CPUNUM_ALL;
+		cpu_num = TRX_CPUNUM_ALL;
 	}
 	else if (SUCCEED != is_uint31_1(tmp, &cpu_num))
 	{
@@ -66,25 +66,25 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	tmp = get_rparam(request, 1);
 
 	if (NULL == tmp || '\0' == *tmp || 0 == strcmp(tmp, "user"))
-		state = ZBX_CPU_STATE_USER;
+		state = TRX_CPU_STATE_USER;
 	else if (0 == strcmp(tmp, "nice"))
-		state = ZBX_CPU_STATE_NICE;
+		state = TRX_CPU_STATE_NICE;
 	else if (0 == strcmp(tmp, "system"))
-		state = ZBX_CPU_STATE_SYSTEM;
+		state = TRX_CPU_STATE_SYSTEM;
 	else if (0 == strcmp(tmp, "idle"))
-		state = ZBX_CPU_STATE_IDLE;
+		state = TRX_CPU_STATE_IDLE;
 	else if (0 == strcmp(tmp, "iowait"))
-		state = ZBX_CPU_STATE_IOWAIT;
+		state = TRX_CPU_STATE_IOWAIT;
 	else if (0 == strcmp(tmp, "interrupt"))
-		state = ZBX_CPU_STATE_INTERRUPT;
+		state = TRX_CPU_STATE_INTERRUPT;
 	else if (0 == strcmp(tmp, "softirq"))
-		state = ZBX_CPU_STATE_SOFTIRQ;
+		state = TRX_CPU_STATE_SOFTIRQ;
 	else if (0 == strcmp(tmp, "steal"))
-		state = ZBX_CPU_STATE_STEAL;
+		state = TRX_CPU_STATE_STEAL;
 	else if (0 == strcmp(tmp, "guest"))
-		state = ZBX_CPU_STATE_GCPU;
+		state = TRX_CPU_STATE_GCPU;
 	else if (0 == strcmp(tmp, "guest_nice"))
-		state = ZBX_CPU_STATE_GNICE;
+		state = TRX_CPU_STATE_GNICE;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
@@ -94,11 +94,11 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	tmp = get_rparam(request, 2);
 
 	if (NULL == tmp || '\0' == *tmp || 0 == strcmp(tmp, "avg1"))
-		mode = ZBX_AVG1;
+		mode = TRX_AVG1;
 	else if (0 == strcmp(tmp, "avg5"))
-		mode = ZBX_AVG5;
+		mode = TRX_AVG5;
 	else if (0 == strcmp(tmp, "avg15"))
-		mode = ZBX_AVG15;
+		mode = TRX_AVG15;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -112,7 +112,7 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char	*tmp;
 	int	mode, per_cpu = 1, cpu_num;
-	double	load[ZBX_AVG_COUNT], value;
+	double	load[TRX_AVG_COUNT], value;
 
 	if (2 < request->nparam)
 	{
@@ -135,11 +135,11 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 	tmp = get_rparam(request, 1);
 
 	if (NULL == tmp || '\0' == *tmp || 0 == strcmp(tmp, "avg1"))
-		mode = ZBX_AVG1;
+		mode = TRX_AVG1;
 	else if (0 == strcmp(tmp, "avg5"))
-		mode = ZBX_AVG5;
+		mode = TRX_AVG5;
 	else if (0 == strcmp(tmp, "avg15"))
-		mode = ZBX_AVG15;
+		mode = TRX_AVG15;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
@@ -177,7 +177,7 @@ int     SYSTEM_CPU_SWITCHES(AGENT_REQUEST *request, AGENT_RESULT *result)
 	zbx_uint64_t	value = 0;
 	FILE		*f;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (NULL == (f = fopen("/proc/stat", "r")))
 	{
@@ -190,7 +190,7 @@ int     SYSTEM_CPU_SWITCHES(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (0 != strncmp(line, "ctxt", 4))
 			continue;
 
-		if (1 != sscanf(line, "%*s " ZBX_FS_UI64, &value))
+		if (1 != sscanf(line, "%*s " TRX_FS_UI64, &value))
 			continue;
 
 		SET_UI64_RESULT(result, value);
@@ -212,7 +212,7 @@ int     SYSTEM_CPU_INTR(AGENT_REQUEST *request, AGENT_RESULT *result)
 	zbx_uint64_t	value = 0;
 	FILE		*f;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (NULL == (f = fopen("/proc/stat", "r")))
 	{
@@ -225,7 +225,7 @@ int     SYSTEM_CPU_INTR(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (0 != strncmp(line, "intr", 4))
 			continue;
 
-		if (1 != sscanf(line, "%*s " ZBX_FS_UI64, &value))
+		if (1 != sscanf(line, "%*s " TRX_FS_UI64, &value))
 			continue;
 
 		SET_UI64_RESULT(result, value);

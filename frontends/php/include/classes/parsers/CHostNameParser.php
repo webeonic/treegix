@@ -106,7 +106,7 @@ class CHostNameParser extends CParser {
 	 * @return bool
 	 */
 	private static function parseCharacters($source, &$pos) {
-		if (!preg_match('/^'.ZBX_PREG_HOST_FORMAT.'/', substr($source, $pos), $matches)) {
+		if (!preg_match('/^'.TRX_PREG_HOST_FORMAT.'/', substr($source, $pos), $matches)) {
 			return false;
 		}
 

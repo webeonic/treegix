@@ -13,7 +13,7 @@ $tags_form_list = new CFormList('tagsFormList');
 
 $table = (new CTable())
 	->setId('tags-table')
-	->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER)
+	->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER)
 	->setHeader([
 		_('Name'),
 		_('Value'),
@@ -24,13 +24,13 @@ $table = (new CTable())
 // fields
 foreach ($data['tags'] as $i => $tag) {
 	if (!array_key_exists('type', $tag)) {
-		$tag['type'] = ZBX_PROPERTY_OWN;
+		$tag['type'] = TRX_PROPERTY_OWN;
 	}
 
-	$readonly = ($data['readonly'] || ($show_inherited_tags && $tag['type'] == ZBX_PROPERTY_INHERITED));
+	$readonly = ($data['readonly'] || ($show_inherited_tags && $tag['type'] == TRX_PROPERTY_INHERITED));
 
 	$tag_input = (new CTextAreaFlexible('tags['.$i.'][tag]', $tag['tag'], ['readonly' => $readonly]))
-		->setWidth(ZBX_TEXTAREA_TAG_WIDTH)
+		->setWidth(TRX_TEXTAREA_TAG_WIDTH)
 		->setAttribute('placeholder', _('tag'));
 
 	$tag_cell = [$tag_input];
@@ -40,25 +40,25 @@ foreach ($data['tags'] as $i => $tag) {
 	}
 
 	$value_input = (new CTextAreaFlexible('tags['.$i.'][value]', $tag['value'], ['readonly' => $readonly]))
-		->setWidth(ZBX_TEXTAREA_TAG_VALUE_WIDTH)
+		->setWidth(TRX_TEXTAREA_TAG_VALUE_WIDTH)
 		->setAttribute('placeholder', _('value'));
 
 	$row = [
-		(new CCol($tag_cell))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
-		(new CCol($value_input))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT)
+		(new CCol($tag_cell))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+		(new CCol($value_input))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT)
 	];
 
 	$row[] = (new CCol(
-		($show_inherited_tags && ($tag['type'] & ZBX_PROPERTY_INHERITED))
+		($show_inherited_tags && ($tag['type'] & TRX_PROPERTY_INHERITED))
 			? (new CButton('tags['.$i.'][disable]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-disable')
 				->setEnabled(!$readonly)
 			: (new CButton('tags['.$i.'][remove]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
 				->setEnabled(!$readonly)
-	))->addClass(ZBX_STYLE_NOWRAP);
+	))->addClass(TRX_STYLE_NOWRAP);
 
 	if ($show_inherited_tags) {
 		$template_list = [];
@@ -75,7 +75,7 @@ foreach ($data['tags'] as $i => $tag) {
 					))->setAttribute('target', '_blank');
 				}
 				else {
-					$template_list[] = (new CSpan($template['name']))->addClass(ZBX_STYLE_GREY);
+					$template_list[] = (new CSpan($template['name']))->addClass(TRX_STYLE_GREY);
 				}
 
 				$template_list[] = ', ';
@@ -93,7 +93,7 @@ foreach ($data['tags'] as $i => $tag) {
 // buttons
 $table->setFooter(new CCol(
 	(new CButton('tag_add', _('Add')))
-		->addClass(ZBX_STYLE_BTN_LINK)
+		->addClass(TRX_STYLE_BTN_LINK)
 		->addClass('element-table-add')
 		->setEnabled(!$data['readonly'])
 ));

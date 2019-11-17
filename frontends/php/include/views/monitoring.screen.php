@@ -6,19 +6,19 @@ $web_layout_mode = CView::getLayoutMode();
 
 $widget = (new CWidget())->setWebLayoutMode($web_layout_mode);
 
-if (in_array($web_layout_mode, [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN])) {
+if (in_array($web_layout_mode, [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN])) {
 	$widget
 		->setTitle(_('Screens'))
 		->addItem((new CList())
 			->setAttribute('role', 'navigation')
 			->setAttribute('aria-label', _x('Hierarchy', 'screen reader'))
-			->addClass(ZBX_STYLE_OBJECT_GROUP)
-			->addClass(ZBX_STYLE_FILTER_BREADCRUMB)
+			->addClass(TRX_STYLE_OBJECT_GROUP)
+			->addClass(TRX_STYLE_FILTER_BREADCRUMB)
 			->addItem([
 				(new CSpan())->addItem(new CLink(_('All screens'), 'screenconf.php')),
 				'/',
 				(new CSpan())
-					->addClass(ZBX_STYLE_SELECTED)
+					->addClass(TRX_STYLE_SELECTED)
 					->addItem(
 						new CLink($data['screen']['name'], (new CUrl('screens.php'))
 							->setArgument('elementid', $data['screen']['screenid'])
@@ -54,12 +54,12 @@ if (check_dynamic_items($data['screen']['screenid'], 0)) {
 	$controls
 		->addItem([
 			new CLabel(_('Group'), 'groupid'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$pageFilter->getGroupsCB()
 		])
 		->addItem([
 			new CLabel(_('Host'), 'hostid'),
-			(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 			$pageFilter->getHostsCB()
 		]);
 }
@@ -103,10 +103,10 @@ $widget->addItem(
 		->setProfile($data['profileIdx'], $data['profileIdx2'])
 		->setActiveTab($data['active_tab'])
 		->addTimeSelector($screenBuilder->timeline['from'], $screenBuilder->timeline['to'],
-			$web_layout_mode != ZBX_LAYOUT_KIOSKMODE)
+			$web_layout_mode != TRX_LAYOUT_KIOSKMODE)
 );
 
-$widget->addItem((new CDiv($screenBuilder->show()))->addClass(ZBX_STYLE_TABLE_FORMS_CONTAINER));
+$widget->addItem((new CDiv($screenBuilder->show()))->addClass(TRX_STYLE_TABLE_FORMS_CONTAINER));
 
 CScreenBuilder::insertScreenStandardJs($screenBuilder->timeline);
 

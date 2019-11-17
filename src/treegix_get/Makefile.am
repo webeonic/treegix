@@ -14,6 +14,6 @@ treegix_get_LDADD = \
 	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
 	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a
 
-treegix_get_LDADD += @ZBXGET_LIBS@
+treegix_get_LDADD += @TRXGET_LIBS@
 
-treegix_get_LDFLAGS = @ZBXGET_LDFLAGS@
+treegix_get_LDFLAGS = @TRXGET_LDFLAGS@

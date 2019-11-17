@@ -52,10 +52,10 @@ typedef struct
 #endif
 #endif
 }
-ZBX_THREAD_SENDVAL_TLS_ARGS;
+TRX_THREAD_SENDVAL_TLS_ARGS;
 
-void	zbx_tls_pass_vars(ZBX_THREAD_SENDVAL_TLS_ARGS *args);
-void	zbx_tls_take_vars(ZBX_THREAD_SENDVAL_TLS_ARGS *args);
+void	zbx_tls_pass_vars(TRX_THREAD_SENDVAL_TLS_ARGS *args);
+void	zbx_tls_take_vars(TRX_THREAD_SENDVAL_TLS_ARGS *args);
 #endif	/* #if defined(_WINDOWS) */
 
 void	zbx_tls_validate_config(void);

@@ -302,7 +302,7 @@ class CHttpTest extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $httptests, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$names_by_hostid = [];
@@ -397,7 +397,7 @@ class CHttpTest extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $httptests, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		// permissions
@@ -425,7 +425,7 @@ class CHttpTest extends CApiService {
 
 		foreach ($httptests as $httptest) {
 			if (!array_key_exists($httptest['httptestid'], $db_httptests)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -434,7 +434,7 @@ class CHttpTest extends CApiService {
 
 			if (array_key_exists('name', $httptest)) {
 				if ($db_httptest['templateid'] != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Cannot update a templated web scenario "%1$s": %2$s.', $httptest['name'],
 						_s('unexpected parameter "%1$s"', 'name')
 					));
@@ -458,7 +458,7 @@ class CHttpTest extends CApiService {
 					foreach ($httptest['steps'] as $httpstep) {
 						foreach (['name', 'no'] as $field_name) {
 							if (array_key_exists($field_name, $httpstep)) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Cannot update step for a templated web scenario "%1$s": %2$s.', $httptest['name'],
 									_s('unexpected parameter "%1$s"', $field_name)
 								));
@@ -477,7 +477,7 @@ class CHttpTest extends CApiService {
 			'steps' =>	['type' => API_OBJECTS, 'uniq' => [['name']]]
 		]];
 		if (!CApiInputValidator::validateUniqueness($api_input_rules, $httptests, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		// validation
@@ -505,7 +505,7 @@ class CHttpTest extends CApiService {
 
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $httptestids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_httptests = $this->get([
@@ -518,7 +518,7 @@ class CHttpTest extends CApiService {
 		if (!$nopermissions) {
 			foreach ($httptestids as $httptestid) {
 				if (!array_key_exists($httptestid, $db_httptests)) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS,
+					self::exception(TRX_API_ERROR_PERMISSIONS,
 						_('No permissions to referred object or it does not exist!')
 					);
 				}
@@ -526,7 +526,7 @@ class CHttpTest extends CApiService {
 				$db_httptest = $db_httptests[$httptestid];
 
 				if ($db_httptest['templateid'] != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Cannot delete templated web scenario "%1$s".', $db_httptest['name'])
 					);
 				}
@@ -605,7 +605,7 @@ class CHttpTest extends CApiService {
 			]);
 
 			if ($count != count($hostids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -630,7 +630,7 @@ class CHttpTest extends CApiService {
 		);
 
 		if ($db_httptests) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Web scenario "%1$s" already exists.', $db_httptests[0]['name'])
 			);
 		}
@@ -671,15 +671,15 @@ class CHttpTest extends CApiService {
 					&& ($method === 'validateCreate'
 						|| $httptest['applicationid'] != $db_httptests[$httptest['httptestid']]['applicationid'])) {
 				if (!array_key_exists($httptest['applicationid'], $db_applications)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Application with applicationid "%1$s" does not exist.', $httptest['applicationid'])
 					);
 				}
 
 				$db_application = $db_applications[$httptest['applicationid']];
 
-				if ($db_application['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				if ($db_application['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Cannot add a discovered application "%1$s" to a web scenario.', $db_application['name']
 					));
 				}
@@ -689,7 +689,7 @@ class CHttpTest extends CApiService {
 					: $db_httptests[$httptest['httptestid']]['hostid'];
 
 				if (bccomp($db_application['hostid'], $hostid) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_('The web scenario application belongs to a different host than the web scenario host.')
 					);
 				}
@@ -715,18 +715,18 @@ class CHttpTest extends CApiService {
 
 				if ($db_httptest['templateid'] != 0) {
 					if (count($httptest['steps']) != count($db_httptest['steps'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect templated web scenario step count.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect templated web scenario step count.'));
 					}
 
 					foreach ($httptest['steps'] as $httpstep) {
 						if (!array_key_exists('httpstepid', $httpstep)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Cannot update step for a templated web scenario "%1$s": %2$s.', $httptest['name'],
 								_s('the parameter "%1$s" is missing', 'httpstepid')
 							));
 						}
 						elseif (!array_key_exists($httpstep['httpstepid'], $db_httptest['steps'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_('No permissions to referred object or it does not exist!')
 							);
 						}
@@ -763,7 +763,7 @@ class CHttpTest extends CApiService {
 				}
 
 				if ($ranges_parser->parse($httpstep['status_codes']) != CParser::PARSE_SUCCESS) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid response code "%1$s".', $httpstep['status_codes'])
 					);
 				}
@@ -791,8 +791,8 @@ class CHttpTest extends CApiService {
 
 		// adding headers and variables
 		$fields = [
-			ZBX_HTTPFIELD_HEADER => 'headers',
-			ZBX_HTTPFIELD_VARIABLE => 'variables'
+			TRX_HTTPFIELD_HEADER => 'headers',
+			TRX_HTTPFIELD_VARIABLE => 'variables'
 		];
 		foreach ($fields as $type => $field) {
 			if (!$this->outputIsRequested($field, $options['output'])) {
@@ -842,10 +842,10 @@ class CHttpTest extends CApiService {
 		if ($options['selectSteps'] !== null) {
 			if ($options['selectSteps'] != API_OUTPUT_COUNT) {
 				$fields = [
-					ZBX_HTTPFIELD_HEADER => 'headers',
-					ZBX_HTTPFIELD_VARIABLE => 'variables',
-					ZBX_HTTPFIELD_QUERY_FIELD => 'query_fields',
-					ZBX_HTTPFIELD_POST_FIELD => 'posts',
+					TRX_HTTPFIELD_HEADER => 'headers',
+					TRX_HTTPFIELD_VARIABLE => 'variables',
+					TRX_HTTPFIELD_QUERY_FIELD => 'query_fields',
+					TRX_HTTPFIELD_POST_FIELD => 'posts',
 				];
 				foreach ($fields as $type => $field) {
 					if (!$this->outputIsRequested($field, $options['selectSteps'])) {
@@ -863,7 +863,7 @@ class CHttpTest extends CApiService {
 				if ($fields) {
 					foreach ($db_httpsteps as &$db_httpstep) {
 						foreach ($fields as $type => $field) {
-							if ($type != ZBX_HTTPFIELD_POST_FIELD || $db_httpstep['post_type'] == ZBX_POSTTYPE_FORM) {
+							if ($type != TRX_HTTPFIELD_POST_FIELD || $db_httpstep['post_type'] == TRX_POSTTYPE_FORM) {
 								$db_httpstep[$field] = [];
 							}
 						}
@@ -882,8 +882,8 @@ class CHttpTest extends CApiService {
 					foreach ($db_httpstep_fields as $db_httpstep_field) {
 						$db_httpstep = &$db_httpsteps[$db_httpstep_field['httpstepid']];
 
-						if ($db_httpstep_field['type'] != ZBX_HTTPFIELD_POST_FIELD
-								|| $db_httpstep['post_type'] == ZBX_POSTTYPE_FORM) {
+						if ($db_httpstep_field['type'] != TRX_HTTPFIELD_POST_FIELD
+								|| $db_httpstep['post_type'] == TRX_POSTTYPE_FORM) {
 							$db_httpstep[$fields[$db_httpstep_field['type']]][] = [
 								'name' => $db_httpstep_field['name'],
 								'value' => $db_httpstep_field['value']
@@ -936,7 +936,7 @@ class CHttpTest extends CApiService {
 						$httptest += [$field_name => ''];
 
 						if ($httptest[$field_name] !== '') {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', $field_name, _('should be empty'))
 							);
 						}
@@ -976,13 +976,13 @@ class CHttpTest extends CApiService {
 				}
 
 				if ($httptest['ssl_key_password'] != '' && $httptest['ssl_key_file'] == '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Empty SSL key file for web scenario "%1$s".', $httptest['name'])
 					);
 				}
 
 				if ($httptest['ssl_key_file'] != '' && $httptest['ssl_cert_file'] == '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Empty SSL certificate file for web scenario "%1$s".', $httptest['name'])
 					);
 				}
@@ -1032,7 +1032,7 @@ class CHttpTest extends CApiService {
 						if ($httpstep['posts'] !== '' && $httpstep['posts'] !== []) {
 							$field_name = $httpstep['required'] !== '' ? 'required' : 'posts';
 
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Incorrect value for field "%1$s": %2$s.', 'posts', _('should be empty'))
 							);
 						}

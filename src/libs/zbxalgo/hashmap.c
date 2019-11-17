@@ -5,29 +5,29 @@
 
 #include "zbxalgo.h"
 
-static void	__hashmap_ensure_free_entry(zbx_hashmap_t *hm, ZBX_HASHMAP_SLOT_T *slot);
+static void	__hashmap_ensure_free_entry(zbx_hashmap_t *hm, TRX_HASHMAP_SLOT_T *slot);
 
 #define	CRIT_LOAD_FACTOR	5/1
 #define	SLOT_GROWTH_FACTOR	3/2
 
 #define ARRAY_GROWTH_FACTOR	2 /* because the number of slot entries is usually small, with 3/2 they grow too slow */
 
-#define ZBX_HASHMAP_DEFAULT_SLOTS	10
+#define TRX_HASHMAP_DEFAULT_SLOTS	10
 
 /* private hashmap functions */
 
-static void	__hashmap_ensure_free_entry(zbx_hashmap_t *hm, ZBX_HASHMAP_SLOT_T *slot)
+static void	__hashmap_ensure_free_entry(zbx_hashmap_t *hm, TRX_HASHMAP_SLOT_T *slot)
 {
 	if (NULL == slot->entries)
 	{
 		slot->entries_num = 0;
 		slot->entries_alloc = 6;
-		slot->entries = (ZBX_HASHMAP_ENTRY_T *)hm->mem_malloc_func(NULL, slot->entries_alloc * sizeof(ZBX_HASHMAP_ENTRY_T));
+		slot->entries = (TRX_HASHMAP_ENTRY_T *)hm->mem_malloc_func(NULL, slot->entries_alloc * sizeof(TRX_HASHMAP_ENTRY_T));
 	}
 	else if (slot->entries_num == slot->entries_alloc)
 	{
 		slot->entries_alloc = slot->entries_alloc * ARRAY_GROWTH_FACTOR;
-		slot->entries = (ZBX_HASHMAP_ENTRY_T *)hm->mem_realloc_func(slot->entries, slot->entries_alloc * sizeof(ZBX_HASHMAP_ENTRY_T));
+		slot->entries = (TRX_HASHMAP_ENTRY_T *)hm->mem_realloc_func(slot->entries, slot->entries_alloc * sizeof(TRX_HASHMAP_ENTRY_T));
 	}
 }
 
@@ -38,8 +38,8 @@ static void	zbx_hashmap_init_slots(zbx_hashmap_t *hm, size_t init_size)
 	if (0 < init_size)
 	{
 		hm->num_slots = next_prime(init_size);
-		hm->slots = (ZBX_HASHMAP_SLOT_T *)hm->mem_malloc_func(NULL, hm->num_slots * sizeof(ZBX_HASHMAP_SLOT_T));
-		memset(hm->slots, 0, hm->num_slots * sizeof(ZBX_HASHMAP_SLOT_T));
+		hm->slots = (TRX_HASHMAP_SLOT_T *)hm->mem_malloc_func(NULL, hm->num_slots * sizeof(TRX_HASHMAP_SLOT_T));
+		memset(hm->slots, 0, hm->num_slots * sizeof(TRX_HASHMAP_SLOT_T));
 	}
 	else
 	{
@@ -53,11 +53,11 @@ static void	zbx_hashmap_init_slots(zbx_hashmap_t *hm, size_t init_size)
 void	zbx_hashmap_create(zbx_hashmap_t *hm, size_t init_size)
 {
 	zbx_hashmap_create_ext(hm, init_size,
-				ZBX_DEFAULT_UINT64_HASH_FUNC,
-				ZBX_DEFAULT_UINT64_COMPARE_FUNC,
-				ZBX_DEFAULT_MEM_MALLOC_FUNC,
-				ZBX_DEFAULT_MEM_REALLOC_FUNC,
-				ZBX_DEFAULT_MEM_FREE_FUNC);
+				TRX_DEFAULT_UINT64_HASH_FUNC,
+				TRX_DEFAULT_UINT64_COMPARE_FUNC,
+				TRX_DEFAULT_MEM_MALLOC_FUNC,
+				TRX_DEFAULT_MEM_REALLOC_FUNC,
+				TRX_DEFAULT_MEM_FREE_FUNC);
 }
 
 void	zbx_hashmap_create_ext(zbx_hashmap_t *hm, size_t init_size,
@@ -106,7 +106,7 @@ int	zbx_hashmap_get(zbx_hashmap_t *hm, zbx_uint64_t key)
 {
 	int			i, value = FAIL;
 	zbx_hash_t		hash;
-	ZBX_HASHMAP_SLOT_T	*slot;
+	TRX_HASHMAP_SLOT_T	*slot;
 
 	if (0 == hm->num_slots)
 		return FAIL;
@@ -130,10 +130,10 @@ void	zbx_hashmap_set(zbx_hashmap_t *hm, zbx_uint64_t key, int value)
 {
 	int			i;
 	zbx_hash_t		hash;
-	ZBX_HASHMAP_SLOT_T	*slot;
+	TRX_HASHMAP_SLOT_T	*slot;
 
 	if (0 == hm->num_slots)
-		zbx_hashmap_init_slots(hm, ZBX_HASHMAP_DEFAULT_SLOTS);
+		zbx_hashmap_init_slots(hm, TRX_HASHMAP_DEFAULT_SLOTS);
 
 	hash = hm->hash_func(&key);
 	slot = &hm->slots[hash % hm->num_slots];
@@ -158,12 +158,12 @@ void	zbx_hashmap_set(zbx_hashmap_t *hm, zbx_uint64_t key, int value)
 		if (hm->num_data >= hm->num_slots * CRIT_LOAD_FACTOR)
 		{
 			int			inc_slots, s;
-			ZBX_HASHMAP_SLOT_T	*new_slot;
+			TRX_HASHMAP_SLOT_T	*new_slot;
 
 			inc_slots = next_prime(hm->num_slots * SLOT_GROWTH_FACTOR);
 
-			hm->slots = (ZBX_HASHMAP_SLOT_T *)hm->mem_realloc_func(hm->slots, inc_slots * sizeof(ZBX_HASHMAP_SLOT_T));
-			memset(hm->slots + hm->num_slots, 0, (inc_slots - hm->num_slots) * sizeof(ZBX_HASHMAP_SLOT_T));
+			hm->slots = (TRX_HASHMAP_SLOT_T *)hm->mem_realloc_func(hm->slots, inc_slots * sizeof(TRX_HASHMAP_SLOT_T));
+			memset(hm->slots + hm->num_slots, 0, (inc_slots - hm->num_slots) * sizeof(TRX_HASHMAP_SLOT_T));
 
 			for (s = 0; s < hm->num_slots; s++)
 			{
@@ -196,7 +196,7 @@ void	zbx_hashmap_remove(zbx_hashmap_t *hm, zbx_uint64_t key)
 {
 	int			i;
 	zbx_hash_t		hash;
-	ZBX_HASHMAP_SLOT_T	*slot;
+	TRX_HASHMAP_SLOT_T	*slot;
 
 	if (0 == hm->num_slots)
 		return;

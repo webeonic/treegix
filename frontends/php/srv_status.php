@@ -10,7 +10,7 @@ $page['title'] = _('Services');
 $page['file'] = 'srv_status.php';
 $page['scripts'] = ['layout.mode.js'];
 
-define('ZBX_PAGE_DO_REFRESH', 1);
+define('TRX_PAGE_DO_REFRESH', 1);
 
 if (!getRequest('serviceid') || !getRequest('showgraph')) {
 	CView::$has_web_layout_mode = true;
@@ -31,9 +31,9 @@ $periods = [
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'serviceid' =>	[T_ZBX_INT, O_OPT, P_SYS|P_NZERO, DB_ID,	null],
-	'showgraph' =>	[T_ZBX_INT, O_OPT, P_SYS,	IN('1'),		'isset({serviceid})'],
-	'period' =>		[T_ZBX_STR, O_OPT, P_SYS,	IN('"'.implode('","', array_keys($periods)).'"'),	null]
+	'serviceid' =>	[T_TRX_INT, O_OPT, P_SYS|P_NZERO, DB_ID,	null],
+	'showgraph' =>	[T_TRX_INT, O_OPT, P_SYS,	IN('1'),		'isset({serviceid})'],
+	'period' =>		[T_TRX_STR, O_OPT, P_SYS,	IN('"'.implode('","', array_keys($periods)).'"'),	null]
 ];
 check_fields($fields);
 
@@ -46,8 +46,8 @@ if (isset($_REQUEST['serviceid']) && isset($_REQUEST['showgraph'])) {
 
 	if ($service) {
 		$table = (new CDiv())
-			->addClass(ZBX_STYLE_TABLE_FORMS_CONTAINER)
-			->addClass(ZBX_STYLE_CENTER)
+			->addClass(TRX_STYLE_TABLE_FORMS_CONTAINER)
+			->addClass(TRX_STYLE_CENTER)
 			->addItem(new CImg('chart5.php?serviceid='.$service['serviceid'].url_param('path')))
 			->show();
 	}
@@ -151,7 +151,7 @@ else {
 					->addItem((new CList())
 						->addItem([
 							new CLabel(_('Period'), 'period'),
-							(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+							(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 							$period_combo
 						])
 					),

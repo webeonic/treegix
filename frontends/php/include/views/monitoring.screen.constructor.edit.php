@@ -9,7 +9,7 @@ if (isset($_REQUEST['screenitemid'])) {
 
 $form = (new CForm('post', $action))
 	->setName('screen_item_form')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('screenid', getRequest('screenid'));
 
 if ($data['screen']['templateid'] != 0) {
@@ -132,7 +132,7 @@ if ($resourceType == SCREEN_RESOURCE_GRAPH) {
 				]),
 			]
 		]))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(true)
 	);
 }
@@ -189,13 +189,13 @@ elseif ($resourceType == SCREEN_RESOURCE_LLD_GRAPH) {
 					]),
 				]
 			]))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAriaRequired()
 		)
 		->addRow(
 			(new CLabel(_('Max columns'), 'max_columns'))->setAsteriskMark(),
 			(new CNumericBox('max_columns', $maxColumns, 3, false, false, false))
-				->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 				->setAriaRequired()
 		);
 }
@@ -249,7 +249,7 @@ elseif ($resourceType == SCREEN_RESOURCE_SIMPLE_GRAPH) {
 				]
 			]
 		]))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(true)
 	);
 }
@@ -279,7 +279,7 @@ elseif ($resourceType == SCREEN_RESOURCE_LLD_SIMPLE_GRAPH) {
 
 	if ($this->data['screen']['templateid']) {
 		$selectButton = (new CButton('select', _('Select')))
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->onClick('return PopUp("popup.generic",'.
 				CJs::encodeJson([
 					'srctbl' => 'item_prototypes',
@@ -296,7 +296,7 @@ elseif ($resourceType == SCREEN_RESOURCE_LLD_SIMPLE_GRAPH) {
 	}
 	else {
 		$selectButton = (new CButton('select', _('Select')))
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->onClick('return PopUp("popup.generic",'.
 				CJs::encodeJson([
 					'srctbl' => 'item_prototypes',
@@ -316,9 +316,9 @@ elseif ($resourceType == SCREEN_RESOURCE_LLD_SIMPLE_GRAPH) {
 	$form->addVar('resourceid', $id);
 	$screenFormList->addRow((new CLabel(_('Item prototype'), 'caption'))->setAsteriskMark(), [
 		(new CTextBox('caption', $caption, true))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		$selectButton
 	]);
 
@@ -326,7 +326,7 @@ elseif ($resourceType == SCREEN_RESOURCE_LLD_SIMPLE_GRAPH) {
 		(new CLabel(_('Max columns'), 'max_columns'))->setAsteriskMark(),
 		(new CNumericBox('max_columns', $maxColumns, 3, false, false, false))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	);
 }
 
@@ -350,11 +350,11 @@ elseif ($resourceType == SCREEN_RESOURCE_MAP) {
 	$form->addVar('resourceid', $id);
 	$screenFormList->addRow((new CLabel(_('Map'), 'caption'))->setAsteriskMark(), [
 		(new CTextBox('caption', $caption, true))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		(new CButton('select', _('Select')))
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->onClick('return PopUp("popup.generic",'.
 				CJs::encodeJson([
 					'srctbl' => 'sysmaps',
@@ -416,13 +416,13 @@ elseif ($resourceType == SCREEN_RESOURCE_PLAIN_TEXT) {
 					]
 				],
 			]))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired(true)
 		)
 		->addRow((new CLabel(_('Show lines'), 'elements'))->setAsteriskMark(),
 			(new CNumericBox('elements', $elements, 3))
 				->setAriaRequired()
-				->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 		)
 		->addRow(_('Show text as HTML'),
 			(new CCheckBox('style'))
@@ -472,7 +472,7 @@ elseif (in_array($resourceType, [SCREEN_RESOURCE_HOSTGROUP_TRIGGERS, SCREEN_RESO
 						'real_hosts' => true
 					]
 				]
-			]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		);
 	}
 	else {
@@ -509,7 +509,7 @@ elseif (in_array($resourceType, [SCREEN_RESOURCE_HOSTGROUP_TRIGGERS, SCREEN_RESO
 						'dstfld1' => 'resourceid'
 					]
 				]
-			]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		);
 	}
 
@@ -517,7 +517,7 @@ elseif (in_array($resourceType, [SCREEN_RESOURCE_HOSTGROUP_TRIGGERS, SCREEN_RESO
 		(new CLabel(_('Show lines'), 'elements'))->setAsteriskMark(),
 		(new CNumericBox('elements', $elements, 3))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	);
 	$screenFormList->addRow(
 		_('Sort triggers by'),
@@ -537,7 +537,7 @@ elseif ($resourceType == SCREEN_RESOURCE_ACTIONS) {
 		(new CLabel(_('Show lines'), 'elements'))->setAsteriskMark(),
 		(new CNumericBox('elements', $elements, 3))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	);
 	$screenFormList->addRow(
 		_('Sort entries by'),
@@ -562,7 +562,7 @@ elseif ($resourceType == SCREEN_RESOURCE_EVENTS) {
 		(new CLabel(_('Show lines'), 'elements'))->setAsteriskMark(),
 		(new CNumericBox('elements', $elements, 3))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	);
 	$form->addVar('resourceid', 0);
 }
@@ -607,15 +607,15 @@ elseif (in_array($resourceType, [SCREEN_RESOURCE_TRIGGER_OVERVIEW, SCREEN_RESOUR
 				]
 			]
 		]))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	)
 	->addRow(_('Application'), [
 		(new CTextBox('application', $application))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		(new CButton('application_select', _('Select')))
-			->addClass(ZBX_STYLE_BTN_GREY)
+			->addClass(TRX_STYLE_BTN_GREY)
 			->onClick('return PopUp("popup.generic", '.
 				CJs::encodeJson([
 					'srctbl' => 'applications',
@@ -669,7 +669,7 @@ elseif ($resourceType == SCREEN_RESOURCE_HOST_INFO || $resourceType == SCREEN_RE
 					'real_hosts' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	);
 }
 
@@ -727,7 +727,7 @@ elseif ($resourceType == SCREEN_RESOURCE_CLOCK) {
 					]
 				]
 			]))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAriaRequired(true)
 		);
 	}
@@ -758,7 +758,7 @@ elseif ($resourceType != SCREEN_RESOURCE_CLOCK) {
 
 if (in_array($resourceType, [SCREEN_RESOURCE_URL])) {
 	$screenFormList->addRow((new CLabel(_('URL'), 'url'))->setAsteriskMark(),
-		(new CTextBox('url', $url))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)->setAriaRequired()
+		(new CTextBox('url', $url))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)->setAriaRequired()
 	);
 }
 else {
@@ -775,10 +775,10 @@ $resourcesWithWidthAndHeight = [
 ];
 if (in_array($resourceType, $resourcesWithWidthAndHeight)) {
 	$screenFormList->addRow(_('Width'),
-		(new CNumericBox('width', $width, 5))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+		(new CNumericBox('width', $width, 5))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	);
 	$screenFormList->addRow(_('Height'),
-		(new CNumericBox('height', $height, 5))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+		(new CNumericBox('height', $height, 5))->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	);
 }
 else {
@@ -820,13 +820,13 @@ $screenFormList->addRow(
 	(new CLabel(_('Column span'), 'colspan'))->setAsteriskMark(),
 	(new CNumericBox('colspan', $colspan, 3))
 		->setAriaRequired()
-		->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 );
 $screenFormList->addRow(
 	(new CLabel(_('Row span'), 'rowspan'))->setAsteriskMark(),
 	(new CNumericBox('rowspan', $rowspan, 3))
 		->setAriaRequired()
-		->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 );
 
 // dynamic addon

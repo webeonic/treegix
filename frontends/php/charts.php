@@ -14,18 +14,18 @@ $page['type'] = detect_page_type(PAGE_TYPE_HTML);
 CView::$has_web_layout_mode = true;
 $page['web_layout_mode'] = CView::getLayoutMode();
 
-define('ZBX_PAGE_DO_JS_REFRESH', 1);
+define('TRX_PAGE_DO_JS_REFRESH', 1);
 
 require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'groupid' =>	[T_ZBX_INT,			O_OPT, P_SYS, DB_ID,		null],
-	'hostid' =>		[T_ZBX_INT,			O_OPT, P_SYS, DB_ID,		null],
-	'graphid' =>	[T_ZBX_INT,			O_OPT, P_SYS, DB_ID,		null],
-	'from' =>		[T_ZBX_RANGE_TIME,	O_OPT, P_SYS, null,			null],
-	'to' =>			[T_ZBX_RANGE_TIME,	O_OPT, P_SYS, null,			null],
-	'action' =>		[T_ZBX_STR,			O_OPT, P_SYS, IN('"'.HISTORY_GRAPH.'","'.HISTORY_VALUES.'"'), null]
+	'groupid' =>	[T_TRX_INT,			O_OPT, P_SYS, DB_ID,		null],
+	'hostid' =>		[T_TRX_INT,			O_OPT, P_SYS, DB_ID,		null],
+	'graphid' =>	[T_TRX_INT,			O_OPT, P_SYS, DB_ID,		null],
+	'from' =>		[T_TRX_RANGE_TIME,	O_OPT, P_SYS, null,			null],
+	'to' =>			[T_TRX_RANGE_TIME,	O_OPT, P_SYS, null,			null],
+	'action' =>		[T_TRX_STR,			O_OPT, P_SYS, IN('"'.HISTORY_GRAPH.'","'.HISTORY_VALUES.'"'), null]
 ];
 check_fields($fields);
 validateTimeSelectorPeriod(getRequest('from'), getRequest('to'));

@@ -20,7 +20,7 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			),
 			(new CFormList())->addRow(_('Mode'),
@@ -43,7 +43,7 @@ $proxyTable = (new CTableInfo())
 		(new CColHeader(
 			(new CCheckBox('all_hosts'))
 				->onClick("checkAll('".$proxyForm->getName()."', 'all_hosts', 'proxyids');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'host', $data['sort'], $data['sortorder']),
 		_('Mode'),
 		_('Encryption'),
@@ -71,10 +71,10 @@ foreach ($data['proxies'] as $proxy) {
 				$style = null;
 				break;
 			case HOST_STATUS_TEMPLATE:
-				$style = ZBX_STYLE_GREY;
+				$style = TRX_STYLE_GREY;
 				break;
 			default:
-				$style = ZBX_STYLE_RED;
+				$style = TRX_STYLE_RED;
 		}
 
 		if ($hosts) {
@@ -93,41 +93,41 @@ foreach ($data['proxies'] as $proxy) {
 	if ($proxy['status'] == HOST_STATUS_PROXY_PASSIVE) {
 		// input encryption
 		if ($proxy['tls_connect'] == HOST_ENCRYPTION_NONE) {
-			$in_encryption = (new CSpan(_('None')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$in_encryption = (new CSpan(_('None')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 		elseif ($proxy['tls_connect'] == HOST_ENCRYPTION_PSK) {
-			$in_encryption = (new CSpan(_('PSK')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$in_encryption = (new CSpan(_('PSK')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 		else {
-			$in_encryption = (new CSpan(_('CERT')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$in_encryption = (new CSpan(_('CERT')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 	}
 	else {
 		// output encryption
 		$out_encryption_array = [];
 		if (($proxy['tls_accept'] & HOST_ENCRYPTION_NONE) == HOST_ENCRYPTION_NONE) {
-			$out_encryption_array[] = (new CSpan(_('None')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$out_encryption_array[] = (new CSpan(_('None')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 		if (($proxy['tls_accept'] & HOST_ENCRYPTION_PSK) == HOST_ENCRYPTION_PSK) {
-			$out_encryption_array[] = (new CSpan(_('PSK')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$out_encryption_array[] = (new CSpan(_('PSK')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 		if (($proxy['tls_accept'] & HOST_ENCRYPTION_CERTIFICATE) == HOST_ENCRYPTION_CERTIFICATE) {
-			$out_encryption_array[] = (new CSpan(_('CERT')))->addClass(ZBX_STYLE_STATUS_GREEN);
+			$out_encryption_array[] = (new CSpan(_('CERT')))->addClass(TRX_STYLE_STATUS_GREEN);
 		}
 
-		$out_encryption = (new CDiv($out_encryption_array))->addClass(ZBX_STYLE_STATUS_CONTAINER);
+		$out_encryption = (new CDiv($out_encryption_array))->addClass(TRX_STYLE_STATUS_CONTAINER);
 	}
 
 	$proxyTable->addRow([
 		new CCheckBox('proxyids['.$proxy['proxyid'].']', $proxy['proxyid']),
-		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol($name))->addClass(TRX_STYLE_NOWRAP),
 		$proxy['status'] == HOST_STATUS_PROXY_ACTIVE ? _('Active') : _('Passive'),
 		$proxy['status'] == HOST_STATUS_PROXY_ACTIVE ? $out_encryption : $in_encryption,
 		($proxy['auto_compress'] == HOST_COMPRESSION_ON)
-			? (new CSpan(_('On')))->addClass(ZBX_STYLE_STATUS_GREEN)
-			: (new CSpan(_('Off')))->addClass(ZBX_STYLE_STATUS_GREY),
+			? (new CSpan(_('On')))->addClass(TRX_STYLE_STATUS_GREEN)
+			: (new CSpan(_('Off')))->addClass(TRX_STYLE_STATUS_GREY),
 		($proxy['lastaccess'] == 0)
-			? (new CSpan(_('Never')))->addClass(ZBX_STYLE_RED)
+			? (new CSpan(_('Never')))->addClass(TRX_STYLE_RED)
 			: zbx_date2age($proxy['lastaccess']),
 		array_key_exists('host_count', $proxy) ? $proxy['host_count'] : '',
 		array_key_exists('item_count', $proxy) ? $proxy['item_count'] : '',

@@ -13,7 +13,7 @@ catch (Exception $e) {
 	(new CView('general.warning', [
 		'header' => $e->getMessage(),
 		'messages' => [],
-		'theme' => ZBX_DEFAULT_THEME
+		'theme' => TRX_DEFAULT_THEME
 	]))->render();
 
 	exit;
@@ -21,23 +21,23 @@ catch (Exception $e) {
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'type' =>				[T_ZBX_STR, O_OPT, null,	IN('"'.ZBX_DB_MYSQL.'","'.ZBX_DB_POSTGRESQL.'","'.ZBX_DB_ORACLE.'","'.ZBX_DB_DB2.'"'), null],
-	'server' =>				[T_ZBX_STR, O_OPT, null,	null,				null],
-	'port' =>				[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 65535),	null, _('Database port')],
-	'database' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,			null, _('Database name')],
-	'user' =>				[T_ZBX_STR, O_OPT, null,	null,				null],
-	'password' =>			[T_ZBX_STR, O_OPT, null,	null, 				null],
-	'schema' =>				[T_ZBX_STR, O_OPT, null,	null, 				null],
-	'zbx_server' =>			[T_ZBX_STR, O_OPT, null,	null,				null],
-	'zbx_server_name' =>	[T_ZBX_STR, O_OPT, null,	null,				null],
-	'zbx_server_port' =>	[T_ZBX_INT, O_OPT, null,	BETWEEN(0, 65535),	null, _('Port')],
+	'type' =>				[T_TRX_STR, O_OPT, null,	IN('"'.TRX_DB_MYSQL.'","'.TRX_DB_POSTGRESQL.'","'.TRX_DB_ORACLE.'","'.TRX_DB_DB2.'"'), null],
+	'server' =>				[T_TRX_STR, O_OPT, null,	null,				null],
+	'port' =>				[T_TRX_INT, O_OPT, null,	BETWEEN(0, 65535),	null, _('Database port')],
+	'database' =>			[T_TRX_STR, O_OPT, null,	NOT_EMPTY,			null, _('Database name')],
+	'user' =>				[T_TRX_STR, O_OPT, null,	null,				null],
+	'password' =>			[T_TRX_STR, O_OPT, null,	null, 				null],
+	'schema' =>				[T_TRX_STR, O_OPT, null,	null, 				null],
+	'zbx_server' =>			[T_TRX_STR, O_OPT, null,	null,				null],
+	'zbx_server_name' =>	[T_TRX_STR, O_OPT, null,	null,				null],
+	'zbx_server_port' =>	[T_TRX_INT, O_OPT, null,	BETWEEN(0, 65535),	null, _('Port')],
 	// actions
-	'save_config' =>		[T_ZBX_STR, O_OPT, P_SYS,	null,				null],
-	'retry' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,				null],
-	'cancel' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,				null],
-	'finish' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,				null],
-	'next' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,				null],
-	'back' =>				[T_ZBX_STR, O_OPT, P_SYS,	null,				null],
+	'save_config' =>		[T_TRX_STR, O_OPT, P_SYS,	null,				null],
+	'retry' =>				[T_TRX_STR, O_OPT, P_SYS,	null,				null],
+	'cancel' =>				[T_TRX_STR, O_OPT, P_SYS,	null,				null],
+	'finish' =>				[T_TRX_STR, O_OPT, P_SYS,	null,				null],
+	'next' =>				[T_TRX_STR, O_OPT, P_SYS,	null,				null],
+	'back' =>				[T_TRX_STR, O_OPT, P_SYS,	null,				null],
 ];
 
 CSession::start();
@@ -66,14 +66,14 @@ elseif (hasRequest('cancel') || hasRequest('finish')) {
 	redirect('index.php');
 }
 
-$theme = CWebUser::$data ? getUserTheme(CWebUser::$data) : ZBX_DEFAULT_THEME;
+$theme = CWebUser::$data ? getUserTheme(CWebUser::$data) : TRX_DEFAULT_THEME;
 
 DBclose();
 
 /*
  * Setup wizard
  */
-$ZBX_SETUP_WIZARD = new CSetupWizard();
+$TRX_SETUP_WIZARD = new CSetupWizard();
 
 // if init fails due to missing configuration, set user as guest with default en_GB language
 if (!CWebUser::$data) {
@@ -96,7 +96,7 @@ if (!CWebUser::$data) {
  */
 //todo tip
 
-(new CTag('body', true, [(new CTag('main', true, [$ZBX_SETUP_WIZARD, $sub_footer]))]))
+(new CTag('body', true, [(new CTag('main', true, [$TRX_SETUP_WIZARD, $sub_footer]))]))
 	->setAttribute('lang', CWebUser::getLang())
 	->show();
 ?>

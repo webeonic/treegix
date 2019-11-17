@@ -16,7 +16,7 @@ foreach ($data['screens'] as $screen) {
 		new CLink($screen['label'], $url),
 		(new CButton())
 			->onClick($on_click)
-			->addClass(ZBX_STYLE_REMOVE_BTN)
+			->addClass(TRX_STYLE_REMOVE_BTN)
 			->setAttribute('aria-label', _xs('Remove, %1$s', 'screen reader', $screen['label']))
 	]);
 }

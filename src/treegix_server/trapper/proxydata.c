@@ -12,38 +12,38 @@
 #include "daemon.h"
 
 extern unsigned char	program_type;
-static zbx_mutex_t	proxy_lock = ZBX_MUTEX_NULL;
+static zbx_mutex_t	proxy_lock = TRX_MUTEX_NULL;
 
-#define	LOCK_PROXY_HISTORY	if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY_PASSIVE)) zbx_mutex_lock(proxy_lock)
-#define	UNLOCK_PROXY_HISTORY	if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY_PASSIVE)) zbx_mutex_unlock(proxy_lock)
+#define	LOCK_PROXY_HISTORY	if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY_PASSIVE)) zbx_mutex_lock(proxy_lock)
+#define	UNLOCK_PROXY_HISTORY	if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY_PASSIVE)) zbx_mutex_unlock(proxy_lock)
 
 int	zbx_send_proxy_data_response(const DC_PROXY *proxy, zbx_socket_t *sock, const char *info)
 {
 	struct zbx_json		json;
 	zbx_vector_ptr_t	tasks;
-	int			ret, flags = ZBX_TCP_PROTOCOL;
+	int			ret, flags = TRX_TCP_PROTOCOL;
 
 	zbx_vector_ptr_create(&tasks);
 
 	zbx_tm_get_remote_tasks(&tasks, proxy->hostid);
 
-	zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
-	zbx_json_addstring(&json, ZBX_PROTO_TAG_RESPONSE, ZBX_PROTO_VALUE_SUCCESS, ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
 
 	if (NULL != info && '\0' != *info)
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_INFO, info, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_INFO, info, TRX_JSON_TYPE_STRING);
 
 	if (0 != tasks.values_num)
 		zbx_tm_json_serialize_tasks(&json, &tasks);
 
 	if (0 != proxy->auto_compress)
-		flags |= ZBX_TCP_COMPRESS;
+		flags |= TRX_TCP_COMPRESS;
 
 	if (SUCCEED == (ret = zbx_tcp_send_ext(sock, json.buffer, strlen(json.buffer), flags, 0)))
 	{
 		if (0 != tasks.values_num)
-			zbx_tm_update_task_status(&tasks, ZBX_TM_STATUS_INPROGRESS);
+			zbx_tm_update_task_status(&tasks, TRX_TM_STATUS_INPROGRESS);
 	}
 
 	zbx_json_free(&json);
@@ -88,7 +88,7 @@ void	zbx_recv_proxy_data(zbx_socket_t *sock, struct zbx_json_parse *jp, zbx_time
 	}
 
 	zbx_update_proxy_data(&proxy, zbx_get_proxy_protocol_version(jp), time(NULL),
-			(0 != (sock->protocol & ZBX_TCP_COMPRESS) ? 1 : 0));
+			(0 != (sock->protocol & TRX_TCP_COMPRESS) ? 1 : 0));
 
 	if (SUCCEED != zbx_check_protocol_version(&proxy))
 	{
@@ -103,7 +103,7 @@ void	zbx_recv_proxy_data(zbx_socket_t *sock, struct zbx_json_parse *jp, zbx_time
 		goto out;
 	}
 
-	if (!ZBX_IS_RUNNING())
+	if (!TRX_IS_RUNNING())
 	{
 		error = zbx_strdup(error, "Treegix server shutdown in progress");
 		treegix_log(LOG_LEVEL_WARNING, "cannot process proxy data from active proxy at \"%s\": %s",
@@ -117,10 +117,10 @@ void	zbx_recv_proxy_data(zbx_socket_t *sock, struct zbx_json_parse *jp, zbx_time
 out:
 	if (FAIL == ret)
 	{
-		int	flags = ZBX_TCP_PROTOCOL;
+		int	flags = TRX_TCP_PROTOCOL;
 
-		if (0 != (sock->protocol & ZBX_TCP_COMPRESS))
-			flags |= ZBX_TCP_COMPRESS;
+		if (0 != (sock->protocol & TRX_TCP_COMPRESS))
+			flags |= TRX_TCP_COMPRESS;
 
 		zbx_send_response_ext(sock, status, error, NULL, flags, CONFIG_TIMEOUT);
 	}
@@ -143,7 +143,7 @@ out:
  ******************************************************************************/
 static int	send_data_to_server(zbx_socket_t *sock, const char *data, char **error)
 {
-	if (SUCCEED != zbx_tcp_send_ext(sock, data, strlen(data), ZBX_TCP_PROTOCOL | ZBX_TCP_COMPRESS, CONFIG_TIMEOUT))
+	if (SUCCEED != zbx_tcp_send_ext(sock, data, strlen(data), TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS, CONFIG_TIMEOUT))
 	{
 		*error = zbx_strdup(*error, zbx_socket_strerror());
 		return FAIL;
@@ -176,16 +176,16 @@ void	zbx_send_proxy_data(zbx_socket_t *sock, zbx_timespec_t *ts)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != check_access_passive_proxy(sock, ZBX_DO_NOT_SEND_RESPONSE, "proxy data request"))
+	if (SUCCEED != check_access_passive_proxy(sock, TRX_DO_NOT_SEND_RESPONSE, "proxy data request"))
 	{
 		/* do not send any reply to server in this case as the server expects proxy data */
 		goto out;
 	}
 
 	LOCK_PROXY_HISTORY;
-	zbx_json_init(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_init(&j, TRX_JSON_STAT_BUF_LEN);
 
-	zbx_json_addstring(&j, ZBX_PROTO_TAG_SESSION, zbx_dc_get_session_token(), ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, TRX_PROTO_TAG_SESSION, zbx_dc_get_session_token(), TRX_JSON_TYPE_STRING);
 	get_host_availability_data(&j, &availability_ts);
 	proxy_get_hist_data(&j, &history_lastid, &more_history);
 	proxy_get_dhis_data(&j, &discovery_lastid, &more_discovery);
@@ -197,15 +197,15 @@ void	zbx_send_proxy_data(zbx_socket_t *sock, zbx_timespec_t *ts)
 	if (0 != tasks.values_num)
 		zbx_tm_json_serialize_tasks(&j, &tasks);
 
-	if (ZBX_PROXY_DATA_MORE == more_history || ZBX_PROXY_DATA_MORE == more_discovery ||
-			ZBX_PROXY_DATA_MORE == more_areg)
+	if (TRX_PROXY_DATA_MORE == more_history || TRX_PROXY_DATA_MORE == more_discovery ||
+			TRX_PROXY_DATA_MORE == more_areg)
 	{
-		zbx_json_adduint64(&j, ZBX_PROTO_TAG_MORE, ZBX_PROXY_DATA_MORE);
+		zbx_json_adduint64(&j, TRX_PROTO_TAG_MORE, TRX_PROXY_DATA_MORE);
 	}
 
-	zbx_json_addstring(&j, ZBX_PROTO_TAG_VERSION, TREEGIX_VERSION, ZBX_JSON_TYPE_STRING);
-	zbx_json_adduint64(&j, ZBX_PROTO_TAG_CLOCK, ts->sec);
-	zbx_json_adduint64(&j, ZBX_PROTO_TAG_NS, ts->ns);
+	zbx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
+	zbx_json_adduint64(&j, TRX_PROTO_TAG_CLOCK, ts->sec);
+	zbx_json_adduint64(&j, TRX_PROTO_TAG_NS, ts->ns);
 
 	if (SUCCEED == send_data_to_server(sock, j.buffer, &error))
 	{
@@ -224,13 +224,13 @@ void	zbx_send_proxy_data(zbx_socket_t *sock, zbx_timespec_t *ts)
 
 		if (0 != tasks.values_num)
 		{
-			zbx_tm_update_task_status(&tasks, ZBX_TM_STATUS_DONE);
+			zbx_tm_update_task_status(&tasks, TRX_TM_STATUS_DONE);
 			zbx_vector_ptr_clear_ext(&tasks, (zbx_clean_func_t)zbx_tm_task_free);
 		}
 
 		if (SUCCEED == zbx_json_open(sock->buffer, &jp))
 		{
-			if (SUCCEED == zbx_json_brackets_by_name(&jp, ZBX_PROTO_TAG_TASKS, &jp_tasks))
+			if (SUCCEED == zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_TASKS, &jp_tasks))
 			{
 				zbx_tm_json_deserialize_tasks(&jp_tasks, &tasks);
 				zbx_tm_save_tasks(&tasks);
@@ -274,13 +274,13 @@ void	zbx_send_task_data(zbx_socket_t *sock, zbx_timespec_t *ts)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != check_access_passive_proxy(sock, ZBX_DO_NOT_SEND_RESPONSE, "proxy data request"))
+	if (SUCCEED != check_access_passive_proxy(sock, TRX_DO_NOT_SEND_RESPONSE, "proxy data request"))
 	{
 		/* do not send any reply to server in this case as the server expects proxy data */
 		goto out;
 	}
 
-	zbx_json_init(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_init(&j, TRX_JSON_STAT_BUF_LEN);
 
 	zbx_vector_ptr_create(&tasks);
 	zbx_tm_get_remote_tasks(&tasks, 0);
@@ -288,9 +288,9 @@ void	zbx_send_task_data(zbx_socket_t *sock, zbx_timespec_t *ts)
 	if (0 != tasks.values_num)
 		zbx_tm_json_serialize_tasks(&j, &tasks);
 
-	zbx_json_addstring(&j, ZBX_PROTO_TAG_VERSION, TREEGIX_VERSION, ZBX_JSON_TYPE_STRING);
-	zbx_json_adduint64(&j, ZBX_PROTO_TAG_CLOCK, ts->sec);
-	zbx_json_adduint64(&j, ZBX_PROTO_TAG_NS, ts->ns);
+	zbx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
+	zbx_json_adduint64(&j, TRX_PROTO_TAG_CLOCK, ts->sec);
+	zbx_json_adduint64(&j, TRX_PROTO_TAG_NS, ts->ns);
 
 	if (SUCCEED == send_data_to_server(sock, j.buffer, &error))
 	{
@@ -298,13 +298,13 @@ void	zbx_send_task_data(zbx_socket_t *sock, zbx_timespec_t *ts)
 
 		if (0 != tasks.values_num)
 		{
-			zbx_tm_update_task_status(&tasks, ZBX_TM_STATUS_DONE);
+			zbx_tm_update_task_status(&tasks, TRX_TM_STATUS_DONE);
 			zbx_vector_ptr_clear_ext(&tasks, (zbx_clean_func_t)zbx_tm_task_free);
 		}
 
 		if (SUCCEED == zbx_json_open(sock->buffer, &jp))
 		{
-			if (SUCCEED == zbx_json_brackets_by_name(&jp, ZBX_PROTO_TAG_TASKS, &jp_tasks))
+			if (SUCCEED == zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_TASKS, &jp_tasks))
 			{
 				zbx_tm_json_deserialize_tasks(&jp_tasks, &tasks);
 				zbx_tm_save_tasks(&tasks);
@@ -329,15 +329,15 @@ out:
 
 int	init_proxy_history_lock(char **error)
 {
-	if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY_PASSIVE))
-		return zbx_mutex_create(&proxy_lock, ZBX_MUTEX_PROXY_HISTORY, error);
+	if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY_PASSIVE))
+		return zbx_mutex_create(&proxy_lock, TRX_MUTEX_PROXY_HISTORY, error);
 
 	return SUCCEED;
 }
 
 void	free_proxy_history_lock(void)
 {
-	if (0 != (program_type & ZBX_PROGRAM_TYPE_PROXY_PASSIVE))
+	if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY_PASSIVE))
 		zbx_mutex_destroy(&proxy_lock);
 }
 

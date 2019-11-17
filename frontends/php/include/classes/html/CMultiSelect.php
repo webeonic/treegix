@@ -6,7 +6,7 @@ class CMultiSelect extends CTag {
 	/**
 	 * Default CSS class name for HTML root element.
 	 */
-	const ZBX_STYLE_CLASS = 'multiselect-control';
+	const TRX_STYLE_CLASS = 'multiselect-control';
 
 	/**
 	 * Search method used for autocomplete requests.
@@ -215,7 +215,7 @@ class CMultiSelect extends CTag {
 
 				if (array_key_exists('normal_only', $parameters) && $parameters['normal_only']) {
 					$popup_parameters['normal_only'] = '1';
-					$autocomplete_parameters['filter']['flags'] = ZBX_FLAG_DISCOVERY_NORMAL;
+					$autocomplete_parameters['filter']['flags'] = TRX_FLAG_DISCOVERY_NORMAL;
 				}
 
 				if (array_key_exists('value_types', $parameters)) {

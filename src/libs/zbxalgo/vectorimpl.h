@@ -3,9 +3,9 @@
 #ifndef TREEGIX_VECTORIMPL_H
 #define TREEGIX_VECTORIMPL_H
 
-#define	ZBX_VECTOR_ARRAY_GROWTH_FACTOR	3/2
+#define	TRX_VECTOR_ARRAY_GROWTH_FACTOR	3/2
 
-#define	ZBX_VECTOR_IMPL(__id, __type)										\
+#define	TRX_VECTOR_IMPL(__id, __type)										\
 														\
 static void	__vector_ ## __id ## _ensure_free_space(zbx_vector_ ## __id ## _t *vector)			\
 {														\
@@ -17,7 +17,7 @@ static void	__vector_ ## __id ## _ensure_free_space(zbx_vector_ ## __id ## _t *v
 	}													\
 	else if (vector->values_num == vector->values_alloc)							\
 	{													\
-		vector->values_alloc = MAX(vector->values_alloc + 1, vector->values_alloc * ZBX_VECTOR_ARRAY_GROWTH_FACTOR); \
+		vector->values_alloc = MAX(vector->values_alloc + 1, vector->values_alloc * TRX_VECTOR_ARRAY_GROWTH_FACTOR); \
 		vector->values = (__type *)vector->mem_realloc_func(vector->values, vector->values_alloc * sizeof(__type)); \
 	}													\
 }														\
@@ -25,9 +25,9 @@ static void	__vector_ ## __id ## _ensure_free_space(zbx_vector_ ## __id ## _t *v
 void	zbx_vector_ ## __id ## _create(zbx_vector_ ## __id ## _t *vector)					\
 {														\
 	zbx_vector_ ## __id ## _create_ext(vector,								\
-						ZBX_DEFAULT_MEM_MALLOC_FUNC,					\
-						ZBX_DEFAULT_MEM_REALLOC_FUNC,					\
-						ZBX_DEFAULT_MEM_FREE_FUNC);					\
+						TRX_DEFAULT_MEM_MALLOC_FUNC,					\
+						TRX_DEFAULT_MEM_REALLOC_FUNC,					\
+						TRX_DEFAULT_MEM_FREE_FUNC);					\
 }														\
 														\
 void	zbx_vector_ ## __id ## _create_ext(zbx_vector_ ## __id ## _t *vector,					\
@@ -251,9 +251,9 @@ void	zbx_vector_ ## __id ## _clear(zbx_vector_ ## __id ## _t *vector)					\
 	vector->values_num = 0;											\
 }
 
-#define	ZBX_PTR_VECTOR_IMPL(__id, __type)									\
+#define	TRX_PTR_VECTOR_IMPL(__id, __type)									\
 														\
-ZBX_VECTOR_IMPL(__id, __type)											\
+TRX_VECTOR_IMPL(__id, __type)											\
 														\
 void	zbx_vector_ ## __id ## _clear_ext(zbx_vector_ ## __id ## _t *vector, zbx_ ## __id ## _free_func_t free_func)	\
 {														\

@@ -25,7 +25,7 @@ typedef struct
 zbx_autoreg_host_t;
 
 #if HAVE_POSTGRESQL
-extern char	ZBX_PG_ESCAPE_BACKSLASH;
+extern char	TRX_PG_ESCAPE_BACKSLASH;
 #endif
 
 static int	connection_failure;
@@ -41,9 +41,9 @@ void	DBclose(void)
  *                                                                            *
  * Purpose: connect to the database                                           *
  *                                                                            *
- * Parameters: flag - ZBX_DB_CONNECT_ONCE (try once and return the result),   *
- *                    ZBX_DB_CONNECT_EXIT (exit on failure) or                *
- *                    ZBX_DB_CONNECT_NORMAL (retry until connected)           *
+ * Parameters: flag - TRX_DB_CONNECT_ONCE (try once and return the result),   *
+ *                    TRX_DB_CONNECT_EXIT (exit on failure) or                *
+ *                    TRX_DB_CONNECT_NORMAL (retry until connected)           *
  *                                                                            *
  * Return value: same as zbx_db_connect()                                     *
  *                                                                            *
@@ -54,21 +54,21 @@ int	DBconnect(int flag)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() flag:%d", __func__, flag);
 
-	while (ZBX_DB_OK != (err = zbx_db_connect(CONFIG_DBHOST, CONFIG_DBUSER, CONFIG_DBPASSWORD,
+	while (TRX_DB_OK != (err = zbx_db_connect(CONFIG_DBHOST, CONFIG_DBUSER, CONFIG_DBPASSWORD,
 			CONFIG_DBNAME, CONFIG_DBSCHEMA, CONFIG_DBSOCKET, CONFIG_DBPORT)))
 	{
-		if (ZBX_DB_CONNECT_ONCE == flag)
+		if (TRX_DB_CONNECT_ONCE == flag)
 			break;
 
-		if (ZBX_DB_FAIL == err || ZBX_DB_CONNECT_EXIT == flag)
+		if (TRX_DB_FAIL == err || TRX_DB_CONNECT_EXIT == flag)
 		{
 			treegix_log(LOG_LEVEL_CRIT, "Cannot connect to the database. Exiting...");
 			exit(EXIT_FAILURE);
 		}
 
-		treegix_log(LOG_LEVEL_ERR, "database is down: reconnecting in %d seconds", ZBX_DB_WAIT_DOWN);
+		treegix_log(LOG_LEVEL_ERR, "database is down: reconnecting in %d seconds", TRX_DB_WAIT_DOWN);
 		connection_failure = 1;
-		zbx_sleep(ZBX_DB_WAIT_DOWN);
+		zbx_sleep(TRX_DB_WAIT_DOWN);
 	}
 
 	if (0 != connection_failure)
@@ -114,16 +114,16 @@ static void	DBtxn_operation(int (*txn_operation)(void))
 
 	rc = txn_operation();
 
-	while (ZBX_DB_DOWN == rc)
+	while (TRX_DB_DOWN == rc)
 	{
 		DBclose();
-		DBconnect(ZBX_DB_CONNECT_NORMAL);
+		DBconnect(TRX_DB_CONNECT_NORMAL);
 
-		if (ZBX_DB_DOWN == (rc = txn_operation()))
+		if (TRX_DB_DOWN == (rc = txn_operation()))
 		{
-			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", TRX_DB_WAIT_DOWN);
 			connection_failure = 1;
-			sleep(ZBX_DB_WAIT_DOWN);
+			sleep(TRX_DB_WAIT_DOWN);
 		}
 	}
 }
@@ -157,7 +157,7 @@ void	DBbegin(void)
  ******************************************************************************/
 int	DBcommit(void)
 {
-	if (ZBX_DB_OK > zbx_db_commit())
+	if (TRX_DB_OK > zbx_db_commit())
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "commit called on failed transaction, doing a rollback instead");
 		DBrollback();
@@ -179,12 +179,12 @@ int	DBcommit(void)
  ******************************************************************************/
 void	DBrollback(void)
 {
-	if (ZBX_DB_OK > zbx_db_rollback())
+	if (TRX_DB_OK > zbx_db_rollback())
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot perform transaction rollback, connection will be reset");
 
 		DBclose();
-		DBconnect(ZBX_DB_CONNECT_NORMAL);
+		DBconnect(TRX_DB_CONNECT_NORMAL);
 	}
 }
 
@@ -200,7 +200,7 @@ void	DBrollback(void)
 int	DBend(int ret)
 {
 	if (SUCCEED == ret)
-		return ZBX_DB_OK == DBcommit() ? SUCCEED : FAIL;
+		return TRX_DB_OK == DBcommit() ? SUCCEED : FAIL;
 
 	DBrollback();
 
@@ -223,16 +223,16 @@ void	DBstatement_prepare(const char *sql)
 
 	rc = zbx_db_statement_prepare(sql);
 
-	while (ZBX_DB_DOWN == rc)
+	while (TRX_DB_DOWN == rc)
 	{
 		DBclose();
-		DBconnect(ZBX_DB_CONNECT_NORMAL);
+		DBconnect(TRX_DB_CONNECT_NORMAL);
 
-		if (ZBX_DB_DOWN == (rc = zbx_db_statement_prepare(sql)))
+		if (TRX_DB_DOWN == (rc = zbx_db_statement_prepare(sql)))
 		{
-			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", TRX_DB_WAIT_DOWN);
 			connection_failure = 1;
-			sleep(ZBX_DB_WAIT_DOWN);
+			sleep(TRX_DB_WAIT_DOWN);
 		}
 	}
 }
@@ -256,16 +256,16 @@ int	DBexecute(const char *fmt, ...)
 
 	rc = zbx_db_vexecute(fmt, args);
 
-	while (ZBX_DB_DOWN == rc)
+	while (TRX_DB_DOWN == rc)
 	{
 		DBclose();
-		DBconnect(ZBX_DB_CONNECT_NORMAL);
+		DBconnect(TRX_DB_CONNECT_NORMAL);
 
-		if (ZBX_DB_DOWN == (rc = zbx_db_vexecute(fmt, args)))
+		if (TRX_DB_DOWN == (rc = zbx_db_vexecute(fmt, args)))
 		{
-			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", TRX_DB_WAIT_DOWN);
 			connection_failure = 1;
-			sleep(ZBX_DB_WAIT_DOWN);
+			sleep(TRX_DB_WAIT_DOWN);
 		}
 	}
 
@@ -346,16 +346,16 @@ DB_RESULT	DBselect(const char *fmt, ...)
 
 	rc = zbx_db_vselect(fmt, args);
 
-	while ((DB_RESULT)ZBX_DB_DOWN == rc)
+	while ((DB_RESULT)TRX_DB_DOWN == rc)
 	{
 		DBclose();
-		DBconnect(ZBX_DB_CONNECT_NORMAL);
+		DBconnect(TRX_DB_CONNECT_NORMAL);
 
-		if ((DB_RESULT)ZBX_DB_DOWN == (rc = zbx_db_vselect(fmt, args)))
+		if ((DB_RESULT)TRX_DB_DOWN == (rc = zbx_db_vselect(fmt, args)))
 		{
-			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", TRX_DB_WAIT_DOWN);
 			connection_failure = 1;
-			sleep(ZBX_DB_WAIT_DOWN);
+			sleep(TRX_DB_WAIT_DOWN);
 		}
 	}
 
@@ -379,16 +379,16 @@ DB_RESULT	DBselectN(const char *query, int n)
 
 	rc = zbx_db_select_n(query, n);
 
-	while ((DB_RESULT)ZBX_DB_DOWN == rc)
+	while ((DB_RESULT)TRX_DB_DOWN == rc)
 	{
 		DBclose();
-		DBconnect(ZBX_DB_CONNECT_NORMAL);
+		DBconnect(TRX_DB_CONNECT_NORMAL);
 
-		if ((DB_RESULT)ZBX_DB_DOWN == (rc = zbx_db_select_n(query, n)))
+		if ((DB_RESULT)TRX_DB_DOWN == (rc = zbx_db_select_n(query, n)))
 		{
-			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", TRX_DB_WAIT_DOWN);
 			connection_failure = 1;
-			sleep(ZBX_DB_WAIT_DOWN);
+			sleep(TRX_DB_WAIT_DOWN);
 		}
 	}
 
@@ -447,11 +447,11 @@ static size_t	get_string_field_size(unsigned char type)
 {
 	switch(type)
 	{
-		case ZBX_TYPE_LONGTEXT:
-			return ZBX_SIZE_T_MAX;
-		case ZBX_TYPE_CHAR:
-		case ZBX_TYPE_TEXT:
-		case ZBX_TYPE_SHORTTEXT:
+		case TRX_TYPE_LONGTEXT:
+			return TRX_SIZE_T_MAX;
+		case TRX_TYPE_CHAR:
+		case TRX_TYPE_TEXT:
+		case TRX_TYPE_SHORTTEXT:
 			return 65535u;
 		default:
 			THIS_SHOULD_NEVER_HAPPEN;
@@ -463,11 +463,11 @@ static size_t	get_string_field_size(unsigned char type)
 {
 	switch(type)
 	{
-		case ZBX_TYPE_LONGTEXT:
-		case ZBX_TYPE_TEXT:
-			return ZBX_SIZE_T_MAX;
-		case ZBX_TYPE_CHAR:
-		case ZBX_TYPE_SHORTTEXT:
+		case TRX_TYPE_LONGTEXT:
+		case TRX_TYPE_TEXT:
+			return TRX_SIZE_T_MAX;
+		case TRX_TYPE_CHAR:
+		case TRX_TYPE_SHORTTEXT:
 			return 4000u;
 		default:
 			THIS_SHOULD_NEVER_HAPPEN;
@@ -484,9 +484,9 @@ static size_t	get_string_field_size(unsigned char type)
 char	*DBdyn_escape_string_len(const char *src, size_t length)
 {
 #if HAVE_IBM_DB2	/* IBM DB2 fields are limited by bytes rather than characters */
-	return zbx_db_dyn_escape_string(src, length, ZBX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
+	return zbx_db_dyn_escape_string(src, length, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
 #else
-	return zbx_db_dyn_escape_string(src, ZBX_SIZE_T_MAX, length, ESCAPE_SEQUENCE_ON);
+	return zbx_db_dyn_escape_string(src, TRX_SIZE_T_MAX, length, ESCAPE_SEQUENCE_ON);
 #endif
 }
 
@@ -497,7 +497,7 @@ char	*DBdyn_escape_string_len(const char *src, size_t length)
  ******************************************************************************/
 char	*DBdyn_escape_string(const char *src)
 {
-	return zbx_db_dyn_escape_string(src, ZBX_SIZE_T_MAX, ZBX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
+	return zbx_db_dyn_escape_string(src, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
 }
 
 /******************************************************************************
@@ -505,21 +505,21 @@ char	*DBdyn_escape_string(const char *src)
  * Function: DBdyn_escape_field_len                                           *
  *                                                                            *
  ******************************************************************************/
-static char	*DBdyn_escape_field_len(const ZBX_FIELD *field, const char *src, zbx_escape_sequence_t flag)
+static char	*DBdyn_escape_field_len(const TRX_FIELD *field, const char *src, zbx_escape_sequence_t flag)
 {
 	size_t	length;
 
-	if (ZBX_TYPE_LONGTEXT == field->type && 0 == field->length)
-		length = ZBX_SIZE_T_MAX;
+	if (TRX_TYPE_LONGTEXT == field->type && 0 == field->length)
+		length = TRX_SIZE_T_MAX;
 	else
 		length = field->length;
 
 #if defined(HAVE_MYSQL) || defined(HAVE_ORACLE)
 	return zbx_db_dyn_escape_string(src, get_string_field_size(field->type), length, flag);
 #elif HAVE_IBM_DB2	/* IBM DB2 fields are limited by bytes rather than characters */
-	return zbx_db_dyn_escape_string(src, length, ZBX_SIZE_T_MAX, flag);
+	return zbx_db_dyn_escape_string(src, length, TRX_SIZE_T_MAX, flag);
 #else
-	return zbx_db_dyn_escape_string(src, ZBX_SIZE_T_MAX, length, flag);
+	return zbx_db_dyn_escape_string(src, TRX_SIZE_T_MAX, length, flag);
 #endif
 }
 
@@ -530,8 +530,8 @@ static char	*DBdyn_escape_field_len(const ZBX_FIELD *field, const char *src, zbx
  ******************************************************************************/
 char	*DBdyn_escape_field(const char *table_name, const char *field_name, const char *src)
 {
-	const ZBX_TABLE	*table;
-	const ZBX_FIELD	*field;
+	const TRX_TABLE	*table;
+	const TRX_FIELD	*field;
 
 	if (NULL == (table = DBget_table(table_name)) || NULL == (field = DBget_field(table, field_name)))
 	{
@@ -552,7 +552,7 @@ char	*DBdyn_escape_like_pattern(const char *src)
 	return zbx_db_dyn_escape_like_pattern(src);
 }
 
-const ZBX_TABLE	*DBget_table(const char *tablename)
+const TRX_TABLE	*DBget_table(const char *tablename)
 {
 	int	t;
 
@@ -565,7 +565,7 @@ const ZBX_TABLE	*DBget_table(const char *tablename)
 	return NULL;
 }
 
-const ZBX_FIELD	*DBget_field(const ZBX_TABLE *table, const char *fieldname)
+const TRX_FIELD	*DBget_field(const TRX_TABLE *table, const char *fieldname)
 {
 	int	f;
 
@@ -595,9 +595,9 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 	DB_RESULT	result;
 	DB_ROW		row;
 	zbx_uint64_t	ret1, ret2;
-	zbx_uint64_t	min = 0, max = ZBX_DB_MAX_ID;
+	zbx_uint64_t	min = 0, max = TRX_DB_MAX_ID;
 	int		found = FAIL, dbres;
-	const ZBX_TABLE	*table;
+	const TRX_TABLE	*table;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() tablename:'%s'", __func__, tablename);
 
@@ -619,7 +619,7 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 		{
 			DBfree_result(result);
 
-			result = DBselect("select max(%s) from %s where %s between " ZBX_FS_UI64 " and " ZBX_FS_UI64,
+			result = DBselect("select max(%s) from %s where %s between " TRX_FS_UI64 " and " TRX_FS_UI64,
 					table->recid, table->table, table->recid, min, max);
 
 			if (NULL == (row = DBfetch(result)) || SUCCEED == DBis_null(row[0]))
@@ -628,11 +628,11 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 			}
 			else
 			{
-				ZBX_STR2UINT64(ret1, row[0]);
+				TRX_STR2UINT64(ret1, row[0]);
 				if (ret1 >= max)
 				{
 					treegix_log(LOG_LEVEL_CRIT, "maximum number of id's exceeded"
-							" [table:%s, field:%s, id:" ZBX_FS_UI64 "]",
+							" [table:%s, field:%s, id:" TRX_FS_UI64 "]",
 							table->table, table->recid, ret1);
 					exit(EXIT_FAILURE);
 				}
@@ -641,10 +641,10 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 			DBfree_result(result);
 
 			dbres = DBexecute("insert into ids (table_name,field_name,nextid)"
-					" values ('%s','%s'," ZBX_FS_UI64 ")",
+					" values ('%s','%s'," TRX_FS_UI64 ")",
 					table->table, table->recid, ret1);
 
-			if (ZBX_DB_OK > dbres)
+			if (TRX_DB_OK > dbres)
 			{
 				/* solving the problem of an invisible record created in a parallel transaction */
 				DBexecute("update ids set nextid=nextid+1 where table_name='%s' and field_name='%s'",
@@ -655,7 +655,7 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 		}
 		else
 		{
-			ZBX_STR2UINT64(ret1, row[0]);
+			TRX_STR2UINT64(ret1, row[0]);
 			DBfree_result(result);
 
 			if (ret1 < min || ret1 >= max)
@@ -673,7 +673,7 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 
 			if (NULL != (row = DBfetch(result)) && SUCCEED != DBis_null(row[0]))
 			{
-				ZBX_STR2UINT64(ret2, row[0]);
+				TRX_STR2UINT64(ret2, row[0]);
 
 				if (ret1 + num == ret2)
 					found = SUCCEED;
@@ -685,7 +685,7 @@ static zbx_uint64_t	DBget_nextid(const char *tablename, int num)
 		}
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():" ZBX_FS_UI64 " table:'%s' recid:'%s'",
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():" TRX_FS_UI64 " table:'%s' recid:'%s'",
 			__func__, ret2 - num + 1, table->table, table->recid);
 
 	return ret2 - num + 1;
@@ -780,7 +780,7 @@ static void	DBadd_condition_alloc_btw(char **sql, size_t *sql_alloc, size_t *sql
 			else
 				first = 0;
 
-			zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s between " ZBX_FS_UI64 " and " ZBX_FS_UI64,
+			zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s between " TRX_FS_UI64 " and " TRX_FS_UI64,
 					fieldname, values[start], values[start + (*seq_len)[i] - 1]);
 		}
 
@@ -860,7 +860,7 @@ void	DBadd_condition_alloc(char **sql, size_t *sql_alloc, size_t *sql_offset, co
 			if (1 == num)
 #endif
 			{
-				zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s=" ZBX_FS_UI64, fieldname,
+				zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s=" TRX_FS_UI64, fieldname,
 #ifdef HAVE_ORACLE
 						values[start]);
 #else
@@ -896,7 +896,7 @@ void	DBadd_condition_alloc(char **sql, size_t *sql_alloc, size_t *sql_offset, co
 					}
 
 					in_cnt++;
-					zbx_snprintf_alloc(sql, sql_alloc, sql_offset, ZBX_FS_UI64 ",",
+					zbx_snprintf_alloc(sql, sql_alloc, sql_offset, TRX_FS_UI64 ",",
 #ifdef HAVE_ORACLE
 							values[start++]);
 				}
@@ -983,7 +983,7 @@ void	DBadd_str_condition_alloc(char **sql, size_t *sql_alloc, size_t *sql_offset
 
 	if (0 != empty_num)
 	{
-		zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s" ZBX_SQL_STRCMP, fieldname, ZBX_SQL_STRVAL_EQ(""));
+		zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s" TRX_SQL_STRCMP, fieldname, TRX_SQL_STRVAL_EQ(""));
 
 		if (0 == values_num)
 			return;
@@ -1062,7 +1062,7 @@ const char	*zbx_host_string(zbx_uint64_t hostid)
 	result = DBselect(
 			"select host"
 			" from hosts"
-			" where hostid=" ZBX_FS_UI64,
+			" where hostid=" TRX_FS_UI64,
 			hostid);
 
 	if (NULL != (row = DBfetch(result)))
@@ -1093,7 +1093,7 @@ const char	*zbx_host_key_string(zbx_uint64_t itemid)
 			"select h.host,i.key_"
 			" from hosts h,items i"
 			" where h.hostid=i.hostid"
-				" and i.itemid=" ZBX_FS_UI64,
+				" and i.itemid=" TRX_FS_UI64,
 			itemid);
 
 	if (NULL != (row = DBfetch(result)))
@@ -1137,7 +1137,7 @@ int	zbx_check_user_permissions(const zbx_uint64_t *userid, const zbx_uint64_t *r
 	if (NULL == recipient_userid || *userid == *recipient_userid)
 		goto out;
 
-	result = DBselect("select type from users where userid=" ZBX_FS_UI64, *recipient_userid);
+	result = DBselect("select type from users where userid=" TRX_FS_UI64, *recipient_userid);
 
 	if (NULL != (row = DBfetch(result)) && FAIL == DBis_null(row[0]))
 		user_type = atoi(row[0]);
@@ -1156,11 +1156,11 @@ int	zbx_check_user_permissions(const zbx_uint64_t *userid, const zbx_uint64_t *r
 		result = DBselect(
 				"select null"
 				" from users_groups ug1"
-				" where ug1.userid=" ZBX_FS_UI64
+				" where ug1.userid=" TRX_FS_UI64
 					" and exists (select null"
 						" from users_groups ug2"
 						" where ug1.usrgrpid=ug2.usrgrpid"
-							" and ug2.userid=" ZBX_FS_UI64
+							" and ug2.userid=" TRX_FS_UI64
 					")",
 				*userid, *recipient_userid);
 
@@ -1188,7 +1188,7 @@ const char	*zbx_user_string(zbx_uint64_t userid)
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	result = DBselect("select name,surname,alias from users where userid=" ZBX_FS_UI64, userid);
+	result = DBselect("select name,surname,alias from users where userid=" TRX_FS_UI64, userid);
 
 	if (NULL != (row = DBfetch(result)))
 		zbx_snprintf(buf_string, sizeof(buf_string), "%s %s (%s)", row[0], row[1], row[2]);
@@ -1222,7 +1222,7 @@ const char	*DBsql_id_cmp(zbx_uint64_t id)
 	if (0 == id)
 		return is_null;
 
-	zbx_snprintf(buf, sizeof(buf), "=" ZBX_FS_UI64, id);
+	zbx_snprintf(buf, sizeof(buf), "=" TRX_FS_UI64, id);
 
 	return buf;
 }
@@ -1373,8 +1373,8 @@ static void	process_autoreg_hosts(zbx_vector_ptr_t *autoreg_hosts, zbx_uint64_t 
 				if (0 != strcmp(autoreg_host->host, row[0]))
 					continue;
 
-				ZBX_STR2UINT64(autoreg_host->hostid, row[1]);
-				ZBX_DBROW2UINT64(current_proxy_hostid, row[2]);
+				TRX_STR2UINT64(autoreg_host->hostid, row[1]);
+				TRX_DBROW2UINT64(current_proxy_hostid, row[2]);
 
 				if (current_proxy_hostid != proxy_hostid || SUCCEED == DBis_null(row[3]) ||
 						0 != strcmp(autoreg_host->host_metadata, row[3]) ||
@@ -1385,17 +1385,17 @@ static void	process_autoreg_hosts(zbx_vector_ptr_t *autoreg_hosts, zbx_uint64_t 
 
 				/* process with auto registration if the connection type was forced and */
 				/* is different from the last registered connection type                */
-				if (ZBX_CONN_DEFAULT != autoreg_host->flag)
+				if (TRX_CONN_DEFAULT != autoreg_host->flag)
 				{
 					unsigned short	port;
 
 					if (FAIL == is_ushort(row[6], &port) || port != autoreg_host->port)
 						break;
 
-					if (ZBX_CONN_IP == autoreg_host->flag && 0 != strcmp(row[4], autoreg_host->ip))
+					if (TRX_CONN_IP == autoreg_host->flag && 0 != strcmp(row[4], autoreg_host->ip))
 						break;
 
-					if (ZBX_CONN_DNS == autoreg_host->flag && 0 != strcmp(row[5], autoreg_host->dns))
+					if (TRX_CONN_DNS == autoreg_host->flag && 0 != strcmp(row[5], autoreg_host->dns))
 						break;
 				}
 
@@ -1434,7 +1434,7 @@ static void	process_autoreg_hosts(zbx_vector_ptr_t *autoreg_hosts, zbx_uint64_t 
 
 				if (0 == autoreg_host->autoreg_hostid && 0 == strcmp(autoreg_host->host, row[1]))
 				{
-					ZBX_STR2UINT64(autoreg_host->autoreg_hostid, row[0]);
+					TRX_STR2UINT64(autoreg_host->autoreg_hostid, row[0]);
 					break;
 				}
 			}
@@ -1453,7 +1453,7 @@ static int	compare_autoreg_host_by_hostid(const void *d1, const void *d2)
 	const zbx_autoreg_host_t	*p1 = *(const zbx_autoreg_host_t **)d1;
 	const zbx_autoreg_host_t	*p2 = *(const zbx_autoreg_host_t **)d2;
 
-	ZBX_RETURN_IF_NOT_EQUAL(p1->hostid, p2->hostid);
+	TRX_RETURN_IF_NOT_EQUAL(p1->hostid, p2->hostid);
 
 	return 0;
 }
@@ -1497,7 +1497,7 @@ void	DBregister_host_flush(zbx_vector_ptr_t *autoreg_hosts, zbx_uint64_t proxy_h
 		DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 	}
 
-	zbx_vector_ptr_sort(autoreg_hosts, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	zbx_vector_ptr_sort(autoreg_hosts, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 	for (i = 0; i < autoreg_hosts->values_num; i++)
 	{
@@ -1527,7 +1527,7 @@ void	DBregister_host_flush(zbx_vector_ptr_t *autoreg_hosts, zbx_uint64_t proxy_h
 						"tls_accepted='%u',"
 						"flags=%hu,"
 						"proxy_hostid=%s"
-					" where autoreg_hostid=" ZBX_FS_UI64 ";\n",
+					" where autoreg_hostid=" TRX_FS_UI64 ";\n",
 				ip_esc, dns_esc, autoreg_host->port, host_metadata_esc, autoreg_host->connection_type,
 				autoreg_host->flag, DBsql_id_ins(proxy_hostid), autoreg_host->autoreg_hostid);
 
@@ -1619,7 +1619,7 @@ int	DBexecute_overflowed_sql(char **sql, size_t *sql_alloc, size_t *sql_offset)
 {
 	int	ret = SUCCEED;
 
-	if (ZBX_MAX_OVERFLOW_SQL_SIZE < *sql_offset)
+	if (TRX_MAX_OVERFLOW_SQL_SIZE < *sql_offset)
 	{
 #ifdef HAVE_MULTIROW_INSERT
 		if (',' == (*sql)[*sql_offset - 1])
@@ -1628,23 +1628,23 @@ int	DBexecute_overflowed_sql(char **sql, size_t *sql_alloc, size_t *sql_offset)
 			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, ";\n");
 		}
 #endif
-#if defined(HAVE_ORACLE) && 0 == ZBX_MAX_OVERFLOW_SQL_SIZE
+#if defined(HAVE_ORACLE) && 0 == TRX_MAX_OVERFLOW_SQL_SIZE
 		/* make sure we are not called twice without */
 		/* putting a new sql into the buffer first */
-		if (*sql_offset <= ZBX_SQL_EXEC_FROM)
+		if (*sql_offset <= TRX_SQL_EXEC_FROM)
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			return ret;
 		}
 
 		/* Oracle fails with ORA-00911 if it encounters ';' w/o PL/SQL block */
-		zbx_rtrim(*sql, ZBX_WHITESPACE ";");
+		zbx_rtrim(*sql, TRX_WHITESPACE ";");
 #else
 		DBend_multiple_update(sql, sql_alloc, sql_offset);
 #endif
 		/* For Oracle with max_overflow_sql_size == 0, jump over "begin\n" */
-		/* before execution. ZBX_SQL_EXEC_FROM is 0 for all other cases. */
-		if (ZBX_DB_OK > DBexecute("%s", *sql + ZBX_SQL_EXEC_FROM))
+		/* before execution. TRX_SQL_EXEC_FROM is 0 for all other cases. */
+		if (TRX_DB_OK > DBexecute("%s", *sql + TRX_SQL_EXEC_FROM))
 			ret = FAIL;
 
 		*sql_offset = 0;
@@ -1700,8 +1700,8 @@ char	*DBget_unique_hostname_by_sample(const char *host_name_sample, const char *
 			" where %s like '%s%%' escape '%c'"
 				" and flags<>%d"
 				" and status in (%d,%d,%d)",
-				field_name, field_name, host_name_sample_esc, ZBX_SQL_LIKE_ESCAPE_CHAR,
-			ZBX_FLAG_DISCOVERY_PROTOTYPE,
+				field_name, field_name, host_name_sample_esc, TRX_SQL_LIKE_ESCAPE_CHAR,
+			TRX_FLAG_DISCOVERY_PROTOTYPE,
 			HOST_STATUS_MONITORED, HOST_STATUS_NOT_MONITORED, HOST_STATUS_TEMPLATE);
 
 	zbx_free(host_name_sample_esc);
@@ -1729,7 +1729,7 @@ char	*DBget_unique_hostname_by_sample(const char *host_name_sample, const char *
 	}
 	DBfree_result(result);
 
-	zbx_vector_uint64_sort(&nums, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&nums, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	if (0 == full_match)
 	{
@@ -1748,7 +1748,7 @@ char	*DBget_unique_hostname_by_sample(const char *host_name_sample, const char *
 		num++;
 	}
 
-	host_name_temp = zbx_dsprintf(host_name_temp, "%s_" ZBX_FS_UI64, host_name_sample, num);
+	host_name_temp = zbx_dsprintf(host_name_temp, "%s_" TRX_FS_UI64, host_name_sample, num);
 clean:
 	zbx_vector_uint64_destroy(&nums);
 
@@ -1780,7 +1780,7 @@ const char	*DBsql_id_ins(zbx_uint64_t id)
 
 	n = (n + 1) & 3;
 
-	zbx_snprintf(buf[n], sizeof(buf[n]), ZBX_FS_UI64, id);
+	zbx_snprintf(buf[n], sizeof(buf[n]), TRX_FS_UI64, id);
 
 	return buf[n];
 }
@@ -2076,31 +2076,31 @@ void	DBselect_uint64(const char *sql, zbx_vector_uint64_t *ids)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(id, row[0]);
+		TRX_STR2UINT64(id, row[0]);
 
 		zbx_vector_uint64_append(ids, id);
 	}
 	DBfree_result(result);
 
-	zbx_vector_uint64_sort(ids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(ids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 }
 
 int	DBexecute_multiple_query(const char *query, const char *field_name, zbx_vector_uint64_t *ids)
 {
-#define ZBX_MAX_IDS	950
+#define TRX_MAX_IDS	950
 	char	*sql = NULL;
-	size_t	sql_alloc = ZBX_KIBIBYTE, sql_offset = 0;
+	size_t	sql_alloc = TRX_KIBIBYTE, sql_offset = 0;
 	int	i, ret = SUCCEED;
 
 	sql = (char *)zbx_malloc(sql, sql_alloc);
 
 	DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 
-	for (i = 0; i < ids->values_num; i += ZBX_MAX_IDS)
+	for (i = 0; i < ids->values_num; i += TRX_MAX_IDS)
 	{
 		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, query);
 		DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, field_name,
-				&ids->values[i], MIN(ZBX_MAX_IDS, ids->values_num - i));
+				&ids->values[i], MIN(TRX_MAX_IDS, ids->values_num - i));
 		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ";\n");
 
 		if (SUCCEED != (ret = DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset)))
@@ -2111,7 +2111,7 @@ int	DBexecute_multiple_query(const char *query, const char *field_name, zbx_vect
 	{
 		DBend_multiple_update(&sql, &sql_alloc, &sql_offset);
 
-		if (ZBX_DB_OK > DBexecute("%s", sql))
+		if (TRX_DB_OK > DBexecute("%s", sql))
 			ret = FAIL;
 	}
 
@@ -2137,7 +2137,7 @@ int	DBexecute_multiple_query(const char *query, const char *field_name, zbx_vect
  *           freed by the caller later.                                       *
  *                                                                            *
  ******************************************************************************/
-static char	*zbx_db_format_values(ZBX_FIELD **fields, const zbx_db_value_t *values, int values_num)
+static char	*zbx_db_format_values(TRX_FIELD **fields, const zbx_db_value_t *values, int values_num)
 {
 	int	i;
 	char	*str = NULL;
@@ -2145,7 +2145,7 @@ static char	*zbx_db_format_values(ZBX_FIELD **fields, const zbx_db_value_t *valu
 
 	for (i = 0; i < values_num; i++)
 	{
-		ZBX_FIELD		*field = fields[i];
+		TRX_FIELD		*field = fields[i];
 		const zbx_db_value_t	*value = &values[i];
 
 		if (0 < i)
@@ -2153,20 +2153,20 @@ static char	*zbx_db_format_values(ZBX_FIELD **fields, const zbx_db_value_t *valu
 
 		switch (field->type)
 		{
-			case ZBX_TYPE_CHAR:
-			case ZBX_TYPE_TEXT:
-			case ZBX_TYPE_SHORTTEXT:
-			case ZBX_TYPE_LONGTEXT:
+			case TRX_TYPE_CHAR:
+			case TRX_TYPE_TEXT:
+			case TRX_TYPE_SHORTTEXT:
+			case TRX_TYPE_LONGTEXT:
 				zbx_snprintf_alloc(&str, &str_alloc, &str_offset, "'%s'", value->str);
 				break;
-			case ZBX_TYPE_FLOAT:
-				zbx_snprintf_alloc(&str, &str_alloc, &str_offset, ZBX_FS_DBL, value->dbl);
+			case TRX_TYPE_FLOAT:
+				zbx_snprintf_alloc(&str, &str_alloc, &str_offset, TRX_FS_DBL, value->dbl);
 				break;
-			case ZBX_TYPE_ID:
-			case ZBX_TYPE_UINT:
-				zbx_snprintf_alloc(&str, &str_alloc, &str_offset, ZBX_FS_UI64, value->ui64);
+			case TRX_TYPE_ID:
+			case TRX_TYPE_UINT:
+				zbx_snprintf_alloc(&str, &str_alloc, &str_offset, TRX_FS_UI64, value->ui64);
 				break;
-			case ZBX_TYPE_INT:
+			case TRX_TYPE_INT:
 				zbx_snprintf_alloc(&str, &str_alloc, &str_offset, "%d", value->i32);
 				break;
 			default:
@@ -2198,14 +2198,14 @@ void	zbx_db_insert_clean(zbx_db_insert_t *self)
 
 		for (j = 0; j < self->fields.values_num; j++)
 		{
-			ZBX_FIELD	*field = (ZBX_FIELD *)self->fields.values[j];
+			TRX_FIELD	*field = (TRX_FIELD *)self->fields.values[j];
 
 			switch (field->type)
 			{
-				case ZBX_TYPE_CHAR:
-				case ZBX_TYPE_TEXT:
-				case ZBX_TYPE_SHORTTEXT:
-				case ZBX_TYPE_LONGTEXT:
+				case TRX_TYPE_CHAR:
+				case TRX_TYPE_TEXT:
+				case TRX_TYPE_SHORTTEXT:
+				case TRX_TYPE_LONGTEXT:
 					zbx_free(row[j].str);
 			}
 		}
@@ -2243,7 +2243,7 @@ void	zbx_db_insert_clean(zbx_db_insert_t *self)
  *             zbx_db_insert_clean(&ins);                                     *
  *                                                                            *
  ******************************************************************************/
-void	zbx_db_insert_prepare_dyn(zbx_db_insert_t *self, const ZBX_TABLE *table, const ZBX_FIELD **fields, int fields_num)
+void	zbx_db_insert_prepare_dyn(zbx_db_insert_t *self, const TRX_TABLE *table, const TRX_FIELD **fields, int fields_num)
 {
 	int	i;
 
@@ -2261,7 +2261,7 @@ void	zbx_db_insert_prepare_dyn(zbx_db_insert_t *self, const ZBX_TABLE *table, co
 	self->table = table;
 
 	for (i = 0; i < fields_num; i++)
-		zbx_vector_ptr_append(&self->fields, (ZBX_FIELD *)fields[i]);
+		zbx_vector_ptr_append(&self->fields, (TRX_FIELD *)fields[i]);
 }
 
 /******************************************************************************
@@ -2284,8 +2284,8 @@ void	zbx_db_insert_prepare(zbx_db_insert_t *self, const char *table, ...)
 	zbx_vector_ptr_t	fields;
 	va_list			args;
 	char			*field;
-	const ZBX_TABLE		*ptable;
-	const ZBX_FIELD		*pfield;
+	const TRX_TABLE		*ptable;
+	const TRX_FIELD		*pfield;
 
 	/* find the table and fields in database schema */
 	if (NULL == (ptable = DBget_table(table)))
@@ -2307,12 +2307,12 @@ void	zbx_db_insert_prepare(zbx_db_insert_t *self, const char *table, ...)
 			THIS_SHOULD_NEVER_HAPPEN;
 			exit(EXIT_FAILURE);
 		}
-		zbx_vector_ptr_append(&fields, (ZBX_FIELD *)pfield);
+		zbx_vector_ptr_append(&fields, (TRX_FIELD *)pfield);
 	}
 
 	va_end(args);
 
-	zbx_db_insert_prepare_dyn(self, ptable, (const ZBX_FIELD **)fields.values, fields.values_num);
+	zbx_db_insert_prepare_dyn(self, ptable, (const TRX_FIELD **)fields.values, fields.values_num);
 
 	zbx_vector_ptr_destroy(&fields);
 }
@@ -2346,15 +2346,15 @@ void	zbx_db_insert_add_values_dyn(zbx_db_insert_t *self, const zbx_db_value_t **
 
 	for (i = 0; i < self->fields.values_num; i++)
 	{
-		ZBX_FIELD		*field = (ZBX_FIELD *)self->fields.values[i];
+		TRX_FIELD		*field = (TRX_FIELD *)self->fields.values[i];
 		const zbx_db_value_t	*value = values[i];
 
 		switch (field->type)
 		{
-			case ZBX_TYPE_LONGTEXT:
-			case ZBX_TYPE_CHAR:
-			case ZBX_TYPE_TEXT:
-			case ZBX_TYPE_SHORTTEXT:
+			case TRX_TYPE_LONGTEXT:
+			case TRX_TYPE_CHAR:
+			case TRX_TYPE_TEXT:
+			case TRX_TYPE_SHORTTEXT:
 #ifdef HAVE_ORACLE
 				row[i].str = DBdyn_escape_field_len(field, value->str, ESCAPE_SEQUENCE_OFF);
 #else
@@ -2390,7 +2390,7 @@ void	zbx_db_insert_add_values(zbx_db_insert_t *self, ...)
 	zbx_vector_ptr_t	values;
 	va_list			args;
 	int			i;
-	ZBX_FIELD		*field;
+	TRX_FIELD		*field;
 	zbx_db_value_t		*value;
 
 	va_start(args, self);
@@ -2399,26 +2399,26 @@ void	zbx_db_insert_add_values(zbx_db_insert_t *self, ...)
 
 	for (i = 0; i < self->fields.values_num; i++)
 	{
-		field = (ZBX_FIELD *)self->fields.values[i];
+		field = (TRX_FIELD *)self->fields.values[i];
 
 		value = (zbx_db_value_t *)zbx_malloc(NULL, sizeof(zbx_db_value_t));
 
 		switch (field->type)
 		{
-			case ZBX_TYPE_CHAR:
-			case ZBX_TYPE_TEXT:
-			case ZBX_TYPE_SHORTTEXT:
-			case ZBX_TYPE_LONGTEXT:
+			case TRX_TYPE_CHAR:
+			case TRX_TYPE_TEXT:
+			case TRX_TYPE_SHORTTEXT:
+			case TRX_TYPE_LONGTEXT:
 				value->str = va_arg(args, char *);
 				break;
-			case ZBX_TYPE_INT:
+			case TRX_TYPE_INT:
 				value->i32 = va_arg(args, int);
 				break;
-			case ZBX_TYPE_FLOAT:
+			case TRX_TYPE_FLOAT:
 				value->dbl = va_arg(args, double);
 				break;
-			case ZBX_TYPE_UINT:
-			case ZBX_TYPE_ID:
+			case TRX_TYPE_UINT:
+			case TRX_TYPE_ID:
 				value->ui64 = va_arg(args, zbx_uint64_t);
 				break;
 			default:
@@ -2452,13 +2452,13 @@ void	zbx_db_insert_add_values(zbx_db_insert_t *self, ...)
 int	zbx_db_insert_execute(zbx_db_insert_t *self)
 {
 	int		ret = FAIL, i, j;
-	const ZBX_FIELD	*field;
+	const TRX_FIELD	*field;
 	char		*sql_command, delim[2] = {',', '('};
 	size_t		sql_command_alloc = 512, sql_command_offset = 0;
 
 #ifndef HAVE_ORACLE
 	char		*sql;
-	size_t		sql_alloc = 16 * ZBX_KIBIBYTE, sql_offset = 0;
+	size_t		sql_alloc = 16 * TRX_KIBIBYTE, sql_offset = 0;
 
 #	ifdef HAVE_MYSQL
 	char		*sql_values = NULL;
@@ -2500,7 +2500,7 @@ int	zbx_db_insert_execute(zbx_db_insert_t *self)
 
 	for (i = 0; i < self->fields.values_num; i++)
 	{
-		field = (ZBX_FIELD *)self->fields.values[i];
+		field = (TRX_FIELD *)self->fields.values[i];
 
 		zbx_chrcpy_alloc(&sql_command, &sql_command_alloc, &sql_command_offset, delim[0 == i]);
 		zbx_strcpy_alloc(&sql_command, &sql_command_alloc, &sql_command_offset, field->name);
@@ -2508,16 +2508,16 @@ int	zbx_db_insert_execute(zbx_db_insert_t *self)
 
 #ifdef HAVE_MYSQL
 	/* MySQL workaround - explicitly add missing text fields with '' default value */
-	for (field = (const ZBX_FIELD *)self->table->fields; NULL != field->name; field++)
+	for (field = (const TRX_FIELD *)self->table->fields; NULL != field->name; field++)
 	{
 		switch (field->type)
 		{
-			case ZBX_TYPE_BLOB:
-			case ZBX_TYPE_TEXT:
-			case ZBX_TYPE_SHORTTEXT:
-			case ZBX_TYPE_LONGTEXT:
+			case TRX_TYPE_BLOB:
+			case TRX_TYPE_TEXT:
+			case TRX_TYPE_SHORTTEXT:
+			case TRX_TYPE_LONGTEXT:
 				if (FAIL != zbx_vector_ptr_search(&self->fields, (void *)field,
-						ZBX_DEFAULT_PTR_COMPARE_FUNC))
+						TRX_DEFAULT_PTR_COMPARE_FUNC))
 				{
 					continue;
 				}
@@ -2547,9 +2547,9 @@ retry_oracle:
 
 	for (j = 0; j < self->fields.values_num; j++)
 	{
-		field = (ZBX_FIELD *)self->fields.values[j];
+		field = (TRX_FIELD *)self->fields.values[j];
 
-		if (ZBX_DB_OK > zbx_db_bind_parameter_dyn(&contexts[j], j, field->type,
+		if (TRX_DB_OK > zbx_db_bind_parameter_dyn(&contexts[j], j, field->type,
 				(zbx_db_value_t **)self->rows.values, self->rows.values_num))
 		{
 			for (i = 0; i < j; i++)
@@ -2559,14 +2559,14 @@ retry_oracle:
 		}
 	}
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
 		for (i = 0; i < self->rows.values_num; i++)
 		{
 			zbx_db_value_t	*values = (zbx_db_value_t *)self->rows.values[i];
 			char	*str;
 
-			str = zbx_db_format_values((ZBX_FIELD **)self->fields.values, values, self->fields.values_num);
+			str = zbx_db_format_values((TRX_FIELD **)self->fields.values, values, self->fields.values_num);
 			treegix_log(LOG_LEVEL_DEBUG, "insert [txnlev:%d] [%s]", zbx_db_txn_level(), str);
 			zbx_free(str);
 		}
@@ -2577,22 +2577,22 @@ retry_oracle:
 	for (j = 0; j < self->fields.values_num; j++)
 		zbx_db_clean_bind_context(&contexts[j]);
 
-	if (ZBX_DB_DOWN == rc)
+	if (TRX_DB_DOWN == rc)
 	{
 		if (0 < tries++)
 		{
-			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", ZBX_DB_WAIT_DOWN);
+			treegix_log(LOG_LEVEL_ERR, "database is down: retrying in %d seconds", TRX_DB_WAIT_DOWN);
 			connection_failure = 1;
-			sleep(ZBX_DB_WAIT_DOWN);
+			sleep(TRX_DB_WAIT_DOWN);
 		}
 
 		DBclose();
-		DBconnect(ZBX_DB_CONNECT_NORMAL);
+		DBconnect(TRX_DB_CONNECT_NORMAL);
 
 		goto retry_oracle;
 	}
 
-	ret = (ZBX_DB_OK <= rc ? SUCCEED : FAIL);
+	ret = (TRX_DB_OK <= rc ? SUCCEED : FAIL);
 
 #else
 	DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
@@ -2611,32 +2611,32 @@ retry_oracle:
 		{
 			const zbx_db_value_t	*value = &values[j];
 
-			field = (const ZBX_FIELD *)self->fields.values[j];
+			field = (const TRX_FIELD *)self->fields.values[j];
 
 			zbx_chrcpy_alloc(&sql, &sql_alloc, &sql_offset, delim[0 == j]);
 
 			switch (field->type)
 			{
-				case ZBX_TYPE_CHAR:
-				case ZBX_TYPE_TEXT:
-				case ZBX_TYPE_SHORTTEXT:
-				case ZBX_TYPE_LONGTEXT:
+				case TRX_TYPE_CHAR:
+				case TRX_TYPE_TEXT:
+				case TRX_TYPE_SHORTTEXT:
+				case TRX_TYPE_LONGTEXT:
 					zbx_chrcpy_alloc(&sql, &sql_alloc, &sql_offset, '\'');
 					zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, value->str);
 					zbx_chrcpy_alloc(&sql, &sql_alloc, &sql_offset, '\'');
 					break;
-				case ZBX_TYPE_INT:
+				case TRX_TYPE_INT:
 					zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%d", value->i32);
 					break;
-				case ZBX_TYPE_FLOAT:
-					zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, ZBX_FS_DBL,
+				case TRX_TYPE_FLOAT:
+					zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, TRX_FS_DBL,
 							value->dbl);
 					break;
-				case ZBX_TYPE_UINT:
-					zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, ZBX_FS_UI64,
+				case TRX_TYPE_UINT:
+					zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, TRX_FS_UI64,
 							value->ui64);
 					break;
-				case ZBX_TYPE_ID:
+				case TRX_TYPE_ID:
 					zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
 							DBsql_id_ins(value->ui64));
 					break;
@@ -2650,7 +2650,7 @@ retry_oracle:
 			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, sql_values);
 #	endif
 
-		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ")" ZBX_ROW_DL);
+		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ")" TRX_ROW_DL);
 
 		if (SUCCEED != (ret = DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset)))
 			goto out;
@@ -2667,7 +2667,7 @@ retry_oracle:
 #	endif
 		DBend_multiple_update(sql, sql_alloc, sql_offset);
 
-		if (ZBX_DB_OK > DBexecute("%s", sql))
+		if (TRX_DB_OK > DBexecute("%s", sql))
 			ret = FAIL;
 	}
 #endif
@@ -2702,9 +2702,9 @@ void	zbx_db_insert_autoincrement(zbx_db_insert_t *self, const char *field_name)
 
 	for (i = 0; i < self->fields.values_num; i++)
 	{
-		ZBX_FIELD	*field = (ZBX_FIELD *)self->fields.values[i];
+		TRX_FIELD	*field = (TRX_FIELD *)self->fields.values[i];
 
-		if (ZBX_TYPE_ID == field->type && 0 == strcmp(field_name, field->name))
+		if (TRX_TYPE_ID == field->type && 0 == strcmp(field_name, field->name))
 		{
 			self->autoincrement = i;
 			return;
@@ -2721,9 +2721,9 @@ void	zbx_db_insert_autoincrement(zbx_db_insert_t *self, const char *field_name)
  *                                                                            *
  * Purpose: determine is it a server or a proxy database                      *
  *                                                                            *
- * Return value: ZBX_DB_SERVER - server database                              *
- *               ZBX_DB_PROXY - proxy database                                *
- *               ZBX_DB_UNKNOWN - an error occurred                           *
+ * Return value: TRX_DB_SERVER - server database                              *
+ *               TRX_DB_PROXY - proxy database                                *
+ *               TRX_DB_UNKNOWN - an error occurred                           *
  *                                                                            *
  ******************************************************************************/
 int	zbx_db_get_database_type(void)
@@ -2731,11 +2731,11 @@ int	zbx_db_get_database_type(void)
 	const char	*result_string;
 	DB_RESULT	result;
 	DB_ROW		row;
-	int		ret = ZBX_DB_UNKNOWN;
+	int		ret = TRX_DB_UNKNOWN;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	if (NULL == (result = DBselectN("select userid from users", 1)))
 	{
@@ -2746,12 +2746,12 @@ int	zbx_db_get_database_type(void)
 	if (NULL != (row = DBfetch(result)))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "there is at least 1 record in \"users\" table");
-		ret = ZBX_DB_SERVER;
+		ret = TRX_DB_SERVER;
 	}
 	else
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "no records in \"users\" table");
-		ret = ZBX_DB_PROXY;
+		ret = TRX_DB_PROXY;
 	}
 
 	DBfree_result(result);
@@ -2760,14 +2760,14 @@ out:
 
 	switch (ret)
 	{
-		case ZBX_DB_SERVER:
-			result_string = "ZBX_DB_SERVER";
+		case TRX_DB_SERVER:
+			result_string = "TRX_DB_SERVER";
 			break;
-		case ZBX_DB_PROXY:
-			result_string = "ZBX_DB_PROXY";
+		case TRX_DB_PROXY:
+			result_string = "TRX_DB_PROXY";
 			break;
-		case ZBX_DB_UNKNOWN:
-			result_string = "ZBX_DB_UNKNOWN";
+		case TRX_DB_UNKNOWN:
+			result_string = "TRX_DB_UNKNOWN";
 			break;
 	}
 
@@ -2795,7 +2795,7 @@ out:
 int	DBlock_record(const char *table, zbx_uint64_t id, const char *add_field, zbx_uint64_t add_id)
 {
 	DB_RESULT	result;
-	const ZBX_TABLE	*t;
+	const TRX_TABLE	*t;
 	int		ret;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -2807,11 +2807,11 @@ int	DBlock_record(const char *table, zbx_uint64_t id, const char *add_field, zbx
 
 	if (NULL == add_field)
 	{
-		result = DBselect("select null from %s where %s=" ZBX_FS_UI64 ZBX_FOR_UPDATE, table, t->recid, id);
+		result = DBselect("select null from %s where %s=" TRX_FS_UI64 TRX_FOR_UPDATE, table, t->recid, id);
 	}
 	else
 	{
-		result = DBselect("select null from %s where %s=" ZBX_FS_UI64 " and %s=" ZBX_FS_UI64 ZBX_FOR_UPDATE,
+		result = DBselect("select null from %s where %s=" TRX_FS_UI64 " and %s=" TRX_FS_UI64 TRX_FOR_UPDATE,
 				table, t->recid, id, add_field, add_id);
 	}
 
@@ -2845,7 +2845,7 @@ int	DBlock_record(const char *table, zbx_uint64_t id, const char *add_field, zbx
 int	DBlock_records(const char *table, const zbx_vector_uint64_t *ids)
 {
 	DB_RESULT	result;
-	const ZBX_TABLE	*t;
+	const TRX_TABLE	*t;
 	int		ret;
 	char		*sql = NULL;
 	size_t		sql_alloc = 0, sql_offset = 0;
@@ -2860,7 +2860,7 @@ int	DBlock_records(const char *table, const zbx_vector_uint64_t *ids)
 	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "select null from %s where", table);
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, t->recid, ids->values, ids->values_num);
 
-	result = DBselect("%s" ZBX_FOR_UPDATE, sql);
+	result = DBselect("%s" TRX_FOR_UPDATE, sql);
 
 	zbx_free(sql);
 
@@ -2906,13 +2906,13 @@ int	DBlock_ids(const char *table_name, const char *field_name, zbx_vector_uint64
 
 	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "select %s from %s where", field_name, table_name);
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, field_name, ids->values, ids->values_num);
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " order by %s" ZBX_FOR_UPDATE, field_name);
+	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " order by %s" TRX_FOR_UPDATE, field_name);
 	result = DBselect("%s", sql);
 	zbx_free(sql);
 
 	for (i = 0; NULL != (row = DBfetch(result)); i++)
 	{
-		ZBX_STR2UINT64(id, row[0]);
+		TRX_STR2UINT64(id, row[0]);
 
 		while (id != ids->values[i])
 			zbx_vector_uint64_remove(ids, i);
@@ -2942,7 +2942,7 @@ int	DBlock_ids(const char *table_name, const char *field_name, zbx_vector_uint64
 int	zbx_sql_add_host_availability(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const zbx_host_availability_t *ha)
 {
-	const char	*field_prefix[ZBX_AGENT_MAX] = {"", "snmp_", "ipmi_", "jmx_"};
+	const char	*field_prefix[TRX_AGENT_MAX] = {"", "snmp_", "ipmi_", "jmx_"};
 	char		delim = ' ';
 	int		i;
 
@@ -2951,16 +2951,16 @@ int	zbx_sql_add_host_availability(char **sql, size_t *sql_alloc, size_t *sql_off
 
 	zbx_strcpy_alloc(sql, sql_alloc, sql_offset, "update hosts set");
 
-	for (i = 0; i < ZBX_AGENT_MAX; i++)
+	for (i = 0; i < TRX_AGENT_MAX; i++)
 	{
-		if (0 != (ha->agents[i].flags & ZBX_FLAGS_AGENT_STATUS_AVAILABLE))
+		if (0 != (ha->agents[i].flags & TRX_FLAGS_AGENT_STATUS_AVAILABLE))
 		{
 			zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%c%savailable=%d", delim, field_prefix[i],
 					(int)ha->agents[i].available);
 			delim = ',';
 		}
 
-		if (0 != (ha->agents[i].flags & ZBX_FLAGS_AGENT_STATUS_ERROR))
+		if (0 != (ha->agents[i].flags & TRX_FLAGS_AGENT_STATUS_ERROR))
 		{
 			char	*error_esc;
 
@@ -2971,14 +2971,14 @@ int	zbx_sql_add_host_availability(char **sql, size_t *sql_alloc, size_t *sql_off
 			delim = ',';
 		}
 
-		if (0 != (ha->agents[i].flags & ZBX_FLAGS_AGENT_STATUS_ERRORS_FROM))
+		if (0 != (ha->agents[i].flags & TRX_FLAGS_AGENT_STATUS_ERRORS_FROM))
 		{
 			zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%c%serrors_from=%d", delim, field_prefix[i],
 					ha->agents[i].errors_from);
 			delim = ',';
 		}
 
-		if (0 != (ha->agents[i].flags & ZBX_FLAGS_AGENT_STATUS_DISABLE_UNTIL))
+		if (0 != (ha->agents[i].flags & TRX_FLAGS_AGENT_STATUS_DISABLE_UNTIL))
 		{
 			zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%c%sdisable_until=%d", delim, field_prefix[i],
 					ha->agents[i].disable_until);
@@ -2986,7 +2986,7 @@ int	zbx_sql_add_host_availability(char **sql, size_t *sql_alloc, size_t *sql_off
 		}
 	}
 
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, " where hostid=" ZBX_FS_UI64, ha->hostid);
+	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, " where hostid=" TRX_FS_UI64, ha->hostid);
 
 	return SUCCEED;
 }
@@ -3021,7 +3021,7 @@ int	DBget_user_by_active_session(const char *sessionid, zbx_user_t *user)
 			" where s.userid=u.userid"
 				" and s.sessionid='%s'"
 				" and s.status=%d",
-			sessionid_esc, ZBX_SESSION_ACTIVE)))
+			sessionid_esc, TRX_SESSION_ACTIVE)))
 	{
 		goto out;
 	}
@@ -3029,7 +3029,7 @@ int	DBget_user_by_active_session(const char *sessionid, zbx_user_t *user)
 	if (NULL == (row = DBfetch(result)))
 		goto out;
 
-	ZBX_STR2UINT64(user->userid, row[0]);
+	TRX_STR2UINT64(user->userid, row[0]);
 	user->type = atoi(row[1]);
 
 	ret = SUCCEED;
@@ -3057,7 +3057,7 @@ void	zbx_db_mock_field_init(zbx_db_mock_field_t *field, int field_type, int fiel
 {
 	switch (field_type)
 	{
-		case ZBX_TYPE_CHAR:
+		case TRX_TYPE_CHAR:
 #if defined(HAVE_ORACLE)
 			field->chars_num = field_len;
 			field->bytes_num = 4000;

@@ -29,7 +29,7 @@ $filter_column = (new CFormList())
 					'enrich_parent_groups' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 	)
 	->addRow((new CLabel(_('Hosts'), 'hostids__ms')),
 		(new CMultiSelect([
@@ -44,7 +44,7 @@ $filter_column = (new CFormList())
 					'dstfld1' => 'hostids_'
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 	)
 	->addRow(_('Severity'),
 		(new CTable())
@@ -55,7 +55,7 @@ $filter_column = (new CFormList())
 $filterForm
 	->setProfile($data['filter']['timeline']['profileIdx'])
 	->setActiveTab($data['filter']['active_tab'])
-	->addTimeSelector($data['filter']['timeline']['from'], $data['filter']['timeline']['to'], true, ZBX_DATE_TIME)
+	->addTimeSelector($data['filter']['timeline']['from'], $data['filter']['timeline']['to'], true, TRX_DATE_TIME)
 	->addFilterTab(_('Filter'), [$filter_column]);
 
 // table
@@ -66,7 +66,7 @@ foreach ($data['triggers'] as $trigger) {
 
 	$hostName = (new CLinkAction($trigger['hosts'][0]['name']))->setMenuPopup(CMenuPopupHelper::getHost($hostId));
 	if ($data['hosts'][$hostId]['status'] == HOST_STATUS_NOT_MONITORED) {
-		$hostName->addClass(ZBX_STYLE_RED);
+		$hostName->addClass(TRX_STYLE_RED);
 	}
 
 	$triggerDescription = (new CLinkAction($trigger['description']))

@@ -321,8 +321,8 @@ UNIXODBC_CFLAGS = @UNIXODBC_CFLAGS@
 UNIXODBC_LDFLAGS = @UNIXODBC_LDFLAGS@
 UNIXODBC_LIBS = @UNIXODBC_LIBS@
 VERSION = @VERSION@
-ZBXGET_LDFLAGS = @ZBXGET_LDFLAGS@
-ZBXGET_LIBS = @ZBXGET_LIBS@
+TRXGET_LDFLAGS = @TRXGET_LDFLAGS@
+TRXGET_LIBS = @TRXGET_LIBS@
 ZLIB_CFLAGS = @ZLIB_CFLAGS@
 ZLIB_LDFLAGS = @ZLIB_LDFLAGS@
 ZLIB_LIBS = @ZLIB_LIBS@
@@ -388,8 +388,8 @@ treegix_get_LDADD = $(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
 	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
 	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
 	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
-	@ZBXGET_LIBS@ $(am__empty)
-treegix_get_LDFLAGS = @ZBXGET_LDFLAGS@
+	@TRXGET_LIBS@ $(am__empty)
+treegix_get_LDFLAGS = @TRXGET_LDFLAGS@
 all: all-am
 
 .SUFFIXES:

@@ -9,9 +9,9 @@
 class CFrontendSetup {
 
 	const MIN_PHP_VERSION = '5.4.0';
-	const MIN_PHP_MEMORY_LIMIT = '134217728'; // 128 * ZBX_MEBIBYTE;
-	const MIN_PHP_POST_MAX_SIZE = '16777216'; // 16 * ZBX_MEBIBYTE;
-	const MIN_PHP_UPLOAD_MAX_FILESIZE = '2097152'; // 2 * ZBX_MEBIBYTE;
+	const MIN_PHP_MEMORY_LIMIT = '134217728'; // 128 * TRX_MEBIBYTE;
+	const MIN_PHP_POST_MAX_SIZE = '16777216'; // 16 * TRX_MEBIBYTE;
+	const MIN_PHP_UPLOAD_MAX_FILESIZE = '2097152'; // 2 * TRX_MEBIBYTE;
 	const MIN_PHP_MAX_EXECUTION_TIME = 300;
 	const MIN_PHP_MAX_INPUT_TIME = 300;
 	const MIN_PHP_GD_VERSION = '2.0';
@@ -250,24 +250,24 @@ class CFrontendSetup {
 
 		if (zbx_is_callable(['mysqli_close', 'mysqli_connect', 'mysqli_connect_error', 'mysqli_error',
 				'mysqli_fetch_assoc', 'mysqli_free_result', 'mysqli_query', 'mysqli_real_escape_string'])) {
-			$allowed_db[ZBX_DB_MYSQL] = 'MySQL';
+			$allowed_db[TRX_DB_MYSQL] = 'MySQL';
 		}
 
 		if (zbx_is_callable(['pg_close', 'pg_connect', 'pg_escape_bytea', 'pg_escape_string', 'pg_fetch_assoc',
 				'pg_free_result', 'pg_last_error', 'pg_parameter_status', 'pg_query', 'pg_unescape_bytea'])) {
-			$allowed_db[ZBX_DB_POSTGRESQL] = 'PostgreSQL';
+			$allowed_db[TRX_DB_POSTGRESQL] = 'PostgreSQL';
 		}
 
 		if (zbx_is_callable(['oci_bind_by_name', 'oci_close', 'oci_commit', 'oci_connect', 'oci_error', 'oci_execute',
 				'oci_fetch_assoc', 'oci_field_type', 'oci_free_statement', 'oci_new_descriptor', 'oci_parse',
 				'oci_rollback'])) {
-			$allowed_db[ZBX_DB_ORACLE] = 'Oracle';
+			$allowed_db[TRX_DB_ORACLE] = 'Oracle';
 		}
 
 		if (zbx_is_callable(['db2_autocommit', 'db2_bind_param', 'db2_close', 'db2_commit', 'db2_conn_errormsg',
 				'db2_connect', 'db2_escape_string', 'db2_execute', 'db2_fetch_assoc', 'db2_free_result', 'db2_prepare',
 				'db2_rollback', 'db2_set_option', 'db2_stmt_errormsg'])) {
-			$allowed_db[ZBX_DB_DB2] = 'IBM DB2';
+			$allowed_db[TRX_DB_DB2] = 'IBM DB2';
 		}
 
 		return $allowed_db;

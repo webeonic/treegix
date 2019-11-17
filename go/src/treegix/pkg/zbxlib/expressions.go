@@ -65,12 +65,12 @@ func MatchGlobalRegexp(
 
 	ret := C.regexp_sub_ex(C.zbx_vector_ptr_lp_t(grxp), cvalue, cpattern, C.int(mode), ctemplate, &coutput)
 	switch ret {
-	case C.ZBX_REGEXP_MATCH:
+	case C.TRX_REGEXP_MATCH:
 		match = true
 		if coutput != nil {
 			output = C.GoString(coutput)
 		}
-	case C.ZBX_REGEXP_NO_MATCH:
+	case C.TRX_REGEXP_NO_MATCH:
 		match = false
 	default:
 		err = errors.New("invalid global regular expression")

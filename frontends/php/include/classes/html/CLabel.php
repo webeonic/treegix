@@ -20,6 +20,6 @@ class CLabel extends CTag {
 	 * @return CLabel
 	 */
 	public function setAsteriskMark($add_asterisk = true) {
-		return $this->addClass($add_asterisk ? ZBX_STYLE_FIELD_LABEL_ASTERISK : null);
+		return $this->addClass($add_asterisk ? TRX_STYLE_FIELD_LABEL_ASTERISK : null);
 	}
 }

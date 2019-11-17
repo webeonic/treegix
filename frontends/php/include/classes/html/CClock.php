@@ -16,7 +16,7 @@ class CClock extends CDiv {
 		parent::__construct();
 
 		$this->setId(uniqid());
-		$this->addClass(ZBX_STYLE_CLOCK);
+		$this->addClass(TRX_STYLE_CLOCK);
 
 		$this->width = null;
 		$this->height = null;
@@ -65,8 +65,8 @@ class CClock extends CDiv {
 
 	public function getTimeDiv() {
 		return (new CDiv($this->error))
-			->addClass(ZBX_STYLE_TIME_ZONE.'-'.$this->getId())
-			->addClass($this->error !== null ? ZBX_STYLE_RED : ZBX_STYLE_GREY);
+			->addClass(TRX_STYLE_TIME_ZONE.'-'.$this->getId())
+			->addClass($this->error !== null ? TRX_STYLE_RED : TRX_STYLE_GREY);
 	}
 
 	public function getScriptFile() {
@@ -99,7 +99,7 @@ class CClock extends CDiv {
 			->setAttribute('x', $x)
 			->setAttribute('y', $y)
 			->setAttribute('transform', 'rotate('.$deg.' 50 50)')
-			->addClass(ZBX_STYLE_CLOCK_LINES);
+			->addClass(TRX_STYLE_CLOCK_LINES);
 	}
 
 	private function makeClockFace() {
@@ -108,7 +108,7 @@ class CClock extends CDiv {
 				->setAttribute('cx', '50')
 				->setAttribute('cy', '50')
 				->setAttribute('r', '50')
-				->addClass(ZBX_STYLE_CLOCK_FACE),
+				->addClass(TRX_STYLE_CLOCK_FACE),
 			$this->makeClockLine('1.5', '5', '49.25', '5', '330'),
 			$this->makeClockLine('1.5', '5', '49.25', '5', '300'),
 			$this->makeClockLine('2.5', '7', '48.75', '5', '270'),
@@ -134,7 +134,7 @@ class CClock extends CDiv {
 				->setAttribute('rx', '1.5')
 				->setAttribute('ry', '1.5')
 				->addClass('clock-hand-h')
-				->addClass(ZBX_STYLE_CLOCK_HAND),
+				->addClass(TRX_STYLE_CLOCK_HAND),
 			(new CTag('rect', true))
 				->setAttribute('width', '3.25')
 				->setAttribute('height', '35')
@@ -143,19 +143,19 @@ class CClock extends CDiv {
 				->setAttribute('rx', '1.5')
 				->setAttribute('ry', '1.5')
 				->addClass('clock-hand-m')
-				->addClass(ZBX_STYLE_CLOCK_HAND),
+				->addClass(TRX_STYLE_CLOCK_HAND),
 			(new CTag('rect', true))
 				->setAttribute('width', '1.5')
 				->setAttribute('height', '55')
 				->setAttribute('x', '49.25')
 				->setAttribute('y', '5')
 				->addClass('clock-hand-s')
-				->addClass(ZBX_STYLE_CLOCK_HAND_SEC),
+				->addClass(TRX_STYLE_CLOCK_HAND_SEC),
 			(new CTag('circle', true))
 				->setAttribute('cx', '50')
 				->setAttribute('cy', '50')
 				->setAttribute('r', '3.5')
-				->addClass(ZBX_STYLE_CLOCK_HAND_SEC)
+				->addClass(TRX_STYLE_CLOCK_HAND_SEC)
 		];
 	}
 
@@ -165,7 +165,7 @@ class CClock extends CDiv {
 			->addItem($this->makeClockHands())
 			->setAttribute('xmlns', 'http://www.w3.org/2000/svg')
 			->setAttribute('viewBox', '0 0 100 100')
-			->addClass(ZBX_STYLE_CLOCK_SVG);
+			->addClass(TRX_STYLE_CLOCK_SVG);
 
 		if ($this->width !== null && $this->height !== null) {
 			$clock
@@ -174,7 +174,7 @@ class CClock extends CDiv {
 		}
 
 		if ($this->error !== null) {
-			$clock->addClass(ZBX_STYLE_DISABLED);
+			$clock->addClass(TRX_STYLE_DISABLED);
 		}
 
 		$this->addItem($clock);

@@ -5,7 +5,7 @@
 
 #include "service.h"
 
-ZBX_METRIC	parameters_specific[] =
+TRX_METRIC	parameters_specific[] =
 /*	KEY			FLAG		FUNCTION		TEST PARAMETERS */
 {
 	{"vfs.fs.size",		CF_HAVEPARAMS,	VFS_FS_SIZE,		"c:,free"},

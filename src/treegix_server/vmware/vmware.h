@@ -6,25 +6,25 @@
 #include "threads.h"
 
 /* the vmware service state */
-#define ZBX_VMWARE_STATE_NEW		0x001
-#define ZBX_VMWARE_STATE_READY		0x002
-#define ZBX_VMWARE_STATE_FAILED		0x004
+#define TRX_VMWARE_STATE_NEW		0x001
+#define TRX_VMWARE_STATE_READY		0x002
+#define TRX_VMWARE_STATE_FAILED		0x004
 
-#define ZBX_VMWARE_STATE_MASK		0x0FF
+#define TRX_VMWARE_STATE_MASK		0x0FF
 
-#define ZBX_VMWARE_STATE_UPDATING	0x100
-#define ZBX_VMWARE_STATE_UPDATING_PERF	0x200
-#define ZBX_VMWARE_STATE_REMOVING	0x400
+#define TRX_VMWARE_STATE_UPDATING	0x100
+#define TRX_VMWARE_STATE_UPDATING_PERF	0x200
+#define TRX_VMWARE_STATE_REMOVING	0x400
 
-#define ZBX_VMWARE_STATE_BUSY		(ZBX_VMWARE_STATE_UPDATING | ZBX_VMWARE_STATE_UPDATING_PERF \
-							| ZBX_VMWARE_STATE_REMOVING)
+#define TRX_VMWARE_STATE_BUSY		(TRX_VMWARE_STATE_UPDATING | TRX_VMWARE_STATE_UPDATING_PERF \
+							| TRX_VMWARE_STATE_REMOVING)
 
 /* the vmware performance counter state */
-#define ZBX_VMWARE_COUNTER_NEW		0x00
-#define ZBX_VMWARE_COUNTER_READY	0x01
-#define ZBX_VMWARE_COUNTER_UPDATING	0x10
+#define TRX_VMWARE_COUNTER_NEW		0x00
+#define TRX_VMWARE_COUNTER_READY	0x01
+#define TRX_VMWARE_COUNTER_UPDATING	0x10
 
-#define ZBX_VMWARE_EVENT_KEY_UNINITIALIZED	__UINT64_C(0xffffffffffffffff)
+#define TRX_VMWARE_EVENT_KEY_UNINITIALIZED	__UINT64_C(0xffffffffffffffff)
 
 typedef struct
 {
@@ -33,7 +33,7 @@ typedef struct
 }
 zbx_str_uint64_pair_t;
 
-ZBX_VECTOR_DECL(str_uint64_pair, zbx_str_uint64_pair_t)
+TRX_VECTOR_DECL(str_uint64_pair, zbx_str_uint64_pair_t)
 
 /* performance counter data */
 typedef struct
@@ -46,7 +46,7 @@ typedef struct
 	/*    pair->value - value                   */
 	zbx_vector_str_uint64_pair_t	values;
 
-	/* the counter state, see ZBX_VMAWRE_COUNTER_* defines */
+	/* the counter state, see TRX_VMAWRE_COUNTER_* defines */
 	unsigned char			state;
 }
 zbx_vmware_perf_counter_t;
@@ -90,10 +90,10 @@ typedef struct
 zbx_vmware_datastore_t;
 
 int	vmware_ds_name_compare(const void *d1, const void *d2);
-ZBX_PTR_VECTOR_DECL(vmware_datastore, zbx_vmware_datastore_t *)
+TRX_PTR_VECTOR_DECL(vmware_datastore, zbx_vmware_datastore_t *)
 
-#define ZBX_VMWARE_DEV_TYPE_NIC		1
-#define ZBX_VMWARE_DEV_TYPE_DISK	2
+#define TRX_VMWARE_DEV_TYPE_NIC		1
+#define TRX_VMWARE_DEV_TYPE_DISK	2
 typedef struct
 {
 	int	type;
@@ -196,7 +196,7 @@ typedef struct
 	/* the service type - vCenter or vSphere */
 	unsigned char			type;
 
-	/* the service state - see ZBX_VMWARE_STATE_* defines */
+	/* the service state - see TRX_VMWARE_STATE_* defines */
 	int				state;
 
 	int				lastcheck;
@@ -225,8 +225,8 @@ typedef struct
 }
 zbx_vmware_service_t;
 
-#define ZBX_VMWARE_PERF_INTERVAL_UNKNOWN	0
-#define ZBX_VMWARE_PERF_INTERVAL_NONE		-1
+#define TRX_VMWARE_PERF_INTERVAL_UNKNOWN	0
+#define TRX_VMWARE_PERF_INTERVAL_NONE		-1
 
 /* the vmware collector data */
 typedef struct
@@ -244,7 +244,7 @@ typedef struct
 }
 zbx_vmware_stats_t;
 
-ZBX_THREAD_ENTRY(vmware_thread, args);
+TRX_THREAD_ENTRY(vmware_thread, args);
 
 int	zbx_vmware_init(char **error);
 void	zbx_vmware_destroy(void);
@@ -265,54 +265,54 @@ zbx_vmware_perf_entity_t	*zbx_vmware_service_get_perf_entity(zbx_vmware_service_
 		const char *id);
 
 /* hypervisor properties */
-#define ZBX_VMWARE_HVPROP_OVERALL_CPU_USAGE		0
-#define ZBX_VMWARE_HVPROP_FULL_NAME			1
-#define ZBX_VMWARE_HVPROP_HW_NUM_CPU_CORES		2
-#define ZBX_VMWARE_HVPROP_HW_CPU_MHZ			3
-#define ZBX_VMWARE_HVPROP_HW_CPU_MODEL			4
-#define ZBX_VMWARE_HVPROP_HW_NUM_CPU_THREADS		5
-#define ZBX_VMWARE_HVPROP_HW_MEMORY_SIZE		6
-#define ZBX_VMWARE_HVPROP_HW_MODEL			7
-#define ZBX_VMWARE_HVPROP_HW_UUID			8
-#define ZBX_VMWARE_HVPROP_HW_VENDOR			9
-#define ZBX_VMWARE_HVPROP_MEMORY_USED			10
-#define ZBX_VMWARE_HVPROP_HEALTH_STATE			11
-#define ZBX_VMWARE_HVPROP_UPTIME			12
-#define ZBX_VMWARE_HVPROP_VERSION			13
-#define ZBX_VMWARE_HVPROP_NAME				14
-#define ZBX_VMWARE_HVPROP_STATUS			15
+#define TRX_VMWARE_HVPROP_OVERALL_CPU_USAGE		0
+#define TRX_VMWARE_HVPROP_FULL_NAME			1
+#define TRX_VMWARE_HVPROP_HW_NUM_CPU_CORES		2
+#define TRX_VMWARE_HVPROP_HW_CPU_MHZ			3
+#define TRX_VMWARE_HVPROP_HW_CPU_MODEL			4
+#define TRX_VMWARE_HVPROP_HW_NUM_CPU_THREADS		5
+#define TRX_VMWARE_HVPROP_HW_MEMORY_SIZE		6
+#define TRX_VMWARE_HVPROP_HW_MODEL			7
+#define TRX_VMWARE_HVPROP_HW_UUID			8
+#define TRX_VMWARE_HVPROP_HW_VENDOR			9
+#define TRX_VMWARE_HVPROP_MEMORY_USED			10
+#define TRX_VMWARE_HVPROP_HEALTH_STATE			11
+#define TRX_VMWARE_HVPROP_UPTIME			12
+#define TRX_VMWARE_HVPROP_VERSION			13
+#define TRX_VMWARE_HVPROP_NAME				14
+#define TRX_VMWARE_HVPROP_STATUS			15
 
-#define ZBX_VMWARE_HVPROPS_NUM				16
+#define TRX_VMWARE_HVPROPS_NUM				16
 
 /* virtual machine properties */
-#define ZBX_VMWARE_VMPROP_CPU_NUM			0
-#define ZBX_VMWARE_VMPROP_CPU_USAGE			1
-#define ZBX_VMWARE_VMPROP_NAME				2
-#define ZBX_VMWARE_VMPROP_MEMORY_SIZE			3
-#define ZBX_VMWARE_VMPROP_MEMORY_SIZE_BALLOONED		4
-#define ZBX_VMWARE_VMPROP_MEMORY_SIZE_COMPRESSED	5
-#define ZBX_VMWARE_VMPROP_MEMORY_SIZE_SWAPPED		6
-#define ZBX_VMWARE_VMPROP_MEMORY_SIZE_USAGE_GUEST	7
-#define ZBX_VMWARE_VMPROP_MEMORY_SIZE_USAGE_HOST	8
-#define ZBX_VMWARE_VMPROP_MEMORY_SIZE_PRIVATE		9
-#define ZBX_VMWARE_VMPROP_MEMORY_SIZE_SHARED		10
-#define ZBX_VMWARE_VMPROP_POWER_STATE			11
-#define ZBX_VMWARE_VMPROP_STORAGE_COMMITED		12
-#define ZBX_VMWARE_VMPROP_STORAGE_UNSHARED		13
-#define ZBX_VMWARE_VMPROP_STORAGE_UNCOMMITTED		14
-#define ZBX_VMWARE_VMPROP_UPTIME			15
+#define TRX_VMWARE_VMPROP_CPU_NUM			0
+#define TRX_VMWARE_VMPROP_CPU_USAGE			1
+#define TRX_VMWARE_VMPROP_NAME				2
+#define TRX_VMWARE_VMPROP_MEMORY_SIZE			3
+#define TRX_VMWARE_VMPROP_MEMORY_SIZE_BALLOONED		4
+#define TRX_VMWARE_VMPROP_MEMORY_SIZE_COMPRESSED	5
+#define TRX_VMWARE_VMPROP_MEMORY_SIZE_SWAPPED		6
+#define TRX_VMWARE_VMPROP_MEMORY_SIZE_USAGE_GUEST	7
+#define TRX_VMWARE_VMPROP_MEMORY_SIZE_USAGE_HOST	8
+#define TRX_VMWARE_VMPROP_MEMORY_SIZE_PRIVATE		9
+#define TRX_VMWARE_VMPROP_MEMORY_SIZE_SHARED		10
+#define TRX_VMWARE_VMPROP_POWER_STATE			11
+#define TRX_VMWARE_VMPROP_STORAGE_COMMITED		12
+#define TRX_VMWARE_VMPROP_STORAGE_UNSHARED		13
+#define TRX_VMWARE_VMPROP_STORAGE_UNCOMMITTED		14
+#define TRX_VMWARE_VMPROP_UPTIME			15
 
-#define ZBX_VMWARE_VMPROPS_NUM				16
+#define TRX_VMWARE_VMPROPS_NUM				16
 
 /* vmware service types */
-#define ZBX_VMWARE_TYPE_UNKNOWN	0
-#define ZBX_VMWARE_TYPE_VSPHERE	1
-#define ZBX_VMWARE_TYPE_VCENTER	2
+#define TRX_VMWARE_TYPE_UNKNOWN	0
+#define TRX_VMWARE_TYPE_VSPHERE	1
+#define TRX_VMWARE_TYPE_VCENTER	2
 
-#define ZBX_VMWARE_SOAP_DATACENTER	"Datacenter"
-#define ZBX_VMWARE_SOAP_FOLDER		"Folder"
-#define ZBX_VMWARE_SOAP_CLUSTER		"ClusterComputeResource"
-#define ZBX_VMWARE_SOAP_DEFAULT		"VMware"
+#define TRX_VMWARE_SOAP_DATACENTER	"Datacenter"
+#define TRX_VMWARE_SOAP_FOLDER		"Folder"
+#define TRX_VMWARE_SOAP_CLUSTER		"ClusterComputeResource"
+#define TRX_VMWARE_SOAP_DEFAULT		"VMware"
 
 #endif	/* defined(HAVE_LIBXML2) && defined(HAVE_LIBCURL) */
 

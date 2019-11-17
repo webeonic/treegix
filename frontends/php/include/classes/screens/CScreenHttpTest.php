@@ -119,10 +119,10 @@ class CScreenHttpTest extends CScreenBase {
 						$status = new CSpan(_s('Unknown step failed: %1$s', $error));
 					}
 
-					$status->addClass(ZBX_STYLE_RED);
+					$status->addClass(TRX_STYLE_RED);
 				}
 				else {
-					$status = (new CSpan(_('OK')))->addClass(ZBX_STYLE_GREEN);
+					$status = (new CSpan(_('OK')))->addClass(TRX_STYLE_GREEN);
 				}
 			}
 			else {
@@ -132,7 +132,7 @@ class CScreenHttpTest extends CScreenBase {
 
 			$table->addRow(new CRow([
 				($httptest['host']['status'] == HOST_STATUS_NOT_MONITORED)
-					? (new CSpan($httptest['hostname']))->addClass(ZBX_STYLE_RED)
+					? (new CSpan($httptest['hostname']))->addClass(TRX_STYLE_RED)
 					: $httptest['hostname'],
 				new CLink($httptest['name'], 'httpdetails.php?httptestid='.$httptest['httptestid']),
 				$httptest['steps'],

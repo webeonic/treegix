@@ -13,7 +13,7 @@ static int	read_uint64_from_procfs(const char *path, zbx_uint64_t *value)
 	{
 		if (NULL != fgets(line, sizeof(line), f))
 		{
-			if (1 == sscanf(line, ZBX_FS_UI64 "\n", value))
+			if (1 == sscanf(line, TRX_FS_UI64 "\n", value))
 				ret = SYSINFO_RET_OK;
 		}
 		zbx_fclose(f);
@@ -26,7 +26,7 @@ int	KERNEL_MAXFILES(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	zbx_uint64_t	value;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (SYSINFO_RET_FAIL == read_uint64_from_procfs("/proc/sys/fs/file-max", &value))
 	{
@@ -42,7 +42,7 @@ int	KERNEL_MAXPROC(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	zbx_uint64_t	value;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (SYSINFO_RET_FAIL == read_uint64_from_procfs("/proc/sys/kernel/pid_max", &value))
 	{

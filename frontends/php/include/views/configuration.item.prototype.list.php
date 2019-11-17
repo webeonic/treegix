@@ -30,7 +30,7 @@ $itemTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_items'))->onClick("checkAll('".$itemForm->getName()."', 'all_items', 'group_itemid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		_('Wizard'),
 		make_sorting_header(_('Name'),'name', $data['sort'], $data['sortorder'], $url),
 		make_sorting_header(_('Key'), 'key_', $data['sort'], $data['sortorder'], $url),
@@ -46,7 +46,7 @@ $update_interval_parser = new CUpdateIntervalParser(['usermacros' => true, 'lldm
 
 foreach ($data['items'] as $item) {
 	$description = [];
-	$description[] = makeItemTemplatePrefix($item['itemid'], $data['parent_templates'], ZBX_FLAG_DISCOVERY_PROTOTYPE);
+	$description[] = makeItemTemplatePrefix($item['itemid'], $data['parent_templates'], TRX_FLAG_DISCOVERY_PROTOTYPE);
 
 	if ($item['type'] == ITEM_TYPE_DEPENDENT) {
 		if ($item['master_item']['type'] == ITEM_TYPE_HTTPTEST) {
@@ -65,8 +65,8 @@ foreach ($data['items'] as $item) {
 					->setArgument('itemid', $item['master_item']['itemid'])
 					->getUrl()
 			))
-				->addClass(ZBX_STYLE_LINK_ALT)
-				->addClass(ZBX_STYLE_TEAL);
+				->addClass(TRX_STYLE_LINK_ALT)
+				->addClass(TRX_STYLE_TEAL);
 		}
 
 		$description[] = NAME_DELIMITER;
@@ -92,7 +92,7 @@ foreach ($data['items'] as $item) {
 			)
 			->getUrl()
 	))
-		->addClass(ZBX_STYLE_LINK_ACTION)
+		->addClass(TRX_STYLE_LINK_ACTION)
 		->addClass(itemIndicatorStyle($item['status']))
 		->addSID();
 
@@ -125,8 +125,8 @@ foreach ($data['items'] as $item) {
 	$item_menu = CMenuPopupHelper::getItemPrototype($item['itemid'], $data['parent_discoveryid']);
 
 	$wizard = (new CSpan(
-		(new CButton(null))->addClass(ZBX_STYLE_ICON_WZRD_ACTION)->setMenuPopup($item_menu)
-	))->addClass(ZBX_STYLE_REL_CONTAINER);
+		(new CButton(null))->addClass(TRX_STYLE_ICON_WZRD_ACTION)->setMenuPopup($item_menu)
+	))->addClass(TRX_STYLE_REL_CONTAINER);
 
 	$itemTable->addRow([
 		new CCheckBox('group_itemid['.$item['itemid'].']', $item['itemid']),

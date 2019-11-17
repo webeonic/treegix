@@ -24,19 +24,19 @@ foreach ($filter_tags as $tag) {
 	$filter_tags_table->addRow([
 		(new CTextBox('filter_tags['.$i.'][tag]', $tag['tag']))
 			->setAttribute('placeholder', _('tag'))
-			->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		(new CRadioButtonList('filter_tags['.$i.'][operator]', (int) $tag['operator']))
 			->addValue(_('Contains'), TAG_OPERATOR_LIKE)
 			->addValue(_('Equals'), TAG_OPERATOR_EQUAL)
 			->setModern(true),
 		(new CTextBox('filter_tags['.$i.'][value]', $tag['value']))
 			->setAttribute('placeholder', _('value'))
-			->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH),
+			->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH),
 		(new CCol(
 			(new CButton('filter_tags['.$i.'][remove]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	], 'form_row');
 
 	$i++;
@@ -44,7 +44,7 @@ foreach ($filter_tags as $tag) {
 $filter_tags_table->addRow(
 	(new CCol(
 		(new CButton('filter_tags_add', _('Add')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-add')
 	))->setColSpan(3)
 );
@@ -57,7 +57,7 @@ $filter
 		(new CFormList())
 			->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			)
 			->addRow(
@@ -75,7 +75,7 @@ $filter
 							'dstfld1' => 'filter_templates_'
 						]
 					]
-				]))->setWidth(ZBX_TEXTAREA_MEDIUM_WIDTH)
+				]))->setWidth(TRX_TEXTAREA_MEDIUM_WIDTH)
 			),
 		(new CFormList())->addRow(_('Tags'), $filter_tags_table)
 	]);
@@ -89,7 +89,7 @@ $widget = (new CWidget())
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Group'), 'groupid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$data['pageFilter']->getGroupsCB()
 				])
 			),
@@ -114,7 +114,7 @@ $table = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_templates'))->onClick("checkAll('".$form->getName()."', 'all_templates', 'templates');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sortField'], $data['sortOrder']),
 		_('Applications'),
 		_('Items'),
@@ -157,12 +157,12 @@ foreach ($data['templates'] as $template) {
 
 		if (array_key_exists($parentTemplate['templateid'], $data['writable_templates'])) {
 			$linkedTemplatesOutput[] = (new CLink($parentTemplate['name'], $url))
-				->addClass(ZBX_STYLE_LINK_ALT)
-				->addClass(ZBX_STYLE_GREY);
+				->addClass(TRX_STYLE_LINK_ALT)
+				->addClass(TRX_STYLE_GREY);
 		}
 		else {
 			$linkedTemplatesOutput[] = (new CSpan($parentTemplate['name']))
-				->addClass(ZBX_STYLE_GREY);
+				->addClass(TRX_STYLE_GREY);
 		}
 	}
 
@@ -188,24 +188,24 @@ foreach ($data['templates'] as $template) {
 			if (array_key_exists($linkedToObject['templateid'], $data['writable_templates'])) {
 				$url = 'templates.php?form=update&templateid='.$linkedToObject['templateid'].url_param('groupid');
 				$link = (new CLink($linkedToObject['name'], $url))
-					->addClass(ZBX_STYLE_LINK_ALT)
-					->addClass(ZBX_STYLE_GREY);
+					->addClass(TRX_STYLE_LINK_ALT)
+					->addClass(TRX_STYLE_GREY);
 			}
 			else {
 				$link = (new CSpan($linkedToObject['name']))
-					->addClass(ZBX_STYLE_GREY);
+					->addClass(TRX_STYLE_GREY);
 			}
 		}
 		else {
 			if (array_key_exists($linkedToObject['hostid'], $data['writable_hosts'])) {
 				$url = 'hosts.php?form=update&hostid='.$linkedToObject['hostid'].url_param('groupid');
-				$link = (new CLink($linkedToObject['name'], $url))->addClass(ZBX_STYLE_LINK_ALT);
+				$link = (new CLink($linkedToObject['name'], $url))->addClass(TRX_STYLE_LINK_ALT);
 			}
 			else {
 				$link = (new CSpan($linkedToObject['name']));
 			}
 
-			$link->addClass($linkedToObject['status'] == HOST_STATUS_MONITORED ? ZBX_STYLE_GREEN : ZBX_STYLE_RED);
+			$link->addClass($linkedToObject['status'] == HOST_STATUS_MONITORED ? TRX_STYLE_GREEN : TRX_STYLE_RED);
 		}
 
 		$linkedToOutput[] = $link;
@@ -213,7 +213,7 @@ foreach ($data['templates'] as $template) {
 
 	$table->addRow([
 		new CCheckBox('templates['.$template['templateid'].']', $template['templateid']),
-		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
+		(new CCol($name))->addClass(TRX_STYLE_NOWRAP),
 		[
 			new CLink(_('Applications'), 'applications.php?hostid='.$template['templateid'].url_param('groupid')),
 			CViewHelper::showNum($template['applications'])

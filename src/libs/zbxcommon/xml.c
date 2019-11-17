@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-static char	data_static[ZBX_MAX_B64_LEN];
+static char	data_static[TRX_MAX_B64_LEN];
 
 /******************************************************************************
  *                                                                            *

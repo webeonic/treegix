@@ -6,8 +6,8 @@
 #include "common.h"
 #include "db.h"
 
-#define ZBX_ACTION_RECOVERY_NONE	0
-#define ZBX_ACTION_RECOVERY_OPERATIONS	1
+#define TRX_ACTION_RECOVERY_NONE	0
+#define TRX_ACTION_RECOVERY_OPERATIONS	1
 
 typedef struct
 {

@@ -15,11 +15,11 @@ class CWidget {
 	protected $body = [];
 
 	/**
-	 * Layout mode (ZBX_LAYOUT_NORMAL|ZBX_LAYOUT_FULLSCREEN|ZBX_LAYOUT_KIOSKMODE).
+	 * Layout mode (TRX_LAYOUT_NORMAL|TRX_LAYOUT_FULLSCREEN|TRX_LAYOUT_KIOSKMODE).
 	 *
 	 * @var integer
 	 */
-	protected $web_layout_mode = ZBX_LAYOUT_NORMAL;
+	protected $web_layout_mode = TRX_LAYOUT_NORMAL;
 
 	public function setTitle($title) {
 		$this->title = $title;
@@ -48,7 +48,7 @@ class CWidget {
 	}
 
 	public function setBreadcrumbs($breadcrumbs = null) {
-		if ($breadcrumbs !== null && in_array($this->web_layout_mode, [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN])) {
+		if ($breadcrumbs !== null && in_array($this->web_layout_mode, [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN])) {
 			$this->body[] = $breadcrumbs;
 		}
 
@@ -72,7 +72,7 @@ class CWidget {
 	public function toString() {
 		$widget = [];
 
-		if ($this->web_layout_mode === ZBX_LAYOUT_KIOSKMODE) {
+		if ($this->web_layout_mode === TRX_LAYOUT_KIOSKMODE) {
 			$this
 				->addItem(get_icon('fullscreen')
 				->setAttribute('aria-label', _('Content controls')));
@@ -87,18 +87,18 @@ class CWidget {
 		$divs = [];
 
 		if ($this->title !== null) {
-			$divs[] = (new CDiv((new CTag('h1', true, $this->title))->setId(ZBX_STYLE_PAGE_TITLE)))
-				->addClass(ZBX_STYLE_CELL);
+			$divs[] = (new CDiv((new CTag('h1', true, $this->title))->setId(TRX_STYLE_PAGE_TITLE)))
+				->addClass(TRX_STYLE_CELL);
 		}
 
 		if ($this->controls !== null) {
 			$divs[] = (new CDiv($this->controls))
-				->addClass(ZBX_STYLE_CELL)
-				->addClass(ZBX_STYLE_NOWRAP);
+				->addClass(TRX_STYLE_CELL)
+				->addClass(TRX_STYLE_NOWRAP);
 		}
 
 		return (new CDiv($divs))
-			->addClass(ZBX_STYLE_HEADER_TITLE)
-			->addClass(ZBX_STYLE_TABLE);
+			->addClass(TRX_STYLE_HEADER_TITLE)
+			->addClass(TRX_STYLE_TABLE);
 	}
 }

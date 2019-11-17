@@ -97,7 +97,7 @@ abstract class CTriggerGeneral extends CApiService {
 
 		// expression: {template:item.func()} => {host:item.func()}
 		if (!$expressionData->parse($trigger['expression'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $expressionData->error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $expressionData->error);
 		}
 
 		$exprPart = end($expressionData->expressions);
@@ -110,9 +110,9 @@ abstract class CTriggerGeneral extends CApiService {
 		while ($exprPart = prev($expressionData->expressions));
 
 		// recovery_expression: {template:item.func()} => {host:item.func()}
-		if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+		if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 			if (!$expressionData->parse($trigger['recovery_expression'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $expressionData->error);
+				self::exception(TRX_API_ERROR_PARAMETERS, $expressionData->error);
 			}
 
 			$exprPart = end($expressionData->expressions);
@@ -217,17 +217,17 @@ abstract class CTriggerGeneral extends CApiService {
 
 		foreach ($trigger['tags'] as &$tag) {
 			if (!array_key_exists('tag', $tag)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'tag'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'tag'));
 			}
 
 			if (!is_string($tag['tag'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'tag', _('a character string is expected'))
 				);
 			}
 
 			if ($tag['tag'] === '') {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'tag', _('cannot be empty'))
 				);
 			}
@@ -237,7 +237,7 @@ abstract class CTriggerGeneral extends CApiService {
 			}
 
 			if (!is_string($tag['value'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'value', _('a character string is expected'))
 				);
 			}
@@ -247,7 +247,7 @@ abstract class CTriggerGeneral extends CApiService {
 		// Check tag and value duplicates in input data.
 		$tag = CArrayHelper::findDuplicate($trigger['tags'], 'tag', 'value');
 		if ($tag !== null) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Tag "%1$s" with value "%2$s" already exists.', $tag['tag'], $tag['value'])
 			);
 		}
@@ -280,7 +280,7 @@ abstract class CTriggerGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		$expressionData->parse($trigger['expression']);
@@ -308,7 +308,7 @@ abstract class CTriggerGeneral extends CApiService {
 			if ($_db_trigger['expression'] === $trigger['expression']
 					&& $_db_trigger['recovery_expression'] === $trigger['recovery_expression']) {
 
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_params($error_already_exists, [$trigger['description'], $expressionData->getHosts()[0]])
 				);
 			}
@@ -425,28 +425,28 @@ abstract class CTriggerGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		// expression
 		if (!$expressionData->parse($trigger['expression'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $expressionData->error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $expressionData->error);
 		}
 
 		if (!$expressionData->expressions) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_('Trigger expression must contain at least one host:key reference.')
 			);
 		}
 
 		// recovery_expression
-		if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+		if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 			if (!$expressionData->parse($trigger['recovery_expression'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $expressionData->error);
+				self::exception(TRX_API_ERROR_PARAMETERS, $expressionData->error);
 			}
 
 			if (!$expressionData->expressions) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_('Trigger recovery expression must contain at least one host:key reference.')
 				);
 			}
@@ -490,12 +490,12 @@ abstract class CTriggerGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		$duplicate = CArrayHelper::findDuplicate($triggers, 'description', 'expression');
 		if ($duplicate) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s($error_duplicate, $duplicate['description']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s($error_duplicate, $duplicate['description']));
 		}
 
 		$triggerDbFields = [
@@ -506,36 +506,36 @@ abstract class CTriggerGeneral extends CApiService {
 
 		foreach ($triggers as &$trigger) {
 			if (!check_db_fields($triggerDbFields, $trigger)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $error_wrong_fields);
+				self::exception(TRX_API_ERROR_PARAMETERS, $error_wrong_fields);
 			}
 
 			if (array_key_exists('url', $trigger) && $trigger['url'] && !CHtmlUrlValidator::validate($trigger['url'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
 			}
 
 			$this->checkNoParameters($trigger, $read_only_fields, $error_cannot_set, $trigger['description']);
 
 			if (!array_key_exists('recovery_mode', $trigger)) {
-				$trigger['recovery_mode'] = ZBX_RECOVERY_MODE_EXPRESSION;
+				$trigger['recovery_mode'] = TRX_RECOVERY_MODE_EXPRESSION;
 			}
 
 			switch ($trigger['recovery_mode']) {
-				case ZBX_RECOVERY_MODE_EXPRESSION:
-				case ZBX_RECOVERY_MODE_NONE:
+				case TRX_RECOVERY_MODE_EXPRESSION:
+				case TRX_RECOVERY_MODE_NONE:
 					if (!array_key_exists('recovery_expression', $trigger)) {
 						$trigger['recovery_expression'] = '';
 					}
 
 					if ($trigger['recovery_expression'] !== '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'recovery_expression', _('should be empty'))
 						);
 					}
 					break;
 
-				case ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION:
+				case TRX_RECOVERY_MODE_RECOVERY_EXPRESSION:
 					if (!array_key_exists('recovery_expression', $trigger) || $trigger['recovery_expression'] === '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'recovery_expression', _('cannot be empty'))
 						);
 					}
@@ -543,46 +543,46 @@ abstract class CTriggerGeneral extends CApiService {
 			}
 
 			if (!array_key_exists('correlation_mode', $trigger)) {
-				$trigger['correlation_mode'] = ZBX_TRIGGER_CORRELATION_NONE;
+				$trigger['correlation_mode'] = TRX_TRIGGER_CORRELATION_NONE;
 			}
 
 			switch ($trigger['correlation_mode']) {
-				case ZBX_TRIGGER_CORRELATION_NONE:
+				case TRX_TRIGGER_CORRELATION_NONE:
 					if (!array_key_exists('correlation_tag', $trigger)) {
 						$trigger['correlation_tag'] = '';
 					}
 
 					if ($trigger['correlation_tag'] !== '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'correlation_tag', _('should be empty'))
 						);
 					}
 					break;
 
-				case ZBX_TRIGGER_CORRELATION_TAG:
-					if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_NONE) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+				case TRX_TRIGGER_CORRELATION_TAG:
+					if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_NONE) {
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 							'correlation_mode', _s('unexpected value "%1$s"', $trigger['correlation_mode'])
 						));
 					}
 
 					if (!array_key_exists('correlation_tag', $trigger) || $trigger['correlation_tag'] === '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'correlation_tag', _('cannot be empty'))
 						);
 					}
 					break;
 
 				default:
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'correlation_mode', _s('unexpected value "%1$s"', $trigger['correlation_mode'])
 					));
 			}
 
 			if (array_key_exists('manual_close', $trigger)
-					&& $trigger['manual_close'] != ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED
-					&& $trigger['manual_close'] != ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					&& $trigger['manual_close'] != TRX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED
+					&& $trigger['manual_close'] != TRX_TRIGGER_MANUAL_CLOSE_ALLOWED) {
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'manual_close', _s('unexpected value "%1$s"', $trigger['manual_close'])
 				));
 			}
@@ -648,7 +648,7 @@ abstract class CTriggerGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		$triggerDbFields = ['triggerid' => null];
@@ -659,11 +659,11 @@ abstract class CTriggerGeneral extends CApiService {
 
 		foreach ($triggers as $trigger) {
 			if (!check_db_fields($triggerDbFields, $trigger)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $error_wrong_fields);
+				self::exception(TRX_API_ERROR_PARAMETERS, $error_wrong_fields);
 			}
 
 			if (array_key_exists('url', $trigger) && $trigger['url'] && !CHtmlUrlValidator::validate($trigger['url'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Wrong value for url field.'));
 			}
 		}
 
@@ -710,7 +710,7 @@ abstract class CTriggerGeneral extends CApiService {
 		foreach ($triggers as $tnum => &$trigger) {
 			// check permissions
 			if (!array_key_exists($trigger['triggerid'], $_db_triggers)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 			$_db_trigger = $_db_triggers[$trigger['triggerid']];
 
@@ -730,13 +730,13 @@ abstract class CTriggerGeneral extends CApiService {
 
 			if (array_key_exists('recovery_mode', $trigger)) {
 				switch ($trigger['recovery_mode']) {
-					case ZBX_RECOVERY_MODE_NONE:
+					case TRX_RECOVERY_MODE_NONE:
 						if (!array_key_exists('correlation_mode', $trigger)) {
-							$trigger['correlation_mode'] = ZBX_TRIGGER_CORRELATION_NONE;
+							$trigger['correlation_mode'] = TRX_TRIGGER_CORRELATION_NONE;
 						}
 						// break; is not missing here
 
-					case ZBX_RECOVERY_MODE_EXPRESSION:
+					case TRX_RECOVERY_MODE_EXPRESSION:
 						if (!array_key_exists('recovery_expression', $trigger)) {
 							$trigger['recovery_expression'] = '';
 						}
@@ -746,7 +746,7 @@ abstract class CTriggerGeneral extends CApiService {
 
 			if (array_key_exists('correlation_mode', $trigger) && !array_key_exists('correlation_tag', $trigger)) {
 				switch ($trigger['correlation_mode']) {
-					case ZBX_TRIGGER_CORRELATION_NONE:
+					case TRX_TRIGGER_CORRELATION_NONE:
 						$trigger['correlation_tag'] = '';
 						break;
 				}
@@ -762,25 +762,25 @@ abstract class CTriggerGeneral extends CApiService {
 			}
 
 			switch ($trigger['recovery_mode']) {
-				case ZBX_RECOVERY_MODE_NONE:
-					if ($trigger['correlation_mode'] != ZBX_TRIGGER_CORRELATION_NONE) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+				case TRX_RECOVERY_MODE_NONE:
+					if ($trigger['correlation_mode'] != TRX_TRIGGER_CORRELATION_NONE) {
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 							'correlation_mode', _s('unexpected value "%1$s"', $trigger['correlation_mode'])
 						));
 					}
 					// break; is not missing here
 
-				case ZBX_RECOVERY_MODE_EXPRESSION:
+				case TRX_RECOVERY_MODE_EXPRESSION:
 					if ($trigger['recovery_expression'] !== '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'recovery_expression', _('should be empty'))
 						);
 					}
 					break;
 
-				case ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION:
+				case TRX_RECOVERY_MODE_RECOVERY_EXPRESSION:
 					if ($trigger['recovery_expression'] === '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'recovery_expression', _('cannot be empty'))
 						);
 					}
@@ -788,32 +788,32 @@ abstract class CTriggerGeneral extends CApiService {
 			}
 
 			switch ($trigger['correlation_mode']) {
-				case ZBX_TRIGGER_CORRELATION_NONE:
+				case TRX_TRIGGER_CORRELATION_NONE:
 					if ($trigger['correlation_tag'] !== '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'correlation_tag', _('should be empty'))
 						);
 					}
 					break;
 
-				case ZBX_TRIGGER_CORRELATION_TAG:
+				case TRX_TRIGGER_CORRELATION_TAG:
 					if ($trigger['correlation_tag'] === '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'correlation_tag', _('cannot be empty'))
 						);
 					}
 					break;
 
 				default:
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 						'correlation_mode', _s('unexpected value "%1$s"', $trigger['correlation_mode'])
 					));
 			}
 
 			if (array_key_exists('manual_close', $trigger)
-					&& $trigger['manual_close'] != ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED
-					&& $trigger['manual_close'] != ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
+					&& $trigger['manual_close'] != TRX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED
+					&& $trigger['manual_close'] != TRX_TRIGGER_MANUAL_CLOSE_ALLOWED) {
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value for field "%1$s": %2$s.',
 					'manual_close', _s('unexpected value "%1$s"', $trigger['manual_close'])
 				));
 			}
@@ -878,7 +878,7 @@ abstract class CTriggerGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		$new_triggers = $triggers;
@@ -899,7 +899,7 @@ abstract class CTriggerGeneral extends CApiService {
 			}
 
 			if ($class === 'CTriggerPrototype') {
-				$new_trigger['flags'] = ZBX_FLAG_DISCOVERY_PROTOTYPE;
+				$new_trigger['flags'] = TRX_FLAG_DISCOVERY_PROTOTYPE;
 			}
 
 			if (array_key_exists('tags', $new_trigger)) {
@@ -989,7 +989,7 @@ abstract class CTriggerGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		$upd_triggers = [];
@@ -1175,7 +1175,7 @@ abstract class CTriggerGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		/*
@@ -1211,7 +1211,7 @@ abstract class CTriggerGeneral extends CApiService {
 			$expressionData->parse($trigger['expression']);
 			$expressions = $expressionData->expressions;
 
-			if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+			if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 				$expressionData->parse($trigger['recovery_expression']);
 				$expressions = array_merge($expressions, $expressionData->expressions);
 			}
@@ -1276,7 +1276,7 @@ abstract class CTriggerGeneral extends CApiService {
 					' WHERE i.hostid='.$host_keys['hostid'].
 						' AND '.dbConditionString('i.key_', array_keys($host_keys['keys'])).
 						' AND '.dbConditionInt('i.flags',
-							[ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_PROTOTYPE, ZBX_FLAG_DISCOVERY_CREATED]
+							[TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_PROTOTYPE, TRX_FLAG_DISCOVERY_CREATED]
 						);
 			}
 			else {
@@ -1284,7 +1284,7 @@ abstract class CTriggerGeneral extends CApiService {
 					' FROM items i'.
 					' WHERE i.hostid='.$host_keys['hostid'].
 						' AND '.dbConditionString('i.key_', array_keys($host_keys['keys'])).
-						' AND '.dbConditionInt('i.flags', [ZBX_FLAG_DISCOVERY_NORMAL, ZBX_FLAG_DISCOVERY_CREATED]);
+						' AND '.dbConditionInt('i.flags', [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_CREATED]);
 			}
 
 			$_db_items = DBselect($sql);
@@ -1294,7 +1294,7 @@ abstract class CTriggerGeneral extends CApiService {
 				$host_keys['keys'][$_db_item['key_']]['value_type'] = $_db_item['value_type'];
 				$host_keys['keys'][$_db_item['key_']]['flags'] = $_db_item['flags'];
 
-				if ($class === 'CTriggerPrototype' && $_db_item['flags'] == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+				if ($class === 'CTriggerPrototype' && $_db_item['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 					$host_keys['keys'][$_db_item['key_']]['lld_ruleid'] = $_db_item['parent_itemid'];
 				}
 			}
@@ -1342,7 +1342,7 @@ abstract class CTriggerGeneral extends CApiService {
 			$expressions1 = $expressionData->expressions;
 			$expressions2 = [];
 
-			if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+			if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 				$expressionData->parse($trigger['recovery_expression']);
 				$expressions2 = $expressionData->expressions;
 			}
@@ -1367,11 +1367,11 @@ abstract class CTriggerGeneral extends CApiService {
 				$key = $host_keys['keys'][$exprPart['item']];
 
 				if ($host_keys['hostid'] === null) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _params($error_wrong_host, [$host_keys['host']]));
+					self::exception(TRX_API_ERROR_PARAMETERS, _params($error_wrong_host, [$host_keys['host']]));
 				}
 
 				if ($key['itemid'] === null) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Incorrect item key "%1$s" provided for trigger expression on "%2$s".', $key['key'],
 						$host_keys['host']
 					));
@@ -1382,7 +1382,7 @@ abstract class CTriggerGeneral extends CApiService {
 						'functionName' => $exprPart['functionName'],
 						'functionParamList' => $exprPart['functionParamList'],
 						'valueType' => $key['value_type']])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $triggerFunctionValidator->getError());
+					self::exception(TRX_API_ERROR_PARAMETERS, $triggerFunctionValidator->getError());
 				}
 
 				if (!array_key_exists($exprPart['expression'], $triggers_functions[$tnum])) {
@@ -1396,7 +1396,7 @@ abstract class CTriggerGeneral extends CApiService {
 					$functions_num++;
 				}
 
-				if ($class === 'CTriggerPrototype' && $key['flags'] == ZBX_FLAG_DISCOVERY_PROTOTYPE) {
+				if ($class === 'CTriggerPrototype' && $key['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE) {
 					$lld_ruleids[$key['lld_ruleid']] = true;
 				}
 
@@ -1407,7 +1407,7 @@ abstract class CTriggerGeneral extends CApiService {
 
 			// When both templates and hosts are referenced in expressions.
 			if ($status_mask == 0x03) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, $error_host_and_template);
+				self::exception(TRX_API_ERROR_PARAMETERS, $error_host_and_template);
 			}
 
 			// Triggers with children cannot be moved from one template to another host or template.
@@ -1416,7 +1416,7 @@ abstract class CTriggerGeneral extends CApiService {
 				$old_hosts1 = $expressionData->getHosts();
 				$old_hosts2 = [];
 
-				if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+				if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 					$expressionData->parse($db_triggers[$tnum]['recovery_expression']);
 					$old_hosts2 = $expressionData->getHosts();
 				}
@@ -1446,19 +1446,19 @@ abstract class CTriggerGeneral extends CApiService {
 				$lld_ruleids = array_keys($lld_ruleids);
 
 				if (!$lld_ruleids) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Trigger prototype "%1$s" must contain at least one item prototype.', $trigger['description']
 					));
 				}
 				elseif (count($lld_ruleids) > 1) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Trigger prototype "%1$s" contains item prototypes from multiple discovery rules.',
 						$trigger['description']
 					));
 				}
 				elseif ($db_triggers !== null
 						&& !idcmp($lld_ruleids[0], $db_triggers[$tnum]['discoveryRule']['itemid'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Cannot update trigger prototype "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Cannot update trigger prototype "%1$s": %2$s.',
 						$trigger['description'], _('trigger prototype cannot be moved to another template or host')
 					));
 				}
@@ -1502,7 +1502,7 @@ abstract class CTriggerGeneral extends CApiService {
 			}
 			while ($exprPart = prev($expressionData->expressions));
 
-			if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+			if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 				$expressionData->parse($trigger['recovery_expression']);
 				$exprPart = end($expressionData->expressions);
 				do {
@@ -1537,7 +1537,7 @@ abstract class CTriggerGeneral extends CApiService {
 				break;
 
 			default:
-				self::exception(ZBX_API_ERROR_INTERNAL, _('Internal error.'));
+				self::exception(TRX_API_ERROR_INTERNAL, _('Internal error.'));
 		}
 
 		$templateids = [];
@@ -1577,7 +1577,7 @@ abstract class CTriggerGeneral extends CApiService {
 				$linked_to = $templates[$templateid];
 
 				if (array_diff($compare_links, $linked_to) || array_diff($linked_to, $compare_links)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_params($error_different_linkages, [$mt_trigger['description']])
 					);
 				}
@@ -1602,7 +1602,7 @@ abstract class CTriggerGeneral extends CApiService {
 		);
 
 		if ($_db_trigger = DBfetch($_db_triggers)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Cannot update trigger "%1$s": %2$s.',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Cannot update trigger "%1$s": %2$s.',
 				$moved_triggers[$_db_trigger['templateid']]['description'],
 				_('trigger with linkages cannot be moved to another template or host')
 			));

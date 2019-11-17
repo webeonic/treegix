@@ -49,8 +49,8 @@ class CMacrosResolverGeneral {
 		$expression = str_replace(" \r\n\t", '', $expression);
 
 		// Search for numeric values in expression.
-		preg_match_all('/((?<![\)\.0-9]|[\.0-9]['.ZBX_BYTE_SUFFIXES.ZBX_TIME_SUFFIXES.']|function)\-?'.
-				'([.][0-9]+|[0-9]+[.]?[0-9]*)['.ZBX_BYTE_SUFFIXES.ZBX_TIME_SUFFIXES.']?)/', $expression, $values);
+		preg_match_all('/((?<![\)\.0-9]|[\.0-9]['.TRX_BYTE_SUFFIXES.TRX_TIME_SUFFIXES.']|function)\-?'.
+				'([.][0-9]+|[0-9]+[.]?[0-9]*)['.TRX_BYTE_SUFFIXES.TRX_TIME_SUFFIXES.']?)/', $expression, $values);
 
 		$macro_values = [];
 
@@ -765,7 +765,7 @@ class CMacrosResolverGeneral {
 						// break; is not missing here
 
 					case 'ITEM.LASTVALUE':
-						$history = Manager::History()->getLastValues([$function], 1, ZBX_HISTORY_PERIOD);
+						$history = Manager::History()->getLastValues([$function], 1, TRX_HISTORY_PERIOD);
 
 						if (array_key_exists($function['itemid'], $history)) {
 							$clock = $history[$function['itemid']][0]['clock'];

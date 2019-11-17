@@ -55,7 +55,7 @@ class CUiWidget extends CDiv {
 
 		parent::__construct();
 
-		$this->addClass(ZBX_STYLE_DASHBRD_WIDGET);
+		$this->addClass(TRX_STYLE_DASHBRD_WIDGET);
 		$this->setId($this->id.'_widget');
 	}
 
@@ -69,7 +69,7 @@ class CUiWidget extends CDiv {
 	 */
 	public function setHeader($caption, array $controls = []) {
 		$this->header = (new CDiv())
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD)
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD)
 			->addItem(
 				(new CTag('h4', true, $caption))->setId($this->id.'_header')
 			);
@@ -89,7 +89,7 @@ class CUiWidget extends CDiv {
 	 */
 	public function setFooter($list) {
 		$this->footer = $list;
-		$this->footer->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+		$this->footer->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 		return $this;
 	}
 

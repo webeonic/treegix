@@ -42,7 +42,7 @@ static void	zbx_sysinfo_proc_free(zbx_sysinfo_proc_t *proc)
 
 static int	get_cmdline(FILE *f_cmd, char **line, size_t *line_offset)
 {
-	size_t	line_alloc = ZBX_KIBIBYTE, n;
+	size_t	line_alloc = TRX_KIBIBYTE, n;
 
 	rewind(f_cmd);
 
@@ -186,7 +186,7 @@ static int	check_procstate(FILE *f_stat, int zbx_proc_stat)
 {
 	char	tmp[MAX_STRING_LEN], *p;
 
-	if (ZBX_PROC_STAT_ALL == zbx_proc_stat)
+	if (TRX_PROC_STAT_ALL == zbx_proc_stat)
 		return SUCCEED;
 
 	rewind(f_stat);
@@ -200,15 +200,15 @@ static int	check_procstate(FILE *f_stat, int zbx_proc_stat)
 
 		switch (zbx_proc_stat)
 		{
-			case ZBX_PROC_STAT_RUN:
+			case TRX_PROC_STAT_RUN:
 				return ('R' == *p) ? SUCCEED : FAIL;
-			case ZBX_PROC_STAT_SLEEP:
+			case TRX_PROC_STAT_SLEEP:
 				return ('S' == *p) ? SUCCEED : FAIL;
-			case ZBX_PROC_STAT_ZOMB:
+			case TRX_PROC_STAT_ZOMB:
 				return ('Z' == *p) ? SUCCEED : FAIL;
-			case ZBX_PROC_STAT_DISK:
+			case TRX_PROC_STAT_DISK:
 				return ('D' == *p) ? SUCCEED : FAIL;
-			case ZBX_PROC_STAT_TRACE:
+			case TRX_PROC_STAT_TRACE:
 				return ('T' == *p) ? SUCCEED : FAIL;
 			default:
 				return FAIL;
@@ -322,20 +322,20 @@ static int	get_total_memory(zbx_uint64_t *total_memory)
 
 int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-#define ZBX_SIZE	0
-#define ZBX_RSS		1
-#define ZBX_VSIZE	2
-#define ZBX_PMEM	3
-#define ZBX_VMPEAK	4
-#define ZBX_VMSWAP	5
-#define ZBX_VMLIB	6
-#define ZBX_VMLCK	7
-#define ZBX_VMPIN	8
-#define ZBX_VMHWM	9
-#define ZBX_VMDATA	10
-#define ZBX_VMSTK	11
-#define ZBX_VMEXE	12
-#define ZBX_VMPTE	13
+#define TRX_SIZE	0
+#define TRX_RSS		1
+#define TRX_VSIZE	2
+#define TRX_PMEM	3
+#define TRX_VMPEAK	4
+#define TRX_VMSWAP	5
+#define TRX_VMLIB	6
+#define TRX_VMLCK	7
+#define TRX_VMPIN	8
+#define TRX_VMHWM	9
+#define TRX_VMDATA	10
+#define TRX_VMSTK	11
+#define TRX_VMEXE	12
+#define TRX_VMPTE	13
 
 	char		tmp[MAX_STRING_LEN], *procname, *proccomm, *param;
 	DIR		*dir;
@@ -380,13 +380,13 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "sum"))
-		do_task = ZBX_DO_SUM;
+		do_task = TRX_DO_SUM;
 	else if (0 == strcmp(param, "avg"))
-		do_task = ZBX_DO_AVG;
+		do_task = TRX_DO_AVG;
 	else if (0 == strcmp(param, "max"))
-		do_task = ZBX_DO_MAX;
+		do_task = TRX_DO_MAX;
 	else if (0 == strcmp(param, "min"))
-		do_task = ZBX_DO_MIN;
+		do_task = TRX_DO_MIN;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -403,70 +403,70 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == mem_type || '\0' == *mem_type || 0 == strcmp(mem_type, "vsize"))
 	{
-		mem_type_code = ZBX_VSIZE;		/* current virtual memory size (total program size) */
+		mem_type_code = TRX_VSIZE;		/* current virtual memory size (total program size) */
 		mem_type_search = "VmSize:\t";
 	}
 	else if (0 == strcmp(mem_type, "rss"))
 	{
-		mem_type_code = ZBX_RSS;		/* current resident set size (size of memory portions) */
+		mem_type_code = TRX_RSS;		/* current resident set size (size of memory portions) */
 		mem_type_search = "VmRSS:\t";
 	}
 	else if (0 == strcmp(mem_type, "pmem"))
 	{
-		mem_type_code = ZBX_PMEM;		/* percentage of real memory used by process */
+		mem_type_code = TRX_PMEM;		/* percentage of real memory used by process */
 	}
 	else if (0 == strcmp(mem_type, "size"))
 	{
-		mem_type_code = ZBX_SIZE;		/* size of process (code + data + stack) */
+		mem_type_code = TRX_SIZE;		/* size of process (code + data + stack) */
 	}
 	else if (0 == strcmp(mem_type, "peak"))
 	{
-		mem_type_code = ZBX_VMPEAK;		/* peak virtual memory size */
+		mem_type_code = TRX_VMPEAK;		/* peak virtual memory size */
 		mem_type_search = "VmPeak:\t";
 	}
 	else if (0 == strcmp(mem_type, "swap"))
 	{
-		mem_type_code = ZBX_VMSWAP;		/* size of swap space used */
+		mem_type_code = TRX_VMSWAP;		/* size of swap space used */
 		mem_type_search = "VmSwap:\t";
 	}
 	else if (0 == strcmp(mem_type, "lib"))
 	{
-		mem_type_code = ZBX_VMLIB;		/* size of shared libraries */
+		mem_type_code = TRX_VMLIB;		/* size of shared libraries */
 		mem_type_search = "VmLib:\t";
 	}
 	else if (0 == strcmp(mem_type, "lck"))
 	{
-		mem_type_code = ZBX_VMLCK;		/* size of locked memory */
+		mem_type_code = TRX_VMLCK;		/* size of locked memory */
 		mem_type_search = "VmLck:\t";
 	}
 	else if (0 == strcmp(mem_type, "pin"))
 	{
-		mem_type_code = ZBX_VMPIN;		/* size of pinned pages, they are never swappable */
+		mem_type_code = TRX_VMPIN;		/* size of pinned pages, they are never swappable */
 		mem_type_search = "VmPin:\t";
 	}
 	else if (0 == strcmp(mem_type, "hwm"))
 	{
-		mem_type_code = ZBX_VMHWM;		/* peak resident set size ("high water mark") */
+		mem_type_code = TRX_VMHWM;		/* peak resident set size ("high water mark") */
 		mem_type_search = "VmHWM:\t";
 	}
 	else if (0 == strcmp(mem_type, "data"))
 	{
-		mem_type_code = ZBX_VMDATA;		/* size of data segment */
+		mem_type_code = TRX_VMDATA;		/* size of data segment */
 		mem_type_search = "VmData:\t";
 	}
 	else if (0 == strcmp(mem_type, "stk"))
 	{
-		mem_type_code = ZBX_VMSTK;		/* size of stack segment */
+		mem_type_code = TRX_VMSTK;		/* size of stack segment */
 		mem_type_search = "VmStk:\t";
 	}
 	else if (0 == strcmp(mem_type, "exe"))
 	{
-		mem_type_code = ZBX_VMEXE;		/* size of text (code) segment */
+		mem_type_code = TRX_VMEXE;		/* size of text (code) segment */
 		mem_type_search = "VmExe:\t";
 	}
 	else if (0 == strcmp(mem_type, "pte"))
 	{
-		mem_type_code = ZBX_VMPTE;		/* size of page table entries */
+		mem_type_code = TRX_VMPTE;		/* size of page table entries */
 		mem_type_search = "VmPTE:\t";
 	}
 	else
@@ -478,7 +478,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (1 == invalid_user)	/* handle 0 for non-existent user after all parameters have been parsed and validated */
 		goto out;
 
-	if (ZBX_PMEM == mem_type_code)
+	if (TRX_PMEM == mem_type_code)
 	{
 		if (SUCCEED != get_total_memory(&total_memory))
 		{
@@ -534,18 +534,18 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		switch (mem_type_code)
 		{
-			case ZBX_VSIZE:
-			case ZBX_RSS:
-			case ZBX_VMPEAK:
-			case ZBX_VMSWAP:
-			case ZBX_VMLIB:
-			case ZBX_VMLCK:
-			case ZBX_VMPIN:
-			case ZBX_VMHWM:
-			case ZBX_VMDATA:
-			case ZBX_VMSTK:
-			case ZBX_VMEXE:
-			case ZBX_VMPTE:
+			case TRX_VSIZE:
+			case TRX_RSS:
+			case TRX_VMPEAK:
+			case TRX_VMSWAP:
+			case TRX_VMLIB:
+			case TRX_VMLCK:
+			case TRX_VMPIN:
+			case TRX_VMHWM:
+			case TRX_VMDATA:
+			case TRX_VMSTK:
+			case TRX_VMEXE:
+			case TRX_VMPTE:
 				res = byte_value_from_proc_file(f_stat, mem_type_search, NULL, &byte_value);
 
 				if (NOTSUPPORTED == res)
@@ -557,7 +557,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 					goto clean;
 				}
 				break;
-			case ZBX_SIZE:
+			case TRX_SIZE:
 				{
 					zbx_uint64_t	m;
 
@@ -601,7 +601,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 					}
 				}
 				break;
-			case ZBX_PMEM:
+			case TRX_PMEM:
 				mem_type_search = "VmRSS:\t";
 				res = byte_value_from_proc_file(f_stat, mem_type_search, NULL, &byte_value);
 
@@ -621,13 +621,13 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 				break;
 		}
 
-		if (ZBX_PMEM != mem_type_code)
+		if (TRX_PMEM != mem_type_code)
 		{
 			if (0 != proccount++)
 			{
-				if (ZBX_DO_MAX == do_task)
+				if (TRX_DO_MAX == do_task)
 					mem_size = MAX(mem_size, byte_value);
-				else if (ZBX_DO_MIN == do_task)
+				else if (TRX_DO_MIN == do_task)
 					mem_size = MIN(mem_size, byte_value);
 				else
 					mem_size += byte_value;
@@ -639,9 +639,9 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != proccount++)
 			{
-				if (ZBX_DO_MAX == do_task)
+				if (TRX_DO_MAX == do_task)
 					pct_size = MAX(pct_size, pct_value);
-				else if (ZBX_DO_MIN == do_task)
+				else if (TRX_DO_MIN == do_task)
 					pct_size = MIN(pct_size, pct_value);
 				else
 					pct_size += pct_value;
@@ -666,16 +666,16 @@ clean:
 		return SYSINFO_RET_FAIL;
 	}
 out:
-	if (ZBX_PMEM != mem_type_code)
+	if (TRX_PMEM != mem_type_code)
 	{
-		if (ZBX_DO_AVG == do_task)
+		if (TRX_DO_AVG == do_task)
 			SET_DBL_RESULT(result, 0 == proccount ? 0 : (double)mem_size / (double)proccount);
 		else
 			SET_UI64_RESULT(result, mem_size);
 	}
 	else
 	{
-		if (ZBX_DO_AVG == do_task)
+		if (TRX_DO_AVG == do_task)
 			SET_DBL_RESULT(result, 0 == proccount ? 0 : pct_size / (double)proccount);
 		else
 			SET_DBL_RESULT(result, pct_size);
@@ -683,20 +683,20 @@ out:
 
 	return SYSINFO_RET_OK;
 
-#undef ZBX_SIZE
-#undef ZBX_RSS
-#undef ZBX_VSIZE
-#undef ZBX_PMEM
-#undef ZBX_VMPEAK
-#undef ZBX_VMSWAP
-#undef ZBX_VMLIB
-#undef ZBX_VMLCK
-#undef ZBX_VMPIN
-#undef ZBX_VMHWM
-#undef ZBX_VMDATA
-#undef ZBX_VMSTK
-#undef ZBX_VMEXE
-#undef ZBX_VMPTE
+#undef TRX_SIZE
+#undef TRX_RSS
+#undef TRX_VSIZE
+#undef TRX_PMEM
+#undef TRX_VMPEAK
+#undef TRX_VMSWAP
+#undef TRX_VMLIB
+#undef TRX_VMLCK
+#undef TRX_VMPIN
+#undef TRX_VMHWM
+#undef TRX_VMDATA
+#undef TRX_VMSTK
+#undef TRX_VMEXE
+#undef TRX_VMPTE
 }
 
 int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
@@ -739,17 +739,17 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = ZBX_PROC_STAT_ALL;
+		zbx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = ZBX_PROC_STAT_RUN;
+		zbx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = ZBX_PROC_STAT_SLEEP;
+		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = ZBX_PROC_STAT_ZOMB;
+		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else if (0 == strcmp(param, "disk"))
-		zbx_proc_stat = ZBX_PROC_STAT_DISK;
+		zbx_proc_stat = TRX_PROC_STAT_DISK;
 	else if (0 == strcmp(param, "trace"))
-		zbx_proc_stat = ZBX_PROC_STAT_TRACE;
+		zbx_proc_stat = TRX_PROC_STAT_TRACE;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -874,7 +874,7 @@ static int	proc_get_process_cmdline(pid_t pid, char **cmdline, size_t *cmdline_n
 {
 	char	tmp[MAX_STRING_LEN];
 	int	fd, n;
-	size_t	cmdline_alloc = ZBX_KIBIBYTE;
+	size_t	cmdline_alloc = TRX_KIBIBYTE;
 
 	*cmdline_nbytes = 0;
 	zbx_snprintf(tmp, sizeof(tmp), "/proc/%d/cmdline", (int)pid);
@@ -1160,16 +1160,16 @@ static zbx_sysinfo_proc_t	*proc_create(int pid, unsigned int flags)
 	int			ret = FAIL;
 	size_t			cmdline_nbytes;
 
-	if (0 != (flags & ZBX_SYSINFO_PROC_USER) && SUCCEED != proc_get_process_uid(pid, &uid))
+	if (0 != (flags & TRX_SYSINFO_PROC_USER) && SUCCEED != proc_get_process_uid(pid, &uid))
 		goto out;
 
-	if (0 != (flags & (ZBX_SYSINFO_PROC_CMDLINE | ZBX_SYSINFO_PROC_NAME)) &&
+	if (0 != (flags & (TRX_SYSINFO_PROC_CMDLINE | TRX_SYSINFO_PROC_NAME)) &&
 			SUCCEED != proc_get_process_cmdline(pid, &cmdline, &cmdline_nbytes))
 	{
 		goto out;
 	}
 
-	if (0 != (flags & ZBX_SYSINFO_PROC_NAME) && SUCCEED != proc_get_process_name(pid, &procname))
+	if (0 != (flags & TRX_SYSINFO_PROC_NAME) && SUCCEED != proc_get_process_name(pid, &procname))
 		goto out;
 
 	if (NULL != cmdline)
@@ -1177,7 +1177,7 @@ static zbx_sysinfo_proc_t	*proc_create(int pid, unsigned int flags)
 		char		*ptr;
 		unsigned int	i;
 
-		if (0 != (flags & ZBX_SYSINFO_PROC_NAME))
+		if (0 != (flags & TRX_SYSINFO_PROC_NAME))
 		{
 			if (NULL == (ptr = strrchr(cmdline, '/')))
 				name_arg0 = zbx_strdup(NULL, cmdline);
@@ -1299,8 +1299,8 @@ void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *p
 	int			i;
 	zbx_sysinfo_proc_t	*proc;
 
-	treegix_log(LOG_LEVEL_TRACE, "In %s() procname:%s username:%s cmdline:%s flags:" ZBX_FS_UI64, __func__,
-			ZBX_NULL2EMPTY_STR(procname), ZBX_NULL2EMPTY_STR(username), ZBX_NULL2EMPTY_STR(cmdline), flags);
+	treegix_log(LOG_LEVEL_TRACE, "In %s() procname:%s username:%s cmdline:%s flags:" TRX_FS_UI64, __func__,
+			TRX_NULL2EMPTY_STR(procname), TRX_NULL2EMPTY_STR(username), TRX_NULL2EMPTY_STR(cmdline), flags);
 
 	if (NULL != username)
 	{
@@ -1360,15 +1360,15 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	/* utilization type parameter (user|system) */
 	if (NULL == (tmp = get_rparam(request, 2)) || '\0' == *tmp || 0 == strcmp(tmp, "total"))
 	{
-		type = ZBX_PROCSTAT_CPU_TOTAL;
+		type = TRX_PROCSTAT_CPU_TOTAL;
 	}
 	else if (0 == strcmp(tmp, "user"))
 	{
-		type = ZBX_PROCSTAT_CPU_USER;
+		type = TRX_PROCSTAT_CPU_USER;
 	}
 	else if (0 == strcmp(tmp, "system"))
 	{
-		type = ZBX_PROCSTAT_CPU_SYSTEM;
+		type = TRX_PROCSTAT_CPU_SYSTEM;
 	}
 	else
 	{

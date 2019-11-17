@@ -14,7 +14,7 @@
 
 	echo (new CListItem([
 		(new CDiv([
-			(new CDiv())->addClass(ZBX_STYLE_DRAG_ICON),
+			(new CDiv())->addClass(TRX_STYLE_DRAG_ICON),
 			(new CDiv($preproc_types_cbbox))
 				->addClass('list-numbered-item')
 				->addClass('step-name'),
@@ -22,21 +22,21 @@
 			(new CDiv(new CCheckBox('preprocessing[#{rowNum}][on_fail]')))->addClass('step-on-fail'),
 			(new CDiv([
 				(new CButton('preprocessing[#{rowNum}][test]', _('Test')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('preprocessing-step-test')
 					->removeId(),
 				(new CButton('preprocessing[#{rowNum}][remove]', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->addClass('element-table-remove')
 					->removeId()
 			]))->addClass('step-action')
 		]))->addClass('preprocessing-step'),
 		(new CDiv([
 			new CLabel(_('Custom on fail')),
-			(new CRadioButtonList('preprocessing[#{rowNum}][error_handler]', ZBX_PREPROC_FAIL_DISCARD_VALUE))
-				->addValue(_('Discard value'), ZBX_PREPROC_FAIL_DISCARD_VALUE)
-				->addValue(_('Set value to'), ZBX_PREPROC_FAIL_SET_VALUE)
-				->addValue(_('Set error to'), ZBX_PREPROC_FAIL_SET_ERROR)
+			(new CRadioButtonList('preprocessing[#{rowNum}][error_handler]', TRX_PREPROC_FAIL_DISCARD_VALUE))
+				->addValue(_('Discard value'), TRX_PREPROC_FAIL_DISCARD_VALUE)
+				->addValue(_('Set value to'), TRX_PREPROC_FAIL_SET_VALUE)
+				->addValue(_('Set error to'), TRX_PREPROC_FAIL_SET_ERROR)
 				->setModern(true)
 				->setEnabled(false),
 			(new CTextBox('preprocessing[#{rowNum}][error_handler_params]'))
@@ -97,13 +97,13 @@
 				var type = $('[name="preprocessing[' + num + '][type]"]', $preprocessing).val(),
 					error_handler = $('[name="preprocessing[' + num + '][on_fail]"]').is(':checked')
 						? $('[name="preprocessing[' + num + '][error_handler]"]:checked').val()
-						: <?= ZBX_PREPROC_FAIL_DEFAULT ?>,
+						: <?= TRX_PREPROC_FAIL_DEFAULT ?>,
 					params = [];
 
 				var on_fail = {
 					error_handler: error_handler,
-					error_handler_params: (error_handler == <?= ZBX_PREPROC_FAIL_SET_VALUE ?>
-							|| error_handler == <?= ZBX_PREPROC_FAIL_SET_ERROR ?>)
+					error_handler_params: (error_handler == <?= TRX_PREPROC_FAIL_SET_VALUE ?>
+							|| error_handler == <?= TRX_PREPROC_FAIL_SET_ERROR ?>)
 						? $('[name="preprocessing[' + num + '][error_handler_params]"]').val()
 						: ''
 				};
@@ -115,8 +115,8 @@
 					params.push($('[name="preprocessing[' + num + '][params][1]"]', $preprocessing).val());
 				}
 				if ($('[name="preprocessing[' + num + '][params][2]"]', $preprocessing).length) {
-					// ZBX-16642
-					if (type == <?= ZBX_PREPROC_CSV_TO_JSON ?>) {
+					// TRX-16642
+					if (type == <?= TRX_PREPROC_CSV_TO_JSON ?>) {
 						if ($('[name="preprocessing[' + num + '][params][2]"]', $preprocessing).is(':checked')) {
 							params.push($('[name="preprocessing[' + num + '][params][2]"]', $preprocessing).val());
 						}
@@ -150,7 +150,7 @@
 
 			PopUp('popup.preproctest.edit', $.extend({
 				delay: $('#delay').val() || '',
-				value_type: $('#value_type').val() || <?= CControllerPopupPreprocTest::ZBX_DEFAULT_VALUE_TYPE ?>,
+				value_type: $('#value_type').val() || <?= CControllerPopupPreprocTest::TRX_DEFAULT_VALUE_TYPE ?>,
 				steps: getPreprocessingSteps(step_nums),
 				hostid: <?= $data['hostid'] ?>,
 				test_type: <?= $data['preprocessing_test_type'] ?>,
@@ -167,63 +167,63 @@
 				preproc_param_multiline_tmpl = new Template($('#preprocessing-steps-parameters-multiline-tmpl').html());
 
 			switch (type) {
-				case '<?= ZBX_PREPROC_MULTIPLIER ?>':
+				case '<?= TRX_PREPROC_MULTIPLIER ?>':
 					return $(preproc_param_single_tmpl.evaluate({
 						rowNum: index,
 						placeholder: <?= CJs::encodeJson(_('number')) ?>
-					})).css('width', <?= ZBX_TEXTAREA_NUMERIC_BIG_WIDTH ?>);
+					})).css('width', <?= TRX_TEXTAREA_NUMERIC_BIG_WIDTH ?>);
 
-				case '<?= ZBX_PREPROC_RTRIM ?>':
-				case '<?= ZBX_PREPROC_LTRIM ?>':
-				case '<?= ZBX_PREPROC_TRIM ?>':
+				case '<?= TRX_PREPROC_RTRIM ?>':
+				case '<?= TRX_PREPROC_LTRIM ?>':
+				case '<?= TRX_PREPROC_TRIM ?>':
 					return $(preproc_param_single_tmpl.evaluate({
 						rowNum: index,
 						placeholder: <?= CJs::encodeJson(_('list of characters')) ?>
-					})).css('width', <?= ZBX_TEXTAREA_SMALL_WIDTH ?>);
+					})).css('width', <?= TRX_TEXTAREA_SMALL_WIDTH ?>);
 
-				case '<?= ZBX_PREPROC_XPATH ?>':
-				case '<?= ZBX_PREPROC_ERROR_FIELD_XML ?>':
+				case '<?= TRX_PREPROC_XPATH ?>':
+				case '<?= TRX_PREPROC_ERROR_FIELD_XML ?>':
 					return $(preproc_param_single_tmpl.evaluate({
 						rowNum: index,
 						placeholder: <?= CJs::encodeJson(_('XPath')) ?>
 					}));
 
-				case '<?= ZBX_PREPROC_JSONPATH ?>':
-				case '<?= ZBX_PREPROC_ERROR_FIELD_JSON ?>':
+				case '<?= TRX_PREPROC_JSONPATH ?>':
+				case '<?= TRX_PREPROC_ERROR_FIELD_JSON ?>':
 					return $(preproc_param_single_tmpl.evaluate({
 						rowNum: index,
 						placeholder: <?= CJs::encodeJson(_('$.path.to.node')) ?>
 					}));
 
-				case '<?= ZBX_PREPROC_REGSUB ?>':
-				case '<?= ZBX_PREPROC_ERROR_FIELD_REGEX ?>':
+				case '<?= TRX_PREPROC_REGSUB ?>':
+				case '<?= TRX_PREPROC_ERROR_FIELD_REGEX ?>':
 					return $(preproc_param_double_tmpl.evaluate({
 						rowNum: index,
 						placeholder_0: <?= CJs::encodeJson(_('pattern')) ?>,
 						placeholder_1: <?= CJs::encodeJson(_('output')) ?>
 					}));
 
-				case '<?= ZBX_PREPROC_VALIDATE_RANGE ?>':
+				case '<?= TRX_PREPROC_VALIDATE_RANGE ?>':
 					return $(preproc_param_double_tmpl.evaluate({
 						rowNum: index,
 						placeholder_0: <?= CJs::encodeJson(_('min')) ?>,
 						placeholder_1: <?= CJs::encodeJson(_('max')) ?>
 					}));
 
-				case '<?= ZBX_PREPROC_VALIDATE_REGEX ?>':
-				case '<?= ZBX_PREPROC_VALIDATE_NOT_REGEX ?>':
+				case '<?= TRX_PREPROC_VALIDATE_REGEX ?>':
+				case '<?= TRX_PREPROC_VALIDATE_NOT_REGEX ?>':
 					return $(preproc_param_single_tmpl.evaluate({
 						rowNum: index,
 						placeholder: <?= CJs::encodeJson(_('pattern')) ?>
 					}));
 
-				case '<?= ZBX_PREPROC_THROTTLE_TIMED_VALUE ?>':
+				case '<?= TRX_PREPROC_THROTTLE_TIMED_VALUE ?>':
 					return $(preproc_param_single_tmpl.evaluate({
 						rowNum: index,
 						placeholder: <?= CJs::encodeJson(_('seconds')) ?>
-					})).css('width', <?= ZBX_TEXTAREA_NUMERIC_BIG_WIDTH ?>);
+					})).css('width', <?= TRX_TEXTAREA_NUMERIC_BIG_WIDTH ?>);
 
-				case '<?= ZBX_PREPROC_SCRIPT ?>':
+				case '<?= TRX_PREPROC_SCRIPT ?>':
 					return $(preproc_param_multiline_tmpl.evaluate({rowNum: index})).multilineInput({
 						title: <?= CJs::encodeJson(_('JavaScript')) ?>,
 						placeholder: <?= CJs::encodeJson(_('script')) ?>,
@@ -235,7 +235,7 @@
 						maxlength: <?= (int) $data['preprocessing_script_maxlength'] ?>
 					});
 
-				case '<?= ZBX_PREPROC_PROMETHEUS_PATTERN ?>':
+				case '<?= TRX_PREPROC_PROMETHEUS_PATTERN ?>':
 					return $(preproc_param_double_tmpl.evaluate({
 						rowNum: index,
 						placeholder_0: <?= CJs::encodeJson(
@@ -244,7 +244,7 @@
 						placeholder_1: <?= CJs::encodeJson(_('<label name>')) ?>
 					}));
 
-				case '<?= ZBX_PREPROC_PROMETHEUS_TO_JSON ?>':
+				case '<?= TRX_PREPROC_PROMETHEUS_TO_JSON ?>':
 					return $(preproc_param_single_tmpl.evaluate({
 						rowNum: index,
 						placeholder: <?= CJs::encodeJson(
@@ -252,15 +252,15 @@
 						) ?>
 					}));
 
-				case '<?= ZBX_PREPROC_CSV_TO_JSON ?>':
+				case '<?= TRX_PREPROC_CSV_TO_JSON ?>':
 					return $(preproc_param_custom_width_chkbox_tmpl.evaluate({
 						rowNum: index,
-						width_0: <?= ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH ?>,
-						width_1: <?= ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH ?>,
+						width_0: <?= TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH ?>,
+						width_1: <?= TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH ?>,
 						placeholder_0: ',',
 						placeholder_1: '"',
 						chkbox_label: <?= CJs::encodeJson(_('With header row')) ?>,
-						chkbox_value: <?= ZBX_PREPROC_CSV_HEADER ?>,
+						chkbox_value: <?= TRX_PREPROC_CSV_HEADER ?>,
 						chkbox_default: true
 					}));
 
@@ -273,12 +273,12 @@
 			step_index = $preprocessing.find('li.sortable').length;
 
 		$preprocessing.sortable({
-			disabled: $preprocessing.find('div.<?= ZBX_STYLE_DRAG_ICON ?>').hasClass('<?= ZBX_STYLE_DISABLED ?>'),
+			disabled: $preprocessing.find('div.<?= TRX_STYLE_DRAG_ICON ?>').hasClass('<?= TRX_STYLE_DISABLED ?>'),
 			items: 'li.sortable',
 			axis: 'y',
 			containment: 'parent',
 			cursor: IE ? 'move' : 'grabbing',
-			handle: 'div.<?= ZBX_STYLE_DRAG_ICON ?>',
+			handle: 'div.<?= TRX_STYLE_DRAG_ICON ?>',
 			tolerance: 'pointer',
 			opacity: 0.6
 		});
@@ -300,12 +300,12 @@
 					$('#preproc_test_all').show();
 					$preprocessing
 						.sortable('disable')
-						.find('div.<?= ZBX_STYLE_DRAG_ICON ?>').addClass('<?= ZBX_STYLE_DISABLED ?>');
+						.find('div.<?= TRX_STYLE_DRAG_ICON ?>').addClass('<?= TRX_STYLE_DISABLED ?>');
 				}
 				else if (sortable_count > 1) {
 					$preprocessing
 						.sortable('enable')
-						.find('div.<?= ZBX_STYLE_DRAG_ICON ?>').removeClass('<?= ZBX_STYLE_DISABLED ?>');
+						.find('div.<?= TRX_STYLE_DRAG_ICON ?>').removeClass('<?= TRX_STYLE_DISABLED ?>');
 				}
 
 				step_index++;
@@ -337,7 +337,7 @@
 				else if (sortable_count == 1) {
 					$preprocessing
 						.sortable('disable')
-						.find('div.<?= ZBX_STYLE_DRAG_ICON ?>').addClass('<?= ZBX_STYLE_DISABLED ?>');
+						.find('div.<?= TRX_STYLE_DRAG_ICON ?>').addClass('<?= TRX_STYLE_DISABLED ?>');
 				}
 			})
 			.on('change', 'select[name*="type"]', function() {
@@ -349,12 +349,12 @@
 
 				// Disable "Custom on fail" for some of the preprocessing types.
 				switch (type) {
-					case '<?= ZBX_PREPROC_RTRIM ?>':
-					case '<?= ZBX_PREPROC_LTRIM ?>':
-					case '<?= ZBX_PREPROC_TRIM ?>':
-					case '<?= ZBX_PREPROC_THROTTLE_VALUE ?>':
-					case '<?= ZBX_PREPROC_THROTTLE_TIMED_VALUE ?>':
-					case '<?= ZBX_PREPROC_SCRIPT ?>':
+					case '<?= TRX_PREPROC_RTRIM ?>':
+					case '<?= TRX_PREPROC_LTRIM ?>':
+					case '<?= TRX_PREPROC_TRIM ?>':
+					case '<?= TRX_PREPROC_THROTTLE_VALUE ?>':
+					case '<?= TRX_PREPROC_THROTTLE_TIMED_VALUE ?>':
+					case '<?= TRX_PREPROC_SCRIPT ?>':
 						$on_fail
 							.prop('checked', false)
 							.prop('disabled', true)
@@ -385,18 +385,18 @@
 				var error_handler = $(this).val(),
 					$error_handler_params = $(this).closest('.on-fail-options').find('[name*="error_handler_params"]');
 
-				if (error_handler == '<?= ZBX_PREPROC_FAIL_DISCARD_VALUE ?>') {
+				if (error_handler == '<?= TRX_PREPROC_FAIL_DISCARD_VALUE ?>') {
 					$error_handler_params
 						.prop('disabled', true)
 						.hide();
 				}
-				else if (error_handler == '<?= ZBX_PREPROC_FAIL_SET_VALUE ?>') {
+				else if (error_handler == '<?= TRX_PREPROC_FAIL_SET_VALUE ?>') {
 					$error_handler_params
 						.prop('disabled', false)
 						.attr('placeholder', <?= CJs::encodeJson(_('value')) ?>)
 						.show();
 				}
-				else if (error_handler == '<?= ZBX_PREPROC_FAIL_SET_ERROR ?>') {
+				else if (error_handler == '<?= TRX_PREPROC_FAIL_SET_ERROR ?>') {
 					$error_handler_params
 						.prop('disabled', false)
 						.attr('placeholder', <?= CJs::encodeJson(_('error message')) ?>)

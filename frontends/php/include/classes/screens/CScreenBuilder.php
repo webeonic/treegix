@@ -312,52 +312,52 @@ class CScreenBuilder {
 		// create screen table
 		$screenTable = (new CTable())
 			->setId(self::makeScreenTableId($this->screen['screenid']))
-			->addClass(ZBX_STYLE_SCREEN_TABLE);
+			->addClass(TRX_STYLE_SCREEN_TABLE);
 
 		if ($this->mode == SCREEN_MODE_EDIT) {
-			$screenTable->addClass(ZBX_STYLE_DASHED_BORDER);
+			$screenTable->addClass(TRX_STYLE_DASHED_BORDER);
 		}
 
 		// action top row
 		if ($this->mode == SCREEN_MODE_EDIT) {
-			$newColumns = [(new CCol())->addClass(ZBX_STYLE_CELL_WIDTH)];
+			$newColumns = [(new CCol())->addClass(TRX_STYLE_CELL_WIDTH)];
 
 			for ($i = 0, $size = $this->screen['hsize']; $i < $size; $i++) {
 				if ($this->screen['hsize'] >= SCREEN_MAX_SIZE) {
 					$link = (new CDiv('+'))
-						->addClass(ZBX_STYLE_TREEVIEW_PLUS)
-						->addClass(ZBX_STYLE_DISABLED);
+						->addClass(TRX_STYLE_TREEVIEW_PLUS)
+						->addClass(TRX_STYLE_DISABLED);
 				}
 				else {
 					$link = (new CLink('+', 'screenedit.php?screenid='.$this->screen['screenid'].
 						url_param('templateid').'&add_col='.$i
 					))
-						->addClass(ZBX_STYLE_TREEVIEW_PLUS)
+						->addClass(TRX_STYLE_TREEVIEW_PLUS)
 						->addSID();
 				}
 
 				$newColumns[] = (new CCol($link))
-					->addClass(ZBX_STYLE_CENTER)
-					->addClass(ZBX_STYLE_MIDDLE);
+					->addClass(TRX_STYLE_CENTER)
+					->addClass(TRX_STYLE_MIDDLE);
 			}
 
 			if ($this->screen['hsize'] >= SCREEN_MAX_SIZE) {
 				$link = (new CDiv('+'))
-					->addClass(ZBX_STYLE_TREEVIEW_PLUS)
-					->addClass(ZBX_STYLE_DISABLED);
+					->addClass(TRX_STYLE_TREEVIEW_PLUS)
+					->addClass(TRX_STYLE_DISABLED);
 			}
 			else {
 				$link = (new CLink('+', 'screenedit.php?screenid='.$this->screen['screenid'].url_param('templateid').
 					'&add_col='.$this->screen['hsize']
 				))
-					->addClass(ZBX_STYLE_TREEVIEW_PLUS)
+					->addClass(TRX_STYLE_TREEVIEW_PLUS)
 					->addSID();
 			}
 
 			$newColumns[] = (new CCol($link))
-				->addClass(ZBX_STYLE_CENTER)
-				->addClass(ZBX_STYLE_MIDDLE)
-				->addClass(ZBX_STYLE_CELL_WIDTH);
+				->addClass(TRX_STYLE_CENTER)
+				->addClass(TRX_STYLE_MIDDLE)
+				->addClass(TRX_STYLE_CELL_WIDTH);
 
 			$screenTable->addRow($newColumns);
 		}
@@ -370,20 +370,20 @@ class CScreenBuilder {
 			if ($this->mode == SCREEN_MODE_EDIT) {
 				if ($this->screen['vsize'] >= SCREEN_MAX_SIZE) {
 					$link = (new CDiv('+'))
-						->addClass(ZBX_STYLE_TREEVIEW_PLUS)
-						->addClass(ZBX_STYLE_DISABLED);
+						->addClass(TRX_STYLE_TREEVIEW_PLUS)
+						->addClass(TRX_STYLE_DISABLED);
 				}
 				else {
 					$link = (new CLink('+', 'screenedit.php?screenid='.$this->screen['screenid'].
 						url_param('templateid').'&add_row='.$r
 					))
-						->addClass(ZBX_STYLE_TREEVIEW_PLUS)
+						->addClass(TRX_STYLE_TREEVIEW_PLUS)
 						->addSID();
 				}
 
 				$newColumns[] = (new CCol($link))
-					->addClass(ZBX_STYLE_CENTER)
-					->addClass(ZBX_STYLE_MIDDLE);
+					->addClass(TRX_STYLE_CENTER)
+					->addClass(TRX_STYLE_MIDDLE);
 			}
 
 			for ($c = 0; $c < $this->screen['hsize']; $c++) {
@@ -480,7 +480,7 @@ class CScreenBuilder {
 					$item =[
 						(new CDiv(
 							(new CLink(_x('Change', 'verb'), $action))->addClass('empty_change_link')
-						))->addClass(ZBX_STYLE_CENTER)
+						))->addClass(TRX_STYLE_CENTER)
 					];
 				}
 				else {
@@ -499,23 +499,23 @@ class CScreenBuilder {
 				$newColumn = (new CCol($item))->addClass('screenitem');
 
 				if ($screenitem['halign'] == HALIGN_CENTER || $isEditForm) {
-					$newColumn->addClass(ZBX_STYLE_CENTER);
+					$newColumn->addClass(TRX_STYLE_CENTER);
 				}
 				elseif ($screenitem['halign'] == HALIGN_LEFT) {
-					$newColumn->addClass(ZBX_STYLE_LEFT);
+					$newColumn->addClass(TRX_STYLE_LEFT);
 				}
 				elseif ($screenitem['halign'] == HALIGN_RIGHT) {
-					$newColumn->addClass(ZBX_STYLE_RIGHT);
+					$newColumn->addClass(TRX_STYLE_RIGHT);
 				}
 
 				if ($screenitem['valign'] == VALIGN_MIDDLE || $isEditForm) {
-					$newColumn->addClass(ZBX_STYLE_MIDDLE);
+					$newColumn->addClass(TRX_STYLE_MIDDLE);
 				}
 				elseif ($screenitem['valign'] == VALIGN_TOP) {
-					$newColumn->addClass(ZBX_STYLE_TOP);
+					$newColumn->addClass(TRX_STYLE_TOP);
 				}
 				elseif ($screenitem['valign'] == VALIGN_BOTTOM) {
-					$newColumn->addClass(ZBX_STYLE_BOTTOM);
+					$newColumn->addClass(TRX_STYLE_BOTTOM);
 				}
 
 				if ($screenitem['colspan'] > 1) {
@@ -531,14 +531,14 @@ class CScreenBuilder {
 			if ($this->mode == SCREEN_MODE_EDIT) {
 				if ($this->screen['vsize'] == SCREEN_MIN_SIZE) {
 					$link = (new CDiv('−'))
-						->addClass(ZBX_STYLE_TREEVIEW_PLUS)
-						->addClass(ZBX_STYLE_DISABLED);
+						->addClass(TRX_STYLE_TREEVIEW_PLUS)
+						->addClass(TRX_STYLE_DISABLED);
 				}
 				else {
 					$link = (new CLink('−', 'screenedit.php?screenid='.$this->screen['screenid'].
 						url_param('templateid').'&rmv_row='.$r
 					))
-						->addClass(ZBX_STYLE_TREEVIEW_PLUS)
+						->addClass(TRX_STYLE_TREEVIEW_PLUS)
 						->addSID();
 					if (!$emptyScreenRow) {
 						$link->addConfirmation(_('This screen row is not empty. Delete it?'));
@@ -546,8 +546,8 @@ class CScreenBuilder {
 				}
 
 				$newColumns[] = (new CCol($link))
-					->addClass(ZBX_STYLE_CENTER)
-					->addClass(ZBX_STYLE_MIDDLE);
+					->addClass(TRX_STYLE_CENTER)
+					->addClass(TRX_STYLE_MIDDLE);
 			}
 			$screenTable->addRow(new CRow($newColumns));
 		}
@@ -556,34 +556,34 @@ class CScreenBuilder {
 		if ($this->mode == SCREEN_MODE_EDIT) {
 			if ($this->screen['vsize'] >= SCREEN_MAX_SIZE) {
 				$link = (new CDiv('+'))
-					->addClass(ZBX_STYLE_TREEVIEW_PLUS)
-					->addClass(ZBX_STYLE_DISABLED);
+					->addClass(TRX_STYLE_TREEVIEW_PLUS)
+					->addClass(TRX_STYLE_DISABLED);
 			}
 			else {
 				$link = (new CLink('+', 'screenedit.php?screenid='.$this->screen['screenid'].url_param('templateid').
 					'&add_row='.$this->screen['vsize']
 				))
-					->addClass(ZBX_STYLE_TREEVIEW_PLUS)
+					->addClass(TRX_STYLE_TREEVIEW_PLUS)
 					->addSID();
 			}
 
 			$newColumns = [
 				(new CCol($link))
-					->addClass(ZBX_STYLE_CENTER)
-					->addClass(ZBX_STYLE_MIDDLE)
+					->addClass(TRX_STYLE_CENTER)
+					->addClass(TRX_STYLE_MIDDLE)
 			];
 
 			for ($i = 0; $i < $this->screen['hsize']; $i++) {
 				if ($this->screen['hsize'] == SCREEN_MIN_SIZE) {
 					$link = (new CDiv('−'))
-						->addClass(ZBX_STYLE_TREEVIEW_PLUS)
-						->addClass(ZBX_STYLE_DISABLED);
+						->addClass(TRX_STYLE_TREEVIEW_PLUS)
+						->addClass(TRX_STYLE_DISABLED);
 				}
 				else {
 					$link = (new CLink('−', 'screenedit.php?screenid='.$this->screen['screenid'].
 						url_param('templateid').'&rmv_col='.$i
 					))
-						->addClass(ZBX_STYLE_TREEVIEW_PLUS)
+						->addClass(TRX_STYLE_TREEVIEW_PLUS)
 						->addSID();
 
 					if (array_key_exists($i, $emptyScreenColumns)) {
@@ -592,8 +592,8 @@ class CScreenBuilder {
 				}
 
 				$newColumns[] = (new CCol($link))
-					->addClass(ZBX_STYLE_CENTER)
-					->addClass(ZBX_STYLE_MIDDLE);
+					->addClass(TRX_STYLE_CENTER)
+					->addClass(TRX_STYLE_MIDDLE);
 			}
 
 			$newColumns[] = '';

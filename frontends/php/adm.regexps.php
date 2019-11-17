@@ -14,21 +14,21 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'regexpids' =>		[T_ZBX_INT, O_OPT, P_SYS,		DB_ID,	null],
-	'regexpid' =>		[T_ZBX_INT, O_OPT, P_SYS,		DB_ID,	'isset({form}) && {form} == "update"'],
-	'name' =>			[T_ZBX_STR, O_OPT, null,		NOT_EMPTY, 'isset({add}) || isset({update})', _('Name')],
-	'test_string' =>	[T_ZBX_STR, O_OPT, P_NO_TRIM,	null,	'isset({add}) || isset({update})', _('Test string')],
-	'expressions' =>	[T_ZBX_STR, O_OPT, P_NO_TRIM,	null,	'isset({add}) || isset({update})'],
+	'regexpids' =>		[T_TRX_INT, O_OPT, P_SYS,		DB_ID,	null],
+	'regexpid' =>		[T_TRX_INT, O_OPT, P_SYS,		DB_ID,	'isset({form}) && {form} == "update"'],
+	'name' =>			[T_TRX_STR, O_OPT, null,		NOT_EMPTY, 'isset({add}) || isset({update})', _('Name')],
+	'test_string' =>	[T_TRX_STR, O_OPT, P_NO_TRIM,	null,	'isset({add}) || isset({update})', _('Test string')],
+	'expressions' =>	[T_TRX_STR, O_OPT, P_NO_TRIM,	null,	'isset({add}) || isset({update})'],
 	// actions
-	'action' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, IN('"regexp.massdelete"'),	null],
-	'add' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'form' =>			[T_ZBX_STR, O_OPT, P_SYS,		null,	null],
-	'form_refresh' =>	[T_ZBX_INT, O_OPT, null,		null,	null],
+	'action' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, IN('"regexp.massdelete"'),	null],
+	'add' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'form' =>			[T_TRX_STR, O_OPT, P_SYS,		null,	null],
+	'form_refresh' =>	[T_TRX_INT, O_OPT, null,		null,	null],
 	// ajax
-	'output' =>			[T_ZBX_STR, O_OPT, P_ACT,		null,	null],
-	'ajaxaction' =>		[T_ZBX_STR, O_OPT, P_ACT,		null,	null],
-	'ajaxdata' =>		[T_ZBX_STR, O_OPT, P_ACT|P_NO_TRIM,		null,	null]
+	'output' =>			[T_TRX_STR, O_OPT, P_ACT,		null,	null],
+	'ajaxaction' =>		[T_TRX_STR, O_OPT, P_ACT,		null,	null],
+	'ajaxdata' =>		[T_TRX_STR, O_OPT, P_ACT|P_NO_TRIM,		null,	null]
 ];
 check_fields($fields);
 

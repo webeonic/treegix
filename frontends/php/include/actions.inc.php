@@ -819,9 +819,9 @@ function getActionOperationDescriptions(array $actions, $type) {
  *															Possible values: OPERATION_TYPE_MESSAGE, OPERATION_TYPE_COMMAND,
  *															OPERATION_TYPE_ACK_MESSAGE and OPERATION_TYPE_RECOVERY_MESSAGE
  * @param string $operation['opcommand']['type']			Action operation command type.
- *															Possible values: ZBX_SCRIPT_TYPE_IPMI, ZBX_SCRIPT_TYPE_SSH,
- *															ZBX_SCRIPT_TYPE_TELNET, ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT
- *															and ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT
+ *															Possible values: TRX_SCRIPT_TYPE_IPMI, TRX_SCRIPT_TYPE_SSH,
+ *															TRX_SCRIPT_TYPE_TELNET, TRX_SCRIPT_TYPE_CUSTOM_SCRIPT
+ *															and TRX_SCRIPT_TYPE_GLOBAL_SCRIPT
  * @param string $operation['opmessage']['default_msg']		'1' to show default message (optional)
  * @param array  $defaultMessage							Array containing default subject and message set via action.
  * @param string $defaultMessage['subject']					Default subject.
@@ -836,7 +836,7 @@ function getActionOperationHints(array $operations, array $defaultMessage) {
 
 	foreach ($operations as $operation) {
 		if ($operation['operationtype'] == OPERATION_TYPE_COMMAND
-				&& $operation['opcommand']['type'] == ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT) {
+				&& $operation['opcommand']['type'] == TRX_SCRIPT_TYPE_GLOBAL_SCRIPT) {
 			$scriptids[$operation['opcommand']['scriptid']] = true;
 		}
 	}
@@ -880,31 +880,31 @@ function getActionOperationHints(array $operations, array $defaultMessage) {
 
 			case OPERATION_TYPE_COMMAND:
 				switch ($operation['opcommand']['type']) {
-					case ZBX_SCRIPT_TYPE_IPMI:
+					case TRX_SCRIPT_TYPE_IPMI:
 						$result[$key][] = [bold(_('Run IPMI command').': '), BR(),
 							italic(zbx_nl2br($operation['opcommand']['command']))
 						];
 						break;
 
-					case ZBX_SCRIPT_TYPE_SSH:
+					case TRX_SCRIPT_TYPE_SSH:
 						$result[$key][] = [bold(_('Run SSH commands').': '), BR(),
 							italic(zbx_nl2br($operation['opcommand']['command']))
 						];
 						break;
 
-					case ZBX_SCRIPT_TYPE_TELNET:
+					case TRX_SCRIPT_TYPE_TELNET:
 						$result[$key][] = [bold(_('Run TELNET commands').': '), BR(),
 							italic(zbx_nl2br($operation['opcommand']['command']))
 						];
 						break;
 
-					case ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT:
-						if ($operation['opcommand']['execute_on'] == ZBX_SCRIPT_EXECUTE_ON_AGENT) {
+					case TRX_SCRIPT_TYPE_CUSTOM_SCRIPT:
+						if ($operation['opcommand']['execute_on'] == TRX_SCRIPT_EXECUTE_ON_AGENT) {
 							$result[$key][] = [bold(_s('Run custom commands on %1$s', _('Treegix agent')).': '),
 								BR(), italic(zbx_nl2br($operation['opcommand']['command']))
 							];
 						}
-						elseif ($operation['opcommand']['execute_on'] == ZBX_SCRIPT_EXECUTE_ON_PROXY) {
+						elseif ($operation['opcommand']['execute_on'] == TRX_SCRIPT_EXECUTE_ON_PROXY) {
 							$result[$key][] = [bold(_s('Run custom commands on %1$s', _('Treegix server (proxy)')).': '),
 								BR(), italic(zbx_nl2br($operation['opcommand']['command']))
 							];
@@ -916,7 +916,7 @@ function getActionOperationHints(array $operations, array $defaultMessage) {
 						}
 						break;
 
-					case ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT:
+					case TRX_SCRIPT_TYPE_GLOBAL_SCRIPT:
 						$scriptId = $operation['opcommand']['scriptid'];
 
 						if (isset($scripts[$scriptId])) {
@@ -1399,7 +1399,7 @@ function getEventsMessages(array $events) {
 		$event_messages = [];
 
 		foreach ($event['acknowledges'] as $ack) {
-			if (($ack['action'] & ZBX_PROBLEM_UPDATE_MESSAGE) == ZBX_PROBLEM_UPDATE_MESSAGE) {
+			if (($ack['action'] & TRX_PROBLEM_UPDATE_MESSAGE) == TRX_PROBLEM_UPDATE_MESSAGE) {
 				// Alias is mandatory for each user, so if alias is not returned, we don't have rights for this user.
 				$event_messages[] = [
 					'message' => $ack['message'],
@@ -1411,7 +1411,7 @@ function getEventsMessages(array $events) {
 			}
 		}
 
-		CArrayHelper::sort($event_messages, [['field' => 'clock', 'order' => ZBX_SORT_DOWN]]);
+		CArrayHelper::sort($event_messages, [['field' => 'clock', 'order' => TRX_SORT_DOWN]]);
 
 		$messages[$event['eventid']] = [
 			'messages' => array_values($event_messages),
@@ -1452,7 +1452,7 @@ function getEventsSeverityChanges(array $events, array $triggers) {
 		$event_severities = [];
 
 		foreach ($event['acknowledges'] as $ack) {
-			if (($ack['action'] & ZBX_PROBLEM_UPDATE_SEVERITY) == ZBX_PROBLEM_UPDATE_SEVERITY) {
+			if (($ack['action'] & TRX_PROBLEM_UPDATE_SEVERITY) == TRX_PROBLEM_UPDATE_SEVERITY) {
 				$event_severities[] = [
 					'old_severity' => $ack['old_severity'],
 					'new_severity' => $ack['new_severity'],
@@ -1464,7 +1464,7 @@ function getEventsSeverityChanges(array $events, array $triggers) {
 			}
 		}
 
-		CArrayHelper::sort($event_severities, [['field' => 'clock', 'order' => ZBX_SORT_DOWN]]);
+		CArrayHelper::sort($event_severities, [['field' => 'clock', 'order' => TRX_SORT_DOWN]]);
 
 		$severities[$event['eventid']] = [
 			'severities' => array_values($event_severities),
@@ -1617,21 +1617,21 @@ function getSingleEventActions(array $event, array $r_events, array $alerts) {
 
 	// Add row for problem generation event.
 	$actions[] = [
-		'action_type' => ZBX_EVENT_HISTORY_PROBLEM_EVENT,
+		'action_type' => TRX_EVENT_HISTORY_PROBLEM_EVENT,
 		'clock' => $event['clock']
 	];
 
 	// Add row for problem recovery event.
 	if (array_key_exists($event['r_eventid'], $r_events)) {
 		$actions[] = [
-			'action_type' => ZBX_EVENT_HISTORY_RECOVERY_EVENT,
+			'action_type' => TRX_EVENT_HISTORY_RECOVERY_EVENT,
 			'clock' => $r_events[$event['r_eventid']]['clock']
 		];
 	}
 
 	// Add manual operations.
 	foreach ($event['acknowledges'] as $ack) {
-		$ack['action_type'] = ZBX_EVENT_HISTORY_MANUAL_UPDATE;
+		$ack['action_type'] = TRX_EVENT_HISTORY_MANUAL_UPDATE;
 		$actions[] = $ack;
 
 		$action_count++;
@@ -1643,7 +1643,7 @@ function getSingleEventActions(array $event, array $r_events, array $alerts) {
 		// Add only alerts, related to current event.
 		if (bccomp($alert['eventid'], $event['eventid']) == 0
 				|| bccomp($alert['eventid'], $event['r_eventid']) == 0) {
-			$alert['action_type'] = ZBX_EVENT_HISTORY_ALERT;
+			$alert['action_type'] = TRX_EVENT_HISTORY_ALERT;
 			$actions[] = $alert;
 
 			$action_count++;
@@ -1669,8 +1669,8 @@ function getSingleEventActions(array $event, array $r_events, array $alerts) {
 
 	// Sort by action_type is done to put Recovery event before actions, resulted from it. Same for other action_type.
 	CArrayHelper::sort($actions, [
-		['field' => 'clock', 'order' => ZBX_SORT_DOWN],
-		['field' => 'action_type', 'order' => ZBX_SORT_DOWN]
+		['field' => 'clock', 'order' => TRX_SORT_DOWN],
+		['field' => 'action_type', 'order' => TRX_SORT_DOWN]
 	]);
 
 	return [
@@ -1700,7 +1700,7 @@ function getEventUpdates(array $event) {
 		$userids[$ack['userid']] = true;
 	}
 
-	CArrayHelper::sort($event['acknowledges'], [['field' => 'clock', 'order' => ZBX_SORT_DOWN]]);
+	CArrayHelper::sort($event['acknowledges'], [['field' => 'clock', 'order' => TRX_SORT_DOWN]]);
 
 	return [
 		'data' => array_values($event['acknowledges']),
@@ -1738,7 +1738,7 @@ function makeEventActionsIcons($eventid, $actions, $mediatypes, $users, $config)
 		$action_icons[] = $actions_icon;
 	}
 
-	return $action_icons ? (new CCol($action_icons))->addClass(ZBX_STYLE_NOWRAP) : '';
+	return $action_icons ? (new CCol($action_icons))->addClass(TRX_STYLE_NOWRAP) : '';
 }
 
 /**
@@ -1757,11 +1757,11 @@ function makeEventMessagesIcon(array $data, array $users) {
 
 	$table = (new CTableInfo())->setHeader([_('Time'), _('User'), _('Message')]);
 
-	for ($i = 0; $i < $total && $i < ZBX_WIDGET_ROWS; $i++) {
+	for ($i = 0; $i < $total && $i < TRX_WIDGET_ROWS; $i++) {
 		$message = $data['messages'][$i];
 
 		// Added in order to reuse makeActionTableUser().
-		$message['action_type'] = ZBX_EVENT_HISTORY_MANUAL_UPDATE;
+		$message['action_type'] = TRX_EVENT_HISTORY_MANUAL_UPDATE;
 
 		$table->addRow([
 			zbx_date2str(DATE_TIME_FORMAT_SECONDS, $message['clock']),
@@ -1772,16 +1772,16 @@ function makeEventMessagesIcon(array $data, array $users) {
 
 	return $total
 		? makeActionIcon([
-			'icon' => ZBX_STYLE_ACTION_ICON_MSGS,
+			'icon' => TRX_STYLE_ACTION_ICON_MSGS,
 			'hint' => [
 				$table,
-				($total > ZBX_WIDGET_ROWS)
+				($total > TRX_WIDGET_ROWS)
 					? (new CDiv(
 						(new CDiv(
-							(new CDiv(_s('Displaying %1$s of %2$s found', ZBX_WIDGET_ROWS, $total)))
-								->addClass(ZBX_STYLE_TABLE_STATS)
-						))->addClass(ZBX_STYLE_PAGING_BTN_CONTAINER)
-					))->addClass(ZBX_STYLE_TABLE_PAGING)
+							(new CDiv(_s('Displaying %1$s of %2$s found', TRX_WIDGET_ROWS, $total)))
+								->addClass(TRX_STYLE_TABLE_STATS)
+						))->addClass(TRX_STYLE_PAGING_BTN_CONTAINER)
+					))->addClass(TRX_STYLE_TABLE_PAGING)
 					: null
 			],
 			'num' => $total,
@@ -1811,11 +1811,11 @@ function makeEventSeverityChangesIcon(array $data, array $users, array $config) 
 
 	$table = (new CTableInfo())->setHeader([_('Time'), _('User'), _('Severity changes')]);
 
-	for ($i = 0; $i < $total && $i < ZBX_WIDGET_ROWS; $i++) {
+	for ($i = 0; $i < $total && $i < TRX_WIDGET_ROWS; $i++) {
 		$severity = $data['severities'][$i];
 
 		// Added in order to reuse makeActionTableUser().
-		$severity['action_type'] = ZBX_EVENT_HISTORY_MANUAL_UPDATE;
+		$severity['action_type'] = TRX_EVENT_HISTORY_MANUAL_UPDATE;
 
 		// severity changes
 		$old_severity_name = getSeverityName($severity['old_severity'], $config);
@@ -1830,15 +1830,15 @@ function makeEventSeverityChangesIcon(array $data, array $users, array $config) 
 
 	// select icon
 	if ($data['original_severity'] > $data['current_severity']) {
-		$icon_style = ZBX_STYLE_ACTION_ICON_SEV_DOWN;
+		$icon_style = TRX_STYLE_ACTION_ICON_SEV_DOWN;
 		$aria_label = _x('Severity decreased', 'screen reader');
 	}
 	elseif ($data['original_severity'] < $data['current_severity']) {
-		$icon_style = ZBX_STYLE_ACTION_ICON_SEV_UP;
+		$icon_style = TRX_STYLE_ACTION_ICON_SEV_UP;
 		$aria_label = _x('Severity increased', 'screen reader');
 	}
 	else {
-		$icon_style = ZBX_STYLE_ACTION_ICON_SEV_CHANGED;
+		$icon_style = TRX_STYLE_ACTION_ICON_SEV_CHANGED;
 		$aria_label = _x('Severity changed', 'screen reader');
 	}
 
@@ -1847,13 +1847,13 @@ function makeEventSeverityChangesIcon(array $data, array $users, array $config) 
 			'icon' => $icon_style,
 			'hint' => [
 				$table,
-				($total > ZBX_WIDGET_ROWS)
+				($total > TRX_WIDGET_ROWS)
 					? (new CDiv(
 						(new CDiv(
-							(new CDiv(_s('Displaying %1$s of %2$s found', ZBX_WIDGET_ROWS, $total)))
-								->addClass(ZBX_STYLE_TABLE_STATS)
-						))->addClass(ZBX_STYLE_PAGING_BTN_CONTAINER)
-					))->addClass(ZBX_STYLE_TABLE_PAGING)
+							(new CDiv(_s('Displaying %1$s of %2$s found', TRX_WIDGET_ROWS, $total)))
+								->addClass(TRX_STYLE_TABLE_STATS)
+						))->addClass(TRX_STYLE_PAGING_BTN_CONTAINER)
+					))->addClass(TRX_STYLE_TABLE_PAGING)
 					: null
 			],
 			'aria-label' => $aria_label
@@ -1866,13 +1866,13 @@ function makeEventSeverityChangesIcon(array $data, array $users, array $config) 
  *
  * @param array  $data
  * @param array  $data['actions']                   Array with all actions sorted by clock.
- * @param int    $data['actions'][]['action_type']  Type of action table entry (ZBX_EVENT_HISTORY_*).
+ * @param int    $data['actions'][]['action_type']  Type of action table entry (TRX_EVENT_HISTORY_*).
  * @param string $data['actions'][]['clock']        Time, when action was performed.
  * @param string $data['actions'][]['message']      Message sent by alert, or written by manual update, or remote command text.
- * @param string $data['actions'][]['action']       Flag with problem update operation performed (only for ZBX_EVENT_HISTORY_MANUAL_UPDATE).
- * @param string $data['actions'][]['alerttype']    Type of alert (only for ZBX_EVENT_HISTORY_ALERT).
- * @param string $data['actions'][]['mediatypeid']  Id for mediatype, where alert message was sent (only for ZBX_EVENT_HISTORY_ALERT).
- * @param string $data['actions'][]['error']        Error message in case of failed alert (only for ZBX_EVENT_HISTORY_ALERT).
+ * @param string $data['actions'][]['action']       Flag with problem update operation performed (only for TRX_EVENT_HISTORY_MANUAL_UPDATE).
+ * @param string $data['actions'][]['alerttype']    Type of alert (only for TRX_EVENT_HISTORY_ALERT).
+ * @param string $data['actions'][]['mediatypeid']  Id for mediatype, where alert message was sent (only for TRX_EVENT_HISTORY_ALERT).
+ * @param string $data['actions'][]['error']        Error message in case of failed alert (only for TRX_EVENT_HISTORY_ALERT).
  * @param int    $data['count']                     Number of actions.
  * @param bool   $data['has_uncomplete_action']     Does the event have at least one uncompleted alert action.
  * @param bool   $data['has_failed_action']         Does the event have at least one failed alert action.
@@ -1893,15 +1893,15 @@ function makeEventActionsIcon(array $data, array $users, array $mediatypes, arra
 		_('Time'), _('User/Recipient'), _('Action'), _('Message/Command'), _('Status'), _('Info')
 	]);
 
-	for ($i = 0; $i < $action_count && $i < ZBX_WIDGET_ROWS; $i++) {
+	for ($i = 0; $i < $action_count && $i < TRX_WIDGET_ROWS; $i++) {
 		$action = $data['actions'][$i];
 
 		$message = '';
-		if ($action['action_type'] == ZBX_EVENT_HISTORY_MANUAL_UPDATE
-				&& ($action['action'] & ZBX_PROBLEM_UPDATE_MESSAGE) == ZBX_PROBLEM_UPDATE_MESSAGE) {
+		if ($action['action_type'] == TRX_EVENT_HISTORY_MANUAL_UPDATE
+				&& ($action['action'] & TRX_PROBLEM_UPDATE_MESSAGE) == TRX_PROBLEM_UPDATE_MESSAGE) {
 			$message = zbx_nl2br($action['message']);
 		}
-		elseif ($action['action_type'] == ZBX_EVENT_HISTORY_ALERT) {
+		elseif ($action['action_type'] == TRX_EVENT_HISTORY_ALERT) {
 			if ($action['alerttype'] == ALERT_TYPE_COMMAND) {
 				$message = _('Remote command');
 			}
@@ -1924,13 +1924,13 @@ function makeEventActionsIcon(array $data, array $users, array $mediatypes, arra
 
 	// select icon
 	if ($data['has_failed_action']) {
-		$icon_style = ZBX_STYLE_ACTIONS_NUM_RED;
+		$icon_style = TRX_STYLE_ACTIONS_NUM_RED;
 	}
 	elseif ($data['has_uncomplete_action']) {
-		$icon_style = ZBX_STYLE_ACTIONS_NUM_YELLOW;
+		$icon_style = TRX_STYLE_ACTIONS_NUM_YELLOW;
 	}
 	else {
-		$icon_style = ZBX_STYLE_ACTIONS_NUM_GRAY;
+		$icon_style = TRX_STYLE_ACTIONS_NUM_GRAY;
 	}
 
 	return $total
@@ -1938,13 +1938,13 @@ function makeEventActionsIcon(array $data, array $users, array $mediatypes, arra
 			'icon' => $icon_style,
 			'hint' => [
 				$table,
-				($total > ZBX_WIDGET_ROWS)
+				($total > TRX_WIDGET_ROWS)
 					? (new CDiv(
 						(new CDiv(
-							(new CDiv(_s('Displaying %1$s of %2$s found', ZBX_WIDGET_ROWS, $total)))
-								->addClass(ZBX_STYLE_TABLE_STATS)
-						))->addClass(ZBX_STYLE_PAGING_BTN_CONTAINER)
-					))->addClass(ZBX_STYLE_TABLE_PAGING)
+							(new CDiv(_s('Displaying %1$s of %2$s found', TRX_WIDGET_ROWS, $total)))
+								->addClass(TRX_STYLE_TABLE_STATS)
+						))->addClass(TRX_STYLE_PAGING_BTN_CONTAINER)
+					))->addClass(TRX_STYLE_TABLE_PAGING)
 					: null
 			],
 			'num' => $total,
@@ -1958,14 +1958,14 @@ function makeEventActionsIcon(array $data, array $users, array $mediatypes, arra
  *
  * @param array  $data
  * @param array  $data['actions']                     Array with all actions sorted by clock.
- * @param int    $data['actions'][]['action_type']    Type of action table entry (ZBX_EVENT_HISTORY_*).
+ * @param int    $data['actions'][]['action_type']    Type of action table entry (TRX_EVENT_HISTORY_*).
  * @param string $data['actions'][]['clock']          Time, when action was performed.
  * @param string $data['actions'][]['message']        Message sent by alert, or written by manual update, or remote command text.
- * @param string $data['actions'][]['alerttype']      Type of alert (only for ZBX_EVENT_HISTORY_ALERT).
- * @param string $data['actions'][]['esc_step']       Alert escalation step (only for ZBX_EVENT_HISTORY_ALERT).
- * @param string $data['actions'][]['subject']        Message alert subject (only for ZBX_EVENT_HISTORY_ALERT).
- * @param string $data['actions'][]['p_eventid']      Problem eventid that was reason for alert (only for ZBX_EVENT_HISTORY_ALERT).
- * @param string $data['actions'][]['acknowledgeid']  Problem update action that was reason for alert (only for ZBX_EVENT_HISTORY_ALERT).
+ * @param string $data['actions'][]['alerttype']      Type of alert (only for TRX_EVENT_HISTORY_ALERT).
+ * @param string $data['actions'][]['esc_step']       Alert escalation step (only for TRX_EVENT_HISTORY_ALERT).
+ * @param string $data['actions'][]['subject']        Message alert subject (only for TRX_EVENT_HISTORY_ALERT).
+ * @param string $data['actions'][]['p_eventid']      Problem eventid that was reason for alert (only for TRX_EVENT_HISTORY_ALERT).
+ * @param string $data['actions'][]['acknowledgeid']  Problem update action that was reason for alert (only for TRX_EVENT_HISTORY_ALERT).
  * @param array  $users                               User name, surname and alias.
  * @param array  $mediatypes                          Mediatypes with maxattempts value.
  * @param array  $config                              Treegix config.
@@ -1980,7 +1980,7 @@ function makeEventDetailsActionsTable(array $data, array $users, array $mediatyp
 	foreach ($data['actions'] as $action) {
 		$esc_step = '';
 
-		if ($action['action_type'] == ZBX_EVENT_HISTORY_ALERT && $action['p_eventid'] == 0
+		if ($action['action_type'] == TRX_EVENT_HISTORY_ALERT && $action['p_eventid'] == 0
 				&& $action['acknowledgeid'] == 0) {
 			/*
 			 * Escalation step should be displayed, only if alert is caused by problem event.
@@ -1990,11 +1990,11 @@ function makeEventDetailsActionsTable(array $data, array $users, array $mediatyp
 		}
 
 		$message = '';
-		if ($action['action_type'] == ZBX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_MESSAGE) {
+		if ($action['action_type'] == TRX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_MESSAGE) {
 			$message = [bold($action['subject']), BR(), BR(), zbx_nl2br($action['message'])];
 		}
-		elseif (($action['action_type'] == ZBX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_COMMAND)
-				|| $action['action_type'] == ZBX_EVENT_HISTORY_MANUAL_UPDATE) {
+		elseif (($action['action_type'] == TRX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_COMMAND)
+				|| $action['action_type'] == TRX_EVENT_HISTORY_MANUAL_UPDATE) {
 			$message = zbx_nl2br($action['message']);
 		}
 
@@ -2028,7 +2028,7 @@ function makeEventHistoryTable(array $actions, array $users, array $config) {
 
 	foreach ($actions as $action) {
 		// Added in order to reuse makeActionTableUser() and makeActionTableIcon()
-		$action['action_type'] = ZBX_EVENT_HISTORY_MANUAL_UPDATE;
+		$action['action_type'] = TRX_EVENT_HISTORY_MANUAL_UPDATE;
 
 		$table->addRow([
 			zbx_date2str(DATE_TIME_FORMAT_SECONDS, $action['clock']),
@@ -2045,7 +2045,7 @@ function makeEventHistoryTable(array $actions, array $users, array $config) {
  * Creates username for message author or alert receiver.
  *
  * @param array  $action                 Array of action data.
- * @param int    $action['action_type']  Type of event table action (ZBX_EVENT_HISTORY_*).
+ * @param int    $action['action_type']  Type of event table action (TRX_EVENT_HISTORY_*).
  * @param string $action['alerttype']    Type of alert.
  * @param string $action['userid']       ID of message author, or alert receiver.
  * @param array  $users                  Array with user data - alias, name, surname.
@@ -2053,8 +2053,8 @@ function makeEventHistoryTable(array $actions, array $users, array $config) {
  * @return string
  */
 function makeActionTableUser(array $action, array $users) {
-	if (($action['action_type'] == ZBX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_MESSAGE)
-			|| $action['action_type'] == ZBX_EVENT_HISTORY_MANUAL_UPDATE) {
+	if (($action['action_type'] == TRX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_MESSAGE)
+			|| $action['action_type'] == TRX_EVENT_HISTORY_MANUAL_UPDATE) {
 		return array_key_exists($action['userid'], $users)
 			? getUserFullname($users[$action['userid']])
 			: _('Inaccessible user');
@@ -2068,7 +2068,7 @@ function makeActionTableUser(array $action, array $users) {
  * Creates username for message author or alert receiver. Also contains 'sendto' for message actions.
  *
  * @param array  $action
- * @param int    $action['action_type']  Type of event table action (ZBX_EVENT_HISTORY_*).
+ * @param int    $action['action_type']  Type of event table action (TRX_EVENT_HISTORY_*).
  * @param string $action['alerttype']    Type of alert.
  * @param array  $action['userid']       ID of message author, or alert receiver.
  * @param array  $action['sendto']       Receiver media address for automatic action.
@@ -2077,12 +2077,12 @@ function makeActionTableUser(array $action, array $users) {
  * @return string
  */
 function makeEventDetailsTableUser(array $action, array $users) {
-	if ($action['action_type'] == ZBX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_MESSAGE) {
+	if ($action['action_type'] == TRX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_MESSAGE) {
 		return array_key_exists($action['userid'], $users)
 			? [getUserFullname($users[$action['userid']]), BR(), italic(zbx_nl2br($action['sendto']))]
 			: _('Inaccessible user');
 	}
-	elseif ($action['action_type'] == ZBX_EVENT_HISTORY_MANUAL_UPDATE) {
+	elseif ($action['action_type'] == TRX_EVENT_HISTORY_MANUAL_UPDATE) {
 		return array_key_exists($action['userid'], $users)
 			? getUserFullname($users[$action['userid']])
 			: _('Inaccessible user');
@@ -2096,45 +2096,45 @@ function makeEventDetailsTableUser(array $action, array $users) {
  * Make appropriate icon for event action.
  *
  * @param array  $action                  Array with actions table data.
- * @param int    $action['action_type']   Type of action table entry (ZBX_EVENT_HISTORY_*).
- * @param int    $action['action']        Flag with problem update operation performed. (only for ZBX_EVENT_HISTORY_MANUAL_UPDATE)
- * @param int    $action['old_severity']  Severity before problem update. (only for ZBX_EVENT_HISTORY_MANUAL_UPDATE)
- * @param int    $action['new_severity']  Severity after problem update. (only for ZBX_EVENT_HISTORY_MANUAL_UPDATE)
- * @param int    $action['alerttype']     Type of alert. (only for ZBX_EVENT_HISTORY_ALERT)
+ * @param int    $action['action_type']   Type of action table entry (TRX_EVENT_HISTORY_*).
+ * @param int    $action['action']        Flag with problem update operation performed. (only for TRX_EVENT_HISTORY_MANUAL_UPDATE)
+ * @param int    $action['old_severity']  Severity before problem update. (only for TRX_EVENT_HISTORY_MANUAL_UPDATE)
+ * @param int    $action['new_severity']  Severity after problem update. (only for TRX_EVENT_HISTORY_MANUAL_UPDATE)
+ * @param int    $action['alerttype']     Type of alert. (only for TRX_EVENT_HISTORY_ALERT)
  * @param array  $config                  Treegix config.
  *
  * @return CSpan
  */
 function makeActionTableIcon(array $action, array $config) {
 	switch ($action['action_type']) {
-		case ZBX_EVENT_HISTORY_PROBLEM_EVENT:
-			return makeActionIcon(['icon' => ZBX_STYLE_PROBLEM_GENERATED, 'title' => _('Problem created')]);
+		case TRX_EVENT_HISTORY_PROBLEM_EVENT:
+			return makeActionIcon(['icon' => TRX_STYLE_PROBLEM_GENERATED, 'title' => _('Problem created')]);
 
-		case ZBX_EVENT_HISTORY_RECOVERY_EVENT:
-			return makeActionIcon(['icon' => ZBX_STYLE_PROBLEM_RECOVERY, 'title' => _('Problem resolved')]);
+		case TRX_EVENT_HISTORY_RECOVERY_EVENT:
+			return makeActionIcon(['icon' => TRX_STYLE_PROBLEM_RECOVERY, 'title' => _('Problem resolved')]);
 
-		case ZBX_EVENT_HISTORY_MANUAL_UPDATE:
+		case TRX_EVENT_HISTORY_MANUAL_UPDATE:
 			$action_icons = [];
 
-			if (($action['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE) {
+			if (($action['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE) {
 				$action_icons[] = makeActionIcon([
-					'icon' => ZBX_STYLE_ACTION_ICON_CLOSE,
+					'icon' => TRX_STYLE_ACTION_ICON_CLOSE,
 					'title' => _('Manually closed')
 				]);
 			}
 
-			if (($action['action'] & ZBX_PROBLEM_UPDATE_ACKNOWLEDGE) == ZBX_PROBLEM_UPDATE_ACKNOWLEDGE) {
-				$action_icons[] = makeActionIcon(['icon' => ZBX_STYLE_ACTION_ICON_ACK, 'title' => _('Acknowledged')]);
+			if (($action['action'] & TRX_PROBLEM_UPDATE_ACKNOWLEDGE) == TRX_PROBLEM_UPDATE_ACKNOWLEDGE) {
+				$action_icons[] = makeActionIcon(['icon' => TRX_STYLE_ACTION_ICON_ACK, 'title' => _('Acknowledged')]);
 			}
 
-			if (($action['action'] & ZBX_PROBLEM_UPDATE_MESSAGE) == ZBX_PROBLEM_UPDATE_MESSAGE) {
-				$action_icons[] = makeActionIcon(['icon' => ZBX_STYLE_ACTION_ICON_MSG, 'title' => _('Message')]);
+			if (($action['action'] & TRX_PROBLEM_UPDATE_MESSAGE) == TRX_PROBLEM_UPDATE_MESSAGE) {
+				$action_icons[] = makeActionIcon(['icon' => TRX_STYLE_ACTION_ICON_MSG, 'title' => _('Message')]);
 			}
 
-			if (($action['action'] & ZBX_PROBLEM_UPDATE_SEVERITY) == ZBX_PROBLEM_UPDATE_SEVERITY) {
+			if (($action['action'] & TRX_PROBLEM_UPDATE_SEVERITY) == TRX_PROBLEM_UPDATE_SEVERITY) {
 				$action_type = ($action['new_severity'] > $action['old_severity'])
-					? ZBX_STYLE_ACTION_ICON_SEV_UP
-					: ZBX_STYLE_ACTION_ICON_SEV_DOWN;
+					? TRX_STYLE_ACTION_ICON_SEV_UP
+					: TRX_STYLE_ACTION_ICON_SEV_DOWN;
 
 				$old_severity_name = getSeverityName($action['old_severity'], $config);
 				$new_severity_name = getSeverityName($action['new_severity'], $config);
@@ -2143,12 +2143,12 @@ function makeActionTableIcon(array $action, array $config) {
 				$action_icons[] = makeActionIcon(['icon' => $action_type, 'hint' => $hint]);
 			}
 
-			return (new CCol($action_icons))->addClass(ZBX_STYLE_NOWRAP);
+			return (new CCol($action_icons))->addClass(TRX_STYLE_NOWRAP);
 
-		case ZBX_EVENT_HISTORY_ALERT:
+		case TRX_EVENT_HISTORY_ALERT:
 			$action_icon = ($action['alerttype'] == ALERT_TYPE_COMMAND)
-					? ZBX_STYLE_ACTION_COMMAND
-					: ZBX_STYLE_ACTION_MESSAGE;
+					? TRX_STYLE_ACTION_COMMAND
+					: TRX_STYLE_ACTION_MESSAGE;
 			$title = ($action['alerttype'] == ALERT_TYPE_COMMAND)
 				? _('Remote command')
 				: _('Alert message');
@@ -2161,31 +2161,31 @@ function makeActionTableIcon(array $action, array $config) {
  * Creates span with alert status text.
  *
  * @param array  $action
- * @param int    $action['action_type']  Type of event table action (ZBX_EVENT_HISTORY_*).
+ * @param int    $action['action_type']  Type of event table action (TRX_EVENT_HISTORY_*).
  * @param string $action['status']       Alert status.
  * @param string $action['alerttype']    Type of alert.
  *
  * @return CSpan|string
  */
 function makeActionTableStatus(array $action) {
-	if ($action['action_type'] == ZBX_EVENT_HISTORY_ALERT) {
+	if ($action['action_type'] == TRX_EVENT_HISTORY_ALERT) {
 		switch ($action['status']) {
 			case ALERT_STATUS_SENT:
 				$status_label = ($action['alerttype'] == ALERT_TYPE_COMMAND)
 					? _('Executed')
 					: _('Sent');
-				$status_color = ZBX_STYLE_GREEN;
+				$status_color = TRX_STYLE_GREEN;
 				break;
 
 			case ALERT_STATUS_NEW:
 			case ALERT_STATUS_NOT_SENT:
 				$status_label = _('In progress');
-				$status_color = ZBX_STYLE_YELLOW;
+				$status_color = TRX_STYLE_YELLOW;
 				break;
 
 			default:
 				$status_label = _('Failed');
-				$status_color = ZBX_STYLE_RED;
+				$status_color = TRX_STYLE_RED;
 				break;
 		}
 
@@ -2200,7 +2200,7 @@ function makeActionTableStatus(array $action) {
  * Creates div with alert info icons.
  *
  * @param array  $action
- * @param int    $action['action_type']        Type of event table action (ZBX_EVENT_HISTORY_*).
+ * @param int    $action['action_type']        Type of event table action (TRX_EVENT_HISTORY_*).
  * @param string $action['status']             Alert status.
  * @param string $action['alerttype']          Type of alert.
  * @param string $action['mediatypeid']        ID for mediatype, where alert message was sent.
@@ -2211,7 +2211,7 @@ function makeActionTableStatus(array $action) {
  * @return CDiv|string
  */
 function makeActionTableInfo(array $action, array $mediatypes) {
-	if ($action['action_type'] == ZBX_EVENT_HISTORY_ALERT) {
+	if ($action['action_type'] == TRX_EVENT_HISTORY_ALERT) {
 		$info_icons = [];
 
 		if ($action['alerttype'] == ALERT_TYPE_MESSAGE

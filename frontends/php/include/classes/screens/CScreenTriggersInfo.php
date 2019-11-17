@@ -12,7 +12,7 @@ class CScreenTriggersInfo extends CScreenBase {
 	public function get() {
 		$header = (new CDiv([
 			new CTag('h4', true, _('Trigger info'))
-		]))->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD);
+		]))->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD);
 
 		if ($this->screenitem['resourceid'] != 0) {
 			$groups = API::HostGroup()->get([
@@ -27,7 +27,7 @@ class CScreenTriggersInfo extends CScreenBase {
 
 		$footer = (new CList())
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(new CUiWidget(uniqid(), [$header, $table, $footer]));
 	}

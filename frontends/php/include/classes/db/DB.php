@@ -39,16 +39,16 @@ class DB {
 
 		if (!self::$dbBackend) {
 			switch ($DB['TYPE']) {
-				case ZBX_DB_MYSQL:
+				case TRX_DB_MYSQL:
 					self::$dbBackend = new MysqlDbBackend();
 					break;
-				case ZBX_DB_POSTGRESQL:
+				case TRX_DB_POSTGRESQL:
 					self::$dbBackend = new PostgresqlDbBackend();
 					break;
-				case ZBX_DB_ORACLE:
+				case TRX_DB_ORACLE:
 					self::$dbBackend = new OracleDbBackend();
 					break;
-				case ZBX_DB_DB2:
+				case TRX_DB_DB2:
 					self::$dbBackend = new Db2DbBackend();
 					break;
 			}
@@ -92,7 +92,7 @@ class DB {
 		if ($res) {
 			$maxNextId = bcadd($res['nextid'], $count, 0);
 
-			if (bccomp($maxNextId, ZBX_DB_MAX_ID) == 1) {
+			if (bccomp($maxNextId, TRX_DB_MAX_ID) == 1) {
 				$nextid = self::refreshIds($table, $count);
 			}
 			else {
@@ -157,7 +157,7 @@ class DB {
 
 		$maxNextId = bcadd($nextid, $count, 0);
 
-		if (bccomp($maxNextId, ZBX_DB_MAX_ID) == 1) {
+		if (bccomp($maxNextId, TRX_DB_MAX_ID) == 1) {
 			self::exception(
 				self::RESERVEIDS_ERROR, __METHOD__.' ID greater than maximum allowed for table "'.$table.'"'
 			);
@@ -252,7 +252,7 @@ class DB {
 		$schema = self::getSchema($table_name);
 
 		if ($schema['fields'][$field_name]['type'] == self::FIELD_TYPE_TEXT) {
-			return ($DB['TYPE'] == ZBX_DB_DB2 || $DB['TYPE'] == ZBX_DB_ORACLE) ? 2048 : 65535;
+			return ($DB['TYPE'] == TRX_DB_DB2 || $DB['TYPE'] == TRX_DB_ORACLE) ? 2048 : 65535;
 		}
 
 		return $schema['fields'][$field_name]['length'];
@@ -261,7 +261,7 @@ class DB {
 	private static function addMissingFields($tableSchema, $values) {
 		global $DB;
 
-		if ($DB['TYPE'] == ZBX_DB_MYSQL) {
+		if ($DB['TYPE'] == TRX_DB_MYSQL) {
 			foreach ($tableSchema['fields'] as $name => $field) {
 				if ($field['type'] == self::FIELD_TYPE_TEXT && !$field['null']) {
 					foreach ($values as &$value) {
@@ -364,7 +364,7 @@ class DB {
 						$values[$field] = zbx_dbstr($values[$field]);
 						break;
 					case self::FIELD_TYPE_TEXT:
-						if ($DB['TYPE'] == ZBX_DB_DB2 || $DB['TYPE'] == ZBX_DB_ORACLE) {
+						if ($DB['TYPE'] == TRX_DB_DB2 || $DB['TYPE'] == TRX_DB_ORACLE) {
 							$length = mb_strlen($values[$field]);
 
 							if ($length > 2048) {
@@ -1115,8 +1115,8 @@ class DB {
 			}
 
 			$sortorder = '';
-			if (array_key_exists($index, $options['sortorder']) && $options['sortorder'][$index] == ZBX_SORT_DOWN) {
-				$sortorder = ' '.ZBX_SORT_DOWN;
+			if (array_key_exists($index, $options['sortorder']) && $options['sortorder'][$index] == TRX_SORT_DOWN) {
+				$sortorder = ' '.TRX_SORT_DOWN;
 			}
 
 			$sql_parts['order'][] = self::fieldId($field_name, $table_alias).$sortorder;

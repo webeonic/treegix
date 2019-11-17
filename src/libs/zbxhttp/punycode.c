@@ -310,7 +310,7 @@ int	zbx_http_punycode_encode_url(char **url)
 		if (NULL == (domain = strstr(*url, "://")))
 			domain = *url;
 		else
-			domain += ZBX_CONST_STRLEN("://");
+			domain += TRX_CONST_STRLEN("://");
 	}
 	else
 		domain++;

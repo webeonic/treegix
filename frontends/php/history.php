@@ -15,30 +15,30 @@ CView::$has_web_layout_mode = true;
 $page['web_layout_mode'] = CView::getLayoutMode();
 
 if (hasRequest('plaintext')) {
-	define('ZBX_PAGE_NO_MENU', true);
+	define('TRX_PAGE_NO_MENU', true);
 }
-define('ZBX_PAGE_DO_JS_REFRESH', 1);
+define('TRX_PAGE_DO_JS_REFRESH', 1);
 
 require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'itemids' =>		[T_ZBX_INT,			O_OPT, P_SYS,	DB_ID,	null],
-	'from' =>			[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,	null],
-	'to' =>				[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,	null],
-	'filter_task' =>	[T_ZBX_STR,			O_OPT, null,	IN(FILTER_TASK_SHOW.','.FILTER_TASK_HIDE.','.FILTER_TASK_MARK.','.FILTER_TASK_INVERT_MARK), null],
-	'filter' =>			[T_ZBX_STR,			O_OPT, null,	null,	null],
-	'mark_color' =>		[T_ZBX_STR,			O_OPT, null,	IN(MARK_COLOR_RED.','.MARK_COLOR_GREEN.','.MARK_COLOR_BLUE), null],
-	'cmbitemlist' =>	[T_ZBX_INT,			O_OPT, null,	DB_ID,	null],
-	'plaintext' =>		[T_ZBX_STR,			O_OPT, null,	null,	null],
-	'action' =>			[T_ZBX_STR,			O_OPT, P_SYS,	IN('"'.HISTORY_GRAPH.'","'.HISTORY_VALUES.'","'.HISTORY_LATEST.'","'.HISTORY_BATCH_GRAPH.'"'), null],
-	'graphtype' =>		[T_ZBX_INT,			O_OPT, null,   IN([GRAPH_TYPE_NORMAL, GRAPH_TYPE_STACKED]), null],
+	'itemids' =>		[T_TRX_INT,			O_OPT, P_SYS,	DB_ID,	null],
+	'from' =>			[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,	null],
+	'to' =>				[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,	null],
+	'filter_task' =>	[T_TRX_STR,			O_OPT, null,	IN(FILTER_TASK_SHOW.','.FILTER_TASK_HIDE.','.FILTER_TASK_MARK.','.FILTER_TASK_INVERT_MARK), null],
+	'filter' =>			[T_TRX_STR,			O_OPT, null,	null,	null],
+	'mark_color' =>		[T_TRX_STR,			O_OPT, null,	IN(MARK_COLOR_RED.','.MARK_COLOR_GREEN.','.MARK_COLOR_BLUE), null],
+	'cmbitemlist' =>	[T_TRX_INT,			O_OPT, null,	DB_ID,	null],
+	'plaintext' =>		[T_TRX_STR,			O_OPT, null,	null,	null],
+	'action' =>			[T_TRX_STR,			O_OPT, P_SYS,	IN('"'.HISTORY_GRAPH.'","'.HISTORY_VALUES.'","'.HISTORY_LATEST.'","'.HISTORY_BATCH_GRAPH.'"'), null],
+	'graphtype' =>		[T_TRX_INT,			O_OPT, null,   IN([GRAPH_TYPE_NORMAL, GRAPH_TYPE_STACKED]), null],
 	// actions
-	'reset' =>			[T_ZBX_STR,			O_OPT, P_SYS|P_ACT, null, null],
-	'cancel' =>			[T_ZBX_STR,			O_OPT, P_SYS,	null,	null],
-	'form' =>			[T_ZBX_STR,			O_OPT, P_SYS,	null,	null],
-	'form_copy_to' =>	[T_ZBX_STR,			O_OPT, P_SYS,	null,	null],
-	'form_refresh' =>	[T_ZBX_INT,			O_OPT, null,	null,	null]
+	'reset' =>			[T_TRX_STR,			O_OPT, P_SYS|P_ACT, null, null],
+	'cancel' =>			[T_TRX_STR,			O_OPT, P_SYS,	null,	null],
+	'form' =>			[T_TRX_STR,			O_OPT, P_SYS,	null,	null],
+	'form_copy_to' =>	[T_TRX_STR,			O_OPT, P_SYS,	null,	null],
+	'form_refresh' =>	[T_TRX_INT,			O_OPT, null,	null,	null]
 ];
 check_fields($fields);
 validateTimeSelectorPeriod(getRequest('from'), getRequest('to'));

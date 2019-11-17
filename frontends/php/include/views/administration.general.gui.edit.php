@@ -23,10 +23,10 @@ $guiTab = (new CFormList())
 	)
 	->addRow(_('Dropdown first entry'), [
 		new CComboBox('dropdown_first_entry', $data['dropdown_first_entry'], null, [
-			ZBX_DROPDOWN_FIRST_NONE => _('None'),
-			ZBX_DROPDOWN_FIRST_ALL => _('All')
+			TRX_DROPDOWN_FIRST_NONE => _('None'),
+			TRX_DROPDOWN_FIRST_ALL => _('All')
 		]),
-		(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+		(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 		(new CCheckBox('dropdown_first_remember'))
 			->setLabel(_('remember selected'))
 			->setChecked($data['dropdown_first_remember'] == 1)
@@ -34,12 +34,12 @@ $guiTab = (new CFormList())
 	->addRow((new CLabel(_('Limit for search and filter results'), 'search_limit'))->setAsteriskMark(),
 		(new CNumericBox('search_limit', $data['search_limit'], 6))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	)
 	->addRow((new CLabel(_('Max count of elements to show inside table cell'), 'max_in_table'))->setAsteriskMark(),
 		(new CNumericBox('max_in_table', $data['max_in_table'], 5))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	)
 	->addRow(_('Show warning if Treegix server is down'),
 		(new CCheckBox('server_check_interval', SERVER_CHECK_INTERVAL))
@@ -51,7 +51,7 @@ $guiView = (new CTabView())
 	->setFooter(makeFormFooter(new CSubmit('update', _('Update'))));
 
 $guiForm = (new CForm())
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addItem($guiView);
 
 $widget->addItem($guiForm);

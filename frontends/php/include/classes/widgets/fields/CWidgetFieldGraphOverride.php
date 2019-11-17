@@ -16,7 +16,7 @@ class CWidgetFieldGraphOverride extends CWidgetField {
 	public function __construct($name, $label) {
 		parent::__construct($name, $label);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_STR);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_STR);
 		$this->setValidationRules(['type' => API_OBJECTS, 'fields' => [
 			'hosts'				=> ['type' => API_STRINGS_UTF8, 'flags' => API_REQUIRED],
 			'items'				=> ['type' => API_STRINGS_UTF8, 'flags' => API_REQUIRED],
@@ -28,7 +28,7 @@ class CWidgetFieldGraphOverride extends CWidgetField {
 			'fill'				=> ['type' => API_INT32, 'in' => implode(',', range(0, 10))],
 			'missingdatafunc'	=> ['type' => API_INT32, 'in' => implode(',', [SVG_GRAPH_MISSING_DATA_NONE, SVG_GRAPH_MISSING_DATA_CONNECTED, SVG_GRAPH_MISSING_DATA_TREAT_AS_ZERO])],
 			'axisy'				=> ['type' => API_INT32, 'in' => implode(',', [GRAPH_YAXIS_SIDE_LEFT, GRAPH_YAXIS_SIDE_RIGHT])],
-			'timeshift'			=> ['type' => API_TIME_UNIT, 'in' => implode(':', [ZBX_MIN_TIMESHIFT, ZBX_MAX_TIMESHIFT])]
+			'timeshift'			=> ['type' => API_TIME_UNIT, 'in' => implode(':', [TRX_MIN_TIMESHIFT, TRX_MAX_TIMESHIFT])]
 		]]);
 		$this->setDefault([]);
 	}
@@ -120,14 +120,14 @@ class CWidgetFieldGraphOverride extends CWidgetField {
 			// Hosts and items fields are stored as arrays to bypass length limit.
 			foreach ($val['hosts'] as $num => $pattern_item) {
 				$widget_fields[] = [
-					'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+					'type' => TRX_WIDGET_FIELD_TYPE_STR,
 					'name' => $this->name.'.hosts.'.$index.'.'.$num,
 					'value' => $pattern_item
 				];
 			}
 			foreach ($val['items'] as $num => $pattern_item) {
 				$widget_fields[] = [
-					'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+					'type' => TRX_WIDGET_FIELD_TYPE_STR,
 					'name' => $this->name.'.items.'.$index.'.'.$num,
 					'value' => $pattern_item
 				];
@@ -137,8 +137,8 @@ class CWidgetFieldGraphOverride extends CWidgetField {
 				if (array_key_exists($opt, $val)) {
 					$widget_fields[] = [
 						'type' => ($opt === 'color' || $opt === 'timeshift')
-							? ZBX_WIDGET_FIELD_TYPE_STR
-							: ZBX_WIDGET_FIELD_TYPE_INT32,
+							? TRX_WIDGET_FIELD_TYPE_STR
+							: TRX_WIDGET_FIELD_TYPE_INT32,
 						'name' => $this->name.'.'.$opt.'.'.$index,
 						'value' => $val[$opt]
 					];

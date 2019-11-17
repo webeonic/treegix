@@ -214,17 +214,17 @@ class CHostInterface extends CApiService {
 		$check_have_items = [];
 		foreach ($interfaces as &$interface) {
 			if (!check_db_fields($interfaceDBfields, $interface)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			if ($update) {
 				if (!isset($dbInterfaces[$interface['interfaceid']])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 				}
 
 				$dbInterface = $dbInterfaces[$interface['interfaceid']];
 				if (isset($interface['hostid']) && bccomp($dbInterface['hostid'], $interface['hostid']) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Cannot switch host for interface.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Cannot switch host for interface.'));
 				}
 
 				if (array_key_exists('type', $interface) && $interface['type'] != $dbInterface['type']) {
@@ -239,42 +239,42 @@ class CHostInterface extends CApiService {
 			}
 			else {
 				if (!isset($dbHosts[$interface['hostid']]) && !isset($dbProxies[$interface['hostid']])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 				}
 
 				if (isset($dbProxies[$interface['hostid']])) {
 					$interface['type'] = INTERFACE_TYPE_UNKNOWN;
 				}
 				elseif (!isset($interface['type'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to method.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to method.'));
 				}
 			}
 
 			if (zbx_empty($interface['ip']) && zbx_empty($interface['dns'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('IP and DNS cannot be empty for host interface.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('IP and DNS cannot be empty for host interface.'));
 			}
 
 			if ($interface['useip'] == INTERFACE_USE_IP && zbx_empty($interface['ip'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Interface with DNS "%1$s" cannot have empty IP address.', $interface['dns']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Interface with DNS "%1$s" cannot have empty IP address.', $interface['dns']));
 			}
 
 			if ($interface['useip'] == INTERFACE_USE_DNS && zbx_empty($interface['dns'])) {
 				if ($dbHosts && !empty($dbHosts[$interface['hostid']]['host'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Interface with IP "%1$s" cannot have empty DNS name while having "Use DNS" property on "%2$s".',
 							$interface['ip'],
 							$dbHosts[$interface['hostid']]['host']
 					));
 				}
 				elseif ($dbProxies && !empty($dbProxies[$interface['hostid']]['host'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Interface with IP "%1$s" cannot have empty DNS name while having "Use DNS" property on "%2$s".',
 							$interface['ip'],
 							$dbProxies[$interface['hostid']]['host']
 					));
 				}
 				else {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Interface with IP "%1$s" cannot have empty DNS name.', $interface['ip']));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Interface with IP "%1$s" cannot have empty DNS name.', $interface['ip']));
 				}
 			}
 
@@ -363,7 +363,7 @@ class CHostInterface extends CApiService {
 	 */
 	public function delete(array $interfaceids) {
 		if (empty($interfaceids)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$dbInterfaces = $this->get([
@@ -374,7 +374,7 @@ class CHostInterface extends CApiService {
 		]);
 		foreach ($interfaceids as $interfaceId) {
 			if (!isset($dbInterfaces[$interfaceId])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -411,7 +411,7 @@ class CHostInterface extends CApiService {
 		// check interfaces
 		foreach ($data['interfaces'] as $interface) {
 			if (!isset($interface['dns']) || !isset($interface['ip']) || !isset($interface['port'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			$this->checkDns($interface);
@@ -563,9 +563,9 @@ class CHostInterface extends CApiService {
 
 		$user_macro_parser = new CUserMacroParser();
 
-		if (!preg_match('/^'.ZBX_PREG_DNS_FORMAT.'$/', $interface['dns'])
+		if (!preg_match('/^'.TRX_PREG_DNS_FORMAT.'$/', $interface['dns'])
 				&& $user_macro_parser->parse($interface['dns']) != CParser::PARSE_SUCCESS) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect interface DNS parameter "%s" provided.', $interface['dns'])
 			);
 		}
@@ -586,15 +586,15 @@ class CHostInterface extends CApiService {
 
 		$user_macro_parser = new CUserMacroParser();
 
-		if (preg_match('/^'.ZBX_PREG_MACRO_NAME_FORMAT.'$/', $interface['ip'])
+		if (preg_match('/^'.TRX_PREG_MACRO_NAME_FORMAT.'$/', $interface['ip'])
 				|| $user_macro_parser->parse($interface['ip']) == CParser::PARSE_SUCCESS) {
 			return;
 		}
 
-		$ip_parser = new CIPParser(['v6' => ZBX_HAVE_IPV6]);
+		$ip_parser = new CIPParser(['v6' => TRX_HAVE_IPV6]);
 
 		if ($ip_parser->parse($interface['ip']) != CParser::PARSE_SUCCESS) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Invalid IP address "%1$s".', $interface['ip']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Invalid IP address "%1$s".', $interface['ip']));
 		}
 	}
 
@@ -607,10 +607,10 @@ class CHostInterface extends CApiService {
 	 */
 	protected function checkPort(array $interface) {
 		if (!isset($interface['port']) || zbx_empty($interface['port'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Port cannot be empty for host interface.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Port cannot be empty for host interface.'));
 		}
 		elseif (!validatePortNumberOrMacro($interface['port'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect interface port "%s" provided.', $interface['port']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect interface port "%s" provided.', $interface['port']));
 		}
 	}
 
@@ -632,7 +632,7 @@ class CHostInterface extends CApiService {
 			]);
 
 			if ($count != count($hostids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -654,7 +654,7 @@ class CHostInterface extends CApiService {
 				|| ($interface['type'] == INTERFACE_TYPE_SNMP && isset($interface['bulk'])
 					&& (zbx_empty($interface['bulk'])
 						|| ($interface['bulk'] != SNMP_BULK_DISABLED && $interface['bulk'] != SNMP_BULK_ENABLED))))) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect bulk value for interface.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect bulk value for interface.'));
 		}
 	}
 
@@ -794,12 +794,12 @@ class CHostInterface extends CApiService {
 					]);
 					$host = reset($host);
 
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('No default interface for "%1$s" type on "%2$s".', hostInterfaceTypeNumToName($type), $host['name']));
 				}
 
 				if ($counters['main'] > 1) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Host cannot have more than one default interface of the same type.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Host cannot have more than one default interface of the same type.'));
 				}
 			}
 		}
@@ -818,7 +818,7 @@ class CHostInterface extends CApiService {
 		foreach ($items as $item) {
 			$host = reset($item['hosts']);
 
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Interface is linked to item "%1$s" on "%2$s".', $item['name'], $host['name']));
 		}
 	}

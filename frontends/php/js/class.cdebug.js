@@ -197,5 +197,5 @@ function cdump($obj) {
 }
 
 function cdumpts(timestamp) {
-	return new CDate(timestamp).getZBXDate();
+	return new CDate(timestamp).getTRXDate();
 }

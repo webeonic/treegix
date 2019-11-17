@@ -12,10 +12,10 @@ class CWidgetFormGraphPrototype extends CWidgetForm {
 
 		// Select graph type field.
 		$field_source = (new CWidgetFieldRadioButtonList('source_type', _('Source'), [
-			ZBX_WIDGET_FIELD_RESOURCE_GRAPH_PROTOTYPE => _('Graph prototype'),
-			ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH_PROTOTYPE => _('Simple graph prototype'),
+			TRX_WIDGET_FIELD_RESOURCE_GRAPH_PROTOTYPE => _('Graph prototype'),
+			TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH_PROTOTYPE => _('Simple graph prototype'),
 		]))
-			->setDefault(ZBX_WIDGET_FIELD_RESOURCE_GRAPH_PROTOTYPE)
+			->setDefault(TRX_WIDGET_FIELD_RESOURCE_GRAPH_PROTOTYPE)
 			->setAction('updateWidgetConfigDialogue()')
 			->setModern(true);
 
@@ -26,7 +26,7 @@ class CWidgetFormGraphPrototype extends CWidgetForm {
 		$this->fields[$field_source->getName()] = $field_source;
 
 		if (array_key_exists('source_type', $this->data)
-				&& $this->data['source_type'] == ZBX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH_PROTOTYPE) {
+				&& $this->data['source_type'] == TRX_WIDGET_FIELD_RESOURCE_SIMPLE_GRAPH_PROTOTYPE) {
 			// Select simple graph prototype field.
 			$field_item_prototype = (new CWidgetFieldMsItemPrototype('itemid', _('Item prototype')))
 				->setFlags(CWidgetField::FLAG_NOT_EMPTY | CWidgetField::FLAG_LABEL_ASTERISK)

@@ -28,7 +28,7 @@ extern int	CONFIG_TIMEOUT;
 static int	ONLY_ACTIVE(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	SYSTEM_RUN(AGENT_REQUEST *request, AGENT_RESULT *result);
 
-ZBX_METRIC	parameters_common[] =
+TRX_METRIC	parameters_common[] =
 /*	KEY			FLAG		FUNCTION		TEST PARAMETERS */
 {
 	{"system.localtime",	CF_HAVEPARAMS,	SYSTEM_LOCALTIME,	"utc"},
@@ -71,7 +71,7 @@ ZBX_METRIC	parameters_common[] =
 
 static int	ONLY_ACTIVE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	SET_MSG_RESULT(result, zbx_strdup(NULL, "Accessible only as active check."));
 
@@ -99,15 +99,15 @@ int	EXECUTE_STR(const char *command, AGENT_RESULT *result)
 	char		*cmd_result = NULL, error[MAX_STRING_LEN];
 
 	if (SUCCEED != zbx_execute(command, &cmd_result, error, sizeof(error), CONFIG_TIMEOUT,
-			ZBX_EXIT_CODE_CHECKS_DISABLED))
+			TRX_EXIT_CODE_CHECKS_DISABLED))
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, error));
 		goto out;
 	}
 
-	zbx_rtrim(cmd_result, ZBX_WHITESPACE);
+	zbx_rtrim(cmd_result, TRX_WHITESPACE);
 
-	treegix_log(LOG_LEVEL_DEBUG, "%s() command:'%s' len:" ZBX_FS_SIZE_T " cmd_result:'%.20s'",
+	treegix_log(LOG_LEVEL_DEBUG, "%s() command:'%s' len:" TRX_FS_SIZE_T " cmd_result:'%.20s'",
 			__func__, command, (zbx_fs_size_t)strlen(cmd_result), cmd_result);
 
 	SET_TEXT_RESULT(result, zbx_strdup(NULL, cmd_result));

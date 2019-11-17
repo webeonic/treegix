@@ -18,7 +18,7 @@ extern int		server_num, process_num;
 
 static void	zbx_proxyconfig_sigusr_handler(int flags)
 {
-	if (ZBX_RTC_CONFIG_CACHE_RELOAD == ZBX_RTC_GET_MSG(flags))
+	if (TRX_RTC_CONFIG_CACHE_RELOAD == TRX_RTC_GET_MSG(flags))
 	{
 		if (0 < zbx_sleep_get_remainder())
 		{
@@ -49,7 +49,7 @@ static void	process_configuration_sync(size_t *data_size)
 	if (FAIL == connect_to_server(&sock, 600, CONFIG_PROXYCONFIG_RETRY))	/* retry till have a connection */
 		goto out;
 
-	if (SUCCEED != get_data_from_server(&sock, ZBX_PROTO_VALUE_PROXY_CONFIG, &error))
+	if (SUCCEED != get_data_from_server(&sock, TRX_PROTO_VALUE_PROXY_CONFIG, &error))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot obtain configuration data from server at \"%s\": %s",
 				sock.peer, error);
@@ -74,13 +74,13 @@ static void	process_configuration_sync(size_t *data_size)
 
 	/* if the answer is short then most likely it is a negative answer "response":"failed" */
 	if (128 > *data_size &&
-			SUCCEED == zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_RESPONSE, value, sizeof(value)) &&
-			0 == strcmp(value, ZBX_PROTO_VALUE_FAILED))
+			SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value)) &&
+			0 == strcmp(value, TRX_PROTO_VALUE_FAILED))
 	{
 		char	*info = NULL;
 		size_t	info_alloc = 0;
 
-		if (SUCCEED != zbx_json_value_by_name_dyn(&jp, ZBX_PROTO_TAG_INFO, &info, &info_alloc))
+		if (SUCCEED != zbx_json_value_by_name_dyn(&jp, TRX_PROTO_TAG_INFO, &info, &info_alloc))
 			info = zbx_dsprintf(info, "negative response \"%s\"", value);
 
 		treegix_log(LOG_LEVEL_WARNING, "cannot obtain configuration data from server at \"%s\": %s",
@@ -89,7 +89,7 @@ static void	process_configuration_sync(size_t *data_size)
 		goto error;
 	}
 
-	treegix_log(LOG_LEVEL_WARNING, "received configuration data from server at \"%s\", datalen " ZBX_FS_SIZE_T,
+	treegix_log(LOG_LEVEL_WARNING, "received configuration data from server at \"%s\", datalen " TRX_FS_SIZE_T,
 			sock.peer, (zbx_fs_size_t)*data_size);
 
 	process_proxyconfig(&jp);
@@ -116,7 +116,7 @@ out:
  * Comments: never returns                                                    *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(proxyconfig_thread, args)
+TRX_THREAD_ENTRY(proxyconfig_thread, args)
 {
 	size_t	data_size;
 	double	sec;
@@ -133,11 +133,11 @@ ZBX_THREAD_ENTRY(proxyconfig_thread, args)
 #endif
 	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
-	DBconnect(ZBX_DB_CONNECT_NORMAL);
+	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	zbx_set_sigusr_handler(zbx_proxyconfig_sigusr_handler);
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 		zbx_update_env(sec);
@@ -147,7 +147,7 @@ ZBX_THREAD_ENTRY(proxyconfig_thread, args)
 		process_configuration_sync(&data_size);
 		sec = zbx_time() - sec;
 
-		zbx_setproctitle("%s [synced config " ZBX_FS_SIZE_T " bytes in " ZBX_FS_DBL " sec, idle %d sec]",
+		zbx_setproctitle("%s [synced config " TRX_FS_SIZE_T " bytes in " TRX_FS_DBL " sec, idle %d sec]",
 				get_process_type_string(process_type), (zbx_fs_size_t)data_size, sec,
 				CONFIG_PROXYCONFIG_FREQUENCY);
 

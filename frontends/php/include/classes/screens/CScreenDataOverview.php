@@ -21,15 +21,15 @@ class CScreenDataOverview extends CScreenBase {
 			new CTag('h4', true, _('Data overview')),
 			(new CList())
 				->addItem([_('Group'), ':', SPACE, $groups[0]['name']])
-		]))->addClass(ZBX_STYLE_DASHBRD_WIDGET_HEAD);
+		]))->addClass(TRX_STYLE_DASHBRD_WIDGET_HEAD);
 
 		$table = getItemsDataOverview((array) $groupid, $this->screenitem['application'], $this->screenitem['style'],
-			ZBX_PROBLEM_SUPPRESSED_FALSE
+			TRX_PROBLEM_SUPPRESSED_FALSE
 		);
 
 		$footer = (new CList())
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(new CUiWidget(uniqid(), [$header, $table, $footer]));
 	}

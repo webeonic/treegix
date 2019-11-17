@@ -170,22 +170,22 @@ class CFilter extends CDiv {
 	 * @return CFilter
 	 */
 	public function addFilterTab($header, $columns, $footer = null) {
-		$row = (new CDiv())->addClass(ZBX_STYLE_ROW);
+		$row = (new CDiv())->addClass(TRX_STYLE_ROW);
 		$body = [];
 		$anchor = 'tab_'.count($this->tabs);
 
 		foreach ($columns as $column) {
-			$row->addItem((new CDiv($column))->addClass(ZBX_STYLE_CELL));
+			$row->addItem((new CDiv($column))->addClass(TRX_STYLE_CELL));
 		}
 
 		$body[] = (new CDiv())
-			->addClass(ZBX_STYLE_TABLE)
-			->addClass(ZBX_STYLE_FILTER_FORMS)
+			->addClass(TRX_STYLE_TABLE)
+			->addClass(TRX_STYLE_FILTER_FORMS)
 			->addItem($row);
 
 		if ($this->show_buttons) {
 			$body[] = (new CDiv())
-				->addClass(ZBX_STYLE_FILTER_FORMS)
+				->addClass(TRX_STYLE_FILTER_FORMS)
 				->addItem(
 					(new CSubmitButton(_('Apply'), 'filter_set', 1))
 						->onClick('javascript: chkbxRange.clearSelectedOnFilterChange();')
@@ -196,7 +196,7 @@ class CFilter extends CDiv {
 							->setArgument('filter_rst', 1)
 							->getUrl()
 					))
-						->addClass(ZBX_STYLE_BTN_ALT)
+						->addClass(TRX_STYLE_BTN_ALT)
 						->onClick('javascript: chkbxRange.clearSelectedOnFilterChange();')
 				);
 		}
@@ -206,9 +206,9 @@ class CFilter extends CDiv {
 		}
 
 		return $this->addTab(
-			(new CLink($header, '#'.$anchor))->addClass(ZBX_STYLE_FILTER_TRIGGER),
+			(new CLink($header, '#'.$anchor))->addClass(TRX_STYLE_FILTER_TRIGGER),
 			(new CDiv($body))
-				->addClass(ZBX_STYLE_FILTER_CONTAINER)
+				->addClass(TRX_STYLE_FILTER_CONTAINER)
 				->setId($anchor)
 		);
 	}
@@ -225,20 +225,20 @@ class CFilter extends CDiv {
 	 *
 	 * @return CFilter
 	 */
-	public function addTimeSelector($from, $to, $visible = true, $format = ZBX_FULL_DATE_TIME) {
+	public function addTimeSelector($from, $to, $visible = true, $format = TRX_FULL_DATE_TIME) {
 		$header = relativeDateToText($from, $to);
 
 		if ($visible) {
 			$this->addTab(new CDiv([
-				(new CSimpleButton())->addClass(ZBX_STYLE_BTN_TIME_LEFT),
-				(new CSimpleButton(_('Zoom out')))->addClass(ZBX_STYLE_BTN_TIME_OUT),
-				(new CSimpleButton())->addClass(ZBX_STYLE_BTN_TIME_RIGHT)
+				(new CSimpleButton())->addClass(TRX_STYLE_BTN_TIME_LEFT),
+				(new CSimpleButton(_('Zoom out')))->addClass(TRX_STYLE_BTN_TIME_OUT),
+				(new CSimpleButton())->addClass(TRX_STYLE_BTN_TIME_RIGHT)
 			]), null);
 
 			$predefined_ranges = [];
 
 			foreach ($this->time_ranges as $column_ranges) {
-				$column = (new CList())->addClass(ZBX_STYLE_TIME_QUICK);
+				$column = (new CList())->addClass(TRX_STYLE_TIME_QUICK);
 
 				foreach ($column_ranges as $range) {
 					$label = relativeDateToText($range[0], $range[1]);
@@ -248,43 +248,43 @@ class CFilter extends CDiv {
 						->setAttribute('data-from', $range[0])
 						->setAttribute('data-to', $range[1])
 						->setAttribute('data-label', $label)
-						->addClass($is_selected ? ZBX_STYLE_SELECTED : null)
+						->addClass($is_selected ? TRX_STYLE_SELECTED : null)
 					);
 				}
 
-				$predefined_ranges[] = (new CDiv($column))->addClass(ZBX_STYLE_CELL);
+				$predefined_ranges[] = (new CDiv($column))->addClass(TRX_STYLE_CELL);
 			}
 
 			$anchor = 'tab_'.count($this->tabs);
 
 			$this->addTab(
-				(new CLink($header, '#'.$anchor))->addClass(ZBX_STYLE_BTN_TIME),
+				(new CLink($header, '#'.$anchor))->addClass(TRX_STYLE_BTN_TIME),
 				(new CDiv([
 					(new CDiv([
 						new CList([
 							new CLabel(_('From'), 'from'),
 							(new CDateSelector('from', $from))->setDateFormat($format)
 						]),
-						(new CList([(new CListItem(''))->addClass(ZBX_STYLE_RED)]))
+						(new CList([(new CListItem(''))->addClass(TRX_STYLE_RED)]))
 							->setAttribute('data-error-for', 'from')
-							->addClass(ZBX_STYLE_TIME_INPUT_ERROR)
+							->addClass(TRX_STYLE_TIME_INPUT_ERROR)
 							->addStyle('display: none'),
 						new CList([
 							new CLabel(_('To'), 'to'),
 							(new CDateSelector('to', $to))->setDateFormat($format)
 						]),
-						(new CList([(new CListItem(''))->addClass(ZBX_STYLE_RED)]))
+						(new CList([(new CListItem(''))->addClass(TRX_STYLE_RED)]))
 							->setAttribute('data-error-for', 'to')
-							->addClass(ZBX_STYLE_TIME_INPUT_ERROR)
+							->addClass(TRX_STYLE_TIME_INPUT_ERROR)
 							->addStyle('display: none'),
 						new CList([
 							new CButton('apply', _('Apply'))
 						])
-					]))->addClass(ZBX_STYLE_TIME_INPUT),
-					(new CDiv($predefined_ranges))->addClass(ZBX_STYLE_TIME_QUICK_RANGE)
+					]))->addClass(TRX_STYLE_TIME_INPUT),
+					(new CDiv($predefined_ranges))->addClass(TRX_STYLE_TIME_QUICK_RANGE)
 				]))
-					->addClass(ZBX_STYLE_FILTER_CONTAINER)
-					->addClass(ZBX_STYLE_TIME_SELECTION_CONTAINER)
+					->addClass(TRX_STYLE_FILTER_CONTAINER)
+					->addClass(TRX_STYLE_TIME_SELECTION_CONTAINER)
 					->setId($anchor)
 			);
 		}
@@ -356,7 +356,7 @@ class CFilter extends CDiv {
 	 * @return string
 	 */
 	public function toString($destroy = true) {
-		$headers = (new CList())->addClass(ZBX_STYLE_FILTER_BTN_CONTAINER);
+		$headers = (new CList())->addClass(TRX_STYLE_FILTER_BTN_CONTAINER);
 		$headers_cnt = 0;
 
 		if ($this->tabs_options['active'] !== false

@@ -31,7 +31,7 @@ class CScreenSystemStatus extends CScreenBase {
 
 		$footer = (new CList())
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(
 			(new CUiWidget('hat_syssum', [$table, $footer]))->setHeader(_('Problems by severity'))

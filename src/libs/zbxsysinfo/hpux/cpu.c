@@ -50,7 +50,7 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	tmp = get_rparam(request, 0);
 
 	if (NULL == tmp || '\0' == *tmp || 0 == strcmp(tmp, "all"))
-		cpu_num = ZBX_CPUNUM_ALL;
+		cpu_num = TRX_CPUNUM_ALL;
 	else if (SUCCEED != is_uint31_1(tmp, &cpu_num))
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
@@ -60,13 +60,13 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	tmp = get_rparam(request, 1);
 
 	if (NULL == tmp || '\0' == *tmp || 0 == strcmp(tmp, "user"))
-		state = ZBX_CPU_STATE_USER;
+		state = TRX_CPU_STATE_USER;
 	else if (0 == strcmp(tmp, "nice"))
-		state = ZBX_CPU_STATE_NICE;
+		state = TRX_CPU_STATE_NICE;
 	else if (0 == strcmp(tmp, "system"))
-		state = ZBX_CPU_STATE_SYSTEM;
+		state = TRX_CPU_STATE_SYSTEM;
 	else if (0 == strcmp(tmp, "idle"))
-		state = ZBX_CPU_STATE_IDLE;
+		state = TRX_CPU_STATE_IDLE;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
@@ -76,11 +76,11 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	tmp = get_rparam(request, 2);
 
 	if (NULL == tmp || '\0' == *tmp || 0 == strcmp(tmp, "avg1"))
-		mode = ZBX_AVG1;
+		mode = TRX_AVG1;
 	else if (0 == strcmp(tmp, "avg5"))
-		mode = ZBX_AVG5;
+		mode = TRX_AVG5;
 	else if (0 == strcmp(tmp, "avg15"))
-		mode = ZBX_AVG15;
+		mode = TRX_AVG15;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));

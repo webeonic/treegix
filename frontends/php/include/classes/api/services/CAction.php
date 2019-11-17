@@ -282,7 +282,7 @@ class CAction extends CApiService {
 			$sqlParts['from']['opcommand'] = 'opcommand oc';
 			$sqlParts['from']['operations_scripts'] = 'operations os';
 			$sqlParts['where'][] = '('.dbConditionInt('oc.scriptid', $options['scriptids']).
-				' AND oc.type='.ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT.')';
+				' AND oc.type='.TRX_SCRIPT_TYPE_GLOBAL_SCRIPT.')';
 			$sqlParts['where']['aos'] = 'a.actionid=os.actionid';
 			$sqlParts['where']['ooc'] = 'os.operationid=oc.operationid';
 		}
@@ -426,7 +426,7 @@ class CAction extends CApiService {
 				' FROM operations o,opcommand oc'.
 				' WHERE o.operationid=oc.operationid'.
 					' AND '.dbConditionInt('o.actionid', $actionIds).
-					' AND oc.type='.ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT
+					' AND oc.type='.TRX_SCRIPT_TYPE_GLOBAL_SCRIPT
 			);
 			while ($script = DBfetch($dbScripts)) {
 				if (!isset($scripts[$script['scriptid']])) {
@@ -807,7 +807,7 @@ class CAction extends CApiService {
 							unset($db_operations[$operationid]);
 						}
 						else {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
 								$operationid, 'operationid'
 							));
 						}
@@ -850,7 +850,7 @@ class CAction extends CApiService {
 							unset($db_recovery_operations[$recovery_operationid]);
 						}
 						else {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
+							self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
 								$recovery_operationid, 'operationid'
 							));
 						}
@@ -924,7 +924,7 @@ class CAction extends CApiService {
 						unset($db_ack_operations[$ack_operation['operationid']]);
 					}
 					else {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
 							$ack_operation['operationid'], 'operationid'
 						));
 					}
@@ -1008,7 +1008,7 @@ class CAction extends CApiService {
 				'conditiontype' => null
 			];
 			if (!check_db_fields($connectionDbFields, $condition)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect parameters for condition.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect parameters for condition.'));
 			}
 		}
 
@@ -1046,7 +1046,7 @@ class CAction extends CApiService {
 				'operationtype' => null
 			];
 			if (!check_db_fields($operationDbFields, $operation)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect parameter for operations.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect parameter for operations.'));
 			}
 		}
 
@@ -1372,17 +1372,17 @@ class CAction extends CApiService {
 					}
 					else {
 						// clear and reset fields to default values on type change
-						if ($operation['opcommand']['type'] == ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT) {
+						if ($operation['opcommand']['type'] == TRX_SCRIPT_TYPE_GLOBAL_SCRIPT) {
 							$operation['opcommand']['command'] = '';
 						}
 						else {
 							$operation['opcommand']['scriptid'] = null;
 						}
-						if ($operation['opcommand']['type'] != ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT) {
-							$operation['opcommand']['execute_on'] = ZBX_SCRIPT_EXECUTE_ON_AGENT;
+						if ($operation['opcommand']['type'] != TRX_SCRIPT_TYPE_CUSTOM_SCRIPT) {
+							$operation['opcommand']['execute_on'] = TRX_SCRIPT_EXECUTE_ON_AGENT;
 						}
-						if ($operation['opcommand']['type'] != ZBX_SCRIPT_TYPE_SSH
-								&& $operation['opcommand']['type'] != ZBX_SCRIPT_TYPE_TELNET) {
+						if ($operation['opcommand']['type'] != TRX_SCRIPT_TYPE_SSH
+								&& $operation['opcommand']['type'] != TRX_SCRIPT_TYPE_TELNET) {
 							$operation['opcommand']['port'] = '';
 							$operation['opcommand']['username'] = '';
 							$operation['opcommand']['password'] = '';
@@ -1588,7 +1588,7 @@ class CAction extends CApiService {
 	public function delete(array $actionids) {
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $actionids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_actions = $this->get([
@@ -1600,7 +1600,7 @@ class CAction extends CApiService {
 
 		foreach ($actionids as $actionid) {
 			if (!array_key_exists($actionid, $db_actions)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -1627,14 +1627,14 @@ class CAction extends CApiService {
 	public function validateFilterConditionsIntegrity($name, $eventsource, array $conditions) {
 		foreach ($conditions as $condition) {
 			if (!in_array($condition['conditiontype'], $this->valid_condition_types[$eventsource])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect filter condition type for action "%1$s".', $name)
 				);
 			}
 
 			if (!in_array($condition['operator'],
 					$this->valid_condition_type_operators[$condition['conditiontype']])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect filter condition operator for action "%1$s".', $name)
 				);
 			}
@@ -1695,7 +1695,7 @@ class CAction extends CApiService {
 		foreach ($operations as $operation) {
 			foreach ($required_fields as $field) {
 				if (!array_key_exists($field, $operation)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', $field));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', $field));
 				}
 			}
 			$eventsource = $operation['eventsource'];
@@ -1706,18 +1706,18 @@ class CAction extends CApiService {
 				if ((array_key_exists('esc_step_from', $operation) || array_key_exists('esc_step_to', $operation))
 						&& (!array_key_exists('esc_step_from', $operation)
 							|| !array_key_exists('esc_step_to', $operation))) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('esc_step_from and esc_step_to must be set together.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('esc_step_from and esc_step_to must be set together.'));
 				}
 
 				if (array_key_exists('esc_step_from', $operation) && array_key_exists('esc_step_to', $operation)) {
 					if ($operation['esc_step_from'] < 1 || $operation['esc_step_to'] < 0) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Incorrect action operation escalation step values.')
 						);
 					}
 
 					if ($operation['esc_step_from'] > $operation['esc_step_to'] && $operation['esc_step_to'] != 0) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Incorrect action operation escalation step values.')
 						);
 					}
@@ -1726,7 +1726,7 @@ class CAction extends CApiService {
 				if (array_key_exists('esc_period', $operation)
 						&& !validateTimeUnit($operation['esc_period'], SEC_PER_MIN, SEC_PER_WEEK, true, $error,
 							['usermacros' => true])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'esc_period', $error)
 					);
 				}
@@ -1734,7 +1734,7 @@ class CAction extends CApiService {
 
 			if (!array_key_exists($eventsource, $valid_operationtypes[$recovery])
 					|| !in_array($operationtype, $valid_operationtypes[$recovery][$eventsource])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect action operation type "%1$s" for event source "%2$s".', $operationtype, $eventsource)
 				);
 			}
@@ -1750,7 +1750,7 @@ class CAction extends CApiService {
 						: [];
 
 					if (!$userids && !$usrgrpids) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('No recipients for action operation message.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('No recipients for action operation message.'));
 					}
 
 					$all_userids = array_merge($all_userids, $userids);
@@ -1765,7 +1765,7 @@ class CAction extends CApiService {
 
 					if (array_key_exists('default_msg', $message)
 							&& (!$default_msg_validator->validate($message['default_msg']))) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value "%1$s" for "%2$s" field: must be between %3$s and %4$s.',
 							$message['default_msg'], 'default_msg', 0, 1
 						));
@@ -1773,31 +1773,31 @@ class CAction extends CApiService {
 					break;
 				case OPERATION_TYPE_COMMAND:
 					if (!isset($operation['opcommand']['type'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('No command type specified for action operation.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('No command type specified for action operation.'));
 					}
 
 					if ((!isset($operation['opcommand']['command'])
 							|| zbx_empty(trim($operation['opcommand']['command'])))
-							&& $operation['opcommand']['type'] != ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('No command specified for action operation.'));
+							&& $operation['opcommand']['type'] != TRX_SCRIPT_TYPE_GLOBAL_SCRIPT) {
+						self::exception(TRX_API_ERROR_PARAMETERS, _('No command specified for action operation.'));
 					}
 
 					switch ($operation['opcommand']['type']) {
-						case ZBX_SCRIPT_TYPE_IPMI:
+						case TRX_SCRIPT_TYPE_IPMI:
 							break;
-						case ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT:
+						case TRX_SCRIPT_TYPE_CUSTOM_SCRIPT:
 							if (!isset($operation['opcommand']['execute_on'])) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('No execution target specified for action operation command "%s".',
 										$operation['opcommand']['command']
 									)
 								);
 							}
 							break;
-						case ZBX_SCRIPT_TYPE_SSH:
+						case TRX_SCRIPT_TYPE_SSH:
 							if (!isset($operation['opcommand']['authtype'])
 									|| zbx_empty($operation['opcommand']['authtype'])) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('No authentication type specified for action operation command "%s".',
 										$operation['opcommand']['command']
 									)
@@ -1807,7 +1807,7 @@ class CAction extends CApiService {
 							if (!array_key_exists('username', $operation['opcommand'])
 									|| !is_string($operation['opcommand']['username'])
 									|| $operation['opcommand']['username'] == '') {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('No authentication user name specified for action operation command "%s".',
 										$operation['opcommand']['command']
 									)
@@ -1817,7 +1817,7 @@ class CAction extends CApiService {
 							if ($operation['opcommand']['authtype'] == ITEM_AUTHTYPE_PUBLICKEY) {
 								if (!isset($operation['opcommand']['publickey'])
 										|| zbx_empty($operation['opcommand']['publickey'])) {
-									self::exception(ZBX_API_ERROR_PARAMETERS,
+									self::exception(TRX_API_ERROR_PARAMETERS,
 										_s('No public key file specified for action operation command "%s".',
 											$operation['opcommand']['command']
 										)
@@ -1825,7 +1825,7 @@ class CAction extends CApiService {
 								}
 								if (!isset($operation['opcommand']['privatekey'])
 										|| zbx_empty($operation['opcommand']['privatekey'])) {
-									self::exception(ZBX_API_ERROR_PARAMETERS,
+									self::exception(TRX_API_ERROR_PARAMETERS,
 										_s('No private key file specified for action operation command "%s".',
 											$operation['opcommand']['command']
 										)
@@ -1833,26 +1833,26 @@ class CAction extends CApiService {
 								}
 							}
 							elseif ($operation['opcommand']['authtype'] != ITEM_AUTHTYPE_PASSWORD) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
+								self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect value "%1$s" for "%2$s" field.',
 									$operation['opcommand']['authtype'], 'authtype'
 								));
 							}
 							break;
-						case ZBX_SCRIPT_TYPE_TELNET:
+						case TRX_SCRIPT_TYPE_TELNET:
 							if (!array_key_exists('username', $operation['opcommand'])
 									|| !is_string($operation['opcommand']['username'])
 									|| $operation['opcommand']['username'] == '') {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('No authentication user name specified for action operation command "%s".',
 										$operation['opcommand']['command']
 									)
 								);
 							}
 							break;
-						case ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT:
+						case TRX_SCRIPT_TYPE_GLOBAL_SCRIPT:
 							if (!isset($operation['opcommand']['scriptid'])
 									|| zbx_empty($operation['opcommand']['scriptid'])) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_('No script specified for action operation command.')
 								);
 							}
@@ -1862,19 +1862,19 @@ class CAction extends CApiService {
 								'preservekeys' => true
 							]);
 							if (!isset($scripts[$operation['opcommand']['scriptid']])) {
-								self::exception(ZBX_API_ERROR_PARAMETERS, _(
+								self::exception(TRX_API_ERROR_PARAMETERS, _(
 									'Specified script does not exist or you do not have rights on it for action operation command.'
 								));
 							}
 							break;
 						default:
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect action operation command type.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect action operation command type.'));
 					}
 
 					if (isset($operation['opcommand']['port']) && !zbx_empty($operation['opcommand']['port'])) {
 						if (zbx_ctype_digit($operation['opcommand']['port'])) {
 							if ($operation['opcommand']['port'] > 65535 || $operation['opcommand']['port'] < 1) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('Incorrect action operation port "%s".', $operation['opcommand']['port'])
 								);
 							}
@@ -1883,7 +1883,7 @@ class CAction extends CApiService {
 							$user_macro_parser = new CUserMacroParser();
 
 							if ($user_macro_parser->parse($operation['opcommand']['port']) != CParser::PARSE_SUCCESS) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('Incorrect action operation port "%s".', $operation['opcommand']['port'])
 								);
 							}
@@ -1900,7 +1900,7 @@ class CAction extends CApiService {
 					if (array_key_exists('opcommand_hst', $operation)) {
 						foreach ($operation['opcommand_hst'] as $hstCommand) {
 							if (!is_array($hstCommand) || !array_key_exists('hostid', $hstCommand)) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('Incorrect value for field "%1$s": %2$s.', 'hostid', _('cannot be empty'))
 								);
 							}
@@ -1915,14 +1915,14 @@ class CAction extends CApiService {
 					}
 
 					if (!$groupids && !$hostids && $withoutCurrent) {
-						if ($operation['opcommand']['type'] == ZBX_SCRIPT_TYPE_GLOBAL_SCRIPT) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+						if ($operation['opcommand']['type'] == TRX_SCRIPT_TYPE_GLOBAL_SCRIPT) {
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('You did not specify targets for action operation global script "%s".',
 									$scripts[$operation['opcommand']['scriptid']]['name']
 							));
 						}
 						else {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('You did not specify targets for action operation command "%s".',
 									$operation['opcommand']['command']
 							));
@@ -1939,7 +1939,7 @@ class CAction extends CApiService {
 						: [];
 
 					if (!$groupids) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Operation has no group to operate.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Operation has no group to operate.'));
 					}
 
 					$all_groupids = array_merge($all_groupids, $groupids);
@@ -1951,7 +1951,7 @@ class CAction extends CApiService {
 						: [];
 
 					if (!$templateids) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Operation has no template to operate.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Operation has no template to operate.'));
 					}
 
 					$all_templateids = array_merge($all_templateids, $templateids);
@@ -1965,13 +1965,13 @@ class CAction extends CApiService {
 				case OPERATION_TYPE_HOST_INVENTORY:
 					if (!array_key_exists('opinventory', $operation)
 							|| !array_key_exists('inventory_mode', $operation['opinventory'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('No inventory mode specified for action operation.')
 						);
 					}
 					if ($operation['opinventory']['inventory_mode'] != HOST_INVENTORY_MANUAL
 							&& $operation['opinventory']['inventory_mode'] != HOST_INVENTORY_AUTOMATIC) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect inventory mode in action operation.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect inventory mode in action operation.'));
 					}
 					break;
 			}
@@ -2017,12 +2017,12 @@ class CAction extends CApiService {
 			switch ($condition['conditiontype']) {
 				case CONDITION_TYPE_EVENT_ACKNOWLEDGED:
 					if (!isset($ackStatuses[$condition['value']])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect action operation condition acknowledge type.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect action operation condition acknowledge type.'));
 					}
 					break;
 
 				default:
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect action operation condition type.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect action operation condition type.'));
 					break;
 			}
 		}
@@ -2070,10 +2070,10 @@ class CAction extends CApiService {
 
 						// sort conditions
 						$sortFields = [
-							['field' => 'conditiontype', 'order' => ZBX_SORT_DOWN],
-							['field' => 'operator', 'order' => ZBX_SORT_DOWN],
-							['field' => 'value2', 'order' => ZBX_SORT_DOWN],
-							['field' => 'value', 'order' => ZBX_SORT_DOWN]
+							['field' => 'conditiontype', 'order' => TRX_SORT_DOWN],
+							['field' => 'operator', 'order' => TRX_SORT_DOWN],
+							['field' => 'value2', 'order' => TRX_SORT_DOWN],
+							['field' => 'value', 'order' => TRX_SORT_DOWN]
 						];
 						CArrayHelper::sort($conditions, $sortFields);
 
@@ -2803,13 +2803,13 @@ class CAction extends CApiService {
 		foreach ($actions as $action) {
 			if (!check_db_fields($actionDbFields, $action)) {
 				self::exception(
-					ZBX_API_ERROR_PARAMETERS,
+					TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect parameter for action "%1$s".', $action['name'])
 				);
 			}
 
 			if (isset($duplicates[$action['name']])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Action "%1$s" already exists.', $action['name']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Action "%1$s" already exists.', $action['name']));
 			}
 			else {
 				$duplicates[$action['name']] = $action['name'];
@@ -2827,7 +2827,7 @@ class CAction extends CApiService {
 		]);
 		if ($dbActionsWithSameName) {
 			$dbActionWithSameName = reset($dbActionsWithSameName);
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Action "%1$s" already exists.', $dbActionWithSameName['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Action "%1$s" already exists.', $dbActionWithSameName['name']));
 		}
 
 		$filterValidator = new CSchemaValidator($this->getFilterSchema());
@@ -2849,7 +2849,7 @@ class CAction extends CApiService {
 			}
 			elseif (array_key_exists('pause_suppressed', $action)
 					&& !$pause_suppressed_validator->validate($action['pause_suppressed'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value "%1$s" for "%2$s" field.', $action['pause_suppressed'], 'pause_suppressed')
 				);
 			}
@@ -2863,7 +2863,7 @@ class CAction extends CApiService {
 					if ($condition['conditiontype'] == CONDITION_TYPE_EVENT_TAG_VALUE &&
 							!array_key_exists('value2', $condition)) {
 						self::exception(
-							ZBX_API_ERROR_PARAMETERS,
+							TRX_API_ERROR_PARAMETERS,
 							_s('No "%2$s" given for a filter condition of action "%1$s".', $action['name'], 'value2')
 						);
 					}
@@ -2880,13 +2880,13 @@ class CAction extends CApiService {
 			if ((!array_key_exists('operations', $action) || !$action['operations'])
 					&& (!array_key_exists('recovery_operations', $action) || !$action['recovery_operations'])
 					&& (!array_key_exists('acknowledge_operations', $action) || !$action['acknowledge_operations'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Action "%1$s" no operations defined.', $action['name']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Action "%1$s" no operations defined.', $action['name']));
 			}
 
 			if (array_key_exists('operations', $action)) {
 				foreach ($action['operations'] as $operation) {
 					if (array_key_exists('operationid', $operation)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect input parameters.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect input parameters.'));
 					}
 
 					$operation['recovery'] = ACTION_OPERATION;
@@ -2898,7 +2898,7 @@ class CAction extends CApiService {
 			if (array_key_exists('recovery_operations', $action)) {
 				foreach ($action['recovery_operations'] as $operation) {
 					if (array_key_exists('operationid', $operation)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect input parameters.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect input parameters.'));
 					}
 
 					$operation['recovery'] = ACTION_RECOVERY_OPERATION;
@@ -2910,7 +2910,7 @@ class CAction extends CApiService {
 			if (array_key_exists('acknowledge_operations', $action)) {
 				foreach ($action['acknowledge_operations'] as $operation) {
 					if (array_key_exists('operationid', $operation)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect input parameters.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect input parameters.'));
 					}
 
 					$operation['recovery'] = ACTION_ACKNOWLEDGE_OPERATION;
@@ -2938,7 +2938,7 @@ class CAction extends CApiService {
 	 */
 	private static function validateStepDuration($esc_period) {
 		if (!validateTimeUnit($esc_period, SEC_PER_MIN, SEC_PER_WEEK, false, $error, ['usermacros' => true])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'esc_period', $error)
 			);
 		}
@@ -2954,7 +2954,7 @@ class CAction extends CApiService {
 		foreach ($actions as $action) {
 			if (isset($action['actionid']) && !isset($db_actions[$action['actionid']])) {
 				self::exception(
-					ZBX_API_ERROR_PERMISSIONS,
+					TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -2972,7 +2972,7 @@ class CAction extends CApiService {
 			$action_name = isset($action['name']) ? $action['name'] : $db_actions[$action['actionid']]['name'];
 
 			if (!check_db_fields(['actionid' => null], $action)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Incorrect parameters for action update method "%1$s".', $action_name
 				));
 			}
@@ -2994,7 +2994,7 @@ class CAction extends CApiService {
 			}
 			elseif (array_key_exists('pause_suppressed', $action)
 					&& !$pause_suppressed_validator->validate($action['pause_suppressed'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value "%1$s" for "%2$s" field.', $action['pause_suppressed'], 'pause_suppressed')
 				);
 			}
@@ -3004,7 +3004,7 @@ class CAction extends CApiService {
 			}
 
 			if (isset($duplicates[$action['name']])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Action "%1$s" already exists.', $action['name']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Action "%1$s" already exists.', $action['name']));
 			}
 			else {
 				$duplicates[$action['name']] = $action['name'];
@@ -3037,7 +3037,7 @@ class CAction extends CApiService {
 				]);
 				if (($actionExists = reset($actionExists))
 						&& (bccomp($actionExists['actionid'], $actionId) != 0)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Action "%1$s" already exists.', $action_name));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Action "%1$s" already exists.', $action_name));
 				}
 			}
 			else {
@@ -3056,7 +3056,7 @@ class CAction extends CApiService {
 					if ($condition['conditiontype'] == CONDITION_TYPE_EVENT_TAG_VALUE
 							&& !array_key_exists('value2', $condition)) {
 						self::exception(
-							ZBX_API_ERROR_PARAMETERS,
+							TRX_API_ERROR_PARAMETERS,
 							_s('No "%2$s" given for a filter condition of action "%1$s".', $action_name, 'value2')
 						);
 					}
@@ -3081,7 +3081,7 @@ class CAction extends CApiService {
 				: (bool) $db_action['acknowledgeOperations'];
 
 			if (!$operations_defined && !$rcv_operations_defined && !$ack_operations_defined) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Action "%1$s" no operations defined.', $action_name));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Action "%1$s" no operations defined.', $action_name));
 			}
 
 			if (array_key_exists('operations', $action) && $action['operations']) {
@@ -3094,7 +3094,7 @@ class CAction extends CApiService {
 						$operations_to_validate[] = $operation;
 					}
 					else {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect action operationid.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect action operationid.'));
 					}
 				}
 			}
@@ -3112,7 +3112,7 @@ class CAction extends CApiService {
 						$operations_to_validate[] = $recovery_operation;
 					}
 					else {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect action operationid.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect action operationid.'));
 					}
 				}
 			}
@@ -3150,7 +3150,7 @@ class CAction extends CApiService {
 						$operations_to_validate[] = $ack_operation;
 					}
 					else {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect acknowledgement action operationid.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect acknowledgement action operationid.'));
 					}
 				}
 			}
@@ -3249,7 +3249,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($mediatypeids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -3273,7 +3273,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($groupids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -3297,7 +3297,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($hostids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -3320,7 +3320,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($userids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -3343,7 +3343,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($usrgrpids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -3367,7 +3367,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($templateids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -3391,7 +3391,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($triggerids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -3415,7 +3415,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($druleids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -3439,7 +3439,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($dcheckids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}
@@ -3463,7 +3463,7 @@ class CAction extends CApiService {
 			]);
 
 			if ($count != count($proxyids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, $error);
+				self::exception(TRX_API_ERROR_PERMISSIONS, $error);
 			}
 		}
 	}

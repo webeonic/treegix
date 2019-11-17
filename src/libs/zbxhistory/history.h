@@ -3,8 +3,8 @@
 #ifndef TREEGIX_HISTORY_H
 #define TREEGIX_HISTORY_H
 
-#define ZBX_HISTORY_IFACE_SQL		0
-#define ZBX_HISTORY_IFACE_ELASTIC	1
+#define TRX_HISTORY_IFACE_SQL		0
+#define TRX_HISTORY_IFACE_ELASTIC	1
 
 typedef struct zbx_history_iface zbx_history_iface_t;
 

@@ -6,7 +6,7 @@ class CMultilineInput extends CDiv {
 	/**
 	 * Default CSS class name for HTML root element.
 	 */
-	const ZBX_STYLE_CLASS = 'multilineinput-control';
+	const TRX_STYLE_CLASS = 'multilineinput-control';
 
 	/**
 	 * @var string
@@ -46,7 +46,7 @@ class CMultilineInput extends CDiv {
 		parent::__construct();
 
 		$this
-			->addClass(self::ZBX_STYLE_CLASS)
+			->addClass(self::TRX_STYLE_CLASS)
 			->setId(zbx_formatDomId($name))
 			->setAttribute('data-name', $name);
 

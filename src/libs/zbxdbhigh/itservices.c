@@ -9,7 +9,7 @@
 #define LOCK_ITSERVICES		zbx_mutex_lock(itservices_lock)
 #define UNLOCK_ITSERVICES	zbx_mutex_unlock(itservices_lock)
 
-static zbx_mutex_t	itservices_lock = ZBX_MUTEX_NULL;
+static zbx_mutex_t	itservices_lock = TRX_MUTEX_NULL;
 
 /* status update queue items */
 typedef struct
@@ -89,8 +89,8 @@ zbx_itservices_t;
  ******************************************************************************/
 static void	its_itservices_init(zbx_itservices_t *itservices)
 {
-	zbx_hashset_create(&itservices->itservices, 512, ZBX_DEFAULT_UINT64_HASH_FUNC, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_hashset_create(&itservices->index, 128, ZBX_DEFAULT_UINT64_HASH_FUNC, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_hashset_create(&itservices->itservices, 512, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_hashset_create(&itservices->index, 128, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 }
 
 /******************************************************************************
@@ -236,7 +236,7 @@ static void	its_itservices_load_children(zbx_itservices_t *itservices)
 	if (0 == serviceids.values_num)
 		goto out;
 
-	zbx_vector_uint64_sort(&serviceids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&serviceids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
 			"select s.serviceid,s.status,s.algorithm,sl.serviceupid"
@@ -250,8 +250,8 @@ static void	its_itservices_load_children(zbx_itservices_t *itservices)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(serviceid, row[0]);
-		ZBX_STR2UINT64(parentid, row[3]);
+		TRX_STR2UINT64(serviceid, row[0]);
+		TRX_STR2UINT64(parentid, row[3]);
 
 		if (NULL == (parent = (zbx_itservice_t *)zbx_hashset_search(&itservices->itservices, &parentid)))
 		{
@@ -262,7 +262,7 @@ static void	its_itservices_load_children(zbx_itservices_t *itservices)
 		if (NULL == (itservice = (zbx_itservice_t *)zbx_hashset_search(&itservices->itservices, &serviceid)))
 			itservice = its_itservice_create(itservices, serviceid, 0, atoi(row[1]), atoi(row[2]));
 
-		if (FAIL == zbx_vector_ptr_search(&parent->children, itservice, ZBX_DEFAULT_PTR_COMPARE_FUNC))
+		if (FAIL == zbx_vector_ptr_search(&parent->children, itservice, TRX_DEFAULT_PTR_COMPARE_FUNC))
 			zbx_vector_ptr_append(&parent->children, itservice);
 	}
 	DBfree_result(result);
@@ -297,8 +297,8 @@ static void	its_itservices_load_parents(zbx_itservices_t *itservices, zbx_vector
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_uint64_sort(serviceids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(serviceids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(serviceids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_uniq(serviceids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
 			"select s.serviceid,s.status,s.algorithm,sl.servicedownid"
@@ -314,8 +314,8 @@ static void	its_itservices_load_parents(zbx_itservices_t *itservices, zbx_vector
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(parentid, row[0]);
-		ZBX_STR2UINT64(serviceid, row[3]);
+		TRX_STR2UINT64(parentid, row[0]);
+		TRX_STR2UINT64(serviceid, row[3]);
 
 		/* find the service */
 		if (NULL == (itservice = (zbx_itservice_t *)zbx_hashset_search(&itservices->itservices, &serviceid)))
@@ -332,7 +332,7 @@ static void	its_itservices_load_parents(zbx_itservices_t *itservices, zbx_vector
 		}
 
 		/* link the service as a parent's child */
-		if (FAIL == zbx_vector_ptr_search(&itservice->parents, parent, ZBX_DEFAULT_PTR_COMPARE_FUNC))
+		if (FAIL == zbx_vector_ptr_search(&itservice->parents, parent, TRX_DEFAULT_PTR_COMPARE_FUNC))
 			zbx_vector_ptr_append(&itservice->parents, parent);
 	}
 	DBfree_result(result);
@@ -382,8 +382,8 @@ static void	its_load_services_by_triggerids(zbx_itservices_t *itservices, const 
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(serviceid, row[0]);
-		ZBX_STR2UINT64(triggerid, row[1]);
+		TRX_STR2UINT64(serviceid, row[0]);
+		TRX_STR2UINT64(triggerid, row[1]);
 
 		itservice = its_itservice_create(itservices, serviceid, triggerid, atoi(row[2]), atoi(row[3]));
 
@@ -475,7 +475,7 @@ out:
  ******************************************************************************/
 static int	its_updates_compare(const zbx_status_update_t **update1, const zbx_status_update_t **update2)
 {
-	ZBX_RETURN_IF_NOT_EQUAL((*update1)->sourceid, (*update2)->sourceid);
+	TRX_RETURN_IF_NOT_EQUAL((*update1)->sourceid, (*update2)->sourceid);
 
 	return 0;
 }
@@ -529,7 +529,7 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 					"update services"
 					" set status=%d"
-					" where serviceid=" ZBX_FS_UI64 ";\n",
+					" where serviceid=" TRX_FS_UI64 ";\n",
 					update->status, update->sourceid);
 
 			if (SUCCEED != DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset))
@@ -541,7 +541,7 @@ static int	its_write_status_and_alarms(zbx_itservices_t *itservices, zbx_vector_
 
 	if (16 < sql_offset)
 	{
-		if (ZBX_DB_OK > DBexecute("%s", sql))
+		if (TRX_DB_OK > DBexecute("%s", sql))
 			goto out;
 	}
 
@@ -620,7 +620,7 @@ static int	its_flush_updates(const zbx_vector_ptr_t *updates)
 		zbx_vector_uint64_append(&triggerids, update->sourceid);
 	}
 
-	zbx_vector_uint64_sort(&triggerids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&triggerids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	/* load all services affected by the trigger status change and      */
 	/* the services that are required for resulting status calculations */
@@ -708,7 +708,7 @@ int	DBupdate_itservices(const zbx_vector_ptr_t *trigger_diff)
 	{
 		diff = (zbx_trigger_diff_t *)trigger_diff->values[i];
 
-		if (0 == (diff->flags & ZBX_FLAGS_TRIGGER_DIFF_UPDATE_VALUE))
+		if (0 == (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE_VALUE))
 			continue;
 
 		its_updates_append(&updates, diff->triggerid, TRIGGER_VALUE_PROBLEM == diff->value ?
@@ -725,7 +725,7 @@ int	DBupdate_itservices(const zbx_vector_ptr_t *trigger_diff)
 
 			ret = its_flush_updates(&updates);
 		}
-		while (ZBX_DB_DOWN == DBcommit());
+		while (TRX_DB_DOWN == DBcommit());
 
 		UNLOCK_ITSERVICES;
 
@@ -778,7 +778,7 @@ int	DBremove_triggers_from_itservices(zbx_uint64_t *triggerids, int triggerids_n
 	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update services set triggerid=null,showsla=0 where");
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "triggerid", triggerids, triggerids_num);
 
-	if (ZBX_DB_OK <= DBexecute("%s", sql))
+	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = SUCCEED;
 
 	zbx_free(sql);
@@ -793,7 +793,7 @@ out:
 
 int	zbx_create_itservices_lock(char **error)
 {
-	return zbx_mutex_create(&itservices_lock, ZBX_MUTEX_ITSERVICES, error);
+	return zbx_mutex_create(&itservices_lock, TRX_MUTEX_ITSERVICES, error);
 }
 
 void	zbx_destroy_itservices_lock(void)

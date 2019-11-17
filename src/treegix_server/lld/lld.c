@@ -135,7 +135,7 @@ static int	lld_filter_load(lld_filter_t *filter, zbx_uint64_t lld_ruleid, char *
 
 	if (SUCCEED != errcode)
 	{
-		*error = zbx_dsprintf(*error, "Invalid discovery rule ID [" ZBX_FS_UI64 "].",
+		*error = zbx_dsprintf(*error, "Invalid discovery rule ID [" TRX_FS_UI64 "].",
 				lld_ruleid);
 		ret = FAIL;
 		goto out;
@@ -144,13 +144,13 @@ static int	lld_filter_load(lld_filter_t *filter, zbx_uint64_t lld_ruleid, char *
 	result = DBselect(
 			"select item_conditionid,macro,value,operator"
 			" from item_condition"
-			" where itemid=" ZBX_FS_UI64,
+			" where itemid=" TRX_FS_UI64,
 			lld_ruleid);
 
 	while (NULL != (row = DBfetch(result)))
 	{
 		condition = (lld_condition_t *)zbx_malloc(NULL, sizeof(lld_condition_t));
-		ZBX_STR2UINT64(condition->id, row[0]);
+		TRX_STR2UINT64(condition->id, row[0]);
 		condition->macro = zbx_strdup(NULL, row[1]);
 		condition->regexp = zbx_strdup(NULL, row[2]);
 		condition->op = (unsigned char)atoi(row[3]);
@@ -211,12 +211,12 @@ static int	filter_condition_match(const struct zbx_json_parse *jp_row, const zbx
 
 	if (SUCCEED == (ret = zbx_lld_macro_value_by_name(jp_row, lld_macro_paths, condition->macro, &value)))
 	{
-		switch (regexp_match_ex(&condition->regexps, value, condition->regexp, ZBX_CASE_SENSITIVE))
+		switch (regexp_match_ex(&condition->regexps, value, condition->regexp, TRX_CASE_SENSITIVE))
 		{
-			case ZBX_REGEXP_MATCH:
+			case TRX_REGEXP_MATCH:
 				ret = (CONDITION_OPERATOR_REGEXP == condition->op ? SUCCEED : FAIL);
 				break;
-			case ZBX_REGEXP_NO_MATCH:
+			case TRX_REGEXP_NO_MATCH:
 				ret = (CONDITION_OPERATOR_NOT_REGEXP == condition->op ? SUCCEED : FAIL);
 				break;
 			default:
@@ -374,7 +374,7 @@ static int	filter_evaluate_expression(const lld_filter_t *filter, const struct z
 		const zbx_vector_ptr_t *lld_macro_paths)
 {
 	int	i, ret = FAIL, id_len;
-	char	*expression, id[ZBX_MAX_UINT64_LEN + 2], *p, error[256];
+	char	*expression, id[TRX_MAX_UINT64_LEN + 2], *p, error[256];
 	double	result;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() expression:%s", __func__, filter->expression);
@@ -387,7 +387,7 @@ static int	filter_evaluate_expression(const lld_filter_t *filter, const struct z
 
 		ret = filter_condition_match(jp_row, lld_macro_paths, condition);
 
-		zbx_snprintf(id, sizeof(id), "{" ZBX_FS_UI64 "}", condition->id);
+		zbx_snprintf(id, sizeof(id), "{" TRX_FS_UI64 "}", condition->id);
 
 		id_len = strlen(id);
 		p = expression;
@@ -514,10 +514,10 @@ static int	lld_rows_get(const char *value, lld_filter_t *filter, zbx_vector_ptr_
 	{
 		jp_array = jp;
 	}
-	else if (SUCCEED != zbx_json_brackets_by_name(&jp, ZBX_PROTO_TAG_DATA, &jp_array))	/* deprecated */
+	else if (SUCCEED != zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_DATA, &jp_array))	/* deprecated */
 	{
 		*error = zbx_dsprintf(*error, "Cannot find the \"%s\" array in the received JSON object.",
-				ZBX_PROTO_TAG_DATA);
+				TRX_PROTO_TAG_DATA);
 		goto out;
 	}
 
@@ -582,7 +582,7 @@ int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char 
 	lld_filter_t		filter;
 	time_t			now;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" ZBX_FS_UI64, __func__, lld_ruleid);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" TRX_FS_UI64, __func__, lld_ruleid);
 
 	zbx_vector_ptr_create(&lld_rows);
 	zbx_vector_ptr_create(&lld_macro_paths);
@@ -592,14 +592,14 @@ int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char 
 	result = DBselect(
 			"select hostid,key_,evaltype,formula,lifetime"
 			" from items"
-			" where itemid=" ZBX_FS_UI64,
+			" where itemid=" TRX_FS_UI64,
 			lld_ruleid);
 
 	if (NULL != (row = DBfetch(result)))
 	{
 		char	*lifetime_str;
 
-		ZBX_STR2UINT64(hostid, row[0]);
+		TRX_STR2UINT64(hostid, row[0]);
 		discovery_key = zbx_strdup(discovery_key, row[1]);
 		filter.evaltype = atoi(row[2]);
 		filter.expression = zbx_strdup(NULL, row[3]);
@@ -607,7 +607,7 @@ int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char 
 		substitute_simple_macros(NULL, NULL, NULL, NULL, &hostid, NULL, NULL, NULL, NULL,
 				&lifetime_str, MACRO_TYPE_COMMON, NULL, 0);
 
-		if (SUCCEED != is_time_suffix(lifetime_str, &lifetime, ZBX_LENGTH_UNLIMITED))
+		if (SUCCEED != is_time_suffix(lifetime_str, &lifetime, TRX_LENGTH_UNLIMITED))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot process lost resources for the discovery rule \"%s:%s\":"
 					" \"%s\" is not a valid value",
@@ -621,7 +621,7 @@ int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char 
 
 	if (NULL == row)
 	{
-		treegix_log(LOG_LEVEL_WARNING, "invalid discovery rule ID [" ZBX_FS_UI64 "]", lld_ruleid);
+		treegix_log(LOG_LEVEL_WARNING, "invalid discovery rule ID [" TRX_FS_UI64 "]", lld_ruleid);
 		goto out;
 	}
 

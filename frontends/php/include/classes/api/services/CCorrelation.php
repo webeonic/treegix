@@ -106,8 +106,8 @@ class CCorrelation extends CApiService {
 	 * @param string $correlations[]['description']							Correlation description (optional).
 	 * @param int    $correlations[]['status']								Correlation status (optional).
 	 *																		Possible values are:
-	 *																			0 - ZBX_CORRELATION_ENABLED;
-	 *																			1 - ZBX_CORRELATION_DISABLED.
+	 *																			0 - TRX_CORRELATION_ENABLED;
+	 *																			1 - TRX_CORRELATION_DISABLED.
 	 * @param array	 $correlations[]['filter']								Correlation filter that contains evaluation
 	 *																		method, formula and conditions.
 	 * @param int    $correlations[]['filter']['evaltype']					Correlation condition evaluation method.
@@ -124,34 +124,34 @@ class CCorrelation extends CApiService {
 	 * @param array  $correlations[]['filter']['conditions']					An array of correlation conditions.
 	 * @param int    $correlations[]['filter']['conditions'][]['type']		Condition type.
 	 *																		Possible values are:
-	 *																			0 - ZBX_CORR_CONDITION_OLD_EVENT_TAG;
-	 *																			1 - ZBX_CORR_CONDITION_NEW_EVENT_TAG;
-	 *																			2 - ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
-	 *																			3 - ZBX_CORR_CONDITION_EVENT_TAG_PAIR;
-	 *																			4 - ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
-	 *																			5 - ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
+	 *																			0 - TRX_CORR_CONDITION_OLD_EVENT_TAG;
+	 *																			1 - TRX_CORR_CONDITION_NEW_EVENT_TAG;
+	 *																			2 - TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
+	 *																			3 - TRX_CORR_CONDITION_EVENT_TAG_PAIR;
+	 *																			4 - TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
+	 *																			5 - TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
 	 * @param string $correlations[]['filter']['conditions'][]['formulaid']	Condition formula ID. Optional, but required
 	 *																		when evaluation method is:
 	 *																			3 - CONDITION_EVAL_TYPE_EXPRESSION.
 	 * @param string $correlations[]['filter']['conditions'][]['tag']		Correlation condition tag.
 	 * @param int	 $correlations[]['filter']['conditions'][]['operator']	Correlation condition operator. Optional,
 	 *																		but required when "type" is one of the following:
-	 *																			2 - ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
-	 *																			4 - ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
-	 *																			5 - ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
+	 *																			2 - TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
+	 *																			4 - TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
+	 *																			5 - TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
 	 *																		Possible values depend on type:
-	 *																		for type ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+	 *																		for type TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 	 *																			0 - CONDITION_OPERATOR_EQUAL
 	 *																			1 - CONDITION_OPERATOR_NOT_EQUAL
-	 *																		for types ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE
-	 *																		or ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+	 *																		for types TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE
+	 *																		or TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 	 *																			0 - CONDITION_OPERATOR_EQUAL;
 	 *																			1 - CONDITION_OPERATOR_NOT_EQUAL;
 	 *																			2 - CONDITION_OPERATOR_LIKE;
 	 *																			3 - CONDITION_OPERATOR_NOT_LIKE.
 	 * @param string $correlations[]['filter']['conditions'][]['groupid']	Correlation host group ID. Optional, but
 	 *																		required when "type" is:
-	 *																			2 - ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP.
+	 *																			2 - TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP.
 	 * @param string $correlations[]['filter']['conditions'][]['newtag']	Correlation condition new (current) tag.
 	 * @param string $correlations[]['filter']['conditions'][]['oldtag']	Correlation condition old (target/matching)
 	 *																		tag.
@@ -159,8 +159,8 @@ class CCorrelation extends CApiService {
 	 * @param array	 $correlations[]['operations']							An array of correlation operations.
 	 * @param int	 $correlations[]['operations'][]['type']				Correlation operation type.
 	 *																		Possible values are:
-	 *																			0 - ZBX_CORR_OPERATION_CLOSE_OLD;
-	 *																			1 - ZBX_CORR_OPERATION_CLOSE_NEW.
+	 *																			0 - TRX_CORR_OPERATION_CLOSE_OLD;
+	 *																			1 - TRX_CORR_OPERATION_CLOSE_NEW.
 	 *
 	 * @return array
 	 */
@@ -226,8 +226,8 @@ class CCorrelation extends CApiService {
 	 * @param string $correlations[]['description']							Correlation description (optional).
 	 * @param int	 $correlations[]['status']								Correlation status (optional).
 	 *																		Possible values are:
-	 *																			0 - ZBX_CORRELATION_ENABLED;
-	 *																			1 - ZBX_CORRELATION_DISABLED.
+	 *																			0 - TRX_CORRELATION_ENABLED;
+	 *																			1 - TRX_CORRELATION_DISABLED.
 	 * @param array	 $correlations[]['filter']								Correlation filter that contains evaluation
 	 *																		method, formula and conditions.
 	 * @param int	 $correlations[]['filter']['evaltype']					Correlation condition evaluation
@@ -247,12 +247,12 @@ class CCorrelation extends CApiService {
 	 * @param int	 $correlations[]['filter']['conditions'][]['type']		Condition type. Optional, but required when
 	 *																		new conditions are set.
 	 *																		Possible values are:
-	 *																			0 - ZBX_CORR_CONDITION_OLD_EVENT_TAG;
-	 *																			1 - ZBX_CORR_CONDITION_NEW_EVENT_TAG;
-	 *																			2 - ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
-	 *																			3 - ZBX_CORR_CONDITION_EVENT_TAG_PAIR;
-	 *																			4 - ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
-	 *																			5 - ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
+	 *																			0 - TRX_CORR_CONDITION_OLD_EVENT_TAG;
+	 *																			1 - TRX_CORR_CONDITION_NEW_EVENT_TAG;
+	 *																			2 - TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
+	 *																			3 - TRX_CORR_CONDITION_EVENT_TAG_PAIR;
+	 *																			4 - TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
+	 *																			5 - TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
 	 * @param string $correlations[]['filter']['conditions'][]['formulaid']	Condition formula ID. Optional, but required
 	 *																		when evaluation method is changed to
 	 *																		CONDITION_EVAL_TYPE_EXPRESSION (or remains the same)
@@ -261,22 +261,22 @@ class CCorrelation extends CApiService {
 	 * @param int	 $correlations[]['filter']['conditions'][]['operator']	Correlation condition operator. Optional,
 	 *																		but required when "type" is changed to one
 	 *																		of the following:
-	 *																			2 - ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
-	 *																			4 - ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
-	 *																			5 - ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
+	 *																			2 - TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
+	 *																			4 - TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
+	 *																			5 - TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
 	 *																		Possible values depend on type:
-	 *																		for type ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+	 *																		for type TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 	 *																			0 - CONDITION_OPERATOR_EQUAL
 	 *																			1 - CONDITION_OPERATOR_NOT_EQUAL
-	 *																		for types ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE
-	 *																		or ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+	 *																		for types TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE
+	 *																		or TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 	 *																			0 - CONDITION_OPERATOR_EQUAL;
 	 *																			1 - CONDITION_OPERATOR_NOT_EQUAL;
 	 *																			2 - CONDITION_OPERATOR_LIKE;
 	 *																			3 - CONDITION_OPERATOR_NOT_LIKE.
 	 * @param string $correlations[]['filter']['conditions'][]['groupid']	Correlation host group ID. Optional, but
 	 *																		required when "type" is changed to:
-	 *																			2 - ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP.
+	 *																			2 - TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP.
 	 * @param string $correlations[]['filter']['conditions'][]['newtag']	Correlation condition new (current) tag.
 	 * @param string $correlations[]['filter']['conditions'][]['oldtag']	Correlation condition old (target/matching)
 	 *																		tag.
@@ -284,8 +284,8 @@ class CCorrelation extends CApiService {
 	 * @param array  $correlations[]['operations']							An array of correlation operations (optional).
 	 * @param int	 $correlations[]['operations'][]['type']				Correlation operation type (optional).
 	 *																		Possible values are:
-	 *																			0 - ZBX_CORR_OPERATION_CLOSE_OLD;
-	 *																			1 - ZBX_CORR_OPERATION_CLOSE_NEW.
+	 *																			0 - TRX_CORR_OPERATION_CLOSE_OLD;
+	 *																			1 - TRX_CORR_OPERATION_CLOSE_NEW.
 	 *
 	 * @return array
 	 */
@@ -454,12 +454,12 @@ class CCorrelation extends CApiService {
 	 */
 	public function delete(array $correlationids) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $correlationids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_correlations = $this->get([
@@ -470,7 +470,7 @@ class CCorrelation extends CApiService {
 
 		foreach ($correlationids as $correlationid) {
 			if (!array_key_exists($correlationid, $db_correlations)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -492,11 +492,11 @@ class CCorrelation extends CApiService {
 	 */
 	protected function validateCreate(array $correlations) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only super admins can create correlations.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only super admins can create correlations.'));
 		}
 
 		if (!$correlations) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$required_fields = ['name', 'filter', 'operations'];
@@ -504,31 +504,31 @@ class CCorrelation extends CApiService {
 		// Validate required fields and check if "name" is not empty.
 		foreach ($correlations as $correlation) {
 			if (!is_array($correlation)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			// Check required parameters.
 			$missing_keys = array_diff($required_fields, array_keys($correlation));
 
 			if ($missing_keys) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Correlation is missing parameters: %1$s', implode(', ', $missing_keys))
 				);
 			}
 
 			// Validate "name" field.
 			if (is_array($correlation['name'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 			elseif ($correlation['name'] === '' || $correlation['name'] === null || $correlation['name'] === false) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Correlation name cannot be empty.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Correlation name cannot be empty.'));
 			}
 		}
 
 		// Check for duplicate names.
 		$duplicate = CArrayHelper::findDuplicate($correlations, 'name');
 		if ($duplicate) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Duplicate "%1$s" value "%2$s" for correlation.', 'name', $duplicate['name'])
 			);
 		}
@@ -541,14 +541,14 @@ class CCorrelation extends CApiService {
 		]);
 
 		if ($db_correlations) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Correlation "%1$s" already exists.', $correlations[0]['name'])
 			);
 		}
 
 		// Set all necessary validators and parser before cycling each correlation.
 		$status_validator = new CLimitedSetValidator([
-			'values' => [ZBX_CORRELATION_ENABLED, ZBX_CORRELATION_DISABLED]
+			'values' => [TRX_CORRELATION_ENABLED, TRX_CORRELATION_DISABLED]
 		]);
 
 		$filter_evaltype_validator = new CLimitedSetValidator([
@@ -558,9 +558,9 @@ class CCorrelation extends CApiService {
 		]);
 
 		$filter_condition_type_validator = new CLimitedSetValidator([
-			'values' => [ZBX_CORR_CONDITION_OLD_EVENT_TAG, ZBX_CORR_CONDITION_NEW_EVENT_TAG,
-				ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP,	ZBX_CORR_CONDITION_EVENT_TAG_PAIR,
-				ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE,	ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE
+			'values' => [TRX_CORR_CONDITION_OLD_EVENT_TAG, TRX_CORR_CONDITION_NEW_EVENT_TAG,
+				TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP,	TRX_CORR_CONDITION_EVENT_TAG_PAIR,
+				TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE,	TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE
 			]
 		]);
 
@@ -575,7 +575,7 @@ class CCorrelation extends CApiService {
 		]);
 
 		$filter_operations_validator = new CLimitedSetValidator([
-			'values' => [ZBX_CORR_OPERATION_CLOSE_OLD, ZBX_CORR_OPERATION_CLOSE_NEW]
+			'values' => [TRX_CORR_OPERATION_CLOSE_OLD, TRX_CORR_OPERATION_CLOSE_NEW]
 		]);
 
 		$parser = new CConditionFormula();
@@ -585,7 +585,7 @@ class CCorrelation extends CApiService {
 		foreach ($correlations as $correlation) {
 			// Validate "status" field (optional).
 			if (array_key_exists('status', $correlation) && !$status_validator->validate($correlation['status'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Incorrect value "%1$s" in field "%2$s" for correlation "%3$s".',
 					$correlation['status'],
 					'status',
@@ -595,17 +595,17 @@ class CCorrelation extends CApiService {
 
 			// Validate "filter" field.
 			if (!is_array($correlation['filter'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			// Validate "evaltype" field.
 			if (!array_key_exists('evaltype', $correlation['filter'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect type of calculation for correlation "%1$s".', $correlation['name'])
 				);
 			}
 			elseif (!$filter_evaltype_validator->validate($correlation['filter']['evaltype'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Incorrect value "%1$s" in field "%2$s" for correlation "%3$s".',
 					$correlation['filter']['evaltype'],
 					'evaltype',
@@ -615,7 +615,7 @@ class CCorrelation extends CApiService {
 
 			// Check if conditions exist and that array is not empty.
 			if (!array_key_exists('conditions', $correlation['filter'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('No "%1$s" given for correlation "%2$s".', 'conditions', $correlation['name'])
 				);
 			}
@@ -629,7 +629,7 @@ class CCorrelation extends CApiService {
 			if ($correlation['filter']['evaltype'] == CONDITION_EVAL_TYPE_EXPRESSION) {
 				// Check formula.
 				if (!array_key_exists('formula', $correlation['filter'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('No "%1$s" given for correlation "%2$s".', 'formula', $correlation['name'])
 					);
 				}
@@ -652,7 +652,7 @@ class CCorrelation extends CApiService {
 			]);
 
 			if ($groups_count != count($groupids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -669,11 +669,11 @@ class CCorrelation extends CApiService {
 	 */
 	protected function validateUpdate(array $correlations, array &$db_correlations) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('Only super admins can update correlations.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('Only super admins can update correlations.'));
 		}
 
 		if (!$correlations) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		// Validate given IDs.
@@ -696,7 +696,7 @@ class CCorrelation extends CApiService {
 		foreach ($correlations as $correlation) {
 			// Check if this correlation exists.
 			if (!array_key_exists($correlation['correlationid'], $db_correlations)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -704,10 +704,10 @@ class CCorrelation extends CApiService {
 			// Validate "name" field (optional).
 			if (array_key_exists('name', $correlation)) {
 				if (is_array($correlation['name'])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 				elseif ($correlation['name'] === '' || $correlation['name'] === null || $correlation['name'] === false) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Correlation name cannot be empty.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Correlation name cannot be empty.'));
 				}
 
 				if ($db_correlations[$correlation['correlationid']]['name'] !== $correlation['name']) {
@@ -721,7 +721,7 @@ class CCorrelation extends CApiService {
 			// Check for duplicate names.
 			$duplicate = CArrayHelper::findDuplicate($check_names, 'name');
 			if ($duplicate) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Duplicate "%1$s" value "%2$s" for correlation.', 'name', $duplicate['name'])
 				);
 			}
@@ -737,7 +737,7 @@ class CCorrelation extends CApiService {
 				if (array_key_exists($correlation['name'], $db_correlation_names)
 						&& bccomp($db_correlation_names[$correlation['name']]['correlationid'],
 							$correlation['correlationid']) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Correlation "%1$s" already exists.', $correlation['name'])
 					);
 				}
@@ -746,7 +746,7 @@ class CCorrelation extends CApiService {
 
 		// Set all necessary validators and parser before cycling each correlation.
 		$status_validator = new CLimitedSetValidator([
-			'values' => [ZBX_CORRELATION_ENABLED, ZBX_CORRELATION_DISABLED]
+			'values' => [TRX_CORRELATION_ENABLED, TRX_CORRELATION_DISABLED]
 		]);
 
 		$filter_evaltype_validator = new CLimitedSetValidator([
@@ -756,9 +756,9 @@ class CCorrelation extends CApiService {
 		]);
 
 		$filter_condition_type_validator = new CLimitedSetValidator([
-			'values' => [ZBX_CORR_CONDITION_OLD_EVENT_TAG, ZBX_CORR_CONDITION_NEW_EVENT_TAG,
-				ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP,	ZBX_CORR_CONDITION_EVENT_TAG_PAIR,
-				ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE,	ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE
+			'values' => [TRX_CORR_CONDITION_OLD_EVENT_TAG, TRX_CORR_CONDITION_NEW_EVENT_TAG,
+				TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP,	TRX_CORR_CONDITION_EVENT_TAG_PAIR,
+				TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE,	TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE
 			]
 		]);
 
@@ -773,7 +773,7 @@ class CCorrelation extends CApiService {
 		]);
 
 		$filter_operations_validator = new CLimitedSetValidator([
-			'values' => [ZBX_CORR_OPERATION_CLOSE_OLD, ZBX_CORR_OPERATION_CLOSE_NEW]
+			'values' => [TRX_CORR_OPERATION_CLOSE_OLD, TRX_CORR_OPERATION_CLOSE_NEW]
 		]);
 
 		$parser = new CConditionFormula();
@@ -790,7 +790,7 @@ class CCorrelation extends CApiService {
 
 			// Validate "status" field (optional).
 			if (array_key_exists('status', $correlation) && !$status_validator->validate($correlation['status'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Incorrect value "%1$s" in field "%2$s" for correlation "%3$s".',
 					$correlation['status'],
 					'status',
@@ -801,7 +801,7 @@ class CCorrelation extends CApiService {
 			// Validate "filter" field. If filter is set, then something else must exist.
 			if (array_key_exists('filter', $correlation)) {
 				if (!is_array($correlation['filter']) || !$correlation['filter']) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 				}
 
 				$evaltype_changed = false;
@@ -811,7 +811,7 @@ class CCorrelation extends CApiService {
 					// Check if evaltype has changed.
 					if ($correlation['filter']['evaltype'] != $db_correlation['filter']['evaltype']) {
 						if (!$filter_evaltype_validator->validate($correlation['filter']['evaltype'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for correlation "%3$s".',
 								$correlation['filter']['evaltype'],
 								'evaltype',
@@ -830,7 +830,7 @@ class CCorrelation extends CApiService {
 				if ($evaltype_changed) {
 					if ($correlation['filter']['evaltype'] == CONDITION_EVAL_TYPE_EXPRESSION) {
 						if (!array_key_exists('formula', $correlation['filter'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('No "%1$s" given for correlation "%2$s".', 'formula', $correlation['name'])
 							);
 						}
@@ -838,7 +838,7 @@ class CCorrelation extends CApiService {
 						$this->validateFormula($correlation, $parser);
 
 						if (!array_key_exists('conditions', $correlation['filter'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('No "%1$s" given for correlation "%2$s".', 'conditions', $correlation['name'])
 							);
 						}
@@ -851,7 +851,7 @@ class CCorrelation extends CApiService {
 					}
 					else {
 						if (!array_key_exists('conditions', $correlation['filter'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('No "%1$s" given for correlation "%2$s".', 'conditions', $correlation['name'])
 							);
 						}
@@ -867,7 +867,7 @@ class CCorrelation extends CApiService {
 							$this->validateFormula($correlation, $parser);
 
 							if (!array_key_exists('conditions', $correlation['filter'])) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('No "%1$s" given for correlation "%2$s".', 'conditions', $correlation['name'])
 								);
 							}
@@ -879,7 +879,7 @@ class CCorrelation extends CApiService {
 							$this->validateConditionFormulaIDs($correlation, $parser);
 						}
 						elseif (array_key_exists('conditions', $correlation['filter'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('No "%1$s" given for correlation "%2$s".', 'formula', $correlation['name'])
 							);
 						}
@@ -906,7 +906,7 @@ class CCorrelation extends CApiService {
 			]);
 
 			if ($groups_count != count($groupids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -942,31 +942,31 @@ class CCorrelation extends CApiService {
 	 * @param array					$correlation['filter']['conditions']					An array of correlation conditions.
 	 * @param int					$correlation['filter']['conditions'][]['type']			Condition type.
 	 *																						Possible values are:
-	 *																							0 - ZBX_CORR_CONDITION_OLD_EVENT_TAG;
-	 *																							1 - ZBX_CORR_CONDITION_NEW_EVENT_TAG;
-	 *																							2 - ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
-	 *																							3 - ZBX_CORR_CONDITION_EVENT_TAG_PAIR;
-	 *																							4 - ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
-	 *																							5 - ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
+	 *																							0 - TRX_CORR_CONDITION_OLD_EVENT_TAG;
+	 *																							1 - TRX_CORR_CONDITION_NEW_EVENT_TAG;
+	 *																							2 - TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
+	 *																							3 - TRX_CORR_CONDITION_EVENT_TAG_PAIR;
+	 *																							4 - TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
+	 *																							5 - TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
 	 * @param int					$correlation['filter']['conditions'][]['operator']		Correlation condition operator.
 	 *																						Possible values when "type"
 	 *																						is one of the following:
-	 *																							2 - ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
-	 *																							4 - ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
-	 *																							5 - ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
+	 *																							2 - TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP;
+	 *																							4 - TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE;
+	 *																							5 - TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE.
 	 *																						Possible values depend on type:
-	 *																							for type ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+	 *																							for type TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 	 *																								0 - CONDITION_OPERATOR_EQUAL
 	 *																								1 - CONDITION_OPERATOR_NOT_EQUAL
-	 *																							for types ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE
-	 *																							or ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+	 *																							for types TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE
+	 *																							or TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 	 *																								0 - CONDITION_OPERATOR_EQUAL;
 	 *																								1 - CONDITION_OPERATOR_NOT_EQUAL;
 	 *																								2 - CONDITION_OPERATOR_LIKE;
 	 *																								3 - CONDITION_OPERATOR_NOT_LIKE.
 	 * @param string				$correlations['filter']['conditions'][]['groupid']		Correlation host group ID.
 	 *																						Required when "type" is:
-	 *																							2 - ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP.
+	 *																							2 - TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP.
 	 * @param CLimitedSetValidator	$filter_condition_type_validator						Validator for conditype type.
 	 * @param CLimitedSetValidator	$filter_condition_hg_operator_validator					Validator for host group operator.
 	 * @param CLimitedSetValidator	$filter_condition_tagval_operator_validator				Validator for tag value operator.
@@ -979,13 +979,13 @@ class CCorrelation extends CApiService {
 			CLimitedSetValidator $filter_condition_hg_operator_validator,
 			CLimitedSetValidator $filter_condition_tagval_operator_validator) {
 		if (!$correlation['filter']['conditions']) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('No "%1$s" given for correlation "%2$s".', 'conditions', $correlation['name'])
 			);
 		}
 
 		if (!is_array($correlation['filter']['conditions'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 		}
 
 		$groupids = [];
@@ -994,15 +994,15 @@ class CCorrelation extends CApiService {
 
 		foreach ($correlation['filter']['conditions'] as $condition) {
 			if (!array_key_exists('type', $condition)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('No condition type given for correlation "%1$s".', $correlation['name'])
 				);
 			}
 			elseif (is_array($condition['type'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 			elseif (!$filter_condition_type_validator->validate($condition['type'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Incorrect value "%1$s" in field "%2$s" for correlation "%3$s".',
 					$condition['type'],
 					'type',
@@ -1011,34 +1011,34 @@ class CCorrelation extends CApiService {
 			}
 
 			switch ($condition['type']) {
-				case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
-				case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
+				case TRX_CORR_CONDITION_OLD_EVENT_TAG:
+				case TRX_CORR_CONDITION_NEW_EVENT_TAG:
 					if (!array_key_exists('tag', $condition)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('No "%1$s" given for correlation "%2$s".', 'tag', $correlation['name'])
 						);
 					}
 					elseif (is_array($condition['tag'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Incorrect arguments passed to function.')
 						);
 					}
 					elseif ($condition['tag'] === '' || $condition['tag'] === null || $condition['tag'] === false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'tag', _('cannot be empty'))
 						);
 					}
 					break;
 
-				case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+				case TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 					if (array_key_exists('operator', $condition)) {
 						if (is_array($condition['operator'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_('Incorrect arguments passed to function.')
 							);
 						}
 						elseif (!$filter_condition_hg_operator_validator->validate($condition['operator'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for correlation "%3$s".',
 								$condition['operator'],
 								'operator',
@@ -1048,18 +1048,18 @@ class CCorrelation extends CApiService {
 					}
 
 					if (!array_key_exists('groupid', $condition)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('No "%1$s" given for correlation "%2$s".', 'groupid', $correlation['name'])
 						);
 					}
 					elseif (is_array($condition['groupid'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Incorrect arguments passed to function.')
 						);
 					}
 					elseif ($condition['groupid'] === '' || $condition['groupid'] === null
 							|| $condition['groupid'] === false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'groupid', _('cannot be empty'))
 						);
 					}
@@ -1067,68 +1067,68 @@ class CCorrelation extends CApiService {
 					$groupids[$condition['groupid']] = true;
 					break;
 
-				case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+				case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 					if (!array_key_exists('oldtag', $condition)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('No "%1$s" given for correlation "%2$s".', 'oldtag', $correlation['name'])
 						);
 					}
 					elseif (is_array($condition['oldtag'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Incorrect arguments passed to function.')
 						);
 					}
 					elseif ($condition['oldtag'] === '' || $condition['oldtag'] === null
 							|| $condition['oldtag'] === false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'oldtag', _('cannot be empty'))
 						);
 					}
 
 					if (!array_key_exists('newtag', $condition)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('No "%1$s" given for correlation "%2$s".', 'newtag', $correlation['name'])
 						);
 					}
 					elseif (is_array($condition['newtag'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Incorrect arguments passed to function.')
 						);
 					}
 					elseif ($condition['newtag'] === '' || $condition['newtag'] === null
 							|| $condition['newtag'] === false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'newtag', _('cannot be empty'))
 						);
 					}
 					break;
 
-				case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-				case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+				case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+				case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 					if (!array_key_exists('tag', $condition)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('No "%1$s" given for correlation "%2$s".', 'tag', $correlation['name'])
 						);
 					}
 					elseif (is_array($condition['tag'])) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_('Incorrect arguments passed to function.')
 						);
 					}
 					elseif ($condition['tag'] === '' || $condition['tag'] === null || $condition['tag'] === false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Incorrect value for field "%1$s": %2$s.', 'tag', _('cannot be empty'))
 						);
 					}
 
 					if (array_key_exists('operator', $condition)) {
 						if (is_array($condition['operator'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_('Incorrect arguments passed to function.')
 							);
 						}
 						elseif (!$filter_condition_tagval_operator_validator->validate($condition['operator'])) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+							self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Incorrect value "%1$s" in field "%2$s" for correlation "%3$s".',
 								$condition['operator'],
 								'operator',
@@ -1141,7 +1141,7 @@ class CCorrelation extends CApiService {
 
 			if ($correlation['filter']['evaltype'] == CONDITION_EVAL_TYPE_EXPRESSION) {
 				if (array_key_exists($condition['formulaid'], $formulaIds)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Duplicate "%1$s" value "%2$s" for correlation "%3$s".', 'formulaid', $condition['formulaid'],
 							$correlation['name']
 					));
@@ -1156,7 +1156,7 @@ class CCorrelation extends CApiService {
 		}
 
 		if (count($conditions) != count(array_unique($conditions, SORT_REGULAR))) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Conditions duplicates for correlation "%1$s".', $correlation['name'])
 			);
 		}
@@ -1178,11 +1178,11 @@ class CCorrelation extends CApiService {
 	 */
 	protected function validateFormula(array $correlation, CConditionFormula $parser) {
 		if (is_array($correlation['filter']['formula'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 		}
 
 		if (!$parser->parse($correlation['filter']['formula'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect custom expression "%2$s" for correlation "%1$s": %3$s.',
 					$correlation['name'], $correlation['filter']['formula'], $parser->error
 				)
@@ -1207,15 +1207,15 @@ class CCorrelation extends CApiService {
 	protected function validateConditionFormulaIDs(array $correlation, CConditionFormula $parser) {
 		foreach ($correlation['filter']['conditions'] as $condition) {
 			if (!array_key_exists('formulaid', $condition)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('No "%1$s" given for correlation "%2$s".', 'formulaid', $correlation['name'])
 				);
 			}
 			elseif (is_array($condition['formulaid'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 			elseif (!preg_match('/[A-Z]+/', $condition['formulaid'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect filter condition formula ID given for correlation "%1$s".', $correlation['name'])
 				);
 			}
@@ -1226,7 +1226,7 @@ class CCorrelation extends CApiService {
 
 		foreach ($constants as $constant) {
 			if (!array_key_exists($constant, $conditions)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Condition "%2$s" used in formula "%3$s" for correlation "%1$s" is not defined.',
 					$correlation['name'], $constant, $correlation['filter']['formula']
 				));
@@ -1238,7 +1238,7 @@ class CCorrelation extends CApiService {
 		// Check that the "conditions" array has no unused conditions.
 		if ($conditions) {
 			$condition = reset($conditions);
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+			self::exception(TRX_API_ERROR_PARAMETERS, _s(
 				'Condition "%2$s" is not used in formula "%3$s" for correlation "%1$s".', $correlation['name'],
 				$condition['formulaid'], $correlation['filter']['formula']
 			));
@@ -1254,34 +1254,34 @@ class CCorrelation extends CApiService {
 	 * @param array					$correlation['operations']			An array of correlation operations.
 	 * @param int					$correlation['operations']['type']	Correlation operation type.
 	 *																	Possible values are:
-	 *																		0 - ZBX_CORR_OPERATION_CLOSE_OLD;
-	 *																		1 - ZBX_CORR_OPERATION_CLOSE_NEW.
+	 *																		0 - TRX_CORR_OPERATION_CLOSE_OLD;
+	 *																		1 - TRX_CORR_OPERATION_CLOSE_NEW.
 	 * @param CLimitedSetValidator	$filter_operations_validator		Operations validator.
 	 *
 	 * @throws APIException if the input is invalid.
 	 */
 	protected function validateOperations(array $correlation, CLimitedSetValidator $filter_operations_validator) {
 		if (!is_array($correlation['operations'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 		}
 		elseif (!$correlation['operations']) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('No "%1$s" given for correlation "%2$s".', 'operations', $correlation['name'])
 			);
 		}
 
 		foreach ($correlation['operations'] as $operation) {
 			if (!array_key_exists('type', $operation)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('No operation type given for correlation "%1$s".', $correlation['name'])
 				);
 			}
 			elseif (is_array($operation['type'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 			}
 
 			if (!$filter_operations_validator->validate($operation['type'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Incorrect value "%1$s" in field "%2$s" for correlation "%3$s".',
 					$operation['type'],
 					'type',
@@ -1293,7 +1293,7 @@ class CCorrelation extends CApiService {
 		// Check that same operation types do not repeat.
 		$duplicate = CArrayHelper::findDuplicate($correlation['operations'], 'type');
 		if ($duplicate) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Duplicate "%1$s" value "%2$s" for correlation "%3$s".', 'type', $duplicate['type'],
 					$correlation['name']
 				)
@@ -1318,21 +1318,21 @@ class CCorrelation extends CApiService {
 
 		foreach ($conditions as $condition) {
 			switch ($condition['type']) {
-				case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
-				case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
+				case TRX_CORR_CONDITION_OLD_EVENT_TAG:
+				case TRX_CORR_CONDITION_NEW_EVENT_TAG:
 					$corr_condition_tags_to_create[] = $condition;
 					break;
 
-				case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+				case TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 					$corr_condition_hostgroups_to_create[] = $condition;
 					break;
 
-				case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+				case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 					$corr_condition_tag_pairs_to_create[] = $condition;
 					break;
 
-				case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-				case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+				case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+				case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 					$corr_condition_tag_values_to_create[] = $condition;
 					break;
 			}
@@ -1439,23 +1439,23 @@ class CCorrelation extends CApiService {
 						];
 
 						switch ($row['type']) {
-							case ZBX_CORR_CONDITION_OLD_EVENT_TAG:
-							case ZBX_CORR_CONDITION_NEW_EVENT_TAG:
+							case TRX_CORR_CONDITION_OLD_EVENT_TAG:
+							case TRX_CORR_CONDITION_NEW_EVENT_TAG:
 								$fields['tag'] = $row['ct_tag'];
 								break;
 
-							case ZBX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
+							case TRX_CORR_CONDITION_NEW_EVENT_HOSTGROUP:
 								$fields['operator'] = $row['cg_operator'];
 								$fields['groupid'] = $row['groupid'];
 								break;
 
-							case ZBX_CORR_CONDITION_EVENT_TAG_PAIR:
+							case TRX_CORR_CONDITION_EVENT_TAG_PAIR:
 								$fields['oldtag'] = $row['oldtag'];
 								$fields['newtag'] = $row['newtag'];
 								break;
 
-							case ZBX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
-							case ZBX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
+							case TRX_CORR_CONDITION_OLD_EVENT_TAG_VALUE:
+							case TRX_CORR_CONDITION_NEW_EVENT_TAG_VALUE:
 								$fields['tag'] = $row['ctv_tag'];
 								$fields['operator'] = $row['ctv_operator'];
 								$fields['value'] = $row['value'];

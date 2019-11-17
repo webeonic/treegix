@@ -1,17 +1,17 @@
 
-#ifndef TREEGIX_ZBXSELF_H
-#define TREEGIX_ZBXSELF_H
+#ifndef TREEGIX_TRXSELF_H
+#define TREEGIX_TRXSELF_H
 
-#define ZBX_PROCESS_STATE_IDLE		0
-#define ZBX_PROCESS_STATE_BUSY		1
-#define ZBX_PROCESS_STATE_COUNT		2	/* number of process states */
+#define TRX_PROCESS_STATE_IDLE		0
+#define TRX_PROCESS_STATE_BUSY		1
+#define TRX_PROCESS_STATE_COUNT		2	/* number of process states */
 
-#define ZBX_AGGR_FUNC_ONE		0
-#define ZBX_AGGR_FUNC_AVG		1
-#define ZBX_AGGR_FUNC_MAX		2
-#define ZBX_AGGR_FUNC_MIN		3
+#define TRX_AGGR_FUNC_ONE		0
+#define TRX_AGGR_FUNC_AVG		1
+#define TRX_AGGR_FUNC_MAX		2
+#define TRX_AGGR_FUNC_MIN		3
 
-#define ZBX_SELFMON_DELAY		1
+#define TRX_SELFMON_DELAY		1
 
 /* the process statistics */
 typedef struct
@@ -42,4 +42,4 @@ void	zbx_wakeup(void);
 int	zbx_sleep_get_remainder(void);
 #endif
 
-#endif	/* TREEGIX_ZBXSELF_H */
+#endif	/* TREEGIX_TRXSELF_H */

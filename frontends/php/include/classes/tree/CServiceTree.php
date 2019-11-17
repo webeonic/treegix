@@ -27,7 +27,7 @@ class CServiceTree extends CTree {
 
 					// do not show the severity for information and unclassified triggers
 					if (in_array($status, [TRIGGER_SEVERITY_INFORMATION, TRIGGER_SEVERITY_NOT_CLASSIFIED])) {
-						return (new CCol(_('OK')))->addClass(ZBX_STYLE_GREEN);
+						return (new CCol(_('OK')))->addClass(TRX_STYLE_GREEN);
 					}
 					else {
 						return (new CCol(getSeverityName($status, $config)))->addClass(getSeverityStyle($status));
@@ -36,7 +36,7 @@ class CServiceTree extends CTree {
 				break;
 
 			case 'sla':
-				return parent::makeCol($rowId, $colName)->addClass(ZBX_STYLE_CELL_WIDTH);
+				return parent::makeCol($rowId, $colName)->addClass(TRX_STYLE_CELL_WIDTH);
 		}
 
 		return parent::makeCol($rowId, $colName);

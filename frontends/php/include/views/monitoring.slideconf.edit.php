@@ -15,7 +15,7 @@ if (!$data['form_refresh']) {
 // create form
 $form = (new CForm())
 	->setName('slideForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $data['form'])
 	->addVar('slides', $data['slides_without_delay'])
 	->addVar('current_user_userid', $data['current_user_userid'])
@@ -68,7 +68,7 @@ $slideshow_tab->addRow(
 	(new CLabel(_('Owner'), 'userid_ms'))->setAsteriskMark(),
 	(new CMultiSelect($multiselect_data))
 		->setAriaRequired()
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 );
 
 $slideshow_tab
@@ -76,14 +76,14 @@ $slideshow_tab
 		(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $data['slideshow']['name']))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAttribute('autofocus', 'autofocus')
 	)
 	->addRow(
 		(new CLabel(_('Default delay'), 'delay'))->setAsteriskMark(),
 		(new CTextBox('delay', $data['slideshow']['delay']))
 			->setAriaRequired()
-			->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+			->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 	);
 
 // append slide table
@@ -104,21 +104,21 @@ foreach ($data['slideshow']['slides'] as $key => $slides) {
 	$slideTable->addRow(
 		(new CRow([
 			(new CCol(
-				(new CDiv())->addClass(ZBX_STYLE_DRAG_ICON)
-			))->addClass(ZBX_STYLE_TD_DRAG_ICON),
+				(new CDiv())->addClass(TRX_STYLE_DRAG_ICON)
+			))->addClass(TRX_STYLE_TD_DRAG_ICON),
 			(new CSpan($i++.':'))
 				->addClass('rowNum')
 				->setId('current_slide_'.$key),
 			$data['slideshow']['screens'][$slides['screenid']]['name'],
 			(new CTextBox('slides['.$key.'][delay]', $slides['delay']))
-				->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+				->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 				->setAttribute('placeholder', _('default')),
 			(new CCol(
 				(new CButton('remove_'.$key, _('Remove')))
 					->onClick('javascript: removeSlide(this);')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->setAttribute('remove_slide', $key)
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->addClass('sortable')
 			->setId('slides_'.$key)
@@ -135,7 +135,7 @@ $addButtonColumn = (new CCol(
 					'multiselect' => '1'
 				]).', null, this);'
 			)
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 	))->setColSpan(5);
 
 $addButtonColumn->setAttribute('style', 'vertical-align: middle;');
@@ -144,8 +144,8 @@ $slideTable->addRow((new CRow($addButtonColumn))->setId('screenListFooter'));
 $slideshow_tab->addRow(
 	(new CLabel(_('Slides'), $slideTable->getId()))->setAsteriskMark(),
 	(new CDiv($slideTable))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 // Append tabs to form.
@@ -166,7 +166,7 @@ $add_user_group_btn = ([(new CButton(null, _('Add')))
 			'multiselect' => '1'
 		]).', null, this);'
 	)
-	->addClass(ZBX_STYLE_BTN_LINK)]);
+	->addClass(TRX_STYLE_BTN_LINK)]);
 
 $user_group_shares_table->addRow(
 	(new CRow(
@@ -204,7 +204,7 @@ $add_user_btn = ([(new CButton(null, _('Add')))
 			'multiselect' => '1'
 		]).', null, this);'
 	)
-	->addClass(ZBX_STYLE_BTN_LINK)]);
+	->addClass(TRX_STYLE_BTN_LINK)]);
 
 $user_shares_table->addRow(
 	(new CRow(
@@ -238,13 +238,13 @@ $sharing_tab = (new CFormList('sharing_form'))
 	)
 	->addRow(_('List of user group shares'),
 		(new CDiv($user_group_shares_table))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 	)
 	->addRow(_('List of user shares'),
 		(new CDiv($user_shares_table))
-			->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-			->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+			->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+			->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 	);
 
 // Append data to form.

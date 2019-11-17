@@ -6,7 +6,7 @@ class CTextAreaFlexible extends CTextArea {
 	/**
 	 * Default CSS class name for textarea element.
 	 */
-	const ZBX_STYLE_CLASS = 'textarea-flexible';
+	const TRX_STYLE_CLASS = 'textarea-flexible';
 
 	/**
 	 * An options array.
@@ -36,7 +36,7 @@ class CTextAreaFlexible extends CTextArea {
 
 		parent::__construct($name, $value, $this->options);
 
-		$this->addClass(self::ZBX_STYLE_CLASS);
+		$this->addClass(self::TRX_STYLE_CLASS);
 
 		if ($this->options['add_post_js']) {
 			zbx_add_post_js($this->getPostJS());

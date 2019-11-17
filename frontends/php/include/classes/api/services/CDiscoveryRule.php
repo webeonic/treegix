@@ -18,10 +18,10 @@ class CDiscoveryRule extends CItemGeneral {
 	 *
 	 * 5.6 would allow this to be defined constant.
 	 */
-	public static $supported_preprocessing_types = [ZBX_PREPROC_REGSUB, ZBX_PREPROC_JSONPATH,
-		ZBX_PREPROC_VALIDATE_NOT_REGEX, ZBX_PREPROC_ERROR_FIELD_JSON, ZBX_PREPROC_THROTTLE_TIMED_VALUE,
-		ZBX_PREPROC_SCRIPT, ZBX_PREPROC_PROMETHEUS_TO_JSON, ZBX_PREPROC_XPATH, ZBX_PREPROC_ERROR_FIELD_XML,
-		ZBX_PREPROC_CSV_TO_JSON
+	public static $supported_preprocessing_types = [TRX_PREPROC_REGSUB, TRX_PREPROC_JSONPATH,
+		TRX_PREPROC_VALIDATE_NOT_REGEX, TRX_PREPROC_ERROR_FIELD_JSON, TRX_PREPROC_THROTTLE_TIMED_VALUE,
+		TRX_PREPROC_SCRIPT, TRX_PREPROC_PROMETHEUS_TO_JSON, TRX_PREPROC_XPATH, TRX_PREPROC_ERROR_FIELD_XML,
+		TRX_PREPROC_CSV_TO_JSON
 	];
 
 	public function __construct() {
@@ -43,7 +43,7 @@ class CDiscoveryRule extends CItemGeneral {
 		$sqlParts = [
 			'select'	=> ['items' => 'i.itemid'],
 			'from'		=> ['items' => 'items i'],
-			'where'		=> ['i.flags='.ZBX_FLAG_DISCOVERY_RULE],
+			'where'		=> ['i.flags='.TRX_FLAG_DISCOVERY_RULE],
 			'group'		=> [],
 			'order'		=> [],
 			'limit'		=> null
@@ -489,7 +489,7 @@ class CDiscoveryRule extends CItemGeneral {
 	 */
 	public function delete(array $ruleids, $nopermissions = false) {
 		if (empty($ruleids)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		$ruleids = array_keys(array_flip($ruleids));
@@ -505,10 +505,10 @@ class CDiscoveryRule extends CItemGeneral {
 		if (!$nopermissions) {
 			foreach ($ruleids as $ruleid) {
 				if (!isset($delRules[$ruleid])) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+					self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 				}
 				if ($delRules[$ruleid]['templateid'] != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot delete templated items.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot delete templated items.'));
 				}
 			}
 		}
@@ -557,7 +557,7 @@ class CDiscoveryRule extends CItemGeneral {
 		), 'hostid');
 		if ($hostPrototypeIds) {
 			if (!API::HostPrototype()->delete($hostPrototypeIds, true)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot delete host prototype.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot delete host prototype.'));
 			}
 		}
 
@@ -605,7 +605,7 @@ class CDiscoveryRule extends CItemGeneral {
 			]);
 
 			if ($count != count($hostids)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -627,10 +627,10 @@ class CDiscoveryRule extends CItemGeneral {
 	public function copy(array $data) {
 		// validate data
 		if (!isset($data['discoveryids']) || !$data['discoveryids']) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('No discovery rule IDs given.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('No discovery rule IDs given.'));
 		}
 		if (!isset($data['hostids']) || !$data['hostids']) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('No host IDs given.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('No host IDs given.'));
 		}
 
 		$this->checkHostPermissions($data['hostids']);
@@ -642,7 +642,7 @@ class CDiscoveryRule extends CItemGeneral {
 		]);
 
 		if ($count != count($data['discoveryids'])) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		// copy
@@ -777,7 +777,7 @@ class CDiscoveryRule extends CItemGeneral {
 			$trigger['expression'] = triggerExpressionReplaceHost($trigger['expression'], $srcHost['host'],
 				$dstHost['host']
 			);
-			if ($trigger['recovery_mode'] == ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
+			if ($trigger['recovery_mode'] == TRX_RECOVERY_MODE_RECOVERY_EXPRESSION) {
 				$trigger['recovery_expression'] = triggerExpressionReplaceHost($trigger['recovery_expression'],
 					$srcHost['host'], $dstHost['host']
 				);
@@ -787,7 +787,7 @@ class CDiscoveryRule extends CItemGeneral {
 
 		$result = API::TriggerPrototype()->create($dstTriggers);
 		if (!$result) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot clone trigger prototypes.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot clone trigger prototypes.'));
 		}
 
 		// Process dependencies, if at least one trigger prototype has a dependency.
@@ -873,7 +873,7 @@ class CDiscoveryRule extends CItemGeneral {
 									$new_trigger_prototype['src_host'],
 									$new_trigger_prototype['new_host']
 								);
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Cannot add dependency from trigger "%1$s:%2$s" to non existing trigger "%3$s:%4$s".',
 									$trigger_prototype['description'],
 									$trigger_prototype['expression'],
@@ -1199,7 +1199,7 @@ class CDiscoveryRule extends CItemGeneral {
 	protected function checkInput(array &$items, $update = false, array $dbItems = []) {
 		// add the values that cannot be changed, but are required for further processing
 		foreach ($items as &$item) {
-			$item['flags'] = ZBX_FLAG_DISCOVERY_RULE;
+			$item['flags'] = TRX_FLAG_DISCOVERY_RULE;
 			$item['value_type'] = ITEM_VALUE_TYPE_TEXT;
 
 			// unset fields that are updated using the 'filter' parameter
@@ -1281,7 +1281,7 @@ class CDiscoveryRule extends CItemGeneral {
 		return [
 			'validators' => [
 				'macro' => new CStringValidator([
-					'regex' => '/^'.ZBX_PREG_EXPRESSION_LLD_MACROS.'$/',
+					'regex' => '/^'.TRX_PREG_EXPRESSION_LLD_MACROS.'$/',
 					'messageEmpty' => _('Empty filter condition macro for discovery rule "%1$s".'),
 					'messageRegex' => _('Incorrect filter condition macro for discovery rule "%1$s".')
 				]),
@@ -1316,7 +1316,7 @@ class CDiscoveryRule extends CItemGeneral {
 		if (array_key_exists('lifetime', $item)
 				&& !validateTimeUnit($item['lifetime'], SEC_PER_HOUR, 25 * SEC_PER_YEAR, true, $error,
 					['usermacros' => true])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'lifetime', $error)
 			);
 		}
@@ -1336,7 +1336,7 @@ class CDiscoveryRule extends CItemGeneral {
 		foreach ($lld_macro_paths as $num => $lld_macro_path) {
 			if (array_key_exists('lld_macro', $lld_macro_path)) {
 				if (array_key_exists($lld_macro_path['lld_macro'], $macro_names)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid parameter "%1$s": %2$s.', $path.'/lld_macro_paths/'.($num + 1).'/lld_macro',
 							_s('value "%1$s" already exists', $lld_macro_path['lld_macro'])
 						)
@@ -1374,7 +1374,7 @@ class CDiscoveryRule extends CItemGeneral {
 				$path = '/'.($key + 1);
 
 				if (!CApiInputValidator::validate(['type' => API_OBJECT, 'fields' => $rules], $item, $path, $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 
 				$this->checkDuplicateLLDMacros($item['lld_macro_paths'], [], $path);
@@ -1417,12 +1417,12 @@ class CDiscoveryRule extends CItemGeneral {
 				$path = '/'.($key + 1);
 
 				if (!CApiInputValidator::validate(['type' => API_OBJECT, 'fields' => $rules], $item, $path, $error)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+					self::exception(TRX_API_ERROR_PARAMETERS, $error);
 				}
 
 				if (array_key_exists('lld_macro_paths', $item)) {
 					if ($templateid != 0) {
-						self::exception(ZBX_API_ERROR_PARAMETERS,
+						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Invalid parameter "%1$s": %2$s.', $path.'/lld_macro_paths',
 								_('cannot update property for templated discovery rule')
 							)
@@ -1439,7 +1439,7 @@ class CDiscoveryRule extends CItemGeneral {
 						if (!array_key_exists('lld_macro', $lld_macro_path)
 								&& !array_key_exists('path', $lld_macro_path)
 								&& !array_key_exists('lld_macro_pathid', $lld_macro_path)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Invalid parameter "%1$s": %2$s.', $path.'/lld_macro_paths/'.$subpath,
 									_('cannot be empty')
 								)
@@ -1457,7 +1457,7 @@ class CDiscoveryRule extends CItemGeneral {
 							 */
 							if (array_key_exists('lld_macro', $lld_macro_path)
 									&& !array_key_exists('path', $lld_macro_path)) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('Invalid parameter "%1$s": %2$s.', $path.'/lld_macro_paths/'.$subpath,
 										_s('the parameter "%1$s" is missing', 'path')
 									)
@@ -1465,7 +1465,7 @@ class CDiscoveryRule extends CItemGeneral {
 							}
 							elseif (array_key_exists('path', $lld_macro_path)
 									&& !array_key_exists('lld_macro', $lld_macro_path)) {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('Invalid parameter "%1$s": %2$s.', $path.'/lld_macro_paths/'.$subpath,
 										_s('the parameter "%1$s" is missing', 'lld_macro')
 									)
@@ -1491,7 +1491,7 @@ class CDiscoveryRule extends CItemGeneral {
 						), 'lld_macro_pathid');
 
 						if (count($db_lld_macro_paths) != count($lld_macro_pathids)) {
-							self::exception(ZBX_API_ERROR_PERMISSIONS,
+							self::exception(TRX_API_ERROR_PERMISSIONS,
 								_('No permissions to referred object or it does not exist!')
 							);
 						}
@@ -1579,7 +1579,7 @@ class CDiscoveryRule extends CItemGeneral {
 			}
 			// no matching interface found, throw an error
 			elseif ($interface !== false) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+				self::exception(TRX_API_ERROR_PARAMETERS, _s(
 					'Cannot find host interface on "%1$s" for item key "%2$s".',
 					$dstHost['name'],
 					$dstDiscovery['key_']
@@ -1598,7 +1598,7 @@ class CDiscoveryRule extends CItemGeneral {
 			));
 
 			if (!$master_items) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_s('Discovery rule "%1$s" cannot be copied without its master item.', $srcDiscovery['name'])
 				);
 			}
@@ -1689,7 +1689,7 @@ class CDiscoveryRule extends CItemGeneral {
 					'output' => ['itemid'],
 					'itemids' => array_keys($unresolved_master_itemids),
 					'webitems' => true,
-					'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+					'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 					'preservekeys' => true
 				]);
 
@@ -1702,7 +1702,7 @@ class CDiscoveryRule extends CItemGeneral {
 				// If still there are IDs left, there's nothing more we can do.
 				if ($unresolved_master_itemids) {
 					reset($unresolved_master_itemids);
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s('Incorrect value for field "%1$s": %2$s.',
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s('Incorrect value for field "%1$s": %2$s.',
 						'master_itemid', _s('Item "%1$s" does not exist or you have no access to this item',
 							key($unresolved_master_itemids)
 					)));
@@ -1736,7 +1736,7 @@ class CDiscoveryRule extends CItemGeneral {
 					$created_itemids = API::ItemPrototype()->create($create_items);
 
 					if (!$created_itemids) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot clone item prototypes.'));
+						self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot clone item prototypes.'));
 					}
 
 					$created_itemids = $created_itemids['itemids'];
@@ -1762,7 +1762,7 @@ class CDiscoveryRule extends CItemGeneral {
 					}
 					// no matching interface found, throw an error
 					elseif ($interface !== false) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Cannot find host interface on "%1$s" for item key "%2$s".',
 							$dstHost['name'],
 							$item_prototype['key_']
@@ -1792,7 +1792,7 @@ class CDiscoveryRule extends CItemGeneral {
 						$dst_item = get_same_item_for_host($items[$master_itemid], $dstHost['hostid']);
 
 						if (!$dst_item) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot clone item prototypes.'));
+							self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot clone item prototypes.'));
 						}
 
 						$item_prototype['master_itemid'] = $dst_item['itemid'];
@@ -1810,7 +1810,7 @@ class CDiscoveryRule extends CItemGeneral {
 				$created_itemids = API::ItemPrototype()->create($create_items);
 
 				if (!$created_itemids) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot clone item prototypes.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot clone item prototypes.'));
 				}
 
 				$new_itemids = array_merge($new_itemids, $created_itemids['itemids']);
@@ -1931,7 +1931,7 @@ class CDiscoveryRule extends CItemGeneral {
 		// save graphs
 		$rs = API::GraphPrototype()->create($dstGraphs);
 		if (!$rs) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot clone graph prototypes.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot clone graph prototypes.'));
 		}
 
 		return $rs;
@@ -1978,7 +1978,7 @@ class CDiscoveryRule extends CItemGeneral {
 
 			$rs = API::HostPrototype()->create($prototypes);
 			if (!$rs) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot clone host prototypes.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot clone host prototypes.'));
 			}
 		}
 		return $rs;

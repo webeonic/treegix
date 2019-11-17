@@ -89,8 +89,8 @@ static int	get_interval_option(const char * fping, const char *dst, int *value, 
 
 	zbx_snprintf(tmp, sizeof(tmp), "%s -c1 -t50 -i0 %s", fping, dst);
 
-	if (SUCCEED == (ret_exec = zbx_execute(tmp, &out, err, sizeof(err), 1, ZBX_EXIT_CODE_CHECKS_DISABLED)) &&
-			ZBX_KIBIBYTE > strlen(out) && NULL != strstr(out, dst))
+	if (SUCCEED == (ret_exec = zbx_execute(tmp, &out, err, sizeof(err), 1, TRX_EXIT_CODE_CHECKS_DISABLED)) &&
+			TRX_KIBIBYTE > strlen(out) && NULL != strstr(out, dst))
 	{
 		*value = 0;
 		ret = SUCCEED;
@@ -109,8 +109,8 @@ static int	get_interval_option(const char * fping, const char *dst, int *value, 
 
 	zbx_snprintf(tmp, sizeof(tmp), "%s -c1 -t50 -i1 %s", fping, dst);
 
-	if (SUCCEED == (ret_exec = zbx_execute(tmp, &out, err, sizeof(err), 1, ZBX_EXIT_CODE_CHECKS_DISABLED))
-			&& ZBX_KIBIBYTE > strlen(out) && NULL != strstr(out, dst))
+	if (SUCCEED == (ret_exec = zbx_execute(tmp, &out, err, sizeof(err), 1, TRX_EXIT_CODE_CHECKS_DISABLED))
+			&& TRX_KIBIBYTE > strlen(out) && NULL != strstr(out, dst))
 	{
 		*value = 1;
 		ret = SUCCEED;
@@ -155,8 +155,8 @@ static int	get_ipv6_support(const char * fping, const char *dst)
 
 	zbx_snprintf(tmp, sizeof(tmp), "%s -6 -c1 -t50 %s", fping, dst);
 
-	if ((SUCCEED == (ret = zbx_execute(tmp, &out, error, sizeof(error), 1, ZBX_EXIT_CODE_CHECKS_DISABLED)) &&
-				ZBX_KIBIBYTE > strlen(out) && NULL != strstr(out, dst)) || TIMEOUT_ERROR == ret)
+	if ((SUCCEED == (ret = zbx_execute(tmp, &out, error, sizeof(error), 1, TRX_EXIT_CODE_CHECKS_DISABLED)) &&
+				TRX_KIBIBYTE > strlen(out) && NULL != strstr(out, dst)) || TIMEOUT_ERROR == ret)
 	{
 		ret = SUCCEED;
 	}
@@ -172,14 +172,14 @@ static int	get_ipv6_support(const char * fping, const char *dst)
 }
 #endif	/* HAVE_IPV6 */
 
-static int	process_ping(ZBX_FPING_HOST *hosts, int hosts_count, int count, int interval, int size, int timeout,
+static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int interval, int size, int timeout,
 		char *error, int max_error_len)
 {
 	FILE		*f;
 	char		*c, params[70];
 	char		filename[MAX_STRING_LEN], tmp[MAX_STRING_LEN];
 	size_t		offset;
-	ZBX_FPING_HOST	*host;
+	TRX_FPING_HOST	*host;
 	double		sec;
 	int 		i, ret = NOTSUPPORTED, index;
 
@@ -528,7 +528,7 @@ static int	process_ping(ZBX_FPING_HOST *hosts, int hosts_count, int count, int i
  * Comments: use external binary 'fping' to avoid superuser privileges        *
  *                                                                            *
  ******************************************************************************/
-int	do_ping(ZBX_FPING_HOST *hosts, int hosts_count, int count, int interval, int size, int timeout, char *error, int max_error_len)
+int	do_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int interval, int size, int timeout, char *error, int max_error_len)
 {
 	int	res;
 

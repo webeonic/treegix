@@ -9,7 +9,7 @@ $hostWidget = (new CWidget())->setTitle(_('Hosts'));
 // create form
 $hostView = (new CForm())
 	->setName('hostForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('action', 'host.massupdate')
 	->addVar('tls_accept', $data['tls_accept'])
 	->setId('hostForm');
@@ -35,10 +35,10 @@ $hostFormList->addRow(
 		->setChecked(array_key_exists('groups', $data['visible']))
 		->setAttribute('autofocus', 'autofocus'),
 	(new CDiv([
-		(new CRadioButtonList('mass_update_groups', ZBX_ACTION_ADD))
-			->addValue(_('Add'), ZBX_ACTION_ADD)
-			->addValue(_('Replace'), ZBX_ACTION_REPLACE)
-			->addValue(_('Remove'), ZBX_ACTION_REMOVE)
+		(new CRadioButtonList('mass_update_groups', TRX_ACTION_ADD))
+			->addValue(_('Add'), TRX_ACTION_ADD)
+			->addValue(_('Replace'), TRX_ACTION_REPLACE)
+			->addValue(_('Remove'), TRX_ACTION_REMOVE)
 			->setModern(true)
 			->addStyle('margin-bottom: 5px;'),
 		(new CMultiSelect([
@@ -55,7 +55,7 @@ $hostFormList->addRow(
 					'editable' => true
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	]))->setId('groups-div')
 );
 
@@ -64,7 +64,7 @@ $hostFormList->addRow(
 	(new CVisibilityBox('visible[description]', 'description', _('Original')))
 		->setLabel(_('Description'))
 		->setChecked(array_key_exists('description', $data['visible'])),
-	(new CTextArea('description', $data['description']))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+	(new CTextArea('description', $data['description']))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 );
 
 // append proxy to form list
@@ -109,11 +109,11 @@ $newTemplateTable = (new CTable())
 					'dstfld1' => 'templates_'
 				]
 			]
-		]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 	])
 	->addRow([
 		(new CList())
-			->addClass(ZBX_STYLE_LIST_CHECK_RADIO)
+			->addClass(TRX_STYLE_LIST_CHECK_RADIO)
 			->addItem((new CCheckBox('mass_replace_tpls'))
 				->setLabel(_('Replace'))
 				->setChecked($data['mass_replace_tpls'] == 1)
@@ -130,8 +130,8 @@ $templatesFormList->addRow(
 		->setChecked(array_key_exists('templates', $data['visible'])),
 	(new CDiv($newTemplateTable))
 		->setId('templateDiv')
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 $ipmiFormList = new CFormList('ipmiFormList');
@@ -155,14 +155,14 @@ $ipmiFormList->addRow(
 	(new CVisibilityBox('visible[ipmi_username]', 'ipmi_username', _('Original')))
 		->setLabel(_('Username'))
 		->setChecked(array_key_exists('ipmi_username', $data['visible'])),
-	(new CTextBox('ipmi_username', $data['ipmi_username']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+	(new CTextBox('ipmi_username', $data['ipmi_username']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 );
 
 $ipmiFormList->addRow(
 	(new CVisibilityBox('visible[ipmi_password]', 'ipmi_password', _('Original')))
 		->setLabel(_('Password'))
 		->setChecked(array_key_exists('ipmi_password', $data['visible'])),
-	(new CTextBox('ipmi_password', $data['ipmi_password']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+	(new CTextBox('ipmi_password', $data['ipmi_password']))->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 );
 
 $inventoryFormList = new CFormList('inventoryFormList');
@@ -189,10 +189,10 @@ $tags_form_list->addRow(
 		->setLabel(_('Tags'))
 		->setChecked(array_key_exists('tags', $data['visible'])),
 	(new CDiv([
-		(new CRadioButtonList('mass_update_tags', ZBX_ACTION_ADD))
-			->addValue(_('Add'), ZBX_ACTION_ADD)
-			->addValue(_('Replace'), ZBX_ACTION_REPLACE)
-			->addValue(_('Remove'), ZBX_ACTION_REMOVE)
+		(new CRadioButtonList('mass_update_tags', TRX_ACTION_ADD))
+			->addValue(_('Add'), TRX_ACTION_ADD)
+			->addValue(_('Replace'), TRX_ACTION_REPLACE)
+			->addValue(_('Remove'), TRX_ACTION_REMOVE)
 			->setModern(true)
 			->addStyle('margin-bottom: 10px;'),
 		renderTagTable($data['tags'])
@@ -209,11 +209,11 @@ foreach ($data['inventories'] as $field => $fieldInfo) {
 
 	if ($hostInventoryTable['fields'][$field]['type'] == DB::FIELD_TYPE_TEXT) {
 		$fieldInput = (new CTextArea('host_inventory['.$field.']', $data['host_inventory'][$field]))
-			->setWidth(ZBX_TEXTAREA_BIG_WIDTH);
+			->setWidth(TRX_TEXTAREA_BIG_WIDTH);
 	}
 	else {
 		$fieldInput = (new CTextBox('host_inventory['.$field.']', $data['host_inventory'][$field]))
-			->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+			->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			->setAttribute('maxlength', $hostInventoryTable['fields'][$field]['length']);
 	}
 
@@ -238,7 +238,7 @@ $encryption_table = (new CTable())
 	])
 	->addRow([_('Connections from host'),
 		(new CList())
-			->addClass(ZBX_STYLE_LIST_CHECK_RADIO)
+			->addClass(TRX_STYLE_LIST_CHECK_RADIO)
 			->addItem((new CCheckBox('tls_in_none'))->setLabel(_('No encryption')))
 			->addItem((new CCheckBox('tls_in_psk'))->setLabel(_('PSK')))
 			->addItem((new CCheckBox('tls_in_cert'))->setLabel(_('Certificate')))
@@ -246,20 +246,20 @@ $encryption_table = (new CTable())
 	->addRow([
 		(new CLabel(_('PSK identity'), 'tls_psk_identity'))->setAsteriskMark(),
 		(new CTextBox('tls_psk_identity', $data['tls_psk_identity'], false, 128))
-			->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+			->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			->setAriaRequired()
 	])
 	->addRow([
 		(new CLabel(_('PSK'), 'tls_psk'))->setAsteriskMark(),
 		(new CTextBox('tls_psk', $data['tls_psk'], false, 512))
-			->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+			->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			->setAriaRequired()
 	])
 	->addRow([_('Issuer'),
-		(new CTextBox('tls_issuer', $data['tls_issuer'], false, 1024))->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+		(new CTextBox('tls_issuer', $data['tls_issuer'], false, 1024))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 	])
 	->addRow([_x('Subject', 'encryption certificate'),
-		(new CTextBox('tls_subject', $data['tls_subject'], false, 1024))->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+		(new CTextBox('tls_subject', $data['tls_subject'], false, 1024))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 	]);
 
 $encryption_form_list->addRow(
@@ -268,8 +268,8 @@ $encryption_form_list->addRow(
 		->setChecked(array_key_exists('encryption', $data['visible'])),
 	(new CDiv($encryption_table))
 		->setId('encryption_div')
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 // append tabs to form

@@ -1,10 +1,10 @@
-#ifndef TREEGIX_ZBXREGEXP_H
-#define TREEGIX_ZBXREGEXP_H
+#ifndef TREEGIX_TRXREGEXP_H
+#define TREEGIX_TRXREGEXP_H
 
 #include "zbxalgo.h"
 
-#define ZBX_REGEXP_NO_MATCH	0
-#define ZBX_REGEXP_MATCH	1
+#define TRX_REGEXP_NO_MATCH	0
+#define TRX_REGEXP_MATCH	1
 
 typedef struct zbx_regexp zbx_regexp_t;
 
@@ -40,4 +40,4 @@ int	regexp_sub_ex(const zbx_vector_ptr_t *regexps, const char *string, const cha
 int	zbx_global_regexp_exists(const char *name, const zbx_vector_ptr_t *regexps);
 void	zbx_regexp_escape(char **string);
 
-#endif /* TREEGIX_ZBXREGEXP_H */
+#endif /* TREEGIX_TRXREGEXP_H */

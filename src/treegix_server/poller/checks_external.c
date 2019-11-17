@@ -26,7 +26,7 @@ extern char	*CONFIG_EXTERNALSCRIPTS;
 int	get_value_external(DC_ITEM *item, AGENT_RESULT *result)
 {
 	char		error[ITEM_ERROR_LEN_MAX], *cmd = NULL, *buf = NULL;
-	size_t		cmd_alloc = ZBX_KIBIBYTE, cmd_offset = 0;
+	size_t		cmd_alloc = TRX_KIBIBYTE, cmd_offset = 0;
 	int		i, ret = NOTSUPPORTED;
 	AGENT_REQUEST	request;
 
@@ -61,9 +61,9 @@ int	get_value_external(DC_ITEM *item, AGENT_RESULT *result)
 		zbx_free(param_esc);
 	}
 
-	if (SUCCEED == zbx_execute(cmd, &buf, error, sizeof(error), CONFIG_TIMEOUT, ZBX_EXIT_CODE_CHECKS_DISABLED))
+	if (SUCCEED == zbx_execute(cmd, &buf, error, sizeof(error), CONFIG_TIMEOUT, TRX_EXIT_CODE_CHECKS_DISABLED))
 	{
-		zbx_rtrim(buf, ZBX_WHITESPACE);
+		zbx_rtrim(buf, TRX_WHITESPACE);
 
 		set_result_type(result, ITEM_VALUE_TYPE_TEXT, buf);
 		zbx_free(buf);

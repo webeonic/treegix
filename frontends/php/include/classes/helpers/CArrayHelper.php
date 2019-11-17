@@ -147,7 +147,7 @@ class CArrayHelper {
 	public static function sort(array &$array, array $fields) {
 		foreach ($fields as $fid => $field) {
 			if (!is_array($field)) {
-				$fields[$fid] = ['field' => $field, 'order' => ZBX_SORT_UP];
+				$fields[$fid] = ['field' => $field, 'order' => TRX_SORT_UP];
 			}
 		}
 		self::$fields = $fields;
@@ -183,7 +183,7 @@ class CArrayHelper {
 			}
 
 			if ($cmp != 0) {
-				return $cmp * ($field['order'] == ZBX_SORT_UP?1:-1);
+				return $cmp * ($field['order'] == TRX_SORT_UP?1:-1);
 			}
 		}
 		return 0;

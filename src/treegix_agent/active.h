@@ -51,7 +51,7 @@ typedef struct
 	char		*host;
 	unsigned short	port;
 }
-ZBX_THREAD_ACTIVECHK_ARGS;
+TRX_THREAD_ACTIVECHK_ARGS;
 
 typedef struct
 {
@@ -69,18 +69,18 @@ typedef struct
 	unsigned char	flags;
 	zbx_uint64_t	id;
 }
-ZBX_ACTIVE_BUFFER_ELEMENT;
+TRX_ACTIVE_BUFFER_ELEMENT;
 
 typedef struct
 {
-	ZBX_ACTIVE_BUFFER_ELEMENT	*data;
+	TRX_ACTIVE_BUFFER_ELEMENT	*data;
 	int				count;
 	int				pcount;
 	int				lastsent;
 	int				first_error;
 }
-ZBX_ACTIVE_BUFFER;
+TRX_ACTIVE_BUFFER;
 
-ZBX_THREAD_ENTRY(active_checks_thread, args);
+TRX_THREAD_ENTRY(active_checks_thread, args);
 
 #endif	/* TREEGIX_ACTIVE_H */

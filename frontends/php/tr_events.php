@@ -21,11 +21,11 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'triggerid' =>	[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		PAGE_TYPE_HTML.'=='.$page['type']],
-	'eventid' =>	[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		PAGE_TYPE_HTML.'=='.$page['type']],
+	'triggerid' =>	[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		PAGE_TYPE_HTML.'=='.$page['type']],
+	'eventid' =>	[T_TRX_INT, O_OPT, P_SYS,	DB_ID,		PAGE_TYPE_HTML.'=='.$page['type']],
 	// Ajax
-	'widget' =>		[T_ZBX_STR, O_OPT, P_ACT,	IN('"'.WIDGET_HAT_EVENTACTIONS.'","'.WIDGET_HAT_EVENTLIST.'"'), null],
-	'state' =>		[T_ZBX_INT, O_OPT, P_ACT,	IN('0,1'), null]
+	'widget' =>		[T_TRX_STR, O_OPT, P_ACT,	IN('"'.WIDGET_HAT_EVENTACTIONS.'","'.WIDGET_HAT_EVENTLIST.'"'), null],
+	'state' =>		[T_TRX_INT, O_OPT, P_ACT,	IN('0,1'), null]
 ];
 check_fields($fields);
 
@@ -115,7 +115,7 @@ if ($trigger['opdata'] !== '') {
 		]
 	)))
 		->addClass('opdata')
-		->addClass(ZBX_STYLE_WORDWRAP);
+		->addClass(TRX_STYLE_WORDWRAP);
 }
 else {
 	$db_items = API::Item()->get([

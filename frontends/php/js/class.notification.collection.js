@@ -2,9 +2,9 @@
 
 
 /**
- * Represents DOM node for notification list. Stores the collection of ZBX_Notification objects.
+ * Represents DOM node for notification list. Stores the collection of TRX_Notification objects.
  */
-function ZBX_NotificationCollection() {
+function TRX_NotificationCollection() {
 	this._dangling_nodes = [];
 
 	this._list_sequence = [];
@@ -19,14 +19,14 @@ function ZBX_NotificationCollection() {
 /**
  * @return {array}
  */
-ZBX_NotificationCollection.prototype.getIds = function() {
+TRX_NotificationCollection.prototype.getIds = function() {
 	return this._list_sequence;
 };
 
 /**
  * @param {callable} callback
  */
-ZBX_NotificationCollection.prototype.map = function(callback) {
+TRX_NotificationCollection.prototype.map = function(callback) {
 	var len = this._list_sequence.length;
 
 	while (--len > -1) {
@@ -39,7 +39,7 @@ ZBX_NotificationCollection.prototype.map = function(callback) {
  *
  * @return {array}
  */
-ZBX_NotificationCollection.prototype.filterList = function(callback) {
+TRX_NotificationCollection.prototype.filterList = function(callback) {
 	var list = [],
 		len = this._list_sequence.length;
 
@@ -54,20 +54,20 @@ ZBX_NotificationCollection.prototype.filterList = function(callback) {
 /**
  * @return {array} List of raw notification objects.
  */
-ZBX_NotificationCollection.prototype.getRawList = function() {
+TRX_NotificationCollection.prototype.getRawList = function() {
 	return this.filterList(function(notif) {
 		return notif.getRaw();
 	});
 };
 
 /**
- * Merges current with new list. Updates changes for ZBX_Notification if possible, or creates new ZBX_Notification.
+ * Merges current with new list. Updates changes for TRX_Notification if possible, or creates new TRX_Notification.
  * Recoverable notification is just partial of raw with one mandatory field - `eventid`. New iterator sequence reflects
  * the order of list given to this method. During merge, nodes that are not present in list will be removed.
  *
  * @param {array} list List of raw/recoverable notification objects.
  */
-ZBX_NotificationCollection.prototype.consumeList = function(list) {
+TRX_NotificationCollection.prototype.consumeList = function(list) {
 	var new_list_sequence = [];
 
 	while (raw = list.pop()) {
@@ -83,7 +83,7 @@ ZBX_NotificationCollection.prototype.consumeList = function(list) {
 			this._list_obj[raw.eventid].updateRaw(raw);
 		}
 		else {
-			this._list_obj[raw.eventid] = new ZBX_Notification(raw);
+			this._list_obj[raw.eventid] = new TRX_Notification(raw);
 		}
 
 		new_list_sequence.push(raw.eventid);
@@ -102,7 +102,7 @@ ZBX_NotificationCollection.prototype.consumeList = function(list) {
 /**
  * Creates detatched DOM nodes.
  */
-ZBX_NotificationCollection.prototype.makeNodes = function() {
+TRX_NotificationCollection.prototype.makeNodes = function() {
 	var header = document.createElement('div'),
 		controls = document.createElement('ul');
 
@@ -148,7 +148,7 @@ ZBX_NotificationCollection.prototype.makeNodes = function() {
  *
  * @return {HTMLElement} DOM button element.
  */
-ZBX_NotificationCollection.prototype.makeToggleBtn = function(attrs_inactive, attrs_active) {
+TRX_NotificationCollection.prototype.makeToggleBtn = function(attrs_inactive, attrs_active) {
 	var button = document.createElement('button');
 	button.renderState = function(is_active) {
 		var attrs = is_active ? attrs_active : attrs_inactive,
@@ -168,7 +168,7 @@ ZBX_NotificationCollection.prototype.makeToggleBtn = function(attrs_inactive, at
  *
  * @param {string} id
  */
-ZBX_NotificationCollection.prototype.removeById = function(id) {
+TRX_NotificationCollection.prototype.removeById = function(id) {
 	var index = this._list_sequence.indexOf(id);
 
 	if (index === -1) {
@@ -187,9 +187,9 @@ ZBX_NotificationCollection.prototype.removeById = function(id) {
 /**
  * @param {string} id
  *
- * @return {ZBX_Notification}
+ * @return {TRX_Notification}
  */
-ZBX_NotificationCollection.prototype.getById = function(id) {
+TRX_NotificationCollection.prototype.getById = function(id) {
 	return this._list_obj[id];
 };
 
@@ -198,8 +198,8 @@ ZBX_NotificationCollection.prototype.getById = function(id) {
  *
  * @return {Promise}
  */
-ZBX_NotificationCollection.prototype.show = function() {
-	return ZBX_Notifications.util.fadeIn(this.node);
+TRX_NotificationCollection.prototype.show = function() {
+	return TRX_Notifications.util.fadeIn(this.node);
 };
 
 /**
@@ -207,26 +207,26 @@ ZBX_NotificationCollection.prototype.show = function() {
  *
  * @return {Promise}
  */
-ZBX_NotificationCollection.prototype.hide = function() {
-	return ZBX_Notifications.util.fadeOut(this.node);
+TRX_NotificationCollection.prototype.hide = function() {
+	return TRX_Notifications.util.fadeOut(this.node);
 };
 
 /**
  * @return {boolean}
  */
-ZBX_NotificationCollection.prototype.isEmpty = function() {
+TRX_NotificationCollection.prototype.isEmpty = function() {
 	return !this._list_sequence.length;
 };
 
 /**
  * Animates slide-up-remove on dangling nodes one by one.
  */
-ZBX_NotificationCollection.prototype.removeDanglingNodes = function() {
+TRX_NotificationCollection.prototype.removeDanglingNodes = function() {
 	var duration = this._dangling_nodes.length > 4 ? 200 : 500;
 	var first = true;
 
 	while (node = this._dangling_nodes.pop()) {
-		ZBX_Notifications.util.slideUp(node, first && 500 || duration, this._dangling_nodes.length * duration)
+		TRX_Notifications.util.slideUp(node, first && 500 || duration, this._dangling_nodes.length * duration)
 			.then(function(node) {
 				node.parentNode && node.remove();
 			});
@@ -239,9 +239,9 @@ ZBX_NotificationCollection.prototype.removeDanglingNodes = function() {
  * Shows or hides list node, updates and appends notification nodes, then deligates to remove dangling nodes.
  *
  * @param {object} severity_styles
- * @param {ZBX_NotificationsAlarm} alarm_state
+ * @param {TRX_NotificationsAlarm} alarm_state
  */
-ZBX_NotificationCollection.prototype.render = function(severity_styles, alarm_state) {
+TRX_NotificationCollection.prototype.render = function(severity_styles, alarm_state) {
 	this.btn_snooze.renderState(alarm_state.isSnoozed(this.getRawList()));
 	this.btn_mute.renderState(alarm_state.muted);
 
@@ -272,7 +272,7 @@ ZBX_NotificationCollection.prototype.render = function(severity_styles, alarm_st
 			list_node.insertAdjacentElement('afterbegin', notif.node);
 		}
 
-		slide_down && ZBX_Notifications.util.slideDown(notif.node, 200);
+		slide_down && TRX_Notifications.util.slideDown(notif.node, 200);
 		prev_notif_node = notif.node;
 	});
 

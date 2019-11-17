@@ -14,33 +14,33 @@ typedef struct
 	zbx_uint64_t		ymin_itemid;
 	zbx_uint64_t		ymax_itemid;
 	zbx_vector_ptr_t	gitems;
-#define ZBX_FLAG_LLD_GRAPH_UNSET			__UINT64_C(0x00000000)
-#define ZBX_FLAG_LLD_GRAPH_DISCOVERED			__UINT64_C(0x00000001)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_NAME			__UINT64_C(0x00000002)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_WIDTH			__UINT64_C(0x00000004)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_HEIGHT		__UINT64_C(0x00000008)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_YAXISMIN		__UINT64_C(0x00000010)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_YAXISMAX		__UINT64_C(0x00000020)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_WORK_PERIOD	__UINT64_C(0x00000040)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_TRIGGERS		__UINT64_C(0x00000080)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_GRAPHTYPE		__UINT64_C(0x00000100)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_LEGEND		__UINT64_C(0x00000200)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_3D		__UINT64_C(0x00000400)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_PERCENT_LEFT		__UINT64_C(0x00000800)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_PERCENT_RIGHT		__UINT64_C(0x00001000)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_YMIN_TYPE		__UINT64_C(0x00002000)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_YMIN_ITEMID		__UINT64_C(0x00004000)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_YMAX_TYPE		__UINT64_C(0x00008000)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE_YMAX_ITEMID		__UINT64_C(0x00010000)
-#define ZBX_FLAG_LLD_GRAPH_UPDATE									\
-		(ZBX_FLAG_LLD_GRAPH_UPDATE_NAME | ZBX_FLAG_LLD_GRAPH_UPDATE_WIDTH |			\
-		ZBX_FLAG_LLD_GRAPH_UPDATE_HEIGHT | ZBX_FLAG_LLD_GRAPH_UPDATE_YAXISMIN |			\
-		ZBX_FLAG_LLD_GRAPH_UPDATE_YAXISMAX | ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_WORK_PERIOD |	\
-		ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_TRIGGERS | ZBX_FLAG_LLD_GRAPH_UPDATE_GRAPHTYPE |		\
-		ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_LEGEND | ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_3D |		\
-		ZBX_FLAG_LLD_GRAPH_UPDATE_PERCENT_LEFT | ZBX_FLAG_LLD_GRAPH_UPDATE_PERCENT_RIGHT |	\
-		ZBX_FLAG_LLD_GRAPH_UPDATE_YMIN_TYPE | ZBX_FLAG_LLD_GRAPH_UPDATE_YMIN_ITEMID |		\
-		ZBX_FLAG_LLD_GRAPH_UPDATE_YMAX_TYPE | ZBX_FLAG_LLD_GRAPH_UPDATE_YMAX_ITEMID)
+#define TRX_FLAG_LLD_GRAPH_UNSET			__UINT64_C(0x00000000)
+#define TRX_FLAG_LLD_GRAPH_DISCOVERED			__UINT64_C(0x00000001)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_NAME			__UINT64_C(0x00000002)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_WIDTH			__UINT64_C(0x00000004)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_HEIGHT		__UINT64_C(0x00000008)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_YAXISMIN		__UINT64_C(0x00000010)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_YAXISMAX		__UINT64_C(0x00000020)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_WORK_PERIOD	__UINT64_C(0x00000040)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_TRIGGERS		__UINT64_C(0x00000080)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_GRAPHTYPE		__UINT64_C(0x00000100)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_LEGEND		__UINT64_C(0x00000200)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_3D		__UINT64_C(0x00000400)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_PERCENT_LEFT		__UINT64_C(0x00000800)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_PERCENT_RIGHT		__UINT64_C(0x00001000)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_YMIN_TYPE		__UINT64_C(0x00002000)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_YMIN_ITEMID		__UINT64_C(0x00004000)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_YMAX_TYPE		__UINT64_C(0x00008000)
+#define TRX_FLAG_LLD_GRAPH_UPDATE_YMAX_ITEMID		__UINT64_C(0x00010000)
+#define TRX_FLAG_LLD_GRAPH_UPDATE									\
+		(TRX_FLAG_LLD_GRAPH_UPDATE_NAME | TRX_FLAG_LLD_GRAPH_UPDATE_WIDTH |			\
+		TRX_FLAG_LLD_GRAPH_UPDATE_HEIGHT | TRX_FLAG_LLD_GRAPH_UPDATE_YAXISMIN |			\
+		TRX_FLAG_LLD_GRAPH_UPDATE_YAXISMAX | TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_WORK_PERIOD |	\
+		TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_TRIGGERS | TRX_FLAG_LLD_GRAPH_UPDATE_GRAPHTYPE |		\
+		TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_LEGEND | TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_3D |		\
+		TRX_FLAG_LLD_GRAPH_UPDATE_PERCENT_LEFT | TRX_FLAG_LLD_GRAPH_UPDATE_PERCENT_RIGHT |	\
+		TRX_FLAG_LLD_GRAPH_UPDATE_YMIN_TYPE | TRX_FLAG_LLD_GRAPH_UPDATE_YMIN_ITEMID |		\
+		TRX_FLAG_LLD_GRAPH_UPDATE_YMAX_TYPE | TRX_FLAG_LLD_GRAPH_UPDATE_YMAX_ITEMID)
 	zbx_uint64_t		flags;
 }
 zbx_lld_graph_t;
@@ -55,21 +55,21 @@ typedef struct
 	unsigned char		yaxisside;
 	unsigned char		calc_fnc;
 	unsigned char		type;
-#define ZBX_FLAG_LLD_GITEM_UNSET			__UINT64_C(0x0000)
-#define ZBX_FLAG_LLD_GITEM_DISCOVERED			__UINT64_C(0x0001)
-#define ZBX_FLAG_LLD_GITEM_UPDATE_ITEMID		__UINT64_C(0x0002)
-#define ZBX_FLAG_LLD_GITEM_UPDATE_DRAWTYPE		__UINT64_C(0x0004)
-#define ZBX_FLAG_LLD_GITEM_UPDATE_SORTORDER		__UINT64_C(0x0008)
-#define ZBX_FLAG_LLD_GITEM_UPDATE_COLOR			__UINT64_C(0x0010)
-#define ZBX_FLAG_LLD_GITEM_UPDATE_YAXISSIDE		__UINT64_C(0x0020)
-#define ZBX_FLAG_LLD_GITEM_UPDATE_CALC_FNC		__UINT64_C(0x0040)
-#define ZBX_FLAG_LLD_GITEM_UPDATE_TYPE			__UINT64_C(0x0080)
-#define ZBX_FLAG_LLD_GITEM_UPDATE								\
-		(ZBX_FLAG_LLD_GITEM_UPDATE_ITEMID | ZBX_FLAG_LLD_GITEM_UPDATE_DRAWTYPE |	\
-		ZBX_FLAG_LLD_GITEM_UPDATE_SORTORDER | ZBX_FLAG_LLD_GITEM_UPDATE_COLOR |		\
-		ZBX_FLAG_LLD_GITEM_UPDATE_YAXISSIDE | ZBX_FLAG_LLD_GITEM_UPDATE_CALC_FNC |	\
-		ZBX_FLAG_LLD_GITEM_UPDATE_TYPE)
-#define ZBX_FLAG_LLD_GITEM_DELETE			__UINT64_C(0x0100)
+#define TRX_FLAG_LLD_GITEM_UNSET			__UINT64_C(0x0000)
+#define TRX_FLAG_LLD_GITEM_DISCOVERED			__UINT64_C(0x0001)
+#define TRX_FLAG_LLD_GITEM_UPDATE_ITEMID		__UINT64_C(0x0002)
+#define TRX_FLAG_LLD_GITEM_UPDATE_DRAWTYPE		__UINT64_C(0x0004)
+#define TRX_FLAG_LLD_GITEM_UPDATE_SORTORDER		__UINT64_C(0x0008)
+#define TRX_FLAG_LLD_GITEM_UPDATE_COLOR			__UINT64_C(0x0010)
+#define TRX_FLAG_LLD_GITEM_UPDATE_YAXISSIDE		__UINT64_C(0x0020)
+#define TRX_FLAG_LLD_GITEM_UPDATE_CALC_FNC		__UINT64_C(0x0040)
+#define TRX_FLAG_LLD_GITEM_UPDATE_TYPE			__UINT64_C(0x0080)
+#define TRX_FLAG_LLD_GITEM_UPDATE								\
+		(TRX_FLAG_LLD_GITEM_UPDATE_ITEMID | TRX_FLAG_LLD_GITEM_UPDATE_DRAWTYPE |	\
+		TRX_FLAG_LLD_GITEM_UPDATE_SORTORDER | TRX_FLAG_LLD_GITEM_UPDATE_COLOR |		\
+		TRX_FLAG_LLD_GITEM_UPDATE_YAXISSIDE | TRX_FLAG_LLD_GITEM_UPDATE_CALC_FNC |	\
+		TRX_FLAG_LLD_GITEM_UPDATE_TYPE)
+#define TRX_FLAG_LLD_GITEM_DELETE			__UINT64_C(0x0100)
 	zbx_uint64_t		flags;
 }
 zbx_lld_gitem_t;
@@ -147,61 +147,61 @@ static void	lld_graphs_get(zbx_uint64_t parent_graphid, zbx_vector_ptr_t *graphs
 				"g.ymin_type,g.ymin_itemid,g.ymax_type,g.ymax_itemid"
 			" from graphs g,graph_discovery gd"
 			" where g.graphid=gd.graphid"
-				" and gd.parent_graphid=" ZBX_FS_UI64,
+				" and gd.parent_graphid=" TRX_FS_UI64,
 			parent_graphid);
 
 	while (NULL != (row = DBfetch(result)))
 	{
 		graph = (zbx_lld_graph_t *)zbx_malloc(NULL, sizeof(zbx_lld_graph_t));
 
-		ZBX_STR2UINT64(graph->graphid, row[0]);
+		TRX_STR2UINT64(graph->graphid, row[0]);
 		graph->name = zbx_strdup(NULL, row[1]);
 		graph->name_orig = NULL;
 
-		graph->flags = ZBX_FLAG_LLD_GRAPH_UNSET;
+		graph->flags = TRX_FLAG_LLD_GRAPH_UNSET;
 
 		if (atoi(row[2]) != width)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_WIDTH;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_WIDTH;
 
 		if (atoi(row[3]) != height)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_HEIGHT;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_HEIGHT;
 
 		if (atof(row[4]) != yaxismin)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_YAXISMIN;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_YAXISMIN;
 
 		if (atof(row[5]) != yaxismax)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_YAXISMAX;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_YAXISMAX;
 
 		if ((unsigned char)atoi(row[6]) != show_work_period)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_WORK_PERIOD;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_WORK_PERIOD;
 
 		if ((unsigned char)atoi(row[7]) != show_triggers)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_TRIGGERS;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_TRIGGERS;
 
 		if ((unsigned char)atoi(row[8]) != graphtype)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_GRAPHTYPE;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_GRAPHTYPE;
 
 		if ((unsigned char)atoi(row[9]) != show_legend)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_LEGEND;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_LEGEND;
 
 		if ((unsigned char)atoi(row[10]) != show_3d)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_3D;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_3D;
 
 		if (atof(row[11]) != percent_left)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_PERCENT_LEFT;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_PERCENT_LEFT;
 
 		if (atof(row[12]) != percent_right)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_PERCENT_RIGHT;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_PERCENT_RIGHT;
 
 		if ((unsigned char)atoi(row[13]) != ymin_type)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_YMIN_TYPE;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_YMIN_TYPE;
 
-		ZBX_DBROW2UINT64(graph->ymin_itemid, row[14]);
+		TRX_DBROW2UINT64(graph->ymin_itemid, row[14]);
 
 		if ((unsigned char)atoi(row[15]) != ymax_type)
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_YMAX_TYPE;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_YMAX_TYPE;
 
-		ZBX_DBROW2UINT64(graph->ymax_itemid, row[16]);
+		TRX_DBROW2UINT64(graph->ymax_itemid, row[16]);
 
 		zbx_vector_ptr_create(&graph->gitems);
 
@@ -209,7 +209,7 @@ static void	lld_graphs_get(zbx_uint64_t parent_graphid, zbx_vector_ptr_t *graphs
 	}
 	DBfree_result(result);
 
-	zbx_vector_ptr_sort(graphs, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	zbx_vector_ptr_sort(graphs, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -247,7 +247,7 @@ static void	lld_gitems_get(zbx_uint64_t parent_graphid, zbx_vector_ptr_t *gitems
 		zbx_vector_uint64_append(&graphids, graph->graphid);
 	}
 
-	zbx_vector_uint64_sort(&graphids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&graphids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	sql = (char *)zbx_malloc(sql, sql_alloc);
 
@@ -266,24 +266,24 @@ static void	lld_gitems_get(zbx_uint64_t parent_graphid, zbx_vector_ptr_t *gitems
 	{
 		gitem = (zbx_lld_gitem_t *)zbx_malloc(NULL, sizeof(zbx_lld_gitem_t));
 
-		ZBX_STR2UINT64(gitem->gitemid, row[0]);
-		ZBX_STR2UINT64(graphid, row[1]);
-		ZBX_STR2UINT64(gitem->itemid, row[2]);
-		ZBX_STR2UCHAR(gitem->drawtype, row[3]);
+		TRX_STR2UINT64(gitem->gitemid, row[0]);
+		TRX_STR2UINT64(graphid, row[1]);
+		TRX_STR2UINT64(gitem->itemid, row[2]);
+		TRX_STR2UCHAR(gitem->drawtype, row[3]);
 		gitem->sortorder = atoi(row[4]);
 		gitem->color = zbx_strdup(NULL, row[5]);
-		ZBX_STR2UCHAR(gitem->yaxisside, row[6]);
-		ZBX_STR2UCHAR(gitem->calc_fnc, row[7]);
-		ZBX_STR2UCHAR(gitem->type, row[8]);
+		TRX_STR2UCHAR(gitem->yaxisside, row[6]);
+		TRX_STR2UCHAR(gitem->calc_fnc, row[7]);
+		TRX_STR2UCHAR(gitem->type, row[8]);
 
-		gitem->flags = ZBX_FLAG_LLD_GITEM_UNSET;
+		gitem->flags = TRX_FLAG_LLD_GITEM_UNSET;
 
 		if (graphid == parent_graphid)
 		{
 			zbx_vector_ptr_append(gitems_proto, gitem);
 		}
 		else if (FAIL != (index = zbx_vector_ptr_bsearch(graphs, &graphid,
-				ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+				TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 		{
 			graph = (zbx_lld_graph_t *)graphs->values[index];
 
@@ -297,13 +297,13 @@ static void	lld_gitems_get(zbx_uint64_t parent_graphid, zbx_vector_ptr_t *gitems
 	}
 	DBfree_result(result);
 
-	zbx_vector_ptr_sort(gitems_proto, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	zbx_vector_ptr_sort(gitems_proto, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 	for (i = 0; i < graphs->values_num; i++)
 	{
 		graph = (zbx_lld_graph_t *)graphs->values[i];
 
-		zbx_vector_ptr_sort(&graph->gitems, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+		zbx_vector_ptr_sort(&graph->gitems, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 	}
 
 	zbx_vector_uint64_destroy(&graphids);
@@ -356,7 +356,7 @@ static void	lld_items_get(const zbx_vector_ptr_t *gitems_proto, zbx_uint64_t ymi
 		char	*sql = NULL;
 		size_t	sql_alloc = 256, sql_offset = 0;
 
-		zbx_vector_uint64_sort(&itemids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_sort(&itemids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		sql = (char *)zbx_malloc(sql, sql_alloc);
 
@@ -374,14 +374,14 @@ static void	lld_items_get(const zbx_vector_ptr_t *gitems_proto, zbx_uint64_t ymi
 		{
 			item = (zbx_lld_item_t *)zbx_malloc(NULL, sizeof(zbx_lld_item_t));
 
-			ZBX_STR2UINT64(item->itemid, row[0]);
-			ZBX_STR2UCHAR(item->flags, row[1]);
+			TRX_STR2UINT64(item->itemid, row[0]);
+			TRX_STR2UCHAR(item->flags, row[1]);
 
 			zbx_vector_ptr_append(items, item);
 		}
 		DBfree_result(result);
 
-		zbx_vector_ptr_sort(items, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+		zbx_vector_ptr_sort(items, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 	}
 
 	zbx_vector_uint64_destroy(&itemids);
@@ -408,7 +408,7 @@ static zbx_lld_graph_t	*lld_graph_by_item(zbx_vector_ptr_t *graphs, zbx_uint64_t
 	{
 		graph = (zbx_lld_graph_t *)graphs->values[i];
 
-		if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_DISCOVERED))
+		if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_DISCOVERED))
 			continue;
 
 		for (j = 0; j < graph->gitems.values_num; j++)
@@ -466,14 +466,14 @@ static int	lld_item_get(zbx_uint64_t itemid_proto, const zbx_vector_ptr_t *items
 	zbx_lld_item_t		*item_proto;
 	zbx_lld_item_link_t	*item_link;
 
-	if (FAIL == (index = zbx_vector_ptr_bsearch(items, &itemid_proto, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+	if (FAIL == (index = zbx_vector_ptr_bsearch(items, &itemid_proto, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 		return FAIL;
 
 	item_proto = (zbx_lld_item_t *)items->values[index];
 
-	if (0 != (item_proto->flags & ZBX_FLAG_DISCOVERY_PROTOTYPE))
+	if (0 != (item_proto->flags & TRX_FLAG_DISCOVERY_PROTOTYPE))
 	{
-		index = zbx_vector_ptr_bsearch(item_links, &item_proto->itemid, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+		index = zbx_vector_ptr_bsearch(item_links, &item_proto->itemid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 		if (FAIL == index)
 			return FAIL;
@@ -518,7 +518,7 @@ static int	lld_gitems_make(const zbx_vector_ptr_t *gitems_proto, zbx_vector_ptr_
 			gitem->calc_fnc = gitem_proto->calc_fnc;
 			gitem->type = gitem_proto->type;
 
-			gitem->flags = ZBX_FLAG_LLD_GITEM_DISCOVERED;
+			gitem->flags = TRX_FLAG_LLD_GITEM_DISCOVERED;
 
 			zbx_vector_ptr_append(gitems, gitem);
 		}
@@ -529,46 +529,46 @@ static int	lld_gitems_make(const zbx_vector_ptr_t *gitems_proto, zbx_vector_ptr_
 			if (gitem->itemid != itemid)
 			{
 				gitem->itemid = itemid;
-				gitem->flags |= ZBX_FLAG_LLD_GITEM_UPDATE_ITEMID;
+				gitem->flags |= TRX_FLAG_LLD_GITEM_UPDATE_ITEMID;
 			}
 
 			if (gitem->drawtype != gitem_proto->drawtype)
 			{
 				gitem->drawtype = gitem_proto->drawtype;
-				gitem->flags |= ZBX_FLAG_LLD_GITEM_UPDATE_DRAWTYPE;
+				gitem->flags |= TRX_FLAG_LLD_GITEM_UPDATE_DRAWTYPE;
 			}
 
 			if (gitem->sortorder != gitem_proto->sortorder)
 			{
 				gitem->sortorder = gitem_proto->sortorder;
-				gitem->flags |= ZBX_FLAG_LLD_GITEM_UPDATE_SORTORDER;
+				gitem->flags |= TRX_FLAG_LLD_GITEM_UPDATE_SORTORDER;
 			}
 
 			if (0 != strcmp(gitem->color, gitem_proto->color))
 			{
 				gitem->color = zbx_strdup(gitem->color, gitem_proto->color);
-				gitem->flags |= ZBX_FLAG_LLD_GITEM_UPDATE_COLOR;
+				gitem->flags |= TRX_FLAG_LLD_GITEM_UPDATE_COLOR;
 			}
 
 			if (gitem->yaxisside != gitem_proto->yaxisside)
 			{
 				gitem->yaxisside = gitem_proto->yaxisside;
-				gitem->flags |= ZBX_FLAG_LLD_GITEM_UPDATE_YAXISSIDE;
+				gitem->flags |= TRX_FLAG_LLD_GITEM_UPDATE_YAXISSIDE;
 			}
 
 			if (gitem->calc_fnc != gitem_proto->calc_fnc)
 			{
 				gitem->calc_fnc = gitem_proto->calc_fnc;
-				gitem->flags |= ZBX_FLAG_LLD_GITEM_UPDATE_CALC_FNC;
+				gitem->flags |= TRX_FLAG_LLD_GITEM_UPDATE_CALC_FNC;
 			}
 
 			if (gitem->type != gitem_proto->type)
 			{
 				gitem->type = gitem_proto->type;
-				gitem->flags |= ZBX_FLAG_LLD_GITEM_UPDATE_TYPE;
+				gitem->flags |= TRX_FLAG_LLD_GITEM_UPDATE_TYPE;
 			}
 
-			gitem->flags |= ZBX_FLAG_LLD_GITEM_DISCOVERED;
+			gitem->flags |= TRX_FLAG_LLD_GITEM_DISCOVERED;
 		}
 	}
 
@@ -576,7 +576,7 @@ static int	lld_gitems_make(const zbx_vector_ptr_t *gitems_proto, zbx_vector_ptr_
 	{
 		gitem = (zbx_lld_gitem_t *)gitems->values[i];
 
-		gitem->flags |= ZBX_FLAG_LLD_GITEM_DELETE;
+		gitem->flags |= TRX_FLAG_LLD_GITEM_DELETE;
 	}
 
 	ret = SUCCEED;
@@ -617,26 +617,26 @@ static void 	lld_graph_make(const zbx_vector_ptr_t *gitems_proto, zbx_vector_ptr
 	if (NULL != (graph = lld_graph_get(graphs, &lld_row->item_links)))
 	{
 		buffer = zbx_strdup(buffer, name_proto);
-		substitute_lld_macros(&buffer, jp_row, lld_macro_paths, ZBX_MACRO_SIMPLE, NULL, 0);
-		zbx_lrtrim(buffer, ZBX_WHITESPACE);
+		substitute_lld_macros(&buffer, jp_row, lld_macro_paths, TRX_MACRO_SIMPLE, NULL, 0);
+		zbx_lrtrim(buffer, TRX_WHITESPACE);
 		if (0 != strcmp(graph->name, buffer))
 		{
 			graph->name_orig = graph->name;
 			graph->name = buffer;
 			buffer = NULL;
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_NAME;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_NAME;
 		}
 
 		if (graph->ymin_itemid != ymin_itemid)
 		{
 			graph->ymin_itemid = ymin_itemid;
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_YMIN_ITEMID;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_YMIN_ITEMID;
 		}
 
 		if (graph->ymax_itemid != ymax_itemid)
 		{
 			graph->ymax_itemid = ymax_itemid;
-			graph->flags |= ZBX_FLAG_LLD_GRAPH_UPDATE_YMAX_ITEMID;
+			graph->flags |= TRX_FLAG_LLD_GRAPH_UPDATE_YMAX_ITEMID;
 		}
 	}
 	else
@@ -647,15 +647,15 @@ static void 	lld_graph_make(const zbx_vector_ptr_t *gitems_proto, zbx_vector_ptr
 
 		graph->name = zbx_strdup(NULL, name_proto);
 		graph->name_orig = NULL;
-		substitute_lld_macros(&graph->name, jp_row, lld_macro_paths, ZBX_MACRO_SIMPLE, NULL, 0);
-		zbx_lrtrim(graph->name, ZBX_WHITESPACE);
+		substitute_lld_macros(&graph->name, jp_row, lld_macro_paths, TRX_MACRO_SIMPLE, NULL, 0);
+		zbx_lrtrim(graph->name, TRX_WHITESPACE);
 
 		graph->ymin_itemid = ymin_itemid;
 		graph->ymax_itemid = ymax_itemid;
 
 		zbx_vector_ptr_create(&graph->gitems);
 
-		graph->flags = ZBX_FLAG_LLD_GRAPH_UNSET;
+		graph->flags = TRX_FLAG_LLD_GRAPH_UNSET;
 
 		zbx_vector_ptr_append(graphs, graph);
 	}
@@ -665,7 +665,7 @@ static void 	lld_graph_make(const zbx_vector_ptr_t *gitems_proto, zbx_vector_ptr
 	if (SUCCEED != lld_gitems_make(gitems_proto, &graph->gitems, items, &lld_row->item_links))
 		return;
 
-	graph->flags |= ZBX_FLAG_LLD_GRAPH_DISCOVERED;
+	graph->flags |= TRX_FLAG_LLD_GRAPH_DISCOVERED;
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -684,7 +684,7 @@ static void	lld_graphs_make(const zbx_vector_ptr_t *gitems_proto, zbx_vector_ptr
 				lld_macro_paths);
 	}
 
-	zbx_vector_ptr_sort(graphs, ZBX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	zbx_vector_ptr_sort(graphs, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 }
 
 /******************************************************************************
@@ -695,7 +695,7 @@ static void	lld_graphs_make(const zbx_vector_ptr_t *gitems_proto, zbx_vector_ptr
 static void	lld_validate_graph_field(zbx_lld_graph_t *graph, char **field, char **field_orig, zbx_uint64_t flag,
 		size_t field_len, char **error)
 {
-	if (0 == (graph->flags & ZBX_FLAG_LLD_GRAPH_DISCOVERED))
+	if (0 == (graph->flags & TRX_FLAG_LLD_GRAPH_DISCOVERED))
 		return;
 
 	/* only new graphs or graphs with changed data will be validated */
@@ -713,7 +713,7 @@ static void	lld_validate_graph_field(zbx_lld_graph_t *graph, char **field, char 
 		*error = zbx_strdcatf(*error, "Cannot %s graph: value \"%s\" is too long.\n",
 				(0 != graph->graphid ? "update" : "create"), *field);
 	}
-	else if (ZBX_FLAG_LLD_GRAPH_UPDATE_NAME == flag && '\0' == **field)
+	else if (TRX_FLAG_LLD_GRAPH_UPDATE_NAME == flag && '\0' == **field)
 	{
 		*error = zbx_strdcatf(*error, "Cannot %s graph: name is empty.\n",
 				(0 != graph->graphid ? "update" : "create"));
@@ -724,7 +724,7 @@ static void	lld_validate_graph_field(zbx_lld_graph_t *graph, char **field, char 
 	if (0 != graph->graphid)
 		lld_field_str_rollback(field, field_orig, &graph->flags, flag);
 	else
-		graph->flags &= ~ZBX_FLAG_LLD_GRAPH_DISCOVERED;
+		graph->flags &= ~TRX_FLAG_LLD_GRAPH_DISCOVERED;
 }
 
 /******************************************************************************
@@ -753,7 +753,7 @@ static void	lld_graphs_validate(zbx_uint64_t hostid, zbx_vector_ptr_t *graphs, c
 		graph = (zbx_lld_graph_t *)graphs->values[i];
 
 		lld_validate_graph_field(graph, &graph->name, &graph->name_orig,
-				ZBX_FLAG_LLD_GRAPH_UPDATE_NAME, GRAPH_NAME_LEN, error);
+				TRX_FLAG_LLD_GRAPH_UPDATE_NAME, GRAPH_NAME_LEN, error);
 	}
 
 	/* checking duplicated graph names */
@@ -761,18 +761,18 @@ static void	lld_graphs_validate(zbx_uint64_t hostid, zbx_vector_ptr_t *graphs, c
 	{
 		graph = (zbx_lld_graph_t *)graphs->values[i];
 
-		if (0 == (graph->flags & ZBX_FLAG_LLD_GRAPH_DISCOVERED))
+		if (0 == (graph->flags & TRX_FLAG_LLD_GRAPH_DISCOVERED))
 			continue;
 
 		/* only new graphs or graphs with changed name will be validated */
-		if (0 != graph->graphid && 0 == (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_NAME))
+		if (0 != graph->graphid && 0 == (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_NAME))
 			continue;
 
 		for (j = 0; j < graphs->values_num; j++)
 		{
 			graph_b = (zbx_lld_graph_t *)graphs->values[j];
 
-			if (0 == (graph_b->flags & ZBX_FLAG_LLD_GRAPH_DISCOVERED) || i == j)
+			if (0 == (graph_b->flags & TRX_FLAG_LLD_GRAPH_DISCOVERED) || i == j)
 				continue;
 
 			if (0 != strcmp(graph->name, graph_b->name))
@@ -785,10 +785,10 @@ static void	lld_graphs_validate(zbx_uint64_t hostid, zbx_vector_ptr_t *graphs, c
 			if (0 != graph->graphid)
 			{
 				lld_field_str_rollback(&graph->name, &graph->name_orig, &graph->flags,
-						ZBX_FLAG_LLD_GRAPH_UPDATE_NAME);
+						TRX_FLAG_LLD_GRAPH_UPDATE_NAME);
 			}
 			else
-				graph->flags &= ~ZBX_FLAG_LLD_GRAPH_DISCOVERED;
+				graph->flags &= ~TRX_FLAG_LLD_GRAPH_DISCOVERED;
 
 			break;
 		}
@@ -800,14 +800,14 @@ static void	lld_graphs_validate(zbx_uint64_t hostid, zbx_vector_ptr_t *graphs, c
 	{
 		graph = (zbx_lld_graph_t *)graphs->values[i];
 
-		if (0 == (graph->flags & ZBX_FLAG_LLD_GRAPH_DISCOVERED))
+		if (0 == (graph->flags & TRX_FLAG_LLD_GRAPH_DISCOVERED))
 			continue;
 
 		if (0 != graph->graphid)
 		{
 			zbx_vector_uint64_append(&graphids, graph->graphid);
 
-			if (0 == (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_NAME))
+			if (0 == (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_NAME))
 				continue;
 		}
 
@@ -828,7 +828,7 @@ static void	lld_graphs_validate(zbx_uint64_t hostid, zbx_vector_ptr_t *graphs, c
 				" from graphs g,graphs_items gi,items i"
 				" where g.graphid=gi.graphid"
 					" and gi.itemid=i.itemid"
-					" and i.hostid=" ZBX_FS_UI64
+					" and i.hostid=" TRX_FS_UI64
 					" and",
 				hostid);
 		DBadd_str_condition_alloc(&sql, &sql_alloc, &sql_offset, "g.name",
@@ -836,7 +836,7 @@ static void	lld_graphs_validate(zbx_uint64_t hostid, zbx_vector_ptr_t *graphs, c
 
 		if (0 != graphids.values_num)
 		{
-			zbx_vector_uint64_sort(&graphids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+			zbx_vector_uint64_sort(&graphids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " and not");
 			DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "g.graphid",
 					graphids.values, graphids.values_num);
@@ -850,7 +850,7 @@ static void	lld_graphs_validate(zbx_uint64_t hostid, zbx_vector_ptr_t *graphs, c
 			{
 				graph = (zbx_lld_graph_t *)graphs->values[i];
 
-				if (0 == (graph->flags & ZBX_FLAG_LLD_GRAPH_DISCOVERED))
+				if (0 == (graph->flags & TRX_FLAG_LLD_GRAPH_DISCOVERED))
 					continue;
 
 				if (0 == strcmp(graph->name, row[0]))
@@ -862,10 +862,10 @@ static void	lld_graphs_validate(zbx_uint64_t hostid, zbx_vector_ptr_t *graphs, c
 					if (0 != graph->graphid)
 					{
 						lld_field_str_rollback(&graph->name, &graph->name_orig, &graph->flags,
-								ZBX_FLAG_LLD_GRAPH_UPDATE_NAME);
+								TRX_FLAG_LLD_GRAPH_UPDATE_NAME);
 					}
 					else
-						graph->flags &= ~ZBX_FLAG_LLD_GRAPH_DISCOVERED;
+						graph->flags &= ~TRX_FLAG_LLD_GRAPH_DISCOVERED;
 
 					continue;
 				}
@@ -906,7 +906,7 @@ static int	lld_graphs_save(zbx_uint64_t hostid, zbx_uint64_t parent_graphid, zbx
 
 	zbx_uint64_t		graphid = 0, gitemid = 0;
 	char			*sql = NULL, *name_esc, *color_esc;
-	size_t			sql_alloc = 8 * ZBX_KIBIBYTE, sql_offset = 0;
+	size_t			sql_alloc = 8 * TRX_KIBIBYTE, sql_offset = 0;
 	zbx_db_insert_t		db_insert, db_insert_gdiscovery, db_insert_gitems;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -918,30 +918,30 @@ static int	lld_graphs_save(zbx_uint64_t hostid, zbx_uint64_t parent_graphid, zbx
 	{
 		graph = (zbx_lld_graph_t *)graphs->values[i];
 
-		if (0 == (graph->flags & ZBX_FLAG_LLD_GRAPH_DISCOVERED))
+		if (0 == (graph->flags & TRX_FLAG_LLD_GRAPH_DISCOVERED))
 			continue;
 
 		if (0 == graph->graphid)
 			new_graphs++;
-		else if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE))
+		else if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE))
 			upd_graphs++;
 
 		for (j = 0; j < graph->gitems.values_num; j++)
 		{
 			gitem = (zbx_lld_gitem_t *)graph->gitems.values[j];
 
-			if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_DELETE))
+			if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_DELETE))
 			{
 				zbx_vector_uint64_append(&del_gitemids, gitem->gitemid);
 				continue;
 			}
 
-			if (0 == (gitem->flags & ZBX_FLAG_LLD_GITEM_DISCOVERED))
+			if (0 == (gitem->flags & TRX_FLAG_LLD_GITEM_DISCOVERED))
 				continue;
 
 			if (0 == gitem->gitemid)
 				new_gitems++;
-			else if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_UPDATE))
+			else if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_UPDATE))
 				zbx_vector_ptr_append(&upd_gitems, gitem);
 		}
 	}
@@ -991,7 +991,7 @@ static int	lld_graphs_save(zbx_uint64_t hostid, zbx_uint64_t parent_graphid, zbx
 	{
 		graph = (zbx_lld_graph_t *)graphs->values[i];
 
-		if (0 == (graph->flags & ZBX_FLAG_LLD_GRAPH_DISCOVERED))
+		if (0 == (graph->flags & TRX_FLAG_LLD_GRAPH_DISCOVERED))
 			continue;
 
 		if (0 == graph->graphid)
@@ -999,19 +999,19 @@ static int	lld_graphs_save(zbx_uint64_t hostid, zbx_uint64_t parent_graphid, zbx
 			zbx_db_insert_add_values(&db_insert, graphid, graph->name, width, height, yaxismin, yaxismax,
 					(int)show_work_period, (int)show_triggers, (int)graphtype, (int)show_legend,
 					(int)show_3d, percent_left, percent_right, (int)ymin_type, graph->ymin_itemid,
-					(int)ymax_type, graph->ymax_itemid, (int)ZBX_FLAG_DISCOVERY_CREATED);
+					(int)ymax_type, graph->ymax_itemid, (int)TRX_FLAG_DISCOVERY_CREATED);
 
 			zbx_db_insert_add_values(&db_insert_gdiscovery, graphid, parent_graphid);
 
 			graph->graphid = graphid++;
 		}
-		else if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE))
+		else if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE))
 		{
 			const char	*d = "";
 
 			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update graphs set ");
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_NAME))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_NAME))
 			{
 				name_esc = DBdyn_escape_string(graph->name);
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "name='%s'", name_esc);
@@ -1019,108 +1019,108 @@ static int	lld_graphs_save(zbx_uint64_t hostid, zbx_uint64_t parent_graphid, zbx
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_WIDTH))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_WIDTH))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%swidth=%d", d, width);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_HEIGHT))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_HEIGHT))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%sheight=%d", d, height);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_YAXISMIN))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_YAXISMIN))
 			{
-				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%syaxismin=" ZBX_FS_DBL, d,
+				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%syaxismin=" TRX_FS_DBL, d,
 						yaxismin);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_YAXISMAX))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_YAXISMAX))
 			{
-				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%syaxismax=" ZBX_FS_DBL, d,
+				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%syaxismax=" TRX_FS_DBL, d,
 						yaxismax);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_WORK_PERIOD))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_WORK_PERIOD))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%sshow_work_period=%d", d,
 						(int)show_work_period);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_TRIGGERS))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_TRIGGERS))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%sshow_triggers=%d", d,
 						(int)show_triggers);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_GRAPHTYPE))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_GRAPHTYPE))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%sgraphtype=%d", d,
 						(int)graphtype);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_LEGEND))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_LEGEND))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%sshow_legend=%d", d,
 						(int)show_legend);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_SHOW_3D))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_SHOW_3D))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%sshow_3d=%d", d, (int)show_3d);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_PERCENT_LEFT))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_PERCENT_LEFT))
 			{
-				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%spercent_left=" ZBX_FS_DBL, d,
+				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%spercent_left=" TRX_FS_DBL, d,
 						percent_left);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_PERCENT_RIGHT))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_PERCENT_RIGHT))
 			{
-				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%spercent_right=" ZBX_FS_DBL, d,
+				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%spercent_right=" TRX_FS_DBL, d,
 						percent_right);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_YMIN_TYPE))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_YMIN_TYPE))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%symin_type=%d", d,
 						(int)ymin_type);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_YMIN_ITEMID))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_YMIN_ITEMID))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%symin_itemid=%s", d,
 						DBsql_id_ins(graph->ymin_itemid));
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_YMAX_TYPE))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_YMAX_TYPE))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%symax_type=%d", d,
 						(int)ymax_type);
 				d = ",";
 			}
 
-			if (0 != (graph->flags & ZBX_FLAG_LLD_GRAPH_UPDATE_YMAX_ITEMID))
+			if (0 != (graph->flags & TRX_FLAG_LLD_GRAPH_UPDATE_YMAX_ITEMID))
 			{
 				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%symax_itemid=%s", d,
 						DBsql_id_ins(graph->ymax_itemid));
 			}
 
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where graphid=" ZBX_FS_UI64 ";\n",
+			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where graphid=" TRX_FS_UI64 ";\n",
 					graph->graphid);
 		}
 
@@ -1128,10 +1128,10 @@ static int	lld_graphs_save(zbx_uint64_t hostid, zbx_uint64_t parent_graphid, zbx
 		{
 			gitem = (zbx_lld_gitem_t *)graph->gitems.values[j];
 
-			if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_DELETE))
+			if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_DELETE))
 				continue;
 
-			if (0 == (gitem->flags & ZBX_FLAG_LLD_GITEM_DISCOVERED))
+			if (0 == (gitem->flags & TRX_FLAG_LLD_GITEM_DISCOVERED))
 				continue;
 
 			if (0 == gitem->gitemid)
@@ -1153,25 +1153,25 @@ static int	lld_graphs_save(zbx_uint64_t hostid, zbx_uint64_t parent_graphid, zbx
 
 		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update graphs_items set ");
 
-		if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_UPDATE_ITEMID))
+		if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_UPDATE_ITEMID))
 		{
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "itemid=" ZBX_FS_UI64, gitem->itemid);
+			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "itemid=" TRX_FS_UI64, gitem->itemid);
 			d = ",";
 		}
 
-		if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_UPDATE_DRAWTYPE))
+		if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_UPDATE_DRAWTYPE))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%sdrawtype=%d", d, (int)gitem->drawtype);
 			d = ",";
 		}
 
-		if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_UPDATE_SORTORDER))
+		if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_UPDATE_SORTORDER))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%ssortorder=%d", d, gitem->sortorder);
 			d = ",";
 		}
 
-		if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_UPDATE_COLOR))
+		if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_UPDATE_COLOR))
 		{
 			color_esc = DBdyn_escape_string(gitem->color);
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%scolor='%s'", d, color_esc);
@@ -1179,29 +1179,29 @@ static int	lld_graphs_save(zbx_uint64_t hostid, zbx_uint64_t parent_graphid, zbx
 			d = ",";
 		}
 
-		if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_UPDATE_YAXISSIDE))
+		if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_UPDATE_YAXISSIDE))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%syaxisside=%d", d,
 					(int)gitem->yaxisside);
 			d = ",";
 		}
 
-		if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_UPDATE_CALC_FNC))
+		if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_UPDATE_CALC_FNC))
 		{
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%scalc_fnc=%d", d, (int)gitem->calc_fnc);
 			d = ",";
 		}
 
-		if (0 != (gitem->flags & ZBX_FLAG_LLD_GITEM_UPDATE_TYPE))
+		if (0 != (gitem->flags & TRX_FLAG_LLD_GITEM_UPDATE_TYPE))
 			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%stype=%d", d, (int)gitem->type);
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where gitemid=" ZBX_FS_UI64 ";\n",
+		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where gitemid=" TRX_FS_UI64 ";\n",
 				gitem->gitemid);
 	}
 
 	if (0 != del_gitemids.values_num)
 	{
-		zbx_vector_uint64_sort(&del_gitemids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+		zbx_vector_uint64_sort(&del_gitemids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "delete from graphs_items where");
 		DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "gitemid",
@@ -1283,7 +1283,7 @@ int	lld_update_graphs(zbx_uint64_t hostid, zbx_uint64_t lld_ruleid, const zbx_ve
 			" where g.graphid=gi.graphid"
 				" and gi.itemid=i.itemid"
 				" and i.itemid=id.itemid"
-				" and id.parent_itemid=" ZBX_FS_UI64,
+				" and id.parent_itemid=" TRX_FS_UI64,
 			lld_ruleid);
 
 	while (SUCCEED == ret && NULL != (row = DBfetch(result)))
@@ -1295,23 +1295,23 @@ int	lld_update_graphs(zbx_uint64_t hostid, zbx_uint64_t lld_ruleid, const zbx_ve
 		unsigned char	show_work_period, show_triggers, graphtype, show_legend, show_3d,
 				ymin_type, ymax_type;
 
-		ZBX_STR2UINT64(parent_graphid, row[0]);
+		TRX_STR2UINT64(parent_graphid, row[0]);
 		name_proto = row[1];
 		width = atoi(row[2]);
 		height = atoi(row[3]);
 		yaxismin = atof(row[4]);
 		yaxismax = atof(row[5]);
-		ZBX_STR2UCHAR(show_work_period, row[6]);
-		ZBX_STR2UCHAR(show_triggers, row[7]);
-		ZBX_STR2UCHAR(graphtype, row[8]);
-		ZBX_STR2UCHAR(show_legend, row[9]);
-		ZBX_STR2UCHAR(show_3d, row[10]);
+		TRX_STR2UCHAR(show_work_period, row[6]);
+		TRX_STR2UCHAR(show_triggers, row[7]);
+		TRX_STR2UCHAR(graphtype, row[8]);
+		TRX_STR2UCHAR(show_legend, row[9]);
+		TRX_STR2UCHAR(show_3d, row[10]);
 		percent_left = atof(row[11]);
 		percent_right = atof(row[12]);
-		ZBX_STR2UCHAR(ymin_type, row[13]);
-		ZBX_DBROW2UINT64(ymin_itemid_proto, row[14]);
-		ZBX_STR2UCHAR(ymax_type, row[15]);
-		ZBX_DBROW2UINT64(ymax_itemid_proto, row[16]);
+		TRX_STR2UCHAR(ymin_type, row[13]);
+		TRX_DBROW2UINT64(ymin_itemid_proto, row[14]);
+		TRX_STR2UCHAR(ymax_type, row[15]);
+		TRX_DBROW2UINT64(ymax_itemid_proto, row[16]);
 
 		lld_graphs_get(parent_graphid, &graphs, width, height, yaxismin, yaxismax, show_work_period,
 				show_triggers, graphtype, show_legend, show_3d, percent_left, percent_right,

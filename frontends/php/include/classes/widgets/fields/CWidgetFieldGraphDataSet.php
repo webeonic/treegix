@@ -22,7 +22,7 @@ class CWidgetFieldGraphDataSet extends CWidgetField {
 	public function __construct($name, $label) {
 		parent::__construct($name, $label);
 
-		$this->setSaveType(ZBX_WIDGET_FIELD_TYPE_STR);
+		$this->setSaveType(TRX_WIDGET_FIELD_TYPE_STR);
 		$this->setValidationRules(['type' => API_OBJECTS, 'fields' => [
 			'hosts'					=> ['type' => API_STRINGS_UTF8, 'flags' => API_REQUIRED],
 			'items'					=> ['type' => API_STRINGS_UTF8, 'flags' => API_REQUIRED],
@@ -34,9 +34,9 @@ class CWidgetFieldGraphDataSet extends CWidgetField {
 			'fill'					=> ['type' => API_INT32, 'in' => implode(',', range(0, 10))],
 			'missingdatafunc'		=> ['type' => API_INT32, 'in' => implode(',', [SVG_GRAPH_MISSING_DATA_NONE, SVG_GRAPH_MISSING_DATA_CONNECTED, SVG_GRAPH_MISSING_DATA_TREAT_AS_ZERO])],
 			'axisy'					=> ['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [GRAPH_YAXIS_SIDE_LEFT, GRAPH_YAXIS_SIDE_RIGHT])],
-			'timeshift'				=> ['type' => API_TIME_UNIT, 'flags' => API_REQUIRED, 'in' => implode(':', [ZBX_MIN_TIMESHIFT, ZBX_MAX_TIMESHIFT])],
+			'timeshift'				=> ['type' => API_TIME_UNIT, 'flags' => API_REQUIRED, 'in' => implode(':', [TRX_MIN_TIMESHIFT, TRX_MAX_TIMESHIFT])],
 			'aggregate_function'	=> ['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [GRAPH_AGGREGATE_NONE, GRAPH_AGGREGATE_MIN, GRAPH_AGGREGATE_MAX, GRAPH_AGGREGATE_AVG, GRAPH_AGGREGATE_COUNT, GRAPH_AGGREGATE_SUM, GRAPH_AGGREGATE_FIRST, GRAPH_AGGREGATE_LAST])],
-			'aggregate_interval'	=> ['type' => API_TIME_UNIT, 'flags' => API_TIME_UNIT_WITH_YEAR, 'in' => implode(':', [1, ZBX_MAX_TIMESHIFT])],
+			'aggregate_interval'	=> ['type' => API_TIME_UNIT, 'flags' => API_TIME_UNIT_WITH_YEAR, 'in' => implode(':', [1, TRX_MAX_TIMESHIFT])],
 			'aggregate_grouping'	=> ['type' => API_INT32, 'in' => implode(',', [GRAPH_AGGREGATE_BY_ITEM, GRAPH_AGGREGATE_BY_DATASET])]
 		]]);
 
@@ -117,18 +117,18 @@ class CWidgetFieldGraphDataSet extends CWidgetField {
 		$value = $this->getValue();
 
 		$dataset_fields = [
-			'color' => ZBX_WIDGET_FIELD_TYPE_STR,
-			'type' => ZBX_WIDGET_FIELD_TYPE_INT32,
-			'width' => ZBX_WIDGET_FIELD_TYPE_INT32,
-			'pointsize' => ZBX_WIDGET_FIELD_TYPE_INT32,
-			'transparency' => ZBX_WIDGET_FIELD_TYPE_INT32,
-			'fill' => ZBX_WIDGET_FIELD_TYPE_INT32,
-			'axisy' => ZBX_WIDGET_FIELD_TYPE_STR,
-			'timeshift' => ZBX_WIDGET_FIELD_TYPE_STR,
-			'missingdatafunc' => ZBX_WIDGET_FIELD_TYPE_INT32,
-			'aggregate_function' => ZBX_WIDGET_FIELD_TYPE_INT32,
-			'aggregate_interval' => ZBX_WIDGET_FIELD_TYPE_STR,
-			'aggregate_grouping' => ZBX_WIDGET_FIELD_TYPE_INT32
+			'color' => TRX_WIDGET_FIELD_TYPE_STR,
+			'type' => TRX_WIDGET_FIELD_TYPE_INT32,
+			'width' => TRX_WIDGET_FIELD_TYPE_INT32,
+			'pointsize' => TRX_WIDGET_FIELD_TYPE_INT32,
+			'transparency' => TRX_WIDGET_FIELD_TYPE_INT32,
+			'fill' => TRX_WIDGET_FIELD_TYPE_INT32,
+			'axisy' => TRX_WIDGET_FIELD_TYPE_STR,
+			'timeshift' => TRX_WIDGET_FIELD_TYPE_STR,
+			'missingdatafunc' => TRX_WIDGET_FIELD_TYPE_INT32,
+			'aggregate_function' => TRX_WIDGET_FIELD_TYPE_INT32,
+			'aggregate_interval' => TRX_WIDGET_FIELD_TYPE_STR,
+			'aggregate_grouping' => TRX_WIDGET_FIELD_TYPE_INT32
 		];
 		$dataset_defaults = self::getDefaults();
 
@@ -136,14 +136,14 @@ class CWidgetFieldGraphDataSet extends CWidgetField {
 			// Hosts and items fields are stored as arrays to bypass length limit.
 			foreach ($val['hosts'] as $num => $pattern_item) {
 				$widget_fields[] = [
-					'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+					'type' => TRX_WIDGET_FIELD_TYPE_STR,
 					'name' => $this->name.'.hosts.'.$index.'.'.$num,
 					'value' => $pattern_item
 				];
 			}
 			foreach ($val['items'] as $num => $pattern_item) {
 				$widget_fields[] = [
-					'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+					'type' => TRX_WIDGET_FIELD_TYPE_STR,
 					'name' => $this->name.'.items.'.$index.'.'.$num,
 					'value' => $pattern_item
 				];

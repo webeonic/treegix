@@ -9,7 +9,7 @@ static vm_size_t	pagesize = 0;
 static struct vm_statistics	vm;
 static mach_msg_type_number_t	count;
 
-#define ZBX_HOST_STATISTICS(value)										\
+#define TRX_HOST_STATISTICS(value)										\
 														\
 	count = HOST_VM_INFO_COUNT;										\
 	if (KERN_SUCCESS != host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&value, &count))	\
@@ -22,7 +22,7 @@ static int		mib[] = {CTL_HW, HW_MEMSIZE};
 static size_t		len;
 static zbx_uint64_t	memsize;
 
-#define ZBX_SYSCTL(value)											\
+#define TRX_SYSCTL(value)											\
 														\
 	len = sizeof(value);											\
 	if (0 != sysctl(mib, 2, &value, &len, NULL, 0))								\
@@ -34,7 +34,7 @@ static zbx_uint64_t	memsize;
 
 static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 {
-	ZBX_SYSCTL(memsize);
+	TRX_SYSCTL(memsize);
 
 	SET_UI64_RESULT(result, memsize);
 
@@ -43,7 +43,7 @@ static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 
 static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 {
-	ZBX_HOST_STATISTICS(vm);
+	TRX_HOST_STATISTICS(vm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)vm.active_count * pagesize);
 
@@ -52,7 +52,7 @@ static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_INACTIVE(AGENT_RESULT *result)
 {
-	ZBX_HOST_STATISTICS(vm);
+	TRX_HOST_STATISTICS(vm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)vm.inactive_count * pagesize);
 
@@ -61,7 +61,7 @@ static int	VM_MEMORY_INACTIVE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_WIRED(AGENT_RESULT *result)
 {
-	ZBX_HOST_STATISTICS(vm);
+	TRX_HOST_STATISTICS(vm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)vm.wire_count * pagesize);
 
@@ -70,7 +70,7 @@ static int	VM_MEMORY_WIRED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 {
-	ZBX_HOST_STATISTICS(vm);
+	TRX_HOST_STATISTICS(vm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)vm.free_count * pagesize);
 
@@ -79,7 +79,7 @@ static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_USED(AGENT_RESULT *result)
 {
-	ZBX_HOST_STATISTICS(vm);
+	TRX_HOST_STATISTICS(vm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)(vm.active_count + vm.wire_count) * pagesize);
 
@@ -90,7 +90,7 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 {
 	zbx_uint64_t	used;
 
-	ZBX_SYSCTL(memsize);
+	TRX_SYSCTL(memsize);
 
 	if (0 == memsize)
 	{
@@ -98,7 +98,7 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	ZBX_HOST_STATISTICS(vm);
+	TRX_HOST_STATISTICS(vm);
 
 	used = (zbx_uint64_t)(vm.active_count + vm.wire_count) * pagesize;
 
@@ -109,7 +109,7 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 {
-	ZBX_HOST_STATISTICS(vm);
+	TRX_HOST_STATISTICS(vm);
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)(vm.inactive_count + vm.free_count) * pagesize);
 
@@ -120,7 +120,7 @@ static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 {
 	zbx_uint64_t	available;
 
-	ZBX_SYSCTL(memsize);
+	TRX_SYSCTL(memsize);
 
 	if (0 == memsize)
 	{
@@ -128,7 +128,7 @@ static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	ZBX_HOST_STATISTICS(vm);
+	TRX_HOST_STATISTICS(vm);
 
 	available = (zbx_uint64_t)(vm.inactive_count + vm.free_count) * pagesize;
 

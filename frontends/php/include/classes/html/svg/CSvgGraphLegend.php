@@ -19,15 +19,15 @@ class CSvgGraphLegend extends CDiv {
 
 		switch (count($labels)) {
 			case 1:
-				$this->addClass(CSvgTag::ZBX_STYLE_GRAPH_LEGEND_SINGLE_ITEM);
+				$this->addClass(CSvgTag::TRX_STYLE_GRAPH_LEGEND_SINGLE_ITEM);
 				break;
 
 			case 2:
-				$this->addClass(CSvgTag::ZBX_STYLE_GRAPH_LEGEND_TWO_ITEMS);
+				$this->addClass(CSvgTag::TRX_STYLE_GRAPH_LEGEND_TWO_ITEMS);
 				break;
 
 			default:
-				$this->addClass(CSvgTag::ZBX_STYLE_GRAPH_LEGEND);
+				$this->addClass(CSvgTag::TRX_STYLE_GRAPH_LEGEND);
 				break;
 		}
 	}

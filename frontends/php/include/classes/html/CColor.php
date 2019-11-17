@@ -77,13 +77,13 @@ class CColor extends CDiv {
 
 		$this->addItem(
 			(new CTextBox($this->name, $this->value))
-				->setWidth(ZBX_TEXTAREA_COLOR_WIDTH)
+				->setWidth(TRX_TEXTAREA_COLOR_WIDTH)
 				->setAttribute('maxlength', self::MAX_LENGTH)
 				->setEnabled($this->is_enabled)
 				->setAriaRequired($this->is_required)
 		);
 
-		$this->addClass(ZBX_STYLE_INPUT_COLOR_PICKER);
+		$this->addClass(TRX_STYLE_INPUT_COLOR_PICKER);
 
 		$init_script = $this->append_color_picker_js ? get_js('jQuery("#'.$this->name.'").colorpicker()') : '';
 

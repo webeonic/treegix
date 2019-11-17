@@ -4,15 +4,15 @@
 
 // hint table
 $help_hint = (new CList())
-	->addClass(ZBX_STYLE_NOTIF_BODY)
-	->addStyle('min-width: '.ZBX_OVERVIEW_HELP_MIN_WIDTH.'px');
+	->addClass(TRX_STYLE_NOTIF_BODY)
+	->addStyle('min-width: '.TRX_OVERVIEW_HELP_MIN_WIDTH.'px');
 for ($severity = TRIGGER_SEVERITY_NOT_CLASSIFIED; $severity < TRIGGER_SEVERITY_COUNT; $severity++) {
 	$help_hint->addItem([
 		(new CDiv())
-			->addClass(ZBX_STYLE_NOTIF_INDIC)
+			->addClass(TRX_STYLE_NOTIF_INDIC)
 			->addClass(getSeverityStyle($severity)),
 		new CTag('h4', true, getSeverityName($severity, $data['config'])),
-		(new CTag('p', true, _('PROBLEM')))->addClass(ZBX_STYLE_GREY)
+		(new CTag('p', true, _('PROBLEM')))->addClass(TRX_STYLE_GREY)
 	]);
 }
 
@@ -29,12 +29,12 @@ $widget = (new CWidget())
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Group'), 'groupid'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$this->data['pageFilter']->getGroupsCB()
 				])
 				->addItem([
 					new CLabel(_('Type'), 'type'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					new CComboBox('type', $this->data['type'], 'submit()', [
 						SHOW_TRIGGERS => _('Triggers'),
 						SHOW_DATA => _('Data')
@@ -42,7 +42,7 @@ $widget = (new CWidget())
 				])
 				->addItem([
 					new CLabel(_('Hosts location'), 'view_style'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					new CComboBox('view_style', $this->data['view_style'], 'submit()', [
 						STYLE_TOP => _('Top'),
 						STYLE_LEFT => _('Left')
@@ -56,7 +56,7 @@ $widget = (new CWidget())
 			->setAttribute('aria-label', _('Content controls'))
 	])));
 
-if (in_array($web_layout_mode, [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN])) {
+if (in_array($web_layout_mode, [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN])) {
 	// filter
 	$widget->addItem((new CFilter((new CUrl('overview.php'))->setArgument('type', 1)))
 		->setProfile($data['profileIdx'])
@@ -65,11 +65,11 @@ if (in_array($web_layout_mode, [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN])) {
 			(new CFormList())
 				->addRow(_('Application'), [
 					(new CTextBox('application', $data['filter']['application']))
-						->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 						->setAttribute('autofocus', 'autofocus'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					(new CButton('application_name', _('Select')))
-						->addClass(ZBX_STYLE_BTN_GREY)
+						->addClass(TRX_STYLE_BTN_GREY)
 						->onClick('return PopUp("popup.generic",'.
 							CJs::encodeJson([
 								'srctbl' => 'applications',
@@ -83,7 +83,7 @@ if (in_array($web_layout_mode, [ZBX_LAYOUT_NORMAL, ZBX_LAYOUT_FULLSCREEN])) {
 				])
 				->addRow(_('Show suppressed problems'),
 					(new CCheckBox('show_suppressed'))->setChecked(
-						$data['filter']['show_suppressed'] == ZBX_PROBLEM_SUPPRESSED_TRUE
+						$data['filter']['show_suppressed'] == TRX_PROBLEM_SUPPRESSED_TRUE
 					)
 				)
 		])

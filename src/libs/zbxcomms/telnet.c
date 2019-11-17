@@ -7,7 +7,7 @@
 
 static char	prompt_char = '\0';
 
-static int	telnet_waitsocket(ZBX_SOCKET socket_fd, int mode)
+static int	telnet_waitsocket(TRX_SOCKET socket_fd, int mode)
 {
 	struct timeval	tv;
 	int		rc;
@@ -26,9 +26,9 @@ static int	telnet_waitsocket(ZBX_SOCKET socket_fd, int mode)
 	else
 		writefd = &fd;
 
-	rc = select(ZBX_SOCKET_TO_INT(socket_fd) + 1, readfd, writefd, NULL, &tv);
+	rc = select(TRX_SOCKET_TO_INT(socket_fd) + 1, readfd, writefd, NULL, &tv);
 
-	if (ZBX_PROTO_ERROR == rc)
+	if (TRX_PROTO_ERROR == rc)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "%s() rc:%d errno:%d error:[%s]", __func__, rc, zbx_socket_last_error(),
 				strerror_from_system(zbx_socket_last_error()));
@@ -39,14 +39,14 @@ static int	telnet_waitsocket(ZBX_SOCKET socket_fd, int mode)
 	return rc;
 }
 
-static ssize_t	telnet_socket_read(ZBX_SOCKET socket_fd, void *buf, size_t count)
+static ssize_t	telnet_socket_read(TRX_SOCKET socket_fd, void *buf, size_t count)
 {
 	ssize_t	rc;
 	int	error;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	while (ZBX_PROTO_ERROR == (rc = ZBX_TCP_READ(socket_fd, buf, count)))
+	while (TRX_PROTO_ERROR == (rc = TRX_TCP_READ(socket_fd, buf, count)))
 	{
 		error = zbx_socket_last_error();	/* treegix_log() resets the error code */
 		treegix_log(LOG_LEVEL_DEBUG, "%s() rc:%ld errno:%d error:[%s]",
@@ -68,24 +68,24 @@ static ssize_t	telnet_socket_read(ZBX_SOCKET socket_fd, void *buf, size_t count)
 		break;
 	}
 
-	/* when ZBX_TCP_READ returns 0, it means EOF - let's consider it a permanent error */
+	/* when TRX_TCP_READ returns 0, it means EOF - let's consider it a permanent error */
 	/* note that if telnet_waitsocket() is zero, it is not a permanent condition */
 	if (0 == rc)
-		rc = ZBX_PROTO_ERROR;
+		rc = TRX_PROTO_ERROR;
 ret:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%ld", __func__, (long int)rc);
 
 	return rc;
 }
 
-static ssize_t	telnet_socket_write(ZBX_SOCKET socket_fd, const void *buf, size_t count)
+static ssize_t	telnet_socket_write(TRX_SOCKET socket_fd, const void *buf, size_t count)
 {
 	ssize_t	rc;
 	int	error;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	while (ZBX_PROTO_ERROR == (rc = ZBX_TCP_WRITE(socket_fd, buf, count)))
+	while (TRX_PROTO_ERROR == (rc = TRX_TCP_WRITE(socket_fd, buf, count)))
 	{
 		error = zbx_socket_last_error();	/* treegix_log() resets the error code */
 		treegix_log(LOG_LEVEL_DEBUG, "%s() rc:%ld errno:%d error:[%s]",
@@ -108,10 +108,10 @@ static ssize_t	telnet_socket_write(ZBX_SOCKET socket_fd, const void *buf, size_t
 	return rc;
 }
 
-static ssize_t	telnet_read(ZBX_SOCKET socket_fd, char *buf, size_t *buf_left, size_t *buf_offset)
+static ssize_t	telnet_read(TRX_SOCKET socket_fd, char *buf, size_t *buf_left, size_t *buf_offset)
 {
 	unsigned char	c, c1, c2, c3;
-	ssize_t		rc = ZBX_PROTO_ERROR;
+	ssize_t		rc = TRX_PROTO_ERROR;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -128,7 +128,7 @@ static ssize_t	telnet_read(ZBX_SOCKET socket_fd, char *buf, size_t *buf_left, si
 				while (0 == (rc = telnet_socket_read(socket_fd, &c2, 1)))
 					;
 
-				if (ZBX_PROTO_ERROR == rc)
+				if (TRX_PROTO_ERROR == rc)
 					goto end;
 
 				treegix_log(LOG_LEVEL_DEBUG, "%s() c2:%x", __func__, c2);
@@ -149,7 +149,7 @@ static ssize_t	telnet_read(ZBX_SOCKET socket_fd, char *buf, size_t *buf_left, si
 						while (0 == (rc = telnet_socket_read(socket_fd, &c3, 1)))
 							;
 
-						if (ZBX_PROTO_ERROR == rc)
+						if (TRX_PROTO_ERROR == rc)
 							goto end;
 
 						treegix_log(LOG_LEVEL_DEBUG, "%s() c3:%x", __func__, c3);
@@ -288,7 +288,7 @@ static void	telnet_rm_prompt(const char *buf, size_t *offset)
 	}
 }
 
-int	telnet_test_login(ZBX_SOCKET socket_fd)
+int	telnet_test_login(TRX_SOCKET socket_fd)
 {
 	char	buf[MAX_BUFFER_LEN];
 	size_t	sz, offset;
@@ -298,7 +298,7 @@ int	telnet_test_login(ZBX_SOCKET socket_fd)
 
 	sz = sizeof(buf);
 	offset = 0;
-	while (ZBX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
+	while (TRX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
 	{
 		if (':' == telnet_lastchar(buf, offset))
 			break;
@@ -307,7 +307,7 @@ int	telnet_test_login(ZBX_SOCKET socket_fd)
 	convert_telnet_to_unix_eol(buf, &offset);
 	treegix_log(LOG_LEVEL_DEBUG, "%s() login prompt:'%.*s'", __func__, (int)offset, buf);
 
-	if (ZBX_PROTO_ERROR != rc)
+	if (TRX_PROTO_ERROR != rc)
 		ret = SUCCEED;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
@@ -315,7 +315,7 @@ int	telnet_test_login(ZBX_SOCKET socket_fd)
 	return ret;
 }
 
-int	telnet_login(ZBX_SOCKET socket_fd, const char *username, const char *password, AGENT_RESULT *result)
+int	telnet_login(TRX_SOCKET socket_fd, const char *username, const char *password, AGENT_RESULT *result)
 {
 	char	buf[MAX_BUFFER_LEN], c;
 	size_t	sz, offset;
@@ -325,7 +325,7 @@ int	telnet_login(ZBX_SOCKET socket_fd, const char *username, const char *passwor
 
 	sz = sizeof(buf);
 	offset = 0;
-	while (ZBX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
+	while (TRX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
 	{
 		if (':' == telnet_lastchar(buf, offset))
 			break;
@@ -334,7 +334,7 @@ int	telnet_login(ZBX_SOCKET socket_fd, const char *username, const char *passwor
 	convert_telnet_to_unix_eol(buf, &offset);
 	treegix_log(LOG_LEVEL_DEBUG, "%s() login prompt:'%.*s'", __func__, (int)offset, buf);
 
-	if (ZBX_PROTO_ERROR == rc)
+	if (TRX_PROTO_ERROR == rc)
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "No login prompt."));
 		goto fail;
@@ -345,7 +345,7 @@ int	telnet_login(ZBX_SOCKET socket_fd, const char *username, const char *passwor
 
 	sz = sizeof(buf);
 	offset = 0;
-	while (ZBX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
+	while (TRX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
 	{
 		if (':' == telnet_lastchar(buf, offset))
 			break;
@@ -354,7 +354,7 @@ int	telnet_login(ZBX_SOCKET socket_fd, const char *username, const char *passwor
 	convert_telnet_to_unix_eol(buf, &offset);
 	treegix_log(LOG_LEVEL_DEBUG, "%s() password prompt:'%.*s'", __func__, (int)offset, buf);
 
-	if (ZBX_PROTO_ERROR == rc)
+	if (TRX_PROTO_ERROR == rc)
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "No password prompt."));
 		goto fail;
@@ -365,7 +365,7 @@ int	telnet_login(ZBX_SOCKET socket_fd, const char *username, const char *passwor
 
 	sz = sizeof(buf);
 	offset = 0;
-	while (ZBX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
+	while (TRX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
 	{
 		if ('$' == (c = telnet_lastchar(buf, offset)) || '#' == c || '>' == c || '%' == c)
 		{
@@ -377,7 +377,7 @@ int	telnet_login(ZBX_SOCKET socket_fd, const char *username, const char *passwor
 	convert_telnet_to_unix_eol(buf, &offset);
 	treegix_log(LOG_LEVEL_DEBUG, "%s() prompt:'%.*s'", __func__, (int)offset, buf);
 
-	if (ZBX_PROTO_ERROR == rc)
+	if (TRX_PROTO_ERROR == rc)
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Login failed."));
 		goto fail;
@@ -390,7 +390,7 @@ fail:
 	return ret;
 }
 
-int	telnet_execute(ZBX_SOCKET socket_fd, const char *command, AGENT_RESULT *result, const char *encoding)
+int	telnet_execute(TRX_SOCKET socket_fd, const char *command, AGENT_RESULT *result, const char *encoding)
 {
 	char	buf[MAX_BUFFER_LEN];
 	size_t	sz, offset;
@@ -416,7 +416,7 @@ int	telnet_execute(ZBX_SOCKET socket_fd, const char *command, AGENT_RESULT *resu
 
 	sz = sizeof(buf);
 	offset = 0;
-	while (ZBX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
+	while (TRX_PROTO_ERROR != (rc = telnet_read(socket_fd, buf, &sz, &offset)))
 	{
 		if (prompt_char == telnet_lastchar(buf, offset))
 			break;
@@ -425,7 +425,7 @@ int	telnet_execute(ZBX_SOCKET socket_fd, const char *command, AGENT_RESULT *resu
 	convert_telnet_to_unix_eol(buf, &offset);
 	treegix_log(LOG_LEVEL_DEBUG, "%s() command output:'%.*s'", __func__, (int)offset, buf);
 
-	if (ZBX_PROTO_ERROR == rc)
+	if (TRX_PROTO_ERROR == rc)
 	{
 		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot find prompt after command execution: %s",
 				strerror_from_system(zbx_socket_last_error())));

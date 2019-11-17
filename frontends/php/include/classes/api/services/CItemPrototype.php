@@ -18,13 +18,13 @@ class CItemPrototype extends CItemGeneral {
 	 *
 	 * 5.6 would allow this to be defined constant.
 	 */
-	public static $supported_preprocessing_types = [ZBX_PREPROC_REGSUB, ZBX_PREPROC_TRIM, ZBX_PREPROC_RTRIM,
-		ZBX_PREPROC_LTRIM, ZBX_PREPROC_XPATH, ZBX_PREPROC_JSONPATH, ZBX_PREPROC_MULTIPLIER, ZBX_PREPROC_DELTA_VALUE,
-		ZBX_PREPROC_DELTA_SPEED, ZBX_PREPROC_BOOL2DEC, ZBX_PREPROC_OCT2DEC, ZBX_PREPROC_HEX2DEC,
-		ZBX_PREPROC_VALIDATE_RANGE, ZBX_PREPROC_VALIDATE_REGEX, ZBX_PREPROC_VALIDATE_NOT_REGEX,
-		ZBX_PREPROC_ERROR_FIELD_JSON, ZBX_PREPROC_ERROR_FIELD_XML, ZBX_PREPROC_ERROR_FIELD_REGEX,
-		ZBX_PREPROC_THROTTLE_VALUE, ZBX_PREPROC_THROTTLE_TIMED_VALUE, ZBX_PREPROC_SCRIPT,
-		ZBX_PREPROC_PROMETHEUS_PATTERN, ZBX_PREPROC_PROMETHEUS_TO_JSON, ZBX_PREPROC_CSV_TO_JSON
+	public static $supported_preprocessing_types = [TRX_PREPROC_REGSUB, TRX_PREPROC_TRIM, TRX_PREPROC_RTRIM,
+		TRX_PREPROC_LTRIM, TRX_PREPROC_XPATH, TRX_PREPROC_JSONPATH, TRX_PREPROC_MULTIPLIER, TRX_PREPROC_DELTA_VALUE,
+		TRX_PREPROC_DELTA_SPEED, TRX_PREPROC_BOOL2DEC, TRX_PREPROC_OCT2DEC, TRX_PREPROC_HEX2DEC,
+		TRX_PREPROC_VALIDATE_RANGE, TRX_PREPROC_VALIDATE_REGEX, TRX_PREPROC_VALIDATE_NOT_REGEX,
+		TRX_PREPROC_ERROR_FIELD_JSON, TRX_PREPROC_ERROR_FIELD_XML, TRX_PREPROC_ERROR_FIELD_REGEX,
+		TRX_PREPROC_THROTTLE_VALUE, TRX_PREPROC_THROTTLE_TIMED_VALUE, TRX_PREPROC_SCRIPT,
+		TRX_PREPROC_PROMETHEUS_PATTERN, TRX_PREPROC_PROMETHEUS_TO_JSON, TRX_PREPROC_CSV_TO_JSON
 	];
 
 	public function __construct() {
@@ -46,7 +46,7 @@ class CItemPrototype extends CItemGeneral {
 		$sqlParts = [
 			'select'	=> ['items' => 'i.itemid'],
 			'from'		=> ['items' => 'items i'],
-			'where'		=> ['i.flags='.ZBX_FLAG_DISCOVERY_PROTOTYPE],
+			'where'		=> ['i.flags='.TRX_FLAG_DISCOVERY_PROTOTYPE],
 			'group'		=> [],
 			'order'		=> [],
 			'limit'		=> null
@@ -301,26 +301,26 @@ class CItemPrototype extends CItemGeneral {
 
 		// set proper flags to divide normal and discovered items in future processing
 		foreach ($items as &$item) {
-			$item['flags'] = ZBX_FLAG_DISCOVERY_PROTOTYPE;
+			$item['flags'] = TRX_FLAG_DISCOVERY_PROTOTYPE;
 
 			if (array_key_exists('applicationPrototypes', $item) && is_array($item['applicationPrototypes'])
 					&& $item['applicationPrototypes']) {
 				// Check that "name" field exists for application prototypes.
 				foreach ($item['applicationPrototypes'] as $application_prototype) {
 					if (!array_key_exists('name', $application_prototype)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Missing "name" field for application prototype in item prototype "%1$s".', $item['name']
 						));
 					}
 
 					if ($application_prototype['name'] === '') {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Empty application prototype name in item prototype "%1$s".', $item['name']
 						));
 					}
 
 					if (array_key_exists('templateid', $application_prototype)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Cannot set "templateid" field for application prototype in item prototype "%1$s".',
 							$item['name']
 						));
@@ -330,7 +330,7 @@ class CItemPrototype extends CItemGeneral {
 				// Check that "name" field has no duplicate values for application prototypes.
 				$duplicate_name = CArrayHelper::findDuplicate($item['applicationPrototypes'], 'name');
 				if ($duplicate_name) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+					self::exception(TRX_API_ERROR_PARAMETERS, _s(
 						'Duplicate "name" value "%1$s" for application prototype in item prototype "%2$s".',
 						$duplicate_name['name'],
 						$item['name']
@@ -491,7 +491,7 @@ class CItemPrototype extends CItemGeneral {
 
 		$result = DB::update('items', $data);
 		if (!$result) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, 'DBerror');
+			self::exception(TRX_API_ERROR_PARAMETERS, 'DBerror');
 		}
 
 		$itemids = [];
@@ -852,7 +852,7 @@ class CItemPrototype extends CItemGeneral {
 	private function validateDelete(array &$itemids, array &$db_items = null) {
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $itemids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_items = $this->get([
@@ -864,7 +864,7 @@ class CItemPrototype extends CItemGeneral {
 
 		foreach ($itemids as $itemid) {
 			if (!array_key_exists($itemid, $db_items)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -872,7 +872,7 @@ class CItemPrototype extends CItemGeneral {
 			$db_item = $db_items[$itemid];
 
 			if ($db_item['templateid'] != 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot delete templated item prototype.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot delete templated item prototype.'));
 			}
 		}
 	}
@@ -939,7 +939,7 @@ class CItemPrototype extends CItemGeneral {
 		if (array_key_exists('history', $item)
 				&& !validateTimeUnit($item['history'], SEC_PER_HOUR, 25 * SEC_PER_YEAR, true, $error,
 					['usermacros' => true, 'lldmacros' => true])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'history', $error)
 			);
 		}
@@ -947,7 +947,7 @@ class CItemPrototype extends CItemGeneral {
 		if (array_key_exists('trends', $item)
 				&& !validateTimeUnit($item['trends'], SEC_PER_DAY, 25 * SEC_PER_YEAR, true, $error,
 					['usermacros' => true, 'lldmacros' => true])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Incorrect value for field "%1$s": %2$s.', 'trends', $error)
 			);
 		}

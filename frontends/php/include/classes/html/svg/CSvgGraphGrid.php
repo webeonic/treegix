@@ -17,7 +17,7 @@ class CSvgGraphGrid extends CSvgTag {
 
 		$this
 			->setAttribute('shape-rendering', 'crispEdges')
-			->addClass(CSvgTag::ZBX_STYLE_GRAPH_GRID);
+			->addClass(CSvgTag::TRX_STYLE_GRAPH_GRID);
 
 		$this->points_value = $points_value;
 		$this->points_time = $points_time;
@@ -25,7 +25,7 @@ class CSvgGraphGrid extends CSvgTag {
 
 	public function makeStyles() {
 		return [
-			'.'.CSvgTag::ZBX_STYLE_GRAPH_GRID.' path' => [
+			'.'.CSvgTag::TRX_STYLE_GRAPH_GRID.' path' => [
 				'stroke-dasharray' => '2,2',
 				'stroke' => $this->color
 			]

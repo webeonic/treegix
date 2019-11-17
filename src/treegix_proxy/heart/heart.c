@@ -28,9 +28,9 @@ static int	send_heartbeat(void)
 	treegix_log(LOG_LEVEL_DEBUG, "In send_heartbeat()");
 
 	zbx_json_init(&j, 128);
-	zbx_json_addstring(&j, "request", ZBX_PROTO_VALUE_PROXY_HEARTBEAT, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, "host", CONFIG_HOSTNAME, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, ZBX_PROTO_TAG_VERSION, TREEGIX_VERSION, ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, "request", TRX_PROTO_VALUE_PROXY_HEARTBEAT, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, "host", CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
 
 	if (FAIL == connect_to_server(&sock, CONFIG_HEARTBEAT_FREQUENCY, 0)) /* do not retry */
 		return FAIL;
@@ -55,7 +55,7 @@ static int	send_heartbeat(void)
  * Purpose: periodically send heartbeat message to the server                 *
  *                                                                            *
  ******************************************************************************/
-ZBX_THREAD_ENTRY(heart_thread, args)
+TRX_THREAD_ENTRY(heart_thread, args)
 {
 	int	start, sleeptime = 0, res;
 	double	sec, total_sec = 0.0, old_total_sec = 0.0;
@@ -78,14 +78,14 @@ ZBX_THREAD_ENTRY(heart_thread, args)
 
 	zbx_setproctitle("%s [sending heartbeat message]", get_process_type_string(process_type));
 
-	while (ZBX_IS_RUNNING())
+	while (TRX_IS_RUNNING())
 	{
 		sec = zbx_time();
 		zbx_update_env(sec);
 
 		if (0 != sleeptime)
 		{
-			zbx_setproctitle("%s [sending heartbeat message %s in " ZBX_FS_DBL " sec, "
+			zbx_setproctitle("%s [sending heartbeat message %s in " TRX_FS_DBL " sec, "
 					"sending heartbeat message]",
 					get_process_type_string(process_type),
 					SUCCEED == res ? "success" : "failed", old_total_sec);
@@ -101,7 +101,7 @@ ZBX_THREAD_ENTRY(heart_thread, args)
 		{
 			if (0 == sleeptime)
 			{
-				zbx_setproctitle("%s [sending heartbeat message %s in " ZBX_FS_DBL " sec, "
+				zbx_setproctitle("%s [sending heartbeat message %s in " TRX_FS_DBL " sec, "
 						"sending heartbeat message]",
 						get_process_type_string(process_type),
 						SUCCEED == res ? "success" : "failed", total_sec);
@@ -109,7 +109,7 @@ ZBX_THREAD_ENTRY(heart_thread, args)
 			}
 			else
 			{
-				zbx_setproctitle("%s [sending heartbeat message %s in " ZBX_FS_DBL " sec, "
+				zbx_setproctitle("%s [sending heartbeat message %s in " TRX_FS_DBL " sec, "
 						"idle %d sec]",
 						get_process_type_string(process_type),
 						SUCCEED == res ? "success" : "failed", total_sec, sleeptime);

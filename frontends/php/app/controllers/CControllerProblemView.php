@@ -17,7 +17,7 @@ class CControllerProblemView extends CController {
 		$fields = [
 			'action' =>					'string',
 			'sort' =>					'in clock,host,severity,name',
-			'sortorder' =>				'in '.ZBX_SORT_DOWN.','.ZBX_SORT_UP,
+			'sortorder' =>				'in '.TRX_SORT_DOWN.','.TRX_SORT_UP,
 			'uncheck' =>				'in 1',
 			'page' =>					'ge 1',
 			'filter_set' =>				'in 1',
@@ -86,7 +86,7 @@ class CControllerProblemView extends CController {
 
 	protected function doAction() {
 		$sortField = $this->getInput('sort', CProfile::get('web.problem.sort', 'clock'));
-		$sortOrder = $this->getInput('sortorder', CProfile::get('web.problem.sortorder', ZBX_SORT_DOWN));
+		$sortOrder = $this->getInput('sortorder', CProfile::get('web.problem.sortorder', TRX_SORT_DOWN));
 		$active_tab = CProfile::get('web.problem.filter.active', 1);
 
 		CProfile::update('web.problem.sort', $sortField, PROFILE_TYPE_STR);
@@ -163,7 +163,7 @@ class CControllerProblemView extends CController {
 				PROFILE_TYPE_STR
 			);
 			CProfile::update('web.problem.filter.show_suppressed',
-				$this->getInput('filter_show_suppressed', ZBX_PROBLEM_SUPPRESSED_FALSE), PROFILE_TYPE_INT
+				$this->getInput('filter_show_suppressed', TRX_PROBLEM_SUPPRESSED_FALSE), PROFILE_TYPE_INT
 			);
 			CProfile::update('web.problem.filter.unacknowledged', $this->getInput('filter_unacknowledged', 0),
 				PROFILE_TYPE_INT
@@ -231,7 +231,7 @@ class CControllerProblemView extends CController {
 			: [];
 
 		CArrayHelper::sort($filter_triggers, [
-			['field' => 'name', 'order' => ZBX_SORT_UP]
+			['field' => 'name', 'order' => TRX_SORT_UP]
 		]);
 
 		foreach ($filter_triggers as &$filter_trigger) {

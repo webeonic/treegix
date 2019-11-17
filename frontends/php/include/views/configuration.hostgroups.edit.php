@@ -6,16 +6,16 @@ $widget = (new CWidget())->setTitle(_('Host groups'));
 
 $form = (new CForm())
 	->setName('hostgroupForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('groupid', $data['groupid'])
 	->addVar('form', $data['form']);
 
 $form_list = (new CFormList('hostgroupFormList'))
 	->addRow(
 		(new CLabel(_('Group name'), 'name'))->setAsteriskMark(),
-		(new CTextBox('name', $data['name'], $data['groupid'] && $data['group']['flags'] == ZBX_FLAG_DISCOVERY_CREATED))
+		(new CTextBox('name', $data['name'], $data['groupid'] && $data['group']['flags'] == TRX_FLAG_DISCOVERY_CREATED))
 			->setAttribute('autofocus', 'autofocus')
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	);
 

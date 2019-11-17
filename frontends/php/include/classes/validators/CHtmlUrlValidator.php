@@ -8,7 +8,7 @@ class CHtmlUrlValidator {
 	 * URL is validated if schema validation is enabled (see VALIDATE_URI_SCHEMES).
 	 *
 	 * Relative URL should start with .php file name.
-	 * Absolute URL schema must match schemes mentioned in ZBX_URL_VALID_SCHEMES comma separated list.
+	 * Absolute URL schema must match schemes mentioned in TRX_URL_VALID_SCHEMES comma separated list.
 	 *
 	 * @static
 	 *
@@ -74,7 +74,7 @@ class CHtmlUrlValidator {
 		}
 
 		$url = parse_url($url);
-		$allowed_schemes = explode(',', strtolower(ZBX_URI_VALID_SCHEMES));
+		$allowed_schemes = explode(',', strtolower(TRX_URI_VALID_SCHEMES));
 
 		return ($url && ((array_key_exists('scheme', $url) && in_array(strtolower($url['scheme']), $allowed_schemes))
 			|| (array_key_exists('path', $url) && preg_match('/^[a-z_\.]+\.php/i', $url['path']) == 1)

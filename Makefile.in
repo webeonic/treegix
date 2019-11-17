@@ -353,8 +353,8 @@ UNIXODBC_CFLAGS = @UNIXODBC_CFLAGS@
 UNIXODBC_LDFLAGS = @UNIXODBC_LDFLAGS@
 UNIXODBC_LIBS = @UNIXODBC_LIBS@
 VERSION = @VERSION@
-ZBXGET_LDFLAGS = @ZBXGET_LDFLAGS@
-ZBXGET_LIBS = @ZBXGET_LIBS@
+TRXGET_LDFLAGS = @TRXGET_LDFLAGS@
+TRXGET_LIBS = @TRXGET_LIBS@
 ZLIB_CFLAGS = @ZLIB_CFLAGS@
 ZLIB_LDFLAGS = @ZLIB_LDFLAGS@
 ZLIB_LIBS = @ZLIB_LIBS@
@@ -431,46 +431,46 @@ EXTRA_DIST = \
 	sass \
 	go
 
-@ZBXCMOCKA_TRUE@WRAP_DB_FUNCS = \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=zbx_db_vselect \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=zbx_db_select_n \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=zbx_db_fetch \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=__zbx_DBexecute \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=DBbegin \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=DBcommit \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=DBexecute_multiple_query \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=DBfree_result
+@TRXCMOCKA_TRUE@WRAP_DB_FUNCS = \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=zbx_db_vselect \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=zbx_db_select_n \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=zbx_db_fetch \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=__zbx_DBexecute \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=DBbegin \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=DBcommit \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=DBexecute_multiple_query \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=DBfree_result
 
-@ZBXCMOCKA_TRUE@WRAP_IO_FUNCS = \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=fopen \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=fclose \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=fgets \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=open
+@TRXCMOCKA_TRUE@WRAP_IO_FUNCS = \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=fopen \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=fclose \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=fgets \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=open
 
-@ZBXCMOCKA_TRUE@WRAP_FS_FUNCS = \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=opendir \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=readdir \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=stat \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=__xstat \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=__fxstat
+@TRXCMOCKA_TRUE@WRAP_FS_FUNCS = \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=opendir \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=readdir \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=stat \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=__xstat \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=__fxstat
 
-@ZBXCMOCKA_TRUE@WRAP_EXIT = \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=exit
+@TRXCMOCKA_TRUE@WRAP_EXIT = \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=exit
 
-@ZBXCMOCKA_TRUE@WRAP_COMM_FUNCS = \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=read \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=connect
+@TRXCMOCKA_TRUE@WRAP_COMM_FUNCS = \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=read \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=connect
 
-@ZBXCMOCKA_TRUE@WRAP_LOG = \
-@ZBXCMOCKA_TRUE@	-Wl,--wrap=__zbx_treegix_log
+@TRXCMOCKA_TRUE@WRAP_LOG = \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=__zbx_treegix_log
 
-@ZBXCMOCKA_TRUE@COMMON_WRAP_FUNCS = \
-@ZBXCMOCKA_TRUE@	$(WRAP_DB_FUNCS) \
-@ZBXCMOCKA_TRUE@	$(WRAP_IO_FUNCS) \
-@ZBXCMOCKA_TRUE@	$(WRAP_FS_FUNCS) \
-@ZBXCMOCKA_TRUE@	$(WRAP_EXIT) \
-@ZBXCMOCKA_TRUE@	$(WRAP_COMM_FUNCS) \
-@ZBXCMOCKA_TRUE@	$(WRAP_LOG)
+@TRXCMOCKA_TRUE@COMMON_WRAP_FUNCS = \
+@TRXCMOCKA_TRUE@	$(WRAP_DB_FUNCS) \
+@TRXCMOCKA_TRUE@	$(WRAP_IO_FUNCS) \
+@TRXCMOCKA_TRUE@	$(WRAP_FS_FUNCS) \
+@TRXCMOCKA_TRUE@	$(WRAP_EXIT) \
+@TRXCMOCKA_TRUE@	$(WRAP_COMM_FUNCS) \
+@TRXCMOCKA_TRUE@	$(WRAP_LOG)
 
 all: all-recursive
 
@@ -1056,13 +1056,13 @@ css_icons:
 
 css: css_theme_blue css_theme_dark css_hc_light css_hc_dark css_icons
 
-@ZBXCMOCKA_TRUE@tests_build:
-@ZBXCMOCKA_TRUE@	$(MAKE) $(AM_MAKEFLAGS) && \
-@ZBXCMOCKA_TRUE@	cd tests && \
-@ZBXCMOCKA_TRUE@	$(MAKE) $(AM_MAKEFLAGS) LDFLAGS="$(LDFLAGS) $(COMMON_WRAP_FUNCS)" LIBS="$(LIBS) -lcmocka -lyaml"
+@TRXCMOCKA_TRUE@tests_build:
+@TRXCMOCKA_TRUE@	$(MAKE) $(AM_MAKEFLAGS) && \
+@TRXCMOCKA_TRUE@	cd tests && \
+@TRXCMOCKA_TRUE@	$(MAKE) $(AM_MAKEFLAGS) LDFLAGS="$(LDFLAGS) $(COMMON_WRAP_FUNCS)" LIBS="$(LIBS) -lcmocka -lyaml"
 
-@ZBXCMOCKA_TRUE@tests: tests_build
-@ZBXCMOCKA_TRUE@	tests/tests_run.pl
+@TRXCMOCKA_TRUE@tests: tests_build
+@TRXCMOCKA_TRUE@	tests/tests_run.pl
 
 .PHONY: test tests
 

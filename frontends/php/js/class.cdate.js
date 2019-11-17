@@ -113,7 +113,7 @@ CDate.prototype = {
 		}
 	},
 
-	getZBXDate: function() {
+	getTRXDate: function() {
 		var thedate = [];
 		thedate[0] = this.serverDate.getDate();
 		thedate[1] = this.serverDate.getMonth() + 1;
@@ -131,7 +131,7 @@ CDate.prototype = {
 		return '' + thedate[2] + thedate[1] + thedate[0] + thedate[3] + thedate[4] + thedate[5];
 	},
 
-	setZBXDate: function(strdate) {
+	setTRXDate: function(strdate) {
 		this.setTimeObject(
 			strdate.toString().substr(0, 4),
 			strdate.toString().substr(4, 2) - 1,

@@ -67,8 +67,8 @@ foreach ($data['hosts'] as $hostid => $host) {
 
 	if ($host['status'] == HOST_STATUS_NOT_MONITORED) {
 		$name
-			->addClass(ZBX_STYLE_LINK_ALT)
-			->addClass(ZBX_STYLE_RED);
+			->addClass(TRX_STYLE_LINK_ALT)
+			->addClass(TRX_STYLE_RED);
 	}
 
 	// Display the host name only if it matches the search string and is different from the visible name.
@@ -100,7 +100,7 @@ foreach ($data['hosts'] as $hostid => $host) {
 }
 
 $widgets[] = (new CCollapsibleUiWidget(WIDGET_SEARCH_HOSTS, $table))
-	->addClass(ZBX_STYLE_DASHBRD_WIDGET_FLUID)
+	->addClass(TRX_STYLE_DASHBRD_WIDGET_FLUID)
 	->setExpanded((bool) CProfile::get('web.search.hats.'.WIDGET_SEARCH_HOSTS.'.state', true))
 	->setHeader(_('Hosts'), [], 'web.search.hats.'.WIDGET_SEARCH_HOSTS.'.state')
 	->setFooter(new CList([
@@ -156,7 +156,7 @@ foreach ($data['groups'] as $groupid => $group) {
 }
 
 $widgets[] = (new CCollapsibleUiWidget(WIDGET_SEARCH_HOSTGROUP, $table))
-	->addClass(ZBX_STYLE_DASHBRD_WIDGET_FLUID)
+	->addClass(TRX_STYLE_DASHBRD_WIDGET_FLUID)
 	->setExpanded((bool) CProfile::get('web.search.hats.'.WIDGET_SEARCH_HOSTGROUP.'.state', true))
 	->setHeader(_('Host groups'), [], 'web.search.hats.'.WIDGET_SEARCH_HOSTGROUP.'.state')
 	->setFooter(new CList([
@@ -230,7 +230,7 @@ if ($data['admin']) {
 	}
 
 	$widgets[] = (new CCollapsibleUiWidget(WIDGET_SEARCH_TEMPLATES, $table))
-		->addClass(ZBX_STYLE_DASHBRD_WIDGET_FLUID)
+		->addClass(TRX_STYLE_DASHBRD_WIDGET_FLUID)
 		->setExpanded((bool) CProfile::get('web.search.hats.'.WIDGET_SEARCH_TEMPLATES.'.state', true))
 		->setHeader(_('Templates'), [], 'web.search.hats.'.WIDGET_SEARCH_TEMPLATES.'.state')
 		->setFooter(new CList([

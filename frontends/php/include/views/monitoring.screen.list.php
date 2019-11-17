@@ -41,7 +41,7 @@ if (!$data['templateid']) {
 			->addFilterTab(_('Filter'), [
 				(new CFormList())->addRow(_('Name'),
 					(new CTextBox('filter_name', $data['filter']['name']))
-						->setWidth(ZBX_TEXTAREA_FILTER_STANDARD_WIDTH)
+						->setWidth(TRX_TEXTAREA_FILTER_STANDARD_WIDTH)
 						->setAttribute('autofocus', 'autofocus')
 				)
 			])
@@ -58,7 +58,7 @@ $screenTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_screens'))->onClick("checkAll('".$screenForm->getName()."', 'all_screens', 'screens');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder']),
 		_('Dimension (cols x rows)'),
 		_('Actions')

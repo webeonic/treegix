@@ -195,12 +195,12 @@ zbx_sms_scenario;
 
 int	send_sms(const char *device, const char *number, const char *message, char *error, int max_error_len)
 {
-#define	ZBX_AT_ESC	"\x1B"
-#define ZBX_AT_CTRL_Z	"\x1A"
+#define	TRX_AT_ESC	"\x1B"
+#define TRX_AT_CTRL_Z	"\x1A"
 
 	zbx_sms_scenario scenario[] =
 	{
-		{ZBX_AT_ESC	, NULL		, 0},	/* Send <ESC> */
+		{TRX_AT_ESC	, NULL		, 0},	/* Send <ESC> */
 		{"AT+CMEE=2\r"	, ""/*"OK"*/	, 5},	/* verbose error values */
 		{"ATE0\r"	, "OK"		, 5},	/* Turn off echo */
 		{"AT\r"		, "OK"		, 5},	/* Init modem */
@@ -209,7 +209,7 @@ int	send_sms(const char *device, const char *number, const char *message, char *
 		{number		, NULL		, 0},	/* Write phone number */
 		{"\"\r"		, "> "		, 5},	/* Set phone number */
 		{message	, NULL		, 0},	/* Write message */
-		{ZBX_AT_CTRL_Z	, "+CMGS: "	, 40},	/* Send message */
+		{TRX_AT_CTRL_Z	, "+CMGS: "	, 40},	/* Send message */
 		{NULL		, "OK"		, 1},	/* ^Z */
 		{NULL		, NULL		, 0}
 	};
@@ -276,7 +276,7 @@ int	send_sms(const char *device, const char *number, const char *message, char *
 
 	if (FAIL == ret)
 	{
-		write_gsm(f, "\r" ZBX_AT_ESC ZBX_AT_CTRL_Z, NULL, 0); /* cancel all */
+		write_gsm(f, "\r" TRX_AT_ESC TRX_AT_CTRL_Z, NULL, 0); /* cancel all */
 		read_gsm(f, "", NULL, 0, 0); /* clear buffer */
 	}
 

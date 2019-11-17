@@ -216,13 +216,13 @@ class CScript extends CApiService {
 	 */
 	protected function validateCreate(array &$scripts) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['name']], 'fields' => [
 			'name' =>			['type' => API_SCRIPT_NAME, 'flags' => API_REQUIRED, 'length' => DB::getFieldLength('scripts', 'name')],
-			'type' =>			['type' => API_INT32, 'in' => implode(',', [ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT, ZBX_SCRIPT_TYPE_IPMI])],
-			'execute_on' =>		['type' => API_INT32, 'in' => implode(',', [ZBX_SCRIPT_EXECUTE_ON_AGENT, ZBX_SCRIPT_EXECUTE_ON_SERVER, ZBX_SCRIPT_EXECUTE_ON_PROXY])],
+			'type' =>			['type' => API_INT32, 'in' => implode(',', [TRX_SCRIPT_TYPE_CUSTOM_SCRIPT, TRX_SCRIPT_TYPE_IPMI])],
+			'execute_on' =>		['type' => API_INT32, 'in' => implode(',', [TRX_SCRIPT_EXECUTE_ON_AGENT, TRX_SCRIPT_EXECUTE_ON_SERVER, TRX_SCRIPT_EXECUTE_ON_PROXY])],
 			'command' =>		['type' => API_STRING_UTF8, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'length' => DB::getFieldLength('scripts', 'command')],
 			'description' =>	['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('scripts', 'description')],
 			'usrgrpid' =>		['type' => API_ID],
@@ -231,7 +231,7 @@ class CScript extends CApiService {
 			'confirmation' =>	['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('scripts', 'confirmation')]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $scripts, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$scripts = $this->checkExecutionType($scripts);
@@ -293,14 +293,14 @@ class CScript extends CApiService {
 	 */
 	protected function validateUpdate(array &$scripts, array &$db_scripts = null) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_OBJECTS, 'flags' => API_NOT_EMPTY | API_NORMALIZE, 'uniq' => [['scriptid'], ['name']], 'fields' => [
 			'scriptid' =>		['type' => API_ID, 'flags' => API_REQUIRED],
 			'name' =>			['type' => API_SCRIPT_NAME, 'length' => DB::getFieldLength('scripts', 'name')],
-			'type' =>			['type' => API_INT32, 'in' => implode(',', [ZBX_SCRIPT_TYPE_CUSTOM_SCRIPT, ZBX_SCRIPT_TYPE_IPMI])],
-			'execute_on' =>		['type' => API_INT32, 'in' => implode(',', [ZBX_SCRIPT_EXECUTE_ON_AGENT, ZBX_SCRIPT_EXECUTE_ON_SERVER, ZBX_SCRIPT_EXECUTE_ON_PROXY])],
+			'type' =>			['type' => API_INT32, 'in' => implode(',', [TRX_SCRIPT_TYPE_CUSTOM_SCRIPT, TRX_SCRIPT_TYPE_IPMI])],
+			'execute_on' =>		['type' => API_INT32, 'in' => implode(',', [TRX_SCRIPT_EXECUTE_ON_AGENT, TRX_SCRIPT_EXECUTE_ON_SERVER, TRX_SCRIPT_EXECUTE_ON_PROXY])],
 			'command' =>		['type' => API_STRING_UTF8, 'flags' => API_NOT_EMPTY, 'length' => DB::getFieldLength('scripts', 'command')],
 			'description' =>	['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('scripts', 'description')],
 			'usrgrpid' =>		['type' => API_ID],
@@ -309,7 +309,7 @@ class CScript extends CApiService {
 			'confirmation' =>	['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('scripts', 'confirmation')]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $scripts, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_scripts = DB::select('scripts', [
@@ -324,7 +324,7 @@ class CScript extends CApiService {
 
 		foreach ($scripts as $script) {
 			if (!array_key_exists($script['scriptid'], $db_scripts)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -345,7 +345,7 @@ class CScript extends CApiService {
 	}
 
 	/**
-	 * Validate incompatible options ZBX_SCRIPT_TYPE_IPMI and ZBX_SCRIPT_EXECUTE_ON_AGENT.
+	 * Validate incompatible options TRX_SCRIPT_TYPE_IPMI and TRX_SCRIPT_EXECUTE_ON_AGENT.
 	 *
 	 * @param array $scripts
 	 *
@@ -353,12 +353,12 @@ class CScript extends CApiService {
 	 */
 	private function checkExecutionType(array $scripts) {
 		foreach ($scripts as &$script) {
-			if (array_key_exists('type', $script) && $script['type'] == ZBX_SCRIPT_TYPE_IPMI) {
+			if (array_key_exists('type', $script) && $script['type'] == TRX_SCRIPT_TYPE_IPMI) {
 				if (!array_key_exists('execute_on', $script)) {
-					$script['execute_on'] = ZBX_SCRIPT_EXECUTE_ON_SERVER;
+					$script['execute_on'] = TRX_SCRIPT_EXECUTE_ON_SERVER;
 				}
-				elseif ($script['execute_on'] == ZBX_SCRIPT_EXECUTE_ON_AGENT) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('IPMI scripts can be executed only by server.'));
+				elseif ($script['execute_on'] == TRX_SCRIPT_EXECUTE_ON_AGENT) {
+					self::exception(TRX_API_ERROR_PARAMETERS, _('IPMI scripts can be executed only by server.'));
 				}
 			}
 		}
@@ -398,7 +398,7 @@ class CScript extends CApiService {
 
 		foreach ($usrgrpids as $usrgrpid) {
 			if (!array_key_exists($usrgrpid, $db_usrgrps)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('User group with ID "%1$s" is not available.', $usrgrpid));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('User group with ID "%1$s" is not available.', $usrgrpid));
 			}
 		}
 	}
@@ -434,7 +434,7 @@ class CScript extends CApiService {
 
 		foreach ($groupids as $groupid) {
 			if (!array_key_exists($groupid, $db_groups)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Host group with ID "%1$s" is not available.', $groupid));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Host group with ID "%1$s" is not available.', $groupid));
 			}
 		}
 	}
@@ -451,13 +451,13 @@ class CScript extends CApiService {
 	 */
 	private static function checkScriptNames(array $folders, $name, array $db_folders, $db_name) {
 		if (array_slice($folders, 0, count($db_folders)) === $db_folders) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Script menu path "%1$s" already used in script name "%2$s".', $name, $db_name)
 			);
 		}
 
 		if (array_slice($db_folders, 0, count($folders)) === $folders) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Script name "%1$s" already used in menu path for script "%2$s".', $name, $db_name)
 			);
 		}
@@ -492,7 +492,7 @@ class CScript extends CApiService {
 			$uniq_name = implode('/', $script['folders']);
 
 			if (array_key_exists($uniq_name, $uniq_names)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Script "%1$s" already exists.', $script['name']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Script "%1$s" already exists.', $script['name']));
 			}
 			$uniq_names[$uniq_name] = true;
 
@@ -535,12 +535,12 @@ class CScript extends CApiService {
 	 */
 	protected function validateDelete(array &$scriptids, array &$db_scripts = null) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $scriptids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_scripts = DB::select('scripts', [
@@ -551,7 +551,7 @@ class CScript extends CApiService {
 
 		foreach ($scriptids as $scriptid) {
 			if (!array_key_exists($scriptid, $db_scripts)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -568,7 +568,7 @@ class CScript extends CApiService {
 		);
 
 		if ($db_action = DBfetch($db_actions)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Cannot delete scripts. Script "%1$s" is used in action operation "%2$s".',
 					$db_scripts[$db_action['scriptid']]['name'], $db_action['name']
 				)
@@ -582,14 +582,14 @@ class CScript extends CApiService {
 	 * @return array
 	 */
 	public function execute(array $data) {
-		global $ZBX_SERVER, $ZBX_SERVER_PORT;
+		global $TRX_SERVER, $TRX_SERVER_PORT;
 
 		$api_input_rules = ['type' => API_OBJECT, 'fields' => [
 			'hostid' =>		['type' => API_ID, 'flags' => API_REQUIRED],
 			'scriptid' =>	['type' => API_ID, 'flags' => API_REQUIRED]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $data, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_hosts = API::Host()->get([
@@ -597,7 +597,7 @@ class CScript extends CApiService {
 			'hostids' => $data['hostid']
 		]);
 		if (!$db_hosts) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		$db_scripts = $this->get([
@@ -606,11 +606,11 @@ class CScript extends CApiService {
 			'scriptids' => $data['scriptid']
 		]);
 		if (!$db_scripts) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		// execute script
-		$treegix_server = new CTreegixServer($ZBX_SERVER, $ZBX_SERVER_PORT, ZBX_SCRIPT_TIMEOUT, ZBX_SOCKET_BYTES_LIMIT);
+		$treegix_server = new CTreegixServer($TRX_SERVER, $TRX_SERVER_PORT, TRX_SCRIPT_TIMEOUT, TRX_SOCKET_BYTES_LIMIT);
 		$result = $treegix_server->executeScript($data['scriptid'], $data['hostid'], self::$userData['sessionid']);
 
 		if ($result !== false) {
@@ -621,7 +621,7 @@ class CScript extends CApiService {
 			];
 		}
 		else {
-			self::exception(ZBX_API_ERROR_INTERNAL, $treegix_server->getError());
+			self::exception(TRX_API_ERROR_INTERNAL, $treegix_server->getError());
 		}
 	}
 

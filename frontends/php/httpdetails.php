@@ -19,10 +19,10 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'from' =>		[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,		null],
-	'to' =>			[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,	null,		null],
-	'reset' =>		[T_ZBX_STR,			O_OPT, P_SYS|P_ACT, null,	null],
-	'httptestid' =>	[T_ZBX_INT,			O_MAND, P_SYS,	DB_ID,		null]
+	'from' =>		[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,		null],
+	'to' =>			[T_TRX_RANGE_TIME,	O_OPT, P_SYS,	null,		null],
+	'reset' =>		[T_TRX_STR,			O_OPT, P_SYS|P_ACT, null,	null],
+	'httptestid' =>	[T_TRX_INT,			O_MAND, P_SYS,	DB_ID,		null]
 ];
 check_fields($fields);
 validateTimeSelectorPeriod(getRequest('from'), getRequest('to'));
@@ -117,7 +117,7 @@ $url = (new CUrl('chart3.php'))
 
 $graphs[] = (new CDiv((new CDiv())
 		->setId('graph_in_container')
-		->addClass(ZBX_STYLE_CENTER)
+		->addClass(TRX_STYLE_CENTER)
 	))
 	->addClass('flickerfreescreen')
 	->setId('flickerfreescreen_graph_in')
@@ -159,7 +159,7 @@ $url = (new CUrl('chart3.php'))
 
 $graphs[] = (new CDiv(((new CDiv())
 		->setId('graph_time_container')
-		->addClass(ZBX_STYLE_CENTER)
+		->addClass(TRX_STYLE_CENTER)
 	)))
 	->addClass('flickerfreescreen')
 	->setId('flickerfreescreen_graph_time')
@@ -188,9 +188,9 @@ $widget = (new CWidget())
 		(new CFilter(new CUrl()))
 			->setProfile($timeline['profileIdx'], $timeline['profileIdx2'])
 			->setActiveTab(CProfile::get($timeline['profileIdx'].'.active', 1))
-			->addTimeSelector($timeline['from'], $timeline['to'], $page['web_layout_mode'] != ZBX_LAYOUT_KIOSKMODE)
+			->addTimeSelector($timeline['from'], $timeline['to'], $page['web_layout_mode'] != TRX_LAYOUT_KIOSKMODE)
 	)
-	->addItem((new CDiv($graphs))->addClass(ZBX_STYLE_TABLE_FORMS_CONTAINER))
+	->addItem((new CDiv($graphs))->addClass(TRX_STYLE_TABLE_FORMS_CONTAINER))
 	->show();
 
 require_once dirname(__FILE__).'/include/page_footer.php';

@@ -180,7 +180,7 @@ static int	calcitem_evaluate_expression(expression_t *exp, char *error, size_t m
 
 	for (i = 0; i < exp->functions_num; i++)
 	{
-		int	ret_unknown = 0;	/* flag raised if current function evaluates to ZBX_UNKNOWN */
+		int	ret_unknown = 0;	/* flag raised if current function evaluates to TRX_UNKNOWN */
 		char	*unknown_msg;
 
 		f = &exp->functions[i];
@@ -221,7 +221,7 @@ static int	calcitem_evaluate_expression(expression_t *exp, char *error, size_t m
 		/*   - functions white-listed in evaluatable_for_notsupported(). */
 		/*     Their values can be evaluated to regular numbers even for */
 		/*     NOTSUPPORTED items. */
-		/*   - other functions. Result of evaluation is ZBX_UNKNOWN.     */
+		/*   - other functions. Result of evaluation is TRX_UNKNOWN.     */
 
 		if (ITEM_STATE_NOTSUPPORTED == items[i].state && FAIL == evaluatable_for_notsupported(f->func))
 		{
@@ -256,7 +256,7 @@ static int	calcitem_evaluate_expression(expression_t *exp, char *error, size_t m
 			ret_unknown = 1;
 		}
 
-		if (1 == ret_unknown || SUCCEED != is_double_suffix(f->value, ZBX_FLAG_DOUBLE_SUFFIX) || '-' == *f->value)
+		if (1 == ret_unknown || SUCCEED != is_double_suffix(f->value, TRX_FLAG_DOUBLE_SUFFIX) || '-' == *f->value)
 		{
 			char	*wrapped;
 
@@ -267,8 +267,8 @@ static int	calcitem_evaluate_expression(expression_t *exp, char *error, size_t m
 			else
 			{
 				/* write a special token of unknown value with 'unknown' message number, like */
-				/* ZBX_UNKNOWN0, ZBX_UNKNOWN1 etc. not wrapped in () */
-				wrapped = zbx_dsprintf(NULL, ZBX_UNKNOWN_STR "%d", unknown_msgs->values_num - 1);
+				/* TRX_UNKNOWN0, TRX_UNKNOWN1 etc. not wrapped in () */
+				wrapped = zbx_dsprintf(NULL, TRX_UNKNOWN_STR "%d", unknown_msgs->values_num - 1);
 			}
 
 			zbx_free(f->value);
@@ -329,11 +329,11 @@ int	get_value_calculated(DC_ITEM *dc_item, AGENT_RESULT *result)
 		goto clean;
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "%s() value:" ZBX_FS_DBL, __func__, value);
+	treegix_log(LOG_LEVEL_DEBUG, "%s() value:" TRX_FS_DBL, __func__, value);
 
 	if (ITEM_VALUE_TYPE_UINT64 == dc_item->value_type && 0 > value)
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Received value [" ZBX_FS_DBL "]"
+		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Received value [" TRX_FS_DBL "]"
 				" is not suitable for value type [%s].",
 				value, zbx_item_value_type_string((zbx_item_value_type_t)dc_item->value_type)));
 		ret = NOTSUPPORTED;

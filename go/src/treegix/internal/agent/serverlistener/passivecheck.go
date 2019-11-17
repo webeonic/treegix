@@ -9,7 +9,7 @@ import (
 	"treegix/pkg/log"
 )
 
-const notsupported = "ZBX_NOTSUPPORTED"
+const notsupported = "TRX_NOTSUPPORTED"
 
 type passiveCheck struct {
 	conn      *passiveConnection

@@ -1,23 +1,23 @@
 <script type="text/x-jquery-tmpl" id="screenRowTPL">
 <?= (new CRow([
 	(new CCol([
-		(new CDiv())->addClass(ZBX_STYLE_DRAG_ICON),
+		(new CDiv())->addClass(TRX_STYLE_DRAG_ICON),
 		new CInput('hidden', 'slides[#{rowId}][screenid]', '#{screenid}'),
 		new CInput('hidden', 'slides[#{rowId}][slideid]')
-	]))->addClass(ZBX_STYLE_TD_DRAG_ICON),
+	]))->addClass(TRX_STYLE_TD_DRAG_ICON),
 	(new CSpan('#{rowNum}:'))
 		->addClass('rowNum')
 		->setId('current_slide_#{rowId}'),
 	'#{name}',
 	(new CTextBox('slides[#{rowId}][delay]'))
-		->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+		->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 		->setAttribute('placeholder', _('default')),
 	(new CCol(
 		(new CButton('remove_#{rowId}', _('Remove')))
 			->onClick('javascript: removeSlide(this);')
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->setAttribute('remove_slide', '#{rowId}')
-	))->addClass(ZBX_STYLE_NOWRAP)
+	))->addClass(TRX_STYLE_NOWRAP)
 ]))
 	->addClass('sortable')
 	->setId('slides_#{rowId}')
@@ -45,13 +45,13 @@
 						(new CTag('label', false, _('Read-write')))
 							->setAttribute('for', 'user_group_#{usrgrpid}_permission_'.PERM_READ_WRITE)
 					])
-				]))->addClass(CRadioButtonList::ZBX_STYLE_CLASS)
+				]))->addClass(CRadioButtonList::TRX_STYLE_CLASS)
 			),
 			(new CCol(
 				(new CButton('remove', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->onClick('removeUserGroupShares("#{usrgrpid}");')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->setId('user_group_shares_#{usrgrpid}')
 			->toString()
@@ -78,13 +78,13 @@
 						(new CTag('label', false, _('Read-write')))
 							->setAttribute('for', 'user_#{id}_permission_'.PERM_READ_WRITE)
 					])
-				]))->addClass(CRadioButtonList::ZBX_STYLE_CLASS)
+				]))->addClass(CRadioButtonList::TRX_STYLE_CLASS)
 			),
 			(new CCol(
 				(new CButton('remove', _('Remove')))
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->onClick('removeUserShares("#{id}");')
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))
 			->setId('user_shares_#{id}')
 			->toString()
@@ -273,7 +273,7 @@
 			axis: 'y',
 			containment: 'parent',
 			cursor: IE ? 'move' : 'grabbing',
-			handle: 'div.<?= ZBX_STYLE_DRAG_ICON ?>',
+			handle: 'div.<?= TRX_STYLE_DRAG_ICON ?>',
 			tolerance: 'pointer',
 			opacity: 0.6,
 			update: recalculateSortOrder,

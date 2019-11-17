@@ -15,54 +15,54 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR											TYPE	OPTIONAL	FLAGS	VALIDATION		EXCEPTION
 $fields = [
-	'hostid' =>									[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,			null],
-	'triggerid' =>								[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,			'(isset({form}) && ({form} == "update"))'],
-	'copy_type' =>								[T_ZBX_INT, O_OPT, P_SYS,
+	'hostid' =>									[T_TRX_INT, O_OPT, P_SYS,	DB_ID,			null],
+	'triggerid' =>								[T_TRX_INT, O_OPT, P_SYS,	DB_ID,			'(isset({form}) && ({form} == "update"))'],
+	'copy_type' =>								[T_TRX_INT, O_OPT, P_SYS,
 													IN([COPY_TYPE_TO_HOST_GROUP, COPY_TYPE_TO_HOST,
 														COPY_TYPE_TO_TEMPLATE
 													]),
 													'isset({copy})'
 												],
-	'copy_mode' =>								[T_ZBX_INT, O_OPT, P_SYS,	IN('0'),		null],
-	'type' =>									[T_ZBX_INT, O_OPT, null,	IN('0,1'),		null],
-	'description' =>							[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,		'isset({add}) || isset({update})', _('Name')],
-	'opdata' =>									[T_ZBX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
-	'expression' =>								[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,		'isset({add}) || isset({update})', _('Expression')],
-	'recovery_expression' =>					[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({add}) || isset({update})) && isset({recovery_mode}) && {recovery_mode} == '.ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION.'', _('Recovery expression')],
-	'recovery_mode' =>							[T_ZBX_INT, O_OPT, null,	IN(ZBX_RECOVERY_MODE_EXPRESSION.','.ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION.','.ZBX_RECOVERY_MODE_NONE),	null],
-	'priority' =>								[T_ZBX_INT, O_OPT, null,	IN('0,1,2,3,4,5'), 'isset({add}) || isset({update})'],
-	'comments' =>								[T_ZBX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
-	'url' =>									[T_ZBX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
-	'correlation_mode' =>						[T_ZBX_STR, O_OPT, null,	IN(ZBX_TRIGGER_CORRELATION_NONE.','.ZBX_TRIGGER_CORRELATION_TAG),	null],
-	'correlation_tag' =>						[T_ZBX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
-	'status' =>									[T_ZBX_STR, O_OPT, null,	null,			null],
-	'expression_constructor' =>					[T_ZBX_INT, O_OPT, null,	NOT_EMPTY,		'isset({toggle_expression_constructor})'],
-	'recovery_expression_constructor' =>		[T_ZBX_INT, O_OPT, null,	NOT_EMPTY,		'isset({toggle_recovery_expression_constructor})'],
-	'expr_temp' =>								[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({add_expression}) || isset({and_expression}) || isset({or_expression}) || isset({replace_expression}))', _('Expression')],
-	'expr_target_single' =>						[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({and_expression}) || isset({or_expression}) || isset({replace_expression}))', _('Target')],
-	'recovery_expr_temp' =>						[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({add_recovery_expression}) || isset({and_recovery_expression}) || isset({or_recovery_expression}) || isset({replace_recovery_expression}))', _('Recovery expression')],
-	'recovery_expr_target_single' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({and_recovery_expression}) || isset({or_recovery_expression}) || isset({replace_recovery_expression}))', _('Target')],
-	'dependencies' =>							[T_ZBX_INT, O_OPT, null,	DB_ID,			null],
-	'new_dependency' =>							[T_ZBX_INT, O_OPT, null,	DB_ID.'{}>0',	'isset({add_dependency})'],
-	'g_triggerid' =>							[T_ZBX_INT, O_OPT, null,	DB_ID,			null],
-	'copy_targetids' =>							[T_ZBX_INT, O_OPT, null,	DB_ID,			null],
-	'visible' =>								[T_ZBX_STR, O_OPT, null,	null,			null],
-	'tags' =>									[T_ZBX_STR, O_OPT, null,	null,			null],
-	'mass_update_tags'	=>						[T_ZBX_INT, O_OPT, null,
-													IN([ZBX_ACTION_ADD, ZBX_ACTION_REPLACE, ZBX_ACTION_REMOVE]),
+	'copy_mode' =>								[T_TRX_INT, O_OPT, P_SYS,	IN('0'),		null],
+	'type' =>									[T_TRX_INT, O_OPT, null,	IN('0,1'),		null],
+	'description' =>							[T_TRX_STR, O_OPT, null,	NOT_EMPTY,		'isset({add}) || isset({update})', _('Name')],
+	'opdata' =>									[T_TRX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
+	'expression' =>								[T_TRX_STR, O_OPT, null,	NOT_EMPTY,		'isset({add}) || isset({update})', _('Expression')],
+	'recovery_expression' =>					[T_TRX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({add}) || isset({update})) && isset({recovery_mode}) && {recovery_mode} == '.TRX_RECOVERY_MODE_RECOVERY_EXPRESSION.'', _('Recovery expression')],
+	'recovery_mode' =>							[T_TRX_INT, O_OPT, null,	IN(TRX_RECOVERY_MODE_EXPRESSION.','.TRX_RECOVERY_MODE_RECOVERY_EXPRESSION.','.TRX_RECOVERY_MODE_NONE),	null],
+	'priority' =>								[T_TRX_INT, O_OPT, null,	IN('0,1,2,3,4,5'), 'isset({add}) || isset({update})'],
+	'comments' =>								[T_TRX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
+	'url' =>									[T_TRX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
+	'correlation_mode' =>						[T_TRX_STR, O_OPT, null,	IN(TRX_TRIGGER_CORRELATION_NONE.','.TRX_TRIGGER_CORRELATION_TAG),	null],
+	'correlation_tag' =>						[T_TRX_STR, O_OPT, null,	null,			'isset({add}) || isset({update})'],
+	'status' =>									[T_TRX_STR, O_OPT, null,	null,			null],
+	'expression_constructor' =>					[T_TRX_INT, O_OPT, null,	NOT_EMPTY,		'isset({toggle_expression_constructor})'],
+	'recovery_expression_constructor' =>		[T_TRX_INT, O_OPT, null,	NOT_EMPTY,		'isset({toggle_recovery_expression_constructor})'],
+	'expr_temp' =>								[T_TRX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({add_expression}) || isset({and_expression}) || isset({or_expression}) || isset({replace_expression}))', _('Expression')],
+	'expr_target_single' =>						[T_TRX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({and_expression}) || isset({or_expression}) || isset({replace_expression}))', _('Target')],
+	'recovery_expr_temp' =>						[T_TRX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({add_recovery_expression}) || isset({and_recovery_expression}) || isset({or_recovery_expression}) || isset({replace_recovery_expression}))', _('Recovery expression')],
+	'recovery_expr_target_single' =>			[T_TRX_STR, O_OPT, null,	NOT_EMPTY,		'(isset({and_recovery_expression}) || isset({or_recovery_expression}) || isset({replace_recovery_expression}))', _('Target')],
+	'dependencies' =>							[T_TRX_INT, O_OPT, null,	DB_ID,			null],
+	'new_dependency' =>							[T_TRX_INT, O_OPT, null,	DB_ID.'{}>0',	'isset({add_dependency})'],
+	'g_triggerid' =>							[T_TRX_INT, O_OPT, null,	DB_ID,			null],
+	'copy_targetids' =>							[T_TRX_INT, O_OPT, null,	DB_ID,			null],
+	'visible' =>								[T_TRX_STR, O_OPT, null,	null,			null],
+	'tags' =>									[T_TRX_STR, O_OPT, null,	null,			null],
+	'mass_update_tags'	=>						[T_TRX_INT, O_OPT, null,
+													IN([TRX_ACTION_ADD, TRX_ACTION_REPLACE, TRX_ACTION_REMOVE]),
 													null
 												],
-	'show_inherited_tags' =>					[T_ZBX_INT, O_OPT, null,	IN([0,1]),		null],
-	'manual_close' =>							[T_ZBX_INT, O_OPT, null,
-													IN([ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED,
-														ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED
+	'show_inherited_tags' =>					[T_TRX_INT, O_OPT, null,	IN([0,1]),		null],
+	'manual_close' =>							[T_TRX_INT, O_OPT, null,
+													IN([TRX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED,
+														TRX_TRIGGER_MANUAL_CLOSE_ALLOWED
 													]),
 													null
 												],
 	// Filter related fields.
-	'filter_set' =>								[T_ZBX_STR, O_OPT, P_SYS,	null,			null],
-	'filter_rst' =>								[T_ZBX_STR, O_OPT, P_SYS,	null,			null],
-	'filter_priority' =>						[T_ZBX_INT, O_OPT, null,
+	'filter_set' =>								[T_TRX_STR, O_OPT, P_SYS,	null,			null],
+	'filter_rst' =>								[T_TRX_STR, O_OPT, P_SYS,	null,			null],
+	'filter_priority' =>						[T_TRX_INT, O_OPT, null,
 													IN([
 														TRIGGER_SEVERITY_NOT_CLASSIFIED,
 														TRIGGER_SEVERITY_INFORMATION, TRIGGER_SEVERITY_WARNING,
@@ -70,62 +70,62 @@ $fields = [
 														TRIGGER_SEVERITY_DISASTER
 													]), null
 												],
-	'filter_groupids' =>						[T_ZBX_INT, O_OPT, null, DB_ID, null],
-	'filter_hostids' =>							[T_ZBX_INT, O_OPT, null, DB_ID, null],
-	'filter_inherited' =>						[T_ZBX_INT, O_OPT, null, IN([-1, 0, 1]), null],
-	'filter_discovered' =>						[T_ZBX_INT, O_OPT, null, IN([-1, 0, 1]), null],
-	'filter_dependent' =>						[T_ZBX_INT, O_OPT, null, IN([-1, 0, 1]), null],
-	'filter_name' =>							[T_ZBX_STR, O_OPT, null, null, null],
-	'filter_state' =>							[T_ZBX_INT, O_OPT, null,
+	'filter_groupids' =>						[T_TRX_INT, O_OPT, null, DB_ID, null],
+	'filter_hostids' =>							[T_TRX_INT, O_OPT, null, DB_ID, null],
+	'filter_inherited' =>						[T_TRX_INT, O_OPT, null, IN([-1, 0, 1]), null],
+	'filter_discovered' =>						[T_TRX_INT, O_OPT, null, IN([-1, 0, 1]), null],
+	'filter_dependent' =>						[T_TRX_INT, O_OPT, null, IN([-1, 0, 1]), null],
+	'filter_name' =>							[T_TRX_STR, O_OPT, null, null, null],
+	'filter_state' =>							[T_TRX_INT, O_OPT, null,
 													IN([-1, TRIGGER_STATE_NORMAL, TRIGGER_STATE_UNKNOWN]), null
 												],
-	'filter_status' =>							[T_ZBX_INT, O_OPT, null,
+	'filter_status' =>							[T_TRX_INT, O_OPT, null,
 													IN([-1, TRIGGER_STATUS_ENABLED, TRIGGER_STATUS_DISABLED]), null
 												],
-	'filter_value' =>							[T_ZBX_INT, O_OPT, null,
+	'filter_value' =>							[T_TRX_INT, O_OPT, null,
 													IN([-1, TRIGGER_VALUE_FALSE, TRIGGER_VALUE_TRUE]), null
 												],
-	'filter_evaltype' =>						[T_ZBX_INT, O_OPT, null,
+	'filter_evaltype' =>						[T_TRX_INT, O_OPT, null,
 													IN([TAG_EVAL_TYPE_AND_OR, TAG_EVAL_TYPE_OR]), null
 												],
-	'filter_tags' =>							[T_ZBX_STR, O_OPT, null,	null,			null],
+	'filter_tags' =>							[T_TRX_STR, O_OPT, null,	null,			null],
 	// Action related fields.
-	'action' =>									[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>									[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 													IN('"trigger.masscopyto","trigger.massdelete","trigger.massdisable",'.
 														'"trigger.massenable","trigger.massupdate","trigger.massupdateform"'
 													),
 													null
 												],
-	'toggle_expression_constructor' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'toggle_recovery_expression_constructor' =>	[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add_expression' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add_recovery_expression' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'and_expression' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'and_recovery_expression' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'or_expression' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'or_recovery_expression' =>					[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'replace_expression' =>						[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'replace_recovery_expression' =>			[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'remove_expression' =>						[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'remove_recovery_expression' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'test_expression' =>						[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add_dependency' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'group_enable' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'group_disable' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'group_delete' =>							[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'copy' =>									[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'clone' =>									[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'add' =>									[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'update' =>									[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'massupdate' =>								[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'delete' =>									[T_ZBX_STR, O_OPT, P_SYS|P_ACT, null,	null],
-	'cancel' =>									[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'form' =>									[T_ZBX_STR, O_OPT, P_SYS,	null,		null],
-	'form_refresh' =>							[T_ZBX_INT, O_OPT, null,	null,		null],
-	'checkbox_hash' =>							[T_ZBX_STR, O_OPT, null,	null,		null],
+	'toggle_expression_constructor' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'toggle_recovery_expression_constructor' =>	[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add_expression' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add_recovery_expression' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'and_expression' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'and_recovery_expression' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'or_expression' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'or_recovery_expression' =>					[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'replace_expression' =>						[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'replace_recovery_expression' =>			[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'remove_expression' =>						[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'remove_recovery_expression' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'test_expression' =>						[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add_dependency' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'group_enable' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'group_disable' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'group_delete' =>							[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'copy' =>									[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'clone' =>									[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'add' =>									[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'update' =>									[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'massupdate' =>								[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'delete' =>									[T_TRX_STR, O_OPT, P_SYS|P_ACT, null,	null],
+	'cancel' =>									[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'form' =>									[T_TRX_STR, O_OPT, P_SYS,	null,		null],
+	'form_refresh' =>							[T_TRX_INT, O_OPT, null,	null,		null],
+	'checkbox_hash' =>							[T_TRX_STR, O_OPT, null,	null,		null],
 	// Sort and sortorder.
-	'sort' =>									[T_ZBX_STR, O_OPT, P_SYS, IN('"description","priority","status"'),		null],
-	'sortorder' =>								[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>									[T_TRX_STR, O_OPT, P_SYS, IN('"description","priority","status"'),		null],
+	'sortorder' =>								[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 
 check_fields($fields);
@@ -178,7 +178,7 @@ foreach ($tags as $key => $tag) {
 	}
 
 	// remove inherited tags
-	if (array_key_exists('type', $tag) && !($tag['type'] & ZBX_PROPERTY_OWN)) {
+	if (array_key_exists('type', $tag) && !($tag['type'] & TRX_PROPERTY_OWN)) {
 		unset($tags[$key]);
 	}
 	else {
@@ -236,15 +236,15 @@ elseif (hasRequest('add') || hasRequest('update')) {
 	$description = getRequest('description', '');
 	$opdata = getRequest('opdata', '');
 	$expression = getRequest('expression', '');
-	$recovery_mode = getRequest('recovery_mode', ZBX_RECOVERY_MODE_EXPRESSION);
+	$recovery_mode = getRequest('recovery_mode', TRX_RECOVERY_MODE_EXPRESSION);
 	$recovery_expression = getRequest('recovery_expression', '');
 	$type = getRequest('type', 0);
 	$url = getRequest('url', '');
 	$priority = getRequest('priority', TRIGGER_SEVERITY_NOT_CLASSIFIED);
 	$comments = getRequest('comments', '');
-	$correlation_mode = getRequest('correlation_mode', ZBX_TRIGGER_CORRELATION_NONE);
+	$correlation_mode = getRequest('correlation_mode', TRX_TRIGGER_CORRELATION_NONE);
 	$correlation_tag = getRequest('correlation_tag', '');
-	$manual_close = getRequest('manual_close', ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED);
+	$manual_close = getRequest('manual_close', TRX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED);
 	$status = getRequest('status', TRIGGER_STATUS_ENABLED);
 
 	if (hasRequest('add')) {
@@ -264,14 +264,14 @@ elseif (hasRequest('add') || hasRequest('update')) {
 		];
 
 		switch ($recovery_mode) {
-			case ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION:
+			case TRX_RECOVERY_MODE_RECOVERY_EXPRESSION:
 				$trigger['recovery_expression'] = $recovery_expression;
 				// break; is not missing here.
 
-			case ZBX_RECOVERY_MODE_EXPRESSION:
+			case TRX_RECOVERY_MODE_EXPRESSION:
 				$trigger['correlation_mode'] = $correlation_mode;
 
-				if ($correlation_mode == ZBX_TRIGGER_CORRELATION_TAG) {
+				if ($correlation_mode == TRX_TRIGGER_CORRELATION_TAG) {
 					$trigger['correlation_tag'] = $correlation_tag;
 				}
 				break;
@@ -300,7 +300,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 
 		$trigger = [];
 
-		if ($db_trigger['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) {
+		if ($db_trigger['flags'] == TRX_FLAG_DISCOVERY_NORMAL) {
 			if ($db_trigger['templateid'] == 0) {
 				if ($db_trigger['description'] !== $description) {
 					$trigger['description'] = $description;
@@ -316,17 +316,17 @@ elseif (hasRequest('add') || hasRequest('update')) {
 				}
 
 				switch ($recovery_mode) {
-					case ZBX_RECOVERY_MODE_RECOVERY_EXPRESSION:
+					case TRX_RECOVERY_MODE_RECOVERY_EXPRESSION:
 						if ($db_trigger['recovery_expression'] !== $recovery_expression) {
 							$trigger['recovery_expression'] = $recovery_expression;
 						}
 						// break; is not missing here.
-					case ZBX_RECOVERY_MODE_EXPRESSION:
+					case TRX_RECOVERY_MODE_EXPRESSION:
 						if ($db_trigger['correlation_mode'] != $correlation_mode) {
 							$trigger['correlation_mode'] = $correlation_mode;
 						}
 
-						if ($correlation_mode == ZBX_TRIGGER_CORRELATION_TAG
+						if ($correlation_mode == TRX_TRIGGER_CORRELATION_TAG
 								&& $db_trigger['correlation_tag'] !== $correlation_tag) {
 							$trigger['correlation_tag'] = $correlation_tag;
 						}
@@ -421,14 +421,14 @@ elseif (hasRequest('action') && getRequest('action') === 'trigger.massupdate'
 		$options = [
 			'output' => ['triggerid', 'templateid'],
 			'triggerids' => $triggerids,
-			'filter' => ['flags' => ZBX_FLAG_DISCOVERY_NORMAL],
+			'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL],
 			'preservekeys' => true
 		];
 
 		if (array_key_exists('tags', $visible)) {
-			$mass_update_tags = getRequest('mass_update_tags', ZBX_ACTION_ADD);
+			$mass_update_tags = getRequest('mass_update_tags', TRX_ACTION_ADD);
 
-			if ($mass_update_tags == ZBX_ACTION_ADD || $mass_update_tags == ZBX_ACTION_REMOVE) {
+			if ($mass_update_tags == TRX_ACTION_ADD || $mass_update_tags == TRX_ACTION_REMOVE) {
 				$options['selectTags'] = ['tag', 'value'];
 			}
 
@@ -455,7 +455,7 @@ elseif (hasRequest('action') && getRequest('action') === 'trigger.massupdate'
 						$trigger['dependencies'] = zbx_toObject(getRequest('dependencies', []), 'triggerid');
 					}
 					if (array_key_exists('tags', $visible)) {
-						if ($tags && $mass_update_tags == ZBX_ACTION_ADD) {
+						if ($tags && $mass_update_tags == TRX_ACTION_ADD) {
 							$unique_tags = [];
 
 							foreach (array_merge($triggers[$triggerid]['tags'], $tags) as $tag) {
@@ -464,10 +464,10 @@ elseif (hasRequest('action') && getRequest('action') === 'trigger.massupdate'
 
 							$trigger['tags'] = array_values($unique_tags);
 						}
-						elseif ($mass_update_tags == ZBX_ACTION_REPLACE) {
+						elseif ($mass_update_tags == TRX_ACTION_REPLACE) {
 							$trigger['tags'] = $tags;
 						}
-						elseif ($tags && $mass_update_tags == ZBX_ACTION_REMOVE) {
+						elseif ($tags && $mass_update_tags == TRX_ACTION_REMOVE) {
 							$diff_tags = [];
 
 							foreach ($triggers[$triggerid]['tags'] as $a) {
@@ -641,9 +641,9 @@ elseif (isset($_REQUEST['form'])) {
 		'recovery_expression_action' => $recovery_expression_action,
 		'tags' => $tags,
 		'show_inherited_tags' => getRequest('show_inherited_tags', 0),
-		'correlation_mode' => getRequest('correlation_mode', ZBX_TRIGGER_CORRELATION_NONE),
+		'correlation_mode' => getRequest('correlation_mode', TRX_TRIGGER_CORRELATION_NONE),
 		'correlation_tag' => getRequest('correlation_tag', ''),
-		'manual_close' => getRequest('manual_close', ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED)
+		'manual_close' => getRequest('manual_close', TRX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED)
 	];
 
 	$triggersView = new CView('configuration.triggers.edit', getTriggerFormData($data));
@@ -749,7 +749,7 @@ else {
 	});
 
 	$sort = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'description'));
-	$sortorder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortorder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 	$active_tab = CProfile::get('web.triggers.filter.active', 1);
 
 	// Get triggers (build options).
@@ -772,8 +772,8 @@ else {
 
 	if ($filter_discovered != -1) {
 		$options['filter']['flags'] = ($filter_discovered == 1)
-			? ZBX_FLAG_DISCOVERY_CREATED
-			: ZBX_FLAG_DISCOVERY_NORMAL;
+			? TRX_FLAG_DISCOVERY_CREATED
+			: TRX_FLAG_DISCOVERY_NORMAL;
 	}
 
 	if ($filter_value != -1) {
@@ -874,12 +874,12 @@ else {
 		]);
 
 		foreach ($triggers as &$trigger) {
-			order_result($trigger['dependencies'], 'description', ZBX_SORT_UP);
+			order_result($trigger['dependencies'], 'description', TRX_SORT_UP);
 		}
 		unset($trigger);
 
 		foreach ($dep_triggers as &$dependencyTrigger) {
-			order_result($dependencyTrigger['hosts'], 'name', ZBX_SORT_UP);
+			order_result($dependencyTrigger['hosts'], 'name', TRX_SORT_UP);
 		}
 		unset($dependencyTrigger);
 	}
@@ -983,10 +983,10 @@ else {
 		'show_info_column' => $show_info_column,
 		'show_value_column' => $show_value_column,
 		'single_selected_hostid' => $single_selected_hostid,
-		'parent_templates' => getTriggerParentTemplates($triggers, ZBX_FLAG_DISCOVERY_NORMAL),
+		'parent_templates' => getTriggerParentTemplates($triggers, TRX_FLAG_DISCOVERY_NORMAL),
 		'paging' => $paging,
 		'dep_triggers' => $dep_triggers,
-		'tags' => makeTags($triggers, true, 'triggerid', ZBX_TAG_COUNT_DEFAULT, $filter_tags)
+		'tags' => makeTags($triggers, true, 'triggerid', TRX_TAG_COUNT_DEFAULT, $filter_tags)
 	];
 	$triggersView = new CView('configuration.triggers.list', $data);
 

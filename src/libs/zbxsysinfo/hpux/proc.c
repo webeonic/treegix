@@ -15,16 +15,16 @@
 
 static int	check_procstate(struct pst_status pst, int zbx_proc_stat)
 {
-	if (ZBX_PROC_STAT_ALL == zbx_proc_stat)
+	if (TRX_PROC_STAT_ALL == zbx_proc_stat)
 		return SUCCEED;
 
 	switch (zbx_proc_stat)
 	{
-		case ZBX_PROC_STAT_RUN:
+		case TRX_PROC_STAT_RUN:
 			return PS_RUN == pst.pst_stat ? SUCCEED : FAIL;
-		case ZBX_PROC_STAT_SLEEP:
+		case TRX_PROC_STAT_SLEEP:
 			return PS_SLEEP == pst.pst_stat ? SUCCEED : FAIL;
-		case ZBX_PROC_STAT_ZOMB:
+		case TRX_PROC_STAT_ZOMB:
 			return PS_ZOMBIE == pst.pst_stat ? SUCCEED : FAIL;
 	}
 
@@ -33,12 +33,12 @@ static int	check_procstate(struct pst_status pst, int zbx_proc_stat)
 
 int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-#define ZBX_BURST	((size_t)10)
+#define TRX_BURST	((size_t)10)
 
 	char			*procname, *proccomm, *param;
 	struct passwd		*usrinfo;
 	int			proccount = 0, invalid_user = 0, zbx_proc_stat, count, idx = 0;
-	struct pst_status	pst[ZBX_BURST];
+	struct pst_status	pst[TRX_BURST];
 
 	if (4 < request->nparam)
 	{
@@ -72,13 +72,13 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	param = get_rparam(request, 2);
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = ZBX_PROC_STAT_ALL;
+		zbx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = ZBX_PROC_STAT_RUN;
+		zbx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = ZBX_PROC_STAT_SLEEP;
+		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = ZBX_PROC_STAT_ZOMB;
+		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -94,7 +94,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	memset(pst, 0, sizeof(pst));
 
-	while (0 < (count = pstat_getproc(pst, sizeof(*pst), ZBX_BURST, idx)))
+	while (0 < (count = pstat_getproc(pst, sizeof(*pst), TRX_BURST, idx)))
 	{
 		int	i;
 

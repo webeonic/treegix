@@ -1,7 +1,7 @@
 
 
-#ifndef TREEGIX_ZBXCONF_H
-#define TREEGIX_ZBXCONF_H
+#ifndef TREEGIX_TRXCONF_H
+#define TREEGIX_TRXCONF_H
 
 extern char	*CONFIG_HOSTS_ALLOWED;
 extern char	*CONFIG_HOSTNAME;
@@ -49,4 +49,4 @@ void	load_perf_counters(const char **def_lines, const char **eng_lines);
 void	tl_version(void);
 #endif
 
-#endif /* TREEGIX_ZBXCONF_H */
+#endif /* TREEGIX_TRXCONF_H */

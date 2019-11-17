@@ -12,16 +12,16 @@
 
 #define MAX_LEN_MD5	512	/* maximum size of the initial part of the file to calculate MD5 sum for */
 
-#define ZBX_SAME_FILE_ERROR	-1
-#define ZBX_SAME_FILE_NO	0
-#define ZBX_SAME_FILE_YES	1
-#define ZBX_SAME_FILE_RETRY	2
-#define ZBX_NO_FILE_ERROR	3
-#define ZBX_SAME_FILE_COPY	4
+#define TRX_SAME_FILE_ERROR	-1
+#define TRX_SAME_FILE_NO	0
+#define TRX_SAME_FILE_YES	1
+#define TRX_SAME_FILE_RETRY	2
+#define TRX_NO_FILE_ERROR	3
+#define TRX_SAME_FILE_COPY	4
 
-#define ZBX_FILE_PLACE_UNKNOWN	-1	/* cannot compare file device and inode numbers */
-#define ZBX_FILE_PLACE_OTHER	0	/* both files have different device or inode numbers */
-#define ZBX_FILE_PLACE_SAME	1	/* both files have the same device and inode numbers */
+#define TRX_FILE_PLACE_UNKNOWN	-1	/* cannot compare file device and inode numbers */
+#define TRX_FILE_PLACE_OTHER	0	/* both files have different device or inode numbers */
+#define TRX_FILE_PLACE_SAME	1	/* both files have the same device and inode numbers */
 
 extern int	CONFIG_MAX_LINES_PER_SECOND;
 extern char	*CONFIG_HOSTNAME;
@@ -115,7 +115,7 @@ static int	split_filename(const char *filename, char **directory, char **filenam
 #ifdef _WINDOWS
 	size_t		sz;
 #endif
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() filename:'%s'", __func__, ZBX_NULL2STR(filename));
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() filename:'%s'", __func__, TRX_NULL2STR(filename));
 
 	if (NULL == filename || '\0' == *filename)
 	{
@@ -301,7 +301,7 @@ static int	file_id(int f, int use_ino, zbx_uint64_t *dev, zbx_uint64_t *ino_lo, 
 	int				ret = FAIL;
 	intptr_t			h;	/* file HANDLE */
 	BY_HANDLE_FILE_INFORMATION	hfi;
-	ZBX_FILE_ID_INFO		fid;
+	TRX_FILE_ID_INFO		fid;
 
 	if (-1 == (h = _get_osfhandle(f)))
 	{
@@ -433,9 +433,9 @@ static void	print_logfile_list(const struct st_logfile *logfiles, int logfiles_n
 
 	for (i = 0; i < logfiles_num; i++)
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "   nr:%d filename:'%s' mtime:%d size:" ZBX_FS_UI64 " processed_size:"
-				ZBX_FS_UI64 " seq:%d copy_of:%d incomplete:%d dev:" ZBX_FS_UI64 " ino_hi:" ZBX_FS_UI64
-				" ino_lo:" ZBX_FS_UI64
+		treegix_log(LOG_LEVEL_DEBUG, "   nr:%d filename:'%s' mtime:%d size:" TRX_FS_UI64 " processed_size:"
+				TRX_FS_UI64 " seq:%d copy_of:%d incomplete:%d dev:" TRX_FS_UI64 " ino_hi:" TRX_FS_UI64
+				" ino_lo:" TRX_FS_UI64
 				" md5size:%d md5buf:%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
 				i, logfiles[i].filename, logfiles[i].mtime, logfiles[i].size,
 				logfiles[i].processed_size, logfiles[i].seq, logfiles[i].copy_of,
@@ -461,9 +461,9 @@ static void	print_logfile_list(const struct st_logfile *logfiles, int logfiles_n
  *                             1 - use up to 64-bit inodes in comparison,     *
  *                             2 - use 128-bit inodes in comparison.          *
  *                                                                            *
- * Return value: ZBX_FILE_PLACE_SAME - both files have the same place         *
- *               ZBX_FILE_PLACE_OTHER - files reside in different places      *
- *               ZBX_FILE_PLACE_UNKNOWN - cannot compare places (no inodes)   *
+ * Return value: TRX_FILE_PLACE_SAME - both files have the same place         *
+ *               TRX_FILE_PLACE_OTHER - files reside in different places      *
+ *               TRX_FILE_PLACE_UNKNOWN - cannot compare places (no inodes)   *
  *                                                                            *
  ******************************************************************************/
 static int	compare_file_places(const struct st_logfile *old_file, const struct st_logfile *new_file, int use_ino)
@@ -473,13 +473,13 @@ static int	compare_file_places(const struct st_logfile *old_file, const struct s
 		if (old_file->ino_lo != new_file->ino_lo || old_file->dev != new_file->dev ||
 				(2 == use_ino && old_file->ino_hi != new_file->ino_hi))
 		{
-			return ZBX_FILE_PLACE_OTHER;
+			return TRX_FILE_PLACE_OTHER;
 		}
 		else
-			return ZBX_FILE_PLACE_SAME;
+			return TRX_FILE_PLACE_SAME;
 	}
 
-	return ZBX_FILE_PLACE_UNKNOWN;
+	return TRX_FILE_PLACE_UNKNOWN;
 }
 
 /******************************************************************************
@@ -543,10 +543,10 @@ static int	close_file_helper(int fd, const char *pathname, char **err_msg)
  *          err_msg  - [IN/OUT] error message why an item became              *
  *                     NOTSUPPORTED                                           *
  *                                                                            *
- * Return value: ZBX_SAME_FILE_NO - it is not the same file,                  *
- *               ZBX_SAME_FILE_YES - it could be the same file,               *
- *               ZBX_SAME_FILE_ERROR - error.                                 *
- *               ZBX_SAME_FILE_RETRY - retry on the next check                *
+ * Return value: TRX_SAME_FILE_NO - it is not the same file,                  *
+ *               TRX_SAME_FILE_YES - it could be the same file,               *
+ *               TRX_SAME_FILE_ERROR - error.                                 *
+ *               TRX_SAME_FILE_RETRY - retry on the next check                *
  *                                                                            *
  * Comments: In some cases we can say that it IS NOT the same file.           *
  *           We can never say that it IS the same file and it has not been    *
@@ -558,23 +558,23 @@ static int	close_file_helper(int fd, const char *pathname, char **err_msg)
 static int	is_same_file_logrt(const struct st_logfile *old_file, const struct st_logfile *new_file, int use_ino,
 		char **err_msg)
 {
-	if (ZBX_FILE_PLACE_OTHER == compare_file_places(old_file, new_file, use_ino))
+	if (TRX_FILE_PLACE_OTHER == compare_file_places(old_file, new_file, use_ino))
 	{
 		/* files cannot reside on different devices or occupy different inodes */
-		return ZBX_SAME_FILE_NO;
+		return TRX_SAME_FILE_NO;
 	}
 
 	if (old_file->mtime > new_file->mtime)
 	{
 		/* file mtime cannot decrease unless manipulated */
-		return ZBX_SAME_FILE_NO;
+		return TRX_SAME_FILE_NO;
 	}
 
 	if (old_file->size > new_file->size)
 	{
 		/* File size cannot decrease. Truncating or replacing a file with a smaller one */
 		/* counts as 2 different files. */
-		return ZBX_SAME_FILE_NO;
+		return TRX_SAME_FILE_NO;
 	}
 
 	if (old_file->size == new_file->size && old_file->mtime < new_file->mtime)
@@ -591,32 +591,32 @@ static int	is_same_file_logrt(const struct st_logfile *old_file, const struct st
 		{
 			treegix_log(LOG_LEVEL_WARNING, "the modification time of log file \"%s\" has been updated"
 					" without changing its size, try checking again later", old_file->filename);
-			return ZBX_SAME_FILE_RETRY;
+			return TRX_SAME_FILE_RETRY;
 		}
 
 		treegix_log(LOG_LEVEL_WARNING, "after changing modification time the size of log file \"%s\""
 				" still has not been updated, consider it to be a new file", old_file->filename);
-		return ZBX_SAME_FILE_NO;
+		return TRX_SAME_FILE_NO;
 	}
 
 	if (-1 == old_file->md5size || -1 == new_file->md5size)
 	{
 		/* Cannot compare MD5 sums. Assume two different files - reporting twice is better than skipping. */
-		return ZBX_SAME_FILE_NO;
+		return TRX_SAME_FILE_NO;
 	}
 
 	if (old_file->md5size > new_file->md5size)
 	{
 		/* file initial block size from which MD5 sum is calculated cannot decrease */
-		return ZBX_SAME_FILE_NO;
+		return TRX_SAME_FILE_NO;
 	}
 
 	if (old_file->md5size == new_file->md5size)
 	{
 		if (0 != memcmp(old_file->md5buf, new_file->md5buf, sizeof(new_file->md5buf)))	/* MD5 sums differ */
-			return ZBX_SAME_FILE_NO;
+			return TRX_SAME_FILE_NO;
 
-		return ZBX_SAME_FILE_YES;
+		return TRX_SAME_FILE_YES;
 	}
 
 	if (0 < old_file->md5size)
@@ -627,30 +627,30 @@ static int	is_same_file_logrt(const struct st_logfile *old_file, const struct st
 		md5_byte_t	md5tmp[MD5_DIGEST_SIZE];
 
 		if (-1 == (f = open_file_helper(new_file->filename, err_msg)))
-			return ZBX_SAME_FILE_ERROR;
+			return TRX_SAME_FILE_ERROR;
 
 		if (SUCCEED == file_start_md5(f, old_file->md5size, md5tmp, new_file->filename, err_msg))
 		{
-			ret = (0 == memcmp(old_file->md5buf, &md5tmp, sizeof(md5tmp))) ? ZBX_SAME_FILE_YES :
-					ZBX_SAME_FILE_NO;
+			ret = (0 == memcmp(old_file->md5buf, &md5tmp, sizeof(md5tmp))) ? TRX_SAME_FILE_YES :
+					TRX_SAME_FILE_NO;
 		}
 		else
-			ret = ZBX_SAME_FILE_ERROR;
+			ret = TRX_SAME_FILE_ERROR;
 
 		if (0 != close(f))
 		{
-			if (ZBX_SAME_FILE_ERROR != ret)
+			if (TRX_SAME_FILE_ERROR != ret)
 			{
 				*err_msg = zbx_dsprintf(*err_msg, "Cannot close file \"%s\": %s", new_file->filename,
 						zbx_strerror(errno));
-				ret = ZBX_SAME_FILE_ERROR;
+				ret = TRX_SAME_FILE_ERROR;
 			}
 		}
 
 		return ret;
 	}
 
-	return ZBX_SAME_FILE_YES;
+	return TRX_SAME_FILE_YES;
 }
 
 /******************************************************************************
@@ -665,9 +665,9 @@ static int	is_same_file_logrt(const struct st_logfile *old_file, const struct st
  *              buf2          - [IN] MD5 sum of initial block of he 2nd file  *
  *              is_same_place - [IN] equality of file places                  *
  *                                                                            *
- * Return value: ZBX_SAME_FILE_NO - they are 2 different files                *
- *               ZBX_SAME_FILE_YES - 2 files are (assumed) to be the same     *
- *               ZBX_SAME_FILE_COPY - one file is copy of the other           *
+ * Return value: TRX_SAME_FILE_NO - they are 2 different files                *
+ *               TRX_SAME_FILE_YES - 2 files are (assumed) to be the same     *
+ *               TRX_SAME_FILE_COPY - one file is copy of the other           *
  *                                                                            *
  * Comments: in case files places are unknown but MD5 sums of initial blocks  *
  *           match it is assumed to be the same file                          *
@@ -679,15 +679,15 @@ static int	examine_md5_and_place(const md5_byte_t *buf1, const md5_byte_t *buf2,
 	{
 		switch (is_same_place)
 		{
-			case ZBX_FILE_PLACE_UNKNOWN:
-			case ZBX_FILE_PLACE_SAME:
-				return ZBX_SAME_FILE_YES;
-			case ZBX_FILE_PLACE_OTHER:
-				return ZBX_SAME_FILE_COPY;
+			case TRX_FILE_PLACE_UNKNOWN:
+			case TRX_FILE_PLACE_SAME:
+				return TRX_SAME_FILE_YES;
+			case TRX_FILE_PLACE_OTHER:
+				return TRX_SAME_FILE_COPY;
 		}
 	}
 
-	return ZBX_SAME_FILE_NO;
+	return TRX_SAME_FILE_NO;
 }
 
 /******************************************************************************
@@ -706,10 +706,10 @@ static int	examine_md5_and_place(const md5_byte_t *buf1, const md5_byte_t *buf2,
  *          err_msg  - [IN/OUT] error message why an item became              *
  *                     NOTSUPPORTED                                           *
  *                                                                            *
- * Return value: ZBX_SAME_FILE_NO - it is not the same file                   *
- *               ZBX_SAME_FILE_YES - it could be the same file                *
- *               ZBX_SAME_FILE_COPY - it is a copy                            *
- *               ZBX_SAME_FILE_ERROR - error                                  *
+ * Return value: TRX_SAME_FILE_NO - it is not the same file                   *
+ *               TRX_SAME_FILE_YES - it could be the same file                *
+ *               TRX_SAME_FILE_COPY - it is a copy                            *
+ *               TRX_SAME_FILE_ERROR - error                                  *
  *                                                                            *
  * Comments: In some cases we can say that it IS NOT the same file.           *
  *           In other cases it COULD BE the same file or copy.                *
@@ -723,12 +723,12 @@ static int	is_same_file_logcpt(const struct st_logfile *old_file, const struct s
 	int	is_same_place;
 
 	if (old_file->mtime > new_file->mtime)
-		return ZBX_SAME_FILE_NO;
+		return TRX_SAME_FILE_NO;
 
 	if (-1 == old_file->md5size || -1 == new_file->md5size)
 	{
 		/* Cannot compare MD5 sums. Assume two different files - reporting twice is better than skipping. */
-		return ZBX_SAME_FILE_NO;
+		return TRX_SAME_FILE_NO;
 	}
 
 	is_same_place = compare_file_places(old_file, new_file, use_ino);
@@ -759,27 +759,27 @@ static int	is_same_file_logcpt(const struct st_logfile *old_file, const struct s
 		}
 
 		if (-1 == (f = open_file_helper(p_larger->filename, err_msg)))
-			return ZBX_SAME_FILE_ERROR;
+			return TRX_SAME_FILE_ERROR;
 
 		if (SUCCEED == file_start_md5(f, p_smaller->md5size, md5tmp, p_larger->filename, err_msg))
 			ret = examine_md5_and_place(p_smaller->md5buf, md5tmp, sizeof(md5tmp), is_same_place);
 		else
-			ret = ZBX_SAME_FILE_ERROR;
+			ret = TRX_SAME_FILE_ERROR;
 
 		if (0 != close(f))
 		{
-			if (ZBX_SAME_FILE_ERROR != ret)
+			if (TRX_SAME_FILE_ERROR != ret)
 			{
 				*err_msg = zbx_dsprintf(*err_msg, "Cannot close file \"%s\": %s", p_larger->filename,
 						zbx_strerror(errno));
-				ret = ZBX_SAME_FILE_ERROR;
+				ret = TRX_SAME_FILE_ERROR;
 			}
 		}
 
 		return ret;
 	}
 
-	return ZBX_SAME_FILE_NO;
+	return TRX_SAME_FILE_NO;
 }
 
 /******************************************************************************
@@ -1160,17 +1160,17 @@ static char	*create_old2new_and_copy_of(int rotation_type, struct st_logfile *ol
 		{
 			int	rc;
 
-			if (ZBX_LOG_ROTATION_LOGRT == rotation_type)
+			if (TRX_LOG_ROTATION_LOGRT == rotation_type)
 				rc = is_same_file_logrt(old_files + i, new_files + j, use_ino, err_msg);
 			else
 				rc = is_same_file_logcpt(old_files + i, new_files + j, use_ino, err_msg);
 
 			switch (rc)
 			{
-				case ZBX_SAME_FILE_NO:
+				case TRX_SAME_FILE_NO:
 					p[j] = '0';
 					break;
-				case ZBX_SAME_FILE_YES:
+				case TRX_SAME_FILE_YES:
 					if (1 == old_files[i].retry)
 					{
 						treegix_log(LOG_LEVEL_DEBUG, "%s(): the size of log file \"%s\" has been"
@@ -1181,15 +1181,15 @@ static char	*create_old2new_and_copy_of(int rotation_type, struct st_logfile *ol
 					}
 					p[j] = '1';
 					break;
-				case ZBX_SAME_FILE_COPY:
+				case TRX_SAME_FILE_COPY:
 					p[j] = '2';
 					new_files[j].copy_of = i;
 					break;
-				case ZBX_SAME_FILE_RETRY:
+				case TRX_SAME_FILE_RETRY:
 					old_files[i].retry = 1;
 					zbx_free(old2new);
 					return NULL;
-				case ZBX_SAME_FILE_ERROR:
+				case TRX_SAME_FILE_ERROR:
 					zbx_free(old2new);
 					return NULL;
 			}
@@ -1201,7 +1201,7 @@ static char	*create_old2new_and_copy_of(int rotation_type, struct st_logfile *ol
 		p += (size_t)num_new;
 	}
 
-	if (ZBX_LOG_ROTATION_LOGRT == rotation_type && (1 < num_old || 1 < num_new))
+	if (TRX_LOG_ROTATION_LOGRT == rotation_type && (1 < num_old || 1 < num_new))
 		resolve_old2new(old2new, num_old, num_new);
 
 	return old2new;
@@ -1258,7 +1258,7 @@ static void	add_logfile(struct st_logfile **logfiles, int *logfiles_alloc, int *
 {
 	int	i = 0, cmp = 0;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() filename:'%s' mtime:%d size:" ZBX_FS_UI64, __func__, filename,
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() filename:'%s' mtime:%d size:" TRX_FS_UI64, __func__, filename,
 			(int)st->st_mtime, (zbx_uint64_t)st->st_size);
 
 	if (*logfiles_alloc == *logfiles_num)
@@ -1611,11 +1611,11 @@ clean:
  *     logfiles_alloc - [IN/OUT] number of logfiles memory was allocated for  *
  *     logfiles_num   - [IN/OUT] number of already inserted logfiles          *
  *     use_ino        - [IN/OUT] how to use inode numbers                     *
- *     err_msg        - [IN/OUT] error message (if FAIL or ZBX_NO_FILE_ERROR  *
+ *     err_msg        - [IN/OUT] error message (if FAIL or TRX_NO_FILE_ERROR  *
  *                      is returned)                                          *
  *                                                                            *
  * Return value: SUCCEED - file list successfully built,                      *
- *               ZBX_NO_FILE_ERROR - file(s) do not exist,                    *
+ *               TRX_NO_FILE_ERROR - file(s) do not exist,                    *
  *               FAIL - other errors                                          *
  *                                                                            *
  * Comments: Supposed to be thread-safe, see pick_logfiles() comments.        *
@@ -1626,7 +1626,7 @@ static int	make_logfile_list(unsigned char flags, const char *filename, int mtim
 {
 	int	ret = SUCCEED;
 
-	if (0 != (ZBX_METRIC_FLAG_LOG_LOG & flags))	/* log[] or log.count[] item */
+	if (0 != (TRX_METRIC_FLAG_LOG_LOG & flags))	/* log[] or log.count[] item */
 	{
 		zbx_stat_t	file_buf;
 
@@ -1634,7 +1634,7 @@ static int	make_logfile_list(unsigned char flags, const char *filename, int mtim
 		{
 			*err_msg = zbx_dsprintf(*err_msg, "Cannot obtain information for file \"%s\": %s", filename,
 					zbx_strerror(errno));
-			ret = ZBX_NO_FILE_ERROR;
+			ret = TRX_NO_FILE_ERROR;
 			goto clean;
 		}
 
@@ -1654,7 +1654,7 @@ static int	make_logfile_list(unsigned char flags, const char *filename, int mtim
 		*use_ino = 1;
 #endif
 	}
-	else if (0 != (ZBX_METRIC_FLAG_LOG_LOGRT & flags))	/* logrt[] or logrt.count[] item */
+	else if (0 != (TRX_METRIC_FLAG_LOG_LOGRT & flags))	/* logrt[] or logrt.count[] item */
 	{
 		char	*directory = NULL, *filename_regexp = NULL;
 		zbx_regexp_t	*re;
@@ -1680,7 +1680,7 @@ static int	make_logfile_list(unsigned char flags, const char *filename, int mtim
 			treegix_log(LOG_LEVEL_WARNING, "there are no recently modified files matching \"%s\" in \"%s\"",
 					filename_regexp, directory);
 
-			ret = ZBX_NO_FILE_ERROR;
+			ret = TRX_NO_FILE_ERROR;
 #else
 			if (0 != access(directory, X_OK))
 			{
@@ -1691,7 +1691,7 @@ static int	make_logfile_list(unsigned char flags, const char *filename, int mtim
 			{
 				treegix_log(LOG_LEVEL_WARNING, "there are no recently modified files matching \"%s\" in"
 						" \"%s\"", filename_regexp, directory);
-				ret = ZBX_NO_FILE_ERROR;
+				ret = TRX_NO_FILE_ERROR;
 			}
 #endif
 		}
@@ -1701,7 +1701,7 @@ clean1:
 		zbx_free(directory);
 		zbx_free(filename_regexp);
 
-		if (FAIL == ret || ZBX_NO_FILE_ERROR == ret)
+		if (FAIL == ret || TRX_NO_FILE_ERROR == ret)
 			goto clean;
 	}
 	else
@@ -1713,7 +1713,7 @@ clean1:
 	ret = fill_file_details(logfiles, *logfiles_num, err_msg);
 #endif
 clean:
-	if ((FAIL == ret || ZBX_NO_FILE_ERROR == ret) && NULL != *logfiles)
+	if ((FAIL == ret || TRX_NO_FILE_ERROR == ret) && NULL != *logfiles)
 		destroy_logfile_list(logfiles, logfiles_alloc, logfiles_num);
 
 	return	ret;
@@ -1791,7 +1791,7 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 		const char *server, unsigned short port, const char *hostname, const char *key,
 		zbx_uint64_t *lastlogsize_sent, int *mtime_sent)
 {
-	static ZBX_THREAD_LOCAL char	*buf = NULL;
+	static TRX_THREAD_LOCAL char	*buf = NULL;
 
 	int				ret, nbytes, regexp_ret;
 	const char			*cr, *lf, *p_end;
@@ -1801,7 +1801,7 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 	int				send_err;
 	zbx_uint64_t			lastlogsize1;
 
-#define BUF_SIZE	(256 * ZBX_KIBIBYTE)	/* The longest encodings use 4 bytes for every character. To send */
+#define BUF_SIZE	(256 * TRX_KIBIBYTE)	/* The longest encodings use 4 bytes for every character. To send */
 						/* up to 64 k characters to Treegix server a 256 kB buffer might be */
 						/* required. */
 
@@ -1891,16 +1891,16 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 					lastlogsize1 = (size_t)offset + (size_t)nbytes;
 					send_err = FAIL;
 
-					if (0 == (ZBX_METRIC_FLAG_LOG_COUNT & flags))	/* log[] or logrt[] */
+					if (0 == (TRX_METRIC_FLAG_LOG_COUNT & flags))	/* log[] or logrt[] */
 					{
-						if (ZBX_REGEXP_MATCH == (regexp_ret = regexp_sub_ex(regexps, value,
-								pattern, ZBX_CASE_SENSITIVE, output_template,
+						if (TRX_REGEXP_MATCH == (regexp_ret = regexp_sub_ex(regexps, value,
+								pattern, TRX_CASE_SENSITIVE, output_template,
 								&item_value)))
 						{
 							if (SUCCEED == (send_err = process_value(server, port,
 									hostname, key, item_value, ITEM_STATE_NORMAL,
 									&lastlogsize1, mtime, NULL, NULL, NULL, NULL,
-									flags | ZBX_METRIC_FLAG_PERSISTENT)))
+									flags | TRX_METRIC_FLAG_PERSISTENT)))
 							{
 								*lastlogsize_sent = lastlogsize1;
 								if (NULL != mtime_sent)
@@ -1914,8 +1914,8 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 					}
 					else	/* log.count[] or logrt.count[] */
 					{
-						if (ZBX_REGEXP_MATCH == (regexp_ret = regexp_sub_ex(regexps, value,
-								pattern, ZBX_CASE_SENSITIVE, NULL, NULL)))
+						if (TRX_REGEXP_MATCH == (regexp_ret = regexp_sub_ex(regexps, value,
+								pattern, TRX_CASE_SENSITIVE, NULL, NULL)))
 						{
 							(*s_count)--;
 						}
@@ -1933,8 +1933,8 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 
 					(*p_count)--;
 
-					if (0 != (ZBX_METRIC_FLAG_LOG_COUNT & flags) ||
-							ZBX_REGEXP_NO_MATCH == regexp_ret || SUCCEED == send_err)
+					if (0 != (TRX_METRIC_FLAG_LOG_COUNT & flags) ||
+							TRX_REGEXP_NO_MATCH == regexp_ret || SUCCEED == send_err)
 					{
 						*lastlogsize = lastlogsize1;
 						*big_rec = 1;	/* ignore the rest of this record */
@@ -1977,16 +1977,16 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 					lastlogsize1 = (size_t)offset + (size_t)(p_next - buf);
 					send_err = FAIL;
 
-					if (0 == (ZBX_METRIC_FLAG_LOG_COUNT & flags))   /* log[] or logrt[] */
+					if (0 == (TRX_METRIC_FLAG_LOG_COUNT & flags))   /* log[] or logrt[] */
 					{
-						if (ZBX_REGEXP_MATCH == (regexp_ret = regexp_sub_ex(regexps, value,
-								pattern, ZBX_CASE_SENSITIVE, output_template,
+						if (TRX_REGEXP_MATCH == (regexp_ret = regexp_sub_ex(regexps, value,
+								pattern, TRX_CASE_SENSITIVE, output_template,
 								&item_value)))
 						{
 							if (SUCCEED == (send_err = process_value(server, port,
 									hostname, key, item_value, ITEM_STATE_NORMAL,
 									&lastlogsize1, mtime, NULL, NULL, NULL, NULL,
-									flags | ZBX_METRIC_FLAG_PERSISTENT)))
+									flags | TRX_METRIC_FLAG_PERSISTENT)))
 							{
 								*lastlogsize_sent = lastlogsize1;
 								if (NULL != mtime_sent)
@@ -2000,8 +2000,8 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 					}
 					else	/* log.count[] or logrt.count[] */
 					{
-						if (ZBX_REGEXP_MATCH == (regexp_ret = regexp_sub_ex(regexps, value,
-								pattern, ZBX_CASE_SENSITIVE, NULL, NULL)))
+						if (TRX_REGEXP_MATCH == (regexp_ret = regexp_sub_ex(regexps, value,
+								pattern, TRX_CASE_SENSITIVE, NULL, NULL)))
 						{
 							(*s_count)--;
 						}
@@ -2019,8 +2019,8 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 
 					(*p_count)--;
 
-					if (0 != (ZBX_METRIC_FLAG_LOG_COUNT & flags) ||
-							ZBX_REGEXP_NO_MATCH == regexp_ret || SUCCEED == send_err)
+					if (0 != (TRX_METRIC_FLAG_LOG_COUNT & flags) ||
+							TRX_REGEXP_NO_MATCH == regexp_ret || SUCCEED == send_err)
 					{
 						*lastlogsize = lastlogsize1;
 					}
@@ -2045,7 +2045,7 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 
 					if ((zbx_offset_t)-1 == zbx_lseek(fd, *lastlogsize, SEEK_SET))
 					{
-						*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " ZBX_FS_UI64
+						*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64
 								" in file: %s", *lastlogsize, zbx_strerror(errno));
 						ret = FAIL;
 						goto out;
@@ -2127,7 +2127,7 @@ static int	process_log(unsigned char flags, const char *filename, zbx_uint64_t *
 {
 	int		f, ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() filename:'%s' lastlogsize:" ZBX_FS_UI64 " mtime:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() filename:'%s' lastlogsize:" TRX_FS_UI64 " mtime:%d",
 			__func__, filename, *lastlogsize, NULL != mtime ? *mtime : 0);
 
 	if (-1 == (f = open_file_helper(filename, err_msg)))
@@ -2147,15 +2147,15 @@ static int	process_log(unsigned char flags, const char *filename, zbx_uint64_t *
 	}
 	else
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " ZBX_FS_UI64 " in file \"%s\": %s",
+		*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64 " in file \"%s\": %s",
 				seek_offset, filename, zbx_strerror(errno));
 	}
 
 	if (SUCCEED != close_file_helper(f, filename, err_msg))
 		ret = FAIL;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s() filename:'%s' lastlogsize:" ZBX_FS_UI64 " mtime:%d ret:%s"
-			" processed_bytes:" ZBX_FS_UI64, __func__, filename, *lastlogsize,
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() filename:'%s' lastlogsize:" TRX_FS_UI64 " mtime:%d ret:%s"
+			" processed_bytes:" TRX_FS_UI64, __func__, filename, *lastlogsize,
 			NULL != mtime ? *mtime : 0, zbx_result_string(ret),
 			SUCCEED == ret ? *processed_bytes : (zbx_uint64_t)0);
 
@@ -2204,11 +2204,11 @@ static int	is_swap_required(const struct st_logfile *old_files, struct st_logfil
 
 	is_same_place = compare_file_places(old_files + new_files[idx + 1].copy_of, new_files + idx, use_ino);
 
-	if (ZBX_FILE_PLACE_SAME == is_same_place && new_files[idx].seq >= new_files[idx + 1].seq)
+	if (TRX_FILE_PLACE_SAME == is_same_place && new_files[idx].seq >= new_files[idx + 1].seq)
 		return SUCCEED;
 
 	/* The last attempt - compare file names. It is less reliable as file rotation can change file names. */
-	if (ZBX_FILE_PLACE_OTHER == is_same_place || ZBX_FILE_PLACE_UNKNOWN == is_same_place)
+	if (TRX_FILE_PLACE_OTHER == is_same_place || TRX_FILE_PLACE_UNKNOWN == is_same_place)
 	{
 		if (0 == strcmp((old_files + new_files[idx + 1].copy_of)->filename, (new_files + idx)->filename))
 			return SUCCEED;
@@ -2332,7 +2332,7 @@ static void	handle_multiple_copies(struct st_logfile *logfiles, int logfiles_num
 				logfiles[j].processed_size = MIN(logfiles[i].processed_size, logfiles[j].size);
 
 				treegix_log(LOG_LEVEL_DEBUG, "handle_multiple_copies() file '%s' processed_size:"
-						ZBX_FS_UI64 " transferred to" " file '%s' processed_size:" ZBX_FS_UI64,
+						TRX_FS_UI64 " transferred to" " file '%s' processed_size:" TRX_FS_UI64,
 						logfiles[i].filename, logfiles[i].processed_size,
 						logfiles[j].filename, logfiles[j].processed_size);
 			}
@@ -2341,7 +2341,7 @@ static void	handle_multiple_copies(struct st_logfile *logfiles, int logfiles_num
 				logfiles[i].processed_size = MIN(logfiles[j].processed_size, logfiles[i].size);
 
 				treegix_log(LOG_LEVEL_DEBUG, "handle_multiple_copies() file '%s' processed_size:"
-						ZBX_FS_UI64 " transferred to" " file '%s' processed_size:" ZBX_FS_UI64,
+						TRX_FS_UI64 " transferred to" " file '%s' processed_size:" TRX_FS_UI64,
 						logfiles[j].filename, logfiles[j].processed_size,
 						logfiles[i].filename, logfiles[i].processed_size);
 			}
@@ -2389,7 +2389,7 @@ static void	delay_update_if_copies(struct st_logfile *logfiles, int logfiles_num
 	if (logfiles[idx_to_keep].mtime < *mtime)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "delay_update_if_copies(): setting mtime back from %d to %d,"
-				" lastlogsize from " ZBX_FS_UI64 " to " ZBX_FS_UI64, *mtime,
+				" lastlogsize from " TRX_FS_UI64 " to " TRX_FS_UI64, *mtime,
 				logfiles[idx_to_keep].mtime, *lastlogsize, logfiles[idx_to_keep].processed_size);
 
 		/* ensure that next time element 'idx_to_keep' is included in file list with the right 'lastlogsize' */
@@ -2450,9 +2450,9 @@ static double	calculate_delay(zbx_uint64_t processed_bytes, zbx_uint64_t remaini
 	{
 		delay = (double)remaining_bytes * t_proc / (double)processed_bytes;
 
-		treegix_log(LOG_LEVEL_DEBUG, "calculate_delay(): processed bytes:" ZBX_FS_UI64
-				" remaining bytes:" ZBX_FS_UI64 " t_proc:%e s speed:%e B/s remaining full checks:"
-				ZBX_FS_UI64 " delay:%e s", processed_bytes, remaining_bytes, t_proc,
+		treegix_log(LOG_LEVEL_DEBUG, "calculate_delay(): processed bytes:" TRX_FS_UI64
+				" remaining bytes:" TRX_FS_UI64 " t_proc:%e s speed:%e B/s remaining full checks:"
+				TRX_FS_UI64 " delay:%e s", processed_bytes, remaining_bytes, t_proc,
 				(double)processed_bytes / t_proc, remaining_bytes / processed_bytes, delay);
 	}
 
@@ -2476,8 +2476,8 @@ static void	jump_remaining_bytes_logrt(struct st_logfile *logfiles, int logfiles
 			bytes_jumped = MIN(bytes_to_jump, logfiles[i].size - logfiles[i].processed_size);
 			new_processed_size = logfiles[i].processed_size + bytes_jumped;
 
-			treegix_log(LOG_LEVEL_WARNING, "item:\"%s\" logfile:\"%s\" skipping " ZBX_FS_UI64 " bytes (from"
-					" byte " ZBX_FS_UI64 " to byte " ZBX_FS_UI64 ") to meet maxdelay", key,
+			treegix_log(LOG_LEVEL_WARNING, "item:\"%s\" logfile:\"%s\" skipping " TRX_FS_UI64 " bytes (from"
+					" byte " TRX_FS_UI64 " to byte " TRX_FS_UI64 ") to meet maxdelay", key,
 					logfiles[i].filename, bytes_jumped, logfiles[i].processed_size,
 					new_processed_size);
 
@@ -2535,7 +2535,7 @@ static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *
 	const char	*cr, *lf, *p_end;
 	char		*p, *p_nl, *p_next;
 	zbx_uint64_t	lastlogsize_tmp, lastlogsize_aligned, lastlogsize_org, seek_pos, remainder;
-	char   		buf[32 * ZBX_KIBIBYTE];		/* buffer must be of size multiple of 4 as some character */
+	char   		buf[32 * TRX_KIBIBYTE];		/* buffer must be of size multiple of 4 as some character */
 							/* encodings use 4 bytes for every character */
 
 	if (-1 == (fd = open_file_helper(logfile->filename, err_msg)))
@@ -2559,7 +2559,7 @@ static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *
 
 	if ((zbx_offset_t)-1 == zbx_lseek(fd, lastlogsize_aligned, SEEK_SET))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " ZBX_FS_UI64 " in file \"%s\": %s",
+		*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64 " in file \"%s\": %s",
 				lastlogsize_aligned, logfile->filename, zbx_strerror(errno));
 		goto out;
 	}
@@ -2609,7 +2609,7 @@ static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *
 
 		if ((zbx_offset_t)-1 == zbx_lseek(fd, seek_pos, SEEK_SET))
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " ZBX_FS_UI64 " in file \"%s\": %s",
+			*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64 " in file \"%s\": %s",
 					lastlogsize_aligned, logfile->filename, zbx_strerror(errno));
 			goto out;
 		}
@@ -2657,7 +2657,7 @@ out:
 	if (SUCCEED != close_file_helper(fd, logfile->filename, err_msg))
 		ret = FAIL;
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
 		const char	*dbg_msg;
 
@@ -2666,13 +2666,13 @@ out:
 		else
 			dbg_msg = "NEWLINE NOT FOUND";
 
-		treegix_log(LOG_LEVEL_DEBUG, "adjust_position_after_jump(): szbyte:" ZBX_FS_SIZE_T " lastlogsize_org:"
-				ZBX_FS_UI64 " lastlogsize_aligned:" ZBX_FS_UI64 " (change " ZBX_FS_I64 " bytes)"
-				" lastlogsize_after:" ZBX_FS_UI64 " (change " ZBX_FS_I64 " bytes) %s %s",
+		treegix_log(LOG_LEVEL_DEBUG, "adjust_position_after_jump(): szbyte:" TRX_FS_SIZE_T " lastlogsize_org:"
+				TRX_FS_UI64 " lastlogsize_aligned:" TRX_FS_UI64 " (change " TRX_FS_I64 " bytes)"
+				" lastlogsize_after:" TRX_FS_UI64 " (change " TRX_FS_I64 " bytes) %s %s",
 				(zbx_fs_size_t)szbyte, lastlogsize_org, lastlogsize_aligned,
 				(zbx_int64_t)lastlogsize_aligned - (zbx_int64_t)lastlogsize_org, *lastlogsize,
 				(zbx_int64_t)*lastlogsize - (zbx_int64_t)lastlogsize_aligned,
-				dbg_msg, ZBX_NULL2EMPTY_STR(*err_msg));
+				dbg_msg, TRX_NULL2EMPTY_STR(*err_msg));
 	}
 
 	return ret;
@@ -2866,7 +2866,7 @@ static int	update_new_list_from_old(int rotation_type, struct st_logfile *logfil
 	/* transfer data about fully and partially processed files from the old file list to the new list */
 	for (i = 0; i < logfiles_num_old; i++)
 	{
-		if (ZBX_LOG_ROTATION_LOGCPT == rotation_type)
+		if (TRX_LOG_ROTATION_LOGCPT == rotation_type)
 			transfer_for_copytruncate(logfiles_old, i, logfiles, logfiles_num, old2new, seq);
 		else
 			transfer_for_rotate(logfiles_old, i, logfiles, logfiles_num, old2new, seq);
@@ -2959,7 +2959,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 	struct st_logfile	*logfiles = NULL;
 	zbx_uint64_t		processed_bytes_sum = 0;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() flags:0x%02x filename:'%s' lastlogsize:" ZBX_FS_UI64 " mtime:%d",
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() flags:0x%02x filename:'%s' lastlogsize:" TRX_FS_UI64 " mtime:%d",
 			__func__, (unsigned int)flags, filename, *lastlogsize, *mtime);
 
 	adjust_mtime_to_clock(mtime);
@@ -2967,7 +2967,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 	if (SUCCEED != (res = make_logfile_list(flags, filename, *mtime, &logfiles, &logfiles_alloc, &logfiles_num,
 			use_ino, err_msg)))
 	{
-		if (ZBX_NO_FILE_ERROR == res)
+		if (TRX_NO_FILE_ERROR == res)
 		{
 			if (1 == *skip_old_data)
 			{
@@ -2976,7 +2976,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 				treegix_log(LOG_LEVEL_DEBUG, "%s(): no files, setting skip_old_data to 0", __func__);
 			}
 
-			if (0 != (ZBX_METRIC_FLAG_LOG_LOGRT & flags) && 0 == *logfiles_num_old)
+			if (0 != (TRX_METRIC_FLAG_LOG_LOGRT & flags) && 0 == *logfiles_num_old)
 			{
 				/* Both the old and the new log file lists are empty. That means the agent has not */
 				/* seen any log files for this logrt[] item since started. If log files appear later */
@@ -2988,7 +2988,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 		}
 
 		/* file was not accessible for a log[] or log.count[] item or an error occurred */
-		if (0 != (ZBX_METRIC_FLAG_LOG_LOG & flags) || (0 != (ZBX_METRIC_FLAG_LOG_LOGRT & flags) && FAIL == res))
+		if (0 != (TRX_METRIC_FLAG_LOG_LOG & flags) || (0 != (TRX_METRIC_FLAG_LOG_LOGRT & flags) && FAIL == res))
 			goto out;
 	}
 
@@ -3021,10 +3021,10 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 		goto out;
 	}
 
-	if (ZBX_LOG_ROTATION_LOGCPT == rotation_type && 1 < logfiles_num)
+	if (TRX_LOG_ROTATION_LOGCPT == rotation_type && 1 < logfiles_num)
 		ensure_order_if_mtimes_equal(*logfiles_old, logfiles, logfiles_num, *use_ino, &start_idx);
 
-	if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "%s() old file list:", __func__);
 		if (NULL != *logfiles_old)
@@ -3032,7 +3032,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 		else
 			treegix_log(LOG_LEVEL_DEBUG, "   file list empty");
 
-		treegix_log(LOG_LEVEL_DEBUG, "%s() new file list: (mtime:%d lastlogsize:" ZBX_FS_UI64 " start_idx:%d)",
+		treegix_log(LOG_LEVEL_DEBUG, "%s() new file list: (mtime:%d lastlogsize:" TRX_FS_UI64 " start_idx:%d)",
 				__func__, *mtime, *lastlogsize, start_idx);
 		if (NULL != logfiles)
 			print_logfile_list(logfiles, logfiles_num);
@@ -3104,10 +3104,10 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 				seek_offset = logfiles[i].size;
 
 				treegix_log(LOG_LEVEL_DEBUG, "skipping old data in filename:'%s' to seek_offset:"
-						ZBX_FS_UI64, logfiles[i].filename, seek_offset);
+						TRX_FS_UI64, logfiles[i].filename, seek_offset);
 			}
 
-			if (ZBX_LOG_ROTATION_LOGCPT == rotation_type)
+			if (TRX_LOG_ROTATION_LOGCPT == rotation_type)
 			{
 				zbx_uint64_t	max_processed;
 
@@ -3145,7 +3145,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 			/* and we will know where we left off. */
 			logfiles[i].seq = seq++;
 
-			if (ZBX_LOG_ROTATION_LOGCPT == rotation_type && 1 < logfiles_num)
+			if (TRX_LOG_ROTATION_LOGCPT == rotation_type && 1 < logfiles_num)
 			{
 				int	k;
 
@@ -3179,7 +3179,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 		i++;
 	}
 
-	if (ZBX_LOG_ROTATION_LOGCPT == rotation_type && 1 < logfiles_num)
+	if (TRX_LOG_ROTATION_LOGCPT == rotation_type && 1 < logfiles_num)
 	{
 		/* If logrt[] or logrt.count[] item is checked often but rotation by copying is slow it could happen */
 		/* that the original file is completely processed but the copy with a newer timestamp is still in */
@@ -3225,9 +3225,9 @@ static int	check_number_of_parameters(unsigned char flags, const AGENT_REQUEST *
 		return FAIL;
 	}
 
-	if (0 != (ZBX_METRIC_FLAG_LOG_LOG & flags) && 0 != (ZBX_METRIC_FLAG_LOG_COUNT & flags))	/* log.count */
+	if (0 != (TRX_METRIC_FLAG_LOG_LOG & flags) && 0 != (TRX_METRIC_FLAG_LOG_COUNT & flags))	/* log.count */
 		max_parameter_num = 6;
-	else if (0 != (ZBX_METRIC_FLAG_LOG_LOGRT & flags) && 0 == (ZBX_METRIC_FLAG_LOG_COUNT & flags))	/* logrt */
+	else if (0 != (TRX_METRIC_FLAG_LOG_LOGRT & flags) && 0 == (TRX_METRIC_FLAG_LOG_COUNT & flags))	/* logrt */
 		max_parameter_num = 8;
 	else
 		max_parameter_num = 7;	/* log or logrt.count */
@@ -3308,12 +3308,12 @@ static int	init_max_delay(int is_count_item, const AGENT_REQUEST *request, float
 
 static int	init_rotation_type(unsigned char flags, const AGENT_REQUEST *request, int *rotation_type, char **error)
 {
-	if (0 != (ZBX_METRIC_FLAG_LOG_LOGRT & flags))
+	if (0 != (TRX_METRIC_FLAG_LOG_LOGRT & flags))
 	{
 		char	*options;
 		int	options_par_nr;
 
-		if (0 == (ZBX_METRIC_FLAG_LOG_COUNT & flags))	/* logrt */
+		if (0 == (TRX_METRIC_FLAG_LOG_COUNT & flags))	/* logrt */
 			options_par_nr = 7;
 		else						/* logrt.count */
 			options_par_nr = 6;
@@ -3322,7 +3322,7 @@ static int	init_rotation_type(unsigned char flags, const AGENT_REQUEST *request,
 		{
 			if (0 == strcmp(options, "copytruncate"))
 			{
-				*rotation_type = ZBX_LOG_ROTATION_LOGCPT;
+				*rotation_type = TRX_LOG_ROTATION_LOGCPT;
 				return SUCCEED;
 			}
 
@@ -3335,7 +3335,7 @@ static int	init_rotation_type(unsigned char flags, const AGENT_REQUEST *request,
 		}
 	}
 
-	*rotation_type = ZBX_LOG_ROTATION_LOGRT;	/* default */
+	*rotation_type = TRX_LOG_ROTATION_LOGRT;	/* default */
 	return SUCCEED;
 }
 
@@ -3350,7 +3350,7 @@ static int	init_rotation_type(unsigned char flags, const AGENT_REQUEST *request,
  *           comments.                                                        *
  *                                                                            *
  ******************************************************************************/
-int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regexps, ZBX_ACTIVE_METRIC *metric,
+int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regexps, TRX_ACTIVE_METRIC *metric,
 		zbx_process_value_func_t process_value_cb, zbx_uint64_t *lastlogsize_sent, int *mtime_sent,
 		char **error)
 {
@@ -3363,7 +3363,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 	float			max_delay;
 	struct st_logfile	*logfiles_new = NULL;
 
-	if (0 != (ZBX_METRIC_FLAG_LOG_COUNT & metric->flags))
+	if (0 != (TRX_METRIC_FLAG_LOG_COUNT & metric->flags))
 		is_count_item = 1;
 	else
 		is_count_item = 0;
@@ -3447,7 +3447,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 		goto out;
 
 	/* jumping over fast growing log files is not supported with 'copytruncate' */
-	if (ZBX_LOG_ROTATION_LOGCPT == rotation_type && 0.0f != max_delay)
+	if (TRX_LOG_ROTATION_LOGCPT == rotation_type && 0.0f != max_delay)
 	{
 		*error = zbx_strdup(*error, "maxdelay > 0 is not supported with copytruncate option.");
 		goto out;
@@ -3507,7 +3507,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 			/* send log.count[] or logrt.count[] item value to server */
 
 			int	match_count;			/* number of matching lines */
-			char	buf[ZBX_MAX_UINT64_LEN];
+			char	buf[TRX_MAX_UINT64_LEN];
 
 			match_count = s_count_orig - s_count;
 
@@ -3515,7 +3515,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 
 			if (SUCCEED == process_value_cb(server, port, CONFIG_HOSTNAME, metric->key_orig, buf,
 					ITEM_STATE_NORMAL, &metric->lastlogsize, &metric->mtime, NULL, NULL, NULL, NULL,
-					metric->flags | ZBX_METRIC_FLAG_PERSISTENT) || 0 != jumped)
+					metric->flags | TRX_METRIC_FLAG_PERSISTENT) || 0 != jumped)
 			{
 				/* if process_value() fails (i.e. log(rt).count result cannot be sent to server) but */
 				/* a jump took place to meet <maxdelay> then we discard the result and keep the state */

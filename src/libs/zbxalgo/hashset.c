@@ -5,16 +5,16 @@
 
 #include "zbxalgo.h"
 
-static void	__hashset_free_entry(zbx_hashset_t *hs, ZBX_HASHSET_ENTRY_T *entry);
+static void	__hashset_free_entry(zbx_hashset_t *hs, TRX_HASHSET_ENTRY_T *entry);
 
 #define	CRIT_LOAD_FACTOR	4/5
 #define	SLOT_GROWTH_FACTOR	3/2
 
-#define ZBX_HASHSET_DEFAULT_SLOTS	10
+#define TRX_HASHSET_DEFAULT_SLOTS	10
 
 /* private hashset functions */
 
-static void	__hashset_free_entry(zbx_hashset_t *hs, ZBX_HASHSET_ENTRY_T *entry)
+static void	__hashset_free_entry(zbx_hashset_t *hs, TRX_HASHSET_ENTRY_T *entry)
 {
 	if (NULL != hs->clean_func)
 		hs->clean_func(entry->data);
@@ -30,10 +30,10 @@ static int	zbx_hashset_init_slots(zbx_hashset_t *hs, size_t init_size)
 	{
 		hs->num_slots = next_prime(init_size);
 
-		if (NULL == (hs->slots = (ZBX_HASHSET_ENTRY_T **)hs->mem_malloc_func(NULL, hs->num_slots * sizeof(ZBX_HASHSET_ENTRY_T *))))
+		if (NULL == (hs->slots = (TRX_HASHSET_ENTRY_T **)hs->mem_malloc_func(NULL, hs->num_slots * sizeof(TRX_HASHSET_ENTRY_T *))))
 			return FAIL;
 
-		memset(hs->slots, 0, hs->num_slots * sizeof(ZBX_HASHSET_ENTRY_T *));
+		memset(hs->slots, 0, hs->num_slots * sizeof(TRX_HASHSET_ENTRY_T *));
 	}
 	else
 	{
@@ -51,9 +51,9 @@ void	zbx_hashset_create(zbx_hashset_t *hs, size_t init_size,
 				zbx_compare_func_t compare_func)
 {
 	zbx_hashset_create_ext(hs, init_size, hash_func, compare_func, NULL,
-					ZBX_DEFAULT_MEM_MALLOC_FUNC,
-					ZBX_DEFAULT_MEM_REALLOC_FUNC,
-					ZBX_DEFAULT_MEM_FREE_FUNC);
+					TRX_DEFAULT_MEM_MALLOC_FUNC,
+					TRX_DEFAULT_MEM_REALLOC_FUNC,
+					TRX_DEFAULT_MEM_FREE_FUNC);
 }
 
 void	zbx_hashset_create_ext(zbx_hashset_t *hs, size_t init_size,
@@ -77,7 +77,7 @@ void	zbx_hashset_create_ext(zbx_hashset_t *hs, size_t init_size,
 void	zbx_hashset_destroy(zbx_hashset_t *hs)
 {
 	int			i;
-	ZBX_HASHSET_ENTRY_T	*entry, *next_entry;
+	TRX_HASHSET_ENTRY_T	*entry, *next_entry;
 
 	for (i = 0; i < hs->num_slots; i++)
 	{
@@ -122,7 +122,7 @@ int	zbx_hashset_reserve(zbx_hashset_t *hs, int num_slots_req)
 	if (0 == hs->num_slots)
 	{
 		/* correction for prevent the second relocation in the case that requires the same number of slots */
-		if (SUCCEED != zbx_hashset_init_slots(hs, MAX(ZBX_HASHSET_DEFAULT_SLOTS,
+		if (SUCCEED != zbx_hashset_init_slots(hs, MAX(TRX_HASHSET_DEFAULT_SLOTS,
 				num_slots_req * (2 - CRIT_LOAD_FACTOR) + 1)))
 		{
 			return FAIL;
@@ -132,16 +132,16 @@ int	zbx_hashset_reserve(zbx_hashset_t *hs, int num_slots_req)
 	{
 		int			inc_slots, new_slot, slot;
 		void			*slots;
-		ZBX_HASHSET_ENTRY_T	**prev_next, *curr_entry, *tmp;
+		TRX_HASHSET_ENTRY_T	**prev_next, *curr_entry, *tmp;
 
 		inc_slots = next_prime(hs->num_slots * SLOT_GROWTH_FACTOR);
 
-		if (NULL == (slots = hs->mem_realloc_func(hs->slots, inc_slots * sizeof(ZBX_HASHSET_ENTRY_T *))))
+		if (NULL == (slots = hs->mem_realloc_func(hs->slots, inc_slots * sizeof(TRX_HASHSET_ENTRY_T *))))
 			return FAIL;
 
-		hs->slots = (ZBX_HASHSET_ENTRY_T **)slots;
+		hs->slots = (TRX_HASHSET_ENTRY_T **)slots;
 
-		memset(hs->slots + hs->num_slots, 0, (inc_slots - hs->num_slots) * sizeof(ZBX_HASHSET_ENTRY_T *));
+		memset(hs->slots + hs->num_slots, 0, (inc_slots - hs->num_slots) * sizeof(TRX_HASHSET_ENTRY_T *));
 
 		for (slot = 0; slot < hs->num_slots; slot++)
 		{
@@ -182,9 +182,9 @@ void	*zbx_hashset_insert_ext(zbx_hashset_t *hs, const void *data, size_t size, s
 {
 	int			slot;
 	zbx_hash_t		hash;
-	ZBX_HASHSET_ENTRY_T	*entry;
+	TRX_HASHSET_ENTRY_T	*entry;
 
-	if (0 == hs->num_slots && SUCCEED != zbx_hashset_init_slots(hs, ZBX_HASHSET_DEFAULT_SLOTS))
+	if (0 == hs->num_slots && SUCCEED != zbx_hashset_init_slots(hs, TRX_HASHSET_DEFAULT_SLOTS))
 		return NULL;
 
 	hash = hs->hash_func(data);
@@ -208,7 +208,7 @@ void	*zbx_hashset_insert_ext(zbx_hashset_t *hs, const void *data, size_t size, s
 		/* recalculate new slot */
 		slot = hash % hs->num_slots;
 
-		if (NULL == (entry = (ZBX_HASHSET_ENTRY_T *)hs->mem_malloc_func(NULL, offsetof(ZBX_HASHSET_ENTRY_T, data) + size)))
+		if (NULL == (entry = (TRX_HASHSET_ENTRY_T *)hs->mem_malloc_func(NULL, offsetof(TRX_HASHSET_ENTRY_T, data) + size)))
 			return NULL;
 
 		memcpy((char *)entry->data + offset, (const char *)data + offset, size - offset);
@@ -225,7 +225,7 @@ void	*zbx_hashset_search(zbx_hashset_t *hs, const void *data)
 {
 	int			slot;
 	zbx_hash_t		hash;
-	ZBX_HASHSET_ENTRY_T	*entry;
+	TRX_HASHSET_ENTRY_T	*entry;
 
 	if (0 == hs->num_slots)
 		return NULL;
@@ -255,7 +255,7 @@ void	zbx_hashset_remove(zbx_hashset_t *hs, const void *data)
 {
 	int			slot;
 	zbx_hash_t		hash;
-	ZBX_HASHSET_ENTRY_T	*entry;
+	TRX_HASHSET_ENTRY_T	*entry;
 
 	if (0 == hs->num_slots)
 		return;
@@ -275,7 +275,7 @@ void	zbx_hashset_remove(zbx_hashset_t *hs, const void *data)
 		}
 		else
 		{
-			ZBX_HASHSET_ENTRY_T	*prev_entry;
+			TRX_HASHSET_ENTRY_T	*prev_entry;
 
 			prev_entry = entry;
 			entry = entry->next;
@@ -306,12 +306,12 @@ void	zbx_hashset_remove(zbx_hashset_t *hs, const void *data)
 void	zbx_hashset_remove_direct(zbx_hashset_t *hs, const void *data)
 {
 	int			slot;
-	ZBX_HASHSET_ENTRY_T	*data_entry, *iter_entry;
+	TRX_HASHSET_ENTRY_T	*data_entry, *iter_entry;
 
 	if (0 == hs->num_slots)
 		return;
 
-	data_entry = (ZBX_HASHSET_ENTRY_T *)((const char *)data - offsetof(ZBX_HASHSET_ENTRY_T, data));
+	data_entry = (TRX_HASHSET_ENTRY_T *)((const char *)data - offsetof(TRX_HASHSET_ENTRY_T, data));
 
 	slot = data_entry->hash % hs->num_slots;
 	iter_entry = hs->slots[slot];
@@ -345,7 +345,7 @@ void	zbx_hashset_remove_direct(zbx_hashset_t *hs, const void *data)
 void	zbx_hashset_clear(zbx_hashset_t *hs)
 {
 	int			slot;
-	ZBX_HASHSET_ENTRY_T	*entry;
+	TRX_HASHSET_ENTRY_T	*entry;
 
 	for (slot = 0; slot < hs->num_slots; slot++)
 	{
@@ -417,7 +417,7 @@ void	zbx_hashset_iter_remove(zbx_hashset_iter_t *iter)
 	}
 	else
 	{
-		ZBX_HASHSET_ENTRY_T	*prev_entry = iter->hashset->slots[iter->slot];
+		TRX_HASHSET_ENTRY_T	*prev_entry = iter->hashset->slots[iter->slot];
 
 		while (prev_entry->next != iter->entry)
 			prev_entry = prev_entry->next;

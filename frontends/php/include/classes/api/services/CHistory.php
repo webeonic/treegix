@@ -127,14 +127,14 @@ class CHistory extends CApiService {
 			'countOutput' =>			['type' => API_FLAG, 'default' => false],
 			// sort and limit
 			'sortfield' =>				['type' => API_STRINGS_UTF8, 'flags' => API_NORMALIZE, 'in' => implode(',', $this->sortColumns), 'uniq' => true, 'default' => []],
-			'sortorder' =>				['type' => API_STRINGS_UTF8, 'flags' => API_NORMALIZE, 'in' => implode(',', [ZBX_SORT_UP, ZBX_SORT_DOWN]), 'default' => []],
-			'limit' =>					['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => '1:'.ZBX_MAX_INT32, 'default' => null],
+			'sortorder' =>				['type' => API_STRINGS_UTF8, 'flags' => API_NORMALIZE, 'in' => implode(',', [TRX_SORT_UP, TRX_SORT_DOWN]), 'default' => []],
+			'limit' =>					['type' => API_INT32, 'flags' => API_ALLOW_NULL, 'in' => '1:'.TRX_MAX_INT32, 'default' => null],
 			// flags
 			'editable' =>				['type' => API_BOOLEAN, 'default' => false]
 		]];
 
 		if (!CApiInputValidator::validate($api_input_rules, $options, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN || $options['hostids'] !== null) {
@@ -152,7 +152,7 @@ class CHistory extends CApiService {
 		$this->tableName = CHistoryManager::getTableName($options['history']);
 
 		switch (CHistoryManager::getDataSourceType($options['history'])) {
-			case ZBX_HISTORY_SOURCE_ELASTIC:
+			case TRX_HISTORY_SOURCE_ELASTIC:
 				return $this->getFromElasticsearch($options);
 
 			default:

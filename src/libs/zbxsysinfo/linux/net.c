@@ -214,14 +214,14 @@ static int	get_net_stat(const char *if_name, net_stat_t *result, char **error)
 
 		*p = '\t';
 
-		if (17 == sscanf(line, "%s\t" ZBX_FS_UI64 "\t" ZBX_FS_UI64 "\t"
-				ZBX_FS_UI64 "\t" ZBX_FS_UI64 "\t"
-				ZBX_FS_UI64 "\t" ZBX_FS_UI64 "\t"
-				ZBX_FS_UI64 "\t" ZBX_FS_UI64 "\t"
-				ZBX_FS_UI64 "\t" ZBX_FS_UI64 "\t"
-				ZBX_FS_UI64 "\t" ZBX_FS_UI64 "\t"
-				ZBX_FS_UI64 "\t" ZBX_FS_UI64 "\t"
-				ZBX_FS_UI64 "\t" ZBX_FS_UI64 "\n",
+		if (17 == sscanf(line, "%s\t" TRX_FS_UI64 "\t" TRX_FS_UI64 "\t"
+				TRX_FS_UI64 "\t" TRX_FS_UI64 "\t"
+				TRX_FS_UI64 "\t" TRX_FS_UI64 "\t"
+				TRX_FS_UI64 "\t" TRX_FS_UI64 "\t"
+				TRX_FS_UI64 "\t" TRX_FS_UI64 "\t"
+				TRX_FS_UI64 "\t" TRX_FS_UI64 "\t"
+				TRX_FS_UI64 "\t" TRX_FS_UI64 "\t"
+				TRX_FS_UI64 "\t" TRX_FS_UI64 "\n",
 				name,
 				&result->ibytes,	/* bytes */
 				&result->ipackets,	/* packets */
@@ -548,7 +548,7 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 	FILE		*f;
 	struct zbx_json	j;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (NULL == (f = fopen("/proc/net/dev", "r")))
 	{
@@ -556,7 +556,7 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	while (NULL != fgets(line, sizeof(line), f))
 	{
@@ -570,7 +570,7 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 			;
 
 		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#IFNAME}", p, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&j, "{#IFNAME}", p, TRX_JSON_TYPE_STRING);
 		zbx_json_close(&j);
 	}
 
@@ -590,7 +590,7 @@ int	NET_TCP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		pattern[64], *port_str, *buffer = NULL;
 	unsigned short	port;
 	zbx_uint64_t	listen = 0;
-	int		ret = SYSINFO_RET_FAIL, n, buffer_alloc = 64 * ZBX_KIBIBYTE;
+	int		ret = SYSINFO_RET_FAIL, n, buffer_alloc = 64 * TRX_KIBIBYTE;
 #ifdef HAVE_INET_DIAG
 	int		found;
 #endif
@@ -691,7 +691,7 @@ int	NET_UDP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		pattern[64], *port_str, *buffer = NULL;
 	unsigned short	port;
 	zbx_uint64_t	listen = 0;
-	int		ret = SYSINFO_RET_FAIL, n, buffer_alloc = 64 * ZBX_KIBIBYTE;
+	int		ret = SYSINFO_RET_FAIL, n, buffer_alloc = 64 * TRX_KIBIBYTE;
 
 	if (1 < request->nparam)
 	{

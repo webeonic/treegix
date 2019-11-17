@@ -56,13 +56,13 @@ void	zbx_tm_task_clear(zbx_tm_task_t *task)
 	{
 		switch (task->type)
 		{
-			case ZBX_TM_TASK_REMOTE_COMMAND:
+			case TRX_TM_TASK_REMOTE_COMMAND:
 				tm_remote_command_clear((zbx_tm_remote_command_t *)task->data);
 				break;
-			case ZBX_TM_TASK_REMOTE_COMMAND_RESULT:
+			case TRX_TM_TASK_REMOTE_COMMAND_RESULT:
 				tm_remote_command_result_clear((zbx_tm_remote_command_result_t *)task->data);
 				break;
-			case ZBX_TM_TASK_CHECK_NOW:
+			case TRX_TM_TASK_CHECK_NOW:
 				/* nothing to clear */
 				break;
 			default:
@@ -71,7 +71,7 @@ void	zbx_tm_task_clear(zbx_tm_task_t *task)
 	}
 
 	zbx_free(task->data);
-	task->type = ZBX_TM_TASK_UNDEFINED;
+	task->type = TRX_TM_TASK_UNDEFINED;
 }
 
 /******************************************************************************
@@ -95,9 +95,9 @@ void	zbx_tm_task_free(zbx_tm_task_t *task)
  *                                                                            *
  * Purpose: create a remote command task data                                 *
  *                                                                            *
- * Parameters: command_type  - [IN] the remote command type (ZBX_SCRIPT_TYPE_)*
+ * Parameters: command_type  - [IN] the remote command type (TRX_SCRIPT_TYPE_)*
  *             command       - [IN] the command to execute                    *
- *             execute_on    - [IN] the execution target (ZBX_SCRIPT_EXECUTE_)*
+ *             execute_on    - [IN] the execution target (TRX_SCRIPT_EXECUTE_)*
  *             port          - [IN] the target port                           *
  *             authtype      - [IN] the authentication type                   *
  *             username      - [IN] the username (can be NULL)                *
@@ -119,14 +119,14 @@ zbx_tm_remote_command_t	*zbx_tm_remote_command_create(int command_type, const ch
 
 	data = (zbx_tm_remote_command_t *)zbx_malloc(NULL, sizeof(zbx_tm_remote_command_t));
 	data->command_type = command_type;
-	data->command = zbx_strdup(NULL, ZBX_NULL2EMPTY_STR(command));
+	data->command = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(command));
 	data->execute_on = execute_on;
 	data->port = port;
 	data->authtype = authtype;
-	data->username = zbx_strdup(NULL, ZBX_NULL2EMPTY_STR(username));
-	data->password = zbx_strdup(NULL, ZBX_NULL2EMPTY_STR(password));
-	data->publickey = zbx_strdup(NULL, ZBX_NULL2EMPTY_STR(publickey));
-	data->privatekey = zbx_strdup(NULL, ZBX_NULL2EMPTY_STR(privatekey));
+	data->username = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(username));
+	data->password = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(password));
+	data->publickey = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(publickey));
+	data->privatekey = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(privatekey));
 	data->parent_taskid = parent_taskid;
 	data->hostid = hostid;
 	data->alertid = alertid;
@@ -155,7 +155,7 @@ zbx_tm_remote_command_result_t	*zbx_tm_remote_command_result_create(zbx_uint64_t
 	data = (zbx_tm_remote_command_result_t *)zbx_malloc(NULL, sizeof(zbx_tm_remote_command_result_t));
 	data->status = status;
 	data->parent_taskid = parent_taskid;
-	data->info = zbx_strdup(NULL, ZBX_NULL2EMPTY_STR(info));
+	data->info = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(info));
 
 	return data;
 }
@@ -188,8 +188,8 @@ zbx_tm_check_now_t	*zbx_tm_check_now_create(zbx_uint64_t itemid)
  * Purpose: create a new task                                                 *
  *                                                                            *
  * Parameters: taskid       - [IN] the task identifier                        *
- *             type         - [IN] the task type (see ZBX_TM_TASK_*)          *
- *             status       - [IN] the task status (see ZBX_TM_STATUS_*)      *
+ *             type         - [IN] the task type (see TRX_TM_TASK_*)          *
+ *             status       - [IN] the task status (see TRX_TM_STATUS_*)      *
  *             clock        - [IN] the task creation time                     *
  *             ttl          - [IN] the task expiration period in seconds      *
  *             proxy_hostid - [IN] the destination proxy identifier (or 0)    *
@@ -246,7 +246,7 @@ static int	tm_save_remote_command_tasks(zbx_tm_task_t **tasks, int tasks_num)
 
 		switch (task->type)
 		{
-			case ZBX_TM_TASK_REMOTE_COMMAND:
+			case TRX_TM_TASK_REMOTE_COMMAND:
 				data = (zbx_tm_remote_command_t *)task->data;
 				zbx_db_insert_add_values(&db_insert, task->taskid, data->command_type, data->execute_on,
 						data->port, data->authtype, data->username, data->password,
@@ -291,7 +291,7 @@ static int	tm_save_remote_command_result_tasks(zbx_tm_task_t **tasks, int tasks_
 
 		switch (task->type)
 		{
-			case ZBX_TM_TASK_REMOTE_COMMAND_RESULT:
+			case TRX_TM_TASK_REMOTE_COMMAND_RESULT:
 				data = (zbx_tm_remote_command_result_t *)task->data;
 				zbx_db_insert_add_values(&db_insert, task->taskid, data->status, data->parent_taskid,
 						data->info);
@@ -333,7 +333,7 @@ static int	tm_save_check_now_tasks(zbx_tm_task_t **tasks, int tasks_num)
 
 		switch (task->type)
 		{
-			case ZBX_TM_TASK_CHECK_NOW:
+			case TRX_TM_TASK_CHECK_NOW:
 				data = (zbx_tm_check_now_t *)task->data;
 				zbx_db_insert_add_values(&db_insert, task->taskid, data->itemid);
 		}
@@ -377,13 +377,13 @@ static int	tm_save_tasks(zbx_tm_task_t **tasks, int tasks_num)
 	{
 		switch (tasks[i]->type)
 		{
-			case ZBX_TM_TASK_REMOTE_COMMAND:
+			case TRX_TM_TASK_REMOTE_COMMAND:
 				remote_command_num++;
 				break;
-			case ZBX_TM_TASK_REMOTE_COMMAND_RESULT:
+			case TRX_TM_TASK_REMOTE_COMMAND_RESULT:
 				remote_command_result_num++;
 				break;
-			case ZBX_TM_TASK_CHECK_NOW:
+			case TRX_TM_TASK_CHECK_NOW:
 				check_now_num++;
 				break;
 			default:
@@ -491,7 +491,7 @@ void	zbx_tm_update_task_status(zbx_vector_ptr_t *tasks, int status)
 		zbx_vector_uint64_append(&taskids, task->taskid);
 	}
 
-	zbx_vector_uint64_sort(&taskids, ZBX_DEFAULT_UINT64_COMPARE_FUNC);
+	zbx_vector_uint64_sort(&taskids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update task set status=%d where", status);
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "taskid", taskids.values, taskids.values_num);
@@ -515,9 +515,9 @@ void	zbx_tm_update_task_status(zbx_vector_ptr_t *tasks, int status)
  ******************************************************************************/
 static void	tm_json_serialize_task(struct zbx_json *json, const zbx_tm_task_t *task)
 {
-	zbx_json_addint64(json, ZBX_PROTO_TAG_TYPE, task->type);
-	zbx_json_addint64(json, ZBX_PROTO_TAG_CLOCK, task->clock);
-	zbx_json_addint64(json, ZBX_PROTO_TAG_TTL, task->ttl);
+	zbx_json_addint64(json, TRX_PROTO_TAG_TYPE, task->type);
+	zbx_json_addint64(json, TRX_PROTO_TAG_CLOCK, task->clock);
+	zbx_json_addint64(json, TRX_PROTO_TAG_TTL, task->ttl);
 }
 
 /******************************************************************************
@@ -532,18 +532,18 @@ static void	tm_json_serialize_task(struct zbx_json *json, const zbx_tm_task_t *t
  ******************************************************************************/
 static void	tm_json_serialize_remote_command(struct zbx_json *json, const zbx_tm_remote_command_t *data)
 {
-	zbx_json_addint64(json, ZBX_PROTO_TAG_COMMANDTYPE, data->command_type);
-	zbx_json_addstring(json, ZBX_PROTO_TAG_COMMAND, data->command, ZBX_JSON_TYPE_STRING);
-	zbx_json_addint64(json, ZBX_PROTO_TAG_EXECUTE_ON, data->execute_on);
-	zbx_json_addint64(json, ZBX_PROTO_TAG_PORT, data->port);
-	zbx_json_addint64(json, ZBX_PROTO_TAG_AUTHTYPE, data->authtype);
-	zbx_json_addstring(json, ZBX_PROTO_TAG_USERNAME, data->username, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(json, ZBX_PROTO_TAG_PASSWORD, data->password, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(json, ZBX_PROTO_TAG_PUBLICKEY, data->publickey, ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(json, ZBX_PROTO_TAG_PRIVATEKEY, data->privatekey, ZBX_JSON_TYPE_STRING);
-	zbx_json_adduint64(json, ZBX_PROTO_TAG_ALERTID, data->alertid);
-	zbx_json_adduint64(json, ZBX_PROTO_TAG_PARENT_TASKID, data->parent_taskid);
-	zbx_json_adduint64(json, ZBX_PROTO_TAG_HOSTID, data->hostid);
+	zbx_json_addint64(json, TRX_PROTO_TAG_COMMANDTYPE, data->command_type);
+	zbx_json_addstring(json, TRX_PROTO_TAG_COMMAND, data->command, TRX_JSON_TYPE_STRING);
+	zbx_json_addint64(json, TRX_PROTO_TAG_EXECUTE_ON, data->execute_on);
+	zbx_json_addint64(json, TRX_PROTO_TAG_PORT, data->port);
+	zbx_json_addint64(json, TRX_PROTO_TAG_AUTHTYPE, data->authtype);
+	zbx_json_addstring(json, TRX_PROTO_TAG_USERNAME, data->username, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(json, TRX_PROTO_TAG_PASSWORD, data->password, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(json, TRX_PROTO_TAG_PUBLICKEY, data->publickey, TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(json, TRX_PROTO_TAG_PRIVATEKEY, data->privatekey, TRX_JSON_TYPE_STRING);
+	zbx_json_adduint64(json, TRX_PROTO_TAG_ALERTID, data->alertid);
+	zbx_json_adduint64(json, TRX_PROTO_TAG_PARENT_TASKID, data->parent_taskid);
+	zbx_json_adduint64(json, TRX_PROTO_TAG_HOSTID, data->hostid);
 }
 
 /******************************************************************************
@@ -559,9 +559,9 @@ static void	tm_json_serialize_remote_command(struct zbx_json *json, const zbx_tm
 static void	tm_json_serialize_remote_command_result(struct zbx_json *json,
 		const zbx_tm_remote_command_result_t *data)
 {
-	zbx_json_addint64(json, ZBX_PROTO_TAG_STATUS, data->status);
-	zbx_json_addstring(json, ZBX_PROTO_TAG_INFO, data->info, ZBX_JSON_TYPE_STRING);
-	zbx_json_adduint64(json, ZBX_PROTO_TAG_PARENT_TASKID, data->parent_taskid);
+	zbx_json_addint64(json, TRX_PROTO_TAG_STATUS, data->status);
+	zbx_json_addstring(json, TRX_PROTO_TAG_INFO, data->info, TRX_JSON_TYPE_STRING);
+	zbx_json_adduint64(json, TRX_PROTO_TAG_PARENT_TASKID, data->parent_taskid);
 }
 
 /******************************************************************************
@@ -576,7 +576,7 @@ static void	tm_json_serialize_remote_command_result(struct zbx_json *json,
  ******************************************************************************/
 static void	tm_json_serialize_check_now(struct zbx_json *json, const zbx_tm_check_now_t *data)
 {
-	zbx_json_addint64(json, ZBX_PROTO_TAG_ITEMID, data->itemid);
+	zbx_json_addint64(json, TRX_PROTO_TAG_ITEMID, data->itemid);
 }
 
 /******************************************************************************
@@ -593,7 +593,7 @@ void	zbx_tm_json_serialize_tasks(struct zbx_json *json, const zbx_vector_ptr_t *
 {
 	int	i;
 
-	zbx_json_addarray(json, ZBX_PROTO_TAG_TASKS);
+	zbx_json_addarray(json, TRX_PROTO_TAG_TASKS);
 
 	for (i = 0; i < tasks->values_num; i++)
 	{
@@ -604,13 +604,13 @@ void	zbx_tm_json_serialize_tasks(struct zbx_json *json, const zbx_vector_ptr_t *
 
 		switch (task->type)
 		{
-			case ZBX_TM_TASK_REMOTE_COMMAND:
+			case TRX_TM_TASK_REMOTE_COMMAND:
 				tm_json_serialize_remote_command(json, (zbx_tm_remote_command_t *)task->data);
 				break;
-			case ZBX_TM_TASK_REMOTE_COMMAND_RESULT:
+			case TRX_TM_TASK_REMOTE_COMMAND_RESULT:
 				tm_json_serialize_remote_command_result(json, (zbx_tm_remote_command_result_t *)task->data);
 				break;
-			case ZBX_TM_TASK_CHECK_NOW:
+			case TRX_TM_TASK_CHECK_NOW:
 				tm_json_serialize_check_now(json, (zbx_tm_check_now_t *)task->data);
 				break;
 			default:
@@ -647,57 +647,57 @@ static zbx_tm_remote_command_t	*tm_json_deserialize_remote_command(const struct 
 				command_alloc = 0;
 	zbx_tm_remote_command_t	*data = NULL;
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_COMMANDTYPE, value, sizeof(value)))
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_COMMANDTYPE, value, sizeof(value)))
 		goto out;
 
 	commandtype = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_EXECUTE_ON, value, sizeof(value)))
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_EXECUTE_ON, value, sizeof(value)))
 		goto out;
 
 	execute_on = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_PORT, value, sizeof(value)))
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_PORT, value, sizeof(value)))
 		goto out;
 
 	port = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_AUTHTYPE, value, sizeof(value)))
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_AUTHTYPE, value, sizeof(value)))
 		goto out;
 
 	authtype = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_ALERTID, value, sizeof(value)) ||
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_ALERTID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &alertid))
 	{
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_PARENT_TASKID, value, sizeof(value)) ||
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_PARENT_TASKID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &parent_taskid))
 	{
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_HOSTID, value, sizeof(value)) ||
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_HOSTID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &hostid))
 	{
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, ZBX_PROTO_TAG_USERNAME, &username, &username_alloc))
+	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_USERNAME, &username, &username_alloc))
 		goto out;
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, ZBX_PROTO_TAG_PASSWORD, &password, &password_alloc))
+	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_PASSWORD, &password, &password_alloc))
 		goto out;
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, ZBX_PROTO_TAG_PUBLICKEY, &publickey, &publickey_alloc))
+	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_PUBLICKEY, &publickey, &publickey_alloc))
 		goto out;
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, ZBX_PROTO_TAG_PRIVATEKEY, &privatekey, &privatekey_alloc))
+	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_PRIVATEKEY, &privatekey, &privatekey_alloc))
 		goto out;
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, ZBX_PROTO_TAG_COMMAND, &command, &command_alloc))
+	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_COMMAND, &command, &command_alloc))
 		goto out;
 
 	data = zbx_tm_remote_command_create(commandtype, command, execute_on, port, authtype, username, password,
@@ -733,18 +733,18 @@ static zbx_tm_remote_command_result_t	*tm_json_deserialize_remote_command_result
 	size_t				info_alloc = 0;
 	zbx_tm_remote_command_result_t	*data = NULL;
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_STATUS, value, sizeof(value)))
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_STATUS, value, sizeof(value)))
 		goto out;
 
 	status = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_PARENT_TASKID, value, sizeof(value)) ||
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_PARENT_TASKID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &parent_taskid))
 	{
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, ZBX_PROTO_TAG_INFO, &info, &info_alloc))
+	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_INFO, &info, &info_alloc))
 		goto out;
 
 	data = zbx_tm_remote_command_result_create(parent_taskid, status, info);
@@ -771,7 +771,7 @@ static zbx_tm_check_now_t	*tm_json_deserialize_check_now(const struct zbx_json_p
 	char		value[MAX_ID_LEN + 1];
 	zbx_uint64_t	itemid;
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_ITEMID, value, sizeof(value)) ||
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_ITEMID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &itemid))
 	{
 		return NULL;
@@ -796,22 +796,22 @@ static zbx_tm_task_t	*tm_json_deserialize_task(const struct zbx_json_parse *jp)
 	char	value[MAX_STRING_LEN];
 	int	type, clock, ttl;
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_TYPE, value, sizeof(value)))
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_TYPE, value, sizeof(value)))
 		return NULL;
 
-	ZBX_STR2UCHAR(type, value);
+	TRX_STR2UCHAR(type, value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_CLOCK, value, sizeof(value)))
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_CLOCK, value, sizeof(value)))
 		return NULL;
 
 	clock = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, ZBX_PROTO_TAG_TTL, value, sizeof(value)))
+	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_TTL, value, sizeof(value)))
 		return NULL;
 
 	ttl = atoi(value);
 
-	return zbx_tm_task_create(0, type, ZBX_TM_STATUS_NEW, clock, ttl, 0);
+	return zbx_tm_task_create(0, type, TRX_TM_STATUS_NEW, clock, ttl, 0);
 }
 
 /******************************************************************************
@@ -849,13 +849,13 @@ void	zbx_tm_json_deserialize_tasks(const struct zbx_json_parse *jp, zbx_vector_p
 
 		switch (task->type)
 		{
-			case ZBX_TM_TASK_REMOTE_COMMAND:
+			case TRX_TM_TASK_REMOTE_COMMAND:
 				task->data = tm_json_deserialize_remote_command(&jp_task);
 				break;
-			case ZBX_TM_TASK_REMOTE_COMMAND_RESULT:
+			case TRX_TM_TASK_REMOTE_COMMAND_RESULT:
 				task->data = tm_json_deserialize_remote_command_result(&jp_task);
 				break;
-			case ZBX_TM_TASK_CHECK_NOW:
+			case TRX_TM_TASK_CHECK_NOW:
 				task->data = tm_json_deserialize_check_now(&jp_task);
 				break;
 			default:

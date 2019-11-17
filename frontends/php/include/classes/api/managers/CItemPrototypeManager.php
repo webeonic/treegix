@@ -67,7 +67,7 @@ class CItemPrototypeManager {
 					' WHERE gi.graphid=gii.graphid'.
 						' AND gii.itemid=i.itemid'.
 						' AND '.dbConditionInt('gii.itemid', $del_itemids, true).
-						' AND '.dbConditionInt('i.flags', [ZBX_FLAG_DISCOVERY_PROTOTYPE]).
+						' AND '.dbConditionInt('i.flags', [TRX_FLAG_DISCOVERY_PROTOTYPE]).
 				')'
 		);
 

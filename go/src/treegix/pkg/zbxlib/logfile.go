@@ -12,14 +12,14 @@ package zbxlib
 
 extern int CONFIG_MAX_LINES_PER_SECOND;
 
-typedef ZBX_ACTIVE_METRIC* ZBX_ACTIVE_METRIC_LP;
+typedef TRX_ACTIVE_METRIC* TRX_ACTIVE_METRIC_LP;
 typedef zbx_vector_ptr_t * zbx_vector_ptr_lp_t;
 typedef char * char_lp_t;
 
-ZBX_ACTIVE_METRIC *new_metric(char *key, zbx_uint64_t lastlogsize, int mtime, int flags)
+TRX_ACTIVE_METRIC *new_metric(char *key, zbx_uint64_t lastlogsize, int mtime, int flags)
 {
-	ZBX_ACTIVE_METRIC *metric = malloc(sizeof(ZBX_ACTIVE_METRIC));
-	memset(metric, 0, sizeof(ZBX_ACTIVE_METRIC));
+	TRX_ACTIVE_METRIC *metric = malloc(sizeof(TRX_ACTIVE_METRIC));
+	memset(metric, 0, sizeof(TRX_ACTIVE_METRIC));
 	metric->key = key;
 	// key_orig is used in error messages, consider using "itemid: <itemid>" instead of the key
 	metric->key_orig = zbx_strdup(NULL, key);
@@ -30,18 +30,18 @@ ZBX_ACTIVE_METRIC *new_metric(char *key, zbx_uint64_t lastlogsize, int mtime, in
 	return metric;
 }
 
-void metric_set_refresh(ZBX_ACTIVE_METRIC *metric, int refresh)
+void metric_set_refresh(TRX_ACTIVE_METRIC *metric, int refresh)
 {
 	metric->refresh = refresh;
 }
 
-void metric_get_meta(ZBX_ACTIVE_METRIC *metric, zbx_uint64_t *lastlogsize, int *mtime)
+void metric_get_meta(TRX_ACTIVE_METRIC *metric, zbx_uint64_t *lastlogsize, int *mtime)
 {
 	*lastlogsize = metric->lastlogsize;
 	*mtime = metric->mtime;
 }
 
-void metric_set_unsupported(ZBX_ACTIVE_METRIC *metric)
+void metric_set_unsupported(TRX_ACTIVE_METRIC *metric)
 {
 	metric->state = ITEM_STATE_NOTSUPPORTED;
 	metric->refresh_unsupported = 0;
@@ -50,7 +50,7 @@ void metric_set_unsupported(ZBX_ACTIVE_METRIC *metric)
 	metric->processed_bytes = 0;
 }
 
-int metric_set_supported(ZBX_ACTIVE_METRIC *metric, zbx_uint64_t lastlogsize_sent, int mtime_sent,
+int metric_set_supported(TRX_ACTIVE_METRIC *metric, zbx_uint64_t lastlogsize_sent, int mtime_sent,
 		zbx_uint64_t lastlogsize_last, int mtime_last)
 {
 	int	ret = FAIL;
@@ -66,16 +66,16 @@ int metric_set_supported(ZBX_ACTIVE_METRIC *metric, zbx_uint64_t lastlogsize_sen
 
 		if (lastlogsize_sent != metric->lastlogsize || mtime_sent != metric->mtime ||
 				(lastlogsize_last == lastlogsize_sent && mtime_last == mtime_sent &&
-						(old_state != metric->state || 0 != (ZBX_METRIC_FLAG_NEW & metric->flags))))
+						(old_state != metric->state || 0 != (TRX_METRIC_FLAG_NEW & metric->flags))))
 		{
 			ret = SUCCEED;
 		}
-		metric->flags &= ~ZBX_METRIC_FLAG_NEW;
+		metric->flags &= ~TRX_METRIC_FLAG_NEW;
 	}
 	return ret;
 }
 
-void	metric_free(ZBX_ACTIVE_METRIC *metric)
+void	metric_free(TRX_ACTIVE_METRIC *metric)
 {
 	int	i;
 
@@ -225,15 +225,15 @@ func NewActiveMetric(key string, params []string, lastLogsize uint64, mtime int3
 }
 
 func FreeActiveMetric(data unsafe.Pointer) {
-	C.metric_free(C.ZBX_ACTIVE_METRIC_LP(data))
+	C.metric_free(C.TRX_ACTIVE_METRIC_LP(data))
 }
 
 func ProcessLogCheck(data unsafe.Pointer, item *LogItem, refresh int, cblob unsafe.Pointer) {
-	C.metric_set_refresh(C.ZBX_ACTIVE_METRIC_LP(data), C.int(refresh))
+	C.metric_set_refresh(C.TRX_ACTIVE_METRIC_LP(data), C.int(refresh))
 
 	var clastLogsizeSent, clastLogsizeLast C.ulong
 	var cmtimeSent, cmtimeLast C.int
-	C.metric_get_meta(C.ZBX_ACTIVE_METRIC_LP(data), &clastLogsizeSent, &cmtimeSent)
+	C.metric_get_meta(C.TRX_ACTIVE_METRIC_LP(data), &clastLogsizeSent, &cmtimeSent)
 	clastLogsizeLast = clastLogsizeSent
 	cmtimeLast = cmtimeSent
 
@@ -241,7 +241,7 @@ func ProcessLogCheck(data unsafe.Pointer, item *LogItem, refresh int, cblob unsa
 
 	var cerrmsg *C.char
 	ret := C.process_log_check(C.char_lp_t(unsafe.Pointer(result)), 0, C.zbx_vector_ptr_lp_t(cblob),
-		C.ZBX_ACTIVE_METRIC_LP(data), C.zbx_process_value_func_t(C.process_value_cb), &clastLogsizeSent, &cmtimeSent,
+		C.TRX_ACTIVE_METRIC_LP(data), C.zbx_process_value_func_t(C.process_value_cb), &clastLogsizeSent, &cmtimeSent,
 		&cerrmsg)
 
 	// add cached results
@@ -269,7 +269,7 @@ func ProcessLogCheck(data unsafe.Pointer, item *LogItem, refresh int, cblob unsa
 	C.free_log_result(result)
 
 	if ret == C.FAIL {
-		C.metric_set_unsupported(C.ZBX_ACTIVE_METRIC_LP(data))
+		C.metric_set_unsupported(C.TRX_ACTIVE_METRIC_LP(data))
 
 		var err error
 		if cerrmsg != nil {
@@ -284,11 +284,11 @@ func ProcessLogCheck(data unsafe.Pointer, item *LogItem, refresh int, cblob unsa
 		}
 		item.Results = append(item.Results, result)
 	} else {
-		ret := C.metric_set_supported(C.ZBX_ACTIVE_METRIC_LP(data), clastLogsizeSent, cmtimeSent, clastLogsizeLast,
+		ret := C.metric_set_supported(C.TRX_ACTIVE_METRIC_LP(data), clastLogsizeSent, cmtimeSent, clastLogsizeLast,
 			cmtimeLast)
 
 		if ret == Succeed {
-			C.metric_get_meta(C.ZBX_ACTIVE_METRIC_LP(data), &clastLogsizeLast, &cmtimeLast)
+			C.metric_get_meta(C.TRX_ACTIVE_METRIC_LP(data), &clastLogsizeLast, &cmtimeLast)
 			result := &LogResult{
 				Ts:          time.Now(),
 				LastLogsize: uint64(clastLogsizeLast),

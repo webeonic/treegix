@@ -41,13 +41,13 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "sum"))	/* default parameter */
-		do_task = ZBX_DO_SUM;
+		do_task = TRX_DO_SUM;
 	else if (0 == strcmp(param, "avg"))
-		do_task = ZBX_DO_AVG;
+		do_task = TRX_DO_AVG;
 	else if (0 == strcmp(param, "max"))
-		do_task = ZBX_DO_MAX;
+		do_task = TRX_DO_MAX;
 	else if (0 == strcmp(param, "min"))
-		do_task = ZBX_DO_MIN;
+		do_task = TRX_DO_MIN;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -103,9 +103,9 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			}
 			else
 			{
-				if (ZBX_DO_MAX == do_task)
+				if (TRX_DO_MAX == do_task)
 					memsize = MAX(memsize, (double)(psinfo.pr_rssize * pgsize));
-				else if (ZBX_DO_MIN == do_task)
+				else if (TRX_DO_MIN == do_task)
 					memsize = MIN(memsize, (double)(psinfo.pr_rssize * pgsize));
 				else	/* SUM */
 					memsize += (double)(psinfo.pr_rssize * pgsize);
@@ -124,7 +124,7 @@ lbl_skip_procces:
 		memsize = 0;
 	}
 out:
-	if (ZBX_DO_AVG == do_task)
+	if (TRX_DO_AVG == do_task)
 		SET_DBL_RESULT(result, 0 == proccount ? 0 : memsize / (double)proccount);
 	else
 		SET_UI64_RESULT(result, memsize);

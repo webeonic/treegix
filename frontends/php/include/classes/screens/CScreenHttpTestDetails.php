@@ -82,7 +82,7 @@ class CScreenHttpTestDetails extends CScreenBase {
 			$items_by_type = $step_items[$step_data['httpstepid']];
 
 			$status['msg'] = _('OK');
-			$status['style'] = ZBX_STYLE_GREEN;
+			$status['style'] = TRX_STYLE_GREEN;
 			$status['afterError'] = false;
 
 			if (!array_key_exists('lastfailedstep', $httptest_data)) {
@@ -93,11 +93,11 @@ class CScreenHttpTestDetails extends CScreenBase {
 					$status['msg'] = ($httptest_data['error'] === null)
 						? _('Unknown error')
 						: _s('Error: %1$s', $httptest_data['error']);
-					$status['style'] = ZBX_STYLE_RED;
+					$status['style'] = TRX_STYLE_RED;
 				}
 				elseif ($httptest_data['lastfailedstep'] < $step_data['no']) {
 					$status['msg'] = _('Unknown');
-					$status['style'] = ZBX_STYLE_GREY;
+					$status['style'] = TRX_STYLE_GREY;
 					$status['afterError'] = true;
 				}
 			}
@@ -164,10 +164,10 @@ class CScreenHttpTestDetails extends CScreenBase {
 		elseif ($httptest_data['lastfailedstep'] != 0) {
 			$status_info = (new CSpan(
 				($httptest_data['error'] === null) ? _('Unknown error') : _s('Error: %1$s', $httptest_data['error'])
-			))->addClass(ZBX_STYLE_RED);
+			))->addClass(TRX_STYLE_RED);
 		}
 		else {
-			$status_info = (new CSpan(_('OK')))->addClass(ZBX_STYLE_GREEN);
+			$status_info = (new CSpan(_('OK')))->addClass(TRX_STYLE_GREEN);
 		}
 
 		$table->addRow([

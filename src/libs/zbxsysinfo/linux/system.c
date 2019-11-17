@@ -11,7 +11,7 @@ int	SYSTEM_UNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	struct utsname	name;
 
-	ZBX_UNUSED(request);
+	TRX_UNUSED(request);
 
 	if (-1 == uname(&name))
 	{

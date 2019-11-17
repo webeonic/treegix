@@ -73,7 +73,7 @@ function getSystemStatusData(array $filter) {
 		'actions' => []
 	];
 
-	CArrayHelper::sort($data['groups'], [['field' => 'name', 'order' => ZBX_SORT_UP]]);
+	CArrayHelper::sort($data['groups'], [['field' => 'name', 'order' => TRX_SORT_UP]]);
 
 	$default_stats = [];
 
@@ -97,7 +97,7 @@ function getSystemStatusData(array $filter) {
 		'object' => EVENT_OBJECT_TRIGGER,
 		'suppressed' => false,
 		'sortfield' => ['eventid'],
-		'sortorder' => ZBX_SORT_DOWN,
+		'sortorder' => TRX_SORT_DOWN,
 		'preservekeys' => true
 	];
 
@@ -152,7 +152,7 @@ function getSystemStatusData(array $filter) {
 		$data['triggers'] = API::Trigger()->get($options);
 
 		foreach ($data['triggers'] as &$trigger) {
-			CArrayHelper::sort($trigger['hosts'], [['field' => 'name', 'order' => ZBX_SORT_UP]]);
+			CArrayHelper::sort($trigger['hosts'], [['field' => 'name', 'order' => TRX_SORT_UP]]);
 		}
 		unset($trigger);
 
@@ -176,7 +176,7 @@ function getSystemStatusData(array $filter) {
 				$group = &$data['groups'][$trigger_group['groupid']];
 
 				if (in_array($filter_ext_ack, [EXTACK_OPTION_ALL, EXTACK_OPTION_BOTH])) {
-					if ($group['stats'][$problem['severity']]['count'] < ZBX_WIDGET_ROWS) {
+					if ($group['stats'][$problem['severity']]['count'] < TRX_WIDGET_ROWS) {
 						$group['stats'][$problem['severity']]['problems'][] = $problem;
 						$visible_problems[$eventid] = ['eventid' => $eventid];
 					}
@@ -186,7 +186,7 @@ function getSystemStatusData(array $filter) {
 
 				if (in_array($filter_ext_ack, [EXTACK_OPTION_UNACK, EXTACK_OPTION_BOTH])
 						&& $problem['acknowledged'] == EVENT_NOT_ACKNOWLEDGED) {
-					if ($group['stats'][$problem['severity']]['count_unack'] < ZBX_WIDGET_ROWS) {
+					if ($group['stats'][$problem['severity']]['count_unack'] < TRX_WIDGET_ROWS) {
 						$group['stats'][$problem['severity']]['problems_unack'][] = $problem;
 						$visible_problems[$eventid] = ['eventid' => $eventid];
 					}
@@ -312,7 +312,7 @@ function makeSystemStatus(array $filter, array $data, array $config, $backurl) {
 		: EXTACK_OPTION_ALL;
 
 	// indicator of sort field
-	$sort_div = (new CSpan())->addClass(ZBX_STYLE_ARROW_UP);
+	$sort_div = (new CSpan())->addClass(TRX_STYLE_ARROW_UP);
 
 	// Set trigger severities as table header starting from highest severity.
 	$header = [[_('Host group'), $sort_div]];
@@ -558,20 +558,20 @@ function getSeverityTableCell($severity, array $data, array $stat, $is_total = f
 	switch ($ext_ack) {
 		case EXTACK_OPTION_ALL:
 			return getSeverityCell($severity, null, [
-				(new CSpan($allTriggersNum))->addClass(ZBX_STYLE_TOTALS_LIST_COUNT),
+				(new CSpan($allTriggersNum))->addClass(TRX_STYLE_TOTALS_LIST_COUNT),
 				$severity_name
 			], false, $is_total);
 
 		case EXTACK_OPTION_UNACK:
 			return getSeverityCell($severity, null, [
-				(new CSpan($unackTriggersNum))->addClass(ZBX_STYLE_TOTALS_LIST_COUNT),
+				(new CSpan($unackTriggersNum))->addClass(TRX_STYLE_TOTALS_LIST_COUNT),
 				$severity_name
 			], false, $is_total);
 
 		case EXTACK_OPTION_BOTH:
 			return getSeverityCell($severity, $data['severity_names'], [
 				(new CSpan([$unackTriggersNum, ' '._('of').' ', $allTriggersNum]))
-					->addClass(ZBX_STYLE_TOTALS_LIST_COUNT),
+					->addClass(TRX_STYLE_TOTALS_LIST_COUNT),
 				$severity_name
 			], false, $is_total);
 
@@ -582,9 +582,9 @@ function getSeverityTableCell($severity, array $data, array $stat, $is_total = f
 
 function make_status_of_zbx() {
 	if (CWebUser::getType() == USER_TYPE_SUPER_ADMIN) {
-		global $ZBX_SERVER, $ZBX_SERVER_PORT;
+		global $TRX_SERVER, $TRX_SERVER_PORT;
 
-		$server_details = $ZBX_SERVER.':'.$ZBX_SERVER_PORT;
+		$server_details = $TRX_SERVER.':'.$TRX_SERVER_PORT;
 	}
 	else {
 		$server_details = '';
@@ -599,16 +599,16 @@ function make_status_of_zbx() {
 	$table->addRow([
 		_('Treegix server is running'),
 		(new CSpan($status['is_running'] ? _('Yes') : _('No')))
-			->addClass($status['is_running'] ? ZBX_STYLE_GREEN : ZBX_STYLE_RED),
+			->addClass($status['is_running'] ? TRX_STYLE_GREEN : TRX_STYLE_RED),
 		$server_details
 	]);
 	$table->addRow([_('Number of hosts (enabled/disabled/templates)'),
 		$status['has_status'] ? $status['hosts_count'] : '',
 		$status['has_status']
 			? [
-				(new CSpan($status['hosts_count_monitored']))->addClass(ZBX_STYLE_GREEN), ' / ',
-				(new CSpan($status['hosts_count_not_monitored']))->addClass(ZBX_STYLE_RED), ' / ',
-				(new CSpan($status['hosts_count_template']))->addClass(ZBX_STYLE_GREY)
+				(new CSpan($status['hosts_count_monitored']))->addClass(TRX_STYLE_GREEN), ' / ',
+				(new CSpan($status['hosts_count_not_monitored']))->addClass(TRX_STYLE_RED), ' / ',
+				(new CSpan($status['hosts_count_template']))->addClass(TRX_STYLE_GREY)
 			]
 			: ''
 	]);
@@ -617,9 +617,9 @@ function make_status_of_zbx() {
 	$table->addRow([$title, $status['has_status'] ? $status['items_count'] : '',
 		$status['has_status']
 			? [
-				(new CSpan($status['items_count_monitored']))->addClass(ZBX_STYLE_GREEN), ' / ',
-				(new CSpan($status['items_count_disabled']))->addClass(ZBX_STYLE_RED), ' / ',
-				(new CSpan($status['items_count_not_supported']))->addClass(ZBX_STYLE_GREY)
+				(new CSpan($status['items_count_monitored']))->addClass(TRX_STYLE_GREEN), ' / ',
+				(new CSpan($status['items_count_disabled']))->addClass(TRX_STYLE_RED), ' / ',
+				(new CSpan($status['items_count_not_supported']))->addClass(TRX_STYLE_GREY)
 			]
 			: ''
 	]);
@@ -630,13 +630,13 @@ function make_status_of_zbx() {
 			? [
 				$status['triggers_count_enabled'], ' / ',
 				$status['triggers_count_disabled'], ' [',
-				(new CSpan($status['triggers_count_on']))->addClass(ZBX_STYLE_RED), ' / ',
-				(new CSpan($status['triggers_count_off']))->addClass(ZBX_STYLE_GREEN), ']'
+				(new CSpan($status['triggers_count_on']))->addClass(TRX_STYLE_RED), ' / ',
+				(new CSpan($status['triggers_count_off']))->addClass(TRX_STYLE_GREEN), ']'
 			]
 			: ''
 	]);
 	$table->addRow([_('Number of users (online)'), $status['has_status'] ? $status['users_count'] : '',
-		$status['has_status'] ? (new CSpan($status['users_online']))->addClass(ZBX_STYLE_GREEN) : ''
+		$status['has_status'] ? (new CSpan($status['users_online']))->addClass(TRX_STYLE_GREEN) : ''
 	]);
 	if (CWebUser::getType() == USER_TYPE_SUPER_ADMIN) {
 		$table->addRow([_('Required server performance, new values per second'),
@@ -649,7 +649,7 @@ function make_status_of_zbx() {
 		foreach ((new CFrontendSetup())->checkRequirements() as $req) {
 			if ($req['result'] == CFrontendSetup::CHECK_FATAL) {
 				$table->addRow(
-					(new CRow([$req['name'], $req['current'], $req['error']]))->addClass(ZBX_STYLE_RED)
+					(new CRow([$req['name'], $req['current'], $req['error']]))->addClass(TRX_STYLE_RED)
 				);
 			}
 		}
@@ -694,16 +694,16 @@ function makeProblemsPopup(array $problems, array $triggers, $backurl, array $ac
 		->setArgument('triggerid', '')
 		->setArgument('eventid', '');
 
-	$header_time = new CColHeader([_('Time'), (new CSpan())->addClass(ZBX_STYLE_ARROW_DOWN)]);
+	$header_time = new CColHeader([_('Time'), (new CSpan())->addClass(TRX_STYLE_ARROW_DOWN)]);
 
 	$show_timeline = (array_key_exists('show_timeline', $filter) && $filter['show_timeline']);
 	$show_opdata = (array_key_exists('show_opdata', $filter)) ? $filter['show_opdata'] : OPERATIONAL_DATA_SHOW_NONE;
 
 	if ($show_timeline) {
 		$header = [
-			$header_time->addClass(ZBX_STYLE_RIGHT),
-			(new CColHeader())->addClass(ZBX_STYLE_TIMELINE_TH),
-			(new CColHeader())->addClass(ZBX_STYLE_TIMELINE_TH)
+			$header_time->addClass(TRX_STYLE_RIGHT),
+			(new CColHeader())->addClass(TRX_STYLE_TIMELINE_TH),
+			(new CColHeader())->addClass(TRX_STYLE_TIMELINE_TH)
 		];
 	}
 	else {
@@ -759,23 +759,23 @@ function makeProblemsPopup(array $problems, array $triggers, $backurl, array $ac
 
 		if ($show_timeline) {
 			if ($last_clock != 0) {
-				CScreenProblem::addTimelineBreakpoint($table, $last_clock, $problem['clock'], ZBX_SORT_DOWN);
+				CScreenProblem::addTimelineBreakpoint($table, $last_clock, $problem['clock'], TRX_SORT_DOWN);
 			}
 			$last_clock = $problem['clock'];
 
 			$row = [
-				$cell_clock->addClass(ZBX_STYLE_TIMELINE_DATE),
+				$cell_clock->addClass(TRX_STYLE_TIMELINE_DATE),
 				(new CCol())
-					->addClass(ZBX_STYLE_TIMELINE_AXIS)
-					->addClass(ZBX_STYLE_TIMELINE_DOT),
-				(new CCol())->addClass(ZBX_STYLE_TIMELINE_TD)
+					->addClass(TRX_STYLE_TIMELINE_AXIS)
+					->addClass(TRX_STYLE_TIMELINE_DOT),
+				(new CCol())->addClass(TRX_STYLE_TIMELINE_TD)
 			];
 		}
 		else {
 			$row = [
 				$cell_clock
-					->addClass(ZBX_STYLE_NOWRAP)
-					->addClass(ZBX_STYLE_RIGHT)
+					->addClass(TRX_STYLE_NOWRAP)
+					->addClass(TRX_STYLE_RIGHT)
 			];
 		}
 
@@ -811,7 +811,7 @@ function makeProblemsPopup(array $problems, array $triggers, $backurl, array $ac
 				if ($show_opdata == OPERATIONAL_DATA_SHOW_SEPARATELY) {
 					$opdata = (new CCol($opdata))
 						->addClass('opdata')
-						->addClass(ZBX_STYLE_WORDWRAP);
+						->addClass(TRX_STYLE_WORDWRAP);
 				}
 			}
 		}
@@ -824,8 +824,8 @@ function makeProblemsPopup(array $problems, array $triggers, $backurl, array $ac
 			->getUrl();
 
 		$ack = (new CLink($problem['acknowledged'] == EVENT_ACKNOWLEDGED ? _('Yes') : _('No'), $problem_update_url))
-			->addClass($problem['acknowledged'] == EVENT_ACKNOWLEDGED ? ZBX_STYLE_GREEN : ZBX_STYLE_RED)
-			->addClass(ZBX_STYLE_LINK_ALT);
+			->addClass($problem['acknowledged'] == EVENT_ACKNOWLEDGED ? TRX_STYLE_GREEN : TRX_STYLE_RED)
+			->addClass(TRX_STYLE_LINK_ALT);
 
 		$table->addRow(array_merge($row, [
 			makeInformationList($info_icons),

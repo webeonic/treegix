@@ -14,7 +14,7 @@ static int	__binary_heap_bubble_down(zbx_binary_heap_t *heap, int index);
 
 #define	ARRAY_GROWTH_FACTOR	3/2
 
-#define	HAS_DIRECT_OPTION(heap)	(0 != (heap->options & ZBX_BINARY_HEAP_OPTION_DIRECT))
+#define	HAS_DIRECT_OPTION(heap)	(0 != (heap->options & TRX_BINARY_HEAP_OPTION_DIRECT))
 
 /* helper functions */
 
@@ -130,9 +130,9 @@ static int	__binary_heap_bubble_down(zbx_binary_heap_t *heap, int index)
 void	zbx_binary_heap_create(zbx_binary_heap_t *heap, zbx_compare_func_t compare_func, int options)
 {
 	zbx_binary_heap_create_ext(heap, compare_func, options,
-					ZBX_DEFAULT_MEM_MALLOC_FUNC,
-					ZBX_DEFAULT_MEM_REALLOC_FUNC,
-					ZBX_DEFAULT_MEM_FREE_FUNC);
+					TRX_DEFAULT_MEM_MALLOC_FUNC,
+					TRX_DEFAULT_MEM_REALLOC_FUNC,
+					TRX_DEFAULT_MEM_FREE_FUNC);
 }
 
 void	zbx_binary_heap_create_ext(zbx_binary_heap_t *heap, zbx_compare_func_t compare_func, int options,
@@ -150,8 +150,8 @@ void	zbx_binary_heap_create_ext(zbx_binary_heap_t *heap, zbx_compare_func_t comp
 	{
 		heap->key_index = (zbx_hashmap_t *)mem_malloc_func(NULL, sizeof(zbx_hashmap_t));
 		zbx_hashmap_create_ext(heap->key_index, 512,
-					ZBX_DEFAULT_UINT64_HASH_FUNC,
-					ZBX_DEFAULT_UINT64_COMPARE_FUNC,
+					TRX_DEFAULT_UINT64_HASH_FUNC,
+					TRX_DEFAULT_UINT64_COMPARE_FUNC,
 					mem_malloc_func,
 					mem_realloc_func,
 					mem_free_func);
@@ -245,7 +245,7 @@ void	zbx_binary_heap_update_direct(zbx_binary_heap_t *heap, zbx_binary_heap_elem
 	}
 	else
 	{
-		treegix_log(LOG_LEVEL_CRIT, "element with key " ZBX_FS_UI64 " not found in heap for update", elem->key);
+		treegix_log(LOG_LEVEL_CRIT, "element with key " TRX_FS_UI64 " not found in heap for update", elem->key);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -298,7 +298,7 @@ void	zbx_binary_heap_remove_direct(zbx_binary_heap_t *heap, zbx_uint64_t key)
 	}
 	else
 	{
-		treegix_log(LOG_LEVEL_CRIT, "element with key " ZBX_FS_UI64 " not found in heap for remove", key);
+		treegix_log(LOG_LEVEL_CRIT, "element with key " TRX_FS_UI64 " not found in heap for remove", key);
 		exit(EXIT_FAILURE);
 	}
 }

@@ -1,12 +1,12 @@
 <script type="text/x-jquery-tmpl" id="mapping_row">
 	<?= (new CRow([
-			(new CTextBox('mappings[#{rowNum}][value]', '', false, 64))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
+			(new CTextBox('mappings[#{rowNum}][value]', '', false, 64))->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
 			'&rArr;',
 			(new CTextBox('mappings[#{rowNum}][newvalue]', '', false, 64))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				->setAriaRequired(),
 			(new CButton('mappings[#{rowNum}][remove]', _('Remove')))
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->addClass('element-table-remove')
 		]))
 			->addClass('form_row')

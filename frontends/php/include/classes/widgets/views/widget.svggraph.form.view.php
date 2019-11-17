@@ -23,7 +23,7 @@ $form_name = $form->getName();
 $form->addItem(
 	(new CDiv(
 		(new CDiv())->setId('svg-graph-preview')
-	))->addClass(ZBX_STYLE_SVG_GRAPH_PREVIEW)
+	))->addClass(TRX_STYLE_SVG_GRAPH_PREVIEW)
 );
 
 // Stick preview to the top of configuration window when scroll.
@@ -31,7 +31,7 @@ $scripts[] =
 	'jQuery(".overlay-dialogue-body").on("scroll", function() {'.
 		'if (jQuery("#svg-graph-preview").length) {'.
 			'var $dialogue_body = jQuery(this),'.
-				'$preview_container = jQuery(".'.ZBX_STYLE_SVG_GRAPH_PREVIEW.'");'.
+				'$preview_container = jQuery(".'.TRX_STYLE_SVG_GRAPH_PREVIEW.'");'.
 				'jQuery("#svg-graph-preview").css("top",'.
 					'($preview_container.offset().top < $dialogue_body.offset().top && $dialogue_body.height() > 500)'.
 						' ? $dialogue_body.offset().top - $preview_container.offset().top'.
@@ -186,10 +186,10 @@ $tab_axes = (new CFormList())->addRow('',
 			->addRow(CWidgetHelper::getLabel($fields['lefty_min']), CWidgetHelper::getNumericBox($fields['lefty_min']))
 			->addRow(CWidgetHelper::getLabel($fields['lefty_max']), CWidgetHelper::getNumericBox($fields['lefty_max']))
 			->addRow(CWidgetHelper::getLabel($fields['lefty_units']), [
-				CWidgetHelper::getComboBox($fields['lefty_units'])->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				CWidgetHelper::getComboBox($fields['lefty_units'])->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				CWidgetHelper::getTextBox($fields['lefty_static_units'])
 			])
-			->addClass(ZBX_STYLE_COLUMN_33),
+			->addClass(TRX_STYLE_COLUMN_33),
 
 		(new CFormList())
 			->addRow(CWidgetHelper::getLabel($fields['righty']), CWidgetHelper::getCheckBox($fields['righty']))
@@ -200,16 +200,16 @@ $tab_axes = (new CFormList())->addRow('',
 				CWidgetHelper::getNumericBox($fields['righty_max'])
 			)
 			->addRow(CWidgetHelper::getLabel($fields['righty_units']), [
-				CWidgetHelper::getComboBox($fields['righty_units'])->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				CWidgetHelper::getComboBox($fields['righty_units'])->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				CWidgetHelper::getTextBox($fields['righty_static_units'])
 			])
-			->addClass(ZBX_STYLE_COLUMN_33),
+			->addClass(TRX_STYLE_COLUMN_33),
 
 		(new CFormList())
 			->addRow(CWidgetHelper::getLabel($fields['axisx']), CWidgetHelper::getCheckBox($fields['axisx']))
-			->addClass(ZBX_STYLE_COLUMN_33)
+			->addClass(TRX_STYLE_COLUMN_33)
 	]))
-		->addClass(ZBX_STYLE_COLUMNS)
+		->addClass(TRX_STYLE_COLUMNS)
 );
 
 // Create 'Legend' tab.

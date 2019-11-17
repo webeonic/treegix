@@ -14,7 +14,7 @@ static HANDLE		system_log_handle = INVALID_HANDLE_VALUE;
 
 static char		log_filename[MAX_STRING_LEN];
 static int		log_type = LOG_TYPE_UNDEFINED;
-static zbx_mutex_t	log_access = ZBX_MUTEX_NULL;
+static zbx_mutex_t	log_access = TRX_MUTEX_NULL;
 int			zbx_log_level = LOG_LEVEL_WARNING;
 
 #ifdef _WINDOWS
@@ -25,18 +25,18 @@ int			zbx_log_level = LOG_LEVEL_WARNING;
 #	define UNLOCK_LOG	unlock_log()
 #endif
 
-#define ZBX_MESSAGE_BUF_SIZE	1024
+#define TRX_MESSAGE_BUF_SIZE	1024
 
 #ifdef _WINDOWS
 #	define STDIN_FILENO	_fileno(stdin)
 #	define STDOUT_FILENO	_fileno(stdout)
 #	define STDERR_FILENO	_fileno(stderr)
 
-#	define ZBX_DEV_NULL	"NUL"
+#	define TRX_DEV_NULL	"NUL"
 
 #	define dup2(fd1, fd2)	_dup2(fd1, fd2)
 #else
-#	define ZBX_DEV_NULL	"/dev/null"
+#	define TRX_DEV_NULL	"/dev/null"
 #endif
 
 #ifndef _WINDOWS
@@ -85,7 +85,7 @@ int	treegix_decrease_log_level(void)
 
 int	zbx_redirect_stdio(const char *filename)
 {
-	const char	default_file[] = ZBX_DEV_NULL;
+	const char	default_file[] = TRX_DEV_NULL;
 	int		open_flags = O_WRONLY, fd;
 
 	if (NULL != filename && '\0' != *filename)
@@ -127,7 +127,7 @@ static void	rotate_log(const char *filename)
 {
 	zbx_stat_t		buf;
 	zbx_uint64_t		new_size;
-	static zbx_uint64_t	old_size = ZBX_MAX_UINT64; /* redirect stdout and stderr */
+	static zbx_uint64_t	old_size = TRX_MAX_UINT64; /* redirect stdout and stderr */
 
 	if (0 != zbx_stat(filename, &buf))
 	{
@@ -137,7 +137,7 @@ static void	rotate_log(const char *filename)
 
 	new_size = buf.st_size;
 
-	if (0 != CONFIG_LOG_FILE_SIZE && (zbx_uint64_t)CONFIG_LOG_FILE_SIZE * ZBX_MEBIBYTE < new_size)
+	if (0 != CONFIG_LOG_FILE_SIZE && (zbx_uint64_t)CONFIG_LOG_FILE_SIZE * TRX_MEBIBYTE < new_size)
 	{
 		char	filename_old[MAX_STRING_LEN];
 
@@ -233,7 +233,7 @@ static void	unlock_log(void)
 static void	lock_log(void)
 {
 #ifdef TREEGIX_AGENT
-	if (0 == (ZBX_MUTEX_LOGGING_DENIED & get_thread_global_mutex_flag()))
+	if (0 == (TRX_MUTEX_LOGGING_DENIED & get_thread_global_mutex_flag()))
 #endif
 		LOCK_LOG;
 }
@@ -241,7 +241,7 @@ static void	lock_log(void)
 static void	unlock_log(void)
 {
 #ifdef TREEGIX_AGENT
-	if (0 == (ZBX_MUTEX_LOGGING_DENIED & get_thread_global_mutex_flag()))
+	if (0 == (TRX_MUTEX_LOGGING_DENIED & get_thread_global_mutex_flag()))
 #endif
 		UNLOCK_LOG;
 }
@@ -286,7 +286,7 @@ int	treegix_open_log(int type, int level, const char *filename, char **error)
 			return FAIL;
 		}
 
-		if (SUCCEED != zbx_mutex_create(&log_access, ZBX_MUTEX_LOG, error))
+		if (SUCCEED != zbx_mutex_create(&log_access, TRX_MUTEX_LOG, error))
 			return FAIL;
 
 		if (NULL == (log_file = fopen(filename, "a+")))
@@ -300,7 +300,7 @@ int	treegix_open_log(int type, int level, const char *filename, char **error)
 	}
 	else if (LOG_TYPE_CONSOLE == type || LOG_TYPE_UNDEFINED == type)
 	{
-		if (SUCCEED != zbx_mutex_create(&log_access, ZBX_MUTEX_LOG, error))
+		if (SUCCEED != zbx_mutex_create(&log_access, TRX_MUTEX_LOG, error))
 		{
 			*error = zbx_strdup(*error, "unable to create mutex for standard output");
 			return FAIL;
@@ -345,8 +345,8 @@ void	__zbx_treegix_log(int level, const char *fmt, ...)
 	wchar_t		thread_id[20], *strings[2];
 #endif
 
-#ifndef ZBX_TREEGIX_LOG_CHECK
-	if (SUCCEED != ZBX_CHECK_LOG_LEVEL(level))
+#ifndef TRX_TREEGIX_LOG_CHECK
+	if (SUCCEED != TRX_CHECK_LOG_LEVEL(level))
 		return;
 #endif
 	if (LOG_TYPE_FILE == log_type)
@@ -533,7 +533,7 @@ void	__zbx_treegix_log(int level, const char *fmt, ...)
 
 int	zbx_get_log_type(const char *logtype)
 {
-	const char	*logtypes[] = {ZBX_OPTION_LOGTYPE_SYSTEM, ZBX_OPTION_LOGTYPE_FILE, ZBX_OPTION_LOGTYPE_CONSOLE};
+	const char	*logtypes[] = {TRX_OPTION_LOGTYPE_SYSTEM, TRX_OPTION_LOGTYPE_FILE, TRX_OPTION_LOGTYPE_CONSOLE};
 	int		i;
 
 	for (i = 0; i < (int)ARRSIZE(logtypes); i++)
@@ -545,7 +545,7 @@ int	zbx_get_log_type(const char *logtype)
 	return LOG_TYPE_UNDEFINED;
 }
 
-int	zbx_validate_log_parameters(ZBX_TASK_EX *task)
+int	zbx_validate_log_parameters(TRX_TASK_EX *task)
 {
 	if (LOG_TYPE_UNDEFINED == CONFIG_LOG_TYPE)
 	{
@@ -553,8 +553,8 @@ int	zbx_validate_log_parameters(ZBX_TASK_EX *task)
 		return FAIL;
 	}
 
-	if (LOG_TYPE_CONSOLE == CONFIG_LOG_TYPE && 0 == (task->flags & ZBX_TASK_FLAG_FOREGROUND) &&
-			ZBX_TASK_START == task->task)
+	if (LOG_TYPE_CONSOLE == CONFIG_LOG_TYPE && 0 == (task->flags & TRX_TASK_FLAG_FOREGROUND) &&
+			TRX_TASK_START == task->task)
 	{
 		treegix_log(LOG_LEVEL_CRIT, "\"LogType\" \"console\" parameter can only be used with the"
 				" -f (--foreground) command line option");
@@ -578,7 +578,7 @@ int	zbx_validate_log_parameters(ZBX_TASK_EX *task)
 char	*zbx_strerror(int errnum)
 {
 	/* !!! Attention: static !!! Not thread-safe for Win32 */
-	static char	utf8_string[ZBX_MESSAGE_BUF_SIZE];
+	static char	utf8_string[TRX_MESSAGE_BUF_SIZE];
 
 	zbx_snprintf(utf8_string, sizeof(utf8_string), "[%d] %s", errnum, strerror(errnum));
 
@@ -589,15 +589,15 @@ char	*strerror_from_system(unsigned long error)
 {
 #ifdef _WINDOWS
 	size_t		offset = 0;
-	wchar_t		wide_string[ZBX_MESSAGE_BUF_SIZE];
+	wchar_t		wide_string[TRX_MESSAGE_BUF_SIZE];
 	/* !!! Attention: static !!! Not thread-safe for Win32 */
-	static char	utf8_string[ZBX_MESSAGE_BUF_SIZE];
+	static char	utf8_string[TRX_MESSAGE_BUF_SIZE];
 
 	offset += zbx_snprintf(utf8_string, sizeof(utf8_string), "[0x%08lX] ", error);
 
 	/* we don't know the inserts so we pass NULL and enable appropriate flag */
 	if (0 == FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, error,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), wide_string, ZBX_MESSAGE_BUF_SIZE, NULL))
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), wide_string, TRX_MESSAGE_BUF_SIZE, NULL))
 	{
 		zbx_snprintf(utf8_string + offset, sizeof(utf8_string) - offset,
 				"unable to find message text [0x%08lX]", GetLastError());
@@ -611,7 +611,7 @@ char	*strerror_from_system(unsigned long error)
 
 	return utf8_string;
 #else	/* not _WINDOWS */
-	ZBX_UNUSED(error);
+	TRX_UNUSED(error);
 
 	return zbx_strerror(errno);
 #endif	/* _WINDOWS */
@@ -621,10 +621,10 @@ char	*strerror_from_system(unsigned long error)
 char	*strerror_from_module(unsigned long error, const wchar_t *module)
 {
 	size_t		offset = 0;
-	wchar_t		wide_string[ZBX_MESSAGE_BUF_SIZE];
+	wchar_t		wide_string[TRX_MESSAGE_BUF_SIZE];
 	HMODULE		hmodule;
 	/* !!! Attention: static !!! not thread-safe for Win32 */
-	static char	utf8_string[ZBX_MESSAGE_BUF_SIZE];
+	static char	utf8_string[TRX_MESSAGE_BUF_SIZE];
 
 	*utf8_string = '\0';
 	hmodule = GetModuleHandle(module);

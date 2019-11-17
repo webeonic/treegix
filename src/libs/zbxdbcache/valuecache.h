@@ -40,11 +40,11 @@
  *
  */
 
-#define ZBX_VC_MODE_NORMAL	0
-#define ZBX_VC_MODE_LOWMEM	1
+#define TRX_VC_MODE_NORMAL	0
+#define TRX_VC_MODE_LOWMEM	1
 
 /* indicates that all values from database are cached */
-#define ZBX_ITEM_STATUS_CACHED_ALL	1
+#define TRX_ITEM_STATUS_CACHED_ALL	1
 
 /* the cache statistics */
 typedef struct
@@ -60,7 +60,7 @@ typedef struct
 	zbx_uint64_t	total_size;
 	zbx_uint64_t	free_size;
 
-	/* value cache operating mode - see ZBX_VC_MODE_* defines */
+	/* value cache operating mode - see TRX_VC_MODE_* defines */
 	int		mode;
 }
 zbx_vc_stats_t;

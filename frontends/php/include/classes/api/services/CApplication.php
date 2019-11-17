@@ -245,7 +245,7 @@ class CApplication extends CApiService {
 		);
 
 		if ($db_applications) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Application "%1$s" already exists.', $db_applications[0]['name'])
 			);
 		}
@@ -262,7 +262,7 @@ class CApplication extends CApiService {
 			'name' =>		['type' => API_STRING_UTF8, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'length' => DB::getFieldLength('applications', 'name')]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $applications, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$hostids = [];
@@ -283,7 +283,7 @@ class CApplication extends CApiService {
 		foreach ($applications as $application) {
 			// check permissions by hostid
 			if (!array_key_exists($application['hostid'], $dbHosts)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -306,7 +306,7 @@ class CApplication extends CApiService {
 			'name' =>			['type' => API_STRING_UTF8, 'flags' => API_NOT_EMPTY, 'length' => DB::getFieldLength('applications', 'name')]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $applications, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		// permissions
@@ -319,21 +319,21 @@ class CApplication extends CApiService {
 
 		foreach ($applications as $application) {
 			if (!array_key_exists($application['applicationid'], $db_applications)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
 		}
 
 		if ($this->hasTemplatedApplications(zbx_objectValues($applications, 'applicationid'))) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot update templated applications.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot update templated applications.'));
 		}
 
 		$applications = $this->extendObjectsByKey($applications, $db_applications, 'applicationid', ['hostid']);
 
 		$api_input_rules = ['type' => API_OBJECTS, 'uniq' => [['hostid', 'name']]];
 		if (!CApiInputValidator::validateUniqueness($api_input_rules, $applications, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$names_by_hostid = [];
@@ -341,8 +341,8 @@ class CApplication extends CApiService {
 		foreach ($applications as $application) {
 			$db_application = $db_applications[$application['applicationid']];
 
-			if ($db_application['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+			if ($db_application['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Cannot update discovered application "%1$s".', $db_application['name'])
 				);
 			}
@@ -420,7 +420,7 @@ class CApplication extends CApiService {
 
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $applicationids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_applications = $this->get([
@@ -433,22 +433,22 @@ class CApplication extends CApiService {
 		if (!$nopermissions) {
 			foreach ($applicationids as $applicationid) {
 				if (!array_key_exists($applicationid, $db_applications)) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS,
+					self::exception(TRX_API_ERROR_PERMISSIONS,
 						_('No permissions to referred object or it does not exist!')
 					);
 				}
 
 				$db_application = $db_applications[$applicationid];
 
-				if ($db_application['flags'] == ZBX_FLAG_DISCOVERY_CREATED) {
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _s('Cannot delete discovered application "%1$s".',
+				if ($db_application['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
+					self::exception(TRX_API_ERROR_PERMISSIONS, _s('Cannot delete discovered application "%1$s".',
 						$db_application['name']
 					));
 				}
 			}
 
 			if ($this->hasTemplatedApplications($applicationids)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot delete templated application.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot delete templated application.'));
 			}
 		}
 
@@ -489,7 +489,7 @@ class CApplication extends CApiService {
 	 */
 	public function massAdd($data) {
 		if (empty($data['applications']) || empty($data['items'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameters.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameters.'));
 		}
 
 		$applications = zbx_toArray($data['applications']);
@@ -507,7 +507,7 @@ class CApplication extends CApiService {
 		]);
 		foreach ($applications as $application) {
 			if (!isset($allowedApplications[$application['applicationid']])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -520,7 +520,7 @@ class CApplication extends CApiService {
 		]);
 		foreach ($items as $item) {
 			if (!isset($allowedItems[$item['itemid']])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -529,7 +529,7 @@ class CApplication extends CApiService {
 		$dbApplicationHost = $dbApplication['host'];
 		foreach ($applications as $application) {
 			if ($dbApplicationHost['hostid'] != $allowedApplications[$application['applicationid']]['hostid']) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('Cannot process applications from different hosts or templates.'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('Cannot process applications from different hosts or templates.'));
 			}
 		}
 
@@ -539,7 +539,7 @@ class CApplication extends CApiService {
 			if ($dbItem['hostid'] != $dbApplicationHost['hostid']) {
 				$dbItem['host'] = reset($dbItem['hosts']);
 
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_s('Cannot add item "%1$s" from "%2$s" to application "%3$s" from "%4$s".',
 						$dbItem['name'], $dbItem['host']['name'], $dbApplication['name'], $dbApplicationHost['name']));
 			}
@@ -593,7 +593,7 @@ class CApplication extends CApiService {
 				}
 
 				if (!$result = $this->massAdd(['items' => $child, 'applications' => $childApplications])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot add items.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot add items.'));
 				}
 			}
 		}
@@ -657,7 +657,7 @@ class CApplication extends CApiService {
 				' WHERE '.dbConditionInt('ad.applicationid', $applicationids).
 					' AND ad.application_prototypeid=ap.application_prototypeid'.
 					' AND a.applicationid=ad.applicationid'.
-					' AND a.flags='.ZBX_FLAG_DISCOVERY_CREATED
+					' AND a.flags='.TRX_FLAG_DISCOVERY_CREATED
 			);
 
 			while ($rule = DBfetch($dbRules)) {

@@ -47,7 +47,7 @@ static void	row2value_dbl(history_value_t *value, DB_ROW row)
 
 static void	row2value_ui64(history_value_t *value, DB_ROW row)
 {
-	ZBX_STR2UINT64(value->ui64, row[0]);
+	TRX_STR2UINT64(value->ui64, row[0]);
 }
 
 /* timestamp, logeventid, severity, source, value */
@@ -160,11 +160,11 @@ static int	sql_writer_flush(void)
 			zbx_db_insert_execute(db_insert);
 		}
 	}
-	while (ZBX_DB_DOWN == (txn_error = DBcommit()));
+	while (TRX_DB_DOWN == (txn_error = DBcommit()));
 
 	sql_writer_release();
 
-	return ZBX_DB_OK == txn_error ? SUCCEED : FAIL;
+	return TRX_DB_OK == txn_error ? SUCCEED : FAIL;
 }
 
 /******************************************************************************************************************
@@ -190,7 +190,7 @@ static void	add_history_dbl(const zbx_vector_ptr_t *history)
 
 	for (i = 0; i < history->values_num; i++)
 	{
-		const ZBX_DC_HISTORY	*h = (ZBX_DC_HISTORY *)history->values[i];
+		const TRX_DC_HISTORY	*h = (TRX_DC_HISTORY *)history->values[i];
 
 		if (ITEM_VALUE_TYPE_FLOAT != h->value_type)
 			continue;
@@ -216,7 +216,7 @@ static void	add_history_uint(zbx_vector_ptr_t *history)
 
 	for (i = 0; i < history->values_num; i++)
 	{
-		const ZBX_DC_HISTORY	*h = (ZBX_DC_HISTORY *)history->values[i];
+		const TRX_DC_HISTORY	*h = (TRX_DC_HISTORY *)history->values[i];
 
 		if (ITEM_VALUE_TYPE_UINT64 != h->value_type)
 			continue;
@@ -242,7 +242,7 @@ static void	add_history_str(zbx_vector_ptr_t *history)
 
 	for (i = 0; i < history->values_num; i++)
 	{
-		const ZBX_DC_HISTORY	*h = (ZBX_DC_HISTORY *)history->values[i];
+		const TRX_DC_HISTORY	*h = (TRX_DC_HISTORY *)history->values[i];
 
 		if (ITEM_VALUE_TYPE_STR != h->value_type)
 			continue;
@@ -268,7 +268,7 @@ static void	add_history_text(zbx_vector_ptr_t *history)
 
 	for (i = 0; i < history->values_num; i++)
 	{
-		const ZBX_DC_HISTORY	*h = (ZBX_DC_HISTORY *)history->values[i];
+		const TRX_DC_HISTORY	*h = (TRX_DC_HISTORY *)history->values[i];
 
 		if (ITEM_VALUE_TYPE_TEXT != h->value_type)
 			continue;
@@ -295,7 +295,7 @@ static void	add_history_log(zbx_vector_ptr_t *history)
 
 	for (i = 0; i < history->values_num; i++)
 	{
-		const ZBX_DC_HISTORY	*h = (ZBX_DC_HISTORY *)history->values[i];
+		const TRX_DC_HISTORY	*h = (TRX_DC_HISTORY *)history->values[i];
 		const zbx_log_value_t	*log;
 
 		if (ITEM_VALUE_TYPE_LOG != h->value_type)
@@ -304,7 +304,7 @@ static void	add_history_log(zbx_vector_ptr_t *history)
 		log = h->value.log;
 
 		zbx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, log->timestamp,
-				ZBX_NULL2EMPTY_STR(log->source), log->severity, log->value, log->logeventid);
+				TRX_NULL2EMPTY_STR(log->source), log->severity, log->value, log->logeventid);
 	}
 
 	sql_writer_add_dbinsert(db_insert);
@@ -347,10 +347,10 @@ static int	db_read_values_by_time(zbx_uint64_t itemid, int value_type, zbx_vecto
 	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select clock,ns,%s"
 			" from %s"
-			" where itemid=" ZBX_FS_UI64,
+			" where itemid=" TRX_FS_UI64,
 			table->fields, table->name, itemid);
 
-	if (ZBX_JAN_2038 == end_timestamp)
+	if (TRX_JAN_2038 == end_timestamp)
 	{
 		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock>%d", end_timestamp - seconds);
 	}
@@ -436,7 +436,7 @@ static int	db_read_values_by_count(zbx_uint64_t itemid, int value_type, zbx_vect
 		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 				"select clock,ns,%s"
 				" from %s"
-				" where itemid=" ZBX_FS_UI64
+				" where itemid=" TRX_FS_UI64
 					" and clock<=%d",
 				table->fields, table->name, itemid, clock_to);
 
@@ -527,7 +527,7 @@ static int	db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_type,
 	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select clock,ns,%s"
 			" from %s"
-			" where itemid=" ZBX_FS_UI64,
+			" where itemid=" TRX_FS_UI64,
 			table->fields, table->name, itemid);
 
 	if (1 == seconds)
@@ -602,7 +602,7 @@ out:
  ************************************************************************************/
 static void	sql_destroy(zbx_history_iface_t *hist)
 {
-	ZBX_UNUSED(hist);
+	TRX_UNUSED(hist);
 }
 
 /************************************************************************************
@@ -653,7 +653,7 @@ static int	sql_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t *his
 
 	for (i = 0; i < history->values_num; i++)
 	{
-		const ZBX_DC_HISTORY	*h = (ZBX_DC_HISTORY *)history->values[i];
+		const TRX_DC_HISTORY	*h = (TRX_DC_HISTORY *)history->values[i];
 
 		if (h->value_type == hist->value_type)
 			h_num++;
@@ -682,7 +682,7 @@ static int	sql_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t *his
  ************************************************************************************/
 static int	sql_flush(zbx_history_iface_t *hist)
 {
-	ZBX_UNUSED(hist);
+	TRX_UNUSED(hist);
 
 	return sql_writer_flush();
 }
@@ -703,7 +703,7 @@ static int	sql_flush(zbx_history_iface_t *hist)
  ************************************************************************************/
 int	zbx_history_sql_init(zbx_history_iface_t *hist, unsigned char value_type, char **error)
 {
-	ZBX_UNUSED(error);
+	TRX_UNUSED(error);
 
 	hist->value_type = value_type;
 

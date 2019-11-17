@@ -127,7 +127,7 @@ class CUser extends CApiService {
 			}
 
 			if (isset($options['filter']['passwd'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('It is not possible to filter by user password.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('It is not possible to filter by user password.'));
 			}
 
 			$this->dbFilter('users u', $options, $sqlParts);
@@ -136,7 +136,7 @@ class CUser extends CApiService {
 		// search
 		if (is_array($options['search'])) {
 			if (isset($options['search']['passwd'])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('It is not possible to search by user password.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('It is not possible to search by user password.'));
 			}
 
 			zbx_db_search('users u', $options, $sqlParts);
@@ -240,7 +240,7 @@ class CUser extends CApiService {
 	 */
 	private function validateCreate(array &$users) {
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('You do not have permissions to create users.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('You do not have permissions to create users.'));
 		}
 
 		$locales = array_keys(getLocales());
@@ -271,7 +271,7 @@ class CUser extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $users, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		foreach ($users as &$user) {
@@ -378,7 +378,7 @@ class CUser extends CApiService {
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $users, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_users = $this->get([
@@ -401,7 +401,7 @@ class CUser extends CApiService {
 
 		foreach ($users as &$user) {
 			if (!array_key_exists($user['userid'], $db_users)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -409,8 +409,8 @@ class CUser extends CApiService {
 			$db_user = $db_users[$user['userid']];
 
 			if (array_key_exists('alias', $user) && $user['alias'] !== $db_user['alias']) {
-				if ($db_user['alias'] === ZBX_GUEST_USER) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot rename guest user.'));
+				if ($db_user['alias'] === TRX_GUEST_USER) {
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot rename guest user.'));
 				}
 
 				$aliases[] = $user['alias'];
@@ -419,8 +419,8 @@ class CUser extends CApiService {
 			$user = $this->checkLoginOptions($user);
 
 			if (array_key_exists('passwd', $user)) {
-				if ($db_user['alias'] == ZBX_GUEST_USER) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Not allowed to set password for user "guest".'));
+				if ($db_user['alias'] == TRX_GUEST_USER) {
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Not allowed to set password for user "guest".'));
 				}
 
 				$user['passwd'] = md5($user['passwd']);
@@ -453,7 +453,7 @@ class CUser extends CApiService {
 		]);
 
 		if ($db_users) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('User with alias "%s" already exists.', $db_users[0]['alias'])
 			);
 		}
@@ -495,7 +495,7 @@ class CUser extends CApiService {
 
 		foreach ($usrgrpids as $usrgrpid) {
 			if (!array_key_exists($usrgrpid, $db_usrgrps)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('User group with ID "%1$s" is not available.', $usrgrpid));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('User group with ID "%1$s" is not available.', $usrgrpid));
 			}
 		}
 
@@ -512,7 +512,7 @@ class CUser extends CApiService {
 
 			// Do not allow empty password for users with GROUP_GUI_ACCESS_INTERNAL.
 			if ($passwd === '' && self::hasInternalAuth($user, $db_usrgrps)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Incorrect value for field "%1$s": %2$s.', 'passwd', _('cannot be empty'))
 				);
 			}
@@ -529,7 +529,7 @@ class CUser extends CApiService {
 	private function checkLanguages(array $languages) {
 		foreach ($languages as $lang) {
 			if ($lang !== 'en_GB' && !setlocale(LC_MONETARY , zbx_locale_variants($lang))) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Language "%1$s" is not supported.', $lang));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Language "%1$s" is not supported.', $lang));
 			}
 		}
 	}
@@ -546,7 +546,7 @@ class CUser extends CApiService {
 	 */
 	private static function hasInternalAuth($user, $db_usrgrps) {
 		$config = select_config();
-		$system_gui_access = ($config['authentication_type'] == ZBX_AUTH_INTERNAL)
+		$system_gui_access = ($config['authentication_type'] == TRX_AUTH_INTERNAL)
 			? GROUP_GUI_ACCESS_INTERNAL
 			: GROUP_GUI_ACCESS_LDAP;
 
@@ -597,7 +597,7 @@ class CUser extends CApiService {
 
 		foreach ($mediatypeids as $mediatypeid) {
 			if (!array_key_exists($mediatypeid, $db_mediatypes)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
+				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Media type with ID "%1$s" is not available.', $mediatypeid)
 				);
 			}
@@ -640,7 +640,7 @@ class CUser extends CApiService {
 						 */
 						if (!array_key_exists($media['mediatypeid'], $email_mediatypes)
 								&& count($media['sendto']) > 1) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_s('Invalid parameter "%1$s": %2$s.', 'sendto', _('a character string is expected'))
 							);
 						}
@@ -651,7 +651,7 @@ class CUser extends CApiService {
 						 */
 						foreach ($media['sendto'] as $sendto) {
 							if ($sendto === '') {
-								self::exception(ZBX_API_ERROR_PARAMETERS,
+								self::exception(TRX_API_ERROR_PARAMETERS,
 									_s('Invalid parameter "%1$s": %2$s.', 'sendto', _('cannot be empty'))
 								);
 							}
@@ -666,14 +666,14 @@ class CUser extends CApiService {
 						if (array_key_exists($media['mediatypeid'], $email_mediatypes)) {
 							foreach ($media['sendto'] as $sendto) {
 								if (!$email_validator->validate($sendto)) {
-									self::exception(ZBX_API_ERROR_PARAMETERS,
+									self::exception(TRX_API_ERROR_PARAMETERS,
 										_s('Invalid email address for media type with ID "%1$s".',
 											$media['mediatypeid']
 										)
 									);
 								}
 								elseif (strlen(implode("\n", $media['sendto'])) > $max_length) {
-									self::exception(ZBX_API_ERROR_PARAMETERS,
+									self::exception(TRX_API_ERROR_PARAMETERS,
 										_s('Maximum total length of email address exceeded for media type with ID "%1$s".',
 											$media['mediatypeid']
 										)
@@ -699,7 +699,7 @@ class CUser extends CApiService {
 		foreach ($users as $user) {
 			if (bccomp($user['userid'], self::$userData['userid']) == 0) {
 				if (array_key_exists('type', $user)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('User cannot change their user type.'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('User cannot change their user type.'));
 				}
 
 				if (array_key_exists('usrgrps', $user)) {
@@ -711,7 +711,7 @@ class CUser extends CApiService {
 					foreach ($db_usrgrps as $db_usrgrp) {
 						if ($db_usrgrp['gui_access'] == GROUP_GUI_ACCESS_DISABLED
 								|| $db_usrgrp['users_status'] == GROUP_STATUS_DISABLED) {
-							self::exception(ZBX_API_ERROR_PARAMETERS,
+							self::exception(TRX_API_ERROR_PARAMETERS,
 								_('User cannot add himself to a disabled group or a group with disabled GUI access.')
 							);
 						}
@@ -744,7 +744,7 @@ class CUser extends CApiService {
 
 		if (array_key_exists('autologin', $user) && array_key_exists('autologout', $user)
 				&& $user['autologin'] != 0 && timeUnitToSeconds($user['autologout']) != 0) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_('Auto-login and auto-logout options cannot be enabled together.')
 			);
 		}
@@ -946,7 +946,7 @@ class CUser extends CApiService {
 	private function validateDelete(array &$userids, array &$db_users = null) {
 		$api_input_rules = ['type' => API_IDS, 'flags' => API_NOT_EMPTY, 'uniq' => true];
 		if (!CApiInputValidator::validate($api_input_rules, $userids, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$db_users = $this->get([
@@ -958,7 +958,7 @@ class CUser extends CApiService {
 
 		foreach ($userids as $userid) {
 			if (!array_key_exists($userid, $db_users)) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_('No permissions to referred object or it does not exist!')
 				);
 			}
@@ -966,12 +966,12 @@ class CUser extends CApiService {
 			$db_user = $db_users[$userid];
 
 			if (bccomp($userid, self::$userData['userid']) == 0) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('User is not allowed to delete himself.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('User is not allowed to delete himself.'));
 			}
 
-			if ($db_user['alias'] == ZBX_GUEST_USER) {
-				self::exception(ZBX_API_ERROR_PARAMETERS,
-					_s('Cannot delete Treegix internal user "%1$s", try disabling that user.', ZBX_GUEST_USER)
+			if ($db_user['alias'] == TRX_GUEST_USER) {
+				self::exception(TRX_API_ERROR_PARAMETERS,
+					_s('Cannot delete Treegix internal user "%1$s", try disabling that user.', TRX_GUEST_USER)
 				);
 			}
 		}
@@ -987,7 +987,7 @@ class CUser extends CApiService {
 		);
 
 		if ($db_action = DBfetch($db_actions)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('User "%1$s" is used in "%2$s" action.',
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('User "%1$s" is used in "%2$s" action.',
 				$db_users[$db_action['userid']]['alias'], $db_action['name']
 			));
 		}
@@ -1000,7 +1000,7 @@ class CUser extends CApiService {
 		]);
 
 		if ($db_maps) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('User "%1$s" is map "%2$s" owner.', $db_users[$db_maps[0]['userid']]['alias'], $db_maps[0]['name'])
 			);
 		}
@@ -1013,7 +1013,7 @@ class CUser extends CApiService {
 		]);
 
 		if ($db_screens) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('User "%1$s" is screen "%2$s" owner.', $db_users[$db_screens[0]['userid']]['alias'],
 					$db_screens[0]['name']
 				)
@@ -1028,7 +1028,7 @@ class CUser extends CApiService {
 		]);
 
 		if ($db_slideshows) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('User "%1$s" is slide show "%2$s" owner.', $db_users[$db_slideshows[0]['userid']]['alias'],
 					$db_slideshows[0]['name']
 				)
@@ -1043,7 +1043,7 @@ class CUser extends CApiService {
 		]);
 
 		if ($db_dashboards) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('User "%1$s" is dashboard "%2$s" owner.', $db_users[$db_dashboards[0]['userid']]['alias'],
 					$db_dashboards[0]['name']
 				)
@@ -1075,7 +1075,7 @@ class CUser extends CApiService {
 		$ldap_status = (new CFrontendSetup())->checkPhpLdapModule();
 
 		if ($ldap_status['result'] != CFrontendSetup::CHECK_OK) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $ldap_status['error']);
+			self::exception(TRX_API_ERROR_PARAMETERS, $ldap_status['error']);
 		}
 
 		$ldapValidator = new CLdapAuthValidator(['conf' => $cnf]);
@@ -1085,8 +1085,8 @@ class CUser extends CApiService {
 		}
 		else {
 			self::exception($ldapValidator->isConnectionError()
-					? ZBX_API_ERROR_PARAMETERS
-					: ZBX_API_ERROR_PERMISSIONS,
+					? TRX_API_ERROR_PARAMETERS
+					: TRX_API_ERROR_PERMISSIONS,
 				$ldapValidator->getError()
 			);
 		}
@@ -1095,7 +1095,7 @@ class CUser extends CApiService {
 	public function logout($user) {
 		$api_input_rules = ['type' => API_OBJECT, 'fields' => []];
 		if (!CApiInputValidator::validate($api_input_rules, $user, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$sessionid = self::$userData['sessionid'];
@@ -1104,21 +1104,21 @@ class CUser extends CApiService {
 			'output' => ['userid'],
 			'filter' => [
 				'sessionid' => $sessionid,
-				'status' => ZBX_SESSION_ACTIVE
+				'status' => TRX_SESSION_ACTIVE
 			],
 			'limit' => 1
 		]);
 
 		if (!$db_sessions) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Cannot logout.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot logout.'));
 		}
 
 		DB::delete('sessions', [
-			'status' => ZBX_SESSION_PASSIVE,
+			'status' => TRX_SESSION_PASSIVE,
 			'userid' => $db_sessions[0]['userid']
 		]);
 		DB::update('sessions', [
-			'values' => ['status' => ZBX_SESSION_PASSIVE],
+			'values' => ['status' => TRX_SESSION_PASSIVE],
 			'where' => ['sessionid' => $sessionid]
 		]);
 
@@ -1141,26 +1141,26 @@ class CUser extends CApiService {
 			'userData' =>	['type' => API_FLAG]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $user, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$config = select_config();
 		$group_to_auth_map = [
 			GROUP_GUI_ACCESS_SYSTEM => $config['authentication_type'],
-			GROUP_GUI_ACCESS_INTERNAL => ZBX_AUTH_INTERNAL,
-			GROUP_GUI_ACCESS_LDAP => ZBX_AUTH_LDAP,
+			GROUP_GUI_ACCESS_INTERNAL => TRX_AUTH_INTERNAL,
+			GROUP_GUI_ACCESS_LDAP => TRX_AUTH_LDAP,
 			GROUP_GUI_ACCESS_DISABLED => $config['authentication_type']
 		];
 
-		$db_user = $this->findByAlias($user['user'], ($config['ldap_case_sensitive'] == ZBX_AUTH_CASE_SENSITIVE),
+		$db_user = $this->findByAlias($user['user'], ($config['ldap_case_sensitive'] == TRX_AUTH_CASE_SENSITIVE),
 			$config['authentication_type'], true
 		);
 
-		if ($db_user['attempt_failed'] >= ZBX_LOGIN_ATTEMPTS) {
-			$sec_left = ZBX_LOGIN_BLOCK - (time() - $db_user['attempt_clock']);
+		if ($db_user['attempt_failed'] >= TRX_LOGIN_ATTEMPTS) {
+			$sec_left = TRX_LOGIN_BLOCK - (time() - $db_user['attempt_clock']);
 
 			if ($sec_left > 0) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
+				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_n('Account is blocked for %1$s second.', 'Account is blocked for %1$s seconds.', $sec_left)
 				);
 			}
@@ -1168,23 +1168,23 @@ class CUser extends CApiService {
 
 		try {
 			switch ($group_to_auth_map[$db_user['gui_access']]) {
-				case ZBX_AUTH_LDAP:
+				case TRX_AUTH_LDAP:
 					$this->ldapLogin($user);
 					break;
 
-				case ZBX_AUTH_INTERNAL:
+				case TRX_AUTH_INTERNAL:
 					if (md5($user['password']) !== $db_user['passwd']) {
-						self::exception(ZBX_API_ERROR_PERMISSIONS, _('Login name or password is incorrect.'));
+						self::exception(TRX_API_ERROR_PERMISSIONS, _('Login name or password is incorrect.'));
 					}
 					break;
 
 				default:
-					self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions for system access.'));
+					self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions for system access.'));
 					break;
 			}
 		}
 		catch (APIException $e) {
-			if ($e->getCode() == ZBX_API_ERROR_PERMISSIONS) {
+			if ($e->getCode() == TRX_API_ERROR_PERMISSIONS) {
 				++$db_user['attempt_failed'];
 			}
 
@@ -1201,13 +1201,13 @@ class CUser extends CApiService {
 				$db_user['userip']
 			);
 
-			if ($e->getCode() == ZBX_API_ERROR_PERMISSIONS && $db_user['attempt_failed'] >= ZBX_LOGIN_ATTEMPTS) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS,
-					_n('Account is blocked for %1$s second.', 'Account is blocked for %1$s seconds.', ZBX_LOGIN_BLOCK)
+			if ($e->getCode() == TRX_API_ERROR_PERMISSIONS && $db_user['attempt_failed'] >= TRX_LOGIN_ATTEMPTS) {
+				self::exception(TRX_API_ERROR_PERMISSIONS,
+					_n('Account is blocked for %1$s second.', 'Account is blocked for %1$s seconds.', TRX_LOGIN_BLOCK)
 				);
 			}
 
-			self::exception(ZBX_API_ERROR_PERMISSIONS, $e->getMessage());
+			self::exception(TRX_API_ERROR_PERMISSIONS, $e->getMessage());
 		}
 
 		// Start session.
@@ -1231,11 +1231,11 @@ class CUser extends CApiService {
 	 */
 	public function loginHttp($alias, $api_call = true) {
 		if ($api_call) {
-			return self::exception(ZBX_API_ERROR_PARAMETERS, _s('Incorrect method "%1$s.%2$s".', 'user', 'loginHttp'));
+			return self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect method "%1$s.%2$s".', 'user', 'loginHttp'));
 		}
 
 		$config = select_config();
-		$db_user = $this->findByAlias($alias, ($config['http_case_sensitive'] == ZBX_AUTH_CASE_SENSITIVE),
+		$db_user = $this->findByAlias($alias, ($config['http_case_sensitive'] == TRX_AUTH_CASE_SENSITIVE),
 			$config['authentication_type'], false
 		);
 
@@ -1265,7 +1265,7 @@ class CUser extends CApiService {
 			'extend' =>	['type' => API_BOOLEAN, 'default' => true]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $session, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		$sessionid = $session['sessionid'];
@@ -1280,11 +1280,11 @@ class CUser extends CApiService {
 		$db_sessions = DB::select('sessions', [
 			'output' => ['userid', 'lastaccess'],
 			'sessionids' => $sessionid,
-			'filter' => ['status' => ZBX_SESSION_ACTIVE]
+			'filter' => ['status' => TRX_SESSION_ACTIVE]
 		]);
 
 		if (!$db_sessions) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Session terminated, re-login, please.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Session terminated, re-login, please.'));
 		}
 
 		$db_session = $db_sessions[0];
@@ -1297,7 +1297,7 @@ class CUser extends CApiService {
 		]);
 
 		if (!$db_users) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Session terminated, re-login, please.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Session terminated, re-login, please.'));
 		}
 
 		$db_user = $db_users[0];
@@ -1315,15 +1315,15 @@ class CUser extends CApiService {
 		if (($autologout != 0 && $db_session['lastaccess'] + $autologout <= $time)
 				|| $usrgrps['users_status'] == GROUP_STATUS_DISABLED) {
 			DB::delete('sessions', [
-				'status' => ZBX_SESSION_PASSIVE,
+				'status' => TRX_SESSION_PASSIVE,
 				'userid' => $db_user['userid']
 			]);
 			DB::update('sessions', [
-				'values' => ['status' => ZBX_SESSION_PASSIVE],
+				'values' => ['status' => TRX_SESSION_PASSIVE],
 				'where' => ['sessionid' => $sessionid]
 			]);
 
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Session terminated, re-login, please.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Session terminated, re-login, please.'));
 		}
 
 		if ($session['extend'] && $time != $db_session['lastaccess']) {
@@ -1455,7 +1455,7 @@ class CUser extends CApiService {
 			'sessionid' => $db_user['sessionid'],
 			'userid' => $db_user['userid'],
 			'lastaccess' => time(),
-			'status' => ZBX_SESSION_ACTIVE
+			'status' => TRX_SESSION_ACTIVE
 		]], false);
 
 		if ($db_user['attempt_failed'] != 0) {
@@ -1484,8 +1484,8 @@ class CUser extends CApiService {
 		$db_users = [];
 		$group_to_auth_map = [
 			GROUP_GUI_ACCESS_SYSTEM => $default_auth,
-			GROUP_GUI_ACCESS_INTERNAL => ZBX_AUTH_INTERNAL,
-			GROUP_GUI_ACCESS_LDAP => ZBX_AUTH_LDAP,
+			GROUP_GUI_ACCESS_INTERNAL => TRX_AUTH_INTERNAL,
+			GROUP_GUI_ACCESS_LDAP => TRX_AUTH_LDAP,
 			GROUP_GUI_ACCESS_DISABLED => $default_auth
 		];
 		$fields = ['userid', 'alias', 'name', 'surname', 'url', 'autologin', 'autologout', 'lang', 'refresh',
@@ -1506,11 +1506,11 @@ class CUser extends CApiService {
 			));
 
 			if ($do_group_check) {
-				// Users with ZBX_AUTH_INTERNAL access attribute 'alias' is always case sensitive.
+				// Users with TRX_AUTH_INTERNAL access attribute 'alias' is always case sensitive.
 				foreach($db_users_rows as $db_user_row) {
 					$permissions = $this->getUserGroupsData($db_user_row['userid']);
 
-					if ($group_to_auth_map[$permissions['gui_access']] != ZBX_AUTH_INTERNAL
+					if ($group_to_auth_map[$permissions['gui_access']] != TRX_AUTH_INTERNAL
 							|| $db_user_row['alias'] === $alias) {
 						$db_users[] = $db_user_row;
 					}
@@ -1522,10 +1522,10 @@ class CUser extends CApiService {
 		}
 
 		if (!$db_users) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Login name or password is incorrect.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Login name or password is incorrect.'));
 		}
 		elseif (count($db_users) > 1) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Authentication failed: %1$s.', _('supplied credentials are not unique'))
 			);
 		}
@@ -1534,7 +1534,7 @@ class CUser extends CApiService {
 		$usrgrps = $this->getUserGroupsData($db_user['userid']);
 
 		if ($usrgrps['users_status'] == GROUP_STATUS_DISABLED) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions for system access.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions for system access.'));
 		}
 
 		$db_user['debug_mode'] = $usrgrps['debug_mode'];

@@ -5,7 +5,7 @@
 #include "perfmon.h"
 #include "log.h"
 
-static ZBX_THREAD_LOCAL zbx_perf_counter_id_t	*PerfCounterList = NULL;
+static TRX_THREAD_LOCAL zbx_perf_counter_id_t	*PerfCounterList = NULL;
 
 /* This struct contains mapping between built-in English counter names and PDH indexes. */
 /* If you change it then you also need to add enum values to zbx_builtin_counter_ref_t.  */
@@ -84,8 +84,8 @@ PDH_STATUS	zbx_PdhAddCounter(const char *function, zbx_perf_counter_data_t *coun
 	wchar_t		*wcounterPath = NULL;
 	int		need_english;
 
-	ZBX_THREAD_LOCAL static ADD_ENG_COUNTER add_eng_counter;
-	ZBX_THREAD_LOCAL static int 		first_call = 1;
+	TRX_THREAD_LOCAL static ADD_ENG_COUNTER add_eng_counter;
+	TRX_THREAD_LOCAL static int 		first_call = 1;
 
 	need_english = PERF_COUNTER_LANG_DEFAULT != lang ||
 			(NULL != counter && PERF_COUNTER_LANG_DEFAULT != counter->lang);

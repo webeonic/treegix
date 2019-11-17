@@ -11,7 +11,7 @@ $widget = (new CWidget())->setTitle(_('Services'));
 // create form
 $servicesForm = (new CForm())
 	->setName('servicesForm')
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $this->data['form'])
 	->addVar('parentid', $this->data['parentid'])
 	->addVar('parentname', $this->data['parentname'])
@@ -25,7 +25,7 @@ $servicesFormList = (new CFormList('servicesFormList'))
 	->addRow(
 		(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $this->data['name'], false, 128))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	);
@@ -39,11 +39,11 @@ if ($this->data['service']['serviceid']) {
 }
 $servicesFormList->addRow((new CLabel(_('Parent service'), 'parent_name'))->setAsteriskMark(), [
 	(new CTextBox('parent_name', $this->data['parentname'], true, 128))
-		->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+		->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 		->setAriaRequired(),
-	(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+	(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 	(new CButton('select_parent', _x('Change', 'verb')))
-		->addClass(ZBX_STYLE_BTN_GREY)
+		->addClass(TRX_STYLE_BTN_GREY)
 		->onClick('return PopUp("popup.services",jQuery.extend('.
 			CJs::encodeJson($parent_service_popup_options).
 				',{parentid: this.form.parentid.value}), null, this);'
@@ -58,20 +58,20 @@ $servicesFormList->addRow(
 
 // append SLA to form list
 $showslaCheckbox = (new CCheckBox('showsla'))->setChecked($this->data['showsla'] == SERVICE_SHOW_SLA_ON);
-$goodslaTextBox = (new CTextBox('goodsla', $this->data['goodsla'], false, 8))->setWidth(ZBX_TEXTAREA_TINY_WIDTH);
+$goodslaTextBox = (new CTextBox('goodsla', $this->data['goodsla'], false, 8))->setWidth(TRX_TEXTAREA_TINY_WIDTH);
 if (!$this->data['showsla']) {
 	$goodslaTextBox->setAttribute('disabled', 'disabled');
 }
 $servicesFormList->addRow(_('Calculate SLA, acceptable SLA (in %)'), [
-	$showslaCheckbox, (new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN), $goodslaTextBox
+	$showslaCheckbox, (new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN), $goodslaTextBox
 ]);
 
 // append trigger to form list
 $servicesFormList->addRow(_('Trigger'), [
-	(new CTextBox('trigger', $this->data['trigger'], true))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
-	(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+	(new CTextBox('trigger', $this->data['trigger'], true))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
+	(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 	(new CButton('btn1', _('Select')))
-		->addClass(ZBX_STYLE_BTN_GREY)
+		->addClass(TRX_STYLE_BTN_GREY)
 		->onClick('return PopUp("popup.generic",'.
 			CJs::encodeJson([
 				'srctbl' => 'triggers',
@@ -87,7 +87,7 @@ $servicesFormList->addRow(_('Trigger'), [
 ]);
 $servicesFormList->addRow((new CLabel(_('Sort order (0->999)'), 'sortorder'))->setAsteriskMark(),
 	(new CTextBox('sortorder', $this->data['sortorder'], false, 3))
-		->setWidth(ZBX_TEXTAREA_TINY_WIDTH)
+		->setWidth(TRX_TEXTAREA_TINY_WIDTH)
 		->setAriaRequired()
 );
 
@@ -116,9 +116,9 @@ foreach ($this->data['children'] as $child) {
 			(new CCol(
 				(new CButton('remove', _('Remove')))
 					->onClick('javascript: removeDependentChild(\''.$child['serviceid'].'\');')
-					->addClass(ZBX_STYLE_BTN_LINK)
+					->addClass(TRX_STYLE_BTN_LINK)
 					->removeId()
-			))->addClass(ZBX_STYLE_NOWRAP)
+			))->addClass(TRX_STYLE_NOWRAP)
 		]))->setId('children_'.$child['serviceid'])
 	);
 }
@@ -140,10 +140,10 @@ $servicesDependenciesFormList->addRow(
 				CJs::encodeJson($dep_service_popup_options).
 					',{parentid: this.form.parentid.value}), null, this);'
 			)
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 	]))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 // Service times tab.
@@ -185,14 +185,14 @@ foreach ($data['times'] as $service_time) {
 		],
 		$from.' - '.$till,
 		(new CCol($service_time['note']))
-			->addClass(ZBX_STYLE_WORDWRAP)
-			->addStyle('max-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;'),
+			->addClass(TRX_STYLE_WORDWRAP)
+			->addStyle('max-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;'),
 		(new CCol(
 			(new CButton('remove', _('Remove')))
 				->onClick('javascript: removeTime(\''.$i.'\');')
-				->addClass(ZBX_STYLE_BTN_LINK)
+				->addClass(TRX_STYLE_BTN_LINK)
 				->removeId()
-		))->addClass(ZBX_STYLE_NOWRAP)
+		))->addClass(TRX_STYLE_NOWRAP)
 	]);
 	$row->setId('times_'.$i);
 	$servicesTimeTable->addRow($row);
@@ -201,8 +201,8 @@ foreach ($data['times'] as $service_time) {
 
 $servicesTimeFormList->addRow(_('Service times'),
 	(new CDiv($servicesTimeTable))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 // create service time table
@@ -221,20 +221,20 @@ if ($data['new_service_time']['type'] == SERVICE_TIME_TYPE_ONETIME_DOWNTIME) {
 		->addRow(
 			_('Note'),
 			(new CTextBox('new_service_time[note]'))
-				->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+				->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 				->setAttribute('placeholder', _('short description'))
 		)
 		->addRow(
 			(new CLabel(_('From'), 'new_service_time_from'))->setAsteriskMark(),
 			(new CDateSelector('new_service_time_from', $data['new_service_time_from']))
-				->setDateFormat(ZBX_DATE_TIME)
+				->setDateFormat(TRX_DATE_TIME)
 				->setPlaceholder(_('YYYY-MM-DD hh:mm'))
 				->setAriaRequired()
 		)
 		->addRow(
 			(new CLabel(_('Till'), 'new_service_time_till'))->setAsteriskMark(),
 			(new CDateSelector('new_service_time_till', $data['new_service_time_till']))
-				->setDateFormat(ZBX_DATE_TIME)
+				->setDateFormat(TRX_DATE_TIME)
 				->setPlaceholder(_('YYYY-MM-DD hh:mm'))
 				->setAriaRequired()
 		);
@@ -250,22 +250,22 @@ else {
 	}
 	$timeFromHourTextBox = (new CTextBox('new_service_time[from_hour]', isset($_REQUEST['new_service_time']['from_hour'])
 			? $_REQUEST['new_service_time']['from_hour'] : '', false, 2))
-		->setWidth(ZBX_TEXTAREA_2DIGITS_WIDTH)
+		->setWidth(TRX_TEXTAREA_2DIGITS_WIDTH)
 		->setAriaRequired()
 		->setAttribute('placeholder', _('hh'));
 	$timeFromMinuteTextBox = (new CTextBox('new_service_time[from_minute]', isset($_REQUEST['new_service_time']['from_minute'])
 			? $_REQUEST['new_service_time']['from_minute'] : '', false, 2))
-		->setWidth(ZBX_TEXTAREA_2DIGITS_WIDTH)
+		->setWidth(TRX_TEXTAREA_2DIGITS_WIDTH)
 		->setAriaRequired()
 		->setAttribute('placeholder', _('mm'));
 	$timeToHourTextBox = (new CTextBox('new_service_time[to_hour]', isset($_REQUEST['new_service_time']['to_hour'])
 			? $_REQUEST['new_service_time']['to_hour'] : '', false, 2))
-		->setWidth(ZBX_TEXTAREA_2DIGITS_WIDTH)
+		->setWidth(TRX_TEXTAREA_2DIGITS_WIDTH)
 		->setAriaRequired()
 		->setAttribute('placeholder', _('hh'));
 	$timeToMinuteTextBox = (new CTextBox('new_service_time[to_minute]', isset($_REQUEST['new_service_time']['to_minute'])
 			? $_REQUEST['new_service_time']['to_minute'] : '', false, 2))
-		->setWidth(ZBX_TEXTAREA_2DIGITS_WIDTH)
+		->setWidth(TRX_TEXTAREA_2DIGITS_WIDTH)
 		->setAriaRequired()
 		->setAttribute('placeholder', _('mm'));
 
@@ -274,13 +274,13 @@ else {
 			(new CLabel(_('From'), 'new_service_time_from'))->setAsteriskMark(),
 			(new CDiv([
 					$weekFromComboBox,
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					_('Time'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$timeFromHourTextBox,
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					':',
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					$timeFromMinuteTextBox
 			]))
 		)
@@ -288,13 +288,13 @@ else {
 			(new CLabel(_('Till'), 'new_service_time_to'))->setAsteriskMark(),
 			(new CDiv([
 				$weekToComboBox,
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				_('Time'),
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				$timeToHourTextBox,
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				':',
-				(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				$timeToMinuteTextBox
 			]))
 		);
@@ -306,10 +306,10 @@ $servicesTimeFormList->addRow(_('New service time'),
 		$serviceTimeTable,
 		(new CSimpleButton(_('Add')))
 			->onClick('javascript: submitFormWithParam("'.$servicesForm->getName().'", "add_service_time", "1");')
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 	]))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_BIG_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_BIG_WIDTH.'px;')
 );
 
 /*

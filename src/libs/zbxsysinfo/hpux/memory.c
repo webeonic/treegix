@@ -7,7 +7,7 @@
 struct pst_static	pst;
 struct pst_dynamic	pdy;
 
-#define ZBX_PSTAT_GETSTATIC()											\
+#define TRX_PSTAT_GETSTATIC()											\
 														\
 	if (-1 == pstat_getstatic(&pst, sizeof(pst), 1, 0))							\
 	{													\
@@ -16,7 +16,7 @@ struct pst_dynamic	pdy;
 		return SYSINFO_RET_FAIL;									\
 	}
 
-#define ZBX_PSTAT_GETDYNAMIC()											\
+#define TRX_PSTAT_GETDYNAMIC()											\
 														\
 	if (-1 == pstat_getdynamic(&pdy, sizeof(pdy), 1, 0))							\
 	{													\
@@ -27,7 +27,7 @@ struct pst_dynamic	pdy;
 
 static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 {
-	ZBX_PSTAT_GETSTATIC();
+	TRX_PSTAT_GETSTATIC();
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)pst.physical_memory * pst.page_size);
 
@@ -36,8 +36,8 @@ static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 
 static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 {
-	ZBX_PSTAT_GETSTATIC();
-	ZBX_PSTAT_GETDYNAMIC();
+	TRX_PSTAT_GETSTATIC();
+	TRX_PSTAT_GETDYNAMIC();
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)pdy.psd_free * pst.page_size);
 
@@ -46,8 +46,8 @@ static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 {
-	ZBX_PSTAT_GETSTATIC();
-	ZBX_PSTAT_GETDYNAMIC();
+	TRX_PSTAT_GETSTATIC();
+	TRX_PSTAT_GETDYNAMIC();
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)pdy.psd_arm * pst.page_size);
 
@@ -56,8 +56,8 @@ static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_USED(AGENT_RESULT *result)
 {
-	ZBX_PSTAT_GETSTATIC();
-	ZBX_PSTAT_GETDYNAMIC();
+	TRX_PSTAT_GETSTATIC();
+	TRX_PSTAT_GETDYNAMIC();
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)(pst.physical_memory - pdy.psd_free) * pst.page_size);
 
@@ -66,8 +66,8 @@ static int	VM_MEMORY_USED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 {
-	ZBX_PSTAT_GETSTATIC();
-	ZBX_PSTAT_GETDYNAMIC();
+	TRX_PSTAT_GETSTATIC();
+	TRX_PSTAT_GETDYNAMIC();
 
 	if (0 == pst.physical_memory)
 	{
@@ -82,8 +82,8 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 {
-	ZBX_PSTAT_GETSTATIC();
-	ZBX_PSTAT_GETDYNAMIC();
+	TRX_PSTAT_GETSTATIC();
+	TRX_PSTAT_GETDYNAMIC();
 
 	SET_UI64_RESULT(result, (zbx_uint64_t)pdy.psd_free * pst.page_size);
 
@@ -92,8 +92,8 @@ static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 
 static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 {
-	ZBX_PSTAT_GETSTATIC();
-	ZBX_PSTAT_GETDYNAMIC();
+	TRX_PSTAT_GETSTATIC();
+	TRX_PSTAT_GETDYNAMIC();
 
 	if (0 == pst.physical_memory)
 	{

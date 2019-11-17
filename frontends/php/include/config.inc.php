@@ -19,7 +19,7 @@ catch (DBException $e) {
 	(new CView('general.warning', [
 		'header' => 'Database error',
 		'messages' => [$e->getMessage()],
-		'theme' => ZBX_DEFAULT_THEME
+		'theme' => TRX_DEFAULT_THEME
 	]))->render();
 
 	exit;
@@ -34,7 +34,7 @@ catch (ConfigFileException $e) {
 			(new CView('general.warning', [
 				'header' => 'Configuration file error',
 				'messages' => [$e->getMessage()],
-				'theme' => ZBX_DEFAULT_THEME
+				'theme' => TRX_DEFAULT_THEME
 			]))->render();
 
 			exit;
@@ -44,7 +44,7 @@ catch (Exception $e) {
 	(new CView('general.warning', [
 		'header' => $e->getMessage(),
 		'messages' => [],
-		'theme' => ZBX_DEFAULT_THEME
+		'theme' => TRX_DEFAULT_THEME
 	]))->render();
 
 	exit;
@@ -52,7 +52,7 @@ catch (Exception $e) {
 
 CProfiler::getInstance()->start();
 
-global $ZBX_SERVER, $ZBX_SERVER_PORT, $page;
+global $TRX_SERVER, $TRX_SERVER_PORT, $page;
 
 $page = [
 	'title' => null,

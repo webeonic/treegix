@@ -17,7 +17,7 @@ $widget = (new CWidget())
 	);
 
 $form = (new CForm())
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('form', $data['form']);
 
 if ($data['valuemapid'] != 0) {
@@ -28,7 +28,7 @@ $form_list = (new CFormList())
 	->addRow(
 		(new CLabel(_('Name'), 'name'))->setAsteriskMark(),
 		(new CTextBox('name', $data['name'], false, 64))
-			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setWidth(TRX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 			->setAttribute('autofocus', 'autofocus')
 	);
@@ -40,13 +40,13 @@ $table = (new CTable())
 
 foreach ($data['mappings'] as $i => $mapping) {
 	$table->addRow([
-		(new CTextBox('mappings['.$i.'][value]', $mapping['value'], false, 64))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH),
+		(new CTextBox('mappings['.$i.'][value]', $mapping['value'], false, 64))->setWidth(TRX_TEXTAREA_SMALL_WIDTH),
 		'&rArr;',
 		(new CTextBox('mappings['.$i.'][newvalue]', $mapping['newvalue'], false, 64))
-			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 			->setAriaRequired(),
 		(new CButton('mappings['.$i.'][remove]', _('Remove')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-remove')
 		],
 		'form_row'
@@ -56,7 +56,7 @@ foreach ($data['mappings'] as $i => $mapping) {
 $table->addRow([
 	(new CCol(
 		(new CButton('mapping_add', _('Add')))
-			->addClass(ZBX_STYLE_BTN_LINK)
+			->addClass(TRX_STYLE_BTN_LINK)
 			->addClass('element-table-add')
 	))->setColSpan(4)
 ]);
@@ -64,8 +64,8 @@ $table->addRow([
 $form_list->addRow(
 	(new CLabel(_('Mappings'), $table->getId()))->setAsteriskMark(),
 	(new CDiv($table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
-		->setAttribute('style', 'min-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
+		->setAttribute('style', 'min-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 );
 
 // append form list to tab

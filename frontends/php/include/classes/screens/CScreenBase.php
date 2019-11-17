@@ -378,7 +378,7 @@ class CScreenBase {
 			$div->addItem(
 				(new CDiv([
 					new CLink(_x('Change', 'verb'), $this->action)
-				]))->addClass(ZBX_STYLE_CENTER)
+				]))->addClass(TRX_STYLE_CENTER)
 			);
 		}
 

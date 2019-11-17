@@ -24,8 +24,8 @@ class CControllerMediatypeCreate extends CController {
 			'parameters' =>				'array',
 			'script' => 				'db media_type.script',
 			'timeout' => 				'db media_type.timeout',
-			'process_tags' =>			'in '.ZBX_MEDIA_TYPE_TAGS_DISABLED.','.ZBX_MEDIA_TYPE_TAGS_ENABLED,
-			'show_event_menu' =>		'in '.ZBX_EVENT_MENU_HIDE.','.ZBX_EVENT_MENU_SHOW,
+			'process_tags' =>			'in '.TRX_MEDIA_TYPE_TAGS_DISABLED.','.TRX_MEDIA_TYPE_TAGS_ENABLED,
+			'show_event_menu' =>		'in '.TRX_EVENT_MENU_HIDE.','.TRX_EVENT_MENU_SHOW,
 			'event_menu_url' =>			'db media_type.event_menu_url',
 			'event_menu_name' =>		'db media_type.event_menu_name',
 			'status' =>					'db media_type.status|in '.MEDIA_TYPE_STATUS_ACTIVE.','.MEDIA_TYPE_STATUS_DISABLED,
@@ -110,8 +110,8 @@ class CControllerMediatypeCreate extends CController {
 				break;
 
 			case MEDIA_TYPE_WEBHOOK:
-				$mediatype['process_tags'] = ZBX_MEDIA_TYPE_TAGS_DISABLED;
-				$mediatype['show_event_menu'] = ZBX_EVENT_MENU_HIDE;
+				$mediatype['process_tags'] = TRX_MEDIA_TYPE_TAGS_DISABLED;
+				$mediatype['show_event_menu'] = TRX_EVENT_MENU_HIDE;
 				$this->getInputs($mediatype, ['script', 'timeout', 'process_tags', 'show_event_menu', 'event_menu_url',
 					'event_menu_name'
 				]);

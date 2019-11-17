@@ -550,7 +550,7 @@ function closeDialogHandler(event) {
 
 				// Close overlay message.
 				case 'message':
-					jQuery(ZBX_MESSAGES).each(function(i, msg) {
+					jQuery(TRX_MESSAGES).each(function(i, msg) {
 						msg.closeAllMessages();
 					});
 					break;

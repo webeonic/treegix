@@ -25,13 +25,13 @@ $autoreg_form = (new CForm())
 		->setArgument('action', 'autoreg.edit')
 		->getUrl()
 	)
-	->setAttribute('aria-labeledby', ZBX_STYLE_PAGE_TITLE)
+	->setAttribute('aria-labeledby', TRX_STYLE_PAGE_TITLE)
 	->addVar('tls_accept', $data['tls_accept']);
 
 $autoreg_tab = (new CFormList())
 	->addRow(_('Encryption level'),
 		(new CList())
-			->addClass(ZBX_STYLE_LIST_CHECK_RADIO)
+			->addClass(TRX_STYLE_LIST_CHECK_RADIO)
 			->addItem((new CCheckBox('tls_in_none'))
 				->setAttribute('autofocus', 'autofocus')
 				->setLabel(_('No encryption'))
@@ -46,7 +46,7 @@ if ($data['change_psk']) {
 			(new CTextBox('tls_psk_identity', $data['tls_psk_identity'], false,
 				DB::getFieldLength('config_autoreg_tls', 'tls_psk_identity')
 			))
-				->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+				->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 				->setAttribute('autocomplete', 'off')
 				->setAriaRequired(),
 			null,
@@ -55,7 +55,7 @@ if ($data['change_psk']) {
 		->addRow(
 			(new CLabel(_('PSK'), 'tls_psk'))->setAsteriskMark(),
 			(new CTextBox('tls_psk', $data['tls_psk'], false, DB::getFieldLength('config_autoreg_tls', 'tls_psk')))
-				->setWidth(ZBX_TEXTAREA_BIG_WIDTH)
+				->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 				->setAttribute('autocomplete', 'off')
 				->setAriaRequired(),
 			null,
@@ -68,7 +68,7 @@ else {
 			(new CLabel(_('PSK')))->setAsteriskMark(),
 			(new CSimpleButton(_('Change PSK')))
 				->onClick('javascript: submitFormWithParam("'.$autoreg_form->getName().'", "change_psk", "1");')
-				->addClass(ZBX_STYLE_BTN_GREY),
+				->addClass(TRX_STYLE_BTN_GREY),
 			null,
 			'tls_psk'
 		);

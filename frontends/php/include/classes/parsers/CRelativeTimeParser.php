@@ -7,8 +7,8 @@
  */
 class CRelativeTimeParser extends CParser {
 
-	const ZBX_TOKEN_PRECISION = 0;
-	const ZBX_TOKEN_OFFSET = 1;
+	const TRX_TOKEN_PRECISION = 0;
+	const TRX_TOKEN_OFFSET = 1;
 
 	/**
 	 * @var array $tokens  An array of tokens for relative date.
@@ -75,7 +75,7 @@ class CRelativeTimeParser extends CParser {
 		}
 
 		$this->tokens[] = [
-			'type' => self::ZBX_TOKEN_PRECISION,
+			'type' => self::TRX_TOKEN_PRECISION,
 			'suffix' => substr($matches[0], 1)
 		];
 
@@ -100,7 +100,7 @@ class CRelativeTimeParser extends CParser {
 		}
 
 		$this->tokens[] = [
-			'type' => self::ZBX_TOKEN_OFFSET,
+			'type' => self::TRX_TOKEN_OFFSET,
 			'sign' => $matches['offset_sign'],
 			'value' => $matches['offset_value'],
 			'suffix' => array_key_exists('offset_suffix', $matches) ? $matches['offset_suffix'] : 's'
@@ -138,7 +138,7 @@ class CRelativeTimeParser extends CParser {
 
 		foreach ($this->getTokens() as $token) {
 			switch ($token['type']) {
-				case CRelativeTimeParser::ZBX_TOKEN_PRECISION:
+				case CRelativeTimeParser::TRX_TOKEN_PRECISION:
 					if ($token['suffix'] === 'm' || $token['suffix'] === 'h' || $token['suffix'] === 'd') {
 						$formats = $is_start
 							? [
@@ -171,7 +171,7 @@ class CRelativeTimeParser extends CParser {
 					}
 					break;
 
-				case CRelativeTimeParser::ZBX_TOKEN_OFFSET:
+				case CRelativeTimeParser::TRX_TOKEN_OFFSET:
 					$units = [
 						's' => 'second',
 						'm' => 'minute',

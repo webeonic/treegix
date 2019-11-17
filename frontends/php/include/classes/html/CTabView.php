@@ -34,7 +34,7 @@ class CTabView extends CDiv {
 		}
 		parent::__construct();
 		$this->setId(zbx_formatDomId($this->id));
-		$this->addClass(ZBX_STYLE_TABLE_FORMS_CONTAINER);
+		$this->addClass(TRX_STYLE_TABLE_FORMS_CONTAINER);
 	}
 
 	public function setSelected($selected) {
@@ -84,7 +84,7 @@ class CTabView extends CDiv {
 			$this->addItem($tab);
 		}
 		else {
-			$headersList = (new CList())->addClass(ZBX_STYLE_TABS_NAV);
+			$headersList = (new CList())->addClass(TRX_STYLE_TABS_NAV);
 
 			foreach ($this->headers as $id => $header) {
 				$tabLink = (new CLink($header, '#'.$id))

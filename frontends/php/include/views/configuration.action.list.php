@@ -10,7 +10,7 @@ $widget = (new CWidget())
 			->addItem((new CList())
 				->addItem([
 					new CLabel(_('Event source'), 'eventsource'),
-					(new CDiv())->addClass(ZBX_STYLE_FORM_INPUT_MARGIN),
+					(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 					new CComboBox('eventsource', $data['eventsource'], 'submit()', [
 						EVENT_SOURCE_TRIGGERS => _('Triggers'),
 						EVENT_SOURCE_DISCOVERY => _('Discovery'),
@@ -29,7 +29,7 @@ $widget = (new CWidget())
 		->addFilterTab(_('Filter'), [
 			(new CFormList())->addRow(_('Name'),
 				(new CTextBox('filter_name', $data['filter']['name']))
-					->setWidth(ZBX_TEXTAREA_FILTER_SMALL_WIDTH)
+					->setWidth(TRX_TEXTAREA_FILTER_SMALL_WIDTH)
 					->setAttribute('autofocus', 'autofocus')
 			),
 			(new CFormList())->addRow(_('Status'),
@@ -51,7 +51,7 @@ $actionTable = (new CTableInfo())
 		(new CColHeader(
 			(new CCheckBox('all_items'))
 				->onClick("checkAll('".$actionForm->getName()."', 'all_items', 'g_actionid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'], 'actionconf.php'),
 		_('Conditions'),
 		_('Operations'),
@@ -66,7 +66,7 @@ if ($this->data['actions']) {
 		$conditions = [];
 		$operations = [];
 
-		order_result($action['filter']['conditions'], 'conditiontype', ZBX_SORT_DOWN);
+		order_result($action['filter']['conditions'], 'conditiontype', TRX_SORT_DOWN);
 
 		foreach ($action['filter']['conditions'] as $cIdx => $condition) {
 			$conditions[] = getConditionDescription($condition['conditiontype'], $condition['operator'],
@@ -85,16 +85,16 @@ if ($this->data['actions']) {
 			$status = (new CLink(_('Disabled'),
 				'actionconf.php?action=action.massenable&g_actionid[]='.$action['actionid'].url_param('eventsource'))
 			)
-				->addClass(ZBX_STYLE_LINK_ACTION)
-				->addClass(ZBX_STYLE_RED)
+				->addClass(TRX_STYLE_LINK_ACTION)
+				->addClass(TRX_STYLE_RED)
 				->addSID();
 		}
 		else {
 			$status = (new CLink(_('Enabled'),
 				'actionconf.php?action=action.massdisable&g_actionid[]='.$action['actionid'].url_param('eventsource'))
 			)
-				->addClass(ZBX_STYLE_LINK_ACTION)
-				->addClass(ZBX_STYLE_GREEN)
+				->addClass(TRX_STYLE_LINK_ACTION)
+				->addClass(TRX_STYLE_GREEN)
 				->addSID();
 		}
 

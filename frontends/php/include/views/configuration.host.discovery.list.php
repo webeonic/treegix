@@ -30,12 +30,12 @@ $discoveryTable = (new CTableInfo())
 	->setHeader([
 		(new CColHeader(
 			(new CCheckBox('all_items'))->onClick("checkAll('".$discoveryForm->getName()."', 'all_items', 'g_hostdruleid');")
-		))->addClass(ZBX_STYLE_CELL_WIDTH),
+		))->addClass(TRX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'], $url),
 		_('Items'),
 		_('Triggers'),
 		_('Graphs'),
-		($data['host']['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) ? _('Hosts') : null,
+		($data['host']['flags'] == TRX_FLAG_DISCOVERY_NORMAL) ? _('Hosts') : null,
 		make_sorting_header(_('Key'), 'key_', $data['sort'], $data['sortorder'], $url),
 		make_sorting_header(_('Interval'), 'delay', $data['sort'], $data['sortorder'], $url),
 		make_sorting_header(_('Type'), 'type', $data['sort'], $data['sortorder'], $url),
@@ -48,7 +48,7 @@ $update_interval_parser = new CUpdateIntervalParser(['usermacros' => true]);
 foreach ($data['discoveries'] as $discovery) {
 	// description
 	$description = [];
-	$description[] = makeItemTemplatePrefix($discovery['itemid'], $data['parent_templates'], ZBX_FLAG_DISCOVERY_RULE);
+	$description[] = makeItemTemplatePrefix($discovery['itemid'], $data['parent_templates'], TRX_FLAG_DISCOVERY_RULE);
 
 	if ($discovery['type'] == ITEM_TYPE_DEPENDENT) {
 		if ($discovery['master_item']['type'] == ITEM_TYPE_HTTPTEST) {
@@ -61,8 +61,8 @@ foreach ($data['discoveries'] as $discovery) {
 					->setArgument('itemid', $discovery['master_item']['itemid'])
 					->getUrl()
 			))
-				->addClass(ZBX_STYLE_LINK_ALT)
-				->addClass(ZBX_STYLE_TEAL);
+				->addClass(TRX_STYLE_LINK_ALT)
+				->addClass(TRX_STYLE_TEAL);
 		}
 
 		$description[] = NAME_DELIMITER;
@@ -80,7 +80,7 @@ foreach ($data['discoveries'] as $discovery) {
 				: 'discoveryrule.massdisable'
 			))
 		)
-			->addClass(ZBX_STYLE_LINK_ACTION)
+			->addClass(TRX_STYLE_LINK_ACTION)
 			->addClass(itemIndicatorStyle($discovery['status'], $discovery['state']))
 			->addSID();
 
@@ -94,7 +94,7 @@ foreach ($data['discoveries'] as $discovery) {
 
 	// host prototype link
 	$hostPrototypeLink = null;
-	if ($data['host']['flags'] == ZBX_FLAG_DISCOVERY_NORMAL) {
+	if ($data['host']['flags'] == TRX_FLAG_DISCOVERY_NORMAL) {
 		$hostPrototypeLink = [
 			new CLink(_('Host prototypes'), 'host_prototypes.php?parent_discoveryid='.$discovery['itemid']),
 			CViewHelper::showNum($discovery['hostPrototypes'])

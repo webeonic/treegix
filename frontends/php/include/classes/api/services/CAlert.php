@@ -344,19 +344,19 @@ class CAlert extends CApiService {
 			'values' => array_keys(eventSource())
 		]);
 		if (!$sourceValidator->validate($options['eventsource'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect eventsource value.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect eventsource value.'));
 		}
 
 		$objectValidator = new CLimitedSetValidator([
 			'values' => array_keys(eventObject())
 		]);
 		if (!$objectValidator->validate($options['eventobject'])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect eventobject value.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect eventobject value.'));
 		}
 
 		$sourceObjectValidator = new CEventSourceObjectValidator();
 		if (!$sourceObjectValidator->validate(['source' => $options['eventsource'], 'object' => $options['eventobject']])) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $sourceObjectValidator->getError());
+			self::exception(TRX_API_ERROR_PARAMETERS, $sourceObjectValidator->getError());
 		}
 	}
 

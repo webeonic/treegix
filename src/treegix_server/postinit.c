@@ -8,9 +8,9 @@
 #include "postinit.h"
 #include "valuecache.h"
 
-#define ZBX_HIST_MACRO_NONE		(-1)
-#define ZBX_HIST_MACRO_ITEM_VALUE	0
-#define ZBX_HIST_MACRO_ITEM_LASTVALUE	1
+#define TRX_HIST_MACRO_NONE		(-1)
+#define TRX_HIST_MACRO_ITEM_VALUE	0
+#define TRX_HIST_MACRO_ITEM_LASTVALUE	1
 
 /******************************************************************************
  *                                                                            *
@@ -48,18 +48,18 @@ static int	get_trigger_count(void)
  *                                                                            *
  * Parameters: macro      - [IN] the macro name                               *
  *                                                                            *
- * Return value: ZBX_HIST_MACRO_* defines                                     *
+ * Return value: TRX_HIST_MACRO_* defines                                     *
  *                                                                            *
  ******************************************************************************/
 static int	is_historical_macro(const char *macro)
 {
-	if (0 == strncmp(macro, "ITEM.VALUE", ZBX_CONST_STRLEN("ITEM.VALUE")))
-		return ZBX_HIST_MACRO_ITEM_VALUE;
+	if (0 == strncmp(macro, "ITEM.VALUE", TRX_CONST_STRLEN("ITEM.VALUE")))
+		return TRX_HIST_MACRO_ITEM_VALUE;
 
-	if (0 == strncmp(macro, "ITEM.LASTVALUE", ZBX_CONST_STRLEN("ITEM.LASTVALUE")))
-		return ZBX_HIST_MACRO_ITEM_LASTVALUE;
+	if (0 == strncmp(macro, "ITEM.LASTVALUE", TRX_CONST_STRLEN("ITEM.LASTVALUE")))
+		return TRX_HIST_MACRO_ITEM_LASTVALUE;
 
-	return ZBX_HIST_MACRO_NONE;
+	return TRX_HIST_MACRO_NONE;
 }
 
 /******************************************************************************
@@ -68,7 +68,7 @@ static int	is_historical_macro(const char *macro)
  *                                                                            *
  * Purpose: translates historical macro to lld macro format                   *
  *                                                                            *
- * Parameters: macro - [IN] the macro type (see ZBX_HIST_MACRO_* defines)     *
+ * Parameters: macro - [IN] the macro type (see TRX_HIST_MACRO_* defines)     *
  *                                                                            *
  * Return value: the macro                                                    *
  *                                                                            *
@@ -115,12 +115,12 @@ static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 
 	name_alloc = name_len = strlen(trigger->description) + 1;
 
-	while (SUCCEED == zbx_token_find(trigger->description, pos, &token, ZBX_TOKEN_SEARCH_BASIC))
+	while (SUCCEED == zbx_token_find(trigger->description, pos, &token, TRX_TOKEN_SEARCH_BASIC))
 	{
-		if (ZBX_TOKEN_MACRO == token.type || ZBX_TOKEN_FUNC_MACRO == token.type)
+		if (TRX_TOKEN_MACRO == token.type || TRX_TOKEN_FUNC_MACRO == token.type)
 		{
 			/* the macro excluding the opening and closing brackets {}, for example: ITEM.VALUE */
-			if (ZBX_TOKEN_MACRO == token.type)
+			if (TRX_TOKEN_MACRO == token.type)
 			{
 				l = token.data.macro.name.l;
 				r = token.data.macro.name.r;
@@ -133,7 +133,7 @@ static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 
 			macro = trigger->description + l;
 
-			if (ZBX_HIST_MACRO_NONE != (macro_type = is_historical_macro(macro)))
+			if (TRX_HIST_MACRO_NONE != (macro_type = is_historical_macro(macro)))
 			{
 				if (0 != isdigit(*(trigger->description + r)))
 					macro_len = r - l;
@@ -163,11 +163,11 @@ static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 		pos = 0;
 		name_alloc = name_len = strlen(trigger->description) + 1;
 
-		while (SUCCEED == zbx_token_find(trigger->description, pos, &token, ZBX_TOKEN_SEARCH_BASIC))
+		while (SUCCEED == zbx_token_find(trigger->description, pos, &token, TRX_TOKEN_SEARCH_BASIC))
 		{
-			if (ZBX_TOKEN_LLD_MACRO == token.type || ZBX_TOKEN_LLD_FUNC_MACRO == token.type)
+			if (TRX_TOKEN_LLD_MACRO == token.type || TRX_TOKEN_LLD_FUNC_MACRO == token.type)
 			{
-				if (ZBX_TOKEN_LLD_MACRO == token.type)
+				if (TRX_TOKEN_LLD_MACRO == token.type)
 				{
 					l = token.data.lld_macro.name.l;
 					r = token.data.lld_macro.name.r;
@@ -180,7 +180,7 @@ static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 
 				macro = trigger->description + l;
 
-				if (ZBX_HIST_MACRO_NONE != is_historical_macro(macro))
+				if (TRX_HIST_MACRO_NONE != is_historical_macro(macro))
 				{
 					macro_len = r - l + 1;
 					replace_offset = 0;
@@ -227,7 +227,7 @@ static int	process_event_bulk_update(const DB_TRIGGER *trigger, char **sql, size
 			" set name='%s'"
 			" where source=%d"
 				" and object=%d"
-				" and objectid=" ZBX_FS_UI64 ";\n",
+				" and objectid=" TRX_FS_UI64 ";\n",
 			name_esc, EVENT_SOURCE_TRIGGERS, EVENT_OBJECT_TRIGGER, trigger->triggerid);
 
 	if (SUCCEED == (ret = DBexecute_overflowed_sql(sql, sql_alloc, sql_offset)))
@@ -237,7 +237,7 @@ static int	process_event_bulk_update(const DB_TRIGGER *trigger, char **sql, size
 				" set name='%s'"
 				" where source=%d"
 					" and object=%d"
-					" and objectid=" ZBX_FS_UI64 ";\n",
+					" and objectid=" TRX_FS_UI64 ";\n",
 				name_esc, EVENT_SOURCE_TRIGGERS, EVENT_OBJECT_TRIGGER, trigger->triggerid);
 
 		ret = DBexecute_overflowed_sql(sql, sql_alloc, sql_offset);
@@ -282,16 +282,16 @@ static int	process_event_update(const DB_TRIGGER *trigger, char **sql, size_t *s
 			" from events"
 			" where source=%d"
 				" and object=%d"
-				" and objectid=" ZBX_FS_UI64
+				" and objectid=" TRX_FS_UI64
 			" order by eventid",
 			EVENT_SOURCE_TRIGGERS, EVENT_OBJECT_TRIGGER, trigger->triggerid);
 
 	while (SUCCEED == ret && NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(event.eventid, row[0]);
+		TRX_STR2UINT64(event.eventid, row[0]);
 		event.source = atoi(row[1]);
 		event.object = atoi(row[2]);
-		ZBX_STR2UINT64(event.objectid, row[3]);
+		TRX_STR2UINT64(event.objectid, row[3]);
 		event.clock = atoi(row[4]);
 		event.value = atoi(row[5]);
 		event.acknowledged = atoi(row[6]);
@@ -310,7 +310,7 @@ static int	process_event_update(const DB_TRIGGER *trigger, char **sql, size_t *s
 		zbx_snprintf_alloc(sql, sql_alloc, sql_offset,
 				"update events"
 				" set name='%s'"
-				" where eventid=" ZBX_FS_UI64 ";\n",
+				" where eventid=" TRX_FS_UI64 ";\n",
 				name_esc, event.eventid);
 
 		if (SUCCEED == (ret = DBexecute_overflowed_sql(sql, sql_alloc, sql_offset)))
@@ -318,7 +318,7 @@ static int	process_event_update(const DB_TRIGGER *trigger, char **sql, size_t *s
 			zbx_snprintf_alloc(sql, sql_alloc, sql_offset,
 					"update problem"
 					" set name='%s'"
-					" where eventid=" ZBX_FS_UI64 ";\n",
+					" where eventid=" TRX_FS_UI64 ";\n",
 					name_esc, event.eventid);
 
 			ret = DBexecute_overflowed_sql(sql, sql_alloc, sql_offset);
@@ -370,15 +370,15 @@ static int	update_event_names(void)
 
 	while (SUCCEED == ret && NULL != (row = DBfetch(result)))
 	{
-		ZBX_STR2UINT64(trigger.triggerid, row[0]);
+		TRX_STR2UINT64(trigger.triggerid, row[0]);
 		trigger.description = zbx_strdup(NULL, row[1]);
 		trigger.expression = zbx_strdup(NULL, row[2]);
-		ZBX_STR2UCHAR(trigger.priority, row[3]);
+		TRX_STR2UCHAR(trigger.priority, row[3]);
 		trigger.comments = zbx_strdup(NULL, row[4]);
 		trigger.url = zbx_strdup(NULL, row[5]);
 		trigger.recovery_expression = zbx_strdup(NULL, row[6]);
-		ZBX_STR2UCHAR(trigger.recovery_mode, row[7]);
-		ZBX_STR2UCHAR(trigger.value, row[8]);
+		TRX_STR2UCHAR(trigger.recovery_mode, row[7]);
+		TRX_STR2UCHAR(trigger.value, row[8]);
 
 		preprocess_trigger_name(&trigger, &historical);
 
@@ -402,7 +402,7 @@ static int	update_event_names(void)
 
 	if (SUCCEED == ret && 16 < sql_offset) /* in ORACLE always present begin..end; */
 	{
-		if (ZBX_DB_OK > DBexecute("%s", sql))
+		if (TRX_DB_OK > DBexecute("%s", sql))
 			ret = FAIL;
 	}
 
@@ -434,8 +434,8 @@ int	zbx_check_postinit_tasks(char **error)
 	DB_ROW		row;
 	int		ret = SUCCEED;
 
-	result = DBselect("select taskid from task where type=%d and status=%d", ZBX_TM_TASK_UPDATE_EVENTNAMES,
-			ZBX_TM_STATUS_NEW);
+	result = DBselect("select taskid from task where type=%d and status=%d", TRX_TM_TASK_UPDATE_EVENTNAMES,
+			TRX_TM_STATUS_NEW);
 
 	if (NULL != (row = DBfetch(result)))
 	{

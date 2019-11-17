@@ -11,24 +11,24 @@ $form = (new CForm())
 	->setId('preprocessing-test-form');
 
 // Create macros table.
-$macros_table = $data['macros'] ? (new CTable())->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER) : null;
+$macros_table = $data['macros'] ? (new CTable())->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_CONTAINER) : null;
 
 $i = 0;
 foreach ($data['macros'] as $macro_name => $macro_value) {
 	$macros_table->addRow([
 		(new CCol(
 			(new CTextAreaFlexible('macro_rows['.$i++.']', $macro_name, ['readonly' => true]))
-				->setWidth(ZBX_TEXTAREA_MACRO_WIDTH)
+				->setWidth(TRX_TEXTAREA_MACRO_WIDTH)
 				->removeAttribute('name')
 				->removeId()
-		))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
+		))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT),
 		(new CCol('&rArr;'))->addStyle('vertical-align: top;'),
 		(new CCol(
 			(new CTextAreaFlexible('macros['.$macro_name.']', $macro_value))
-				->setWidth(ZBX_TEXTAREA_MACRO_VALUE_WIDTH)
+				->setWidth(TRX_TEXTAREA_MACRO_VALUE_WIDTH)
 				->setAttribute('placeholder', _('value'))
 				->removeId()
-		))->addClass(ZBX_STYLE_TEXTAREA_FLEXIBLE_PARENT)
+		))->addClass(TRX_STYLE_TEXTAREA_FLEXIBLE_PARENT)
 	]);
 }
 
@@ -40,7 +40,7 @@ $result_table = (new CTable())
 	->setHeader([
 		'',
 		(new CColHeader(_('Name')))->addStyle('width: 100%;'),
-		(new CColHeader(_('Result')))->addClass(ZBX_STYLE_RIGHT)
+		(new CColHeader(_('Result')))->addClass(TRX_STYLE_RIGHT)
 	]);
 
 foreach ($data['steps'] as $i => $step) {
@@ -50,7 +50,7 @@ foreach ($data['steps'] as $i => $step) {
 		->addVar('steps['.$i.'][error_handler_params]', $step['error_handler_params']);
 
 	// Temporary solution to fix "\n\n1" conversion to "\n1" in the hidden textarea field after jQuery.append().
-	if ($step['type'] == ZBX_PREPROC_CSV_TO_JSON) {
+	if ($step['type'] == TRX_PREPROC_CSV_TO_JSON) {
 		$form->addItem(new CInput('hidden', 'steps['.$i.'][params]', $step['params']));
 	}
 	else {
@@ -61,7 +61,7 @@ foreach ($data['steps'] as $i => $step) {
 		$step['num'].':',
 		(new CCol($step['name']))->setId('preproc-test-step-'.$i.'-name'),
 		(new CCol())
-			->addClass(ZBX_STYLE_RIGHT)
+			->addClass(TRX_STYLE_RIGHT)
 			->setId('preproc-test-step-'.$i.'-result')
 	]);
 }
@@ -73,10 +73,10 @@ $form_list = (new CFormList())
 			(new CMultilineInput('value', '', [
 				'disabled' => false,
 				'readonly' => false
-			]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 			new CLabel(_('Time'), 'time'),
 			(new CTextBox(null, 'now', true))
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 				->setId('time')
 		]))->addClass('preproc-test-popup-value-row')
 	)
@@ -85,32 +85,32 @@ $form_list = (new CFormList())
 		(new CDiv([
 			(new CMultilineInput('prev_value', '', [
 				'disabled' => !$data['show_prev']
-			]))->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH),
+			]))->setWidth(TRX_TEXTAREA_STANDARD_WIDTH),
 			new CLabel(_('Prev. time'), 'prev_time'),
 			(new CTextBox('prev_time', $data['prev_time']))
 				->setEnabled($data['show_prev'])
-				->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		]))->addClass('preproc-test-popup-value-row')
 	)
 	->addRow(
 		new CLabel(_('End of line sequence'), 'eol'),
 		(new CRadioButtonList('eol', $data['eol']))
-			->addValue(_('LF'), ZBX_EOL_LF)
-			->addValue(_('CRLF'), ZBX_EOL_CRLF)
+			->addValue(_('LF'), TRX_EOL_LF)
+			->addValue(_('CRLF'), TRX_EOL_CRLF)
 			->setModern(true)
 	);
 
 if ($macros_table) {
 	$form_list->addRow(
 		_('Macros'),
-		(new CDiv($macros_table))->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+		(new CDiv($macros_table))->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 	);
 }
 
 $form_list->addRow(
 	_('Preprocessing steps'),
 	(new CDiv($result_table))
-		->addClass(ZBX_STYLE_TABLE_FORMS_SEPARATOR)
+		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)
 		->addStyle('width: 100%;')
 );
 
@@ -137,7 +137,7 @@ $templates = [
 		->addItem(
 			(new CDiv('#{label}'))
 				->addStyle('margin-top: 5px;')
-				->addClass(ZBX_STYLE_GREY)
+				->addClass(TRX_STYLE_GREY)
 		),
 	(new CTag('script', true))
 		->setAttribute('type', 'text/x-jquery-tmpl')
@@ -145,11 +145,11 @@ $templates = [
 		->addItem(
 			(new CDiv(
 				(new CSpan('#{result}'))
-					->addClass(ZBX_STYLE_LINK_ACTION)
-					->setHint('#{result}', 'hintbox-scrollable', true, 'max-width:'.ZBX_ACTIONS_POPUP_MAX_WIDTH.'px;')
+					->addClass(TRX_STYLE_LINK_ACTION)
+					->setHint('#{result}', 'hintbox-scrollable', true, 'max-width:'.TRX_ACTIONS_POPUP_MAX_WIDTH.'px;')
 			))
-				->addStyle('max-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
-				->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
+				->addStyle('max-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
+				->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
 		),
 	(new CTag('script', true))
 		->setAttribute('type', 'text/x-jquery-tmpl')
@@ -159,15 +159,15 @@ $templates = [
 				'#{action_name} ',
 				(new CDiv(
 					(new CSpan('#{failed}'))
-						->addClass(ZBX_STYLE_LINK_ACTION)
-						->setHint('#{failed}', '', true, 'max-width:'.ZBX_ACTIONS_POPUP_MAX_WIDTH.'px; ')
+						->addClass(TRX_STYLE_LINK_ACTION)
+						->setHint('#{failed}', '', true, 'max-width:'.TRX_ACTIONS_POPUP_MAX_WIDTH.'px; ')
 				))
-					->addStyle('max-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')
-					->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-					->addClass(ZBX_STYLE_REL_CONTAINER)
+					->addStyle('max-width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
+					->addClass(TRX_STYLE_OVERFLOW_ELLIPSIS)
+					->addClass(TRX_STYLE_REL_CONTAINER)
 			]))
 				->addStyle('margin-top: 1px;')
-				->addClass(ZBX_STYLE_GREY)
+				->addClass(TRX_STYLE_GREY)
 		)
 ];
 

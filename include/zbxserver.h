@@ -1,7 +1,7 @@
 
 
-#ifndef TREEGIX_ZBXSERVER_H
-#define TREEGIX_ZBXSERVER_H
+#ifndef TREEGIX_TRXSERVER_H
+#define TREEGIX_TRXSERVER_H
 
 #include "common.h"
 #include "db.h"
@@ -53,12 +53,12 @@ void	zbx_format_value(char *value, size_t max_len, zbx_uint64_t valuemapid,
 void	zbx_determine_items_in_expressions(zbx_vector_ptr_t *trigger_order, const zbx_uint64_t *itemids, int item_num);
 
 /* lld macro context */
-#define ZBX_MACRO_ANY		(ZBX_TOKEN_LLD_MACRO | ZBX_TOKEN_LLD_FUNC_MACRO | ZBX_TOKEN_USER_MACRO)
-#define ZBX_MACRO_NUMERIC	(ZBX_MACRO_ANY | ZBX_TOKEN_NUMERIC)
-#define ZBX_MACRO_JSON		(ZBX_MACRO_ANY | ZBX_TOKEN_JSON)
-#define ZBX_MACRO_XML		(ZBX_MACRO_ANY | ZBX_TOKEN_XML)
-#define ZBX_MACRO_SIMPLE	(ZBX_MACRO_ANY | ZBX_TOKEN_SIMPLE_MACRO)
-#define ZBX_MACRO_FUNC		(ZBX_MACRO_ANY | ZBX_TOKEN_FUNC_MACRO)
+#define TRX_MACRO_ANY		(TRX_TOKEN_LLD_MACRO | TRX_TOKEN_LLD_FUNC_MACRO | TRX_TOKEN_USER_MACRO)
+#define TRX_MACRO_NUMERIC	(TRX_MACRO_ANY | TRX_TOKEN_NUMERIC)
+#define TRX_MACRO_JSON		(TRX_MACRO_ANY | TRX_TOKEN_JSON)
+#define TRX_MACRO_XML		(TRX_MACRO_ANY | TRX_TOKEN_XML)
+#define TRX_MACRO_SIMPLE	(TRX_MACRO_ANY | TRX_TOKEN_SIMPLE_MACRO)
+#define TRX_MACRO_FUNC		(TRX_MACRO_ANY | TRX_TOKEN_FUNC_MACRO)
 
 int	substitute_lld_macros(char **data, const struct zbx_json_parse *jp_row, const zbx_vector_ptr_t *lld_macro_paths,
 		int flags, char *error, size_t max_error_len);

@@ -4,7 +4,7 @@
 #define TREEGIX_JSON_H
 
 #define SKIP_WHITESPACE(src)	\
-	while ('\0' != *(src) && NULL != strchr(ZBX_WHITESPACE, *(src))) (src)++
+	while ('\0' != *(src) && NULL != strchr(TRX_WHITESPACE, *(src))) (src)++
 
 /* can only be used on non empty string */
 #define SKIP_WHITESPACE_NEXT(src)\

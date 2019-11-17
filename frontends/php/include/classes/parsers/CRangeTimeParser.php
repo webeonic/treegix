@@ -6,9 +6,9 @@
  */
 class CRangeTimeParser extends CParser {
 
-	const ZBX_TIME_UNKNOWN = 0;
-	const ZBX_TIME_ABSOLUTE = 1;
-	const ZBX_TIME_RELATIVE = 2;
+	const TRX_TIME_UNKNOWN = 0;
+	const TRX_TIME_ABSOLUTE = 1;
+	const TRX_TIME_RELATIVE = 2;
 
 	/**
 	 * @var int $time_type
@@ -39,17 +39,17 @@ class CRangeTimeParser extends CParser {
 	public function parse($source, $pos = 0) {
 		$this->length = 0;
 		$this->match = '';
-		$this->time_type = self::ZBX_TIME_UNKNOWN;
+		$this->time_type = self::TRX_TIME_UNKNOWN;
 
 		$p = $pos;
 
 		if ($this->relative_time_parser->parse($source, $p) != self::PARSE_FAIL) {
 			$p += $this->relative_time_parser->getLength();
-			$this->time_type = self::ZBX_TIME_RELATIVE;
+			$this->time_type = self::TRX_TIME_RELATIVE;
 		}
 		elseif ($this->absolute_time_parser->parse($source, $p) != self::PARSE_FAIL) {
 			$p += $this->absolute_time_parser->getLength();
-			$this->time_type = self::ZBX_TIME_ABSOLUTE;
+			$this->time_type = self::TRX_TIME_ABSOLUTE;
 		}
 		else {
 			return self::PARSE_FAIL;
@@ -76,10 +76,10 @@ class CRangeTimeParser extends CParser {
 	 */
 	public function getDateTime($is_start) {
 		switch ($this->time_type) {
-			case self::ZBX_TIME_ABSOLUTE:
+			case self::TRX_TIME_ABSOLUTE:
 				return $this->absolute_time_parser->getDateTime($is_start);
 
-			case self::ZBX_TIME_RELATIVE:
+			case self::TRX_TIME_RELATIVE:
 				return $this->relative_time_parser->getDateTime($is_start);
 
 			default:

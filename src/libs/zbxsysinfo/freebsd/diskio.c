@@ -5,9 +5,9 @@
 #include "stats.h"
 #include "diskdevices.h"
 
-#define ZBX_DEV_PFX	"/dev/"
-#define ZBX_DEV_READ	0
-#define ZBX_DEV_WRITE	1
+#define TRX_DEV_PFX	"/dev/"
+#define TRX_DEV_READ	0
+#define TRX_DEV_WRITE	1
 
 static struct statinfo	*si = NULL;
 
@@ -21,7 +21,7 @@ int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
 
 	assert(devname);
 
-	for (i = 0; i < ZBX_DSTAT_MAX; i++)
+	for (i = 0; i < TRX_DSTAT_MAX; i++)
 		dstat[i] = (zbx_uint64_t)__UINT64_C(0);
 
 	if (NULL == si)
@@ -33,9 +33,9 @@ int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
 
 	pd = devname;
 
-	/* skip prefix ZBX_DEV_PFX, if present */
-	if ('\0' != *devname && 0 == strncmp(pd, ZBX_DEV_PFX, ZBX_CONST_STRLEN(ZBX_DEV_PFX)))
-			pd += ZBX_CONST_STRLEN(ZBX_DEV_PFX);
+	/* skip prefix TRX_DEV_PFX, if present */
+	if ('\0' != *devname && 0 == strncmp(pd, TRX_DEV_PFX, TRX_CONST_STRLEN(TRX_DEV_PFX)))
+			pd += TRX_CONST_STRLEN(TRX_DEV_PFX);
 
 #if DEVSTAT_USER_API_VER >= 5
 	if (-1 == devstat_getdevs(NULL, si))
@@ -57,15 +57,15 @@ int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
 		}
 
 #if DEVSTAT_USER_API_VER >= 5
-		dstat[ZBX_DSTAT_R_OPER] += (zbx_uint64_t)ds->operations[DEVSTAT_READ];
-		dstat[ZBX_DSTAT_W_OPER] += (zbx_uint64_t)ds->operations[DEVSTAT_WRITE];
-		dstat[ZBX_DSTAT_R_BYTE] += (zbx_uint64_t)ds->bytes[DEVSTAT_READ];
-		dstat[ZBX_DSTAT_W_BYTE] += (zbx_uint64_t)ds->bytes[DEVSTAT_WRITE];
+		dstat[TRX_DSTAT_R_OPER] += (zbx_uint64_t)ds->operations[DEVSTAT_READ];
+		dstat[TRX_DSTAT_W_OPER] += (zbx_uint64_t)ds->operations[DEVSTAT_WRITE];
+		dstat[TRX_DSTAT_R_BYTE] += (zbx_uint64_t)ds->bytes[DEVSTAT_READ];
+		dstat[TRX_DSTAT_W_BYTE] += (zbx_uint64_t)ds->bytes[DEVSTAT_WRITE];
 #else
-		dstat[ZBX_DSTAT_R_OPER] += (zbx_uint64_t)ds->num_reads;
-		dstat[ZBX_DSTAT_W_OPER] += (zbx_uint64_t)ds->num_writes;
-		dstat[ZBX_DSTAT_R_BYTE] += (zbx_uint64_t)ds->bytes_read;
-		dstat[ZBX_DSTAT_W_BYTE] += (zbx_uint64_t)ds->bytes_written;
+		dstat[TRX_DSTAT_R_OPER] += (zbx_uint64_t)ds->num_reads;
+		dstat[TRX_DSTAT_W_OPER] += (zbx_uint64_t)ds->num_writes;
+		dstat[TRX_DSTAT_R_BYTE] += (zbx_uint64_t)ds->bytes_read;
+		dstat[TRX_DSTAT_W_BYTE] += (zbx_uint64_t)ds->bytes_written;
 #endif
 		ret = SUCCEED;
 
@@ -78,10 +78,10 @@ int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
 
 static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 {
-	ZBX_SINGLE_DISKDEVICE_DATA *device;
+	TRX_SINGLE_DISKDEVICE_DATA *device;
 	char		devname[32], *tmp;
 	int		type, mode;
-	zbx_uint64_t	dstats[ZBX_DSTAT_MAX];
+	zbx_uint64_t	dstats[TRX_DSTAT_MAX];
 	char		*pd;			/* pointer to device name without '/dev/' prefix, e.g. 'da0' */
 
 	if (3 < request->nparam)
@@ -101,28 +101,28 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 
 	if ('\0' != *pd)
 	{
-		/* skip prefix ZBX_DEV_PFX, if present */
-		if (0 == strncmp(pd, ZBX_DEV_PFX, ZBX_CONST_STRLEN(ZBX_DEV_PFX)))
-			pd += ZBX_CONST_STRLEN(ZBX_DEV_PFX);
+		/* skip prefix TRX_DEV_PFX, if present */
+		if (0 == strncmp(pd, TRX_DEV_PFX, TRX_CONST_STRLEN(TRX_DEV_PFX)))
+			pd += TRX_CONST_STRLEN(TRX_DEV_PFX);
 	}
 
 	tmp = get_rparam(request, 1);
 
 	if (NULL == tmp || '\0' == *tmp || 0 == strcmp(tmp, "bps"))	/* default parameter */
-		type = ZBX_DSTAT_TYPE_BPS;
+		type = TRX_DSTAT_TYPE_BPS;
 	else if (0 == strcmp(tmp, "ops"))
-		type = ZBX_DSTAT_TYPE_OPS;
+		type = TRX_DSTAT_TYPE_OPS;
 	else if (0 == strcmp(tmp, "bytes"))
-		type = ZBX_DSTAT_TYPE_BYTE;
+		type = TRX_DSTAT_TYPE_BYTE;
 	else if (0 == strcmp(tmp, "operations"))
-		type = ZBX_DSTAT_TYPE_OPER;
+		type = TRX_DSTAT_TYPE_OPER;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	if (type == ZBX_DSTAT_TYPE_BYTE || type == ZBX_DSTAT_TYPE_OPER)
+	if (type == TRX_DSTAT_TYPE_BYTE || type == TRX_DSTAT_TYPE_OPER)
 	{
 		if (2 < request->nparam)
 		{
@@ -136,10 +136,10 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 			return SYSINFO_RET_FAIL;
 		}
 
-		if (ZBX_DSTAT_TYPE_BYTE == type)
-			SET_UI64_RESULT(result, dstats[(ZBX_DEV_READ == rw ? ZBX_DSTAT_R_BYTE : ZBX_DSTAT_W_BYTE)]);
-		else	/* ZBX_DSTAT_TYPE_OPER */
-			SET_UI64_RESULT(result, dstats[(ZBX_DEV_READ == rw ? ZBX_DSTAT_R_OPER : ZBX_DSTAT_W_OPER)]);
+		if (TRX_DSTAT_TYPE_BYTE == type)
+			SET_UI64_RESULT(result, dstats[(TRX_DEV_READ == rw ? TRX_DSTAT_R_BYTE : TRX_DSTAT_W_BYTE)]);
+		else	/* TRX_DSTAT_TYPE_OPER */
+			SET_UI64_RESULT(result, dstats[(TRX_DEV_READ == rw ? TRX_DSTAT_R_OPER : TRX_DSTAT_W_OPER)]);
 
 		return SYSINFO_RET_OK;
 	}
@@ -147,11 +147,11 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 	tmp = get_rparam(request, 2);
 
 	if (NULL == tmp || '\0' == *tmp || 0 == strcmp(tmp, "avg1"))	/* default parameter */
-		mode = ZBX_AVG1;
+		mode = TRX_AVG1;
 	else if (0 == strcmp(tmp, "avg5"))
-		mode = ZBX_AVG5;
+		mode = TRX_AVG5;
 	else if (0 == strcmp(tmp, "avg15"))
-		mode = ZBX_AVG15;
+		mode = TRX_AVG15;
 	else
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
@@ -185,20 +185,20 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 		}
 	}
 
-	if (ZBX_DSTAT_TYPE_BPS == type)	/* default parameter */
-		SET_DBL_RESULT(result, (ZBX_DEV_READ == rw ? device->r_bps[mode] : device->w_bps[mode]));
-	else if (ZBX_DSTAT_TYPE_OPS == type)
-		SET_DBL_RESULT(result, (ZBX_DEV_READ == rw ? device->r_ops[mode] : device->w_ops[mode]));
+	if (TRX_DSTAT_TYPE_BPS == type)	/* default parameter */
+		SET_DBL_RESULT(result, (TRX_DEV_READ == rw ? device->r_bps[mode] : device->w_bps[mode]));
+	else if (TRX_DSTAT_TYPE_OPS == type)
+		SET_DBL_RESULT(result, (TRX_DEV_READ == rw ? device->r_ops[mode] : device->w_ops[mode]));
 
 	return SYSINFO_RET_OK;
 }
 
 int	VFS_DEV_READ(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	return vfs_dev_rw(request, result, ZBX_DEV_READ);
+	return vfs_dev_rw(request, result, TRX_DEV_READ);
 }
 
 int	VFS_DEV_WRITE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	return vfs_dev_rw(request, result, ZBX_DEV_WRITE);
+	return vfs_dev_rw(request, result, TRX_DEV_WRITE);
 }

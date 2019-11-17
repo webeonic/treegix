@@ -35,17 +35,17 @@ int	zbx_send_response_ext(zbx_socket_t *sock, int result, const char *info, cons
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_json_init(&json, ZBX_JSON_STAT_BUF_LEN);
+	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
-	resp = SUCCEED == result ? ZBX_PROTO_VALUE_SUCCESS : ZBX_PROTO_VALUE_FAILED;
+	resp = SUCCEED == result ? TRX_PROTO_VALUE_SUCCESS : TRX_PROTO_VALUE_FAILED;
 
-	zbx_json_addstring(&json, ZBX_PROTO_TAG_RESPONSE, resp, ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, resp, TRX_JSON_TYPE_STRING);
 
 	if (NULL != info && '\0' != *info)
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_INFO, info, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_INFO, info, TRX_JSON_TYPE_STRING);
 
 	if (NULL != version)
-		zbx_json_addstring(&json, ZBX_PROTO_TAG_VERSION, version, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, TRX_PROTO_TAG_VERSION, version, TRX_JSON_TYPE_STRING);
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() '%s'", __func__, json.buffer);
 
@@ -121,18 +121,18 @@ int	zbx_recv_response(zbx_socket_t *sock, int timeout, char **error)
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_RESPONSE, value, sizeof(value)))
+	if (SUCCEED != zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value)))
 	{
-		*error = zbx_strdup(*error, "no \"" ZBX_PROTO_TAG_RESPONSE "\" tag");
+		*error = zbx_strdup(*error, "no \"" TRX_PROTO_TAG_RESPONSE "\" tag");
 		goto out;
 	}
 
-	if (0 != strcmp(value, ZBX_PROTO_VALUE_SUCCESS))
+	if (0 != strcmp(value, TRX_PROTO_VALUE_SUCCESS))
 	{
 		char	*info = NULL;
 		size_t	info_alloc = 0;
 
-		if (SUCCEED == zbx_json_value_by_name_dyn(&jp, ZBX_PROTO_TAG_INFO, &info, &info_alloc))
+		if (SUCCEED == zbx_json_value_by_name_dyn(&jp, TRX_PROTO_TAG_INFO, &info, &info_alloc))
 			*error = zbx_strdup(*error, info);
 		else
 			*error = zbx_dsprintf(*error, "negative response \"%s\"", value);

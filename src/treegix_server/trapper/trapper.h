@@ -10,6 +10,6 @@ extern int	CONFIG_TIMEOUT;
 extern int	CONFIG_TRAPPER_TIMEOUT;
 extern char	*CONFIG_STATS_ALLOWED_IP;
 
-ZBX_THREAD_ENTRY(trapper_thread, args);
+TRX_THREAD_ENTRY(trapper_thread, args);
 
 #endif

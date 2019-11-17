@@ -18,14 +18,14 @@
 #define LOG_TYPE_FILE		2
 #define LOG_TYPE_CONSOLE	3
 
-#define ZBX_OPTION_LOGTYPE_SYSTEM	"system"
-#define ZBX_OPTION_LOGTYPE_FILE		"file"
-#define ZBX_OPTION_LOGTYPE_CONSOLE	"console"
+#define TRX_OPTION_LOGTYPE_SYSTEM	"system"
+#define TRX_OPTION_LOGTYPE_FILE		"file"
+#define TRX_OPTION_LOGTYPE_CONSOLE	"console"
 
 #define LOG_ENTRY_INTERVAL_DELAY	60	/* seconds */
 
 extern int	zbx_log_level;
-#define ZBX_CHECK_LOG_LEVEL(level)			\
+#define TRX_CHECK_LOG_LEVEL(level)			\
 		((LOG_LEVEL_INFORMATION != (level) &&	\
 		((level) > zbx_log_level || LOG_LEVEL_EMPTY == (level))) ? FAIL : SUCCEED)
 
@@ -42,12 +42,12 @@ typedef enum
 zbx_err_codes_t;
 
 #ifdef HAVE___VA_ARGS__
-#	define ZBX_TREEGIX_LOG_CHECK
+#	define TRX_TREEGIX_LOG_CHECK
 #	define treegix_log(level, ...)									\
 													\
 	do												\
 	{												\
-		if (SUCCEED == ZBX_CHECK_LOG_LEVEL(level))						\
+		if (SUCCEED == TRX_CHECK_LOG_LEVEL(level))						\
 			__zbx_treegix_log(level, __VA_ARGS__);						\
 	}												\
 	while (0)
@@ -77,6 +77,6 @@ int		zbx_redirect_stdio(const char *filename);
 void		zbx_handle_log(void);
 
 int		zbx_get_log_type(const char *logtype);
-int		zbx_validate_log_parameters(ZBX_TASK_EX *task);
+int		zbx_validate_log_parameters(TRX_TASK_EX *task);
 
 #endif

@@ -177,7 +177,7 @@ class CImage extends CApiService {
 			];
 
 			switch ($DB['TYPE']) {
-				case ZBX_DB_ORACLE:
+				case TRX_DB_ORACLE:
 					$values['image'] = 'EMPTY_BLOB()';
 
 					$lob = oci_new_descriptor($DB['DB'], OCI_D_LOB);
@@ -187,49 +187,49 @@ class CImage extends CApiService {
 					$stmt = oci_parse($DB['DB'], $sql);
 					if (!$stmt) {
 						$e = oci_error($DB['DB']);
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Parse SQL error [%1$s] in [%2$s].', $e['message'], $e['sqltext']));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Parse SQL error [%1$s] in [%2$s].', $e['message'], $e['sqltext']));
 					}
 
 					oci_bind_by_name($stmt, ':imgdata', $lob, -1, OCI_B_BLOB);
 					if (!oci_execute($stmt, OCI_DEFAULT)) {
 						$e = oci_error($stmt);
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Execute SQL error [%1$s] in [%2$s].', $e['message'], $e['sqltext']));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Execute SQL error [%1$s] in [%2$s].', $e['message'], $e['sqltext']));
 					}
 					if (!$lob->save($image['image'])) {
 						$e = oci_error($stmt);
-						self::exception(ZBX_API_ERROR_PARAMETERS, _s('Image load error [%1$s] in [%2$s].', $e['message'], $e['sqltext']));
+						self::exception(TRX_API_ERROR_PARAMETERS, _s('Image load error [%1$s] in [%2$s].', $e['message'], $e['sqltext']));
 					}
 					$lob->free();
 					oci_free_statement($stmt);
 				break;
-				case ZBX_DB_DB2:
+				case TRX_DB_DB2:
 					$stmt = db2_prepare($DB['DB'], 'INSERT INTO images ('.implode(' ,', array_keys($values)).',image)'.
 						' VALUES ('.implode(',', $values).', ?)');
 
 					if (!$stmt) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
+						self::exception(TRX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
 					}
 
 					$variable = $image['image'];
 					if (!db2_bind_param($stmt, 1, "variable", DB2_PARAM_IN, DB2_BINARY)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
+						self::exception(TRX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
 					}
 					if (!db2_execute($stmt)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
+						self::exception(TRX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
 					}
 				break;
-				case ZBX_DB_MYSQL:
+				case TRX_DB_MYSQL:
 						$values['image'] = zbx_dbstr($image['image']);
 						$sql = 'INSERT INTO images ('.implode(', ', array_keys($values)).') VALUES ('.implode(', ', $values).')';
 						if (!DBexecute($sql)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, 'DBerror');
+							self::exception(TRX_API_ERROR_PARAMETERS, 'DBerror');
 						}
 				break;
-				case ZBX_DB_POSTGRESQL:
+				case TRX_DB_POSTGRESQL:
 					$values['image'] = "'".pg_escape_bytea($image['image'])."'";
 					$sql = 'INSERT INTO images ('.implode(', ', array_keys($values)).') VALUES ('.implode(', ', $values).')';
 					if (!DBexecute($sql)) {
-						self::exception(ZBX_API_ERROR_PARAMETERS, 'DBerror');
+						self::exception(TRX_API_ERROR_PARAMETERS, 'DBerror');
 					}
 				break;
 			}
@@ -276,29 +276,29 @@ class CImage extends CApiService {
 				}
 
 				switch ($DB['TYPE']) {
-					case ZBX_DB_POSTGRESQL:
+					case TRX_DB_POSTGRESQL:
 						$values['image'] = "'".pg_escape_bytea($image['image'])."'";
 						break;
 
-					case ZBX_DB_MYSQL:
+					case TRX_DB_MYSQL:
 						$values['image'] = zbx_dbstr($image['image']);
 						break;
 
-					case ZBX_DB_ORACLE:
+					case TRX_DB_ORACLE:
 						$sql = 'SELECT i.image FROM images i WHERE i.imageid='.zbx_dbstr($image['imageid']).' FOR UPDATE';
 
 						if (!$stmt = oci_parse($DB['DB'], $sql)) {
 							$e = oci_error($DB['DB']);
-							self::exception(ZBX_API_ERROR_PARAMETERS, 'SQL error ['.$e['message'].'] in ['.$e['sqltext'].']');
+							self::exception(TRX_API_ERROR_PARAMETERS, 'SQL error ['.$e['message'].'] in ['.$e['sqltext'].']');
 						}
 
 						if (!oci_execute($stmt, OCI_DEFAULT)) {
 							$e = oci_error($stmt);
-							self::exception(ZBX_API_ERROR_PARAMETERS, 'SQL error ['.$e['message'].'] in ['.$e['sqltext'].']');
+							self::exception(TRX_API_ERROR_PARAMETERS, 'SQL error ['.$e['message'].'] in ['.$e['sqltext'].']');
 						}
 
 						if (false === ($row = oci_fetch_assoc($stmt))) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, 'DBerror');
+							self::exception(TRX_API_ERROR_PARAMETERS, 'DBerror');
 						}
 
 						$row['IMAGE']->truncate();
@@ -306,20 +306,20 @@ class CImage extends CApiService {
 						$row['IMAGE']->free();
 						break;
 
-					case ZBX_DB_DB2:
+					case TRX_DB_DB2:
 						$stmt = db2_prepare($DB['DB'], 'UPDATE images SET image=? WHERE imageid='.zbx_dbstr($image['imageid']));
 
 						if (!$stmt) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
+							self::exception(TRX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
 						}
 
 						// not unused, db2_bind_param requires variable name as string
 						$variable = $image['image'];
 						if (!db2_bind_param($stmt, 1, 'variable', DB2_PARAM_IN, DB2_BINARY)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
+							self::exception(TRX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
 						}
 						if (!db2_execute($stmt)) {
-							self::exception(ZBX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
+							self::exception(TRX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
 						}
 						break;
 				}
@@ -334,7 +334,7 @@ class CImage extends CApiService {
 				$result = DBexecute($sql);
 
 				if (!$result) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _('Could not save image!'));
+					self::exception(TRX_API_ERROR_PARAMETERS, _('Could not save image!'));
 				}
 			}
 		}
@@ -351,11 +351,11 @@ class CImage extends CApiService {
 	 */
 	public function delete(array $imageids) {
 		if (empty($imageids)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty parameters'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty parameters'));
 		}
 
 		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		// check if icon is used in icon maps
@@ -373,7 +373,7 @@ class CImage extends CApiService {
 		}
 
 		if (!empty($usedInIconmaps)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_n('The image is used in icon map %1$s.', 'The image is used in icon maps %1$s.',
 					'"'.implode('", "', $usedInIconmaps).'"', count($usedInIconmaps))
 			);
@@ -399,7 +399,7 @@ class CImage extends CApiService {
 		}
 
 		if (!empty($usedInMaps)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_n('The image is used in map %1$s.', 'The image is used in maps %1$s.',
 				'"'.implode('", "', $usedInMaps).'"', count($usedInMaps))
 			);
@@ -427,11 +427,11 @@ class CImage extends CApiService {
 	protected function validateCreate(array &$images) {
 		// validate permissions
 		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		if (!$images) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
 		}
 
 		// check fields
@@ -443,7 +443,7 @@ class CImage extends CApiService {
 			];
 
 			if (!check_db_fields($imageDbFields, $image)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 		}
 		unset($image);
@@ -464,7 +464,7 @@ class CImage extends CApiService {
 
 		if ($dbImages) {
 			$dbImage = reset($dbImages);
-			self::exception(ZBX_API_ERROR_PARAMETERS, _s('Image "%1$s" already exists.', $dbImage['name']));
+			self::exception(TRX_API_ERROR_PARAMETERS, _s('Image "%1$s" already exists.', $dbImage['name']));
 		}
 	}
 
@@ -479,12 +479,12 @@ class CImage extends CApiService {
 	 */
 	protected function validateUpdate(array $images) {
 		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		foreach ($images as $image) {
 			if (!check_db_fields(['imageid'], $image)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 		}
 
@@ -497,12 +497,12 @@ class CImage extends CApiService {
 		$changedImageNames = [];
 		foreach ($images as $image) {
 			if (!isset($dbImages[$image['imageid']])) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('No permissions to referred object or it does not exist!'));
 			}
 
 			if (array_key_exists('imagetype', $image)) {
 				self::exception(
-					ZBX_API_ERROR_PARAMETERS,
+					TRX_API_ERROR_PARAMETERS,
 					_s('Cannot update "imagetype" for image "%1$s".', $dbImages[$image['imageid']]['name'])
 				);
 			}
@@ -510,7 +510,7 @@ class CImage extends CApiService {
 			if (isset($image['name']) && !zbx_empty($image['name'])
 					&& $dbImages[$image['imageid']]['name'] !== $image['name']) {
 				if (isset($changedImageNames[$image['name']])) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Image "%1$s" already exists.', $image['name']));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Image "%1$s" already exists.', $image['name']));
 				}
 				else {
 					$changedImageNames[$image['name']] = $image['name'];
@@ -528,7 +528,7 @@ class CImage extends CApiService {
 
 			if ($dbImages) {
 				$dbImage = reset($dbImages);
-				self::exception(ZBX_API_ERROR_PARAMETERS, _s('Image "%1$s" already exists.', $dbImage['name']));
+				self::exception(TRX_API_ERROR_PARAMETERS, _s('Image "%1$s" already exists.', $dbImage['name']));
 			}
 		}
 	}
@@ -543,10 +543,10 @@ class CImage extends CApiService {
 	 */
 	protected function checkImage($image) {
 		// check size
-		if (bccomp(strlen($image), ZBX_MAX_IMAGE_SIZE) == 1) {
-			self::exception(ZBX_API_ERROR_PARAMETERS,
+		if (bccomp(strlen($image), TRX_MAX_IMAGE_SIZE) == 1) {
+			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Image size must be less than %s.', convert_units([
-					'value' => ZBX_MAX_IMAGE_SIZE,
+					'value' => TRX_MAX_IMAGE_SIZE,
 					'units' => 'B'
 				]))
 			);
@@ -554,7 +554,7 @@ class CImage extends CApiService {
 
 		// check file format
 		if (@imageCreateFromString($image) === false) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, _('File format is unsupported.'));
+			self::exception(TRX_API_ERROR_PARAMETERS, _('File format is unsupported.'));
 		}
 	}
 

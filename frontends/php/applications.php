@@ -13,25 +13,25 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'applications' =>		[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,			null],
-	'hostid' =>				[T_ZBX_INT, O_OPT, P_SYS,	DB_ID.NOT_ZERO, 'isset({form}) && !isset({applicationid})'],
-	'groupid' =>			[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,			null],
-	'applicationid' =>		[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,			'isset({form}) && {form} == "update"'],
-	'appname' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,		'isset({add}) || isset({update})', _('Name')],
+	'applications' =>		[T_TRX_INT, O_OPT, P_SYS,	DB_ID,			null],
+	'hostid' =>				[T_TRX_INT, O_OPT, P_SYS,	DB_ID.NOT_ZERO, 'isset({form}) && !isset({applicationid})'],
+	'groupid' =>			[T_TRX_INT, O_OPT, P_SYS,	DB_ID,			null],
+	'applicationid' =>		[T_TRX_INT, O_OPT, P_SYS,	DB_ID,			'isset({form}) && {form} == "update"'],
+	'appname' =>			[T_TRX_STR, O_OPT, null,	NOT_EMPTY,		'isset({add}) || isset({update})', _('Name')],
 	// actions
-	'action' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
+	'action' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT,
 								IN('"application.massdelete","application.massdisable","application.massenable"'),
 								null
 							],
-	'add' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'update' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'clone' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'delete' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
-	'form' =>				[T_ZBX_STR, O_OPT, P_SYS,			null,	null],
-	'form_refresh' =>		[T_ZBX_INT, O_OPT, null,			null,	null],
+	'add' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'update' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'clone' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'delete' =>				[T_TRX_STR, O_OPT, P_SYS|P_ACT,	null,	null],
+	'form' =>				[T_TRX_STR, O_OPT, P_SYS,			null,	null],
+	'form_refresh' =>		[T_TRX_INT, O_OPT, null,			null,	null],
 	// sort and sortorder
-	'sort' =>				[T_ZBX_STR, O_OPT, P_SYS, IN('"name"'),								null],
-	'sortorder' =>			[T_ZBX_STR, O_OPT, P_SYS, IN('"'.ZBX_SORT_DOWN.'","'.ZBX_SORT_UP.'"'),	null]
+	'sort' =>				[T_TRX_STR, O_OPT, P_SYS, IN('"name"'),								null],
+	'sortorder' =>			[T_TRX_STR, O_OPT, P_SYS, IN('"'.TRX_SORT_DOWN.'","'.TRX_SORT_UP.'"'),	null]
 ];
 check_fields($fields);
 
@@ -188,7 +188,7 @@ if (isset($_REQUEST['form'])) {
 }
 else {
 	$sortField = getRequest('sort', CProfile::get('web.'.$page['file'].'.sort', 'name'));
-	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', ZBX_SORT_UP));
+	$sortOrder = getRequest('sortorder', CProfile::get('web.'.$page['file'].'.sortorder', TRX_SORT_UP));
 
 	CProfile::update('web.'.$page['file'].'.sort', $sortField, PROFILE_TYPE_STR);
 	CProfile::update('web.'.$page['file'].'.sortorder', $sortOrder, PROFILE_TYPE_STR);

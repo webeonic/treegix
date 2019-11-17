@@ -191,7 +191,7 @@ class CDashboardWidgetMap extends CDiv {
 	 * Build an object of HTML used in widget content.
 	 */
 	private function build() {
-		$this->addClass(ZBX_STYLE_SYSMAP);
+		$this->addClass(TRX_STYLE_SYSMAP);
 		$this->setId(uniqid());
 
 		if ($this->error === null) {
@@ -199,14 +199,14 @@ class CDashboardWidgetMap extends CDiv {
 
 			if ($this->previous_map) {
 				$go_back_div = (new CDiv())
-					->addClass(ZBX_STYLE_BTN_BACK_MAP_CONTAINER)
+					->addClass(TRX_STYLE_BTN_BACK_MAP_CONTAINER)
 					->addItem(
 						(new CLink(
 							(new CSpan())
-								->addClass(ZBX_STYLE_BTN_BACK_MAP)
-								->addItem((new CDiv())->addClass(ZBX_STYLE_BTN_BACK_MAP_ICON))
+								->addClass(TRX_STYLE_BTN_BACK_MAP)
+								->addItem((new CDiv())->addClass(TRX_STYLE_BTN_BACK_MAP_ICON))
 								->addItem((new CDiv())
-									->addClass(ZBX_STYLE_BTN_BACK_MAP_CONTENT)
+									->addClass(TRX_STYLE_BTN_BACK_MAP_CONTENT)
 									->addItem(_s('Go back to %1$s', $this->previous_map['name']))
 								),
 								'javascript: navigateToSubmap('.$this->previous_map['sysmapid'].', "'.
@@ -217,7 +217,7 @@ class CDashboardWidgetMap extends CDiv {
 				$this->addItem($go_back_div);
 			}
 
-			$map_div = (new CDiv((new CDiv($this->sysmap_data['aria_label']))->addClass(ZBX_STYLE_INLINE_SR_ONLY)))
+			$map_div = (new CDiv((new CDiv($this->sysmap_data['aria_label']))->addClass(TRX_STYLE_INLINE_SR_ONLY)))
 				->setId('map_'.$this->uniqueid)
 				->addClass('sysmap-widget-container');
 

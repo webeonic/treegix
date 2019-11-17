@@ -22,7 +22,7 @@ class CScreenEvents extends CScreenBase {
 			'skipDependent' => true,
 			'monitored' => true,
 			'sortfield' => 'lastchange',
-			'sortorder' => ZBX_SORT_DOWN,
+			'sortorder' => TRX_SORT_DOWN,
 			'limit' => $this->screenitem['elements'],
 			'preservekeys' => true
 		]);
@@ -35,7 +35,7 @@ class CScreenEvents extends CScreenBase {
 			'value' => TRIGGER_VALUE_TRUE,
 			'objectids' => array_keys($triggers),
 			'sortfield' => ['clock', 'eventid'],
-			'sortorder' => ZBX_SORT_DOWN,
+			'sortorder' => TRX_SORT_DOWN,
 			'limit' => $this->screenitem['elements']
 		]);
 
@@ -89,7 +89,7 @@ class CScreenEvents extends CScreenBase {
 				$in_closing = false;
 
 				foreach ($event['acknowledges'] as $acknowledge) {
-					if (($acknowledge['action'] & ZBX_PROBLEM_UPDATE_CLOSE) == ZBX_PROBLEM_UPDATE_CLOSE) {
+					if (($acknowledge['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE) {
 						$in_closing = true;
 						break;
 					}
@@ -125,7 +125,7 @@ class CScreenEvents extends CScreenBase {
 
 		$footer = (new CList())
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput((new CUiWidget(uniqid(), [$table, $footer]))->setHeader(_('History of events')));
 	}

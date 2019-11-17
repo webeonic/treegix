@@ -525,7 +525,7 @@ class CTemplateScreen extends CScreen {
 									'SELECT h.name FROM hosts h WHERE h.hostid='.zbx_dbstr($templateId)
 								));
 
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Graph "%1$s" does not exist on template "%2$s".', $graph['name'],
 									$template['name']
 								));
@@ -543,7 +543,7 @@ class CTemplateScreen extends CScreen {
 									'SELECT h.name FROM hosts h WHERE h.hostid='.zbx_dbstr($templateId)
 								));
 
-								self::exception(ZBX_API_ERROR_PARAMETERS, _s(
+								self::exception(TRX_API_ERROR_PARAMETERS, _s(
 									'Item "%1$s" does not exist on template "%2$s".', $item['name'],
 									$template['name']
 								));
@@ -576,7 +576,7 @@ class CTemplateScreen extends CScreen {
 
 		foreach ($screens as $screen) {
 			if (!check_db_fields($screenDbFields, $screen)) {
-				self::exception(ZBX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
+				self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect input parameters.'));
 			}
 
 			// Sharing is not allowed for template screen.
@@ -584,7 +584,7 @@ class CTemplateScreen extends CScreen {
 			foreach ($sharing_fields as $sharing_field) {
 				if (array_key_exists($sharing_field, $screen)) {
 					self::exception(
-						ZBX_API_ERROR_PARAMETERS,
+						TRX_API_ERROR_PARAMETERS,
 						_s('Cannot set "%1$s" for template screen "%2$s".', $sharing_field, $screen['name'])
 					);
 				}
@@ -611,7 +611,7 @@ class CTemplateScreen extends CScreen {
 
 		foreach ($templateIds as $templateId) {
 			if (!isset($dbTemplates[$templateId])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -619,7 +619,7 @@ class CTemplateScreen extends CScreen {
 			foreach ($dbScreens as $dbScreen) {
 				if ($dbScreen['name'] == $screen['name'] && bccomp($dbScreen['templateid'], $screen['templateid']) == 0) {
 					self::exception(
-						ZBX_API_ERROR_PARAMETERS,
+						TRX_API_ERROR_PARAMETERS,
 						_s('Template screen "%1$s" already exists.', $screen['name'])
 					);
 				}
@@ -662,7 +662,7 @@ class CTemplateScreen extends CScreen {
 	protected function validateUpdate(array $screens, array $dbScreens) {
 		foreach ($screens as $screen) {
 			if (!isset($dbScreens[$screen['screenid']])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -672,7 +672,7 @@ class CTemplateScreen extends CScreen {
 			// "templateid" is not allowed
 			if (array_key_exists('templateid', $screen)) {
 				self::exception(
-					ZBX_API_ERROR_PARAMETERS,
+					TRX_API_ERROR_PARAMETERS,
 					_s('Cannot update "templateid" for template screen "%1$s".', $screen['name'])
 				);
 			}
@@ -682,7 +682,7 @@ class CTemplateScreen extends CScreen {
 			foreach ($sharing_fields as $sharing_field) {
 				if (array_key_exists($sharing_field, $screen)) {
 					self::exception(
-						ZBX_API_ERROR_PARAMETERS,
+						TRX_API_ERROR_PARAMETERS,
 						_s('Cannot set "%1$s" for template screen "%2$s".', $sharing_field, $screen['name'])
 					);
 				}
@@ -700,7 +700,7 @@ class CTemplateScreen extends CScreen {
 				$dbScreenExist = reset($dbScreenExist);
 
 				if ($dbScreenExist && bccomp($dbScreenExist['screenid'], $screen['screenid']) != 0) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Template screen "%1$s" already exists.', $screen['name']));
+					self::exception(TRX_API_ERROR_PARAMETERS, _s('Template screen "%1$s" already exists.', $screen['name']));
 				}
 			}
 		}
@@ -725,7 +725,7 @@ class CTemplateScreen extends CScreen {
 
 		foreach ($screenIds as $screenId) {
 			if (!isset($dbScreens[$screenId])) {
-				self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+				self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 			}
 		}
 
@@ -736,7 +736,7 @@ class CTemplateScreen extends CScreen {
 		]);
 
 		if ($count != count($templateIds)) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		// check if screen with same name exists
@@ -757,7 +757,7 @@ class CTemplateScreen extends CScreen {
 			));
 
 			self::exception(
-				ZBX_API_ERROR_PARAMETERS,
+				TRX_API_ERROR_PARAMETERS,
 				_s('Screen "%1$s" already exists on template "%2$s".', $dbExistingScreen['name'], $dbTemplate['name'])
 			);
 		}

@@ -12,10 +12,10 @@
 /* curl_multi_wait() is supported starting with version 7.28.0 (0x071c00) */
 #if defined(HAVE_LIBCURL) && LIBCURL_VERSION_NUM >= 0x071c00
 
-#define		ZBX_HISTORY_STORAGE_DOWN	10000 /* Timeout in milliseconds */
+#define		TRX_HISTORY_STORAGE_DOWN	10000 /* Timeout in milliseconds */
 
-#define		ZBX_IDX_JSON_ALLOCATE		256
-#define		ZBX_JSON_ALLOCATE		2048
+#define		TRX_IDX_JSON_ALLOCATE		256
+#define		TRX_JSON_ALLOCATE		2048
 
 
 const char	*value_type_str[] = {"dbl", "str", "log", "uint", "text"};
@@ -92,14 +92,14 @@ static history_value_t	history_str2value(char *str, unsigned char value_type)
 			value.dbl = atof(str);
 			break;
 		case ITEM_VALUE_TYPE_UINT64:
-			ZBX_STR2UINT64(value.ui64, str);
+			TRX_STR2UINT64(value.ui64, str);
 			break;
 	}
 
 	return value;
 }
 
-static const char	*history_value2str(const ZBX_DC_HISTORY *h)
+static const char	*history_value2str(const TRX_DC_HISTORY *h)
 {
 	static char	buffer[MAX_ID_LEN + 1];
 
@@ -111,10 +111,10 @@ static const char	*history_value2str(const ZBX_DC_HISTORY *h)
 		case ITEM_VALUE_TYPE_LOG:
 			return h->value.log->value;
 		case ITEM_VALUE_TYPE_FLOAT:
-			zbx_snprintf(buffer, sizeof(buffer), ZBX_FS_DBL, h->value.dbl);
+			zbx_snprintf(buffer, sizeof(buffer), TRX_FS_DBL, h->value.dbl);
 			break;
 		case ITEM_VALUE_TYPE_UINT64:
-			zbx_snprintf(buffer, sizeof(buffer), ZBX_FS_UI64, h->value.ui64);
+			zbx_snprintf(buffer, sizeof(buffer), TRX_FS_UI64, h->value.ui64);
 			break;
 	}
 
@@ -251,7 +251,7 @@ static int	elastic_is_error_present(zbx_httppage_t *page, char **err)
 	size_t			index_alloc = 0, status_alloc = 0, type_alloc = 0, reason_alloc = 0;
 	int			rc_js = SUCCEED;
 
-	treegix_log(LOG_LEVEL_TRACE, "%s() raw json: %s", __func__, ZBX_NULL2EMPTY_STR(page->data));
+	treegix_log(LOG_LEVEL_TRACE, "%s() raw json: %s", __func__, TRX_NULL2EMPTY_STR(page->data));
 
 	if (SUCCEED != zbx_json_open(page->data, &jp) || SUCCEED != zbx_json_brackets_open(jp.start, &jp_values))
 		return FAIL;
@@ -286,8 +286,8 @@ static int	elastic_is_error_present(zbx_httppage_t *page, char **err)
 	else
 		rc_js = FAIL;
 
-	*err = zbx_dsprintf(NULL,"index:%s status:%s type:%s reason:%s%s", ZBX_NULL2EMPTY_STR(index),
-			ZBX_NULL2EMPTY_STR(status), ZBX_NULL2EMPTY_STR(type), ZBX_NULL2EMPTY_STR(reason),
+	*err = zbx_dsprintf(NULL,"index:%s status:%s type:%s reason:%s%s", TRX_NULL2EMPTY_STR(index),
+			TRX_NULL2EMPTY_STR(status), TRX_NULL2EMPTY_STR(type), TRX_NULL2EMPTY_STR(reason),
 			FAIL == rc_js ? " / elasticsearch version is not fully compatible with treegix server" : "");
 
 	zbx_free(status);
@@ -441,7 +441,7 @@ try_again:
 			break;
 		}
 
-		if (CURLM_OK != (code = curl_multi_wait(writer.handle, NULL, 0, ZBX_HISTORY_STORAGE_DOWN, &fds)))
+		if (CURLM_OK != (code = curl_multi_wait(writer.handle, NULL, 0, TRX_HISTORY_STORAGE_DOWN, &fds)))
 		{
 			treegix_log(LOG_LEVEL_ERR, "cannot wait on curl multi handle: %s", curl_multi_strerror(code));
 			break;
@@ -524,7 +524,7 @@ try_again:
 
 	/* We check if we have handles to retry. If yes, we put them back in the multi */
 	/* handle and go to the beginning of the do while() for try sending the data again */
-	/* after sleeping for ZBX_HISTORY_STORAGE_DOWN / 1000 (seconds) */
+	/* after sleeping for TRX_HISTORY_STORAGE_DOWN / 1000 (seconds) */
 	if (0 < retries.values_num)
 	{
 		for (i = 0; i < retries.values_num; i++)
@@ -532,7 +532,7 @@ try_again:
 
 		zbx_vector_ptr_clear(&retries);
 
-		sleep(ZBX_HISTORY_STORAGE_DOWN / 1000);
+		sleep(TRX_HISTORY_STORAGE_DOWN / 1000);
 		goto try_again;
 	}
 
@@ -618,7 +618,7 @@ static int	elastic_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, in
 			value_type_str[hist->value_type]);
 
 	/* prepare the json query for elasticsearch, apply ranges if needed */
-	zbx_json_init(&query, ZBX_JSON_ALLOCATE);
+	zbx_json_init(&query, TRX_JSON_ALLOCATE);
 
 	if (0 < count)
 	{
@@ -626,7 +626,7 @@ static int	elastic_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, in
 		zbx_json_addarray(&query, "sort");
 		zbx_json_addobject(&query, NULL);
 		zbx_json_addobject(&query, "clock");
-		zbx_json_addstring(&query, "order", "desc", ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&query, "order", "desc", TRX_JSON_TYPE_STRING);
 		zbx_json_close(&query);
 		zbx_json_close(&query);
 		zbx_json_close(&query);
@@ -747,7 +747,7 @@ static int	elastic_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, in
 		/* scroll to the next page */
 		scroll_offset = 0;
 		zbx_snprintf_alloc(&scroll_query, &scroll_alloc, &scroll_offset,
-				"{\"scroll\":\"10s\",\"scroll_id\":\"%s\"}\n", ZBX_NULL2EMPTY_STR(scroll_id));
+				"{\"scroll\":\"10s\",\"scroll_id\":\"%s\"}\n", TRX_NULL2EMPTY_STR(scroll_id));
 
 		curl_easy_setopt(data->handle, CURLOPT_POSTFIELDS, scroll_query);
 
@@ -811,23 +811,23 @@ static int	elastic_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t 
 {
 	zbx_elastic_data_t	*data = (zbx_elastic_data_t *)hist->data;
 	int			i, num = 0;
-	ZBX_DC_HISTORY		*h;
+	TRX_DC_HISTORY		*h;
 	struct zbx_json		json_idx, json;
 	size_t			buf_alloc = 0, buf_offset = 0;
 	char			pipeline[14]; /* index name length + suffix "-pipeline" */
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_json_init(&json_idx, ZBX_IDX_JSON_ALLOCATE);
+	zbx_json_init(&json_idx, TRX_IDX_JSON_ALLOCATE);
 
 	zbx_json_addobject(&json_idx, "index");
-	zbx_json_addstring(&json_idx, "_index", value_type_str[hist->value_type], ZBX_JSON_TYPE_STRING);
-	zbx_json_addstring(&json_idx, "_type", "values", ZBX_JSON_TYPE_STRING);
+	zbx_json_addstring(&json_idx, "_index", value_type_str[hist->value_type], TRX_JSON_TYPE_STRING);
+	zbx_json_addstring(&json_idx, "_type", "values", TRX_JSON_TYPE_STRING);
 
 	if (1 == CONFIG_HISTORY_STORAGE_PIPELINES)
 	{
 		zbx_snprintf(pipeline, sizeof(pipeline), "%s-pipeline", value_type_str[hist->value_type]);
-		zbx_json_addstring(&json_idx, "pipeline", pipeline, ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json_idx, "pipeline", pipeline, TRX_JSON_TYPE_STRING);
 	}
 
 	zbx_json_close(&json_idx);
@@ -835,16 +835,16 @@ static int	elastic_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t 
 
 	for (i = 0; i < history->values_num; i++)
 	{
-		h = (ZBX_DC_HISTORY *)history->values[i];
+		h = (TRX_DC_HISTORY *)history->values[i];
 
 		if (hist->value_type != h->value_type)
 			continue;
 
-		zbx_json_init(&json, ZBX_JSON_ALLOCATE);
+		zbx_json_init(&json, TRX_JSON_ALLOCATE);
 
 		zbx_json_adduint64(&json, "itemid", h->itemid);
 
-		zbx_json_addstring(&json, "value", history_value2str(h), ZBX_JSON_TYPE_STRING);
+		zbx_json_addstring(&json, "value", history_value2str(h), TRX_JSON_TYPE_STRING);
 
 		if (ITEM_VALUE_TYPE_LOG == h->value_type)
 		{
@@ -853,7 +853,7 @@ static int	elastic_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t 
 			log = h->value.log;
 
 			zbx_json_adduint64(&json, "timestamp", log->timestamp);
-			zbx_json_addstring(&json, "source", ZBX_NULL2EMPTY_STR(log->source), ZBX_JSON_TYPE_STRING);
+			zbx_json_addstring(&json, "source", TRX_NULL2EMPTY_STR(log->source), TRX_JSON_TYPE_STRING);
 			zbx_json_adduint64(&json, "severity", log->severity);
 			zbx_json_adduint64(&json, "logeventid", log->logeventid);
 		}
@@ -898,7 +898,7 @@ static int	elastic_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t 
  ************************************************************************************/
 static int	elastic_flush(zbx_history_iface_t *hist)
 {
-	ZBX_UNUSED(hist);
+	TRX_UNUSED(hist);
 
 	return elastic_writer_flush();
 }
@@ -950,8 +950,8 @@ int	zbx_history_elastic_init(zbx_history_iface_t *hist, unsigned char value_type
 
 int	zbx_history_elastic_init(zbx_history_iface_t *hist, unsigned char value_type, char **error)
 {
-	ZBX_UNUSED(hist);
-	ZBX_UNUSED(value_type);
+	TRX_UNUSED(hist);
+	TRX_UNUSED(value_type);
 
 	*error = zbx_strdup(*error, "cURL library support >= 7.28.0 is required for Elasticsearch history backend");
 	return FAIL;

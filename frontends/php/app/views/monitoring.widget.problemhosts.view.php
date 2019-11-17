@@ -2,7 +2,7 @@
 
 
 // indicator of sort field
-$sort_div = (new CSpan())->addClass(ZBX_STYLE_ARROW_UP);
+$sort_div = (new CSpan())->addClass(TRX_STYLE_ARROW_UP);
 
 $table = (new CTableInfo())
 	->setHeader([
@@ -20,8 +20,8 @@ $url_group = (new CUrl('treegix.php'))
 	->setArgument('filter_groupids', null)
 	->setArgument('filter_hostids', $data['filter']['hostids'])
 	->setArgument('filter_name', $data['filter']['problem'])
-	->setArgument('filter_show_suppressed', ($data['filter']['show_suppressed'] == ZBX_PROBLEM_SUPPRESSED_TRUE)
-		? ZBX_PROBLEM_SUPPRESSED_TRUE
+	->setArgument('filter_show_suppressed', ($data['filter']['show_suppressed'] == TRX_PROBLEM_SUPPRESSED_TRUE)
+		? TRX_PROBLEM_SUPPRESSED_TRUE
 		: null
 	);
 $url_host = (new CUrl('treegix.php'))
@@ -31,8 +31,8 @@ $url_host = (new CUrl('treegix.php'))
 	->setArgument('filter_groupids', null)
 	->setArgument('filter_hostids', null)
 	->setArgument('filter_name', $data['filter']['problem'])
-	->setArgument('filter_show_suppressed', ($data['filter']['show_suppressed'] == ZBX_PROBLEM_SUPPRESSED_TRUE)
-		? ZBX_PROBLEM_SUPPRESSED_TRUE
+	->setArgument('filter_show_suppressed', ($data['filter']['show_suppressed'] == TRX_PROBLEM_SUPPRESSED_TRUE)
+		? TRX_PROBLEM_SUPPRESSED_TRUE
 		: null
 	);
 

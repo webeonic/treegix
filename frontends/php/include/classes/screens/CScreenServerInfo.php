@@ -14,7 +14,7 @@ class CScreenServerInfo extends CScreenBase {
 	public function get() {
 		$footer = (new CList())
 			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
-			->addClass(ZBX_STYLE_DASHBRD_WIDGET_FOOT);
+			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(
 			(new CUiWidget(uniqid(), [make_status_of_zbx(), $footer]))

@@ -56,7 +56,7 @@ function createServiceConfigurationTree(array $services, &$tree, array $parentSe
 			'trigger' => [],
 			'action' => new CHorList([
 				(new CLink(_('Add child'), 'services.php?form=1&parentname='._('root')))
-					->addClass(ZBX_STYLE_LINK_ACTION)
+					->addClass(TRX_STYLE_LINK_ACTION)
 			]),
 			'algorithm' => SPACE,
 			'description' => SPACE
@@ -96,10 +96,10 @@ function createServiceConfigurationTree(array $services, &$tree, array $parentSe
 			'action' => new CHorList([
 				(new CLink(_('Add child'),
 					'services.php?form=1&parentid='.$service['serviceid'].'&parentname='.urlencode($service['name'])
-				))->addClass(ZBX_STYLE_LINK_ACTION),
+				))->addClass(TRX_STYLE_LINK_ACTION),
 				$deletable
 					? (new CLink(_('Delete'), 'services.php?delete=1&serviceid='.$service['serviceid']))
-						->addClass(ZBX_STYLE_LINK_ACTION)
+						->addClass(TRX_STYLE_LINK_ACTION)
 						->addConfirmation(_s('Delete service "%1$s"?', $service['name']))
 						->addSID()
 					: null
@@ -234,30 +234,30 @@ function createServiceMonitoringTree(array $services, array $slaData, $period, &
 
 			$sla = (new CDiv(
 				new CLink([
-					(new CSpan([new CSpan('80%'), new CSpan('100%')]))->addClass(ZBX_STYLE_PROGRESS_BAR_LABEL),
+					(new CSpan([new CSpan('80%'), new CSpan('100%')]))->addClass(TRX_STYLE_PROGRESS_BAR_LABEL),
 					$width_green > 0
 						? (new CSpan('&nbsp;'))
-							->addClass(ZBX_STYLE_PROGRESS_BAR_BG)
-							->addClass(ZBX_STYLE_GREEN_BG)
+							->addClass(TRX_STYLE_PROGRESS_BAR_BG)
+							->addClass(TRX_STYLE_GREEN_BG)
 							->setAttribute('style', 'width: '.$width_green.'px;')
 						: null,
 					$width_red > 0
 						? (new CSpan('&nbsp;'))
-							->addClass(ZBX_STYLE_PROGRESS_BAR_BG)
-							->addClass(ZBX_STYLE_RED_BG)
+							->addClass(TRX_STYLE_PROGRESS_BAR_BG)
+							->addClass(TRX_STYLE_RED_BG)
 							->setAttribute('style', 'width: '.$width_red.'px;')
 						: null
 				], 'srv_status.php?serviceid='.$service['serviceid'].'&showgraph=1'.url_param('path'))
 			))
-				->addClass(ZBX_STYLE_PROGRESS_BAR_CONTAINER)
+				->addClass(TRX_STYLE_PROGRESS_BAR_CONTAINER)
 				->setTitle(_s('Only the last 20%% of the indicator is displayed.'));
 
 			$sla2 = (new CSpan(sprintf('%.4f', $sla_bad)))
-				->addClass($service['goodsla'] > $sla_good ? ZBX_STYLE_RED : ZBX_STYLE_GREEN);
+				->addClass($service['goodsla'] > $sla_good ? TRX_STYLE_RED : TRX_STYLE_GREEN);
 
 			$sla3 = [
 				(new CSpan(sprintf('%.4f', $sla_good)))
-					->addClass($service['goodsla'] > $sla_good ? ZBX_STYLE_RED : ZBX_STYLE_GREEN),
+					->addClass($service['goodsla'] > $sla_good ? TRX_STYLE_RED : TRX_STYLE_GREEN),
 				' / ',
 				sprintf('%.4f', $service['goodsla'])
 			];
@@ -466,30 +466,30 @@ function checkServiceTime(array $serviceTime) {
 		SERVICE_TIME_TYPE_UPTIME
 	];
 	if (!isset($serviceTime['type']) || !in_array($serviceTime['type'], $serviceTypes)) {
-		throw new APIException(ZBX_API_ERROR_PARAMETERS, _('Incorrect service time type.'));
+		throw new APIException(TRX_API_ERROR_PARAMETERS, _('Incorrect service time type.'));
 	}
 
 	// one-time downtime validation
 	if ($serviceTime['type'] == SERVICE_TIME_TYPE_ONETIME_DOWNTIME) {
 		if (!isset($serviceTime['ts_from']) || !validateUnixTime($serviceTime['ts_from'])) {
-			throw new APIException(ZBX_API_ERROR_PARAMETERS, _('Incorrect service start time.'));
+			throw new APIException(TRX_API_ERROR_PARAMETERS, _('Incorrect service start time.'));
 		}
 		if (!isset($serviceTime['ts_to']) || !validateUnixTime($serviceTime['ts_to'])) {
-			throw new APIException(ZBX_API_ERROR_PARAMETERS, _('Incorrect service end time.'));
+			throw new APIException(TRX_API_ERROR_PARAMETERS, _('Incorrect service end time.'));
 		}
 	}
 	// recurring downtime validation
 	else {
 		if (!isset($serviceTime['ts_from']) || !zbx_is_int($serviceTime['ts_from']) || $serviceTime['ts_from'] < 0 || $serviceTime['ts_from'] > SEC_PER_WEEK) {
-			throw new APIException(ZBX_API_ERROR_PARAMETERS, _('Incorrect service start time.'));
+			throw new APIException(TRX_API_ERROR_PARAMETERS, _('Incorrect service start time.'));
 		}
 		if (!isset($serviceTime['ts_to']) || !zbx_is_int($serviceTime['ts_to']) || $serviceTime['ts_to'] < 0 || $serviceTime['ts_to'] > SEC_PER_WEEK) {
-			throw new APIException(ZBX_API_ERROR_PARAMETERS, _('Incorrect service end time.'));
+			throw new APIException(TRX_API_ERROR_PARAMETERS, _('Incorrect service end time.'));
 		}
 	}
 
 	if ($serviceTime['ts_from'] >= $serviceTime['ts_to']) {
-		throw new APIException(ZBX_API_ERROR_PARAMETERS, _('Service start time must be less than end time.'));
+		throw new APIException(TRX_API_ERROR_PARAMETERS, _('Service start time must be less than end time.'));
 	}
 }
 
@@ -504,8 +504,8 @@ function checkServiceTime(array $serviceTime) {
  */
 function sortServices(array &$services) {
 	$sort_options = [
-		['field' => 'sortorder', 'order' => ZBX_SORT_UP],
-		['field' => 'name', 'order' => ZBX_SORT_UP]
+		['field' => 'sortorder', 'order' => TRX_SORT_UP],
+		['field' => 'name', 'order' => TRX_SORT_UP]
 	];
 
 	// Sort first level entries.

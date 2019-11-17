@@ -22,7 +22,7 @@ class CAutoregistration extends CApiService {
 			'output' =>	['type' => API_OUTPUT, 'in' => 'tls_accept', 'default' => API_OUTPUT_EXTEND]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $options, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
@@ -105,12 +105,12 @@ class CAutoregistration extends CApiService {
 			'tls_psk' =>			['type' => API_PSK, 'length' => DB::getFieldLength('config_autoreg_tls', 'tls_psk')]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $autoreg, '/', $error)) {
-			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
+			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
 		// Check permissions.
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
-			self::exception(ZBX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
+			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
 		$db_autoreg = DBfetch(DBselect(
@@ -124,20 +124,20 @@ class CAutoregistration extends CApiService {
 		foreach (['tls_psk_identity', 'tls_psk'] as $field_name) {
 			if ($tls_accept & HOST_ENCRYPTION_PSK) {
 				if (!array_key_exists($field_name, $autoreg) && $db_autoreg[$field_name] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid parameter "%1$s": %2$s.', '/', _s('the parameter "%1$s" is missing', $field_name))
 					);
 				}
 
 				if (array_key_exists($field_name, $autoreg) && $autoreg[$field_name] === '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid parameter "%1$s": %2$s.', '/'.$field_name, _('cannot be empty'))
 					);
 				}
 			}
 			else {
 				if (array_key_exists($field_name, $autoreg) && $autoreg[$field_name] !== '') {
-					self::exception(ZBX_API_ERROR_PARAMETERS,
+					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Invalid parameter "%1$s": %2$s.', '/'.$field_name, _('should be empty'))
 					);
 				}

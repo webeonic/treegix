@@ -12,16 +12,16 @@ require_once dirname(__FILE__).'/include/page_header.php';
 
 // VAR	TYPE	OPTIONAL	FLAGS	VALIDATION	EXCEPTION
 $fields = [
-	'graphid' =>		[T_ZBX_INT,			O_MAND, P_SYS,		DB_ID,		null],
-	'from' =>			[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,		null,		null],
-	'to' =>				[T_ZBX_RANGE_TIME,	O_OPT, P_SYS,		null,		null],
-	'profileIdx' =>		[T_ZBX_STR,			O_OPT, null,		null,		null],
-	'profileIdx2' =>	[T_ZBX_STR,			O_OPT, null,		null,		null],
-	'width' =>			[T_ZBX_INT,			O_OPT, P_NZERO,	BETWEEN(20, 65535),	null],
-	'height' =>			[T_ZBX_INT,			O_OPT, P_NZERO,	'{} > 0',	null],
-	'graph3d' =>		[T_ZBX_INT,			O_OPT, P_NZERO,	IN('0,1'),	null],
-	'legend' =>			[T_ZBX_INT,			O_OPT, null,	IN('0,1'),	null],
-	'widget_view' =>	[T_ZBX_INT,			O_OPT, null,	IN('0,1'),	null]
+	'graphid' =>		[T_TRX_INT,			O_MAND, P_SYS,		DB_ID,		null],
+	'from' =>			[T_TRX_RANGE_TIME,	O_OPT, P_SYS,		null,		null],
+	'to' =>				[T_TRX_RANGE_TIME,	O_OPT, P_SYS,		null,		null],
+	'profileIdx' =>		[T_TRX_STR,			O_OPT, null,		null,		null],
+	'profileIdx2' =>	[T_TRX_STR,			O_OPT, null,		null,		null],
+	'width' =>			[T_TRX_INT,			O_OPT, P_NZERO,	BETWEEN(20, 65535),	null],
+	'height' =>			[T_TRX_INT,			O_OPT, P_NZERO,	'{} > 0',	null],
+	'graph3d' =>		[T_TRX_INT,			O_OPT, P_NZERO,	IN('0,1'),	null],
+	'legend' =>			[T_TRX_INT,			O_OPT, null,	IN('0,1'),	null],
+	'widget_view' =>	[T_TRX_INT,			O_OPT, null,	IN('0,1'),	null]
 ];
 if (!check_fields($fields)) {
 	exit();
@@ -79,7 +79,7 @@ $graph->setHeight($height);
 
 // array sorting
 CArrayHelper::sort($dbGraph['gitems'], [
-	['field' => 'sortorder', 'order' => ZBX_SORT_UP]
+	['field' => 'sortorder', 'order' => TRX_SORT_UP]
 ]);
 
 // get graph items

@@ -51,44 +51,44 @@ void	zbx_mem_dump_stats(int level, zbx_mem_info_t *info);
 
 size_t	zbx_mem_required_size(int chunks_num, const char *descr, const char *param);
 
-#define ZBX_MEM_FUNC1_DECL_MALLOC(__prefix)				\
+#define TRX_MEM_FUNC1_DECL_MALLOC(__prefix)				\
 static void	*__prefix ## _mem_malloc_func(void *old, size_t size)
-#define ZBX_MEM_FUNC1_DECL_REALLOC(__prefix)				\
+#define TRX_MEM_FUNC1_DECL_REALLOC(__prefix)				\
 static void	*__prefix ## _mem_realloc_func(void *old, size_t size)
-#define ZBX_MEM_FUNC1_DECL_FREE(__prefix)				\
+#define TRX_MEM_FUNC1_DECL_FREE(__prefix)				\
 static void	__prefix ## _mem_free_func(void *ptr)
 
-#define ZBX_MEM_FUNC1_IMPL_MALLOC(__prefix, __info)			\
+#define TRX_MEM_FUNC1_IMPL_MALLOC(__prefix, __info)			\
 									\
 static void	*__prefix ## _mem_malloc_func(void *old, size_t size)	\
 {									\
 	return zbx_mem_malloc(__info, old, size);			\
 }
 
-#define ZBX_MEM_FUNC1_IMPL_REALLOC(__prefix, __info)			\
+#define TRX_MEM_FUNC1_IMPL_REALLOC(__prefix, __info)			\
 									\
 static void	*__prefix ## _mem_realloc_func(void *old, size_t size)	\
 {									\
 	return zbx_mem_realloc(__info, old, size);			\
 }
 
-#define ZBX_MEM_FUNC1_IMPL_FREE(__prefix, __info)			\
+#define TRX_MEM_FUNC1_IMPL_FREE(__prefix, __info)			\
 									\
 static void	__prefix ## _mem_free_func(void *ptr)			\
 {									\
 	zbx_mem_free(__info, ptr);					\
 }
 
-#define ZBX_MEM_FUNC_DECL(__prefix)					\
+#define TRX_MEM_FUNC_DECL(__prefix)					\
 									\
-ZBX_MEM_FUNC1_DECL_MALLOC(__prefix);					\
-ZBX_MEM_FUNC1_DECL_REALLOC(__prefix);					\
-ZBX_MEM_FUNC1_DECL_FREE(__prefix);
+TRX_MEM_FUNC1_DECL_MALLOC(__prefix);					\
+TRX_MEM_FUNC1_DECL_REALLOC(__prefix);					\
+TRX_MEM_FUNC1_DECL_FREE(__prefix);
 
-#define ZBX_MEM_FUNC_IMPL(__prefix, __info)				\
+#define TRX_MEM_FUNC_IMPL(__prefix, __info)				\
 									\
-ZBX_MEM_FUNC1_IMPL_MALLOC(__prefix, __info)				\
-ZBX_MEM_FUNC1_IMPL_REALLOC(__prefix, __info)				\
-ZBX_MEM_FUNC1_IMPL_FREE(__prefix, __info)
+TRX_MEM_FUNC1_IMPL_MALLOC(__prefix, __info)				\
+TRX_MEM_FUNC1_IMPL_REALLOC(__prefix, __info)				\
+TRX_MEM_FUNC1_IMPL_FREE(__prefix, __info)
 
 #endif

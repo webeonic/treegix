@@ -92,9 +92,9 @@ int	zbx_calculate_macro_function(const char *expression, const zbx_token_func_ma
 	ptr = expression + func_macro->func.l;
 	len = func_macro->func_param.l - func_macro->func.l;
 
-	if (ZBX_CONST_STRLEN("regsub") == len && 0 == strncmp(ptr, "regsub", len))
+	if (TRX_CONST_STRLEN("regsub") == len && 0 == strncmp(ptr, "regsub", len))
 		macrofunc = macrofunc_regsub;
-	else if (ZBX_CONST_STRLEN("iregsub") == len && 0 == strncmp(ptr, "iregsub", len))
+	else if (TRX_CONST_STRLEN("iregsub") == len && 0 == strncmp(ptr, "iregsub", len))
 		macrofunc = macrofunc_iregsub;
 	else
 		return FAIL;

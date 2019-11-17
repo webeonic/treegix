@@ -11,7 +11,7 @@ class CControllerUserList extends CController {
 	protected function checkInput() {
 		$fields = [
 			'sort' =>				'in alias,name,surname,type',
-			'sortorder' =>			'in '.ZBX_SORT_DOWN.','.ZBX_SORT_UP,
+			'sortorder' =>			'in '.TRX_SORT_DOWN.','.TRX_SORT_UP,
 			'uncheck' =>			'in 1',
 			'filter_set' =>			'in 1',
 			'filter_rst' =>			'in 1',
@@ -41,7 +41,7 @@ class CControllerUserList extends CController {
 		CProfile::update('web.user.filter.usrgrpid', $filter_usrgrpid, PROFILE_TYPE_ID);
 
 		$sortfield = $this->getInput('sort', CProfile::get('web.user.sort', 'alias'));
-		$sortorder = $this->getInput('sortorder', CProfile::get('web.user.sortorder', ZBX_SORT_UP));
+		$sortorder = $this->getInput('sortorder', CProfile::get('web.user.sortorder', TRX_SORT_UP));
 		CProfile::update('web.user.sort', $sortfield, PROFILE_TYPE_STR);
 		CProfile::update('web.user.sortorder', $sortorder, PROFILE_TYPE_STR);
 

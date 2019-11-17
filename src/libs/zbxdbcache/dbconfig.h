@@ -3,7 +3,7 @@
 #ifndef TREEGIX_DBCONFIG_H
 #define TREEGIX_DBCONFIG_H
 
-#ifndef ZBX_DBCONFIG_IMPL
+#ifndef TRX_DBCONFIG_IMPL
 #	error This header must be used by configuration cache implementation
 #endif
 
@@ -28,21 +28,21 @@ typedef struct
 	unsigned char		status;
 	unsigned char		functional;		/* see TRIGGER_FUNCTIONAL_* defines      */
 	unsigned char		recovery_mode;		/* see TRIGGER_RECOVERY_MODE_* defines   */
-	unsigned char		correlation_mode;	/* see ZBX_TRIGGER_CORRELATION_* defines */
-	unsigned char		timer;			/* see ZBX_TRIGGER_TIMER_* defines       */
+	unsigned char		correlation_mode;	/* see TRX_TRIGGER_CORRELATION_* defines */
+	unsigned char		timer;			/* see TRX_TRIGGER_TIMER_* defines       */
 
 	zbx_vector_ptr_t	tags;
 }
-ZBX_DC_TRIGGER;
+TRX_DC_TRIGGER;
 
 typedef struct zbx_dc_trigger_deplist
 {
 	zbx_uint64_t		triggerid;
 	int			refcount;
-	ZBX_DC_TRIGGER		*trigger;
+	TRX_DC_TRIGGER		*trigger;
 	zbx_vector_ptr_t	dependencies;
 }
-ZBX_DC_TRIGGER_DEPLIST;
+TRX_DC_TRIGGER_DEPLIST;
 
 typedef struct
 {
@@ -53,7 +53,7 @@ typedef struct
 	const char	*parameter;
 	unsigned char	timer;
 }
-ZBX_DC_FUNCTION;
+TRX_DC_FUNCTION;
 
 typedef struct
 {
@@ -66,7 +66,7 @@ typedef struct
 	const char		*port;
 	const char		*error;
 	const char		*delay;
-	ZBX_DC_TRIGGER		**triggers;
+	TRX_DC_TRIGGER		**triggers;
 	int			nextcheck;
 	int			lastclock;
 	int			mtime;
@@ -88,7 +88,7 @@ typedef struct
 	zbx_uint64_t		templateid;
 	zbx_uint64_t		parent_itemid; /* from joined item_discovery table */
 }
-ZBX_DC_ITEM;
+TRX_DC_ITEM;
 
 typedef struct
 {
@@ -96,7 +96,7 @@ typedef struct
 	zbx_uint64_t		hostid;
 	zbx_uint64_t		templateid;
 }
-ZBX_DC_TEMPLATE_ITEM;
+TRX_DC_TEMPLATE_ITEM;
 
 typedef struct
 {
@@ -104,15 +104,15 @@ typedef struct
 	zbx_uint64_t		hostid;
 	zbx_uint64_t		templateid;
 }
-ZBX_DC_PROTOTYPE_ITEM;
+TRX_DC_PROTOTYPE_ITEM;
 
 typedef struct
 {
 	zbx_uint64_t	hostid;
 	const char	*key;
-	ZBX_DC_ITEM	*item_ptr;
+	TRX_DC_ITEM	*item_ptr;
 }
-ZBX_DC_ITEM_HK;
+TRX_DC_ITEM_HK;
 
 typedef struct
 {
@@ -120,7 +120,7 @@ typedef struct
 	const char	*units;
 	unsigned char	trends;
 }
-ZBX_DC_NUMITEM;
+TRX_DC_NUMITEM;
 
 typedef struct
 {
@@ -136,21 +136,21 @@ typedef struct
 	unsigned char	snmpv3_privprotocol;
 	unsigned char	snmp_oid_type;
 }
-ZBX_DC_SNMPITEM;
+TRX_DC_SNMPITEM;
 
 typedef struct
 {
 	zbx_uint64_t	itemid;
 	const char	*ipmi_sensor;
 }
-ZBX_DC_IPMIITEM;
+TRX_DC_IPMIITEM;
 
 typedef struct
 {
 	zbx_uint64_t	itemid;
 	const char	*trapper_hosts;
 }
-ZBX_DC_TRAPITEM;
+TRX_DC_TRAPITEM;
 
 typedef struct
 {
@@ -159,14 +159,14 @@ typedef struct
 	zbx_uint64_t	last_master_itemid;
 	unsigned char	flags;
 }
-ZBX_DC_DEPENDENTITEM;
+TRX_DC_DEPENDENTITEM;
 
 typedef struct
 {
 	zbx_uint64_t	itemid;
 	const char	*logtimefmt;
 }
-ZBX_DC_LOGITEM;
+TRX_DC_LOGITEM;
 
 typedef struct
 {
@@ -175,7 +175,7 @@ typedef struct
 	const char	*username;
 	const char	*password;
 }
-ZBX_DC_DBITEM;
+TRX_DC_DBITEM;
 
 typedef struct
 {
@@ -187,7 +187,7 @@ typedef struct
 	const char	*params;
 	unsigned char	authtype;
 }
-ZBX_DC_SSHITEM;
+TRX_DC_SSHITEM;
 
 typedef struct
 {
@@ -196,7 +196,7 @@ typedef struct
 	const char	*password;
 	const char	*params;
 }
-ZBX_DC_TELNETITEM;
+TRX_DC_TELNETITEM;
 
 typedef struct
 {
@@ -204,7 +204,7 @@ typedef struct
 	const char	*username;
 	const char	*password;
 }
-ZBX_DC_SIMPLEITEM;
+TRX_DC_SIMPLEITEM;
 
 typedef struct
 {
@@ -213,21 +213,21 @@ typedef struct
 	const char	*password;
 	const char	*jmx_endpoint;
 }
-ZBX_DC_JMXITEM;
+TRX_DC_JMXITEM;
 
 typedef struct
 {
 	zbx_uint64_t	itemid;
 	const char	*params;
 }
-ZBX_DC_CALCITEM;
+TRX_DC_CALCITEM;
 
 typedef struct
 {
 	zbx_uint64_t			itemid;
 	zbx_vector_uint64_pair_t	dep_itemids;
 }
-ZBX_DC_MASTERITEM;
+TRX_DC_MASTERITEM;
 
 typedef struct
 {
@@ -235,7 +235,7 @@ typedef struct
 	int			update_time;
 	zbx_vector_ptr_t	preproc_ops;
 }
-ZBX_DC_PREPROCITEM;
+TRX_DC_PREPROCITEM;
 
 typedef struct
 {
@@ -263,7 +263,7 @@ typedef struct
 	unsigned char	verify_host;
 	unsigned char	allow_traps;
 }
-ZBX_DC_HTTPITEM;
+TRX_DC_HTTPITEM;
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 typedef struct
@@ -272,7 +272,7 @@ typedef struct
 	const char	*tls_psk;		/* pre-shared key value (hex-string) */
 	unsigned int	refcount;		/* reference count                   */
 }
-ZBX_DC_PSK;
+TRX_DC_PSK;
 #endif
 
 typedef struct
@@ -329,7 +329,7 @@ typedef struct
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	const char	*tls_issuer;
 	const char	*tls_subject;
-	ZBX_DC_PSK	*tls_dc_psk;
+	TRX_DC_PSK	*tls_dc_psk;
 #endif
 	const char	*error;
 	const char	*snmp_error;
@@ -339,7 +339,7 @@ typedef struct
 	zbx_vector_ptr_t	interfaces_v;	/* for quick finding of all host interfaces in */
 						/* 'config->interfaces' hashset */
 }
-ZBX_DC_HOST;
+TRX_DC_HOST;
 
 typedef struct
 {
@@ -347,14 +347,14 @@ typedef struct
 	unsigned char	inventory_mode;
 	const char	*values[HOST_INVENTORY_FIELD_COUNT];
 }
-ZBX_DC_HOST_INVENTORY;
+TRX_DC_HOST_INVENTORY;
 
 typedef struct
 {
 	const char	*host;
-	ZBX_DC_HOST	*host_ptr;
+	TRX_DC_HOST	*host_ptr;
 }
-ZBX_DC_HOST_H;
+TRX_DC_HOST_H;
 
 typedef struct
 {
@@ -375,7 +375,7 @@ typedef struct
 	const char	*proxy_address;
 	int		last_version_error_time;
 }
-ZBX_DC_PROXY;
+TRX_DC_PROXY;
 
 typedef struct
 {
@@ -385,14 +385,14 @@ typedef struct
 	signed char	ipmi_authtype;
 	unsigned char	ipmi_privilege;
 }
-ZBX_DC_IPMIHOST;
+TRX_DC_IPMIHOST;
 
 typedef struct
 {
 	zbx_uint64_t		hostid;
 	zbx_vector_uint64_t	templateids;
 }
-ZBX_DC_HTMPL;
+TRX_DC_HTMPL;
 
 typedef struct
 {
@@ -401,14 +401,14 @@ typedef struct
 	const char	*context;
 	const char	*value;
 }
-ZBX_DC_GMACRO;
+TRX_DC_GMACRO;
 
 typedef struct
 {
 	const char		*macro;
 	zbx_vector_ptr_t	gmacros;
 }
-ZBX_DC_GMACRO_M;
+TRX_DC_GMACRO_M;
 
 typedef struct
 {
@@ -418,7 +418,7 @@ typedef struct
 	const char	*context;
 	const char	*value;
 }
-ZBX_DC_HMACRO;
+TRX_DC_HMACRO;
 
 typedef struct
 {
@@ -426,7 +426,7 @@ typedef struct
 	const char		*macro;
 	zbx_vector_ptr_t	hmacros;
 }
-ZBX_DC_HMACRO_HM;
+TRX_DC_HMACRO_HM;
 
 typedef struct
 {
@@ -442,36 +442,36 @@ typedef struct
 	unsigned char	max_snmp_succeed;
 	unsigned char	min_snmp_fail;
 }
-ZBX_DC_INTERFACE;
+TRX_DC_INTERFACE;
 
 typedef struct
 {
 	zbx_uint64_t		hostid;
-	ZBX_DC_INTERFACE	*interface_ptr;
+	TRX_DC_INTERFACE	*interface_ptr;
 	unsigned char		type;
 }
-ZBX_DC_INTERFACE_HT;
+TRX_DC_INTERFACE_HT;
 
 typedef struct
 {
 	const char		*addr;
 	zbx_vector_uint64_t	interfaceids;
 }
-ZBX_DC_INTERFACE_ADDR;
+TRX_DC_INTERFACE_ADDR;
 
 typedef struct
 {
 	zbx_uint64_t		interfaceid;
 	zbx_vector_uint64_t	itemids;
 }
-ZBX_DC_INTERFACE_ITEM;
+TRX_DC_INTERFACE_ITEM;
 
 typedef struct
 {
 	const char		*name;
 	zbx_vector_uint64_t	expressionids;
 }
-ZBX_DC_REGEXP;
+TRX_DC_REGEXP;
 
 typedef struct
 {
@@ -482,7 +482,7 @@ typedef struct
 	unsigned char	type;
 	unsigned char	case_sensitive;
 }
-ZBX_DC_EXPRESSION;
+TRX_DC_EXPRESSION;
 
 typedef struct
 {
@@ -496,7 +496,7 @@ typedef struct
 	/* housekeeping related configuration data */
 	zbx_config_hk_t	hk;
 }
-ZBX_DC_CONFIG_TABLE;
+TRX_DC_CONFIG_TABLE;
 
 typedef struct
 {
@@ -514,7 +514,7 @@ typedef struct
 	double		required_performance;		/* required performance of server (values per second) */
 	time_t		last_update;
 }
-ZBX_DC_STATUS;
+TRX_DC_STATUS;
 
 typedef struct
 {
@@ -631,8 +631,8 @@ typedef struct
 }
 zbx_dc_correlation_t;
 
-#define ZBX_DC_HOSTGROUP_FLAGS_NONE		0
-#define ZBX_DC_HOSTGROUP_FLAGS_NESTED_GROUPIDS	1
+#define TRX_DC_HOSTGROUP_FLAGS_NONE		0
+#define TRX_DC_HOSTGROUP_FLAGS_NESTED_GROUPIDS	1
 
 typedef struct
 {
@@ -784,27 +784,27 @@ typedef struct
 							/* by PSK identity */
 #endif
 	zbx_hashset_t		data_sessions;
-	zbx_binary_heap_t	queues[ZBX_POLLER_TYPE_COUNT];
+	zbx_binary_heap_t	queues[TRX_POLLER_TYPE_COUNT];
 	zbx_binary_heap_t	pqueue;
 	zbx_binary_heap_t	timer_queue;
-	ZBX_DC_CONFIG_TABLE	*config;
-	ZBX_DC_STATUS		*status;
+	TRX_DC_CONFIG_TABLE	*config;
+	TRX_DC_STATUS		*status;
 	zbx_hashset_t		strpool;
 	char			autoreg_psk_identity[HOST_TLS_PSK_IDENTITY_LEN_MAX];	/* autoregistration PSK */
 	char			autoreg_psk[HOST_TLS_PSK_LEN_MAX];
 }
-ZBX_DC_CONFIG;
+TRX_DC_CONFIG;
 
 extern int	sync_in_progress;
-extern ZBX_DC_CONFIG	*config;
+extern TRX_DC_CONFIG	*config;
 extern zbx_rwlock_t	config_lock;
 
 #define	RDLOCK_CACHE	if (0 == sync_in_progress) zbx_rwlock_rdlock(config_lock)
 #define	WRLOCK_CACHE	if (0 == sync_in_progress) zbx_rwlock_wrlock(config_lock)
 #define	UNLOCK_CACHE	if (0 == sync_in_progress) zbx_rwlock_unlock(config_lock)
 
-#define ZBX_IPMI_DEFAULT_AUTHTYPE	-1
-#define ZBX_IPMI_DEFAULT_PRIVILEGE	2
+#define TRX_IPMI_DEFAULT_AUTHTYPE	-1
+#define TRX_IPMI_DEFAULT_PRIVILEGE	2
 
 /* validator function optionally used to validate macro values when expanding user macros */
 
@@ -853,7 +853,7 @@ void	DCsync_maintenance_hosts(zbx_dbsync_t *sync);
 /* maintenance support */
 
 /* number of slots to store maintenance update flags */
-#define ZBX_MAINTENANCE_UPDATE_FLAGS_NUM()	\
+#define TRX_MAINTENANCE_UPDATE_FLAGS_NUM()	\
 		((CONFIG_TIMER_FORKS + sizeof(uint64_t) * 8 - 1) / (sizeof(uint64_t) * 8))
 
 
