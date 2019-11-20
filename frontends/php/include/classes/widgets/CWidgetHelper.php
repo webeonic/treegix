@@ -139,7 +139,7 @@ class CWidgetHelper {
 					'srctbl' => 'hosts',
 					'srcfld1' => 'hostid',
 					'dstfrm' => $form_name,
-					'dstfld1' => zbx_formatDomId($field->getName().'[]')
+					'dstfld1' => trx_formatDomId($field->getName().'[]')
 				]
 			],
 			'add_post_js' => false
@@ -203,7 +203,7 @@ class CWidgetHelper {
 			'popup' => [
 				'parameters' => [
 					'dstfrm' => $form_name,
-					'dstfld1' => zbx_formatDomId($field_name)
+					'dstfld1' => trx_formatDomId($field_name)
 				] + $popup_options
 			],
 			'add_post_js' => false
@@ -578,7 +578,7 @@ class CWidgetHelper {
 									'srctbl' => 'hosts',
 									'srcfld1' => 'hostid',
 									'dstfrm' => $form_name,
-									'dstfld1' => zbx_formatDomId($field->getName().'['.$row_num.'][hosts][]')
+									'dstfld1' => trx_formatDomId($field->getName().'['.$row_num.'][hosts][]')
 								]
 							],
 							'add_post_js' => false
@@ -603,7 +603,7 @@ class CWidgetHelper {
 									'webitems' => 1,
 									'orig_names' => 1,
 									'dstfrm' => $form_name,
-									'dstfld1' => zbx_formatDomId($field->getName().'['.$row_num.'][items][]')
+									'dstfld1' => trx_formatDomId($field->getName().'['.$row_num.'][items][]')
 								]
 							],
 							'add_post_js' => false
@@ -936,7 +936,7 @@ class CWidgetHelper {
 									'srctbl' => 'hosts',
 									'srcfld1' => 'host',
 									'dstfrm' => $form_name,
-									'dstfld1' => zbx_formatDomId($field_name.'['.$row_num.'][hosts][]')
+									'dstfld1' => trx_formatDomId($field_name.'['.$row_num.'][hosts][]')
 								]
 							],
 							'add_post_js' => false
@@ -956,7 +956,7 @@ class CWidgetHelper {
 									'webitems' => 1,
 									'orig_names' => 1,
 									'dstfrm' => $form_name,
-									'dstfld1' => zbx_formatDomId($field_name.'['.$row_num.'][items][]')
+									'dstfld1' => trx_formatDomId($field_name.'['.$row_num.'][items][]')
 								]
 							],
 							'add_post_js' => false
@@ -1220,7 +1220,7 @@ class CWidgetHelper {
 					'}'.
 				'})'.
 				'.bind("beforeadd.dynamicRows", function(event, options) {'.
-					'jQuery("#data_sets").zbx_vertical_accordion("collapseAll");'.
+					'jQuery("#data_sets").trx_vertical_accordion("collapseAll");'.
 				'})'.
 				'.bind("afteradd.dynamicRows", function(event, options) {'.
 					'var container = jQuery(".overlay-dialogue-body");'.
@@ -1255,7 +1255,7 @@ class CWidgetHelper {
 				'});',
 
 			// Intialize vertical accordion.
-			'jQuery("#data_sets").zbx_vertical_accordion({'.
+			'jQuery("#data_sets").trx_vertical_accordion({'.
 				'handler: ".'.TRX_STYLE_COLOR_PREVIEW_BOX.'"'.
 			'});',
 
@@ -1268,7 +1268,7 @@ class CWidgetHelper {
 				'.'.TRX_STYLE_LIST_ACCORDION_ITEM_CLOSED.' .'.TRX_STYLE_BTN_GREY
 			]).'", function() {'.
 				'var index = jQuery(this).closest(".'.TRX_STYLE_LIST_ACCORDION_ITEM.'").index();'.
-				'jQuery("#data_sets").zbx_vertical_accordion("expandNth", index);'.
+				'jQuery("#data_sets").trx_vertical_accordion("expandNth", index);'.
 			'});',
 
 			// Initialize pattern fields.

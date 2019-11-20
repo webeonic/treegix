@@ -92,7 +92,7 @@ foreach ($data['menu']['sub_menus'] as $label => $sub_menu) {
 
     if ($data['menu']['selected'] === $label) {
         $sub_menu_row->setAttribute('style', 'display: block;');
-        insert_js('MMenu.def_label = ' . zbx_jsvalue($label));
+        insert_js('MMenu.def_label = ' . trx_jsvalue($label));
     } else {
         $sub_menu_row->setAttribute('style', 'display: none;');
     }

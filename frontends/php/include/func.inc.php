@@ -9,7 +9,7 @@
  *
  * @return bool
  */
-function zbx_is_callable(array $names) {
+function trx_is_callable(array $names) {
 	foreach ($names as $name) {
 		if (!is_callable($name)) {
 			return false;
@@ -83,13 +83,13 @@ function get_cookie($name, $default_value = null) {
 	return $default_value;
 }
 
-function zbx_setcookie($name, $value, $time = null) {
+function trx_setcookie($name, $value, $time = null) {
 	setcookie($name, $value, isset($time) ? $time : 0, CSession::getDefaultCookiePath(), null, HTTPS, true);
 	$_COOKIE[$name] = $value;
 }
 
-function zbx_unsetcookie($name) {
-	zbx_setcookie($name, null, -99999);
+function trx_unsetcookie($name) {
+	trx_setcookie($name, null, -99999);
 	unset($_COOKIE[$name]);
 }
 
@@ -150,7 +150,7 @@ function dowHrMinToStr($value, $display24Hours = false) {
 
 // Convert Day Of Week, Hours and Minutes to seconds representation. For example, 2 11:00 -> 212400. false if error occurred
 function dowHrMinToSec($dow, $hr, $min) {
-	if (zbx_empty($dow) || zbx_empty($hr) || zbx_empty($min) || !zbx_ctype_digit($dow) || !zbx_ctype_digit($hr) || !zbx_ctype_digit($min)) {
+	if (trx_empty($dow) || trx_empty($hr) || trx_empty($min) || !trx_ctype_digit($dow) || !trx_ctype_digit($hr) || !trx_ctype_digit($min)) {
 		return false;
 	}
 
@@ -174,7 +174,7 @@ function dowHrMinToSec($dow, $hr, $min) {
 }
 
 // Convert timestamp to string representation. Return 'Never' if 0.
-function zbx_date2str($format, $value = null) {
+function trx_date2str($format, $value = null) {
 	static $weekdaynames, $weekdaynameslong, $months, $monthslong;
 
 	$prefix = '';
@@ -284,13 +284,13 @@ function zbx_date2str($format, $value = null) {
  *
  * @return string
  */
-function zbx_date2age($start_date, $end_date = 0) {
+function trx_date2age($start_date, $end_date = 0) {
 	$end_date = ($end_date != 0) ? $end_date : time();
 
 	return convertUnitsS($end_date - $start_date);
 }
 
-function zbxDateToTime($strdate) {
+function trxDateToTime($strdate) {
 	if (6 == sscanf($strdate, '%04d%02d%02d%02d%02d%02d', $year, $month, $date, $hours, $minutes, $seconds)) {
 		return mktime($hours, $minutes, $seconds, $month, $date, $year);
 	}
@@ -313,8 +313,8 @@ function zbxDateToTime($strdate) {
  *
  * @return int
  */
-function zbxAddSecondsToUnixtime($sec, $unixtime) {
-	return strtotime('+'.$sec.' seconds', zbxDateToTime($unixtime));
+function trxAddSecondsToUnixtime($sec, $unixtime) {
+	return strtotime('+'.$sec.' seconds', trxDateToTime($unixtime));
 }
 
 /*************** CONVERTING ******************/
@@ -396,7 +396,7 @@ function getColorVariations($color, $variations_requested = 1) {
 	return $variations;
 }
 
-function zbx_num2bitstr($num, $rev = false) {
+function trx_num2bitstr($num, $rev = false) {
 	if (!is_numeric($num)) {
 		return 0;
 	}
@@ -643,11 +643,11 @@ function convert_units($options = []) {
 		'length' => false
 	];
 
-	$options = zbx_array_merge($defOptions, $options);
+	$options = trx_array_merge($defOptions, $options);
 
 	// special processing for unix timestamps
 	if ($options['units'] == 'unixtime') {
-		return zbx_date2str(DATE_TIME_FORMAT_SECONDS, $options['value']);
+		return trx_date2str(DATE_TIME_FORMAT_SECONDS, $options['value']);
 	}
 
 	// special processing of uptime
@@ -670,7 +670,7 @@ function convert_units($options = []) {
 	}
 
 	// any other unit
-	if (in_array($options['units'], $blackList) || (zbx_empty($options['units'])
+	if (in_array($options['units'], $blackList) || (trx_empty($options['units'])
 			&& ($options['convert'] == ITEM_CONVERT_WITH_UNITS))) {
 		if (preg_match('/\.\d+$/', $options['value'])) {
 			$format = (abs($options['value']) >= TRX_UNITS_ROUNDOFF_THRESHOLD)
@@ -910,14 +910,14 @@ function convertFunctionValue($value, $scale = 0) {
  * @param mixed $a first value
  * @param mixed $b second value
  */
-function zbx_swap(&$a, &$b) {
+function trx_swap(&$a, &$b) {
 	$tmp = $a;
 	$a = $b;
 	$b = $tmp;
 }
 
-function zbx_avg($values) {
-	zbx_value2array($values);
+function trx_avg($values) {
+	trx_value2array($values);
 	$sum = 0;
 	foreach ($values as $value) {
 		$sum = bcadd($sum, $value);
@@ -933,7 +933,7 @@ function zbx_avg($values) {
  *
  * @return boolean
  */
-function zbx_ctype_digit($x) {
+function trx_ctype_digit($x) {
 	return ctype_digit(strval($x));
 }
 
@@ -946,7 +946,7 @@ function zbx_ctype_digit($x) {
  *
  * @return bool
  */
-function zbx_empty($value) {
+function trx_empty($value) {
 	if ($value === null) {
 		return true;
 	}
@@ -960,7 +960,7 @@ function zbx_empty($value) {
 	return false;
 }
 
-function zbx_is_int($var) {
+function trx_is_int($var) {
 	if (is_int($var)) {
 		return true;
 	}
@@ -971,7 +971,7 @@ function zbx_is_int($var) {
 		}
 	}
 	else {
-		if ($var > 0 && zbx_ctype_digit($var)) {
+		if ($var > 0 && trx_ctype_digit($var)) {
 			return true;
 		}
 	}
@@ -989,15 +989,15 @@ function zbx_is_int($var) {
  *
  * @return array
  */
-function zbx_array_diff(array $primary, array $secondary, $field) {
-	$fields1 = zbx_objectValues($primary, $field);
-	$fields2 = zbx_objectValues($secondary, $field);
+function trx_array_diff(array $primary, array $secondary, $field) {
+	$fields1 = trx_objectValues($primary, $field);
+	$fields2 = trx_objectValues($secondary, $field);
 
 	$first = array_diff($fields1, $fields2);
-	$first = zbx_toHash($first);
+	$first = trx_toHash($first);
 
 	$second = array_diff($fields2, $fields1);
-	$second = zbx_toHash($second);
+	$second = trx_toHash($second);
 
 	$result = [
 		'first' => [],
@@ -1029,7 +1029,7 @@ function zbx_array_diff(array $primary, array $secondary, $field) {
 	return $result;
 }
 
-function zbx_array_push(&$array, $add) {
+function trx_array_push(&$array, $add) {
 	foreach ($array as $key => $value) {
 		foreach ($add as $newKey => $newValue) {
 			$array[$key][$newKey] = $newValue;
@@ -1041,7 +1041,7 @@ function zbx_array_push(&$array, $add) {
  * Find if array has any duplicate values and return an array with info about them.
  * In case of no duplicates, empty array is returned.
  * Example of usage:
- *     $result = zbx_arrayFindDuplicates(
+ *     $result = trx_arrayFindDuplicates(
  *         array('a', 'b', 'c', 'c', 'd', 'd', 'd', 'e')
  *     );
  *     array(
@@ -1053,7 +1053,7 @@ function zbx_array_push(&$array, $add) {
  *
  * @return array
  */
-function zbx_arrayFindDuplicates(array $array) {
+function trx_arrayFindDuplicates(array $array) {
 	$countValues = array_count_values($array); // counting occurrences of every value in array
 	foreach ($countValues as $value => $count) {
 		if ($count <= 1) {
@@ -1066,7 +1066,7 @@ function zbx_arrayFindDuplicates(array $array) {
 }
 
 /************* STRING *************/
-function zbx_nl2br($str) {
+function trx_nl2br($str) {
 	$str_res = [];
 	foreach (explode("\n", $str) as $str_line) {
 		array_push($str_res, $str_line, BR());
@@ -1076,7 +1076,7 @@ function zbx_nl2br($str) {
 	return $str_res;
 }
 
-function zbx_formatDomId($value) {
+function trx_formatDomId($value) {
 	return str_replace(['[', ']'], ['_', ''], $value);
 }
 
@@ -1097,10 +1097,10 @@ function natksort(&$array) {
 }
 
 // recursively sort an array by key
-function zbx_rksort(&$array, $flags = null) {
+function trx_rksort(&$array, $flags = null) {
 	if (is_array($array)) {
 		foreach ($array as $id => $data) {
-			zbx_rksort($array[$id]);
+			trx_rksort($array[$id]);
 		}
 		ksort($array, $flags);
 	}
@@ -1187,7 +1187,7 @@ function order_macros(array $macros, $sortfield, $order = TRX_SORT_UP) {
 }
 
 // preserve keys
-function zbx_array_merge() {
+function trx_array_merge() {
 	$args = func_get_args();
 	$result = [];
 	foreach ($args as &$array) {
@@ -1235,7 +1235,7 @@ function str_in_array($needle, $haystack, $strict = false) {
 	return false;
 }
 
-function zbx_value2array(&$values) {
+function trx_value2array(&$values) {
 	if (!is_array($values) && !is_null($values)) {
 		$tmp = [];
 		if (is_object($values)) {
@@ -1256,12 +1256,12 @@ function createParentToChildRelation(&$chain, $link, $parentField, $childField) 
 
 	$chain[$link[$parentField]][$link[$childField]] = $link[$childField];
 	if (isset($chain[$link[$childField]])) {
-		$chain[$link[$parentField]] = zbx_array_merge($chain[$link[$parentField]], $chain[$link[$childField]]);
+		$chain[$link[$parentField]] = trx_array_merge($chain[$link[$parentField]], $chain[$link[$childField]]);
 	}
 }
 
 // object or array of objects to hash
-function zbx_toHash($value, $field = null) {
+function trx_toHash($value, $field = null) {
 	if (is_null($value)) {
 		return $value;
 	}
@@ -1292,9 +1292,9 @@ function zbx_toHash($value, $field = null) {
  * key.
  *
  * E.g:
- * zbx_toObject(array(1, 2), 'hostid')            // returns array(array('hostid' => 1), array('hostid' => 2))
- * zbx_toObject(3, 'hostid')                      // returns array(array('hostid' => 3))
- * zbx_toObject(array('a' => 1), 'hostid', true)  // returns array('a' => array('hostid' => 1))
+ * trx_toObject(array(1, 2), 'hostid')            // returns array(array('hostid' => 1), array('hostid' => 2))
+ * trx_toObject(3, 'hostid')                      // returns array(array('hostid' => 3))
+ * trx_toObject(array('a' => 1), 'hostid', true)  // returns array('a' => array('hostid' => 1))
  *
  * @param $value
  * @param $field
@@ -1302,7 +1302,7 @@ function zbx_toHash($value, $field = null) {
  *
  * @return array
  */
-function zbx_toObject($value, $field, $preserve_keys = false) {
+function trx_toObject($value, $field, $preserve_keys = false) {
 	if (is_null($value)) {
 		return $value;
 	}
@@ -1338,7 +1338,7 @@ function zbx_toObject($value, $field, $preserve_keys = false) {
  *
  * @return array
  */
-function zbx_toArray($value) {
+function trx_toArray($value) {
 	if ($value === null) {
 		return $value;
 	}
@@ -1347,7 +1347,7 @@ function zbx_toArray($value) {
 		// reset() is needed to move internal array pointer to the beginning of the array
 		reset($value);
 
-		if (zbx_ctype_digit(key($value))) {
+		if (trx_ctype_digit(key($value))) {
 			$result = array_values($value);
 		}
 		elseif (!empty($value)) {
@@ -1365,7 +1365,7 @@ function zbx_toArray($value) {
 }
 
 // value OR object OR array of objects TO an array
-function zbx_objectValues($value, $field) {
+function trx_objectValues($value, $field) {
 	if (is_null($value)) {
 		return $value;
 	}
@@ -1392,11 +1392,11 @@ function zbx_objectValues($value, $field) {
 	return $result;
 }
 
-function zbx_cleanHashes(&$value) {
+function trx_cleanHashes(&$value) {
 	if (is_array($value)) {
 		// reset() is needed to move internal array pointer to the beginning of the array
 		reset($value);
-		if (zbx_ctype_digit(key($value))) {
+		if (trx_ctype_digit(key($value))) {
 			$value = array_values($value);
 		}
 	}
@@ -1404,7 +1404,7 @@ function zbx_cleanHashes(&$value) {
 	return $value;
 }
 
-function zbx_toCSV($values) {
+function trx_toCSV($values) {
 	$csv = '';
 	$glue = '","';
 	foreach ($values as $row) {
@@ -1425,7 +1425,7 @@ function zbx_toCSV($values) {
 	return $csv;
 }
 
-function zbx_str2links($text) {
+function trx_str2links($text) {
 	$result = [];
 
 	foreach (explode("\n", $text) as $line) {
@@ -1457,7 +1457,7 @@ function zbx_str2links($text) {
 	return $result;
 }
 
-function zbx_subarray_push(&$mainArray, $sIndex, $element = null, $key = null) {
+function trx_subarray_push(&$mainArray, $sIndex, $element = null, $key = null) {
 	if (!isset($mainArray[$sIndex])) {
 		$mainArray[$sIndex] = [];
 	}
@@ -1490,7 +1490,7 @@ function make_sorting_header($obj, $tabfield, $sortField, $sortOrder, $link = nu
 	$link->setArgument('sort', $tabfield);
 	$link->setArgument('sortorder', $sortorder);
 
-	zbx_value2array($obj);
+	trx_value2array($obj);
 
 	$arrow = null;
 	if ($tabfield == $sortField) {
@@ -2047,7 +2047,7 @@ function info($msgs) {
 		$TRX_MESSAGES = [];
 	}
 
-	zbx_value2array($msgs);
+	trx_value2array($msgs);
 
 	foreach ($msgs as $msg) {
 		$TRX_MESSAGES[] = ['type' => 'info', 'message' => $msg];
@@ -2067,7 +2067,7 @@ function error($msgs, $src = '') {
 		$TRX_MESSAGES = [];
 	}
 
-	$msgs = zbx_toArray($msgs);
+	$msgs = trx_toArray($msgs);
 
 	foreach ($msgs as $msg) {
 		$TRX_MESSAGES[] = [
@@ -2086,7 +2086,7 @@ function error($msgs, $src = '') {
  * @param array  $data['msgs']    array of error messages
  */
 function error_group($data) {
-	foreach (zbx_toArray($data['msgs']) as $msg) {
+	foreach (trx_toArray($data['msgs']) as $msg) {
 		error($data['header'] . ' ' . $msg);
 	}
 }
@@ -2497,7 +2497,7 @@ function getUserGraphTheme() {
  * @param string  $errfile Filename that the error was raised in.
  * @param int     $errline Line number the error was raised in.
  */
-function zbx_err_handler($errno, $errstr, $errfile, $errline) {
+function trx_err_handler($errno, $errstr, $errfile, $errline) {
 	// Necessary to suppress errors when calling with error control operator like @function_name().
 	if (error_reporting() === 0) {
 		return true;
@@ -2571,8 +2571,8 @@ function makeUpdateIntervalFilter($field_name, $values) {
 		$filter = str_replace("%", "!%", $filter);
 		$filter = str_replace("_", "!_", $filter);
 
-		$filters[] = $field_name.' LIKE '.zbx_dbstr($filter).' ESCAPE '.zbx_dbstr('!');
-		$filters[] = $field_name.' LIKE '.zbx_dbstr($filter.';%').' ESCAPE '.zbx_dbstr('!');
+		$filters[] = $field_name.' LIKE '.trx_dbstr($filter).' ESCAPE '.trx_dbstr('!');
+		$filters[] = $field_name.' LIKE '.trx_dbstr($filter.';%').' ESCAPE '.trx_dbstr('!');
 	}
 
 	$res = $filters ? implode(' OR ', $filters) : '';

@@ -57,7 +57,7 @@ class CWidgetFieldHostPatternSelect extends CWidgetField {
 	}
 
 	public function getJavascript() {
-		$fieldid = zbx_formatDomId($this->getName().'[]');
+		$fieldid = trx_formatDomId($this->getName().'[]');
 
 		return 'jQuery("#'.$fieldid.'").multiSelect(jQuery("#'.$fieldid.'").data("params"));';
 	}

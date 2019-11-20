@@ -2,8 +2,8 @@
 #ifndef TREEGIX_TRXTASKS_H
 #define TREEGIX_TRXTASKS_H
 
-#include "zbxalgo.h"
-#include "zbxjson.h"
+#include "trxalgo.h"
+#include "trxjson.h"
 
 #define TRX_TASK_UPDATE_FREQUENCY	1
 
@@ -38,32 +38,32 @@ typedef struct
 	char		*password;
 	char		*publickey;
 	char		*privatekey;
-	zbx_uint64_t	parent_taskid;
-	zbx_uint64_t	hostid;
-	zbx_uint64_t	alertid;
+	trx_uint64_t	parent_taskid;
+	trx_uint64_t	hostid;
+	trx_uint64_t	alertid;
 }
-zbx_tm_remote_command_t;
+trx_tm_remote_command_t;
 
 typedef struct
 {
 	int		status;
 	char		*info;
-	zbx_uint64_t	parent_taskid;
+	trx_uint64_t	parent_taskid;
 }
-zbx_tm_remote_command_result_t;
+trx_tm_remote_command_result_t;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 }
-zbx_tm_check_now_t;
+trx_tm_check_now_t;
 
 typedef struct
 {
 	/* the task identifier */
-	zbx_uint64_t	taskid;
+	trx_uint64_t	taskid;
 	/* the target proxy hostid or 0 if the task must be on server, ignored by proxy */
-	zbx_uint64_t	proxy_hostid;
+	trx_uint64_t	proxy_hostid;
 	/* the task type (TRX_TM_TASK_* defines) */
 	unsigned char	type;
 	/* the task status (TRX_TM_STATUS_* defines) */
@@ -76,32 +76,32 @@ typedef struct
 	/* the task data, depending on task type */
 	void		*data;
 }
-zbx_tm_task_t;
+trx_tm_task_t;
 
 
-zbx_tm_task_t	*zbx_tm_task_create(zbx_uint64_t taskid, unsigned char type, unsigned char status, int clock, int ttl,
-		zbx_uint64_t proxy_hostid);
-void	zbx_tm_task_clear(zbx_tm_task_t *task);
-void	zbx_tm_task_free(zbx_tm_task_t *task);
+trx_tm_task_t	*trx_tm_task_create(trx_uint64_t taskid, unsigned char type, unsigned char status, int clock, int ttl,
+		trx_uint64_t proxy_hostid);
+void	trx_tm_task_clear(trx_tm_task_t *task);
+void	trx_tm_task_free(trx_tm_task_t *task);
 
-zbx_tm_remote_command_t	*zbx_tm_remote_command_create(int commandtype, const char *command, int execute_on, int port,
+trx_tm_remote_command_t	*trx_tm_remote_command_create(int commandtype, const char *command, int execute_on, int port,
 		int authtype, const char *username, const char *password, const char *publickey, const char *privatekey,
-		zbx_uint64_t parent_taskid, zbx_uint64_t hostid, zbx_uint64_t alertid);
+		trx_uint64_t parent_taskid, trx_uint64_t hostid, trx_uint64_t alertid);
 
-zbx_tm_remote_command_result_t	*zbx_tm_remote_command_result_create(zbx_uint64_t parent_taskid, int status,
+trx_tm_remote_command_result_t	*trx_tm_remote_command_result_create(trx_uint64_t parent_taskid, int status,
 		const char *error);
 
-zbx_tm_check_now_t	*zbx_tm_check_now_create(zbx_uint64_t itemid);
+trx_tm_check_now_t	*trx_tm_check_now_create(trx_uint64_t itemid);
 
-void	zbx_tm_save_tasks(zbx_vector_ptr_t *tasks);
-int	zbx_tm_save_task(zbx_tm_task_t *task);
+void	trx_tm_save_tasks(trx_vector_ptr_t *tasks);
+int	trx_tm_save_task(trx_tm_task_t *task);
 
-void	zbx_tm_get_proxy_tasks(zbx_vector_ptr_t *tasks, zbx_uint64_t proxy_hostid);
-void	zbx_tm_update_task_status(zbx_vector_ptr_t *tasks, int status);
-void	zbx_tm_json_serialize_tasks(struct zbx_json *json, const zbx_vector_ptr_t *tasks);
-void	zbx_tm_json_deserialize_tasks(const struct zbx_json_parse *jp, zbx_vector_ptr_t *tasks);
+void	trx_tm_get_proxy_tasks(trx_vector_ptr_t *tasks, trx_uint64_t proxy_hostid);
+void	trx_tm_update_task_status(trx_vector_ptr_t *tasks, int status);
+void	trx_tm_json_serialize_tasks(struct trx_json *json, const trx_vector_ptr_t *tasks);
+void	trx_tm_json_deserialize_tasks(const struct trx_json_parse *jp, trx_vector_ptr_t *tasks);
 
 /* separate implementation for proxy and server */
-void	zbx_tm_get_remote_tasks(zbx_vector_ptr_t *tasks, zbx_uint64_t proxy_hostid);
+void	trx_tm_get_remote_tasks(trx_vector_ptr_t *tasks, trx_uint64_t proxy_hostid);
 
 #endif

@@ -112,7 +112,7 @@ class CDashboardWidgetMap extends CDiv {
 		if ($this->initial_load) {
 			$script_run .=
 				'jQuery(".dashbrd-grid-container").dashboardGrid("addAction", "timer_refresh", '.
-					'"zbx_sysmap_widget_trigger", "'.$this->uniqueid.'", {'.
+					'"trx_sysmap_widget_trigger", "'.$this->uniqueid.'", {'.
 						'parameters: ["onWidgetRefresh"],'.
 						'grid: {widget: 1},'.
 						'trigger_name: "map_widget_timer_refresh_'.$this->uniqueid.'"'.
@@ -121,7 +121,7 @@ class CDashboardWidgetMap extends CDiv {
 
 			$script_run .=
 				'jQuery(".dashbrd-grid-container").dashboardGrid("addAction", "afterUpdateWidgetConfig", '.
-					'"zbx_sysmap_widget_trigger", "'.$this->uniqueid.'", {'.
+					'"trx_sysmap_widget_trigger", "'.$this->uniqueid.'", {'.
 						'parameters: ["afterUpdateWidgetConfig"],'.
 						'grid: {widget: 1},'.
 						'trigger_name: "after_map_widget_config_update_'.$this->uniqueid.'"'.
@@ -150,7 +150,7 @@ class CDashboardWidgetMap extends CDiv {
 				'jQuery(".dashbrd-grid-container").dashboardGrid("callWidgetDataShare");'.
 
 				'jQuery(".dashbrd-grid-container").dashboardGrid("addAction", "onEditStart", '.
-					'"zbx_sysmap_widget_trigger", "'.$this->uniqueid.'", {'.
+					'"trx_sysmap_widget_trigger", "'.$this->uniqueid.'", {'.
 						'parameters: ["onEditStart"],'.
 						'grid: {widget: 1},'.
 					'trigger_name: "map_widget_on_edit_start_'.$this->uniqueid.'"'.
@@ -161,9 +161,9 @@ class CDashboardWidgetMap extends CDiv {
 			$this->sysmap_data['container'] = "#map_{$this->uniqueid}";
 
 			$script_run .= 'jQuery(function($) {'.
-					'$("#'.$this->getId().'").zbx_mapwidget({'.
+					'$("#'.$this->getId().'").trx_mapwidget({'.
 						'uniqueid: "'.$this->uniqueid.'",'.
-						'map_options: '.zbx_jsvalue($this->sysmap_data).
+						'map_options: '.trx_jsvalue($this->sysmap_data).
 					'});'.
 					// Hack for Safari to manually accept parent container height in pixels when map widget is loaded.
 					'if (SF) {'.
@@ -175,7 +175,7 @@ class CDashboardWidgetMap extends CDiv {
 			$error_msg_html = (new CTableInfo())->setNoDataMessage($this->error);
 			$script_run .=
 				'jQuery(".dashbrd-grid-container").dashboardGrid("addAction", "onDashboardReady", '.
-					'"zbx_sysmap_widget_trigger", "'.$this->uniqueid.'", {'.
+					'"trx_sysmap_widget_trigger", "'.$this->uniqueid.'", {'.
 						'parameters: ["onDashboardReady", {html: "'. addslashes($error_msg_html).'"}],'.
 						'grid: {widget: 1},'.
 						'priority: 10,'.

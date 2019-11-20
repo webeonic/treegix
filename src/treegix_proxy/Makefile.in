@@ -120,67 +120,67 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxproxy_a_AR = $(AR) $(ARFLAGS)
-libzbxproxy_a_LIBADD =
-am_libzbxproxy_a_OBJECTS = libzbxproxy_a-servercomms.$(OBJEXT) \
-	libzbxproxy_a-events.$(OBJEXT) \
-	libzbxproxy_a-proxy_lld.$(OBJEXT) \
-	libzbxproxy_a-proxy_alerter_protocol.$(OBJEXT)
-libzbxproxy_a_OBJECTS = $(am_libzbxproxy_a_OBJECTS)
+libtrxproxy_a_AR = $(AR) $(ARFLAGS)
+libtrxproxy_a_LIBADD =
+am_libtrxproxy_a_OBJECTS = libtrxproxy_a-servercomms.$(OBJEXT) \
+	libtrxproxy_a-events.$(OBJEXT) \
+	libtrxproxy_a-proxy_lld.$(OBJEXT) \
+	libtrxproxy_a-proxy_alerter_protocol.$(OBJEXT)
+libtrxproxy_a_OBJECTS = $(am_libtrxproxy_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(sbindir)"
 PROGRAMS = $(sbin_PROGRAMS)
 am_treegix_proxy_OBJECTS = treegix_proxy-proxy.$(OBJEXT)
 treegix_proxy_OBJECTS = $(am_treegix_proxy_OBJECTS)
-treegix_proxy_DEPENDENCIES = heart/libzbxheart.a \
-	$(top_srcdir)/src/treegix_server/dbsyncer/libzbxdbsyncer.a \
-	$(top_srcdir)/src/treegix_server/discoverer/libzbxdiscoverer.a \
-	housekeeper/libzbxhousekeeper.a \
-	$(top_srcdir)/src/treegix_server/httppoller/libzbxhttppoller.a \
-	proxyconfig/libzbxproxyconfig.a \
-	$(top_srcdir)/src/treegix_server/pinger/libzbxpinger.a \
-	$(top_srcdir)/src/treegix_server/poller/libzbxpoller.a \
-	$(top_srcdir)/src/treegix_server/poller/libzbxpoller_proxy.a \
-	$(top_srcdir)/src/treegix_server/trapper/libzbxtrapper.a \
-	$(top_srcdir)/src/treegix_server/snmptrapper/libzbxsnmptrapper.a \
-	$(top_srcdir)/src/treegix_server/odbc/libzbxodbc.a \
-	datasender/libzbxdatasender.a taskmanager/libzbxtaskmanager.a \
-	$(top_srcdir)/src/treegix_server/selfmon/libzbxselfmon.a \
-	$(top_srcdir)/src/treegix_server/vmware/libzbxvmware.a \
-	$(top_srcdir)/src/treegix_server/scripts/libzbxscripts.a \
+treegix_proxy_DEPENDENCIES = heart/libtrxheart.a \
+	$(top_srcdir)/src/treegix_server/dbsyncer/libtrxdbsyncer.a \
+	$(top_srcdir)/src/treegix_server/discoverer/libtrxdiscoverer.a \
+	housekeeper/libtrxhousekeeper.a \
+	$(top_srcdir)/src/treegix_server/httppoller/libtrxhttppoller.a \
+	proxyconfig/libtrxproxyconfig.a \
+	$(top_srcdir)/src/treegix_server/pinger/libtrxpinger.a \
+	$(top_srcdir)/src/treegix_server/poller/libtrxpoller.a \
+	$(top_srcdir)/src/treegix_server/poller/libtrxpoller_proxy.a \
+	$(top_srcdir)/src/treegix_server/trapper/libtrxtrapper.a \
+	$(top_srcdir)/src/treegix_server/snmptrapper/libtrxsnmptrapper.a \
+	$(top_srcdir)/src/treegix_server/odbc/libtrxodbc.a \
+	datasender/libtrxdatasender.a taskmanager/libtrxtaskmanager.a \
+	$(top_srcdir)/src/treegix_server/selfmon/libtrxselfmon.a \
+	$(top_srcdir)/src/treegix_server/vmware/libtrxvmware.a \
+	$(top_srcdir)/src/treegix_server/scripts/libtrxscripts.a \
 	$(top_srcdir)/src/treegix_server/preprocessor/libpreprocessor.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/libzbxproxysysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver_proxy.a \
-	$(top_srcdir)/src/libs/zbxdbcache/libzbxdbcache.a \
-	$(top_srcdir)/src/libs/zbxhistory/libzbxhistory.a \
-	$(top_srcdir)/src/libs/zbxmemory/libzbxmemory.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxself/libzbxself.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxipcservice/libzbxipcservice.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxcommshigh/libzbxcommshigh.a \
-	$(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxhttp/libzbxhttp.a \
-	$(top_srcdir)/src/libs/zbxexec/libzbxexec.a \
-	$(top_srcdir)/src/libs/zbxicmpping/libzbxicmpping.a \
-	$(top_srcdir)/src/libs/zbxdbupgrade/libzbxdbupgrade.a \
-	$(top_srcdir)/src/libs/zbxdbhigh/libzbxdbhigh.a \
-	$(top_srcdir)/src/libs/zbxdb/libzbxdb.a \
-	$(top_srcdir)/src/libs/zbxmodules/libzbxmodules.a \
-	$(top_srcdir)/src/libs/zbxtasks/libzbxtasks.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
-	$(top_srcdir)/src/libs/zbxembed/libzbxembed.a \
-	$(top_srcdir)/src/libs/zbxprometheus/libzbxprometheus.a \
-	libzbxproxy.a $(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/libtrxproxysysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver_proxy.a \
+	$(top_srcdir)/src/libs/trxdbcache/libtrxdbcache.a \
+	$(top_srcdir)/src/libs/trxhistory/libtrxhistory.a \
+	$(top_srcdir)/src/libs/trxmemory/libtrxmemory.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxself/libtrxself.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxipcservice/libtrxipcservice.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxcommshigh/libtrxcommshigh.a \
+	$(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxhttp/libtrxhttp.a \
+	$(top_srcdir)/src/libs/trxexec/libtrxexec.a \
+	$(top_srcdir)/src/libs/trxicmpping/libtrxicmpping.a \
+	$(top_srcdir)/src/libs/trxdbupgrade/libtrxdbupgrade.a \
+	$(top_srcdir)/src/libs/trxdbhigh/libtrxdbhigh.a \
+	$(top_srcdir)/src/libs/trxdb/libtrxdb.a \
+	$(top_srcdir)/src/libs/trxmodules/libtrxmodules.a \
+	$(top_srcdir)/src/libs/trxtasks/libtrxtasks.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
+	$(top_srcdir)/src/libs/trxembed/libtrxembed.a \
+	$(top_srcdir)/src/libs/trxprometheus/libtrxprometheus.a \
+	libtrxproxy.a $(top_srcdir)/src/libs/trxalgo/libtrxalgo.a \
 	$(am__append_1)
 treegix_proxy_LINK = $(CCLD) $(treegix_proxy_CFLAGS) $(CFLAGS) \
 	$(treegix_proxy_LDFLAGS) $(LDFLAGS) -o $@
@@ -216,8 +216,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxproxy_a_SOURCES) $(treegix_proxy_SOURCES)
-DIST_SOURCES = $(libzbxproxy_a_SOURCES) $(treegix_proxy_SOURCES)
+SOURCES = $(libtrxproxy_a_SOURCES) $(treegix_proxy_SOURCES)
+DIST_SOURCES = $(libtrxproxy_a_SOURCES) $(treegix_proxy_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -490,67 +490,67 @@ SUBDIRS = \
 	datasender \
 	taskmanager
 
-noinst_LIBRARIES = libzbxproxy.a
-libzbxproxy_a_SOURCES = \
+noinst_LIBRARIES = libtrxproxy.a
+libtrxproxy_a_SOURCES = \
 	servercomms.c servercomms.h \
 	events.c \
 	proxy_lld.c \
 	proxy_alerter_protocol.c
 
-libzbxproxy_a_CFLAGS = \
+libtrxproxy_a_CFLAGS = \
 	-DTREEGIX_DAEMON
 
 treegix_proxy_SOURCES = proxy.c
-treegix_proxy_LDADD = heart/libzbxheart.a \
-	$(top_srcdir)/src/treegix_server/dbsyncer/libzbxdbsyncer.a \
-	$(top_srcdir)/src/treegix_server/discoverer/libzbxdiscoverer.a \
-	housekeeper/libzbxhousekeeper.a \
-	$(top_srcdir)/src/treegix_server/httppoller/libzbxhttppoller.a \
-	proxyconfig/libzbxproxyconfig.a \
-	$(top_srcdir)/src/treegix_server/pinger/libzbxpinger.a \
-	$(top_srcdir)/src/treegix_server/poller/libzbxpoller.a \
-	$(top_srcdir)/src/treegix_server/poller/libzbxpoller_proxy.a \
-	$(top_srcdir)/src/treegix_server/trapper/libzbxtrapper.a \
-	$(top_srcdir)/src/treegix_server/snmptrapper/libzbxsnmptrapper.a \
-	$(top_srcdir)/src/treegix_server/odbc/libzbxodbc.a \
-	datasender/libzbxdatasender.a taskmanager/libzbxtaskmanager.a \
-	$(top_srcdir)/src/treegix_server/selfmon/libzbxselfmon.a \
-	$(top_srcdir)/src/treegix_server/vmware/libzbxvmware.a \
-	$(top_srcdir)/src/treegix_server/scripts/libzbxscripts.a \
+treegix_proxy_LDADD = heart/libtrxheart.a \
+	$(top_srcdir)/src/treegix_server/dbsyncer/libtrxdbsyncer.a \
+	$(top_srcdir)/src/treegix_server/discoverer/libtrxdiscoverer.a \
+	housekeeper/libtrxhousekeeper.a \
+	$(top_srcdir)/src/treegix_server/httppoller/libtrxhttppoller.a \
+	proxyconfig/libtrxproxyconfig.a \
+	$(top_srcdir)/src/treegix_server/pinger/libtrxpinger.a \
+	$(top_srcdir)/src/treegix_server/poller/libtrxpoller.a \
+	$(top_srcdir)/src/treegix_server/poller/libtrxpoller_proxy.a \
+	$(top_srcdir)/src/treegix_server/trapper/libtrxtrapper.a \
+	$(top_srcdir)/src/treegix_server/snmptrapper/libtrxsnmptrapper.a \
+	$(top_srcdir)/src/treegix_server/odbc/libtrxodbc.a \
+	datasender/libtrxdatasender.a taskmanager/libtrxtaskmanager.a \
+	$(top_srcdir)/src/treegix_server/selfmon/libtrxselfmon.a \
+	$(top_srcdir)/src/treegix_server/vmware/libtrxvmware.a \
+	$(top_srcdir)/src/treegix_server/scripts/libtrxscripts.a \
 	$(top_srcdir)/src/treegix_server/preprocessor/libpreprocessor.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/libzbxproxysysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver_proxy.a \
-	$(top_srcdir)/src/libs/zbxdbcache/libzbxdbcache.a \
-	$(top_srcdir)/src/libs/zbxhistory/libzbxhistory.a \
-	$(top_srcdir)/src/libs/zbxmemory/libzbxmemory.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxself/libzbxself.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxipcservice/libzbxipcservice.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxcommshigh/libzbxcommshigh.a \
-	$(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxhttp/libzbxhttp.a \
-	$(top_srcdir)/src/libs/zbxexec/libzbxexec.a \
-	$(top_srcdir)/src/libs/zbxicmpping/libzbxicmpping.a \
-	$(top_srcdir)/src/libs/zbxdbupgrade/libzbxdbupgrade.a \
-	$(top_srcdir)/src/libs/zbxdbhigh/libzbxdbhigh.a \
-	$(top_srcdir)/src/libs/zbxdb/libzbxdb.a \
-	$(top_srcdir)/src/libs/zbxmodules/libzbxmodules.a \
-	$(top_srcdir)/src/libs/zbxtasks/libzbxtasks.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
-	$(top_srcdir)/src/libs/zbxembed/libzbxembed.a \
-	$(top_srcdir)/src/libs/zbxprometheus/libzbxprometheus.a \
-	libzbxproxy.a $(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/libtrxproxysysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver_proxy.a \
+	$(top_srcdir)/src/libs/trxdbcache/libtrxdbcache.a \
+	$(top_srcdir)/src/libs/trxhistory/libtrxhistory.a \
+	$(top_srcdir)/src/libs/trxmemory/libtrxmemory.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxself/libtrxself.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxipcservice/libtrxipcservice.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxcommshigh/libtrxcommshigh.a \
+	$(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxhttp/libtrxhttp.a \
+	$(top_srcdir)/src/libs/trxexec/libtrxexec.a \
+	$(top_srcdir)/src/libs/trxicmpping/libtrxicmpping.a \
+	$(top_srcdir)/src/libs/trxdbupgrade/libtrxdbupgrade.a \
+	$(top_srcdir)/src/libs/trxdbhigh/libtrxdbhigh.a \
+	$(top_srcdir)/src/libs/trxdb/libtrxdb.a \
+	$(top_srcdir)/src/libs/trxmodules/libtrxmodules.a \
+	$(top_srcdir)/src/libs/trxtasks/libtrxtasks.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
+	$(top_srcdir)/src/libs/trxembed/libtrxembed.a \
+	$(top_srcdir)/src/libs/trxprometheus/libtrxprometheus.a \
+	libtrxproxy.a $(top_srcdir)/src/libs/trxalgo/libtrxalgo.a \
 	$(am__append_1) @PROXY_LIBS@
 treegix_proxy_LDFLAGS = @PROXY_LDFLAGS@
 treegix_proxy_CFLAGS = \
@@ -597,10 +597,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxproxy.a: $(libzbxproxy_a_OBJECTS) $(libzbxproxy_a_DEPENDENCIES) $(EXTRA_libzbxproxy_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxproxy.a
-	$(AM_V_AR)$(libzbxproxy_a_AR) libzbxproxy.a $(libzbxproxy_a_OBJECTS) $(libzbxproxy_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxproxy.a
+libtrxproxy.a: $(libtrxproxy_a_OBJECTS) $(libtrxproxy_a_DEPENDENCIES) $(EXTRA_libtrxproxy_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxproxy.a
+	$(AM_V_AR)$(libtrxproxy_a_AR) libtrxproxy.a $(libtrxproxy_a_OBJECTS) $(libtrxproxy_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxproxy.a
 install-sbinPROGRAMS: $(sbin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(sbin_PROGRAMS)'; test -n "$(sbindir)" || list=; \
@@ -654,10 +654,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxproxy_a-events.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxproxy_a-proxy_alerter_protocol.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxproxy_a-proxy_lld.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxproxy_a-servercomms.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxproxy_a-events.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxproxy_a-proxy_alerter_protocol.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxproxy_a-proxy_lld.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxproxy_a-servercomms.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/treegix_proxy-proxy.Po@am__quote@
 
 .c.o:
@@ -676,61 +676,61 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxproxy_a-servercomms.o: servercomms.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -MT libzbxproxy_a-servercomms.o -MD -MP -MF $(DEPDIR)/libzbxproxy_a-servercomms.Tpo -c -o libzbxproxy_a-servercomms.o `test -f 'servercomms.c' || echo '$(srcdir)/'`servercomms.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxy_a-servercomms.Tpo $(DEPDIR)/libzbxproxy_a-servercomms.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='servercomms.c' object='libzbxproxy_a-servercomms.o' libtool=no @AMDEPBACKSLASH@
+libtrxproxy_a-servercomms.o: servercomms.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -MT libtrxproxy_a-servercomms.o -MD -MP -MF $(DEPDIR)/libtrxproxy_a-servercomms.Tpo -c -o libtrxproxy_a-servercomms.o `test -f 'servercomms.c' || echo '$(srcdir)/'`servercomms.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxy_a-servercomms.Tpo $(DEPDIR)/libtrxproxy_a-servercomms.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='servercomms.c' object='libtrxproxy_a-servercomms.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -c -o libzbxproxy_a-servercomms.o `test -f 'servercomms.c' || echo '$(srcdir)/'`servercomms.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -c -o libtrxproxy_a-servercomms.o `test -f 'servercomms.c' || echo '$(srcdir)/'`servercomms.c
 
-libzbxproxy_a-servercomms.obj: servercomms.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -MT libzbxproxy_a-servercomms.obj -MD -MP -MF $(DEPDIR)/libzbxproxy_a-servercomms.Tpo -c -o libzbxproxy_a-servercomms.obj `if test -f 'servercomms.c'; then $(CYGPATH_W) 'servercomms.c'; else $(CYGPATH_W) '$(srcdir)/servercomms.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxy_a-servercomms.Tpo $(DEPDIR)/libzbxproxy_a-servercomms.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='servercomms.c' object='libzbxproxy_a-servercomms.obj' libtool=no @AMDEPBACKSLASH@
+libtrxproxy_a-servercomms.obj: servercomms.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -MT libtrxproxy_a-servercomms.obj -MD -MP -MF $(DEPDIR)/libtrxproxy_a-servercomms.Tpo -c -o libtrxproxy_a-servercomms.obj `if test -f 'servercomms.c'; then $(CYGPATH_W) 'servercomms.c'; else $(CYGPATH_W) '$(srcdir)/servercomms.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxy_a-servercomms.Tpo $(DEPDIR)/libtrxproxy_a-servercomms.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='servercomms.c' object='libtrxproxy_a-servercomms.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -c -o libzbxproxy_a-servercomms.obj `if test -f 'servercomms.c'; then $(CYGPATH_W) 'servercomms.c'; else $(CYGPATH_W) '$(srcdir)/servercomms.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -c -o libtrxproxy_a-servercomms.obj `if test -f 'servercomms.c'; then $(CYGPATH_W) 'servercomms.c'; else $(CYGPATH_W) '$(srcdir)/servercomms.c'; fi`
 
-libzbxproxy_a-events.o: events.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -MT libzbxproxy_a-events.o -MD -MP -MF $(DEPDIR)/libzbxproxy_a-events.Tpo -c -o libzbxproxy_a-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxy_a-events.Tpo $(DEPDIR)/libzbxproxy_a-events.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='events.c' object='libzbxproxy_a-events.o' libtool=no @AMDEPBACKSLASH@
+libtrxproxy_a-events.o: events.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -MT libtrxproxy_a-events.o -MD -MP -MF $(DEPDIR)/libtrxproxy_a-events.Tpo -c -o libtrxproxy_a-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxy_a-events.Tpo $(DEPDIR)/libtrxproxy_a-events.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='events.c' object='libtrxproxy_a-events.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -c -o libzbxproxy_a-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -c -o libtrxproxy_a-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
 
-libzbxproxy_a-events.obj: events.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -MT libzbxproxy_a-events.obj -MD -MP -MF $(DEPDIR)/libzbxproxy_a-events.Tpo -c -o libzbxproxy_a-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxy_a-events.Tpo $(DEPDIR)/libzbxproxy_a-events.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='events.c' object='libzbxproxy_a-events.obj' libtool=no @AMDEPBACKSLASH@
+libtrxproxy_a-events.obj: events.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -MT libtrxproxy_a-events.obj -MD -MP -MF $(DEPDIR)/libtrxproxy_a-events.Tpo -c -o libtrxproxy_a-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxy_a-events.Tpo $(DEPDIR)/libtrxproxy_a-events.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='events.c' object='libtrxproxy_a-events.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -c -o libzbxproxy_a-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -c -o libtrxproxy_a-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
 
-libzbxproxy_a-proxy_lld.o: proxy_lld.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -MT libzbxproxy_a-proxy_lld.o -MD -MP -MF $(DEPDIR)/libzbxproxy_a-proxy_lld.Tpo -c -o libzbxproxy_a-proxy_lld.o `test -f 'proxy_lld.c' || echo '$(srcdir)/'`proxy_lld.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxy_a-proxy_lld.Tpo $(DEPDIR)/libzbxproxy_a-proxy_lld.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy_lld.c' object='libzbxproxy_a-proxy_lld.o' libtool=no @AMDEPBACKSLASH@
+libtrxproxy_a-proxy_lld.o: proxy_lld.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -MT libtrxproxy_a-proxy_lld.o -MD -MP -MF $(DEPDIR)/libtrxproxy_a-proxy_lld.Tpo -c -o libtrxproxy_a-proxy_lld.o `test -f 'proxy_lld.c' || echo '$(srcdir)/'`proxy_lld.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxy_a-proxy_lld.Tpo $(DEPDIR)/libtrxproxy_a-proxy_lld.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy_lld.c' object='libtrxproxy_a-proxy_lld.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -c -o libzbxproxy_a-proxy_lld.o `test -f 'proxy_lld.c' || echo '$(srcdir)/'`proxy_lld.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -c -o libtrxproxy_a-proxy_lld.o `test -f 'proxy_lld.c' || echo '$(srcdir)/'`proxy_lld.c
 
-libzbxproxy_a-proxy_lld.obj: proxy_lld.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -MT libzbxproxy_a-proxy_lld.obj -MD -MP -MF $(DEPDIR)/libzbxproxy_a-proxy_lld.Tpo -c -o libzbxproxy_a-proxy_lld.obj `if test -f 'proxy_lld.c'; then $(CYGPATH_W) 'proxy_lld.c'; else $(CYGPATH_W) '$(srcdir)/proxy_lld.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxy_a-proxy_lld.Tpo $(DEPDIR)/libzbxproxy_a-proxy_lld.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy_lld.c' object='libzbxproxy_a-proxy_lld.obj' libtool=no @AMDEPBACKSLASH@
+libtrxproxy_a-proxy_lld.obj: proxy_lld.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -MT libtrxproxy_a-proxy_lld.obj -MD -MP -MF $(DEPDIR)/libtrxproxy_a-proxy_lld.Tpo -c -o libtrxproxy_a-proxy_lld.obj `if test -f 'proxy_lld.c'; then $(CYGPATH_W) 'proxy_lld.c'; else $(CYGPATH_W) '$(srcdir)/proxy_lld.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxy_a-proxy_lld.Tpo $(DEPDIR)/libtrxproxy_a-proxy_lld.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy_lld.c' object='libtrxproxy_a-proxy_lld.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -c -o libzbxproxy_a-proxy_lld.obj `if test -f 'proxy_lld.c'; then $(CYGPATH_W) 'proxy_lld.c'; else $(CYGPATH_W) '$(srcdir)/proxy_lld.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -c -o libtrxproxy_a-proxy_lld.obj `if test -f 'proxy_lld.c'; then $(CYGPATH_W) 'proxy_lld.c'; else $(CYGPATH_W) '$(srcdir)/proxy_lld.c'; fi`
 
-libzbxproxy_a-proxy_alerter_protocol.o: proxy_alerter_protocol.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -MT libzbxproxy_a-proxy_alerter_protocol.o -MD -MP -MF $(DEPDIR)/libzbxproxy_a-proxy_alerter_protocol.Tpo -c -o libzbxproxy_a-proxy_alerter_protocol.o `test -f 'proxy_alerter_protocol.c' || echo '$(srcdir)/'`proxy_alerter_protocol.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxy_a-proxy_alerter_protocol.Tpo $(DEPDIR)/libzbxproxy_a-proxy_alerter_protocol.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy_alerter_protocol.c' object='libzbxproxy_a-proxy_alerter_protocol.o' libtool=no @AMDEPBACKSLASH@
+libtrxproxy_a-proxy_alerter_protocol.o: proxy_alerter_protocol.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -MT libtrxproxy_a-proxy_alerter_protocol.o -MD -MP -MF $(DEPDIR)/libtrxproxy_a-proxy_alerter_protocol.Tpo -c -o libtrxproxy_a-proxy_alerter_protocol.o `test -f 'proxy_alerter_protocol.c' || echo '$(srcdir)/'`proxy_alerter_protocol.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxy_a-proxy_alerter_protocol.Tpo $(DEPDIR)/libtrxproxy_a-proxy_alerter_protocol.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy_alerter_protocol.c' object='libtrxproxy_a-proxy_alerter_protocol.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -c -o libzbxproxy_a-proxy_alerter_protocol.o `test -f 'proxy_alerter_protocol.c' || echo '$(srcdir)/'`proxy_alerter_protocol.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -c -o libtrxproxy_a-proxy_alerter_protocol.o `test -f 'proxy_alerter_protocol.c' || echo '$(srcdir)/'`proxy_alerter_protocol.c
 
-libzbxproxy_a-proxy_alerter_protocol.obj: proxy_alerter_protocol.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -MT libzbxproxy_a-proxy_alerter_protocol.obj -MD -MP -MF $(DEPDIR)/libzbxproxy_a-proxy_alerter_protocol.Tpo -c -o libzbxproxy_a-proxy_alerter_protocol.obj `if test -f 'proxy_alerter_protocol.c'; then $(CYGPATH_W) 'proxy_alerter_protocol.c'; else $(CYGPATH_W) '$(srcdir)/proxy_alerter_protocol.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxy_a-proxy_alerter_protocol.Tpo $(DEPDIR)/libzbxproxy_a-proxy_alerter_protocol.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy_alerter_protocol.c' object='libzbxproxy_a-proxy_alerter_protocol.obj' libtool=no @AMDEPBACKSLASH@
+libtrxproxy_a-proxy_alerter_protocol.obj: proxy_alerter_protocol.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -MT libtrxproxy_a-proxy_alerter_protocol.obj -MD -MP -MF $(DEPDIR)/libtrxproxy_a-proxy_alerter_protocol.Tpo -c -o libtrxproxy_a-proxy_alerter_protocol.obj `if test -f 'proxy_alerter_protocol.c'; then $(CYGPATH_W) 'proxy_alerter_protocol.c'; else $(CYGPATH_W) '$(srcdir)/proxy_alerter_protocol.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxy_a-proxy_alerter_protocol.Tpo $(DEPDIR)/libtrxproxy_a-proxy_alerter_protocol.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy_alerter_protocol.c' object='libtrxproxy_a-proxy_alerter_protocol.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxy_a_CFLAGS) $(CFLAGS) -c -o libzbxproxy_a-proxy_alerter_protocol.obj `if test -f 'proxy_alerter_protocol.c'; then $(CYGPATH_W) 'proxy_alerter_protocol.c'; else $(CYGPATH_W) '$(srcdir)/proxy_alerter_protocol.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxy_a_CFLAGS) $(CFLAGS) -c -o libtrxproxy_a-proxy_alerter_protocol.obj `if test -f 'proxy_alerter_protocol.c'; then $(CYGPATH_W) 'proxy_alerter_protocol.c'; else $(CYGPATH_W) '$(srcdir)/proxy_alerter_protocol.c'; fi`
 
 treegix_proxy-proxy.o: proxy.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(treegix_proxy_CFLAGS) $(CFLAGS) -MT treegix_proxy-proxy.o -MD -MP -MF $(DEPDIR)/treegix_proxy-proxy.Tpo -c -o treegix_proxy-proxy.o `test -f 'proxy.c' || echo '$(srcdir)/'`proxy.c

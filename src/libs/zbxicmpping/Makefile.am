@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxicmpping.a
+noinst_LIBRARIES = libtrxicmpping.a
 
-libzbxicmpping_a_SOURCES = \
+libtrxicmpping_a_SOURCES = \
 	icmpping.c

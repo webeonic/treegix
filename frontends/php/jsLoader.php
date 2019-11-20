@@ -12,7 +12,7 @@ require_once dirname(__FILE__).'/include/translateDefines.inc.php';
 if (isset($_GET['lang'])) {
 	if (function_exists('bindtextdomain')) {
 		// initializing gettext translations depending on language selected by user
-		$locales = zbx_locale_variants($_GET['lang']);
+		$locales = trx_locale_variants($_GET['lang']);
 		foreach ($locales as $locale) {
 			putenv('LC_ALL='.$locale);
 			putenv('LANG='.$locale);
@@ -354,7 +354,7 @@ $js .= 'if (typeof(locale) === "undefined") { var locale = {}; }'."\n";
 foreach ($files as $file) {
 	if (isset($tranStrings[$file])) {
 		foreach ($tranStrings[$file] as $origStr => $str) {
-			$js .= 'locale[\'' . $origStr . '\'] = ' . zbx_jsvalue($str) . ';';
+			$js .= 'locale[\'' . $origStr . '\'] = ' . trx_jsvalue($str) . ';';
 		}
 	}
 }

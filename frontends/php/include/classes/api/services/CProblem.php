@@ -71,13 +71,13 @@ class CProblem extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		$this->validateGet($options);
 
 		// source and object
-		$sqlParts['where'][] = 'p.source='.zbx_dbstr($options['source']);
-		$sqlParts['where'][] = 'p.object='.zbx_dbstr($options['object']);
+		$sqlParts['where'][] = 'p.source='.trx_dbstr($options['source']);
+		$sqlParts['where'][] = 'p.object='.trx_dbstr($options['object']);
 
 		// editable + PERMISSION CHECK
 		if ($userType != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -160,19 +160,19 @@ class CProblem extends CApiService {
 
 		// eventids
 		if ($options['eventids'] !== null) {
-			zbx_value2array($options['eventids']);
+			trx_value2array($options['eventids']);
 			$sqlParts['where'][] = dbConditionInt('p.eventid', $options['eventids']);
 		}
 
 		// objectids
 		if ($options['objectids'] !== null) {
-			zbx_value2array($options['objectids']);
+			trx_value2array($options['objectids']);
 			$sqlParts['where'][] = dbConditionInt('p.objectid', $options['objectids']);
 		}
 
 		// groupids
 		if ($options['groupids'] !== null) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			// triggers
 			if ($options['object'] == EVENT_OBJECT_TRIGGER) {
@@ -196,7 +196,7 @@ class CProblem extends CApiService {
 
 		// hostids
 		if ($options['hostids'] !== null) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			// triggers
 			if ($options['object'] == EVENT_OBJECT_TRIGGER) {
@@ -216,7 +216,7 @@ class CProblem extends CApiService {
 
 		// applicationids
 		if ($options['applicationids'] !== null) {
-			zbx_value2array($options['applicationids']);
+			trx_value2array($options['applicationids']);
 
 			// triggers
 			if ($options['object'] == EVENT_OBJECT_TRIGGER) {
@@ -239,7 +239,7 @@ class CProblem extends CApiService {
 		if ($options['severities'] !== null) {
 			// triggers
 			if ($options['object'] == EVENT_OBJECT_TRIGGER) {
-				zbx_value2array($options['severities']);
+				trx_value2array($options['severities']);
 				$sqlParts['where'][] = dbConditionInt('p.severity', $options['severities']);
 			}
 			// ignore this filter for items and lld rules
@@ -281,27 +281,27 @@ class CProblem extends CApiService {
 
 		// time_from
 		if ($options['time_from'] !== null) {
-			$sqlParts['where'][] = 'p.clock>='.zbx_dbstr($options['time_from']);
+			$sqlParts['where'][] = 'p.clock>='.trx_dbstr($options['time_from']);
 		}
 
 		// time_till
 		if ($options['time_till'] !== null) {
-			$sqlParts['where'][] = 'p.clock<='.zbx_dbstr($options['time_till']);
+			$sqlParts['where'][] = 'p.clock<='.trx_dbstr($options['time_till']);
 		}
 
 		// eventid_from
 		if ($options['eventid_from'] !== null) {
-			$sqlParts['where'][] = 'p.eventid>='.zbx_dbstr($options['eventid_from']);
+			$sqlParts['where'][] = 'p.eventid>='.trx_dbstr($options['eventid_from']);
 		}
 
 		// eventid_till
 		if ($options['eventid_till'] !== null) {
-			$sqlParts['where'][] = 'p.eventid<='.zbx_dbstr($options['eventid_till']);
+			$sqlParts['where'][] = 'p.eventid<='.trx_dbstr($options['eventid_till']);
 		}
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('problem p', $options, $sqlParts);
+			trx_db_search('problem p', $options, $sqlParts);
 		}
 
 		// filter
@@ -310,7 +310,7 @@ class CProblem extends CApiService {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -337,7 +337,7 @@ class CProblem extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -465,7 +465,7 @@ class CProblem extends CApiService {
 					'output' => ['eventid'],
 					'filter' => ['eventid' => $suppressed_eventids]
 				]);
-				$suppressed_eventids = array_flip(zbx_objectValues($suppressed_events, 'eventid'));
+				$suppressed_eventids = array_flip(trx_objectValues($suppressed_events, 'eventid'));
 				foreach ($result as &$problem) {
 					$problem['suppressed'] = array_key_exists($problem['eventid'], $suppressed_eventids)
 						? (string) TRX_PROBLEM_SUPPRESSED_TRUE
@@ -600,13 +600,13 @@ class CProblem extends CApiService {
 			$parenthesis = $tags || count($tag_values) > 1;
 
 			foreach ($tag_values as $tag => $values) {
-				$condition = 'pt.tag='.zbx_dbstr($tag).' AND '.dbConditionString('pt.value', $values);
+				$condition = 'pt.tag='.trx_dbstr($tag).' AND '.dbConditionString('pt.value', $values);
 				$conditions[] = $parenthesis ? '('.$condition.')' : $condition;
 			}
 
 			$conditions = (count($conditions) > 1) ? '('.implode(' OR ', $conditions).')' : $conditions[0];
 
-			$tag_conditions[] = 'hg.groupid='.zbx_dbstr($groupid).' AND '.$conditions;
+			$tag_conditions[] = 'hg.groupid='.trx_dbstr($groupid).' AND '.$conditions;
 		}
 
 		if ($tag_conditions) {

@@ -63,7 +63,7 @@ static size_t	iprange_address_length(const char *address)
  *             bits    - [IN] the number of bits in IP mask                   *
  *                                                                            *
  ******************************************************************************/
-static void	iprange_apply_mask(zbx_iprange_t *iprange, int bits)
+static void	iprange_apply_mask(trx_iprange_t *iprange, int bits)
 {
 	int	i, groups, group_bits;
 
@@ -115,7 +115,7 @@ static void	iprange_apply_mask(zbx_iprange_t *iprange, int bits)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	iprangev4_parse(zbx_iprange_t *iprange, const char *address)
+static int	iprangev4_parse(trx_iprange_t *iprange, const char *address)
 {
 	int		index, bits = -1;
 	const char	*ptr = address, *dash, *end;
@@ -209,7 +209,7 @@ static int	iprangev4_parse(zbx_iprange_t *iprange, const char *address)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	iprangev6_parse(zbx_iprange_t *iprange, const char *address)
+static int	iprangev6_parse(trx_iprange_t *iprange, const char *address)
 {
 	int		index, fill = -1, bits = -1, target;
 	const char	*ptr = address, *dash, *end;
@@ -345,7 +345,7 @@ check_fill:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	iprange_parse(zbx_iprange_t *iprange, const char *address)
+int	iprange_parse(trx_iprange_t *iprange, const char *address)
 {
 	/* ignore leading whitespace characters */
 	while (SUCCEED == iprange_is_whitespace_character(*address))
@@ -370,7 +370,7 @@ int	iprange_parse(zbx_iprange_t *iprange, const char *address)
  * Comments: The IP address is returned as a number array.                    *
  *                                                                            *
  ******************************************************************************/
-void	iprange_first(const zbx_iprange_t *iprange, int *address)
+void	iprange_first(const trx_iprange_t *iprange, int *address)
 {
 	int	i, groups;
 
@@ -401,7 +401,7 @@ void	iprange_first(const zbx_iprange_t *iprange, int *address)
  * Comments: The IP address is returned as a number array.                    *
  *                                                                            *
  ******************************************************************************/
-int	iprange_next(const zbx_iprange_t *iprange, int *address)
+int	iprange_next(const trx_iprange_t *iprange, int *address)
 {
 	int	i, groups;
 
@@ -449,7 +449,7 @@ int	iprange_next(const zbx_iprange_t *iprange, int *address)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	iprange_validate(const zbx_iprange_t *iprange, const int *address)
+int	iprange_validate(const trx_iprange_t *iprange, const int *address)
 {
 	int	i, groups;
 
@@ -477,10 +477,10 @@ int	iprange_validate(const zbx_iprange_t *iprange, const int *address)
  *               integer.                                                     *
  *                                                                            *
  ******************************************************************************/
-zbx_uint64_t	iprange_volume(const zbx_iprange_t *iprange)
+trx_uint64_t	iprange_volume(const trx_iprange_t *iprange)
 {
 	int		i, groups;
-	zbx_uint64_t	n, volume = 1;
+	trx_uint64_t	n, volume = 1;
 
 	groups = (TRX_IPRANGE_V4 == iprange->type ? 4 : 8);
 

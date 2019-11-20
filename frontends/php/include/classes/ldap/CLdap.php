@@ -43,7 +43,7 @@ class CLdap {
 		];
 
 		if (is_array($arg)) {
-			$this->cnf = zbx_array_merge($this->cnf, $arg);
+			$this->cnf = trx_array_merge($this->cnf, $arg);
 		}
 
 		$this->error = $this->moduleEnabled() ? 0 : static::ERR_PHP_EXTENSION;
@@ -88,7 +88,7 @@ class CLdap {
 				}
 
 				// needs version 3
-				if (!zbx_empty($this->cnf['referrals'])
+				if (!trx_empty($this->cnf['referrals'])
 						&& !@ldap_set_option($this->ds, LDAP_OPT_REFERRALS, $this->cnf['referrals'])) {
 					$this->error = static::ERR_OPT_REFERRALS_FAILED;
 				}
@@ -235,7 +235,7 @@ class CLdap {
 				$info[$localkey] = isset($user_result[$key])?$user_result[$key][0]:null;
 			}
 		}
-		$user_result = zbx_array_merge($info,$user_result);
+		$user_result = trx_array_merge($info,$user_result);
 
 		return $info;
 	}

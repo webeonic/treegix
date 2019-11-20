@@ -199,7 +199,7 @@ class CHistory extends CApiService {
 
 		// search
 		if ($options['search'] !== null) {
-			zbx_db_search($sql_parts['from']['history'], $options, $sql_parts);
+			trx_db_search($sql_parts['from']['history'], $options, $sql_parts);
 		}
 
 		$sql_parts = $this->applyQueryOutputOptions($this->tableName(), $this->tableAlias(), $options, $sql_parts);

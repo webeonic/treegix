@@ -5,11 +5,11 @@ package serverlistener
 import (
 	"time"
 	"treegix/internal/agent"
-	"treegix/pkg/zbxcomms"
+	"treegix/pkg/trxcomms"
 )
 
 type passiveConnection struct {
-	conn *zbxcomms.Connection
+	conn *trxcomms.Connection
 }
 
 func (pc *passiveConnection) Write(data []byte) (n int, err error) {

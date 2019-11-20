@@ -28,9 +28,9 @@ $fields = [
 	'user' =>				[T_TRX_STR, O_OPT, null,	null,				null],
 	'password' =>			[T_TRX_STR, O_OPT, null,	null, 				null],
 	'schema' =>				[T_TRX_STR, O_OPT, null,	null, 				null],
-	'zbx_server' =>			[T_TRX_STR, O_OPT, null,	null,				null],
-	'zbx_server_name' =>	[T_TRX_STR, O_OPT, null,	null,				null],
-	'zbx_server_port' =>	[T_TRX_INT, O_OPT, null,	BETWEEN(0, 65535),	null, _('Port')],
+	'trx_server' =>			[T_TRX_STR, O_OPT, null,	null,				null],
+	'trx_server_name' =>	[T_TRX_STR, O_OPT, null,	null,				null],
+	'trx_server_port' =>	[T_TRX_INT, O_OPT, null,	BETWEEN(0, 65535),	null, _('Port')],
 	// actions
 	'save_config' =>		[T_TRX_STR, O_OPT, P_SYS,	null,				null],
 	'retry' =>				[T_TRX_STR, O_OPT, P_SYS,	null,				null],

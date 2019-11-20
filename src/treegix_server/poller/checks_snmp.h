@@ -12,7 +12,7 @@ extern char	*CONFIG_SOURCE_IP;
 extern int	CONFIG_TIMEOUT;
 
 #ifdef HAVE_NETSNMP
-void	zbx_init_snmp(void);
+void	trx_init_snmp(void);
 int	get_value_snmp(const DC_ITEM *item, AGENT_RESULT *result);
 void	get_values_snmp(const DC_ITEM *items, AGENT_RESULT *results, int *errcodes, int num);
 #endif

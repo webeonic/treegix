@@ -4,7 +4,7 @@
 #include "threads.h"
 #include "module.h"
 
-#include "../zbxcrypto/tls.h"
+#include "../trxcrypto/tls.h"
 
 #ifdef HAVE_ICONV
 #	include <iconv.h>
@@ -39,7 +39,7 @@ void	version(void)
 	puts(copyright_message);
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	printf("\n");
-	zbx_tls_version();
+	trx_tls_version();
 #endif
 }
 
@@ -130,7 +130,7 @@ void	help(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_error                                                        *
+ * Function: trx_error                                                        *
  *                                                                            *
  * Purpose: Print error text to the stderr                                    *
  *                                                                            *
@@ -141,13 +141,13 @@ void	help(void)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_error(const char *fmt, ...)
+void	trx_error(const char *fmt, ...)
 {
 	va_list	args;
 
 	va_start(args, fmt);
 
-	fprintf(stderr, "%s [%li]: ", progname, zbx_get_thread_id());
+	fprintf(stderr, "%s [%li]: ", progname, trx_get_thread_id());
 	vfprintf(stderr, fmt, args);
 	fprintf(stderr, "\n");
 	fflush(stderr);
@@ -157,7 +157,7 @@ void	zbx_error(const char *fmt, ...)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_snprintf                                                     *
+ * Function: trx_snprintf                                                     *
  *                                                                            *
  * Purpose: Secure version of snprintf function.                              *
  *          Add zero character at the end of string.                          *
@@ -171,13 +171,13 @@ void	zbx_error(const char *fmt, ...)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-size_t	zbx_snprintf(char *str, size_t count, const char *fmt, ...)
+size_t	trx_snprintf(char *str, size_t count, const char *fmt, ...)
 {
 	size_t	written_len;
 	va_list	args;
 
 	va_start(args, fmt);
-	written_len = zbx_vsnprintf(str, count, fmt, args);
+	written_len = trx_vsnprintf(str, count, fmt, args);
 	va_end(args);
 
 	return written_len;
@@ -185,7 +185,7 @@ size_t	zbx_snprintf(char *str, size_t count, const char *fmt, ...)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_snprintf_alloc                                               *
+ * Function: trx_snprintf_alloc                                               *
  *                                                                            *
  * Purpose: Secure version of snprintf function.                              *
  *          Add zero character at the end of string.                          *
@@ -201,31 +201,31 @@ size_t	zbx_snprintf(char *str, size_t count, const char *fmt, ...)
  * Author: Alexei Vladishev, Alexander Vladishev                              *
  *                                                                            *
  ******************************************************************************/
-void	zbx_snprintf_alloc(char **str, size_t *alloc_len, size_t *offset, const char *fmt, ...)
+void	trx_snprintf_alloc(char **str, size_t *alloc_len, size_t *offset, const char *fmt, ...)
 {
 	va_list	args;
 	size_t	avail_len, written_len;
 retry:
 	if (NULL == *str)
 	{
-		/* zbx_vsnprintf() returns bytes actually written instead of bytes to write, */
+		/* trx_vsnprintf() returns bytes actually written instead of bytes to write, */
 		/* so we have to use the standard function                                   */
 		va_start(args, fmt);
 		*alloc_len = vsnprintf(NULL, 0, fmt, args) + 2;	/* '\0' + one byte to prevent the operation retry */
 		va_end(args);
 		*offset = 0;
-		*str = (char *)zbx_malloc(*str, *alloc_len);
+		*str = (char *)trx_malloc(*str, *alloc_len);
 	}
 
 	avail_len = *alloc_len - *offset;
 	va_start(args, fmt);
-	written_len = zbx_vsnprintf(*str + *offset, avail_len, fmt, args);
+	written_len = trx_vsnprintf(*str + *offset, avail_len, fmt, args);
 	va_end(args);
 
 	if (written_len == avail_len - 1)
 	{
 		*alloc_len *= 2;
-		*str = (char *)zbx_realloc(*str, *alloc_len);
+		*str = (char *)trx_realloc(*str, *alloc_len);
 
 		goto retry;
 	}
@@ -235,7 +235,7 @@ retry:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vsnprintf                                                    *
+ * Function: trx_vsnprintf                                                    *
  *                                                                            *
  * Purpose: Secure version of vsnprintf function.                             *
  *          Add zero character at the end of string.                          *
@@ -247,10 +247,10 @@ retry:
  * Return value: the number of characters in the output buffer                *
  *               (not including the trailing '\0')                            *
  *                                                                            *
- * Author: Alexei Vladishev (see also zbx_snprintf)                           *
+ * Author: Alexei Vladishev (see also trx_snprintf)                           *
  *                                                                            *
  ******************************************************************************/
-size_t	zbx_vsnprintf(char *str, size_t count, const char *fmt, va_list args)
+size_t	trx_vsnprintf(char *str, size_t count, const char *fmt, va_list args)
 {
 	int	written_len = 0;
 
@@ -268,7 +268,7 @@ size_t	zbx_vsnprintf(char *str, size_t count, const char *fmt, va_list args)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strncpy_alloc, zbx_strcpy_alloc, zbx_chrcpy_alloc            *
+ * Function: trx_strncpy_alloc, trx_strcpy_alloc, trx_chrcpy_alloc            *
  *                                                                            *
  * Purpose: If there is no '\0' byte among the first n bytes of src,          *
  *          then all n bytes will be placed into the dest buffer.             *
@@ -285,19 +285,19 @@ size_t	zbx_vsnprintf(char *str, size_t count, const char *fmt, va_list args)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_strncpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src, size_t n)
+void	trx_strncpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src, size_t n)
 {
 	if (NULL == *str)
 	{
 		*alloc_len = n + 1;
 		*offset = 0;
-		*str = (char *)zbx_malloc(*str, *alloc_len);
+		*str = (char *)trx_malloc(*str, *alloc_len);
 	}
 	else if (*offset + n >= *alloc_len)
 	{
 		while (*offset + n >= *alloc_len)
 			*alloc_len *= 2;
-		*str = (char *)zbx_realloc(*str, *alloc_len);
+		*str = (char *)trx_realloc(*str, *alloc_len);
 	}
 
 	while (0 != n && '\0' != *src)
@@ -309,19 +309,19 @@ void	zbx_strncpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char
 	(*str)[*offset] = '\0';
 }
 
-void	zbx_str_memcpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src, size_t n)
+void	trx_str_memcpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src, size_t n)
 {
 	if (NULL == *str)
 	{
 		*alloc_len = n + 1;
 		*offset = 0;
-		*str = (char *)zbx_malloc(*str, *alloc_len);
+		*str = (char *)trx_malloc(*str, *alloc_len);
 	}
 	else if (*offset + n >= *alloc_len)
 	{
 		while (*offset + n >= *alloc_len)
 			*alloc_len *= 2;
-		*str = (char *)zbx_realloc(*str, *alloc_len);
+		*str = (char *)trx_realloc(*str, *alloc_len);
 	}
 
 	memcpy(*str + *offset, src, n);
@@ -329,14 +329,14 @@ void	zbx_str_memcpy_alloc(char **str, size_t *alloc_len, size_t *offset, const c
 	(*str)[*offset] = '\0';
 }
 
-void	zbx_strcpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src)
+void	trx_strcpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src)
 {
-	zbx_strncpy_alloc(str, alloc_len, offset, src, strlen(src));
+	trx_strncpy_alloc(str, alloc_len, offset, src, strlen(src));
 }
 
-void	zbx_chrcpy_alloc(char **str, size_t *alloc_len, size_t *offset, char c)
+void	trx_chrcpy_alloc(char **str, size_t *alloc_len, size_t *offset, char c)
 {
-	zbx_strncpy_alloc(str, alloc_len, offset, &c, 1);
+	trx_strncpy_alloc(str, alloc_len, offset, &c, 1);
 }
 
 /* Has to be rewritten to avoid malloc */
@@ -361,12 +361,12 @@ char	*string_replace(const char *str, const char *sub_str1, const char *sub_str2
 	for ( p=str; (p = strstr(p, sub_str1)); p+=len, count++ );
 
 	if (0 == count)
-		return zbx_strdup(NULL, str);
+		return trx_strdup(NULL, str);
 
 	diff = (long)strlen(sub_str2) - len;
 
         /* allocate new memory */
-	new_str = (char *)zbx_malloc(new_str, (size_t)(strlen(str) + count*diff + 1)*sizeof(char));
+	new_str = (char *)trx_malloc(new_str, (size_t)(strlen(str) + count*diff + 1)*sizeof(char));
 
         for (q=str,t=new_str,p=str; (p = strstr(p, sub_str1)); )
         {
@@ -454,7 +454,7 @@ void	del_zeros(char *s)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_rtrim                                                        *
+ * Function: trx_rtrim                                                        *
  *                                                                            *
  * Purpose: Strip characters from the end of a string                         *
  *                                                                            *
@@ -466,7 +466,7 @@ void	del_zeros(char *s)
  * Author: Eugene Grigorjev, Aleksandrs Saveljevs                             *
  *                                                                            *
  ******************************************************************************/
-int	zbx_rtrim(char *str, const char *charlist)
+int	trx_rtrim(char *str, const char *charlist)
 {
 	char	*p;
 	int	count = 0;
@@ -485,7 +485,7 @@ int	zbx_rtrim(char *str, const char *charlist)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ltrim                                                        *
+ * Function: trx_ltrim                                                        *
  *                                                                            *
  * Purpose: Strip characters from the beginning of a string                   *
  *                                                                            *
@@ -497,7 +497,7 @@ int	zbx_rtrim(char *str, const char *charlist)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ltrim(char *str, const char *charlist)
+void	trx_ltrim(char *str, const char *charlist)
 {
 	char	*p;
 
@@ -518,7 +518,7 @@ void	zbx_ltrim(char *str, const char *charlist)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_lrtrim                                                       *
+ * Function: trx_lrtrim                                                       *
  *                                                                            *
  * Purpose: Removes leading and trailing characters from the specified        *
  *          character string                                                  *
@@ -527,15 +527,15 @@ void	zbx_ltrim(char *str, const char *charlist)
  *             charlist - [IN] null terminated list of characters             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_lrtrim(char *str, const char *charlist)
+void	trx_lrtrim(char *str, const char *charlist)
 {
-	zbx_rtrim(str, charlist);
-	zbx_ltrim(str, charlist);
+	trx_rtrim(str, charlist);
+	trx_ltrim(str, charlist);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_remove_chars                                                 *
+ * Function: trx_remove_chars                                                 *
  *                                                                            *
  * Purpose: Remove characters 'charlist' from the whole string                *
  *                                                                            *
@@ -547,7 +547,7 @@ void	zbx_lrtrim(char *str, const char *charlist)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_remove_chars(char *str, const char *charlist)
+void	trx_remove_chars(char *str, const char *charlist)
 {
 	char	*p;
 
@@ -565,7 +565,7 @@ void	zbx_remove_chars(char *str, const char *charlist)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strlcpy                                                      *
+ * Function: trx_strlcpy                                                      *
  *                                                                            *
  * Purpose: Copy src to string dst of size siz. At most siz - 1 characters    *
  *          will be copied. Always null terminates (unless siz == 0).         *
@@ -573,7 +573,7 @@ void	zbx_remove_chars(char *str, const char *charlist)
  * Return value: the number of characters copied (excluding the null byte)    *
  *                                                                            *
  ******************************************************************************/
-size_t	zbx_strlcpy(char *dst, const char *src, size_t siz)
+size_t	trx_strlcpy(char *dst, const char *src, size_t siz)
 {
 	const char	*s = src;
 
@@ -590,7 +590,7 @@ size_t	zbx_strlcpy(char *dst, const char *src, size_t siz)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strlcat                                                      *
+ * Function: trx_strlcat                                                      *
  *                                                                            *
  * Purpose: Appends src to string dst of size siz (unlike strncat, size is    *
  *          the full size of dst, not space left). At most siz - 1 characters *
@@ -598,7 +598,7 @@ size_t	zbx_strlcpy(char *dst, const char *src, size_t siz)
  *          siz <= strlen(dst)).                                              *
  *                                                                            *
  ******************************************************************************/
-void	zbx_strlcat(char *dst, const char *src, size_t siz)
+void	trx_strlcat(char *dst, const char *src, size_t siz)
 {
 	while ('\0' != *dst)
 	{
@@ -606,12 +606,12 @@ void	zbx_strlcat(char *dst, const char *src, size_t siz)
 		siz--;
 	}
 
-	zbx_strlcpy(dst, src, siz);
+	trx_strlcpy(dst, src, siz);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strlcpy_utf8                                                 *
+ * Function: trx_strlcpy_utf8                                                 *
  *                                                                            *
  * Purpose: copies utf-8 string + terminating zero character into specified   *
  *          buffer                                                            *
@@ -624,9 +624,9 @@ void	zbx_strlcat(char *dst, const char *src, size_t siz)
  *           byte.                                                            *
  *                                                                            *
  ******************************************************************************/
-size_t	zbx_strlcpy_utf8(char *dst, const char *src, size_t size)
+size_t	trx_strlcpy_utf8(char *dst, const char *src, size_t size)
 {
-	size = zbx_strlen_utf8_nbytes(src, size - 1);
+	size = trx_strlen_utf8_nbytes(src, size - 1);
 	memcpy(dst, src, size);
 	dst[size] = '\0';
 
@@ -635,7 +635,7 @@ size_t	zbx_strlcpy_utf8(char *dst, const char *src, size_t size)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dvsprintf                                                    *
+ * Function: trx_dvsprintf                                                    *
  *                                                                            *
  * Purpose: dynamical formatted output conversion                             *
  *                                                                            *
@@ -646,7 +646,7 @@ size_t	zbx_strlcpy_utf8(char *dst, const char *src, size_t size)
  * Comments: returns a pointer to allocated memory                            *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_dvsprintf(char *dest, const char *f, va_list args)
+char	*trx_dvsprintf(char *dest, const char *f, va_list args)
 {
 	char	*string = NULL;
 	int	n, size = MAX_STRING_LEN >> 1;
@@ -655,7 +655,7 @@ char	*zbx_dvsprintf(char *dest, const char *f, va_list args)
 
 	while (1)
 	{
-		string = (char *)zbx_malloc(string, size);
+		string = (char *)trx_malloc(string, size);
 
 		va_copy(curr, args);
 		n = vsnprintf(string, size, f, curr);
@@ -670,17 +670,17 @@ char	*zbx_dvsprintf(char *dest, const char *f, va_list args)
 		else
 			size = n + 1;	/* n bytes + trailing '\0' */
 
-		zbx_free(string);
+		trx_free(string);
 	}
 
-	zbx_free(dest);
+	trx_free(dest);
 
 	return string;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dsprintf                                                     *
+ * Function: trx_dsprintf                                                     *
  *                                                                            *
  * Purpose: dynamical formatted output conversion                             *
  *                                                                            *
@@ -691,14 +691,14 @@ char	*zbx_dvsprintf(char *dest, const char *f, va_list args)
  * Comments: returns a pointer to allocated memory                            *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_dsprintf(char *dest, const char *f, ...)
+char	*trx_dsprintf(char *dest, const char *f, ...)
 {
 	char	*string;
 	va_list args;
 
 	va_start(args, f);
 
-	string = zbx_dvsprintf(dest, f, args);
+	string = trx_dvsprintf(dest, f, args);
 
 	va_end(args);
 
@@ -707,7 +707,7 @@ char	*zbx_dsprintf(char *dest, const char *f, ...)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strdcat                                                      *
+ * Function: trx_strdcat                                                      *
  *                                                                            *
  * Purpose: dynamical cating of strings                                       *
  *                                                                            *
@@ -716,10 +716,10 @@ char	*zbx_dsprintf(char *dest, const char *f, ...)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  * Comments: returns a pointer to allocated memory                            *
- *           zbx_strdcat(NULL, "") will return "", not NULL!                  *
+ *           trx_strdcat(NULL, "") will return "", not NULL!                  *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_strdcat(char *dest, const char *src)
+char	*trx_strdcat(char *dest, const char *src)
 {
 	size_t	len_dest, len_src;
 
@@ -727,21 +727,21 @@ char	*zbx_strdcat(char *dest, const char *src)
 		return dest;
 
 	if (NULL == dest)
-		return zbx_strdup(NULL, src);
+		return trx_strdup(NULL, src);
 
 	len_dest = strlen(dest);
 	len_src = strlen(src);
 
-	dest = (char *)zbx_realloc(dest, len_dest + len_src + 1);
+	dest = (char *)trx_realloc(dest, len_dest + len_src + 1);
 
-	zbx_strlcpy(dest + len_dest, src, len_src + 1);
+	trx_strlcpy(dest + len_dest, src, len_src + 1);
 
 	return dest;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strdcatf                                                     *
+ * Function: trx_strdcatf                                                     *
  *                                                                            *
  * Purpose: dynamical cating of formatted strings                             *
  *                                                                            *
@@ -752,25 +752,25 @@ char	*zbx_strdcat(char *dest, const char *src)
  * Comments: returns a pointer to allocated memory                            *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_strdcatf(char *dest, const char *f, ...)
+char	*trx_strdcatf(char *dest, const char *f, ...)
 {
 	char	*string, *result;
 	va_list	args;
 
 	va_start(args, f);
-	string = zbx_dvsprintf(NULL, f, args);
+	string = trx_dvsprintf(NULL, f, args);
 	va_end(args);
 
-	result = zbx_strdcat(dest, string);
+	result = trx_strdcat(dest, string);
 
-	zbx_free(string);
+	trx_free(string);
 
 	return result;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_check_hostname                                               *
+ * Function: trx_check_hostname                                               *
  *                                                                            *
  * Purpose: check a byte stream for a valid hostname                          *
  *                                                                            *
@@ -784,7 +784,7 @@ char	*zbx_strdcatf(char *dest, const char *f, ...)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_check_hostname(const char *hostname, char **error)
+int	trx_check_hostname(const char *hostname, char **error)
 {
 	int	len = 0;
 
@@ -793,7 +793,7 @@ int	zbx_check_hostname(const char *hostname, char **error)
 		if (FAIL == is_hostname_char(hostname[len]))
 		{
 			if (NULL != error)
-				*error = zbx_dsprintf(NULL, "name contains invalid character '%c'", hostname[len]);
+				*error = trx_dsprintf(NULL, "name contains invalid character '%c'", hostname[len]);
 			return FAIL;
 		}
 
@@ -803,14 +803,14 @@ int	zbx_check_hostname(const char *hostname, char **error)
 	if (0 == len)
 	{
 		if (NULL != error)
-			*error = zbx_strdup(NULL, "name is empty");
+			*error = trx_strdup(NULL, "name is empty");
 		return FAIL;
 	}
 
 	if (MAX_TRX_HOSTNAME_LEN < len)
 	{
 		if (NULL != error)
-			*error = zbx_dsprintf(NULL, "name is too long (max %d characters)", MAX_TRX_HOSTNAME_LEN);
+			*error = trx_dsprintf(NULL, "name is too long (max %d characters)", MAX_TRX_HOSTNAME_LEN);
 		return FAIL;
 	}
 
@@ -970,7 +970,7 @@ int	parse_host_key(char *exp, char **host, char **key)
 				 */
 		{
 			*p = '\0';
-			*host = zbx_strdup(NULL, s);
+			*host = trx_strdup(NULL, s);
 			*p++ = ':';
 
 			s = p;
@@ -981,14 +981,14 @@ int	parse_host_key(char *exp, char **host, char **key)
 			break;
 	}
 
-	*key = zbx_strdup(NULL, s);
+	*key = trx_strdup(NULL, s);
 
 	return SUCCEED;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_escape_string_len                                        *
+ * Function: trx_get_escape_string_len                                        *
  *                                                                            *
  * Purpose: calculate the required size for the escaped string                *
  *                                                                            *
@@ -1000,7 +1000,7 @@ int	parse_host_key(char *exp, char **host, char **key)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-size_t	zbx_get_escape_string_len(const char *src, const char *charlist)
+size_t	trx_get_escape_string_len(const char *src, const char *charlist)
 {
 	size_t	sz = 0;
 
@@ -1015,7 +1015,7 @@ size_t	zbx_get_escape_string_len(const char *src, const char *charlist)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dyn_escape_string                                            *
+ * Function: trx_dyn_escape_string                                            *
  *                                                                            *
  * Purpose: escape characters in the source string                            *
  *                                                                            *
@@ -1027,14 +1027,14 @@ size_t	zbx_get_escape_string_len(const char *src, const char *charlist)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_dyn_escape_string(const char *src, const char *charlist)
+char	*trx_dyn_escape_string(const char *src, const char *charlist)
 {
 	size_t	sz;
 	char	*d, *dst = NULL;
 
-	sz = zbx_get_escape_string_len(src, charlist) + 1;
+	sz = trx_get_escape_string_len(src, charlist) + 1;
 
-	dst = (char *)zbx_malloc(dst, sz);
+	dst = (char *)trx_malloc(dst, sz);
 
 	for (d = dst; '\0' != *src; src++)
 	{
@@ -1049,7 +1049,7 @@ char	*zbx_dyn_escape_string(const char *src, const char *charlist)
 	return dst;
 }
 
-char	*zbx_age2str(int age)
+char	*trx_age2str(int age)
 {
 	size_t		offset = 0;
 	int		days, hours, minutes;
@@ -1060,22 +1060,22 @@ char	*zbx_age2str(int age)
 	minutes	= (int)((double)(age - days * SEC_PER_DAY - hours * SEC_PER_HOUR) / SEC_PER_MIN);
 
 	if (0 != days)
-		offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%dd ", days);
+		offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "%dd ", days);
 	if (0 != days || 0 != hours)
-		offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%dh ", hours);
+		offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "%dh ", hours);
 
-	zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%dm", minutes);
+	trx_snprintf(buffer + offset, sizeof(buffer) - offset, "%dm", minutes);
 
 	return buffer;
 }
 
-char	*zbx_date2str(time_t date)
+char	*trx_date2str(time_t date)
 {
 	static char	buffer[11];
 	struct tm	*tm;
 
 	tm = localtime(&date);
-	zbx_snprintf(buffer, sizeof(buffer), "%.4d.%.2d.%.2d",
+	trx_snprintf(buffer, sizeof(buffer), "%.4d.%.2d.%.2d",
 			tm->tm_year + 1900,
 			tm->tm_mon + 1,
 			tm->tm_mday);
@@ -1083,20 +1083,20 @@ char	*zbx_date2str(time_t date)
 	return buffer;
 }
 
-char	*zbx_time2str(time_t time)
+char	*trx_time2str(time_t time)
 {
 	static char	buffer[9];
 	struct tm	*tm;
 
 	tm = localtime(&time);
-	zbx_snprintf(buffer, sizeof(buffer), "%.2d:%.2d:%.2d",
+	trx_snprintf(buffer, sizeof(buffer), "%.2d:%.2d:%.2d",
 			tm->tm_hour,
 			tm->tm_min,
 			tm->tm_sec);
 	return buffer;
 }
 
-int	zbx_strncasecmp(const char *s1, const char *s2, size_t n)
+int	trx_strncasecmp(const char *s1, const char *s2, size_t n)
 {
 	if (NULL == s1 && NULL == s2)
 		return 0;
@@ -1118,7 +1118,7 @@ int	zbx_strncasecmp(const char *s1, const char *s2, size_t n)
 	return 0 == n ? 0 : tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
 }
 
-char	*zbx_strcasestr(const char *haystack, const char *needle)
+char	*trx_strcasestr(const char *haystack, const char *needle)
 {
 	size_t		sz_h, sz_n;
 	const char	*p;
@@ -1136,7 +1136,7 @@ char	*zbx_strcasestr(const char *haystack, const char *needle)
 
 	for (p = haystack; p <= &haystack[sz_h - sz_n]; p++)
 	{
-		if (0 == zbx_strncasecmp(p, needle, sz_n))
+		if (0 == trx_strncasecmp(p, needle, sz_n))
 			return (char *)p;
 	}
 
@@ -1272,7 +1272,7 @@ const char	*get_program_type_string(unsigned char program_type)
 	}
 }
 
-const char	*zbx_permission_string(int perm)
+const char	*trx_permission_string(int perm)
 {
 	switch (perm)
 	{
@@ -1287,7 +1287,7 @@ const char	*zbx_permission_string(int perm)
 	}
 }
 
-const char	*zbx_agent_type_string(zbx_item_type_t item_type)
+const char	*trx_agent_type_string(trx_item_type_t item_type)
 {
 	switch (item_type)
 	{
@@ -1306,7 +1306,7 @@ const char	*zbx_agent_type_string(zbx_item_type_t item_type)
 	}
 }
 
-const char	*zbx_item_value_type_string(zbx_item_value_type_t value_type)
+const char	*trx_item_value_type_string(trx_item_value_type_t value_type)
 {
 	switch (value_type)
 	{
@@ -1325,7 +1325,7 @@ const char	*zbx_item_value_type_string(zbx_item_value_type_t value_type)
 	}
 }
 
-const char	*zbx_interface_type_string(zbx_interface_type_t type)
+const char	*trx_interface_type_string(trx_interface_type_t type)
 {
 	switch (type)
 	{
@@ -1353,7 +1353,7 @@ const int	INTERFACE_TYPE_PRIORITY[INTERFACE_TYPE_COUNT] =
 	INTERFACE_TYPE_IPMI
 };
 
-const char	*zbx_sysinfo_ret_string(int ret)
+const char	*trx_sysinfo_ret_string(int ret)
 {
 	switch (ret)
 	{
@@ -1366,7 +1366,7 @@ const char	*zbx_sysinfo_ret_string(int ret)
 	}
 }
 
-const char	*zbx_result_string(int result)
+const char	*trx_result_string(int result)
 {
 	switch (result)
 	{
@@ -1391,7 +1391,7 @@ const char	*zbx_result_string(int result)
 	}
 }
 
-const char	*zbx_item_logtype_string(unsigned char logtype)
+const char	*trx_item_logtype_string(unsigned char logtype)
 {
 	switch (logtype)
 	{
@@ -1414,7 +1414,7 @@ const char	*zbx_item_logtype_string(unsigned char logtype)
 	}
 }
 
-const char	*zbx_dservice_type_string(zbx_dservice_type_t service)
+const char	*trx_dservice_type_string(trx_dservice_type_t service)
 {
 	switch (service)
 	{
@@ -1455,7 +1455,7 @@ const char	*zbx_dservice_type_string(zbx_dservice_type_t service)
 	}
 }
 
-const char	*zbx_alert_type_string(unsigned char type)
+const char	*trx_alert_type_string(unsigned char type)
 {
 	switch (type)
 	{
@@ -1466,7 +1466,7 @@ const char	*zbx_alert_type_string(unsigned char type)
 	}
 }
 
-const char	*zbx_alert_status_string(unsigned char type, unsigned char status)
+const char	*trx_alert_status_string(unsigned char type, unsigned char status)
 {
 	switch (status)
 	{
@@ -1479,7 +1479,7 @@ const char	*zbx_alert_status_string(unsigned char type, unsigned char status)
 	}
 }
 
-const char	*zbx_escalation_status_string(unsigned char status)
+const char	*trx_escalation_status_string(unsigned char status)
 {
 	switch (status)
 	{
@@ -1494,7 +1494,7 @@ const char	*zbx_escalation_status_string(unsigned char status)
 	}
 }
 
-const char	*zbx_trigger_value_string(unsigned char value)
+const char	*trx_trigger_value_string(unsigned char value)
 {
 	switch (value)
 	{
@@ -1507,7 +1507,7 @@ const char	*zbx_trigger_value_string(unsigned char value)
 	}
 }
 
-const char	*zbx_trigger_state_string(unsigned char state)
+const char	*trx_trigger_state_string(unsigned char state)
 {
 	switch (state)
 	{
@@ -1520,7 +1520,7 @@ const char	*zbx_trigger_state_string(unsigned char state)
 	}
 }
 
-const char	*zbx_item_state_string(unsigned char state)
+const char	*trx_item_state_string(unsigned char state)
 {
 	switch (state)
 	{
@@ -1533,7 +1533,7 @@ const char	*zbx_item_state_string(unsigned char state)
 	}
 }
 
-const char	*zbx_event_value_string(unsigned char source, unsigned char object, unsigned char value)
+const char	*trx_event_value_string(unsigned char source, unsigned char object, unsigned char value)
 {
 	if (EVENT_SOURCE_TRIGGERS == source)
 	{
@@ -1553,10 +1553,10 @@ const char	*zbx_event_value_string(unsigned char source, unsigned char object, u
 		switch (object)
 		{
 			case EVENT_OBJECT_TRIGGER:
-				return zbx_trigger_state_string(value);
+				return trx_trigger_state_string(value);
 			case EVENT_OBJECT_ITEM:
 			case EVENT_OBJECT_LLDRULE:
-				return zbx_item_state_string(value);
+				return trx_item_state_string(value);
 		}
 	}
 
@@ -1645,7 +1645,7 @@ static int	get_codepage(const char *encoding, unsigned int *codepage)
 	/* by 'cp' + number */
 	for (i = 0; 0 != cp[i].codepage || NULL != cp[i].name; i++)
 	{
-		zbx_snprintf(buf, sizeof(buf), "cp%li", cp[i].codepage);
+		trx_snprintf(buf, sizeof(buf), "cp%li", cp[i].codepage);
 		if (0 == strcmp(encoding, buf))
 		{
 			*codepage = cp[i].codepage;
@@ -1657,13 +1657,13 @@ static int	get_codepage(const char *encoding, unsigned int *codepage)
 }
 
 /* convert from selected code page to unicode */
-static wchar_t	*zbx_to_unicode(unsigned int codepage, const char *cp_string)
+static wchar_t	*trx_to_unicode(unsigned int codepage, const char *cp_string)
 {
 	wchar_t	*wide_string = NULL;
 	int	wide_size;
 
 	wide_size = MultiByteToWideChar(codepage, 0, cp_string, -1, NULL, 0);
-	wide_string = (wchar_t *)zbx_malloc(wide_string, (size_t)wide_size * sizeof(wchar_t));
+	wide_string = (wchar_t *)trx_malloc(wide_string, (size_t)wide_size * sizeof(wchar_t));
 
 	/* convert from cp_string to wide_string */
 	MultiByteToWideChar(codepage, 0, cp_string, -1, wide_string, wide_size);
@@ -1672,18 +1672,18 @@ static wchar_t	*zbx_to_unicode(unsigned int codepage, const char *cp_string)
 }
 
 /* convert from Windows ANSI code page to unicode */
-wchar_t	*zbx_acp_to_unicode(const char *acp_string)
+wchar_t	*trx_acp_to_unicode(const char *acp_string)
 {
-	return zbx_to_unicode(CP_ACP, acp_string);
+	return trx_to_unicode(CP_ACP, acp_string);
 }
 
 /* convert from Windows OEM code page to unicode */
-wchar_t	*zbx_oemcp_to_unicode(const char *oemcp_string)
+wchar_t	*trx_oemcp_to_unicode(const char *oemcp_string)
 {
-	return zbx_to_unicode(CP_OEMCP, oemcp_string);
+	return trx_to_unicode(CP_OEMCP, oemcp_string);
 }
 
-int	zbx_acp_to_unicode_static(const char *acp_string, wchar_t *wide_string, int wide_size)
+int	trx_acp_to_unicode_static(const char *acp_string, wchar_t *wide_string, int wide_size)
 {
 	/* convert from acp_string to wide_string */
 	if (0 == MultiByteToWideChar(CP_ACP, 0, acp_string, -1, wide_string, wide_size))
@@ -1693,19 +1693,19 @@ int	zbx_acp_to_unicode_static(const char *acp_string, wchar_t *wide_string, int 
 }
 
 /* convert from UTF-8 to unicode */
-wchar_t	*zbx_utf8_to_unicode(const char *utf8_string)
+wchar_t	*trx_utf8_to_unicode(const char *utf8_string)
 {
-	return zbx_to_unicode(CP_UTF8, utf8_string);
+	return trx_to_unicode(CP_UTF8, utf8_string);
 }
 
 /* convert from unicode to utf8 */
-char	*zbx_unicode_to_utf8(const wchar_t *wide_string)
+char	*trx_unicode_to_utf8(const wchar_t *wide_string)
 {
 	char	*utf8_string = NULL;
 	int	utf8_size;
 
 	utf8_size = WideCharToMultiByte(CP_UTF8, 0, wide_string, -1, NULL, 0, NULL, NULL);
-	utf8_string = (char *)zbx_malloc(utf8_string, (size_t)utf8_size);
+	utf8_string = (char *)trx_malloc(utf8_string, (size_t)utf8_size);
 
 	/* convert from wide_string to utf8_string */
 	WideCharToMultiByte(CP_UTF8, 0, wide_string, -1, utf8_string, utf8_size, NULL, NULL);
@@ -1714,7 +1714,7 @@ char	*zbx_unicode_to_utf8(const wchar_t *wide_string)
 }
 
 /* convert from unicode to utf8 */
-char	*zbx_unicode_to_utf8_static(const wchar_t *wide_string, char *utf8_string, int utf8_size)
+char	*trx_unicode_to_utf8_static(const wchar_t *wide_string, char *utf8_string, int utf8_size)
 {
 	/* convert from wide_string to utf8_string */
 	if (0 == WideCharToMultiByte(CP_UTF8, 0, wide_string, -1, utf8_string, utf8_size, NULL, NULL))
@@ -1724,13 +1724,13 @@ char	*zbx_unicode_to_utf8_static(const wchar_t *wide_string, char *utf8_string, 
 }
 #endif
 
-void	zbx_strlower(char *str)
+void	trx_strlower(char *str)
 {
 	for (; '\0' != *str; str++)
 		*str = tolower(*str);
 }
 
-void	zbx_strupper(char *str)
+void	trx_strupper(char *str)
 {
 	for (; '\0' != *str; str++)
 		*str = toupper(*str);
@@ -1750,7 +1750,7 @@ char	*convert_to_utf8(char *in, size_t in_size, const char *encoding)
 	if ('\0' == *encoding || FAIL == get_codepage(encoding, &codepage))
 	{
 		utf8_size = (int)in_size + 1;
-		utf8_string = zbx_malloc(utf8_string, utf8_size);
+		utf8_string = trx_malloc(utf8_string, utf8_size);
 		memcpy(utf8_string, in, in_size);
 		utf8_string[in_size] = '\0';
 		return utf8_string;
@@ -1773,7 +1773,7 @@ char	*convert_to_utf8(char *in, size_t in_size, const char *encoding)
 
 
 		if (wide_size > STATIC_SIZE)
-			wide_string = (wchar_t *)zbx_malloc(wide_string, (size_t)wide_size * sizeof(wchar_t));
+			wide_string = (wchar_t *)trx_malloc(wide_string, (size_t)wide_size * sizeof(wchar_t));
 		else
 			wide_string = wide_string_static;
 
@@ -1786,7 +1786,7 @@ char	*convert_to_utf8(char *in, size_t in_size, const char *encoding)
 		wide_size = MultiByteToWideChar(codepage, 0, in, (int)in_size, NULL, 0);
 
 		if (wide_size > STATIC_SIZE)
-			wide_string = (wchar_t *)zbx_malloc(wide_string, (size_t)wide_size * sizeof(wchar_t));
+			wide_string = (wchar_t *)trx_malloc(wide_string, (size_t)wide_size * sizeof(wchar_t));
 		else
 			wide_string = wide_string_static;
 
@@ -1795,14 +1795,14 @@ char	*convert_to_utf8(char *in, size_t in_size, const char *encoding)
 	}
 
 	utf8_size = WideCharToMultiByte(CP_UTF8, 0, wide_string, wide_size, NULL, 0, NULL, NULL);
-	utf8_string = (char *)zbx_malloc(utf8_string, (size_t)utf8_size + 1/* '\0' */);
+	utf8_string = (char *)trx_malloc(utf8_string, (size_t)utf8_size + 1/* '\0' */);
 
 	/* convert from 'wide_string' to 'utf8_string' */
 	WideCharToMultiByte(CP_UTF8, 0, wide_string, wide_size, utf8_string, utf8_size, NULL, NULL);
 	utf8_string[utf8_size] = '\0';
 
 	if (wide_string != wide_string_static && wide_string != (wchar_t *)in)
-		zbx_free(wide_string);
+		trx_free(wide_string);
 
 	return utf8_string;
 }
@@ -1815,7 +1815,7 @@ char	*convert_to_utf8(char *in, size_t in_size, const char *encoding)
 	char		*out = NULL, *p;
 
 	out_alloc = in_size + 1;
-	p = out = (char *)zbx_malloc(out, out_alloc);
+	p = out = (char *)trx_malloc(out, out_alloc);
 
 	if ('\0' == *encoding || (iconv_t)-1 == (cd = iconv_open(to_code, encoding)))
 	{
@@ -1835,7 +1835,7 @@ char	*convert_to_utf8(char *in, size_t in_size, const char *encoding)
 		sz = (size_t)(p - out);
 		out_alloc += in_size;
 		out_size_left += in_size;
-		p = out = (char *)zbx_realloc(out, out_alloc);
+		p = out = (char *)trx_realloc(out, out_alloc);
 		p += sz;
 	}
 
@@ -1847,7 +1847,7 @@ char	*convert_to_utf8(char *in, size_t in_size, const char *encoding)
 }
 #endif	/* HAVE_ICONV */
 
-size_t	zbx_strlen_utf8(const char *text)
+size_t	trx_strlen_utf8(const char *text)
 {
 	size_t	n = 0;
 
@@ -1862,7 +1862,7 @@ size_t	zbx_strlen_utf8(const char *text)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_utf8_char_len                                                *
+ * Function: trx_utf8_char_len                                                *
  *                                                                            *
  * Purpose: Returns the size (in bytes) of an UTF-8 encoded character or 0    *
  *          if the character is not a valid UTF-8.                            *
@@ -1870,7 +1870,7 @@ size_t	zbx_strlen_utf8(const char *text)
  * Parameters: text - [IN] pointer to the 1st byte of UTF-8 character         *
  *                                                                            *
  ******************************************************************************/
-size_t	zbx_utf8_char_len(const char *text)
+size_t	trx_utf8_char_len(const char *text)
 {
 	if (0 == (*text & 0x80))		/* ASCII */
 		return 1;
@@ -1881,25 +1881,25 @@ size_t	zbx_utf8_char_len(const char *text)
 	else if (0xf0 == (*text & 0xf8))	/* 11110000-11110100 starts a 4-byte sequence */
 		return 4;
 #if TRX_MAX_BYTES_IN_UTF8_CHAR != 4
-#	error "zbx_utf8_char_len() is not synchronized with TRX_MAX_BYTES_IN_UTF8_CHAR"
+#	error "trx_utf8_char_len() is not synchronized with TRX_MAX_BYTES_IN_UTF8_CHAR"
 #endif
 	return 0;				/* not a valid UTF-8 character */
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strlen_utf8_nchars                                           *
+ * Function: trx_strlen_utf8_nchars                                           *
  *                                                                            *
  * Purpose: calculates number of bytes in utf8 text limited by utf8_maxlen    *
  *          characters                                                        *
  *                                                                            *
  ******************************************************************************/
-size_t	zbx_strlen_utf8_nchars(const char *text, size_t utf8_maxlen)
+size_t	trx_strlen_utf8_nchars(const char *text, size_t utf8_maxlen)
 {
 	size_t		sz = 0, csz = 0;
 	const char	*next;
 
-	while ('\0' != *text && 0 < utf8_maxlen && 0 != (csz = zbx_utf8_char_len(text)))
+	while ('\0' != *text && 0 < utf8_maxlen && 0 != (csz = trx_utf8_char_len(text)))
 	{
 		next = text + csz;
 		while (next > text)
@@ -1916,12 +1916,12 @@ size_t	zbx_strlen_utf8_nchars(const char *text, size_t utf8_maxlen)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strlen_utf8_nbytes                                           *
+ * Function: trx_strlen_utf8_nbytes                                           *
  *                                                                            *
  * Purpose: calculates number of bytes in utf8 text limited by maxlen bytes   *
  *                                                                            *
  ******************************************************************************/
-size_t	zbx_strlen_utf8_nbytes(const char *text, size_t maxlen)
+size_t	trx_strlen_utf8_nbytes(const char *text, size_t maxlen)
 {
 	size_t	sz;
 
@@ -1941,7 +1941,7 @@ size_t	zbx_strlen_utf8_nbytes(const char *text, size_t maxlen)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_is_utf8                                                      *
+ * Function: trx_is_utf8                                                      *
  *                                                                            *
  * Purpose: check UTF-8 sequences                                             *
  *                                                                            *
@@ -1950,7 +1950,7 @@ size_t	zbx_strlen_utf8_nbytes(const char *text, size_t maxlen)
  * Return value: SUCCEED if string is valid or FAIL otherwise                 *
  *                                                                            *
  ******************************************************************************/
-int	zbx_is_utf8(const char *text)
+int	trx_is_utf8(const char *text)
 {
 	unsigned int	utf32;
 	unsigned char	*utf8;
@@ -2036,14 +2036,14 @@ int	zbx_is_utf8(const char *text)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_replace_invalid_utf8                                         *
+ * Function: trx_replace_invalid_utf8                                         *
  *                                                                            *
  * Purpose: replace invalid UTF-8 sequences of bytes with '?' character       *
  *                                                                            *
  * Parameters: text - [IN/OUT] pointer to the first char                      *
  *                                                                            *
  ******************************************************************************/
-void	zbx_replace_invalid_utf8(char *text)
+void	trx_replace_invalid_utf8(char *text)
 {
 	char	*out = text;
 
@@ -2210,7 +2210,7 @@ char	*str_linefeed(const char *src, size_t maxline, const char *delim)
 	dst_size = src_size + feeds * delim_size + 1;
 
 	/* allocate memory for output */
-	dst = (char *)zbx_malloc(dst, dst_size);
+	dst = (char *)trx_malloc(dst, dst_size);
 
 	p_src = src;
 	p_dst = dst;
@@ -2240,7 +2240,7 @@ char	*str_linefeed(const char *src, size_t maxline, const char *delim)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strarr_init                                                  *
+ * Function: trx_strarr_init                                                  *
  *                                                                            *
  * Purpose: initialize dynamic string array                                   *
  *                                                                            *
@@ -2253,15 +2253,15 @@ char	*str_linefeed(const char *src, size_t maxline, const char *delim)
  * Comments: allocates memory, calls assert() if that fails                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_strarr_init(char ***arr)
+void	trx_strarr_init(char ***arr)
 {
-	*arr = (char **)zbx_malloc(*arr, sizeof(char *));
+	*arr = (char **)trx_malloc(*arr, sizeof(char *));
 	**arr = NULL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strarr_add                                                   *
+ * Function: trx_strarr_add                                                   *
  *                                                                            *
  * Purpose: add a string to dynamic string array                              *
  *                                                                            *
@@ -2275,7 +2275,7 @@ void	zbx_strarr_init(char ***arr)
  * Comments: allocates memory, calls assert() if that fails                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_strarr_add(char ***arr, const char *entry)
+void	trx_strarr_add(char ***arr, const char *entry)
 {
 	int	i;
 
@@ -2284,15 +2284,15 @@ void	zbx_strarr_add(char ***arr, const char *entry)
 	for (i = 0; NULL != (*arr)[i]; i++)
 		;
 
-	*arr = (char **)zbx_realloc(*arr, sizeof(char *) * (i + 2));
+	*arr = (char **)trx_realloc(*arr, sizeof(char *) * (i + 2));
 
-	(*arr)[i] = zbx_strdup((*arr)[i], entry);
+	(*arr)[i] = trx_strdup((*arr)[i], entry);
 	(*arr)[++i] = NULL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strarr_free                                                  *
+ * Function: trx_strarr_free                                                  *
  *                                                                            *
  * Purpose: free dynamic string array memory                                  *
  *                                                                            *
@@ -2303,18 +2303,18 @@ void	zbx_strarr_add(char ***arr, const char *entry)
  * Author: Vladimir Levijev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_strarr_free(char **arr)
+void	trx_strarr_free(char **arr)
 {
 	char	**p;
 
 	for (p = arr; NULL != *p; p++)
-		zbx_free(*p);
-	zbx_free(arr);
+		trx_free(*p);
+	trx_free(arr);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_replace_string                                               *
+ * Function: trx_replace_string                                               *
  *                                                                            *
  * Purpose: replace data block with 'value'                                   *
  *                                                                            *
@@ -2326,7 +2326,7 @@ void	zbx_strarr_free(char **arr)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_replace_string(char **data, size_t l, size_t *r, const char *value)
+void	trx_replace_string(char **data, size_t l, size_t *r, const char *value)
 {
 	size_t	sz_data, sz_block, sz_value;
 	char	*src, *dst;
@@ -2340,7 +2340,7 @@ void	zbx_replace_string(char **data, size_t l, size_t *r, const char *value)
 		sz_data += sz_value - sz_block;
 
 		if (sz_value > sz_block)
-			*data = (char *)zbx_realloc(*data, sz_data + 1);
+			*data = (char *)trx_realloc(*data, sz_data + 1);
 
 		src = *data + l + sz_block;
 		dst = *data + l + sz_value;
@@ -2355,7 +2355,7 @@ void	zbx_replace_string(char **data, size_t l, size_t *r, const char *value)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_trim_str_list                                                *
+ * Function: trx_trim_str_list                                                *
  *                                                                            *
  * Purpose: remove whitespace surrounding a string list item delimiters       *
  *                                                                            *
@@ -2366,7 +2366,7 @@ void	zbx_replace_string(char **data, size_t l, size_t *r, const char *value)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-void	zbx_trim_str_list(char *list, char delimiter)
+void	trx_trim_str_list(char *list, char delimiter)
 {
 	/* NB! strchr(3): "terminating null byte is considered part of the string" */
 	const char	*whitespace = " \t";
@@ -2399,7 +2399,7 @@ void	zbx_trim_str_list(char *list, char delimiter)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strcmp_null                                                  *
+ * Function: trx_strcmp_null                                                  *
  *                                                                            *
  * Purpose:                                                                   *
  *     compares two strings where any of them can be a NULL pointer           *
@@ -2411,7 +2411,7 @@ void	zbx_trim_str_list(char *list, char delimiter)
  * Comments: NULL is less than any string                                     *
  *                                                                            *
  ******************************************************************************/
-int	zbx_strcmp_null(const char *s1, const char *s2)
+int	trx_strcmp_null(const char *s1, const char *s2)
 {
 	if (NULL == s1)
 		return NULL == s2 ? 0 : -1;
@@ -2424,7 +2424,7 @@ int	zbx_strcmp_null(const char *s1, const char *s2)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_user_macro_parse                                             *
+ * Function: trx_user_macro_parse                                             *
  *                                                                            *
  * Purpose:                                                                   *
  *     parses user macro and finds its end position and context location      *
@@ -2446,7 +2446,7 @@ int	zbx_strcmp_null(const char *s1, const char *s2)
  *               is not defined.                                              *
  *                                                                            *
  ******************************************************************************/
-int	zbx_user_macro_parse(const char *macro, int *macro_r, int *context_l, int *context_r)
+int	trx_user_macro_parse(const char *macro, int *macro_r, int *context_l, int *context_r)
 {
 	int	i;
 
@@ -2519,7 +2519,7 @@ int	zbx_user_macro_parse(const char *macro, int *macro_r, int *context_l, int *c
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_user_macro_parse_dyn                                         *
+ * Function: trx_user_macro_parse_dyn                                         *
  *                                                                            *
  * Purpose:                                                                   *
  *     parses user macro {$MACRO:<context>} into {$MACRO} and <context>       *
@@ -2537,16 +2537,16 @@ int	zbx_user_macro_parse(const char *macro, int *macro_r, int *context_l, int *c
  *     FAIL    - the macro parsing failed, invalid parameter syntax           *
  *                                                                            *
  ******************************************************************************/
-int	zbx_user_macro_parse_dyn(const char *macro, char **name, char **context, int *length)
+int	trx_user_macro_parse_dyn(const char *macro, char **name, char **context, int *length)
 {
 	const char	*ptr;
 	int		macro_r, context_l, context_r;
 	size_t		len;
 
-	if (SUCCEED != zbx_user_macro_parse(macro, &macro_r, &context_l, &context_r))
+	if (SUCCEED != trx_user_macro_parse(macro, &macro_r, &context_l, &context_r))
 		return FAIL;
 
-	zbx_free(*context);
+	trx_free(*context);
 
 	if (0 != context_l)
 	{
@@ -2558,17 +2558,17 @@ int	zbx_user_macro_parse_dyn(const char *macro, char **name, char **context, int
 
 		/* extract the macro name and close with '}' character */
 		len = ptr - macro + 1;
-		*name = (char *)zbx_realloc(*name, len + 1);
+		*name = (char *)trx_realloc(*name, len + 1);
 		memcpy(*name, macro, len - 1);
 		(*name)[len - 1] = '}';
 		(*name)[len] = '\0';
 
-		*context = zbx_user_macro_unquote_context_dyn(macro + context_l, context_r - context_l + 1);
+		*context = trx_user_macro_unquote_context_dyn(macro + context_l, context_r - context_l + 1);
 	}
 	else
 	{
-		*name = (char *)zbx_realloc(*name, macro_r + 2);
-		zbx_strlcpy(*name, macro, macro_r + 2);
+		*name = (char *)trx_realloc(*name, macro_r + 2);
+		trx_strlcpy(*name, macro, macro_r + 2);
 	}
 
 	if (NULL != length)
@@ -2579,7 +2579,7 @@ int	zbx_user_macro_parse_dyn(const char *macro, char **name, char **context, int
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_user_macro_unquote_context_dyn                               *
+ * Function: trx_user_macro_unquote_context_dyn                               *
  *                                                                            *
  * Purpose:                                                                   *
  *     extracts the macro context unquoting if necessary                      *
@@ -2594,12 +2594,12 @@ int	zbx_user_macro_parse_dyn(const char *macro, char **name, char **context, int
  *     by the caller.                                                         *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_user_macro_unquote_context_dyn(const char *context, int len)
+char	*trx_user_macro_unquote_context_dyn(const char *context, int len)
 {
 	int	quoted = 0;
 	char	*buffer, *ptr;
 
-	ptr = buffer = (char *)zbx_malloc(NULL, len + 1);
+	ptr = buffer = (char *)trx_malloc(NULL, len + 1);
 
 	if ('"' == *context)
 	{
@@ -2630,7 +2630,7 @@ char	*zbx_user_macro_unquote_context_dyn(const char *context, int len)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_user_macro_quote_context_dyn                                 *
+ * Function: trx_user_macro_quote_context_dyn                                 *
  *                                                                            *
  * Purpose:                                                                   *
  *     quotes user macro context if necessary                                 *
@@ -2644,7 +2644,7 @@ char	*zbx_user_macro_unquote_context_dyn(const char *context, int len)
  *     the caller.                                                            *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_user_macro_quote_context_dyn(const char *context, int force_quote)
+char	*trx_user_macro_quote_context_dyn(const char *context, int force_quote)
 {
 	int		len, quotes = 0;
 	char		*buffer, *ptr_buffer;
@@ -2663,10 +2663,10 @@ char	*zbx_user_macro_quote_context_dyn(const char *context, int force_quote)
 	}
 
 	if (0 == force_quote)
-		return zbx_strdup(NULL, context);
+		return trx_strdup(NULL, context);
 
 	len = (int)strlen(context) + 2 + quotes;
-	ptr_buffer = buffer = (char *)zbx_malloc(NULL, len + 1);
+	ptr_buffer = buffer = (char *)trx_malloc(NULL, len + 1);
 
 	*ptr_buffer++ = '"';
 
@@ -2686,7 +2686,7 @@ char	*zbx_user_macro_quote_context_dyn(const char *context, int force_quote)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dyn_escape_shell_single_quote                                *
+ * Function: trx_dyn_escape_shell_single_quote                                *
  *                                                                            *
  * Purpose: escape single quote in shell command arguments                    *
  *                                                                            *
@@ -2695,7 +2695,7 @@ char	*zbx_user_macro_quote_context_dyn(const char *context, int force_quote)
  * Return value: The escaped argument.                                        *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_dyn_escape_shell_single_quote(const char *arg)
+char	*trx_dyn_escape_shell_single_quote(const char *arg)
 {
 	int		len = 1; /* include terminating zero character */
 	const char	*pin;
@@ -2708,7 +2708,7 @@ char	*zbx_dyn_escape_shell_single_quote(const char *arg)
 		len++;
 	}
 
-	pout = arg_esc = (char *)zbx_malloc(NULL, len);
+	pout = arg_esc = (char *)trx_malloc(NULL, len);
 
 	for (pin = arg; '\0' != *pin; pin++)
 	{
@@ -2756,7 +2756,7 @@ static int	function_parse_name(const char *expr, size_t *length)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_function_param_parse                                         *
+ * Function: trx_function_param_parse                                         *
  *                                                                            *
  * Purpose: parses function parameter                                         *
  *                                                                            *
@@ -2769,7 +2769,7 @@ static int	function_parse_name(const char *expr, size_t *length)
  *                               (',' or '\0' or ')') position                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_function_param_parse(const char *expr, size_t *param_pos, size_t *length, size_t *sep_pos)
+void	trx_function_param_parse(const char *expr, size_t *param_pos, size_t *length, size_t *sep_pos)
 {
 	const char	*ptr = expr;
 
@@ -2803,7 +2803,7 @@ void	zbx_function_param_parse(const char *expr, size_t *param_pos, size_t *lengt
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_function_param_unquote_dyn                                   *
+ * Function: trx_function_param_unquote_dyn                                   *
  *                                                                            *
  * Purpose: unquotes function parameter                                       *
  *                                                                            *
@@ -2816,11 +2816,11 @@ void	zbx_function_param_parse(const char *expr, size_t *param_pos, size_t *lengt
  *               caller.                                                      *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_function_param_unquote_dyn(const char *param, size_t len, int *quoted)
+char	*trx_function_param_unquote_dyn(const char *param, size_t len, int *quoted)
 {
 	char	*out;
 
-	out = (char *)zbx_malloc(NULL, len + 1);
+	out = (char *)trx_malloc(NULL, len + 1);
 
 	if (0 == (*quoted = (0 != len && '"' == *param)))
 	{
@@ -2850,7 +2850,7 @@ char	*zbx_function_param_unquote_dyn(const char *param, size_t len, int *quoted)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_function_param_quote                                         *
+ * Function: trx_function_param_quote                                         *
  *                                                                            *
  * Purpose: quotes function parameter                                         *
  *                                                                            *
@@ -2866,7 +2866,7 @@ char	*zbx_function_param_unquote_dyn(const char *param, size_t len, int *quoted)
  *                         backslash in the end                               *
  *                                                                            *
  ******************************************************************************/
-int	zbx_function_param_quote(char **param, int forced)
+int	trx_function_param_quote(char **param, int forced)
 {
 	size_t	sz_src, sz_dst;
 
@@ -2879,9 +2879,9 @@ int	zbx_function_param_quote(char **param, int forced)
 	if (0 != (sz_src = strlen(*param)) && '\\' == (*param)[sz_src - 1])
 		return FAIL;
 
-	sz_dst = zbx_get_escape_string_len(*param, "\"") + 3;
+	sz_dst = trx_get_escape_string_len(*param, "\"") + 3;
 
-	*param = (char *)zbx_realloc(*param, sz_dst);
+	*param = (char *)trx_realloc(*param, sz_dst);
 
 	(*param)[--sz_dst] = '\0';
 	(*param)[--sz_dst] = '"';
@@ -2899,7 +2899,7 @@ int	zbx_function_param_quote(char **param, int forced)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_function_get_param_dyn                                       *
+ * Function: trx_function_get_param_dyn                                       *
  *                                                                            *
  * Purpose: return parameter by index (Nparam) from parameter list (params)   *
  *                                                                            *
@@ -2912,7 +2912,7 @@ int	zbx_function_param_quote(char **param, int forced)
  *      otherwise - requested parameter                                       *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_function_get_param_dyn(const char *params, int Nparam)
+char	*trx_function_get_param_dyn(const char *params, int Nparam)
 {
 	const char	*ptr;
 	size_t		sep_pos, params_len;
@@ -2926,10 +2926,10 @@ char	*zbx_function_get_param_dyn(const char *params, int Nparam)
 		size_t	param_pos, param_len;
 		int	quoted;
 
-		zbx_function_param_parse(ptr, &param_pos, &param_len, &sep_pos);
+		trx_function_param_parse(ptr, &param_pos, &param_len, &sep_pos);
 
 		if (idx == Nparam)
-			out = zbx_function_param_unquote_dyn(ptr + param_pos, param_len, &quoted);
+			out = trx_function_param_unquote_dyn(ptr + param_pos, param_len, &quoted);
 	}
 
 	return out;
@@ -3062,7 +3062,7 @@ static int	function_match_parenthesis(const char *expr, size_t par_l, size_t *pa
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_function_validate_parameters                                 *
+ * Function: trx_function_validate_parameters                                 *
  *                                                                            *
  * Purpose: validate parameters that end with '\0'                            *
  *                                                                            *
@@ -3075,7 +3075,7 @@ static int	function_match_parenthesis(const char *expr, size_t par_l, size_t *pa
  *                          function parameter list                           *
  *                                                                            *
  ******************************************************************************/
-int	zbx_function_validate_parameters(const char *expr, size_t *length)
+int	trx_function_validate_parameters(const char *expr, size_t *length)
 {
 	size_t offset, len;
 
@@ -3084,7 +3084,7 @@ int	zbx_function_validate_parameters(const char *expr, size_t *length)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_function_validate                                            *
+ * Function: trx_function_validate                                            *
  *                                                                            *
  * Purpose: check whether expression starts with a valid function             *
  *                                                                            *
@@ -3100,7 +3100,7 @@ int	zbx_function_validate_parameters(const char *expr, size_t *length)
  *                         characters can be safely skipped                   *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_function_validate(const char *expr, size_t *par_l, size_t *par_r, char *error, int max_error_len)
+static int	trx_function_validate(const char *expr, size_t *par_l, size_t *par_r, char *error, int max_error_len)
 {
 	size_t	lpp_offset, lpp_len;
 
@@ -3113,7 +3113,7 @@ static int	zbx_function_validate(const char *expr, size_t *par_l, size_t *par_r,
 
 		if (NULL != error && *par_l > *par_r)
 		{
-			zbx_snprintf(error, max_error_len, "Incorrect function '%.*s' expression. "
+			trx_snprintf(error, max_error_len, "Incorrect function '%.*s' expression. "
 				"Check expression part starting from: %.*s",
 				(int)*par_l, expr, (int)lpp_len, expr + lpp_offset);
 
@@ -3122,14 +3122,14 @@ static int	zbx_function_validate(const char *expr, size_t *par_l, size_t *par_r,
 	}
 
 	if (NULL != error)
-		zbx_snprintf(error, max_error_len, "Incorrect function expression: %s", expr);
+		trx_snprintf(error, max_error_len, "Incorrect function expression: %s", expr);
 
 	return FAIL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strcmp_natural                                               *
+ * Function: trx_strcmp_natural                                               *
  *                                                                            *
  * Purpose: performs natural comparison of two strings                        *
  *                                                                            *
@@ -3141,7 +3141,7 @@ static int	zbx_function_validate(const char *expr, size_t *par_l, size_t *par_r,
  *               >0: s1 > s2                                                  *
  *                                                                            *
  ******************************************************************************/
-int	zbx_strcmp_natural(const char *s1, const char *s2)
+int	trx_strcmp_natural(const char *s1, const char *s2)
 {
 	int	ret, value1, value2;
 
@@ -3175,7 +3175,7 @@ int	zbx_strcmp_natural(const char *s1, const char *s2)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_parse_user_macro                                       *
+ * Function: trx_token_parse_user_macro                                       *
  *                                                                            *
  * Purpose: parses user macro token                                           *
  *                                                                            *
@@ -3191,13 +3191,13 @@ int	zbx_strcmp_natural(const char *s1, const char *s2)
  *           structure is filled with user macro specific data.               *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_token_parse_user_macro(const char *expression, const char *macro, zbx_token_t *token)
+static int	trx_token_parse_user_macro(const char *expression, const char *macro, trx_token_t *token)
 {
 	size_t			offset;
 	int			macro_r, context_l, context_r;
-	zbx_token_user_macro_t	*data;
+	trx_token_user_macro_t	*data;
 
-	if (SUCCEED != zbx_user_macro_parse(macro, &macro_r, &context_l, &context_r))
+	if (SUCCEED != trx_user_macro_parse(macro, &macro_r, &context_l, &context_r))
 		return FAIL;
 
 	offset = macro - expression;
@@ -3236,7 +3236,7 @@ static int	zbx_token_parse_user_macro(const char *expression, const char *macro,
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_parse_lld_macro                                        *
+ * Function: trx_token_parse_lld_macro                                        *
  *                                                                            *
  * Purpose: parses lld macro token                                            *
  *                                                                            *
@@ -3252,11 +3252,11 @@ static int	zbx_token_parse_user_macro(const char *expression, const char *macro,
  *           structure is filled with lld macro specific data.                *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_token_parse_lld_macro(const char *expression, const char *macro, zbx_token_t *token)
+static int	trx_token_parse_lld_macro(const char *expression, const char *macro, trx_token_t *token)
 {
 	const char		*ptr;
 	size_t			offset;
-	zbx_token_macro_t	*data;
+	trx_token_macro_t	*data;
 
 	/* find the end of lld macro by validating its name until the closing bracket } */
 	for (ptr = macro + 2; '}' != *ptr; ptr++)
@@ -3289,7 +3289,7 @@ static int	zbx_token_parse_lld_macro(const char *expression, const char *macro, 
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_parse_objectid                                         *
+ * Function: trx_token_parse_objectid                                         *
  *                                                                            *
  * Purpose: parses object id token                                            *
  *                                                                            *
@@ -3305,11 +3305,11 @@ static int	zbx_token_parse_lld_macro(const char *expression, const char *macro, 
  *           structure is filled with object id specific data.                *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_token_parse_objectid(const char *expression, const char *macro, zbx_token_t *token)
+static int	trx_token_parse_objectid(const char *expression, const char *macro, trx_token_t *token)
 {
 	const char		*ptr;
 	size_t			offset;
-	zbx_token_macro_t	*data;
+	trx_token_macro_t	*data;
 
 	/* find the end of object id by checking if it contains digits until the closing bracket } */
 	for (ptr = macro + 1; '}' != *ptr; ptr++)
@@ -3343,7 +3343,7 @@ static int	zbx_token_parse_objectid(const char *expression, const char *macro, z
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_parse_macro                                            *
+ * Function: trx_token_parse_macro                                            *
  *                                                                            *
  * Purpose: parses normal macro token                                         *
  *                                                                            *
@@ -3359,11 +3359,11 @@ static int	zbx_token_parse_objectid(const char *expression, const char *macro, z
  *           structure is filled with simple macro specific data.             *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_token_parse_macro(const char *expression, const char *macro, zbx_token_t *token)
+static int	trx_token_parse_macro(const char *expression, const char *macro, trx_token_t *token)
 {
 	const char		*ptr;
 	size_t			offset;
-	zbx_token_macro_t	*data;
+	trx_token_macro_t	*data;
 
 	/* find the end of simple macro by validating its name until the closing bracket } */
 	for (ptr = macro + 1; '}' != *ptr; ptr++)
@@ -3396,7 +3396,7 @@ static int	zbx_token_parse_macro(const char *expression, const char *macro, zbx_
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_parse_function                                         *
+ * Function: trx_token_parse_function                                         *
  *                                                                            *
  * Purpose: parses function inside token                                      *
  *                                                                            *
@@ -3409,12 +3409,12 @@ static int	zbx_token_parse_macro(const char *expression, const char *macro, zbx_
  *               FAIL    - func does not point at valid function              *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_token_parse_function(const char *expression, const char *func,
-		zbx_strloc_t *func_loc, zbx_strloc_t *func_param)
+static int	trx_token_parse_function(const char *expression, const char *func,
+		trx_strloc_t *func_loc, trx_strloc_t *func_param)
 {
 	size_t	par_l, par_r;
 
-	if (SUCCEED != zbx_function_validate(func, &par_l, &par_r, NULL, 0))
+	if (SUCCEED != trx_function_validate(func, &par_l, &par_r, NULL, 0))
 		return FAIL;
 
 	func_loc->l = func - expression;
@@ -3428,7 +3428,7 @@ static int	zbx_token_parse_function(const char *expression, const char *func,
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_parse_func_macro                                       *
+ * Function: trx_token_parse_func_macro                                       *
  *                                                                            *
  * Purpose: parses function macro token                                       *
  *                                                                            *
@@ -3450,18 +3450,18 @@ static int	zbx_token_parse_function(const char *expression, const char *func,
  *           specific data.                                                   *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_token_parse_func_macro(const char *expression, const char *macro, const char *func,
-		zbx_token_t *token, int token_type)
+static int	trx_token_parse_func_macro(const char *expression, const char *macro, const char *func,
+		trx_token_t *token, int token_type)
 {
-	zbx_strloc_t		func_loc, func_param;
-	zbx_token_func_macro_t	*data;
+	trx_strloc_t		func_loc, func_param;
+	trx_token_func_macro_t	*data;
 	const char		*ptr;
 	size_t			offset;
 
 	if ('\0' == *func)
 		return FAIL;
 
-	if (SUCCEED != zbx_token_parse_function(expression, func, &func_loc, &func_param))
+	if (SUCCEED != trx_token_parse_function(expression, func, &func_loc, &func_param))
 		return FAIL;
 
 	ptr = expression + func_loc.r + 1;
@@ -3494,7 +3494,7 @@ static int	zbx_token_parse_func_macro(const char *expression, const char *macro,
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_parse_simple_macro_key                                 *
+ * Function: trx_token_parse_simple_macro_key                                 *
  *                                                                            *
  * Purpose: parses simple macro token with given key                          *
  *                                                                            *
@@ -3516,19 +3516,19 @@ static int	zbx_token_parse_func_macro(const char *expression, const char *macro,
  *           specific data.                                                   *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_token_parse_simple_macro_key(const char *expression, const char *macro, const char *key,
-		zbx_token_t *token)
+static int	trx_token_parse_simple_macro_key(const char *expression, const char *macro, const char *key,
+		trx_token_t *token)
 {
 	size_t				offset;
-	zbx_token_simple_macro_t	*data;
+	trx_token_simple_macro_t	*data;
 	const char			*ptr = key;
-	zbx_strloc_t			key_loc, func_loc, func_param;
+	trx_strloc_t			key_loc, func_loc, func_param;
 
 	if (SUCCEED != parse_key(&ptr))
 	{
-		zbx_token_t	key_token;
+		trx_token_t	key_token;
 
-		if (SUCCEED != zbx_token_parse_macro(expression, key, &key_token))
+		if (SUCCEED != trx_token_parse_macro(expression, key, &key_token))
 			return FAIL;
 
 		ptr = expression + key_token.loc.r + 1;
@@ -3546,7 +3546,7 @@ static int	zbx_token_parse_simple_macro_key(const char *expression, const char *
 	if (0 == ptr - key)
 		return FAIL;
 
-	if (SUCCEED != zbx_token_parse_function(expression, ptr + 1, &func_loc, &func_param))
+	if (SUCCEED != trx_token_parse_function(expression, ptr + 1, &func_loc, &func_param))
 		return FAIL;
 
 	key_loc.l = key - expression;
@@ -3583,7 +3583,7 @@ static int	zbx_token_parse_simple_macro_key(const char *expression, const char *
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_parse_simple_macro                                     *
+ * Function: trx_token_parse_simple_macro                                     *
  *                                                                            *
  * Purpose: parses simple macro token                                         *
  *                                                                            *
@@ -3604,7 +3604,7 @@ static int	zbx_token_parse_simple_macro_key(const char *expression, const char *
  *           specific data.                                                   *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_token_parse_simple_macro(const char *expression, const char *macro, zbx_token_t *token)
+static int	trx_token_parse_simple_macro(const char *expression, const char *macro, trx_token_t *token)
 {
 	const char	*ptr;
 
@@ -3623,12 +3623,12 @@ static int	zbx_token_parse_simple_macro(const char *expression, const char *macr
 	if (1 == ptr - macro)
 		return FAIL;
 
-	return zbx_token_parse_simple_macro_key(expression, macro, ptr + 1, token);
+	return trx_token_parse_simple_macro_key(expression, macro, ptr + 1, token);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_parse_nested_macro                                     *
+ * Function: trx_token_parse_nested_macro                                     *
  *                                                                            *
  * Purpose: parses token with nested macros                                   *
  *                                                                            *
@@ -3652,7 +3652,7 @@ static int	zbx_token_parse_simple_macro(const char *expression, const char *macr
  *           filled with macro specific data.                                 *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_token_parse_nested_macro(const char *expression, const char *macro, zbx_token_t *token)
+static int	trx_token_parse_nested_macro(const char *expression, const char *macro, trx_token_t *token)
 {
 	const char	*ptr;
 	int		macro_offset;
@@ -3683,18 +3683,18 @@ static int	zbx_token_parse_nested_macro(const char *expression, const char *macr
 	/*               simple macros                        {{MACRO}:key.function()} */
 	if ('.' == ptr[1])
 	{
-		return zbx_token_parse_func_macro(expression, macro, ptr + 2, token, '#' == macro[2] ?
+		return trx_token_parse_func_macro(expression, macro, ptr + 2, token, '#' == macro[2] ?
 				TRX_TOKEN_LLD_FUNC_MACRO : TRX_TOKEN_FUNC_MACRO);
 	}
 	else if ('#' != macro[2] && ':' == ptr[1])
-		return zbx_token_parse_simple_macro_key(expression, macro, ptr + 2, token);
+		return trx_token_parse_simple_macro_key(expression, macro, ptr + 2, token);
 
 	return FAIL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_token_find                                                   *
+ * Function: trx_token_find                                                   *
  *                                                                            *
  * Purpose: finds token {} inside expression starting at specified position   *
  *          also searches for reference if requested                          *
@@ -3712,16 +3712,16 @@ static int	zbx_token_parse_nested_macro(const char *expression, const char *macr
  *                                                                            *
  *           Simply iterating through tokens can be done with:                *
  *                                                                            *
- *           zbx_token_t token = {0};                                         *
+ *           trx_token_t token = {0};                                         *
  *                                                                            *
- *           while (SUCCEED == zbx_token_find(expression, token.loc.r + 1,    *
+ *           while (SUCCEED == trx_token_find(expression, token.loc.r + 1,    *
  *                       &token))                                             *
  *           {                                                                *
  *                   process_token(expression, &token);                       *
  *           }                                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_token_find(const char *expression, int pos, zbx_token_t *token, zbx_token_search_t token_search)
+int	trx_token_find(const char *expression, int pos, trx_token_t *token, trx_token_search_t token_search)
 {
 	int		ret = FAIL;
 	const char	*ptr = expression + pos, *dollar = ptr;
@@ -3767,14 +3767,14 @@ int	zbx_token_find(const char *expression, int pos, zbx_token_t *token, zbx_toke
 		switch (ptr[1])
 		{
 			case '$':
-				ret = zbx_token_parse_user_macro(expression, ptr, token);
+				ret = trx_token_parse_user_macro(expression, ptr, token);
 				break;
 			case '#':
-				ret = zbx_token_parse_lld_macro(expression, ptr, token);
+				ret = trx_token_parse_lld_macro(expression, ptr, token);
 				break;
 
 			case '{':
-				ret = zbx_token_parse_nested_macro(expression, ptr, token);
+				ret = trx_token_parse_nested_macro(expression, ptr, token);
 				break;
 			case '0':
 			case '1':
@@ -3786,12 +3786,12 @@ int	zbx_token_find(const char *expression, int pos, zbx_token_t *token, zbx_toke
 			case '7':
 			case '8':
 			case '9':
-				if (SUCCEED == (ret = zbx_token_parse_objectid(expression, ptr, token)))
+				if (SUCCEED == (ret = trx_token_parse_objectid(expression, ptr, token)))
 					break;
 				TRX_FALLTHROUGH;
 			default:
-				if (SUCCEED != (ret = zbx_token_parse_macro(expression, ptr, token)))
-					ret = zbx_token_parse_simple_macro(expression, ptr, token);
+				if (SUCCEED != (ret = trx_token_parse_macro(expression, ptr, token)))
+					ret = trx_token_parse_simple_macro(expression, ptr, token);
 		}
 
 		ptr++;
@@ -3802,26 +3802,26 @@ int	zbx_token_find(const char *expression, int pos, zbx_token_t *token, zbx_toke
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_no_function                                                  *
+ * Function: trx_no_function                                                  *
  *                                                                            *
  * Purpose: count calculated item (prototype) formula characters that can be  *
  *          skipped without the risk of missing a function                    *
  *                                                                            *
  ******************************************************************************/
-static size_t	zbx_no_function(const char *expr)
+static size_t	trx_no_function(const char *expr)
 {
 	const char	*ptr = expr;
 	int		len, c_l, c_r;
-	zbx_token_t	token;
+	trx_token_t	token;
 
 	while ('\0' != *ptr)
 	{
-		if ('{' == *ptr && '$' == *(ptr + 1) && SUCCEED == zbx_user_macro_parse(ptr, &len, &c_l, &c_r))
+		if ('{' == *ptr && '$' == *(ptr + 1) && SUCCEED == trx_user_macro_parse(ptr, &len, &c_l, &c_r))
 		{
 			ptr += len + 1;	/* skip to the position after user macro */
 		}
 		else if ('{' == *ptr && '{' == *(ptr + 1) && '#' == *(ptr + 2) &&
-				SUCCEED == zbx_token_parse_nested_macro(ptr, ptr, &token))
+				SUCCEED == trx_token_parse_nested_macro(ptr, ptr, &token))
 		{
 			ptr += token.loc.r - token.loc.l + 1;
 		}
@@ -3849,7 +3849,7 @@ static size_t	zbx_no_function(const char *expr)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_function_find                                                *
+ * Function: trx_function_find                                                *
  *                                                                            *
  * Purpose: find the location of the next function and its parameters in      *
  *          calculated item (prototype) formula                               *
@@ -3866,7 +3866,7 @@ static size_t	zbx_no_function(const char *expr)
  *               FAIL    - there are no functions in the expression           *
  *                                                                            *
  ******************************************************************************/
-int	zbx_function_find(const char *expr, size_t *func_pos, size_t *par_l, size_t *par_r, char *error,
+int	trx_function_find(const char *expr, size_t *func_pos, size_t *par_l, size_t *par_r, char *error,
 		int max_error_len)
 {
 	const char	*ptr;
@@ -3874,11 +3874,11 @@ int	zbx_function_find(const char *expr, size_t *func_pos, size_t *par_l, size_t 
 	for (ptr = expr; '\0' != *ptr; ptr += *par_l)
 	{
 		/* skip the part of expression that is definitely not a function */
-		ptr += zbx_no_function(ptr);
+		ptr += trx_no_function(ptr);
 		*par_r = 0;
 
 		/* try to validate function candidate */
-		if (SUCCEED != zbx_function_validate(ptr, par_l, par_r, error, max_error_len))
+		if (SUCCEED != trx_function_validate(ptr, par_l, par_r, error, max_error_len))
 		{
 			if (*par_l > *par_r)
 				return FAIL;
@@ -3892,14 +3892,14 @@ int	zbx_function_find(const char *expr, size_t *func_pos, size_t *par_l, size_t 
 		return SUCCEED;
 	}
 
-	zbx_snprintf(error, max_error_len, "Incorrect function expression: %s", expr);
+	trx_snprintf(error, max_error_len, "Incorrect function expression: %s", expr);
 
 	return FAIL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strmatch_condition                                           *
+ * Function: trx_strmatch_condition                                           *
  *                                                                            *
  * Purpose: check if pattern matches the specified value                      *
  *                                                                            *
@@ -3910,7 +3910,7 @@ int	zbx_function_find(const char *expr, size_t *func_pos, size_t *par_l, size_t 
  * Return value: SUCCEED - matches, FAIL - otherwise                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_strmatch_condition(const char *value, const char *pattern, unsigned char op)
+int	trx_strmatch_condition(const char *value, const char *pattern, unsigned char op)
 {
 	int	ret = FAIL;
 
@@ -3939,7 +3939,7 @@ int	zbx_strmatch_condition(const char *value, const char *pattern, unsigned char
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_number_parse                                                 *
+ * Function: trx_number_parse                                                 *
  *                                                                            *
  * Purpose: parse a number like "12.345"                                      *
  *                                                                            *
@@ -3954,7 +3954,7 @@ int	zbx_strmatch_condition(const char *value, const char *pattern, unsigned char
  *           beginning of the expression.                                     *
  *                                                                            *
  ******************************************************************************/
-int	zbx_number_parse(const char *number, int *len)
+int	trx_number_parse(const char *number, int *len)
 {
 	int	digits = 0, dots = 0;
 
@@ -3985,7 +3985,7 @@ int	zbx_number_parse(const char *number, int *len)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_suffixed_number_parse                                        *
+ * Function: trx_suffixed_number_parse                                        *
  *                                                                            *
  * Purpose: parse a suffixed number like "12.345K"                            *
  *                                                                            *
@@ -4000,9 +4000,9 @@ int	zbx_number_parse(const char *number, int *len)
  *           beginning of the expression.                                     *
  *                                                                            *
  ******************************************************************************/
-int	zbx_suffixed_number_parse(const char *number, int *len)
+int	trx_suffixed_number_parse(const char *number, int *len)
 {
-	if (FAIL == zbx_number_parse(number, len))
+	if (FAIL == trx_number_parse(number, len))
 		return FAIL;
 
 	if (0 != isalpha(number[*len]) && NULL != strchr(TRX_UNIT_SYMBOLS, number[*len]))
@@ -4013,7 +4013,7 @@ int	zbx_suffixed_number_parse(const char *number, int *len)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_number_find                                                  *
+ * Function: trx_number_find                                                  *
  *                                                                            *
  * Purpose: finds number inside expression starting at specified position     *
  *                                                                            *
@@ -4031,7 +4031,7 @@ int	zbx_suffixed_number_parse(const char *number, int *len)
  *           beginning of the expression.                                     *
  *                                                                            *
  ******************************************************************************/
-int	zbx_number_find(const char *str, size_t pos, zbx_strloc_t *number_loc)
+int	trx_number_find(const char *str, size_t pos, trx_strloc_t *number_loc)
 {
 	const char	*s, *e;
 	int		len;
@@ -4048,7 +4048,7 @@ int	zbx_number_find(const char *str, size_t pos, zbx_strloc_t *number_loc)
 			continue;
 		}
 
-		if (SUCCEED != zbx_suffixed_number_parse(s, &len))
+		if (SUCCEED != trx_suffixed_number_parse(s, &len))
 			continue;
 
 		/* number found */
@@ -4491,10 +4491,10 @@ char	*get_param_dyn(const char *p, int num)
 	if (0 != get_param_len(p, num, &sz))
 		return buf;
 
-	buf = (char *)zbx_malloc(buf, sz + 1);
+	buf = (char *)trx_malloc(buf, sz + 1);
 
 	if (0 != get_param(p, num, buf, sz + 1))
-		zbx_free(buf);
+		trx_free(buf);
 
 	return buf;
 }
@@ -4522,10 +4522,10 @@ static int	replace_key_param(char **data, int key_type, size_t l, size_t *r, int
 	if (NULL != param)
 	{
 		(*r)--;
-		zbx_replace_string(data, l, r, param);
+		trx_replace_string(data, l, r, param);
 		(*r)++;
 
-		zbx_free(param);
+		trx_free(param);
 	}
 
 	return ret;
@@ -4560,11 +4560,11 @@ int	replace_key_params_dyn(char **data, int key_type, replace_key_param_f cb, vo
 		TRX_STATE_UNQUOTED,
 		TRX_STATE_QUOTED
 	}
-	zbx_parser_state_t;
+	trx_parser_state_t;
 
 	size_t			i = 0, l = 0;
 	int			level = 0, num = 0, ret = SUCCEED;
-	zbx_parser_state_t	state = TRX_STATE_NEW;
+	trx_parser_state_t	state = TRX_STATE_NEW;
 
 	if (TRX_KEY_TYPE_ITEM == key_type)
 	{
@@ -4579,18 +4579,18 @@ int	replace_key_params_dyn(char **data, int key_type, replace_key_param_f cb, vo
 	}
 	else
 	{
-		zbx_token_t	token;
+		trx_token_t	token;
 		int		len, c_l, c_r;
 
 		while ('\0' != (*data)[i])
 		{
 			if ('{' == (*data)[i] && '$' == (*data)[i + 1] &&
-					SUCCEED == zbx_user_macro_parse(&(*data)[i], &len, &c_l, &c_r))
+					SUCCEED == trx_user_macro_parse(&(*data)[i], &len, &c_l, &c_r))
 			{
 				i += len + 1;	/* skip to the position after user macro */
 			}
 			else if ('{' == (*data)[i] && '{' == (*data)[i + 1] && '#' == (*data)[i + 2] &&
-					SUCCEED == zbx_token_parse_nested_macro(&(*data)[i], &(*data)[i], &token))
+					SUCCEED == trx_token_parse_nested_macro(&(*data)[i], &(*data)[i], &token))
 			{
 				i += token.loc.r - token.loc.l + 1;
 			}
@@ -4687,8 +4687,8 @@ clean:
 	{
 		if (NULL != error)
 		{
-			zbx_snprintf(error, maxerrlen, "Invalid %s at position " TRX_FS_SIZE_T,
-					(TRX_KEY_TYPE_ITEM == key_type ? "item key" : "SNMP OID"), (zbx_fs_size_t)i);
+			trx_snprintf(error, maxerrlen, "Invalid %s at position " TRX_FS_SIZE_T,
+					(TRX_KEY_TYPE_ITEM == key_type ? "item key" : "SNMP OID"), (trx_fs_size_t)i);
 		}
 		ret = FAIL;
 	}
@@ -4865,7 +4865,7 @@ int	num_key_param(char *param)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_replace_mem_dyn                                              *
+ * Function: trx_replace_mem_dyn                                              *
  *                                                                            *
  * Purpose: to replace memory block and allocate more memory if needed        *
  *                                                                            *
@@ -4880,7 +4880,7 @@ int	num_key_param(char *param)
  * Return value: once data is replaced offset can become less, bigger or      *
  *               remain unchanged                                             *
  ******************************************************************************/
-int	zbx_replace_mem_dyn(char **data, size_t *data_alloc, size_t *data_len, size_t offset, size_t sz_to,
+int	trx_replace_mem_dyn(char **data, size_t *data_alloc, size_t *data_len, size_t offset, size_t sz_to,
 		const char *from, size_t sz_from)
 {
 	size_t	sz_changed = sz_from - sz_to;
@@ -4896,7 +4896,7 @@ int	zbx_replace_mem_dyn(char **data, size_t *data_alloc, size_t *data_len, size_
 			while (*data_len > *data_alloc)
 				*data_alloc *= 2;
 
-			*data = (char *)zbx_realloc(*data, *data_alloc);
+			*data = (char *)trx_realloc(*data, *data_alloc);
 		}
 
 		to = *data + offset;
@@ -4910,7 +4910,7 @@ int	zbx_replace_mem_dyn(char **data, size_t *data_alloc, size_t *data_len, size_
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_strsplit                                                     *
+ * Function: trx_strsplit                                                     *
  *                                                                            *
  * Purpose: splits string                                                     *
  *                                                                            *
@@ -4921,13 +4921,13 @@ int	zbx_replace_mem_dyn(char **data, size_t *data_alloc, size_t *data_len, size_
  *                                  delimiter was not found                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_strsplit(const char *src, char delimiter, char **left, char **right)
+void	trx_strsplit(const char *src, char delimiter, char **left, char **right)
 {
 	char	*delimiter_ptr;
 
 	if (NULL == (delimiter_ptr = strchr(src, delimiter)))
 	{
-		*left = zbx_strdup(NULL, src);
+		*left = trx_strdup(NULL, src);
 		*right = NULL;
 	}
 	else
@@ -4938,8 +4938,8 @@ void	zbx_strsplit(const char *src, char delimiter, char **left, char **right)
 		left_size = (size_t)(delimiter_ptr - src) + 1;
 		right_size = strlen(src) - (size_t)(delimiter_ptr - src);
 
-		*left = zbx_malloc(NULL, left_size);
-		*right = zbx_malloc(NULL, right_size);
+		*left = trx_malloc(NULL, left_size);
+		*right = trx_malloc(NULL, right_size);
 
 		memcpy(*left, src, left_size - 1);
 		(*left)[left_size - 1] = '\0';
@@ -4949,7 +4949,7 @@ void	zbx_strsplit(const char *src, char delimiter, char **left, char **right)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_trim_number                                                  *
+ * Function: trx_trim_number                                                  *
  *                                                                            *
  * Purpose: Removes spaces from both ends of the string, then unquotes it if  *
  *          double quotation mark is present on both ends of the string. If   *
@@ -4965,7 +4965,7 @@ void	zbx_strsplit(const char *src, char delimiter, char **left, char **right)
  *             strip_plus_sign - [IN] non-zero if "+" should be stripped      *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_trim_number(char *str, int strip_plus_sign)
+static void	trx_trim_number(char *str, int strip_plus_sign)
 {
 	char	*left = str;			/* pointer to the first character */
 	char	*right = strchr(str, '\0') - 1; /* pointer to the last character, not including terminating null-char */
@@ -5020,7 +5020,7 @@ static void	zbx_trim_number(char *str, int strip_plus_sign)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_trim_integer                                                 *
+ * Function: trx_trim_integer                                                 *
  *                                                                            *
  * Purpose: Removes spaces from both ends of the string, then unquotes it if  *
  *          double quotation mark is present on both ends of the string, then *
@@ -5035,14 +5035,14 @@ static void	zbx_trim_number(char *str, int strip_plus_sign)
  * Parameters: str - [IN/OUT] string for processing                           *
  *                                                                            *
  ******************************************************************************/
-void	zbx_trim_integer(char *str)
+void	trx_trim_integer(char *str)
 {
-	zbx_trim_number(str, 1);
+	trx_trim_number(str, 1);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_trim_float                                                   *
+ * Function: trx_trim_float                                                   *
  *                                                                            *
  * Purpose: Removes spaces from both ends of the string, then unquotes it if  *
  *          double quotation mark is present on both ends of the string.      *
@@ -5055,14 +5055,14 @@ void	zbx_trim_integer(char *str)
  * Parameters: str - [IN/OUT] string for processing                           *
  *                                                                            *
  ******************************************************************************/
-void	zbx_trim_float(char *str)
+void	trx_trim_float(char *str)
 {
-	zbx_trim_number(str, 0);
+	trx_trim_number(str, 0);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_component_version                                        *
+ * Function: trx_get_component_version                                        *
  *                                                                            *
  * Purpose: extracts protocol version from value                              *
  *                                                                            *
@@ -5072,7 +5072,7 @@ void	zbx_trim_float(char *str)
  * Return value: The protocol version if it was successfully extracted,       *
  *               otherwise -1                                                 *
  ******************************************************************************/
-int	zbx_get_component_version(char *value)
+int	trx_get_component_version(char *value)
 {
 	char	*pminor, *ptr;
 

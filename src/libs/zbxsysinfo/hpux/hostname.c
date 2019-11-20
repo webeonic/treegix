@@ -18,12 +18,12 @@ int	SYSTEM_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (0 == hostbufsize)
 		hostbufsize = 256;
 
-	hostname = zbx_malloc(NULL, hostbufsize);
+	hostname = trx_malloc(NULL, hostbufsize);
 
 	if (0 != gethostname(hostname, hostbufsize))
 	{
-		zbx_free(hostname);
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		trx_free(hostname);
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 

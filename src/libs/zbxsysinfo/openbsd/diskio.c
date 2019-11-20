@@ -4,13 +4,13 @@
 #include "sysinfo.h"
 #include "log.h"
 
-int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
+int	get_diskstat(const char *devname, trx_uint64_t *dstat)
 {
 	return FAIL;
 }
 
-static int	get_disk_stats(const char *devname, zbx_uint64_t *rbytes, zbx_uint64_t *wbytes, zbx_uint64_t *roper,
-		zbx_uint64_t *woper, char **error)
+static int	get_disk_stats(const char *devname, trx_uint64_t *rbytes, trx_uint64_t *wbytes, trx_uint64_t *roper,
+		trx_uint64_t *woper, char **error)
 {
 	int			ret = SYSINFO_RET_FAIL, mib[2], i, drive_count;
 	size_t			len;
@@ -23,13 +23,13 @@ static int	get_disk_stats(const char *devname, zbx_uint64_t *rbytes, zbx_uint64_
 
 	if (0 != sysctl(mib, 2, &drive_count, &len, NULL, 0))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot obtain number of disks: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain number of disks: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
 	len = drive_count * sizeof(struct diskstats);
 
-	stats = zbx_calloc(NULL, drive_count, len);
+	stats = trx_calloc(NULL, drive_count, len);
 
 	mib[0] = CTL_HW;
 	mib[1] = HW_DISKSTATS;
@@ -45,8 +45,8 @@ static int	get_disk_stats(const char *devname, zbx_uint64_t *rbytes, zbx_uint64_
 
 	if (0 != sysctl(mib, 2, stats, &len, NULL, 0))
 	{
-		zbx_free(stats);
-		*error = zbx_dsprintf(NULL, "Cannot obtain disk information: %s", zbx_strerror(errno));
+		trx_free(stats);
+		*error = trx_dsprintf(NULL, "Cannot obtain disk information: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -68,11 +68,11 @@ static int	get_disk_stats(const char *devname, zbx_uint64_t *rbytes, zbx_uint64_
 		}
 	}
 
-	zbx_free(stats);
+	trx_free(stats);
 
 	if (SYSINFO_RET_FAIL == ret)
 	{
-		*error = zbx_strdup(NULL, "Cannot find information for this disk device.");
+		*error = trx_strdup(NULL, "Cannot find information for this disk device.");
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -81,7 +81,7 @@ static int	get_disk_stats(const char *devname, zbx_uint64_t *rbytes, zbx_uint64_
 
 static int	VFS_DEV_READ_BYTES(const char *devname, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_disk_stats(devname, &value, NULL, NULL, NULL, &error))
@@ -97,7 +97,7 @@ static int	VFS_DEV_READ_BYTES(const char *devname, AGENT_RESULT *result)
 
 static int	VFS_DEV_READ_OPERATIONS(const char *devname, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_disk_stats(devname, NULL, NULL, &value, NULL, &error))
@@ -113,7 +113,7 @@ static int	VFS_DEV_READ_OPERATIONS(const char *devname, AGENT_RESULT *result)
 
 static int	VFS_DEV_WRITE_BYTES(const char *devname, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_disk_stats(devname, NULL, &value, NULL, NULL, &error))
@@ -129,7 +129,7 @@ static int	VFS_DEV_WRITE_BYTES(const char *devname, AGENT_RESULT *result)
 
 static int	VFS_DEV_WRITE_OPERATIONS(const char *devname, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_disk_stats(devname, NULL, NULL, NULL, &value, &error))
@@ -150,7 +150,7 @@ int	VFS_DEV_READ(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -163,7 +163,7 @@ int	VFS_DEV_READ(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VFS_DEV_READ_BYTES(devname, result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -177,7 +177,7 @@ int	VFS_DEV_WRITE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -190,7 +190,7 @@ int	VFS_DEV_WRITE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VFS_DEV_WRITE_BYTES(devname, result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

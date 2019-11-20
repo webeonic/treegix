@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxproxypoller_a_AR = $(AR) $(ARFLAGS)
-libzbxproxypoller_a_LIBADD =
-am_libzbxproxypoller_a_OBJECTS = proxypoller.$(OBJEXT)
-libzbxproxypoller_a_OBJECTS = $(am_libzbxproxypoller_a_OBJECTS)
+libtrxproxypoller_a_AR = $(AR) $(ARFLAGS)
+libtrxproxypoller_a_LIBADD =
+am_libtrxproxypoller_a_OBJECTS = proxypoller.$(OBJEXT)
+libtrxproxypoller_a_OBJECTS = $(am_libtrxproxypoller_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxproxypoller_a_SOURCES)
-DIST_SOURCES = $(libzbxproxypoller_a_SOURCES)
+SOURCES = $(libtrxproxypoller_a_SOURCES)
+DIST_SOURCES = $(libtrxproxypoller_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxproxypoller.a
-libzbxproxypoller_a_SOURCES = \
+noinst_LIBRARIES = libtrxproxypoller.a
+libtrxproxypoller_a_SOURCES = \
 	proxypoller.c proxypoller.h
 
 all: all-am
@@ -415,10 +415,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxproxypoller.a: $(libzbxproxypoller_a_OBJECTS) $(libzbxproxypoller_a_DEPENDENCIES) $(EXTRA_libzbxproxypoller_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxproxypoller.a
-	$(AM_V_AR)$(libzbxproxypoller_a_AR) libzbxproxypoller.a $(libzbxproxypoller_a_OBJECTS) $(libzbxproxypoller_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxproxypoller.a
+libtrxproxypoller.a: $(libtrxproxypoller_a_OBJECTS) $(libtrxproxypoller_a_DEPENDENCIES) $(EXTRA_libtrxproxypoller_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxproxypoller.a
+	$(AM_V_AR)$(libtrxproxypoller_a_AR) libtrxproxypoller.a $(libtrxproxypoller_a_OBJECTS) $(libtrxproxypoller_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxproxypoller.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

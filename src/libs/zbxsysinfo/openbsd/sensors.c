@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 
 #include <sys/sensors.h>
@@ -89,9 +89,9 @@ static int	get_device_sensors(int do_task, int *mib, const struct sensordev *sen
 				struct sensor	sensor;
 				size_t		slen = sizeof(sensor);
 
-				zbx_snprintf(human, sizeof(human), "%s%d", sensor_type_s[i], j);
+				trx_snprintf(human, sizeof(human), "%s%d", sensor_type_s[i], j);
 
-				if (NULL == zbx_regexp_match(human, name, NULL))
+				if (NULL == trx_regexp_match(human, name, NULL))
 					continue;
 
 				mib[3] = i;
@@ -116,7 +116,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (3 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -126,13 +126,13 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == device || '\0' == *device)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == name || '\0' == *name)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -146,7 +146,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 		do_task = TRX_DO_MIN;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -167,17 +167,17 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if (errno == ENOENT)
 				break;
 
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s",
-					zbx_strerror(errno)));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s",
+					trx_strerror(errno)));
 			return SYSINFO_RET_FAIL;
 		}
 
 		if ((TRX_DO_ONE == do_task && 0 == strcmp(sensordev.xname, device)) ||
-				(TRX_DO_ONE != do_task && NULL != zbx_regexp_match(sensordev.xname, device, NULL)))
+				(TRX_DO_ONE != do_task && NULL != trx_regexp_match(sensordev.xname, device, NULL)))
 		{
 			if (SUCCEED != get_device_sensors(do_task, mib, &sensordev, name, &aggr, &cnt))
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain sensor information."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain sensor information."));
 				return SYSINFO_RET_FAIL;
 			}
 		}
@@ -185,7 +185,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 == cnt)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain sensor information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain sensor information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -201,7 +201,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Agent was compiled without support for \"sensordev\" structure."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Agent was compiled without support for \"sensordev\" structure."));
 	return SYSINFO_RET_FAIL;
 }
 

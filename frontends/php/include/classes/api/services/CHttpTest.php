@@ -60,7 +60,7 @@ class CHttpTest extends CApiService {
 			'sortorder'      => '',
 			'limit'          => null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -76,23 +76,23 @@ class CHttpTest extends CApiService {
 					' WHERE ht.hostid=hgg.hostid'.
 					' GROUP BY hgg.hostid'.
 					' HAVING MIN(r.permission)>'.PERM_DENY.
-						' AND MAX(r.permission)>='.zbx_dbstr($permission).
+						' AND MAX(r.permission)>='.trx_dbstr($permission).
 					')';
 		}
 
 		// httptestids
 		if (!is_null($options['httptestids'])) {
-			zbx_value2array($options['httptestids']);
+			trx_value2array($options['httptestids']);
 
 			$sqlParts['where']['httptestid'] = dbConditionInt('ht.httptestid', $options['httptestids']);
 		}
 
 		// templateids
 		if (!is_null($options['templateids'])) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			if (!is_null($options['hostids'])) {
-				zbx_value2array($options['hostids']);
+				trx_value2array($options['hostids']);
 				$options['hostids'] = array_merge($options['hostids'], $options['templateids']);
 			}
 			else {
@@ -101,7 +101,7 @@ class CHttpTest extends CApiService {
 		}
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			$sqlParts['where']['hostid'] = dbConditionInt('ht.hostid', $options['hostids']);
 
@@ -112,7 +112,7 @@ class CHttpTest extends CApiService {
 
 		// groupids
 		if (!is_null($options['groupids'])) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			$sqlParts['from']['hosts_groups'] = 'hosts_groups hg';
 			$sqlParts['where'][] = dbConditionInt('hg.groupid', $options['groupids']);
@@ -125,7 +125,7 @@ class CHttpTest extends CApiService {
 
 		// applicationids
 		if (!is_null($options['applicationids'])) {
-			zbx_value2array($options['applicationids']);
+			trx_value2array($options['applicationids']);
 
 			$sqlParts['where'][] = dbConditionId('ht.applicationid', $options['applicationids']);
 		}
@@ -163,7 +163,7 @@ class CHttpTest extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('httptest ht', $options, $sqlParts);
+			trx_db_search('httptest ht', $options, $sqlParts);
 		}
 
 		// filter
@@ -176,7 +176,7 @@ class CHttpTest extends CApiService {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -223,7 +223,7 @@ class CHttpTest extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -243,7 +243,7 @@ class CHttpTest extends CApiService {
 
 		$this->addAuditBulk(AUDIT_ACTION_ADD, AUDIT_RESOURCE_SCENARIO, $httptests);
 
-		return ['httptestids' => zbx_objectValues($httptests, 'httptestid')];
+		return ['httptestids' => trx_objectValues($httptests, 'httptestid')];
 	}
 
 	/**
@@ -336,7 +336,7 @@ class CHttpTest extends CApiService {
 
 		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_SCENARIO, $httptests, $db_httptests);
 
-		return ['httptestids' => zbx_objectValues($httptests, 'httptestid')];
+		return ['httptestids' => trx_objectValues($httptests, 'httptestid')];
 	}
 
 	/**
@@ -409,7 +409,7 @@ class CHttpTest extends CApiService {
 			'selectSteps' => ['httpstepid', 'name', 'no', 'url', 'timeout', 'posts', 'required',
 				'status_codes', 'follow_redirects', 'retrieve_mode', 'post_type'
 			],
-			'httptestids' => zbx_objectValues($httptests, 'httptestid'),
+			'httptestids' => trx_objectValues($httptests, 'httptestid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
@@ -417,7 +417,7 @@ class CHttpTest extends CApiService {
 		foreach ($db_httptests as &$db_httptest) {
 			$db_httptest['headers'] = [];
 			$db_httptest['variables'] = [];
-			$db_httptest['steps'] = zbx_toHash($db_httptest['steps'], 'httpstepid');
+			$db_httptest['steps'] = trx_toHash($db_httptest['steps'], 'httpstepid');
 		}
 		unset($db_httptest);
 

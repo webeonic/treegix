@@ -5,14 +5,14 @@
 #include "memalloc.h"
 #include "ipc.h"
 #include "dbcache.h"
-#include "zbxhistory.h"
+#include "trxhistory.h"
 
 #include "valuecache.h"
 
 #include "vectorimpl.h"
 
 /*
- * The cache (zbx_vc_cache_t) is organized as a hashset of item records (zbx_vc_item_t).
+ * The cache (trx_vc_cache_t) is organized as a hashset of item records (trx_vc_item_t).
  *
  * Each record holds item data (itemid, value_type), statistics (hits, last access time,...)
  * and the historical data (timestamp,value pairs in ascending order).
@@ -43,9 +43,9 @@
 /* time period after which value cache will switch back to normal mode */
 #define TRX_VC_LOW_MEMORY_RESET_PERIOD		SEC_PER_DAY
 
-static zbx_mem_info_t	*vc_mem = NULL;
+static trx_mem_info_t	*vc_mem = NULL;
 
-static zbx_mutex_t	vc_lock = TRX_MUTEX_NULL;
+static trx_mutex_t	vc_lock = TRX_MUTEX_NULL;
 
 /* flag indicating that the cache was explicitly locked by this process */
 static int	vc_locked = 0;
@@ -58,7 +58,7 @@ static int	vc_locked = 0;
 static int	vc_state = TRX_VC_DISABLED;
 
 /* the value cache size */
-extern zbx_uint64_t	CONFIG_VALUE_CACHE_SIZE;
+extern trx_uint64_t	CONFIG_VALUE_CACHE_SIZE;
 
 TRX_MEM_FUNC_IMPL(__vc, vc_mem)
 
@@ -75,13 +75,13 @@ TRX_MEM_FUNC_IMPL(__vc, vc_mem)
 #define TRX_VC_ITEM_EXPIRE_PERIOD	SEC_PER_DAY
 
 /* the data chunk used to store data fragment */
-typedef struct zbx_vc_chunk
+typedef struct trx_vc_chunk
 {
 	/* a pointer to the previous chunk or NULL if this is the tail chunk */
-	struct zbx_vc_chunk	*prev;
+	struct trx_vc_chunk	*prev;
 
 	/* a pointer to the next chunk or NULL if this is the head chunk */
-	struct zbx_vc_chunk	*next;
+	struct trx_vc_chunk	*next;
 
 	/* the index of first (oldest) value in chunk */
 	int			first_value;
@@ -93,17 +93,17 @@ typedef struct zbx_vc_chunk
 	int			slots_num;
 
 	/* the item value data */
-	zbx_history_record_t	slots[1];
+	trx_history_record_t	slots[1];
 }
-zbx_vc_chunk_t;
+trx_vc_chunk_t;
 
 /* min/max number number of item history values to store in chunk */
 
 #define TRX_VC_MIN_CHUNK_RECORDS	2
 
 /* the maximum number is calculated so that the chunk size does not exceed 64KB */
-#define TRX_VC_MAX_CHUNK_RECORDS	((64 * TRX_KIBIBYTE - sizeof(zbx_vc_chunk_t)) / \
-		sizeof(zbx_history_record_t) + 1)
+#define TRX_VC_MAX_CHUNK_RECORDS	((64 * TRX_KIBIBYTE - sizeof(trx_vc_chunk_t)) / \
+		sizeof(trx_history_record_t) + 1)
 
 /* the item operational state flags */
 #define TRX_ITEM_STATE_CLEAN_PENDING	1
@@ -113,7 +113,7 @@ zbx_vc_chunk_t;
 typedef struct
 {
 	/* the item id */
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 
 	/* the item value type */
 	unsigned char	value_type;
@@ -160,24 +160,24 @@ typedef struct
 	/* The number of cache hits for this item.                    */
 	/* Used to evaluate if the item must be dropped from cache    */
 	/* in low memory situation.                                   */
-	zbx_uint64_t	hits;
+	trx_uint64_t	hits;
 
 	/* the last (newest) chunk of item history data               */
-	zbx_vc_chunk_t	*head;
+	trx_vc_chunk_t	*head;
 
 	/* the first (oldest) chunk of item history data              */
-	zbx_vc_chunk_t	*tail;
+	trx_vc_chunk_t	*tail;
 }
-zbx_vc_item_t;
+trx_vc_item_t;
 
 /* the value cache data  */
 typedef struct
 {
 	/* the number of cache hits, used for statistics */
-	zbx_uint64_t	hits;
+	trx_uint64_t	hits;
 
 	/* the number of cache misses, used for statistics */
-	zbx_uint64_t	misses;
+	trx_uint64_t	misses;
 
 	/* value cache operating mode - see TRX_VC_MODE_* defines */
 	int		mode;
@@ -192,51 +192,51 @@ typedef struct
 	size_t		min_free_request;
 
 	/* the cached items */
-	zbx_hashset_t	items;
+	trx_hashset_t	items;
 
 	/* the string pool for str, text and log item values */
-	zbx_hashset_t	strpool;
+	trx_hashset_t	strpool;
 }
-zbx_vc_cache_t;
+trx_vc_cache_t;
 
 /* the item weight data, used to determine if item can be removed from cache */
 typedef struct
 {
 	/* a pointer to the value cache item */
-	zbx_vc_item_t	*item;
+	trx_vc_item_t	*item;
 
 	/* the item 'weight' - <number of hits> / <number of cache records> */
 	double		weight;
 }
-zbx_vc_item_weight_t;
+trx_vc_item_weight_t;
 
-TRX_VECTOR_DECL(vc_itemweight, zbx_vc_item_weight_t)
-TRX_VECTOR_IMPL(vc_itemweight, zbx_vc_item_weight_t)
+TRX_VECTOR_DECL(vc_itemweight, trx_vc_item_weight_t)
+TRX_VECTOR_IMPL(vc_itemweight, trx_vc_item_weight_t)
 
 /* the value cache */
-static zbx_vc_cache_t	*vc_cache = NULL;
+static trx_vc_cache_t	*vc_cache = NULL;
 
 /* function prototypes */
-static void	vc_history_record_copy(zbx_history_record_t *dst, const zbx_history_record_t *src, int value_type);
-static void	vc_history_record_vector_clean(zbx_vector_history_record_t *vector, int value_type);
+static void	vc_history_record_copy(trx_history_record_t *dst, const trx_history_record_t *src, int value_type);
+static void	vc_history_record_vector_clean(trx_vector_history_record_t *vector, int value_type);
 
-static size_t	vch_item_free_cache(zbx_vc_item_t *item);
-static size_t	vch_item_free_chunk(zbx_vc_item_t *item, zbx_vc_chunk_t *chunk);
-static int	vch_item_add_values_at_tail(zbx_vc_item_t *item, const zbx_history_record_t *values, int values_num);
-static void	vch_item_clean_cache(zbx_vc_item_t *item);
+static size_t	vch_item_free_cache(trx_vc_item_t *item);
+static size_t	vch_item_free_chunk(trx_vc_item_t *item, trx_vc_chunk_t *chunk);
+static int	vch_item_add_values_at_tail(trx_vc_item_t *item, const trx_history_record_t *values, int values_num);
+static void	vch_item_clean_cache(trx_vc_item_t *item);
 
 /******************************************************************************
  *                                                                            *
  * Function: vc_try_lock                                                      *
  *                                                                            *
  * Purpose: locks the cache unless it was explicitly locked externally with   *
- *          zbx_vc_lock() call.                                               *
+ *          trx_vc_lock() call.                                               *
  *                                                                            *
  ******************************************************************************/
 static void	vc_try_lock(void)
 {
 	if (TRX_VC_ENABLED == vc_state && 0 == vc_locked)
-		zbx_mutex_lock(vc_lock);
+		trx_mutex_lock(vc_lock);
 }
 
 /******************************************************************************
@@ -244,13 +244,13 @@ static void	vc_try_lock(void)
  * Function: vc_try_unlock                                                    *
  *                                                                            *
  * Purpose: unlocks the cache locked by vc_try_lock() function unless it was  *
- *          explicitly locked externally with zbx_vc_lock() call.             *
+ *          explicitly locked externally with trx_vc_lock() call.             *
  *                                                                            *
  ******************************************************************************/
 static void	vc_try_unlock(void)
 {
 	if (TRX_VC_ENABLED == vc_state && 0 == vc_locked)
-		zbx_mutex_unlock(vc_lock);
+		trx_mutex_unlock(vc_lock);
 }
 
 /*********************************************************************************
@@ -272,14 +272,14 @@ static void	vc_try_unlock(void)
  *           [range_start, range_end]                                            *
  *                                                                               *
  *********************************************************************************/
-static int	vc_db_read_values_by_time(zbx_uint64_t itemid, int value_type, zbx_vector_history_record_t *values,
+static int	vc_db_read_values_by_time(trx_uint64_t itemid, int value_type, trx_vector_history_record_t *values,
 		int range_start, int range_end)
 {
 	/* decrement interval start point because interval starting point is excluded by history backend */
 	if (0 != range_start)
 		range_start--;
 
-	return zbx_history_get_values(itemid, value_type, range_start, 0, range_end, values);
+	return trx_history_get_values(itemid, value_type, range_start, 0, range_end, values);
 }
 
 /************************************************************************************
@@ -303,9 +303,9 @@ static int	vc_db_read_values_by_time(zbx_uint64_t itemid, int value_type, zbx_ve
  *           that includes the requested values.                                    *
  *                                                                                  *
  ************************************************************************************/
-static int	vc_db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_type,
-		zbx_vector_history_record_t *values, int range_start, int count, int range_end,
-		const zbx_timespec_t *ts)
+static int	vc_db_read_values_by_time_and_count(trx_uint64_t itemid, int value_type,
+		trx_vector_history_record_t *values, int range_start, int count, int range_end,
+		const trx_timespec_t *ts)
 {
 	int	first_timestamp, last_timestamp, i, left = 0, values_start;
 
@@ -333,7 +333,7 @@ static int	vc_db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_ty
 	/*        a) remove values with Tb.* timestamp from result,                              */
 	/*        b) read all values with Tb.* timestamp from database,                          */
 	/*        c) add read values to the result.                                              */
-	if (FAIL == zbx_history_get_values(itemid, value_type, range_start, count + 1, range_end, values))
+	if (FAIL == trx_history_get_values(itemid, value_type, range_start, count + 1, range_end, values))
 		return FAIL;
 
 	/* returned less than requested - all values are read */
@@ -351,7 +351,7 @@ static int	vc_db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_ty
 
 	for (i = values_start; i < values->values_num && values->values[i].timestamp.sec == last_timestamp; i++)
 	{
-		if (0 > zbx_timespec_compare(ts, &values->values[i].timestamp))
+		if (0 > trx_timespec_compare(ts, &values->values[i].timestamp))
 			left++;
 	}
 
@@ -364,13 +364,13 @@ static int	vc_db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_ty
 		while (0 < values->values_num && values->values[values->values_num - 1].timestamp.sec == first_timestamp)
 		{
 			values->values_num--;
-			zbx_history_record_clear(&values->values[values->values_num], value_type);
+			trx_history_record_clear(&values->values[values->values_num], value_type);
 			left++;
 		}
 
 		offset = values->values_num;
 
-		if (FAIL == zbx_history_get_values(itemid, value_type, range_start, left, first_timestamp, values))
+		if (FAIL == trx_history_get_values(itemid, value_type, range_start, left, first_timestamp, values))
 			return FAIL;
 
 		/* returned less than requested - all values are read */
@@ -384,14 +384,14 @@ static int	vc_db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_ty
 	while (0 < values->values_num && values->values[values->values_num - 1].timestamp.sec == first_timestamp)
 	{
 		values->values_num--;
-		zbx_history_record_clear(&values->values[values->values_num], value_type);
+		trx_history_record_clear(&values->values[values->values_num], value_type);
 	}
 
 	/* check if there are enough values matching the request range */
 
 	for (i = values_start; i < values->values_num; i++)
 	{
-		if (0 <= zbx_timespec_compare(ts, &values->values[i].timestamp))
+		if (0 <= trx_timespec_compare(ts, &values->values[i].timestamp))
 			count--;
 	}
 
@@ -399,7 +399,7 @@ static int	vc_db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_ty
 		return SUCCEED;
 
 	/* re-read the first (oldest) second */
-	return zbx_history_get_values(itemid, value_type, first_timestamp - 1, 0, first_timestamp, values);
+	return trx_history_get_values(itemid, value_type, first_timestamp - 1, 0, first_timestamp, values);
 }
 
 /******************************************************************************
@@ -421,8 +421,8 @@ static int	vc_db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_ty
  *                FAIL    - the item history data was not retrieved           *
  *                                                                            *
  ******************************************************************************/
-static int	vc_db_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_history_record_t *values, int seconds,
-		int count, const zbx_timespec_t *ts)
+static int	vc_db_get_values(trx_uint64_t itemid, int value_type, trx_vector_history_record_t *values, int seconds,
+		int count, const trx_timespec_t *ts)
 {
 	int	ret = FAIL, i, j, range_start;
 
@@ -441,7 +441,7 @@ static int	vc_db_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_hist
 	if (SUCCEED != ret)
 		return ret;
 
-	zbx_vector_history_record_sort(values, (zbx_compare_func_t)zbx_history_record_compare_desc_func);
+	trx_vector_history_record_sort(values, (trx_compare_func_t)trx_history_record_compare_desc_func);
 
 	/* History backend returns values by full second intervals. With nanosecond resolution */
 	/* some of returned values might be outside the requested range, for example:          */
@@ -452,7 +452,7 @@ static int	vc_db_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_hist
 	/* find the last value with timestamp less or equal to the requested range end point */
 	for (i = 0; i < values->values_num; i++)
 	{
-		if (0 >= zbx_timespec_compare(&values->values[i].timestamp, ts))
+		if (0 >= trx_timespec_compare(&values->values[i].timestamp, ts))
 			break;
 	}
 
@@ -467,7 +467,7 @@ static int	vc_db_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_hist
 	if (0 != i)
 	{
 		for (j = 0; j < i; j++)
-			zbx_history_record_clear(&values->values[j], value_type);
+			trx_history_record_clear(&values->values[j], value_type);
 
 		for (j = 0; i < values->values_num; i++, j++)
 			values->values[j] = values->values[i];
@@ -479,18 +479,18 @@ static int	vc_db_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_hist
 	if (0 != count)
 	{
 		while (count < values->values_num)
-			zbx_history_record_clear(&values->values[--values->values_num], value_type);
+			trx_history_record_clear(&values->values[--values->values_num], value_type);
 	}
 
 	/* for time based requests remove values with timestamp outside requested range */
 	if (0 != seconds)
 	{
-		zbx_timespec_t	start = {ts->sec - seconds, ts->ns};
+		trx_timespec_t	start = {ts->sec - seconds, ts->ns};
 
 		while (0 < values->values_num &&
-				0 >= zbx_timespec_compare(&values->values[values->values_num - 1].timestamp, &start))
+				0 >= trx_timespec_compare(&values->values[values->values_num - 1].timestamp, &start))
 		{
-			zbx_history_record_clear(&values->values[--values->values_num], value_type);
+			trx_history_record_clear(&values->values[--values->values_num], value_type);
 		}
 	}
 
@@ -509,9 +509,9 @@ static int	vc_db_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_hist
  *                                                                            *
  ******************************************************************************/
 
-#define REFCOUNT_FIELD_SIZE	sizeof(zbx_uint32_t)
+#define REFCOUNT_FIELD_SIZE	sizeof(trx_uint32_t)
 
-static zbx_hash_t	vc_strpool_hash_func(const void *data)
+static trx_hash_t	vc_strpool_hash_func(const void *data)
 {
 	return TRX_DEFAULT_STRING_HASH_FUNC((char *)data + REFCOUNT_FIELD_SIZE);
 }
@@ -531,7 +531,7 @@ static int	vc_strpool_compare_func(const void *d1, const void *d2)
  *             d2   - [IN] the second item weight data structure              *
  *                                                                            *
  ******************************************************************************/
-static int	vc_item_weight_compare_func(const zbx_vc_item_weight_t *d1, const zbx_vc_item_weight_t *d2)
+static int	vc_item_weight_compare_func(const trx_vc_item_weight_t *d1, const trx_vc_item_weight_t *d2)
 {
 	TRX_RETURN_IF_NOT_EQUAL(d1->weight, d2->weight);
 
@@ -547,11 +547,11 @@ static int	vc_item_weight_compare_func(const zbx_vc_item_weight_t *d1, const zbx
  * Parameters: log   - [IN] the history log to free                           *
  *                                                                            *
  ******************************************************************************/
-static void	vc_history_logfree(zbx_log_value_t *log)
+static void	vc_history_logfree(trx_log_value_t *log)
 {
-	zbx_free(log->source);
-	zbx_free(log->value);
-	zbx_free(log);
+	trx_free(log->source);
+	trx_free(log->value);
+	trx_free(log);
 }
 
 /******************************************************************************
@@ -566,17 +566,17 @@ static void	vc_history_logfree(zbx_log_value_t *log)
  * Return value: the duplicated history log                                   *
  *                                                                            *
  ******************************************************************************/
-static zbx_log_value_t	*vc_history_logdup(const zbx_log_value_t *log)
+static trx_log_value_t	*vc_history_logdup(const trx_log_value_t *log)
 {
-	zbx_log_value_t	*plog;
+	trx_log_value_t	*plog;
 
-	plog = (zbx_log_value_t *)zbx_malloc(NULL, sizeof(zbx_log_value_t));
+	plog = (trx_log_value_t *)trx_malloc(NULL, sizeof(trx_log_value_t));
 
 	plog->timestamp = log->timestamp;
 	plog->logeventid = log->logeventid;
 	plog->severity = log->severity;
-	plog->source = (NULL == log->source ? NULL : zbx_strdup(NULL, log->source));
-	plog->value = zbx_strdup(NULL, log->value);
+	plog->source = (NULL == log->source ? NULL : trx_strdup(NULL, log->source));
+	plog->value = trx_strdup(NULL, log->value);
 
 	return plog;
 }
@@ -591,7 +591,7 @@ static zbx_log_value_t	*vc_history_logdup(const zbx_log_value_t *log)
  *             value_type  - [IN] the type of vector values                   *
  *                                                                            *
  ******************************************************************************/
-static void	vc_history_record_vector_clean(zbx_vector_history_record_t *vector, int value_type)
+static void	vc_history_record_vector_clean(trx_vector_history_record_t *vector, int value_type)
 {
 	int	i;
 
@@ -600,7 +600,7 @@ static void	vc_history_record_vector_clean(zbx_vector_history_record_t *vector, 
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:
 			for (i = 0; i < vector->values_num; i++)
-				zbx_free(vector->values[i].value.str);
+				trx_free(vector->values[i].value.str);
 
 			break;
 		case ITEM_VALUE_TYPE_LOG:
@@ -608,7 +608,7 @@ static void	vc_history_record_vector_clean(zbx_vector_history_record_t *vector, 
 				vc_history_logfree(vector->values[i].value.log);
 	}
 
-	zbx_vector_history_record_clear(vector);
+	trx_vector_history_record_clear(vector);
 }
 
 /******************************************************************************
@@ -625,7 +625,7 @@ static void	vc_history_record_vector_clean(zbx_vector_history_record_t *vector, 
  *           added to both - item and cache statistics.                       *
  *                                                                            *
  ******************************************************************************/
-static void	vc_update_statistics(zbx_vc_item_t *item, int hits, int misses)
+static void	vc_update_statistics(trx_vc_item_t *item, int hits, int misses)
 {
 	if (NULL != item)
 	{
@@ -689,13 +689,13 @@ static void	vc_warn_low_memory(void)
  *           bytes of space to reduce number of space release requests.       *
  *                                                                            *
  ******************************************************************************/
-static void	vc_release_space(zbx_vc_item_t *source_item, size_t space)
+static void	vc_release_space(trx_vc_item_t *source_item, size_t space)
 {
-	zbx_hashset_iter_t		iter;
-	zbx_vc_item_t			*item;
+	trx_hashset_iter_t		iter;
+	trx_vc_item_t			*item;
 	int				timestamp, i;
 	size_t				freed = 0;
-	zbx_vector_vc_itemweight_t	items;
+	trx_vector_vc_itemweight_t	items;
 
 	timestamp = time(NULL) - TRX_VC_ITEM_EXPIRE_PERIOD;
 
@@ -704,14 +704,14 @@ static void	vc_release_space(zbx_vc_item_t *source_item, size_t space)
 		space = vc_cache->min_free_request;
 
 	/* first remove items with the last accessed time older than a day */
-	zbx_hashset_iter_reset(&vc_cache->items, &iter);
+	trx_hashset_iter_reset(&vc_cache->items, &iter);
 
-	while (NULL != (item = (zbx_vc_item_t *)zbx_hashset_iter_next(&iter)))
+	while (NULL != (item = (trx_vc_item_t *)trx_hashset_iter_next(&iter)))
 	{
 		if (0 == item->refcount && source_item != item && item->last_accessed < timestamp)
 		{
-			freed += vch_item_free_cache(item) + sizeof(zbx_vc_item_t);
-			zbx_hashset_iter_remove(&iter);
+			freed += vch_item_free_cache(item) + sizeof(trx_vc_item_t);
+			trx_hashset_iter_remove(&iter);
 		}
 	}
 
@@ -725,35 +725,35 @@ static void	vc_release_space(zbx_vc_item_t *source_item, size_t space)
 	vc_warn_low_memory();
 
 	/* remove items with least hits/size ratio */
-	zbx_vector_vc_itemweight_create(&items);
+	trx_vector_vc_itemweight_create(&items);
 
-	zbx_hashset_iter_reset(&vc_cache->items, &iter);
+	trx_hashset_iter_reset(&vc_cache->items, &iter);
 
-	while (NULL != (item = (zbx_vc_item_t *)zbx_hashset_iter_next(&iter)))
+	while (NULL != (item = (trx_vc_item_t *)trx_hashset_iter_next(&iter)))
 	{
 		/* don't remove the item that requested the space and also keep */
 		/* items currently being accessed                               */
 		if (0 == item->refcount)
 		{
-			zbx_vc_item_weight_t	weight = {.item = item};
+			trx_vc_item_weight_t	weight = {.item = item};
 
 			if (0 < item->values_total)
 				weight.weight = (double)item->hits / item->values_total;
 
-			zbx_vector_vc_itemweight_append_ptr(&items, &weight);
+			trx_vector_vc_itemweight_append_ptr(&items, &weight);
 		}
 	}
 
-	zbx_vector_vc_itemweight_sort(&items, (zbx_compare_func_t)vc_item_weight_compare_func);
+	trx_vector_vc_itemweight_sort(&items, (trx_compare_func_t)vc_item_weight_compare_func);
 
 	for (i = 0; i < items.values_num && freed < space; i++)
 	{
 		item = items.values[i].item;
 
-		freed += vch_item_free_cache(item) + sizeof(zbx_vc_item_t);
-		zbx_hashset_remove_direct(&vc_cache->items, item);
+		freed += vch_item_free_cache(item) + sizeof(trx_vc_item_t);
+		trx_hashset_remove_direct(&vc_cache->items, item);
 	}
-	zbx_vector_vc_itemweight_destroy(&items);
+	trx_vector_vc_itemweight_destroy(&items);
 }
 
 /******************************************************************************
@@ -770,7 +770,7 @@ static void	vc_release_space(zbx_vc_item_t *source_item, size_t space)
  *           value contents. This memory must be freed by the caller.         *
  *                                                                            *
  ******************************************************************************/
-static void	vc_history_record_copy(zbx_history_record_t *dst, const zbx_history_record_t *src, int value_type)
+static void	vc_history_record_copy(trx_history_record_t *dst, const trx_history_record_t *src, int value_type)
 {
 	dst->timestamp = src->timestamp;
 
@@ -778,7 +778,7 @@ static void	vc_history_record_copy(zbx_history_record_t *dst, const zbx_history_
 	{
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:
-			dst->value.str = zbx_strdup(NULL, src->value.str);
+			dst->value.str = trx_strdup(NULL, src->value.str);
 			break;
 		case ITEM_VALUE_TYPE_LOG:
 			dst->value.log = vc_history_logdup(src->value.log);
@@ -802,13 +802,13 @@ static void	vc_history_record_copy(zbx_history_record_t *dst, const zbx_history_
  *           value contents. This memory must be freed by the caller.         *
  *                                                                            *
  ******************************************************************************/
-static void	vc_history_record_vector_append(zbx_vector_history_record_t *vector, int value_type,
-		zbx_history_record_t *value)
+static void	vc_history_record_vector_append(trx_vector_history_record_t *vector, int value_type,
+		trx_history_record_t *value)
 {
-	zbx_history_record_t	record;
+	trx_history_record_t	record;
 
 	vc_history_record_copy(&record, value, value_type);
-	zbx_vector_history_record_append_ptr(vector, &record);
+	trx_vector_history_record_append_ptr(vector, &record);
 }
 
 /******************************************************************************
@@ -828,7 +828,7 @@ static void	vc_history_record_vector_append(zbx_vector_history_record_t *vector,
  *           still fails a NULL value is returned.                            *
  *                                                                            *
  ******************************************************************************/
-static void	*vc_item_malloc(zbx_vc_item_t *item, size_t size)
+static void	*vc_item_malloc(trx_vc_item_t *item, size_t size)
 {
 	char	*ptr;
 
@@ -865,11 +865,11 @@ static void	*vc_item_malloc(zbx_vc_item_t *item, size_t size)
  *           tries again. If it still fails then a NULL value is returned.    *
  *                                                                            *
  ******************************************************************************/
-static char	*vc_item_strdup(zbx_vc_item_t *item, const char *str)
+static char	*vc_item_strdup(trx_vc_item_t *item, const char *str)
 {
 	void	*ptr;
 
-	ptr = zbx_hashset_search(&vc_cache->strpool, str - REFCOUNT_FIELD_SIZE);
+	ptr = trx_hashset_search(&vc_cache->strpool, str - REFCOUNT_FIELD_SIZE);
 
 	if (NULL == ptr)
 	{
@@ -878,7 +878,7 @@ static char	*vc_item_strdup(zbx_vc_item_t *item, const char *str)
 
 		len = strlen(str) + 1;
 
-		while (NULL == (ptr = zbx_hashset_insert_ext(&vc_cache->strpool, str - REFCOUNT_FIELD_SIZE,
+		while (NULL == (ptr = trx_hashset_insert_ext(&vc_cache->strpool, str - REFCOUNT_FIELD_SIZE,
 				REFCOUNT_FIELD_SIZE + len, REFCOUNT_FIELD_SIZE)))
 		{
 			/* If there is not enough space - free enough to store string + hashset entry overhead */
@@ -889,10 +889,10 @@ static char	*vc_item_strdup(zbx_vc_item_t *item, const char *str)
 				return NULL;
 		}
 
-		*(zbx_uint32_t *)ptr = 0;
+		*(trx_uint32_t *)ptr = 0;
 	}
 
-	(*(zbx_uint32_t *)ptr)++;
+	(*(trx_uint32_t *)ptr)++;
 
 	return (char *)ptr + REFCOUNT_FIELD_SIZE;
 }
@@ -922,10 +922,10 @@ static size_t	vc_item_strfree(char *str)
 	{
 		void	*ptr = str - REFCOUNT_FIELD_SIZE;
 
-		if (0 == --(*(zbx_uint32_t *)ptr))
+		if (0 == --(*(trx_uint32_t *)ptr))
 		{
 			freed = strlen(str) + REFCOUNT_FIELD_SIZE + 1;
-			zbx_hashset_remove_direct(&vc_cache->strpool, ptr);
+			trx_hashset_remove_direct(&vc_cache->strpool, ptr);
 		}
 	}
 
@@ -950,11 +950,11 @@ static size_t	vc_item_strfree(char *str)
  *           If it still fails then a NULL value is returned.                 *
  *                                                                            *
  ******************************************************************************/
-static zbx_log_value_t	*vc_item_logdup(zbx_vc_item_t *item, const zbx_log_value_t *log)
+static trx_log_value_t	*vc_item_logdup(trx_vc_item_t *item, const trx_log_value_t *log)
 {
-	zbx_log_value_t	*plog = NULL;
+	trx_log_value_t	*plog = NULL;
 
-	if (NULL == (plog = (zbx_log_value_t *)vc_item_malloc(item, sizeof(zbx_log_value_t))))
+	if (NULL == (plog = (trx_log_value_t *)vc_item_malloc(item, sizeof(trx_log_value_t))))
 		return NULL;
 
 	plog->timestamp = log->timestamp;
@@ -995,7 +995,7 @@ fail:
  *           be freed with vc_item_logfree().                                 *
  *                                                                            *
  ******************************************************************************/
-static size_t	vc_item_logfree(zbx_log_value_t *log)
+static size_t	vc_item_logfree(trx_log_value_t *log)
 {
 	size_t	freed = 0;
 
@@ -1005,7 +1005,7 @@ static size_t	vc_item_logfree(zbx_log_value_t *log)
 		freed += vc_item_strfree(log->value);
 
 		__vc_mem_free_func(log);
-		freed += sizeof(zbx_log_value_t);
+		freed += sizeof(trx_log_value_t);
 	}
 
 	return freed;
@@ -1025,7 +1025,7 @@ static size_t	vc_item_logfree(zbx_log_value_t *log)
  * Return value: the number of bytes freed                                    *
  *                                                                            *
  ******************************************************************************/
-static size_t	vc_item_free_values(zbx_vc_item_t *item, zbx_history_record_t *values, int first, int last)
+static size_t	vc_item_free_values(trx_vc_item_t *item, trx_history_record_t *values, int first, int last)
 {
 	size_t	freed = 0;
 	int 	i;
@@ -1057,10 +1057,10 @@ static size_t	vc_item_free_values(zbx_vc_item_t *item, zbx_history_record_t *val
  * Parameters: item    - [IN] the item                                        *
  *                                                                            *
  ******************************************************************************/
-static void	vc_remove_item(zbx_vc_item_t *item)
+static void	vc_remove_item(trx_vc_item_t *item)
 {
 	vch_item_free_cache(item);
-	zbx_hashset_remove_direct(&vc_cache->items, item);
+	trx_hashset_remove_direct(&vc_cache->items, item);
 }
 
 /******************************************************************************
@@ -1072,7 +1072,7 @@ static void	vc_remove_item(zbx_vc_item_t *item)
  * Parameters: item     - [IN] the item                                       *
  *                                                                            *
  ******************************************************************************/
-static void	vc_item_addref(zbx_vc_item_t *item)
+static void	vc_item_addref(trx_vc_item_t *item)
 {
 	item->refcount++;
 }
@@ -1089,7 +1089,7 @@ static void	vc_item_addref(zbx_vc_item_t *item)
  *           processes pending item operations                                *
  *                                                                            *
  ******************************************************************************/
-static void	vc_item_release(zbx_vc_item_t *item)
+static void	vc_item_release(trx_vc_item_t *item)
 {
 	if (0 == (--item->refcount))
 	{
@@ -1117,7 +1117,7 @@ static void	vc_item_release(zbx_vc_item_t *item)
  *                              guaranteed to be cached                       *
  *                                                                            *
  ******************************************************************************/
-static void	vc_item_update_db_cached_from(zbx_vc_item_t *item, int timestamp)
+static void	vc_item_update_db_cached_from(trx_vc_item_t *item, int timestamp)
 {
 	if (0 == item->db_cached_from || timestamp < item->db_cached_from)
 		item->db_cached_from = timestamp;
@@ -1134,9 +1134,9 @@ static void	vc_item_update_db_cached_from(zbx_vc_item_t *item, int timestamp)
  * as illustrated in the following diagram:
  *
  *  .----------------.
- *  | zbx_vc_cache_t |
+ *  | trx_vc_cache_t |
  *  |----------------|      .---------------.
- *  | items          |----->| zbx_vc_item_t |-.
+ *  | items          |----->| trx_vc_item_t |-.
  *  '----------------'      |---------------| |-.
  *  .-----------------------| tail          | | |
  *  |                   .---| head          | | |
@@ -1147,11 +1147,11 @@ static void	vc_item_update_db_cached_from(zbx_vc_item_t *item, int timestamp)
  *  |                   '-------------------------------------------------.
  *  |                                                                     |
  *  |  .----------------.                                                 |
- *  '->| zbx_vc_chunk_t |<-.                                              |
+ *  '->| trx_vc_chunk_t |<-.                                              |
  *     |----------------|  |  .----------------.                          |
- *     | next           |---->| zbx_vc_chunk_t |<-.                       |
+ *     | next           |---->| trx_vc_chunk_t |<-.                       |
  *     | prev           |  |  |----------------|  |  .----------------.   |
- *     '----------------'  |  | next           |---->| zbx_vc_chunk_t |<--'
+ *     '----------------'  |  | next           |---->| trx_vc_chunk_t |<--'
  *                         '--| prev           |  |  |----------------|
  *                            '----------------'  |  | next           |
  *                                                '--| prev           |
@@ -1175,7 +1175,7 @@ static void	vc_item_update_db_cached_from(zbx_vc_item_t *item, int timestamp)
  *             now    - [IN] the current timestamp                            *
  *                                                                            *
  ******************************************************************************/
-static void	vch_item_update_range(zbx_vc_item_t *item, int range, int now)
+static void	vch_item_update_range(trx_vc_item_t *item, int range, int now)
 {
 	int	hour, diff;
 
@@ -1216,13 +1216,13 @@ static void	vch_item_update_range(zbx_vc_item_t *item, int range, int now)
  *           the calculated slot count exceeds the maximum limit.             *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_chunk_slot_count(zbx_vc_item_t *item, int values_new)
+static int	vch_item_chunk_slot_count(trx_vc_item_t *item, int values_new)
 {
 	int	nslots, values;
 
 	values = item->values_total + values_new;
 
-	nslots = zbx_isqrt32(values);
+	nslots = trx_isqrt32(values);
 
 	if ((values + nslots - 1) / nslots + 1 > 32)
 		nslots = values / 32;
@@ -1252,17 +1252,17 @@ static int	vch_item_chunk_slot_count(zbx_vc_item_t *item, int values_new)
  *                FAIL - failed to create a new chunk (not enough memory)     *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_add_chunk(zbx_vc_item_t *item, int nslots, zbx_vc_chunk_t *insert_before)
+static int	vch_item_add_chunk(trx_vc_item_t *item, int nslots, trx_vc_chunk_t *insert_before)
 {
-	zbx_vc_chunk_t	*chunk;
+	trx_vc_chunk_t	*chunk;
 	int		chunk_size;
 
-	chunk_size = sizeof(zbx_vc_chunk_t) + sizeof(zbx_history_record_t) * (nslots - 1);
+	chunk_size = sizeof(trx_vc_chunk_t) + sizeof(trx_history_record_t) * (nslots - 1);
 
-	if (NULL == (chunk = (zbx_vc_chunk_t *)vc_item_malloc(item, chunk_size)))
+	if (NULL == (chunk = (trx_vc_chunk_t *)vc_item_malloc(item, chunk_size)))
 		return FAIL;
 
-	memset(chunk, 0, sizeof(zbx_vc_chunk_t));
+	memset(chunk, 0, sizeof(trx_vc_chunk_t));
 	chunk->slots_num = nslots;
 
 	chunk->next = insert_before;
@@ -1308,12 +1308,12 @@ static int	vch_item_add_chunk(zbx_vc_item_t *item, int nslots, zbx_vc_chunk_t *i
  *               values have timestamps greater than the target timestamp).   *
  *                                                                            *
  ******************************************************************************/
-static int	vch_chunk_find_last_value_before(const zbx_vc_chunk_t *chunk, const zbx_timespec_t *ts)
+static int	vch_chunk_find_last_value_before(const trx_vc_chunk_t *chunk, const trx_timespec_t *ts)
 {
 	int	start = chunk->first_value, end = chunk->last_value, middle;
 
 	/* check if the last value timestamp is already greater or equal to the specified timestamp */
-	if (0 >= zbx_timespec_compare(&chunk->slots[end].timestamp, ts))
+	if (0 >= trx_timespec_compare(&chunk->slots[end].timestamp, ts))
 		return end;
 
 	/* chunk contains only one value, which did not pass the above check, return failure */
@@ -1325,13 +1325,13 @@ static int	vch_chunk_find_last_value_before(const zbx_vc_chunk_t *chunk, const z
 	{
 		middle = start + (end - start) / 2;
 
-		if (0 < zbx_timespec_compare(&chunk->slots[middle].timestamp, ts))
+		if (0 < trx_timespec_compare(&chunk->slots[middle].timestamp, ts))
 		{
 			end = middle;
 			continue;
 		}
 
-		if (0 >= zbx_timespec_compare(&chunk->slots[middle + 1].timestamp, ts))
+		if (0 >= trx_timespec_compare(&chunk->slots[middle + 1].timestamp, ts))
 		{
 			start = middle;
 			continue;
@@ -1364,10 +1364,10 @@ static int	vch_chunk_find_last_value_before(const zbx_vc_chunk_t *chunk, const z
  *           cache is returned.                                               *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_get_last_value(const zbx_vc_item_t *item, const zbx_timespec_t *ts, zbx_vc_chunk_t **pchunk,
+static int	vch_item_get_last_value(const trx_vc_item_t *item, const trx_timespec_t *ts, trx_vc_chunk_t **pchunk,
 		int *pindex)
 {
-	zbx_vc_chunk_t	*chunk = item->head;
+	trx_vc_chunk_t	*chunk = item->head;
 	int		index;
 
 	if (NULL == chunk)
@@ -1375,9 +1375,9 @@ static int	vch_item_get_last_value(const zbx_vc_item_t *item, const zbx_timespec
 
 	index = chunk->last_value;
 
-	if (0 < zbx_timespec_compare(&chunk->slots[index].timestamp, ts))
+	if (0 < trx_timespec_compare(&chunk->slots[index].timestamp, ts))
 	{
-		while (0 < zbx_timespec_compare(&chunk->slots[chunk->first_value].timestamp, ts))
+		while (0 < trx_timespec_compare(&chunk->slots[chunk->first_value].timestamp, ts))
 		{
 			chunk = chunk->prev;
 			/* there are no values for requested range, return failure */
@@ -1411,10 +1411,10 @@ static int	vch_item_get_last_value(const zbx_vc_item_t *item, const zbx_timespec
  *           str, text and log type values are stored in cache string pool.   *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_copy_value(zbx_vc_item_t *item, zbx_vc_chunk_t *chunk, int index,
-		const zbx_history_record_t *source_value)
+static int	vch_item_copy_value(trx_vc_item_t *item, trx_vc_chunk_t *chunk, int index,
+		const trx_history_record_t *source_value)
 {
-	zbx_history_record_t	*value;
+	trx_history_record_t	*value;
 	int			ret = FAIL;
 
 	value = &chunk->slots[index];
@@ -1458,7 +1458,7 @@ out:
  *           str, text and log type values are stored in cache string pool.   *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_copy_values_at_tail(zbx_vc_item_t *item, const zbx_history_record_t *values, int values_num)
+static int	vch_item_copy_values_at_tail(trx_vc_item_t *item, const trx_history_record_t *values, int values_num)
 {
 	int	i, ret = FAIL, first_value = item->tail->first_value;
 
@@ -1468,7 +1468,7 @@ static int	vch_item_copy_values_at_tail(zbx_vc_item_t *item, const zbx_history_r
 		case ITEM_VALUE_TYPE_TEXT:
 			for (i = values_num - 1; i >= 0; i--)
 			{
-				zbx_history_record_t	*value = &item->tail->slots[item->tail->first_value - 1];
+				trx_history_record_t	*value = &item->tail->slots[item->tail->first_value - 1];
 
 				if (NULL == (value->value.str = vc_item_strdup(item, values[i].value.str)))
 					goto out;
@@ -1482,7 +1482,7 @@ static int	vch_item_copy_values_at_tail(zbx_vc_item_t *item, const zbx_history_r
 		case ITEM_VALUE_TYPE_LOG:
 			for (i = values_num - 1; i >= 0; i--)
 			{
-				zbx_history_record_t	*value = &item->tail->slots[item->tail->first_value - 1];
+				trx_history_record_t	*value = &item->tail->slots[item->tail->first_value - 1];
 
 				if (NULL == (value->value.log = vc_item_logdup(item, values[i].value.log)))
 					goto out;
@@ -1495,7 +1495,7 @@ static int	vch_item_copy_values_at_tail(zbx_vc_item_t *item, const zbx_history_r
 			break;
 		default:
 			memcpy(&item->tail->slots[item->tail->first_value - values_num], values,
-					values_num * sizeof(zbx_history_record_t));
+					values_num * sizeof(trx_history_record_t));
 			item->tail->first_value -= values_num;
 			ret = SUCCEED;
 	}
@@ -1517,11 +1517,11 @@ out:
  * Return value: the number of bytes freed                                    *
  *                                                                            *
  ******************************************************************************/
-static size_t	vch_item_free_chunk(zbx_vc_item_t *item, zbx_vc_chunk_t *chunk)
+static size_t	vch_item_free_chunk(trx_vc_item_t *item, trx_vc_chunk_t *chunk)
 {
 	size_t	freed;
 
-	freed = sizeof(zbx_vc_chunk_t) + (chunk->slots_num - 1) * sizeof(zbx_history_record_t);
+	freed = sizeof(trx_vc_chunk_t) + (chunk->slots_num - 1) * sizeof(trx_history_record_t);
 	freed += vc_item_free_values(item, chunk->slots, chunk->first_value, chunk->last_value);
 
 	__vc_mem_free_func(chunk);
@@ -1539,7 +1539,7 @@ static size_t	vch_item_free_chunk(zbx_vc_item_t *item, zbx_vc_chunk_t *chunk)
  *             chunk   - [IN] the chunk to remove                             *
  *                                                                            *
  ******************************************************************************/
-static void	vch_item_remove_chunk(zbx_vc_item_t *item, zbx_vc_chunk_t *chunk)
+static void	vch_item_remove_chunk(trx_vc_item_t *item, trx_vc_chunk_t *chunk)
 {
 	if (NULL != chunk->next)
 		chunk->next->prev = chunk->prev;
@@ -1566,14 +1566,14 @@ static void	vch_item_remove_chunk(zbx_vc_item_t *item, zbx_vc_chunk_t *chunk)
  * Parameters:  item   - [IN] the target item                                 *
  *                                                                            *
  ******************************************************************************/
-static void	vch_item_clean_cache(zbx_vc_item_t *item)
+static void	vch_item_clean_cache(trx_vc_item_t *item)
 {
-	zbx_vc_chunk_t	*next;
+	trx_vc_chunk_t	*next;
 
 	if (0 != item->active_range)
 	{
-		zbx_vc_chunk_t	*tail = item->tail;
-		zbx_vc_chunk_t	*chunk = tail;
+		trx_vc_chunk_t	*tail = item->tail;
+		trx_vc_chunk_t	*chunk = tail;
 		int		timestamp;
 
 		timestamp = time(NULL) - item->active_range;
@@ -1631,9 +1631,9 @@ static void	vch_item_clean_cache(zbx_vc_item_t *item)
  *                               Epoch)                                       *
  *                                                                            *
  ******************************************************************************/
-static void	vch_item_remove_values(zbx_vc_item_t *item, int timestamp)
+static void	vch_item_remove_values(trx_vc_item_t *item, int timestamp)
 {
-	zbx_vc_chunk_t	*chunk = item->tail;
+	trx_vc_chunk_t	*chunk = item->tail;
 
 	if (TRX_ITEM_STATUS_CACHED_ALL == item->status)
 		item->status = 0;
@@ -1641,7 +1641,7 @@ static void	vch_item_remove_values(zbx_vc_item_t *item, int timestamp)
 	/* try to remove chunks with all history values older than the timestamp */
 	while (chunk->slots[chunk->first_value].timestamp.sec < timestamp)
 	{
-		zbx_vc_chunk_t	*next;
+		trx_vc_chunk_t	*next;
 
 		/* If chunk contains values with timestamp greater or equal - remove */
 		/* only the values with less timestamp. Otherwise remove the while   */
@@ -1689,15 +1689,15 @@ static void	vch_item_remove_values(zbx_vc_item_t *item, int timestamp)
  *           later.                                                           *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_add_value_at_head(zbx_vc_item_t *item, const zbx_history_record_t *value)
+static int	vch_item_add_value_at_head(trx_vc_item_t *item, const trx_history_record_t *value)
 {
 	int		ret = FAIL, index, sindex, nslots = 0;
-	zbx_vc_chunk_t	*head = item->head, *chunk, *schunk;
+	trx_vc_chunk_t	*head = item->head, *chunk, *schunk;
 
 	if (NULL != item->head &&
-			0 < zbx_history_record_compare_asc_func(&item->head->slots[item->head->last_value], value))
+			0 < trx_history_record_compare_asc_func(&item->head->slots[item->head->last_value], value))
 	{
-		if (0 < zbx_history_record_compare_asc_func(&item->tail->slots[item->tail->first_value], value))
+		if (0 < trx_history_record_compare_asc_func(&item->tail->slots[item->tail->first_value], value))
 		{
 			/* If the added value has the same or older timestamp as the first value in cache */
 			/* we can't add it to keep cache consistency. Additionally we must make sure no   */
@@ -1740,7 +1740,7 @@ static int	vch_item_add_value_at_head(zbx_vc_item_t *item, const zbx_history_rec
 			{
 				if (NULL == (schunk = schunk->prev))
 				{
-					memset(&chunk->slots[index], 0, sizeof(zbx_vc_chunk_t));
+					memset(&chunk->slots[index], 0, sizeof(trx_vc_chunk_t));
 					THIS_SHOULD_NEVER_HAPPEN;
 
 					goto out;
@@ -1749,7 +1749,7 @@ static int	vch_item_add_value_at_head(zbx_vc_item_t *item, const zbx_history_rec
 				sindex = schunk->last_value;
 			}
 		}
-		while (0 < zbx_timespec_compare(&schunk->slots[sindex].timestamp, &value->timestamp));
+		while (0 < trx_timespec_compare(&schunk->slots[sindex].timestamp, &value->timestamp));
 	}
 	else
 	{
@@ -1801,7 +1801,7 @@ out:
  *           Overlapping values (by timestamp seconds) are ignored.           *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_add_values_at_tail(zbx_vc_item_t *item, const zbx_history_record_t *values, int values_num)
+static int	vch_item_add_values_at_tail(trx_vc_item_t *item, const trx_history_record_t *values, int values_num)
 {
 	int 	count = values_num, ret = FAIL;
 
@@ -1863,7 +1863,7 @@ out:
  *           updates cache from database if necessary.                        *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_cache_values_by_time(zbx_vc_item_t *item, int range_start)
+static int	vch_item_cache_values_by_time(trx_vc_item_t *item, int range_start)
 {
 	int	ret = SUCCEED, range_end;
 
@@ -1886,17 +1886,17 @@ static int	vch_item_cache_values_by_time(zbx_vc_item_t *item, int range_start)
 	/* update cache if necessary */
 	if (range_start < range_end)
 	{
-		zbx_vector_history_record_t	records;
+		trx_vector_history_record_t	records;
 
-		zbx_vector_history_record_create(&records);
+		trx_vector_history_record_create(&records);
 
 		vc_try_unlock();
 
 		if (SUCCEED == (ret = vc_db_read_values_by_time(item->itemid, item->value_type, &records,
 				range_start, range_end)))
 		{
-			zbx_vector_history_record_sort(&records,
-					(zbx_compare_func_t)zbx_history_record_compare_asc_func);
+			trx_vector_history_record_sort(&records,
+					(trx_compare_func_t)trx_history_record_compare_asc_func);
 		}
 
 		vc_try_lock();
@@ -1917,7 +1917,7 @@ static int	vch_item_cache_values_by_time(zbx_vc_item_t *item, int range_start)
 			}
 
 		}
-		zbx_history_record_vector_destroy(&records, item->value_type);
+		trx_history_record_vector_destroy(&records, item->value_type);
 	}
 
 	return ret;
@@ -1942,8 +1942,8 @@ static int	vch_item_cache_values_by_time(zbx_vc_item_t *item, int range_start)
  *           and updates cache from database if necessary.                    *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_cache_values_by_time_and_count(zbx_vc_item_t *item, int range_start, int count,
-		const zbx_timespec_t *ts)
+static int	vch_item_cache_values_by_time_and_count(trx_vc_item_t *item, int range_start, int count,
+		const trx_timespec_t *ts)
 {
 	int	ret = SUCCEED, cached_records = 0, range_end;
 
@@ -1957,7 +1957,7 @@ static int	vch_item_cache_values_by_time_and_count(zbx_vc_item_t *item, int rang
 	/* find if the cache should be updated to cover the required count */
 	if (NULL != item->head)
 	{
-		zbx_vc_chunk_t	*chunk;
+		trx_vc_chunk_t	*chunk;
 		int		index;
 
 		if (SUCCEED == vch_item_get_last_value(item, ts, &chunk, &index))
@@ -1972,7 +1972,7 @@ static int	vch_item_cache_values_by_time_and_count(zbx_vc_item_t *item, int rang
 	/* update cache if necessary */
 	if (cached_records < count)
 	{
-		zbx_vector_history_record_t	records;
+		trx_vector_history_record_t	records;
 
 		/* get the end timestamp to which (including) the values should be cached */
 		if (NULL != item->head)
@@ -1982,7 +1982,7 @@ static int	vch_item_cache_values_by_time_and_count(zbx_vc_item_t *item, int rang
 
 		vc_try_unlock();
 
-		zbx_vector_history_record_create(&records);
+		trx_vector_history_record_create(&records);
 
 		if (range_end > ts->sec)
 		{
@@ -1995,8 +1995,8 @@ static int	vch_item_cache_values_by_time_and_count(zbx_vc_item_t *item, int rang
 		if (SUCCEED == ret && SUCCEED == (ret = vc_db_read_values_by_time_and_count(item->itemid,
 				item->value_type, &records, range_start, count - cached_records, range_end, ts)))
 		{
-			zbx_vector_history_record_sort(&records,
-					(zbx_compare_func_t)zbx_history_record_compare_asc_func);
+			trx_vector_history_record_sort(&records,
+					(trx_compare_func_t)trx_history_record_compare_asc_func);
 		}
 
 		vc_try_lock();
@@ -2019,7 +2019,7 @@ static int	vch_item_cache_values_by_time_and_count(zbx_vc_item_t *item, int rang
 			}
 		}
 
-		zbx_history_record_vector_destroy(&records, item->value_type);
+		trx_history_record_vector_destroy(&records, item->value_type);
 	}
 
 	return ret;
@@ -2038,12 +2038,12 @@ static int	vch_item_cache_values_by_time_and_count(zbx_vc_item_t *item, int rang
  *             ts        - [IN] the requested period end timestamp            *
  *                                                                            *
  ******************************************************************************/
-static void	vch_item_get_values_by_time(zbx_vc_item_t *item, zbx_vector_history_record_t *values, int seconds,
-		const zbx_timespec_t *ts)
+static void	vch_item_get_values_by_time(trx_vc_item_t *item, trx_vector_history_record_t *values, int seconds,
+		const trx_timespec_t *ts)
 {
 	int		index, now;
-	zbx_timespec_t	start = {ts->sec - seconds, ts->ns};
-	zbx_vc_chunk_t	*chunk;
+	trx_timespec_t	start = {ts->sec - seconds, ts->ns};
+	trx_vc_chunk_t	*chunk;
 
 	/* Check if maximum request range is not set and all data are cached.  */
 	/* Because that indicates there was a count based request with unknown */
@@ -2063,9 +2063,9 @@ static void	vch_item_get_values_by_time(zbx_vc_item_t *item, zbx_vector_history_
 	}
 
 	/* fill the values vector with item history values until the start timestamp is reached */
-	while (0 < zbx_timespec_compare(&chunk->slots[chunk->last_value].timestamp, &start))
+	while (0 < trx_timespec_compare(&chunk->slots[chunk->last_value].timestamp, &start))
 	{
-		while (index >= chunk->first_value && 0 < zbx_timespec_compare(&chunk->slots[index].timestamp, &start))
+		while (index >= chunk->first_value && 0 < trx_timespec_compare(&chunk->slots[index].timestamp, &start))
 			vc_history_record_vector_append(values, item->value_type, &chunk->slots[index--]);
 
 		if (NULL == (chunk = chunk->prev))
@@ -2092,12 +2092,12 @@ static void	vch_item_get_values_by_time(zbx_vc_item_t *item, zbx_vector_history_
  *             timestamp - [IN] the target timestamp                          *
  *                                                                            *
  ******************************************************************************/
-static void	vch_item_get_values_by_time_and_count(zbx_vc_item_t *item, zbx_vector_history_record_t *values,
-		int seconds, int count, const zbx_timespec_t *ts)
+static void	vch_item_get_values_by_time_and_count(trx_vc_item_t *item, trx_vector_history_record_t *values,
+		int seconds, int count, const trx_timespec_t *ts)
 {
 	int		index, now, range_timestamp;
-	zbx_vc_chunk_t	*chunk;
-	zbx_timespec_t	start;
+	trx_vc_chunk_t	*chunk;
+	trx_timespec_t	start;
 
 	/* set start timestamp of the requested time period */
 	if (0 != seconds)
@@ -2120,9 +2120,9 @@ static void	vch_item_get_values_by_time_and_count(zbx_vc_item_t *item, zbx_vecto
 	/* fill the values vector with item history values until the <count> values are read    */
 	/* or no more values within specified time period                                       */
 	/* fill the values vector with item history values until the start timestamp is reached */
-	while (0 < zbx_timespec_compare(&chunk->slots[chunk->last_value].timestamp, &start))
+	while (0 < trx_timespec_compare(&chunk->slots[chunk->last_value].timestamp, &start))
 	{
-		while (index >= chunk->first_value && 0 < zbx_timespec_compare(&chunk->slots[index].timestamp, &start))
+		while (index >= chunk->first_value && 0 < trx_timespec_compare(&chunk->slots[index].timestamp, &start))
 		{
 			vc_history_record_vector_append(values, item->value_type, &chunk->slots[index--]);
 
@@ -2188,12 +2188,12 @@ out:
  *           seconds before <timestamp>.                                      *
  *                                                                            *
  ******************************************************************************/
-static int	vch_item_get_values(zbx_vc_item_t *item, zbx_vector_history_record_t *values, int seconds,
-		int count, const zbx_timespec_t *ts)
+static int	vch_item_get_values(trx_vc_item_t *item, trx_vector_history_record_t *values, int seconds,
+		int count, const trx_timespec_t *ts)
 {
 	int	ret, records_read, hits, misses, range_start;
 
-	zbx_vector_history_record_clear(values);
+	trx_vector_history_record_clear(values);
 
 	if (0 == count)
 	{
@@ -2246,15 +2246,15 @@ out:
  * Return value: the size of freed memory (bytes)                             *
  *                                                                            *
  ******************************************************************************/
-static size_t	vch_item_free_cache(zbx_vc_item_t *item)
+static size_t	vch_item_free_cache(trx_vc_item_t *item)
 {
 	size_t	freed = 0;
 
-	zbx_vc_chunk_t	*chunk = item->tail;
+	trx_vc_chunk_t	*chunk = item->tail;
 
 	while (NULL != chunk)
 	{
-		zbx_vc_chunk_t	*next = chunk->next;
+		trx_vc_chunk_t	*next = chunk->next;
 
 		freed += vch_item_free_chunk(item, chunk);
 		chunk = next;
@@ -2274,14 +2274,14 @@ static size_t	vch_item_free_cache(zbx_vc_item_t *item)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_init                                                      *
+ * Function: trx_vc_init                                                      *
  *                                                                            *
  * Purpose: initializes value cache                                           *
  *                                                                            *
  ******************************************************************************/
-int	zbx_vc_init(char **error)
+int	trx_vc_init(char **error)
 {
-	zbx_uint64_t	size_reserved;
+	trx_uint64_t	size_reserved;
 	int		ret = FAIL;
 
 	if (0 == CONFIG_VALUE_CACHE_SIZE)
@@ -2289,42 +2289,42 @@ int	zbx_vc_init(char **error)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != zbx_mutex_create(&vc_lock, TRX_MUTEX_VALUECACHE, error))
+	if (SUCCEED != trx_mutex_create(&vc_lock, TRX_MUTEX_VALUECACHE, error))
 		goto out;
 
-	size_reserved = zbx_mem_required_size(1, "value cache size", "ValueCacheSize");
+	size_reserved = trx_mem_required_size(1, "value cache size", "ValueCacheSize");
 
-	if (SUCCEED != zbx_mem_create(&vc_mem, CONFIG_VALUE_CACHE_SIZE, "value cache size", "ValueCacheSize", 1, error))
+	if (SUCCEED != trx_mem_create(&vc_mem, CONFIG_VALUE_CACHE_SIZE, "value cache size", "ValueCacheSize", 1, error))
 		goto out;
 
 	CONFIG_VALUE_CACHE_SIZE -= size_reserved;
 
-	vc_cache = (zbx_vc_cache_t *)__vc_mem_malloc_func(vc_cache, sizeof(zbx_vc_cache_t));
+	vc_cache = (trx_vc_cache_t *)__vc_mem_malloc_func(vc_cache, sizeof(trx_vc_cache_t));
 
 	if (NULL == vc_cache)
 	{
-		*error = zbx_strdup(*error, "cannot allocate value cache header");
+		*error = trx_strdup(*error, "cannot allocate value cache header");
 		goto out;
 	}
-	memset(vc_cache, 0, sizeof(zbx_vc_cache_t));
+	memset(vc_cache, 0, sizeof(trx_vc_cache_t));
 
-	zbx_hashset_create_ext(&vc_cache->items, VC_ITEMS_INIT_SIZE,
+	trx_hashset_create_ext(&vc_cache->items, VC_ITEMS_INIT_SIZE,
 			TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC, NULL,
 			__vc_mem_malloc_func, __vc_mem_realloc_func, __vc_mem_free_func);
 
 	if (NULL == vc_cache->items.slots)
 	{
-		*error = zbx_strdup(*error, "cannot allocate value cache data storage");
+		*error = trx_strdup(*error, "cannot allocate value cache data storage");
 		goto out;
 	}
 
-	zbx_hashset_create_ext(&vc_cache->strpool, VC_STRPOOL_INIT_SIZE,
+	trx_hashset_create_ext(&vc_cache->strpool, VC_STRPOOL_INIT_SIZE,
 			vc_strpool_hash_func, vc_strpool_compare_func, NULL,
 			__vc_mem_malloc_func, __vc_mem_realloc_func, __vc_mem_free_func);
 
 	if (NULL == vc_cache->strpool.slots)
 	{
-		*error = zbx_strdup(*error, "cannot allocate string pool for value cache data storage");
+		*error = trx_strdup(*error, "cannot allocate string pool for value cache data storage");
 		goto out;
 	}
 
@@ -2335,7 +2335,7 @@ int	zbx_vc_init(char **error)
 
 	ret = SUCCEED;
 out:
-	zbx_vc_disable();
+	trx_vc_disable();
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -2344,21 +2344,21 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_destroy                                                   *
+ * Function: trx_vc_destroy                                                   *
  *                                                                            *
  * Purpose: destroys value cache                                              *
  *                                                                            *
  ******************************************************************************/
-void	zbx_vc_destroy(void)
+void	trx_vc_destroy(void)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL != vc_cache)
 	{
-		zbx_mutex_destroy(&vc_lock);
+		trx_mutex_destroy(&vc_lock);
 
-		zbx_hashset_destroy(&vc_cache->items);
-		zbx_hashset_destroy(&vc_cache->strpool);
+		trx_hashset_destroy(&vc_cache->items);
+		trx_hashset_destroy(&vc_cache->strpool);
 
 		__vc_mem_free_func(vc_cache);
 		vc_cache = NULL;
@@ -2369,7 +2369,7 @@ void	zbx_vc_destroy(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_reset                                                     *
+ * Function: trx_vc_reset                                                     *
  *                                                                            *
  * Purpose: resets value cache                                                *
  *                                                                            *
@@ -2377,22 +2377,22 @@ void	zbx_vc_destroy(void)
  *           cache working mode, statistics reset.                            *
  *                                                                            *
  ******************************************************************************/
-void	zbx_vc_reset(void)
+void	trx_vc_reset(void)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL != vc_cache)
 	{
-		zbx_vc_item_t		*item;
-		zbx_hashset_iter_t	iter;
+		trx_vc_item_t		*item;
+		trx_hashset_iter_t	iter;
 
 		vc_try_lock();
 
-		zbx_hashset_iter_reset(&vc_cache->items, &iter);
-		while (NULL != (item = (zbx_vc_item_t *)zbx_hashset_iter_next(&iter)))
+		trx_hashset_iter_reset(&vc_cache->items, &iter);
+		while (NULL != (item = (trx_vc_item_t *)trx_hashset_iter_next(&iter)))
 		{
 			vch_item_free_cache(item);
-			zbx_hashset_iter_remove(&iter);
+			trx_hashset_iter_remove(&iter);
 		}
 
 		vc_cache->hits = 0;
@@ -2410,7 +2410,7 @@ void	zbx_vc_reset(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_add_values                                                *
+ * Function: trx_vc_add_values                                                *
  *                                                                            *
  * Purpose: adds item values to the history and value cache                   *
  *                                                                            *
@@ -2420,14 +2420,14 @@ void	zbx_vc_reset(void)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_vc_add_values(zbx_vector_ptr_t *history)
+int	trx_vc_add_values(trx_vector_ptr_t *history)
 {
-	zbx_vc_item_t		*item;
+	trx_vc_item_t		*item;
 	int 			i;
 	TRX_DC_HISTORY		*h;
 	time_t			expire_timestamp;
 
-	if (FAIL == zbx_history_add_values(history))
+	if (FAIL == trx_history_add_values(history))
 		return FAIL;
 
 	if (TRX_VC_DISABLED == vc_state)
@@ -2441,9 +2441,9 @@ int	zbx_vc_add_values(zbx_vector_ptr_t *history)
 	{
 		h = (TRX_DC_HISTORY *)history->values[i];
 
-		if (NULL != (item = (zbx_vc_item_t *)zbx_hashset_search(&vc_cache->items, &h->itemid)))
+		if (NULL != (item = (trx_vc_item_t *)trx_hashset_search(&vc_cache->items, &h->itemid)))
 		{
-			zbx_history_record_t	record = {h->ts, h->value};
+			trx_history_record_t	record = {h->ts, h->value};
 
 			if (0 == (item->state & TRX_ITEM_STATE_REMOVE_PENDING))
 			{
@@ -2474,7 +2474,7 @@ int	zbx_vc_add_values(zbx_vector_ptr_t *history)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_get_values                                                *
+ * Function: trx_vc_get_values                                                *
  *                                                                            *
  * Purpose: get item history data for the specified time period               *
  *                                                                            *
@@ -2497,10 +2497,10 @@ int	zbx_vc_add_values(zbx_vector_ptr_t *history)
  *           seconds before <timestamp>.                                      *
  *                                                                            *
  ******************************************************************************/
-int	zbx_vc_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_history_record_t *values, int seconds,
-		int count, const zbx_timespec_t *ts)
+int	trx_vc_get_values(trx_uint64_t itemid, int value_type, trx_vector_history_record_t *values, int seconds,
+		int count, const trx_timespec_t *ts)
 {
-	zbx_vc_item_t	*item = NULL;
+	trx_vc_item_t	*item = NULL;
 	int 		ret = FAIL, cache_used = 1;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" TRX_FS_UI64 " value_type:%d seconds:%d count:%d sec:%d ns:%d",
@@ -2514,13 +2514,13 @@ int	zbx_vc_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_history_re
 	if (TRX_VC_MODE_LOWMEM == vc_cache->mode)
 		vc_warn_low_memory();
 
-	if (NULL == (item = (zbx_vc_item_t *)zbx_hashset_search(&vc_cache->items, &itemid)))
+	if (NULL == (item = (trx_vc_item_t *)trx_hashset_search(&vc_cache->items, &itemid)))
 	{
 		if (TRX_VC_MODE_NORMAL == vc_cache->mode)
 		{
-			zbx_vc_item_t   new_item = {.itemid = itemid, .value_type = value_type};
+			trx_vc_item_t   new_item = {.itemid = itemid, .value_type = value_type};
 
-			if (NULL == (item = (zbx_vc_item_t *)zbx_hashset_insert(&vc_cache->items, &new_item, sizeof(zbx_vc_item_t))))
+			if (NULL == (item = (trx_vc_item_t *)trx_hashset_insert(&vc_cache->items, &new_item, sizeof(trx_vc_item_t))))
 				goto out;
 		}
 		else
@@ -2557,14 +2557,14 @@ out:
 	vc_try_unlock();
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s count:%d cached:%d",
-			__func__, zbx_result_string(ret), values->values_num, cache_used);
+			__func__, trx_result_string(ret), values->values_num, cache_used);
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_get_value                                                 *
+ * Function: trx_vc_get_value                                                 *
  *                                                                            *
  * Purpose: get the last history value with a timestamp less or equal to the  *
  *          target timestamp                                                  *
@@ -2578,18 +2578,18 @@ out:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  * Comments: Depending on the value type this function might allocate memory  *
- *           to store value data. To free it use zbx_vc_history_value_clear() *
+ *           to store value data. To free it use trx_vc_history_value_clear() *
  *           function.                                                        *
  *                                                                            *
  ******************************************************************************/
-int	zbx_vc_get_value(zbx_uint64_t itemid, int value_type, const zbx_timespec_t *ts, zbx_history_record_t *value)
+int	trx_vc_get_value(trx_uint64_t itemid, int value_type, const trx_timespec_t *ts, trx_history_record_t *value)
 {
-	zbx_vector_history_record_t	values;
+	trx_vector_history_record_t	values;
 	int				ret = FAIL;
 
-	zbx_history_record_vector_create(&values);
+	trx_history_record_vector_create(&values);
 
-	if (SUCCEED != zbx_vc_get_values(itemid, value_type, &values, ts->sec, 1, ts) || 0 == values.values_num)
+	if (SUCCEED != trx_vc_get_values(itemid, value_type, &values, ts->sec, 1, ts) || 0 == values.values_num)
 		goto out;
 
 	*value = values.values[0];
@@ -2599,14 +2599,14 @@ int	zbx_vc_get_value(zbx_uint64_t itemid, int value_type, const zbx_timespec_t *
 
 	ret = SUCCEED;
 out:
-	zbx_history_record_vector_destroy(&values, value_type);
+	trx_history_record_vector_destroy(&values, value_type);
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_get_statistics                                            *
+ * Function: trx_vc_get_statistics                                            *
  *                                                                            *
  * Purpose: retrieves usage cache statistics                                  *
  *                                                                            *
@@ -2617,7 +2617,7 @@ out:
  *                          (cache was not initialized)                       *
  *                                                                            *
  ******************************************************************************/
-int	zbx_vc_get_statistics(zbx_vc_stats_t *stats)
+int	trx_vc_get_statistics(trx_vc_stats_t *stats)
 {
 	if (TRX_VC_DISABLED == vc_state)
 		return FAIL;
@@ -2638,45 +2638,45 @@ int	zbx_vc_get_statistics(zbx_vc_stats_t *stats)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_lock                                                      *
+ * Function: trx_vc_lock                                                      *
  *                                                                            *
  * Purpose: locks the cache for batch usage                                   *
  *                                                                            *
- * Comments: Use zbx_vc_lock()/zbx_vc_unlock to explicitly lock/unlock cache  *
+ * Comments: Use trx_vc_lock()/trx_vc_unlock to explicitly lock/unlock cache  *
  *           for batch usage. The cache is automatically locked during every  *
  *           API call using the cache unless it was explicitly locked with    *
- *           zbx_vc_lock() function by the same process.                      *
+ *           trx_vc_lock() function by the same process.                      *
  *                                                                            *
  ******************************************************************************/
-void	zbx_vc_lock(void)
+void	trx_vc_lock(void)
 {
-	zbx_mutex_lock(vc_lock);
+	trx_mutex_lock(vc_lock);
 	vc_locked = 1;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_unlock                                                    *
+ * Function: trx_vc_unlock                                                    *
  *                                                                            *
- * Purpose: unlocks cache after it has been locked with zbx_vc_lock()         *
+ * Purpose: unlocks cache after it has been locked with trx_vc_lock()         *
  *                                                                            *
- * Comments: See zbx_vc_lock() function.                                      *
+ * Comments: See trx_vc_lock() function.                                      *
  *                                                                            *
  ******************************************************************************/
-void	zbx_vc_unlock(void)
+void	trx_vc_unlock(void)
 {
 	vc_locked = 0;
-	zbx_mutex_unlock(vc_lock);
+	trx_mutex_unlock(vc_lock);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_enable                                                    *
+ * Function: trx_vc_enable                                                    *
  *                                                                            *
  * Purpose: enables value caching for current process                         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_vc_enable(void)
+void	trx_vc_enable(void)
 {
 	if (NULL != vc_cache)
 		vc_state = TRX_VC_ENABLED;
@@ -2684,16 +2684,16 @@ void	zbx_vc_enable(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vc_disable                                                   *
+ * Function: trx_vc_disable                                                   *
  *                                                                            *
  * Purpose: disables value caching for current process                        *
  *                                                                            *
  ******************************************************************************/
-void	zbx_vc_disable(void)
+void	trx_vc_disable(void)
 {
 	vc_state = TRX_VC_DISABLED;
 }
 
 #ifdef HAVE_TESTS
-#	include "../../../tests/libs/zbxdbcache/valuecache_test.c"
+#	include "../../../tests/libs/trxdbcache/valuecache_test.c"
 #endif

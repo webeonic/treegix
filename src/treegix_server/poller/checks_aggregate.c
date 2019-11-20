@@ -26,7 +26,7 @@
  *             result      - [OUT] the resulting value                        *
  *                                                                            *
  ******************************************************************************/
-static void	evaluate_history_func_min(zbx_vector_history_record_t *values, int value_type, history_value_t *result)
+static void	evaluate_history_func_min(trx_vector_history_record_t *values, int value_type, history_value_t *result)
 {
 	int	i;
 
@@ -58,7 +58,7 @@ static void	evaluate_history_func_min(zbx_vector_history_record_t *values, int v
  *             result      - [OUT] the resulting value                        *
  *                                                                            *
  ******************************************************************************/
-static void	evaluate_history_func_max(zbx_vector_history_record_t *values, int value_type, history_value_t *result)
+static void	evaluate_history_func_max(trx_vector_history_record_t *values, int value_type, history_value_t *result)
 {
 	int	i;
 
@@ -90,7 +90,7 @@ static void	evaluate_history_func_max(zbx_vector_history_record_t *values, int v
  *             result      - [OUT] the resulting value                        *
  *                                                                            *
  ******************************************************************************/
-static void	evaluate_history_func_sum(zbx_vector_history_record_t *values, int value_type, history_value_t *result)
+static void	evaluate_history_func_sum(trx_vector_history_record_t *values, int value_type, history_value_t *result)
 {
 	int	i;
 
@@ -120,7 +120,7 @@ static void	evaluate_history_func_sum(zbx_vector_history_record_t *values, int v
  *             result      - [OUT] the resulting value                        *
  *                                                                            *
  ******************************************************************************/
-static void	evaluate_history_func_avg(zbx_vector_history_record_t *values, int value_type, history_value_t *result)
+static void	evaluate_history_func_avg(trx_vector_history_record_t *values, int value_type, history_value_t *result)
 {
 	evaluate_history_func_sum(values, value_type, result);
 
@@ -142,7 +142,7 @@ static void	evaluate_history_func_avg(zbx_vector_history_record_t *values, int v
  *             result      - [OUT] the resulting value                        *
  *                                                                            *
  ******************************************************************************/
-static void	evaluate_history_func_count(zbx_vector_history_record_t *values, int value_type,
+static void	evaluate_history_func_count(trx_vector_history_record_t *values, int value_type,
 		history_value_t *result)
 {
 	if (ITEM_VALUE_TYPE_UINT64 == value_type)
@@ -161,7 +161,7 @@ static void	evaluate_history_func_count(zbx_vector_history_record_t *values, int
  *             result      - [OUT] the resulting value                        *
  *                                                                            *
  ******************************************************************************/
-static void	evaluate_history_func_last(zbx_vector_history_record_t *values, history_value_t *result)
+static void	evaluate_history_func_last(trx_vector_history_record_t *values, history_value_t *result)
 {
 	*result = values->values[0].value;
 }
@@ -183,7 +183,7 @@ static void	evaluate_history_func_last(zbx_vector_history_record_t *values, hist
  *             result      - [OUT] the resulting value                        *
  *                                                                            *
  ******************************************************************************/
-static void	evaluate_history_func(zbx_vector_history_record_t *values, int value_type, int func,
+static void	evaluate_history_func(trx_vector_history_record_t *values, int value_type, int func,
 		history_value_t *result)
 {
 	switch (func)
@@ -228,9 +228,9 @@ static void	quote_string(char **str, size_t sz_src)
 {
 	size_t	sz_dst;
 
-	sz_dst = zbx_get_escape_string_len(*str, "\"") + 3;
+	sz_dst = trx_get_escape_string_len(*str, "\"") + 3;
 
-	*str = (char *)zbx_realloc(*str, sz_dst);
+	*str = (char *)trx_realloc(*str, sz_dst);
 
 	(*str)[--sz_dst] = '\0';
 	(*str)[--sz_dst] = '"';
@@ -264,12 +264,12 @@ static void	aggregate_quote_groups(char **str, size_t *str_alloc, size_t *str_of
 		if (NULL == (group = get_param_dyn(groups, i)))
 			continue;
 
-		zbx_strcpy_alloc(str, str_alloc, str_offset, separator);
+		trx_strcpy_alloc(str, str_alloc, str_offset, separator);
 		separator = (char *)", ";
 
 		quote_string(&group, strlen(group));
-		zbx_strcpy_alloc(str, str_alloc, str_offset, group);
-		zbx_free(group);
+		trx_strcpy_alloc(str, str_alloc, str_offset, group);
+		trx_free(group);
 	}
 }
 
@@ -289,22 +289,22 @@ static void	aggregate_quote_groups(char **str, size_t *str_alloc, size_t *str_of
  *               FAIL    - no items matching the specified groups or keys     *
  *                                                                            *
  ******************************************************************************/
-static int	aggregate_get_items(zbx_vector_uint64_t *itemids, const char *groups, const char *itemkey, char **error)
+static int	aggregate_get_items(trx_vector_uint64_t *itemids, const char *groups, const char *itemkey, char **error)
 {
 	char			*group, *esc;
 	DB_RESULT		result;
 	DB_ROW			row;
-	zbx_uint64_t		itemid;
+	trx_uint64_t		itemid;
 	char			*sql = NULL;
 	size_t			sql_alloc = TRX_KIBIBYTE, sql_offset = 0, error_alloc = 0, error_offset = 0;
 	int			num, n, ret = FAIL;
-	zbx_vector_uint64_t	groupids;
-	zbx_vector_str_t	group_names;
+	trx_vector_uint64_t	groupids;
+	trx_vector_str_t	group_names;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() groups:'%s' itemkey:'%s'", __func__, groups, itemkey);
 
-	zbx_vector_uint64_create(&groupids);
-	zbx_vector_str_create(&group_names);
+	trx_vector_uint64_create(&groupids);
+	trx_vector_str_create(&group_names);
 
 	num = num_param(groups);
 	for (n = 1; n <= num; n++)
@@ -312,25 +312,25 @@ static int	aggregate_get_items(zbx_vector_uint64_t *itemids, const char *groups,
 		if (NULL == (group = get_param_dyn(groups, n)))
 			continue;
 
-		zbx_vector_str_append(&group_names, group);
+		trx_vector_str_append(&group_names, group);
 	}
 
-	zbx_dc_get_nested_hostgroupids_by_names(group_names.values, group_names.values_num, &groupids);
-	zbx_vector_str_clear_ext(&group_names, zbx_str_free);
-	zbx_vector_str_destroy(&group_names);
+	trx_dc_get_nested_hostgroupids_by_names(group_names.values, group_names.values_num, &groupids);
+	trx_vector_str_clear_ext(&group_names, trx_str_free);
+	trx_vector_str_destroy(&group_names);
 
 	if (0 == groupids.values_num)
 	{
-		zbx_strcpy_alloc(error, &error_alloc, &error_offset, "None of the groups in list ");
+		trx_strcpy_alloc(error, &error_alloc, &error_offset, "None of the groups in list ");
 		aggregate_quote_groups(error, &error_alloc, &error_offset, groups);
-		zbx_strcpy_alloc(error, &error_alloc, &error_offset, " is correct.");
+		trx_strcpy_alloc(error, &error_alloc, &error_offset, " is correct.");
 		goto out;
 	}
 
-	sql = (char *)zbx_malloc(sql, sql_alloc);
+	sql = (char *)trx_malloc(sql, sql_alloc);
 	esc = DBdyn_escape_string(itemkey);
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select distinct i.itemid"
 			" from items i,hosts h,hosts_groups hg,item_rtdata ir"
 			" where i.hostid=h.hostid"
@@ -343,33 +343,33 @@ static int	aggregate_get_items(zbx_vector_uint64_t *itemids, const char *groups,
 				" and",
 			esc, ITEM_STATUS_ACTIVE, ITEM_STATE_NORMAL, HOST_STATUS_MONITORED);
 
-	zbx_free(esc);
+	trx_free(esc);
 
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "hg.groupid", groupids.values, groupids.values_num);
 	result = DBselect("%s", sql);
-	zbx_free(sql);
+	trx_free(sql);
 
 	while (NULL != (row = DBfetch(result)))
 	{
 		TRX_STR2UINT64(itemid, row[0]);
-		zbx_vector_uint64_append(itemids, itemid);
+		trx_vector_uint64_append(itemids, itemid);
 	}
 	DBfree_result(result);
 
 	if (0 == itemids->values_num)
 	{
-		zbx_snprintf_alloc(error, &error_alloc, &error_offset, "No items for key \"%s\" in group(s) ", itemkey);
+		trx_snprintf_alloc(error, &error_alloc, &error_offset, "No items for key \"%s\" in group(s) ", itemkey);
 		aggregate_quote_groups(error, &error_alloc, &error_offset, groups);
-		zbx_chrcpy_alloc(error, &error_alloc, &error_offset, '.');
+		trx_chrcpy_alloc(error, &error_alloc, &error_offset, '.');
 		goto out;
 	}
 
-	zbx_vector_uint64_sort(itemids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(itemids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	ret = SUCCEED;
 
 out:
-	zbx_vector_uint64_destroy(&groupids);
+	trx_vector_uint64_destroy(&groupids);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -394,21 +394,21 @@ out:
 static int	evaluate_aggregate(DC_ITEM *item, AGENT_RESULT *res, int grp_func, const char *groups,
 		const char *itemkey, int item_func, const char *param)
 {
-	zbx_vector_uint64_t		itemids;
+	trx_vector_uint64_t		itemids;
 	history_value_t			value, item_result;
-	zbx_history_record_t		group_value;
+	trx_history_record_t		group_value;
 	int				ret = FAIL, *errcodes = NULL, i, count, seconds;
 	DC_ITEM				*items = NULL;
-	zbx_vector_history_record_t	values, group_values;
+	trx_vector_history_record_t	values, group_values;
 	char				*error = NULL;
-	zbx_timespec_t			ts;
+	trx_timespec_t			ts;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() grp_func:%d groups:'%s' itemkey:'%s' item_func:%d param:'%s'",
 			__func__, grp_func, groups, itemkey, item_func, TRX_NULL2STR(param));
 
-	zbx_timespec(&ts);
+	trx_timespec(&ts);
 
-	zbx_vector_uint64_create(&itemids);
+	trx_vector_uint64_create(&itemids);
 	if (FAIL == aggregate_get_items(&itemids, groups, itemkey, &error))
 	{
 		SET_MSG_RESULT(res, error);
@@ -416,10 +416,10 @@ static int	evaluate_aggregate(DC_ITEM *item, AGENT_RESULT *res, int grp_func, co
 	}
 
 	memset(&value, 0, sizeof(value));
-	zbx_history_record_vector_create(&group_values);
+	trx_history_record_vector_create(&group_values);
 
-	items = (DC_ITEM *)zbx_malloc(items, sizeof(DC_ITEM) * itemids.values_num);
-	errcodes = (int *)zbx_malloc(errcodes, sizeof(int) * itemids.values_num);
+	items = (DC_ITEM *)trx_malloc(items, sizeof(DC_ITEM) * itemids.values_num);
+	errcodes = (int *)trx_malloc(errcodes, sizeof(int) * itemids.values_num);
 
 	DCconfig_get_items_by_itemids(items, itemids.values, errcodes, itemids.values_num);
 
@@ -432,7 +432,7 @@ static int	evaluate_aggregate(DC_ITEM *item, AGENT_RESULT *res, int grp_func, co
 	{
 		if (FAIL == is_time_suffix(param, &seconds, TRX_LENGTH_UNLIMITED))
 		{
-			SET_MSG_RESULT(res, zbx_strdup(NULL, "Invalid fourth parameter."));
+			SET_MSG_RESULT(res, trx_strdup(NULL, "Invalid fourth parameter."));
 			goto clean2;
 		}
 		count = 0;
@@ -452,9 +452,9 @@ static int	evaluate_aggregate(DC_ITEM *item, AGENT_RESULT *res, int grp_func, co
 		if (ITEM_VALUE_TYPE_FLOAT != items[i].value_type && ITEM_VALUE_TYPE_UINT64 != items[i].value_type)
 			continue;
 
-		zbx_history_record_vector_create(&values);
+		trx_history_record_vector_create(&values);
 
-		if (SUCCEED == zbx_vc_get_values(items[i].itemid, items[i].value_type, &values, seconds, count, &ts) &&
+		if (SUCCEED == trx_vc_get_values(items[i].itemid, items[i].value_type, &values, seconds, count, &ts) &&
 				0 < values.values_num)
 		{
 			evaluate_history_func(&values, items[i].value_type, item_func, &item_result);
@@ -464,15 +464,15 @@ static int	evaluate_aggregate(DC_ITEM *item, AGENT_RESULT *res, int grp_func, co
 			else
 			{
 				if (ITEM_VALUE_TYPE_UINT64 == item->value_type)
-					group_value.value.ui64 = (zbx_uint64_t)item_result.dbl;
+					group_value.value.ui64 = (trx_uint64_t)item_result.dbl;
 				else
 					group_value.value.dbl = (double)item_result.ui64;
 			}
 
-			zbx_vector_history_record_append_ptr(&group_values, &group_value);
+			trx_vector_history_record_append_ptr(&group_values, &group_value);
 		}
 
-		zbx_history_record_vector_destroy(&values, items[i].value_type);
+		trx_history_record_vector_destroy(&values, items[i].value_type);
 	}
 
 	if (0 == group_values.values_num)
@@ -481,8 +481,8 @@ static int	evaluate_aggregate(DC_ITEM *item, AGENT_RESULT *res, int grp_func, co
 		size_t	tmp_alloc = 0, tmp_offset = 0;
 
 		aggregate_quote_groups(&tmp, &tmp_alloc, &tmp_offset, groups);
-		SET_MSG_RESULT(res, zbx_dsprintf(NULL, "No values for key \"%s\" in group(s) %s.", itemkey, tmp));
-		zbx_free(tmp);
+		SET_MSG_RESULT(res, trx_dsprintf(NULL, "No values for key \"%s\" in group(s) %s.", itemkey, tmp));
+		trx_free(tmp);
 
 		goto clean2;
 	}
@@ -498,13 +498,13 @@ static int	evaluate_aggregate(DC_ITEM *item, AGENT_RESULT *res, int grp_func, co
 clean2:
 	DCconfig_clean_items(items, errcodes, itemids.values_num);
 
-	zbx_free(errcodes);
-	zbx_free(items);
-	zbx_history_record_vector_destroy(&group_values, item->value_type);
+	trx_free(errcodes);
+	trx_free(items);
+	trx_history_record_vector_destroy(&group_values, item->value_type);
 clean1:
-	zbx_vector_uint64_destroy(&itemids);
+	trx_vector_uint64_destroy(&itemids);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -537,13 +537,13 @@ int	get_value_aggregate(DC_ITEM *item, AGENT_RESULT *result)
 
 	if (ITEM_VALUE_TYPE_FLOAT != item->value_type && ITEM_VALUE_TYPE_UINT64 != item->value_type)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Value type must be Numeric for aggregate items"));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Value type must be Numeric for aggregate items"));
 		goto out;
 	}
 
 	if (SUCCEED != parse_item_key(item->key, &request))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid item key format."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid item key format."));
 		goto out;
 	}
 
@@ -565,7 +565,7 @@ int	get_value_aggregate(DC_ITEM *item, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid item key."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid item key."));
 		goto out;
 	}
 
@@ -573,7 +573,7 @@ int	get_value_aggregate(DC_ITEM *item, AGENT_RESULT *result)
 
 	if (3 > params_num || params_num > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -595,7 +595,7 @@ int	get_value_aggregate(DC_ITEM *item, AGENT_RESULT *result)
 		item_func = TRX_VALUE_FUNC_LAST;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		goto out;
 	}
 
@@ -605,7 +605,7 @@ int	get_value_aggregate(DC_ITEM *item, AGENT_RESULT *result)
 	}
 	else if (3 == params_num && TRX_VALUE_FUNC_LAST != item_func)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -616,7 +616,7 @@ int	get_value_aggregate(DC_ITEM *item, AGENT_RESULT *result)
 out:
 	free_request(&request);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

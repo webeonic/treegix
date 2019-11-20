@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxdbupgrade.a
+noinst_LIBRARIES = libtrxdbupgrade.a
 
-libzbxdbupgrade_a_SOURCES = dbupgrade.c \
+libtrxdbupgrade_a_SOURCES = dbupgrade.c \
 	dbupgrade_2010.c \
 	dbupgrade_2020.c \
 	dbupgrade_2030.c \

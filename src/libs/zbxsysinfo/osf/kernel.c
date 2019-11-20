@@ -17,7 +17,7 @@ int	KERNEL_MAXFILES(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 != sysctl(mib, 2, &maxfiles, (size_t *)&len, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -25,7 +25,7 @@ int	KERNEL_MAXFILES(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	return SYSINFO_RET_OK;
 #else
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Agent was compiled without support for \"kern.maxfiles\" system"
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Agent was compiled without support for \"kern.maxfiles\" system"
 			" parameter."));
 	return SYSINFO_RET_FAIL;
 #endif
@@ -44,14 +44,14 @@ int	KERNEL_MAXPROC(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 != sysctl(mib, 2, &maxproc, (size_t *)&len, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
      	SET_UI64_RESULT(result, maxproc);
 	return SYSINFO_RET_OK;
 #else
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Agent was compiled without support for \"kern.maxproc\" system"
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Agent was compiled without support for \"kern.maxproc\" system"
 			" parameter."));
 	return SYSINFO_RET_FAIL;
 #endif

@@ -128,7 +128,7 @@ class CScreenHostgroupTriggers extends CScreenHostTriggers {
 
 		$footer = (new CList())
 			->addItem($info)
-			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
+			->addItem(_s('Updated: %s', trx_date2str(TIME_FORMAT_SECONDS)))
 			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(new CUiWidget('hat_htstatus', [$header, $table, $footer]));

@@ -6,7 +6,7 @@
 #include "log.h"
 #include "fatal.h"
 #include "sigcommon.h"
-#include "../../libs/zbxcrypto/tls.h"
+#include "../../libs/trxcrypto/tls.h"
 
 int			sig_parent_pid = -1;
 volatile sig_atomic_t	sig_exiting;
@@ -24,7 +24,7 @@ static void	log_fatal_signal(int sig, siginfo_t *siginfo, void *context)
 static void	exit_with_failure(void)
 {
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_free_on_signal();
+	trx_tls_free_on_signal();
 #endif
 	_exit(EXIT_FAILURE);
 }
@@ -39,7 +39,7 @@ static void	exit_with_failure(void)
 static void	fatal_signal_handler(int sig, siginfo_t *siginfo, void *context)
 {
 	log_fatal_signal(sig, siginfo, context);
-	zbx_log_fatal_info(context, TRX_FATAL_LOG_FULL_INFO);
+	trx_log_fatal_info(context, TRX_FATAL_LOG_FULL_INFO);
 
 	exit_with_failure();
 }
@@ -55,7 +55,7 @@ static void	fatal_signal_handler(int sig, siginfo_t *siginfo, void *context)
 static void	metric_thread_signal_handler(int sig, siginfo_t *siginfo, void *context)
 {
 	log_fatal_signal(sig, siginfo, context);
-	zbx_log_fatal_info(context, (TRX_FATAL_LOG_PC_REG_SF | TRX_FATAL_LOG_BACKTRACE));
+	trx_log_fatal_info(context, (TRX_FATAL_LOG_PC_REG_SF | TRX_FATAL_LOG_BACKTRACE));
 
 	exit_with_failure();
 }
@@ -71,7 +71,7 @@ static void	alarm_signal_handler(int sig, siginfo_t *siginfo, void *context)
 {
 	SIG_CHECK_PARAMS(sig, siginfo, context);
 
-	zbx_alarm_flag_set();	/* set alarm flag */
+	trx_alarm_flag_set();	/* set alarm flag */
 }
 
 /******************************************************************************
@@ -110,9 +110,9 @@ static void	terminate_signal_handler(int sig, siginfo_t *siginfo, void *context)
 					SIG_CHECKED_FIELD(siginfo, si_code));
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-			zbx_tls_free_on_signal();
+			trx_tls_free_on_signal();
 #endif
-			zbx_on_exit(SUCCEED);
+			trx_on_exit(SUCCEED);
 		}
 	}
 }
@@ -138,20 +138,20 @@ static void	child_signal_handler(int sig, siginfo_t *siginfo, void *context)
 				SIG_CHECKED_FIELD(siginfo, si_pid), SIG_CHECKED_FIELD(siginfo, si_status));
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		zbx_tls_free_on_signal();
+		trx_tls_free_on_signal();
 #endif
-		zbx_on_exit(FAIL);
+		trx_on_exit(FAIL);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_set_common_signal_handlers                                   *
+ * Function: trx_set_common_signal_handlers                                   *
  *                                                                            *
  * Purpose: set the commonly used signal handlers                             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_set_common_signal_handlers(void)
+void	trx_set_common_signal_handlers(void)
 {
 	struct sigaction	phan;
 
@@ -179,12 +179,12 @@ void	zbx_set_common_signal_handlers(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_set_child_signal_handler                                     *
+ * Function: trx_set_child_signal_handler                                     *
  *                                                                            *
  * Purpose: set the handlers for child process signals                        *
  *                                                                            *
  ******************************************************************************/
-void 	zbx_set_child_signal_handler(void)
+void 	trx_set_child_signal_handler(void)
 {
 	struct sigaction	phan;
 
@@ -199,12 +199,12 @@ void 	zbx_set_child_signal_handler(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_set_metric_thread_signal_handler                             *
+ * Function: trx_set_metric_thread_signal_handler                             *
  *                                                                            *
  * Purpose: set the handlers for child process signals                        *
  *                                                                            *
  ******************************************************************************/
-void 	zbx_set_metric_thread_signal_handler(void)
+void 	trx_set_metric_thread_signal_handler(void)
 {
 	struct sigaction	phan;
 

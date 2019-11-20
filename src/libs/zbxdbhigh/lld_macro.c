@@ -12,10 +12,10 @@
  * Purpose: sorting function to sort LLD macros by unique name                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_lld_macro_paths_compare(const void *d1, const void *d2)
+int	trx_lld_macro_paths_compare(const void *d1, const void *d2)
 {
-	const zbx_lld_macro_path_t	*r1 = *(const zbx_lld_macro_path_t **)d1;
-	const zbx_lld_macro_path_t	*r2 = *(const zbx_lld_macro_path_t **)d2;
+	const trx_lld_macro_path_t	*r1 = *(const trx_lld_macro_path_t **)d1;
+	const trx_lld_macro_path_t	*r2 = *(const trx_lld_macro_path_t **)d2;
 
 	return strcmp(r1->lld_macro, r2->lld_macro);
 }
@@ -31,11 +31,11 @@ int	zbx_lld_macro_paths_compare(const void *d1, const void *d2)
  *             error           - [OUT] in case json path is invalid           *
  *                                                                            *
  ******************************************************************************/
-int	zbx_lld_macro_paths_get(zbx_uint64_t lld_ruleid, zbx_vector_ptr_t *lld_macro_paths, char **error)
+int	trx_lld_macro_paths_get(trx_uint64_t lld_ruleid, trx_vector_ptr_t *lld_macro_paths, char **error)
 {
 	DB_RESULT		result;
 	DB_ROW			row;
-	zbx_lld_macro_path_t	*lld_macro_path;
+	trx_lld_macro_path_t	*lld_macro_path;
 	int			ret = SUCCEED;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -49,22 +49,22 @@ int	zbx_lld_macro_paths_get(zbx_uint64_t lld_ruleid, zbx_vector_ptr_t *lld_macro
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_jsonpath_t	path;
+		trx_jsonpath_t	path;
 
-		if (SUCCEED != (ret = zbx_jsonpath_compile(row[1], &path)))
+		if (SUCCEED != (ret = trx_jsonpath_compile(row[1], &path)))
 		{
-			*error = zbx_dsprintf(*error, "Cannot process LLD macro \"%s\": %s.\n", row[0],
-					zbx_json_strerror());
+			*error = trx_dsprintf(*error, "Cannot process LLD macro \"%s\": %s.\n", row[0],
+					trx_json_strerror());
 			break;
 		}
 
-		zbx_jsonpath_clear(&path);
+		trx_jsonpath_clear(&path);
 
-		lld_macro_path = (zbx_lld_macro_path_t *)zbx_malloc(NULL, sizeof(zbx_lld_macro_path_t));
-		lld_macro_path->lld_macro = zbx_strdup(NULL, row[0]);
-		lld_macro_path->path = zbx_strdup(NULL, row[1]);
+		lld_macro_path = (trx_lld_macro_path_t *)trx_malloc(NULL, sizeof(trx_lld_macro_path_t));
+		lld_macro_path->lld_macro = trx_strdup(NULL, row[0]);
+		lld_macro_path->path = trx_strdup(NULL, row[1]);
 
-		zbx_vector_ptr_append(lld_macro_paths, lld_macro_path);
+		trx_vector_ptr_append(lld_macro_paths, lld_macro_path);
 	}
 	DBfree_result(result);
 
@@ -82,16 +82,16 @@ int	zbx_lld_macro_paths_get(zbx_uint64_t lld_ruleid, zbx_vector_ptr_t *lld_macro
  * Parameters: lld_macro_path - [IN] json path to extract from lld_row        *
  *                                                                            *
  ******************************************************************************/
-void	zbx_lld_macro_path_free(zbx_lld_macro_path_t *lld_macro_path)
+void	trx_lld_macro_path_free(trx_lld_macro_path_t *lld_macro_path)
 {
-	zbx_free(lld_macro_path->path);
-	zbx_free(lld_macro_path->lld_macro);
-	zbx_free(lld_macro_path);
+	trx_free(lld_macro_path->path);
+	trx_free(lld_macro_path->lld_macro);
+	trx_free(lld_macro_path);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_lld_macro_value_by_name                                      *
+ * Function: trx_lld_macro_value_by_name                                      *
  *                                                                            *
  * Purpose: get value of LLD macro using json path if available or by         *
  *          searching for such key in key value pairs of array entry          *
@@ -102,26 +102,26 @@ void	zbx_lld_macro_path_free(zbx_lld_macro_path_t *lld_macro_path)
  *             value           - [OUT] value extracted from jp_row            *
  *                                                                            *
  ******************************************************************************/
-int	zbx_lld_macro_value_by_name(const struct zbx_json_parse *jp_row, const zbx_vector_ptr_t *lld_macro_paths,
+int	trx_lld_macro_value_by_name(const struct trx_json_parse *jp_row, const trx_vector_ptr_t *lld_macro_paths,
 		const char *macro, char **value)
 {
-	zbx_lld_macro_path_t	lld_macro_path_local, *lld_macro_path;
+	trx_lld_macro_path_t	lld_macro_path_local, *lld_macro_path;
 	int			index;
 	size_t			value_alloc = 0;
 
 	lld_macro_path_local.lld_macro = (char *)macro;
 
-	if (FAIL != (index = zbx_vector_ptr_bsearch(lld_macro_paths, &lld_macro_path_local,
-			zbx_lld_macro_paths_compare)))
+	if (FAIL != (index = trx_vector_ptr_bsearch(lld_macro_paths, &lld_macro_path_local,
+			trx_lld_macro_paths_compare)))
 	{
-		lld_macro_path = (zbx_lld_macro_path_t *)lld_macro_paths->values[index];
+		lld_macro_path = (trx_lld_macro_path_t *)lld_macro_paths->values[index];
 
-		if (SUCCEED == zbx_jsonpath_query(jp_row, lld_macro_path->path, value) && NULL != *value)
+		if (SUCCEED == trx_jsonpath_query(jp_row, lld_macro_path->path, value) && NULL != *value)
 			return SUCCEED;
 
 		return FAIL;
 	}
 	else
-		return zbx_json_value_by_name_dyn(jp_row, macro, value, &value_alloc);
+		return trx_json_value_by_name_dyn(jp_row, macro, value, &value_alloc);
 }
 

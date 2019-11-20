@@ -74,7 +74,7 @@ if (in_array($web_layout_mode, [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN])) {
 							CJs::encodeJson([
 								'srctbl' => 'applications',
 								'srcfld1' => 'name',
-								'dstfrm' => 'zbx_filter',
+								'dstfrm' => 'trx_filter',
 								'dstfld1' => 'application',
 								'real_hosts' => '1',
 								'with_applications' => '1'

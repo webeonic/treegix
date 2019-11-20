@@ -418,10 +418,10 @@ elseif (hasRequest('action') && getRequest('action') === 'host.massupdate' && ha
 						'hostids' => $hostids
 					]);
 
-					$host_templateids = zbx_objectValues($host_templates, 'templateid');
+					$host_templateids = trx_objectValues($host_templates, 'templateid');
 					$templates_to_delete = array_diff($host_templateids, $templateids);
 
-					$new_values['templates_clear'] = zbx_toObject($templates_to_delete, 'templateid');
+					$new_values['templates_clear'] = trx_toObject($templates_to_delete, 'templateid');
 				}
 
 				$new_values['templates'] = $templateids;
@@ -458,23 +458,23 @@ elseif (hasRequest('action') && getRequest('action') === 'host.massupdate' && ha
 		foreach ($hosts as &$host) {
 			if (array_key_exists('groups', $visible)) {
 				if ($new_groupids && $mass_update_groups == TRX_ACTION_ADD) {
-					$current_groupids = zbx_objectValues($host['groups'], 'groupid');
-					$host['groups'] = zbx_toObject(array_unique(array_merge($current_groupids, $new_groupids)),
+					$current_groupids = trx_objectValues($host['groups'], 'groupid');
+					$host['groups'] = trx_toObject(array_unique(array_merge($current_groupids, $new_groupids)),
 						'groupid'
 					);
 				}
 				elseif ($new_groupids && $mass_update_groups == TRX_ACTION_REPLACE) {
-					$host['groups'] = zbx_toObject($new_groupids, 'groupid');
+					$host['groups'] = trx_toObject($new_groupids, 'groupid');
 				}
 				elseif ($remove_groupids) {
-					$current_groupids = zbx_objectValues($host['groups'], 'groupid');
-					$host['groups'] = zbx_toObject(array_diff($current_groupids, $remove_groupids), 'groupid');
+					$current_groupids = trx_objectValues($host['groups'], 'groupid');
+					$host['groups'] = trx_toObject(array_diff($current_groupids, $remove_groupids), 'groupid');
 				}
 			}
 
 			if ($templateids && array_key_exists('parentTemplates', $host)) {
 				$host['templates'] = array_unique(
-					array_merge($templateids, zbx_objectValues($host['parentTemplates'], 'templateid'))
+					array_merge($templateids, trx_objectValues($host['parentTemplates'], 'templateid'))
 				);
 			}
 
@@ -592,7 +592,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 			$interfaces = getRequest('interfaces', []);
 
 			foreach ($interfaces as $key => $interface) {
-				if (zbx_empty($interface['ip']) && zbx_empty($interface['dns'])) {
+				if (trx_empty($interface['ip']) && trx_empty($interface['dns'])) {
 					unset($interface[$key]);
 					continue;
 				}
@@ -653,7 +653,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 				'ipmi_password' => getRequest('ipmi_password'),
 				'tls_connect' => getRequest('tls_connect', HOST_ENCRYPTION_NONE),
 				'tls_accept' => getRequest('tls_accept', HOST_ENCRYPTION_NONE),
-				'groups' => zbx_toObject($groups, 'groupid'),
+				'groups' => trx_toObject($groups, 'groupid'),
 				'templates' => $templates,
 				'interfaces' => $interfaces,
 				'tags' => $tags,
@@ -676,7 +676,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 			}
 
 			if (!$create) {
-				$host['templates_clear'] = zbx_toObject(getRequest('clear_templates', []), 'templateid');
+				$host['templates_clear'] = trx_toObject(getRequest('clear_templates', []), 'templateid');
 			}
 		}
 
@@ -739,7 +739,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 				'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 			]);
 
-			if ($dbTriggers && !copyTriggersToHosts(zbx_objectValues($dbTriggers, 'triggerid'), $hostId, $srcHostId)) {
+			if ($dbTriggers && !copyTriggersToHosts(trx_objectValues($dbTriggers, 'triggerid'), $hostId, $srcHostId)) {
 				throw new Exception();
 			}
 
@@ -752,7 +752,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 
 			if ($dbDiscoveryRules) {
 				$copyDiscoveryRules = API::DiscoveryRule()->copy([
-					'discoveryids' => zbx_objectValues($dbDiscoveryRules, 'itemid'),
+					'discoveryids' => trx_objectValues($dbDiscoveryRules, 'itemid'),
 					'hostids' => [$hostId]
 				]);
 
@@ -829,7 +829,7 @@ elseif (hasRequest('hosts') && hasRequest('action') && getRequest('action') === 
 			'hostids' => getRequest('hosts'),
 			'editable' => true
 		]);
-		uncheckTableRows(getRequest('hostid'), zbx_objectValues($hostids, 'hostid'));
+		uncheckTableRows(getRequest('hostid'), trx_objectValues($hostids, 'hostid'));
 	}
 	show_messages($result, _('Host deleted'), _('Cannot delete host'));
 }
@@ -843,7 +843,7 @@ elseif (hasRequest('hosts') && hasRequest('action') && str_in_array(getRequest('
 		'templated_hosts' => true,
 		'output' => ['hostid']
 	]);
-	$actHosts = zbx_objectValues($actHosts, 'hostid');
+	$actHosts = trx_objectValues($actHosts, 'hostid');
 
 	if ($actHosts) {
 		DBstart();
@@ -902,7 +902,7 @@ if (hasRequest('hosts') && (getRequest('action') === 'host.massupdateform' || ha
 		'inventory_mode' => getRequest('inventory_mode', HOST_INVENTORY_DISABLED),
 		'host_inventory' => getRequest('host_inventory', []),
 		'templates' => getRequest('templates', []),
-		'inventories' => zbx_toHash(getHostInventories(), 'db_field'),
+		'inventories' => trx_toHash(getHostInventories(), 'db_field'),
 		'tls_connect' => getRequest('tls_connect', HOST_ENCRYPTION_NONE),
 		'tls_accept' => getRequest('tls_accept', HOST_ENCRYPTION_NONE),
 		'tls_issuer' => getRequest('tls_issuer', ''),
@@ -1027,7 +1027,7 @@ elseif (hasRequest('form')) {
 			$data['status'] = $dbHost['status'];
 
 			// Templates
-			$data['templates'] = zbx_objectValues($dbHost['parentTemplates'], 'templateid');
+			$data['templates'] = trx_objectValues($dbHost['parentTemplates'], 'templateid');
 			$data['original_templates'] = array_combine($data['templates'], $data['templates']);
 
 			// IPMI
@@ -1080,7 +1080,7 @@ elseif (hasRequest('form')) {
 				$data['visiblename'] = '';
 			}
 
-			$groups = zbx_objectValues($dbHost['groups'], 'groupid');
+			$groups = trx_objectValues($dbHost['groups'], 'groupid');
 		}
 		else {
 			if (getRequest('groupid', 0) != 0) {
@@ -1107,7 +1107,7 @@ elseif (hasRequest('form')) {
 				$data['hostDiscovery'] = $dbHost['hostDiscovery'];
 			}
 
-			$templateids = zbx_objectValues($dbHost['parentTemplates'], 'templateid');
+			$templateids = trx_objectValues($dbHost['parentTemplates'], 'templateid');
 			$data['original_templates'] = array_combine($templateids, $templateids);
 		}
 
@@ -1129,7 +1129,7 @@ elseif (hasRequest('form')) {
 			'hostids' => [$dbHost['hostid']],
 			'filter' => ['inventory_link' => array_keys(getHostInventories())]
 		]);
-		$data['inventory_items'] = zbx_toHash($data['inventory_items'], 'inventory_link');
+		$data['inventory_items'] = trx_toHash($data['inventory_items'], 'inventory_link');
 		$data['inventory_items'] = CMacrosResolverHelper::resolveItemNames($data['inventory_items']);
 	}
 
@@ -1324,7 +1324,7 @@ else {
 		'selectDiscoveryRule' => ['itemid', 'name'],
 		'selectHostDiscovery' => ['ts_delete'],
 		'selectTags' => ['tag', 'value'],
-		'hostids' => zbx_objectValues($hosts, 'hostid'),
+		'hostids' => trx_objectValues($hosts, 'hostid'),
 		'preservekeys' => true
 	]);
 	order_result($hosts, $sortField, $sortOrder);
@@ -1333,7 +1333,7 @@ else {
 	$templateids = [];
 
 	foreach ($hosts as $host) {
-		$templateids = array_merge($templateids, zbx_objectValues($host['parentTemplates'], 'templateid'));
+		$templateids = array_merge($templateids, trx_objectValues($host['parentTemplates'], 'templateid'));
 	}
 
 	$templateids = array_keys(array_flip($templateids));
@@ -1349,7 +1349,7 @@ else {
 	$writable_templates = [];
 	if ($templateids) {
 		foreach ($templates as $template) {
-			$templateids = array_merge($templateids, zbx_objectValues($template['parentTemplates'], 'templateid'));
+			$templateids = array_merge($templateids, trx_objectValues($template['parentTemplates'], 'templateid'));
 		}
 
 		$writable_templates = API::Template()->get([

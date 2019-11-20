@@ -4,8 +4,8 @@
 #include "sysinfo.h"
 #include "log.h"
 
-static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *free,
-		zbx_uint64_t *used, double *pfree, double *pused, char **error)
+static int	get_fs_size_stat(const char *fs, trx_uint64_t *total, trx_uint64_t *free,
+		trx_uint64_t *used, double *pfree, double *pused, char **error)
 {
 #ifdef HAVE_SYS_STATVFS_H
 #	define TRX_STATFS	statvfs
@@ -18,7 +18,7 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 
 	if (0 != TRX_STATFS(fs, &s))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot obtain filesystem information: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain filesystem information: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -28,13 +28,13 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 		s.f_bavail = 0;
 
 	if (NULL != total)
-		*total = (zbx_uint64_t)s.f_blocks * s.TRX_BSIZE;
+		*total = (trx_uint64_t)s.f_blocks * s.TRX_BSIZE;
 
 	if (NULL != free)
-		*free = (zbx_uint64_t)s.f_bavail * s.TRX_BSIZE;
+		*free = (trx_uint64_t)s.f_bavail * s.TRX_BSIZE;
 
 	if (NULL != used)
-		*used = (zbx_uint64_t)(s.f_blocks - s.f_bfree) * s.TRX_BSIZE;
+		*used = (trx_uint64_t)(s.f_blocks - s.f_bfree) * s.TRX_BSIZE;
 
 	if (NULL != pfree)
 	{
@@ -57,7 +57,7 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 
 static int	VFS_FS_USED(const char *fs, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_fs_size_stat(fs, NULL, NULL, &value, NULL, NULL, &error))
@@ -73,7 +73,7 @@ static int	VFS_FS_USED(const char *fs, AGENT_RESULT *result)
 
 static int	VFS_FS_FREE(const char *fs, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_fs_size_stat(fs, NULL, &value, NULL, NULL, NULL, &error))
@@ -89,7 +89,7 @@ static int	VFS_FS_FREE(const char *fs, AGENT_RESULT *result)
 
 static int	VFS_FS_TOTAL(const char *fs, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_fs_size_stat(fs, &value, NULL, NULL, NULL, NULL, &error))
@@ -141,7 +141,7 @@ static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -150,7 +150,7 @@ static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == fsname || '\0' == *fsname)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -165,12 +165,12 @@ static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (0 == strcmp(mode, "pused"))
 		return VFS_FS_PUSED(fsname, result);
 
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 
 	return SYSINFO_RET_FAIL;
 }
 
 int	VFS_FS_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	return zbx_execute_threaded_metric(vfs_fs_size, request, result);
+	return trx_execute_threaded_metric(vfs_fs_size, request, result);
 }

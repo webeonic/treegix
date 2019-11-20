@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "winmeta.h"
 #include "eventlog.h"
 
@@ -36,8 +36,8 @@ static const wchar_t	*RENDER_ITEMS[] = {
 #define	EVENTLOG_REG_PATH TEXT("SYSTEM\\CurrentControlSet\\Services\\EventLog\\")
 
 /* open event logger and return number of records */
-static int	zbx_open_eventlog(LPCTSTR wsource, HANDLE *eventlog_handle, zbx_uint64_t *FirstID,
-		zbx_uint64_t *LastID, DWORD *error_code)
+static int	trx_open_eventlog(LPCTSTR wsource, HANDLE *eventlog_handle, trx_uint64_t *FirstID,
+		trx_uint64_t *LastID, DWORD *error_code)
 {
 	wchar_t	reg_path[MAX_PATH];
 	HKEY	hk = NULL;
@@ -82,13 +82,13 @@ static int	zbx_open_eventlog(LPCTSTR wsource, HANDLE *eventlog_handle, zbx_uint6
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /* close event logger */
-static void	zbx_close_eventlog(HANDLE eventlog_handle)
+static void	trx_close_eventlog(HANDLE eventlog_handle)
 {
 	if (NULL != eventlog_handle)
 		CloseEventLog(eventlog_handle);
@@ -96,7 +96,7 @@ static void	zbx_close_eventlog(HANDLE eventlog_handle)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_message_files                                            *
+ * Function: trx_get_message_files                                            *
  *                                                                            *
  * Purpose: gets event message and parameter translation files from registry  *
  *                                                                            *
@@ -106,7 +106,7 @@ static void	zbx_close_eventlog(HANDLE eventlog_handle)
  *             pParamMessageFile - [OUT] the parameter message file           *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_get_message_files(const wchar_t *szLogName, const wchar_t *szSourceName, wchar_t **pEventMessageFile,
+static void	trx_get_message_files(const wchar_t *szLogName, const wchar_t *szSourceName, wchar_t **pEventMessageFile,
 		wchar_t **pParamMessageFile)
 {
 	wchar_t	buf[MAX_PATH];
@@ -121,21 +121,21 @@ static void	zbx_get_message_files(const wchar_t *szLogName, const wchar_t *szSou
 
 	if (ERROR_SUCCESS == RegQueryValueEx(hKey, TEXT("EventMessageFile"), NULL, NULL, NULL, &szData))
 	{
-		*pEventMessageFile = zbx_malloc(*pEventMessageFile, szData);
+		*pEventMessageFile = trx_malloc(*pEventMessageFile, szData);
 		if (ERROR_SUCCESS != RegQueryValueEx(hKey, TEXT("EventMessageFile"), NULL, NULL,
 				(unsigned char *)*pEventMessageFile, &szData))
 		{
-			zbx_free(*pEventMessageFile);
+			trx_free(*pEventMessageFile);
 		}
 	}
 
 	if (ERROR_SUCCESS == RegQueryValueEx(hKey, TEXT("ParameterMessageFile"), NULL, NULL, NULL, &szData))
 	{
-		*pParamMessageFile = zbx_malloc(*pParamMessageFile, szData);
+		*pParamMessageFile = trx_malloc(*pParamMessageFile, szData);
 		if (ERROR_SUCCESS != RegQueryValueEx(hKey, TEXT("ParameterMessageFile"), NULL, NULL,
 				(unsigned char *)*pParamMessageFile, &szData))
 		{
-			zbx_free(*pParamMessageFile);
+			trx_free(*pParamMessageFile);
 		}
 	}
 
@@ -144,7 +144,7 @@ static void	zbx_get_message_files(const wchar_t *szLogName, const wchar_t *szSou
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_load_message_file                                            *
+ * Function: trx_load_message_file                                            *
  *                                                                            *
  * Purpose: load the specified message file, expanding environment variables  *
  *          in the file name if necessary                                     *
@@ -154,7 +154,7 @@ static void	zbx_get_message_files(const wchar_t *szLogName, const wchar_t *szSou
  * Return value: Handle to the loaded library or NULL otherwise               *
  *                                                                            *
  ******************************************************************************/
-static HINSTANCE	zbx_load_message_file(const wchar_t *szFileName)
+static HINSTANCE	trx_load_message_file(const wchar_t *szFileName)
 {
 	wchar_t		*dll_name = NULL;
 	long int	sz, len = 0;
@@ -166,7 +166,7 @@ static HINSTANCE	zbx_load_message_file(const wchar_t *szFileName)
 	do
 	{
 		if (0 != (sz = len))
-			dll_name = zbx_realloc(dll_name, sz * sizeof(wchar_t));
+			dll_name = trx_realloc(dll_name, sz * sizeof(wchar_t));
 
 		len = ExpandEnvironmentStrings(szFileName, dll_name, sz);
 	}
@@ -175,14 +175,14 @@ static HINSTANCE	zbx_load_message_file(const wchar_t *szFileName)
 	if (0 != len)
 		res = LoadLibraryEx(dll_name, NULL, LOAD_LIBRARY_AS_DATAFILE);
 
-	zbx_free(dll_name);
+	trx_free(dll_name);
 
 	return res;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_format_message                                               *
+ * Function: trx_format_message                                               *
  *                                                                            *
  * Purpose: extracts the specified message from a message file                *
  *                                                                            *
@@ -196,7 +196,7 @@ static HINSTANCE	zbx_load_message_file(const wchar_t *szFileName)
  *           must be freed by the caller later.                               *
  *                                                                            *
  ******************************************************************************/
-static char	*zbx_format_message(HINSTANCE hLib, DWORD dwMessageId, wchar_t **pInsertStrings)
+static char	*trx_format_message(HINSTANCE hLib, DWORD dwMessageId, wchar_t **pInsertStrings)
 {
 	wchar_t *pMsgBuf = NULL;
 	char	*message;
@@ -209,8 +209,8 @@ static char	*zbx_format_message(HINSTANCE hLib, DWORD dwMessageId, wchar_t **pIn
 		return NULL;
 	}
 
-	message = zbx_unicode_to_utf8(pMsgBuf);
-	zbx_rtrim(message, "\r\n ");
+	message = trx_unicode_to_utf8(pMsgBuf);
+	trx_rtrim(message, "\r\n ");
 
 	LocalFree((HLOCAL)pMsgBuf);
 
@@ -219,7 +219,7 @@ static char	*zbx_format_message(HINSTANCE hLib, DWORD dwMessageId, wchar_t **pIn
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_translate_message_params                                     *
+ * Function: trx_translate_message_params                                     *
  *                                                                            *
  * Purpose: translates message by replacing parameters %%<id> with translated *
  *          values                                                            *
@@ -228,7 +228,7 @@ static char	*zbx_format_message(HINSTANCE hLib, DWORD dwMessageId, wchar_t **pIn
  *             hLib    - [IN] the parameter message file handle               *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_translate_message_params(char **message, HINSTANCE hLib)
+static void	trx_translate_message_params(char **message, HINSTANCE hLib)
 {
 	char	*param, *pstart, *pend;
 	int	dwMessageId;
@@ -248,18 +248,18 @@ static void	zbx_translate_message_params(char **message, HINSTANCE hLib)
 
 		offset = pend - *message - 1;
 
-		if (NULL != (param = zbx_format_message(hLib, dwMessageId, NULL)))
+		if (NULL != (param = trx_format_message(hLib, dwMessageId, NULL)))
 		{
-			zbx_replace_string(message, pstart - *message, &offset, param);
+			trx_replace_string(message, pstart - *message, &offset, param);
 
-			zbx_free(param);
+			trx_free(param);
 		}
 	}
 }
 
 /* open eventlog using API 6 and return the number of records */
-static int	zbx_open_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlogsize, EVT_HANDLE *render_context,
-		zbx_uint64_t *FirstID, zbx_uint64_t *LastID, char **error)
+static int	trx_open_eventlog6(const wchar_t *wsource, trx_uint64_t *lastlogsize, EVT_HANDLE *render_context,
+		trx_uint64_t *FirstID, trx_uint64_t *LastID, char **error)
 {
 	EVT_HANDLE	log = NULL;
 	EVT_VARIANT	var;
@@ -270,7 +270,7 @@ static int	zbx_open_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlogsize,
 	DWORD		size_required = 0;
 	DWORD		size = DEFAULT_EVENT_CONTENT_SIZE;
 	DWORD		bookmarkedCount = 0;
-	zbx_uint64_t	numIDs = 0;
+	trx_uint64_t	numIDs = 0;
 	char		*tmp_str = NULL;
 	int		ret = FAIL;
 
@@ -283,15 +283,15 @@ static int	zbx_open_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlogsize,
 	if (NULL == (log = EvtOpenLog(NULL, wsource, EvtOpenChannelPath)))
 	{
 		status = GetLastError();
-		tmp_str = zbx_unicode_to_utf8(wsource);
-		*error = zbx_dsprintf(*error, "cannot open eventlog '%s':%s", tmp_str, strerror_from_system(status));
+		tmp_str = trx_unicode_to_utf8(wsource);
+		*error = trx_dsprintf(*error, "cannot open eventlog '%s':%s", tmp_str, strerror_from_system(status));
 		goto out;
 	}
 
 	/* obtain the number of records in the log */
 	if (TRUE != EvtGetLogInfo(log, EvtLogNumberOfLogRecords, sizeof(var), &var, &size_required))
 	{
-		*error = zbx_dsprintf(*error, "EvtGetLogInfo failed:%s", strerror_from_system(GetLastError()));
+		*error = trx_dsprintf(*error, "EvtGetLogInfo failed:%s", strerror_from_system(GetLastError()));
 		goto out;
 	}
 
@@ -304,7 +304,7 @@ static int	zbx_open_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlogsize,
 	/* create the system render */
 	if (NULL == (*render_context = EvtCreateRenderContext(RENDER_ITEMS_COUNT, RENDER_ITEMS, EvtRenderContextValues)))
 	{
-		*error = zbx_dsprintf(*error, "EvtCreateRenderContext failed:%s", strerror_from_system(GetLastError()));
+		*error = trx_dsprintf(*error, "EvtCreateRenderContext failed:%s", strerror_from_system(GetLastError()));
 		goto out;
 	}
 
@@ -313,15 +313,15 @@ static int	zbx_open_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlogsize,
 	if (NULL == tmp_all_event_query)
 	{
 		if (ERROR_EVT_CHANNEL_NOT_FOUND == (status = GetLastError()))
-			*error = zbx_dsprintf(*error, "EvtQuery channel missed:%s", strerror_from_system(status));
+			*error = trx_dsprintf(*error, "EvtQuery channel missed:%s", strerror_from_system(status));
 		else
-			*error = zbx_dsprintf(*error, "EvtQuery failed:%s", strerror_from_system(status));
+			*error = trx_dsprintf(*error, "EvtQuery failed:%s", strerror_from_system(status));
 
 		goto out;
 	}
 
 	/* get the entries and allocate the required space */
-	renderedContent = zbx_malloc(renderedContent, size);
+	renderedContent = trx_malloc(renderedContent, size);
 	if (TRUE != EvtNext(tmp_all_event_query, 1, &event_bookmark, INFINITE, 0, &size_required))
 	{
 		/* no data in eventlog */
@@ -341,17 +341,17 @@ static int	zbx_open_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlogsize,
 		/* information exceeds the allocated space */
 		if (ERROR_INSUFFICIENT_BUFFER != (status = GetLastError()))
 		{
-			*error = zbx_dsprintf(*error, "EvtRender failed:%s", strerror_from_system(status));
+			*error = trx_dsprintf(*error, "EvtRender failed:%s", strerror_from_system(status));
 			goto out;
 		}
 
-		renderedContent = (EVT_VARIANT*)zbx_realloc((void *)renderedContent, size_required);
+		renderedContent = (EVT_VARIANT*)trx_realloc((void *)renderedContent, size_required);
 		size = size_required;
 
 		if (TRUE != EvtRender(*render_context, event_bookmark, EvtRenderEventValues, size, renderedContent,
 				&size_required, &bookmarkedCount))
 		{
-			*error = zbx_dsprintf(*error, "EvtRender failed:%s", strerror_from_system(GetLastError()));
+			*error = trx_dsprintf(*error, "EvtRender failed:%s", strerror_from_system(GetLastError()));
 			goto out;
 		}
 	}
@@ -373,16 +373,16 @@ out:
 		EvtClose(tmp_all_event_query);
 	if (NULL != event_bookmark)
 		EvtClose(event_bookmark);
-	zbx_free(tmp_str);
-	zbx_free(renderedContent);
+	trx_free(tmp_str);
+	trx_free(renderedContent);
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s FirstID:" TRX_FS_UI64 " LastID:" TRX_FS_UI64 " numIDs:" TRX_FS_UI64,
-			__func__, zbx_result_string(ret), *FirstID, *LastID, numIDs);
+			__func__, trx_result_string(ret), *FirstID, *LastID, numIDs);
 
 	return ret;
 }
 
 /* get handles of eventlog */
-static int	zbx_get_handle_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlogsize, EVT_HANDLE *query,
+static int	trx_get_handle_eventlog6(const wchar_t *wsource, trx_uint64_t *lastlogsize, EVT_HANDLE *query,
 		char **error)
 {
 	wchar_t	*event_query = NULL;
@@ -393,33 +393,33 @@ static int	zbx_get_handle_eventlog6(const wchar_t *wsource, zbx_uint64_t *lastlo
 	treegix_log(LOG_LEVEL_DEBUG, "In %s(), previous lastlogsize:" TRX_FS_UI64, __func__, *lastlogsize);
 
 	/* start building the query */
-	tmp_str = zbx_dsprintf(NULL, "Event/System[EventRecordID>" TRX_FS_UI64 "]", *lastlogsize);
-	event_query = zbx_utf8_to_unicode(tmp_str);
+	tmp_str = trx_dsprintf(NULL, "Event/System[EventRecordID>" TRX_FS_UI64 "]", *lastlogsize);
+	event_query = trx_utf8_to_unicode(tmp_str);
 
 	/* create massive query for an event on a local computer*/
 	*query = EvtQuery(NULL, wsource, event_query, EvtQueryChannelPath);
 	if (NULL == *query)
 	{
 		if (ERROR_EVT_CHANNEL_NOT_FOUND == (status = GetLastError()))
-			*error = zbx_dsprintf(*error, "EvtQuery channel missed:%s", strerror_from_system(status));
+			*error = trx_dsprintf(*error, "EvtQuery channel missed:%s", strerror_from_system(status));
 		else
-			*error = zbx_dsprintf(*error, "EvtQuery failed:%s", strerror_from_system(status));
+			*error = trx_dsprintf(*error, "EvtQuery failed:%s", strerror_from_system(status));
 
 		goto out;
 	}
 
 	ret = SUCCEED;
 out:
-	zbx_free(tmp_str);
-	zbx_free(event_query);
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	trx_free(tmp_str);
+	trx_free(event_query);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /* initialize event logs with Windows API version 6 */
-int	initialize_eventlog6(const char *source, zbx_uint64_t *lastlogsize, zbx_uint64_t *FirstID,
-		zbx_uint64_t *LastID, EVT_HANDLE *render_context, EVT_HANDLE *query, char **error)
+int	initialize_eventlog6(const char *source, trx_uint64_t *lastlogsize, trx_uint64_t *FirstID,
+		trx_uint64_t *LastID, EVT_HANDLE *render_context, EVT_HANDLE *query, char **error)
 {
 	wchar_t	*wsource = NULL;
 	int	ret = FAIL;
@@ -429,19 +429,19 @@ int	initialize_eventlog6(const char *source, zbx_uint64_t *lastlogsize, zbx_uint
 
 	if (NULL == source || '\0' == *source)
 	{
-		*error = zbx_dsprintf(*error, "cannot open eventlog with empty name.");
+		*error = trx_dsprintf(*error, "cannot open eventlog with empty name.");
 		goto out;
 	}
 
-	wsource = zbx_utf8_to_unicode(source);
+	wsource = trx_utf8_to_unicode(source);
 
-	if (SUCCEED != zbx_open_eventlog6(wsource, lastlogsize, render_context, FirstID, LastID, error))
+	if (SUCCEED != trx_open_eventlog6(wsource, lastlogsize, render_context, FirstID, LastID, error))
 	{
 		treegix_log(LOG_LEVEL_ERR, "cannot open eventlog '%s'", source);
 		goto out;
 	}
 
-	if (SUCCEED != zbx_get_handle_eventlog6(wsource, lastlogsize, query, error))
+	if (SUCCEED != trx_get_handle_eventlog6(wsource, lastlogsize, query, error))
 	{
 		treegix_log(LOG_LEVEL_ERR, "cannot get eventlog handle '%s'", source);
 		goto out;
@@ -449,8 +449,8 @@ int	initialize_eventlog6(const char *source, zbx_uint64_t *lastlogsize, zbx_uint
 
 	ret = SUCCEED;
 out:
-	zbx_free(wsource);
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	trx_free(wsource);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -468,10 +468,10 @@ static char	*expand_message6(const wchar_t *pname, EVT_HANDLE event)
 
 	if (NULL == (provider = EvtOpenPublisherMetadata(NULL, pname, NULL, 0, 0)))
 	{
-		tmp_pname = zbx_unicode_to_utf8(pname);
+		tmp_pname = trx_unicode_to_utf8(pname);
 		treegix_log(LOG_LEVEL_DEBUG, "provider '%s' could not be opened: %s",
 				tmp_pname, strerror_from_system(GetLastError()));
-		zbx_free(tmp_pname);
+		trx_free(tmp_pname);
 		goto out;
 	}
 
@@ -481,7 +481,7 @@ static char	*expand_message6(const wchar_t *pname, EVT_HANDLE event)
 		{
 			DWORD	error = ERROR_SUCCESS;
 
-			pmessage = zbx_malloc(pmessage, sizeof(WCHAR) * require);
+			pmessage = trx_malloc(pmessage, sizeof(WCHAR) * require);
 
 			if (TRUE != EvtFormatMessage(provider, event, 0, 0, NULL, EvtFormatMessageEvent, require,
 					pmessage, &require))
@@ -493,7 +493,7 @@ static char	*expand_message6(const wchar_t *pname, EVT_HANDLE event)
 					ERROR_EVT_UNRESOLVED_PARAMETER_INSERT == error ||
 					ERROR_EVT_MAX_INSERTS_REACHED == error)
 			{
-				out_message = zbx_unicode_to_utf8(pmessage);
+				out_message = trx_unicode_to_utf8(pmessage);
 			}
 			else
 			{
@@ -506,7 +506,7 @@ static char	*expand_message6(const wchar_t *pname, EVT_HANDLE event)
 out:
 	if (NULL != provider)
 		EvtClose(provider);
-	zbx_free(pmessage);
+	trx_free(pmessage);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, out_message);
 
@@ -516,7 +516,7 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_parse_eventlog_message6                                      *
+ * Function: trx_parse_eventlog_message6                                      *
  *                                                                            *
  * Purpose: details parse of a single EventLog record                         *
  *                                                                            *
@@ -537,25 +537,25 @@ out:
  * Return value: SUCCEED or FAIL                                              *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_parse_eventlog_message6(const wchar_t *wsource, EVT_HANDLE *render_context,
-		EVT_HANDLE *event_bookmark, zbx_uint64_t *which, unsigned short *out_severity,
+static int	trx_parse_eventlog_message6(const wchar_t *wsource, EVT_HANDLE *render_context,
+		EVT_HANDLE *event_bookmark, trx_uint64_t *which, unsigned short *out_severity,
 		unsigned long *out_timestamp, char **out_provider, char **out_source, char **out_message,
-		unsigned long *out_eventid, zbx_uint64_t *out_keywords, char **error)
+		unsigned long *out_eventid, trx_uint64_t *out_keywords, char **error)
 {
 	EVT_VARIANT*		renderedContent = NULL;
 	const wchar_t		*pprovider = NULL;
 	char			*tmp_str = NULL;
 	DWORD			size = DEFAULT_EVENT_CONTENT_SIZE, bookmarkedCount = 0, require = 0, error_code;
-	const zbx_uint64_t	sec_1970 = 116444736000000000;
-	const zbx_uint64_t	success_audit = 0x20000000000000;
-	const zbx_uint64_t	failure_audit = 0x10000000000000;
+	const trx_uint64_t	sec_1970 = 116444736000000000;
+	const trx_uint64_t	success_audit = 0x20000000000000;
+	const trx_uint64_t	failure_audit = 0x10000000000000;
 	int			ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() EventRecordID:" TRX_FS_UI64, __func__, *which);
 
 	/* obtain the information from the selected events */
 
-	renderedContent = (EVT_VARIANT *)zbx_malloc((void *)renderedContent, size);
+	renderedContent = (EVT_VARIANT *)trx_malloc((void *)renderedContent, size);
 
 	if (TRUE != EvtRender(*render_context, *event_bookmark, EvtRenderEventValues, size, renderedContent,
 			&require, &bookmarkedCount))
@@ -563,28 +563,28 @@ static int	zbx_parse_eventlog_message6(const wchar_t *wsource, EVT_HANDLE *rende
 		/* information exceeds the space allocated */
 		if (ERROR_INSUFFICIENT_BUFFER != (error_code = GetLastError()))
 		{
-			*error = zbx_dsprintf(*error, "EvtRender failed: %s", strerror_from_system(error_code));
+			*error = trx_dsprintf(*error, "EvtRender failed: %s", strerror_from_system(error_code));
 			goto out;
 		}
 
-		renderedContent = (EVT_VARIANT *)zbx_realloc((void *)renderedContent, require);
+		renderedContent = (EVT_VARIANT *)trx_realloc((void *)renderedContent, require);
 		size = require;
 
 		if (TRUE != EvtRender(*render_context, *event_bookmark, EvtRenderEventValues, size, renderedContent,
 				&require, &bookmarkedCount))
 		{
-			*error = zbx_dsprintf(*error, "EvtRender failed: %s", strerror_from_system(GetLastError()));
+			*error = trx_dsprintf(*error, "EvtRender failed: %s", strerror_from_system(GetLastError()));
 			goto out;
 		}
 	}
 
 	pprovider = VAR_PROVIDER_NAME(renderedContent);
-	*out_provider = zbx_unicode_to_utf8(pprovider);
+	*out_provider = trx_unicode_to_utf8(pprovider);
 	*out_source = NULL;
 
 	if (NULL != VAR_SOURCE_NAME(renderedContent))
 	{
-		*out_source = zbx_unicode_to_utf8(VAR_SOURCE_NAME(renderedContent));
+		*out_source = trx_unicode_to_utf8(VAR_SOURCE_NAME(renderedContent));
 	}
 
 	*out_keywords = VAR_KEYWORDS(renderedContent) & (success_audit | failure_audit);
@@ -593,7 +593,7 @@ static int	zbx_parse_eventlog_message6(const wchar_t *wsource, EVT_HANDLE *rende
 	*out_eventid = VAR_EVENT_ID(renderedContent);
 	*out_message = expand_message6(pprovider, *event_bookmark);
 
-	tmp_str = zbx_unicode_to_utf8(wsource);
+	tmp_str = trx_unicode_to_utf8(wsource);
 
 	if (VAR_RECORD_NUMBER(renderedContent) != *which)
 	{
@@ -606,7 +606,7 @@ static int	zbx_parse_eventlog_message6(const wchar_t *wsource, EVT_HANDLE *rende
 	/* some events don't have enough information for making event message */
 	if (NULL == *out_message)
 	{
-		*out_message = zbx_strdcatf(*out_message, "The description for Event ID:%lu in Source:'%s'"
+		*out_message = trx_strdcatf(*out_message, "The description for Event ID:%lu in Source:'%s'"
 				" cannot be found. Either the component that raises this event is not installed"
 				" on your local computer or the installation is corrupted. You can install or repair"
 				" the component on the local computer. If the event originated on another computer,"
@@ -621,7 +621,7 @@ static int	zbx_parse_eventlog_message6(const wchar_t *wsource, EVT_HANDLE *rende
 			if (0 != (VAR_EVENT_DATA_TYPE(renderedContent) & EVT_VARIANT_TYPE_ARRAY) &&
 				0 < VAR_EVENT_DATA_COUNT(renderedContent))
 			{
-				*out_message = zbx_strdcatf(*out_message, " The following information was included"
+				*out_message = trx_strdcatf(*out_message, " The following information was included"
 						" with the event: ");
 
 				for (i = 0; i < VAR_EVENT_DATA_COUNT(renderedContent); i++)
@@ -629,21 +629,21 @@ static int	zbx_parse_eventlog_message6(const wchar_t *wsource, EVT_HANDLE *rende
 					if (NULL != VAR_EVENT_DATA_STRING_ARRAY(renderedContent, i))
 					{
 						if (0 < i)
-							*out_message = zbx_strdcat(*out_message, "; ");
+							*out_message = trx_strdcat(*out_message, "; ");
 
-						data = zbx_unicode_to_utf8(VAR_EVENT_DATA_STRING_ARRAY(renderedContent,
+						data = trx_unicode_to_utf8(VAR_EVENT_DATA_STRING_ARRAY(renderedContent,
 								i));
-						*out_message = zbx_strdcatf(*out_message, "%s", data);
-						zbx_free(data);
+						*out_message = trx_strdcatf(*out_message, "%s", data);
+						trx_free(data);
 					}
 				}
 			}
 			else if (NULL != VAR_EVENT_DATA_STRING(renderedContent))
 			{
-				data = zbx_unicode_to_utf8(VAR_EVENT_DATA_STRING(renderedContent));
-				*out_message = zbx_strdcatf(*out_message, "The following information was included"
+				data = trx_unicode_to_utf8(VAR_EVENT_DATA_STRING(renderedContent));
+				*out_message = trx_strdcatf(*out_message, "The following information was included"
 						" with the event: %s", data);
-				zbx_free(data);
+				trx_free(data);
 			}
 		}
 	}
@@ -653,9 +653,9 @@ out:
 	EvtClose(*event_bookmark);
 	*event_bookmark = NULL;
 
-	zbx_free(tmp_str);
-	zbx_free(renderedContent);
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	trx_free(tmp_str);
+	trx_free(renderedContent);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -693,15 +693,15 @@ out:
  *                                                                            *
  ******************************************************************************/
 int	process_eventslog6(const char *server, unsigned short port, const char *eventlog_name, EVT_HANDLE *render_context,
-		EVT_HANDLE *query, zbx_uint64_t lastlogsize, zbx_uint64_t FirstID, zbx_uint64_t LastID,
-		zbx_vector_ptr_t *regexps, const char *pattern, const char *key_severity, const char *key_source,
-		const char *key_logeventid, int rate, zbx_process_value_t process_value_cb, TRX_ACTIVE_METRIC *metric,
-		zbx_uint64_t *lastlogsize_sent, char **error)
+		EVT_HANDLE *query, trx_uint64_t lastlogsize, trx_uint64_t FirstID, trx_uint64_t LastID,
+		trx_vector_ptr_t *regexps, const char *pattern, const char *key_severity, const char *key_source,
+		const char *key_logeventid, int rate, trx_process_value_t process_value_cb, TRX_ACTIVE_METRIC *metric,
+		trx_uint64_t *lastlogsize_sent, char **error)
 {
 #	define EVT_ARRAY_SIZE	100
 
 	const char	*str_severity;
-	zbx_uint64_t	keywords, i, reading_startpoint = 0;
+	trx_uint64_t	keywords, i, reading_startpoint = 0;
 	wchar_t		*eventlog_name_w = NULL;
 	int		s_count = 0, p_count = 0, send_err = SUCCEED, ret = FAIL, match = SUCCEED;
 	DWORD		required_buf_size = 0, error_code = ERROR_SUCCESS;
@@ -738,7 +738,7 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 	if (reading_startpoint == LastID)	/* LastID = FirstID + count */
 		goto finish;
 
-	eventlog_name_w = zbx_utf8_to_unicode(eventlog_name);
+	eventlog_name_w = trx_utf8_to_unicode(eventlog_name);
 
 	while (ERROR_SUCCESS == error_code)
 	{
@@ -752,7 +752,7 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 			if (ERROR_NO_MORE_ITEMS == (error_code = GetLastError()))
 				continue;
 
-			*error = zbx_dsprintf(*error, "EvtNext failed: %s, EventRecordID:" TRX_FS_UI64,
+			*error = trx_dsprintf(*error, "EvtNext failed: %s, EventRecordID:" TRX_FS_UI64,
 					strerror_from_system(error_code), lastlogsize + 1);
 			goto out;
 		}
@@ -761,7 +761,7 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 		{
 			lastlogsize += 1;
 
-			if (SUCCEED != zbx_parse_eventlog_message6(eventlog_name_w, render_context, &event_bookmarks[i],
+			if (SUCCEED != trx_parse_eventlog_message6(eventlog_name_w, render_context, &event_bookmarks[i],
 					&lastlogsize, &evt_severity, &evt_timestamp, &evt_provider, &evt_source,
 					&evt_message, &evt_eventid, &keywords, error))
 			{
@@ -806,7 +806,7 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 					break;
 			}
 
-			zbx_snprintf(str_logeventid, sizeof(str_logeventid), "%lu", evt_eventid);
+			trx_snprintf(str_logeventid, sizeof(str_logeventid), "%lu", evt_eventid);
 
 			if (0 == p_count)
 			{
@@ -815,37 +815,37 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 				if (FAIL == (ret1 = regexp_match_ex(regexps, evt_message, pattern,
 						TRX_CASE_SENSITIVE)))
 				{
-					*error = zbx_strdup(*error,
+					*error = trx_strdup(*error,
 							"Invalid regular expression in the second parameter.");
 					match = FAIL;
 				}
 				else if (FAIL == (ret2 = regexp_match_ex(regexps, str_severity, key_severity,
 						TRX_IGNORE_CASE)))
 				{
-					*error = zbx_strdup(*error,
+					*error = trx_strdup(*error,
 							"Invalid regular expression in the third parameter.");
 					match = FAIL;
 				}
 				else if (FAIL == (ret3 = regexp_match_ex(regexps, evt_provider, key_source,
 						TRX_IGNORE_CASE)))
 				{
-					*error = zbx_strdup(*error,
+					*error = trx_strdup(*error,
 							"Invalid regular expression in the fourth parameter.");
 					match = FAIL;
 				}
 				else if (FAIL == (ret4 = regexp_match_ex(regexps, str_logeventid,
 						key_logeventid, TRX_CASE_SENSITIVE)))
 				{
-					*error = zbx_strdup(*error,
+					*error = trx_strdup(*error,
 							"Invalid regular expression in the fifth parameter.");
 					match = FAIL;
 				}
 
 				if (FAIL == match)
 				{
-					zbx_free(evt_source);
-					zbx_free(evt_provider);
-					zbx_free(evt_message);
+					trx_free(evt_source);
+					trx_free(evt_provider);
+					trx_free(evt_message);
 
 					ret = FAIL;
 					break;
@@ -881,9 +881,9 @@ int	process_eventslog6(const char *server, unsigned short port, const char *even
 			}
 			p_count++;
 
-			zbx_free(evt_source);
-			zbx_free(evt_provider);
-			zbx_free(evt_message);
+			trx_free(evt_source);
+			trx_free(evt_provider);
+			trx_free(evt_message);
 
 			if (SUCCEED == send_err)
 			{
@@ -917,8 +917,8 @@ out:
 			EvtClose(event_bookmarks[i]);
 	}
 
-	zbx_free(eventlog_name_w);
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	trx_free(eventlog_name_w);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -944,7 +944,7 @@ int	finalize_eventlog6(EVT_HANDLE *render_context, EVT_HANDLE *query)
 
 	ret = SUCCEED;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -972,12 +972,12 @@ int	finalize_eventlog6(EVT_HANDLE *render_context, EVT_HANDLE *query)
  * Return value: SUCCEED or FAIL                                              *
  *                                                                            *
  ******************************************************************************/
-static int	seek_eventlog(HANDLE *eventlog_handle, zbx_uint64_t FirstID, DWORD ReadDirection,
-		zbx_uint64_t LastID, const char *eventlog_name, BYTE **pELRs, int *buffer_size, DWORD *num_bytes_read,
+static int	seek_eventlog(HANDLE *eventlog_handle, trx_uint64_t FirstID, DWORD ReadDirection,
+		trx_uint64_t LastID, const char *eventlog_name, BYTE **pELRs, int *buffer_size, DWORD *num_bytes_read,
 		DWORD *error_code, char **error)
 {
 	DWORD		dwRecordNumber, required_buf_size;
-	zbx_uint64_t	skip_count = 0;
+	trx_uint64_t	skip_count = 0;
 
 	/* convert to DWORD to handle possible event record number wraparound */
 	dwRecordNumber = (DWORD)FirstID;
@@ -1006,12 +1006,12 @@ static int	seek_eventlog(HANDLE *eventlog_handle, zbx_uint64_t FirstID, DWORD Re
 		if (ERROR_INSUFFICIENT_BUFFER == *error_code)
 		{
 			*buffer_size = required_buf_size;
-			*pELRs = (BYTE *)zbx_realloc((void *)*pELRs, *buffer_size);
+			*pELRs = (BYTE *)trx_realloc((void *)*pELRs, *buffer_size);
 			*error_code = ERROR_SUCCESS;
 			continue;
 		}
 
-		*error = zbx_dsprintf(*error, "Cannot read eventlog '%s': %s.", eventlog_name,
+		*error = trx_dsprintf(*error, "Cannot read eventlog '%s': %s.", eventlog_name,
 				strerror_from_system(*error_code));
 		return FAIL;
 	}
@@ -1049,14 +1049,14 @@ static int	seek_eventlog(HANDLE *eventlog_handle, zbx_uint64_t FirstID, DWORD Re
 			{
 				*error_code = ERROR_SUCCESS;
 				*buffer_size = required_buf_size;
-				*pELRs = (BYTE *)zbx_realloc((void *)*pELRs, *buffer_size);
+				*pELRs = (BYTE *)trx_realloc((void *)*pELRs, *buffer_size);
 				continue;
 			}
 
 			if (ERROR_HANDLE_EOF != *error_code)
 				break;
 
-			*error = zbx_dsprintf(*error, "Cannot read eventlog '%s': %s.", eventlog_name,
+			*error = trx_dsprintf(*error, "Cannot read eventlog '%s': %s.", eventlog_name,
 					strerror_from_system(*error_code));
 			return FAIL;
 		}
@@ -1082,7 +1082,7 @@ static int	seek_eventlog(HANDLE *eventlog_handle, zbx_uint64_t FirstID, DWORD Re
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_parse_eventlog_message                                       *
+ * Function: trx_parse_eventlog_message                                       *
  *                                                                            *
  * Purpose: details parse of a single Event Log record                        *
  *                                                                            *
@@ -1096,7 +1096,7 @@ static int	seek_eventlog(HANDLE *eventlog_handle, zbx_uint64_t FirstID, DWORD Re
  *                                                                            *
  ******************************************************************************/
 #define MAX_INSERT_STRS 100
-static void	zbx_parse_eventlog_message(const wchar_t *wsource, const EVENTLOGRECORD *pELR, char **out_source,
+static void	trx_parse_eventlog_message(const wchar_t *wsource, const EVENTLOGRECORD *pELR, char **out_source,
 		char **out_message, unsigned short *out_severity, unsigned long *out_timestamp,
 		unsigned long *out_eventid)
 {
@@ -1112,10 +1112,10 @@ static void	zbx_parse_eventlog_message(const wchar_t *wsource, const EVENTLOGREC
 	*out_severity = pELR->EventType;				/* return event type */
 	*out_timestamp = pELR->TimeGenerated;				/* return timestamp */
 	*out_eventid = pELR->EventID & 0xffff;
-	*out_source = zbx_unicode_to_utf8((wchar_t *)(pELR + 1));	/* copy source name */
+	*out_source = trx_unicode_to_utf8((wchar_t *)(pELR + 1));	/* copy source name */
 
 	/* get message file names */
-	zbx_get_message_files(wsource, (wchar_t *)(pELR + 1), &pEventMessageFile, &pParamMessageFile);
+	trx_get_message_files(wsource, (wchar_t *)(pELR + 1), &pEventMessageFile, &pParamMessageFile);
 
 	/* prepare insert string array */
 	if (0 < pELR->NumStrings)
@@ -1139,15 +1139,15 @@ static void	zbx_parse_eventlog_message(const wchar_t *wsource, const EVENTLOGREC
 			pNextFile++;
 		}
 
-		if (NULL != (hLib = zbx_load_message_file(pFile)))
+		if (NULL != (hLib = trx_load_message_file(pFile)))
 		{
-			if (NULL != (*out_message = zbx_format_message(hLib, pELR->EventID, aInsertStrings)))
+			if (NULL != (*out_message = trx_format_message(hLib, pELR->EventID, aInsertStrings)))
 			{
 				err = SUCCEED;
 
-				if (NULL != (hParamLib = zbx_load_message_file(pParamMessageFile)))
+				if (NULL != (hParamLib = trx_load_message_file(pParamMessageFile)))
 				{
-					zbx_translate_message_params(out_message, hParamLib);
+					trx_translate_message_params(out_message, hParamLib);
 					FreeLibrary(hParamLib);
 				}
 			}
@@ -1156,12 +1156,12 @@ static void	zbx_parse_eventlog_message(const wchar_t *wsource, const EVENTLOGREC
 		}
 	}
 
-	zbx_free(pEventMessageFile);
-	zbx_free(pParamMessageFile);
+	trx_free(pEventMessageFile);
+	trx_free(pParamMessageFile);
 
 	if (SUCCEED != err)
 	{
-		*out_message = zbx_strdcatf(*out_message, "The description for Event ID:%lu in Source:'%s'"
+		*out_message = trx_strdcatf(*out_message, "The description for Event ID:%lu in Source:'%s'"
 				" cannot be found. The local computer may not have the necessary registry"
 				" information or message DLL files to display messages from a remote computer.",
 				*out_eventid, NULL == *out_source ? "" : *out_source);
@@ -1170,18 +1170,18 @@ static void	zbx_parse_eventlog_message(const wchar_t *wsource, const EVENTLOGREC
 		{
 			char	*buf;
 
-			*out_message = zbx_strdcat(*out_message, " The following information is part of the event: ");
+			*out_message = trx_strdcat(*out_message, " The following information is part of the event: ");
 
 			for (i = 0, pCh = (wchar_t *)((unsigned char *)pELR + pELR->StringOffset);
 					i < pELR->NumStrings;
 					i++, pCh += wcslen(pCh) + 1)
 			{
 				if (0 < i)
-					*out_message = zbx_strdcat(*out_message, "; ");
+					*out_message = trx_strdcat(*out_message, "; ");
 
-				buf = zbx_unicode_to_utf8(pCh);
-				*out_message = zbx_strdcat(*out_message, buf);
-				zbx_free(buf);
+				buf = trx_unicode_to_utf8(pCh);
+				*out_message = trx_strdcat(*out_message, buf);
+				trx_free(buf);
 			}
 		}
 	}
@@ -1218,15 +1218,15 @@ static void	zbx_parse_eventlog_message(const wchar_t *wsource, const EVENTLOGREC
  * Return value: SUCCEED or FAIL                                              *
  *                                                                            *
  ******************************************************************************/
-int	process_eventslog(const char *server, unsigned short port, const char *eventlog_name, zbx_vector_ptr_t *regexps,
+int	process_eventslog(const char *server, unsigned short port, const char *eventlog_name, trx_vector_ptr_t *regexps,
 		const char *pattern, const char *key_severity, const char *key_source, const char *key_logeventid,
-		int rate, zbx_process_value_t process_value_cb, TRX_ACTIVE_METRIC *metric,
-		zbx_uint64_t *lastlogsize_sent, char **error)
+		int rate, trx_process_value_t process_value_cb, TRX_ACTIVE_METRIC *metric,
+		trx_uint64_t *lastlogsize_sent, char **error)
 {
 	int		ret = FAIL;
 	HANDLE		eventlog_handle = NULL;
 	wchar_t 	*eventlog_name_w;
-	zbx_uint64_t	FirstID, LastID, lastlogsize;
+	trx_uint64_t	FirstID, LastID, lastlogsize;
 	int		buffer_size = 64 * TRX_KIBIBYTE;
 	DWORD		num_bytes_read = 0, required_buf_size, ReadDirection, error_code;
 	BYTE		*pELRs = NULL;
@@ -1249,15 +1249,15 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 
 	if (NULL == eventlog_name || '\0' == *eventlog_name)
 	{
-		*error = zbx_strdup(*error, "Cannot open eventlog with empty name.");
+		*error = trx_strdup(*error, "Cannot open eventlog with empty name.");
 		return ret;
 	}
 
-	eventlog_name_w = zbx_utf8_to_unicode(eventlog_name);
+	eventlog_name_w = trx_utf8_to_unicode(eventlog_name);
 
-	if (SUCCEED != zbx_open_eventlog(eventlog_name_w, &eventlog_handle, &FirstID, &LastID, &error_code))
+	if (SUCCEED != trx_open_eventlog(eventlog_name_w, &eventlog_handle, &FirstID, &LastID, &error_code))
 	{
-		*error = zbx_dsprintf(*error, "Cannot open eventlog '%s': %s.", eventlog_name,
+		*error = trx_dsprintf(*error, "Cannot open eventlog '%s': %s.", eventlog_name,
 				strerror_from_system(error_code));
 		goto out;
 	}
@@ -1288,7 +1288,7 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 	else
 		FirstID = lastlogsize + 1;
 
-	pELRs = (BYTE*)zbx_malloc((void *)pELRs, buffer_size);
+	pELRs = (BYTE*)trx_malloc((void *)pELRs, buffer_size);
 
 	if (0 == ReadDirection)		/* read eventlog from the first record */
 	{
@@ -1329,14 +1329,14 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 			{
 				error_code = ERROR_SUCCESS;
 				buffer_size = required_buf_size;
-				pELRs = (BYTE *)zbx_realloc((void *)pELRs, buffer_size);
+				pELRs = (BYTE *)trx_realloc((void *)pELRs, buffer_size);
 				continue;
 			}
 
 			if (ERROR_HANDLE_EOF == error_code)
 				break;
 
-			*error = zbx_dsprintf(*error, "Cannot read eventlog '%s': %s.", eventlog_name,
+			*error = trx_dsprintf(*error, "Cannot read eventlog '%s': %s.", eventlog_name,
 					strerror_from_system(error_code));
 			goto out;
 		}
@@ -1368,7 +1368,7 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 				else
 					lastlogsize += 1;
 
-				zbx_parse_eventlog_message(eventlog_name_w, (EVENTLOGRECORD *)pELR, &source, &value,
+				trx_parse_eventlog_message(eventlog_name_w, (EVENTLOGRECORD *)pELR, &source, &value,
 						&severity, &timestamp, &logeventid);
 
 				switch (severity)
@@ -1396,7 +1396,7 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 						break;
 				}
 
-				zbx_snprintf(str_logeventid, sizeof(str_logeventid), "%lu", logeventid);
+				trx_snprintf(str_logeventid, sizeof(str_logeventid), "%lu", logeventid);
 
 				if (0 == p_count)
 				{
@@ -1405,36 +1405,36 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 					if (FAIL == (ret1 = regexp_match_ex(regexps, value, pattern,
 							TRX_CASE_SENSITIVE)))
 					{
-						*error = zbx_strdup(*error,
+						*error = trx_strdup(*error,
 								"Invalid regular expression in the second parameter.");
 						match = FAIL;
 					}
 					else if (FAIL == (ret2 = regexp_match_ex(regexps, str_severity, key_severity,
 							TRX_IGNORE_CASE)))
 					{
-						*error = zbx_strdup(*error,
+						*error = trx_strdup(*error,
 								"Invalid regular expression in the third parameter.");
 						match = FAIL;
 					}
 					else if (FAIL == (ret3 = regexp_match_ex(regexps, source, key_source,
 							TRX_IGNORE_CASE)))
 					{
-						*error = zbx_strdup(*error,
+						*error = trx_strdup(*error,
 								"Invalid regular expression in the fourth parameter.");
 						match = FAIL;
 					}
 					else if (FAIL == (ret4 = regexp_match_ex(regexps, str_logeventid,
 							key_logeventid, TRX_CASE_SENSITIVE)))
 					{
-						*error = zbx_strdup(*error,
+						*error = trx_strdup(*error,
 								"Invalid regular expression in the fifth parameter.");
 						match = FAIL;
 					}
 
 					if (FAIL == match)
 					{
-						zbx_free(source);
-						zbx_free(value);
+						trx_free(source);
+						trx_free(value);
 
 						ret = FAIL;
 						break;
@@ -1470,8 +1470,8 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 				}
 				p_count++;
 
-				zbx_free(source);
-				zbx_free(value);
+				trx_free(source);
+				trx_free(value);
 
 				if (SUCCEED == send_err)
 				{
@@ -1503,10 +1503,10 @@ int	process_eventslog(const char *server, unsigned short port, const char *event
 finish:
 	ret = SUCCEED;
 out:
-	zbx_close_eventlog(eventlog_handle);
-	zbx_free(eventlog_name_w);
-	zbx_free(pELRs);
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	trx_close_eventlog(eventlog_handle);
+	trx_free(eventlog_name_w);
+	trx_free(pELRs);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

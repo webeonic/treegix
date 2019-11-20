@@ -13,7 +13,7 @@ class CFormList extends CList {
 		$this->addClass(TRX_STYLE_TABLE_FORMS);
 
 		if ($id) {
-			$this->setId(zbx_formatDomId($id));
+			$this->setId(trx_formatDomId($id));
 		}
 	}
 

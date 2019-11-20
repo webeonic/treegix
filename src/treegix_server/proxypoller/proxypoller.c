@@ -3,22 +3,22 @@
 #include "common.h"
 #include "daemon.h"
 #include "comms.h"
-#include "zbxself.h"
+#include "trxself.h"
 
 #include "proxypoller.h"
-#include "zbxserver.h"
+#include "trxserver.h"
 #include "dbcache.h"
 #include "db.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "log.h"
 #include "proxy.h"
-#include "../../libs/zbxcrypto/tls.h"
+#include "../../libs/trxcrypto/tls.h"
 #include "../trapper/proxydata.h"
 
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
 
-static int	connect_to_proxy(const DC_PROXY *proxy, zbx_socket_t *sock, int timeout)
+static int	connect_to_proxy(const DC_PROXY *proxy, trx_socket_t *sock, int timeout)
 {
 	int		ret = FAIL;
 	const char	*tls_arg1, *tls_arg2;
@@ -55,19 +55,19 @@ static int	connect_to_proxy(const DC_PROXY *proxy, zbx_socket_t *sock, int timeo
 			goto out;
 	}
 
-	if (FAIL == (ret = zbx_tcp_connect(sock, CONFIG_SOURCE_IP, proxy->addr, proxy->port, timeout,
+	if (FAIL == (ret = trx_tcp_connect(sock, CONFIG_SOURCE_IP, proxy->addr, proxy->port, timeout,
 			proxy->tls_connect, tls_arg1, tls_arg2)))
 	{
-		treegix_log(LOG_LEVEL_ERR, "cannot connect to proxy \"%s\": %s", proxy->host, zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_ERR, "cannot connect to proxy \"%s\": %s", proxy->host, trx_socket_strerror());
 		ret = NETWORK_ERROR;
 	}
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static int	send_data_to_proxy(const DC_PROXY *proxy, zbx_socket_t *sock, const char *data, size_t size)
+static int	send_data_to_proxy(const DC_PROXY *proxy, trx_socket_t *sock, const char *data, size_t size)
 {
 	int	ret, flags = TRX_TCP_PROTOCOL;
 
@@ -76,42 +76,42 @@ static int	send_data_to_proxy(const DC_PROXY *proxy, zbx_socket_t *sock, const c
 	if (0 != proxy->auto_compress)
 		flags |= TRX_TCP_COMPRESS;
 
-	if (FAIL == (ret = zbx_tcp_send_ext(sock, data, size, flags, 0)))
+	if (FAIL == (ret = trx_tcp_send_ext(sock, data, size, flags, 0)))
 	{
-		treegix_log(LOG_LEVEL_ERR, "cannot send data to proxy \"%s\": %s", proxy->host, zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_ERR, "cannot send data to proxy \"%s\": %s", proxy->host, trx_socket_strerror());
 
 		ret = NETWORK_ERROR;
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static int	recv_data_from_proxy(const DC_PROXY *proxy, zbx_socket_t *sock)
+static int	recv_data_from_proxy(const DC_PROXY *proxy, trx_socket_t *sock)
 {
 	int	ret;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (FAIL == (ret = zbx_tcp_recv(sock)))
+	if (FAIL == (ret = trx_tcp_recv(sock)))
 	{
 		treegix_log(LOG_LEVEL_ERR, "cannot obtain data from proxy \"%s\": %s", proxy->host,
-				zbx_socket_strerror());
+				trx_socket_strerror());
 	}
 	else
 		treegix_log(LOG_LEVEL_DEBUG, "obtained data from proxy \"%s\": [%s]", proxy->host, sock->buffer);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static void	disconnect_proxy(zbx_socket_t *sock)
+static void	disconnect_proxy(trx_socket_t *sock)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_tcp_close(sock);
+	trx_tcp_close(sock);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -136,23 +136,23 @@ static void	disconnect_proxy(zbx_socket_t *sock)
  *           protocol flags sent by proxy.                                    *
  *                                                                            *
  ******************************************************************************/
-static int	get_data_from_proxy(DC_PROXY *proxy, const char *request, char **data, zbx_timespec_t *ts)
+static int	get_data_from_proxy(DC_PROXY *proxy, const char *request, char **data, trx_timespec_t *ts)
 {
-	zbx_socket_t	s;
-	struct zbx_json	j;
+	trx_socket_t	s;
+	struct trx_json	j;
 	int		ret;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() request:'%s'", __func__, request);
 
-	zbx_json_init(&j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_init(&j, TRX_JSON_STAT_BUF_LEN);
 
-	zbx_json_addstring(&j, "request", request, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&j, "request", request, TRX_JSON_TYPE_STRING);
 
 	if (SUCCEED == (ret = connect_to_proxy(proxy, &s, CONFIG_TRAPPER_TIMEOUT)))
 	{
 		/* get connection timestamp if required */
 		if (NULL != ts)
-			zbx_timespec(ts);
+			trx_timespec(ts);
 
 		if (SUCCEED == (ret = send_data_to_proxy(proxy, &s, j.buffer, j.buffer_size)))
 		{
@@ -168,7 +168,7 @@ static int	get_data_from_proxy(DC_PROXY *proxy, const char *request, char **data
 					if (0 != (s.protocol & TRX_TCP_COMPRESS))
 						flags |= TRX_TCP_COMPRESS;
 
-					zbx_send_response_ext(&s, FAIL, "Treegix server shutdown in progress", NULL,
+					trx_send_response_ext(&s, FAIL, "Treegix server shutdown in progress", NULL,
 							flags, CONFIG_TIMEOUT);
 
 					treegix_log(LOG_LEVEL_WARNING, "cannot process proxy data from passive proxy at"
@@ -177,10 +177,10 @@ static int	get_data_from_proxy(DC_PROXY *proxy, const char *request, char **data
 				}
 				else
 				{
-					ret = zbx_send_proxy_data_response(proxy, &s, NULL);
+					ret = trx_send_proxy_data_response(proxy, &s, NULL);
 
 					if (SUCCEED == ret)
-						*data = zbx_strdup(*data, s.buffer);
+						*data = trx_strdup(*data, s.buffer);
 				}
 			}
 		}
@@ -188,9 +188,9 @@ static int	get_data_from_proxy(DC_PROXY *proxy, const char *request, char **data
 		disconnect_proxy(&s);
 	}
 
-	zbx_json_free(&j);
+	trx_json_free(&j);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -214,13 +214,13 @@ static int	proxy_send_configuration(DC_PROXY *proxy)
 {
 	char		*error = NULL;
 	int		ret;
-	zbx_socket_t	s;
-	struct zbx_json	j;
+	trx_socket_t	s;
+	struct trx_json	j;
 
-	zbx_json_init(&j, 512 * TRX_KIBIBYTE);
+	trx_json_init(&j, 512 * TRX_KIBIBYTE);
 
-	zbx_json_addstring(&j, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_PROXY_CONFIG, TRX_JSON_TYPE_STRING);
-	zbx_json_addobject(&j, TRX_PROTO_TAG_DATA);
+	trx_json_addstring(&j, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_PROXY_CONFIG, TRX_JSON_TYPE_STRING);
+	trx_json_addobject(&j, TRX_PROTO_TAG_DATA);
 
 	if (SUCCEED != (ret = get_proxyconfig_data(proxy->hostid, &j, &error)))
 	{
@@ -233,27 +233,27 @@ static int	proxy_send_configuration(DC_PROXY *proxy)
 		goto out;
 
 	treegix_log(LOG_LEVEL_WARNING, "sending configuration data to proxy \"%s\" at \"%s\", datalen " TRX_FS_SIZE_T,
-			proxy->host, s.peer, (zbx_fs_size_t)j.buffer_size);
+			proxy->host, s.peer, (trx_fs_size_t)j.buffer_size);
 
 	if (SUCCEED == (ret = send_data_to_proxy(proxy, &s, j.buffer, j.buffer_size)))
 	{
-		if (SUCCEED != (ret = zbx_recv_response(&s, 0, &error)))
+		if (SUCCEED != (ret = trx_recv_response(&s, 0, &error)))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot send configuration data to proxy"
 					" \"%s\" at \"%s\": %s", proxy->host, s.peer, error);
 		}
 		else
 		{
-			struct zbx_json_parse	jp;
+			struct trx_json_parse	jp;
 
-			if (SUCCEED != zbx_json_open(s.buffer, &jp))
+			if (SUCCEED != trx_json_open(s.buffer, &jp))
 			{
 				treegix_log(LOG_LEVEL_WARNING, "invalid configuration data response received from proxy"
-						" \"%s\" at \"%s\": %s", proxy->host, s.peer, zbx_json_strerror());
+						" \"%s\" at \"%s\": %s", proxy->host, s.peer, trx_json_strerror());
 			}
 			else
 			{
-				proxy->version = zbx_get_proxy_protocol_version(&jp);
+				proxy->version = trx_get_proxy_protocol_version(&jp);
 				proxy->auto_compress = (0 != (s.protocol & TRX_TCP_COMPRESS) ? 1 : 0);
 				proxy->lastaccess = time(NULL);
 			}
@@ -262,8 +262,8 @@ static int	proxy_send_configuration(DC_PROXY *proxy)
 
 	disconnect_proxy(&s);
 out:
-	zbx_free(error);
-	zbx_json_free(&j);
+	trx_free(error);
+	trx_json_free(&j);
 
 	return ret;
 }
@@ -287,9 +287,9 @@ out:
  *           sent by proxy.                                                   *
  *                                                                            *
  ******************************************************************************/
-static int	proxy_process_proxy_data(DC_PROXY *proxy, const char *answer, zbx_timespec_t *ts, int *more)
+static int	proxy_process_proxy_data(DC_PROXY *proxy, const char *answer, trx_timespec_t *ts, int *more)
 {
-	struct zbx_json_parse	jp;
+	struct trx_json_parse	jp;
 	char			*error = NULL;
 	int			ret = FAIL;
 
@@ -304,16 +304,16 @@ static int	proxy_process_proxy_data(DC_PROXY *proxy, const char *answer, zbx_tim
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_open(answer, &jp))
+	if (SUCCEED != trx_json_open(answer, &jp))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "proxy \"%s\" at \"%s\" returned invalid proxy data: %s",
-				proxy->host, proxy->addr, zbx_json_strerror());
+				proxy->host, proxy->addr, trx_json_strerror());
 		goto out;
 	}
 
-	proxy->version = zbx_get_proxy_protocol_version(&jp);
+	proxy->version = trx_get_proxy_protocol_version(&jp);
 
-	if (SUCCEED != zbx_check_protocol_version(proxy))
+	if (SUCCEED != trx_check_protocol_version(proxy))
 	{
 		goto out;
 	}
@@ -327,13 +327,13 @@ static int	proxy_process_proxy_data(DC_PROXY *proxy, const char *answer, zbx_tim
 	{
 		char	value[MAX_STRING_LEN];
 
-		if (SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_MORE, value, sizeof(value)))
+		if (SUCCEED == trx_json_value_by_name(&jp, TRX_PROTO_TAG_MORE, value, sizeof(value)))
 			*more = atoi(value);
 	}
 out:
-	zbx_free(error);
+	trx_free(error);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -358,7 +358,7 @@ static int	proxy_get_data(DC_PROXY *proxy, int *more)
 {
 	char		*answer = NULL;
 	int		ret;
-	zbx_timespec_t	ts;
+	trx_timespec_t	ts;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -369,19 +369,19 @@ static int	proxy_get_data(DC_PROXY *proxy, int *more)
 	if ('\0' == *answer)
 	{
 		proxy->version = TRX_COMPONENT_VERSION(3, 2);
-		zbx_free(answer);
+		trx_free(answer);
 		ret = FAIL;
 		goto out;
 	}
 
 	proxy->lastaccess = time(NULL);
 	ret = proxy_process_proxy_data(proxy, answer, &ts, more);
-	zbx_free(answer);
+	trx_free(answer);
 out:
 	if (SUCCEED == ret)
-		treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s more:%d", __func__, zbx_result_string(ret), *more);
+		treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s more:%d", __func__, trx_result_string(ret), *more);
 	else
-		treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+		treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -405,7 +405,7 @@ static int	proxy_get_tasks(DC_PROXY *proxy)
 {
 	char		*answer = NULL;
 	int		ret = FAIL, more;
-	zbx_timespec_t	ts;
+	trx_timespec_t	ts;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -419,9 +419,9 @@ static int	proxy_get_tasks(DC_PROXY *proxy)
 
 	ret = proxy_process_proxy_data(proxy, answer, &ts, &more);
 
-	zbx_free(answer);
+	trx_free(answer);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -477,17 +477,17 @@ static int	process_proxy(void)
 
 			proxy.addr = proxy.addr_orig;
 
-			port = zbx_strdup(port, proxy.port_orig);
+			port = trx_strdup(port, proxy.port_orig);
 			substitute_simple_macros(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 					&port, MACRO_TYPE_COMMON, NULL, 0);
 			if (FAIL == is_ushort(port, &proxy.port))
 			{
 				treegix_log(LOG_LEVEL_ERR, "invalid proxy \"%s\" port: \"%s\"", proxy.host, port);
 				ret = CONFIG_ERROR;
-				zbx_free(port);
+				trx_free(port);
 				goto error;
 			}
-			zbx_free(port);
+			trx_free(port);
 
 			if (proxy.proxy_config_nextcheck <= now)
 			{
@@ -516,7 +516,7 @@ error:
 		if (proxy_old.version != proxy.version || proxy_old.auto_compress != proxy.auto_compress ||
 				proxy_old.lastaccess != proxy.lastaccess)
 		{
-			zbx_update_proxy_data(&proxy_old, proxy.version, proxy.lastaccess, proxy.auto_compress);
+			trx_update_proxy_data(&proxy_old, proxy.version, proxy.lastaccess, proxy.auto_compress);
 		}
 
 		DCrequeue_proxy(proxy.hostid, update_nextcheck, ret);
@@ -533,9 +533,9 @@ TRX_THREAD_ENTRY(proxypoller_thread, args)
 	double	sec, total_sec = 0.0, old_total_sec = 0.0;
 	time_t	last_stat_time;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
@@ -544,27 +544,27 @@ TRX_THREAD_ENTRY(proxypoller_thread, args)
 				/* once in STAT_INTERVAL seconds */
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_child();
+	trx_tls_init_child();
 #endif
-	zbx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
 	last_stat_time = time(NULL);
 
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	while (TRX_IS_RUNNING())
 	{
-		sec = zbx_time();
-		zbx_update_env(sec);
+		sec = trx_time();
+		trx_update_env(sec);
 
 		if (0 != sleeptime)
 		{
-			zbx_setproctitle("%s #%d [exchanged data with %d proxies in " TRX_FS_DBL " sec,"
+			trx_setproctitle("%s #%d [exchanged data with %d proxies in " TRX_FS_DBL " sec,"
 					" exchanging data]", get_process_type_string(process_type), process_num,
 					old_processed, old_total_sec);
 		}
 
 		processed += process_proxy();
-		total_sec += zbx_time() - sec;
+		total_sec += trx_time() - sec;
 
 		nextcheck = DCconfig_get_proxypoller_nextcheck();
 		sleeptime = calculate_sleeptime(nextcheck, POLLER_DELAY);
@@ -573,13 +573,13 @@ TRX_THREAD_ENTRY(proxypoller_thread, args)
 		{
 			if (0 == sleeptime)
 			{
-				zbx_setproctitle("%s #%d [exchanged data with %d proxies in " TRX_FS_DBL " sec,"
+				trx_setproctitle("%s #%d [exchanged data with %d proxies in " TRX_FS_DBL " sec,"
 						" exchanging data]", get_process_type_string(process_type), process_num,
 						processed, total_sec);
 			}
 			else
 			{
-				zbx_setproctitle("%s #%d [exchanged data with %d proxies in " TRX_FS_DBL " sec,"
+				trx_setproctitle("%s #%d [exchanged data with %d proxies in " TRX_FS_DBL " sec,"
 						" idle %d sec]", get_process_type_string(process_type), process_num,
 						processed, total_sec, sleeptime);
 				old_processed = processed;
@@ -590,12 +590,12 @@ TRX_THREAD_ENTRY(proxypoller_thread, args)
 			last_stat_time = time(NULL);
 		}
 
-		zbx_sleep_loop(sleeptime);
+		trx_sleep_loop(sleeptime);
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 #undef STAT_INTERVAL
 }

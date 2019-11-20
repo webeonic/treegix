@@ -300,7 +300,7 @@ class CControllerMenuPopup extends CController {
 			}
 			elseif (CHtmlUrlValidator::validate($url['url']) === false) {
 				$selement['urls'][$url_nr]['url'] = 'javascript: alert(\''._s('Provided URL "%1$s" is invalid.',
-					zbx_jsvalue($url['url'], false, false)).'\');';
+					trx_jsvalue($url['url'], false, false)).'\');';
 			}
 		}
 
@@ -411,7 +411,7 @@ class CControllerMenuPopup extends CController {
 					case SYSMAP_ELEMENT_TYPE_TRIGGER:
 						$menu_data = [
 							'type' => 'map_element_trigger',
-							'triggerids' => zbx_objectValues($selement['elements'], 'triggerid')
+							'triggerids' => trx_objectValues($selement['elements'], 'triggerid')
 						];
 						if (array_key_exists('severity_min', $data)) {
 							$menu_data['severity_min'] = $data['severity_min'];
@@ -576,7 +576,7 @@ class CControllerMenuPopup extends CController {
 				foreach ($menu_data['urls'] as &$url) {
 					if (!CHtmlUrlValidator::validate($url['url'])) {
 						$url['url'] = 'javascript: alert(\''.
-							_s('Provided URL "%1$s" is invalid.', zbx_jsvalue($url['url'], false, false)).
+							_s('Provided URL "%1$s" is invalid.', trx_jsvalue($url['url'], false, false)).
 						'\');';
 						unset($url['target']);
 					}

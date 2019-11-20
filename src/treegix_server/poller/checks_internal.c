@@ -4,12 +4,12 @@
 #include "checks_internal.h"
 #include "checks_java.h"
 #include "dbcache.h"
-#include "zbxself.h"
+#include "trxself.h"
 #include "proxy.h"
 
 #include "../vmware/vmware.h"
-#include "../../libs/zbxserver/treegix_stats.h"
-#include "../../libs/zbxsysinfo/common/treegix_stats.h"
+#include "../../libs/trxserver/treegix_stats.h"
+#include "../../libs/trxsysinfo/common/treegix_stats.h"
 
 extern unsigned char	program_type;
 
@@ -40,7 +40,7 @@ static int	compare_interfaces(const void *p1, const void *p2)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_host_interfaces_discovery                                    *
+ * Function: trx_host_interfaces_discovery                                    *
  *                                                                            *
  * Purpose: get data of all network interfaces for a host from configuration  *
  *          cache and pack into JSON for LLD                                  *
@@ -56,7 +56,7 @@ static int	compare_interfaces(const void *p1, const void *p2)
  *           empty JSON {"data":[]} is returned                               *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_host_interfaces_discovery(zbx_uint64_t hostid, struct zbx_json *j, char **error)
+static int	trx_host_interfaces_discovery(trx_uint64_t hostid, struct trx_json *j, char **error)
 {
 	DC_INTERFACE2	*interfaces = NULL;
 	int		n = 0;			/* number of interfaces */
@@ -64,9 +64,9 @@ static int	zbx_host_interfaces_discovery(zbx_uint64_t hostid, struct zbx_json *j
 
 	/* get interface data from configuration cache */
 
-	if (SUCCEED != zbx_dc_get_host_interfaces(hostid, &interfaces, &n))
+	if (SUCCEED != trx_dc_get_host_interfaces(hostid, &interfaces, &n))
 	{
-		*error = zbx_strdup(*error, "host not found in configuration cache");
+		*error = trx_strdup(*error, "host not found in configuration cache");
 
 		return FAIL;
 	}
@@ -83,18 +83,18 @@ static int	zbx_host_interfaces_discovery(zbx_uint64_t hostid, struct zbx_json *j
 
 	/* pack results into JSON */
 
-	zbx_json_initarray(j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(j, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < n; i++)
 	{
 		const char	*p;
 		char		buf[16];
 
-		zbx_json_addobject(j, NULL);
-		zbx_json_addstring(j, "{#IF.CONN}", interfaces[i].addr, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(j, "{#IF.IP}", interfaces[i].ip_orig, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(j, "{#IF.DNS}", interfaces[i].dns_orig, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(j, "{#IF.PORT}", interfaces[i].port_orig, TRX_JSON_TYPE_STRING);
+		trx_json_addobject(j, NULL);
+		trx_json_addstring(j, "{#IF.CONN}", interfaces[i].addr, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(j, "{#IF.IP}", interfaces[i].ip_orig, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(j, "{#IF.DNS}", interfaces[i].dns_orig, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(j, "{#IF.PORT}", interfaces[i].port_orig, TRX_JSON_TYPE_STRING);
 
 		switch (interfaces[i].type)
 		{
@@ -114,23 +114,23 @@ static int	zbx_host_interfaces_discovery(zbx_uint64_t hostid, struct zbx_json *j
 			default:
 				p = "UNKNOWN";
 		}
-		zbx_json_addstring(j, "{#IF.TYPE}", p, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(j, "{#IF.TYPE}", p, TRX_JSON_TYPE_STRING);
 
-		zbx_snprintf(buf, sizeof(buf), "%hhu", interfaces[i].main);
-		zbx_json_addstring(j, "{#IF.DEFAULT}", buf, TRX_JSON_TYPE_INT);
+		trx_snprintf(buf, sizeof(buf), "%hhu", interfaces[i].main);
+		trx_json_addstring(j, "{#IF.DEFAULT}", buf, TRX_JSON_TYPE_INT);
 
 		if (INTERFACE_TYPE_SNMP == interfaces[i].type)
 		{
-			zbx_snprintf(buf, sizeof(buf), "%hhu", interfaces[i].bulk);
-			zbx_json_addstring(j, "{#IF.SNMP.BULK}", buf, TRX_JSON_TYPE_INT);
+			trx_snprintf(buf, sizeof(buf), "%hhu", interfaces[i].bulk);
+			trx_json_addstring(j, "{#IF.SNMP.BULK}", buf, TRX_JSON_TYPE_INT);
 		}
 
-		zbx_json_close(j);
+		trx_json_close(j);
 	}
 
-	zbx_json_close(j);
+	trx_json_close(j);
 
-	zbx_free(interfaces);
+	trx_free(interfaces);
 
 	return SUCCEED;
 }
@@ -159,24 +159,24 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 
 	if (SUCCEED != parse_item_key(item->key, &request))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid item key format."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid item key format."));
 		goto out;
 	}
 
 	if (0 != strcmp("treegix", get_rkey(&request)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unsupported item key for this item type."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unsupported item key for this item type."));
 		goto out;
 	}
 
 	/* NULL check to silence analyzer warning */
 	if (0 == (nparams = get_rparams_num(&request)) || NULL == (tmp = get_rparam(&request, 0)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
-	if (FAIL != (ret = zbx_get_value_internal_ext(tmp, &request, result)))
+	if (FAIL != (ret = trx_get_value_internal_ext(tmp, &request, result)))
 		goto out;
 
 	ret = NOTSUPPORTED;
@@ -185,7 +185,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -195,7 +195,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -205,7 +205,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -217,27 +217,27 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 
 		if (3 < nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
 		if (NULL != (tmp = get_rparam(&request, 1)) && '\0' != *tmp &&
 				FAIL == is_time_suffix(tmp, &from, TRX_LENGTH_UNLIMITED))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			goto out;
 		}
 
 		if (NULL != (tmp = get_rparam(&request, 2)) && '\0' != *tmp &&
 				FAIL == is_time_suffix(tmp, &to, TRX_LENGTH_UNLIMITED))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 			goto out;
 		}
 
 		if (TRX_QUEUE_TO_INFINITY != to && from > to)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Parameters represent an invalid interval."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Parameters represent an invalid interval."));
 			goto out;
 		}
 
@@ -247,7 +247,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -257,7 +257,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -267,7 +267,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -277,7 +277,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (3 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -297,7 +297,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 				SET_UI64_RESULT(result, item->host.jmx_available);
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 				goto out;
 			}
 
@@ -308,7 +308,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 			/* this item is always processed by server */
 			if (NULL != (tmp = get_rparam(&request, 1)) && '\0' != *tmp)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 				goto out;
 			}
 
@@ -322,7 +322,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 			/* this item is always processed by server */
 			if (NULL != (tmp = get_rparam(&request, 1)) && '\0' != *tmp)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 				goto out;
 			}
 
@@ -333,7 +333,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 			/* this item is always processed by server */
 			if (NULL != (tmp = get_rparam(&request, 1)) && '\0' != *tmp)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 				goto out;
 			}
 
@@ -341,29 +341,29 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 		}
 		else if (0 == strcmp(tmp, "interfaces"))	/* treegix["host","discovery","interfaces"] */
 		{
-			struct zbx_json	j;
+			struct trx_json	j;
 			char		*error = NULL;
 
 			/* this item is always processed by server */
 			if (NULL == (tmp = get_rparam(&request, 1)) || 0 != strcmp(tmp, "discovery"))
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 				goto out;
 			}
 
-			if (SUCCEED != zbx_host_interfaces_discovery(item->host.hostid, &j, &error))
+			if (SUCCEED != trx_host_interfaces_discovery(item->host.hostid, &j, &error))
 			{
 				SET_MSG_RESULT(result, error);
 				goto out;
 			}
 
-			SET_STR_RESULT(result, zbx_strdup(NULL, j.buffer));
+			SET_STR_RESULT(result, trx_strdup(NULL, j.buffer));
 
-			zbx_json_free(&j);
+			trx_json_free(&j);
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 			goto out;
 		}
 	}
@@ -371,9 +371,9 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		int	res;
 
-		zbx_alarm_on(CONFIG_TIMEOUT);
+		trx_alarm_on(CONFIG_TIMEOUT);
 		res = get_value_java(TRX_JAVA_GATEWAY_REQUEST_INTERNAL, item, result);
-		zbx_alarm_off();
+		trx_alarm_off();
 
 		if (SUCCEED != res)
 		{
@@ -392,7 +392,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 
 		if (2 > nparams || nparams > 4)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -417,7 +417,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 
 		if (TRX_PROCESS_TYPE_UNKNOWN == process_type)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			goto out;
 		}
 
@@ -430,7 +430,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 		{
 			if (4 == nparams)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 				goto out;
 			}
 
@@ -451,19 +451,19 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 				aggr_func = TRX_AGGR_FUNC_ONE;
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				goto out;
 			}
 
 			if (0 == process_forks)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "No \"%s\" processes started.",
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "No \"%s\" processes started.",
 						get_process_type_string(process_type)));
 				goto out;
 			}
 			else if (process_num > process_forks)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Process \"%s #%d\" is not started.",
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Process \"%s #%d\" is not started.",
 						get_process_type_string(process_type), process_num));
 				goto out;
 			}
@@ -474,7 +474,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 				state = TRX_PROCESS_STATE_IDLE;
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 				goto out;
 			}
 
@@ -487,7 +487,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (2 > nparams || nparams > 3)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -497,22 +497,22 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 		if (0 == strcmp(tmp, "values"))
 		{
 			if (NULL == tmp1 || '\0' == *tmp1 || 0 == strcmp(tmp1, "all"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_COUNTER));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_COUNTER));
 			else if (0 == strcmp(tmp1, "float"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_FLOAT_COUNTER));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_FLOAT_COUNTER));
 			else if (0 == strcmp(tmp1, "uint"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_UINT_COUNTER));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_UINT_COUNTER));
 			else if (0 == strcmp(tmp1, "str"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_STR_COUNTER));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_STR_COUNTER));
 			else if (0 == strcmp(tmp1, "log"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_LOG_COUNTER));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_LOG_COUNTER));
 			else if (0 == strcmp(tmp1, "text"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_TEXT_COUNTER));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_TEXT_COUNTER));
 			else if (0 == strcmp(tmp1, "not supported"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_NOTSUPPORTED_COUNTER));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_NOTSUPPORTED_COUNTER));
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				goto out;
 			}
 		}
@@ -521,16 +521,16 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 			if (NULL == tmp1 || '\0' == *tmp1 || 0 == strcmp(tmp1, "pfree"))
 				SET_DBL_RESULT(result, *(double *)DCget_stats(TRX_STATS_HISTORY_PFREE));
 			else if (0 == strcmp(tmp1, "total"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_TOTAL));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_TOTAL));
 			else if (0 == strcmp(tmp1, "used"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_USED));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_USED));
 			else if (0 == strcmp(tmp1, "free"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_FREE));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_FREE));
 			else if (0 == strcmp(tmp1, "pused"))
 				SET_DBL_RESULT(result, *(double *)DCget_stats(TRX_STATS_HISTORY_PUSED));
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				goto out;
 			}
 		}
@@ -538,23 +538,23 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 		{
 			if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 				goto out;
 			}
 
 			if (NULL == tmp1 || '\0' == *tmp1 || 0 == strcmp(tmp1, "pfree"))
 				SET_DBL_RESULT(result, *(double *)DCget_stats(TRX_STATS_TREND_PFREE));
 			else if (0 == strcmp(tmp1, "total"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_TREND_TOTAL));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_TREND_TOTAL));
 			else if (0 == strcmp(tmp1, "used"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_TREND_USED));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_TREND_USED));
 			else if (0 == strcmp(tmp1, "free"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_TREND_FREE));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_TREND_FREE));
 			else if (0 == strcmp(tmp1, "pused"))
 				SET_DBL_RESULT(result, *(double *)DCget_stats(TRX_STATS_TREND_PUSED));
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				goto out;
 			}
 		}
@@ -563,22 +563,22 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 			if (NULL == tmp1 || '\0' == *tmp1 || 0 == strcmp(tmp1, "pfree"))
 				SET_DBL_RESULT(result, *(double *)DCget_stats(TRX_STATS_HISTORY_INDEX_PFREE));
 			else if (0 == strcmp(tmp1, "total"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_INDEX_TOTAL));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_INDEX_TOTAL));
 			else if (0 == strcmp(tmp1, "used"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_INDEX_USED));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_INDEX_USED));
 			else if (0 == strcmp(tmp1, "free"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_INDEX_FREE));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCget_stats(TRX_STATS_HISTORY_INDEX_FREE));
 			else if (0 == strcmp(tmp1, "pused"))
 				SET_DBL_RESULT(result, *(double *)DCget_stats(TRX_STATS_HISTORY_INDEX_PUSED));
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				goto out;
 			}
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			goto out;
 		}
 	}
@@ -586,7 +586,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (2 > nparams || nparams > 3)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -598,39 +598,39 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 			if (NULL == tmp1 || '\0' == *tmp1 || 0 == strcmp(tmp1, "pfree"))
 				SET_DBL_RESULT(result, *(double *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_PFREE));
 			else if (0 == strcmp(tmp1, "total"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_TOTAL));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_TOTAL));
 			else if (0 == strcmp(tmp1, "used"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_USED));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_USED));
 			else if (0 == strcmp(tmp1, "free"))
-				SET_UI64_RESULT(result, *(zbx_uint64_t *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_FREE));
+				SET_UI64_RESULT(result, *(trx_uint64_t *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_FREE));
 			else if (0 == strcmp(tmp1, "pused"))
 				SET_DBL_RESULT(result, *(double *)DCconfig_get_stats(TRX_CONFSTATS_BUFFER_PUSED));
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				goto out;
 			}
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			goto out;
 		}
 	}
 	else if (0 == strcmp(tmp, "vmware"))
 	{
-		zbx_vmware_stats_t	stats;
+		trx_vmware_stats_t	stats;
 
-		if (FAIL == zbx_vmware_get_statistics(&stats))
+		if (FAIL == trx_vmware_get_statistics(&stats))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "No \"%s\" processes started.",
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "No \"%s\" processes started.",
 					get_process_type_string(TRX_PROCESS_TYPE_VMWARE)));
 			goto out;
 		}
 
 		if (2 > nparams || nparams > 3)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -663,13 +663,13 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 			}
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				goto out;
 			}
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			goto out;
 		}
 	}
@@ -677,11 +677,11 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		const char	*ip_str, *port_str, *ip;
 		unsigned short	port_number;
-		struct zbx_json	json;
+		struct trx_json	json;
 
 		if (6 < nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -696,7 +696,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 		}
 		else if (SUCCEED != is_ushort(port_str, &port_number))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 			goto out;
 		}
 
@@ -704,21 +704,21 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 		{
 			if ((NULL == ip_str || '\0' == *ip_str) && (NULL == port_str || '\0' == *port_str))
 			{
-				zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+				trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
 				/* Adding "data" object to JSON structure to make identical JSONPath expressions */
 				/* work for both data received from internal and external source. */
-				zbx_json_addobject(&json, TRX_PROTO_TAG_DATA);
+				trx_json_addobject(&json, TRX_PROTO_TAG_DATA);
 
-				zbx_get_treegix_stats(&json);
+				trx_get_treegix_stats(&json);
 
-				zbx_json_close(&json);
+				trx_json_close(&json);
 
 				set_result_type(result, ITEM_VALUE_TYPE_TEXT, json.buffer);
 
-				zbx_json_free(&json);
+				trx_json_free(&json);
 			}
-			else if (SUCCEED != zbx_get_remote_treegix_stats(ip, port_number, result))
+			else if (SUCCEED != trx_get_remote_treegix_stats(ip, port_number, result))
 				goto out;
 		}
 		else
@@ -737,34 +737,34 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 					if (NULL != tmp && '\0' != *tmp &&
 							FAIL == is_time_suffix(tmp, &from, TRX_LENGTH_UNLIMITED))
 					{
-						SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+						SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 						goto out;
 					}
 
 					if (NULL != tmp1 && '\0' != *tmp1 &&
 							FAIL == is_time_suffix(tmp1, &to, TRX_LENGTH_UNLIMITED))
 					{
-						SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid sixth parameter."));
+						SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid sixth parameter."));
 						goto out;
 					}
 
 					if (TRX_QUEUE_TO_INFINITY != to && from > to)
 					{
-						SET_MSG_RESULT(result, zbx_strdup(NULL, "Parameters represent an"
+						SET_MSG_RESULT(result, trx_strdup(NULL, "Parameters represent an"
 								" invalid interval."));
 						goto out;
 					}
 
-					zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+					trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
-					zbx_json_adduint64(&json, TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE,
+					trx_json_adduint64(&json, TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE,
 							DCget_item_queue(NULL, from, to));
 
 					set_result_type(result, ITEM_VALUE_TYPE_TEXT, json.buffer);
 
-					zbx_json_free(&json);
+					trx_json_free(&json);
 				}
-				else if (SUCCEED != zbx_get_remote_treegix_stats_queue(ip, port_number, tmp, tmp1,
+				else if (SUCCEED != trx_get_remote_treegix_stats_queue(ip, port_number, tmp, tmp1,
 						result))
 				{
 					goto out;
@@ -772,7 +772,7 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 			}
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid forth parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid forth parameter."));
 				goto out;
 			}
 		}
@@ -781,22 +781,22 @@ int	get_value_internal(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
-		SET_UI64_RESULT(result, zbx_preprocessor_get_queue_size());
+		SET_UI64_RESULT(result, trx_preprocessor_get_queue_size());
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto out;
 	}
 
 	ret = SUCCEED;
 out:
 	if (NOTSUPPORTED == ret && !ISSET_MSG(result))
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Internal check is not supported."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Internal check is not supported."));
 
 	free_request(&request);
 

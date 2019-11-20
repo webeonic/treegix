@@ -1,12 +1,12 @@
 
 
 #include "common.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "treegix_stats.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_treegix_stats_ext                                         *
+ * Function: trx_get_treegix_stats_ext                                         *
  *                                                                            *
  * Purpose: get program type (proxy) specific internal statistics             *
  *                                                                            *
@@ -16,7 +16,7 @@
  *           statistics.                                                      *
  *                                                                            *
  ******************************************************************************/
-void	zbx_get_treegix_stats_ext(struct zbx_json *json)
+void	trx_get_treegix_stats_ext(struct trx_json *json)
 {
 	TRX_UNUSED(json);
 	return;

@@ -27,9 +27,9 @@ if ($parentid == 0) {
 else {
 	$description = (new CLink(_('root'), '#'))
 		->onClick('javascript:
-			jQuery(\'#parent_name\', window.opener.document).val('.zbx_jsvalue(_('root')).');
-			jQuery(\'#parentname\', window.opener.document).val('.zbx_jsvalue(_('root')).');
-			jQuery(\'#parentid\', window.opener.document).val('.zbx_jsvalue(0).');
+			jQuery(\'#parent_name\', window.opener.document).val('.trx_jsvalue(_('root')).');
+			jQuery(\'#parentname\', window.opener.document).val('.trx_jsvalue(_('root')).');
+			jQuery(\'#parentid\', window.opener.document).val('.trx_jsvalue(0).');
 			self.close();
 			return false;'
 		);
@@ -50,9 +50,9 @@ foreach ($this->data['db_pservices'] as $db_service) {
 		$description = (new CLink($db_service['name'], '#'))
 			->addClass('link')
 			->onClick('javascript:
-				jQuery(\'#parent_name\', window.opener.document).val('.zbx_jsvalue($db_service['name']).');
-				jQuery(\'#parentname\', window.opener.document).val('.zbx_jsvalue($db_service['name']).');
-				jQuery(\'#parentid\', window.opener.document).val('.zbx_jsvalue($db_service['serviceid']).');
+				jQuery(\'#parent_name\', window.opener.document).val('.trx_jsvalue($db_service['name']).');
+				jQuery(\'#parentname\', window.opener.document).val('.trx_jsvalue($db_service['name']).');
+				jQuery(\'#parentid\', window.opener.document).val('.trx_jsvalue($db_service['serviceid']).');
 				self.close();
 				return false;'
 			);

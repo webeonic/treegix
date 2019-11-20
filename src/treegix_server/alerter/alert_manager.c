@@ -3,25 +3,25 @@
 #include "common.h"
 
 #include "daemon.h"
-#include "zbxself.h"
+#include "trxself.h"
 #include "log.h"
-#include "zbxipcservice.h"
-#include "zbxalgo.h"
-#include "zbxserver.h"
+#include "trxipcservice.h"
+#include "trxalgo.h"
+#include "trxserver.h"
 #include "alerter_protocol.h"
 #include "alert_manager.h"
-#include "zbxmedia.h"
-#include "zbxembed.h"
-#include "zbxserialize.h"
+#include "trxmedia.h"
+#include "trxembed.h"
+#include "trxserialize.h"
 
 #define TRX_AM_LOCATION_NOWHERE		0
 #define TRX_AM_LOCATION_QUEUE		1
 
 #define TRX_UPDATE_STR(dst, src)			\
 	if (NULL == src)				\
-		zbx_free(dst); 				\
+		trx_free(dst); 				\
 	else if (NULL == dst || 0 != strcmp(dst, src)) 	\
-		dst = zbx_strdup(dst, src);
+		dst = trx_strdup(dst, src);
 
 #define TRX_AM_DB_POLL_DELAY	1
 
@@ -82,10 +82,10 @@ extern char	*CONFIG_ALERT_SCRIPTS_PATH;
 /* alert data */
 typedef struct
 {
-	zbx_uint64_t	alertid;
-	zbx_uint64_t	mediatypeid;
-	zbx_uint64_t	alertpoolid;
-	zbx_uint64_t	eventid;
+	trx_uint64_t	alertid;
+	trx_uint64_t	mediatypeid;
+	trx_uint64_t	alertpoolid;
+	trx_uint64_t	eventid;
 	int		nextsend;
 
 	/* alert data */
@@ -96,7 +96,7 @@ typedef struct
 	int		status;
 	int		retries;
 }
-zbx_am_alert_t;
+trx_am_alert_t;
 
 /* Alert pool data.                                                          */
 /* Alerts are assigned to pools based on event source, object and objectid.  */
@@ -104,11 +104,11 @@ zbx_am_alert_t;
 /* are processed sequentially.                                               */
 typedef struct
 {
-	zbx_uint64_t		id;
-	zbx_uint64_t		mediatypeid;
+	trx_uint64_t		id;
+	trx_uint64_t		mediatypeid;
 
 	/* alert queue */
-	zbx_binary_heap_t	queue;
+	trx_binary_heap_t	queue;
 
 	int			location;
 	int			alerts_num;
@@ -116,12 +116,12 @@ typedef struct
 	/* the number of alert objects for this alert pool */
 	int			refcount;
 }
-zbx_am_alertpool_t;
+trx_am_alertpool_t;
 
 /* media type data */
 typedef struct
 {
-	zbx_uint64_t		mediatypeid;
+	trx_uint64_t		mediatypeid;
 
 	int			location;
 	int			alerts_num;
@@ -130,7 +130,7 @@ typedef struct
 	int			refcount;
 
 	/* alert pool queue */
-	zbx_binary_heap_t	queue;
+	trx_binary_heap_t	queue;
 
 	/* media type data */
 	int			type;
@@ -159,69 +159,69 @@ typedef struct
 	unsigned char		content_type;
 	unsigned char		flags;
 }
-zbx_am_mediatype_t;
+trx_am_mediatype_t;
 
 /* alerter data */
 typedef struct
 {
 	/* the connected aleter client */
-	zbx_ipc_client_t	*client;
+	trx_ipc_client_t	*client;
 
-	zbx_am_alert_t		*alert;
+	trx_am_alert_t		*alert;
 }
-zbx_am_alerter_t;
+trx_am_alerter_t;
 
 /* alert manager data */
 typedef struct
 {
 	/* alerter vector, created during manager initialization */
-	zbx_vector_ptr_t	alerters;
-	zbx_queue_ptr_t		free_alerters;
+	trx_vector_ptr_t	alerters;
+	trx_queue_ptr_t		free_alerters;
 
 	/* alerters indexed by IPC service clients */
-	zbx_hashset_t		alerters_client;
+	trx_hashset_t		alerters_client;
 
 	/* the next alerter index to be assigned to new IPC service clients */
 	int			next_alerter_index;
 
-	zbx_hashset_t		mediatypes;
-	zbx_hashset_t		alertpools;
+	trx_hashset_t		mediatypes;
+	trx_hashset_t		alertpools;
 
 	/* the alert status update cache */
-	zbx_hashset_t		results;
+	trx_hashset_t		results;
 
 	/* the watchdog alert recipients */
-	zbx_hashset_t		watchdog;
+	trx_hashset_t		watchdog;
 
 	/* mediatype queue */
-	zbx_binary_heap_t	queue;
+	trx_binary_heap_t	queue;
 
 	/* the database status */
 	int			dbstatus;
 
 	/* the scripting engine */
-	zbx_es_t		es;
+	trx_es_t		es;
 
 	/* the IPC service */
-	zbx_ipc_service_t	ipc;
+	trx_ipc_service_t	ipc;
 }
-zbx_am_t;
+trx_am_t;
 
 /* alerters client index hashset support */
 
-static zbx_hash_t	alerter_hash_func(const void *d)
+static trx_hash_t	alerter_hash_func(const void *d)
 {
-	const zbx_am_alerter_t	*alerter = *(const zbx_am_alerter_t **)d;
+	const trx_am_alerter_t	*alerter = *(const trx_am_alerter_t **)d;
 
-	zbx_hash_t hash = TRX_DEFAULT_PTR_HASH_FUNC(&alerter->client);
+	trx_hash_t hash = TRX_DEFAULT_PTR_HASH_FUNC(&alerter->client);
 
 	return hash;
 }
 
 static int	alerter_compare_func(const void *d1, const void *d2)
 {
-	const zbx_am_alerter_t	*p1 = *(const zbx_am_alerter_t **)d1;
-	const zbx_am_alerter_t	*p2 = *(const zbx_am_alerter_t **)d2;
+	const trx_am_alerter_t	*p1 = *(const trx_am_alerter_t **)d1;
+	const trx_am_alerter_t	*p2 = *(const trx_am_alerter_t **)d2;
 
 	TRX_RETURN_IF_NOT_EQUAL(p1->client, p2->client);
 
@@ -230,11 +230,11 @@ static int	alerter_compare_func(const void *d1, const void *d2)
 
 /* alert pool hashset support */
 
-static zbx_hash_t	am_alertpool_hash_func(const void *data)
+static trx_hash_t	am_alertpool_hash_func(const void *data)
 {
-	const zbx_am_alertpool_t	*pool = (const zbx_am_alertpool_t *)data;
+	const trx_am_alertpool_t	*pool = (const trx_am_alertpool_t *)data;
 
-	zbx_hash_t			hash;
+	trx_hash_t			hash;
 
 	hash = TRX_DEFAULT_UINT64_HASH_FUNC(&pool->id);
 	hash = TRX_DEFAULT_UINT64_HASH_ALGO(&pool->mediatypeid, sizeof(pool->mediatypeid), hash);
@@ -244,8 +244,8 @@ static zbx_hash_t	am_alertpool_hash_func(const void *data)
 
 static int	am_alertpool_compare_func(const void *d1, const void *d2)
 {
-	const zbx_am_alertpool_t	*pool1 = (const zbx_am_alertpool_t *)d1;
-	const zbx_am_alertpool_t	*pool2 = (const zbx_am_alertpool_t *)d2;
+	const trx_am_alertpool_t	*pool1 = (const trx_am_alertpool_t *)d1;
+	const trx_am_alertpool_t	*pool2 = (const trx_am_alertpool_t *)d2;
 
 	TRX_RETURN_IF_NOT_EQUAL(pool1->id, pool2->id);
 	TRX_RETURN_IF_NOT_EQUAL(pool1->mediatypeid, pool2->mediatypeid);
@@ -255,7 +255,7 @@ static int	am_alertpool_compare_func(const void *d1, const void *d2)
 
 /* queue support */
 
-static int	am_alert_compare(const zbx_am_alert_t *alert1, const zbx_am_alert_t *alert2)
+static int	am_alert_compare(const trx_am_alert_t *alert1, const trx_am_alert_t *alert2)
 {
 	TRX_RETURN_IF_NOT_EQUAL(alert1->nextsend, alert2->nextsend);
 	TRX_RETURN_IF_NOT_EQUAL(alert1->alertid, alert2->alertid);
@@ -265,46 +265,46 @@ static int	am_alert_compare(const zbx_am_alert_t *alert1, const zbx_am_alert_t *
 
 static int	am_alert_queue_compare(const void *d1, const void *d2)
 {
-	const zbx_binary_heap_elem_t	*e1 = (const zbx_binary_heap_elem_t *)d1;
-	const zbx_binary_heap_elem_t	*e2 = (const zbx_binary_heap_elem_t *)d2;
+	const trx_binary_heap_elem_t	*e1 = (const trx_binary_heap_elem_t *)d1;
+	const trx_binary_heap_elem_t	*e2 = (const trx_binary_heap_elem_t *)d2;
 
-	return am_alert_compare((const zbx_am_alert_t *)e1->data, (const zbx_am_alert_t *)e2->data);
+	return am_alert_compare((const trx_am_alert_t *)e1->data, (const trx_am_alert_t *)e2->data);
 }
 
-static int	am_alertpool_compare(const zbx_am_alertpool_t *pool1, const zbx_am_alertpool_t *pool2)
+static int	am_alertpool_compare(const trx_am_alertpool_t *pool1, const trx_am_alertpool_t *pool2)
 {
-	zbx_binary_heap_elem_t	*e1, *e2;
+	trx_binary_heap_elem_t	*e1, *e2;
 
-	e1 = zbx_binary_heap_find_min((zbx_binary_heap_t *)&pool1->queue);
-	e2 = zbx_binary_heap_find_min((zbx_binary_heap_t *)&pool2->queue);
+	e1 = trx_binary_heap_find_min((trx_binary_heap_t *)&pool1->queue);
+	e2 = trx_binary_heap_find_min((trx_binary_heap_t *)&pool2->queue);
 
-	return am_alert_compare((const zbx_am_alert_t *)e1->data, (const zbx_am_alert_t *)e2->data);
+	return am_alert_compare((const trx_am_alert_t *)e1->data, (const trx_am_alert_t *)e2->data);
 }
 
 static int	am_alertpool_queue_compare(const void *d1, const void *d2)
 {
-	const zbx_binary_heap_elem_t	*e1 = (const zbx_binary_heap_elem_t *)d1;
-	const zbx_binary_heap_elem_t	*e2 = (const zbx_binary_heap_elem_t *)d2;
+	const trx_binary_heap_elem_t	*e1 = (const trx_binary_heap_elem_t *)d1;
+	const trx_binary_heap_elem_t	*e2 = (const trx_binary_heap_elem_t *)d2;
 
-	return am_alertpool_compare((const zbx_am_alertpool_t *)e1->data, (const zbx_am_alertpool_t *)e2->data);
+	return am_alertpool_compare((const trx_am_alertpool_t *)e1->data, (const trx_am_alertpool_t *)e2->data);
 }
 
-static int	am_mediatype_compare(const zbx_am_mediatype_t *media1, const zbx_am_mediatype_t *media2)
+static int	am_mediatype_compare(const trx_am_mediatype_t *media1, const trx_am_mediatype_t *media2)
 {
-	zbx_binary_heap_elem_t	*e1, *e2;
+	trx_binary_heap_elem_t	*e1, *e2;
 
-	e1 = zbx_binary_heap_find_min((zbx_binary_heap_t *)&media1->queue);
-	e2 = zbx_binary_heap_find_min((zbx_binary_heap_t *)&media2->queue);
+	e1 = trx_binary_heap_find_min((trx_binary_heap_t *)&media1->queue);
+	e2 = trx_binary_heap_find_min((trx_binary_heap_t *)&media2->queue);
 
-	return am_alertpool_compare((const zbx_am_alertpool_t *)e1->data, (const zbx_am_alertpool_t *)e2->data);
+	return am_alertpool_compare((const trx_am_alertpool_t *)e1->data, (const trx_am_alertpool_t *)e2->data);
 }
 
 static int	am_mediatype_queue_compare(const void *d1, const void *d2)
 {
-	const zbx_binary_heap_elem_t	*e1 = (const zbx_binary_heap_elem_t *)d1;
-	const zbx_binary_heap_elem_t	*e2 = (const zbx_binary_heap_elem_t *)d2;
+	const trx_binary_heap_elem_t	*e1 = (const trx_binary_heap_elem_t *)d1;
+	const trx_binary_heap_elem_t	*e2 = (const trx_binary_heap_elem_t *)d2;
 
-	return am_mediatype_compare((const zbx_am_mediatype_t *)e1->data, (const zbx_am_mediatype_t *)e2->data);
+	return am_mediatype_compare((const trx_am_mediatype_t *)e1->data, (const trx_am_mediatype_t *)e2->data);
 }
 
 /******************************************************************************
@@ -319,42 +319,42 @@ static int	am_mediatype_queue_compare(const void *d1, const void *d2)
  * Return value: The media type object or NULL if not found                   *
  *                                                                            *
  ******************************************************************************/
-static zbx_am_mediatype_t	*am_get_mediatype(zbx_am_t *manager, zbx_uint64_t mediatypeid)
+static trx_am_mediatype_t	*am_get_mediatype(trx_am_t *manager, trx_uint64_t mediatypeid)
 {
-	return (zbx_am_mediatype_t *)zbx_hashset_search(&manager->mediatypes, &mediatypeid);
+	return (trx_am_mediatype_t *)trx_hashset_search(&manager->mediatypes, &mediatypeid);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_am_update_webhook                                            *
+ * Function: trx_am_update_webhook                                            *
  *                                                                            *
  * Purpose: updates additional webhook media type fields                      *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_am_update_webhook(zbx_am_t *manager, zbx_am_mediatype_t *mediatype, const char *script,
+static void	trx_am_update_webhook(trx_am_t *manager, trx_am_mediatype_t *mediatype, const char *script,
 		const char *timeout)
 {
 	if (FAIL == is_time_suffix(timeout, &mediatype->timeout, TRX_LENGTH_UNLIMITED))
 	{
-		mediatype->error = zbx_strdup(mediatype->error, "Invalid timeout value in media type configuration.");
+		mediatype->error = trx_strdup(mediatype->error, "Invalid timeout value in media type configuration.");
 		return;
 	}
 
 	if (NULL == mediatype->script || 0 != strcmp(mediatype->script, script))
 	{
-		if (SUCCEED != zbx_es_is_env_initialized(&manager->es))
+		if (SUCCEED != trx_es_is_env_initialized(&manager->es))
 		{
-			if (SUCCEED != zbx_es_init_env(&manager->es, &mediatype->error))
+			if (SUCCEED != trx_es_init_env(&manager->es, &mediatype->error))
 				return;
 		}
 
-		zbx_free(mediatype->script_bin);
-		if (SUCCEED != zbx_es_compile(&manager->es, script, &mediatype->script_bin, &mediatype->script_bin_sz,
+		trx_free(mediatype->script_bin);
+		if (SUCCEED != trx_es_compile(&manager->es, script, &mediatype->script_bin, &mediatype->script_bin_sz,
 				&mediatype->error))
 		{
 			return;
 		}
-		mediatype->script = zbx_strdup(mediatype->script, script);
+		mediatype->script = trx_strdup(mediatype->script, script);
 	}
 }
 
@@ -368,7 +368,7 @@ static void	zbx_am_update_webhook(zbx_am_t *manager, zbx_am_mediatype_t *mediaty
  *             ...         - [IN] media type properties                       *
  *                                                                            *
  ******************************************************************************/
-static void	am_update_mediatype(zbx_am_t *manager, zbx_uint64_t mediatypeid, unsigned char type,
+static void	am_update_mediatype(trx_am_t *manager, trx_uint64_t mediatypeid, unsigned char type,
 		const char *smtp_server, const char *smtp_helo, const char *smtp_email,
 		const char *exec_path, const char *gsm_modem, const char *username, const char *passwd,
 		unsigned short smtp_port, unsigned char smtp_security, unsigned char smtp_verify_peer,
@@ -376,20 +376,20 @@ static void	am_update_mediatype(zbx_am_t *manager, zbx_uint64_t mediatypeid, uns
 		int maxsessions, int maxattempts, const char *attempt_interval, unsigned char content_type,
 		const char *script, const char *timeout, unsigned char flags)
 {
-	zbx_am_mediatype_t	*mediatype;
+	trx_am_mediatype_t	*mediatype;
 
 	if (NULL == (mediatype = am_get_mediatype(manager, mediatypeid)))
 	{
-		zbx_am_mediatype_t	mediatype_local = {
+		trx_am_mediatype_t	mediatype_local = {
 				.mediatypeid = mediatypeid,
 				.location = TRX_AM_LOCATION_NOWHERE,
 				.flags = flags
 		};
 
-		mediatype = (zbx_am_mediatype_t *)zbx_hashset_insert(&manager->mediatypes, &mediatype_local,
+		mediatype = (trx_am_mediatype_t *)trx_hashset_insert(&manager->mediatypes, &mediatype_local,
 				sizeof(mediatype_local));
 
-		zbx_binary_heap_create(&mediatype->queue, am_alertpool_queue_compare,
+		trx_binary_heap_create(&mediatype->queue, am_alertpool_queue_compare,
 				TRX_BINARY_HEAP_OPTION_DIRECT);
 	}
 	else
@@ -400,7 +400,7 @@ static void	am_update_mediatype(zbx_am_t *manager, zbx_uint64_t mediatypeid, uns
 
 	mediatype->type = type;
 
-	zbx_free(mediatype->error);
+	trx_free(mediatype->error);
 	TRX_UPDATE_STR(mediatype->smtp_server, smtp_server);
 	TRX_UPDATE_STR(mediatype->smtp_helo, smtp_helo);
 	TRX_UPDATE_STR(mediatype->smtp_email, smtp_email);
@@ -422,12 +422,12 @@ static void	am_update_mediatype(zbx_am_t *manager, zbx_uint64_t mediatypeid, uns
 
 	if (FAIL == is_time_suffix(attempt_interval, &mediatype->attempt_interval, TRX_LENGTH_UNLIMITED))
 	{
-		mediatype->error = zbx_strdup(mediatype->error, "Invalid media type attempt interval.");
+		mediatype->error = trx_strdup(mediatype->error, "Invalid media type attempt interval.");
 		return;
 	}
 
 	if (MEDIA_TYPE_WEBHOOK == mediatype->type)
-		zbx_am_update_webhook(manager, mediatype, script, timeout);
+		trx_am_update_webhook(manager, mediatype, script, timeout);
 }
 
 /******************************************************************************
@@ -446,23 +446,23 @@ static void	am_update_mediatype(zbx_am_t *manager, zbx_uint64_t mediatypeid, uns
  *           is updated.                                                      *
  *                                                                            *
  ******************************************************************************/
-static void	am_push_mediatype(zbx_am_t *manager, zbx_am_mediatype_t *mediatype)
+static void	am_push_mediatype(trx_am_t *manager, trx_am_mediatype_t *mediatype)
 {
-	zbx_binary_heap_elem_t	elem = {mediatype->mediatypeid, mediatype};
+	trx_binary_heap_elem_t	elem = {mediatype->mediatypeid, mediatype};
 
-	if (SUCCEED == zbx_binary_heap_empty(&mediatype->queue))
+	if (SUCCEED == trx_binary_heap_empty(&mediatype->queue))
 		return;
 
 	if (TRX_AM_LOCATION_NOWHERE == mediatype->location)
 	{
 		if (0 == mediatype->maxsessions || mediatype->alerts_num < mediatype->maxsessions)
 		{
-			zbx_binary_heap_insert(&manager->queue, &elem);
+			trx_binary_heap_insert(&manager->queue, &elem);
 			mediatype->location = TRX_AM_LOCATION_QUEUE;
 		}
 	}
 	else
-		zbx_binary_heap_update_direct(&manager->queue, &elem);
+		trx_binary_heap_update_direct(&manager->queue, &elem);
 }
 
 /******************************************************************************
@@ -476,19 +476,19 @@ static void	am_push_mediatype(zbx_am_t *manager, zbx_am_mediatype_t *mediatype)
  * Return value: The media type object.                                       *
  *                                                                            *
  ******************************************************************************/
-static zbx_am_mediatype_t	*am_pop_mediatype(zbx_am_t *manager)
+static trx_am_mediatype_t	*am_pop_mediatype(trx_am_t *manager)
 {
-	zbx_binary_heap_elem_t	*elem;
-	zbx_am_mediatype_t	*mediatype;
+	trx_binary_heap_elem_t	*elem;
+	trx_am_mediatype_t	*mediatype;
 
-	if (FAIL != zbx_binary_heap_empty(&manager->queue))
+	if (FAIL != trx_binary_heap_empty(&manager->queue))
 		return NULL;
 
-	elem = zbx_binary_heap_find_min(&manager->queue);
-	mediatype = (zbx_am_mediatype_t *)elem->data;
+	elem = trx_binary_heap_find_min(&manager->queue);
+	mediatype = (trx_am_mediatype_t *)elem->data;
 	mediatype->location = TRX_AM_LOCATION_NOWHERE;
 
-	zbx_binary_heap_remove_min(&manager->queue);
+	trx_binary_heap_remove_min(&manager->queue);
 
 	return mediatype;
 }
@@ -498,23 +498,23 @@ static zbx_am_mediatype_t	*am_pop_mediatype(zbx_am_t *manager)
  * Function: am_remove_mediatype                                              *
  *                                                                            *
  ******************************************************************************/
-static void am_remove_mediatype(zbx_am_t *manager, zbx_am_mediatype_t *mediatype)
+static void am_remove_mediatype(trx_am_t *manager, trx_am_mediatype_t *mediatype)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "%s() mediatypeid:" TRX_FS_UI64, __func__, mediatype->mediatypeid);
 
-	zbx_free(mediatype->smtp_server);
-	zbx_free(mediatype->smtp_helo);
-	zbx_free(mediatype->smtp_email);
-	zbx_free(mediatype->exec_path);
-	zbx_free(mediatype->exec_params);
-	zbx_free(mediatype->gsm_modem);
-	zbx_free(mediatype->username);
-	zbx_free(mediatype->passwd);
-	zbx_free(mediatype->script);
-	zbx_free(mediatype->script_bin);
+	trx_free(mediatype->smtp_server);
+	trx_free(mediatype->smtp_helo);
+	trx_free(mediatype->smtp_email);
+	trx_free(mediatype->exec_path);
+	trx_free(mediatype->exec_params);
+	trx_free(mediatype->gsm_modem);
+	trx_free(mediatype->username);
+	trx_free(mediatype->passwd);
+	trx_free(mediatype->script);
+	trx_free(mediatype->script_bin);
 
-	zbx_binary_heap_destroy(&mediatype->queue);
-	zbx_hashset_remove_direct(&manager->mediatypes, mediatype);
+	trx_binary_heap_destroy(&mediatype->queue);
+	trx_hashset_remove_direct(&manager->mediatypes, mediatype);
 }
 
 /******************************************************************************
@@ -522,7 +522,7 @@ static void am_remove_mediatype(zbx_am_t *manager, zbx_am_mediatype_t *mediatype
  * Function: am_release_mediatype                                             *
  *                                                                            *
  ******************************************************************************/
-static int	am_release_mediatype(zbx_am_t *manager, zbx_am_mediatype_t *mediatype)
+static int	am_release_mediatype(trx_am_t *manager, trx_am_mediatype_t *mediatype)
 {
 	if (0 != --mediatype->refcount)
 		return FAIL;
@@ -546,9 +546,9 @@ static int	am_release_mediatype(zbx_am_t *manager, zbx_am_mediatype_t *mediatype
  * Return value: The alert pool id.                                           *
  *                                                                            *
  ******************************************************************************/
-static zbx_uint64_t	am_calc_alertpoolid(int source, int object, zbx_uint64_t objectid)
+static trx_uint64_t	am_calc_alertpoolid(int source, int object, trx_uint64_t objectid)
 {
-	zbx_uint64_t	alertpoolid;
+	trx_uint64_t	alertpoolid;
 
 	if (source < 0 || source > 0xffff)
 		THIS_SHOULD_NEVER_HAPPEN;
@@ -579,19 +579,19 @@ static zbx_uint64_t	am_calc_alertpoolid(int source, int object, zbx_uint64_t obj
  * Return value: The alert pool object.                                       *
  *                                                                            *
  ******************************************************************************/
-static zbx_am_alertpool_t	*am_get_alertpool(zbx_am_t *manager, zbx_uint64_t mediatypeid, zbx_uint64_t alertpoolid)
+static trx_am_alertpool_t	*am_get_alertpool(trx_am_t *manager, trx_uint64_t mediatypeid, trx_uint64_t alertpoolid)
 {
-	zbx_am_alertpool_t	*alertpool, alertpool_local;
+	trx_am_alertpool_t	*alertpool, alertpool_local;
 
 	alertpool_local.mediatypeid = mediatypeid;
 	alertpool_local.id = alertpoolid;
 
-	if (NULL == (alertpool = (zbx_am_alertpool_t *)zbx_hashset_search(&manager->alertpools, &alertpool_local)))
+	if (NULL == (alertpool = (trx_am_alertpool_t *)trx_hashset_search(&manager->alertpools, &alertpool_local)))
 	{
-		alertpool = (zbx_am_alertpool_t *)zbx_hashset_insert(&manager->alertpools, &alertpool_local,
+		alertpool = (trx_am_alertpool_t *)trx_hashset_insert(&manager->alertpools, &alertpool_local,
 				sizeof(alertpool_local));
 
-		zbx_binary_heap_create(&alertpool->queue, am_alert_queue_compare, TRX_BINARY_HEAP_OPTION_EMPTY);
+		trx_binary_heap_create(&alertpool->queue, am_alert_queue_compare, TRX_BINARY_HEAP_OPTION_EMPTY);
 
 		alertpool->location = TRX_AM_LOCATION_NOWHERE;
 		alertpool->refcount = 0;
@@ -614,20 +614,20 @@ static zbx_am_alertpool_t	*am_get_alertpool(zbx_am_t *manager, zbx_uint64_t medi
  *           queued. Otherwise its position in the queue is updated.          *
  *                                                                            *
  ******************************************************************************/
-static void	am_push_alertpool(zbx_am_mediatype_t *mediatype, zbx_am_alertpool_t *alertpool)
+static void	am_push_alertpool(trx_am_mediatype_t *mediatype, trx_am_alertpool_t *alertpool)
 {
-	zbx_binary_heap_elem_t	elem = {alertpool->id, alertpool};
+	trx_binary_heap_elem_t	elem = {alertpool->id, alertpool};
 
 	if (TRX_AM_LOCATION_NOWHERE == alertpool->location)
 	{
 		if (0 == alertpool->alerts_num)
 		{
-			zbx_binary_heap_insert(&mediatype->queue, &elem);
+			trx_binary_heap_insert(&mediatype->queue, &elem);
 			alertpool->location = TRX_AM_LOCATION_QUEUE;
 		}
 	}
 	else
-		zbx_binary_heap_update_direct(&mediatype->queue, &elem);
+		trx_binary_heap_update_direct(&mediatype->queue, &elem);
 }
 
 /******************************************************************************
@@ -641,19 +641,19 @@ static void	am_push_alertpool(zbx_am_mediatype_t *mediatype, zbx_am_alertpool_t 
  * Return value: The alert pool object.                                       *
  *                                                                            *
  ******************************************************************************/
-static zbx_am_alertpool_t	*am_pop_alertpool(zbx_am_mediatype_t *mediatype)
+static trx_am_alertpool_t	*am_pop_alertpool(trx_am_mediatype_t *mediatype)
 {
-	zbx_binary_heap_elem_t	*elem;
-	zbx_am_alertpool_t	*alertpool;
+	trx_binary_heap_elem_t	*elem;
+	trx_am_alertpool_t	*alertpool;
 
-	if (FAIL != zbx_binary_heap_empty(&mediatype->queue))
+	if (FAIL != trx_binary_heap_empty(&mediatype->queue))
 		return NULL;
 
-	elem = zbx_binary_heap_find_min(&mediatype->queue);
-	alertpool = (zbx_am_alertpool_t *)elem->data;
+	elem = trx_binary_heap_find_min(&mediatype->queue);
+	alertpool = (trx_am_alertpool_t *)elem->data;
 	alertpool->location = TRX_AM_LOCATION_NOWHERE;
 
-	zbx_binary_heap_remove_min(&mediatype->queue);
+	trx_binary_heap_remove_min(&mediatype->queue);
 
 	return alertpool;
 }
@@ -671,14 +671,14 @@ static zbx_am_alertpool_t	*am_pop_alertpool(zbx_am_mediatype_t *mediatype)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	am_release_alertpool(zbx_am_t *manager, zbx_am_alertpool_t *alertpool)
+static int	am_release_alertpool(trx_am_t *manager, trx_am_alertpool_t *alertpool)
 {
 
 	if (0 != -- alertpool->refcount)
 		return FAIL;
 
-	zbx_binary_heap_destroy(&alertpool->queue);
-	zbx_hashset_remove_direct(&manager->alertpools, alertpool);
+	trx_binary_heap_destroy(&alertpool->queue);
+	trx_hashset_remove_direct(&manager->alertpools, alertpool);
 
 	return SUCCEED;
 }
@@ -694,34 +694,34 @@ static int	am_release_alertpool(zbx_am_t *manager, zbx_am_alertpool_t *alertpool
  * Return value: The alert object.                                            *
  *                                                                            *
  ******************************************************************************/
-static zbx_am_alert_t	*am_create_alert(zbx_uint64_t alertid, zbx_uint64_t mediatypeid, int source, int object,
-		zbx_uint64_t objectid, const char *sendto, const char *subject, const char *message, const char *params,
+static trx_am_alert_t	*am_create_alert(trx_uint64_t alertid, trx_uint64_t mediatypeid, int source, int object,
+		trx_uint64_t objectid, const char *sendto, const char *subject, const char *message, const char *params,
 		int status, int retries, int nextsend)
 {
-	zbx_am_alert_t	*alert;
+	trx_am_alert_t	*alert;
 
-	alert = (zbx_am_alert_t *)zbx_malloc(NULL, sizeof(zbx_am_alert_t));
+	alert = (trx_am_alert_t *)trx_malloc(NULL, sizeof(trx_am_alert_t));
 	alert->alertid = alertid;
 	alert->mediatypeid = mediatypeid;
 	alert->alertpoolid = am_calc_alertpoolid(source, object, objectid);
 
 	if (NULL != sendto)
-		alert->sendto = zbx_strdup(NULL, sendto);
+		alert->sendto = trx_strdup(NULL, sendto);
 	else
 		alert->sendto = NULL;
 
 	if (NULL != subject)
-		alert->subject = zbx_strdup(NULL, subject);
+		alert->subject = trx_strdup(NULL, subject);
 	else
 		alert->subject = NULL;
 
 	if (NULL != message)
-		alert->message = zbx_strdup(NULL, message);
+		alert->message = trx_strdup(NULL, message);
 	else
 		alert->message = NULL;
 
 	if (NULL != params)
-		alert->params = zbx_strdup(NULL, params);
+		alert->params = trx_strdup(NULL, params);
 	else
 		alert->params = NULL;
 
@@ -747,11 +747,11 @@ static zbx_am_alert_t	*am_create_alert(zbx_uint64_t alertid, zbx_uint64_t mediat
  *           copying.                                                         *
  *                                                                            *
  ******************************************************************************/
-static zbx_am_alert_t	*am_copy_db_alert(zbx_am_db_alert_t *db_alert)
+static trx_am_alert_t	*am_copy_db_alert(trx_am_db_alert_t *db_alert)
 {
-	zbx_am_alert_t	*alert;
+	trx_am_alert_t	*alert;
 
-	alert = (zbx_am_alert_t *)zbx_malloc(NULL, sizeof(zbx_am_alert_t));
+	alert = (trx_am_alert_t *)trx_malloc(NULL, sizeof(trx_am_alert_t));
 	alert->alertid = db_alert->alertid;
 	alert->mediatypeid = db_alert->mediatypeid;
 	alert->alertpoolid = am_calc_alertpoolid(db_alert->source, db_alert->object, db_alert->objectid);
@@ -766,7 +766,7 @@ static zbx_am_alert_t	*am_copy_db_alert(zbx_am_db_alert_t *db_alert)
 	alert->retries = db_alert->retries;
 	alert->nextsend = 0;
 
-	zbx_free(db_alert);
+	trx_free(db_alert);
 
 	return alert;
 }
@@ -781,13 +781,13 @@ static zbx_am_alert_t	*am_copy_db_alert(zbx_am_db_alert_t *db_alert)
  * Parameters: alert - [IN] the alert object                                  *
  *                                                                            *
  ******************************************************************************/
-static void	am_alert_free(zbx_am_alert_t *alert)
+static void	am_alert_free(trx_am_alert_t *alert)
 {
-	zbx_free(alert->sendto);
-	zbx_free(alert->subject);
-	zbx_free(alert->message);
-	zbx_free(alert->params);
-	zbx_free(alert);
+	trx_free(alert->sendto);
+	trx_free(alert->subject);
+	trx_free(alert->message);
+	trx_free(alert->params);
+	trx_free(alert);
 }
 
 /******************************************************************************
@@ -800,11 +800,11 @@ static void	am_alert_free(zbx_am_alert_t *alert)
  *             alert     - [IN] the alert                                     *
  *                                                                            *
  ******************************************************************************/
-static void	am_push_alert(zbx_am_alertpool_t *alertpool, zbx_am_alert_t *alert)
+static void	am_push_alert(trx_am_alertpool_t *alertpool, trx_am_alert_t *alert)
 {
-	zbx_binary_heap_elem_t	elem = {0, alert};
+	trx_binary_heap_elem_t	elem = {0, alert};
 
-	zbx_binary_heap_insert(&alertpool->queue, &elem);
+	trx_binary_heap_insert(&alertpool->queue, &elem);
 }
 
 /******************************************************************************
@@ -818,21 +818,21 @@ static void	am_push_alert(zbx_am_alertpool_t *alertpool, zbx_am_alert_t *alert)
  * Return value: The alert object.                                            *
  *                                                                            *
  ******************************************************************************/
-static zbx_am_alert_t	*am_pop_alert(zbx_am_t *manager)
+static trx_am_alert_t	*am_pop_alert(trx_am_t *manager)
 {
-	zbx_am_mediatype_t	*mediatype;
-	zbx_am_alertpool_t	*alertpool;
-	zbx_am_alert_t		*alert;
-	zbx_binary_heap_elem_t	*elem;
+	trx_am_mediatype_t	*mediatype;
+	trx_am_alertpool_t	*alertpool;
+	trx_am_alert_t		*alert;
+	trx_binary_heap_elem_t	*elem;
 
 	if (NULL == (mediatype = am_pop_mediatype(manager)))
 		return NULL;
 
 	alertpool = am_pop_alertpool(mediatype);
 
-	elem = zbx_binary_heap_find_min(&alertpool->queue);
-	alert = (zbx_am_alert_t *)elem->data;
-	zbx_binary_heap_remove_min(&alertpool->queue);
+	elem = trx_binary_heap_find_min(&alertpool->queue);
+	alert = (trx_am_alert_t *)elem->data;
+	trx_binary_heap_remove_min(&alertpool->queue);
 
 	/* requeue media type if the number of parallel alerts has not yet reached */
 	mediatype->alerts_num++;
@@ -853,10 +853,10 @@ static zbx_am_alert_t	*am_pop_alert(zbx_am_t *manager)
  *             alert   - [IN] the alert                                       *
  *                                                                            *
  ******************************************************************************/
-static void	am_remove_alert(zbx_am_t *manager, zbx_am_alert_t *alert)
+static void	am_remove_alert(trx_am_t *manager, trx_am_alert_t *alert)
 {
-	zbx_am_alertpool_t	*alertpool;
-	zbx_am_mediatype_t	*mediatype;
+	trx_am_alertpool_t	*alertpool;
+	trx_am_mediatype_t	*mediatype;
 
 	if (NULL != (mediatype = am_get_mediatype(manager, alert->mediatypeid)))
 	{
@@ -890,10 +890,10 @@ static void	am_remove_alert(zbx_am_t *manager, zbx_am_alert_t *alert)
  *                      maxattempts limit and alert was removed as failed.    *
  *                                                                            *
  ******************************************************************************/
-static int	am_retry_alert(zbx_am_t *manager, zbx_am_alert_t *alert)
+static int	am_retry_alert(trx_am_t *manager, trx_am_alert_t *alert)
 {
-	zbx_am_alertpool_t	*alertpool;
-	zbx_am_mediatype_t	*mediatype;
+	trx_am_alertpool_t	*alertpool;
+	trx_am_mediatype_t	*mediatype;
 	int			ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() alertid:" TRX_FS_UI64, __func__, alert->alertid);
@@ -929,11 +929,11 @@ out:
  * Purpose: frees alerter                                                     *
  *                                                                            *
  ******************************************************************************/
-static void	am_alerter_free(zbx_am_alerter_t *alerter)
+static void	am_alerter_free(trx_am_alerter_t *alerter)
 {
-	zbx_ipc_client_close(alerter->client);
+	trx_ipc_client_close(alerter->client);
 
-	zbx_free(alerter);
+	trx_free(alerter);
 }
 
 /******************************************************************************
@@ -947,9 +947,9 @@ static void	am_alerter_free(zbx_am_alerter_t *alerter)
  *             message - [IN] the received message                            *
  *                                                                            *
  ******************************************************************************/
-static void	am_register_alerter(zbx_am_t *manager, zbx_ipc_client_t *client, zbx_ipc_message_t *message)
+static void	am_register_alerter(trx_am_t *manager, trx_ipc_client_t *client, trx_ipc_message_t *message)
 {
-	zbx_am_alerter_t	*alerter = NULL;	/* if 'alerter' type changes do not forget to change sizeof() */
+	trx_am_alerter_t	*alerter = NULL;	/* if 'alerter' type changes do not forget to change sizeof() */
 							/* (see comment below) */
 	pid_t			ppid;
 
@@ -959,7 +959,7 @@ static void	am_register_alerter(zbx_am_t *manager, zbx_ipc_client_t *client, zbx
 
 	if (ppid != getppid())
 	{
-		zbx_ipc_client_close(client);
+		trx_ipc_client_close(client);
 		treegix_log(LOG_LEVEL_DEBUG, "refusing connection from foreign process");
 	}
 	else
@@ -970,13 +970,13 @@ static void	am_register_alerter(zbx_am_t *manager, zbx_ipc_client_t *client, zbx
 			exit(EXIT_FAILURE);
 		}
 
-		alerter = (zbx_am_alerter_t *)manager->alerters.values[manager->next_alerter_index++];
+		alerter = (trx_am_alerter_t *)manager->alerters.values[manager->next_alerter_index++];
 		alerter->client = client;
 
-		/* sizeof(zbx_am_alerter_t *) in the following line returns size of 'alerter' pointer. */
+		/* sizeof(trx_am_alerter_t *) in the following line returns size of 'alerter' pointer. */
 		/* sizeof(alerter) is not used to avoid analyzer warning */
-		zbx_hashset_insert(&manager->alerters_client, &alerter, sizeof(zbx_am_alerter_t *));
-		zbx_queue_ptr_push(&manager->free_alerters, alerter);
+		trx_hashset_insert(&manager->alerters_client, &alerter, sizeof(trx_am_alerter_t *));
+		trx_queue_ptr_push(&manager->free_alerters, alerter);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -994,13 +994,13 @@ static void	am_register_alerter(zbx_am_t *manager, zbx_ipc_client_t *client, zbx
  * Return value: The alerter                                                  *
  *                                                                            *
  ******************************************************************************/
-static zbx_am_alerter_t	*am_get_alerter_by_client(zbx_am_t *manager, zbx_ipc_client_t *client)
+static trx_am_alerter_t	*am_get_alerter_by_client(trx_am_t *manager, trx_ipc_client_t *client)
 {
-	zbx_am_alerter_t	**alerter, alerter_local, *plocal = &alerter_local;
+	trx_am_alerter_t	**alerter, alerter_local, *plocal = &alerter_local;
 
 	plocal->client = client;
 
-	alerter = (zbx_am_alerter_t **)zbx_hashset_search(&manager->alerters_client, &plocal);
+	alerter = (trx_am_alerter_t **)trx_hashset_search(&manager->alerters_client, &plocal);
 
 	if (NULL == alerter)
 	{
@@ -1036,27 +1036,27 @@ static char	*am_create_db_alert_message(void)
 	char		*alert_message = NULL;
 	size_t		alert_message_alloc = 0, alert_message_offset = 0;
 
-	zbx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, "%s database \"%s\"",
+	trx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, "%s database \"%s\"",
 			TRX_DATABASE_TYPE, CONFIG_DBNAME);
 
 	if ('\0' != *CONFIG_DBHOST)
 	{
-		zbx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, " on \"%s",
+		trx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, " on \"%s",
 				CONFIG_DBHOST);
 
 		if (0 != CONFIG_DBPORT)
 		{
-			zbx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, ":%d\"",
+			trx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, ":%d\"",
 					CONFIG_DBPORT);
 		}
 		else
-			zbx_chrcpy_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, '\"');
+			trx_chrcpy_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, '\"');
 	}
 
-	zbx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, " is not available");
+	trx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, " is not available");
 
-	if (NULL != (error = zbx_db_last_strerr()) && '\0' != *error)
-		zbx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, ": %s", error);
+	if (NULL != (error = trx_db_last_strerr()) && '\0' != *error)
+		trx_snprintf_alloc(&alert_message, &alert_message_alloc, &alert_message_offset, ": %s", error);
 
 	return alert_message;
 }
@@ -1072,20 +1072,20 @@ static char	*am_create_db_alert_message(void)
  * Parameters: manager - [IN] the alert manager                               *
  *                                                                            *
  ******************************************************************************/
-static void	am_queue_watchdog_alerts(zbx_am_t *manager)
+static void	am_queue_watchdog_alerts(trx_am_t *manager)
 {
-	zbx_am_media_t		*media;
-	zbx_am_mediatype_t	*mediatype;
-	zbx_am_alertpool_t	*alertpool;
-	zbx_am_alert_t		*alert;
-	zbx_hashset_iter_t	iter;
+	trx_am_media_t		*media;
+	trx_am_mediatype_t	*mediatype;
+	trx_am_alertpool_t	*alertpool;
+	trx_am_alert_t		*alert;
+	trx_hashset_iter_t	iter;
 	const char		*alert_subject = "Treegix database is not available.";
 	char			*alert_message;
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() recipients:%d", __func__, manager->watchdog.num_data);
 
-	zbx_hashset_iter_reset(&manager->watchdog, &iter);
-	while (NULL != (media = (zbx_am_media_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&manager->watchdog, &iter);
+	while (NULL != (media = (trx_am_media_t *)trx_hashset_iter_next(&iter)))
 	{
 		if (NULL == (mediatype = am_get_mediatype(manager, media->mediatypeid)))
 			continue;
@@ -1099,8 +1099,8 @@ static void	am_queue_watchdog_alerts(zbx_am_t *manager)
 			char	*am_esc;
 
 			am_esc = xml_escape_dyn(alert_message);
-			alert_message = zbx_dsprintf(alert_message, "<html><pre>%s</pre></html>", am_esc);
-			zbx_free(am_esc);
+			alert_message = trx_dsprintf(alert_message, "<html><pre>%s</pre></html>", am_esc);
+			trx_free(am_esc);
 		}
 
 		alert = am_create_alert(0, media->mediatypeid, 0, 0, 0, media->sendto, alert_subject, alert_message,
@@ -1113,7 +1113,7 @@ static void	am_queue_watchdog_alerts(zbx_am_t *manager)
 		am_push_alertpool(mediatype, alertpool);
 		am_push_mediatype(manager, mediatype);
 
-		zbx_free(alert_message);
+		trx_free(alert_message);
 	}
 }
 
@@ -1126,38 +1126,38 @@ static void	am_queue_watchdog_alerts(zbx_am_t *manager)
  * Parameters: manager - [IN] the manager to initialize                       *
  *                                                                            *
  ******************************************************************************/
-static int	am_init(zbx_am_t *manager, char **error)
+static int	am_init(trx_am_t *manager, char **error)
 {
 	int			i, ret;
-	zbx_am_alerter_t	*alerter;
+	trx_am_alerter_t	*alerter;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() alerters:%d", __func__, CONFIG_ALERTER_FORKS);
 
-	if (FAIL == (ret = zbx_ipc_service_start(&manager->ipc, TRX_IPC_SERVICE_ALERTER, error)))
+	if (FAIL == (ret = trx_ipc_service_start(&manager->ipc, TRX_IPC_SERVICE_ALERTER, error)))
 		goto out;
 
-	zbx_vector_ptr_create(&manager->alerters);
-	zbx_queue_ptr_create(&manager->free_alerters);
-	zbx_hashset_create(&manager->alerters_client, 0, alerter_hash_func, alerter_compare_func);
+	trx_vector_ptr_create(&manager->alerters);
+	trx_queue_ptr_create(&manager->free_alerters);
+	trx_hashset_create(&manager->alerters_client, 0, alerter_hash_func, alerter_compare_func);
 
 	manager->next_alerter_index = 0;
 
 	for (i = 0; i < CONFIG_ALERTER_FORKS; i++)
 	{
-		alerter = (zbx_am_alerter_t *)zbx_malloc(NULL, sizeof(zbx_am_alerter_t));
+		alerter = (trx_am_alerter_t *)trx_malloc(NULL, sizeof(trx_am_alerter_t));
 
 		alerter->client = NULL;
 
-		zbx_vector_ptr_append(&manager->alerters, alerter);
+		trx_vector_ptr_append(&manager->alerters, alerter);
 	}
 
-	zbx_hashset_create(&manager->mediatypes, 5, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_hashset_create(&manager->alertpools, 100, am_alertpool_hash_func, am_alertpool_compare_func);
-	zbx_hashset_create(&manager->results, 100, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_hashset_create(&manager->watchdog, 5, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_binary_heap_create(&manager->queue, am_mediatype_queue_compare, TRX_BINARY_HEAP_OPTION_DIRECT);
+	trx_hashset_create(&manager->mediatypes, 5, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_hashset_create(&manager->alertpools, 100, am_alertpool_hash_func, am_alertpool_compare_func);
+	trx_hashset_create(&manager->results, 100, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_hashset_create(&manager->watchdog, 5, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_binary_heap_create(&manager->queue, am_mediatype_queue_compare, TRX_BINARY_HEAP_OPTION_DIRECT);
 
-	zbx_es_init(&manager->es);
+	trx_es_init(&manager->es);
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -1173,35 +1173,35 @@ out:
  * Parameters: manager - [IN] the manager to destroy                          *
  *                                                                            *
  ******************************************************************************/
-static void	am_destroy(zbx_am_t *manager)
+static void	am_destroy(trx_am_t *manager)
 {
-	zbx_am_alert_t		*alert;
-	zbx_hashset_iter_t	iter;
-	zbx_am_media_t		*media;
+	trx_am_alert_t		*alert;
+	trx_hashset_iter_t	iter;
+	trx_am_media_t		*media;
 
-	zbx_es_destroy(&manager->es);
+	trx_es_destroy(&manager->es);
 
-	zbx_hashset_destroy(&manager->alerters_client);
-	zbx_queue_ptr_destroy(&manager->free_alerters);
-	zbx_vector_ptr_clear_ext(&manager->alerters, (zbx_mem_free_func_t)am_alerter_free);
-	zbx_vector_ptr_destroy(&manager->alerters);
+	trx_hashset_destroy(&manager->alerters_client);
+	trx_queue_ptr_destroy(&manager->free_alerters);
+	trx_vector_ptr_clear_ext(&manager->alerters, (trx_mem_free_func_t)am_alerter_free);
+	trx_vector_ptr_destroy(&manager->alerters);
 
 	while (NULL != (alert = am_pop_alert(manager)))
 		am_remove_alert(manager, alert);
 
-	zbx_binary_heap_destroy(&manager->queue);
+	trx_binary_heap_destroy(&manager->queue);
 
-	zbx_hashset_iter_reset(&manager->watchdog, &iter);
-	while (NULL != (media = (zbx_am_media_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&manager->watchdog, &iter);
+	while (NULL != (media = (trx_am_media_t *)trx_hashset_iter_next(&iter)))
 	{
-		zbx_free(media->sendto);
-		zbx_hashset_iter_remove(&iter);
+		trx_free(media->sendto);
+		trx_hashset_iter_remove(&iter);
 	}
-	zbx_hashset_destroy(&manager->watchdog);
+	trx_hashset_destroy(&manager->watchdog);
 
-	zbx_hashset_destroy(&manager->results);
-	zbx_hashset_destroy(&manager->alertpools);
-	zbx_hashset_destroy(&manager->mediatypes);
+	trx_hashset_destroy(&manager->results);
+	trx_hashset_destroy(&manager->alertpools);
+	trx_hashset_destroy(&manager->mediatypes);
 }
 
 /******************************************************************************
@@ -1218,10 +1218,10 @@ static void	am_destroy(zbx_am_t *manager)
  *             error   - [IN] the error message                               *
  *                                                                            *
  ******************************************************************************/
-static void	am_db_update_alert(zbx_am_t *manager, zbx_am_alert_t *alert, int status, int retries, const char *value,
+static void	am_db_update_alert(trx_am_t *manager, trx_am_alert_t *alert, int status, int retries, const char *value,
 		const char *error)
 {
-	zbx_am_result_t	*result;
+	trx_am_result_t	*result;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() alertid:" TRX_FS_UI64 " status:%d retries:%d value:%s error:%s", __func__,
 			alert->alertid, status, retries, TRX_NULL2EMPTY_STR(value), TRX_NULL2EMPTY_STR(error));
@@ -1229,15 +1229,15 @@ static void	am_db_update_alert(zbx_am_t *manager, zbx_am_alert_t *alert, int sta
 	/* alerts with 0 alertid are runtime alerts generated by alert manager when database is down */
 	if (0 != alert->alertid)
 	{
-		if (NULL == (result = (zbx_am_result_t *)zbx_hashset_search(&manager->results, &alert->alertid)))
+		if (NULL == (result = (trx_am_result_t *)trx_hashset_search(&manager->results, &alert->alertid)))
 		{
-			zbx_am_result_t	update_local = {
+			trx_am_result_t	update_local = {
 					.alertid = alert->alertid,
 					.eventid = alert->eventid,
 					.mediatypeid = alert->mediatypeid
 			};
 
-			result = (zbx_am_result_t *)zbx_hashset_insert(&manager->results, &update_local,
+			result = (trx_am_result_t *)trx_hashset_insert(&manager->results, &update_local,
 					sizeof(update_local));
 		}
 
@@ -1261,19 +1261,19 @@ static void	am_db_update_alert(zbx_am_t *manager, zbx_am_alert_t *alert, int sta
  *             value           - [IN] the value or error message              *
  *                                                                            *
  ******************************************************************************/
-static void	am_external_alert_send_response(const zbx_ipc_service_t *alerter_service, const zbx_am_alert_t *alert,
+static void	am_external_alert_send_response(const trx_ipc_service_t *alerter_service, const trx_am_alert_t *alert,
 		const char *value, int errcode, const char *error)
 {
-	zbx_ipc_client_t	*client;
+	trx_ipc_client_t	*client;
 
-	if (NULL != (client = zbx_ipc_client_by_id(alerter_service, alert->alertid)))
+	if (NULL != (client = trx_ipc_client_by_id(alerter_service, alert->alertid)))
 	{
 		unsigned char	*data;
-		zbx_uint32_t	data_len;
+		trx_uint32_t	data_len;
 
-		data_len = zbx_alerter_serialize_result(&data, value, errcode, error);
-		zbx_ipc_client_send(client, TRX_IPC_ALERTER_ALERT, data, data_len);
-		zbx_free(data);
+		data_len = trx_alerter_serialize_result(&data, value, errcode, error);
+		trx_ipc_client_send(client, TRX_IPC_ALERTER_ALERT, data, data_len);
+		trx_free(data);
 	}
 	else
 		treegix_log(LOG_LEVEL_DEBUG, "client has disconnected");
@@ -1290,48 +1290,48 @@ static void	am_external_alert_send_response(const zbx_ipc_service_t *alerter_ser
  *             medias_num - [IN] the number of watchdog medias                *
  *                                                                            *
  ******************************************************************************/
-static void	am_sync_watchdog(zbx_am_t *manager, zbx_am_media_t **medias, int medias_num)
+static void	am_sync_watchdog(trx_am_t *manager, trx_am_media_t **medias, int medias_num)
 {
 	int			i;
-	zbx_hashset_t		mediaids;
-	zbx_am_media_t		*media, media_local;
-	zbx_hashset_iter_t	iter;
-	zbx_vector_ptr_t	media_new;
+	trx_hashset_t		mediaids;
+	trx_am_media_t		*media, media_local;
+	trx_hashset_iter_t	iter;
+	trx_vector_ptr_t	media_new;
 	static int		old_count = -1;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_hashset_create(&mediaids, 100, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_ptr_create(&media_new);
+	trx_hashset_create(&mediaids, 100, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_ptr_create(&media_new);
 
 	for (i = 0; i < medias_num; i++)
 	{
-		if (NULL == (media = (zbx_am_media_t *)zbx_hashset_search(&manager->watchdog, &medias[i]->mediaid)))
+		if (NULL == (media = (trx_am_media_t *)trx_hashset_search(&manager->watchdog, &medias[i]->mediaid)))
 		{
 			media_local.mediaid = medias[i]->mediaid;
-			media = (zbx_am_media_t *)zbx_hashset_insert(&manager->watchdog, &media_local,
+			media = (trx_am_media_t *)trx_hashset_insert(&manager->watchdog, &media_local,
 					sizeof(media_local));
 			media->sendto = NULL;
-			zbx_vector_ptr_append(&media_new, media);
+			trx_vector_ptr_append(&media_new, media);
 		}
 		media->mediatypeid = medias[i]->mediatypeid;
 		TRX_UPDATE_STR(media->sendto,  medias[i]->sendto);
-		zbx_hashset_insert(&mediaids, &media->mediaid, sizeof(media->mediaid));
+		trx_hashset_insert(&mediaids, &media->mediaid, sizeof(media->mediaid));
 	}
 
 	/* drop removed watchdog alert recipients from cache */
-	zbx_hashset_iter_reset(&manager->watchdog, &iter);
-	while (NULL != (media = (zbx_am_media_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&manager->watchdog, &iter);
+	while (NULL != (media = (trx_am_media_t *)trx_hashset_iter_next(&iter)))
 	{
-		if (NULL != zbx_hashset_search(&mediaids, &media->mediaid))
+		if (NULL != trx_hashset_search(&mediaids, &media->mediaid))
 			continue;
 
-		zbx_free(media->sendto);
-		zbx_hashset_iter_remove(&iter);
+		trx_free(media->sendto);
+		trx_hashset_iter_remove(&iter);
 	}
 
-	zbx_vector_ptr_destroy(&media_new);
-	zbx_hashset_destroy(&mediaids);
+	trx_vector_ptr_destroy(&media_new);
+	trx_hashset_destroy(&mediaids);
 
 	if (0 < old_count && 0 == manager->watchdog.num_data)
 	{
@@ -1363,55 +1363,55 @@ static void	am_sync_watchdog(zbx_am_t *manager, zbx_am_media_t **medias, int med
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	am_prepare_mediatype_exec_command(zbx_am_mediatype_t *mediatype, zbx_am_alert_t *alert, char **cmd,
+static int	am_prepare_mediatype_exec_command(trx_am_mediatype_t *mediatype, trx_am_alert_t *alert, char **cmd,
 		char **error)
 {
 	DB_ALERT	db_alert;
 	size_t		cmd_alloc = TRX_KIBIBYTE, cmd_offset = 0;
 	int		ret = FAIL;
 
-	*cmd = (char *)zbx_malloc(NULL, cmd_alloc);
+	*cmd = (char *)trx_malloc(NULL, cmd_alloc);
 
-	zbx_snprintf_alloc(cmd, &cmd_alloc, &cmd_offset, "%s/%s", CONFIG_ALERT_SCRIPTS_PATH, mediatype->exec_path);
+	trx_snprintf_alloc(cmd, &cmd_alloc, &cmd_offset, "%s/%s", CONFIG_ALERT_SCRIPTS_PATH, mediatype->exec_path);
 
 	if (0 == access(*cmd, X_OK))
 	{
 		char	*pstart, *pend;
 
-		db_alert.sendto = (NULL != alert->sendto ? alert->sendto : zbx_strdup(NULL, ""));
-		db_alert.subject = (NULL != alert->subject ? alert->subject : zbx_strdup(NULL, ""));
-		db_alert.message = (NULL != alert->message ? alert->message : zbx_strdup(NULL, ""));
+		db_alert.sendto = (NULL != alert->sendto ? alert->sendto : trx_strdup(NULL, ""));
+		db_alert.subject = (NULL != alert->subject ? alert->subject : trx_strdup(NULL, ""));
+		db_alert.message = (NULL != alert->message ? alert->message : trx_strdup(NULL, ""));
 
 		for (pstart = mediatype->exec_params; NULL != (pend = strchr(pstart, '\n')); pstart = pend + 1)
 		{
 			char	*param_esc, *param = NULL;
 			size_t	param_alloc = 0, param_offset = 0;
 
-			zbx_strncpy_alloc(&param, &param_alloc, &param_offset, pstart, pend - pstart);
+			trx_strncpy_alloc(&param, &param_alloc, &param_offset, pstart, pend - pstart);
 
 			substitute_simple_macros(NULL, NULL, NULL, NULL, NULL, NULL, NULL, &db_alert, NULL, &param,
 					MACRO_TYPE_ALERT, NULL, 0);
 
-			param_esc = zbx_dyn_escape_shell_single_quote(param);
-			zbx_snprintf_alloc(cmd, &cmd_alloc, &cmd_offset, " '%s'", param_esc);
+			param_esc = trx_dyn_escape_shell_single_quote(param);
+			trx_snprintf_alloc(cmd, &cmd_alloc, &cmd_offset, " '%s'", param_esc);
 
-			zbx_free(param_esc);
-			zbx_free(param);
+			trx_free(param_esc);
+			trx_free(param);
 		}
 
 		if (db_alert.sendto != alert->sendto)
-			zbx_free(db_alert.sendto);
+			trx_free(db_alert.sendto);
 		if (db_alert.subject != alert->subject)
-			zbx_free(db_alert.subject);
+			trx_free(db_alert.subject);
 		if (db_alert.message != alert->message)
-			zbx_free(db_alert.message);
+			trx_free(db_alert.message);
 
 		ret = SUCCEED;
 	}
 	else
 	{
-		*error = zbx_dsprintf(*error, "Cannot execute command \"%s\": %s", *cmd, zbx_strerror(errno));
-		zbx_free(*cmd);
+		*error = trx_dsprintf(*error, "Cannot execute command \"%s\": %s", *cmd, trx_strerror(errno));
+		trx_free(*cmd);
 	}
 
 	return ret;
@@ -1431,12 +1431,12 @@ static int	am_prepare_mediatype_exec_command(zbx_am_mediatype_t *mediatype, zbx_
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	am_process_alert(zbx_am_t *manager, zbx_am_alerter_t *alerter, zbx_am_alert_t *alert)
+static int	am_process_alert(trx_am_t *manager, trx_am_alerter_t *alerter, trx_am_alert_t *alert)
 {
-	zbx_am_mediatype_t	*mediatype;
+	trx_am_mediatype_t	*mediatype;
 	unsigned char		*data = NULL;
 	size_t			data_len;
-	zbx_uint64_t		command;
+	trx_uint64_t		command;
 	char			*cmd = NULL, *error = NULL;
 	int			ret = FAIL;
 
@@ -1464,7 +1464,7 @@ static int	am_process_alert(zbx_am_t *manager, zbx_am_alerter_t *alerter, zbx_am
 	{
 		case MEDIA_TYPE_EMAIL:
 			command = TRX_IPC_ALERTER_EMAIL;
-			data_len = zbx_alerter_serialize_email(&data, alert->alertid, alert->sendto, alert->subject,
+			data_len = trx_alerter_serialize_email(&data, alert->alertid, alert->sendto, alert->subject,
 					alert->message, mediatype->smtp_server, mediatype->smtp_port,
 					mediatype->smtp_helo, mediatype->smtp_email, mediatype->smtp_security,
 					mediatype->smtp_verify_peer, mediatype->smtp_verify_host,
@@ -1473,7 +1473,7 @@ static int	am_process_alert(zbx_am_t *manager, zbx_am_alerter_t *alerter, zbx_am
 			break;
 		case MEDIA_TYPE_SMS:
 			command = TRX_IPC_ALERTER_SMS;
-			data_len = zbx_alerter_serialize_sms(&data, alert->alertid, alert->sendto, alert->message,
+			data_len = trx_alerter_serialize_sms(&data, alert->alertid, alert->sendto, alert->message,
 					mediatype->gsm_modem);
 			break;
 		case MEDIA_TYPE_EXEC:
@@ -1486,15 +1486,15 @@ static int	am_process_alert(zbx_am_t *manager, zbx_am_alerter_t *alerter, zbx_am
 					am_db_update_alert(manager, alert, ALERT_STATUS_FAILED, 0, NULL, error);
 
 				am_remove_alert(manager, alert);
-				zbx_free(error);
+				trx_free(error);
 				goto out;
 			}
-			data_len = zbx_alerter_serialize_exec(&data, alert->alertid, cmd);
-			zbx_free(cmd);
+			data_len = trx_alerter_serialize_exec(&data, alert->alertid, cmd);
+			trx_free(cmd);
 			break;
 		case MEDIA_TYPE_WEBHOOK:
 			command = TRX_IPC_ALERTER_WEBHOOK;
-			data_len = zbx_alerter_serialize_webhook(&data, mediatype->script_bin, mediatype->script_bin_sz,
+			data_len = trx_alerter_serialize_webhook(&data, mediatype->script_bin, mediatype->script_bin_sz,
 					mediatype->timeout, alert->params);
 			break;
 		default:
@@ -1511,8 +1511,8 @@ static int	am_process_alert(zbx_am_t *manager, zbx_am_alerter_t *alerter, zbx_am
 	}
 
 	alerter->alert = alert;
-	zbx_ipc_client_send(alerter->client, command, data, data_len);
-	zbx_free(data);
+	trx_ipc_client_send(alerter->client, command, data, data_len);
+	trx_free(data);
 
 	ret = SUCCEED;
 out:
@@ -1535,10 +1535,10 @@ out:
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	am_process_result(zbx_am_t *manager, zbx_ipc_client_t *client, zbx_ipc_message_t *message)
+static int	am_process_result(trx_am_t *manager, trx_ipc_client_t *client, trx_ipc_message_t *message)
 {
 	int			ret = FAIL, status;
-	zbx_am_alerter_t	*alerter;
+	trx_am_alerter_t	*alerter;
 	char			*value, *errmsg;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -1559,7 +1559,7 @@ static int	am_process_result(zbx_am_t *manager, zbx_ipc_client_t *client, zbx_ip
 			TRX_FS_UX64, __func__, alerter->alert->alertid, alerter->alert->mediatypeid,
 			alerter->alert->alertpoolid);
 
-	zbx_alerter_deserialize_result(message->data, &value, &ret, &errmsg);
+	trx_alerter_deserialize_result(message->data, &value, &ret, &errmsg);
 
 	if (ALERT_SOURCE_EXTERNAL == TRX_ALERTPOOL_SOURCE(alerter->alert->alertpoolid))
 	{
@@ -1586,11 +1586,11 @@ static int	am_process_result(zbx_am_t *manager, zbx_ipc_client_t *client, zbx_ip
 			am_remove_alert(manager, alerter->alert);
 	}
 
-	zbx_free(value);
-	zbx_free(errmsg);
+	trx_free(value);
+	trx_free(errmsg);
 	alerter->alert = NULL;
 
-	zbx_queue_ptr_push(&manager->free_alerters, alerter);
+	trx_queue_ptr_push(&manager->free_alerters, alerter);
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -1610,30 +1610,30 @@ out:
  *               FAIL - there are no alerts to be sent at this time           *
  *                                                                            *
  ******************************************************************************/
-static int	am_check_queue(zbx_am_t *manager, int now)
+static int	am_check_queue(trx_am_t *manager, int now)
 {
-	zbx_binary_heap_elem_t	*elem;
-	zbx_am_mediatype_t	*mediatype;
-	zbx_am_alertpool_t	*alertpool;
-	zbx_am_alert_t		*alert;
+	trx_binary_heap_elem_t	*elem;
+	trx_am_mediatype_t	*mediatype;
+	trx_am_alertpool_t	*alertpool;
+	trx_am_alert_t		*alert;
 
-	if (SUCCEED == zbx_binary_heap_empty(&manager->queue))
+	if (SUCCEED == trx_binary_heap_empty(&manager->queue))
 		return FAIL;
 
-	elem = zbx_binary_heap_find_min(&manager->queue);
-	mediatype = (zbx_am_mediatype_t *)elem->data;
+	elem = trx_binary_heap_find_min(&manager->queue);
+	mediatype = (trx_am_mediatype_t *)elem->data;
 
-	if (SUCCEED == zbx_binary_heap_empty(&mediatype->queue))
+	if (SUCCEED == trx_binary_heap_empty(&mediatype->queue))
 		return FAIL;
 
-	elem = zbx_binary_heap_find_min(&mediatype->queue);
-	alertpool = (zbx_am_alertpool_t *)elem->data;
+	elem = trx_binary_heap_find_min(&mediatype->queue);
+	alertpool = (trx_am_alertpool_t *)elem->data;
 
-	if (SUCCEED == zbx_binary_heap_empty(&alertpool->queue))
+	if (SUCCEED == trx_binary_heap_empty(&alertpool->queue))
 		return FAIL;
 
-	elem = zbx_binary_heap_find_min(&alertpool->queue);
-	alert = (zbx_am_alert_t *)elem->data;
+	elem = trx_binary_heap_find_min(&alertpool->queue);
+	alert = (trx_am_alert_t *)elem->data;
 
 	if (alert->nextsend > now)
 		return FAIL;
@@ -1648,16 +1648,16 @@ static int	am_check_queue(zbx_am_t *manager, int now)
  * Purpose: update cached media types                                         *
  *                                                                            *
  ******************************************************************************/
-static void	am_update_mediatypes(zbx_am_t *manager, zbx_ipc_message_t *message)
+static void	am_update_mediatypes(trx_am_t *manager, trx_ipc_message_t *message)
 {
-	zbx_am_db_mediatype_t	**mediatypes;
+	trx_am_db_mediatype_t	**mediatypes;
 	int			mediatypes_num, i;
 
-	zbx_alerter_deserialize_mediatypes(message->data, &mediatypes, &mediatypes_num);
+	trx_alerter_deserialize_mediatypes(message->data, &mediatypes, &mediatypes_num);
 
 	for (i = 0; i < mediatypes_num; i++)
 	{
-		zbx_am_db_mediatype_t	*mt = mediatypes[i];
+		trx_am_db_mediatype_t	*mt = mediatypes[i];
 
 		am_update_mediatype(manager, mt->mediatypeid, mt->type, mt->smtp_server, mt->smtp_helo, mt->smtp_email,
 				mt->exec_path, mt->gsm_modem, mt->username, mt->passwd, mt->smtp_port, mt->smtp_security,
@@ -1665,10 +1665,10 @@ static void	am_update_mediatypes(zbx_am_t *manager, zbx_ipc_message_t *message)
 				mt->maxsessions, mt->maxattempts, mt->attempt_interval, mt->content_type,
 				mt->script, mt->timeout, TRX_AM_MEDIATYPE_FLAG_NONE);
 
-		zbx_am_db_mediatype_clear(mt);
-		zbx_free(mt);
+		trx_am_db_mediatype_clear(mt);
+		trx_free(mt);
 	}
-	zbx_free(mediatypes);
+	trx_free(mediatypes);
 }
 
 /******************************************************************************
@@ -1678,10 +1678,10 @@ static void	am_update_mediatypes(zbx_am_t *manager, zbx_ipc_message_t *message)
  * Purpose: queue new alerts                                                  *
  *                                                                            *
  ******************************************************************************/
-static int	am_queue_alert(zbx_am_t *manager, zbx_am_alert_t *alert, int now)
+static int	am_queue_alert(trx_am_t *manager, trx_am_alert_t *alert, int now)
 {
-	zbx_am_mediatype_t	*mediatype;
-	zbx_am_alertpool_t	*alertpool;
+	trx_am_mediatype_t	*mediatype;
+	trx_am_alertpool_t	*alertpool;
 
 	alert->nextsend = now;
 
@@ -1707,14 +1707,14 @@ static int	am_queue_alert(zbx_am_t *manager, zbx_am_alert_t *alert, int now)
  * Purpose: queue new alerts                                                  *
  *                                                                            *
  ******************************************************************************/
-static void	am_queue_alerts(zbx_am_t *manager, zbx_ipc_message_t *message, int now)
+static void	am_queue_alerts(trx_am_t *manager, trx_ipc_message_t *message, int now)
 {
-	zbx_am_db_alert_t	**alerts;
+	trx_am_db_alert_t	**alerts;
 	int			alerts_num, i;
-	zbx_am_alert_t		*alert;
+	trx_am_alert_t		*alert;
 
 	now = time(NULL);
-	zbx_alerter_deserialize_alerts(message->data, &alerts, &alerts_num);
+	trx_alerter_deserialize_alerts(message->data, &alerts, &alerts_num);
 
 	for (i = 0; i < alerts_num; i++)
 	{
@@ -1726,7 +1726,7 @@ static void	am_queue_alerts(zbx_am_t *manager, zbx_ipc_message_t *message, int n
 		}
 	}
 
-	zbx_free(alerts);
+	trx_free(alerts);
 }
 
 /******************************************************************************
@@ -1736,17 +1736,17 @@ static void	am_queue_alerts(zbx_am_t *manager, zbx_ipc_message_t *message, int n
  * Purpose: update 'database down' watchdog alert recipients                  *
  *                                                                            *
  ******************************************************************************/
-static void	am_update_watchdog(zbx_am_t *manager, zbx_ipc_message_t *message)
+static void	am_update_watchdog(trx_am_t *manager, trx_ipc_message_t *message)
 {
-	zbx_am_media_t	**medias;
+	trx_am_media_t	**medias;
 	int		medias_num, i;
 
-	zbx_alerter_deserialize_medias(message->data, &medias, &medias_num);
+	trx_alerter_deserialize_medias(message->data, &medias, &medias_num);
 	am_sync_watchdog(manager, medias, medias_num);
 
 	for (i = 0; i < medias_num; i++)
-		zbx_am_media_free(medias[i]);
-	zbx_free(medias);
+		trx_am_media_free(medias[i]);
+	trx_free(medias);
 }
 
 /******************************************************************************
@@ -1756,17 +1756,17 @@ static void	am_update_watchdog(zbx_am_t *manager, zbx_ipc_message_t *message)
  * Purpose: remove unused mediatypes                                          *
  *                                                                            *
  ******************************************************************************/
-static void	am_drop_mediatypes(zbx_am_t *manager, zbx_ipc_message_t *message)
+static void	am_drop_mediatypes(trx_am_t *manager, trx_ipc_message_t *message)
 {
-	zbx_uint64_t		*ids;
+	trx_uint64_t		*ids;
 	int			ids_num, i;
-	zbx_am_mediatype_t	*mediatype;
+	trx_am_mediatype_t	*mediatype;
 
-	zbx_alerter_deserialize_ids(message->data, &ids, &ids_num);
+	trx_alerter_deserialize_ids(message->data, &ids, &ids_num);
 
 	for (i = 0; i < ids_num; i++)
 	{
-		if (NULL == (mediatype = (zbx_am_mediatype_t *)zbx_hashset_search(&manager->mediatypes, &ids[i])))
+		if (NULL == (mediatype = (trx_am_mediatype_t *)trx_hashset_search(&manager->mediatypes, &ids[i])))
 			continue;
 
 		if (0 == mediatype->refcount)
@@ -1775,7 +1775,7 @@ static void	am_drop_mediatypes(zbx_am_t *manager, zbx_ipc_message_t *message)
 			mediatype->flags = TRX_AM_MEDIATYPE_FLAG_REMOVE;
 	}
 
-	zbx_free(ids);
+	trx_free(ids);
 }
 
 /******************************************************************************
@@ -1785,12 +1785,12 @@ static void	am_drop_mediatypes(zbx_am_t *manager, zbx_ipc_message_t *message)
  * Purpose: returns alert sending results                                     *
  *                                                                            *
  ******************************************************************************/
-static void	am_flush_results(zbx_am_t *manager, zbx_ipc_client_t *client)
+static void	am_flush_results(trx_am_t *manager, trx_ipc_client_t *client)
 {
-	zbx_vector_ptr_t	results;
-	zbx_hashset_iter_t	iter;
-	zbx_am_result_t		*result;
-	zbx_uint32_t		data_len;
+	trx_vector_ptr_t	results;
+	trx_hashset_iter_t	iter;
+	trx_am_result_t		*result;
+	trx_uint32_t		data_len;
 	unsigned char		*data;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() results:%d", __func__, manager->results.num_data);
@@ -1800,32 +1800,32 @@ static void	am_flush_results(zbx_am_t *manager, zbx_ipc_client_t *client)
 		int		results_num = 0;
 		unsigned char	buf[sizeof(results_num)];
 
-		(void)zbx_serialize_value(buf, results_num);
-		zbx_ipc_client_send(client, TRX_IPC_ALERTER_RESULTS, buf, sizeof(results_num));
+		(void)trx_serialize_value(buf, results_num);
+		trx_ipc_client_send(client, TRX_IPC_ALERTER_RESULTS, buf, sizeof(results_num));
 		goto out;
 	}
 
-	zbx_vector_ptr_create(&results);
+	trx_vector_ptr_create(&results);
 
-	zbx_hashset_iter_reset(&manager->results, &iter);
-	while (NULL != (result = (zbx_am_result_t *)zbx_hashset_iter_next(&iter)))
-		zbx_vector_ptr_append(&results, result);
+	trx_hashset_iter_reset(&manager->results, &iter);
+	while (NULL != (result = (trx_am_result_t *)trx_hashset_iter_next(&iter)))
+		trx_vector_ptr_append(&results, result);
 
-	zbx_vector_ptr_sort(&results, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	trx_vector_ptr_sort(&results, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
-	data_len = zbx_alerter_serialize_results(&data, (zbx_am_result_t **)results.values, results.values_num);
-	zbx_ipc_client_send(client, TRX_IPC_ALERTER_RESULTS, data, data_len);
-	zbx_free(data);
+	data_len = trx_alerter_serialize_results(&data, (trx_am_result_t **)results.values, results.values_num);
+	trx_ipc_client_send(client, TRX_IPC_ALERTER_RESULTS, data, data_len);
+	trx_free(data);
 
-	zbx_hashset_iter_reset(&manager->results, &iter);
-	while (NULL != (result = (zbx_am_result_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&manager->results, &iter);
+	while (NULL != (result = (trx_am_result_t *)trx_hashset_iter_next(&iter)))
 	{
-		zbx_free(result->value);
-		zbx_free(result->error);
+		trx_free(result->value);
+		trx_free(result->error);
 	}
 
-	zbx_hashset_clear(&manager->results);
-	zbx_vector_ptr_destroy(&results);
+	trx_hashset_clear(&manager->results);
+	trx_vector_ptr_destroy(&results);
 
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -1842,20 +1842,20 @@ out:
  *             data    - [IN] the received message                            *
  *                                                                            *
  ******************************************************************************/
-static void	am_process_external_alert_request(zbx_am_t *manager, zbx_uint64_t id, const unsigned char *data)
+static void	am_process_external_alert_request(trx_am_t *manager, trx_uint64_t id, const unsigned char *data)
 {
-	zbx_uint64_t	mediatypeid;
+	trx_uint64_t	mediatypeid;
 	char		*sendto, *subject, *message, *params, *smtp_server, *smtp_helo, *smtp_email, *exec_path,
 			*gsm_modem, *username, *passwd,*exec_params,*attempt_interval,  *script, *timeout;
 	unsigned short	smtp_port;
 	int		maxsessions, maxattempts;
 	unsigned char	type, smtp_security, smtp_verify_peer, smtp_verify_host, smtp_authentication, content_type;
 
-	zbx_am_alert_t		*alert;
+	trx_am_alert_t		*alert;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_alerter_deserialize_alert_send(data, &mediatypeid, &type, &smtp_server, &smtp_helo, &smtp_email, &exec_path,
+	trx_alerter_deserialize_alert_send(data, &mediatypeid, &type, &smtp_server, &smtp_helo, &smtp_email, &exec_path,
 			&gsm_modem, &username, &passwd, &smtp_port, &smtp_security, &smtp_verify_peer,
 			&smtp_verify_host, &smtp_authentication, &exec_params, &maxsessions, &maxattempts,
 			&attempt_interval, &content_type, &script, &timeout, &sendto, &subject, &message,
@@ -1876,21 +1876,21 @@ static void	am_process_external_alert_request(zbx_am_t *manager, zbx_uint64_t id
 		am_alert_free(alert);
 	}
 
-	zbx_free(params);
-	zbx_free(smtp_server);
-	zbx_free(smtp_helo);
-	zbx_free(smtp_email);
-	zbx_free(exec_path);
-	zbx_free(gsm_modem);
-	zbx_free(username);
-	zbx_free(passwd);
-	zbx_free(exec_params);
-	zbx_free(attempt_interval);
-	zbx_free(script);
-	zbx_free(timeout);
-	zbx_free(message);
-	zbx_free(subject);
-	zbx_free(sendto);
+	trx_free(params);
+	trx_free(smtp_server);
+	trx_free(smtp_helo);
+	trx_free(smtp_email);
+	trx_free(exec_path);
+	trx_free(gsm_modem);
+	trx_free(username);
+	trx_free(passwd);
+	trx_free(exec_params);
+	trx_free(attempt_interval);
+	trx_free(script);
+	trx_free(timeout);
+	trx_free(message);
+	trx_free(subject);
+	trx_free(sendto);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -1902,13 +1902,13 @@ static void	am_process_external_alert_request(zbx_am_t *manager, zbx_uint64_t id
  * Purpose: remove unused media types                                         *
  *                                                                            *
  ******************************************************************************/
-static void	am_remove_unused_mediatypes(zbx_am_t *manager)
+static void	am_remove_unused_mediatypes(trx_am_t *manager)
 {
-	zbx_hashset_iter_t	iter;
-	zbx_am_mediatype_t	*mediatype;
+	trx_hashset_iter_t	iter;
+	trx_am_mediatype_t	*mediatype;
 
-	zbx_hashset_iter_reset(&manager->mediatypes, &iter);
-	while (NULL != (mediatype = (zbx_am_mediatype_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&manager->mediatypes, &iter);
+	while (NULL != (mediatype = (trx_am_mediatype_t *)trx_hashset_iter_next(&iter)))
 	{
 		if (0 != (mediatype->flags & TRX_AM_MEDIATYPE_FLAG_REMOVE) && 0 == mediatype->refcount)
 			am_remove_mediatype(manager, mediatype);
@@ -1920,20 +1920,20 @@ TRX_THREAD_ENTRY(alert_manager_thread, args)
 #define	STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
 
-	zbx_am_t		manager;
+	trx_am_t		manager;
 	char			*error = NULL;
-	zbx_ipc_client_t	*client;
-	zbx_ipc_message_t	*message;
-	zbx_am_alerter_t	*alerter;
+	trx_ipc_client_t	*client;
+	trx_ipc_message_t	*message;
+	trx_am_alerter_t	*alerter;
 	int			ret, sent_num = 0, failed_num = 0, now, time_watchdog = 0, time_ping = 0,
 				time_mediatype = 0;
 	double			time_stat, time_idle = 0, time_now, sec;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
-	zbx_setproctitle("%s #%d starting", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d starting", get_process_type_string(process_type), process_num);
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
@@ -1941,22 +1941,22 @@ TRX_THREAD_ENTRY(alert_manager_thread, args)
 	if (FAIL == am_init(&manager, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize alert manager: %s", error);
-		zbx_free(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
 	manager.dbstatus = TRX_DB_OK;
 
 	/* initialize statistics */
-	time_stat = zbx_time();
+	time_stat = trx_time();
 
-	zbx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
 
 	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
 	while (TRX_IS_RUNNING())
 	{
-		time_now = zbx_time();
+		time_now = trx_time();
 		now = time_now;
 
 		if (time_ping + TRX_DB_PING_FREQUENCY < now)
@@ -1984,7 +1984,7 @@ TRX_THREAD_ENTRY(alert_manager_thread, args)
 
 		if (STAT_INTERVAL < time_now - time_stat)
 		{
-			zbx_setproctitle("%s #%d [sent %d, failed %d alerts, idle " TRX_FS_DBL " sec during "
+			trx_setproctitle("%s #%d [sent %d, failed %d alerts, idle " TRX_FS_DBL " sec during "
 					TRX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
 					sent_num, failed_num, time_idle, time_now - time_stat);
 
@@ -1998,11 +1998,11 @@ TRX_THREAD_ENTRY(alert_manager_thread, args)
 
 		while (SUCCEED == am_check_queue(&manager, now))
 		{
-			if (NULL == (alerter = (zbx_am_alerter_t *)zbx_queue_ptr_pop(&manager.free_alerters)))
+			if (NULL == (alerter = (trx_am_alerter_t *)trx_queue_ptr_pop(&manager.free_alerters)))
 				break;
 
 			if (FAIL == am_process_alert(&manager, alerter, am_pop_alert(&manager)))
-				zbx_queue_ptr_push(&manager.free_alerters, alerter);
+				trx_queue_ptr_push(&manager.free_alerters, alerter);
 		}
 
 		if (time_mediatype + TRX_AM_MEDIATYPE_CLEANUP_FREQUENCY < now)
@@ -2012,11 +2012,11 @@ TRX_THREAD_ENTRY(alert_manager_thread, args)
 		}
 
 		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
-		ret = zbx_ipc_service_recv(&manager.ipc, 1, &client, &message);
+		ret = trx_ipc_service_recv(&manager.ipc, 1, &client, &message);
 		update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
-		sec = zbx_time();
-		zbx_update_env(sec);
+		sec = trx_time();
+		trx_update_env(sec);
 
 		if (TRX_IPC_RECV_IMMEDIATE != ret)
 			time_idle += sec - time_now;
@@ -2035,7 +2035,7 @@ TRX_THREAD_ENTRY(alert_manager_thread, args)
 						failed_num++;
 					break;
 				case TRX_IPC_ALERTER_ALERT:
-					am_process_external_alert_request(&manager, zbx_ipc_client_id(client),
+					am_process_external_alert_request(&manager, trx_ipc_client_id(client),
 							message->data);
 					break;
 				case TRX_IPC_ALERTER_MEDIATYPES:
@@ -2055,18 +2055,18 @@ TRX_THREAD_ENTRY(alert_manager_thread, args)
 					break;
 			}
 
-			zbx_ipc_message_free(message);
+			trx_ipc_message_free(message);
 		}
 
 		if (NULL != client)
-			zbx_ipc_client_release(client);
+			trx_ipc_client_release(client);
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 
-	zbx_ipc_service_close(&manager.ipc);
+	trx_ipc_service_close(&manager.ipc);
 	am_destroy(&manager);
 }

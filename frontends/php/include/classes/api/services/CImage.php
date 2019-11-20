@@ -60,7 +60,7 @@ class CImage extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if ($options['editable'] && self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
@@ -69,13 +69,13 @@ class CImage extends CApiService {
 
 		// imageids
 		if (!is_null($options['imageids'])) {
-			zbx_value2array($options['imageids']);
+			trx_value2array($options['imageids']);
 			$sqlParts['where']['imageid'] = dbConditionInt('i.imageid', $options['imageids']);
 		}
 
 		// sysmapids
 		if (!is_null($options['sysmapids'])) {
-			zbx_value2array($options['sysmapids']);
+			trx_value2array($options['sysmapids']);
 
 			$sqlParts['from']['sysmaps'] = 'sysmaps sm';
 			$sqlParts['from']['sysmaps_elements'] = 'sysmaps_elements se';
@@ -101,11 +101,11 @@ class CImage extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('images i', $options, $sqlParts);
+			trx_db_search('images i', $options, $sqlParts);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -129,13 +129,13 @@ class CImage extends CApiService {
 			$dbImg = DBselect('SELECT i.imageid,i.image FROM images i WHERE '.dbConditionInt('i.imageid', $imageids));
 			while ($img = DBfetch($dbImg)) {
 				// PostgreSQL images are stored escaped in the DB
-				$img['image'] = zbx_unescape_image($img['image']);
+				$img['image'] = trx_unescape_image($img['image']);
 				$result[$img['imageid']]['image'] = base64_encode($img['image']);
 			}
 		}
 
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 		return $result;
 	}
@@ -150,7 +150,7 @@ class CImage extends CApiService {
 	public function create($images) {
 		global $DB;
 
-		$images = zbx_toArray($images);
+		$images = trx_toArray($images);
 
 		$this->validateCreate($images);
 
@@ -172,8 +172,8 @@ class CImage extends CApiService {
 			$imageid = get_dbid('images', 'imageid');
 			$values = [
 				'imageid' => $imageid,
-				'name' => zbx_dbstr($image['name']),
-				'imagetype' => zbx_dbstr($image['imagetype'])
+				'name' => trx_dbstr($image['name']),
+				'imagetype' => trx_dbstr($image['imagetype'])
 			];
 
 			switch ($DB['TYPE']) {
@@ -219,7 +219,7 @@ class CImage extends CApiService {
 					}
 				break;
 				case TRX_DB_MYSQL:
-						$values['image'] = zbx_dbstr($image['image']);
+						$values['image'] = trx_dbstr($image['image']);
 						$sql = 'INSERT INTO images ('.implode(', ', array_keys($values)).') VALUES ('.implode(', ', $values).')';
 						if (!DBexecute($sql)) {
 							self::exception(TRX_API_ERROR_PARAMETERS, 'DBerror');
@@ -250,7 +250,7 @@ class CImage extends CApiService {
 	public function update($images) {
 		global $DB;
 
-		$images = zbx_toArray($images);
+		$images = trx_toArray($images);
 
 		$this->validateUpdate($images);
 
@@ -258,7 +258,7 @@ class CImage extends CApiService {
 			$values = [];
 
 			if (isset($image['name'])) {
-				$values['name'] = zbx_dbstr($image['name']);
+				$values['name'] = trx_dbstr($image['name']);
 			}
 
 			if (isset($image['image'])) {
@@ -281,11 +281,11 @@ class CImage extends CApiService {
 						break;
 
 					case TRX_DB_MYSQL:
-						$values['image'] = zbx_dbstr($image['image']);
+						$values['image'] = trx_dbstr($image['image']);
 						break;
 
 					case TRX_DB_ORACLE:
-						$sql = 'SELECT i.image FROM images i WHERE i.imageid='.zbx_dbstr($image['imageid']).' FOR UPDATE';
+						$sql = 'SELECT i.image FROM images i WHERE i.imageid='.trx_dbstr($image['imageid']).' FOR UPDATE';
 
 						if (!$stmt = oci_parse($DB['DB'], $sql)) {
 							$e = oci_error($DB['DB']);
@@ -307,7 +307,7 @@ class CImage extends CApiService {
 						break;
 
 					case TRX_DB_DB2:
-						$stmt = db2_prepare($DB['DB'], 'UPDATE images SET image=? WHERE imageid='.zbx_dbstr($image['imageid']));
+						$stmt = db2_prepare($DB['DB'], 'UPDATE images SET image=? WHERE imageid='.trx_dbstr($image['imageid']));
 
 						if (!$stmt) {
 							self::exception(TRX_API_ERROR_PARAMETERS, db2_conn_errormsg($DB['DB']));
@@ -330,7 +330,7 @@ class CImage extends CApiService {
 				foreach ($values as $field => $value) {
 					$sqlUpd[] = $field.'='.$value;
 				}
-				$sql = 'UPDATE images SET '.implode(', ', $sqlUpd).' WHERE imageid='.zbx_dbstr($image['imageid']);
+				$sql = 'UPDATE images SET '.implode(', ', $sqlUpd).' WHERE imageid='.trx_dbstr($image['imageid']);
 				$result = DBexecute($sql);
 
 				if (!$result) {
@@ -339,7 +339,7 @@ class CImage extends CApiService {
 			}
 		}
 
-		return ['imageids' => zbx_objectValues($images, 'imageid')];
+		return ['imageids' => trx_objectValues($images, 'imageid')];
 	}
 
 	/**
@@ -458,7 +458,7 @@ class CImage extends CApiService {
 		// check existing names
 		$dbImages = API::getApiService()->select($this->tableName(), [
 			'output' => ['name'],
-			'filter' => ['name' => zbx_objectValues($images, 'name')],
+			'filter' => ['name' => trx_objectValues($images, 'name')],
 			'limit' => 1
 		]);
 
@@ -489,7 +489,7 @@ class CImage extends CApiService {
 		}
 
 		$dbImages = API::getApiService()->select($this->tableName(), [
-			'filter' => ['imageid' => zbx_objectValues($images, 'imageid')],
+			'filter' => ['imageid' => trx_objectValues($images, 'imageid')],
 			'output' => ['imageid', 'name'],
 			'preservekeys' => true
 		]);
@@ -507,7 +507,7 @@ class CImage extends CApiService {
 				);
 			}
 
-			if (isset($image['name']) && !zbx_empty($image['name'])
+			if (isset($image['name']) && !trx_empty($image['name'])
 					&& $dbImages[$image['imageid']]['name'] !== $image['name']) {
 				if (isset($changedImageNames[$image['name']])) {
 					self::exception(TRX_API_ERROR_PARAMETERS, _s('Image "%1$s" already exists.', $image['name']));

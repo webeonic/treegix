@@ -63,7 +63,7 @@ $data['screens'] = API::TemplateScreen()->get([
 	'hostids' => $data['hostid'],
 	'output' => API_OUTPUT_EXTEND
 ]);
-$data['screens'] = zbx_toHash($data['screens'], 'screenid');
+$data['screens'] = trx_toHash($data['screens'], 'screenid');
 order_result($data['screens'], 'name');
 
 // get screen

@@ -5,11 +5,11 @@
 
 #include "common.h"
 
-void	zbx_lld_process_value(zbx_uint64_t itemid, const char *value, const zbx_timespec_t *ts, unsigned char meta,
-		zbx_uint64_t lastlogsize, int mtime, const char *error);
+void	trx_lld_process_value(trx_uint64_t itemid, const char *value, const trx_timespec_t *ts, unsigned char meta,
+		trx_uint64_t lastlogsize, int mtime, const char *error);
 
-void	zbx_lld_process_agent_result(zbx_uint64_t itemid, AGENT_RESULT *result, zbx_timespec_t *ts, char *error);
+void	trx_lld_process_agent_result(trx_uint64_t itemid, AGENT_RESULT *result, trx_timespec_t *ts, char *error);
 
-int	zbx_lld_get_queue_size(zbx_uint64_t *size, char **error);
+int	trx_lld_get_queue_size(trx_uint64_t *size, char **error);
 
 #endif	/* TREEGIX_LLD_H */

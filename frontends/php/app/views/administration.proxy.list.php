@@ -128,7 +128,7 @@ foreach ($data['proxies'] as $proxy) {
 			: (new CSpan(_('Off')))->addClass(TRX_STYLE_STATUS_GREY),
 		($proxy['lastaccess'] == 0)
 			? (new CSpan(_('Never')))->addClass(TRX_STYLE_RED)
-			: zbx_date2age($proxy['lastaccess']),
+			: trx_date2age($proxy['lastaccess']),
 		array_key_exists('host_count', $proxy) ? $proxy['host_count'] : '',
 		array_key_exists('item_count', $proxy) ? $proxy['item_count'] : '',
 		array_key_exists('vps_total', $proxy) ? $proxy['vps_total'] : '',

@@ -64,7 +64,7 @@ function DBconnect(&$error) {
 					$result = false;
 				}
 				else {
-					$schemaSet = DBexecute('SET search_path = '.zbx_dbstr($DB['SCHEMA'] ? $DB['SCHEMA'] : 'public'), true);
+					$schemaSet = DBexecute('SET search_path = '.trx_dbstr($DB['SCHEMA'] ? $DB['SCHEMA'] : 'public'), true);
 
 					if(!$schemaSet) {
 						clear_messages();
@@ -100,7 +100,7 @@ function DBconnect(&$error) {
 
 				$DB['DB'] = @oci_connect($DB['USER'], $DB['PASSWORD'], $connect, 'UTF8');
 				if ($DB['DB']) {
-					DBexecute('ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.zbx_dbstr('. '));
+					DBexecute('ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.trx_dbstr('. '));
 				}
 				else {
 					$ociError = oci_error();
@@ -140,7 +140,7 @@ function DBconnect(&$error) {
 						];
 						db2_set_option($DB['DB'], $options, 1);
 						if (isset($DB['SCHEMA']) && $DB['SCHEMA'] != '') {
-							DBexecute('SET CURRENT SCHEMA='.zbx_dbstr($DB['SCHEMA']));
+							DBexecute('SET CURRENT SCHEMA='.trx_dbstr($DB['SCHEMA']));
 						}
 					}
 				}
@@ -422,7 +422,7 @@ function DBselect($query, $limit = null, $offset = 0) {
 function DBaddLimit($query, $limit = 0, $offset = 0) {
 	global $DB;
 
-	if ((isset($limit) && ($limit < 0 || !zbx_ctype_digit($limit))) || $offset < 0 || !zbx_ctype_digit($offset)) {
+	if ((isset($limit) && ($limit < 0 || !trx_ctype_digit($limit))) || $offset < 0 || !trx_ctype_digit($offset)) {
 		$moreDetails = isset($limit) ? ' Limit ['.$limit.'] Offset ['.$offset.']' : ' Offset ['.$offset.']';
 		error('Incorrect parameters for limit and/or offset. Query ['.$query.']'.$moreDetails, 'sql');
 
@@ -587,7 +587,7 @@ function DBfetch($cursor, $convertNulls = true) {
 	return false;
 }
 
-function zbx_sql_mod($x, $y) {
+function trx_sql_mod($x, $y) {
 	return ' MOD('.$x.','.$y.')';
 }
 
@@ -605,7 +605,7 @@ function get_dbid($table, $field) {
 	$max = TRX_DB_MAX_ID;
 
 	do {
-		$dbSelect = DBselect('SELECT i.nextid FROM ids i WHERE i.table_name='.zbx_dbstr($table).' AND i.field_name='.zbx_dbstr($field));
+		$dbSelect = DBselect('SELECT i.nextid FROM ids i WHERE i.table_name='.trx_dbstr($table).' AND i.field_name='.trx_dbstr($field));
 		if (!$dbSelect) {
 			return false;
 		}
@@ -624,14 +624,14 @@ function get_dbid($table, $field) {
 		else {
 			$ret1 = $row['nextid'];
 			if (bccomp($ret1, $min) < 0 || !bccomp($ret1, $max) < 0) {
-				DBexecute('DELETE FROM ids WHERE table_name='.zbx_dbstr($table).' AND field_name='.zbx_dbstr($field));
+				DBexecute('DELETE FROM ids WHERE table_name='.trx_dbstr($table).' AND field_name='.trx_dbstr($field));
 				continue;
 			}
 
-			$sql = 'UPDATE ids SET nextid=nextid+1 WHERE table_name='.zbx_dbstr($table).' AND field_name='.zbx_dbstr($field);
+			$sql = 'UPDATE ids SET nextid=nextid+1 WHERE table_name='.trx_dbstr($table).' AND field_name='.trx_dbstr($field);
 			DBexecute($sql);
 
-			$row = DBfetch(DBselect('SELECT i.nextid FROM ids i WHERE i.table_name='.zbx_dbstr($table).' AND i.field_name='.zbx_dbstr($field)));
+			$row = DBfetch(DBselect('SELECT i.nextid FROM ids i WHERE i.table_name='.trx_dbstr($table).' AND i.field_name='.trx_dbstr($field)));
 			if (!$row || is_null($row['nextid'])) {
 				// should never be here
 				continue;
@@ -649,7 +649,7 @@ function get_dbid($table, $field) {
 	return $ret2;
 }
 
-function zbx_db_distinct($sql_parts) {
+function trx_db_distinct($sql_parts) {
 	$count = count($sql_parts['from']);
 	if (array_key_exists('left_join', $sql_parts)) {
 		$count += count($sql_parts['left_join']);
@@ -658,7 +658,7 @@ function zbx_db_distinct($sql_parts) {
 	return ($count > 1 ? ' DISTINCT' : '');
 }
 
-function zbx_db_search($table, $options, &$sql_parts) {
+function trx_db_search($table, $options, &$sql_parts) {
 	list($table, $tableShort) = explode(' ', $table);
 
 	$tableSchema = DB::getSchema($table);
@@ -672,7 +672,7 @@ function zbx_db_search($table, $options, &$sql_parts) {
 
 	$search = [];
 	foreach ($options['search'] as $field => $patterns) {
-		if (!isset($tableSchema['fields'][$field]) || zbx_empty($patterns)) {
+		if (!isset($tableSchema['fields'][$field]) || trx_empty($patterns)) {
 			continue;
 		}
 		if ($tableSchema['fields'][$field]['type'] != DB::FIELD_TYPE_CHAR
@@ -682,7 +682,7 @@ function zbx_db_search($table, $options, &$sql_parts) {
 
 		$fieldSearch = [];
 		foreach ((array) $patterns as $pattern) {
-			if (zbx_empty($pattern)) {
+			if (trx_empty($pattern)) {
 				continue;
 			}
 
@@ -695,7 +695,7 @@ function zbx_db_search($table, $options, &$sql_parts) {
 				$fieldSearch[] =
 					' UPPER('.$tableShort.'.'.$field.') '.
 					$exclude.' LIKE '.
-					zbx_dbstr($start.mb_strtoupper($pattern).'%').
+					trx_dbstr($start.mb_strtoupper($pattern).'%').
 					" ESCAPE '!'";
 			}
 			else {
@@ -703,7 +703,7 @@ function zbx_db_search($table, $options, &$sql_parts) {
 				$fieldSearch[] =
 					' UPPER('.$tableShort.'.'.$field.') '.
 					$exclude.' LIKE '.
-					zbx_dbstr(mb_strtoupper($pattern)).
+					trx_dbstr(mb_strtoupper($pattern)).
 					" ESCAPE '!'";
 			}
 		}
@@ -789,7 +789,7 @@ function dbConditionInt($fieldName, array $values, $notIn = false, $zero_to_null
 
 	foreach ($values as $i => $value) {
 		if (!ctype_digit((string) $value) || bccomp($value, TRX_MAX_UINT64) > 0) {
-			$values[$i] = zbx_dbstr($value);
+			$values[$i] = trx_dbstr($value);
 		}
 	}
 
@@ -857,8 +857,8 @@ function dbConditionString($fieldName, array $values, $notIn = false) {
 			return '1=0';
 		case 1:
 			return $notIn
-				? $fieldName.'!='.zbx_dbstr(reset($values))
-				: $fieldName.'='.zbx_dbstr(reset($values));
+				? $fieldName.'!='.trx_dbstr(reset($values))
+				: $fieldName.'='.trx_dbstr(reset($values));
 	}
 
 	$in = $notIn ? ' NOT IN ' : ' IN ';
@@ -868,7 +868,7 @@ function dbConditionString($fieldName, array $values, $notIn = false) {
 	$condition = '';
 	foreach ($items as $values) {
 		$condition .= !empty($condition) ? ')'.$concat.$fieldName.$in.'(' : '';
-		$condition .= implode(',', zbx_dbstr($values));
+		$condition .= implode(',', trx_dbstr($values));
 	}
 
 	return '('.$fieldName.$in.'('.$condition.'))';
@@ -887,7 +887,7 @@ function dbConditionCoalesce($field_name, $default_value, $alias = '') {
 	global $DB;
 
 	if (is_string($default_value)) {
-		$default_value = ($default_value == '') ? '\'\'' : zbx_dbstr($default_value);
+		$default_value = ($default_value == '') ? '\'\'' : trx_dbstr($default_value);
 	}
 
 	$query = (($DB['TYPE'] == TRX_DB_ORACLE) ? 'NVL(' : 'COALESCE(').$field_name.','.$default_value.')';
@@ -974,7 +974,7 @@ function pg_connect_escape($string) {
  *
  * @return array|bool|string
  */
-function zbx_dbstr($var) {
+function trx_dbstr($var) {
 	global $DB;
 
 	if (!isset($DB['TYPE'])) {
@@ -1031,7 +1031,7 @@ function zbx_dbstr($var) {
  *
  * @return bool|string
  */
-function zbx_dbcast_2bigint($field) {
+function trx_dbcast_2bigint($field) {
 	global $DB;
 
 	if (!isset($DB['TYPE'])) {

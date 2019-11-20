@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 
 #include <sys/sysctl.h>
@@ -29,9 +29,9 @@ static char	*proc_argv(pid_t pid)
 	{
 		argv_alloc = sz;
 		if (NULL == argv)
-			argv = zbx_malloc(argv, argv_alloc);
+			argv = trx_malloc(argv, argv_alloc);
 		else
-			argv = zbx_realloc(argv, argv_alloc);
+			argv = trx_realloc(argv, argv_alloc);
 	}
 
 	sz = argv_alloc;
@@ -56,7 +56,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -71,8 +71,8 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-						zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+						trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -94,7 +94,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		do_task = TRX_DO_MIN;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -107,7 +107,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == kd && NULL == (kd = kvm_open(NULL, NULL, NULL, KVM_NO_FILES, NULL)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain a descriptor to access kernel virtual memory."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain a descriptor to access kernel virtual memory."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -124,7 +124,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == (proc = kvm_getproc2(kd, op, arg, sizeof(struct kinfo_proc2), &count)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain process information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain process information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -140,7 +140,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (NULL != (args = proc_argv(pproc->p_pid)))
 			{
-				if (NULL != zbx_regexp_match(args, proccomm, NULL))
+				if (NULL != trx_regexp_match(args, proccomm, NULL))
 					comm_ok = 1;
 			}
 		}
@@ -177,7 +177,7 @@ out:
 int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char			*procname, *proccomm, *param, *args;
-	int			proccount = 0, invalid_user = 0, zbx_proc_stat;
+	int			proccount = 0, invalid_user = 0, trx_proc_stat;
 	int			count, i, proc_ok, stat_ok, comm_ok, op, arg;
 	size_t			sz;
 	struct kinfo_proc2	*proc, *pproc;
@@ -185,7 +185,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -200,8 +200,8 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-						zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+						trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -214,20 +214,20 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = TRX_PROC_STAT_ALL;
+		trx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = TRX_PROC_STAT_RUN;
+		trx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
+		trx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
+		trx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else if (0 == strcmp(param, "disk"))
-		zbx_proc_stat = TRX_PROC_STAT_DISK;
+		trx_proc_stat = TRX_PROC_STAT_DISK;
 	else if (0 == strcmp(param, "trace"))
-		zbx_proc_stat = TRX_PROC_STAT_TRACE;
+		trx_proc_stat = TRX_PROC_STAT_TRACE;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -238,7 +238,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == kd && NULL == (kd = kvm_open(NULL, NULL, NULL, KVM_NO_FILES, NULL)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain a descriptor to access kernel virtual memory."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain a descriptor to access kernel virtual memory."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -255,7 +255,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == (proc = kvm_getproc2(kd, op, arg, sizeof(struct kinfo_proc2), &count)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain process information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain process information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -268,9 +268,9 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL == procname || '\0' == *procname || 0 == strcmp(procname, pproc->p_comm))
 			proc_ok = 1;
 
-		if (TRX_PROC_STAT_ALL != zbx_proc_stat)
+		if (TRX_PROC_STAT_ALL != trx_proc_stat)
 		{
-			switch (zbx_proc_stat)
+			switch (trx_proc_stat)
 			{
 				case TRX_PROC_STAT_RUN:
 					if (LSRUN == pproc->p_stat || LSONPROC == pproc->p_stat)
@@ -301,7 +301,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (NULL != (args = proc_argv(pproc->p_pid)))
 			{
-				if (NULL != zbx_regexp_match(args, proccomm, NULL))
+				if (NULL != trx_regexp_match(args, proccomm, NULL))
 					comm_ok = 1;
 			}
 		}

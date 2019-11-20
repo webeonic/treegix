@@ -14,8 +14,8 @@ static perfstat_memory_total_t	m;
 													\
 	if (-1 == perfstat_memory_total(NULL, &m, sizeof(m), 1))					\
 	{												\
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s",	\
-				zbx_strerror(errno)));							\
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s",	\
+				trx_strerror(errno)));							\
 		return SYSINFO_RET_FAIL;								\
 	}
 
@@ -61,7 +61,7 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 
 	if (0 == m.real_total)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -85,7 +85,7 @@ static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 
 	if (0 == m.real_total)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -113,7 +113,7 @@ int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -137,13 +137,13 @@ int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VM_MEMORY_CACHED(result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	return ret;
 #else
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Agent was compiled without support for Perfstat API."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Agent was compiled without support for Perfstat API."));
 	return SYSINFO_RET_FAIL;
 #endif
 }

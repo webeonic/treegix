@@ -54,7 +54,7 @@ class CDRule extends CApiService {
 			'limit'						=> null,
 			'limitSelects'				=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
 			return [];
@@ -62,13 +62,13 @@ class CDRule extends CApiService {
 
 // druleids
 		if (!is_null($options['druleids'])) {
-			zbx_value2array($options['druleids']);
+			trx_value2array($options['druleids']);
 			$sqlParts['where']['druleid'] = dbConditionInt('dr.druleid', $options['druleids']);
 		}
 
 // dhostids
 		if (!is_null($options['dhostids'])) {
-			zbx_value2array($options['dhostids']);
+			trx_value2array($options['dhostids']);
 
 			$sqlParts['from']['dhosts'] = 'dhosts dh';
 			$sqlParts['where']['dhostid'] = dbConditionInt('dh.dhostid', $options['dhostids']);
@@ -81,7 +81,7 @@ class CDRule extends CApiService {
 
 // dserviceids
 		if (!is_null($options['dserviceids'])) {
-			zbx_value2array($options['dserviceids']);
+			trx_value2array($options['dserviceids']);
 
 			$sqlParts['from']['dhosts'] = 'dhosts dh';
 			$sqlParts['from']['dservices'] = 'dservices ds';
@@ -97,7 +97,7 @@ class CDRule extends CApiService {
 
 // search
 		if (!is_null($options['search'])) {
-			zbx_db_search('drules dr', $options, $sqlParts);
+			trx_db_search('drules dr', $options, $sqlParts);
 		}
 
 // filter
@@ -111,11 +111,11 @@ class CDRule extends CApiService {
 
 // search
 		if (is_array($options['search'])) {
-			zbx_db_search('drules dr', $options, $sqlParts);
+			trx_db_search('drules dr', $options, $sqlParts);
 		}
 
 // limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 //------------
@@ -147,7 +147,7 @@ class CDRule extends CApiService {
 
 // removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 	return $result;
@@ -222,7 +222,7 @@ class CDRule extends CApiService {
 			}
 
 			if (array_key_exists('proxy_hostid', $drule)) {
-				if (!zbx_is_int($drule['proxy_hostid'])) {
+				if (!trx_is_int($drule['proxy_hostid'])) {
 					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value "%1$s" for "%2$s" field.', $drule['proxy_hostid'], 'proxy_hostid')
 					);
@@ -252,7 +252,7 @@ class CDRule extends CApiService {
 		// Check drule name duplicates in DB.
 		$db_duplicate = $this->get([
 			'output' => ['name'],
-			'filter' => ['name' => zbx_objectValues($drules, 'name')],
+			'filter' => ['name' => trx_objectValues($drules, 'name')],
 			'limit' => 1
 		]);
 
@@ -305,7 +305,7 @@ class CDRule extends CApiService {
 
 		$db_drules = $this->get([
 			'output' => ['druleid', 'name'],
-			'druleids' => zbx_objectValues($drules, 'druleid'),
+			'druleids' => trx_objectValues($drules, 'druleid'),
 			'preservekeys' => true
 		]);
 
@@ -371,7 +371,7 @@ class CDRule extends CApiService {
 			}
 
 			if (array_key_exists('proxy_hostid', $drule)) {
-				if (!zbx_is_int($drule['proxy_hostid'])) {
+				if (!trx_is_int($drule['proxy_hostid'])) {
 					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value "%1$s" for "%2$s" field.', $drule['proxy_hostid'], 'proxy_hostid')
 					);
@@ -404,7 +404,7 @@ class CDRule extends CApiService {
 			// Check drule name duplicates in DB.
 			$db_duplicate = $this->get([
 				'output' => ['name'],
-				'filter' => ['name' => zbx_objectValues($drule_names_changed, 'name')],
+				'filter' => ['name' => trx_objectValues($drule_names_changed, 'name')],
 				'limit' => 1
 			]);
 
@@ -665,7 +665,7 @@ class CDRule extends CApiService {
 	 * @return array
 	 */
 	public function create(array $drules) {
-		$drules = zbx_toArray($drules);
+		$drules = trx_toArray($drules);
 		$this->validateCreate($drules);
 
 		$druleids = DB::insert('drules', $drules);
@@ -712,8 +712,8 @@ class CDRule extends CApiService {
 	 * @return array
 	 */
 	public function update(array $drules) {
-		$drules = zbx_toArray($drules);
-		$druleids = zbx_objectValues($drules, 'druleid');
+		$drules = trx_toArray($drules);
+		$druleids = trx_objectValues($drules, 'druleid');
 
 		$this->validateUpdate($drules);
 
@@ -763,8 +763,8 @@ class CDRule extends CApiService {
 				}
 
 				$del_dcheckids = array_diff(
-					zbx_objectValues($db_dchecks, 'dcheckid'),
-					zbx_objectValues($old_dchecks, 'dcheckid')
+					trx_objectValues($db_dchecks, 'dcheckid'),
+					trx_objectValues($old_dchecks, 'dcheckid')
 				);
 
 				if ($del_dcheckids) {
@@ -825,7 +825,7 @@ class CDRule extends CApiService {
 			'SELECT a.name,dc.druleid'.
 			' FROM actions a,conditions c,dchecks dc'.
 			' WHERE a.actionid=c.actionid'.
-				' AND '.zbx_dbcast_2bigint('c.value').'=dc.dcheckid'.
+				' AND '.trx_dbcast_2bigint('c.value').'=dc.dcheckid'.
 				' AND c.conditiontype='.CONDITION_TYPE_DCHECK.
 				' AND '.dbConditionString('dc.druleid', $druleids),
 			1
@@ -905,7 +905,7 @@ class CDRule extends CApiService {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$dchecks = zbx_toHash($dchecks, 'druleid');
+				$dchecks = trx_toHash($dchecks, 'druleid');
 				foreach ($result as $druleid => $drule) {
 					$result[$druleid]['dchecks'] = array_key_exists($druleid, $dchecks)
 						? $dchecks[$druleid]['rowscount']
@@ -934,7 +934,7 @@ class CDRule extends CApiService {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$dhosts = zbx_toHash($dhosts, 'druleid');
+				$dhosts = trx_toHash($dhosts, 'druleid');
 				foreach ($result as $druleid => $drule) {
 					$result[$druleid]['dhosts'] = array_key_exists($druleid, $dhosts)
 						? $dhosts[$druleid]['rowscount']

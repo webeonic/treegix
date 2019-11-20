@@ -4,11 +4,11 @@
 
 #include "comms.h"
 #include "log.h"
-#include "zbxjson.h"
-#include "zbxserver.h"
+#include "trxjson.h"
+#include "trxserver.h"
 #include "dbcache.h"
 #include "proxy.h"
-#include "zbxself.h"
+#include "trxself.h"
 
 #include "trapper.h"
 #include "active.h"
@@ -19,9 +19,9 @@
 #include "trapper_preproc.h"
 
 #include "daemon.h"
-#include "../../libs/zbxcrypto/tls.h"
-#include "../../libs/zbxserver/treegix_stats.h"
-#include "zbxipcservice.h"
+#include "../../libs/trxcrypto/tls.h"
+#include "../../libs/trxserver/treegix_stats.h"
+#include "trxipcservice.h"
 
 #define TRX_MAX_SECTION_ENTRIES		4
 #define TRX_MAX_ENTRY_ATTRIBUTES	3
@@ -32,49 +32,49 @@ extern size_t		(*find_psk_in_cache)(const unsigned char *, unsigned char *, unsi
 
 typedef struct
 {
-	zbx_counter_value_t	online;
-	zbx_counter_value_t	offline;
+	trx_counter_value_t	online;
+	trx_counter_value_t	offline;
 }
-zbx_user_stats_t;
+trx_user_stats_t;
 
 typedef union
 {
-	zbx_counter_value_t	counter;	/* single global counter */
-	zbx_vector_ptr_t	counters;	/* array of per proxy counters */
+	trx_counter_value_t	counter;	/* single global counter */
+	trx_vector_ptr_t	counters;	/* array of per proxy counters */
 }
-zbx_entry_info_t;
+trx_entry_info_t;
 
 typedef struct
 {
 	const char	*name;
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 }
-zbx_entry_attribute_t;
+trx_entry_attribute_t;
 
 typedef struct
 {
-	zbx_entry_info_t	*info;
-	zbx_counter_type_t	counter_type;
-	zbx_entry_attribute_t	attributes[TRX_MAX_ENTRY_ATTRIBUTES];
+	trx_entry_info_t	*info;
+	trx_counter_type_t	counter_type;
+	trx_entry_attribute_t	attributes[TRX_MAX_ENTRY_ATTRIBUTES];
 }
-zbx_section_entry_t;
+trx_section_entry_t;
 
 typedef enum
 {
 	TRX_SECTION_ENTRY_THE_ONLY,
 	TRX_SECTION_ENTRY_PER_PROXY
 }
-zbx_entry_type_t;
+trx_entry_type_t;
 
 typedef struct
 {
 	const char		*name;
-	zbx_entry_type_t	entry_type;
-	zbx_user_type_t		access_level;
+	trx_entry_type_t	entry_type;
+	trx_user_type_t		access_level;
 	int			*res;
-	zbx_section_entry_t	entries[TRX_MAX_SECTION_ENTRIES];
+	trx_section_entry_t	entries[TRX_MAX_SECTION_ENTRIES];
 }
-zbx_status_section_t;
+trx_status_section_t;
 
 /******************************************************************************
  *                                                                            *
@@ -83,7 +83,7 @@ zbx_status_section_t;
  * Purpose: processes the received values from active agents                  *
  *                                                                            *
  ******************************************************************************/
-static void	recv_agenthistory(zbx_socket_t *sock, struct zbx_json_parse *jp, zbx_timespec_t *ts)
+static void	recv_agenthistory(trx_socket_t *sock, struct trx_json_parse *jp, trx_timespec_t *ts)
 {
 	char	*info = NULL;
 	int	ret;
@@ -96,14 +96,14 @@ static void	recv_agenthistory(zbx_socket_t *sock, struct zbx_json_parse *jp, zbx
 	}
 	else if (!TRX_IS_RUNNING())
 	{
-		info = zbx_strdup(info, "Treegix server shutdown in progress");
+		info = trx_strdup(info, "Treegix server shutdown in progress");
 		treegix_log(LOG_LEVEL_WARNING, "cannot receive agent history data from \"%s\": %s", sock->peer, info);
 		ret = FAIL;
 	}
 
-	zbx_send_response(sock, ret, info, CONFIG_TIMEOUT);
+	trx_send_response(sock, ret, info, CONFIG_TIMEOUT);
 
-	zbx_free(info);
+	trx_free(info);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -115,7 +115,7 @@ static void	recv_agenthistory(zbx_socket_t *sock, struct zbx_json_parse *jp, zbx
  * Purpose: processes the received values from senders                        *
  *                                                                            *
  ******************************************************************************/
-static void	recv_senderhistory(zbx_socket_t *sock, struct zbx_json_parse *jp, zbx_timespec_t *ts)
+static void	recv_senderhistory(trx_socket_t *sock, struct trx_json_parse *jp, trx_timespec_t *ts)
 {
 	char	*info = NULL;
 	int	ret;
@@ -128,14 +128,14 @@ static void	recv_senderhistory(zbx_socket_t *sock, struct zbx_json_parse *jp, zb
 	}
 	else if (!TRX_IS_RUNNING())
 	{
-		info = zbx_strdup(info, "Treegix server shutdown in progress");
+		info = trx_strdup(info, "Treegix server shutdown in progress");
 		treegix_log(LOG_LEVEL_WARNING, "cannot process sender data from \"%s\": %s", sock->peer, info);
 		ret = FAIL;
 	}
 
-	zbx_send_response(sock, ret, info, CONFIG_TIMEOUT);
+	trx_send_response(sock, ret, info, CONFIG_TIMEOUT);
 
-	zbx_free(info);
+	trx_free(info);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -152,7 +152,7 @@ static void	recv_senderhistory(zbx_socket_t *sock, struct zbx_json_parse *jp, zb
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static void	recv_proxy_heartbeat(zbx_socket_t *sock, struct zbx_json_parse *jp)
+static void	recv_proxy_heartbeat(trx_socket_t *sock, struct trx_json_parse *jp)
 {
 	char		*error = NULL;
 	int		ret, flags = TRX_TCP_PROTOCOL;
@@ -167,14 +167,14 @@ static void	recv_proxy_heartbeat(zbx_socket_t *sock, struct zbx_json_parse *jp)
 		goto out;
 	}
 
-	if (SUCCEED != (ret = zbx_proxy_check_permissions(&proxy, sock, &error)))
+	if (SUCCEED != (ret = trx_proxy_check_permissions(&proxy, sock, &error)))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot accept connection from proxy \"%s\" at \"%s\", allowed address:"
 				" \"%s\": %s", proxy.host, sock->peer, proxy.proxy_address, error);
 		goto out;
 	}
 
-	zbx_update_proxy_data(&proxy, zbx_get_proxy_protocol_version(jp), time(NULL),
+	trx_update_proxy_data(&proxy, trx_get_proxy_protocol_version(jp), time(NULL),
 			(0 != (sock->protocol & TRX_TCP_COMPRESS) ? 1 : 0));
 
 	if (0 != proxy.auto_compress)
@@ -183,9 +183,9 @@ out:
 	if (FAIL == ret && 0 != (sock->protocol & TRX_TCP_COMPRESS))
 		flags |= TRX_TCP_COMPRESS;
 
-	zbx_send_response_ext(sock, ret, error, NULL, flags, CONFIG_TIMEOUT);
+	trx_send_response_ext(sock, ret, error, NULL, flags, CONFIG_TIMEOUT);
 
-	zbx_free(error);
+	trx_free(error);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -198,7 +198,7 @@ out:
 /* queue stats split by delay times */
 typedef struct
 {
-	zbx_uint64_t	id;
+	trx_uint64_t	id;
 	int		delay5;
 	int		delay10;
 	int		delay30;
@@ -206,7 +206,7 @@ typedef struct
 	int		delay300;
 	int		delay600;
 }
-zbx_queue_stats_t;
+trx_queue_stats_t;
 
 /******************************************************************************
  *                                                                            *
@@ -218,7 +218,7 @@ zbx_queue_stats_t;
  *             delay   - [IN] the delay time of an delayed item               *
  *                                                                            *
  ******************************************************************************/
-static void	queue_stats_update(zbx_queue_stats_t *stats, int delay)
+static void	queue_stats_update(trx_queue_stats_t *stats, int delay)
 {
 	if (10 >= delay)
 		stats->delay5++;
@@ -245,35 +245,35 @@ static void	queue_stats_update(zbx_queue_stats_t *stats, int delay)
  *             json        - [OUT] the output JSON                            *
  *                                                                            *
  ******************************************************************************/
-static void	queue_stats_export(zbx_hashset_t *queue_stats, const char *id_name, struct zbx_json *json)
+static void	queue_stats_export(trx_hashset_t *queue_stats, const char *id_name, struct trx_json *json)
 {
-	zbx_hashset_iter_t	iter;
-	zbx_queue_stats_t	*stats;
+	trx_hashset_iter_t	iter;
+	trx_queue_stats_t	*stats;
 
-	zbx_json_addarray(json, TRX_PROTO_TAG_DATA);
+	trx_json_addarray(json, TRX_PROTO_TAG_DATA);
 
-	zbx_hashset_iter_reset(queue_stats, &iter);
+	trx_hashset_iter_reset(queue_stats, &iter);
 
-	while (NULL != (stats = (zbx_queue_stats_t *)zbx_hashset_iter_next(&iter)))
+	while (NULL != (stats = (trx_queue_stats_t *)trx_hashset_iter_next(&iter)))
 	{
-		zbx_json_addobject(json, NULL);
-		zbx_json_adduint64(json, id_name, stats->id);
-		zbx_json_adduint64(json, "delay5", stats->delay5);
-		zbx_json_adduint64(json, "delay10", stats->delay10);
-		zbx_json_adduint64(json, "delay30", stats->delay30);
-		zbx_json_adduint64(json, "delay60", stats->delay60);
-		zbx_json_adduint64(json, "delay300", stats->delay300);
-		zbx_json_adduint64(json, "delay600", stats->delay600);
-		zbx_json_close(json);
+		trx_json_addobject(json, NULL);
+		trx_json_adduint64(json, id_name, stats->id);
+		trx_json_adduint64(json, "delay5", stats->delay5);
+		trx_json_adduint64(json, "delay10", stats->delay10);
+		trx_json_adduint64(json, "delay30", stats->delay30);
+		trx_json_adduint64(json, "delay60", stats->delay60);
+		trx_json_adduint64(json, "delay300", stats->delay300);
+		trx_json_adduint64(json, "delay600", stats->delay600);
+		trx_json_close(json);
 	}
 
-	zbx_json_close(json);
+	trx_json_close(json);
 }
 
 /* queue item comparison function used to sort queue by nextcheck */
-static int	queue_compare_by_nextcheck_asc(zbx_queue_item_t **d1, zbx_queue_item_t **d2)
+static int	queue_compare_by_nextcheck_asc(trx_queue_item_t **d1, trx_queue_item_t **d2)
 {
-	zbx_queue_item_t	*i1 = *d1, *i2 = *d2;
+	trx_queue_item_t	*i1 = *d1, *i2 = *d2;
 
 	return i1->nextcheck - i2->nextcheck;
 }
@@ -291,26 +291,26 @@ static int	queue_compare_by_nextcheck_asc(zbx_queue_item_t **d1, zbx_queue_item_
  *                FAIL - an error occurred                                    *
  *                                                                            *
  ******************************************************************************/
-static int	recv_getqueue(zbx_socket_t *sock, struct zbx_json_parse *jp)
+static int	recv_getqueue(trx_socket_t *sock, struct trx_json_parse *jp)
 {
 	int			ret = FAIL, request_type = TRX_GET_QUEUE_UNKNOWN, now, i, limit;
 	char			type[MAX_STRING_LEN], sessionid[MAX_STRING_LEN], limit_str[MAX_STRING_LEN];
-	zbx_user_t		user;
-	zbx_vector_ptr_t	queue;
-	struct zbx_json		json;
-	zbx_hashset_t		queue_stats;
-	zbx_queue_stats_t	*stats;
+	trx_user_t		user;
+	trx_vector_ptr_t	queue;
+	struct trx_json		json;
+	trx_hashset_t		queue_stats;
+	trx_queue_stats_t	*stats;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (FAIL == zbx_json_value_by_name(jp, TRX_PROTO_TAG_SID, sessionid, sizeof(sessionid)) ||
+	if (FAIL == trx_json_value_by_name(jp, TRX_PROTO_TAG_SID, sessionid, sizeof(sessionid)) ||
 			SUCCEED != DBget_user_by_active_session(sessionid, &user) || USER_TYPE_SUPER_ADMIN > user.type)
 	{
-		zbx_send_response(sock, ret, "Permission denied.", CONFIG_TIMEOUT);
+		trx_send_response(sock, ret, "Permission denied.", CONFIG_TIMEOUT);
 		goto out;
 	}
 
-	if (FAIL != zbx_json_value_by_name(jp, TRX_PROTO_TAG_TYPE, type, sizeof(type)))
+	if (FAIL != trx_json_value_by_name(jp, TRX_PROTO_TAG_TYPE, type, sizeof(type)))
 	{
 		if (0 == strcmp(type, TRX_PROTO_VALUE_GET_QUEUE_OVERVIEW))
 		{
@@ -324,10 +324,10 @@ static int	recv_getqueue(zbx_socket_t *sock, struct zbx_json_parse *jp)
 		{
 			request_type = TRX_GET_QUEUE_DETAILS;
 
-			if (FAIL == zbx_json_value_by_name(jp, TRX_PROTO_TAG_LIMIT, limit_str, sizeof(limit_str)) ||
+			if (FAIL == trx_json_value_by_name(jp, TRX_PROTO_TAG_LIMIT, limit_str, sizeof(limit_str)) ||
 					FAIL == is_uint31(limit_str, &limit))
 			{
-				zbx_send_response(sock, ret, "Unsupported limit value.", CONFIG_TIMEOUT);
+				trx_send_response(sock, ret, "Unsupported limit value.", CONFIG_TIMEOUT);
 				goto out;
 			}
 		}
@@ -335,102 +335,102 @@ static int	recv_getqueue(zbx_socket_t *sock, struct zbx_json_parse *jp)
 
 	if (TRX_GET_QUEUE_UNKNOWN == request_type)
 	{
-		zbx_send_response(sock, ret, "Unsupported request type.", CONFIG_TIMEOUT);
+		trx_send_response(sock, ret, "Unsupported request type.", CONFIG_TIMEOUT);
 		goto out;
 	}
 
 	now = time(NULL);
-	zbx_vector_ptr_create(&queue);
+	trx_vector_ptr_create(&queue);
 	DCget_item_queue(&queue, TRX_QUEUE_FROM_DEFAULT, TRX_QUEUE_TO_INFINITY);
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
 	switch (request_type)
 	{
 		case TRX_GET_QUEUE_OVERVIEW:
-			zbx_hashset_create(&queue_stats, 32, TRX_DEFAULT_UINT64_HASH_FUNC,
+			trx_hashset_create(&queue_stats, 32, TRX_DEFAULT_UINT64_HASH_FUNC,
 					TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 			/* gather queue stats by item type */
 			for (i = 0; i < queue.values_num; i++)
 			{
-				zbx_queue_item_t	*item = (zbx_queue_item_t *)queue.values[i];
-				zbx_uint64_t		id = item->type;
+				trx_queue_item_t	*item = (trx_queue_item_t *)queue.values[i];
+				trx_uint64_t		id = item->type;
 
-				if (NULL == (stats = (zbx_queue_stats_t *)zbx_hashset_search(&queue_stats, &id)))
+				if (NULL == (stats = (trx_queue_stats_t *)trx_hashset_search(&queue_stats, &id)))
 				{
-					zbx_queue_stats_t	data = {.id = id};
+					trx_queue_stats_t	data = {.id = id};
 
-					stats = (zbx_queue_stats_t *)zbx_hashset_insert(&queue_stats, &data, sizeof(data));
+					stats = (trx_queue_stats_t *)trx_hashset_insert(&queue_stats, &data, sizeof(data));
 				}
 				queue_stats_update(stats, now - item->nextcheck);
 			}
 
-			zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS,
+			trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS,
 					TRX_JSON_TYPE_STRING);
 			queue_stats_export(&queue_stats, "itemtype", &json);
-			zbx_hashset_destroy(&queue_stats);
+			trx_hashset_destroy(&queue_stats);
 
 			break;
 		case TRX_GET_QUEUE_PROXY:
-			zbx_hashset_create(&queue_stats, 32, TRX_DEFAULT_UINT64_HASH_FUNC,
+			trx_hashset_create(&queue_stats, 32, TRX_DEFAULT_UINT64_HASH_FUNC,
 					TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 			/* gather queue stats by proxy hostid */
 			for (i = 0; i < queue.values_num; i++)
 			{
-				zbx_queue_item_t	*item = (zbx_queue_item_t *)queue.values[i];
-				zbx_uint64_t		id = item->proxy_hostid;
+				trx_queue_item_t	*item = (trx_queue_item_t *)queue.values[i];
+				trx_uint64_t		id = item->proxy_hostid;
 
-				if (NULL == (stats = (zbx_queue_stats_t *)zbx_hashset_search(&queue_stats, &id)))
+				if (NULL == (stats = (trx_queue_stats_t *)trx_hashset_search(&queue_stats, &id)))
 				{
-					zbx_queue_stats_t	data = {.id = id};
+					trx_queue_stats_t	data = {.id = id};
 
-					stats = (zbx_queue_stats_t *)zbx_hashset_insert(&queue_stats, &data, sizeof(data));
+					stats = (trx_queue_stats_t *)trx_hashset_insert(&queue_stats, &data, sizeof(data));
 				}
 				queue_stats_update(stats, now - item->nextcheck);
 			}
 
-			zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS,
+			trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS,
 					TRX_JSON_TYPE_STRING);
 			queue_stats_export(&queue_stats, "proxyid", &json);
-			zbx_hashset_destroy(&queue_stats);
+			trx_hashset_destroy(&queue_stats);
 
 			break;
 		case TRX_GET_QUEUE_DETAILS:
-			zbx_vector_ptr_sort(&queue, (zbx_compare_func_t)queue_compare_by_nextcheck_asc);
-			zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS,
+			trx_vector_ptr_sort(&queue, (trx_compare_func_t)queue_compare_by_nextcheck_asc);
+			trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS,
 					TRX_JSON_TYPE_STRING);
-			zbx_json_addarray(&json, TRX_PROTO_TAG_DATA);
+			trx_json_addarray(&json, TRX_PROTO_TAG_DATA);
 
 			for (i = 0; i < queue.values_num && i < limit; i++)
 			{
-				zbx_queue_item_t	*item = (zbx_queue_item_t *)queue.values[i];
+				trx_queue_item_t	*item = (trx_queue_item_t *)queue.values[i];
 
-				zbx_json_addobject(&json, NULL);
-				zbx_json_adduint64(&json, "itemid", item->itemid);
-				zbx_json_adduint64(&json, "nextcheck", item->nextcheck);
-				zbx_json_close(&json);
+				trx_json_addobject(&json, NULL);
+				trx_json_adduint64(&json, "itemid", item->itemid);
+				trx_json_adduint64(&json, "nextcheck", item->nextcheck);
+				trx_json_close(&json);
 			}
 
-			zbx_json_close(&json);
-			zbx_json_adduint64(&json, "total", queue.values_num);
+			trx_json_close(&json);
+			trx_json_adduint64(&json, "total", queue.values_num);
 
 			break;
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() json.buffer:'%s'", __func__, json.buffer);
 
-	(void)zbx_tcp_send(sock, json.buffer);
+	(void)trx_tcp_send(sock, json.buffer);
 
 	DCfree_item_queue(&queue);
-	zbx_vector_ptr_destroy(&queue);
+	trx_vector_ptr_destroy(&queue);
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -448,59 +448,59 @@ out:
  *                FAIL - an error occurred                                    *
  *                                                                            *
  ******************************************************************************/
-static void	recv_alert_send(zbx_socket_t *sock, const struct zbx_json_parse *jp)
+static void	recv_alert_send(trx_socket_t *sock, const struct trx_json_parse *jp)
 {
 	DB_RESULT		result;
 	DB_ROW			row;
 	int			ret = FAIL, errcode;
 	char			tmp[TRX_MAX_UINT64_LEN + 1], sessionid[MAX_STRING_LEN], *sendto = NULL, *subject = NULL,
 				*message = NULL, *error = NULL, *params = NULL, *value = NULL;
-	zbx_uint64_t		mediatypeid;
+	trx_uint64_t		mediatypeid;
 	size_t			string_alloc;
-	struct zbx_json		json;
-	struct zbx_json_parse	jp_data, jp_params;
+	struct trx_json		json;
+	struct trx_json_parse	jp_data, jp_params;
 	unsigned char		*data = NULL,smtp_security, smtp_verify_peer, smtp_verify_host,
 				smtp_authentication, content_type, *response = NULL;
-	zbx_uint32_t		size;
-	zbx_user_t		user;
+	trx_uint32_t		size;
+	trx_user_t		user;
 	unsigned short		smtp_port;
 
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_SID, sessionid, sizeof(sessionid)) ||
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_SID, sessionid, sizeof(sessionid)) ||
 			SUCCEED != DBget_user_by_active_session(sessionid, &user) || USER_TYPE_SUPER_ADMIN > user.type)
 	{
-		error = zbx_strdup(NULL, "Permission denied.");
+		error = trx_strdup(NULL, "Permission denied.");
 		goto fail;
 	}
 
-	if (SUCCEED != zbx_json_brackets_by_name(jp, TRX_PROTO_TAG_DATA, &jp_data))
+	if (SUCCEED != trx_json_brackets_by_name(jp, TRX_PROTO_TAG_DATA, &jp_data))
 	{
-		error = zbx_dsprintf(NULL, "Cannot parse request tag: %s.", TRX_PROTO_TAG_DATA);
+		error = trx_dsprintf(NULL, "Cannot parse request tag: %s.", TRX_PROTO_TAG_DATA);
 		goto fail;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(&jp_data, TRX_PROTO_TAG_MEDIATYPEID, tmp, sizeof(tmp)) ||
+	if (SUCCEED != trx_json_value_by_name(&jp_data, TRX_PROTO_TAG_MEDIATYPEID, tmp, sizeof(tmp)) ||
 			SUCCEED != is_uint64(tmp, &mediatypeid))
 	{
-		error = zbx_dsprintf(NULL, "Cannot parse request tag: %s.", TRX_PROTO_TAG_MEDIATYPEID);
+		error = trx_dsprintf(NULL, "Cannot parse request tag: %s.", TRX_PROTO_TAG_MEDIATYPEID);
 		goto fail;
 	}
 
 	string_alloc = 0;
-	if (SUCCEED == zbx_json_value_by_name_dyn(&jp_data, TRX_PROTO_TAG_SENDTO, &sendto, &string_alloc))
+	if (SUCCEED == trx_json_value_by_name_dyn(&jp_data, TRX_PROTO_TAG_SENDTO, &sendto, &string_alloc))
 		string_alloc = 0;
-	if (SUCCEED == zbx_json_value_by_name_dyn(&jp_data, TRX_PROTO_TAG_SUBJECT, &subject, &string_alloc))
+	if (SUCCEED == trx_json_value_by_name_dyn(&jp_data, TRX_PROTO_TAG_SUBJECT, &subject, &string_alloc))
 		string_alloc = 0;
-	if (SUCCEED == zbx_json_value_by_name_dyn(&jp_data, TRX_PROTO_TAG_MESSAGE, &message, &string_alloc))
+	if (SUCCEED == trx_json_value_by_name_dyn(&jp_data, TRX_PROTO_TAG_MESSAGE, &message, &string_alloc))
 		string_alloc = 0;
 
-	if (SUCCEED == zbx_json_brackets_by_name(&jp_data, TRX_PROTO_TAG_PARAMETERS, &jp_params))
+	if (SUCCEED == trx_json_brackets_by_name(&jp_data, TRX_PROTO_TAG_PARAMETERS, &jp_params))
 	{
 		size_t	string_offset = 0;
 
-		zbx_strncpy_alloc(&params, &string_alloc, &string_offset, jp_params.start,
+		trx_strncpy_alloc(&params, &string_alloc, &string_offset, jp_params.start,
 				jp_params.end - jp_params.start + 1);
 	}
 
@@ -513,14 +513,14 @@ static void	recv_alert_send(zbx_socket_t *sock, const struct zbx_json_parse *jp)
 	if (NULL == (row = DBfetch(result)))
 	{
 		DBfree_result(result);
-		error = zbx_dsprintf(NULL, "Cannot find the specified media type.");
+		error = trx_dsprintf(NULL, "Cannot find the specified media type.");
 		goto fail;
 	}
 
 	if (FAIL == is_ushort(row[8], &smtp_port))
 	{
 		DBfree_result(result);
-		error = zbx_dsprintf(NULL, "Invalid port value.");
+		error = trx_dsprintf(NULL, "Invalid port value.");
 		goto fail;
 	}
 
@@ -530,51 +530,51 @@ static void	recv_alert_send(zbx_socket_t *sock, const struct zbx_json_parse *jp)
 	TRX_STR2UCHAR(smtp_authentication, row[12]);
 	TRX_STR2UCHAR(content_type, row[17]);
 
-	size = zbx_alerter_serialize_alert_send(&data, mediatypeid, atoi(row[0]), row[1], row[2], row[3], row[4],
+	size = trx_alerter_serialize_alert_send(&data, mediatypeid, atoi(row[0]), row[1], row[2], row[3], row[4],
 			row[5], row[6], row[7], smtp_port, smtp_security, smtp_verify_peer, smtp_verify_host,
 			smtp_authentication, row[13], atoi(row[14]), atoi(row[15]), row[16], content_type, row[18],
 			row[19], sendto, subject, message, params);
 
 	DBfree_result(result);
 
-	if (SUCCEED != zbx_ipc_async_exchange(TRX_IPC_SERVICE_ALERTER, TRX_IPC_ALERTER_ALERT, SEC_PER_MIN, data, size,
+	if (SUCCEED != trx_ipc_async_exchange(TRX_IPC_SERVICE_ALERTER, TRX_IPC_ALERTER_ALERT, SEC_PER_MIN, data, size,
 			&response, &error))
 	{
 		goto fail;
 	}
 
-	zbx_alerter_deserialize_result(response, &value, &errcode, &error);
-	zbx_free(response);
+	trx_alerter_deserialize_result(response, &value, &errcode, &error);
+	trx_free(response);
 
 	if (SUCCEED != errcode)
 		goto fail;
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
 	if (NULL != value)
-		zbx_json_addstring(&json, TRX_PROTO_TAG_RESULT, value, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_RESULT, value, TRX_JSON_TYPE_STRING);
 
-	(void)zbx_tcp_send(sock, json.buffer);
+	(void)trx_tcp_send(sock, json.buffer);
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
 	ret = SUCCEED;
 fail:
 	if (SUCCEED != ret)
-		zbx_send_response(sock, FAIL, error, CONFIG_TIMEOUT);
+		trx_send_response(sock, FAIL, error, CONFIG_TIMEOUT);
 
-	zbx_free(params);
-	zbx_free(message);
-	zbx_free(subject);
-	zbx_free(sendto);
-	zbx_free(data);
-	zbx_free(value);
-	zbx_free(error);
+	trx_free(params);
+	trx_free(message);
+	trx_free(subject);
+	trx_free(sendto);
+	trx_free(data);
+	trx_free(value);
+	trx_free(error);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 }
 
-static int	DBget_template_count(zbx_uint64_t *count)
+static int	DBget_template_count(trx_uint64_t *count)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
@@ -593,11 +593,11 @@ out:
 	return ret;
 }
 
-static int	DBget_user_count(zbx_uint64_t *count_online, zbx_uint64_t *count_offline)
+static int	DBget_user_count(trx_uint64_t *count_online, trx_uint64_t *count_offline)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	users_offline, users_online = 0;
+	trx_uint64_t	users_offline, users_online = 0;
 	int		now, ret = FAIL;
 
 	if (NULL == (result = DBselect("select count(*) from users")))
@@ -639,39 +639,39 @@ out:
 
 /* auxiliary variables for status_stats_export() */
 
-static zbx_entry_info_t	templates, hosts_monitored, hosts_not_monitored, items_active_normal, items_active_notsupported,
+static trx_entry_info_t	templates, hosts_monitored, hosts_not_monitored, items_active_normal, items_active_notsupported,
 			items_disabled, triggers_enabled_ok, triggers_enabled_problem, triggers_disabled, users_online,
 			users_offline, required_performance;
 static int		templates_res, users_res;
 
-static void	zbx_status_counters_init(void)
+static void	trx_status_counters_init(void)
 {
-	zbx_vector_ptr_create(&hosts_monitored.counters);
-	zbx_vector_ptr_create(&hosts_not_monitored.counters);
-	zbx_vector_ptr_create(&items_active_normal.counters);
-	zbx_vector_ptr_create(&items_active_notsupported.counters);
-	zbx_vector_ptr_create(&items_disabled.counters);
-	zbx_vector_ptr_create(&required_performance.counters);
+	trx_vector_ptr_create(&hosts_monitored.counters);
+	trx_vector_ptr_create(&hosts_not_monitored.counters);
+	trx_vector_ptr_create(&items_active_normal.counters);
+	trx_vector_ptr_create(&items_active_notsupported.counters);
+	trx_vector_ptr_create(&items_disabled.counters);
+	trx_vector_ptr_create(&required_performance.counters);
 }
 
-static void	zbx_status_counters_free(void)
+static void	trx_status_counters_free(void)
 {
-	zbx_vector_ptr_clear_ext(&hosts_monitored.counters, zbx_default_mem_free_func);
-	zbx_vector_ptr_clear_ext(&hosts_not_monitored.counters, zbx_default_mem_free_func);
-	zbx_vector_ptr_clear_ext(&items_active_normal.counters, zbx_default_mem_free_func);
-	zbx_vector_ptr_clear_ext(&items_active_notsupported.counters, zbx_default_mem_free_func);
-	zbx_vector_ptr_clear_ext(&items_disabled.counters, zbx_default_mem_free_func);
-	zbx_vector_ptr_clear_ext(&required_performance.counters, zbx_default_mem_free_func);
+	trx_vector_ptr_clear_ext(&hosts_monitored.counters, trx_default_mem_free_func);
+	trx_vector_ptr_clear_ext(&hosts_not_monitored.counters, trx_default_mem_free_func);
+	trx_vector_ptr_clear_ext(&items_active_normal.counters, trx_default_mem_free_func);
+	trx_vector_ptr_clear_ext(&items_active_notsupported.counters, trx_default_mem_free_func);
+	trx_vector_ptr_clear_ext(&items_disabled.counters, trx_default_mem_free_func);
+	trx_vector_ptr_clear_ext(&required_performance.counters, trx_default_mem_free_func);
 
-	zbx_vector_ptr_destroy(&hosts_monitored.counters);
-	zbx_vector_ptr_destroy(&hosts_not_monitored.counters);
-	zbx_vector_ptr_destroy(&items_active_normal.counters);
-	zbx_vector_ptr_destroy(&items_active_notsupported.counters);
-	zbx_vector_ptr_destroy(&items_disabled.counters);
-	zbx_vector_ptr_destroy(&required_performance.counters);
+	trx_vector_ptr_destroy(&hosts_monitored.counters);
+	trx_vector_ptr_destroy(&hosts_not_monitored.counters);
+	trx_vector_ptr_destroy(&items_active_normal.counters);
+	trx_vector_ptr_destroy(&items_active_notsupported.counters);
+	trx_vector_ptr_destroy(&items_disabled.counters);
+	trx_vector_ptr_destroy(&required_performance.counters);
 }
 
-const zbx_status_section_t	status_sections[] = {
+const trx_status_section_t	status_sections[] = {
 /*	{SECTION NAME,			NUMBER OF SECTION ENTRIES	SECTION ACCESS LEVEL	SECTION READYNESS, */
 /*		{                                                                                                  */
 /*			{ENTRY INFORMATION,		COUNTER TYPE,                                              */
@@ -791,52 +791,52 @@ const zbx_status_section_t	status_sections[] = {
 	{NULL}
 };
 
-static void	status_entry_export(struct zbx_json *json, const zbx_section_entry_t *entry,
-		zbx_counter_value_t counter_value, const zbx_uint64_t *proxyid)
+static void	status_entry_export(struct trx_json *json, const trx_section_entry_t *entry,
+		trx_counter_value_t counter_value, const trx_uint64_t *proxyid)
 {
-	const zbx_entry_attribute_t	*attribute;
+	const trx_entry_attribute_t	*attribute;
 	char				*tmp = NULL;
 
-	zbx_json_addobject(json, NULL);
+	trx_json_addobject(json, NULL);
 
 	if (NULL != entry->attributes[0].name || NULL != proxyid)
 	{
-		zbx_json_addobject(json, "attributes");
+		trx_json_addobject(json, "attributes");
 
 		if (NULL != proxyid)
-			zbx_json_adduint64(json, "proxyid", *proxyid);
+			trx_json_adduint64(json, "proxyid", *proxyid);
 
 		for (attribute = entry->attributes; NULL != attribute->name; attribute++)
-			zbx_json_adduint64(json, attribute->name, attribute->value);
+			trx_json_adduint64(json, attribute->name, attribute->value);
 
-		zbx_json_close(json);
+		trx_json_close(json);
 	}
 
 	switch (entry->counter_type)
 	{
 		case TRX_COUNTER_TYPE_UI64:
-			zbx_json_adduint64(json, "count", counter_value.ui64);
+			trx_json_adduint64(json, "count", counter_value.ui64);
 			break;
 		case TRX_COUNTER_TYPE_DBL:
-			tmp = zbx_dsprintf(tmp, TRX_FS_DBL, counter_value.dbl);
-			zbx_json_addstring(json, "count", tmp, TRX_JSON_TYPE_STRING);
+			tmp = trx_dsprintf(tmp, TRX_FS_DBL, counter_value.dbl);
+			trx_json_addstring(json, "count", tmp, TRX_JSON_TYPE_STRING);
 			break;
 		default:
 			THIS_SHOULD_NEVER_HAPPEN;
 	}
 
-	zbx_json_close(json);
+	trx_json_close(json);
 
-	zbx_free(tmp);
+	trx_free(tmp);
 }
 
-static void	status_stats_export(struct zbx_json *json, zbx_user_type_t access_level)
+static void	status_stats_export(struct trx_json *json, trx_user_type_t access_level)
 {
-	const zbx_status_section_t	*section;
-	const zbx_section_entry_t	*entry;
+	const trx_status_section_t	*section;
+	const trx_section_entry_t	*entry;
 	int				i;
 
-	zbx_status_counters_init();
+	trx_status_counters_init();
 
 	/* get status information */
 
@@ -856,7 +856,7 @@ static void	status_stats_export(struct zbx_json *json, zbx_user_type_t access_le
 		if (NULL != section->res && SUCCEED != *section->res)	/* skip section we have no information for */
 			continue;
 
-		zbx_json_addarray(json, section->name);
+		trx_json_addarray(json, section->name);
 
 		for (entry = section->entries; NULL != entry->info; entry++)
 		{
@@ -868,9 +868,9 @@ static void	status_stats_export(struct zbx_json *json, zbx_user_type_t access_le
 				case TRX_SECTION_ENTRY_PER_PROXY:
 					for (i = 0; i < entry->info->counters.values_num; i++)
 					{
-						const zbx_proxy_counter_t	*proxy_counter;
+						const trx_proxy_counter_t	*proxy_counter;
 
-						proxy_counter = (zbx_proxy_counter_t *)entry->info->counters.values[i];
+						proxy_counter = (trx_proxy_counter_t *)entry->info->counters.values[i];
 						status_entry_export(json, entry, proxy_counter->counter_value,
 								&proxy_counter->proxyid);
 					}
@@ -880,10 +880,10 @@ static void	status_stats_export(struct zbx_json *json, zbx_user_type_t access_le
 			}
 		}
 
-		zbx_json_close(json);
+		trx_json_close(json);
 	}
 
-	zbx_status_counters_free();
+	trx_status_counters_free();
 }
 
 /******************************************************************************
@@ -899,27 +899,27 @@ static void	status_stats_export(struct zbx_json *json, zbx_user_type_t access_le
  *                FAIL - an error occurred                                    *
  *                                                                            *
  ******************************************************************************/
-static int	recv_getstatus(zbx_socket_t *sock, struct zbx_json_parse *jp)
+static int	recv_getstatus(trx_socket_t *sock, struct trx_json_parse *jp)
 {
 #define TRX_GET_STATUS_UNKNOWN	-1
 #define TRX_GET_STATUS_PING	0
 #define TRX_GET_STATUS_FULL	1
 
-	zbx_user_t	user;
+	trx_user_t	user;
 	int		ret = FAIL, request_type = TRX_GET_STATUS_UNKNOWN;
 	char		type[MAX_STRING_LEN], sessionid[MAX_STRING_LEN];
-	struct zbx_json	json;
+	struct trx_json	json;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_SID, sessionid, sizeof(sessionid)) ||
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_SID, sessionid, sizeof(sessionid)) ||
 			SUCCEED != DBget_user_by_active_session(sessionid, &user))
 	{
-		zbx_send_response(sock, ret, "Permission denied.", CONFIG_TIMEOUT);
+		trx_send_response(sock, ret, "Permission denied.", CONFIG_TIMEOUT);
 		goto out;
 	}
 
-	if (SUCCEED == zbx_json_value_by_name(jp, TRX_PROTO_TAG_TYPE, type, sizeof(type)))
+	if (SUCCEED == trx_json_value_by_name(jp, TRX_PROTO_TAG_TYPE, type, sizeof(type)))
 	{
 		if (0 == strcmp(type, TRX_PROTO_VALUE_GET_STATUS_PING))
 		{
@@ -933,24 +933,24 @@ static int	recv_getstatus(zbx_socket_t *sock, struct zbx_json_parse *jp)
 
 	if (TRX_GET_STATUS_UNKNOWN == request_type)
 	{
-		zbx_send_response(sock, ret, "Unsupported request type.", CONFIG_TIMEOUT);
+		trx_send_response(sock, ret, "Unsupported request type.", CONFIG_TIMEOUT);
 		goto out;
 	}
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
 	switch (request_type)
 	{
 		case TRX_GET_STATUS_PING:
-			zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
-			zbx_json_addobject(&json, TRX_PROTO_TAG_DATA);
-			zbx_json_close(&json);
+			trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
+			trx_json_addobject(&json, TRX_PROTO_TAG_DATA);
+			trx_json_close(&json);
 			break;
 		case TRX_GET_STATUS_FULL:
-			zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
-			zbx_json_addobject(&json, TRX_PROTO_TAG_DATA);
+			trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
+			trx_json_addobject(&json, TRX_PROTO_TAG_DATA);
 			status_stats_export(&json, user.type);
-			zbx_json_close(&json);
+			trx_json_close(&json);
 			break;
 		default:
 			THIS_SHOULD_NEVER_HAPPEN;
@@ -958,13 +958,13 @@ static int	recv_getstatus(zbx_socket_t *sock, struct zbx_json_parse *jp)
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() json.buffer:'%s'", __func__, json.buffer);
 
-	(void)zbx_tcp_send(sock, json.buffer);
+	(void)trx_tcp_send(sock, json.buffer);
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 
@@ -986,46 +986,46 @@ out:
  *                FAIL - an error occurred                                    *
  *                                                                            *
  ******************************************************************************/
-static int	send_internal_stats_json(zbx_socket_t *sock, const struct zbx_json_parse *jp)
+static int	send_internal_stats_json(trx_socket_t *sock, const struct trx_json_parse *jp)
 {
-	struct zbx_json	json;
+	struct trx_json	json;
 	char		type[MAX_STRING_LEN], error[MAX_STRING_LEN];
 	int		ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (NULL == CONFIG_STATS_ALLOWED_IP ||
-			SUCCEED != zbx_tcp_check_allowed_peers(sock, CONFIG_STATS_ALLOWED_IP))
+			SUCCEED != trx_tcp_check_allowed_peers(sock, CONFIG_STATS_ALLOWED_IP))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "failed to accept an incoming stats request: %s",
-				NULL == CONFIG_STATS_ALLOWED_IP ? "StatsAllowedIP not set" : zbx_socket_strerror());
+				NULL == CONFIG_STATS_ALLOWED_IP ? "StatsAllowedIP not set" : trx_socket_strerror());
 		strscpy(error, "Permission denied.");
 		goto out;
 	}
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
-	if (SUCCEED == zbx_json_value_by_name(jp, TRX_PROTO_TAG_TYPE, type, sizeof(type)) &&
+	if (SUCCEED == trx_json_value_by_name(jp, TRX_PROTO_TAG_TYPE, type, sizeof(type)) &&
 			0 == strcmp(type, TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE))
 	{
 		char			from_str[TRX_MAX_UINT64_LEN + 1], to_str[TRX_MAX_UINT64_LEN + 1];
 		int			from = TRX_QUEUE_FROM_DEFAULT, to = TRX_QUEUE_TO_INFINITY;
-		struct zbx_json_parse	jp_data;
+		struct trx_json_parse	jp_data;
 
-		if (SUCCEED != zbx_json_brackets_by_name(jp, TRX_PROTO_TAG_PARAMS, &jp_data))
+		if (SUCCEED != trx_json_brackets_by_name(jp, TRX_PROTO_TAG_PARAMS, &jp_data))
 		{
-			zbx_snprintf(error, sizeof(error), "cannot find tag: %s", TRX_PROTO_TAG_PARAMS);
+			trx_snprintf(error, sizeof(error), "cannot find tag: %s", TRX_PROTO_TAG_PARAMS);
 			goto param_error;
 		}
 
-		if (SUCCEED == zbx_json_value_by_name(&jp_data, TRX_PROTO_TAG_FROM, from_str, sizeof(from_str))
+		if (SUCCEED == trx_json_value_by_name(&jp_data, TRX_PROTO_TAG_FROM, from_str, sizeof(from_str))
 				&& FAIL == is_time_suffix(from_str, &from, TRX_LENGTH_UNLIMITED))
 		{
 			strscpy(error, "invalid 'from' parameter");
 			goto param_error;
 		}
 
-		if (SUCCEED == zbx_json_value_by_name(&jp_data, TRX_PROTO_TAG_TO, to_str, sizeof(to_str)) &&
+		if (SUCCEED == trx_json_value_by_name(&jp_data, TRX_PROTO_TAG_TO, to_str, sizeof(to_str)) &&
 				FAIL == is_time_suffix(to_str, &to, TRX_LENGTH_UNLIMITED))
 		{
 			strscpy(error, "invalid 'to' parameter");
@@ -1038,66 +1038,66 @@ static int	send_internal_stats_json(zbx_socket_t *sock, const struct zbx_json_pa
 			goto param_error;
 		}
 
-		zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
-		zbx_json_adduint64(&json, TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE, DCget_item_queue(NULL, from, to));
+		trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
+		trx_json_adduint64(&json, TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE, DCget_item_queue(NULL, from, to));
 	}
 	else
 	{
-		zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
-		zbx_json_addobject(&json, TRX_PROTO_TAG_DATA);
+		trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
+		trx_json_addobject(&json, TRX_PROTO_TAG_DATA);
 
-		zbx_get_treegix_stats(&json);
+		trx_get_treegix_stats(&json);
 
-		zbx_json_close(&json);
+		trx_json_close(&json);
 	}
 
-	(void)zbx_tcp_send(sock, json.buffer);
+	(void)trx_tcp_send(sock, json.buffer);
 	ret = SUCCEED;
 param_error:
-	zbx_json_free(&json);
+	trx_json_free(&json);
 out:
 	if (SUCCEED != ret)
-		zbx_send_response(sock, ret, error, CONFIG_TIMEOUT);
+		trx_send_response(sock, ret, error, CONFIG_TIMEOUT);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static void	active_passive_misconfig(zbx_socket_t *sock)
+static void	active_passive_misconfig(trx_socket_t *sock)
 {
 	char	*msg = NULL;
 
-	msg = zbx_dsprintf(msg, "misconfiguration error: the proxy is running in the active mode but server at \"%s\""
+	msg = trx_dsprintf(msg, "misconfiguration error: the proxy is running in the active mode but server at \"%s\""
 			" sends requests to it as to proxy in passive mode", sock->peer);
 
 	treegix_log(LOG_LEVEL_WARNING, "%s", msg);
-	zbx_send_proxy_response(sock, FAIL, msg, CONFIG_TIMEOUT);
-	zbx_free(msg);
+	trx_send_proxy_response(sock, FAIL, msg, CONFIG_TIMEOUT);
+	trx_free(msg);
 }
 
-static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
+static int	process_trap(trx_socket_t *sock, char *s, trx_timespec_t *ts)
 {
 	int	ret = SUCCEED;
 
-	zbx_rtrim(s, " \r\n");
+	trx_rtrim(s, " \r\n");
 
 	treegix_log(LOG_LEVEL_DEBUG, "trapper got '%s'", s);
 
 	if ('{' == *s)	/* JSON protocol */
 	{
-		struct zbx_json_parse	jp;
+		struct trx_json_parse	jp;
 		char			value[MAX_STRING_LEN];
 
-		if (SUCCEED != zbx_json_open(s, &jp))
+		if (SUCCEED != trx_json_open(s, &jp))
 		{
-			zbx_send_response(sock, FAIL, zbx_json_strerror(), CONFIG_TIMEOUT);
+			trx_send_response(sock, FAIL, trx_json_strerror(), CONFIG_TIMEOUT);
 			treegix_log(LOG_LEVEL_WARNING, "received invalid JSON object from %s: %s",
-					sock->peer, zbx_json_strerror());
+					sock->peer, trx_json_strerror());
 			return FAIL;
 		}
 
-		if (SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_REQUEST, value, sizeof(value)))
+		if (SUCCEED == trx_json_value_by_name(&jp, TRX_PROTO_TAG_REQUEST, value, sizeof(value)))
 		{
 			if (0 == strcmp(value, TRX_PROTO_VALUE_PROXY_CONFIG))
 			{
@@ -1109,7 +1109,7 @@ static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
 				{
 					treegix_log(LOG_LEVEL_WARNING, "received configuration data from server"
 							" at \"%s\", datalen " TRX_FS_SIZE_T,
-							sock->peer, (zbx_fs_size_t)(jp.end - jp.start + 1));
+							sock->peer, (trx_fs_size_t)(jp.end - jp.start + 1));
 					recv_proxyconfig(sock, &jp);
 				}
 				else if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY_ACTIVE))
@@ -1133,14 +1133,14 @@ static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
 			else if (0 == strcmp(value, TRX_PROTO_VALUE_PROXY_TASKS))
 			{
 				if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY_PASSIVE))
-					zbx_send_task_data(sock, ts);
+					trx_send_task_data(sock, ts);
 			}
 			else if (0 == strcmp(value, TRX_PROTO_VALUE_PROXY_DATA))
 			{
 				if (0 != (program_type & TRX_PROGRAM_TYPE_SERVER))
-					zbx_recv_proxy_data(sock, &jp, ts);
+					trx_recv_proxy_data(sock, &jp, ts);
 				else if (0 != (program_type & TRX_PROGRAM_TYPE_PROXY_PASSIVE))
-					zbx_send_proxy_data(sock, ts);
+					trx_send_proxy_data(sock, ts);
 			}
 			else if (0 == strcmp(value, TRX_PROTO_VALUE_PROXY_HEARTBEAT))
 			{
@@ -1178,7 +1178,7 @@ static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
 			else if (0 == strcmp(value, TRX_PROTO_VALUE_PREPROCESSING_TEST))
 			{
 				if (0 != (program_type & TRX_PROGRAM_TYPE_SERVER))
-					ret = zbx_trapper_preproc_test(sock, &jp);
+					ret = trx_trapper_preproc_test(sock, &jp);
 			}
 			else
 				treegix_log(LOG_LEVEL_WARNING, "unknown request received from \"%s\": [%s]", sock->peer, value);
@@ -1194,12 +1194,12 @@ static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
 					source[HISTORY_LOG_SOURCE_LEN_MAX], severity[11],
 					host[HOST_HOST_LEN * TRX_MAX_BYTES_IN_UTF8_CHAR + 1],
 					key[ITEM_KEY_LEN * TRX_MAX_BYTES_IN_UTF8_CHAR + 1];
-		zbx_agent_value_t	av;
-		zbx_host_key_t		hk = {host, key};
+		trx_agent_value_t	av;
+		trx_host_key_t		hk = {host, key};
 		DC_ITEM			item;
 		int			errcode;
 
-		memset(&av, 0, sizeof(zbx_agent_value_t));
+		memset(&av, 0, sizeof(trx_agent_value_t));
 
 		if ('<' == *s)	/* XML protocol */
 		{
@@ -1223,7 +1223,7 @@ static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
 				return FAIL;
 
 			*pr = '\0';
-			zbx_strlcpy(host, pl, sizeof(host));
+			trx_strlcpy(host, pl, sizeof(host));
 			*pr = ':';
 
 			pl = pr + 1;
@@ -1231,14 +1231,14 @@ static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
 				return FAIL;
 
 			*pr = '\0';
-			zbx_strlcpy(key, pl, sizeof(key));
+			trx_strlcpy(key, pl, sizeof(key));
 			*pr = ':';
 
 			av.value = pr + 1;
 			av.severity = 0;
 		}
 
-		zbx_timespec(&av.ts);
+		trx_timespec(&av.ts);
 
 		if (0 == strcmp(av.value, TRX_NOTSUPPORTED))
 			av.state = ITEM_STATE_NOTSUPPORTED;
@@ -1247,18 +1247,18 @@ static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
 		process_history_data(&item, &av, &errcode, 1);
 		DCconfig_clean_items(&item, &errcode, 1);
 
-		zbx_alarm_on(CONFIG_TIMEOUT);
-		if (SUCCEED != zbx_tcp_send_raw(sock, "OK"))
+		trx_alarm_on(CONFIG_TIMEOUT);
+		if (SUCCEED != trx_tcp_send_raw(sock, "OK"))
 			treegix_log(LOG_LEVEL_WARNING, "Error sending result back");
-		zbx_alarm_off();
+		trx_alarm_off();
 	}
 
 	return ret;
 }
 
-static void	process_trapper_child(zbx_socket_t *sock, zbx_timespec_t *ts)
+static void	process_trapper_child(trx_socket_t *sock, trx_timespec_t *ts)
 {
-	if (SUCCEED != zbx_tcp_recv_to(sock, CONFIG_TRAPPER_TIMEOUT))
+	if (SUCCEED != trx_tcp_recv_to(sock, CONFIG_TRAPPER_TIMEOUT))
 		return;
 
 	process_trap(sock, sock->buffer, ts);
@@ -1267,29 +1267,29 @@ static void	process_trapper_child(zbx_socket_t *sock, zbx_timespec_t *ts)
 TRX_THREAD_ENTRY(trapper_thread, args)
 {
 	double		sec = 0.0;
-	zbx_socket_t	s;
+	trx_socket_t	s;
 	int		ret;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
-	memcpy(&s, (zbx_socket_t *)((zbx_thread_args_t *)args)->args, sizeof(zbx_socket_t));
+	memcpy(&s, (trx_socket_t *)((trx_thread_args_t *)args)->args, sizeof(trx_socket_t));
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_child();
+	trx_tls_init_child();
 	find_psk_in_cache = DCget_psk_by_identity;
 #endif
-	zbx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
 
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	while (TRX_IS_RUNNING())
 	{
-		zbx_setproctitle("%s #%d [processed data in " TRX_FS_DBL " sec, waiting for connection]",
+		trx_setproctitle("%s #%d [processed data in " TRX_FS_DBL " sec, waiting for connection]",
 				get_process_type_string(process_type), process_num, sec);
 
 		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
@@ -1297,36 +1297,36 @@ TRX_THREAD_ENTRY(trapper_thread, args)
 		/* Trapper has to accept all types of connections it can accept with the specified configuration. */
 		/* Only after receiving data it is known who has sent them and one can decide to accept or discard */
 		/* the data. */
-		ret = zbx_tcp_accept(&s, TRX_TCP_SEC_TLS_CERT | TRX_TCP_SEC_TLS_PSK | TRX_TCP_SEC_UNENCRYPTED);
-		zbx_update_env(zbx_time());
+		ret = trx_tcp_accept(&s, TRX_TCP_SEC_TLS_CERT | TRX_TCP_SEC_TLS_PSK | TRX_TCP_SEC_UNENCRYPTED);
+		trx_update_env(trx_time());
 
 		if (SUCCEED == ret)
 		{
-			zbx_timespec_t	ts;
+			trx_timespec_t	ts;
 
 			/* get connection timestamp */
-			zbx_timespec(&ts);
+			trx_timespec(&ts);
 
 			update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
-			zbx_setproctitle("%s #%d [processing data]", get_process_type_string(process_type),
+			trx_setproctitle("%s #%d [processing data]", get_process_type_string(process_type),
 					process_num);
 
-			sec = zbx_time();
+			sec = trx_time();
 			process_trapper_child(&s, &ts);
-			sec = zbx_time() - sec;
+			sec = trx_time() - sec;
 
-			zbx_tcp_unaccept(&s);
+			trx_tcp_unaccept(&s);
 		}
-		else if (EINTR != zbx_socket_last_error())
+		else if (EINTR != trx_socket_last_error())
 		{
 			treegix_log(LOG_LEVEL_WARNING, "failed to accept an incoming connection: %s",
-					zbx_socket_strerror());
+					trx_socket_strerror());
 		}
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 }

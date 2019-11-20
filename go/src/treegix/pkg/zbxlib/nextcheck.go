@@ -1,13 +1,13 @@
 
 
-package zbxlib
+package trxlib
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../../../../include
 
 #include "common.h"
 
-int	zbx_get_agent_item_nextcheck(zbx_uint64_t itemid, const char *delay, unsigned char state, int now,
+int	trx_get_agent_item_nextcheck(trx_uint64_t itemid, const char *delay, unsigned char state, int now,
 		int refresh_unsupported, int *nextcheck, char **error);
 */
 import "C"
@@ -30,7 +30,7 @@ func GetNextcheck(itemid uint64, delay string, from time.Time, unsupported bool,
 		state = ItemStateNormal
 	}
 	now := from.Unix()
-	ret := C.zbx_get_agent_item_nextcheck(C.ulong(itemid), cdelay, C.uchar(state), C.int(now),
+	ret := C.trx_get_agent_item_nextcheck(C.ulong(itemid), cdelay, C.uchar(state), C.int(now),
 		C.int(refresh_unsupported), &cnextcheck, &cerr)
 
 	if ret != Succeed {

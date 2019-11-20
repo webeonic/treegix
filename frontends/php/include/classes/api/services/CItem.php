@@ -113,7 +113,7 @@ class CItem extends CItemGeneral {
 			'limit'						=> null,
 			'limitSelects'				=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + permission check
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -129,23 +129,23 @@ class CItem extends CItemGeneral {
 					' WHERE i.hostid=hgg.hostid'.
 					' GROUP BY hgg.hostid'.
 					' HAVING MIN(r.permission)>'.PERM_DENY.
-						' AND MAX(r.permission)>='.zbx_dbstr($permission).
+						' AND MAX(r.permission)>='.trx_dbstr($permission).
 					')';
 		}
 
 		// itemids
 		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['where']['itemid'] = dbConditionInt('i.itemid', $options['itemids']);
 		}
 
 		// templateids
 		if (!is_null($options['templateids'])) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			if (!is_null($options['hostids'])) {
-				zbx_value2array($options['hostids']);
+				trx_value2array($options['hostids']);
 				$options['hostids'] = array_merge($options['hostids'], $options['templateids']);
 			}
 			else {
@@ -155,7 +155,7 @@ class CItem extends CItemGeneral {
 
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			$sqlParts['where']['hostid'] = dbConditionInt('i.hostid', $options['hostids']);
 
@@ -166,7 +166,7 @@ class CItem extends CItemGeneral {
 
 		// interfaceids
 		if (!is_null($options['interfaceids'])) {
-			zbx_value2array($options['interfaceids']);
+			trx_value2array($options['interfaceids']);
 
 			$sqlParts['where']['interfaceid'] = dbConditionId('i.interfaceid', $options['interfaceids']);
 
@@ -177,7 +177,7 @@ class CItem extends CItemGeneral {
 
 		// groupids
 		if (!is_null($options['groupids'])) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			$sqlParts['from']['hosts_groups'] = 'hosts_groups hg';
 			$sqlParts['where'][] = dbConditionInt('hg.groupid', $options['groupids']);
@@ -190,7 +190,7 @@ class CItem extends CItemGeneral {
 
 		// proxyids
 		if (!is_null($options['proxyids'])) {
-			zbx_value2array($options['proxyids']);
+			trx_value2array($options['proxyids']);
 
 			$sqlParts['from']['hosts'] = 'hosts h';
 			$sqlParts['where'][] = dbConditionId('h.proxy_hostid', $options['proxyids']);
@@ -203,7 +203,7 @@ class CItem extends CItemGeneral {
 
 		// triggerids
 		if (!is_null($options['triggerids'])) {
-			zbx_value2array($options['triggerids']);
+			trx_value2array($options['triggerids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['where'][] = dbConditionInt('f.triggerid', $options['triggerids']);
@@ -212,7 +212,7 @@ class CItem extends CItemGeneral {
 
 		// applicationids
 		if (!is_null($options['applicationids'])) {
-			zbx_value2array($options['applicationids']);
+			trx_value2array($options['applicationids']);
 
 			$sqlParts['from']['items_applications'] = 'items_applications ia';
 			$sqlParts['where'][] = dbConditionInt('ia.applicationid', $options['applicationids']);
@@ -221,7 +221,7 @@ class CItem extends CItemGeneral {
 
 		// graphids
 		if (!is_null($options['graphids'])) {
-			zbx_value2array($options['graphids']);
+			trx_value2array($options['graphids']);
 
 			$sqlParts['from']['graphs_items'] = 'graphs_items gi';
 			$sqlParts['where'][] = dbConditionInt('gi.graphid', $options['graphids']);
@@ -273,12 +273,12 @@ class CItem extends CItemGeneral {
 		// search
 		if (is_array($options['search'])) {
 			if (array_key_exists('error', $options['search']) && $options['search']['error'] !== null) {
-				zbx_db_search('item_rtdata ir', ['search' => ['error' => $options['search']['error']]] + $options,
+				trx_db_search('item_rtdata ir', ['search' => ['error' => $options['search']['error']]] + $options,
 					$sqlParts
 				);
 			}
 
-			zbx_db_search('items i', $options, $sqlParts);
+			trx_db_search('items i', $options, $sqlParts);
 		}
 
 		// filter
@@ -305,7 +305,7 @@ class CItem extends CItemGeneral {
 			$this->dbFilter('items i', $options, $sqlParts);
 
 			if (isset($options['filter']['host'])) {
-				zbx_value2array($options['filter']['host']);
+				trx_value2array($options['filter']['host']);
 
 				$sqlParts['from']['hosts'] = 'hosts h';
 				$sqlParts['where']['hi'] = 'h.hostid=i.hostid';
@@ -313,7 +313,7 @@ class CItem extends CItemGeneral {
 			}
 
 			if (array_key_exists('flags', $options['filter'])
-					&& (is_null($options['filter']['flags']) || !zbx_empty($options['filter']['flags']))) {
+					&& (is_null($options['filter']['flags']) || !trx_empty($options['filter']['flags']))) {
 				unset($sqlParts['where']['flags']);
 			}
 		}
@@ -324,14 +324,14 @@ class CItem extends CItemGeneral {
 			$sqlParts['from']['hosts_groups'] = 'hosts_groups hg';
 			$sqlParts['where']['ghg'] = 'g.groupid=hg.groupid';
 			$sqlParts['where']['hgi'] = 'hg.hostid=i.hostid';
-			$sqlParts['where'][] = ' g.name='.zbx_dbstr($options['group']);
+			$sqlParts['where'][] = ' g.name='.trx_dbstr($options['group']);
 		}
 
 		// host
 		if (!is_null($options['host'])) {
 			$sqlParts['from']['hosts'] = 'hosts h';
 			$sqlParts['where']['hi'] = 'h.hostid=i.hostid';
-			$sqlParts['where'][] = ' h.host='.zbx_dbstr($options['host']);
+			$sqlParts['where'][] = ' h.host='.trx_dbstr($options['host']);
 		}
 
 		// application
@@ -340,7 +340,7 @@ class CItem extends CItemGeneral {
 			$sqlParts['from']['items_applications'] = 'items_applications ia';
 			$sqlParts['where']['aia'] = 'a.applicationid = ia.applicationid';
 			$sqlParts['where']['iai'] = 'ia.itemid=i.itemid';
-			$sqlParts['where'][] = ' a.name='.zbx_dbstr($options['application']);
+			$sqlParts['where'][] = ' a.name='.trx_dbstr($options['application']);
 		}
 
 		// with_triggers
@@ -366,7 +366,7 @@ class CItem extends CItemGeneral {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -399,7 +399,7 @@ class CItem extends CItemGeneral {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		// Decode ITEM_TYPE_HTTPAGENT encoded fields.
@@ -427,7 +427,7 @@ class CItem extends CItemGeneral {
 	 * @return array
 	 */
 	public function create($items) {
-		$items = zbx_toArray($items);
+		$items = trx_toArray($items);
 
 		parent::checkInput($items);
 		self::validateInventoryLinks($items);
@@ -467,7 +467,7 @@ class CItem extends CItemGeneral {
 		// Get only hosts not templates from items
 		$hosts = API::Host()->get([
 			'output' => [],
-			'hostids' => zbx_objectValues($items, 'hostid'),
+			'hostids' => trx_objectValues($items, 'hostid'),
 			'preservekeys' => true
 		]);
 		foreach ($items as &$item) {
@@ -480,7 +480,7 @@ class CItem extends CItemGeneral {
 		$this->createReal($items);
 		$this->inherit($items);
 
-		return ['itemids' => zbx_objectValues($items, 'itemid')];
+		return ['itemids' => trx_objectValues($items, 'itemid')];
 	}
 
 	/**
@@ -586,19 +586,19 @@ class CItem extends CItemGeneral {
 	 * @return boolean
 	 */
 	public function update($items) {
-		$items = zbx_toArray($items);
+		$items = trx_toArray($items);
 
 		parent::checkInput($items, true);
 		self::validateInventoryLinks($items, true);
 
 		$db_items = $this->get([
 			'output' => ['flags', 'type', 'master_itemid', 'authtype', 'allow_traps', 'retrieve_mode'],
-			'itemids' => zbx_objectValues($items, 'itemid'),
+			'itemids' => trx_objectValues($items, 'itemid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
 
-		$items = $this->extendFromObjects(zbx_toHash($items, 'itemid'), $db_items, ['flags', 'type', 'master_itemid']);
+		$items = $this->extendFromObjects(trx_toHash($items, 'itemid'), $db_items, ['flags', 'type', 'master_itemid']);
 
 		$this->validateDependentItems($items);
 
@@ -686,7 +686,7 @@ class CItem extends CItemGeneral {
 		$this->updateReal($items);
 		$this->inherit($items);
 
-		return ['itemids' => zbx_objectValues($items, 'itemid')];
+		return ['itemids' => trx_objectValues($items, 'itemid')];
 	}
 
 	/**
@@ -743,8 +743,8 @@ class CItem extends CItemGeneral {
 	}
 
 	public function syncTemplates($data) {
-		$data['templateids'] = zbx_toArray($data['templateids']);
-		$data['hostids'] = zbx_toArray($data['hostids']);
+		$data['templateids'] = trx_toArray($data['templateids']);
+		$data['hostids'] = trx_toArray($data['hostids']);
 
 		$output = [];
 		foreach ($this->fieldRules as $field_name => $rules) {
@@ -765,7 +765,7 @@ class CItem extends CItemGeneral {
 		$json = new CJson();
 
 		foreach ($tpl_items as &$tpl_item) {
-			$tpl_item['applications'] = zbx_objectValues($tpl_item['applications'], 'applicationid');
+			$tpl_item['applications'] = trx_objectValues($tpl_item['applications'], 'applicationid');
 
 			if ($tpl_item['type'] == ITEM_TYPE_HTTPAGENT) {
 				if (array_key_exists('query_fields', $tpl_item) && is_array($tpl_item['query_fields'])) {
@@ -838,7 +838,7 @@ class CItem extends CItemGeneral {
 			}
 		}
 
-		if (zbx_empty($items)) {
+		if (trx_empty($items)) {
 			return true;
 		}
 
@@ -864,13 +864,13 @@ class CItem extends CItemGeneral {
 			$itemsToFind = array_merge($itemsWithNoHostId, $itemsWithNoInventoryLink, $itemsWithNoKeys);
 
 			// are there any items with lacking info?
-			if (!zbx_empty($itemsToFind)) {
+			if (!trx_empty($itemsToFind)) {
 				$missingInfo = API::Item()->get([
 					'output' => ['hostid', 'inventory_link', 'key_'],
 					'filter' => ['itemid' => $itemsToFind],
 					'nopermissions' => true
 				]);
-				$missingInfo = zbx_toHash($missingInfo, 'itemid');
+				$missingInfo = trx_toHash($missingInfo, 'itemid');
 
 				// appending host ids, inventory_links and keys where they are needed
 				foreach ($items as $i => $item) {
@@ -889,7 +889,7 @@ class CItem extends CItemGeneral {
 			}
 		}
 
-		$hostids = zbx_objectValues($items, 'hostid');
+		$hostids = trx_objectValues($items, 'hostid');
 
 		// getting all inventory links on every affected host
 		$itemsOnHostsInfo = API::Item()->get([
@@ -1044,7 +1044,7 @@ class CItem extends CItemGeneral {
 					'groupCount' => true,
 					'itemids' => $itemids
 				]);
-				$triggers = zbx_toHash($triggers, 'itemid');
+				$triggers = trx_toHash($triggers, 'itemid');
 
 				foreach ($result as $itemid => $item) {
 					$result[$itemid]['triggers'] = array_key_exists($itemid, $triggers)
@@ -1075,7 +1075,7 @@ class CItem extends CItemGeneral {
 					'groupCount' => true,
 					'itemids' => $itemids
 				]);
-				$graphs = zbx_toHash($graphs, 'itemid');
+				$graphs = trx_toHash($graphs, 'itemid');
 
 				foreach ($result as $itemid => $item) {
 					$result[$itemid]['graphs'] = array_key_exists($itemid, $graphs)

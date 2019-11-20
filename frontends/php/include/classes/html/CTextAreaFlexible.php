@@ -39,7 +39,7 @@ class CTextAreaFlexible extends CTextArea {
 		$this->addClass(self::TRX_STYLE_CLASS);
 
 		if ($this->options['add_post_js']) {
-			zbx_add_post_js($this->getPostJS());
+			trx_add_post_js($this->getPostJS());
 		}
 	}
 

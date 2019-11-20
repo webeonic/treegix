@@ -58,11 +58,11 @@ static int	DBpatch_3030007(void)
 {
 	DB_ROW			row;
 	DB_RESULT		result;
-	zbx_vector_uint64_t	dserviceids;
-	zbx_uint64_t		dserviceid;
+	trx_vector_uint64_t	dserviceids;
+	trx_uint64_t		dserviceid;
 	int			ret = SUCCEED;
 
-	zbx_vector_uint64_create(&dserviceids);
+	trx_vector_uint64_create(&dserviceids);
 
 	/* After dropping fields type and key_ from table dservices there is no guarantee that a unique
 	index with fields dcheckid, ip and port can be created. To create a unique index for the same
@@ -82,16 +82,16 @@ static int	DBpatch_3030007(void)
 	{
 		TRX_STR2UINT64(dserviceid, row[0]);
 
-		zbx_vector_uint64_append(&dserviceids, dserviceid);
+		trx_vector_uint64_append(&dserviceids, dserviceid);
 	}
 	DBfree_result(result);
 
-	zbx_vector_uint64_sort(&dserviceids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(&dserviceids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	if (0 != dserviceids.values_num)
 		ret = DBexecute_multiple_query("delete from dservices where", "dserviceid", &dserviceids);
 
-	zbx_vector_uint64_destroy(&dserviceids);
+	trx_vector_uint64_destroy(&dserviceids);
 
 	return ret;
 }
@@ -162,7 +162,7 @@ static int	DBpatch_3030017(void)
 	return DBadd_foreign_key("item_preproc", 1, &field);
 }
 
-static void	DBpatch_3030018_add_numeric_preproc_steps(zbx_db_insert_t *db_insert, zbx_uint64_t itemid,
+static void	DBpatch_3030018_add_numeric_preproc_steps(trx_db_insert_t *db_insert, trx_uint64_t itemid,
 		unsigned char data_type, const char *formula, unsigned char delta)
 {
 	int	step = 1;
@@ -170,13 +170,13 @@ static void	DBpatch_3030018_add_numeric_preproc_steps(zbx_db_insert_t *db_insert
 	switch (data_type)
 	{
 		case ITEM_DATA_TYPE_BOOLEAN:
-			zbx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_BOOL2DEC, "");
+			trx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_BOOL2DEC, "");
 			break;
 		case ITEM_DATA_TYPE_OCTAL:
-			zbx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_OCT2DEC, "");
+			trx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_OCT2DEC, "");
 			break;
 		case ITEM_DATA_TYPE_HEXADECIMAL:
-			zbx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_HEX2DEC, "");
+			trx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_HEX2DEC, "");
 			break;
 	}
 
@@ -184,16 +184,16 @@ static void	DBpatch_3030018_add_numeric_preproc_steps(zbx_db_insert_t *db_insert
 	{
 		/* ITEM_STORE_SPEED_PER_SECOND */
 		case 1:
-			zbx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_DELTA_SPEED, "");
+			trx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_DELTA_SPEED, "");
 			break;
 		/* ITEM_STORE_SIMPLE_CHANGE */
 		case 2:
-			zbx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_DELTA_VALUE, "");
+			trx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_DELTA_VALUE, "");
 			break;
 	}
 
 	if (NULL != formula)
-		zbx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_MULTIPLIER, formula);
+		trx_db_insert_add_values(db_insert, __UINT64_C(0), itemid, step++, TRX_PREPROC_MULTIPLIER, formula);
 
 }
 
@@ -202,12 +202,12 @@ static int	DBpatch_3030018(void)
 	DB_ROW		row;
 	DB_RESULT	result;
 	unsigned char	value_type, data_type, delta;
-	zbx_db_insert_t	db_insert;
-	zbx_uint64_t	itemid;
+	trx_db_insert_t	db_insert;
+	trx_uint64_t	itemid;
 	const char	*formula;
 	int		ret;
 
-	zbx_db_insert_prepare(&db_insert, "item_preproc", "item_preprocid", "itemid", "step", "type", "params", NULL);
+	trx_db_insert_prepare(&db_insert, "item_preproc", "item_preprocid", "itemid", "step", "type", "params", NULL);
 
 	result = DBselect("select itemid,value_type,data_type,multiplier,formula,delta from items");
 
@@ -231,9 +231,9 @@ static int	DBpatch_3030018(void)
 
 	DBfree_result(result);
 
-	zbx_db_insert_autoincrement(&db_insert, "item_preprocid");
-	ret = zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_autoincrement(&db_insert, "item_preprocid");
+	ret = trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 
 	return ret;
 }
@@ -326,24 +326,24 @@ static int	DBpatch_3030030(void)
 	DB_RESULT	result;
 	char		*sql = NULL;
 	size_t		sql_alloc = 0, sql_offset;
-	zbx_uint64_t	last_r_eventid = 0, r_eventid;
+	trx_uint64_t	last_r_eventid = 0, r_eventid;
 
 	do
 	{
 		upd_num = 0;
 
 		sql_offset = 0;
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 					"select e.eventid, e.r_eventid"
 					" from event_recovery e"
 						" join alerts a"
 							" on a.eventid=e.r_eventid");
 		if (0 < last_r_eventid)
 		{
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where e.r_eventid<" TRX_FS_UI64,
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where e.r_eventid<" TRX_FS_UI64,
 					last_r_eventid);
 		}
-		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by e.r_eventid desc, e.eventid desc");
+		trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by e.r_eventid desc, e.eventid desc");
 
 		if (NULL == (result = DBselectN(sql, 10000)))
 		{
@@ -360,7 +360,7 @@ static int	DBpatch_3030030(void)
 			if (last_r_eventid == r_eventid)
 				continue;
 
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 					"update alerts set p_eventid=%s where eventid=%s;\n",
 					row[0], row[1]);
 
@@ -383,7 +383,7 @@ out:
 	}
 	while (0 < upd_num && SUCCEED == ret);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -550,7 +550,7 @@ static int	DBpatch_3030046(void)
 	DB_ROW		row;
 	DB_RESULT	result;
 	int		ret = FAIL;
-	zbx_uint64_t	shapeid = 0;
+	trx_uint64_t	shapeid = 0;
 
 	result = DBselect("select sysmapid,width from sysmaps");
 
@@ -623,11 +623,11 @@ static int	DBpatch_3030053(void)
 {
 	DB_ROW		row;
 	DB_RESULT	result;
-	zbx_db_insert_t	db_insert;
-	zbx_uint64_t	selementid, triggerid;
+	trx_db_insert_t	db_insert;
+	trx_uint64_t	selementid, triggerid;
 	int		ret = FAIL;
 
-	zbx_db_insert_prepare(&db_insert, "sysmap_element_trigger", "selement_triggerid", "selementid", "triggerid",
+	trx_db_insert_prepare(&db_insert, "sysmap_element_trigger", "selement_triggerid", "selementid", "triggerid",
 			NULL);
 
 	/* sysmaps_elements.elementid for trigger map elements (2) should be migrated to table sysmap_element_trigger */
@@ -644,7 +644,7 @@ static int	DBpatch_3030053(void)
 		{
 			TRX_STR2UINT64(triggerid, row[2]);
 
-			zbx_db_insert_add_values(&db_insert, __UINT64_C(0), selementid, triggerid);
+			trx_db_insert_add_values(&db_insert, __UINT64_C(0), selementid, triggerid);
 		}
 		else
 		{
@@ -659,11 +659,11 @@ static int	DBpatch_3030053(void)
 		}
 	}
 
-	zbx_db_insert_autoincrement(&db_insert, "selement_triggerid");
-	ret = zbx_db_insert_execute(&db_insert);
+	trx_db_insert_autoincrement(&db_insert, "selement_triggerid");
+	ret = trx_db_insert_execute(&db_insert);
 out:
 	DBfree_result(result);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_clean(&db_insert);
 
 	return ret;
 }
@@ -730,8 +730,8 @@ static int	DBpatch_3030059(void)
 
 static int 	DBpatch_3030060_pair_cmp_func(const void *d1, const void *d2)
 {
-	const zbx_ptr_pair_t	*pair1 = (const zbx_ptr_pair_t *)d1;
-	const zbx_ptr_pair_t	*pair2 = (const zbx_ptr_pair_t *)d2;
+	const trx_ptr_pair_t	*pair1 = (const trx_ptr_pair_t *)d1;
+	const trx_ptr_pair_t	*pair2 = (const trx_ptr_pair_t *)d2;
 
 	return strcmp((char *)pair1->first, (char *)pair2->first);
 }
@@ -739,17 +739,17 @@ static int 	DBpatch_3030060_pair_cmp_func(const void *d1, const void *d2)
 #define TRIM_LEADING_WHITESPACE(ptr)	while (' ' == *ptr || '\t' == *ptr) ptr++;
 #define TRIM_TRAILING_WHITESPACE(ptr)	do { ptr--; } while (' ' == *ptr || '\t' == *ptr);
 
-static void	DBpatch_3030060_append_pairs(zbx_db_insert_t *db_insert, zbx_uint64_t parentid, int type,
+static void	DBpatch_3030060_append_pairs(trx_db_insert_t *db_insert, trx_uint64_t parentid, int type,
 		const char *source, const char separator, int unique, int allow_empty)
 {
 	char			*buffer, *key, *value, replace;
-	zbx_vector_ptr_pair_t	pairs;
-	zbx_ptr_pair_t		pair;
+	trx_vector_ptr_pair_t	pairs;
+	trx_ptr_pair_t		pair;
 	int			index;
 
-	buffer = zbx_strdup(NULL, source);
+	buffer = trx_strdup(NULL, source);
 	key = buffer;
-	zbx_vector_ptr_pair_create(&pairs);
+	trx_vector_ptr_pair_create(&pairs);
 
 	while ('\0' != *key)
 	{
@@ -800,11 +800,11 @@ static void	DBpatch_3030060_append_pairs(zbx_db_insert_t *db_insert, zbx_uint64_
 
 			pair.first = key;
 
-			if (0 == unique || FAIL == (index = zbx_vector_ptr_pair_search(&pairs, pair,
+			if (0 == unique || FAIL == (index = trx_vector_ptr_pair_search(&pairs, pair,
 					DBpatch_3030060_pair_cmp_func)))
 			{
 				pair.second = value;
-				zbx_vector_ptr_pair_append(&pairs, pair);
+				trx_vector_ptr_pair_append(&pairs, pair);
 			}
 			else
 				pairs.values[index].second = value;
@@ -823,11 +823,11 @@ skip:
 	for (index = 0; index < pairs.values_num; index++)
 	{
 		pair = pairs.values[index];
-		zbx_db_insert_add_values(db_insert, __UINT64_C(0), parentid, type, pair.first, pair.second);
+		trx_db_insert_add_values(db_insert, __UINT64_C(0), parentid, type, pair.first, pair.second);
 	}
 
-	zbx_vector_ptr_pair_destroy(&pairs);
-	zbx_free(buffer);
+	trx_vector_ptr_pair_destroy(&pairs);
+	trx_free(buffer);
 }
 
 static int	DBpatch_3030060_migrate_pairs(const char *table, const char *field, int type, char separator,
@@ -835,16 +835,16 @@ static int	DBpatch_3030060_migrate_pairs(const char *table, const char *field, i
 {
 	DB_ROW		row;
 	DB_RESULT	result;
-	zbx_db_insert_t	db_insert;
-	zbx_uint64_t	parentid;
+	trx_db_insert_t	db_insert;
+	trx_uint64_t	parentid;
 	char		*target, *target_id, *source_id;
 	int		ret;
 
-	target = zbx_dsprintf(NULL, "%s%s", table, "_field");
-	target_id = zbx_dsprintf(NULL, "%s%s", table, "_fieldid");
-	source_id = zbx_dsprintf(NULL, "%s%s", table, "id");
+	target = trx_dsprintf(NULL, "%s%s", table, "_field");
+	target_id = trx_dsprintf(NULL, "%s%s", table, "_fieldid");
+	source_id = trx_dsprintf(NULL, "%s%s", table, "id");
 
-	zbx_db_insert_prepare(&db_insert, target, target_id, source_id, "type", "name", "value", NULL);
+	trx_db_insert_prepare(&db_insert, target, target_id, source_id, "type", "name", "value", NULL);
 
 	result = DBselect("select %s,%s from %s", source_id, field, table);
 
@@ -860,13 +860,13 @@ static int	DBpatch_3030060_migrate_pairs(const char *table, const char *field, i
 	}
 	DBfree_result(result);
 
-	zbx_db_insert_autoincrement(&db_insert, target_id);
-	ret = zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_autoincrement(&db_insert, target_id);
+	ret = trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 
-	zbx_free(source_id);
-	zbx_free(target_id);
-	zbx_free(target);
+	trx_free(source_id);
+	trx_free(target_id);
+	trx_free(target);
 
 	return ret;
 }
@@ -1050,8 +1050,8 @@ static int	DBpatch_table_convert(const char *table, const char *recid, const DBp
 
 	for (fc = field_convs; NULL != fc->field; fc++)
 	{
-		zbx_chrcpy_alloc(&sql, &sql_alloc, &sql_offset, ',');
-		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, fc->field);
+		trx_chrcpy_alloc(&sql, &sql_alloc, &sql_offset, ',');
+		trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, fc->field);
 	}
 
 	result = DBselect("select %s%s from %s", recid, sql, table);
@@ -1062,17 +1062,17 @@ static int	DBpatch_table_convert(const char *table, const char *recid, const DBp
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update %s set ", table);
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update %s set ", table);
 
 		for (i = 1, fc = field_convs; NULL != fc->field; i++, fc++)
 		{
 			value = atoi(row[i]);
 			fc->conv_func(&value, &suffix);
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%s%s='%d%s'",
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%s%s='%d%s'",
 					(1 == i ? "" : ","), fc->field, value, suffix);
 		}
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where %s=%s;\n", recid, row[0]);
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where %s=%s;\n", recid, row[0]);
 
 		if (SUCCEED != DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset))
 			goto out;
@@ -1089,7 +1089,7 @@ static int	DBpatch_table_convert(const char *table, const char *recid, const DBp
 	ret = SUCCEED;
 out:
 	DBfree_result(result);
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -1249,30 +1249,30 @@ static int	DBpatch_3030093(void)
 	{
 		delay = atoi(row[1]);
 		DBpatch_conv_sec(&delay, &suffix);
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update items set delay='%d%s", delay, suffix);
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update items set delay='%d%s", delay, suffix);
 
 		for (delay_flex = row[2]; '\0' != *delay_flex; delay_flex = next + 1)
 		{
-			zbx_chrcpy_alloc(&sql, &sql_alloc, &sql_offset, ';');
+			trx_chrcpy_alloc(&sql, &sql_alloc, &sql_offset, ';');
 
 			if (0 != isdigit(*delay_flex) && NULL != (next = strchr(delay_flex, '/')))	/* flexible */
 			{
 				delay = atoi(delay_flex);
 				DBpatch_conv_sec(&delay, &suffix);
-				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%d%s", delay, suffix);
+				trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%d%s", delay, suffix);
 				delay_flex = next;
 			}
 
 			if (NULL == (next = strchr(delay_flex, ';')))
 			{
-				zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, delay_flex);
+				trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, delay_flex);
 				break;
 			}
 
-			zbx_strncpy_alloc(&sql, &sql_alloc, &sql_offset, delay_flex, next - delay_flex);
+			trx_strncpy_alloc(&sql, &sql_alloc, &sql_offset, delay_flex, next - delay_flex);
 		}
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "' where itemid=%s;\n", row[0]);
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "' where itemid=%s;\n", row[0]);
 
 		if (SUCCEED != DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset))
 			goto out;
@@ -1289,7 +1289,7 @@ static int	DBpatch_3030093(void)
 	ret = SUCCEED;
 out:
 	DBfree_result(result);
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -1369,18 +1369,18 @@ static int	DBpatch_3030102(void)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update items set lifetime='");
+		trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update items set lifetime='");
 
 		if (0 != isdigit(*row[1]))
 		{
 			value = atoi(row[1]);
 			DBpatch_conv_day_limit_25y(&value, &suffix);
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%d%s", value, suffix);
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%d%s", value, suffix);
 		}
 		else	/* items.lifetime may be a macro, in such case simply overwrite with max allowed value */
-			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "9125d");	/* 25 * 365 days */
+			trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "9125d");	/* 25 * 365 days */
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "' where itemid=%s;\n", row[0]);
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "' where itemid=%s;\n", row[0]);
 
 		if (SUCCEED != DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset))
 			goto out;
@@ -1397,7 +1397,7 @@ static int	DBpatch_3030102(void)
 	ret = SUCCEED;
 out:
 	DBfree_result(result);
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -1708,7 +1708,7 @@ static int	DBpatch_trailing_semicolon_remove(const char *table, const char *reci
 		if (NULL == (semicolon = strrchr(row[1], ';')) || '\0' != *(semicolon + 1))
 			continue;
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update %s set %s='%.*s' where %s=%s;\n",
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update %s set %s='%.*s' where %s=%s;\n",
 				table, field, (int)(semicolon - row[1]), row[1], recid, row[0]);
 
 		if (SUCCEED != DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset))
@@ -1726,7 +1726,7 @@ static int	DBpatch_trailing_semicolon_remove(const char *table, const char *reci
 	ret = SUCCEED;
 out:
 	DBfree_result(result);
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -2048,7 +2048,7 @@ static int	DBpatch_3030175(void)
 		"6,1,'dscvry','',3,9,3,4",
 		"7,1,'hoststat','',6,0,6,4",
 		"8,1,'syssum','',6,4,6,4",
-		"9,1,'stszbx','',6,8,6,5",
+		"9,1,'ststrx','',6,8,6,5",
 		NULL
 	};
 

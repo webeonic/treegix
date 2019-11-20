@@ -12,16 +12,16 @@ if (typeof addPopupValues === 'undefined') {
 	var addPopupValues = null;
 }
 
-if (typeof (zbx_widget_navtree_trigger) !== typeof (Function)) {
-	function zbx_widget_navtree_trigger(action, grid) {
+if (typeof (trx_widget_navtree_trigger) !== typeof (Function)) {
+	function trx_widget_navtree_trigger(action, grid) {
 		var $navtree = jQuery('.navtree', grid['widget']['content_body']);
 
-		$navtree.zbx_navtree(action);
+		$navtree.trx_navtree(action);
 	}
 }
 
 (function($) {
-	$.widget('zbx.sortable_tree', $.extend({}, $.ui.sortable.prototype, {
+	$.widget('trx.sortable_tree', $.extend({}, $.ui.sortable.prototype, {
 		options: {
 			// jQuery UI sortable options:
 			cursor: IE ? 'move' : 'grabbing',
@@ -411,8 +411,8 @@ if (typeof (zbx_widget_navtree_trigger) !== typeof (Function)) {
 		}
 	}));
 
-	$.zbx.sortable_tree.prototype.options = $.extend({}, $.ui.sortable.prototype.options,
-		$.zbx.sortable_tree.prototype.options
+	$.trx.sortable_tree.prototype.options = $.extend({}, $.ui.sortable.prototype.options,
+		$.trx.sortable_tree.prototype.options
 	);
 })(jQuery);
 
@@ -422,8 +422,8 @@ jQuery(function($) {
 	 *
 	 * @return object
 	 */
-	if (typeof($.fn.zbx_navtree) === 'undefined') {
-		$.fn.zbx_navtree = function(input) {
+	if (typeof($.fn.trx_navtree) === 'undefined') {
+		$.fn.trx_navtree = function(input) {
 			var getNextId = function($obj) {
 				var widget_data = $obj.data('widgetData');
 
@@ -1417,7 +1417,7 @@ jQuery(function($) {
 
 						$.each(triggers, function(index, trigger) {
 							$(".dashbrd-grid-container").dashboardGrid("addAction", trigger,
-								'zbx_widget_navtree_trigger', options.uniqueid, {
+								'trx_widget_navtree_trigger', options.uniqueid, {
 									'parameters': [trigger],
 									'grid': {'widget': 1},
 									'priority': 5,

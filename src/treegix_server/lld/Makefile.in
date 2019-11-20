@@ -117,13 +117,13 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxlld_a_AR = $(AR) $(ARFLAGS)
-libzbxlld_a_LIBADD =
-am_libzbxlld_a_OBJECTS = lld_manager.$(OBJEXT) lld_worker.$(OBJEXT) \
+libtrxlld_a_AR = $(AR) $(ARFLAGS)
+libtrxlld_a_LIBADD =
+am_libtrxlld_a_OBJECTS = lld_manager.$(OBJEXT) lld_worker.$(OBJEXT) \
 	lld_protocol.$(OBJEXT) lld_common.$(OBJEXT) \
 	lld_graph.$(OBJEXT) lld_host.$(OBJEXT) lld_item.$(OBJEXT) \
 	lld_trigger.$(OBJEXT) lld.$(OBJEXT)
-libzbxlld_a_OBJECTS = $(am_libzbxlld_a_OBJECTS)
+libtrxlld_a_OBJECTS = $(am_libtrxlld_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -152,8 +152,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxlld_a_SOURCES)
-DIST_SOURCES = $(libzbxlld_a_SOURCES)
+SOURCES = $(libtrxlld_a_SOURCES)
+DIST_SOURCES = $(libtrxlld_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -377,8 +377,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxlld.a
-libzbxlld_a_SOURCES = \
+noinst_LIBRARIES = libtrxlld.a
+libtrxlld_a_SOURCES = \
 	lld_manager.c lld_manager.h \
 	lld_worker.c lld_worker.h \
 	lld_protocol.c lld_protocol.h \
@@ -426,10 +426,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxlld.a: $(libzbxlld_a_OBJECTS) $(libzbxlld_a_DEPENDENCIES) $(EXTRA_libzbxlld_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxlld.a
-	$(AM_V_AR)$(libzbxlld_a_AR) libzbxlld.a $(libzbxlld_a_OBJECTS) $(libzbxlld_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxlld.a
+libtrxlld.a: $(libtrxlld_a_OBJECTS) $(libtrxlld_a_DEPENDENCIES) $(EXTRA_libtrxlld_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxlld.a
+	$(AM_V_AR)$(libtrxlld_a_AR) libtrxlld.a $(libtrxlld_a_OBJECTS) $(libtrxlld_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxlld.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

@@ -11,7 +11,7 @@
 
 static struct statinfo	*si = NULL;
 
-int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
+int	get_diskstat(const char *devname, trx_uint64_t *dstat)
 {
 	int		i;
 	struct devstat	*ds = NULL;
@@ -22,12 +22,12 @@ int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
 	assert(devname);
 
 	for (i = 0; i < TRX_DSTAT_MAX; i++)
-		dstat[i] = (zbx_uint64_t)__UINT64_C(0);
+		dstat[i] = (trx_uint64_t)__UINT64_C(0);
 
 	if (NULL == si)
 	{
-		si = (struct statinfo *)zbx_malloc(si, sizeof(struct statinfo));
-		si->dinfo = (struct devinfo *)zbx_malloc(NULL, sizeof(struct devinfo));
+		si = (struct statinfo *)trx_malloc(si, sizeof(struct statinfo));
+		si->dinfo = (struct devinfo *)trx_malloc(NULL, sizeof(struct devinfo));
 		memset(si->dinfo, 0, sizeof(struct devinfo));
 	}
 
@@ -51,21 +51,21 @@ int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
 		/* empty '*devname' string means adding statistics for all disks together */
 		if ('\0' != *devname)
 		{
-			zbx_snprintf(dev, sizeof(dev), "%s%d", ds->device_name, ds->unit_number);
+			trx_snprintf(dev, sizeof(dev), "%s%d", ds->device_name, ds->unit_number);
 			if (0 != strcmp(dev, pd))
 				continue;
 		}
 
 #if DEVSTAT_USER_API_VER >= 5
-		dstat[TRX_DSTAT_R_OPER] += (zbx_uint64_t)ds->operations[DEVSTAT_READ];
-		dstat[TRX_DSTAT_W_OPER] += (zbx_uint64_t)ds->operations[DEVSTAT_WRITE];
-		dstat[TRX_DSTAT_R_BYTE] += (zbx_uint64_t)ds->bytes[DEVSTAT_READ];
-		dstat[TRX_DSTAT_W_BYTE] += (zbx_uint64_t)ds->bytes[DEVSTAT_WRITE];
+		dstat[TRX_DSTAT_R_OPER] += (trx_uint64_t)ds->operations[DEVSTAT_READ];
+		dstat[TRX_DSTAT_W_OPER] += (trx_uint64_t)ds->operations[DEVSTAT_WRITE];
+		dstat[TRX_DSTAT_R_BYTE] += (trx_uint64_t)ds->bytes[DEVSTAT_READ];
+		dstat[TRX_DSTAT_W_BYTE] += (trx_uint64_t)ds->bytes[DEVSTAT_WRITE];
 #else
-		dstat[TRX_DSTAT_R_OPER] += (zbx_uint64_t)ds->num_reads;
-		dstat[TRX_DSTAT_W_OPER] += (zbx_uint64_t)ds->num_writes;
-		dstat[TRX_DSTAT_R_BYTE] += (zbx_uint64_t)ds->bytes_read;
-		dstat[TRX_DSTAT_W_BYTE] += (zbx_uint64_t)ds->bytes_written;
+		dstat[TRX_DSTAT_R_OPER] += (trx_uint64_t)ds->num_reads;
+		dstat[TRX_DSTAT_W_OPER] += (trx_uint64_t)ds->num_writes;
+		dstat[TRX_DSTAT_R_BYTE] += (trx_uint64_t)ds->bytes_read;
+		dstat[TRX_DSTAT_W_BYTE] += (trx_uint64_t)ds->bytes_written;
 #endif
 		ret = SUCCEED;
 
@@ -81,12 +81,12 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 	TRX_SINGLE_DISKDEVICE_DATA *device;
 	char		devname[32], *tmp;
 	int		type, mode;
-	zbx_uint64_t	dstats[TRX_DSTAT_MAX];
+	trx_uint64_t	dstats[TRX_DSTAT_MAX];
 	char		*pd;			/* pointer to device name without '/dev/' prefix, e.g. 'da0' */
 
 	if (3 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -118,7 +118,7 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 		type = TRX_DSTAT_TYPE_OPER;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -126,13 +126,13 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 	{
 		if (2 < request->nparam)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			return SYSINFO_RET_FAIL;
 		}
 
 		if (FAIL == get_diskstat(pd, dstats))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain disk information."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain disk information."));
 			return SYSINFO_RET_FAIL;
 		}
 
@@ -154,7 +154,7 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 		mode = TRX_AVG15;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -165,7 +165,7 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 		/* the collectors are not available and keys "vfs.dev.read", "vfs.dev.write" with some parameters */
 		/* (e.g. sps, ops) are not supported. */
 
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "This item is available only in daemon mode when collectors are"
+		SET_MSG_RESULT(result, trx_strdup(NULL, "This item is available only in daemon mode when collectors are"
 				" started."));
 		return SYSINFO_RET_FAIL;
 	}
@@ -174,13 +174,13 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 	{
 		if (FAIL == get_diskstat(pd, dstats))	/* validate device name */
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain disk information."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain disk information."));
 			return SYSINFO_RET_FAIL;
 		}
 
 		if (NULL == (device = collector_diskdevice_add(pd)))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot add disk device to agent collector."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot add disk device to agent collector."));
 			return SYSINFO_RET_FAIL;
 		}
 	}

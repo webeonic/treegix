@@ -40,7 +40,7 @@ class CRadioButtonList extends CList {
 		$this->values = [];
 		$this->modern = false;
 		$this->readonly = false;
-		$this->setId(zbx_formatDomId($name));
+		$this->setId(trx_formatDomId($name));
 	}
 
 	/**
@@ -57,7 +57,7 @@ class CRadioButtonList extends CList {
 		$this->values[] = [
 			'name' => $name,
 			'value' => $value,
-			'id' => ($id === null ? null : zbx_formatDomId($id)),
+			'id' => ($id === null ? null : trx_formatDomId($id)),
 			'on_change' => $on_change
 		];
 
@@ -99,13 +99,13 @@ class CRadioButtonList extends CList {
 
 		if ($this->readonly) {
 			$this->addItem(
-				(new CVar($this->name, $this->value, zbx_formatDomId($this->name)))->setEnabled($this->enabled)
+				(new CVar($this->name, $this->value, trx_formatDomId($this->name)))->setEnabled($this->enabled)
 			);
 		}
 
 		foreach ($this->values as $key => $value) {
 			if ($value['id'] === null) {
-				$value['id'] = zbx_formatDomId($this->name).'_'.$key;
+				$value['id'] = trx_formatDomId($this->name).'_'.$key;
 			}
 
 			$radio = (new CInput('radio', $this->name, $value['value']))

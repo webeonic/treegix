@@ -16,7 +16,7 @@
  * Comments: we try to imitate "swap -l".                                     *
  *                                                                            *
  ******************************************************************************/
-static int	get_swapinfo(zbx_uint64_t *total, zbx_uint64_t *free1, char **error)
+static int	get_swapinfo(trx_uint64_t *total, trx_uint64_t *free1, char **error)
 {
 	int			i, cnt, cnt2, page_size, ret = FAIL;
 	struct swaptable	*swt = NULL;
@@ -26,7 +26,7 @@ static int	get_swapinfo(zbx_uint64_t *total, zbx_uint64_t *free1, char **error)
 	/* get total number of swap entries */
 	if (-1 == (cnt = swapctl(SC_GETNSWP, 0)))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot obtain number of swap entries: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain number of swap entries: %s", trx_strerror(errno));
 		return FAIL;
 	}
 
@@ -37,7 +37,7 @@ static int	get_swapinfo(zbx_uint64_t *total, zbx_uint64_t *free1, char **error)
 	}
 
 	/* allocate space to hold count + n swapents */
-	swt = (struct swaptable *)zbx_malloc(swt, sizeof(struct swaptable) + (cnt - 1) * sizeof(struct swapent));
+	swt = (struct swaptable *)trx_malloc(swt, sizeof(struct swaptable) + (cnt - 1) * sizeof(struct swapent));
 
 	swt->swt_n = cnt;
 
@@ -52,13 +52,13 @@ static int	get_swapinfo(zbx_uint64_t *total, zbx_uint64_t *free1, char **error)
 	/* grab all swap info */
 	if (-1 == (cnt2 = swapctl(SC_LIST, swt)))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot obtain a list of swap entries: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain a list of swap entries: %s", trx_strerror(errno));
 		goto finish;
 	}
 
 	if (cnt != cnt2)
 	{
-		*error = zbx_strdup(NULL, "Obtained an unexpected number of swap entries.");
+		*error = trx_strdup(NULL, "Obtained an unexpected number of swap entries.");
 		goto finish;
 	}
 
@@ -85,14 +85,14 @@ static int	get_swapinfo(zbx_uint64_t *total, zbx_uint64_t *free1, char **error)
 
 	ret = SUCCEED;
 finish:
-	zbx_free(swt);
+	trx_free(swt);
 
 	return ret;
 }
 
 static int	SYSTEM_SWAP_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	zbx_uint64_t	total, free1;
+	trx_uint64_t	total, free1;
 	char		*error;
 
 	if (SUCCEED != get_swapinfo(&total, &free1, &error))
@@ -108,7 +108,7 @@ static int	SYSTEM_SWAP_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 static int	SYSTEM_SWAP_USED(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	zbx_uint64_t	total, free1;
+	trx_uint64_t	total, free1;
 	char		*error;
 
 	if (SUCCEED != get_swapinfo(&total, &free1, &error))
@@ -124,7 +124,7 @@ static int	SYSTEM_SWAP_USED(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 static int	SYSTEM_SWAP_FREE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	zbx_uint64_t	total, free1;
+	trx_uint64_t	total, free1;
 	char		*error;
 
 	if (SUCCEED != get_swapinfo(&total, &free1, &error))
@@ -140,7 +140,7 @@ static int	SYSTEM_SWAP_FREE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 static int	SYSTEM_SWAP_PUSED(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	zbx_uint64_t	total, free1;
+	trx_uint64_t	total, free1;
 	char		*error;
 
 	if (SUCCEED != get_swapinfo(&total, &free1, &error))
@@ -151,7 +151,7 @@ static int	SYSTEM_SWAP_PUSED(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 == total)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -162,7 +162,7 @@ static int	SYSTEM_SWAP_PUSED(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 static int	SYSTEM_SWAP_PFREE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	zbx_uint64_t	total, free1;
+	trx_uint64_t	total, free1;
 	char		*error;
 
 	if (SUCCEED != get_swapinfo(&total, &free1, &error))
@@ -173,7 +173,7 @@ static int	SYSTEM_SWAP_PFREE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 == total)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -189,7 +189,7 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -197,7 +197,7 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL != tmp && '\0' != *tmp && 0 != strcmp(tmp, "all"))	/* default parameter */
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -215,15 +215,15 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = SYSTEM_SWAP_PUSED(request, result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	return ret;
 }
 
-static int	get_swap_io(zbx_uint64_t *swapin, zbx_uint64_t *pgswapin, zbx_uint64_t *swapout,
-		zbx_uint64_t *pgswapout, char **error)
+static int	get_swap_io(trx_uint64_t *swapin, trx_uint64_t *pgswapin, trx_uint64_t *swapout,
+		trx_uint64_t *pgswapout, char **error)
 {
 	kstat_ctl_t	*kc;
 	kstat_t		*k;
@@ -232,7 +232,7 @@ static int	get_swap_io(zbx_uint64_t *swapin, zbx_uint64_t *pgswapin, zbx_uint64_
 
 	if (NULL == (kc = kstat_open()))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot open kernel statistics facility: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot open kernel statistics facility: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -242,8 +242,8 @@ static int	get_swap_io(zbx_uint64_t *swapin, zbx_uint64_t *pgswapin, zbx_uint64_
 		{
 			if (-1 == kstat_read(kc, k, NULL))
 			{
-				*error = zbx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
-						zbx_strerror(errno));
+				*error = trx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
+						trx_strerror(errno));
 				goto clean;
 			}
 
@@ -281,7 +281,7 @@ static int	get_swap_io(zbx_uint64_t *swapin, zbx_uint64_t *pgswapin, zbx_uint64_
 	{
 		kstat_close(kc);
 
-		*error = zbx_strdup(NULL, "Cannot find swap information.");
+		*error = trx_strdup(NULL, "Cannot find swap information.");
 		return SYSINFO_RET_FAIL;
 	}
 clean:
@@ -294,11 +294,11 @@ int	SYSTEM_SWAP_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int		ret;
 	char		*tmp, *error;
-	zbx_uint64_t	value = 0;
+	trx_uint64_t	value = 0;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -306,7 +306,7 @@ int	SYSTEM_SWAP_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL != tmp && '\0' != *tmp && 0 != strcmp(tmp, "all"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -318,7 +318,7 @@ int	SYSTEM_SWAP_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = get_swap_io(NULL, &value, NULL, NULL, &error);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -334,11 +334,11 @@ int	SYSTEM_SWAP_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int		ret;
 	char		*tmp, *error;
-	zbx_uint64_t	value = 0;
+	trx_uint64_t	value = 0;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -346,7 +346,7 @@ int	SYSTEM_SWAP_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL != tmp && '\0' != *tmp && 0 != strcmp(tmp, "all"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -358,7 +358,7 @@ int	SYSTEM_SWAP_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = get_swap_io(NULL, NULL, NULL, &value, &error);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

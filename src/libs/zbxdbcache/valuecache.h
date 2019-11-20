@@ -3,9 +3,9 @@
 #ifndef TREEGIX_VALUECACHE_H
 #define TREEGIX_VALUECACHE_H
 
-#include "zbxtypes.h"
-#include "zbxalgo.h"
-#include "zbxhistory.h"
+#include "trxtypes.h"
+#include "trxalgo.h"
+#include "trxhistory.h"
 
 /*
  * The Value Cache provides read caching of item historical data residing in history
@@ -16,27 +16,27 @@
  *
  * Initialization
  *
- *   The value cache must be initialized at the start of the program with zbx_vc_init()
+ *   The value cache must be initialized at the start of the program with trx_vc_init()
  *   function. To ensure proper removal of shared memory the value cache must be destroyed
- *   upon a program exit with zbx_vc_destroy() function.
+ *   upon a program exit with trx_vc_destroy() function.
  *
  * Adding data
  *
  *   Whenever a new item value is added to system (history tables) the item value must be
- *   also added added to Value Cache with zbx_dc_add_value() function to keep it up to date.
+ *   also added added to Value Cache with trx_dc_add_value() function to keep it up to date.
  *
  * Retrieving data
  *
- *   The history data is accessed with zbx_vc_get_values() and zbx_vc_get_value()
+ *   The history data is accessed with trx_vc_get_values() and trx_vc_get_value()
  *   functions. Afterwards the retrieved history data must be freed by the caller by using
- *   either zbx_history_record_vector_destroy() function (free the zbx_vc_get_values()
- *   call output) or zbx_history_record_clear() function (free the zbx_vc_get_value() call output).
+ *   either trx_history_record_vector_destroy() function (free the trx_vc_get_values()
+ *   call output) or trx_history_record_clear() function (free the trx_vc_get_value() call output).
  *
  * Locking
  *
  *   The cache ensures synchronization between processes by using automatic locks whenever
- *   a cache function (zbx_vc_*) is called and by providing manual cache locking functionality
- *   with zbx_vc_lock()/zbx_vc_unlock() functions.
+ *   a cache function (trx_vc_*) is called and by providing manual cache locking functionality
+ *   with trx_vc_lock()/trx_vc_unlock() functions.
  *
  */
 
@@ -54,38 +54,38 @@ typedef struct
 	/* returned values is less than misses.                                                */
 	/* When performing count based requests the number of cached values might be greater   */
 	/* than number of returned values. This can skew the hits/misses ratio towards misses. */
-	zbx_uint64_t	hits;
-	zbx_uint64_t	misses;
+	trx_uint64_t	hits;
+	trx_uint64_t	misses;
 
-	zbx_uint64_t	total_size;
-	zbx_uint64_t	free_size;
+	trx_uint64_t	total_size;
+	trx_uint64_t	free_size;
 
 	/* value cache operating mode - see TRX_VC_MODE_* defines */
 	int		mode;
 }
-zbx_vc_stats_t;
+trx_vc_stats_t;
 
-int	zbx_vc_init(char **error);
+int	trx_vc_init(char **error);
 
-void	zbx_vc_destroy(void);
+void	trx_vc_destroy(void);
 
-void	zbx_vc_reset(void);
+void	trx_vc_reset(void);
 
-void	zbx_vc_lock(void);
+void	trx_vc_lock(void);
 
-void	zbx_vc_unlock(void);
+void	trx_vc_unlock(void);
 
-void	zbx_vc_enable(void);
+void	trx_vc_enable(void);
 
-void	zbx_vc_disable(void);
+void	trx_vc_disable(void);
 
-int	zbx_vc_get_values(zbx_uint64_t itemid, int value_type, zbx_vector_history_record_t *values, int seconds,
-		int count, const zbx_timespec_t *ts);
+int	trx_vc_get_values(trx_uint64_t itemid, int value_type, trx_vector_history_record_t *values, int seconds,
+		int count, const trx_timespec_t *ts);
 
-int	zbx_vc_get_value(zbx_uint64_t itemid, int value_type, const zbx_timespec_t *ts, zbx_history_record_t *value);
+int	trx_vc_get_value(trx_uint64_t itemid, int value_type, const trx_timespec_t *ts, trx_history_record_t *value);
 
-int	zbx_vc_add_values(zbx_vector_ptr_t *history);
+int	trx_vc_add_values(trx_vector_ptr_t *history);
 
-int	zbx_vc_get_statistics(zbx_vc_stats_t *stats);
+int	trx_vc_get_statistics(trx_vc_stats_t *stats);
 
 #endif	/* TREEGIX_VALUECACHE_H */

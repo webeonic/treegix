@@ -19,6 +19,6 @@
 				TRX_STR(TREEGIX_VERSION_PATCH) TREEGIX_VERSION_RC
 #define TREEGIX_REVISION		TRX_STR(TREEGIX_VERSION_REVISION)
 
-int	zbx_get_component_version(char *value);
+int	trx_get_component_version(char *value);
 
 #endif

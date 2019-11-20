@@ -280,7 +280,7 @@ class CPieGraphDraw extends CGraphDraw {
 		$fontSize = 8;
 
 		// check if host name will be displayed
-		$displayHostName = (count(array_unique(zbx_objectValues($this->items, 'hostname'))) > 1);
+		$displayHostName = (count(array_unique(trx_objectValues($this->items, 'hostname'))) > 1);
 
 		// calculate function name X shift
 		$functionNameXShift = 0;

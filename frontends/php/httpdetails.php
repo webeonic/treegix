@@ -100,7 +100,7 @@ $items = DBfetchArray(DBselect(
 	' FROM items i,httpstepitem hi,httpstep hs'.
 	' WHERE i.itemid=hi.itemid'.
 		' AND hi.httpstepid=hs.httpstepid'.
-		' AND hs.httptestid='.zbx_dbstr($httptest['httptestid'])
+		' AND hs.httptestid='.trx_dbstr($httptest['httptestid'])
 ));
 
 $url = (new CUrl('chart3.php'))
@@ -131,8 +131,8 @@ $time_control_data = [
 	'loadSBox' => 1,
 	'loadImage' => 1
 ];
-zbx_add_post_js('timeControl.addObject("graph_in", '.zbx_jsvalue($graph_in->timeline).', '.
-	zbx_jsvalue($time_control_data).');'
+trx_add_post_js('timeControl.addObject("graph_in", '.trx_jsvalue($graph_in->timeline).', '.
+	trx_jsvalue($time_control_data).');'
 );
 $graph_in->insertFlickerfreeJs();
 
@@ -173,8 +173,8 @@ $time_control_data = [
 	'loadSBox' => 1,
 	'loadImage' => 1
 ];
-zbx_add_post_js('timeControl.addObject("graph_time", '.zbx_jsvalue($graph_in->timeline).', '.
-	zbx_jsvalue($time_control_data).');'
+trx_add_post_js('timeControl.addObject("graph_time", '.trx_jsvalue($graph_in->timeline).', '.
+	trx_jsvalue($time_control_data).');'
 );
 $graph_time->insertFlickerfreeJs();
 

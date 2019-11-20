@@ -277,7 +277,7 @@ jQuery(function ($){
 	$(document)
 		.on('mousedown', 'img', selectionHandlerDragStart)
 		.on('dblclick', 'img', function(e) {
-			if (typeof $(e.target).data('zbx_sbox') !== 'undefined') {
+			if (typeof $(e.target).data('trx_sbox') !== 'undefined') {
 				$.publish('timeselector.zoomout', {
 					from: element.from.val(),
 					to: element.to.val()
@@ -288,7 +288,7 @@ jQuery(function ($){
 		})
 		.on('click', 'a', function(e) {
 			// Prevent click on graph image parent <a/> element when clicked inside graph selectable area.
-			if ($(e.target).is('img') && typeof $(e.target).data('zbx_sbox') !== 'undefined' && prevent_click
+			if ($(e.target).is('img') && typeof $(e.target).data('trx_sbox') !== 'undefined' && prevent_click
 					&& $(this).hasClass('dashbrd-widget-graph-link')) {
 				return cancelEvent(e);
 			}
@@ -307,7 +307,7 @@ jQuery(function ($){
 		var target = $(e.target),
 			data = target.data();
 
-		if (typeof data.zbx_sbox === 'undefined') {
+		if (typeof data.trx_sbox === 'undefined') {
 			return;
 		}
 
@@ -323,9 +323,9 @@ jQuery(function ($){
 		 * @prop {integer} data.to_ts             Timestamp for end time of selection box.
 		 * @prop {integer} data.prevent_refresh   Mark image as non updateable during selection.
 		 */
-		data = data.zbx_sbox;
+		data = data.trx_sbox;
 		data.prevent_refresh = true;
-		target.data('zbx_sbox', data);
+		target.data('trx_sbox', data);
 
 		var offset = target.offset(),
 			left = data.left,
@@ -366,7 +366,7 @@ jQuery(function ($){
 		}
 
 		$(document)
-			.on('mouseup', {zbx_sbox: data, target: target}, selectionHandlerDragEnd)
+			.on('mouseup', {trx_sbox: data, target: target}, selectionHandlerDragEnd)
 			.on('mousemove', selectionHandlerDrag);
 
 		return cancelEvent(e);
@@ -381,10 +381,10 @@ jQuery(function ($){
 		var left = Math.floor(Math.max(selection.dom.position().left, selection.min)),
 			from_offset = (left - selection.min) * selection.seconds_per_px,
 			to_offset = (selection.max - Math.floor(selection.dom.width()) - left) * selection.seconds_per_px,
-			zbx_sbox = e.data.zbx_sbox;
+			trx_sbox = e.data.trx_sbox;
 
-		zbx_sbox.prevent_refresh = false;
-		e.data.target.data('zbx_sbox', zbx_sbox);
+		trx_sbox.prevent_refresh = false;
+		e.data.target.data('trx_sbox', trx_sbox);
 
 		selection.dom.remove();
 		selection = null;
@@ -535,7 +535,7 @@ var timeControl = {
 	addImage: function(id) {
 		var obj = this.objectList[id],
 			img = jQuery('#' + id),
-			zbx_sbox = {
+			trx_sbox = {
 				left: obj.objDims.shiftXleft,
 				right: obj.objDims.shiftXright,
 				top: obj.objDims.shiftYtop,
@@ -558,8 +558,8 @@ var timeControl = {
 			var xhr = (obj.loadSBox == 0)
 				? null
 				: flickerfreeScreen.getImageSboxHeight(url, function (height) {
-					zbx_sbox.height = parseInt(height, 10);
-					img.data('zbx_sbox', zbx_sbox).attr('src', obj.src);
+					trx_sbox.height = parseInt(height, 10);
+					img.data('trx_sbox', trx_sbox).attr('src', obj.src);
 				});
 
 			if (xhr === null) {
@@ -567,7 +567,7 @@ var timeControl = {
 			}
 
 			if (obj.loadSBox == 1) {
-				img.data('zbx_sbox', zbx_sbox);
+				img.data('trx_sbox', trx_sbox);
 			}
 		}
 	},
@@ -576,9 +576,9 @@ var timeControl = {
 		var obj = this.objectList[id],
 			url = new Curl(obj.src, false),
 			img = jQuery('#' + id),
-			zbx_sbox = img.data('zbx_sbox');
+			trx_sbox = img.data('trx_sbox');
 
-		if (zbx_sbox && zbx_sbox.prevent_refresh) {
+		if (trx_sbox && trx_sbox.prevent_refresh) {
 			return;
 		}
 
@@ -600,8 +600,8 @@ var timeControl = {
 		var async = (obj.loadSBox == 0)
 			? null
 			: flickerfreeScreen.getImageSboxHeight(url, function (height) {
-				zbx_sbox.height = parseInt(height, 10);
-				clone.data('zbx_sbox', zbx_sbox)
+				trx_sbox.height = parseInt(height, 10);
+				clone.data('trx_sbox', trx_sbox)
 					.attr('src', url.getUrl());
 			});
 
@@ -609,7 +609,7 @@ var timeControl = {
 			clone.attr('src', url.getUrl());
 		}
 		else {
-			clone.data('zbx_sbox', jQuery.extend(zbx_sbox, {
+			clone.data('trx_sbox', jQuery.extend(trx_sbox, {
 				left: obj.objDims.shiftXleft,
 				right: obj.objDims.shiftXright,
 				top: obj.objDims.shiftYtop,

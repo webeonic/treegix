@@ -9,7 +9,7 @@ import (
 	"net"
 	"time"
 	"treegix/pkg/tls"
-	"treegix/pkg/zbxcomms"
+	"treegix/pkg/trxcomms"
 )
 
 type activeConnection struct {
@@ -19,7 +19,7 @@ type activeConnection struct {
 }
 
 func (c *activeConnection) Write(data []byte, timeout time.Duration) (err error) {
-	b, err := zbxcomms.Exchange(c.address, &c.localAddr, timeout, data, c.tlsConfig)
+	b, err := trxcomms.Exchange(c.address, &c.localAddr, timeout, data, c.tlsConfig)
 	if err != nil {
 		return err
 	}

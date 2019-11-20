@@ -92,10 +92,10 @@ else {
 	sortServices($services);
 
 	// expand trigger descriptions
-	$triggers = zbx_objectValues(
+	$triggers = trx_objectValues(
 		array_filter($services, function($service) { return (bool) $service['trigger']; }), 'trigger'
 	);
-	$triggers = CMacrosResolverHelper::resolveTriggerNames(zbx_toHash($triggers, 'triggerid'));
+	$triggers = CMacrosResolverHelper::resolveTriggerNames(trx_toHash($triggers, 'triggerid'));
 
 	foreach ($services as &$service) {
 		if ($service['trigger']) {

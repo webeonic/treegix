@@ -29,11 +29,11 @@ int	SYSTEM_SW_ARCH(AGENT_REQUEST *request, AGENT_RESULT *result)
 			arch = "Intel Itanium-based";
 			break;
 		default:
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown processor architecture."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown processor architecture."));
 			return SYSINFO_RET_FAIL;
 	}
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, arch));
+	SET_STR_RESULT(result, trx_strdup(NULL, arch));
 
 	return SYSINFO_RET_OK;
 }

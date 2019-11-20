@@ -88,7 +88,7 @@ foreach (['os', 'hardware', 'software'] as $key) {
 	if (array_key_exists($key, $data['host']['inventory'])) {
 		if ($data['host']['inventory'][$key] !== '') {
 			$overviewFormList->addRow($data['tableTitles'][$key]['title'],
-				(new CDiv(zbx_str2links($data['host']['inventory'][$key])))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
+				(new CDiv(trx_str2links($data['host']['inventory'][$key])))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 			);
 		}
 	}
@@ -97,7 +97,7 @@ foreach (['os', 'hardware', 'software'] as $key) {
 // description
 if ($data['host']['description'] !== '') {
 	$overviewFormList->addRow(_('Description'),
-		(new CDiv(zbx_str2links($data['host']['description'])))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
+		(new CDiv(trx_str2links($data['host']['description'])))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 	);
 }
 
@@ -186,7 +186,7 @@ $inventoryValues = false;
 foreach ($data['host']['inventory'] as $key => $value) {
 	if ($value !== '') {
 		$detailsFormList->addRow($data['tableTitles'][$key]['title'],
-			(new CDiv(zbx_str2links($value)))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
+			(new CDiv(trx_str2links($value)))->setWidth(TRX_TEXTAREA_BIG_WIDTH)
 		);
 
 		$inventoryValues = true;

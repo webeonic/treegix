@@ -4,7 +4,7 @@
 #include "sysinfo.h"
 #include "log.h"
 
-static int	get_swap_size(zbx_uint64_t *total, zbx_uint64_t *free, zbx_uint64_t *used, double *pfree, double *pused,
+static int	get_swap_size(trx_uint64_t *total, trx_uint64_t *free, trx_uint64_t *used, double *pfree, double *pused,
 		char **error)
 {
 	int		mib[2];
@@ -18,7 +18,7 @@ static int	get_swap_size(zbx_uint64_t *total, zbx_uint64_t *free, zbx_uint64_t *
 
 	if (0 != sysctl(mib, 2, &v, &len, NULL, 0))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -27,11 +27,11 @@ static int	get_swap_size(zbx_uint64_t *total, zbx_uint64_t *free, zbx_uint64_t *
 	/* int swpginuse;	number of swap pages in use */
 
 	if (total)
-		*total = (zbx_uint64_t)v.swpages * v.pagesize;
+		*total = (trx_uint64_t)v.swpages * v.pagesize;
 	if (free)
-		*free = (zbx_uint64_t)(v.swpages - v.swpginuse) * v.pagesize;
+		*free = (trx_uint64_t)(v.swpages - v.swpginuse) * v.pagesize;
 	if (used)
-		*used = (zbx_uint64_t)v.swpginuse * v.pagesize;
+		*used = (trx_uint64_t)v.swpginuse * v.pagesize;
 	if (pfree)
 		*pfree = v.swpages ? (double)(100.0 * (v.swpages - v.swpginuse)) / v.swpages : 100;
 	if (pused)
@@ -42,7 +42,7 @@ static int	get_swap_size(zbx_uint64_t *total, zbx_uint64_t *free, zbx_uint64_t *
 
 static int	SYSTEM_SWAP_TOTAL(AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_swap_size(&value, NULL, NULL, NULL, NULL, &error))
@@ -58,7 +58,7 @@ static int	SYSTEM_SWAP_TOTAL(AGENT_RESULT *result)
 
 static int	SYSTEM_SWAP_FREE(AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_swap_size(NULL, &value, NULL, NULL, NULL, &error))
@@ -74,7 +74,7 @@ static int	SYSTEM_SWAP_FREE(AGENT_RESULT *result)
 
 static int	SYSTEM_SWAP_USED(AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_swap_size(NULL, NULL, &value, NULL, NULL, &error))
@@ -127,7 +127,7 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -137,7 +137,7 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 	/* default parameter */
 	if (NULL != swapdev && '\0' != *swapdev && 0 != strcmp(swapdev, "all"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -154,14 +154,14 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = SYSTEM_SWAP_PUSED(result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	return ret;
 }
 
-static int	get_swap_io(zbx_uint64_t *icount, zbx_uint64_t *ipages, zbx_uint64_t *ocount, zbx_uint64_t *opages,
+static int	get_swap_io(trx_uint64_t *icount, trx_uint64_t *ipages, trx_uint64_t *ocount, trx_uint64_t *opages,
 		char **error)
 {
 	int		mib[2];
@@ -175,7 +175,7 @@ static int	get_swap_io(zbx_uint64_t *icount, zbx_uint64_t *ipages, zbx_uint64_t 
 
 	if (0 != sysctl(mib, 2, &v, &len, NULL, 0))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -186,20 +186,20 @@ static int	get_swap_io(zbx_uint64_t *icount, zbx_uint64_t *ipages, zbx_uint64_t 
 
 #if OpenBSD < 201311		/* swapins and swapouts are not supported starting from OpenBSD 5.4 */
 	if (NULL != icount)
-		*icount = (zbx_uint64_t)v.swapins;
+		*icount = (trx_uint64_t)v.swapins;
 	if (NULL != ocount)
-		*ocount = (zbx_uint64_t)v.swapouts;
+		*ocount = (trx_uint64_t)v.swapouts;
 #else
 	if (NULL != icount || NULL != ocount)
 	{
-		*error = zbx_dsprintf(NULL, "Not supported by the system starting from OpenBSD 5.4.");
+		*error = trx_dsprintf(NULL, "Not supported by the system starting from OpenBSD 5.4.");
 		return SYSINFO_RET_FAIL;
 	}
 #endif
 	if (NULL != ipages)
-		*ipages = (zbx_uint64_t)v.pgswapin;
+		*ipages = (trx_uint64_t)v.pgswapin;
 	if (NULL != opages)
-		*opages = (zbx_uint64_t)v.pgswapout;
+		*opages = (trx_uint64_t)v.pgswapout;
 
 	return SYSINFO_RET_OK;
 }
@@ -208,11 +208,11 @@ int	SYSTEM_SWAP_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int		ret;
 	char		*swapdev, *mode, *error;
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -222,7 +222,7 @@ int	SYSTEM_SWAP_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 	/* the only supported parameter */
 	if (NULL != swapdev && '\0' != *swapdev && 0 != strcmp(swapdev, "all"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -237,7 +237,7 @@ int	SYSTEM_SWAP_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -253,11 +253,11 @@ int	SYSTEM_SWAP_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int		ret;
 	char		*swapdev, *mode, *error;
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -267,7 +267,7 @@ int	SYSTEM_SWAP_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 	/* the only supported parameter */
 	if (NULL != swapdev && '\0' != *swapdev && 0 != strcmp(swapdev, "all"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -282,7 +282,7 @@ int	SYSTEM_SWAP_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

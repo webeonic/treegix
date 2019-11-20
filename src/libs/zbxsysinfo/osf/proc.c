@@ -3,7 +3,7 @@
 #include <sys/procfs.h>
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 
 int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
@@ -11,7 +11,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	DIR		*dir;
 	int		proc;
 	struct dirent	*entries;
-	zbx_stat_t	buf;
+	trx_stat_t	buf;
 	struct passwd	*usrinfo;
 	struct prpsinfo	psinfo;
 	char		filename[MAX_STRING_LEN];
@@ -23,7 +23,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -50,7 +50,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		do_task = TRX_DO_MIN;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -61,16 +61,16 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == (dir = opendir("/proc")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
 	while (NULL != (entries = readdir(dir)))
 	{
 		strscpy(filename, "/proc/");
-		zbx_strlcat(filename, entries->d_name, MAX_STRING_LEN);
+		trx_strlcat(filename, entries->d_name, MAX_STRING_LEN);
 
-		if (0 == zbx_stat(filename, &buf))
+		if (0 == trx_stat(filename, &buf))
 		{
 			proc = open(filename, O_RDONLY);
 			if (-1 == proc)
@@ -92,7 +92,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 					goto lbl_skip_procces;
 
 			if (NULL != proccomm && '\0' != *proccomm)
-				if (NULL == zbx_regexp_match(psinfo.pr_psargs, proccomm, NULL))
+				if (NULL == trx_regexp_match(psinfo.pr_psargs, proccomm, NULL))
 					goto lbl_skip_procces;
 
 			proccount++;
@@ -137,17 +137,17 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	DIR		*dir;
 	int		proc;
 	struct  dirent	*entries;
-	zbx_stat_t	buf;
+	trx_stat_t	buf;
 	struct passwd	*usrinfo;
 	struct prpsinfo	psinfo;
 	char		filename[MAX_STRING_LEN];
 	char		*procname, *proccomm, *param;
-	int		proccount = 0, invalid_user = 0, zbx_proc_stat;
+	int		proccount = 0, invalid_user = 0, trx_proc_stat;
 	pid_t		curr_pid = getpid();
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -165,16 +165,16 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = -1;
+		trx_proc_stat = -1;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = PR_SRUN;
+		trx_proc_stat = PR_SRUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = PR_SSLEEP;
+		trx_proc_stat = PR_SSLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = PR_SZOMB;
+		trx_proc_stat = PR_SZOMB;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -185,16 +185,16 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == (dir = opendir("/proc")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
 	while (NULL != (entries = readdir(dir)))
 	{
 		strscpy(filename, "/proc/");
-		zbx_strlcat(filename, entries->d_name,MAX_STRING_LEN);
+		trx_strlcat(filename, entries->d_name,MAX_STRING_LEN);
 
-		if (0 == zbx_stat(filename, &buf))
+		if (0 == trx_stat(filename, &buf))
 		{
 			proc = open(filename, O_RDONLY);
 			if (-1 == proc)
@@ -215,12 +215,12 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 				if (usrinfo->pw_uid != psinfo.pr_uid)
 					goto lbl_skip_procces;
 
-			if (-1 != zbx_proc_stat)
-				if (psinfo.pr_sname != zbx_proc_stat)
+			if (-1 != trx_proc_stat)
+				if (psinfo.pr_sname != trx_proc_stat)
 					goto lbl_skip_procces;
 
 			if (NULL != proccomm && '\0' != *proccomm)
-				if (NULL == zbx_regexp_match(psinfo.pr_psargs, proccomm, NULL))
+				if (NULL == trx_regexp_match(psinfo.pr_psargs, proccomm, NULL))
 					goto lbl_skip_procces;
 
 			proccount++;

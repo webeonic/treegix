@@ -60,23 +60,23 @@ order_result($data['sla']['sla'], 'from', TRX_SORT_DOWN);
 foreach ($data['sla']['sla'] as $sla) {
 	switch ($data['period']) {
 		case 'yearly':
-			$from = zbx_date2str(_x('Y', DATE_FORMAT_CONTEXT), $sla['from']);
+			$from = trx_date2str(_x('Y', DATE_FORMAT_CONTEXT), $sla['from']);
 			$to = null;
 			break;
 
 		case 'monthly':
-			$from =  zbx_date2str(_x('F', DATE_FORMAT_CONTEXT), $sla['from']);
+			$from =  trx_date2str(_x('F', DATE_FORMAT_CONTEXT), $sla['from']);
 			$to = null;
 			break;
 
 		case 'daily':
-			$from = zbx_date2str(DATE_FORMAT, $sla['from']);
+			$from = trx_date2str(DATE_FORMAT, $sla['from']);
 			$to = null;
 			break;
 
 		case 'weekly':
-			$from = zbx_date2str(DATE_TIME_FORMAT, $sla['from']);
-			$to = zbx_date2str(DATE_TIME_FORMAT, $sla['to']);
+			$from = trx_date2str(DATE_TIME_FORMAT, $sla['from']);
+			$to = trx_date2str(DATE_TIME_FORMAT, $sla['to']);
 			break;
 	}
 

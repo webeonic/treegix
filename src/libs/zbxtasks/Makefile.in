@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxtasks
+subdir = src/libs/trxtasks
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxtasks_a_AR = $(AR) $(ARFLAGS)
-libzbxtasks_a_LIBADD =
-am_libzbxtasks_a_OBJECTS = task.$(OBJEXT)
-libzbxtasks_a_OBJECTS = $(am_libzbxtasks_a_OBJECTS)
+libtrxtasks_a_AR = $(AR) $(ARFLAGS)
+libtrxtasks_a_LIBADD =
+am_libtrxtasks_a_OBJECTS = task.$(OBJEXT)
+libtrxtasks_a_OBJECTS = $(am_libtrxtasks_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxtasks_a_SOURCES)
-DIST_SOURCES = $(libzbxtasks_a_SOURCES)
+SOURCES = $(libtrxtasks_a_SOURCES)
+DIST_SOURCES = $(libtrxtasks_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxtasks.a
-libzbxtasks_a_SOURCES = \
+noinst_LIBRARIES = libtrxtasks.a
+libtrxtasks_a_SOURCES = \
 	task.c
 
 all: all-am
@@ -391,9 +391,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxtasks/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxtasks/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxtasks/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxtasks/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -415,10 +415,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxtasks.a: $(libzbxtasks_a_OBJECTS) $(libzbxtasks_a_DEPENDENCIES) $(EXTRA_libzbxtasks_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxtasks.a
-	$(AM_V_AR)$(libzbxtasks_a_AR) libzbxtasks.a $(libzbxtasks_a_OBJECTS) $(libzbxtasks_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxtasks.a
+libtrxtasks.a: $(libtrxtasks_a_OBJECTS) $(libtrxtasks_a_DEPENDENCIES) $(EXTRA_libtrxtasks_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxtasks.a
+	$(AM_V_AR)$(libtrxtasks_a_AR) libtrxtasks.a $(libtrxtasks_a_OBJECTS) $(libtrxtasks_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxtasks.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

@@ -54,7 +54,7 @@ $menu = (new CList())
 $container = (new CDiv())->setId(TRX_STYLE_MAP_AREA);
 
 // create elements
-zbx_add_post_js('TREEGIX.apps.map.run("'.TRX_STYLE_MAP_AREA.'", '.CJs::encodeJson([
+trx_add_post_js('TREEGIX.apps.map.run("'.TRX_STYLE_MAP_AREA.'", '.CJs::encodeJson([
 	'theme' => $data['theme'],
 	'sysmap' => $data['sysmap'],
 	'iconList' => $data['iconList'],

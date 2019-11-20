@@ -14,8 +14,8 @@ extern volatile sig_atomic_t	sig_exiting;
 int	daemon_start(int allow_root, const char *user, unsigned int flags);
 void	daemon_stop(void);
 
-int	zbx_sigusr_send(int flags);
-void	zbx_set_sigusr_handler(void (*handler)(int flags));
+int	trx_sigusr_send(int flags);
+void	trx_set_sigusr_handler(void (*handler)(int flags));
 
 #define TRX_IS_RUNNING()	(0 == sig_exiting)
 #define TRX_DO_EXIT()

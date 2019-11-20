@@ -4,7 +4,7 @@
 #include "sysinfo.h"
 #include "md5.h"
 #include "file.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 
 #define TRX_MAX_DB_FILE_SIZE	64 * TRX_KIBIBYTE	/* files larger than 64 KB cannot be stored in the database */
@@ -13,13 +13,13 @@ extern int	CONFIG_TIMEOUT;
 
 int	VFS_FILE_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	zbx_stat_t	buf;
+	trx_stat_t	buf;
 	char		*filename;
 	int		ret = SYSINFO_RET_FAIL;
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto err;
 	}
 
@@ -27,13 +27,13 @@ int	VFS_FILE_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == filename || '\0' == *filename)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto err;
 	}
 
-	if (0 != zbx_stat(filename, &buf))
+	if (0 != trx_stat(filename, &buf))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain file information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain file information: %s", trx_strerror(errno)));
 		goto err;
 	}
 
@@ -46,13 +46,13 @@ err:
 
 int	VFS_FILE_TIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	zbx_stat_t	buf;
+	trx_stat_t	buf;
 	char		*filename, *type;
 	int		ret = SYSINFO_RET_FAIL;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto err;
 	}
 
@@ -61,13 +61,13 @@ int	VFS_FILE_TIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == filename || '\0' == *filename)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto err;
 	}
 
-	if (0 != zbx_stat(filename, &buf))
+	if (0 != trx_stat(filename, &buf))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain file information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain file information: %s", trx_strerror(errno)));
 		goto err;
 	}
 
@@ -79,7 +79,7 @@ int	VFS_FILE_TIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, buf.st_ctime);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto err;
 	}
 
@@ -90,13 +90,13 @@ err:
 
 int	VFS_FILE_EXISTS(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	zbx_stat_t	buf;
+	trx_stat_t	buf;
 	char		*filename;
 	int		ret = SYSINFO_RET_FAIL, file_exists;
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto err;
 	}
 
@@ -104,11 +104,11 @@ int	VFS_FILE_EXISTS(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == filename || '\0' == *filename)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto err;
 	}
 
-	if (0 == zbx_stat(filename, &buf))
+	if (0 == trx_stat(filename, &buf))
 	{
 		file_exists = S_ISREG(buf.st_mode) ? 1 : 0;
 	}
@@ -118,7 +118,7 @@ int	VFS_FILE_EXISTS(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain file information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain file information: %s", trx_strerror(errno)));
 		goto err;
 	}
 
@@ -134,14 +134,14 @@ int	VFS_FILE_CONTENTS(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		read_buf[MAX_BUFFER_LEN], *utf8, *contents = NULL;
 	size_t		contents_alloc = 0, contents_offset = 0;
 	int		nbytes, flen, f = -1, ret = SYSINFO_RET_FAIL;
-	zbx_stat_t	stat_buf;
+	trx_stat_t	stat_buf;
 	double		ts;
 
-	ts = zbx_time();
+	ts = trx_time();
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto err;
 	}
 
@@ -155,75 +155,75 @@ int	VFS_FILE_CONTENTS(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == filename || '\0' == *filename)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto err;
 	}
 
-	if (0 != zbx_stat(filename, &stat_buf))
+	if (0 != trx_stat(filename, &stat_buf))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain file information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain file information: %s", trx_strerror(errno)));
 		goto err;
 	}
 
-	if (CONFIG_TIMEOUT < zbx_time() - ts)
+	if (CONFIG_TIMEOUT < trx_time() - ts)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 		goto err;
 	}
 
 	if (TRX_MAX_DB_FILE_SIZE < stat_buf.st_size)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "File is too large for this check."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "File is too large for this check."));
 		goto err;
 	}
 
-	if (-1 == (f = zbx_open(filename, O_RDONLY)))
+	if (-1 == (f = trx_open(filename, O_RDONLY)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open file: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open file: %s", trx_strerror(errno)));
 		goto err;
 	}
 
-	if (CONFIG_TIMEOUT < zbx_time() - ts)
+	if (CONFIG_TIMEOUT < trx_time() - ts)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 		goto err;
 	}
 
 	flen = 0;
 
-	while (0 < (nbytes = zbx_read(f, read_buf, sizeof(read_buf), encoding)))
+	while (0 < (nbytes = trx_read(f, read_buf, sizeof(read_buf), encoding)))
 	{
-		if (CONFIG_TIMEOUT < zbx_time() - ts)
+		if (CONFIG_TIMEOUT < trx_time() - ts)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 			goto err;
 		}
 
 		if (TRX_MAX_DB_FILE_SIZE < (flen += nbytes))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "File is too large for this check."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "File is too large for this check."));
 			goto err;
 		}
 
 		utf8 = convert_to_utf8(read_buf, nbytes, encoding);
-		zbx_strcpy_alloc(&contents, &contents_alloc, &contents_offset, utf8);
-		zbx_free(utf8);
+		trx_strcpy_alloc(&contents, &contents_alloc, &contents_offset, utf8);
+		trx_free(utf8);
 	}
 
 	if (-1 == nbytes)	/* error occurred */
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot read from file."));
-		zbx_free(contents);
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot read from file."));
+		trx_free(contents);
 		goto err;
 	}
 
 	if (0 != contents_offset)
-		contents_offset -= zbx_rtrim(contents, "\r\n");
+		contents_offset -= trx_rtrim(contents, "\r\n");
 
 	if (0 == contents_offset) /* empty file */
 	{
-		zbx_free(contents);
-		contents = zbx_strdup(contents, "");
+		trx_free(contents);
+		contents = trx_strdup(contents, "");
 	}
 
 	SET_TEXT_RESULT(result, contents);
@@ -241,14 +241,14 @@ int	VFS_FILE_REGEXP(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		*filename, *regexp, encoding[32], *output, *start_line_str, *end_line_str;
 	char		buf[MAX_BUFFER_LEN], *utf8, *tmp, *ptr = NULL;
 	int		nbytes, f = -1, ret = SYSINFO_RET_FAIL;
-	zbx_uint32_t	start_line, end_line, current_line = 0;
+	trx_uint32_t	start_line, end_line, current_line = 0;
 	double		ts;
 
-	ts = zbx_time();
+	ts = trx_time();
 
 	if (6 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto err;
 	}
 
@@ -261,13 +261,13 @@ int	VFS_FILE_REGEXP(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == filename || '\0' == *filename)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto err;
 	}
 
 	if (NULL == regexp || '\0' == *regexp)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto err;
 	}
 
@@ -280,7 +280,7 @@ int	VFS_FILE_REGEXP(AGENT_REQUEST *request, AGENT_RESULT *result)
 		start_line = 0;
 	else if (FAIL == is_uint32(start_line_str, &start_line))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		goto err;
 	}
 
@@ -288,33 +288,33 @@ int	VFS_FILE_REGEXP(AGENT_REQUEST *request, AGENT_RESULT *result)
 		end_line = 0xffffffff;
 	else if (FAIL == is_uint32(end_line_str, &end_line))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		goto err;
 	}
 
 	if (start_line > end_line)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Start line parameter must not exceed end line."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Start line parameter must not exceed end line."));
 		goto err;
 	}
 
-	if (-1 == (f = zbx_open(filename, O_RDONLY)))
+	if (-1 == (f = trx_open(filename, O_RDONLY)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open file: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open file: %s", trx_strerror(errno)));
 		goto err;
 	}
 
-	if (CONFIG_TIMEOUT < zbx_time() - ts)
+	if (CONFIG_TIMEOUT < trx_time() - ts)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 		goto err;
 	}
 
-	while (0 < (nbytes = zbx_read(f, buf, sizeof(buf), encoding)))
+	while (0 < (nbytes = trx_read(f, buf, sizeof(buf), encoding)))
 	{
-		if (CONFIG_TIMEOUT < zbx_time() - ts)
+		if (CONFIG_TIMEOUT < trx_time() - ts)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 			goto err;
 		}
 
@@ -322,9 +322,9 @@ int	VFS_FILE_REGEXP(AGENT_REQUEST *request, AGENT_RESULT *result)
 			continue;
 
 		utf8 = convert_to_utf8(buf, nbytes, encoding);
-		zbx_rtrim(utf8, "\r\n");
-		zbx_regexp_sub(utf8, regexp, output, &ptr);
-		zbx_free(utf8);
+		trx_rtrim(utf8, "\r\n");
+		trx_regexp_sub(utf8, regexp, output, &ptr);
+		trx_free(utf8);
 
 		if (NULL != ptr)
 		{
@@ -342,12 +342,12 @@ int	VFS_FILE_REGEXP(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (-1 == nbytes)	/* error occurred */
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot read from file."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot read from file."));
 		goto err;
 	}
 
 	if (0 == nbytes)	/* EOF */
-		SET_STR_RESULT(result, zbx_strdup(NULL, ""));
+		SET_STR_RESULT(result, trx_strdup(NULL, ""));
 
 	ret = SYSINFO_RET_OK;
 err:
@@ -362,14 +362,14 @@ int	VFS_FILE_REGMATCH(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		*filename, *regexp, *tmp, encoding[32];
 	char		buf[MAX_BUFFER_LEN], *utf8, *start_line_str, *end_line_str;
 	int		nbytes, res, f = -1, ret = SYSINFO_RET_FAIL;
-	zbx_uint32_t	start_line, end_line, current_line = 0;
+	trx_uint32_t	start_line, end_line, current_line = 0;
 	double		ts;
 
-	ts = zbx_time();
+	ts = trx_time();
 
 	if (5 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto err;
 	}
 
@@ -381,13 +381,13 @@ int	VFS_FILE_REGMATCH(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == filename || '\0' == *filename)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto err;
 	}
 
 	if (NULL == regexp || '\0' == *regexp)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto err;
 	}
 
@@ -400,7 +400,7 @@ int	VFS_FILE_REGMATCH(AGENT_REQUEST *request, AGENT_RESULT *result)
 		start_line = 0;
 	else if (FAIL == is_uint32(start_line_str, &start_line))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		goto err;
 	}
 
@@ -408,35 +408,35 @@ int	VFS_FILE_REGMATCH(AGENT_REQUEST *request, AGENT_RESULT *result)
 		end_line = 0xffffffff;
 	else if (FAIL == is_uint32(end_line_str, &end_line))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		goto err;
 	}
 
 	if (start_line > end_line)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Start line must not exceed end line."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Start line must not exceed end line."));
 		goto err;
 	}
 
-	if (-1 == (f = zbx_open(filename, O_RDONLY)))
+	if (-1 == (f = trx_open(filename, O_RDONLY)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open file: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open file: %s", trx_strerror(errno)));
 		goto err;
 	}
 
-	if (CONFIG_TIMEOUT < zbx_time() - ts)
+	if (CONFIG_TIMEOUT < trx_time() - ts)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 		goto err;
 	}
 
 	res = 0;
 
-	while (0 == res && 0 < (nbytes = zbx_read(f, buf, sizeof(buf), encoding)))
+	while (0 == res && 0 < (nbytes = trx_read(f, buf, sizeof(buf), encoding)))
 	{
-		if (CONFIG_TIMEOUT < zbx_time() - ts)
+		if (CONFIG_TIMEOUT < trx_time() - ts)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 			goto err;
 		}
 
@@ -444,10 +444,10 @@ int	VFS_FILE_REGMATCH(AGENT_REQUEST *request, AGENT_RESULT *result)
 			continue;
 
 		utf8 = convert_to_utf8(buf, nbytes, encoding);
-		zbx_rtrim(utf8, "\r\n");
-		if (NULL != zbx_regexp_match(utf8, regexp, NULL))
+		trx_rtrim(utf8, "\r\n");
+		if (NULL != trx_regexp_match(utf8, regexp, NULL))
 			res = 1;
-		zbx_free(utf8);
+		trx_free(utf8);
 
 		if (current_line >= end_line)
 			break;
@@ -455,7 +455,7 @@ int	VFS_FILE_REGMATCH(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (-1 == nbytes)	/* error occurred */
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot read from file."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot read from file."));
 		goto err;
 	}
 
@@ -480,11 +480,11 @@ int	VFS_FILE_MD5SUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	md5_byte_t	hash[MD5_DIGEST_SIZE];
 	double		ts;
 
-	ts = zbx_time();
+	ts = trx_time();
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto err;
 	}
 
@@ -492,51 +492,51 @@ int	VFS_FILE_MD5SUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == filename || '\0' == *filename)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto err;
 	}
 
-	if (-1 == (f = zbx_open(filename, O_RDONLY)))
+	if (-1 == (f = trx_open(filename, O_RDONLY)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open file: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open file: %s", trx_strerror(errno)));
 		goto err;
 	}
 
-	if (CONFIG_TIMEOUT < zbx_time() - ts)
+	if (CONFIG_TIMEOUT < trx_time() - ts)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 		goto err;
 	}
 
-	zbx_md5_init(&state);
+	trx_md5_init(&state);
 
 	while (0 < (nbytes = (int)read(f, buf, sizeof(buf))))
 	{
-		if (CONFIG_TIMEOUT < zbx_time() - ts)
+		if (CONFIG_TIMEOUT < trx_time() - ts)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 			goto err;
 		}
 
-		zbx_md5_append(&state, (const md5_byte_t *)buf, nbytes);
+		trx_md5_append(&state, (const md5_byte_t *)buf, nbytes);
 	}
 
-	zbx_md5_finish(&state, hash);
+	trx_md5_finish(&state, hash);
 
 	if (0 > nbytes)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot read from file."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot read from file."));
 		goto err;
 	}
 
 	/* convert MD5 hash to text form */
 
 	sz = MD5_DIGEST_SIZE * 2 + 1;
-	hash_text = (char *)zbx_malloc(hash_text, sz);
+	hash_text = (char *)trx_malloc(hash_text, sz);
 
 	for (i = 0; i < MD5_DIGEST_SIZE; i++)
 	{
-		zbx_snprintf(&hash_text[i << 1], sz - (i << 1), "%02x", hash[i]);
+		trx_snprintf(&hash_text[i << 1], sz - (i << 1), "%02x", hash[i]);
 	}
 
 	SET_STR_RESULT(result, hash_text);
@@ -614,16 +614,16 @@ int	VFS_FILE_CKSUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		*filename;
 	int		i, nr, f = -1, ret = SYSINFO_RET_FAIL;
-	zbx_uint32_t	crc, flen;
+	trx_uint32_t	crc, flen;
 	u_char		buf[16 * TRX_KIBIBYTE];
 	u_long		cval;
 	double		ts;
 
-	ts = zbx_time();
+	ts = trx_time();
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto err;
 	}
 
@@ -631,19 +631,19 @@ int	VFS_FILE_CKSUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == filename || '\0' == *filename)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto err;
 	}
 
-	if (-1 == (f = zbx_open(filename, O_RDONLY)))
+	if (-1 == (f = trx_open(filename, O_RDONLY)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open file: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open file: %s", trx_strerror(errno)));
 		goto err;
 	}
 
-	if (CONFIG_TIMEOUT < zbx_time() - ts)
+	if (CONFIG_TIMEOUT < trx_time() - ts)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 		goto err;
 	}
 
@@ -651,9 +651,9 @@ int	VFS_FILE_CKSUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	while (0 < (nr = (int)read(f, buf, sizeof(buf))))
 	{
-		if (CONFIG_TIMEOUT < zbx_time() - ts)
+		if (CONFIG_TIMEOUT < trx_time() - ts)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while processing item."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while processing item."));
 			goto err;
 		}
 
@@ -665,7 +665,7 @@ int	VFS_FILE_CKSUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 > nr)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot read from file."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot read from file."));
 		goto err;
 	}
 

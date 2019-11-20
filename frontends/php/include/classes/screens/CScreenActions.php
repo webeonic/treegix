@@ -102,7 +102,7 @@ class CScreenActions extends CScreenBase {
 
 		$actions = API::Action()->get([
 			'output' => ['actionid', 'name'],
-			'actionids' => array_unique(zbx_objectValues($alerts, 'actionid')),
+			'actionids' => array_unique(trx_objectValues($alerts, 'actionid')),
 			'preservekeys' => true
 		]);
 
@@ -134,18 +134,18 @@ class CScreenActions extends CScreenBase {
 			}
 
 			$table->addRow([
-				zbx_date2str(DATE_TIME_FORMAT_SECONDS, $alert['clock']),
+				trx_date2str(DATE_TIME_FORMAT_SECONDS, $alert['clock']),
 				$action_name,
 				$action_type,
 				makeEventDetailsTableUser($alert, $db_users),
-				[bold($alert['subject']), BR(), BR(), zbx_nl2br($alert['message'])],
+				[bold($alert['subject']), BR(), BR(), trx_nl2br($alert['message'])],
 				makeActionTableStatus($alert),
 				makeInformationList($info_icons)
 			]);
 		}
 
 		$footer = (new CList())
-			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
+			->addItem(_s('Updated: %s', trx_date2str(TIME_FORMAT_SECONDS)))
 			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput((new CUiWidget(uniqid(), [$table, $footer]))->setHeader(_('Action log')));

@@ -53,7 +53,7 @@ class CGlobalRegexp {
 					'SELECT e.regexpid,e.expression,e.expression_type,e.exp_delimiter,e.case_sensitive'.
 					' FROM expressions e,regexps r'.
 					' WHERE e.regexpid=r.regexpid'.
-						' AND r.name='.zbx_dbstr($regExp)
+						' AND r.name='.trx_dbstr($regExp)
 				);
 				while ($expression = DBfetch($dbRegExps)) {
 					self::$_cachedExpressions[$regExp][] = $expression;

@@ -5,16 +5,16 @@
 #include "../ipmi/ipmi.h"
 #include "../poller/checks_ssh.h"
 #include "../poller/checks_telnet.h"
-#include "zbxexec.h"
-#include "zbxserver.h"
+#include "trxexec.h"
+#include "trxserver.h"
 #include "db.h"
 #include "log.h"
-#include "zbxtasks.h"
+#include "trxtasks.h"
 #include "scripts.h"
 
 extern int	CONFIG_TRAPPER_TIMEOUT;
 
-static int	zbx_execute_script_on_agent(const DC_HOST *host, const char *command, char **result,
+static int	trx_execute_script_on_agent(const DC_HOST *host, const char *command, char **result,
 		char *error, size_t max_error_len)
 {
 	int		ret;
@@ -30,58 +30,58 @@ static int	zbx_execute_script_on_agent(const DC_HOST *host, const char *command,
 
 	if (SUCCEED != (ret = DCconfig_get_interface_by_type(&item.interface, host->hostid, INTERFACE_TYPE_AGENT)))
 	{
-		zbx_snprintf(error, max_error_len, "Treegix agent interface is not defined for host [%s]", host->host);
+		trx_snprintf(error, max_error_len, "Treegix agent interface is not defined for host [%s]", host->host);
 		goto fail;
 	}
 
-	port = zbx_strdup(port, item.interface.port_orig);
+	port = trx_strdup(port, item.interface.port_orig);
 	substitute_simple_macros(NULL, NULL, NULL, NULL, &host->hostid, NULL, NULL, NULL, NULL,
 			&port, MACRO_TYPE_COMMON, NULL, 0);
 
 	if (SUCCEED != (ret = is_ushort(port, &item.interface.port)))
 	{
-		zbx_snprintf(error, max_error_len, "Invalid port number [%s]", item.interface.port_orig);
+		trx_snprintf(error, max_error_len, "Invalid port number [%s]", item.interface.port_orig);
 		goto fail;
 	}
 
-	param = zbx_strdup(param, command);
+	param = trx_strdup(param, command);
 	if (SUCCEED != (ret = quote_key_param(&param, 0)))
 	{
-		zbx_snprintf(error, max_error_len, "Invalid param [%s]", param);
+		trx_snprintf(error, max_error_len, "Invalid param [%s]", param);
 		goto fail;
 	}
 
-	item.key = zbx_dsprintf(item.key, "system.run[%s,%s]", param, NULL == result ? "nowait" : "wait");
+	item.key = trx_dsprintf(item.key, "system.run[%s,%s]", param, NULL == result ? "nowait" : "wait");
 	item.value_type = ITEM_VALUE_TYPE_TEXT;
 
 	init_result(&agent_result);
 
-	zbx_alarm_on(CONFIG_TIMEOUT);
+	trx_alarm_on(CONFIG_TIMEOUT);
 
 	if (SUCCEED != (ret = get_value_agent(&item, &agent_result)))
 	{
 		if (ISSET_MSG(&agent_result))
-			zbx_strlcpy(error, agent_result.msg, max_error_len);
+			trx_strlcpy(error, agent_result.msg, max_error_len);
 		ret = FAIL;
 	}
 	else if (NULL != result && ISSET_TEXT(&agent_result))
-		*result = zbx_strdup(*result, agent_result.text);
+		*result = trx_strdup(*result, agent_result.text);
 
-	zbx_alarm_off();
+	trx_alarm_off();
 
 	free_result(&agent_result);
 
-	zbx_free(item.key);
+	trx_free(item.key);
 fail:
-	zbx_free(port);
-	zbx_free(param);
+	trx_free(port);
+	trx_free(param);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static int	zbx_execute_script_on_terminal(const DC_HOST *host, const zbx_script_t *script, char **result,
+static int	trx_execute_script_on_terminal(const DC_HOST *host, const trx_script_t *script, char **result,
 		char *error, size_t max_error_len)
 {
 	int		ret = FAIL, i;
@@ -112,7 +112,7 @@ static int	zbx_execute_script_on_terminal(const DC_HOST *host, const zbx_script_
 
 	if (FAIL == ret)
 	{
-		zbx_snprintf(error, max_error_len, "No interface defined for host [%s]", host->host);
+		trx_snprintf(error, max_error_len, "No interface defined for host [%s]", host->host);
 		goto fail;
 	}
 
@@ -132,46 +132,46 @@ static int	zbx_execute_script_on_terminal(const DC_HOST *host, const zbx_script_
 #ifdef HAVE_SSH2
 	if (TRX_SCRIPT_TYPE_SSH == script->type)
 	{
-		item.key = zbx_dsprintf(item.key, "ssh.run[,,%s]", script->port);
+		item.key = trx_dsprintf(item.key, "ssh.run[,,%s]", script->port);
 		function = get_value_ssh;
 	}
 	else
 	{
 #endif
-		item.key = zbx_dsprintf(item.key, "telnet.run[,,%s]", script->port);
+		item.key = trx_dsprintf(item.key, "telnet.run[,,%s]", script->port);
 		function = get_value_telnet;
 #ifdef HAVE_SSH2
 	}
 #endif
 	item.value_type = ITEM_VALUE_TYPE_TEXT;
-	item.params = zbx_strdup(item.params, script->command);
+	item.params = trx_strdup(item.params, script->command);
 
 	init_result(&agent_result);
 
-	zbx_alarm_on(CONFIG_TIMEOUT);
+	trx_alarm_on(CONFIG_TIMEOUT);
 
 	if (SUCCEED != (ret = function(&item, &agent_result)))
 	{
 		if (ISSET_MSG(&agent_result))
-			zbx_strlcpy(error, agent_result.msg, max_error_len);
+			trx_strlcpy(error, agent_result.msg, max_error_len);
 		ret = FAIL;
 	}
 	else if (NULL != result && ISSET_TEXT(&agent_result))
-		*result = zbx_strdup(*result, agent_result.text);
+		*result = trx_strdup(*result, agent_result.text);
 
-	zbx_alarm_off();
+	trx_alarm_off();
 
 	free_result(&agent_result);
 
-	zbx_free(item.params);
-	zbx_free(item.key);
+	trx_free(item.params);
+	trx_free(item.key);
 fail:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static int	DBget_script_by_scriptid(zbx_uint64_t scriptid, zbx_script_t *script, zbx_uint64_t *groupid)
+static int	DBget_script_by_scriptid(trx_uint64_t scriptid, trx_script_t *script, trx_uint64_t *groupid)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
@@ -189,23 +189,23 @@ static int	DBget_script_by_scriptid(zbx_uint64_t scriptid, zbx_script_t *script,
 	{
 		TRX_STR2UCHAR(script->type, row[0]);
 		TRX_STR2UCHAR(script->execute_on, row[1]);
-		script->command = zbx_strdup(script->command, row[2]);
+		script->command = trx_strdup(script->command, row[2]);
 		TRX_DBROW2UINT64(*groupid, row[3]);
 		TRX_STR2UCHAR(script->host_access, row[4]);
 		ret = SUCCEED;
 	}
 	DBfree_result(result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static int	check_script_permissions(zbx_uint64_t groupid, zbx_uint64_t hostid)
+static int	check_script_permissions(trx_uint64_t groupid, trx_uint64_t hostid)
 {
 	DB_RESULT		result;
 	int			ret = SUCCEED;
-	zbx_vector_uint64_t	groupids;
+	trx_vector_uint64_t	groupids;
 	char			*sql = NULL;
 	size_t			sql_alloc = 0, sql_offset = 0;
 
@@ -214,10 +214,10 @@ static int	check_script_permissions(zbx_uint64_t groupid, zbx_uint64_t hostid)
 	if (0 == groupid)
 		goto exit;
 
-	zbx_vector_uint64_create(&groupids);
-	zbx_dc_get_nested_hostgroupids(&groupid, 1, &groupids);
+	trx_vector_uint64_create(&groupids);
+	trx_dc_get_nested_hostgroupids(&groupid, 1, &groupids);
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select hostid"
 			" from hosts_groups"
 			" where hostid=" TRX_FS_UI64
@@ -229,20 +229,20 @@ static int	check_script_permissions(zbx_uint64_t groupid, zbx_uint64_t hostid)
 
 	result = DBselect("%s", sql);
 
-	zbx_free(sql);
-	zbx_vector_uint64_destroy(&groupids);
+	trx_free(sql);
+	trx_vector_uint64_destroy(&groupids);
 
 	if (NULL == DBfetch(result))
 		ret = FAIL;
 
 	DBfree_result(result);
 exit:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static int	check_user_permissions(zbx_uint64_t userid, const DC_HOST *host, zbx_script_t *script)
+static int	check_user_permissions(trx_uint64_t userid, const DC_HOST *host, trx_script_t *script)
 {
 	int		ret = SUCCEED;
 	DB_RESULT	result;
@@ -271,29 +271,29 @@ static int	check_user_permissions(zbx_uint64_t userid, const DC_HOST *host, zbx_
 
 	DBfree_result(result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-void	zbx_script_init(zbx_script_t *script)
+void	trx_script_init(trx_script_t *script)
 {
-	memset(script, 0, sizeof(zbx_script_t));
+	memset(script, 0, sizeof(trx_script_t));
 }
 
-void	zbx_script_clean(zbx_script_t *script)
+void	trx_script_clean(trx_script_t *script)
 {
-	zbx_free(script->port);
-	zbx_free(script->username);
-	zbx_free(script->publickey);
-	zbx_free(script->privatekey);
-	zbx_free(script->password);
-	zbx_free(script->command);
+	trx_free(script->port);
+	trx_free(script->username);
+	trx_free(script->publickey);
+	trx_free(script->privatekey);
+	trx_free(script->password);
+	trx_free(script->command);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_script_prepare                                               *
+ * Function: trx_script_prepare                                               *
  *                                                                            *
  * Purpose: prepares user script                                              *
  *                                                                            *
@@ -308,15 +308,15 @@ void	zbx_script_clean(zbx_script_t *script)
  *                                                                            *
  * Comments: This function prepares script for execution by loading global    *
  *           script/expanding macros.                                         *
- *           Prepared scripts must be always freed with zbx_script_clean()    *
+ *           Prepared scripts must be always freed with trx_script_clean()    *
  *           function.                                                        *
  *                                                                            *
  ******************************************************************************/
-int	zbx_script_prepare(zbx_script_t *script, const DC_HOST *host, const zbx_user_t *user, char *error,
+int	trx_script_prepare(trx_script_t *script, const DC_HOST *host, const trx_user_t *user, char *error,
 		size_t max_error_len)
 {
 	int		ret = FAIL;
-	zbx_uint64_t	groupid;
+	trx_uint64_t	groupid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -337,7 +337,7 @@ int	zbx_script_prepare(zbx_script_t *script, const DC_HOST *host, const zbx_user
 
 			if ('\0' != *script->port && SUCCEED != (ret = is_ushort(script->port, NULL)))
 			{
-				zbx_snprintf(error, max_error_len, "Invalid port number \"%s\"", script->port);
+				trx_snprintf(error, max_error_len, "Invalid port number \"%s\"", script->port);
 				goto out;
 			}
 
@@ -349,19 +349,19 @@ int	zbx_script_prepare(zbx_script_t *script, const DC_HOST *host, const zbx_user
 		case TRX_SCRIPT_TYPE_GLOBAL_SCRIPT:
 			if (SUCCEED != DBget_script_by_scriptid(script->scriptid, script, &groupid))
 			{
-				zbx_strlcpy(error, "Unknown script identifier.", max_error_len);
+				trx_strlcpy(error, "Unknown script identifier.", max_error_len);
 				goto out;
 			}
 			if (groupid > 0 && SUCCEED != check_script_permissions(groupid, host->hostid))
 			{
-				zbx_strlcpy(error, "Script does not have permission to be executed on the host.",
+				trx_strlcpy(error, "Script does not have permission to be executed on the host.",
 						max_error_len);
 				goto out;
 			}
 			if (user != NULL && USER_TYPE_SUPER_ADMIN != user->type &&
 				SUCCEED != check_user_permissions(user->userid, host, script))
 			{
-				zbx_strlcpy(error, "User does not have permission to execute this script on the host.",
+				trx_strlcpy(error, "User does not have permission to execute this script on the host.",
 						max_error_len);
 				goto out;
 			}
@@ -380,26 +380,26 @@ int	zbx_script_prepare(zbx_script_t *script, const DC_HOST *host, const zbx_user
 			}
 
 			/* ...therefore this recursion is no more than two layers deep */
-			if (FAIL == zbx_script_prepare(script, host, user, error, max_error_len))
+			if (FAIL == trx_script_prepare(script, host, user, error, max_error_len))
 				goto out;
 
 			break;
 		case TRX_SCRIPT_TYPE_IPMI:
 			break;
 		default:
-			zbx_snprintf(error, max_error_len, "Invalid command type \"%d\".", (int)script->type);
+			trx_snprintf(error, max_error_len, "Invalid command type \"%d\".", (int)script->type);
 			goto out;
 	}
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_script_execute                                               *
+ * Function: trx_script_execute                                               *
  *                                                                            *
  * Purpose: executing user scripts or remote commands                         *
  *                                                                            *
@@ -408,7 +408,7 @@ out:
  *                TIMEOUT_ERROR - a timeout occurred                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_script_execute(const zbx_script_t *script, const DC_HOST *host, char **result, char *error,
+int	trx_script_execute(const trx_script_t *script, const DC_HOST *host, char **result, char *error,
 		size_t max_error_len)
 {
 	int	ret = FAIL;
@@ -423,53 +423,53 @@ int	zbx_script_execute(const zbx_script_t *script, const DC_HOST *host, char **r
 			switch (script->execute_on)
 			{
 				case TRX_SCRIPT_EXECUTE_ON_AGENT:
-					ret = zbx_execute_script_on_agent(host, script->command, result, error,
+					ret = trx_execute_script_on_agent(host, script->command, result, error,
 							max_error_len);
 					break;
 				case TRX_SCRIPT_EXECUTE_ON_SERVER:
 				case TRX_SCRIPT_EXECUTE_ON_PROXY:
-					ret = zbx_execute(script->command, result, error, max_error_len,
+					ret = trx_execute(script->command, result, error, max_error_len,
 							CONFIG_TRAPPER_TIMEOUT, TRX_EXIT_CODE_CHECKS_ENABLED);
 					break;
 				default:
-					zbx_snprintf(error, max_error_len, "Invalid 'Execute on' option \"%d\".",
+					trx_snprintf(error, max_error_len, "Invalid 'Execute on' option \"%d\".",
 							(int)script->execute_on);
 			}
 			break;
 		case TRX_SCRIPT_TYPE_IPMI:
 #ifdef HAVE_OPENIPMI
-			if (SUCCEED == (ret = zbx_ipmi_execute_command(host, script->command, error, max_error_len)))
+			if (SUCCEED == (ret = trx_ipmi_execute_command(host, script->command, error, max_error_len)))
 			{
 				if (NULL != result)
-					*result = zbx_strdup(*result, "IPMI command successfully executed.");
+					*result = trx_strdup(*result, "IPMI command successfully executed.");
 			}
 #else
-			zbx_strlcpy(error, "Support for IPMI commands was not compiled in.", max_error_len);
+			trx_strlcpy(error, "Support for IPMI commands was not compiled in.", max_error_len);
 #endif
 			break;
 		case TRX_SCRIPT_TYPE_SSH:
 #ifndef HAVE_SSH2
-			zbx_strlcpy(error, "Support for SSH script was not compiled in.", max_error_len);
+			trx_strlcpy(error, "Support for SSH script was not compiled in.", max_error_len);
 			break;
 #endif
 		case TRX_SCRIPT_TYPE_TELNET:
-			ret = zbx_execute_script_on_terminal(host, script, result, error, max_error_len);
+			ret = trx_execute_script_on_terminal(host, script, result, error, max_error_len);
 			break;
 		default:
-			zbx_snprintf(error, max_error_len, "Invalid command type \"%d\".", (int)script->type);
+			trx_snprintf(error, max_error_len, "Invalid command type \"%d\".", (int)script->type);
 	}
 
 	if (SUCCEED != ret && NULL != result)
-		*result = zbx_strdup(*result, "");
+		*result = trx_strdup(*result, "");
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_script_create_task                                           *
+ * Function: trx_script_create_task                                           *
  *                                                                            *
  * Purpose: creates remote command task from a script                         *
  *                                                                            *
@@ -477,11 +477,11 @@ int	zbx_script_execute(const zbx_script_t *script, const DC_HOST *host, char **r
  *                error                                                       *
  *                                                                            *
  ******************************************************************************/
-zbx_uint64_t	zbx_script_create_task(const zbx_script_t *script, const DC_HOST *host, zbx_uint64_t alertid, int now)
+trx_uint64_t	trx_script_create_task(const trx_script_t *script, const DC_HOST *host, trx_uint64_t alertid, int now)
 {
-	zbx_tm_task_t	*task;
+	trx_tm_task_t	*task;
 	unsigned short	port;
-	zbx_uint64_t	taskid;
+	trx_uint64_t	taskid;
 
 	if (NULL != script->port && '\0' != script->port[0])
 		is_ushort(script->port, &port);
@@ -490,21 +490,21 @@ zbx_uint64_t	zbx_script_create_task(const zbx_script_t *script, const DC_HOST *h
 
 	taskid = DBget_maxid("task");
 
-	task = zbx_tm_task_create(taskid, TRX_TM_TASK_REMOTE_COMMAND, TRX_TM_STATUS_NEW, now,
+	task = trx_tm_task_create(taskid, TRX_TM_TASK_REMOTE_COMMAND, TRX_TM_STATUS_NEW, now,
 			TRX_REMOTE_COMMAND_TTL, host->proxy_hostid);
 
-	task->data = zbx_tm_remote_command_create(script->type, script->command, script->execute_on, port,
+	task->data = trx_tm_remote_command_create(script->type, script->command, script->execute_on, port,
 			script->authtype, script->username, script->password, script->publickey, script->privatekey,
 			taskid, host->hostid, alertid);
 
 	DBbegin();
 
-	if (FAIL == zbx_tm_save_task(task))
+	if (FAIL == trx_tm_save_task(task))
 		taskid = 0;
 
 	DBcommit();
 
-	zbx_tm_task_free(task);
+	trx_tm_task_free(task);
 
 	return taskid;
 }

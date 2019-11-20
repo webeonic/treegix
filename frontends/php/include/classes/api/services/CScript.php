@@ -73,7 +73,7 @@ class CScript extends CApiService {
 			'sortorder'				=> '',
 			'limit'					=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + permission check
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -100,7 +100,7 @@ class CScript extends CApiService {
 
 		// Hostids and groupids selection API calls must be made separately because we must intersect enriched groupids.
 		if ($options['hostids'] !== null) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 			$host_groups_by_hostids = enrichParentGroups(API::HostGroup()->get([
 				'output' => ['groupid', 'name'],
 				'hostids' => $options['hostids'],
@@ -108,7 +108,7 @@ class CScript extends CApiService {
 			]));
 		}
 		if ($options['groupids'] !== null) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 			$host_groups_by_groupids = enrichParentGroups(API::HostGroup()->get([
 				'output' => ['groupid', 'name'],
 				'groupids' => $options['groupids'],
@@ -133,21 +133,21 @@ class CScript extends CApiService {
 
 		// usrgrpids
 		if ($options['usrgrpids'] !== null) {
-			zbx_value2array($options['usrgrpids']);
+			trx_value2array($options['usrgrpids']);
 
 			$sqlParts['where'][] = '(s.usrgrpid IS NULL OR '.dbConditionInt('s.usrgrpid', $options['usrgrpids']).')';
 		}
 
 		// scriptids
 		if ($options['scriptids'] !== null) {
-			zbx_value2array($options['scriptids']);
+			trx_value2array($options['scriptids']);
 
 			$sqlParts['where'][] = dbConditionInt('s.scriptid', $options['scriptids']);
 		}
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('scripts s', $options, $sqlParts);
+			trx_db_search('scripts s', $options, $sqlParts);
 		}
 
 		// filter
@@ -156,7 +156,7 @@ class CScript extends CApiService {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -183,7 +183,7 @@ class CScript extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -282,7 +282,7 @@ class CScript extends CApiService {
 
 		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_SCRIPT, $scripts, $db_scripts);
 
-		return ['scriptids' => zbx_objectValues($scripts, 'scriptid')];
+		return ['scriptids' => trx_objectValues($scripts, 'scriptid')];
 	}
 
 	/**
@@ -316,7 +316,7 @@ class CScript extends CApiService {
 			'output' => ['scriptid', 'name', 'type', 'execute_on', 'command', 'description', 'usrgrpid', 'groupid',
 				'host_access', 'confirmation'
 			],
-			'scriptids' => zbx_objectValues($scripts, 'scriptid'),
+			'scriptids' => trx_objectValues($scripts, 'scriptid'),
 			'preservekeys' => true
 		]);
 
@@ -633,7 +633,7 @@ class CScript extends CApiService {
 	 * @return array
 	 */
 	public function getScriptsByHosts($hostids) {
-		zbx_value2array($hostids);
+		trx_value2array($hostids);
 
 		$scripts_by_host = [];
 

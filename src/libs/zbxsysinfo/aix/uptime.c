@@ -17,14 +17,14 @@ int	SYSTEM_UPTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		if (-1 == hertz)
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain clock-tick increment: %s",
-					zbx_strerror(errno)));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain clock-tick increment: %s",
+					trx_strerror(errno)));
 			return SYSINFO_RET_FAIL;
 		}
 
 		if (0 == hertz)	/* make sure we do not divide by 0 */
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate uptime because clock-tick increment"
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate uptime because clock-tick increment"
 					" is zero."));
 			return SYSINFO_RET_FAIL;
 		}
@@ -33,15 +33,15 @@ int	SYSTEM_UPTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	/* AIX 6.1 */
 	if (-1 == perfstat_cpu_total(NULL, &ps_cpu_total, sizeof(ps_cpu_total), 1))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)((double)ps_cpu_total.lbolt / hertz));
+	SET_UI64_RESULT(result, (trx_uint64_t)((double)ps_cpu_total.lbolt / hertz));
 
 	return SYSINFO_RET_OK;
 #else
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Agent was compiled without support for Perfstat API."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Agent was compiled without support for Perfstat API."));
 	return SYSINFO_RET_FAIL;
 #endif
 }

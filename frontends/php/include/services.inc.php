@@ -26,7 +26,7 @@ function get_service_children($serviceid, $soft = 0) {
 	$result = DBselect(
 		'SELECT sl.servicedownid'.
 		' FROM services_links sl'.
-		' WHERE sl.serviceupid='.zbx_dbstr($serviceid).
+		' WHERE sl.serviceupid='.trx_dbstr($serviceid).
 			($soft ? '' : ' AND sl.soft=0')
 	);
 	while ($row = DBfetch($result)) {
@@ -480,10 +480,10 @@ function checkServiceTime(array $serviceTime) {
 	}
 	// recurring downtime validation
 	else {
-		if (!isset($serviceTime['ts_from']) || !zbx_is_int($serviceTime['ts_from']) || $serviceTime['ts_from'] < 0 || $serviceTime['ts_from'] > SEC_PER_WEEK) {
+		if (!isset($serviceTime['ts_from']) || !trx_is_int($serviceTime['ts_from']) || $serviceTime['ts_from'] < 0 || $serviceTime['ts_from'] > SEC_PER_WEEK) {
 			throw new APIException(TRX_API_ERROR_PARAMETERS, _('Incorrect service start time.'));
 		}
-		if (!isset($serviceTime['ts_to']) || !zbx_is_int($serviceTime['ts_to']) || $serviceTime['ts_to'] < 0 || $serviceTime['ts_to'] > SEC_PER_WEEK) {
+		if (!isset($serviceTime['ts_to']) || !trx_is_int($serviceTime['ts_to']) || $serviceTime['ts_to'] < 0 || $serviceTime['ts_to'] > SEC_PER_WEEK) {
 			throw new APIException(TRX_API_ERROR_PARAMETERS, _('Incorrect service end time.'));
 		}
 	}

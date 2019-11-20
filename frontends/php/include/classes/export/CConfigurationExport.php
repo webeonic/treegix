@@ -238,7 +238,7 @@ class CConfigurationExport {
 				'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 			]);
 
-			$options['hosts'] = zbx_objectValues($hosts, 'hostid');
+			$options['hosts'] = trx_objectValues($hosts, 'hostid');
 		}
 
 		return $options;
@@ -275,7 +275,7 @@ class CConfigurationExport {
 
 		foreach ($templates as &$template) {
 			// merge host groups with all groups
-			$this->data['groups'] += zbx_toHash($template['groups'], 'groupid');
+			$this->data['groups'] += trx_toHash($template['groups'], 'groupid');
 
 			$template['screens'] = [];
 			$template['applications'] = [];
@@ -320,7 +320,7 @@ class CConfigurationExport {
 
 		foreach ($hosts as &$host) {
 			// merge host groups with all groups
-			$this->data['groups'] += zbx_toHash($host['groups'], 'groupid');
+			$this->data['groups'] += trx_toHash($host['groups'], 'groupid');
 
 			$host['applications'] = [];
 			$host['discoveryRules'] = [];
@@ -388,7 +388,7 @@ class CConfigurationExport {
 				' FROM hosts h'.
 				' WHERE '.dbConditionInt('h.hostid', array_keys($proxy_hostids))
 			));
-			$db_proxies = zbx_toHash($db_proxies, 'hostid');
+			$db_proxies = trx_toHash($db_proxies, 'hostid');
 		}
 
 		foreach ($hosts as &$host) {
@@ -607,7 +607,7 @@ class CConfigurationExport {
 			'selectApplicationPrototypes' => ['name'],
 			'selectDiscoveryRule' => ['itemid'],
 			'selectPreprocessing' => ['type', 'params', 'error_handler', 'error_handler_params'],
-			'discoveryids' => zbx_objectValues($items, 'itemid'),
+			'discoveryids' => trx_objectValues($items, 'itemid'),
 			'inherited' => false,
 			'preservekeys' => true
 		]);
@@ -688,7 +688,7 @@ class CConfigurationExport {
 
 		// gather graph prototypes
 		$graphs = API::GraphPrototype()->get([
-			'discoveryids' => zbx_objectValues($items, 'itemid'),
+			'discoveryids' => trx_objectValues($items, 'itemid'),
 			'selectDiscoveryRule' => API_OUTPUT_EXTEND,
 			'selectGraphItems' => API_OUTPUT_EXTEND,
 			'output' => API_OUTPUT_EXTEND,
@@ -711,7 +711,7 @@ class CConfigurationExport {
 			'selectDependencies' => ['expression', 'description', 'recovery_expression'],
 			'selectItems' => ['itemid', 'flags', 'type'],
 			'selectTags' => ['tag', 'value'],
-			'discoveryids' => zbx_objectValues($items, 'itemid'),
+			'discoveryids' => trx_objectValues($items, 'itemid'),
 			'inherited' => false,
 			'preservekeys' => true
 		]);
@@ -724,7 +724,7 @@ class CConfigurationExport {
 
 		// gather host prototypes
 		$hostPrototypes = API::HostPrototype()->get([
-			'discoveryids' => zbx_objectValues($items, 'itemid'),
+			'discoveryids' => trx_objectValues($items, 'itemid'),
 			'output' => API_OUTPUT_EXTEND,
 			'selectGroupLinks' => API_OUTPUT_EXTEND,
 			'selectGroupPrototypes' => API_OUTPUT_EXTEND,
@@ -995,7 +995,7 @@ class CConfigurationExport {
 		$itemids = [];
 
 		foreach ($triggers as $trigger) {
-			$itemids = array_merge($itemids, zbx_objectValues($trigger['items'], 'itemid'));
+			$itemids = array_merge($itemids, trx_objectValues($trigger['items'], 'itemid'));
 		}
 
 		$items = API::Item()->get([
@@ -1067,7 +1067,7 @@ class CConfigurationExport {
 
 		$images = API::Image()->get([
 			'output' => ['imageid', 'name', 'imagetype'],
-			'sysmapids' => zbx_objectValues($sysmaps, 'sysmapid'),
+			'sysmapids' => trx_objectValues($sysmaps, 'sysmapid'),
 			'select_image' => true,
 			'preservekeys' => true
 		]);

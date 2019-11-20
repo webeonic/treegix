@@ -4,7 +4,7 @@
 #include "sysinfo.h"
 #include "stats.h"
 #include "diskdevices.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 
 #define TRX_DEV_PFX		"/dev/"
 #define TRX_DEV_READ		0
@@ -53,17 +53,17 @@
 				) continue
 #endif
 
-int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
+int	get_diskstat(const char *devname, trx_uint64_t *dstat)
 {
 	FILE		*f;
 	char		tmp[MAX_STRING_LEN], name[MAX_STRING_LEN], dev_path[MAX_STRING_LEN];
 	int		i, ret = FAIL, dev_exists = FAIL;
-	zbx_uint64_t	ds[TRX_DSTAT_MAX], rdev_major, rdev_minor;
-	zbx_stat_t 	dev_st;
+	trx_uint64_t	ds[TRX_DSTAT_MAX], rdev_major, rdev_minor;
+	trx_stat_t 	dev_st;
 	int		found = 0;
 
 	for (i = 0; i < TRX_DSTAT_MAX; i++)
-		dstat[i] = (zbx_uint64_t)__UINT64_C(0);
+		dstat[i] = (trx_uint64_t)__UINT64_C(0);
 
 	if (NULL != devname && '\0' != *devname && 0 != strcmp(devname, "all"))
 	{
@@ -72,7 +72,7 @@ int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
 			strscpy(dev_path, TRX_DEV_PFX);
 		strscat(dev_path, devname);
 
-		if (zbx_stat(dev_path, &dev_st) == 0)
+		if (trx_stat(dev_path, &dev_st) == 0)
 			dev_exists = SUCCEED;
 	}
 
@@ -106,7 +106,7 @@ int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
 		if (1 == found)
 			break;
 	}
-	zbx_fclose(f);
+	trx_fclose(f);
 
 	return ret;
 }
@@ -124,8 +124,8 @@ static int	get_kernel_devname(const char *devname, char *kernel_devname, size_t 
 	FILE		*f;
 	char		tmp[MAX_STRING_LEN], name[MAX_STRING_LEN], dev_path[MAX_STRING_LEN];
 	int		ret = FAIL;
-	zbx_uint64_t	ds[TRX_DSTAT_MAX], rdev_major, rdev_minor;
-	zbx_stat_t	dev_st;
+	trx_uint64_t	ds[TRX_DSTAT_MAX], rdev_major, rdev_minor;
+	trx_stat_t	dev_st;
 
 	if ('\0' == *devname)
 		return ret;
@@ -135,7 +135,7 @@ static int	get_kernel_devname(const char *devname, char *kernel_devname, size_t 
 		strscpy(dev_path, TRX_DEV_PFX);
 	strscat(dev_path, devname);
 
-	if (zbx_stat(dev_path, &dev_st) < 0 || NULL == (f = fopen(INFO_FILE_NAME, "r")))
+	if (trx_stat(dev_path, &dev_st) < 0 || NULL == (f = fopen(INFO_FILE_NAME, "r")))
 		return ret;
 
 	while (NULL != fgets(tmp, sizeof(tmp), f))
@@ -144,11 +144,11 @@ static int	get_kernel_devname(const char *devname, char *kernel_devname, size_t 
 		if (major(dev_st.st_rdev) != rdev_major || minor(dev_st.st_rdev) != rdev_minor)
 			continue;
 
-		zbx_strlcpy(kernel_devname, name, max_kernel_devname_len);
+		trx_strlcpy(kernel_devname, name, max_kernel_devname_len);
 		ret = SUCCEED;
 		break;
 	}
-	zbx_fclose(f);
+	trx_fclose(f);
 
 	return ret;
 }
@@ -158,11 +158,11 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 	TRX_SINGLE_DISKDEVICE_DATA	*device;
 	char				*devname, *tmp, kernel_devname[MAX_STRING_LEN];
 	int				type, mode;
-	zbx_uint64_t			dstats[TRX_DSTAT_MAX];
+	trx_uint64_t			dstats[TRX_DSTAT_MAX];
 
 	if (3 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -179,7 +179,7 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 		type = TRX_DSTAT_TYPE_OPER;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -188,13 +188,13 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 		if (request->nparam > 2)
 		{
 			/* Mode is supported only if type is in: operations, sectors. */
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			return SYSINFO_RET_FAIL;
 		}
 
 		if (SUCCEED != get_diskstat(devname, dstats))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain disk information."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain disk information."));
 			return SYSINFO_RET_FAIL;
 		}
 
@@ -216,7 +216,7 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 		mode = TRX_AVG15;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -227,7 +227,7 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 		/* the collectors are not available and keys "vfs.dev.read", "vfs.dev.write" with some parameters */
 		/* (e.g. sps, ops) are not supported. */
 
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "This item is available only in daemon mode when collectors are"
+		SET_MSG_RESULT(result, trx_strdup(NULL, "This item is available only in daemon mode when collectors are"
 				" started."));
 		return SYSINFO_RET_FAIL;
 	}
@@ -238,7 +238,7 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 	}
 	else if (SUCCEED != get_kernel_devname(devname, kernel_devname, sizeof(kernel_devname)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain device name used internally by the kernel."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain device name used internally by the kernel."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -246,14 +246,14 @@ static int	vfs_dev_rw(AGENT_REQUEST *request, AGENT_RESULT *result, int rw)
 	{
 		if (SUCCEED != get_diskstat(kernel_devname, dstats))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain disk information."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain disk information."));
 
 			return SYSINFO_RET_FAIL;
 		}
 
 		if (NULL == (device = collector_diskdevice_add(kernel_devname)))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot add disk device to agent collector."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot add disk device to agent collector."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -284,37 +284,37 @@ int	VFS_DEV_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 	DIR		*dir;
 	struct dirent	*entries;
 	char		tmp[MAX_STRING_LEN];
-	zbx_stat_t	stat_buf;
-	struct zbx_json	j;
+	trx_stat_t	stat_buf;
+	struct trx_json	j;
 	int		devtype_found, sysfs_found;
 
 	TRX_UNUSED(request);
 
 	if (NULL != (dir = opendir(TRX_DEV_PFX)))
 	{
-		zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
+		trx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 		/* check if sys fs with block devices is available */
-		if (0 == zbx_stat(TRX_SYS_BLKDEV_PFX, &stat_buf) && 0 != S_ISDIR(stat_buf.st_mode))
+		if (0 == trx_stat(TRX_SYS_BLKDEV_PFX, &stat_buf) && 0 != S_ISDIR(stat_buf.st_mode))
 			sysfs_found = 1;
 		else
 			sysfs_found = 0;
 
 		while (NULL != (entries = readdir(dir)))
 		{
-			zbx_snprintf(tmp, sizeof(tmp), TRX_DEV_PFX "%s", entries->d_name);
+			trx_snprintf(tmp, sizeof(tmp), TRX_DEV_PFX "%s", entries->d_name);
 
-			if (0 == zbx_stat(tmp, &stat_buf) && 0 != S_ISBLK(stat_buf.st_mode))
+			if (0 == trx_stat(tmp, &stat_buf) && 0 != S_ISBLK(stat_buf.st_mode))
 			{
 				devtype_found = 0;
-				zbx_json_addobject(&j, NULL);
-				zbx_json_addstring(&j, "{#DEVNAME}", entries->d_name, TRX_JSON_TYPE_STRING);
+				trx_json_addobject(&j, NULL);
+				trx_json_addstring(&j, "{#DEVNAME}", entries->d_name, TRX_JSON_TYPE_STRING);
 
 				if (1 == sysfs_found)
 				{
 					FILE	*f;
 
-					zbx_snprintf(tmp, sizeof(tmp), TRX_SYS_BLKDEV_PFX "%u:%u/uevent",
+					trx_snprintf(tmp, sizeof(tmp), TRX_SYS_BLKDEV_PFX "%u:%u/uevent",
 							major(stat_buf.st_rdev), minor(stat_buf.st_rdev));
 
 					if (NULL != (f = fopen(tmp, "r")))
@@ -334,26 +334,26 @@ int	VFS_DEV_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 								break;
 							}
 						}
-						zbx_fclose(f);
+						trx_fclose(f);
 					}
 				}
 
-				zbx_json_addstring(&j, "{#DEVTYPE}", 1 == devtype_found ? tmp + DEVTYPE_STR_LEN : "",
+				trx_json_addstring(&j, "{#DEVTYPE}", 1 == devtype_found ? tmp + DEVTYPE_STR_LEN : "",
 						TRX_JSON_TYPE_STRING);
-				zbx_json_close(&j);
+				trx_json_close(&j);
 			}
 		}
 		closedir(dir);
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL,
+		SET_MSG_RESULT(result, trx_strdup(NULL,
 				"Cannot obtain device list: failed to open " TRX_DEV_PFX " directory."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, j.buffer));
-	zbx_json_free(&j);
+	SET_STR_RESULT(result, trx_strdup(NULL, j.buffer));
+	trx_json_free(&j);
 
 	return SYSINFO_RET_OK;
 

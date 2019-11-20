@@ -11,7 +11,7 @@
 #include "net.h"
 #include "system.h"
 #include "treegix_stats.h"
-#include "zbxexec.h"
+#include "trxexec.h"
 
 #if !defined(_WINDOWS)
 #	define VFS_TEST_FILE "/etc/passwd"
@@ -73,7 +73,7 @@ static int	ONLY_ACTIVE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	TRX_UNUSED(request);
 
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Accessible only as active check."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Accessible only as active check."));
 
 	return SYSINFO_RET_FAIL;
 }
@@ -84,7 +84,7 @@ int	EXECUTE_USER_PARAMETER(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -98,23 +98,23 @@ int	EXECUTE_STR(const char *command, AGENT_RESULT *result)
 	int		ret = SYSINFO_RET_FAIL;
 	char		*cmd_result = NULL, error[MAX_STRING_LEN];
 
-	if (SUCCEED != zbx_execute(command, &cmd_result, error, sizeof(error), CONFIG_TIMEOUT,
+	if (SUCCEED != trx_execute(command, &cmd_result, error, sizeof(error), CONFIG_TIMEOUT,
 			TRX_EXIT_CODE_CHECKS_DISABLED))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, error));
+		SET_MSG_RESULT(result, trx_strdup(NULL, error));
 		goto out;
 	}
 
-	zbx_rtrim(cmd_result, TRX_WHITESPACE);
+	trx_rtrim(cmd_result, TRX_WHITESPACE);
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() command:'%s' len:" TRX_FS_SIZE_T " cmd_result:'%.20s'",
-			__func__, command, (zbx_fs_size_t)strlen(cmd_result), cmd_result);
+			__func__, command, (trx_fs_size_t)strlen(cmd_result), cmd_result);
 
-	SET_TEXT_RESULT(result, zbx_strdup(NULL, cmd_result));
+	SET_TEXT_RESULT(result, trx_strdup(NULL, cmd_result));
 
 	ret = SYSINFO_RET_OK;
 out:
-	zbx_free(cmd_result);
+	trx_free(cmd_result);
 
 	return ret;
 }
@@ -127,7 +127,7 @@ int	EXECUTE_DBL(const char *command, AGENT_RESULT *result)
 	if (NULL == GET_DBL_RESULT(result))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "Remote command [%s] result is not double", command);
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid result. Double is expected."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid result. Double is expected."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -144,7 +144,7 @@ int	EXECUTE_INT(const char *command, AGENT_RESULT *result)
 	if (NULL == GET_UI64_RESULT(result))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "Remote command [%s] result is not unsigned integer", command);
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid result. Unsigned integer is expected."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid result. Unsigned integer is expected."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -159,7 +159,7 @@ static int	SYSTEM_RUN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -168,7 +168,7 @@ static int	SYSTEM_RUN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == command || '\0' == *command)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -183,15 +183,15 @@ static int	SYSTEM_RUN(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else if (0 == strcmp(flag, "nowait"))
 	{
-		if (SUCCEED != zbx_execute_nowait(command))
+		if (SUCCEED != trx_execute_nowait(command))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot execute command."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot execute command."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

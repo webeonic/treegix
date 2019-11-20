@@ -489,7 +489,7 @@ class C10ImportConverter extends CConverter {
 			}
 		}
 
-		$hosts = zbx_toHash($content['hosts'], 'name');
+		$hosts = trx_toHash($content['hosts'], 'name');
 
 		foreach ($content['dependencies'] as $dependency) {
 			list($sourceHost, $sourceDescription) = explode(':', $dependency['description'], 2);

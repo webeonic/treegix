@@ -40,15 +40,15 @@ static int	DBpatch_4000000(void)
 static int	str_rename_macro(const char *in, const char *oldmacro, const char *newmacro, char **out,
 		size_t *out_alloc)
 {
-	zbx_token_t	token;
+	trx_token_t	token;
 	int		pos = 0, ret = FAIL;
 	size_t		out_offset = 0, newmacro_len;
 
 	newmacro_len = strlen(newmacro);
-	zbx_strcpy_alloc(out, out_alloc, &out_offset, in);
+	trx_strcpy_alloc(out, out_alloc, &out_offset, in);
 	out_offset++;
 
-	for (; SUCCEED == zbx_token_find(*out, pos, &token, TRX_TOKEN_SEARCH_BASIC); pos++)
+	for (; SUCCEED == trx_token_find(*out, pos, &token, TRX_TOKEN_SEARCH_BASIC); pos++)
 	{
 		switch (token.type)
 		{
@@ -56,7 +56,7 @@ static int	str_rename_macro(const char *in, const char *oldmacro, const char *ne
 				pos = token.loc.r;
 				if (0 == strncmp(*out + token.loc.l, oldmacro, token.loc.r - token.loc.l + 1))
 				{
-					pos += zbx_replace_mem_dyn(out, out_alloc, &out_offset, token.loc.l,
+					pos += trx_replace_mem_dyn(out, out_alloc, &out_offset, token.loc.l,
 							token.loc.r - token.loc.l + 1, newmacro, newmacro_len);
 					ret = SUCCEED;
 				}
@@ -101,7 +101,7 @@ static int	db_rename_macro(DB_RESULT result, const char *table, const char *pkey
 	size_t		sql_alloc = 4096, sql_offset = 0, field_alloc = 0, old_offset;
 	int		i, ret = SUCCEED;
 
-	sql = zbx_malloc(NULL, sql_alloc);
+	sql = trx_malloc(NULL, sql_alloc);
 
 	DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 
@@ -114,19 +114,19 @@ static int	db_rename_macro(DB_RESULT result, const char *table, const char *pkey
 			if (SUCCEED == str_rename_macro(row[i + 1], oldmacro, newmacro, &field, &field_alloc))
 			{
 				if (old_offset == sql_offset)
-					zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update %s set ", table);
+					trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update %s set ", table);
 				else
-					zbx_chrcpy_alloc(&sql, &sql_alloc, &sql_offset, ',');
+					trx_chrcpy_alloc(&sql, &sql_alloc, &sql_offset, ',');
 
 				field_esc = DBdyn_escape_string(field);
-				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%s='%s'", fields[i], field_esc);
-				zbx_free(field_esc);
+				trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%s='%s'", fields[i], field_esc);
+				trx_free(field_esc);
 			}
 		}
 
 		if (old_offset != sql_offset)
 		{
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where %s=%s;\n", pkey, row[0]);
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where %s=%s;\n", pkey, row[0]);
 			if (SUCCEED != (ret = DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset)))
 				goto out;
 		}
@@ -137,8 +137,8 @@ static int	db_rename_macro(DB_RESULT result, const char *table, const char *pkey
 	if (16 < sql_offset && TRX_DB_OK > DBexecute("%s", sql))
 		ret = FAIL;
 out:
-	zbx_free(field);
-	zbx_free(sql);
+	trx_free(field);
+	trx_free(sql);
 
 	return ret;
 }

@@ -354,7 +354,7 @@ class CMacrosResolverHelper {
 	public static function resolveTriggerExpressionUserMacro(array $trigger) {
 		self::init();
 
-		$triggers = self::$macrosResolver->resolveTriggerExpressionUserMacro(zbx_toHash([$trigger], 'triggerid'));
+		$triggers = self::$macrosResolver->resolveTriggerExpressionUserMacro(trx_toHash([$trigger], 'triggerid'));
 		$trigger = reset($triggers);
 
 		return $trigger['expression'];

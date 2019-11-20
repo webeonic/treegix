@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 
 #if (__FreeBSD_version) < 500000
@@ -47,7 +47,7 @@ static char	*get_commandline(struct kinfo_proc *proc)
 	static int	args_alloc = 128;
 
 	if (NULL == args)
-		args = zbx_malloc(args, args_alloc);
+		args = trx_malloc(args, args_alloc);
 
 	mib[0] = CTL_KERN;
 	mib[1] = KERN_PROC;
@@ -60,7 +60,7 @@ retry:
 		if (errno == ENOMEM)
 		{
 			args_alloc *= 2;
-			args = zbx_realloc(args, args_alloc);
+			args = trx_realloc(args, args_alloc);
 			goto retry;
 		}
 		return NULL;
@@ -71,7 +71,7 @@ retry:
 			args[i] = ' ';
 
 	if (sz == 0)
-		zbx_strlcpy(args, proc->TRX_PROC_COMM, args_alloc);
+		trx_strlcpy(args, proc->TRX_PROC_COMM, args_alloc);
 
 	return args;
 }
@@ -89,7 +89,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		*procname, *proccomm, *param, *args, *mem_type = NULL;
 	int		do_task, pagesize, count, i, proccount = 0, invalid_user = 0, mem_type_code, mib[4];
 	unsigned int	mibs;
-	zbx_uint64_t	mem_size = 0, byte_value = 0;
+	trx_uint64_t	mem_size = 0, byte_value = 0;
 	double		pct_size = 0.0, pct_value = 0.0;
 #if (__FreeBSD_version) < 500000
 	int		mem_pages;
@@ -103,7 +103,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (5 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -118,8 +118,8 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-						zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+						trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -141,7 +141,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		do_task = TRX_DO_MIN;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -178,7 +178,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -212,8 +212,8 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		if (0 != sysctlbyname("hw.availpages", &mem_pages, &sz, NULL, (size_t)0))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain number of physical pages: %s",
-					zbx_strerror(errno)));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain number of physical pages: %s",
+					trx_strerror(errno)));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -221,17 +221,17 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	sz = 0;
 	if (0 != sysctl(mib, mibs, NULL, &sz, NULL, (size_t)0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	proc = (struct kinfo_proc *)zbx_malloc(proc, sz);
+	proc = (struct kinfo_proc *)trx_malloc(proc, sz);
 	if (0 != sysctl(mib, mibs, proc, &sz, NULL, (size_t)0))
 	{
-		zbx_free(proc);
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain process information: %s",
-				zbx_strerror(errno)));
+		trx_free(proc);
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain process information: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -247,7 +247,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if (NULL == (args = get_commandline(&proc[i])))
 				continue;
 
-			if (NULL == zbx_regexp_match(args, proccomm, NULL))
+			if (NULL == trx_regexp_match(args, proccomm, NULL))
 				continue;
 		}
 
@@ -314,7 +314,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		}
 	}
 
-	zbx_free(proc);
+	trx_free(proc);
 out:
 	if (TRX_PMEM != mem_type_code)
 	{
@@ -345,7 +345,7 @@ out:
 int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char			*procname, *proccomm, *param, *args;
-	int			proccount = 0, invalid_user = 0, zbx_proc_stat;
+	int			proccount = 0, invalid_user = 0, trx_proc_stat;
 	int			count, i, proc_ok, stat_ok, comm_ok, mib[4], mibs;
 	size_t			sz;
 	struct kinfo_proc	*proc = NULL;
@@ -353,7 +353,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -368,8 +368,8 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-						zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+						trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -382,20 +382,20 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = TRX_PROC_STAT_ALL;
+		trx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = TRX_PROC_STAT_RUN;
+		trx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
+		trx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
+		trx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else if (0 == strcmp(param, "disk"))
-		zbx_proc_stat = TRX_PROC_STAT_DISK;
+		trx_proc_stat = TRX_PROC_STAT_DISK;
 	else if (0 == strcmp(param, "trace"))
-		zbx_proc_stat = TRX_PROC_STAT_TRACE;
+		trx_proc_stat = TRX_PROC_STAT_TRACE;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -426,17 +426,17 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	sz = 0;
 	if (0 != sysctl(mib, mibs, NULL, &sz, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	proc = (struct kinfo_proc *)zbx_malloc(proc, sz);
+	proc = (struct kinfo_proc *)trx_malloc(proc, sz);
 	if (0 != sysctl(mib, mibs, proc, &sz, NULL, 0))
 	{
-		zbx_free(proc);
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain process information: %s",
-				zbx_strerror(errno)));
+		trx_free(proc);
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain process information: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -451,9 +451,9 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL == procname || '\0' == *procname || 0 == strcmp(procname, proc[i].TRX_PROC_COMM))
 			proc_ok = 1;
 
-		if (zbx_proc_stat != TRX_PROC_STAT_ALL)
+		if (trx_proc_stat != TRX_PROC_STAT_ALL)
 		{
-			switch (zbx_proc_stat) {
+			switch (trx_proc_stat) {
 			case TRX_PROC_STAT_RUN:
 				if (SRUN == proc[i].TRX_PROC_STAT)
 					stat_ok = 1;
@@ -482,7 +482,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL != proccomm && '\0' != *proccomm)
 		{
 			if (NULL != (args = get_commandline(&proc[i])))
-				if (NULL != zbx_regexp_match(args, proccomm, NULL))
+				if (NULL != trx_regexp_match(args, proccomm, NULL))
 					comm_ok = 1;
 		}
 		else
@@ -491,7 +491,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (proc_ok && stat_ok && comm_ok)
 			proccount++;
 	}
-	zbx_free(proc);
+	trx_free(proc);
 out:
 	SET_UI64_RESULT(result, proccount);
 

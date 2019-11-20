@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxsnmptrapper.a
+noinst_LIBRARIES = libtrxsnmptrapper.a
 
-libzbxsnmptrapper_a_SOURCES = \
+libtrxsnmptrapper_a_SOURCES = \
 	snmptrapper.c snmptrapper.h

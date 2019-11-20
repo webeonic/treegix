@@ -137,7 +137,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 
 	// API requires 'templateid' property.
 	if ($newHostPrototype['templates']) {
-		$newHostPrototype['templates'] = zbx_toObject($newHostPrototype['templates'], 'templateid');
+		$newHostPrototype['templates'] = trx_toObject($newHostPrototype['templates'], 'templateid');
 	}
 
 	// add custom group prototypes
@@ -156,7 +156,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 
 		if (!$hostPrototype['templateid']) {
 			// add group prototypes based on existing host groups
-			$groupPrototypesByGroupId = zbx_toHash($hostPrototype['groupLinks'], 'groupid');
+			$groupPrototypesByGroupId = trx_toHash($hostPrototype['groupLinks'], 'groupid');
 			unset($groupPrototypesByGroupId[0]);
 			foreach (getRequest('group_links', []) as $groupId) {
 				if (isset($groupPrototypesByGroupId[$groupId])) {
@@ -246,7 +246,7 @@ if (hasRequest('action') && hasRequest('group_hostid') && !$result) {
 		'hostids' => getRequest('group_hostid'),
 		'editable' => true
 	]);
-	uncheckTableRows($discoveryRule['itemid'], zbx_objectValues($host_prototypes, 'hostid'));
+	uncheckTableRows($discoveryRule['itemid'], trx_objectValues($host_prototypes, 'hostid'));
 }
 
 $config = select_config();
@@ -314,7 +314,7 @@ if (hasRequest('form')) {
 			// When opening existing host prototype, display all values from database.
 			$data['host_prototype'] = array_merge($data['host_prototype'], $hostPrototype);
 
-			$groupids = zbx_objectValues($data['host_prototype']['groupLinks'], 'groupid');
+			$groupids = trx_objectValues($data['host_prototype']['groupLinks'], 'groupid');
 			$data['groups'] = API::HostGroup()->get([
 				'output' => ['groupid', 'name'],
 				'groupids' => $groupids,
@@ -344,7 +344,7 @@ if (hasRequest('form')) {
 	);
 
 	// Select writable templates
-	$templateids = zbx_objectValues($data['host_prototype']['templates'], 'templateid');
+	$templateids = trx_objectValues($data['host_prototype']['templates'], 'templateid');
 	$data['host_prototype']['writable_templates'] = [];
 
 	if ($templateids) {
@@ -401,7 +401,7 @@ else {
 	// Fetch templates linked to the prototypes.
 	$templateids = [];
 	foreach ($data['hostPrototypes'] as $hostPrototype) {
-		$templateids = array_merge($templateids, zbx_objectValues($hostPrototype['templates'], 'templateid'));
+		$templateids = array_merge($templateids, trx_objectValues($hostPrototype['templates'], 'templateid'));
 	}
 	$templateids = array_keys(array_flip($templateids));
 
@@ -410,7 +410,7 @@ else {
 		'selectParentTemplates' => ['templateid', 'name'],
 		'templateids' => $templateids
 	]);
-	$data['linkedTemplates'] = zbx_toHash($linkedTemplates, 'templateid');
+	$data['linkedTemplates'] = trx_toHash($linkedTemplates, 'templateid');
 
 	foreach ($data['linkedTemplates'] as $linked_template) {
 		foreach ($linked_template['parentTemplates'] as $parent_template) {

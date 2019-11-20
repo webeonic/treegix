@@ -3,7 +3,7 @@
 #include "common.h"
 #include "sysinfo.h"
 #include "dir.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 
 #ifdef _WINDOWS
@@ -27,10 +27,10 @@
  *               If filename fails to pass, 0 is returned.                    *
  *                                                                            *
  ******************************************************************************/
-static int	filename_matches(const char *fname, const zbx_regexp_t *regex_incl, const zbx_regexp_t *regex_excl)
+static int	filename_matches(const char *fname, const trx_regexp_t *regex_incl, const trx_regexp_t *regex_excl)
 {
-	return ((NULL == regex_incl || 0 == zbx_regexp_match_precompiled(fname, regex_incl)) &&
-			(NULL == regex_excl || 0 != zbx_regexp_match_precompiled(fname, regex_excl)));
+	return ((NULL == regex_incl || 0 == trx_regexp_match_precompiled(fname, regex_incl)) &&
+			(NULL == regex_excl || 0 != trx_regexp_match_precompiled(fname, regex_excl)));
 }
 
 /******************************************************************************
@@ -51,17 +51,17 @@ static int	filename_matches(const char *fname, const zbx_regexp_t *regex_incl, c
  *               FAIL - directory depth is more than allowed traversal depth. *
  *                                                                            *
  ******************************************************************************/
-static int	queue_directory(zbx_vector_ptr_t *list, char *path, int depth, int max_depth)
+static int	queue_directory(trx_vector_ptr_t *list, char *path, int depth, int max_depth)
 {
-	zbx_directory_item_t	*item;
+	trx_directory_item_t	*item;
 
 	if (TRAVERSAL_DEPTH_UNLIMITED == max_depth || depth < max_depth)
 	{
-		item = (zbx_directory_item_t*)zbx_malloc(NULL, sizeof(zbx_directory_item_t));
+		item = (trx_directory_item_t*)trx_malloc(NULL, sizeof(trx_directory_item_t));
 		item->depth = depth + 1;
 		item->path = path;	/* 'path' changes ownership. Do not free 'path' in the caller. */
 
-		zbx_vector_ptr_append(list, item);
+		trx_vector_ptr_append(list, item);
 
 		return SUCCEED;
 	}
@@ -73,7 +73,7 @@ static int	queue_directory(zbx_vector_ptr_t *list, char *path, int depth, int ma
  *                                                                            *
  * Function: compare_descriptors                                              *
  *                                                                            *
- * Purpose: compares two zbx_file_descriptor_t values to perform search       *
+ * Purpose: compares two trx_file_descriptor_t values to perform search       *
  *          within descriptor vector                                          *
  *                                                                            *
  * Parameters: file_a - [IN] file descriptor A                                *
@@ -85,24 +85,24 @@ static int	queue_directory(zbx_vector_ptr_t *list, char *path, int depth, int ma
  ******************************************************************************/
 static int	compare_descriptors(const void *file_a, const void *file_b)
 {
-	const zbx_file_descriptor_t	*fa, *fb;
+	const trx_file_descriptor_t	*fa, *fb;
 
-	fa = *((zbx_file_descriptor_t **)file_a);
-	fb = *((zbx_file_descriptor_t **)file_b);
+	fa = *((trx_file_descriptor_t **)file_a);
+	fb = *((trx_file_descriptor_t **)file_b);
 
 	return (fa->st_ino != fb->st_ino || fa->st_dev != fb->st_dev);
 }
 
-static int	prepare_common_parameters(const AGENT_REQUEST *request, AGENT_RESULT *result, zbx_regexp_t **regex_incl,
-		zbx_regexp_t **regex_excl, zbx_regexp_t **regex_excl_dir, int *max_depth, char **dir,
-		zbx_stat_t *status, int depth_param, int excl_dir_param, int param_count)
+static int	prepare_common_parameters(const AGENT_REQUEST *request, AGENT_RESULT *result, trx_regexp_t **regex_incl,
+		trx_regexp_t **regex_excl, trx_regexp_t **regex_excl_dir, int *max_depth, char **dir,
+		trx_stat_t *status, int depth_param, int excl_dir_param, int param_count)
 {
 	char	*dir_param, *regex_incl_str, *regex_excl_str, *regex_excl_dir_str, *max_depth_str;
 	const char	*error = NULL;
 
 	if (param_count < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return FAIL;
 	}
 
@@ -114,15 +114,15 @@ static int	prepare_common_parameters(const AGENT_REQUEST *request, AGENT_RESULT 
 
 	if (NULL == dir_param || '\0' == *dir_param)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return FAIL;
 	}
 
 	if (NULL != regex_incl_str && '\0' != *regex_incl_str)
 	{
-		if (SUCCEED != zbx_regexp_compile(regex_incl_str, regex_incl, &error))
+		if (SUCCEED != trx_regexp_compile(regex_incl_str, regex_incl, &error))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL,
+			SET_MSG_RESULT(result, trx_dsprintf(NULL,
 					"Invalid regular expression in second parameter: %s", error));
 			return FAIL;
 		}
@@ -130,9 +130,9 @@ static int	prepare_common_parameters(const AGENT_REQUEST *request, AGENT_RESULT 
 
 	if (NULL != regex_excl_str && '\0' != *regex_excl_str)
 	{
-		if (SUCCEED != zbx_regexp_compile(regex_excl_str, regex_excl, &error))
+		if (SUCCEED != trx_regexp_compile(regex_excl_str, regex_excl, &error))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL,
+			SET_MSG_RESULT(result, trx_dsprintf(NULL,
 					"Invalid regular expression in third parameter: %s", error));
 			return FAIL;
 		}
@@ -140,9 +140,9 @@ static int	prepare_common_parameters(const AGENT_REQUEST *request, AGENT_RESULT 
 
 	if (NULL != regex_excl_dir_str && '\0' != *regex_excl_dir_str)
 	{
-		if (SUCCEED != zbx_regexp_compile(regex_excl_dir_str, regex_excl_dir, &error))
+		if (SUCCEED != trx_regexp_compile(regex_excl_dir_str, regex_excl_dir, &error))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Invalid regular expression in %s parameter: %s",
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Invalid regular expression in %s parameter: %s",
 					(5 == excl_dir_param ? "sixth" : "eleventh"), error));
 			return FAIL;
 		}
@@ -154,34 +154,34 @@ static int	prepare_common_parameters(const AGENT_REQUEST *request, AGENT_RESULT 
 	}
 	else if (SUCCEED != is_uint31(max_depth_str, max_depth))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Invalid %s parameter.", (4 == depth_param ?
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Invalid %s parameter.", (4 == depth_param ?
 						"fifth" : "sixth")));
 		return FAIL;
 	}
 
-	*dir = zbx_strdup(*dir, dir_param);
+	*dir = trx_strdup(*dir, dir_param);
 
 	/* remove directory suffix '/' or '\\' (if any, except for paths like "/" or "C:\\") as stat() fails on */
 	/* Windows for directories ending with slash */
 	if ('\0' != *(*dir + 1) && ':' != *(*dir + strlen(*dir) - 2))
-		zbx_rtrim(*dir, "/\\");
+		trx_rtrim(*dir, "/\\");
 
 #ifdef _WINDOWS
-	if (0 != zbx_stat(*dir, status))
+	if (0 != trx_stat(*dir, status))
 #else
 	if (0 != lstat(*dir, status))
 #endif
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain directory information: %s",
-				zbx_strerror(errno)));
-		zbx_free(*dir);
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain directory information: %s",
+				trx_strerror(errno)));
+		trx_free(*dir);
 		return FAIL;
 	}
 
 	if (0 == S_ISDIR(status->st_mode))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "First parameter is not a directory."));
-		zbx_free(*dir);
+		SET_MSG_RESULT(result, trx_strdup(NULL, "First parameter is not a directory."));
+		trx_free(*dir);
 		return FAIL;
 	}
 
@@ -204,7 +204,7 @@ static int	prepare_mode_parameter(const AGENT_REQUEST *request, AGENT_RESULT *re
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		return FAIL;
 	}
 
@@ -259,13 +259,13 @@ static int	etypes_to_mask(char *etypes, AGENT_RESULT *result)
 
 		if (DET_OVERFLOW & (type = etype_to_mask(etype)))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Invalid directory entry type \"%s\".", etype));
-			zbx_free(etype);
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Invalid directory entry type \"%s\".", etype));
+			trx_free(etype);
 			return type;
 		}
 
 		ret |= type;
-		zbx_free(etype);
+		trx_free(etype);
 	}
 
 	if (DET_DEV & ret)
@@ -277,7 +277,7 @@ static int	etypes_to_mask(char *etypes, AGENT_RESULT *result)
 	return ret;
 }
 
-static int	parse_size_parameter(char *text, zbx_uint64_t *size_out)
+static int	parse_size_parameter(char *text, trx_uint64_t *size_out)
 {
 	if (NULL == text || '\0' == *text)
 		return SUCCEED;
@@ -287,7 +287,7 @@ static int	parse_size_parameter(char *text, zbx_uint64_t *size_out)
 
 static int	parse_age_parameter(char *text, time_t *time_out, time_t now)
 {
-	zbx_uint64_t	seconds;
+	trx_uint64_t	seconds;
 
 	if (NULL == text || '\0' == *text)
 		return SUCCEED;
@@ -301,7 +301,7 @@ static int	parse_age_parameter(char *text, time_t *time_out, time_t now)
 }
 
 static int	prepare_count_parameters(const AGENT_REQUEST *request, AGENT_RESULT *result, int *types_out,
-		zbx_uint64_t *min_size, zbx_uint64_t *max_size, time_t *min_time, time_t *max_time)
+		trx_uint64_t *min_size, trx_uint64_t *max_size, time_t *min_time, time_t *max_time)
 {
 	int	types_incl;
 	int	types_excl;
@@ -329,13 +329,13 @@ static int	prepare_count_parameters(const AGENT_REQUEST *request, AGENT_RESULT *
 
 	if (SUCCEED != parse_size_parameter(min_size_str, min_size))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Invalid minimum size \"%s\".", min_size_str));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Invalid minimum size \"%s\".", min_size_str));
 		return FAIL;
 	}
 
 	if (SUCCEED != parse_size_parameter(max_size_str, max_size))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Invalid maximum size \"%s\".", max_size_str));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Invalid maximum size \"%s\".", max_size_str));
 		return FAIL;
 	}
 
@@ -345,54 +345,54 @@ static int	prepare_count_parameters(const AGENT_REQUEST *request, AGENT_RESULT *
 
 	if (SUCCEED != parse_age_parameter(min_age_str, max_time, now))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Invalid minimum age \"%s\".", min_age_str));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Invalid minimum age \"%s\".", min_age_str));
 		return FAIL;
 	}
 
 	if (SUCCEED != parse_age_parameter(max_age_str, min_time, now))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Invalid maximum age \"%s\".", max_age_str));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Invalid maximum age \"%s\".", max_age_str));
 		return FAIL;
 	}
 
 	return SUCCEED;
 }
 
-static void	regex_incl_excl_free(zbx_regexp_t *regex_incl, zbx_regexp_t *regex_excl, zbx_regexp_t *regex_excl_dir)
+static void	regex_incl_excl_free(trx_regexp_t *regex_incl, trx_regexp_t *regex_excl, trx_regexp_t *regex_excl_dir)
 {
 	if (NULL != regex_incl)
-		zbx_regexp_free(regex_incl);
+		trx_regexp_free(regex_incl);
 
 	if (NULL != regex_excl)
-		zbx_regexp_free(regex_excl);
+		trx_regexp_free(regex_excl);
 
 	if (NULL != regex_excl_dir)
-		zbx_regexp_free(regex_excl_dir);
+		trx_regexp_free(regex_excl_dir);
 }
 
-static void	list_vector_destroy(zbx_vector_ptr_t *list)
+static void	list_vector_destroy(trx_vector_ptr_t *list)
 {
-	zbx_directory_item_t	*item;
+	trx_directory_item_t	*item;
 
 	while (0 < list->values_num)
 	{
-		item = (zbx_directory_item_t *)list->values[--list->values_num];
-		zbx_free(item->path);
-		zbx_free(item);
+		item = (trx_directory_item_t *)list->values[--list->values_num];
+		trx_free(item->path);
+		trx_free(item);
 	}
-	zbx_vector_ptr_destroy(list);
+	trx_vector_ptr_destroy(list);
 }
 
-static void	descriptors_vector_destroy(zbx_vector_ptr_t *descriptors)
+static void	descriptors_vector_destroy(trx_vector_ptr_t *descriptors)
 {
-	zbx_file_descriptor_t	*file;
+	trx_file_descriptor_t	*file;
 
 	while (0 < descriptors->values_num)
 	{
-		file = (zbx_file_descriptor_t *)descriptors->values[--descriptors->values_num];
-		zbx_free(file);
+		file = (trx_file_descriptor_t *)descriptors->values[--descriptors->values_num];
+		trx_free(file);
 	}
-	zbx_vector_ptr_destroy(descriptors);
+	trx_vector_ptr_destroy(descriptors);
 }
 
 /******************************************************************************
@@ -407,7 +407,7 @@ static void	descriptors_vector_destroy(zbx_vector_ptr_t *descriptors)
  *****************************************************************************/
 #ifdef _WINDOWS
 
-#define		DW2UI64(h,l) 	((zbx_uint64_t)h << 32 | l)
+#define		DW2UI64(h,l) 	((trx_uint64_t)h << 32 | l)
 #define		FT2UT(ft) 	(time_t)(DW2UI64(ft.dwHighDateTime,ft.dwLowDateTime) / 10000000ULL - 11644473600ULL)
 
 /******************************************************************************
@@ -456,14 +456,14 @@ static int	get_file_info_by_handle(wchar_t *wpath, BY_HANDLE_FILE_INFORMATION *l
 
 	if (INVALID_HANDLE_VALUE == file_handle)
 	{
-		*error = zbx_strdup(NULL, strerror_from_system(GetLastError()));
+		*error = trx_strdup(NULL, strerror_from_system(GetLastError()));
 		return FAIL;
 	}
 
 	if (0 == GetFileInformationByHandle(file_handle, link_info))
 	{
 		CloseHandle(file_handle);
-		*error = zbx_strdup(NULL, strerror_from_system(GetLastError()));
+		*error = trx_strdup(NULL, strerror_from_system(GetLastError()));
 		return FAIL;
 	}
 
@@ -472,10 +472,10 @@ static int	get_file_info_by_handle(wchar_t *wpath, BY_HANDLE_FILE_INFORMATION *l
 	return SUCCEED;
 }
 
-static int	link_processed(DWORD attrib, wchar_t *wpath, zbx_vector_ptr_t *descriptors, char *path)
+static int	link_processed(DWORD attrib, wchar_t *wpath, trx_vector_ptr_t *descriptors, char *path)
 {
 	BY_HANDLE_FILE_INFORMATION	link_info;
-	zbx_file_descriptor_t		*file;
+	trx_file_descriptor_t		*file;
 	char 				*error;
 
 	/* Behavior like MS file explorer */
@@ -488,7 +488,7 @@ static int	link_processed(DWORD attrib, wchar_t *wpath, zbx_vector_ptr_t *descri
 	if (FAIL == get_file_info_by_handle(wpath, &link_info, &error))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "%s() cannot get file information '%s': %s", __func__, path, error);
-		zbx_free(error);
+		trx_free(error);
 		return SUCCEED;
 	}
 
@@ -496,18 +496,18 @@ static int	link_processed(DWORD attrib, wchar_t *wpath, zbx_vector_ptr_t *descri
 	if (1 < link_info.nNumberOfLinks)
 	{
 		/* skip file if inode was already processed (multiple hardlinks) */
-		file = (zbx_file_descriptor_t*)zbx_malloc(NULL, sizeof(zbx_file_descriptor_t));
+		file = (trx_file_descriptor_t*)trx_malloc(NULL, sizeof(trx_file_descriptor_t));
 
 		file->st_dev = link_info.dwVolumeSerialNumber;
 		file->st_ino = DW2UI64(link_info.nFileIndexHigh, link_info.nFileIndexLow);
 
-		if (FAIL != zbx_vector_ptr_search(descriptors, file, compare_descriptors))
+		if (FAIL != trx_vector_ptr_search(descriptors, file, compare_descriptors))
 		{
-			zbx_free(file);
+			trx_free(file);
 			return SUCCEED;
 		}
 
-		zbx_vector_ptr_append(descriptors, file);
+		trx_vector_ptr_append(descriptors, file);
 	}
 
 	return FAIL;
@@ -517,10 +517,10 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 {
 	char			*dir = NULL;
 	int			mode, max_depth, ret = SYSINFO_RET_FAIL;
-	zbx_uint64_t		size = 0;
-	zbx_vector_ptr_t	list, descriptors;
-	zbx_stat_t		status;
-	zbx_regexp_t		*regex_incl = NULL, *regex_excl = NULL, *regex_excl_dir = NULL;
+	trx_uint64_t		size = 0;
+	trx_vector_ptr_t	list, descriptors;
+	trx_stat_t		status;
+	trx_regexp_t		*regex_incl = NULL, *regex_excl = NULL, *regex_excl_dir = NULL;
 	size_t			dir_len;
 
 	if (SUCCEED != prepare_mode_parameter(request, result, &mode))
@@ -532,14 +532,14 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 		goto err1;
 	}
 
-	zbx_vector_ptr_create(&descriptors);
-	zbx_vector_ptr_create(&list);
+	trx_vector_ptr_create(&descriptors);
+	trx_vector_ptr_create(&list);
 
 	dir_len = strlen(dir);	/* store this value before giving away pointer ownership */
 
 	if (SUCCEED != queue_directory(&list, dir, -1, max_depth))	/* put top directory into list */
 	{
-		zbx_free(dir);
+		trx_free(dir);
 		goto err2;
 	}
 
@@ -547,18 +547,18 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 	{
 		char			*name, *error = NULL;
 		wchar_t			*wpath;
-		zbx_uint64_t		cluster_size = 0;
+		trx_uint64_t		cluster_size = 0;
 		HANDLE			handle;
 		WIN32_FIND_DATA		data;
-		zbx_directory_item_t	*item;
+		trx_directory_item_t	*item;
 
 		item = list.values[--list.values_num];
 
-		name = zbx_dsprintf(NULL, "%s\\*", item->path);
+		name = trx_dsprintf(NULL, "%s\\*", item->path);
 
-		if (NULL == (wpath = zbx_utf8_to_unicode(name)))
+		if (NULL == (wpath = trx_utf8_to_unicode(name)))
 		{
-			zbx_free(name);
+			trx_free(name);
 
 			if (0 < item->depth)
 			{
@@ -567,26 +567,26 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 				goto skip;
 			}
 
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot convert directory name to UTF-16."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot convert directory name to UTF-16."));
 			list.values_num++;
 			goto err2;
 		}
 
-		zbx_free(name);
+		trx_free(name);
 
 		handle = FindFirstFile(wpath, &data);
-		zbx_free(wpath);
+		trx_free(wpath);
 
 		if (INVALID_HANDLE_VALUE == handle)
 		{
 			if (0 < item->depth)
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
-						__func__, item->path, zbx_strerror(errno));
+						__func__, item->path, trx_strerror(errno));
 				goto skip;
 			}
 
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain directory listing."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain directory listing."));
 			list.values_num++;
 			goto err2;
 		}
@@ -605,27 +605,27 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 			if (0 == wcscmp(data.cFileName, L".") || 0 == wcscmp(data.cFileName, L".."))
 				continue;
 
-			name = zbx_unicode_to_utf8(data.cFileName);
-			path = zbx_dsprintf(NULL, "%s/%s", item->path, name);
-			wpath = zbx_utf8_to_unicode(path);
+			name = trx_unicode_to_utf8(data.cFileName);
+			path = trx_dsprintf(NULL, "%s/%s", item->path, name);
+			wpath = trx_utf8_to_unicode(path);
 
 			if (NULL != regex_excl_dir && 0 != (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
 				/* consider only path relative to path given in first parameter */
-				if (0 == zbx_regexp_match_precompiled(path + dir_len + 1, regex_excl_dir))
+				if (0 == trx_regexp_match_precompiled(path + dir_len + 1, regex_excl_dir))
 				{
-					zbx_free(wpath);
-					zbx_free(path);
-					zbx_free(name);
+					trx_free(wpath);
+					trx_free(path);
+					trx_free(name);
 					continue;
 				}
 			}
 
 			if (SUCCEED == link_processed(data.dwFileAttributes, wpath, &descriptors, path))
 			{
-				zbx_free(wpath);
-				zbx_free(path);
-				zbx_free(name);
+				trx_free(wpath);
+				trx_free(path);
+				trx_free(name);
 				continue;
 			}
 
@@ -635,15 +635,15 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 				{
 					DWORD	size_high, size_low;
 
-					/* GetCompressedFileSize gives more accurate result than zbx_stat for */
+					/* GetCompressedFileSize gives more accurate result than trx_stat for */
 					/* compressed files */
 					size_low = GetCompressedFileSize(wpath, &size_high);
 
 					if (size_low != INVALID_FILE_SIZE || NO_ERROR == GetLastError())
 					{
-						zbx_uint64_t	file_size, mod;
+						trx_uint64_t	file_size, mod;
 
-						file_size = ((zbx_uint64_t)size_high << 32) | size_low;
+						file_size = ((trx_uint64_t)size_high << 32) | size_low;
 
 						if (SIZE_MODE_DISK == mode && 0 != (mod = file_size % cluster_size))
 							file_size += cluster_size - mod;
@@ -651,15 +651,15 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 						size += file_size;
 					}
 				}
-				zbx_free(path);
+				trx_free(path);
 			}
 			else if (SUCCEED != queue_directory(&list, path, item->depth, max_depth))
 			{
-				zbx_free(path);
+				trx_free(path);
 			}
 
-			zbx_free(wpath);
-			zbx_free(name);
+			trx_free(wpath);
+			trx_free(name);
 
 		}
 		while (0 != FindNextFile(handle, &data) && FALSE == has_timed_out(timeout_event));
@@ -667,11 +667,11 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE tim
 		if (0 == FindClose(handle))
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "%s() cannot close directory listing '%s': %s", __func__,
-					item->path, zbx_strerror(errno));
+					item->path, trx_strerror(errno));
 		}
 skip:
-		zbx_free(item->path);
-		zbx_free(item);
+		trx_free(item->path);
+		trx_free(item);
 	}
 
 	if (TRUE == has_timed_out(timeout_event))
@@ -694,10 +694,10 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char			*dir = NULL;
 	int			mode, max_depth, ret = SYSINFO_RET_FAIL;
-	zbx_uint64_t		size = 0;
-	zbx_vector_ptr_t	list, descriptors;
-	zbx_stat_t		status;
-	zbx_regexp_t		*regex_incl = NULL, *regex_excl = NULL, *regex_excl_dir = NULL;
+	trx_uint64_t		size = 0;
+	trx_vector_ptr_t	list, descriptors;
+	trx_stat_t		status;
+	trx_regexp_t		*regex_incl = NULL, *regex_excl = NULL, *regex_excl_dir = NULL;
 	size_t			dir_len;
 
 	if (SUCCEED != prepare_mode_parameter(request, result, &mode))
@@ -709,14 +709,14 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 		goto err1;
 	}
 
-	zbx_vector_ptr_create(&descriptors);
-	zbx_vector_ptr_create(&list);
+	trx_vector_ptr_create(&descriptors);
+	trx_vector_ptr_create(&list);
 
 	dir_len = strlen(dir);	/* store this value before giving away pointer ownership */
 
 	if (SUCCEED != queue_directory(&list, dir, -1, max_depth))	/* put top directory into list */
 	{
-		zbx_free(dir);
+		trx_free(dir);
 		goto err2;
 	}
 
@@ -725,31 +725,31 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (0 != filename_matches(dir, regex_incl, regex_excl))
 	{
 		if (SIZE_MODE_APPARENT == mode)
-			size += (zbx_uint64_t)status.st_size;
+			size += (trx_uint64_t)status.st_size;
 		else	/* must be SIZE_MODE_DISK */
-			size += (zbx_uint64_t)status.st_blocks * DISK_BLOCK_SIZE;
+			size += (trx_uint64_t)status.st_blocks * DISK_BLOCK_SIZE;
 	}
 
 	while (0 < list.values_num)
 	{
-		zbx_directory_item_t	*item;
+		trx_directory_item_t	*item;
 		struct dirent		*entry;
 		DIR			*directory;
 
-		item = (zbx_directory_item_t *)list.values[--list.values_num];
+		item = (trx_directory_item_t *)list.values[--list.values_num];
 
 		if (NULL == (directory = opendir(item->path)))
 		{
 			if (0 < item->depth)	/* unreadable subdirectory - skip */
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
-						__func__, item->path, zbx_strerror(errno));
+						__func__, item->path, trx_strerror(errno));
 				goto skip;
 			}
 
 			/* unreadable top directory - stop */
 
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain directory listing."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain directory listing."));
 			list.values_num++;
 			goto err2;
 		}
@@ -761,16 +761,16 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if (0 == strcmp(entry->d_name, ".") || 0 == strcmp(entry->d_name, ".."))
 				continue;
 
-			path = zbx_dsprintf(NULL, "%s/%s", item->path, entry->d_name);
+			path = trx_dsprintf(NULL, "%s/%s", item->path, entry->d_name);
 
 			if (0 == lstat(path, &status))
 			{
 				if (NULL != regex_excl_dir && 0 != S_ISDIR(status.st_mode))
 				{
 					/* consider only path relative to path given in first parameter */
-					if (0 == zbx_regexp_match_precompiled(path + dir_len + 1, regex_excl_dir))
+					if (0 == trx_regexp_match_precompiled(path + dir_len + 1, regex_excl_dir))
 					{
-						zbx_free(path);
+						trx_free(path);
 						continue;
 					}
 				}
@@ -781,50 +781,50 @@ static int	vfs_dir_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 				{
 					if (0 != S_ISREG(status.st_mode) && 1 < status.st_nlink)
 					{
-						zbx_file_descriptor_t	*file;
+						trx_file_descriptor_t	*file;
 
 						/* skip file if inode was already processed (multiple hardlinks) */
-						file = (zbx_file_descriptor_t*)zbx_malloc(NULL,
-								sizeof(zbx_file_descriptor_t));
+						file = (trx_file_descriptor_t*)trx_malloc(NULL,
+								sizeof(trx_file_descriptor_t));
 
 						file->st_dev = status.st_dev;
 						file->st_ino = status.st_ino;
 
-						if (FAIL != zbx_vector_ptr_search(&descriptors, file,
+						if (FAIL != trx_vector_ptr_search(&descriptors, file,
 								compare_descriptors))
 						{
-							zbx_free(file);
-							zbx_free(path);
+							trx_free(file);
+							trx_free(path);
 							continue;
 						}
 
-						zbx_vector_ptr_append(&descriptors, file);
+						trx_vector_ptr_append(&descriptors, file);
 					}
 
 					if (SIZE_MODE_APPARENT == mode)
-						size += (zbx_uint64_t)status.st_size;
+						size += (trx_uint64_t)status.st_size;
 					else	/* must be SIZE_MODE_DISK */
-						size += (zbx_uint64_t)status.st_blocks * DISK_BLOCK_SIZE;
+						size += (trx_uint64_t)status.st_blocks * DISK_BLOCK_SIZE;
 				}
 
 				if (!(0 != S_ISDIR(status.st_mode) && SUCCEED == queue_directory(&list, path,
 						item->depth, max_depth)))
 				{
-					zbx_free(path);
+					trx_free(path);
 				}
 			}
 			else
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot process directory entry '%s': %s",
-						__func__, path, zbx_strerror(errno));
-				zbx_free(path);
+						__func__, path, trx_strerror(errno));
+				trx_free(path);
 			}
 		}
 
 		closedir(directory);
 skip:
-		zbx_free(item->path);
-		zbx_free(item);
+		trx_free(item->path);
+		trx_free(item);
 	}
 
 	SET_UI64_RESULT(result, size);
@@ -841,7 +841,7 @@ err1:
 
 int	VFS_DIR_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	return zbx_execute_threaded_metric(vfs_dir_size, request, result);
+	return trx_execute_threaded_metric(vfs_dir_size, request, result);
 }
 
 /******************************************************************************
@@ -861,11 +861,11 @@ static int	vfs_dir_count(const AGENT_REQUEST *request, AGENT_RESULT *result, HAN
 {
 	char			*dir = NULL;
 	int			types, max_depth, ret = SYSINFO_RET_FAIL;
-	zbx_uint64_t		count = 0;
-	zbx_vector_ptr_t	list, descriptors;
-	zbx_stat_t		status;
-	zbx_regexp_t		*regex_incl = NULL, *regex_excl = NULL, *regex_excl_dir = NULL;
-	zbx_uint64_t		min_size = 0, max_size = __UINT64_C(0x7fffffffffffffff);
+	trx_uint64_t		count = 0;
+	trx_vector_ptr_t	list, descriptors;
+	trx_stat_t		status;
+	trx_regexp_t		*regex_incl = NULL, *regex_excl = NULL, *regex_excl_dir = NULL;
+	trx_uint64_t		min_size = 0, max_size = __UINT64_C(0x7fffffffffffffff);
 	time_t			min_time = 0, max_time = 0x7fffffff;
 	size_t			dir_len;
 
@@ -878,14 +878,14 @@ static int	vfs_dir_count(const AGENT_REQUEST *request, AGENT_RESULT *result, HAN
 		goto err1;
 	}
 
-	zbx_vector_ptr_create(&descriptors);
-	zbx_vector_ptr_create(&list);
+	trx_vector_ptr_create(&descriptors);
+	trx_vector_ptr_create(&list);
 
 	dir_len = strlen(dir);	/* store this value before giving away pointer ownership */
 
 	if (SUCCEED != queue_directory(&list, dir, -1, max_depth))	/* put top directory into list */
 	{
-		zbx_free(dir);
+		trx_free(dir);
 		goto err2;
 	}
 
@@ -895,15 +895,15 @@ static int	vfs_dir_count(const AGENT_REQUEST *request, AGENT_RESULT *result, HAN
 		wchar_t			*wpath;
 		HANDLE			handle;
 		WIN32_FIND_DATA		data;
-		zbx_directory_item_t	*item;
+		trx_directory_item_t	*item;
 
 		item = list.values[--list.values_num];
 
-		name = zbx_dsprintf(NULL, "%s\\*", item->path);
+		name = trx_dsprintf(NULL, "%s\\*", item->path);
 
-		if (NULL == (wpath = zbx_utf8_to_unicode(name)))
+		if (NULL == (wpath = trx_utf8_to_unicode(name)))
 		{
-			zbx_free(name);
+			trx_free(name);
 
 			if (0 < item->depth)
 			{
@@ -912,26 +912,26 @@ static int	vfs_dir_count(const AGENT_REQUEST *request, AGENT_RESULT *result, HAN
 				goto skip;
 			}
 
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot convert directory name to UTF-16."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot convert directory name to UTF-16."));
 			list.values_num++;
 			goto err2;
 		}
 
-		zbx_free(name);
+		trx_free(name);
 
 		handle = FindFirstFileW(wpath, &data);
-		zbx_free(wpath);
+		trx_free(wpath);
 
 		if (INVALID_HANDLE_VALUE == handle)
 		{
 			if (0 < item->depth)
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
-						__func__, item->path, zbx_strerror(errno));
+						__func__, item->path, trx_strerror(errno));
 				goto skip;
 			}
 
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain directory listing."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain directory listing."));
 			list.values_num++;
 			goto err2;
 		}
@@ -944,16 +944,16 @@ static int	vfs_dir_count(const AGENT_REQUEST *request, AGENT_RESULT *result, HAN
 			if (0 == wcscmp(data.cFileName, L".") || 0 == wcscmp(data.cFileName, L".."))
 				continue;
 
-			name = zbx_unicode_to_utf8(data.cFileName);
-			path = zbx_dsprintf(NULL, "%s/%s", item->path, name);
+			name = trx_unicode_to_utf8(data.cFileName);
+			path = trx_dsprintf(NULL, "%s/%s", item->path, name);
 
 			if (NULL != regex_excl_dir && 0 != (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
 				/* consider only path relative to path given in first parameter */
-				if (0 == zbx_regexp_match_precompiled(path + dir_len + 1, regex_excl_dir))
+				if (0 == trx_regexp_match_precompiled(path + dir_len + 1, regex_excl_dir))
 				{
-					zbx_free(path);
-					zbx_free(name);
+					trx_free(path);
+					trx_free(name);
 					continue;
 				}
 			}
@@ -984,7 +984,7 @@ static int	vfs_dir_count(const AGENT_REQUEST *request, AGENT_RESULT *result, HAN
 					break;
 				case FILE_ATTRIBUTE_DIRECTORY:
 					if (SUCCEED != queue_directory(&list, path, item->depth, max_depth))
-						zbx_free(path);
+						trx_free(path);
 
 					if (0 != (types & DET_DIR) && 0 != match)
 						++count;
@@ -992,31 +992,31 @@ static int	vfs_dir_count(const AGENT_REQUEST *request, AGENT_RESULT *result, HAN
 				default:	/* not a directory => regular file */
 					if (0 != (types & DET_FILE) && 0 != match)
 					{
-						wpath = zbx_utf8_to_unicode(path);
+						wpath = trx_utf8_to_unicode(path);
 						if (FAIL == link_processed(data.dwFileAttributes, wpath, &descriptors,
 								path))
 						{
 							++count;
 						}
 
-						zbx_free(wpath);
+						trx_free(wpath);
 					}
 free_path:
-					zbx_free(path);
+					trx_free(path);
 			}
 
-			zbx_free(name);
+			trx_free(name);
 
 		} while (0 != FindNextFile(handle, &data) && FALSE == has_timed_out(timeout_event));
 
 		if (0 == FindClose(handle))
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "%s() cannot close directory listing '%s': %s", __func__,
-					item->path, zbx_strerror(errno));
+					item->path, trx_strerror(errno));
 		}
 skip:
-		zbx_free(item->path);
-		zbx_free(item);
+		trx_free(item->path);
+		trx_free(item);
 	}
 
 	if (TRUE == has_timed_out(timeout_event))
@@ -1040,10 +1040,10 @@ static int	vfs_dir_count(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char			*dir = NULL;
 	int			types, max_depth, ret = SYSINFO_RET_FAIL;
 	int			count = 0;
-	zbx_vector_ptr_t	list;
-	zbx_stat_t		status;
-	zbx_regexp_t		*regex_incl = NULL, *regex_excl = NULL, *regex_excl_dir = NULL;
-	zbx_uint64_t		min_size = 0, max_size = __UINT64_C(0x7FFFffffFFFFffff);
+	trx_vector_ptr_t	list;
+	trx_stat_t		status;
+	trx_regexp_t		*regex_incl = NULL, *regex_excl = NULL, *regex_excl_dir = NULL;
+	trx_uint64_t		min_size = 0, max_size = __UINT64_C(0x7FFFffffFFFFffff);
 	time_t			min_time = 0, max_time = 0x7fffffff;
 	size_t			dir_len;
 
@@ -1056,36 +1056,36 @@ static int	vfs_dir_count(AGENT_REQUEST *request, AGENT_RESULT *result)
 		goto err1;
 	}
 
-	zbx_vector_ptr_create(&list);
+	trx_vector_ptr_create(&list);
 
 	dir_len = strlen(dir);	/* store this value before giving away pointer ownership */
 
 	if (SUCCEED != queue_directory(&list, dir, -1, max_depth))	/* put top directory into list */
 	{
-		zbx_free(dir);
+		trx_free(dir);
 		goto err2;
 	}
 
 	while (0 < list.values_num)
 	{
-		zbx_directory_item_t	*item;
+		trx_directory_item_t	*item;
 		struct dirent		*entry;
 		DIR			*directory;
 
-		item = (zbx_directory_item_t *)list.values[--list.values_num];
+		item = (trx_directory_item_t *)list.values[--list.values_num];
 
 		if (NULL == (directory = opendir(item->path)))
 		{
 			if (0 < item->depth)	/* unreadable subdirectory - skip */
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot open directory listing '%s': %s",
-						__func__, item->path, zbx_strerror(errno));
+						__func__, item->path, trx_strerror(errno));
 				goto skip;
 			}
 
 			/* unreadable top directory - stop */
 
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain directory listing."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain directory listing."));
 			list.values_num++;
 			goto err2;
 		}
@@ -1097,16 +1097,16 @@ static int	vfs_dir_count(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if (0 == strcmp(entry->d_name, ".") || 0 == strcmp(entry->d_name, ".."))
 				continue;
 
-			path = zbx_dsprintf(NULL, "%s/%s", item->path, entry->d_name);
+			path = trx_dsprintf(NULL, "%s/%s", item->path, entry->d_name);
 
 			if (0 == lstat(path, &status))
 			{
 				if (NULL != regex_excl_dir && 0 != S_ISDIR(status.st_mode))
 				{
 					/* consider only path relative to path given in first parameter */
-					if (0 == zbx_regexp_match_precompiled(path + dir_len + 1, regex_excl_dir))
+					if (0 == trx_regexp_match_precompiled(path + dir_len + 1, regex_excl_dir))
 					{
-						zbx_free(path);
+						trx_free(path);
 						continue;
 					}
 				}
@@ -1119,8 +1119,8 @@ static int	vfs_dir_count(AGENT_REQUEST *request, AGENT_RESULT *result)
 						(S_ISBLK(status.st_mode)  && 0 != (types & DET_BDEV)) ||
 						(S_ISCHR(status.st_mode)  && 0 != (types & DET_CDEV)) ||
 						(S_ISFIFO(status.st_mode) && 0 != (types & DET_FIFO))) &&
-						(min_size <= (zbx_uint64_t)status.st_size
-								&& (zbx_uint64_t)status.st_size <= max_size) &&
+						(min_size <= (trx_uint64_t)status.st_size
+								&& (trx_uint64_t)status.st_size <= max_size) &&
 						(min_time < status.st_mtime &&
 								status.st_mtime <= max_time))
 				{
@@ -1130,21 +1130,21 @@ static int	vfs_dir_count(AGENT_REQUEST *request, AGENT_RESULT *result)
 				if (!(0 != S_ISDIR(status.st_mode) && SUCCEED == queue_directory(&list, path,
 						item->depth, max_depth)))
 				{
-					zbx_free(path);
+					trx_free(path);
 				}
 			}
 			else
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "%s() cannot process directory entry '%s': %s",
-						__func__, path, zbx_strerror(errno));
-				zbx_free(path);
+						__func__, path, trx_strerror(errno));
+				trx_free(path);
 			}
 		}
 
 		closedir(directory);
 skip:
-		zbx_free(item->path);
-		zbx_free(item);
+		trx_free(item->path);
+		trx_free(item);
 	}
 
 	SET_UI64_RESULT(result, count);
@@ -1160,5 +1160,5 @@ err1:
 
 int	VFS_DIR_COUNT(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	return zbx_execute_threaded_metric(vfs_dir_count, request, result);
+	return trx_execute_threaded_metric(vfs_dir_count, request, result);
 }

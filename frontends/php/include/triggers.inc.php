@@ -228,7 +228,7 @@ function trigger_value2str($value = null) {
 }
 
 function get_trigger_by_triggerid($triggerid) {
-	$db_trigger = DBfetch(DBselect('SELECT t.* FROM triggers t WHERE t.triggerid='.zbx_dbstr($triggerid)));
+	$db_trigger = DBfetch(DBselect('SELECT t.* FROM triggers t WHERE t.triggerid='.trx_dbstr($triggerid)));
 	if (!empty($db_trigger)) {
 		return $db_trigger;
 	}
@@ -238,7 +238,7 @@ function get_trigger_by_triggerid($triggerid) {
 }
 
 function get_hosts_by_triggerid($triggerids) {
-	zbx_value2array($triggerids);
+	trx_value2array($triggerids);
 
 	return DBselect(
 		'SELECT DISTINCT h.*'.
@@ -253,7 +253,7 @@ function get_triggers_by_hostid($hostid) {
 	return DBselect(
 		'SELECT DISTINCT t.*'.
 		' FROM triggers t,functions f,items i'.
-		' WHERE i.hostid='.zbx_dbstr($hostid).
+		' WHERE i.hostid='.trx_dbstr($hostid).
 			' AND f.itemid=i.itemid'.
 			' AND f.triggerid=t.triggerid'
 	);
@@ -612,7 +612,7 @@ function check_right_on_trigger_by_expression($permission, $expression) {
 		'templated_hosts' => true,
 		'preservekeys' => true
 	]);
-	$hosts = zbx_toHash($hosts, 'host');
+	$hosts = trx_toHash($hosts, 'host');
 
 	foreach ($expressionHosts as $host) {
 		if (!isset($hosts[$host])) {
@@ -630,8 +630,8 @@ function replace_template_dependencies($deps, $hostid) {
 				' FROM triggers t,functions f,items i'.
 				' WHERE t.triggerid=f.triggerid'.
 					' AND f.itemid=i.itemid'.
-					' AND t.templateid='.zbx_dbstr($val).
-					' AND i.hostid='.zbx_dbstr($hostid);
+					' AND t.templateid='.trx_dbstr($val).
+					' AND i.hostid='.trx_dbstr($hostid);
 		if ($db_new_dep = DBfetch(DBselect($sql))) {
 			$deps[$id] = $db_new_dep['triggerid'];
 		}
@@ -1028,10 +1028,10 @@ function calculateAvailability($triggerId, $startTime, $endTime) {
 	if ($startTime > 0 && $startTime <= time()) {
 		$sql = 'SELECT e.eventid,e.value'.
 				' FROM events e'.
-				' WHERE e.objectid='.zbx_dbstr($triggerId).
+				' WHERE e.objectid='.trx_dbstr($triggerId).
 					' AND e.source='.EVENT_SOURCE_TRIGGERS.
 					' AND e.object='.EVENT_OBJECT_TRIGGER.
-					' AND e.clock<'.zbx_dbstr($startTime).
+					' AND e.clock<'.trx_dbstr($startTime).
 				' ORDER BY e.eventid DESC';
 		if ($row = DBfetch(DBselect($sql, 1))) {
 			$startValue = $row['value'];
@@ -1042,14 +1042,14 @@ function calculateAvailability($triggerId, $startTime, $endTime) {
 
 	$sql = 'SELECT COUNT(e.eventid) AS cnt,MIN(e.clock) AS min_clock,MAX(e.clock) AS max_clock'.
 			' FROM events e'.
-			' WHERE e.objectid='.zbx_dbstr($triggerId).
+			' WHERE e.objectid='.trx_dbstr($triggerId).
 				' AND e.source='.EVENT_SOURCE_TRIGGERS.
 				' AND e.object='.EVENT_OBJECT_TRIGGER;
 	if ($startTime) {
-		$sql .= ' AND e.clock>='.zbx_dbstr($startTime);
+		$sql .= ' AND e.clock>='.trx_dbstr($startTime);
 	}
 	if ($endTime) {
-		$sql .= ' AND e.clock<='.zbx_dbstr($endTime);
+		$sql .= ' AND e.clock<='.trx_dbstr($endTime);
 	}
 
 	$dbEvents = DBfetch(DBselect($sql));
@@ -1088,7 +1088,7 @@ function calculateAvailability($triggerId, $startTime, $endTime) {
 	$dbEvents = DBselect(
 		'SELECT e.eventid,e.clock,e.value'.
 		' FROM events e'.
-		' WHERE e.objectid='.zbx_dbstr($triggerId).
+		' WHERE e.objectid='.trx_dbstr($triggerId).
 			' AND e.source='.EVENT_SOURCE_TRIGGERS.
 			' AND e.object='.EVENT_OBJECT_TRIGGER.
 			' AND e.clock BETWEEN '.$min.' AND '.$max.
@@ -1198,7 +1198,7 @@ function make_trigger_details($trigger, $eventid) {
 
 	$config = select_config();
 
-	$hostIds = zbx_objectValues($trigger['hosts'], 'hostid');
+	$hostIds = trx_objectValues($trigger['hosts'], 'hostid');
 
 	$hosts = API::Host()->get([
 		'output' => ['name', 'hostid', 'status'],
@@ -1231,7 +1231,7 @@ function make_trigger_details($trigger, $eventid) {
 			getSeverityCell($trigger['priority'], $config)
 		]);
 
-	$trigger = CMacrosResolverHelper::resolveTriggerExpressions(zbx_toHash($trigger, 'triggerid'), [
+	$trigger = CMacrosResolverHelper::resolveTriggerExpressions(trx_toHash($trigger, 'triggerid'), [
 		'html' => true,
 		'resolve_usermacros' => true,
 		'resolve_macros' => true,

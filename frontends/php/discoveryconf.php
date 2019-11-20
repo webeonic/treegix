@@ -180,7 +180,7 @@ elseif (hasRequest('action') && str_in_array(getRequest('action'), ['drule.masse
 	DBStart();
 
 	foreach (getRequest('g_druleid') as $druleId) {
-		$result &= DBexecute('UPDATE drules SET status='.zbx_dbstr($status).' WHERE druleid='.zbx_dbstr($druleId));
+		$result &= DBexecute('UPDATE drules SET status='.trx_dbstr($status).' WHERE druleid='.trx_dbstr($druleId));
 
 		if ($result) {
 			$druleData = get_discovery_rule_by_druleid($druleId);
@@ -219,7 +219,7 @@ if (hasRequest('action') && hasRequest('g_druleid') && !$result) {
 		'druleids' => getRequest('g_druleid'),
 		'editable' => true
 	]);
-	uncheckTableRows(null, zbx_objectValues($drules, 'druleid'));
+	uncheckTableRows(null, trx_objectValues($drules, 'druleid'));
 }
 
 /*

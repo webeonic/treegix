@@ -4,7 +4,7 @@
 
 function get_maintenance_by_maintenanceid($maintenanceid) {
 	return DBfetch(DBselect(
-		'SELECT m.* FROM maintenances m WHERE m.maintenanceid='.zbx_dbstr($maintenanceid)
+		'SELECT m.* FROM maintenances m WHERE m.maintenanceid='.trx_dbstr($maintenanceid)
 	));
 }
 
@@ -33,7 +33,7 @@ function schedule2str($timeperiod) {
 	}
 
 	if ($timeperiod['timeperiod_type'] == TIMEPERIOD_TYPE_ONETIME) {
-		$str = zbx_date2str(DATE_TIME_FORMAT, $timeperiod['start_date']);
+		$str = trx_date2str(DATE_TIME_FORMAT, $timeperiod['start_date']);
 	}
 	elseif ($timeperiod['timeperiod_type'] == TIMEPERIOD_TYPE_DAILY) {
 		$str = _n('At %1$s:%2$s every day',
@@ -45,11 +45,11 @@ function schedule2str($timeperiod) {
 	}
 	elseif ($timeperiod['timeperiod_type'] == TIMEPERIOD_TYPE_WEEKLY) {
 		$days = '';
-		$dayofweek = zbx_num2bitstr($timeperiod['dayofweek'], true);
+		$dayofweek = trx_num2bitstr($timeperiod['dayofweek'], true);
 		$length = strlen($dayofweek);
 		for ($i = 0; $i < $length; $i++) {
 			if ($dayofweek[$i] == 1) {
-				if (!zbx_empty($days)) {
+				if (!trx_empty($days)) {
 					$days .= ', ';
 				}
 				$days .= getDayOfWeekCaption($i + 1);
@@ -66,11 +66,11 @@ function schedule2str($timeperiod) {
 	}
 	elseif ($timeperiod['timeperiod_type'] == TIMEPERIOD_TYPE_MONTHLY) {
 		$months = '';
-		$month = zbx_num2bitstr($timeperiod['month'], true);
+		$month = trx_num2bitstr($timeperiod['month'], true);
 		$length = strlen($month);
 		for ($i = 0; $i < $length; $i++) {
 			if ($month[$i] == 1) {
-				if (!zbx_empty($months)) {
+				if (!trx_empty($months)) {
 					$months .=', ';
 				}
 				$months .= getMonthCaption($i + 1);
@@ -78,11 +78,11 @@ function schedule2str($timeperiod) {
 		}
 		if ($timeperiod['dayofweek'] > 0) {
 			$days = '';
-			$dayofweek = zbx_num2bitstr($timeperiod['dayofweek'], true);
+			$dayofweek = trx_num2bitstr($timeperiod['dayofweek'], true);
 			$length = strlen($dayofweek);
 			for ($i = 0; $i < $length; $i++) {
 				if ($dayofweek[$i] == 1) {
-					if (!zbx_empty($days)) {
+					if (!trx_empty($days)) {
 						$days .= ', ';
 					}
 					$days .= getDayOfWeekCaption($i + 1);

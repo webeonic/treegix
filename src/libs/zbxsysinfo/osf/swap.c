@@ -77,8 +77,8 @@ static int	SYSTEM_SWAP_USED(AGENT_RESULT *result)
 	if (0 == sysinfo(&info))
 	{
 #ifdef HAVE_SYSINFO_MEM_UNIT
-		SET_UI64_RESULT(result, ((zbx_uint64_t)info.totalswap - (zbx_uint64_t)info.freeswap) *
-				(zbx_uint64_t)info.mem_unit);
+		SET_UI64_RESULT(result, ((trx_uint64_t)info.totalswap - (trx_uint64_t)info.freeswap) *
+				(trx_uint64_t)info.mem_unit);
 #else
 		SET_UI64_RESULT(result, info.totalswap - info.freeswap);
 #endif
@@ -109,7 +109,7 @@ static int	SYSTEM_SWAP_FREE(AGENT_RESULT *result)
 	if (0 == sysinfo(&info))
 	{
 #ifdef HAVE_SYSINFO_MEM_UNIT
-		SET_UI64_RESULT(result, (zbx_uint64_t)info.freeswap * (zbx_uint64_t)info.mem_unit);
+		SET_UI64_RESULT(result, (trx_uint64_t)info.freeswap * (trx_uint64_t)info.mem_unit);
 #else
 		SET_UI64_RESULT(result, info.freeswap);
 #endif
@@ -140,7 +140,7 @@ static int	SYSTEM_SWAP_TOTAL(AGENT_RESULT *result)
 	if (0 == sysinfo(&info))
 	{
 #ifdef HAVE_SYSINFO_MEM_UNIT
-		SET_UI64_RESULT(result, (zbx_uint64_t)info.totalswap * (zbx_uint64_t)info.mem_unit);
+		SET_UI64_RESULT(result, (trx_uint64_t)info.totalswap * (trx_uint64_t)info.mem_unit);
 #else
 		SET_UI64_RESULT(result, info.totalswap);
 #endif
@@ -166,8 +166,8 @@ static int	SYSTEM_SWAP_TOTAL(AGENT_RESULT *result)
 static int	SYSTEM_SWAP_PFREE(AGENT_RESULT *result)
 {
 	AGENT_RESULT	result_tmp;
-	zbx_uint64_t	tot_val = 0;
-	zbx_uint64_t	free_val = 0;
+	trx_uint64_t	tot_val = 0;
+	trx_uint64_t	free_val = 0;
 
 	init_result(&result_tmp);
 
@@ -196,8 +196,8 @@ static int	SYSTEM_SWAP_PFREE(AGENT_RESULT *result)
 static int	SYSTEM_SWAP_PUSED(AGENT_RESULT *result)
 {
 	AGENT_RESULT	result_tmp;
-	zbx_uint64_t	tot_val = 0;
-	zbx_uint64_t	free_val = 0;
+	trx_uint64_t	tot_val = 0;
+	trx_uint64_t	free_val = 0;
 
 	init_result(&result_tmp);
 

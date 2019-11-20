@@ -110,7 +110,7 @@ foreach ($data['items'] as $item) {
 	// info
 	$info_icons = [];
 
-	if ($item['status'] == ITEM_STATUS_ACTIVE && !zbx_empty($item['error'])) {
+	if ($item['status'] == ITEM_STATUS_ACTIVE && !trx_empty($item['error'])) {
 		$info_icons[] = makeErrorIcon($item['error']);
 	}
 
@@ -130,7 +130,7 @@ foreach ($data['items'] as $item) {
 			TRX_FLAG_DISCOVERY_NORMAL
 		);
 
-		$trigger['hosts'] = zbx_toHash($trigger['hosts'], 'hostid');
+		$trigger['hosts'] = trx_toHash($trigger['hosts'], 'hostid');
 
 		if ($trigger['flags'] == TRX_FLAG_DISCOVERY_CREATED) {
 			$trigger_description[] = new CSpan(CHtml::encode($trigger['description']));

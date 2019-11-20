@@ -8,19 +8,19 @@
 
 typedef struct
 {
-	zbx_uint64_t	nread;
-	zbx_uint64_t	nwritten;
-	zbx_uint64_t	reads;
-	zbx_uint64_t	writes;
+	trx_uint64_t	nread;
+	trx_uint64_t	nwritten;
+	trx_uint64_t	reads;
+	trx_uint64_t	writes;
 }
-zbx_perfstat_t;
+trx_perfstat_t;
 
-int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
+int	get_diskstat(const char *devname, trx_uint64_t *dstat)
 {
 	return FAIL;
 }
 
-static int	get_perfstat_io(const char *devname, zbx_perfstat_t *zp, char **error)
+static int	get_perfstat_io(const char *devname, trx_perfstat_t *zp, char **error)
 {
 #if defined(HAVE_LIBPERFSTAT)
 	int	err;
@@ -58,20 +58,20 @@ static int	get_perfstat_io(const char *devname, zbx_perfstat_t *zp, char **error
 	}
 
 	if (0 == err)
-		*error = zbx_strdup(NULL, "Cannot obtain system information.");
+		*error = trx_strdup(NULL, "Cannot obtain system information.");
 	else
-		*error = zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno));
 
 	return SYSINFO_RET_FAIL;
 #else
-	*error = zbx_strdup(NULL, "Agent was compiled without support for Perfstat API.");
+	*error = trx_strdup(NULL, "Agent was compiled without support for Perfstat API.");
 	return SYSINFO_RET_FAIL;
 #endif
 }
 
 static int	VFS_DEV_READ_BYTES(const char *devname, AGENT_RESULT *result)
 {
-	zbx_perfstat_t	zp;
+	trx_perfstat_t	zp;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_perfstat_io(devname, &zp, &error))
@@ -87,7 +87,7 @@ static int	VFS_DEV_READ_BYTES(const char *devname, AGENT_RESULT *result)
 
 static int	VFS_DEV_READ_OPERATIONS(const char *devname, AGENT_RESULT *result)
 {
-	zbx_perfstat_t	zp;
+	trx_perfstat_t	zp;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_perfstat_io(devname, &zp, &error))
@@ -103,7 +103,7 @@ static int	VFS_DEV_READ_OPERATIONS(const char *devname, AGENT_RESULT *result)
 
 static int	VFS_DEV_WRITE_BYTES(const char *devname, AGENT_RESULT *result)
 {
-	zbx_perfstat_t	zp;
+	trx_perfstat_t	zp;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_perfstat_io(devname, &zp, &error))
@@ -119,7 +119,7 @@ static int	VFS_DEV_WRITE_BYTES(const char *devname, AGENT_RESULT *result)
 
 static int	VFS_DEV_WRITE_OPERATIONS(const char *devname, AGENT_RESULT *result)
 {
-	zbx_perfstat_t	zp;
+	trx_perfstat_t	zp;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_perfstat_io(devname, &zp, &error))
@@ -140,7 +140,7 @@ int	VFS_DEV_READ(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -159,7 +159,7 @@ int	VFS_DEV_READ(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VFS_DEV_READ_BYTES(devname, result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -173,7 +173,7 @@ int	VFS_DEV_WRITE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -192,7 +192,7 @@ int	VFS_DEV_WRITE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VFS_DEV_WRITE_BYTES(devname, result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

@@ -43,7 +43,7 @@ class CGraphItem extends CApiService {
 			'sortorder'		=> '',
 			'limit'			=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -60,13 +60,13 @@ class CGraphItem extends CApiService {
 						' AND i.hostid=hgg.hostid'.
 					' GROUP BY i.itemid'.
 					' HAVING MIN(r.permission)>'.PERM_DENY.
-						' AND MAX(r.permission)>='.zbx_dbstr($permission).
+						' AND MAX(r.permission)>='.trx_dbstr($permission).
 					')';
 		}
 
 		// graphids
 		if (!is_null($options['graphids'])) {
-			zbx_value2array($options['graphids']);
+			trx_value2array($options['graphids']);
 
 			$sqlParts['from']['graphs'] = 'graphs g';
 			$sqlParts['where']['gig'] = 'gi.graphid=g.graphid';
@@ -75,18 +75,18 @@ class CGraphItem extends CApiService {
 
 		// itemids
 		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['where'][] = dbConditionInt('gi.itemid', $options['itemids']);
 		}
 
 		// type
 		if (!is_null($options['type'] )) {
-			$sqlParts['where'][] = 'gi.type='.zbx_dbstr($options['type']);
+			$sqlParts['where'][] = 'gi.type='.trx_dbstr($options['type']);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -113,7 +113,7 @@ class CGraphItem extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;

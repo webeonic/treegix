@@ -2,9 +2,9 @@
 
 #include "common.h"
 #include "db.h"
-#include "zbxtasks.h"
+#include "trxtasks.h"
 #include "log.h"
-#include "zbxserver.h"
+#include "trxserver.h"
 #include "postinit.h"
 #include "valuecache.h"
 
@@ -103,7 +103,7 @@ static const char	*convert_historical_macro(int macro)
 static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 {
 	int		pos = 0, macro_len, macro_type;
-	zbx_token_t	token;
+	trx_token_t	token;
 	size_t		name_alloc, name_len, replace_alloc = 64, replace_offset, r, l;
 	char		*replace;
 	const char	*macro;
@@ -111,11 +111,11 @@ static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 
 	*historical = FAIL;
 
-	replace = (char *)zbx_malloc(NULL, replace_alloc);
+	replace = (char *)trx_malloc(NULL, replace_alloc);
 
 	name_alloc = name_len = strlen(trigger->description) + 1;
 
-	while (SUCCEED == zbx_token_find(trigger->description, pos, &token, TRX_TOKEN_SEARCH_BASIC))
+	while (SUCCEED == trx_token_find(trigger->description, pos, &token, TRX_TOKEN_SEARCH_BASIC))
 	{
 		if (TRX_TOKEN_MACRO == token.type || TRX_TOKEN_FUNC_MACRO == token.type)
 		{
@@ -142,7 +142,7 @@ static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 
 				macro = convert_historical_macro(macro_type);
 
-				token.loc.r += zbx_replace_mem_dyn(&trigger->description, &name_alloc, &name_len, l,
+				token.loc.r += trx_replace_mem_dyn(&trigger->description, &name_alloc, &name_len, l,
 						macro_len, macro, strlen(macro));
 				*historical = SUCCEED;
 			}
@@ -163,7 +163,7 @@ static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 		pos = 0;
 		name_alloc = name_len = strlen(trigger->description) + 1;
 
-		while (SUCCEED == zbx_token_find(trigger->description, pos, &token, TRX_TOKEN_SEARCH_BASIC))
+		while (SUCCEED == trx_token_find(trigger->description, pos, &token, TRX_TOKEN_SEARCH_BASIC))
 		{
 			if (TRX_TOKEN_LLD_MACRO == token.type || TRX_TOKEN_LLD_FUNC_MACRO == token.type)
 			{
@@ -184,9 +184,9 @@ static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 				{
 					macro_len = r - l + 1;
 					replace_offset = 0;
-					zbx_strncpy_alloc(&replace, &replace_alloc, &replace_offset, macro, macro_len);
+					trx_strncpy_alloc(&replace, &replace_alloc, &replace_offset, macro, macro_len);
 
-					token.loc.r += zbx_replace_mem_dyn(&trigger->description, &name_alloc,
+					token.loc.r += trx_replace_mem_dyn(&trigger->description, &name_alloc,
 							&name_len, l - 1, macro_len + 1, replace, replace_offset);
 				}
 			}
@@ -194,7 +194,7 @@ static void	preprocess_trigger_name(DB_TRIGGER *trigger, int *historical)
 		}
 	}
 
-	zbx_free(replace);
+	trx_free(replace);
 }
 
 /******************************************************************************
@@ -222,7 +222,7 @@ static int	process_event_bulk_update(const DB_TRIGGER *trigger, char **sql, size
 
 	name_esc = DBdyn_escape_string_len(trigger->description, EVENT_NAME_LEN);
 
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset,
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset,
 			"update events"
 			" set name='%s'"
 			" where source=%d"
@@ -232,7 +232,7 @@ static int	process_event_bulk_update(const DB_TRIGGER *trigger, char **sql, size
 
 	if (SUCCEED == (ret = DBexecute_overflowed_sql(sql, sql_alloc, sql_offset)))
 	{
-		zbx_snprintf_alloc(sql, sql_alloc, sql_offset,
+		trx_snprintf_alloc(sql, sql_alloc, sql_offset,
 				"update problem"
 				" set name='%s'"
 				" where source=%d"
@@ -243,7 +243,7 @@ static int	process_event_bulk_update(const DB_TRIGGER *trigger, char **sql, size
 		ret = DBexecute_overflowed_sql(sql, sql_alloc, sql_offset);
 	}
 
-	zbx_free(name_esc);
+	trx_free(name_esc);
 
 	return ret;
 }
@@ -300,14 +300,14 @@ static int	process_event_update(const DB_TRIGGER *trigger, char **sql, size_t *s
 
 		event.trigger = *trigger;
 
-		name = zbx_strdup(NULL, trigger->description);
+		name = trx_strdup(NULL, trigger->description);
 
 		substitute_simple_macros(NULL, &event, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &name,
 				MACRO_TYPE_TRIGGER_DESCRIPTION, NULL, 0);
 
 		name_esc = DBdyn_escape_string_len(name, EVENT_NAME_LEN);
 
-		zbx_snprintf_alloc(sql, sql_alloc, sql_offset,
+		trx_snprintf_alloc(sql, sql_alloc, sql_offset,
 				"update events"
 				" set name='%s'"
 				" where eventid=" TRX_FS_UI64 ";\n",
@@ -315,7 +315,7 @@ static int	process_event_update(const DB_TRIGGER *trigger, char **sql, size_t *s
 
 		if (SUCCEED == (ret = DBexecute_overflowed_sql(sql, sql_alloc, sql_offset)))
 		{
-			zbx_snprintf_alloc(sql, sql_alloc, sql_offset,
+			trx_snprintf_alloc(sql, sql_alloc, sql_offset,
 					"update problem"
 					" set name='%s'"
 					" where eventid=" TRX_FS_UI64 ";\n",
@@ -324,8 +324,8 @@ static int	process_event_update(const DB_TRIGGER *trigger, char **sql, size_t *s
 			ret = DBexecute_overflowed_sql(sql, sql_alloc, sql_offset);
 		}
 
-		zbx_free(name_esc);
-		zbx_free(name);
+		trx_free(name_esc);
+		trx_free(name);
 	}
 
 	DBfree_result(result);
@@ -359,7 +359,7 @@ static int	update_event_names(void)
 
 	memset(&trigger, 0, sizeof(DB_TRIGGER));
 
-	sql = (char *)zbx_malloc(NULL, sql_alloc);
+	sql = (char *)trx_malloc(NULL, sql_alloc);
 	DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 
 	result = DBselect(
@@ -371,12 +371,12 @@ static int	update_event_names(void)
 	while (SUCCEED == ret && NULL != (row = DBfetch(result)))
 	{
 		TRX_STR2UINT64(trigger.triggerid, row[0]);
-		trigger.description = zbx_strdup(NULL, row[1]);
-		trigger.expression = zbx_strdup(NULL, row[2]);
+		trigger.description = trx_strdup(NULL, row[1]);
+		trigger.expression = trx_strdup(NULL, row[2]);
 		TRX_STR2UCHAR(trigger.priority, row[3]);
-		trigger.comments = zbx_strdup(NULL, row[4]);
-		trigger.url = zbx_strdup(NULL, row[5]);
-		trigger.recovery_expression = zbx_strdup(NULL, row[6]);
+		trigger.comments = trx_strdup(NULL, row[4]);
+		trigger.url = trx_strdup(NULL, row[5]);
+		trigger.recovery_expression = trx_strdup(NULL, row[6]);
 		TRX_STR2UCHAR(trigger.recovery_mode, row[7]);
 		TRX_STR2UCHAR(trigger.value, row[8]);
 
@@ -387,7 +387,7 @@ static int	update_event_names(void)
 		else
 			ret = process_event_update(&trigger, &sql, &sql_alloc, &sql_offset);
 
-		zbx_db_trigger_clean(&trigger);
+		trx_db_trigger_clean(&trigger);
 
 		processed_num++;
 
@@ -408,7 +408,7 @@ static int	update_event_names(void)
 
 	DBfree_result(result);
 
-	zbx_free(sql);
+	trx_free(sql);
 out:
 	if (SUCCEED == ret)
 		treegix_log(LOG_LEVEL_WARNING, "event name update completed");
@@ -420,7 +420,7 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_check_postinit_tasks                                         *
+ * Function: trx_check_postinit_tasks                                         *
  *                                                                            *
  * Purpose: process post initialization tasks                                 *
  *                                                                            *
@@ -428,7 +428,7 @@ out:
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-int	zbx_check_postinit_tasks(char **error)
+int	trx_check_postinit_tasks(char **error)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
@@ -453,7 +453,7 @@ int	zbx_check_postinit_tasks(char **error)
 	DBfree_result(result);
 
 	if (SUCCEED != ret)
-		*error = zbx_strdup(*error, "cannot update event names");
+		*error = trx_strdup(*error, "cannot update event names");
 
 	return ret;
 }

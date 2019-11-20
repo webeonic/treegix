@@ -43,7 +43,7 @@ $http_form_list->addRow((new CLabel(_('Name'), 'name'))->setAsteriskMark(), $nam
 
 // Application
 if ($this->data['application_list']) {
-	$applications = zbx_array_merge([''], $this->data['application_list']);
+	$applications = trx_array_merge([''], $this->data['application_list']);
 	$http_form_list->addRow(_('Application'),
 		new CComboBox('applicationid', $this->data['applicationid'], null, $applications)
 	);
@@ -254,11 +254,11 @@ $this->data['scenario_tab_data'] = [
 ];
 
 foreach ($data['pairs'] as $field) {
-	zbx_subarray_push($this->data['scenario_tab_data']['pairs'], $field['type'], $field);
+	trx_subarray_push($this->data['scenario_tab_data']['pairs'], $field['type'], $field);
 }
 
-zbx_subarray_push($this->data['scenario_tab_data']['agent_visibility'], TRX_AGENT_OTHER, 'agent_other');
-zbx_subarray_push($this->data['scenario_tab_data']['agent_visibility'], TRX_AGENT_OTHER, 'row_agent_other');
+trx_subarray_push($this->data['scenario_tab_data']['agent_visibility'], TRX_AGENT_OTHER, 'agent_other');
+trx_subarray_push($this->data['scenario_tab_data']['agent_visibility'], TRX_AGENT_OTHER, 'row_agent_other');
 
 require_once dirname(__FILE__).'/js/configuration.httpconf.edit.js.php';
 

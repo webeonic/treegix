@@ -5,25 +5,25 @@
 #include "log.h"
 #include "daemon.h"
 #include "proxy.h"
-#include "zbxself.h"
+#include "trxself.h"
 
 #include "proxyconfig.h"
 #include "../servercomms.h"
-#include "../../libs/zbxcrypto/tls.h"
+#include "../../libs/trxcrypto/tls.h"
 
 #define CONFIG_PROXYCONFIG_RETRY	120	/* seconds */
 
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
 
-static void	zbx_proxyconfig_sigusr_handler(int flags)
+static void	trx_proxyconfig_sigusr_handler(int flags)
 {
 	if (TRX_RTC_CONFIG_CACHE_RELOAD == TRX_RTC_GET_MSG(flags))
 	{
-		if (0 < zbx_sleep_get_remainder())
+		if (0 < trx_sleep_get_remainder())
 		{
 			treegix_log(LOG_LEVEL_WARNING, "forced reloading of the configuration cache");
-			zbx_wakeup();
+			trx_wakeup();
 		}
 		else
 			treegix_log(LOG_LEVEL_WARNING, "configuration cache reloading is already in progress");
@@ -37,8 +37,8 @@ static void	zbx_proxyconfig_sigusr_handler(int flags)
  ******************************************************************************/
 static void	process_configuration_sync(size_t *data_size)
 {
-	zbx_socket_t	sock;
-	struct		zbx_json_parse jp;
+	trx_socket_t	sock;
+	struct		trx_json_parse jp;
 	char		value[16], *error = NULL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -63,10 +63,10 @@ static void	process_configuration_sync(size_t *data_size)
 		goto error;
 	}
 
-	if (SUCCEED != zbx_json_open(sock.buffer, &jp))
+	if (SUCCEED != trx_json_open(sock.buffer, &jp))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot obtain configuration data from server at \"%s\": %s",
-				sock.peer, zbx_json_strerror());
+				sock.peer, trx_json_strerror());
 		goto error;
 	}
 
@@ -74,29 +74,29 @@ static void	process_configuration_sync(size_t *data_size)
 
 	/* if the answer is short then most likely it is a negative answer "response":"failed" */
 	if (128 > *data_size &&
-			SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value)) &&
+			SUCCEED == trx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value)) &&
 			0 == strcmp(value, TRX_PROTO_VALUE_FAILED))
 	{
 		char	*info = NULL;
 		size_t	info_alloc = 0;
 
-		if (SUCCEED != zbx_json_value_by_name_dyn(&jp, TRX_PROTO_TAG_INFO, &info, &info_alloc))
-			info = zbx_dsprintf(info, "negative response \"%s\"", value);
+		if (SUCCEED != trx_json_value_by_name_dyn(&jp, TRX_PROTO_TAG_INFO, &info, &info_alloc))
+			info = trx_dsprintf(info, "negative response \"%s\"", value);
 
 		treegix_log(LOG_LEVEL_WARNING, "cannot obtain configuration data from server at \"%s\": %s",
 				sock.peer, info);
-		zbx_free(info);
+		trx_free(info);
 		goto error;
 	}
 
 	treegix_log(LOG_LEVEL_WARNING, "received configuration data from server at \"%s\", datalen " TRX_FS_SIZE_T,
-			sock.peer, (zbx_fs_size_t)*data_size);
+			sock.peer, (trx_fs_size_t)*data_size);
 
 	process_proxyconfig(&jp);
 error:
 	disconnect_server(&sock);
 
-	zbx_free(error);
+	trx_free(error);
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -121,41 +121,41 @@ TRX_THREAD_ENTRY(proxyconfig_thread, args)
 	size_t	data_size;
 	double	sec;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_child();
+	trx_tls_init_child();
 #endif
-	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
+	trx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	zbx_set_sigusr_handler(zbx_proxyconfig_sigusr_handler);
+	trx_set_sigusr_handler(trx_proxyconfig_sigusr_handler);
 
 	while (TRX_IS_RUNNING())
 	{
-		sec = zbx_time();
-		zbx_update_env(sec);
+		sec = trx_time();
+		trx_update_env(sec);
 
-		zbx_setproctitle("%s [loading configuration]", get_process_type_string(process_type));
+		trx_setproctitle("%s [loading configuration]", get_process_type_string(process_type));
 
 		process_configuration_sync(&data_size);
-		sec = zbx_time() - sec;
+		sec = trx_time() - sec;
 
-		zbx_setproctitle("%s [synced config " TRX_FS_SIZE_T " bytes in " TRX_FS_DBL " sec, idle %d sec]",
-				get_process_type_string(process_type), (zbx_fs_size_t)data_size, sec,
+		trx_setproctitle("%s [synced config " TRX_FS_SIZE_T " bytes in " TRX_FS_DBL " sec, idle %d sec]",
+				get_process_type_string(process_type), (trx_fs_size_t)data_size, sec,
 				CONFIG_PROXYCONFIG_FREQUENCY);
 
-		zbx_sleep_loop(CONFIG_PROXYCONFIG_FREQUENCY);
+		trx_sleep_loop(CONFIG_PROXYCONFIG_FREQUENCY);
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 }

@@ -3,8 +3,8 @@
 #include "common.h"
 #include "db.h"
 #include "log.h"
-#include "zbxregexp.h"
-#include "zbxhttp.h"
+#include "trxregexp.h"
+#include "trxhttp.h"
 
 #include "httpmacro.h"
 
@@ -29,8 +29,8 @@
  ******************************************************************************/
 static int 	httpmacro_cmp_func(const void *d1, const void *d2)
 {
-	const zbx_ptr_pair_t	*pair1 = (const zbx_ptr_pair_t *)d1;
-	const zbx_ptr_pair_t	*pair2 = (const zbx_ptr_pair_t *)d2;
+	const trx_ptr_pair_t	*pair1 = (const trx_ptr_pair_t *)d1;
+	const trx_ptr_pair_t	*pair2 = (const trx_ptr_pair_t *)d2;
 
 	return strcmp((char *)pair1->first, (char *)pair2->first);
 }
@@ -61,12 +61,12 @@ static int 	httpmacro_cmp_func(const void *d1, const void *d2)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-static int	httpmacro_append_pair(zbx_httptest_t *httptest, const char *pkey, size_t nkey,
+static int	httpmacro_append_pair(trx_httptest_t *httptest, const char *pkey, size_t nkey,
 			const char *pvalue, size_t nvalue, const char *data, char **err_str)
 {
 	char 		*value_str = NULL;
 	size_t		key_size = 0, key_offset = 0, value_size = 0, value_offset = 0;
-	zbx_ptr_pair_t	pair = {NULL, NULL};
+	trx_ptr_pair_t	pair = {NULL, NULL};
 	int		index, ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() pkey:'%.*s' pvalue:'%.*s'",
@@ -79,7 +79,7 @@ static int	httpmacro_append_pair(zbx_httptest_t *httptest, const char *pkey, siz
 
 		if (NULL != err_str && NULL == *err_str)
 		{
-			*err_str = zbx_dsprintf(*err_str, "missing variable name (only value provided):"
+			*err_str = trx_dsprintf(*err_str, "missing variable name (only value provided):"
 					" \"%.*s\"", (int)nvalue, pvalue);
 		}
 
@@ -91,13 +91,13 @@ static int	httpmacro_append_pair(zbx_httptest_t *httptest, const char *pkey, siz
 		treegix_log(LOG_LEVEL_DEBUG, "%s() \"%.*s\" not enclosed in {}", __func__, (int)nkey, pkey);
 
 		if (NULL != err_str && NULL == *err_str)
-			*err_str = zbx_dsprintf(*err_str, "\"%.*s\" not enclosed in {}", (int)nkey, pkey);
+			*err_str = trx_dsprintf(*err_str, "\"%.*s\" not enclosed in {}", (int)nkey, pkey);
 
 		goto out;
 	}
 
 	/* get macro value */
-	zbx_strncpy_alloc(&value_str, &value_size, &value_offset, pvalue, nvalue);
+	trx_strncpy_alloc(&value_str, &value_size, &value_offset, pvalue, nvalue);
 	if (0 == strncmp(REGEXP_PREFIX, value_str, REGEXP_PREFIX_SIZE))
 	{
 		int	rc;
@@ -105,8 +105,8 @@ static int	httpmacro_append_pair(zbx_httptest_t *httptest, const char *pkey, siz
 		/* The \@ sequence is a special construct to fail if the pattern matches but does */
 		/* not contain groups to capture.                                                 */
 
-		rc = zbx_mregexp_sub(data, value_str + REGEXP_PREFIX_SIZE, "\\@", (char **)&pair.second);
-		zbx_free(value_str);
+		rc = trx_mregexp_sub(data, value_str + REGEXP_PREFIX_SIZE, "\\@", (char **)&pair.second);
+		trx_free(value_str);
 
 		if (SUCCEED != rc || NULL == pair.second)
 		{
@@ -115,7 +115,7 @@ static int	httpmacro_append_pair(zbx_httptest_t *httptest, const char *pkey, siz
 
 			if (NULL != err_str && NULL == *err_str)
 			{
-				*err_str = zbx_dsprintf(*err_str, "cannot extract the value of \"%.*s\""
+				*err_str = trx_dsprintf(*err_str, "cannot extract the value of \"%.*s\""
 						" from response", (int)nkey, pkey);
 			}
 
@@ -126,25 +126,25 @@ static int	httpmacro_append_pair(zbx_httptest_t *httptest, const char *pkey, siz
 		pair.second = value_str;
 
 	/* get macro name */
-	zbx_strncpy_alloc((char **)&pair.first, &key_size, &key_offset, pkey, nkey);
+	trx_strncpy_alloc((char **)&pair.first, &key_size, &key_offset, pkey, nkey);
 
 	/* remove existing macro if necessary */
-	index = zbx_vector_ptr_pair_search(&httptest->macros, pair, httpmacro_cmp_func);
+	index = trx_vector_ptr_pair_search(&httptest->macros, pair, httpmacro_cmp_func);
 	if (FAIL != index)
 	{
-		zbx_ptr_pair_t	*ppair = &httptest->macros.values[index];
+		trx_ptr_pair_t	*ppair = &httptest->macros.values[index];
 
-		zbx_free(ppair->first);
-		zbx_free(ppair->second);
-		zbx_vector_ptr_pair_remove_noorder(&httptest->macros, index);
+		trx_free(ppair->first);
+		trx_free(ppair->second);
+		trx_vector_ptr_pair_remove_noorder(&httptest->macros, index);
 	}
-	zbx_vector_ptr_pair_append(&httptest->macros, pair);
+	trx_vector_ptr_pair_append(&httptest->macros, pair);
 
 	treegix_log(LOG_LEVEL_DEBUG, "append macro '%s'='%s' in cache", (char *)pair.first, (char *)pair.second);
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -162,12 +162,12 @@ out:
  * Author: Alexei Vladishev, Andris Zeila                                     *
  *                                                                            *
  ******************************************************************************/
-int	http_substitute_variables(const zbx_httptest_t *httptest, char **data)
+int	http_substitute_variables(const trx_httptest_t *httptest, char **data)
 {
 	char		replace_char, *substitute;
 	size_t		left, right, len, offset;
 	int		index, ret = SUCCEED;
-	zbx_ptr_pair_t	pair = {NULL, NULL};
+	trx_ptr_pair_t	pair = {NULL, NULL};
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() data:'%s'", __func__, *data);
 
@@ -188,7 +188,7 @@ int	http_substitute_variables(const zbx_httptest_t *httptest, char **data)
 		(*data)[right + 1] = '\0';
 
 		pair.first = *data + left + offset;
-		index = zbx_vector_ptr_pair_search(&httptest->macros, pair, httpmacro_cmp_func);
+		index = trx_vector_ptr_pair_search(&httptest->macros, pair, httpmacro_cmp_func);
 
 		(*data)[right + 1] = replace_char;
 
@@ -215,14 +215,14 @@ int	http_substitute_variables(const zbx_httptest_t *httptest, char **data)
 				/* http_variable_urlencode cannot fail (except for "out of memory") */
 				/* so no check is needed */
 				substitute = NULL;
-				zbx_http_url_encode((char *)httptest->macros.values[index].second, &substitute);
+				trx_http_url_encode((char *)httptest->macros.values[index].second, &substitute);
 			}
 			else if (TRX_CONST_STRLEN("urldecode()") == len &&
 					0 == strncmp(*data + offset, "urldecode()", len))
 			{
 				/* on error substitute will remain unchanged */
 				substitute = NULL;
-				if (FAIL == (ret = zbx_http_url_decode((char *)httptest->macros.values[index].second,
+				if (FAIL == (ret = trx_http_url_decode((char *)httptest->macros.values[index].second,
 						&substitute)))
 				{
 					break;
@@ -235,9 +235,9 @@ int	http_substitute_variables(const zbx_httptest_t *httptest, char **data)
 		else
 			left += offset;
 
-		zbx_replace_string(data, left, &right, substitute);
+		trx_replace_string(data, left, &right, substitute);
 		if (substitute != (char *)httptest->macros.values[index].second)
-			zbx_free(substitute);
+			trx_free(substitute);
 
 		left = right;
 	}
@@ -271,7 +271,7 @@ int	http_substitute_variables(const zbx_httptest_t *httptest, char **data)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-int	http_process_variables(zbx_httptest_t *httptest, zbx_vector_ptr_pair_t *variables, const char *data,
+int	http_process_variables(trx_httptest_t *httptest, trx_vector_ptr_pair_t *variables, const char *data,
 		char **err_str)
 {
 	char	*key, *value;
@@ -289,7 +289,7 @@ int	http_process_variables(zbx_httptest_t *httptest, zbx_vector_ptr_pair_t *vari
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

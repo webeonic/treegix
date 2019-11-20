@@ -7,7 +7,7 @@ class CFilter extends CDiv {
 	// Filter form object.
 	private $form;
 	// Filter form object name and id attribute.
-	private $name = 'zbx_filter';
+	private $name = 'trx_filter';
 	// Visibility of 'Apply', 'Reset' form buttons. Visibility is set to all tabs.
 	private $show_buttons = true;
 

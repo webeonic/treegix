@@ -20,11 +20,11 @@ int	SYSTEM_LOCALTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		*type, buf[32];
 	long		milliseconds;
 	struct tm	tm;
-	zbx_timezone_t	tz;
+	trx_timezone_t	tz;
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -36,9 +36,9 @@ int	SYSTEM_LOCALTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else if (0 == strcmp(type, "local"))
 	{
-		zbx_get_time(&tm, &milliseconds, &tz);
+		trx_get_time(&tm, &milliseconds, &tz);
 
-		zbx_snprintf(buf, sizeof(buf), "%04d-%02d-%02d,%02d:%02d:%02d.%03ld,%1c%02d:%02d",
+		trx_snprintf(buf, sizeof(buf), "%04d-%02d-%02d,%02d:%02d:%02d.%03ld,%1c%02d:%02d",
 				1900 + tm.tm_year, 1 + tm.tm_mon, tm.tm_mday,
 				tm.tm_hour, tm.tm_min, tm.tm_sec, milliseconds,
 				tz.tz_sign, tz.tz_hour, tz.tz_min);
@@ -47,7 +47,7 @@ int	SYSTEM_LOCALTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -63,17 +63,17 @@ int	SYSTEM_USERS_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	TRX_UNUSED(request);
 
-	zbx_snprintf(counter_path, sizeof(counter_path), "\\%u\\%u",
+	trx_snprintf(counter_path, sizeof(counter_path), "\\%u\\%u",
 			(unsigned int)get_builtin_counter_index(PCI_TERMINAL_SERVICES),
 			(unsigned int)get_builtin_counter_index(PCI_TOTAL_SESSIONS));
 
 	request_tmp.nparam = 1;
-	request_tmp.params = zbx_malloc(NULL, request_tmp.nparam * sizeof(char *));
+	request_tmp.params = trx_malloc(NULL, request_tmp.nparam * sizeof(char *));
 	request_tmp.params[0] = counter_path;
 
 	ret = PERF_COUNTER(&request_tmp, result);
 
-	zbx_free(request_tmp.params);
+	trx_free(request_tmp.params);
 
 	return ret;
 #else

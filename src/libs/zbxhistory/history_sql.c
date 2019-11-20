@@ -2,20 +2,20 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 #include "db.h"
 #include "dbcache.h"
-#include "zbxhistory.h"
+#include "trxhistory.h"
 #include "history.h"
 
 typedef struct
 {
 	unsigned char		initialized;
-	zbx_vector_ptr_t	dbinserts;
+	trx_vector_ptr_t	dbinserts;
 }
-zbx_sql_writer_t;
+trx_sql_writer_t;
 
-static zbx_sql_writer_t	writer;
+static trx_sql_writer_t	writer;
 
 typedef void (*vc_str2value_func_t)(history_value_t *value, DB_ROW row);
 
@@ -32,12 +32,12 @@ typedef struct
 	/* to the value of appropriate type                                           */
 	vc_str2value_func_t	rtov;
 }
-zbx_vc_history_table_t;
+trx_vc_history_table_t;
 
 /* row to value converters for all value types */
 static void	row2value_str(history_value_t *value, DB_ROW row)
 {
-	value->str = zbx_strdup(NULL, row[0]);
+	value->str = trx_strdup(NULL, row[0]);
 }
 
 static void	row2value_dbl(history_value_t *value, DB_ROW row)
@@ -53,17 +53,17 @@ static void	row2value_ui64(history_value_t *value, DB_ROW row)
 /* timestamp, logeventid, severity, source, value */
 static void	row2value_log(history_value_t *value, DB_ROW row)
 {
-	value->log = (zbx_log_value_t *)zbx_malloc(NULL, sizeof(zbx_log_value_t));
+	value->log = (trx_log_value_t *)trx_malloc(NULL, sizeof(trx_log_value_t));
 
 	value->log->timestamp = atoi(row[0]);
 	value->log->logeventid = atoi(row[1]);
 	value->log->severity = atoi(row[2]);
-	value->log->source = '\0' == *row[3] ? NULL : zbx_strdup(NULL, row[3]);
-	value->log->value = zbx_strdup(NULL, row[4]);
+	value->log->source = '\0' == *row[3] ? NULL : trx_strdup(NULL, row[3]);
+	value->log->value = trx_strdup(NULL, row[4]);
 }
 
 /* value_type - history table data mapping */
-static zbx_vc_history_table_t	vc_history_tables[] = {
+static trx_vc_history_table_t	vc_history_tables[] = {
 	{"history", "value", row2value_dbl},
 	{"history_str", "value", row2value_str},
 	{"history_log", "timestamp,logeventid,severity,source,value", row2value_log},
@@ -89,7 +89,7 @@ static void	sql_writer_init(void)
 	if (0 != writer.initialized)
 		return;
 
-	zbx_vector_ptr_create(&writer.dbinserts);
+	trx_vector_ptr_create(&writer.dbinserts);
 
 	writer.initialized = 1;
 }
@@ -108,13 +108,13 @@ static void	sql_writer_release(void)
 
 	for (i = 0; i < writer.dbinserts.values_num; i++)
 	{
-		zbx_db_insert_t	*db_insert = (zbx_db_insert_t *)writer.dbinserts.values[i];
+		trx_db_insert_t	*db_insert = (trx_db_insert_t *)writer.dbinserts.values[i];
 
-		zbx_db_insert_clean(db_insert);
-		zbx_free(db_insert);
+		trx_db_insert_clean(db_insert);
+		trx_free(db_insert);
 	}
-	zbx_vector_ptr_clear(&writer.dbinserts);
-	zbx_vector_ptr_destroy(&writer.dbinserts);
+	trx_vector_ptr_clear(&writer.dbinserts);
+	trx_vector_ptr_destroy(&writer.dbinserts);
 
 	writer.initialized = 0;
 }
@@ -128,10 +128,10 @@ static void	sql_writer_release(void)
  * Parameters: db_insert - [IN] bulk insert data                                    *
  *                                                                                  *
  ************************************************************************************/
-static void	sql_writer_add_dbinsert(zbx_db_insert_t *db_insert)
+static void	sql_writer_add_dbinsert(trx_db_insert_t *db_insert)
 {
 	sql_writer_init();
-	zbx_vector_ptr_append(&writer.dbinserts, db_insert);
+	trx_vector_ptr_append(&writer.dbinserts, db_insert);
 }
 
 /************************************************************************************
@@ -156,8 +156,8 @@ static int	sql_writer_flush(void)
 
 		for (i = 0; i < writer.dbinserts.values_num; i++)
 		{
-			zbx_db_insert_t	*db_insert = (zbx_db_insert_t *)writer.dbinserts.values[i];
-			zbx_db_insert_execute(db_insert);
+			trx_db_insert_t	*db_insert = (trx_db_insert_t *)writer.dbinserts.values[i];
+			trx_db_insert_execute(db_insert);
 		}
 	}
 	while (TRX_DB_DOWN == (txn_error = DBcommit()));
@@ -173,20 +173,20 @@ static int	sql_writer_flush(void)
  *                                                                                                                *
  ******************************************************************************************************************/
 
-typedef void (*add_history_func_t)(const zbx_vector_ptr_t *history);
+typedef void (*add_history_func_t)(const trx_vector_ptr_t *history);
 
 /******************************************************************************
  *                                                                            *
  * Function: add_history_dbl                                                  *
  *                                                                            *
  ******************************************************************************/
-static void	add_history_dbl(const zbx_vector_ptr_t *history)
+static void	add_history_dbl(const trx_vector_ptr_t *history)
 {
 	int		i;
-	zbx_db_insert_t	*db_insert;
+	trx_db_insert_t	*db_insert;
 
-	db_insert = (zbx_db_insert_t *)zbx_malloc(NULL, sizeof(zbx_db_insert_t));
-	zbx_db_insert_prepare(db_insert, "history", "itemid", "clock", "ns", "value", NULL);
+	db_insert = (trx_db_insert_t *)trx_malloc(NULL, sizeof(trx_db_insert_t));
+	trx_db_insert_prepare(db_insert, "history", "itemid", "clock", "ns", "value", NULL);
 
 	for (i = 0; i < history->values_num; i++)
 	{
@@ -195,7 +195,7 @@ static void	add_history_dbl(const zbx_vector_ptr_t *history)
 		if (ITEM_VALUE_TYPE_FLOAT != h->value_type)
 			continue;
 
-		zbx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, h->value.dbl);
+		trx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, h->value.dbl);
 	}
 
 	sql_writer_add_dbinsert(db_insert);
@@ -206,13 +206,13 @@ static void	add_history_dbl(const zbx_vector_ptr_t *history)
  * Function: add_history_uint                                                 *
  *                                                                            *
  ******************************************************************************/
-static void	add_history_uint(zbx_vector_ptr_t *history)
+static void	add_history_uint(trx_vector_ptr_t *history)
 {
 	int		i;
-	zbx_db_insert_t	*db_insert;
+	trx_db_insert_t	*db_insert;
 
-	db_insert = (zbx_db_insert_t *)zbx_malloc(NULL, sizeof(zbx_db_insert_t));
-	zbx_db_insert_prepare(db_insert, "history_uint", "itemid", "clock", "ns", "value", NULL);
+	db_insert = (trx_db_insert_t *)trx_malloc(NULL, sizeof(trx_db_insert_t));
+	trx_db_insert_prepare(db_insert, "history_uint", "itemid", "clock", "ns", "value", NULL);
 
 	for (i = 0; i < history->values_num; i++)
 	{
@@ -221,7 +221,7 @@ static void	add_history_uint(zbx_vector_ptr_t *history)
 		if (ITEM_VALUE_TYPE_UINT64 != h->value_type)
 			continue;
 
-		zbx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, h->value.ui64);
+		trx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, h->value.ui64);
 	}
 
 	sql_writer_add_dbinsert(db_insert);
@@ -232,13 +232,13 @@ static void	add_history_uint(zbx_vector_ptr_t *history)
  * Function: add_history_str                                                  *
  *                                                                            *
  ******************************************************************************/
-static void	add_history_str(zbx_vector_ptr_t *history)
+static void	add_history_str(trx_vector_ptr_t *history)
 {
 	int		i;
-	zbx_db_insert_t	*db_insert;
+	trx_db_insert_t	*db_insert;
 
-	db_insert = (zbx_db_insert_t *)zbx_malloc(NULL, sizeof(zbx_db_insert_t));
-	zbx_db_insert_prepare(db_insert, "history_str", "itemid", "clock", "ns", "value", NULL);
+	db_insert = (trx_db_insert_t *)trx_malloc(NULL, sizeof(trx_db_insert_t));
+	trx_db_insert_prepare(db_insert, "history_str", "itemid", "clock", "ns", "value", NULL);
 
 	for (i = 0; i < history->values_num; i++)
 	{
@@ -247,7 +247,7 @@ static void	add_history_str(zbx_vector_ptr_t *history)
 		if (ITEM_VALUE_TYPE_STR != h->value_type)
 			continue;
 
-		zbx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, h->value.str);
+		trx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, h->value.str);
 	}
 
 	sql_writer_add_dbinsert(db_insert);
@@ -258,13 +258,13 @@ static void	add_history_str(zbx_vector_ptr_t *history)
  * Function: add_history_text                                                 *
  *                                                                            *
  ******************************************************************************/
-static void	add_history_text(zbx_vector_ptr_t *history)
+static void	add_history_text(trx_vector_ptr_t *history)
 {
 	int		i;
-	zbx_db_insert_t	*db_insert;
+	trx_db_insert_t	*db_insert;
 
-	db_insert = (zbx_db_insert_t *)zbx_malloc(NULL, sizeof(zbx_db_insert_t));
-	zbx_db_insert_prepare(db_insert, "history_text", "itemid", "clock", "ns", "value", NULL);
+	db_insert = (trx_db_insert_t *)trx_malloc(NULL, sizeof(trx_db_insert_t));
+	trx_db_insert_prepare(db_insert, "history_text", "itemid", "clock", "ns", "value", NULL);
 
 	for (i = 0; i < history->values_num; i++)
 	{
@@ -273,7 +273,7 @@ static void	add_history_text(zbx_vector_ptr_t *history)
 		if (ITEM_VALUE_TYPE_TEXT != h->value_type)
 			continue;
 
-		zbx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, h->value.str);
+		trx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, h->value.str);
 	}
 
 	sql_writer_add_dbinsert(db_insert);
@@ -284,26 +284,26 @@ static void	add_history_text(zbx_vector_ptr_t *history)
  * Function: add_history_log                                                  *
  *                                                                            *
  ******************************************************************************/
-static void	add_history_log(zbx_vector_ptr_t *history)
+static void	add_history_log(trx_vector_ptr_t *history)
 {
 	int			i;
-	zbx_db_insert_t	*db_insert;
+	trx_db_insert_t	*db_insert;
 
-	db_insert = (zbx_db_insert_t *)zbx_malloc(NULL, sizeof(zbx_db_insert_t));
-	zbx_db_insert_prepare(db_insert, "history_log", "itemid", "clock", "ns", "timestamp", "source", "severity",
+	db_insert = (trx_db_insert_t *)trx_malloc(NULL, sizeof(trx_db_insert_t));
+	trx_db_insert_prepare(db_insert, "history_log", "itemid", "clock", "ns", "timestamp", "source", "severity",
 			"value", "logeventid", NULL);
 
 	for (i = 0; i < history->values_num; i++)
 	{
 		const TRX_DC_HISTORY	*h = (TRX_DC_HISTORY *)history->values[i];
-		const zbx_log_value_t	*log;
+		const trx_log_value_t	*log;
 
 		if (ITEM_VALUE_TYPE_LOG != h->value_type)
 			continue;
 
 		log = h->value.log;
 
-		zbx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, log->timestamp,
+		trx_db_insert_add_values(db_insert, h->itemid, h->ts.sec, h->ts.ns, log->timestamp,
 				TRX_NULL2EMPTY_STR(log->source), log->severity, log->value, log->logeventid);
 	}
 
@@ -335,16 +335,16 @@ static void	add_history_log(zbx_vector_ptr_t *history)
  *             end_timestamp - seconds < <value timestamp> <= end_timestamp      *
  *                                                                               *
  *********************************************************************************/
-static int	db_read_values_by_time(zbx_uint64_t itemid, int value_type, zbx_vector_history_record_t *values,
+static int	db_read_values_by_time(trx_uint64_t itemid, int value_type, trx_vector_history_record_t *values,
 		int seconds, int end_timestamp)
 {
 	char			*sql = NULL;
 	size_t	 		sql_alloc = 0, sql_offset = 0;
 	DB_RESULT		result;
 	DB_ROW			row;
-	zbx_vc_history_table_t	*table = &vc_history_tables[value_type];
+	trx_vc_history_table_t	*table = &vc_history_tables[value_type];
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select clock,ns,%s"
 			" from %s"
 			" where itemid=" TRX_FS_UI64,
@@ -352,34 +352,34 @@ static int	db_read_values_by_time(zbx_uint64_t itemid, int value_type, zbx_vecto
 
 	if (TRX_JAN_2038 == end_timestamp)
 	{
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock>%d", end_timestamp - seconds);
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock>%d", end_timestamp - seconds);
 	}
 	else if (1 == seconds)
 	{
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock=%d", end_timestamp);
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock=%d", end_timestamp);
 	}
 	else
 	{
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock>%d and clock<=%d",
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock>%d and clock<=%d",
 				end_timestamp - seconds, end_timestamp);
 	}
 
 	result = DBselect("%s", sql);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	if (NULL == result)
 		goto out;
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_history_record_t	value;
+		trx_history_record_t	value;
 
 		value.timestamp.sec = atoi(row[0]);
 		value.timestamp.ns = atoi(row[1]);
 		table->rtov(&value.value, row + 2);
 
-		zbx_vector_history_record_append_ptr(values, &value);
+		trx_vector_history_record_append_ptr(values, &value);
 	}
 	DBfree_result(result);
 out:
@@ -411,7 +411,7 @@ out:
  *           is not yet retrieved.                                                  *
  *                                                                                  *
  ************************************************************************************/
-static int	db_read_values_by_count(zbx_uint64_t itemid, int value_type, zbx_vector_history_record_t *values,
+static int	db_read_values_by_count(trx_uint64_t itemid, int value_type, trx_vector_history_record_t *values,
 		int count, int end_timestamp)
 {
 	char			*sql = NULL;
@@ -419,7 +419,7 @@ static int	db_read_values_by_count(zbx_uint64_t itemid, int value_type, zbx_vect
 	int			clock_to, clock_from, step = 0, ret = FAIL;
 	DB_RESULT		result;
 	DB_ROW			row;
-	zbx_vc_history_table_t	*table = &vc_history_tables[value_type];
+	trx_vc_history_table_t	*table = &vc_history_tables[value_type];
 	const int		periods[] = {SEC_PER_HOUR, SEC_PER_DAY, SEC_PER_WEEK, SEC_PER_MONTH, 0, -1};
 
 	clock_to = end_timestamp;
@@ -433,7 +433,7 @@ static int	db_read_values_by_count(zbx_uint64_t itemid, int value_type, zbx_vect
 		}
 
 		sql_offset = 0;
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 				"select clock,ns,%s"
 				" from %s"
 				" where itemid=" TRX_FS_UI64
@@ -441,9 +441,9 @@ static int	db_read_values_by_count(zbx_uint64_t itemid, int value_type, zbx_vect
 				table->fields, table->name, itemid, clock_to);
 
 		if (clock_from != clock_to)
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock>%d", clock_from);
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock>%d", clock_from);
 
-		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by clock desc");
+		trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by clock desc");
 
 		result = DBselectN(sql, count);
 
@@ -452,13 +452,13 @@ static int	db_read_values_by_count(zbx_uint64_t itemid, int value_type, zbx_vect
 
 		while (NULL != (row = DBfetch(result)))
 		{
-			zbx_history_record_t	value;
+			trx_history_record_t	value;
 
 			value.timestamp.sec = atoi(row[0]);
 			value.timestamp.ns = atoi(row[1]);
 			table->rtov(&value.value, row + 2);
 
-			zbx_vector_history_record_append_ptr(values, &value);
+			trx_vector_history_record_append_ptr(values, &value);
 
 			count--;
 		}
@@ -483,12 +483,12 @@ static int	db_read_values_by_count(zbx_uint64_t itemid, int value_type, zbx_vect
 	while (0 < values->values_num && values->values[values->values_num - 1].timestamp.sec == end_timestamp)
 	{
 		values->values_num--;
-		zbx_history_record_clear(&values->values[values->values_num], value_type);
+		trx_history_record_clear(&values->values[values->values_num], value_type);
 	}
 
 	ret = db_read_values_by_time(itemid, value_type, values, 1, end_timestamp);
 out:
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -514,17 +514,17 @@ out:
  *             count_timestamp < <value timestamp> <= read_timestamp                *
  *                                                                                  *
  ************************************************************************************/
-static int	db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_type,
-		zbx_vector_history_record_t *values, int seconds, int count, int end_timestamp)
+static int	db_read_values_by_time_and_count(trx_uint64_t itemid, int value_type,
+		trx_vector_history_record_t *values, int seconds, int count, int end_timestamp)
 {
 	int			ret = FAIL;
 	char			*sql = NULL;
 	size_t	 		sql_alloc = 0, sql_offset;
 	DB_RESULT		result;
 	DB_ROW			row;
-	zbx_vc_history_table_t	*table = &vc_history_tables[value_type];
+	trx_vc_history_table_t	*table = &vc_history_tables[value_type];
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select clock,ns,%s"
 			" from %s"
 			" where itemid=" TRX_FS_UI64,
@@ -532,30 +532,30 @@ static int	db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_type,
 
 	if (1 == seconds)
 	{
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock=%d", end_timestamp);
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock=%d", end_timestamp);
 	}
 	else
 	{
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock>%d and clock<=%d order by clock desc",
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " and clock>%d and clock<=%d order by clock desc",
 				end_timestamp - seconds, end_timestamp);
 	}
 
 	result = DBselectN(sql, count);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	if (NULL == result)
 		goto out;
 
 	while (NULL != (row = DBfetch(result)) && 0 < count--)
 	{
-		zbx_history_record_t	value;
+		trx_history_record_t	value;
 
 		value.timestamp.sec = atoi(row[0]);
 		value.timestamp.ns = atoi(row[1]);
 		table->rtov(&value.value, row + 2);
 
-		zbx_vector_history_record_append_ptr(values, &value);
+		trx_vector_history_record_append_ptr(values, &value);
 	}
 	DBfree_result(result);
 
@@ -575,12 +575,12 @@ static int	db_read_values_by_time_and_count(zbx_uint64_t itemid, int value_type,
 	while (0 < values->values_num && values->values[values->values_num - 1].timestamp.sec == end_timestamp)
 	{
 		values->values_num--;
-		zbx_history_record_clear(&values->values[values->values_num], value_type);
+		trx_history_record_clear(&values->values[values->values_num], value_type);
 	}
 
 	ret = db_read_values_by_time(itemid, value_type, values, 1, end_timestamp);
 out:
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -600,7 +600,7 @@ out:
  * Parameters:  hist    - [IN] the history storage interface                        *
  *                                                                                  *
  ************************************************************************************/
-static void	sql_destroy(zbx_history_iface_t *hist)
+static void	sql_destroy(trx_history_iface_t *hist)
 {
 	TRX_UNUSED(hist);
 }
@@ -625,8 +625,8 @@ static void	sql_destroy(zbx_history_iface_t *hist)
  *           all values from the specified interval if count is zero.               *
  *                                                                                  *
  ************************************************************************************/
-static int	sql_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, int start, int count, int end,
-		zbx_vector_history_record_t *values)
+static int	sql_get_values(trx_history_iface_t *hist, trx_uint64_t itemid, int start, int count, int end,
+		trx_vector_history_record_t *values)
 {
 	if (0 == count)
 		return db_read_values_by_time(itemid, hist->value_type, values, end - start, end);
@@ -647,7 +647,7 @@ static int	sql_get_values(zbx_history_iface_t *hist, zbx_uint64_t itemid, int st
  *              history - [IN] the history data vector (may have mixed value types) *
  *                                                                                  *
  ************************************************************************************/
-static int	sql_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t *history)
+static int	sql_add_values(trx_history_iface_t *hist, const trx_vector_ptr_t *history)
 {
 	int	i, h_num = 0;
 
@@ -680,7 +680,7 @@ static int	sql_add_values(zbx_history_iface_t *hist, const zbx_vector_ptr_t *his
  *           unrecoverable error occurs                                             *
  *                                                                                  *
  ************************************************************************************/
-static int	sql_flush(zbx_history_iface_t *hist)
+static int	sql_flush(trx_history_iface_t *hist)
 {
 	TRX_UNUSED(hist);
 
@@ -689,7 +689,7 @@ static int	sql_flush(zbx_history_iface_t *hist)
 
 /************************************************************************************
  *                                                                                  *
- * Function: zbx_history_sql_init                                                   *
+ * Function: trx_history_sql_init                                                   *
  *                                                                                  *
  * Purpose: initializes history storage interface                                   *
  *                                                                                  *
@@ -701,7 +701,7 @@ static int	sql_flush(zbx_history_iface_t *hist)
  *               FAIL    - otherwise                                                *
  *                                                                                  *
  ************************************************************************************/
-int	zbx_history_sql_init(zbx_history_iface_t *hist, unsigned char value_type, char **error)
+int	trx_history_sql_init(trx_history_iface_t *hist, unsigned char value_type, char **error)
 {
 	TRX_UNUSED(error);
 

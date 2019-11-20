@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 
 #include <sys/sysctl.h>
@@ -45,7 +45,7 @@ static int	proc_argv(pid_t pid, char ***argv, size_t *argv_alloc, int *argc)
 	if (NULL == *argv)
 	{
 		*argv_alloc = ARGS_START_SIZE;
-		*argv = zbx_malloc(*argv, *argv_alloc);
+		*argv = trx_malloc(*argv, *argv_alloc);
 	}
 
 	mib[0] = CTL_KERN;
@@ -59,7 +59,7 @@ retry:
 		if (errno == ENOMEM)
 		{
 			*argv_alloc *= 2;
-			*argv = zbx_realloc(*argv, *argv_alloc);
+			*argv = trx_realloc(*argv, *argv_alloc);
 			goto retry;
 		}
 		return FAIL;
@@ -82,11 +82,11 @@ static void	collect_args(char **argv, int argc, char **args, size_t *args_alloc)
 	if (0 == *args_alloc)
 	{
 		*args_alloc = ARGS_START_SIZE;
-		*args = zbx_malloc(*args, *args_alloc);
+		*args = trx_malloc(*args, *args_alloc);
 	}
 
 	for (i = 0; i < argc; i++)
-		zbx_snprintf_alloc(args, args_alloc, &args_offset, "%s ", argv[i]);
+		trx_snprintf_alloc(args, args_alloc, &args_offset, "%s ", argv[i]);
 
 	if (0 != args_offset)
 		args_offset--; /* ' ' */
@@ -113,7 +113,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -128,8 +128,8 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-						zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+						trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -151,7 +151,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		do_task = TRX_DO_MIN;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -182,18 +182,18 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	sz = 0;
 	if (0 != sysctl(mib, 6, NULL, &sz, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	proc = (struct kinfo_proc2 *)zbx_malloc(proc, sz);
+	proc = (struct kinfo_proc2 *)trx_malloc(proc, sz);
 	mib[5] = (int)(sz / sizeof(struct kinfo_proc2));
 	if (0 != sysctl(mib, 6, proc, &sz, NULL, 0))
 	{
-		zbx_free(proc);
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain process information: %s",
-				zbx_strerror(errno)));
+		trx_free(proc);
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain process information: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -204,17 +204,17 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	sz = 0;
 	if (0 != sysctl(mib, 4, NULL, &sz, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	proc = (struct kinfo_proc *)zbx_malloc(proc, sz);
+	proc = (struct kinfo_proc *)trx_malloc(proc, sz);
 	if (0 != sysctl(mib, 4, proc, &sz, NULL, 0))
 	{
-		zbx_free(proc);
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain process information: %s",
-				zbx_strerror(errno)));
+		trx_free(proc);
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain process information: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -233,7 +233,7 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if (SUCCEED == proc_argv(proc[i].TRX_P_PID, &argv, &argv_alloc, &argc))
 			{
 				collect_args(argv, argc, &args, &args_alloc);
-				if (NULL != zbx_regexp_match(args, proccomm, NULL))
+				if (NULL != trx_regexp_match(args, proccomm, NULL))
 					comm_ok = 1;
 			}
 		}
@@ -258,9 +258,9 @@ int     PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			}
 		}
 	}
-	zbx_free(proc);
-	zbx_free(argv);
-	zbx_free(args);
+	trx_free(proc);
+	trx_free(argv);
+	trx_free(args);
 out:
 	if (TRX_DO_AVG == do_task)
 		SET_DBL_RESULT(result, 0 == proccount ? 0 : memsize / proccount);
@@ -273,7 +273,7 @@ out:
 int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char			*procname, *proccomm, *param;
-	int			proccount = 0, invalid_user = 0, zbx_proc_stat, count, i, proc_ok, stat_ok, comm_ok;
+	int			proccount = 0, invalid_user = 0, trx_proc_stat, count, i, proc_ok, stat_ok, comm_ok;
 	size_t			sz;
 	struct passwd		*usrinfo;
 #ifdef KERN_PROC2
@@ -289,7 +289,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -304,8 +304,8 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-						zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+						trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -318,20 +318,20 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = TRX_PROC_STAT_ALL;
+		trx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = TRX_PROC_STAT_RUN;
+		trx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
+		trx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
+		trx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else if (0 == strcmp(param, "disk"))
-		zbx_proc_stat = TRX_PROC_STAT_DISK;
+		trx_proc_stat = TRX_PROC_STAT_DISK;
 	else if (0 == strcmp(param, "trace"))
-		zbx_proc_stat = TRX_PROC_STAT_TRACE;
+		trx_proc_stat = TRX_PROC_STAT_TRACE;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -360,18 +360,18 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	sz = 0;
 	if (0 != sysctl(mib, 6, NULL, &sz, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	proc = (struct kinfo_proc2 *)zbx_malloc(proc, sz);
+	proc = (struct kinfo_proc2 *)trx_malloc(proc, sz);
 	mib[5] = (int)(sz / sizeof(struct kinfo_proc2));
 	if (0 != sysctl(mib, 6, proc, &sz, NULL, 0))
 	{
-		zbx_free(proc);
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain process information: %s",
-				zbx_strerror(errno)));
+		trx_free(proc);
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain process information: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -382,17 +382,17 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	sz = 0;
 	if (0 != sysctl(mib, 4, NULL, &sz, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain necessary buffer size from system: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	proc = (struct kinfo_proc *)zbx_malloc(proc, sz);
+	proc = (struct kinfo_proc *)trx_malloc(proc, sz);
 	if (0 != sysctl(mib, 4, proc, &sz, NULL, 0))
 	{
-		zbx_free(proc);
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain process information: %s",
-				zbx_strerror(errno)));
+		trx_free(proc);
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain process information: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -408,9 +408,9 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL == procname || '\0' == *procname || 0 == strcmp(procname, proc[i].TRX_P_COMM))
 			proc_ok = 1;
 
-		if (TRX_PROC_STAT_ALL != zbx_proc_stat)
+		if (TRX_PROC_STAT_ALL != trx_proc_stat)
 		{
-			switch (zbx_proc_stat)
+			switch (trx_proc_stat)
 			{
 				case TRX_PROC_STAT_RUN:
 					if (SRUN == proc[i].TRX_P_STAT || SONPROC == proc[i].TRX_P_STAT)
@@ -442,7 +442,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if (SUCCEED == proc_argv(proc[i].TRX_P_PID, &argv, &argv_alloc, &argc))
 			{
 				collect_args(argv, argc, &args, &args_alloc);
-				if (NULL != zbx_regexp_match(args, proccomm, NULL))
+				if (NULL != trx_regexp_match(args, proccomm, NULL))
 					comm_ok = 1;
 			}
 		}
@@ -452,9 +452,9 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (proc_ok && stat_ok && comm_ok)
 			proccount++;
 	}
-	zbx_free(proc);
-	zbx_free(argv);
-	zbx_free(args);
+	trx_free(proc);
+	trx_free(argv);
+	trx_free(args);
 out:
 	SET_UI64_RESULT(result, proccount);
 

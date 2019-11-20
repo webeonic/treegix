@@ -19,7 +19,7 @@ import (
 	"treegix/pkg/plugin"
 	"treegix/pkg/tls"
 	"treegix/pkg/version"
-	"treegix/pkg/zbxcomms"
+	"treegix/pkg/trxcomms"
 )
 
 const hostMetadataLen = 255
@@ -152,7 +152,7 @@ func (c *Connector) refreshActiveChecks() {
 		return
 	}
 
-	data, err := zbxcomms.Exchange(c.address, &c.localAddr, time.Second*time.Duration(c.options.Timeout), request, c.tlsConfig)
+	data, err := trxcomms.Exchange(c.address, &c.localAddr, time.Second*time.Duration(c.options.Timeout), request, c.tlsConfig)
 
 	if err != nil {
 		if c.lastError == nil || err.Error() != c.lastError.Error() {

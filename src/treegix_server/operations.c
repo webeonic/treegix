@@ -7,7 +7,7 @@
 #include "dbcache.h"
 
 #include "operations.h"
-#include "zbxserver.h"
+#include "trxserver.h"
 
 typedef enum
 {
@@ -16,7 +16,7 @@ typedef enum
 	TRX_DISCOVERY_IP,
 	TRX_DISCOVERY_VALUE
 }
-zbx_dcheck_source_t;
+trx_dcheck_source_t;
 
 /******************************************************************************
  *                                                                            *
@@ -31,11 +31,11 @@ zbx_dcheck_source_t;
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
  ******************************************************************************/
-static zbx_uint64_t	select_discovered_host(const DB_EVENT *event)
+static trx_uint64_t	select_discovered_host(const DB_EVENT *event)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	hostid = 0, proxy_hostid;
+	trx_uint64_t	hostid = 0, proxy_hostid;
 	char		*sql = NULL, *ip_esc;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() eventid:" TRX_FS_UI64, __func__, event->eventid);
@@ -63,7 +63,7 @@ static zbx_uint64_t	select_discovered_host(const DB_EVENT *event)
 			ip_esc = DBdyn_escape_string(row[1]);
 			DBfree_result(result);
 
-			sql = zbx_dsprintf(sql,
+			sql = trx_dsprintf(sql,
 					"select h.hostid"
 					" from hosts h,interface i"
 					" where h.hostid=i.hostid"
@@ -76,10 +76,10 @@ static zbx_uint64_t	select_discovered_host(const DB_EVENT *event)
 					HOST_STATUS_MONITORED, HOST_STATUS_NOT_MONITORED,
 					DBsql_id_cmp(proxy_hostid));
 
-			zbx_free(ip_esc);
+			trx_free(ip_esc);
 			break;
 		case EVENT_OBJECT_TREEGIX_ACTIVE:
-			sql = zbx_dsprintf(sql,
+			sql = trx_dsprintf(sql,
 					"select h.hostid"
 					" from hosts h,autoreg_host a"
 					" where h.host=a.host"
@@ -94,7 +94,7 @@ static zbx_uint64_t	select_discovered_host(const DB_EVENT *event)
 
 	result = DBselectN(sql, 1);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	if (NULL != (row = DBfetch(result)))
 		TRX_STR2UINT64(hostid, row[0]);
@@ -114,20 +114,20 @@ exit:
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static void	add_discovered_host_groups(zbx_uint64_t hostid, zbx_vector_uint64_t *groupids)
+static void	add_discovered_host_groups(trx_uint64_t hostid, trx_vector_uint64_t *groupids)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	groupid;
+	trx_uint64_t	groupid;
 	char		*sql = NULL;
 	size_t		sql_alloc = 256, sql_offset = 0;
 	int		i;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	sql = (char *)zbx_malloc(sql, sql_alloc);
+	sql = (char *)trx_malloc(sql, sql_alloc);
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select groupid"
 			" from hosts_groups"
 			" where hostid=" TRX_FS_UI64
@@ -137,40 +137,40 @@ static void	add_discovered_host_groups(zbx_uint64_t hostid, zbx_vector_uint64_t 
 
 	result = DBselect("%s", sql);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	while (NULL != (row = DBfetch(result)))
 	{
 		TRX_STR2UINT64(groupid, row[0]);
 
-		if (FAIL == (i = zbx_vector_uint64_search(groupids, groupid, TRX_DEFAULT_UINT64_COMPARE_FUNC)))
+		if (FAIL == (i = trx_vector_uint64_search(groupids, groupid, TRX_DEFAULT_UINT64_COMPARE_FUNC)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
 		}
 
-		zbx_vector_uint64_remove_noorder(groupids, i);
+		trx_vector_uint64_remove_noorder(groupids, i);
 	}
 	DBfree_result(result);
 
 	if (0 != groupids->values_num)
 	{
-		zbx_uint64_t	hostgroupid;
-		zbx_db_insert_t	db_insert;
+		trx_uint64_t	hostgroupid;
+		trx_db_insert_t	db_insert;
 
 		hostgroupid = DBget_maxid_num("hosts_groups", groupids->values_num);
 
-		zbx_db_insert_prepare(&db_insert, "hosts_groups", "hostgroupid", "hostid", "groupid", NULL);
+		trx_db_insert_prepare(&db_insert, "hosts_groups", "hostgroupid", "hostid", "groupid", NULL);
 
-		zbx_vector_uint64_sort(groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_sort(groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		for (i = 0; i < groupids->values_num; i++)
 		{
-			zbx_db_insert_add_values(&db_insert, hostgroupid++, hostid, groupids->values[i]);
+			trx_db_insert_add_values(&db_insert, hostgroupid++, hostid, groupids->values[i]);
 		}
 
-		zbx_db_insert_execute(&db_insert);
-		zbx_db_insert_clean(&db_insert);
+		trx_db_insert_execute(&db_insert);
+		trx_db_insert_clean(&db_insert);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -189,25 +189,25 @@ static void	add_discovered_host_groups(zbx_uint64_t hostid, zbx_vector_uint64_t 
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
  ******************************************************************************/
-static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
+static trx_uint64_t	add_discovered_host(const DB_EVENT *event)
 {
 	DB_RESULT		result;
 	DB_RESULT		result2;
 	DB_ROW			row;
 	DB_ROW			row2;
-	zbx_uint64_t		dhostid, hostid = 0, proxy_hostid, druleid;
+	trx_uint64_t		dhostid, hostid = 0, proxy_hostid, druleid;
 	char			*host, *host_esc, *host_unique, *host_visible, *host_visible_unique;
 	unsigned short		port;
-	zbx_vector_uint64_t	groupids;
+	trx_vector_uint64_t	groupids;
 	unsigned char		svc_type, interface_type;
-	zbx_config_t		cfg;
-	zbx_db_insert_t		db_insert;
+	trx_config_t		cfg;
+	trx_db_insert_t		db_insert;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() eventid:" TRX_FS_UI64, __func__, event->eventid);
 
-	zbx_vector_uint64_create(&groupids);
+	trx_vector_uint64_create(&groupids);
 
-	zbx_config_get(&cfg, TRX_CONFIG_FLAGS_DISCOVERY_GROUPID | TRX_CONFIG_FLAGS_DEFAULT_INVENTORY_MODE);
+	trx_config_get(&cfg, TRX_CONFIG_FLAGS_DISCOVERY_GROUPID | TRX_CONFIG_FLAGS_DEFAULT_INVENTORY_MODE);
 
 	if (TRX_DISCOVERY_GROUPID_UNDEFINED == cfg.discovery_groupid)
 	{
@@ -215,7 +215,7 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 		goto clean;
 	}
 
-	zbx_vector_uint64_append(&groupids, cfg.discovery_groupid);
+	trx_vector_uint64_append(&groupids, cfg.discovery_groupid);
 
 	if (EVENT_OBJECT_DHOST == event->object || EVENT_OBJECT_DSERVICE == event->object)
 	{
@@ -293,11 +293,11 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 			{
 				DB_RESULT		result3;
 				DB_ROW			row3;
-				zbx_dcheck_source_t	host_source, name_source;
+				trx_dcheck_source_t	host_source, name_source;
 				char			*sql = NULL;
 				size_t			sql_alloc, sql_offset;
 
-				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+				trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 						"select ds.value"
 						" from dchecks dc"
 							" left join dservices ds"
@@ -312,7 +312,7 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 
 				if (NULL != (row3 = DBfetch(result3)))
 				{
-					if (SUCCEED == zbx_db_is_null(row3[0]) || '\0' == *row3[0])
+					if (SUCCEED == trx_db_is_null(row3[0]) || '\0' == *row3[0])
 					{
 						treegix_log(LOG_LEVEL_WARNING, "cannot retrieve service value for"
 								" host name on \"%s\"", row[2]);
@@ -332,21 +332,21 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 				}
 
 				if (TRX_DISCOVERY_VALUE == host_source)
-					host = zbx_strdup(NULL, row3[0]);
+					host = trx_strdup(NULL, row3[0]);
 				else if (TRX_DISCOVERY_IP == host_source || '\0' == *row[3])
-					host = zbx_strdup(NULL, row[2]);
+					host = trx_strdup(NULL, row[2]);
 				else
-					host = zbx_strdup(NULL, row[3]);
+					host = trx_strdup(NULL, row[3]);
 
 				DBfree_result(result3);
 
 				/* for host uniqueness purposes */
 				make_hostname(host);	/* replace not-allowed symbols */
 				host_unique = DBget_unique_hostname_by_sample(host, "host");
-				zbx_free(host);
+				trx_free(host);
 
 				sql_offset = 0;
-				zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+				trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 						"select ds.value"
 						" from dchecks dc"
 							" left join dservices ds"
@@ -363,7 +363,7 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 
 				if (NULL != (row3 = DBfetch(result3)))
 				{
-					if (SUCCEED == zbx_db_is_null(row3[0]) || '\0' == *row3[0])
+					if (SUCCEED == trx_db_is_null(row3[0]) || '\0' == *row3[0])
 					{
 						treegix_log(LOG_LEVEL_WARNING, "cannot retrieve service value for"
 								" host visible name on \"%s\"", row[2]);
@@ -383,38 +383,38 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 				}
 
 				if (TRX_DISCOVERY_VALUE == name_source)
-					host_visible = zbx_strdup(NULL, row3[0]);
+					host_visible = trx_strdup(NULL, row3[0]);
 				else if (TRX_DISCOVERY_IP == name_source ||
 						(TRX_DISCOVERY_DNS == name_source && '\0' == *row[3]))
-					host_visible = zbx_strdup(NULL, row[2]);
+					host_visible = trx_strdup(NULL, row[2]);
 				else if (TRX_DISCOVERY_DNS == name_source)
-					host_visible = zbx_strdup(NULL, row[3]);
+					host_visible = trx_strdup(NULL, row[3]);
 				else
-					host_visible = zbx_strdup(NULL, host_unique);
+					host_visible = trx_strdup(NULL, host_unique);
 
 				DBfree_result(result3);
-				zbx_free(sql);
+				trx_free(sql);
 
 				make_hostname(host_visible);	/* replace not-allowed symbols */
 				host_visible_unique = DBget_unique_hostname_by_sample(host_visible, "name");
-				zbx_free(host_visible);
+				trx_free(host_visible);
 
 				hostid = DBget_maxid("hosts");
 
-				zbx_db_insert_prepare(&db_insert, "hosts", "hostid", "proxy_hostid", "host", "name",
+				trx_db_insert_prepare(&db_insert, "hosts", "hostid", "proxy_hostid", "host", "name",
 						NULL);
-				zbx_db_insert_add_values(&db_insert, hostid, proxy_hostid, host_unique,
+				trx_db_insert_add_values(&db_insert, hostid, proxy_hostid, host_unique,
 						host_visible_unique);
-				zbx_db_insert_execute(&db_insert);
-				zbx_db_insert_clean(&db_insert);
+				trx_db_insert_execute(&db_insert);
+				trx_db_insert_clean(&db_insert);
 
 				if (HOST_INVENTORY_DISABLED != cfg.default_inventory_mode)
 					DBadd_host_inventory(hostid, cfg.default_inventory_mode);
 
 				DBadd_interface(hostid, interface_type, 1, row[2], row[3], port, TRX_CONN_DEFAULT);
 
-				zbx_free(host_unique);
-				zbx_free(host_visible_unique);
+				trx_free(host_unique);
+				trx_free(host_visible_unique);
 
 				add_discovered_host_groups(hostid, &groupids);
 			}
@@ -434,8 +434,8 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 		if (NULL != (row = DBfetch(result)))
 		{
 			char			*sql = NULL;
-			zbx_uint64_t		host_proxy_hostid;
-			zbx_conn_flags_t	flags;
+			trx_uint64_t		host_proxy_hostid;
+			trx_conn_flags_t	flags;
 			int			flags_int;
 			unsigned char		useip = 1;
 			int			tls_accepted;
@@ -450,7 +450,7 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 				case TRX_CONN_DEFAULT:
 				case TRX_CONN_IP:
 				case TRX_CONN_DNS:
-					flags = (zbx_conn_flags_t)flags_int;
+					flags = (trx_conn_flags_t)flags_int;
 					break;
 				default:
 					flags = TRX_CONN_DEFAULT;
@@ -479,7 +479,7 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 			}
 			DBfree_result(result2);
 
-			sql = zbx_dsprintf(sql,
+			sql = trx_dsprintf(sql,
 					"select hostid,proxy_hostid"
 					" from hosts"
 					" where host='%s'"
@@ -491,7 +491,7 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 
 			result2 = DBselectN(sql, 1);
 
-			zbx_free(sql);
+			trx_free(sql);
 
 			if (NULL == (row2 = DBfetch(result2)))
 			{
@@ -505,21 +505,21 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 					DCget_autoregistration_psk(psk_identity, sizeof(psk_identity),
 							(unsigned char *)psk, sizeof(psk));
 
-					zbx_db_insert_prepare(&db_insert, "hosts", "hostid", "proxy_hostid",
+					trx_db_insert_prepare(&db_insert, "hosts", "hostid", "proxy_hostid",
 							"host", "name", "tls_connect", "tls_accept",
 							"tls_psk_identity", "tls_psk", NULL);
-					zbx_db_insert_add_values(&db_insert, hostid, proxy_hostid, row[1], row[1],
+					trx_db_insert_add_values(&db_insert, hostid, proxy_hostid, row[1], row[1],
 						tls_accepted, tls_accepted, psk_identity, psk);
 				}
 				else
 				{
-					zbx_db_insert_prepare(&db_insert, "hosts", "hostid", "proxy_hostid", "host",
+					trx_db_insert_prepare(&db_insert, "hosts", "hostid", "proxy_hostid", "host",
 							"name", NULL);
-					zbx_db_insert_add_values(&db_insert, hostid, proxy_hostid, row[1], row[1]);
+					trx_db_insert_add_values(&db_insert, hostid, proxy_hostid, row[1], row[1]);
 				}
 
-				zbx_db_insert_execute(&db_insert);
-				zbx_db_insert_clean(&db_insert);
+				trx_db_insert_execute(&db_insert);
+				trx_db_insert_clean(&db_insert);
 
 				if (HOST_INVENTORY_DISABLED != cfg.default_inventory_mode)
 					DBadd_host_inventory(hostid, cfg.default_inventory_mode);
@@ -545,14 +545,14 @@ static zbx_uint64_t	add_discovered_host(const DB_EVENT *event)
 			}
 			DBfree_result(result2);
 out:
-			zbx_free(host_esc);
+			trx_free(host_esc);
 		}
 		DBfree_result(result);
 	}
 clean:
-	zbx_config_clean(&cfg);
+	trx_config_clean(&cfg);
 
-	zbx_vector_uint64_destroy(&groupids);
+	trx_vector_uint64_destroy(&groupids);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -618,8 +618,8 @@ void	op_host_add(const DB_EVENT *event)
  ******************************************************************************/
 void	op_host_del(const DB_EVENT *event)
 {
-	zbx_vector_uint64_t	hostids;
-	zbx_uint64_t		hostid;
+	trx_vector_uint64_t	hostids;
+	trx_uint64_t		hostid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -629,13 +629,13 @@ void	op_host_del(const DB_EVENT *event)
 	if (0 == (hostid = select_discovered_host(event)))
 		return;
 
-	zbx_vector_uint64_create(&hostids);
+	trx_vector_uint64_create(&hostids);
 
-	zbx_vector_uint64_append(&hostids, hostid);
+	trx_vector_uint64_append(&hostids, hostid);
 
 	DBdelete_hosts_with_prototypes(&hostids);
 
-	zbx_vector_uint64_destroy(&hostids);
+	trx_vector_uint64_destroy(&hostids);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -651,7 +651,7 @@ void	op_host_del(const DB_EVENT *event)
  ******************************************************************************/
 void	op_host_enable(const DB_EVENT *event)
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -682,7 +682,7 @@ void	op_host_enable(const DB_EVENT *event)
  ******************************************************************************/
 void	op_host_disable(const DB_EVENT *event)
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -718,7 +718,7 @@ void	op_host_disable(const DB_EVENT *event)
  ******************************************************************************/
 void	op_host_inventory_mode(const DB_EVENT *event, int inventory_mode)
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -745,9 +745,9 @@ void	op_host_inventory_mode(const DB_EVENT *event, int inventory_mode)
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	op_groups_add(const DB_EVENT *event, zbx_vector_uint64_t *groupids)
+void	op_groups_add(const DB_EVENT *event, trx_vector_uint64_t *groupids)
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -774,10 +774,10 @@ void	op_groups_add(const DB_EVENT *event, zbx_vector_uint64_t *groupids)
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	op_groups_del(const DB_EVENT *event, zbx_vector_uint64_t *groupids)
+void	op_groups_del(const DB_EVENT *event, trx_vector_uint64_t *groupids)
 {
 	DB_RESULT	result;
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 	char		*sql = NULL;
 	size_t		sql_alloc = 256, sql_offset = 0;
 
@@ -789,10 +789,10 @@ void	op_groups_del(const DB_EVENT *event, zbx_vector_uint64_t *groupids)
 	if (0 == (hostid = select_discovered_host(event)))
 		return;
 
-	sql = (char *)zbx_malloc(sql, sql_alloc);
+	sql = (char *)trx_malloc(sql, sql_alloc);
 
 	/* make sure host belongs to at least one hostgroup */
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select groupid"
 			" from hosts_groups"
 			" where hostid=" TRX_FS_UI64
@@ -805,12 +805,12 @@ void	op_groups_del(const DB_EVENT *event, zbx_vector_uint64_t *groupids)
 	if (NULL == DBfetch(result))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot remove host \"%s\" from all host groups:"
-				" it must belong to at least one", zbx_host_string(hostid));
+				" it must belong to at least one", trx_host_string(hostid));
 	}
 	else
 	{
 		sql_offset = 0;
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 				"delete from hosts_groups"
 				" where hostid=" TRX_FS_UI64
 					" and",
@@ -821,7 +821,7 @@ void	op_groups_del(const DB_EVENT *event, zbx_vector_uint64_t *groupids)
 	}
 	DBfree_result(result);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -838,9 +838,9 @@ void	op_groups_del(const DB_EVENT *event, zbx_vector_uint64_t *groupids)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	op_template_add(const DB_EVENT *event, zbx_vector_uint64_t *lnk_templateids)
+void	op_template_add(const DB_EVENT *event, trx_vector_uint64_t *lnk_templateids)
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 	char		*error;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -854,7 +854,7 @@ void	op_template_add(const DB_EVENT *event, zbx_vector_uint64_t *lnk_templateids
 	if (SUCCEED != DBcopy_template_elements(hostid, lnk_templateids, &error))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot link template(s) %s", error);
-		zbx_free(error);
+		trx_free(error);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -872,9 +872,9 @@ void	op_template_add(const DB_EVENT *event, zbx_vector_uint64_t *lnk_templateids
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	op_template_del(const DB_EVENT *event, zbx_vector_uint64_t *del_templateids)
+void	op_template_del(const DB_EVENT *event, trx_vector_uint64_t *del_templateids)
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 	char		*error;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -888,7 +888,7 @@ void	op_template_del(const DB_EVENT *event, zbx_vector_uint64_t *del_templateids
 	if (SUCCEED != DBdelete_template_elements(hostid, del_templateids, &error))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot unlink template: %s", error);
-		zbx_free(error);
+		trx_free(error);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);

@@ -182,7 +182,7 @@ function getSlideshowScreens($slideshowId, $step) {
 	$dbSlides = DBfetch(DBselect(
 		'SELECT MIN(s.step) AS min_step,MAX(s.step) AS max_step'.
 		' FROM slides s'.
-		' WHERE s.slideshowid='.zbx_dbstr($slideshowId)
+		' WHERE s.slideshowid='.trx_dbstr($slideshowId)
 	));
 
 	if (!$dbSlides || $dbSlides['min_step'] === null) {
@@ -197,9 +197,9 @@ function getSlideshowScreens($slideshowId, $step) {
 	return DBfetch(DBselect(
 		'SELECT sl.*'.
 		' FROM slides sl,slideshows ss'.
-		' WHERE ss.slideshowid='.zbx_dbstr($slideshowId).
+		' WHERE ss.slideshowid='.trx_dbstr($slideshowId).
 			' AND sl.slideshowid=ss.slideshowid'.
-			' AND sl.step='.zbx_dbstr($currentStep)
+			' AND sl.step='.trx_dbstr($currentStep)
 	));
 }
 
@@ -213,7 +213,7 @@ function slideshow_accessible($slideshowid, $perm) {
 		$db_screens = DBselect(
 			'SELECT DISTINCT s.screenid'.
 			' FROM slides s'.
-			' WHERE s.slideshowid='.zbx_dbstr($slideshowid)
+			' WHERE s.slideshowid='.trx_dbstr($slideshowid)
 		);
 		while ($slide_data = DBfetch($db_screens)) {
 			$screenids[$slide_data['screenid']] = $slide_data['screenid'];
@@ -227,7 +227,7 @@ function slideshow_accessible($slideshowid, $perm) {
 			$options['editable'] = true;
 		}
 		$screens = API::Screen()->get($options);
-		$screens = zbx_toHash($screens, 'screenid');
+		$screens = trx_toHash($screens, 'screenid');
 
 		foreach ($screenids as $screenid) {
 			if (!isset($screens[$screenid])) {
@@ -272,7 +272,7 @@ function get_slideshow_by_slideshowid($slideshowid, $permission) {
 	}
 
 	return DBfetch(DBselect(
-		'SELECT s.* FROM slideshows s WHERE s.slideshowid='.zbx_dbstr($slideshowid).$condition
+		'SELECT s.* FROM slideshows s WHERE s.slideshowid='.trx_dbstr($slideshowid).$condition
 	));
 }
 
@@ -301,7 +301,7 @@ function add_slideshow($data) {
 	}
 
 	// Validate screens.
-	$screenids = zbx_objectValues($data['slides'], 'screenid');
+	$screenids = trx_objectValues($data['slides'], 'screenid');
 
 	$screens = API::Screen()->get([
 		'output' => ['screenid'],
@@ -319,7 +319,7 @@ function add_slideshow($data) {
 
 	// Validate slide name.
 	$db_slideshow = DBfetch(DBselect(
-		'SELECT s.slideshowid FROM slideshows s WHERE s.name='.zbx_dbstr($data['name'])
+		'SELECT s.slideshowid FROM slideshows s WHERE s.name='.trx_dbstr($data['name'])
 	));
 
 	if ($db_slideshow) {
@@ -344,8 +344,8 @@ function add_slideshow($data) {
 	$slideshowid = get_dbid('slideshows', 'slideshowid');
 	$result = DBexecute(
 		'INSERT INTO slideshows (slideshowid,name,delay,userid,private)'.
-		' VALUES ('.zbx_dbstr($slideshowid).','.zbx_dbstr($data['name']).','.zbx_dbstr($data['delay']).','.
-			zbx_dbstr($data['userid']).','.zbx_dbstr($data['private']).')'
+		' VALUES ('.trx_dbstr($slideshowid).','.trx_dbstr($data['name']).','.trx_dbstr($data['delay']).','.
+			trx_dbstr($data['userid']).','.trx_dbstr($data['private']).')'
 	);
 
 
@@ -394,7 +394,7 @@ function add_slideshow($data) {
 
 		$result = DBexecute(
 			'INSERT INTO slides (slideid,slideshowid,screenid,step,delay)'.
-			' VALUES ('.zbx_dbstr($slideid).','.zbx_dbstr($slideshowid).','.zbx_dbstr($slide['screenid']).','.($i++).','.zbx_dbstr($slide['delay']).')'
+			' VALUES ('.trx_dbstr($slideid).','.trx_dbstr($slideshowid).','.trx_dbstr($slide['screenid']).','.($i++).','.trx_dbstr($slide['delay']).')'
 		);
 
 		if (!$result) {
@@ -430,7 +430,7 @@ function update_slideshow($data) {
 	}
 
 	// validate screens.
-	$screenids = zbx_objectValues($data['slides'], 'screenid');
+	$screenids = trx_objectValues($data['slides'], 'screenid');
 
 	$screens = API::Screen()->get([
 		'output' => ['screenid'],
@@ -450,8 +450,8 @@ function update_slideshow($data) {
 	$db_slideshow = DBfetch(DBselect(
 		'SELECT s.slideshowid'.
 		' FROM slideshows s'.
-		' WHERE s.name='.zbx_dbstr($data['name']).
-			' AND s.slideshowid<>'.zbx_dbstr($data['slideshowid'])
+		' WHERE s.name='.trx_dbstr($data['name']).
+			' AND s.slideshowid<>'.trx_dbstr($data['slideshowid'])
 	));
 
 	if ($db_slideshow) {
@@ -511,7 +511,7 @@ function update_slideshow($data) {
 	$db_slideshow['users'] = DBfetchArray(DBselect(
 		'SELECT s.userid,s.permission,s.slideshowuserid'.
 		' FROM slideshow_user s'.
-		' WHERE s.slideshowid='.zbx_dbstr(getRequest('slideshowid'))
+		' WHERE s.slideshowid='.trx_dbstr(getRequest('slideshowid'))
 	));
 
 	$userids = [];
@@ -531,7 +531,7 @@ function update_slideshow($data) {
 		}
 	}
 
-	$user_shares_diff = zbx_array_diff($data['users'], $db_slideshow['users'], 'userid');
+	$user_shares_diff = trx_array_diff($data['users'], $db_slideshow['users'], 'userid');
 
 	foreach ($user_shares_diff['both'] as $update_user_share) {
 		$shared_users_to_update[] = [
@@ -545,13 +545,13 @@ function update_slideshow($data) {
 		$shared_users_to_add[] = $new_shared_user;
 	}
 
-	$shared_userids_to_delete = zbx_objectValues($user_shares_diff['second'], 'slideshowuserid');
+	$shared_userids_to_delete = trx_objectValues($user_shares_diff['second'], 'slideshowuserid');
 
 	// Slide show user group shares.
 	$db_slideshow['userGroups'] = DBfetchArray(DBselect(
 		'SELECT s.usrgrpid,s.permission,s.slideshowusrgrpid'.
 		' FROM slideshow_usrgrp s'.
-		' WHERE s.slideshowid='.zbx_dbstr(getRequest('slideshowid'))
+		' WHERE s.slideshowid='.trx_dbstr(getRequest('slideshowid'))
 	));
 
 	$usrgrpids = [];
@@ -571,7 +571,7 @@ function update_slideshow($data) {
 		}
 	}
 
-	$user_group_shares_diff = zbx_array_diff($data['userGroups'], $db_slideshow['userGroups'], 'usrgrpid');
+	$user_group_shares_diff = trx_array_diff($data['userGroups'], $db_slideshow['userGroups'], 'usrgrpid');
 
 	foreach ($user_group_shares_diff['both'] as $update_user_share) {
 		$shared_user_groups_to_update[] = [
@@ -585,7 +585,7 @@ function update_slideshow($data) {
 		$shared_user_groups_to_add[] = $new_shared_user_group;
 	}
 
-	$shared_user_groupids_to_delete = zbx_objectValues($user_group_shares_diff['second'], 'slideshowusrgrpid');
+	$shared_user_groupids_to_delete = trx_objectValues($user_group_shares_diff['second'], 'slideshowusrgrpid');
 
 	// User shares.
 	DB::insert('slideshow_user', $shared_users_to_add);
@@ -604,16 +604,16 @@ function update_slideshow($data) {
 	}
 
 	// get slides
-	$db_slides = DBfetchArrayAssoc(DBselect('SELECT s.* FROM slides s WHERE s.slideshowid='.zbx_dbstr($data['slideshowid'])), 'slideid');
+	$db_slides = DBfetchArrayAssoc(DBselect('SELECT s.* FROM slides s WHERE s.slideshowid='.trx_dbstr($data['slideshowid'])), 'slideid');
 
-	$slidesToDel = zbx_objectValues($db_slides, 'slideid');
-	$slidesToDel = zbx_toHash($slidesToDel);
+	$slidesToDel = trx_objectValues($db_slides, 'slideid');
+	$slidesToDel = trx_toHash($slidesToDel);
 	$step = 0;
 	foreach ($data['slides'] as $slide) {
 		if (isset($db_slides[$slide['slideid']])) {
 			// update slide
 			if ($db_slides[$slide['slideid']]['delay'] != $slide['delay'] || $db_slides[$slide['slideid']]['step'] != $step) {
-				$result = DBexecute('UPDATE slides SET step='.zbx_dbstr($step).', delay='.zbx_dbstr($slide['delay']).' WHERE slideid='.zbx_dbstr($slide['slideid']));
+				$result = DBexecute('UPDATE slides SET step='.trx_dbstr($step).', delay='.trx_dbstr($slide['delay']).' WHERE slideid='.trx_dbstr($slide['slideid']));
 			}
 			// do nothing with slide
 			else {
@@ -626,7 +626,7 @@ function update_slideshow($data) {
 			$slideid = get_dbid('slides', 'slideid');
 			$result = DBexecute(
 				'INSERT INTO slides (slideid,slideshowid,screenid,step,delay)'.
-				' VALUES ('.zbx_dbstr($slideid).','.zbx_dbstr($data['slideshowid']).','.zbx_dbstr($slide['screenid']).','.zbx_dbstr($step).','.zbx_dbstr($slide['delay']).')'
+				' VALUES ('.trx_dbstr($slideid).','.trx_dbstr($data['slideshowid']).','.trx_dbstr($slide['screenid']).','.trx_dbstr($step).','.trx_dbstr($slide['delay']).')'
 			);
 		}
 		$step ++;
@@ -647,9 +647,9 @@ function delete_slideshow($slideshowid) {
 	$result = false;
 
 	if (get_slideshow_by_slideshowid($slideshowid, PERM_READ_WRITE)) {
-		$result = DBexecute('DELETE FROM slideshows where slideshowid='.zbx_dbstr($slideshowid));
-		$result &= DBexecute('DELETE FROM slides where slideshowid='.zbx_dbstr($slideshowid));
-		$result &= DBexecute('DELETE FROM profiles WHERE idx=\'web.favorite.screenids\' AND source=\'slideshowid\' AND value_id='.zbx_dbstr($slideshowid));
+		$result = DBexecute('DELETE FROM slideshows where slideshowid='.trx_dbstr($slideshowid));
+		$result &= DBexecute('DELETE FROM slides where slideshowid='.trx_dbstr($slideshowid));
+		$result &= DBexecute('DELETE FROM profiles WHERE idx=\'web.favorite.screenids\' AND source=\'slideshowid\' AND value_id='.trx_dbstr($slideshowid));
 	}
 
 	return (bool) $result;
@@ -660,13 +660,13 @@ function check_dynamic_items($elid, $config = 0) {
 	if ($config == 0) {
 		$sql = 'SELECT si.screenitemid'.
 				' FROM screens_items si'.
-				' WHERE si.screenid='.zbx_dbstr($elid).
+				' WHERE si.screenid='.trx_dbstr($elid).
 					' AND si.dynamic='.SCREEN_DYNAMIC_ITEM;
 	}
 	else {
 		$sql = 'SELECT si.screenitemid'.
 				' FROM slides s,screens_items si'.
-				' WHERE s.slideshowid='.zbx_dbstr($elid).
+				' WHERE s.slideshowid='.trx_dbstr($elid).
 					' AND si.screenid=s.screenid'.
 					' AND si.dynamic='.SCREEN_DYNAMIC_ITEM;
 	}

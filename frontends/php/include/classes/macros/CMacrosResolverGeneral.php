@@ -820,7 +820,7 @@ class CMacrosResolverGeneral {
 								new CCol($function['name_expanded']),
 								new CCol(
 									($clock !== null)
-										? zbx_date2str(DATE_TIME_FORMAT_SECONDS, $clock)
+										? trx_date2str(DATE_TIME_FORMAT_SECONDS, $clock)
 										: UNRESOLVED_MACRO_STRING
 								),
 								new CCol($macro_value),

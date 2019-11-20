@@ -12,7 +12,7 @@ import (
 	"treegix/pkg/glexpr"
 	"treegix/pkg/log"
 	"treegix/pkg/plugin"
-	"treegix/pkg/zbxlib"
+	"treegix/pkg/trxlib"
 )
 
 type clientItem struct {
@@ -102,7 +102,7 @@ func (c *client) addRequest(p *pluginAgent, r *plugin.Request, sink plugin.Resul
 
 		if c.id != 0 {
 			var task *exporterTask
-			if _, err = zbxlib.GetNextcheck(r.Itemid, r.Delay, now, false, c.refreshUnsupported); err != nil {
+			if _, err = trxlib.GetNextcheck(r.Itemid, r.Delay, now, false, c.refreshUnsupported); err != nil {
 				return err
 			}
 			if tacc, ok = c.exporters[r.Itemid]; ok {

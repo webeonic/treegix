@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxpinger.a
+noinst_LIBRARIES = libtrxpinger.a
 
-libzbxpinger_a_SOURCES = pinger.c pinger.h
+libtrxpinger_a_SOURCES = pinger.c pinger.h

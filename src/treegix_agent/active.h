@@ -59,15 +59,15 @@ typedef struct
 	char		*key;
 	char		*value;
 	unsigned char	state;
-	zbx_uint64_t	lastlogsize;
+	trx_uint64_t	lastlogsize;
 	int		timestamp;
 	char		*source;
 	int		severity;
-	zbx_timespec_t	ts;
+	trx_timespec_t	ts;
 	int		logeventid;
 	int		mtime;
 	unsigned char	flags;
-	zbx_uint64_t	id;
+	trx_uint64_t	id;
 }
 TRX_ACTIVE_BUFFER_ELEMENT;
 

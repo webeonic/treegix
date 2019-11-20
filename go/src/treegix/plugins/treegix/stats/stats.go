@@ -8,7 +8,7 @@ import (
 	"time"
 	"treegix/internal/agent"
 	"treegix/pkg/plugin"
-	"treegix/pkg/zbxcomms"
+	"treegix/pkg/trxcomms"
 )
 
 // Plugin -
@@ -41,7 +41,7 @@ var impl Plugin
 func (p *Plugin) getRemoteTreegixStats(addr string, req []byte) ([]byte, error) {
 	var parse response
 
-	resp, err := zbxcomms.Exchange(addr, &p.localAddr, p.timeout, req)
+	resp, err := trxcomms.Exchange(addr, &p.localAddr, p.timeout, req)
 
 	if err != nil {
 		return nil, fmt.Errorf("Cannot obtain internal statistics: %s", err)

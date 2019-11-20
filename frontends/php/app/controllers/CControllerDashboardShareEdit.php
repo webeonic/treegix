@@ -74,7 +74,7 @@ class CControllerDashboardShareEdit extends CController {
 	 * @return array
 	 */
 	private function prepareUsers(array $users = []) {
-		$users = zbx_toHash($users, 'userid');
+		$users = trx_toHash($users, 'userid');
 
 		$db_users = API::User()->get([
 			'output' => ['userid', 'alias', 'name', 'surname'],
@@ -104,7 +104,7 @@ class CControllerDashboardShareEdit extends CController {
 	 * @return array
 	 */
 	private function prepareUserGroups(array $usrgrps = []) {
-		$usrgrps = zbx_toHash($usrgrps, 'usrgrpid');
+		$usrgrps = trx_toHash($usrgrps, 'usrgrpid');
 
 		$db_usrgrps = API::UserGroup()->get([
 			'output' => ['usrgrpid', 'name'],

@@ -403,7 +403,7 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 
 				foreach ($usermacros as $triggerid => &$usermacros_data) {
 					if (array_key_exists($triggerid, $db_triggers)) {
-						$usermacros_data['hostids'] = zbx_objectValues($db_triggers[$triggerid]['hosts'], 'hostid');
+						$usermacros_data['hostids'] = trx_objectValues($db_triggers[$triggerid]['hosts'], 'hostid');
 					}
 				}
 				unset($usermacros_data);
@@ -542,7 +542,7 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 
 			foreach ($usermacros as $triggerid => &$usermacros_data) {
 				if (array_key_exists($triggerid, $db_triggers)) {
-					$usermacros_data['hostids'] = zbx_objectValues($db_triggers[$triggerid]['hosts'], 'hostid');
+					$usermacros_data['hostids'] = trx_objectValues($db_triggers[$triggerid]['hosts'], 'hostid');
 				}
 			}
 			unset($usermacros_data);
@@ -707,7 +707,7 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 
 			foreach ($usermacros as $triggerid => &$usermacros_data) {
 				if (array_key_exists($triggerid, $db_triggers)) {
-					$usermacros_data['hostids'] = zbx_objectValues($db_triggers[$triggerid]['hosts'], 'hostid');
+					$usermacros_data['hostids'] = trx_objectValues($db_triggers[$triggerid]['hosts'], 'hostid');
 				}
 			}
 			unset($usermacros_data);
@@ -1023,7 +1023,7 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 
 			foreach ($usermacros as $triggerid => &$usermacros_data) {
 				if (array_key_exists($triggerid, $db_triggers)) {
-					$usermacros_data['hostids'] = zbx_objectValues($db_triggers[$triggerid]['hosts'], 'hostid');
+					$usermacros_data['hostids'] = trx_objectValues($db_triggers[$triggerid]['hosts'], 'hostid');
 				}
 			}
 			unset($usermacros_data);
@@ -1152,7 +1152,7 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 		// Build item retrieval query from host-key pairs and get all necessary items for all source strings.
 		$queryParts = [];
 		foreach ($hostKeyPairs as $host => $keys) {
-			$queryParts[] = '(h.host='.zbx_dbstr($host).' AND '.dbConditionString('i.key_', array_keys($keys)).')';
+			$queryParts[] = '(h.host='.trx_dbstr($host).' AND '.dbConditionString('i.key_', array_keys($keys)).')';
 		}
 		$items = DBfetchArrayAssoc(DBselect(
 			'SELECT h.host,i.key_,i.itemid,i.value_type,i.units,i.valuemapid'.
@@ -1489,7 +1489,7 @@ class CMacrosResolver extends CMacrosResolverGeneral {
 					));
 
 					$interfaces = CMacrosResolverHelper::resolveHostInterfaces($interfaces);
-					$interfaces = zbx_toHash($interfaces, 'interfaceid');
+					$interfaces = trx_toHash($interfaces, 'interfaceid');
 
 					// Items with no interfaces must collect interface data from host.
 					foreach ($interfaces as $interface) {

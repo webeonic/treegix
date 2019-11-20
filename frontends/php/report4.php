@@ -52,7 +52,7 @@ foreach ($db_media_types as $mediatypeid => $db_media_type) {
 $widget = (new CWidget())->setTitle(_('Notifications'));
 
 // if no media types were defined, we have nothing to show
-if (zbx_empty($media_types)) {
+if (trx_empty($media_types)) {
 	$table = new CTableInfo();
 	$widget->addItem($table)->show();
 }
@@ -210,11 +210,11 @@ else {
 	$table->setHeader($header);
 	foreach ($intervals as $from => $till) {
 		// interval start
-		$row = [zbx_date2str($dateFormat, $from)];
+		$row = [trx_date2str($dateFormat, $from)];
 
 		// interval end, displayed only for week intervals
 		if ($period == 'weekly') {
-			$row[] = zbx_date2str($dateFormat, min($till, time()));
+			$row[] = trx_date2str($dateFormat, min($till, time()));
 		}
 
 		// counting alert count for each user and media type

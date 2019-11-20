@@ -119,41 +119,41 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxagent_a_AR = $(AR) $(ARFLAGS)
-libzbxagent_a_LIBADD =
-am_libzbxagent_a_OBJECTS = libzbxagent_a-active.$(OBJEXT) \
-	libzbxagent_a-stats.$(OBJEXT) libzbxagent_a-cpustat.$(OBJEXT) \
-	libzbxagent_a-diskdevices.$(OBJEXT) \
-	libzbxagent_a-vmstats.$(OBJEXT) \
-	libzbxagent_a-zbxconf.$(OBJEXT) \
-	libzbxagent_a-listener.$(OBJEXT) \
-	libzbxagent_a-procstat.$(OBJEXT)
-libzbxagent_a_OBJECTS = $(am_libzbxagent_a_OBJECTS)
+libtrxagent_a_AR = $(AR) $(ARFLAGS)
+libtrxagent_a_LIBADD =
+am_libtrxagent_a_OBJECTS = libtrxagent_a-active.$(OBJEXT) \
+	libtrxagent_a-stats.$(OBJEXT) libtrxagent_a-cpustat.$(OBJEXT) \
+	libtrxagent_a-diskdevices.$(OBJEXT) \
+	libtrxagent_a-vmstats.$(OBJEXT) \
+	libtrxagent_a-trxconf.$(OBJEXT) \
+	libtrxagent_a-listener.$(OBJEXT) \
+	libtrxagent_a-procstat.$(OBJEXT)
+libtrxagent_a_OBJECTS = $(am_libtrxagent_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(sbindir)"
 PROGRAMS = $(sbin_PROGRAMS)
 am_treegix_agentd_OBJECTS = treegix_agentd-treegix_agentd.$(OBJEXT)
 treegix_agentd_OBJECTS = $(am_treegix_agentd_OBJECTS)
-treegix_agentd_DEPENDENCIES = libzbxagent.a logfiles/libzbxlogfiles.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/libzbxagentsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/$(ARCH)/libspecsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/agent/libagentsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxexec/libzbxexec.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
-	$(top_srcdir)/src/libs/zbxmodules/libzbxmodules.a \
-	$(top_srcdir)/src/libs/zbxhttp/libzbxhttp.a
+treegix_agentd_DEPENDENCIES = libtrxagent.a logfiles/libtrxlogfiles.a \
+	$(top_srcdir)/src/libs/trxsysinfo/libtrxagentsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/$(ARCH)/libspecsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/agent/libagentsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxalgo/libtrxalgo.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxexec/libtrxexec.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
+	$(top_srcdir)/src/libs/trxmodules/libtrxmodules.a \
+	$(top_srcdir)/src/libs/trxhttp/libtrxhttp.a
 treegix_agentd_LINK = $(CCLD) $(treegix_agentd_CFLAGS) $(CFLAGS) \
 	$(treegix_agentd_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
@@ -188,8 +188,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxagent_a_SOURCES) $(treegix_agentd_SOURCES)
-DIST_SOURCES = $(libzbxagent_a_SOURCES) $(treegix_agentd_SOURCES)
+SOURCES = $(libtrxagent_a_SOURCES) $(treegix_agentd_SOURCES)
+DIST_SOURCES = $(libtrxagent_a_SOURCES) $(treegix_agentd_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -462,43 +462,43 @@ EXTRA_DIST = \
 	eventlog.c eventlog.h \
 	perfstat.c perfstat.h
 
-noinst_LIBRARIES = libzbxagent.a
-libzbxagent_a_SOURCES = \
+noinst_LIBRARIES = libtrxagent.a
+libtrxagent_a_SOURCES = \
 	active.c active.h \
 	stats.c stats.h \
 	cpustat.c cpustat.h \
 	diskdevices.c diskdevices.h \
 	vmstats.c vmstats.h \
-	zbxconf.c zbxconf.h \
+	trxconf.c trxconf.h \
 	listener.c listener.h \
 	procstat.c procstat.h \
 	metrics.h
 
-libzbxagent_a_CFLAGS = \
+libtrxagent_a_CFLAGS = \
 	-DTREEGIX_DAEMON
 
 treegix_agentd_SOURCES = treegix_agentd.c
-treegix_agentd_LDADD = libzbxagent.a logfiles/libzbxlogfiles.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/libzbxagentsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/$(ARCH)/libspecsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/agent/libagentsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxexec/libzbxexec.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
-	$(top_srcdir)/src/libs/zbxmodules/libzbxmodules.a \
-	$(top_srcdir)/src/libs/zbxhttp/libzbxhttp.a @AGENT_LIBS@
+treegix_agentd_LDADD = libtrxagent.a logfiles/libtrxlogfiles.a \
+	$(top_srcdir)/src/libs/trxsysinfo/libtrxagentsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/$(ARCH)/libspecsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/agent/libagentsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxalgo/libtrxalgo.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxexec/libtrxexec.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
+	$(top_srcdir)/src/libs/trxmodules/libtrxmodules.a \
+	$(top_srcdir)/src/libs/trxhttp/libtrxhttp.a @AGENT_LIBS@
 treegix_agentd_LDFLAGS = @AGENT_LDFLAGS@
 treegix_agentd_CFLAGS = \
 	-DTREEGIX_DAEMON \
@@ -542,10 +542,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxagent.a: $(libzbxagent_a_OBJECTS) $(libzbxagent_a_DEPENDENCIES) $(EXTRA_libzbxagent_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxagent.a
-	$(AM_V_AR)$(libzbxagent_a_AR) libzbxagent.a $(libzbxagent_a_OBJECTS) $(libzbxagent_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxagent.a
+libtrxagent.a: $(libtrxagent_a_OBJECTS) $(libtrxagent_a_DEPENDENCIES) $(EXTRA_libtrxagent_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxagent.a
+	$(AM_V_AR)$(libtrxagent_a_AR) libtrxagent.a $(libtrxagent_a_OBJECTS) $(libtrxagent_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxagent.a
 install-sbinPROGRAMS: $(sbin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(sbin_PROGRAMS)'; test -n "$(sbindir)" || list=; \
@@ -599,14 +599,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxagent_a-active.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxagent_a-cpustat.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxagent_a-diskdevices.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxagent_a-listener.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxagent_a-procstat.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxagent_a-stats.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxagent_a-vmstats.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxagent_a-zbxconf.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxagent_a-active.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxagent_a-cpustat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxagent_a-diskdevices.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxagent_a-listener.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxagent_a-procstat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxagent_a-stats.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxagent_a-vmstats.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxagent_a-trxconf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/treegix_agentd-treegix_agentd.Po@am__quote@
 
 .c.o:
@@ -625,117 +625,117 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxagent_a-active.o: active.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-active.o -MD -MP -MF $(DEPDIR)/libzbxagent_a-active.Tpo -c -o libzbxagent_a-active.o `test -f 'active.c' || echo '$(srcdir)/'`active.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-active.Tpo $(DEPDIR)/libzbxagent_a-active.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='active.c' object='libzbxagent_a-active.o' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-active.o: active.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-active.o -MD -MP -MF $(DEPDIR)/libtrxagent_a-active.Tpo -c -o libtrxagent_a-active.o `test -f 'active.c' || echo '$(srcdir)/'`active.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-active.Tpo $(DEPDIR)/libtrxagent_a-active.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='active.c' object='libtrxagent_a-active.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-active.o `test -f 'active.c' || echo '$(srcdir)/'`active.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-active.o `test -f 'active.c' || echo '$(srcdir)/'`active.c
 
-libzbxagent_a-active.obj: active.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-active.obj -MD -MP -MF $(DEPDIR)/libzbxagent_a-active.Tpo -c -o libzbxagent_a-active.obj `if test -f 'active.c'; then $(CYGPATH_W) 'active.c'; else $(CYGPATH_W) '$(srcdir)/active.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-active.Tpo $(DEPDIR)/libzbxagent_a-active.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='active.c' object='libzbxagent_a-active.obj' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-active.obj: active.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-active.obj -MD -MP -MF $(DEPDIR)/libtrxagent_a-active.Tpo -c -o libtrxagent_a-active.obj `if test -f 'active.c'; then $(CYGPATH_W) 'active.c'; else $(CYGPATH_W) '$(srcdir)/active.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-active.Tpo $(DEPDIR)/libtrxagent_a-active.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='active.c' object='libtrxagent_a-active.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-active.obj `if test -f 'active.c'; then $(CYGPATH_W) 'active.c'; else $(CYGPATH_W) '$(srcdir)/active.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-active.obj `if test -f 'active.c'; then $(CYGPATH_W) 'active.c'; else $(CYGPATH_W) '$(srcdir)/active.c'; fi`
 
-libzbxagent_a-stats.o: stats.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-stats.o -MD -MP -MF $(DEPDIR)/libzbxagent_a-stats.Tpo -c -o libzbxagent_a-stats.o `test -f 'stats.c' || echo '$(srcdir)/'`stats.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-stats.Tpo $(DEPDIR)/libzbxagent_a-stats.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stats.c' object='libzbxagent_a-stats.o' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-stats.o: stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-stats.o -MD -MP -MF $(DEPDIR)/libtrxagent_a-stats.Tpo -c -o libtrxagent_a-stats.o `test -f 'stats.c' || echo '$(srcdir)/'`stats.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-stats.Tpo $(DEPDIR)/libtrxagent_a-stats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stats.c' object='libtrxagent_a-stats.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-stats.o `test -f 'stats.c' || echo '$(srcdir)/'`stats.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-stats.o `test -f 'stats.c' || echo '$(srcdir)/'`stats.c
 
-libzbxagent_a-stats.obj: stats.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-stats.obj -MD -MP -MF $(DEPDIR)/libzbxagent_a-stats.Tpo -c -o libzbxagent_a-stats.obj `if test -f 'stats.c'; then $(CYGPATH_W) 'stats.c'; else $(CYGPATH_W) '$(srcdir)/stats.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-stats.Tpo $(DEPDIR)/libzbxagent_a-stats.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stats.c' object='libzbxagent_a-stats.obj' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-stats.obj: stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-stats.obj -MD -MP -MF $(DEPDIR)/libtrxagent_a-stats.Tpo -c -o libtrxagent_a-stats.obj `if test -f 'stats.c'; then $(CYGPATH_W) 'stats.c'; else $(CYGPATH_W) '$(srcdir)/stats.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-stats.Tpo $(DEPDIR)/libtrxagent_a-stats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stats.c' object='libtrxagent_a-stats.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-stats.obj `if test -f 'stats.c'; then $(CYGPATH_W) 'stats.c'; else $(CYGPATH_W) '$(srcdir)/stats.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-stats.obj `if test -f 'stats.c'; then $(CYGPATH_W) 'stats.c'; else $(CYGPATH_W) '$(srcdir)/stats.c'; fi`
 
-libzbxagent_a-cpustat.o: cpustat.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-cpustat.o -MD -MP -MF $(DEPDIR)/libzbxagent_a-cpustat.Tpo -c -o libzbxagent_a-cpustat.o `test -f 'cpustat.c' || echo '$(srcdir)/'`cpustat.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-cpustat.Tpo $(DEPDIR)/libzbxagent_a-cpustat.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cpustat.c' object='libzbxagent_a-cpustat.o' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-cpustat.o: cpustat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-cpustat.o -MD -MP -MF $(DEPDIR)/libtrxagent_a-cpustat.Tpo -c -o libtrxagent_a-cpustat.o `test -f 'cpustat.c' || echo '$(srcdir)/'`cpustat.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-cpustat.Tpo $(DEPDIR)/libtrxagent_a-cpustat.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cpustat.c' object='libtrxagent_a-cpustat.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-cpustat.o `test -f 'cpustat.c' || echo '$(srcdir)/'`cpustat.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-cpustat.o `test -f 'cpustat.c' || echo '$(srcdir)/'`cpustat.c
 
-libzbxagent_a-cpustat.obj: cpustat.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-cpustat.obj -MD -MP -MF $(DEPDIR)/libzbxagent_a-cpustat.Tpo -c -o libzbxagent_a-cpustat.obj `if test -f 'cpustat.c'; then $(CYGPATH_W) 'cpustat.c'; else $(CYGPATH_W) '$(srcdir)/cpustat.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-cpustat.Tpo $(DEPDIR)/libzbxagent_a-cpustat.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cpustat.c' object='libzbxagent_a-cpustat.obj' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-cpustat.obj: cpustat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-cpustat.obj -MD -MP -MF $(DEPDIR)/libtrxagent_a-cpustat.Tpo -c -o libtrxagent_a-cpustat.obj `if test -f 'cpustat.c'; then $(CYGPATH_W) 'cpustat.c'; else $(CYGPATH_W) '$(srcdir)/cpustat.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-cpustat.Tpo $(DEPDIR)/libtrxagent_a-cpustat.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cpustat.c' object='libtrxagent_a-cpustat.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-cpustat.obj `if test -f 'cpustat.c'; then $(CYGPATH_W) 'cpustat.c'; else $(CYGPATH_W) '$(srcdir)/cpustat.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-cpustat.obj `if test -f 'cpustat.c'; then $(CYGPATH_W) 'cpustat.c'; else $(CYGPATH_W) '$(srcdir)/cpustat.c'; fi`
 
-libzbxagent_a-diskdevices.o: diskdevices.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-diskdevices.o -MD -MP -MF $(DEPDIR)/libzbxagent_a-diskdevices.Tpo -c -o libzbxagent_a-diskdevices.o `test -f 'diskdevices.c' || echo '$(srcdir)/'`diskdevices.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-diskdevices.Tpo $(DEPDIR)/libzbxagent_a-diskdevices.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='diskdevices.c' object='libzbxagent_a-diskdevices.o' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-diskdevices.o: diskdevices.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-diskdevices.o -MD -MP -MF $(DEPDIR)/libtrxagent_a-diskdevices.Tpo -c -o libtrxagent_a-diskdevices.o `test -f 'diskdevices.c' || echo '$(srcdir)/'`diskdevices.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-diskdevices.Tpo $(DEPDIR)/libtrxagent_a-diskdevices.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='diskdevices.c' object='libtrxagent_a-diskdevices.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-diskdevices.o `test -f 'diskdevices.c' || echo '$(srcdir)/'`diskdevices.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-diskdevices.o `test -f 'diskdevices.c' || echo '$(srcdir)/'`diskdevices.c
 
-libzbxagent_a-diskdevices.obj: diskdevices.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-diskdevices.obj -MD -MP -MF $(DEPDIR)/libzbxagent_a-diskdevices.Tpo -c -o libzbxagent_a-diskdevices.obj `if test -f 'diskdevices.c'; then $(CYGPATH_W) 'diskdevices.c'; else $(CYGPATH_W) '$(srcdir)/diskdevices.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-diskdevices.Tpo $(DEPDIR)/libzbxagent_a-diskdevices.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='diskdevices.c' object='libzbxagent_a-diskdevices.obj' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-diskdevices.obj: diskdevices.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-diskdevices.obj -MD -MP -MF $(DEPDIR)/libtrxagent_a-diskdevices.Tpo -c -o libtrxagent_a-diskdevices.obj `if test -f 'diskdevices.c'; then $(CYGPATH_W) 'diskdevices.c'; else $(CYGPATH_W) '$(srcdir)/diskdevices.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-diskdevices.Tpo $(DEPDIR)/libtrxagent_a-diskdevices.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='diskdevices.c' object='libtrxagent_a-diskdevices.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-diskdevices.obj `if test -f 'diskdevices.c'; then $(CYGPATH_W) 'diskdevices.c'; else $(CYGPATH_W) '$(srcdir)/diskdevices.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-diskdevices.obj `if test -f 'diskdevices.c'; then $(CYGPATH_W) 'diskdevices.c'; else $(CYGPATH_W) '$(srcdir)/diskdevices.c'; fi`
 
-libzbxagent_a-vmstats.o: vmstats.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-vmstats.o -MD -MP -MF $(DEPDIR)/libzbxagent_a-vmstats.Tpo -c -o libzbxagent_a-vmstats.o `test -f 'vmstats.c' || echo '$(srcdir)/'`vmstats.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-vmstats.Tpo $(DEPDIR)/libzbxagent_a-vmstats.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vmstats.c' object='libzbxagent_a-vmstats.o' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-vmstats.o: vmstats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-vmstats.o -MD -MP -MF $(DEPDIR)/libtrxagent_a-vmstats.Tpo -c -o libtrxagent_a-vmstats.o `test -f 'vmstats.c' || echo '$(srcdir)/'`vmstats.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-vmstats.Tpo $(DEPDIR)/libtrxagent_a-vmstats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vmstats.c' object='libtrxagent_a-vmstats.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-vmstats.o `test -f 'vmstats.c' || echo '$(srcdir)/'`vmstats.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-vmstats.o `test -f 'vmstats.c' || echo '$(srcdir)/'`vmstats.c
 
-libzbxagent_a-vmstats.obj: vmstats.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-vmstats.obj -MD -MP -MF $(DEPDIR)/libzbxagent_a-vmstats.Tpo -c -o libzbxagent_a-vmstats.obj `if test -f 'vmstats.c'; then $(CYGPATH_W) 'vmstats.c'; else $(CYGPATH_W) '$(srcdir)/vmstats.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-vmstats.Tpo $(DEPDIR)/libzbxagent_a-vmstats.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vmstats.c' object='libzbxagent_a-vmstats.obj' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-vmstats.obj: vmstats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-vmstats.obj -MD -MP -MF $(DEPDIR)/libtrxagent_a-vmstats.Tpo -c -o libtrxagent_a-vmstats.obj `if test -f 'vmstats.c'; then $(CYGPATH_W) 'vmstats.c'; else $(CYGPATH_W) '$(srcdir)/vmstats.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-vmstats.Tpo $(DEPDIR)/libtrxagent_a-vmstats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vmstats.c' object='libtrxagent_a-vmstats.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-vmstats.obj `if test -f 'vmstats.c'; then $(CYGPATH_W) 'vmstats.c'; else $(CYGPATH_W) '$(srcdir)/vmstats.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-vmstats.obj `if test -f 'vmstats.c'; then $(CYGPATH_W) 'vmstats.c'; else $(CYGPATH_W) '$(srcdir)/vmstats.c'; fi`
 
-libzbxagent_a-zbxconf.o: zbxconf.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-zbxconf.o -MD -MP -MF $(DEPDIR)/libzbxagent_a-zbxconf.Tpo -c -o libzbxagent_a-zbxconf.o `test -f 'zbxconf.c' || echo '$(srcdir)/'`zbxconf.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-zbxconf.Tpo $(DEPDIR)/libzbxagent_a-zbxconf.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='zbxconf.c' object='libzbxagent_a-zbxconf.o' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-trxconf.o: trxconf.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-trxconf.o -MD -MP -MF $(DEPDIR)/libtrxagent_a-trxconf.Tpo -c -o libtrxagent_a-trxconf.o `test -f 'trxconf.c' || echo '$(srcdir)/'`trxconf.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-trxconf.Tpo $(DEPDIR)/libtrxagent_a-trxconf.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='trxconf.c' object='libtrxagent_a-trxconf.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-zbxconf.o `test -f 'zbxconf.c' || echo '$(srcdir)/'`zbxconf.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-trxconf.o `test -f 'trxconf.c' || echo '$(srcdir)/'`trxconf.c
 
-libzbxagent_a-zbxconf.obj: zbxconf.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-zbxconf.obj -MD -MP -MF $(DEPDIR)/libzbxagent_a-zbxconf.Tpo -c -o libzbxagent_a-zbxconf.obj `if test -f 'zbxconf.c'; then $(CYGPATH_W) 'zbxconf.c'; else $(CYGPATH_W) '$(srcdir)/zbxconf.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-zbxconf.Tpo $(DEPDIR)/libzbxagent_a-zbxconf.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='zbxconf.c' object='libzbxagent_a-zbxconf.obj' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-trxconf.obj: trxconf.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-trxconf.obj -MD -MP -MF $(DEPDIR)/libtrxagent_a-trxconf.Tpo -c -o libtrxagent_a-trxconf.obj `if test -f 'trxconf.c'; then $(CYGPATH_W) 'trxconf.c'; else $(CYGPATH_W) '$(srcdir)/trxconf.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-trxconf.Tpo $(DEPDIR)/libtrxagent_a-trxconf.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='trxconf.c' object='libtrxagent_a-trxconf.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-zbxconf.obj `if test -f 'zbxconf.c'; then $(CYGPATH_W) 'zbxconf.c'; else $(CYGPATH_W) '$(srcdir)/zbxconf.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-trxconf.obj `if test -f 'trxconf.c'; then $(CYGPATH_W) 'trxconf.c'; else $(CYGPATH_W) '$(srcdir)/trxconf.c'; fi`
 
-libzbxagent_a-listener.o: listener.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-listener.o -MD -MP -MF $(DEPDIR)/libzbxagent_a-listener.Tpo -c -o libzbxagent_a-listener.o `test -f 'listener.c' || echo '$(srcdir)/'`listener.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-listener.Tpo $(DEPDIR)/libzbxagent_a-listener.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='listener.c' object='libzbxagent_a-listener.o' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-listener.o: listener.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-listener.o -MD -MP -MF $(DEPDIR)/libtrxagent_a-listener.Tpo -c -o libtrxagent_a-listener.o `test -f 'listener.c' || echo '$(srcdir)/'`listener.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-listener.Tpo $(DEPDIR)/libtrxagent_a-listener.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='listener.c' object='libtrxagent_a-listener.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-listener.o `test -f 'listener.c' || echo '$(srcdir)/'`listener.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-listener.o `test -f 'listener.c' || echo '$(srcdir)/'`listener.c
 
-libzbxagent_a-listener.obj: listener.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-listener.obj -MD -MP -MF $(DEPDIR)/libzbxagent_a-listener.Tpo -c -o libzbxagent_a-listener.obj `if test -f 'listener.c'; then $(CYGPATH_W) 'listener.c'; else $(CYGPATH_W) '$(srcdir)/listener.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-listener.Tpo $(DEPDIR)/libzbxagent_a-listener.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='listener.c' object='libzbxagent_a-listener.obj' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-listener.obj: listener.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-listener.obj -MD -MP -MF $(DEPDIR)/libtrxagent_a-listener.Tpo -c -o libtrxagent_a-listener.obj `if test -f 'listener.c'; then $(CYGPATH_W) 'listener.c'; else $(CYGPATH_W) '$(srcdir)/listener.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-listener.Tpo $(DEPDIR)/libtrxagent_a-listener.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='listener.c' object='libtrxagent_a-listener.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-listener.obj `if test -f 'listener.c'; then $(CYGPATH_W) 'listener.c'; else $(CYGPATH_W) '$(srcdir)/listener.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-listener.obj `if test -f 'listener.c'; then $(CYGPATH_W) 'listener.c'; else $(CYGPATH_W) '$(srcdir)/listener.c'; fi`
 
-libzbxagent_a-procstat.o: procstat.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-procstat.o -MD -MP -MF $(DEPDIR)/libzbxagent_a-procstat.Tpo -c -o libzbxagent_a-procstat.o `test -f 'procstat.c' || echo '$(srcdir)/'`procstat.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-procstat.Tpo $(DEPDIR)/libzbxagent_a-procstat.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='procstat.c' object='libzbxagent_a-procstat.o' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-procstat.o: procstat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-procstat.o -MD -MP -MF $(DEPDIR)/libtrxagent_a-procstat.Tpo -c -o libtrxagent_a-procstat.o `test -f 'procstat.c' || echo '$(srcdir)/'`procstat.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-procstat.Tpo $(DEPDIR)/libtrxagent_a-procstat.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='procstat.c' object='libtrxagent_a-procstat.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-procstat.o `test -f 'procstat.c' || echo '$(srcdir)/'`procstat.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-procstat.o `test -f 'procstat.c' || echo '$(srcdir)/'`procstat.c
 
-libzbxagent_a-procstat.obj: procstat.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -MT libzbxagent_a-procstat.obj -MD -MP -MF $(DEPDIR)/libzbxagent_a-procstat.Tpo -c -o libzbxagent_a-procstat.obj `if test -f 'procstat.c'; then $(CYGPATH_W) 'procstat.c'; else $(CYGPATH_W) '$(srcdir)/procstat.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagent_a-procstat.Tpo $(DEPDIR)/libzbxagent_a-procstat.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='procstat.c' object='libzbxagent_a-procstat.obj' libtool=no @AMDEPBACKSLASH@
+libtrxagent_a-procstat.obj: procstat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -MT libtrxagent_a-procstat.obj -MD -MP -MF $(DEPDIR)/libtrxagent_a-procstat.Tpo -c -o libtrxagent_a-procstat.obj `if test -f 'procstat.c'; then $(CYGPATH_W) 'procstat.c'; else $(CYGPATH_W) '$(srcdir)/procstat.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagent_a-procstat.Tpo $(DEPDIR)/libtrxagent_a-procstat.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='procstat.c' object='libtrxagent_a-procstat.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagent_a_CFLAGS) $(CFLAGS) -c -o libzbxagent_a-procstat.obj `if test -f 'procstat.c'; then $(CYGPATH_W) 'procstat.c'; else $(CYGPATH_W) '$(srcdir)/procstat.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagent_a_CFLAGS) $(CFLAGS) -c -o libtrxagent_a-procstat.obj `if test -f 'procstat.c'; then $(CYGPATH_W) 'procstat.c'; else $(CYGPATH_W) '$(srcdir)/procstat.c'; fi`
 
 treegix_agentd-treegix_agentd.o: treegix_agentd.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(treegix_agentd_CFLAGS) $(CFLAGS) -MT treegix_agentd-treegix_agentd.o -MD -MP -MF $(DEPDIR)/treegix_agentd-treegix_agentd.Tpo -c -o treegix_agentd-treegix_agentd.o `test -f 'treegix_agentd.c' || echo '$(srcdir)/'`treegix_agentd.c

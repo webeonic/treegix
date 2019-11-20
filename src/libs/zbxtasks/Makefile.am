@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxtasks.a
+noinst_LIBRARIES = libtrxtasks.a
 
-libzbxtasks_a_SOURCES = \
+libtrxtasks_a_SOURCES = \
 	task.c

@@ -780,7 +780,7 @@ class CImportReferencer {
 			foreach ($this->applications as $host => $applications) {
 				$hostId = $this->resolveHostOrTemplate($host);
 				if ($hostId) {
-					$sqlWhere[] = '(a.hostid='.zbx_dbstr($hostId).' AND '.
+					$sqlWhere[] = '(a.hostid='.trx_dbstr($hostId).' AND '.
 						dbConditionString('a.name', $applications).')';
 				}
 			}
@@ -817,7 +817,7 @@ class CImportReferencer {
 			foreach ($this->items as $host => $keys) {
 				$hostId = $this->resolveHostOrTemplate($host);
 				if ($hostId) {
-					$sqlWhere[] = '(i.hostid='.zbx_dbstr($hostId).' AND '.dbConditionString('i.key_', $keys).')';
+					$sqlWhere[] = '(i.hostid='.trx_dbstr($hostId).' AND '.dbConditionString('i.key_', $keys).')';
 				}
 			}
 
@@ -1026,7 +1026,7 @@ class CImportReferencer {
 			foreach ($this->macros as $host => $macros) {
 				$hostId = $this->resolveHostOrTemplate($host);
 				if ($hostId) {
-					$sqlWhere[] = '(hm.hostid='.zbx_dbstr($hostId).' AND '.dbConditionString('hm.macro', $macros).')';
+					$sqlWhere[] = '(hm.hostid='.trx_dbstr($hostId).' AND '.dbConditionString('hm.macro', $macros).')';
 				}
 			}
 
@@ -1073,7 +1073,7 @@ class CImportReferencer {
 				foreach ($discoveryRule as $discoveryRuleKey => $hostPrototypes) {
 					$discoveryRuleId = $this->resolveItem($hostId, $discoveryRuleKey);
 					if ($hostId) {
-						$sqlWhere[] = '(hd.parent_itemid='.zbx_dbstr($discoveryRuleId).' AND '.dbConditionString('h.host', $hostPrototypes).')';
+						$sqlWhere[] = '(hd.parent_itemid='.trx_dbstr($discoveryRuleId).' AND '.dbConditionString('h.host', $hostPrototypes).')';
 					}
 				}
 			}
@@ -1106,7 +1106,7 @@ class CImportReferencer {
 				$hostid = $this->resolveHostOrTemplate($host);
 
 				if ($hostid !== false) {
-					$sql_where[] = '(ht.hostid='.zbx_dbstr($hostid).' AND '.dbConditionString('ht.name', $names).')';
+					$sql_where[] = '(ht.hostid='.trx_dbstr($hostid).' AND '.dbConditionString('ht.name', $names).')';
 				}
 			}
 
@@ -1147,7 +1147,7 @@ class CImportReferencer {
 						$httptestid = $this->resolveHttpTest($hostid, $httptest_name);
 
 						if ($httptestid !== false) {
-							$sql_where[] = '(hs.httptestid='.zbx_dbstr($httptestid).
+							$sql_where[] = '(hs.httptestid='.trx_dbstr($httptestid).
 								' AND '.dbConditionString('hs.name', $httpstep_names).')';
 						}
 					}

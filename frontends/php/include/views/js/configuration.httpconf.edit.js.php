@@ -62,9 +62,9 @@
 	jQuery(function($) {
 		window.httpconf = {
 			templated:                           <?= $data['templated'] ? 1 : 0 ?>,
-			TRX_STYLE_DRAG_ICON:                 <?= zbx_jsvalue(TRX_STYLE_DRAG_ICON) ?>,
-			TRX_STYLE_TD_DRAG_ICON:              <?= zbx_jsvalue(TRX_STYLE_TD_DRAG_ICON) ?>,
-			TRX_STYLE_DISABLED:                  <?= zbx_jsvalue(TRX_STYLE_DISABLED) ?>,
+			TRX_STYLE_DRAG_ICON:                 <?= trx_jsvalue(TRX_STYLE_DRAG_ICON) ?>,
+			TRX_STYLE_TD_DRAG_ICON:              <?= trx_jsvalue(TRX_STYLE_TD_DRAG_ICON) ?>,
+			TRX_STYLE_DISABLED:                  <?= trx_jsvalue(TRX_STYLE_DISABLED) ?>,
 			HTTPTEST_AUTH_NONE:                  <?= HTTPTEST_AUTH_NONE ?>,
 			TRX_POSTTYPE_FORM:                   <?= TRX_POSTTYPE_FORM ?>,
 			HTTPTEST_STEP_RETRIEVE_MODE_HEADERS: <?= HTTPTEST_STEP_RETRIEVE_MODE_HEADERS ?>,

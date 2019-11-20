@@ -64,7 +64,7 @@ class CControllerUserCreate extends CControllerUserUpdateGeneral {
 		$this->getInputs($user, ['alias', 'name', 'surname', 'url', 'autologin', 'autologout', 'theme', 'refresh',
 			'rows_per_page', 'lang', 'type'
 		]);
-		$user['usrgrps'] = zbx_toObject($this->getInput('user_groups'), 'usrgrpid');
+		$user['usrgrps'] = trx_toObject($this->getInput('user_groups'), 'usrgrpid');
 
 		if ($this->getInput('password1', '') !== '' || !$this->allow_empty_password) {
 			$user['passwd'] = $this->getInput('password1');

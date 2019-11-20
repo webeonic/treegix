@@ -68,7 +68,7 @@ $discoveryFormList->addRow(_('Device uniqueness criteria'),
 	(new CDiv(
 		(new CRadioButtonList('uniqueness_criteria', (int) $this->data['drule']['uniqueness_criteria']))
 			->makeVertical()
-			->addValue(_('IP address'), -1, zbx_formatDomId('uniqueness_criteria_ip'))
+			->addValue(_('IP address'), -1, trx_formatDomId('uniqueness_criteria_ip'))
 	))
 		->setAttribute('style', 'width: '.TRX_TEXTAREA_STANDARD_WIDTH.'px;')
 		->addClass(TRX_STYLE_TABLE_FORMS_SEPARATOR)

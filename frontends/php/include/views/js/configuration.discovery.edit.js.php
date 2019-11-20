@@ -576,29 +576,29 @@
 		dCheck.dcheckid = (typeof dcheckId === 'undefined') ? getUniqueId() : dcheckId;
 
 		// check for duplicates
-		for (var zbxDcheckId in TRX_CHECKLIST) {
-			if (typeof dcheckId === 'undefined' || (typeof dcheckId !== 'undefined') && dcheckId != zbxDcheckId) {
-				if ((typeof dCheck['key_'] === 'undefined' || TRX_CHECKLIST[zbxDcheckId]['key_'] === dCheck['key_'])
+		for (var trxDcheckId in TRX_CHECKLIST) {
+			if (typeof dcheckId === 'undefined' || (typeof dcheckId !== 'undefined') && dcheckId != trxDcheckId) {
+				if ((typeof dCheck['key_'] === 'undefined' || TRX_CHECKLIST[trxDcheckId]['key_'] === dCheck['key_'])
 						&& (typeof dCheck['type'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['type'] === dCheck['type'])
+							|| TRX_CHECKLIST[trxDcheckId]['type'] === dCheck['type'])
 						&& (typeof dCheck['ports'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['ports'] === dCheck['ports'])
+							|| TRX_CHECKLIST[trxDcheckId]['ports'] === dCheck['ports'])
 						&& (typeof dCheck['snmp_community'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['snmp_community'] === dCheck['snmp_community'])
+							|| TRX_CHECKLIST[trxDcheckId]['snmp_community'] === dCheck['snmp_community'])
 						&& (typeof dCheck['snmpv3_authprotocol'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_authprotocol'] === dCheck['snmpv3_authprotocol'])
+							|| TRX_CHECKLIST[trxDcheckId]['snmpv3_authprotocol'] === dCheck['snmpv3_authprotocol'])
 						&& (typeof dCheck['snmpv3_authpassphrase'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_authpassphrase'] === dCheck['snmpv3_authpassphrase'])
+							|| TRX_CHECKLIST[trxDcheckId]['snmpv3_authpassphrase'] === dCheck['snmpv3_authpassphrase'])
 						&& (typeof dCheck['snmpv3_privprotocol'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_privprotocol'] === dCheck['snmpv3_privprotocol'])
+							|| TRX_CHECKLIST[trxDcheckId]['snmpv3_privprotocol'] === dCheck['snmpv3_privprotocol'])
 						&& (typeof dCheck['snmpv3_privpassphrase'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_privpassphrase'] === dCheck['snmpv3_privpassphrase'])
+							|| TRX_CHECKLIST[trxDcheckId]['snmpv3_privpassphrase'] === dCheck['snmpv3_privpassphrase'])
 						&& (typeof dCheck['snmpv3_securitylevel'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_securitylevel'] === dCheck['snmpv3_securitylevel'])
+							|| TRX_CHECKLIST[trxDcheckId]['snmpv3_securitylevel'] === dCheck['snmpv3_securitylevel'])
 						&& (typeof dCheck['snmpv3_securityname'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_securityname'] === dCheck['snmpv3_securityname'])
+							|| TRX_CHECKLIST[trxDcheckId]['snmpv3_securityname'] === dCheck['snmpv3_securityname'])
 						&& (typeof dCheck['snmpv3_contextname'] === 'undefined'
-							|| TRX_CHECKLIST[zbxDcheckId]['snmpv3_contextname'] === dCheck['snmpv3_contextname'])) {
+							|| TRX_CHECKLIST[trxDcheckId]['snmpv3_contextname'] === dCheck['snmpv3_contextname'])) {
 
 					overlayDialogue({
 						'title': <?= CJs::encodeJson(_('Discovery check error')) ?>,
@@ -737,11 +737,11 @@
 	}
 
 	jQuery(document).ready(function() {
-		addPopupValues(<?= zbx_jsvalue(array_values($this->data['drule']['dchecks'])) ?>);
+		addPopupValues(<?= trx_jsvalue(array_values($this->data['drule']['dchecks'])) ?>);
 
-		jQuery("input:radio[name='uniqueness_criteria'][value=<?= zbx_jsvalue($this->data['drule']['uniqueness_criteria']) ?>]").attr('checked', 'checked');
-		jQuery("input:radio[name='host_source'][value=<?= zbx_jsvalue($this->data['drule']['host_source']) ?>]").attr('checked', 'checked');
-		jQuery("input:radio[name='name_source'][value=<?= zbx_jsvalue($this->data['drule']['name_source']) ?>]").attr('checked', 'checked');
+		jQuery("input:radio[name='uniqueness_criteria'][value=<?= trx_jsvalue($this->data['drule']['uniqueness_criteria']) ?>]").attr('checked', 'checked');
+		jQuery("input:radio[name='host_source'][value=<?= trx_jsvalue($this->data['drule']['host_source']) ?>]").attr('checked', 'checked');
+		jQuery("input:radio[name='name_source'][value=<?= trx_jsvalue($this->data['drule']['name_source']) ?>]").attr('checked', 'checked');
 
 		jQuery('#newCheck').click(showNewCheckForm);
 		jQuery('#clone').click(function() {

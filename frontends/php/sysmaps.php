@@ -130,7 +130,7 @@ if (hasRequest('add') || hasRequest('update')) {
 	];
 
 	foreach ($map['urls'] as $unum => $url) {
-		if (zbx_empty($url['name']) && zbx_empty($url['url'])) {
+		if (trx_empty($url['name']) && trx_empty($url['url'])) {
 			unset($map['urls'][$unum]);
 		}
 	}
@@ -237,7 +237,7 @@ elseif ((hasRequest('delete') && hasRequest('sysmapid')) || (hasRequest('action'
 		uncheckTableRows();
 	}
 	else {
-		uncheckTableRows(null, zbx_objectValues($maps, 'sysmapid'));
+		uncheckTableRows(null, trx_objectValues($maps, 'sysmapid'));
 	}
 	show_messages($result, _('Network map deleted'), _('Cannot delete network map'));
 }

@@ -467,7 +467,7 @@ foreach ($subfiltersList as $name) {
 	else {
 		$_REQUEST[$name] = [];
 		$subfiltersVal = CProfile::get('web.items.'.$name);
-		if (!zbx_empty($subfiltersVal)) {
+		if (!trx_empty($subfiltersVal)) {
 			$_REQUEST[$name] = explode(';', $subfiltersVal);
 			$_REQUEST[$name] = array_combine($_REQUEST[$name], $_REQUEST[$name]);
 		}
@@ -535,7 +535,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 	DBstart();
 	$result = true;
 
-	if (!zbx_empty($_REQUEST['new_application'])) {
+	if (!trx_empty($_REQUEST['new_application'])) {
 		$new_appid = API::Application()->create([
 			'name' => $_REQUEST['new_application'],
 			'hostid' => getRequest('hostid')
@@ -869,7 +869,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 				if ($db_item['jmx_endpoint'] !== getRequest('jmx_endpoint', '')) {
 					$item['jmx_endpoint'] = getRequest('jmx_endpoint', '');
 				}
-				$db_applications = zbx_objectValues($db_item['applications'], 'applicationid');
+				$db_applications = trx_objectValues($db_item['applications'], 'applicationid');
 				natsort($db_applications);
 				natsort($applications);
 				if (array_values($db_applications) !== array_values($applications)) {
@@ -1231,7 +1231,7 @@ elseif ($valid_input && hasRequest('massupdate') && hasRequest('group_itemid')) 
 							if ($item) {
 								if (array_key_exists('applications', $visible)) {
 									if ($applicationids) {
-										$db_applicationids = zbx_objectValues($items[$itemid]['applications'],
+										$db_applicationids = trx_objectValues($items[$itemid]['applications'],
 											'applicationid'
 										);
 
@@ -1436,7 +1436,7 @@ if (hasRequest('action') && hasRequest('group_itemid') && !$result) {
 		'itemids' => getRequest('group_itemid'),
 		'editable' => true
 	]);
-	uncheckTableRows(getRequest('checkbox_hash'), zbx_objectValues($itemids, 'itemid'));
+	uncheckTableRows(getRequest('checkbox_hash'), trx_objectValues($itemids, 'itemid'));
 }
 
 /*
@@ -1837,7 +1837,7 @@ else {
 		$options['groupids'] = $filter_groupids;
 	}
 
-	if (isset($_REQUEST['filter_application']) && !zbx_empty($_REQUEST['filter_application'])) {
+	if (isset($_REQUEST['filter_application']) && !trx_empty($_REQUEST['filter_application'])) {
 		$options['applicationids'] = array_keys(API::Application()->get([
 			'output' => [],
 			'groupids' => array_key_exists('groupids', $options) ? $options['groupids'] : null,
@@ -1846,28 +1846,28 @@ else {
 			'preservekeys' => true
 		]));
 	}
-	if (isset($_REQUEST['filter_name']) && !zbx_empty($_REQUEST['filter_name'])) {
+	if (isset($_REQUEST['filter_name']) && !trx_empty($_REQUEST['filter_name'])) {
 		$options['search']['name'] = $_REQUEST['filter_name'];
 	}
-	if (isset($_REQUEST['filter_type']) && !zbx_empty($_REQUEST['filter_type']) && $_REQUEST['filter_type'] != -1) {
+	if (isset($_REQUEST['filter_type']) && !trx_empty($_REQUEST['filter_type']) && $_REQUEST['filter_type'] != -1) {
 		$options['filter']['type'] = $_REQUEST['filter_type'];
 	}
-	if (isset($_REQUEST['filter_key']) && !zbx_empty($_REQUEST['filter_key'])) {
+	if (isset($_REQUEST['filter_key']) && !trx_empty($_REQUEST['filter_key'])) {
 		$options['search']['key_'] = $_REQUEST['filter_key'];
 	}
-	if (isset($_REQUEST['filter_snmp_community']) && !zbx_empty($_REQUEST['filter_snmp_community'])) {
+	if (isset($_REQUEST['filter_snmp_community']) && !trx_empty($_REQUEST['filter_snmp_community'])) {
 		$options['filter']['snmp_community'] = $_REQUEST['filter_snmp_community'];
 	}
-	if (isset($_REQUEST['filter_snmpv3_securityname']) && !zbx_empty($_REQUEST['filter_snmpv3_securityname'])) {
+	if (isset($_REQUEST['filter_snmpv3_securityname']) && !trx_empty($_REQUEST['filter_snmpv3_securityname'])) {
 		$options['filter']['snmpv3_securityname'] = $_REQUEST['filter_snmpv3_securityname'];
 	}
-	if (isset($_REQUEST['filter_snmp_oid']) && !zbx_empty($_REQUEST['filter_snmp_oid'])) {
+	if (isset($_REQUEST['filter_snmp_oid']) && !trx_empty($_REQUEST['filter_snmp_oid'])) {
 		$options['filter']['snmp_oid'] = $_REQUEST['filter_snmp_oid'];
 	}
-	if (isset($_REQUEST['filter_port']) && !zbx_empty($_REQUEST['filter_port'])) {
+	if (isset($_REQUEST['filter_port']) && !trx_empty($_REQUEST['filter_port'])) {
 		$options['filter']['port'] = $_REQUEST['filter_port'];
 	}
-	if (isset($_REQUEST['filter_value_type']) && !zbx_empty($_REQUEST['filter_value_type'])
+	if (isset($_REQUEST['filter_value_type']) && !trx_empty($_REQUEST['filter_value_type'])
 			&& $_REQUEST['filter_value_type'] != -1) {
 		$options['filter']['value_type'] = $_REQUEST['filter_value_type'];
 	}
@@ -1902,7 +1902,7 @@ else {
 		}
 	}
 
-	if (isset($_REQUEST['filter_history']) && !zbx_empty($_REQUEST['filter_history'])) {
+	if (isset($_REQUEST['filter_history']) && !trx_empty($_REQUEST['filter_history'])) {
 		$options['filter']['history'] = $_REQUEST['filter_history'];
 	}
 
@@ -1919,26 +1919,26 @@ else {
 		}
 	}
 
-	if (isset($_REQUEST['filter_status']) && !zbx_empty($_REQUEST['filter_status']) && $_REQUEST['filter_status'] != -1) {
+	if (isset($_REQUEST['filter_status']) && !trx_empty($_REQUEST['filter_status']) && $_REQUEST['filter_status'] != -1) {
 		$options['filter']['status'] = $_REQUEST['filter_status'];
 	}
-	if (isset($_REQUEST['filter_state']) && !zbx_empty($_REQUEST['filter_state']) && $_REQUEST['filter_state'] != -1) {
+	if (isset($_REQUEST['filter_state']) && !trx_empty($_REQUEST['filter_state']) && $_REQUEST['filter_state'] != -1) {
 		$options['filter']['status'] = ITEM_STATUS_ACTIVE;
 		$options['filter']['state'] = $_REQUEST['filter_state'];
 	}
-	if (isset($_REQUEST['filter_templated_items']) && !zbx_empty($_REQUEST['filter_templated_items'])
+	if (isset($_REQUEST['filter_templated_items']) && !trx_empty($_REQUEST['filter_templated_items'])
 			&& $_REQUEST['filter_templated_items'] != -1) {
 		$options['inherited'] = $_REQUEST['filter_templated_items'];
 	}
-	if (isset($_REQUEST['filter_discovery']) && !zbx_empty($_REQUEST['filter_discovery'])
+	if (isset($_REQUEST['filter_discovery']) && !trx_empty($_REQUEST['filter_discovery'])
 			&& $_REQUEST['filter_discovery'] != -1) {
 		$options['filter']['flags'] = $_REQUEST['filter_discovery'];
 	}
-	if (isset($_REQUEST['filter_with_triggers']) && !zbx_empty($_REQUEST['filter_with_triggers'])
+	if (isset($_REQUEST['filter_with_triggers']) && !trx_empty($_REQUEST['filter_with_triggers'])
 			&& $_REQUEST['filter_with_triggers'] != -1) {
 		$options['with_triggers'] = $_REQUEST['filter_with_triggers'];
 	}
-	if (isset($_REQUEST['filter_ipmi_sensor']) && !zbx_empty($_REQUEST['filter_ipmi_sensor'])) {
+	if (isset($_REQUEST['filter_ipmi_sensor']) && !trx_empty($_REQUEST['filter_ipmi_sensor'])) {
 		$options['filter']['ipmi_sensor'] = $_REQUEST['filter_ipmi_sensor'];
 	}
 
@@ -1953,7 +1953,7 @@ else {
 		$update_interval_parser = new CUpdateIntervalParser(['usermacros' => true]);
 
 		foreach ($data['items'] as &$item) {
-			$item['hostids'] = zbx_objectValues($item['hosts'], 'hostid');
+			$item['hostids'] = trx_objectValues($item['hosts'], 'hostid');
 
 			if ($data['hostid'] == 0) {
 				$host = reset($item['hosts']);
@@ -2102,7 +2102,7 @@ else {
 
 	$itemTriggerIds = [];
 	foreach ($data['items'] as $item) {
-		$itemTriggerIds = array_merge($itemTriggerIds, zbx_objectValues($item['triggers'], 'triggerid'));
+		$itemTriggerIds = array_merge($itemTriggerIds, trx_objectValues($item['triggers'], 'triggerid'));
 	}
 	$data['itemTriggers'] = API::Trigger()->get([
 		'triggerids' => $itemTriggerIds,

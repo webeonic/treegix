@@ -6,7 +6,7 @@ import (
 	"time"
 	"treegix/internal/agent"
 	"treegix/pkg/plugin"
-	"treegix/pkg/zbxcmd"
+	"treegix/pkg/trxcmd"
 )
 
 // Plugin -
@@ -42,7 +42,7 @@ func (p *Plugin) Export(key string, params []string, ctx plugin.ContextProvider)
 	}
 
 	if len(params) == 1 || params[1] == "" || params[1] == "wait" {
-		stdoutStderr, err := zbxcmd.Execute(params[0], time.Second*time.Duration(agent.Options.Timeout))
+		stdoutStderr, err := trxcmd.Execute(params[0], time.Second*time.Duration(agent.Options.Timeout))
 		if err != nil {
 			return nil, err
 		}
@@ -51,7 +51,7 @@ func (p *Plugin) Export(key string, params []string, ctx plugin.ContextProvider)
 
 		return stdoutStderr, nil
 	} else if params[1] == "nowait" {
-		err := zbxcmd.ExecuteBackground(params[0])
+		err := trxcmd.ExecuteBackground(params[0])
 
 		if err != nil {
 			return nil, err

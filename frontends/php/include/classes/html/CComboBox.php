@@ -8,7 +8,7 @@ class CComboBox extends CTag {
 
 	public function __construct($name = 'combobox', $value = null, $action = null, array $items = []) {
 		parent::__construct('select', true);
-		$this->setId(zbx_formatDomId($name));
+		$this->setId(trx_formatDomId($name));
 		$this->setAttribute('name', $name);
 		$this->value = $value;
 		if ($action !== null) {

@@ -84,8 +84,8 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 		->setArgument('eventid', $problem['eventid']);
 
 	$cell_clock = ($problem['clock'] >= $today)
-		? zbx_date2str(TIME_FORMAT_SECONDS, $problem['clock'])
-		: zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']);
+		? trx_date2str(TIME_FORMAT_SECONDS, $problem['clock'])
+		: trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']);
 	$cell_clock = new CCol(new CLink($cell_clock, $url_details));
 
 	$is_acknowledged = $problem['acknowledged'] == EVENT_ACKNOWLEDGED;
@@ -93,8 +93,8 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 	if ($show_recovery_data) {
 		if ($problem['r_eventid'] != 0) {
 			$cell_r_clock = ($problem['r_clock'] >= $today)
-				? zbx_date2str(TIME_FORMAT_SECONDS, $problem['r_clock'])
-				: zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock']);
+				? trx_date2str(TIME_FORMAT_SECONDS, $problem['r_clock'])
+				: trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock']);
 			$cell_r_clock = (new CCol(new CLink($cell_r_clock, $url_details)))
 				->addClass(TRX_STYLE_NOWRAP)
 				->addClass(TRX_STYLE_RIGHT);
@@ -239,7 +239,7 @@ foreach ($data['data']['problems'] as $eventid => $problem) {
 		$triggers_hosts[$trigger['triggerid']],
 		$description,
 		($show_opdata == OPERATIONAL_DATA_SHOW_SEPARATELY ) ? $opdata : null,
-		(new CCol(zbx_date2age($problem['clock'], ($problem['r_eventid'] != 0) ? $problem['r_clock'] : 0)))
+		(new CCol(trx_date2age($problem['clock'], ($problem['r_eventid'] != 0) ? $problem['r_clock'] : 0)))
 			->addClass(TRX_STYLE_NOWRAP),
 		(new CLink($problem['acknowledged'] == EVENT_ACKNOWLEDGED ? _('Yes') : _('No'), $problem_update_url))
 			->addClass($problem['acknowledged'] == EVENT_ACKNOWLEDGED ? TRX_STYLE_GREEN : TRX_STYLE_RED)

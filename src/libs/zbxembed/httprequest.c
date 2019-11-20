@@ -1,8 +1,8 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxjson.h"
-#include "zbxembed.h"
+#include "trxjson.h"
+#include "trxembed.h"
 #include "httprequest.h"
 #include "embed.h"
 #include "duktape.h"
@@ -18,7 +18,7 @@ typedef struct
 	size_t			data_offset;
 	unsigned char		custom_header;
 }
-zbx_es_httprequest_t;
+trx_es_httprequest_t;
 
 #define TRX_CURL_SETOPT(ctx, handle, opt, value, err)							\
 	if (CURLE_OK != (err = curl_easy_setopt(handle, opt, value)))					\
@@ -30,9 +30,9 @@ zbx_es_httprequest_t;
 static size_t	curl_write_cb(void *ptr, size_t size, size_t nmemb, void *userdata)
 {
 	size_t				r_size = size * nmemb;
-	zbx_es_httprequest_t	*request = (zbx_es_httprequest_t *)userdata;
+	trx_es_httprequest_t	*request = (trx_es_httprequest_t *)userdata;
 
-	zbx_strncpy_alloc(&request->data, &request->data_alloc, &request->data_offset, (const char *)ptr, r_size);
+	trx_strncpy_alloc(&request->data, &request->data_alloc, &request->data_offset, (const char *)ptr, r_size);
 
 	return r_size;
 }
@@ -44,13 +44,13 @@ static size_t	curl_write_cb(void *ptr, size_t size, size_t nmemb, void *userdata
  * Purpose: return backing C structure embedded in CurlHttpRequest object     *
  *                                                                            *
  ******************************************************************************/
-static zbx_es_httprequest_t *es_httprequest(duk_context *ctx)
+static trx_es_httprequest_t *es_httprequest(duk_context *ctx)
 {
-	zbx_es_httprequest_t	*request;
+	trx_es_httprequest_t	*request;
 
 	duk_push_this(ctx);
 	duk_get_prop_string(ctx, -1, "\xff""\xff""d");
-	request = (zbx_es_httprequest_t *)duk_to_pointer(ctx, -1);
+	request = (trx_es_httprequest_t *)duk_to_pointer(ctx, -1);
 	duk_pop(ctx);
 
 	return request;
@@ -65,18 +65,18 @@ static zbx_es_httprequest_t *es_httprequest(duk_context *ctx)
  ******************************************************************************/
 static duk_ret_t	es_httprequest_dtor(duk_context *ctx)
 {
-	zbx_es_httprequest_t	*request;
+	trx_es_httprequest_t	*request;
 
 	duk_get_prop_string(ctx, 0, "\xff""\xff""d");
-	request = (zbx_es_httprequest_t *)duk_to_pointer(ctx, -1);
+	request = (trx_es_httprequest_t *)duk_to_pointer(ctx, -1);
 	if (NULL != request)
 	{
 		if (NULL != request->headers)
 			curl_slist_free_all(request->headers);
 		if (NULL != request->handle)
 			curl_easy_cleanup(request->handle);
-		zbx_free(request->data);
-		zbx_free(request);
+		trx_free(request->data);
+		trx_free(request);
 
 		duk_push_pointer(ctx, NULL);
 		duk_put_prop_string(ctx, 0, "\xff""\xff""d");
@@ -94,23 +94,23 @@ static duk_ret_t	es_httprequest_dtor(duk_context *ctx)
  ******************************************************************************/
 static duk_ret_t	es_httprequest_ctor(duk_context *ctx)
 {
-	zbx_es_httprequest_t	*request;
+	trx_es_httprequest_t	*request;
 	CURLcode		err;
-	zbx_es_env_t		*env;
+	trx_es_env_t		*env;
 
 	if (!duk_is_constructor_call(ctx))
 		return DUK_RET_TYPE_ERROR;
 
 	duk_push_global_stash(ctx);
-	if (1 != duk_get_prop_string(ctx, -1, "\xff""\xff""zbx_env"))
+	if (1 != duk_get_prop_string(ctx, -1, "\xff""\xff""trx_env"))
 		return duk_error(ctx, DUK_RET_TYPE_ERROR, "cannot access internal environment");
-	env = (zbx_es_env_t *)duk_to_pointer(ctx, -1);
+	env = (trx_es_env_t *)duk_to_pointer(ctx, -1);
 	duk_pop(ctx);
 
 	duk_push_this(ctx);
 
-	request = (zbx_es_httprequest_t *)zbx_malloc(NULL, sizeof(zbx_es_httprequest_t));
-	memset(request, 0, sizeof(zbx_es_httprequest_t));
+	request = (trx_es_httprequest_t *)trx_malloc(NULL, sizeof(trx_es_httprequest_t));
+	memset(request, 0, sizeof(trx_es_httprequest_t));
 
 	if (NULL == (request->handle = curl_easy_init()))
 		return duk_error(ctx, DUK_RET_TYPE_ERROR, "cannot initialize cURL library");
@@ -142,7 +142,7 @@ static duk_ret_t	es_httprequest_ctor(duk_context *ctx)
  ******************************************************************************/
 static duk_ret_t	es_httprequest_add_header(duk_context *ctx)
 {
-	zbx_es_httprequest_t	*request;
+	trx_es_httprequest_t	*request;
 	CURLcode		err;
 
 	if (NULL == (request = es_httprequest(ctx)))
@@ -164,7 +164,7 @@ static duk_ret_t	es_httprequest_add_header(duk_context *ctx)
  ******************************************************************************/
 static duk_ret_t	es_httprequest_clear_header(duk_context *ctx)
 {
-	zbx_es_httprequest_t	*request;
+	trx_es_httprequest_t	*request;
 
 	if (NULL == (request = es_httprequest(ctx)))
 		return duk_error(ctx, DUK_RET_TYPE_ERROR, "internal scripting error: null object");
@@ -188,7 +188,7 @@ static duk_ret_t	es_httprequest_clear_header(duk_context *ctx)
  ******************************************************************************/
 static duk_ret_t	es_httprequest_query(duk_context *ctx, const char *http_request)
 {
-	zbx_es_httprequest_t	*request;
+	trx_es_httprequest_t	*request;
 	const char		*url, *contents = NULL;
 	CURLcode		err;
 
@@ -203,14 +203,14 @@ static duk_ret_t	es_httprequest_query(duk_context *ctx, const char *http_request
 
 	if (0 == request->custom_header)
 	{
-		struct zbx_json_parse	jp;
+		struct trx_json_parse	jp;
 
 		if (NULL != request->headers)
 			curl_slist_free_all(request->headers);
 
 		if (NULL != contents)
 		{
-			if (SUCCEED == zbx_json_open(contents, &jp))
+			if (SUCCEED == trx_json_open(contents, &jp))
 				request->headers = curl_slist_append(NULL, "Content-Type: application/json");
 			else
 				request->headers = curl_slist_append(NULL, "Content-Type: text/plain");
@@ -288,7 +288,7 @@ static duk_ret_t	es_httprequest_delete(duk_context *ctx)
  ******************************************************************************/
 static duk_ret_t	es_httprequest_status(duk_context *ctx)
 {
-	zbx_es_httprequest_t	*request;
+	trx_es_httprequest_t	*request;
 	long			response_code;
 	CURLcode		err;
 
@@ -345,17 +345,17 @@ static int	es_httprequest_create_prototype(duk_context *ctx)
 	return SUCCEED;
 }
 
-int	zbx_es_init_httprequest(zbx_es_t *es, char **error)
+int	trx_es_init_httprequest(trx_es_t *es, char **error)
 {
 	if (0 != setjmp(es->env->loc))
 	{
-		*error = zbx_strdup(*error, es->env->error);
+		*error = trx_strdup(*error, es->env->error);
 		return FAIL;
 	}
 
 	if (FAIL == es_httprequest_create_prototype(es->env->ctx))
 	{
-		*error = zbx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
+		*error = trx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
 		duk_pop(es->env->ctx);
 		return FAIL;
 	}

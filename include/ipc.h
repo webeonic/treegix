@@ -10,11 +10,11 @@
 
 #define TRX_NONEXISTENT_SHMID		(-1)
 
-int	zbx_shm_create(size_t size);
-int	zbx_shm_destroy(int shmid);
+int	trx_shm_create(size_t size);
+int	trx_shm_destroy(int shmid);
 
 /* data copying callback function prototype */
-typedef void (*zbx_shm_copy_func_t)(void *dst, size_t size_dst, const void *src);
+typedef void (*trx_shm_copy_func_t)(void *dst, size_t size_dst, const void *src);
 
 /* dynamic shared memory data structure */
 typedef struct
@@ -26,11 +26,11 @@ typedef struct
 	size_t			size;
 
 	/* callback function to copy data after shared memory reallocation */
-	zbx_shm_copy_func_t	copy_func;
+	trx_shm_copy_func_t	copy_func;
 
-	zbx_mutex_t		lock;
+	trx_mutex_t		lock;
 }
-zbx_dshm_t;
+trx_dshm_t;
 
 /* local process reference to dynamic shared memory data */
 typedef struct
@@ -41,18 +41,18 @@ typedef struct
 	/* shared memory base address */
 	void	*addr;
 }
-zbx_dshm_ref_t;
+trx_dshm_ref_t;
 
-int	zbx_dshm_create(zbx_dshm_t *shm, size_t shm_size, zbx_mutex_name_t mutex,
-		zbx_shm_copy_func_t copy_func, char **errmsg);
+int	trx_dshm_create(trx_dshm_t *shm, size_t shm_size, trx_mutex_name_t mutex,
+		trx_shm_copy_func_t copy_func, char **errmsg);
 
-int	zbx_dshm_destroy(zbx_dshm_t *shm, char **errmsg);
+int	trx_dshm_destroy(trx_dshm_t *shm, char **errmsg);
 
-int	zbx_dshm_realloc(zbx_dshm_t *shm, size_t size, char **errmsg);
+int	trx_dshm_realloc(trx_dshm_t *shm, size_t size, char **errmsg);
 
-int	zbx_dshm_validate_ref(const zbx_dshm_t *shm, zbx_dshm_ref_t *shm_ref, char **errmsg);
+int	trx_dshm_validate_ref(const trx_dshm_t *shm, trx_dshm_ref_t *shm_ref, char **errmsg);
 
-void	zbx_dshm_lock(zbx_dshm_t *shm);
-void	zbx_dshm_unlock(zbx_dshm_t *shm);
+void	trx_dshm_lock(trx_dshm_t *shm);
+void	trx_dshm_unlock(trx_dshm_t *shm);
 
 #endif

@@ -218,7 +218,7 @@ class CProfiler {
 
 		return (new CPre())
 			->addClass(TRX_STYLE_DEBUG_OUTPUT)
-			->setAttribute('name', 'zbx_debug_info')
+			->setAttribute('name', 'trx_debug_info')
 			->addItem($debug);
 	}
 
@@ -340,7 +340,7 @@ class CProfiler {
 
 		foreach ($callStack as $call) {
 			// do not show the call to the error handler function
-			if ($call['function'] != 'zbx_err_handler') {
+			if ($call['function'] != 'trx_err_handler') {
 				if (array_key_exists('class', $call)) {
 					$functions[] = $call['class'].$call['type'].$call['function'].'()';
 				}

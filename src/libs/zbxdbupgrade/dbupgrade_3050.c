@@ -3,8 +3,8 @@
 #include "common.h"
 #include "db.h"
 #include "dbupgrade.h"
-#include "zbxtasks.h"
-#include "zbxregexp.h"
+#include "trxtasks.h"
+#include "trxregexp.h"
 #include "log.h"
 
 extern unsigned char	program_type;
@@ -40,7 +40,7 @@ static int	DBpatch_3050001(void)
 	{
 		const char	*p;
 		int		index;
-		zbx_uint64_t	widget_fieldid;
+		trx_uint64_t	widget_fieldid;
 
 		if (NULL == (p = strrchr(row[1], '.')) || SUCCEED != is_uint31(p + 1, &index))
 			continue;
@@ -314,18 +314,18 @@ static int	DBpatch_3050024(void)
 
 static int	DBpatch_3050025(void)
 {
-	zbx_db_insert_t	db_insert;
+	trx_db_insert_t	db_insert;
 	int		ret;
 
 	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
-	zbx_db_insert_prepare(&db_insert, "task", "taskid", "type", "status", "clock", NULL);
-	zbx_db_insert_add_values(&db_insert, __UINT64_C(0), TRX_TM_TASK_UPDATE_EVENTNAMES, TRX_TM_STATUS_NEW,
+	trx_db_insert_prepare(&db_insert, "task", "taskid", "type", "status", "clock", NULL);
+	trx_db_insert_add_values(&db_insert, __UINT64_C(0), TRX_TM_TASK_UPDATE_EVENTNAMES, TRX_TM_STATUS_NEW,
 			time(NULL));
-	zbx_db_insert_autoincrement(&db_insert, "taskid");
-	ret = zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_autoincrement(&db_insert, "taskid");
+	ret = trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 
 	return ret;
 }
@@ -712,7 +712,7 @@ static int	DBpatch_3050066(void)
 			"favscr", "favscreens",
 			"hoststat", "problemhosts",
 			"navigationtree", "navtree",
-			"stszbx", "systeminfo",
+			"ststrx", "systeminfo",
 			"sysmap", "map",
 			"syssum", "problemsbysv",
 			"webovr", "web",
@@ -1080,9 +1080,9 @@ static int	DBpatch_3050102(void)
 	DB_RESULT		result;
 	DB_ROW			row;
 	int			ret = SUCCEED;
-	zbx_vector_uint64_t	ids;
+	trx_vector_uint64_t	ids;
 
-	zbx_vector_uint64_create(&ids);
+	trx_vector_uint64_create(&ids);
 
 	result = DBselect(
 			"select a.autoreg_hostid,a.proxy_hostid,h.proxy_hostid"
@@ -1092,17 +1092,17 @@ static int	DBpatch_3050102(void)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_uint64_t	autoreg_proxy_hostid, host_proxy_hostid;
+		trx_uint64_t	autoreg_proxy_hostid, host_proxy_hostid;
 
 		TRX_DBROW2UINT64(autoreg_proxy_hostid, row[1]);
 		TRX_DBROW2UINT64(host_proxy_hostid, row[2]);
 
 		if (autoreg_proxy_hostid != host_proxy_hostid)
 		{
-			zbx_uint64_t	id;
+			trx_uint64_t	id;
 
 			TRX_STR2UINT64(id, row[0]);
-			zbx_vector_uint64_append(&ids, id);
+			trx_vector_uint64_append(&ids, id);
 		}
 	}
 	DBfree_result(result);
@@ -1112,16 +1112,16 @@ static int	DBpatch_3050102(void)
 		char	*sql = NULL;
 		size_t	sql_alloc = 0, sql_offset = 0;
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "delete from autoreg_host where");
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "delete from autoreg_host where");
 		DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "autoreg_hostid", ids.values, ids.values_num);
 
 		if (TRX_DB_OK > DBexecute("%s", sql))
 			ret = FAIL;
 
-		zbx_free(sql);
+		trx_free(sql);
 	}
 
-	zbx_vector_uint64_destroy(&ids);
+	trx_vector_uint64_destroy(&ids);
 
 	return ret;
 }
@@ -1298,7 +1298,7 @@ static int	DBpatch_3050118(void)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update events set severity=%s where eventid=%s;\n",
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update events set severity=%s where eventid=%s;\n",
 				row[1], row[0]);
 
 		if (SUCCEED != (ret = DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset)))
@@ -1310,7 +1310,7 @@ static int	DBpatch_3050118(void)
 		ret = FAIL;
 out:
 	DBfree_result(result);
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -1339,7 +1339,7 @@ static int	DBpatch_3050119(void)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update problem set severity=%s where eventid=%s;\n",
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update problem set severity=%s where eventid=%s;\n",
 				row[1], row[0]);
 
 		if (SUCCEED != (ret = DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset)))
@@ -1352,7 +1352,7 @@ static int	DBpatch_3050119(void)
 		ret = FAIL;
 out:
 	DBfree_result(result);
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -1360,8 +1360,8 @@ out:
 static int	DBpatch_3050120(void)
 {
 	int		ret = SUCCEED, action;
-	zbx_uint64_t	ackid, eventid;
-	zbx_hashset_t	eventids;
+	trx_uint64_t	ackid, eventid;
+	trx_hashset_t	eventids;
 	DB_RESULT	result;
 	DB_ROW		row;
 	char		*sql;
@@ -1370,8 +1370,8 @@ static int	DBpatch_3050120(void)
 	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
-	sql = zbx_malloc(NULL, sql_alloc);
-	zbx_hashset_create(&eventids, 1000, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	sql = trx_malloc(NULL, sql_alloc);
+	trx_hashset_create(&eventids, 1000, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 
@@ -1385,14 +1385,14 @@ static int	DBpatch_3050120(void)
 		/* 0x04 - TRX_ACKNOWLEDGE_ACTION_COMMENT */
 		action |= 0x04;
 
-		if (NULL == zbx_hashset_search(&eventids, &eventid))
+		if (NULL == trx_hashset_search(&eventids, &eventid))
 		{
-			zbx_hashset_insert(&eventids, &eventid, sizeof(eventid));
+			trx_hashset_insert(&eventids, &eventid, sizeof(eventid));
 			/* 0x02 - TRX_ACKNOWLEDGE_ACTION_ACKNOWLEDGE */
 			action |= 0x02;
 		}
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 				"update acknowledges set action=%d where acknowledgeid=" TRX_FS_UI64 ";\n",
 				action, ackid);
 
@@ -1405,9 +1405,9 @@ static int	DBpatch_3050120(void)
 	if (16 < sql_offset && TRX_DB_OK > DBexecute("%s", sql))
 		ret = FAIL;
 out:
-	zbx_hashset_destroy(&eventids);
+	trx_hashset_destroy(&eventids);
 	DBfree_result(result);
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -1462,62 +1462,62 @@ static int	DBpatch_3050122(void)
 		size_t		param_pos, param_len, sep_pos, param_alloc = 0, param_offset = 0, current_len;
 		int		was_quoted;
 
-		zbx_function_param_parse(orig_param, &param_pos, &param_len, &sep_pos);
+		trx_function_param_parse(orig_param, &param_pos, &param_len, &sep_pos);
 
 		/* copy leading whitespace (if any) or empty string */
-		zbx_strncpy_alloc(&processed_parameter, &param_alloc, &param_offset, orig_param, param_pos);
+		trx_strncpy_alloc(&processed_parameter, &param_alloc, &param_offset, orig_param, param_pos);
 
-		unquoted_parameter = zbx_function_param_unquote_dyn(orig_param + param_pos, param_len, &was_quoted);
+		unquoted_parameter = trx_function_param_unquote_dyn(orig_param + param_pos, param_len, &was_quoted);
 
-		zbx_regexp_escape(&unquoted_parameter);
+		trx_regexp_escape(&unquoted_parameter);
 
 		current_len = strlen(unquoted_parameter);
 
 		/* increasing length by 3 for ^, $, '\0' */
-		parameter_anchored = (char *)zbx_malloc(NULL, current_len + 3);
+		parameter_anchored = (char *)trx_malloc(NULL, current_len + 3);
 		DBpatch_3050122_add_anchors(unquoted_parameter, parameter_anchored, current_len);
-		zbx_free(unquoted_parameter);
+		trx_free(unquoted_parameter);
 
-		if (SUCCEED != zbx_function_param_quote(&parameter_anchored, was_quoted))
+		if (SUCCEED != trx_function_param_quote(&parameter_anchored, was_quoted))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "Cannot convert parameter \"%s\" of trigger function"
 					" logsource (functionid: %s) to regexp during database upgrade. The"
 					" parameter needs to but cannot be quoted after conversion.",
 					row[1], row[0]);
 
-			zbx_free(parameter_anchored);
-			zbx_free(processed_parameter);
+			trx_free(parameter_anchored);
+			trx_free(processed_parameter);
 			continue;
 		}
 
 		/* copy the parameter */
-		zbx_strcpy_alloc(&processed_parameter, &param_alloc, &param_offset, parameter_anchored);
-		zbx_free(parameter_anchored);
+		trx_strcpy_alloc(&processed_parameter, &param_alloc, &param_offset, parameter_anchored);
+		trx_free(parameter_anchored);
 
 		/* copy trailing whitespace (if any) or empty string */
-		zbx_strncpy_alloc(&processed_parameter, &param_alloc, &param_offset, orig_param + param_pos + param_len,
+		trx_strncpy_alloc(&processed_parameter, &param_alloc, &param_offset, orig_param + param_pos + param_len,
 				sep_pos - param_pos - param_len + 1);
 
-		if (FUNCTION_PARAM_LEN < (current_len = zbx_strlen_utf8(processed_parameter)))
+		if (FUNCTION_PARAM_LEN < (current_len = trx_strlen_utf8(processed_parameter)))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "Cannot convert parameter \"%s\" of trigger function logsource"
 					" (functionid: %s) to regexp during database upgrade. The converted"
 					" value is too long for field \"parameter\" - " TRX_FS_SIZE_T " characters."
 					" Allowed length is %d characters.",
-					row[1], row[0], (zbx_fs_size_t)current_len, FUNCTION_PARAM_LEN);
+					row[1], row[0], (trx_fs_size_t)current_len, FUNCTION_PARAM_LEN);
 
-			zbx_free(processed_parameter);
+			trx_free(processed_parameter);
 			continue;
 		}
 
 		db_parameter_esc = DBdyn_escape_string_len(processed_parameter, FUNCTION_PARAM_LEN);
-		zbx_free(processed_parameter);
+		trx_free(processed_parameter);
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 				"update functions set parameter='%s' where functionid=%s;\n",
 				db_parameter_esc, row[0]);
 
-		zbx_free(db_parameter_esc);
+		trx_free(db_parameter_esc);
 
 		if (SUCCEED != DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset))
 			goto out;
@@ -1534,7 +1534,7 @@ static int	DBpatch_3050122(void)
 	ret = SUCCEED;
 out:
 	DBfree_result(result);
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -1742,12 +1742,12 @@ static int	DBpatch_3050144(void)
 	DB_RESULT	result;
 	DB_ROW		row;
 	int		ret = FAIL;
-	zbx_db_insert_t	db_insert;
+	trx_db_insert_t	db_insert;
 
 	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
 
-	zbx_db_insert_prepare(&db_insert, "widget_field", "widget_fieldid", "widgetid", "type", "name", "value_int",
+	trx_db_insert_prepare(&db_insert, "widget_field", "widget_fieldid", "widgetid", "type", "name", "value_int",
 			NULL);
 
 	/* type : 'problem' - WIDGET_PROBLEMS */
@@ -1761,16 +1761,16 @@ static int	DBpatch_3050144(void)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_uint64_t	widgetid;
+		trx_uint64_t	widgetid;
 
 		TRX_STR2UINT64(widgetid, row[0]);
-		zbx_db_insert_add_values(&db_insert, __UINT64_C(0), widgetid, 0, "show_suppressed", 1);
+		trx_db_insert_add_values(&db_insert, __UINT64_C(0), widgetid, 0, "show_suppressed", 1);
 	}
 	DBfree_result(result);
 
-	zbx_db_insert_autoincrement(&db_insert, "widget_fieldid");
-	ret = zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_autoincrement(&db_insert, "widget_fieldid");
+	ret = trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 
 	return ret;
 }

@@ -9,47 +9,47 @@ EXTRA_DIST = \
 
 sbin_PROGRAMS = treegix_agentd
 
-noinst_LIBRARIES = libzbxagent.a
+noinst_LIBRARIES = libtrxagent.a
 
-libzbxagent_a_SOURCES = \
+libtrxagent_a_SOURCES = \
 	active.c active.h \
 	stats.c stats.h \
 	cpustat.c cpustat.h \
 	diskdevices.c diskdevices.h \
 	vmstats.c vmstats.h \
-	zbxconf.c zbxconf.h \
+	trxconf.c trxconf.h \
 	listener.c listener.h \
 	procstat.c procstat.h \
 	metrics.h
 
-libzbxagent_a_CFLAGS = \
+libtrxagent_a_CFLAGS = \
 	-DTREEGIX_DAEMON
 
 treegix_agentd_SOURCES = treegix_agentd.c
 
 treegix_agentd_LDADD = \
-	libzbxagent.a \
-	logfiles/libzbxlogfiles.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/libzbxagentsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/$(ARCH)/libspecsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/agent/libagentsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxexec/libzbxexec.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
-	$(top_srcdir)/src/libs/zbxmodules/libzbxmodules.a \
-	$(top_srcdir)/src/libs/zbxhttp/libzbxhttp.a
+	libtrxagent.a \
+	logfiles/libtrxlogfiles.a \
+	$(top_srcdir)/src/libs/trxsysinfo/libtrxagentsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/$(ARCH)/libspecsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/agent/libagentsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxalgo/libtrxalgo.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxexec/libtrxexec.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
+	$(top_srcdir)/src/libs/trxmodules/libtrxmodules.a \
+	$(top_srcdir)/src/libs/trxhttp/libtrxhttp.a
 
 treegix_agentd_LDADD += @AGENT_LIBS@
 

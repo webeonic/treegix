@@ -128,7 +128,7 @@ class CScreenHostTriggers extends CScreenBase {
 
 		$footer = (new CList())
 			->addItem($info)
-			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
+			->addItem(_s('Updated: %s', trx_date2str(TIME_FORMAT_SECONDS)))
 			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(new CUiWidget('hat_trstatus', [$header, $table, $footer]));
@@ -194,7 +194,7 @@ class CScreenHostTriggers extends CScreenBase {
 
 		$hostids = [];
 		foreach ($data['triggers'] as $trigger) {
-			$hostids += $trigger['hosts'] ? array_fill_keys(zbx_objectValues($trigger['hosts'], 'hostid'), '') : [];
+			$hostids += $trigger['hosts'] ? array_fill_keys(trx_objectValues($trigger['hosts'], 'hostid'), '') : [];
 		}
 
 		$hosts = API::Host()->get([
@@ -235,7 +235,7 @@ class CScreenHostTriggers extends CScreenBase {
 			}
 
 			// Clock.
-			$clock = new CLink(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']),
+			$clock = new CLink(trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']),
 				(new CUrl('treegix.php'))
 					->setArgument('action', 'problem.view')
 					->setArgument('filter_triggerids[]', $trigger['triggerid'])
@@ -251,7 +251,7 @@ class CScreenHostTriggers extends CScreenBase {
 						))
 				]))->addClass(getSeverityStyle($problem['severity'])),
 				$clock,
-				zbx_date2age($problem['clock']),
+				trx_date2age($problem['clock']),
 				makeInformationList($info_icons),
 				(new CLink($problem['acknowledged'] ? _('Yes') : _('No'),
 					(new CUrl('treegix.php'))

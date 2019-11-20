@@ -92,15 +92,15 @@ function getSupportUrl($language) {
  *
  * @return array A list of possible locale names.
  */
-function zbx_locale_variants($language) {
+function trx_locale_variants($language) {
 	if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
-		return zbx_locale_variants_win($language);
+		return trx_locale_variants_win($language);
 	}
 
-	return zbx_locale_variants_unix($language);
+	return trx_locale_variants_unix($language);
 }
 
-function zbx_locale_variants_unix($language) {
+function trx_locale_variants_unix($language) {
 	$postfixes = [
 		'',
 		'.utf8',
@@ -146,7 +146,7 @@ function zbx_locale_variants_unix($language) {
 	return $result;
 }
 
-function zbx_locale_variants_win($language) {
+function trx_locale_variants_win($language) {
 	// Windows locales are written like language[_country[.charset]].
 	// For a list of supported languages see:
 	// http://msdn.microsoft.com/en-us/library/39cwe7zf(vs.71).aspx

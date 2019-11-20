@@ -5,7 +5,7 @@
 #include "simple.h"
 #include "log.h"
 
-#include "zbxself.h"
+#include "trxself.h"
 
 typedef int	(*vmfunc_t)(AGENT_REQUEST *, const char *, const char *, AGENT_RESULT *);
 
@@ -16,7 +16,7 @@ typedef struct
 	const char	*key;
 	vmfunc_t	func;
 }
-zbx_vmcheck_t;
+trx_vmcheck_t;
 
 #if defined(HAVE_LIBXML2) && defined(HAVE_LIBCURL)
 #	define VMCHECK_FUNC(func)	func
@@ -24,7 +24,7 @@ zbx_vmcheck_t;
 #	define VMCHECK_FUNC(func)	NULL
 #endif
 
-static zbx_vmcheck_t	vmchecks[] =
+static trx_vmcheck_t	vmchecks[] =
 {
 	{"cluster.discovery", VMCHECK_FUNC(check_vcenter_cluster_discovery)},
 	{"cluster.status", VMCHECK_FUNC(check_vcenter_cluster_status)},
@@ -113,7 +113,7 @@ static zbx_vmcheck_t	vmchecks[] =
  ******************************************************************************/
 static int	get_vmware_function(const char *key, vmfunc_t *vmfunc)
 {
-	zbx_vmcheck_t	*check;
+	trx_vmcheck_t	*check;
 
 	if (0 != strncmp(key, TRX_VMWARE_PREFIX, TRX_CONST_STRLEN(TRX_VMWARE_PREFIX)))
 		return FAIL;
@@ -130,7 +130,7 @@ static int	get_vmware_function(const char *key, vmfunc_t *vmfunc)
 	return FAIL;
 }
 
-int	get_value_simple(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_results)
+int	get_value_simple(DC_ITEM *item, AGENT_RESULT *result, trx_vector_ptr_t *add_results)
 {
 	AGENT_REQUEST	request;
 	vmfunc_t	vmfunc;
@@ -142,7 +142,7 @@ int	get_value_simple(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 
 	if (SUCCEED != parse_item_key(item->key, &request))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid item key format."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid item key format."));
 		goto out;
 	}
 
@@ -164,7 +164,7 @@ int	get_value_simple(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 		{
 			if (0 == get_process_type_forks(TRX_PROCESS_TYPE_VMWARE))
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "No \"vmware collector\" processes started."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "No \"vmware collector\" processes started."));
 				goto out;
 			}
 
@@ -172,7 +172,7 @@ int	get_value_simple(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 				ret = SUCCEED;
 		}
 		else
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for VMware checks was not compiled in."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Support for VMware checks was not compiled in."));
 	}
 	else if (0 == strcmp(request.key, TRX_VMWARE_PREFIX "eventlog"))
 	{
@@ -181,7 +181,7 @@ int	get_value_simple(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 			ret = SUCCEED;
 #else
 		TRX_UNUSED(add_results);
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for VMware checks was not compiled in."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Support for VMware checks was not compiled in."));
 #endif
 	}
 	else
@@ -192,12 +192,12 @@ int	get_value_simple(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 	}
 
 	if (NOTSUPPORTED == ret && !ISSET_MSG(result))
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Simple check is not supported."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Simple check is not supported."));
 
 out:
 	free_request(&request);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

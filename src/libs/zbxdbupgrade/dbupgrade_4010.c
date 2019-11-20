@@ -217,7 +217,7 @@ static int	DBpatch_4010025(void)
 {
 	DB_ROW		row;
 	DB_RESULT	result;
-	zbx_uint64_t	nextid;
+	trx_uint64_t	nextid;
 
 	if (0 != (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;

@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"sort"
 	"unsafe"
-	"treegix/pkg/zbxlib"
+	"treegix/pkg/trxlib"
 )
 
 const (
@@ -60,16 +60,16 @@ func (b *Bundle) CompareExpressions(expressions []*Expression) bool {
 }
 
 func (b *Bundle) Match(value string, pattern string, mode int, output_template *string) (match bool, output string) {
-	match, output, _ = zbxlib.MatchGlobalRegexp(b.Cblob, value, pattern, mode, output_template)
+	match, output, _ = trxlib.MatchGlobalRegexp(b.Cblob, value, pattern, mode, output_template)
 	return
 }
 
 func NewBundle(expressions []*Expression) (bundle *Bundle) {
 	bundle = &Bundle{expressions: expressions}
-	bundle.Cblob = zbxlib.NewGlobalRegexp()
+	bundle.Cblob = trxlib.NewGlobalRegexp()
 	for _, e := range expressions {
-		zbxlib.AddGlobalRegexp(bundle.Cblob, e.Name, e.Body, *e.Type, (*e.Delimiter)[0], *e.Mode)
+		trxlib.AddGlobalRegexp(bundle.Cblob, e.Name, e.Body, *e.Type, (*e.Delimiter)[0], *e.Mode)
 	}
-	runtime.SetFinalizer(bundle, func(b *Bundle) { zbxlib.DestroyGlobalRegexp(b.Cblob) })
+	runtime.SetFinalizer(bundle, func(b *Bundle) { trxlib.DestroyGlobalRegexp(b.Cblob) })
 	return
 }

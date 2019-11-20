@@ -6,6 +6,6 @@
 #	error "This module is only available for Windows OS"
 #endif
 
-zbx_uint64_t	get_cluster_size(const char *path, char **error);
+trx_uint64_t	get_cluster_size(const char *path, char **error);
 
 #endif /* TREEGIX_DISK_H */

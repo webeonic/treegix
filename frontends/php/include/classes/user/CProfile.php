@@ -93,7 +93,7 @@ class CProfile {
 			'SELECT type, value_id, value_int, value_str, idx, idx2'.
 			' FROM profiles'.
 			' WHERE userid='.self::$userDetails['userid'].
-				' AND idx LIKE '.zbx_dbstr($idx_pattern)
+				' AND idx LIKE '.trx_dbstr($idx_pattern)
 		);
 
 		while ($row = DBfetch($query)) {
@@ -144,7 +144,7 @@ class CProfile {
 			'SELECT type,value_id,value_int,value_str,idx2'.
 			' FROM profiles'.
 			' WHERE userid='.self::$userDetails['userid'].
-				' AND idx='.zbx_dbstr($idx)
+				' AND idx='.trx_dbstr($idx)
 		);
 
 		while ($row = DBfetch($query)) {
@@ -300,10 +300,10 @@ class CProfile {
 		$values = [
 			'profileid' => get_dbid('profiles', 'profileid'),
 			'userid' => self::$userDetails['userid'],
-			'idx' => zbx_dbstr($idx),
-			$value_type => zbx_dbstr($value),
+			'idx' => trx_dbstr($idx),
+			$value_type => trx_dbstr($value),
 			'type' => $type,
-			'idx2' => zbx_dbstr($idx2)
+			'idx2' => trx_dbstr($idx2)
 		];
 
 		return DBexecute('INSERT INTO profiles ('.implode(', ', array_keys($values)).') VALUES ('.implode(', ', $values).')');
@@ -314,11 +314,11 @@ class CProfile {
 
 		return DBexecute(
 			'UPDATE profiles SET '.
-			$valueType.'='.zbx_dbstr($value).','.
+			$valueType.'='.trx_dbstr($value).','.
 			' type='.$type.
 			' WHERE userid='.self::$userDetails['userid'].
-				' AND idx='.zbx_dbstr($idx).
-				' AND idx2='.zbx_dbstr($idx2)
+				' AND idx='.trx_dbstr($idx).
+				' AND idx2='.trx_dbstr($idx2)
 		);
 	}
 
@@ -341,9 +341,9 @@ class CProfile {
 	private static function checkValueType($value, $type) {
 		switch ($type) {
 			case PROFILE_TYPE_ID:
-				return zbx_ctype_digit($value);
+				return trx_ctype_digit($value);
 			case PROFILE_TYPE_INT:
-				return zbx_is_int($value);
+				return trx_is_int($value);
 			case PROFILE_TYPE_STR:
 				return mb_strlen($value) <= self::$stringProfileMaxLength;
 			default:

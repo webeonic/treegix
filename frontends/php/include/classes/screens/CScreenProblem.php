@@ -430,7 +430,7 @@ class CScreenProblem extends CScreenBase {
 			case 'host':
 				$triggers_hosts_list = [];
 				foreach (getTriggersHostsList($data['triggers']) as $triggerid => $trigger_hosts) {
-					$triggers_hosts_list[$triggerid] = implode(', ', zbx_objectValues($trigger_hosts, 'name'));
+					$triggers_hosts_list[$triggerid] = implode(', ', trx_objectValues($trigger_hosts, 'name'));
 				}
 
 				foreach ($data['problems'] as &$problem) {
@@ -948,8 +948,8 @@ class CScreenProblem extends CScreenBase {
 				$trigger = $data['triggers'][$problem['objectid']];
 
 				$cell_clock = ($problem['clock'] >= $today)
-					? zbx_date2str(TIME_FORMAT_SECONDS, $problem['clock'])
-					: zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']);
+					? trx_date2str(TIME_FORMAT_SECONDS, $problem['clock'])
+					: trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']);
 				$cell_clock = new CCol(new CLink($cell_clock,
 					(new CUrl('tr_events.php'))
 						->setArgument('triggerid', $problem['objectid'])
@@ -958,8 +958,8 @@ class CScreenProblem extends CScreenBase {
 
 				if ($problem['r_eventid'] != 0) {
 					$cell_r_clock = ($problem['r_clock'] >= $today)
-						? zbx_date2str(TIME_FORMAT_SECONDS, $problem['r_clock'])
-						: zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock']);
+						? trx_date2str(TIME_FORMAT_SECONDS, $problem['r_clock'])
+						: trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock']);
 					$cell_r_clock = (new CCol(new CLink($cell_r_clock,
 						(new CUrl('tr_events.php'))
 							->setArgument('triggerid', $problem['objectid'])
@@ -1131,8 +1131,8 @@ class CScreenProblem extends CScreenBase {
 						: $description,
 					($show_opdata == OPERATIONAL_DATA_SHOW_SEPARATELY) ? $opdata : null,
 					($problem['r_eventid'] != 0)
-						? zbx_date2age($problem['clock'], $problem['r_clock'])
-						: zbx_date2age($problem['clock']),
+						? trx_date2age($problem['clock'], $problem['r_clock'])
+						: trx_date2age($problem['clock']),
 					$problem_update_link,
 					makeEventActionsIcons($problem['eventid'], $data['actions'], $data['mediatypes'], $data['users'],
 						$this->config
@@ -1229,9 +1229,9 @@ class CScreenProblem extends CScreenBase {
 
 			$csv[] = [
 				getSeverityName($problem['severity'], $this->config),
-				zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']),
+				trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']),
 				($problem['r_eventid'] != 0)
-					? zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock'])
+					? trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock'])
 					: '',
 				$value_str,
 				implode(', ', $hosts),
@@ -1240,15 +1240,15 @@ class CScreenProblem extends CScreenBase {
 					: $problem['name'],
 				($show_opdata == OPERATIONAL_DATA_SHOW_SEPARATELY) ? $opdata : null,
 				($problem['r_eventid'] != 0)
-					? zbx_date2age($problem['clock'], $problem['r_clock'])
-					: zbx_date2age($problem['clock']),
+					? trx_date2age($problem['clock'], $problem['r_clock'])
+					: trx_date2age($problem['clock']),
 				($problem['acknowledged'] == EVENT_ACKNOWLEDGED) ? _('Yes') : _('No'),
 				implode(', ', $actions_performed),
 				implode(', ', $tags[$problem['eventid']])
 			];
 		}
 
-		return zbx_toCSV($csv);
+		return trx_toCSV($csv);
 	}
 
 	/**
@@ -1264,7 +1264,7 @@ class CScreenProblem extends CScreenBase {
 	public static function getLatestValues(array $items, $html = true) {
 		$latest_values = [];
 
-		$items = zbx_toHash($items, 'itemid');
+		$items = trx_toHash($items, 'itemid');
 		$history_values = Manager::History()->getLastValues($items, 1, TRX_HISTORY_PERIOD);
 
 		if ($html) {
@@ -1292,7 +1292,7 @@ class CScreenProblem extends CScreenBase {
 					new CCol($item['name_expanded']),
 					new CCol(
 						($last_value['clock'] !== null)
-							? zbx_date2str(DATE_TIME_FORMAT_SECONDS, $last_value['clock'])
+							? trx_date2str(DATE_TIME_FORMAT_SECONDS, $last_value['clock'])
 							: UNRESOLVED_MACRO_STRING
 					),
 					new CCol($last_value['value']),

@@ -22,7 +22,7 @@ function select_config() {
 function setHostGroupInternal($groupid, $internal) {
 	return DBexecute(
 		'UPDATE hstgrp'.
-		' SET internal='.zbx_dbstr($internal).
+		' SET internal='.trx_dbstr($internal).
 		' WHERE '.dbConditionInt('groupid', [$groupid])
 	);
 }
@@ -45,7 +45,7 @@ function update_config($config) {
 		$userGroup = DBfetch(DBselect(
 			'SELECT u.name'.
 			' FROM usrgrp u'.
-			' WHERE u.usrgrpid='.zbx_dbstr($config['alert_usrgrpid'])
+			' WHERE u.usrgrpid='.trx_dbstr($config['alert_usrgrpid'])
 		));
 		if (!$userGroup) {
 			error(_('Incorrect user group.'));
@@ -173,7 +173,7 @@ function update_config($config) {
 				$update[] = $key.'='.(($value == '0') ? 'NULL' : $value);
 			}
 			else{
-				$update[] = $key.'='.zbx_dbstr($value);
+				$update[] = $key.'='.trx_dbstr($value);
 			}
 		}
 	}

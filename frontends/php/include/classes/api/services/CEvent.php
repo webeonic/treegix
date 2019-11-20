@@ -96,12 +96,12 @@ class CEvent extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		$this->validateGet($options);
 
 		if ($options['value'] !== null) {
-			zbx_value2array($options['value']);
+			trx_value2array($options['value']);
 		}
 
 		if ($options['source'] == EVENT_SOURCE_TRIGGERS && $options['object'] == EVENT_OBJECT_TRIGGER) {
@@ -122,8 +122,8 @@ class CEvent extends CApiService {
 				$recovery = ($recovery === []) ? 0 : $recovery;
 
 				if ($options['groupCount']) {
-					$problems = zbx_toHash($problems, 'objectid');
-					$recovery = zbx_toHash($recovery, 'objectid');
+					$problems = trx_toHash($problems, 'objectid');
+					$recovery = trx_toHash($recovery, 'objectid');
 
 					foreach ($problems as $objectid => &$problem) {
 						if (array_key_exists($objectid, $recovery)) {
@@ -162,7 +162,7 @@ class CEvent extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -184,8 +184,8 @@ class CEvent extends CApiService {
 		];
 
 		// source and object
-		$sqlParts['where'][] = 'e.source='.zbx_dbstr($options['source']);
-		$sqlParts['where'][] = 'e.object='.zbx_dbstr($options['object']);
+		$sqlParts['where'][] = 'e.source='.trx_dbstr($options['source']);
+		$sqlParts['where'][] = 'e.object='.trx_dbstr($options['object']);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -234,7 +234,7 @@ class CEvent extends CApiService {
 							'itemids' => $options['objectids'],
 							'editable' => $options['editable']
 						]);
-						$options['objectids'] = zbx_objectValues($items, 'itemid');
+						$options['objectids'] = trx_objectValues($items, 'itemid');
 					}
 					elseif ($options['object'] == EVENT_OBJECT_LLDRULE) {
 						$items = API::DiscoveryRule()->get([
@@ -242,7 +242,7 @@ class CEvent extends CApiService {
 							'itemids' => $options['objectids'],
 							'editable' => $options['editable']
 						]);
-						$options['objectids'] = zbx_objectValues($items, 'itemid');
+						$options['objectids'] = trx_objectValues($items, 'itemid');
 					}
 				}
 				// all items and LLD rules
@@ -269,7 +269,7 @@ class CEvent extends CApiService {
 			if ($options['problem_time_from'] !== null && $options['problem_time_till'] !== null) {
 				if ($options['value'][0] == TRIGGER_VALUE_TRUE) {
 					$sqlParts['where'][] =
-						'e.clock<='.zbx_dbstr($options['problem_time_till']).' AND ('.
+						'e.clock<='.trx_dbstr($options['problem_time_till']).' AND ('.
 							'NOT EXISTS ('.
 								'SELECT NULL'.
 								' FROM event_recovery er'.
@@ -280,19 +280,19 @@ class CEvent extends CApiService {
 								' FROM event_recovery er,events e2'.
 								' WHERE e.eventid=er.eventid'.
 									' AND er.r_eventid=e2.eventid'.
-									' AND e2.clock>='.zbx_dbstr($options['problem_time_from']).
+									' AND e2.clock>='.trx_dbstr($options['problem_time_from']).
 							')'.
 						')';
 				}
 				else {
 					$sqlParts['where'][] =
-						'e.clock>='.zbx_dbstr($options['problem_time_from']).
+						'e.clock>='.trx_dbstr($options['problem_time_from']).
 						' AND EXISTS ('.
 							'SELECT NULL'.
 							' FROM event_recovery er,events e2'.
 							' WHERE e.eventid=er.r_eventid'.
 								' AND er.eventid=e2.eventid'.
-								' AND e2.clock<='.zbx_dbstr($options['problem_time_till']).
+								' AND e2.clock<='.trx_dbstr($options['problem_time_till']).
 						')';
 				}
 			}
@@ -300,7 +300,7 @@ class CEvent extends CApiService {
 
 		// eventids
 		if (!is_null($options['eventids'])) {
-			zbx_value2array($options['eventids']);
+			trx_value2array($options['eventids']);
 			$sqlParts['where'][] = dbConditionInt('e.eventid', $options['eventids']);
 		}
 
@@ -308,7 +308,7 @@ class CEvent extends CApiService {
 		if ($options['objectids'] !== null
 				&& in_array($options['object'], [EVENT_OBJECT_TRIGGER, EVENT_OBJECT_ITEM, EVENT_OBJECT_LLDRULE])) {
 
-			zbx_value2array($options['objectids']);
+			trx_value2array($options['objectids']);
 			$sqlParts['where'][] = dbConditionInt('e.objectid', $options['objectids']);
 
 			if ($options['groupCount']) {
@@ -318,7 +318,7 @@ class CEvent extends CApiService {
 
 		// groupids
 		if ($options['groupids'] !== null) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			// triggers
 			if ($options['object'] == EVENT_OBJECT_TRIGGER) {
@@ -342,7 +342,7 @@ class CEvent extends CApiService {
 
 		// hostids
 		if ($options['hostids'] !== null) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			// triggers
 			if ($options['object'] == EVENT_OBJECT_TRIGGER) {
@@ -362,7 +362,7 @@ class CEvent extends CApiService {
 
 		// applicationids
 		if ($options['applicationids'] !== null) {
-			zbx_value2array($options['applicationids']);
+			trx_value2array($options['applicationids']);
 
 			// triggers
 			if ($options['object'] == EVENT_OBJECT_TRIGGER) {
@@ -385,7 +385,7 @@ class CEvent extends CApiService {
 		if ($options['severities'] !== null) {
 			// triggers
 			if ($options['object'] == EVENT_OBJECT_TRIGGER) {
-				zbx_value2array($options['severities']);
+				trx_value2array($options['severities']);
 				$sqlParts['where'][] = dbConditionInt('e.severity', $options['severities']);
 			}
 			// ignore this filter for items and lld rules
@@ -416,22 +416,22 @@ class CEvent extends CApiService {
 
 		// time_from
 		if ($options['time_from'] !== null) {
-			$sqlParts['where'][] = 'e.clock>='.zbx_dbstr($options['time_from']);
+			$sqlParts['where'][] = 'e.clock>='.trx_dbstr($options['time_from']);
 		}
 
 		// time_till
 		if ($options['time_till'] !== null) {
-			$sqlParts['where'][] = 'e.clock<='.zbx_dbstr($options['time_till']);
+			$sqlParts['where'][] = 'e.clock<='.trx_dbstr($options['time_till']);
 		}
 
 		// eventid_from
 		if ($options['eventid_from'] !== null) {
-			$sqlParts['where'][] = 'e.eventid>='.zbx_dbstr($options['eventid_from']);
+			$sqlParts['where'][] = 'e.eventid>='.trx_dbstr($options['eventid_from']);
 		}
 
 		// eventid_till
 		if ($options['eventid_till'] !== null) {
-			$sqlParts['where'][] = 'e.eventid<='.zbx_dbstr($options['eventid_till']);
+			$sqlParts['where'][] = 'e.eventid<='.trx_dbstr($options['eventid_till']);
 		}
 
 		// value
@@ -441,7 +441,7 @@ class CEvent extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('events e', $options, $sqlParts);
+			trx_db_search('events e', $options, $sqlParts);
 		}
 
 		// filter
@@ -450,7 +450,7 @@ class CEvent extends CApiService {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -529,7 +529,7 @@ class CEvent extends CApiService {
 	public function acknowledge(array $data) {
 		$this->validateAcknowledge($data);
 
-		$data['eventids'] = zbx_toArray($data['eventids']);
+		$data['eventids'] = trx_toArray($data['eventids']);
 		$data['eventids'] = array_keys(array_flip($data['eventids']));
 
 		$has_close_action = (($data['action'] & TRX_PROBLEM_UPDATE_CLOSE) == TRX_PROBLEM_UPDATE_CLOSE);
@@ -649,7 +649,7 @@ class CEvent extends CApiService {
 
 			if ($tasks) {
 				$taskids = DB::insertBatch('task', $tasks);
-				$task_close = array_replace_recursive($task_close, zbx_toObject($taskids, 'taskid', true));
+				$task_close = array_replace_recursive($task_close, trx_toObject($taskids, 'taskid', true));
 				DB::insertBatch('task_close_problem', $task_close, false);
 			}
 
@@ -674,7 +674,7 @@ class CEvent extends CApiService {
 
 			if ($tasks) {
 				$taskids = DB::insertBatch('task', $tasks);
-				$tasks_ack = array_replace_recursive($tasks_ack, zbx_toObject($taskids, 'taskid', true));
+				$tasks_ack = array_replace_recursive($tasks_ack, trx_toObject($taskids, 'taskid', true));
 				DB::insertBatch('task_acknowledge', $tasks_ack, false);
 			}
 		}
@@ -709,7 +709,7 @@ class CEvent extends CApiService {
 			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect arguments passed to function.'));
 		}
 
-		$data['eventids'] = zbx_toArray($data['eventids']);
+		$data['eventids'] = trx_toArray($data['eventids']);
 		$data['eventids'] = array_keys(array_flip($data['eventids']));
 
 		// Chack that at least one valid flag is set.
@@ -918,8 +918,8 @@ class CEvent extends CApiService {
 						' WHERE '.dbConditionInt('e.eventid', $eventids).
 						' AND e.objectid=f.triggerid'.
 						' AND f.itemid=i.itemid'.
-						' AND e.object='.zbx_dbstr($options['object']).
-						' AND e.source='.zbx_dbstr($options['source'])
+						' AND e.object='.trx_dbstr($options['object']).
+						' AND e.source='.trx_dbstr($options['source'])
 				);
 			}
 			// item and LLD rule events
@@ -929,8 +929,8 @@ class CEvent extends CApiService {
 						' FROM events e,items i'.
 						' WHERE '.dbConditionInt('e.eventid', $eventids).
 						' AND e.objectid=i.itemid'.
-						' AND e.object='.zbx_dbstr($options['object']).
-						' AND e.source='.zbx_dbstr($options['source'])
+						' AND e.object='.trx_dbstr($options['object']).
+						' AND e.source='.trx_dbstr($options['source'])
 				);
 			}
 
@@ -1025,7 +1025,7 @@ class CEvent extends CApiService {
 				if ($requestUserData) {
 					$users = API::User()->get([
 						'output' => $requestUserData,
-						'userids' => zbx_objectValues($acknowledges, 'userid'),
+						'userids' => trx_objectValues($acknowledges, 'userid'),
 						'preservekeys' => true
 					]);
 
@@ -1091,7 +1091,7 @@ class CEvent extends CApiService {
 					'output' => ['eventid'],
 					'filter' => ['eventid' => $suppressed_eventids]
 				]);
-				$suppressed_eventids = array_flip(zbx_objectValues($suppressed_events, 'eventid'));
+				$suppressed_eventids = array_flip(trx_objectValues($suppressed_events, 'eventid'));
 				foreach ($result as &$event) {
 					$event['suppressed'] = array_key_exists($event['eventid'], $suppressed_eventids)
 						? (string) TRX_PROBLEM_SUPPRESSED_TRUE
@@ -1252,13 +1252,13 @@ class CEvent extends CApiService {
 			$parenthesis = $tags || count($tag_values) > 1;
 
 			foreach ($tag_values as $tag => $values) {
-				$condition = 'et.tag='.zbx_dbstr($tag).' AND '.dbConditionString('et.value', $values);
+				$condition = 'et.tag='.trx_dbstr($tag).' AND '.dbConditionString('et.value', $values);
 				$conditions[] = $parenthesis ? '('.$condition.')' : $condition;
 			}
 
 			$conditions = (count($conditions) > 1) ? '('.implode(' OR ', $conditions).')' : $conditions[0];
 
-			$tag_conditions[] = 'hg.groupid='.zbx_dbstr($groupid).' AND '.$conditions;
+			$tag_conditions[] = 'hg.groupid='.trx_dbstr($groupid).' AND '.$conditions;
 		}
 
 		if ($tag_conditions) {

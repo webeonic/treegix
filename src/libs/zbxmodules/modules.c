@@ -2,31 +2,31 @@
 
 #include "common.h"
 #include "module.h"
-#include "zbxmodules.h"
+#include "trxmodules.h"
 
 #include "log.h"
 #include "sysinfo.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
-#define TRX_MODULE_FUNC_INIT			"zbx_module_init"
-#define TRX_MODULE_FUNC_API_VERSION		"zbx_module_api_version"
-#define TRX_MODULE_FUNC_ITEM_LIST		"zbx_module_item_list"
-#define TRX_MODULE_FUNC_ITEM_PROCESS		"zbx_module_item_process"
-#define TRX_MODULE_FUNC_ITEM_TIMEOUT		"zbx_module_item_timeout"
-#define TRX_MODULE_FUNC_UNINIT			"zbx_module_uninit"
-#define TRX_MODULE_FUNC_HISTORY_WRITE_CBS	"zbx_module_history_write_cbs"
+#define TRX_MODULE_FUNC_INIT			"trx_module_init"
+#define TRX_MODULE_FUNC_API_VERSION		"trx_module_api_version"
+#define TRX_MODULE_FUNC_ITEM_LIST		"trx_module_item_list"
+#define TRX_MODULE_FUNC_ITEM_PROCESS		"trx_module_item_process"
+#define TRX_MODULE_FUNC_ITEM_TIMEOUT		"trx_module_item_timeout"
+#define TRX_MODULE_FUNC_UNINIT			"trx_module_uninit"
+#define TRX_MODULE_FUNC_HISTORY_WRITE_CBS	"trx_module_history_write_cbs"
 
-static zbx_vector_ptr_t	modules;
+static trx_vector_ptr_t	modules;
 
-zbx_history_float_cb_t		*history_float_cbs = NULL;
-zbx_history_integer_cb_t	*history_integer_cbs = NULL;
-zbx_history_string_cb_t		*history_string_cbs = NULL;
-zbx_history_text_cb_t		*history_text_cbs = NULL;
-zbx_history_log_cb_t		*history_log_cbs = NULL;
+trx_history_float_cb_t		*history_float_cbs = NULL;
+trx_history_integer_cb_t	*history_integer_cbs = NULL;
+trx_history_string_cb_t		*history_string_cbs = NULL;
+trx_history_text_cb_t		*history_text_cbs = NULL;
+trx_history_log_cb_t		*history_log_cbs = NULL;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_register_module_items                                        *
+ * Function: trx_register_module_items                                        *
  *                                                                            *
  * Purpose: add items supported by module                                     *
  *                                                                            *
@@ -38,7 +38,7 @@ zbx_history_log_cb_t		*history_log_cbs = NULL;
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_register_module_items(TRX_METRIC *metrics, char *error, size_t max_error_len)
+static int	trx_register_module_items(TRX_METRIC *metrics, char *error, size_t max_error_len)
 {
 	int	i;
 
@@ -58,26 +58,26 @@ static int	zbx_register_module_items(TRX_METRIC *metrics, char *error, size_t ma
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_register_module                                              *
+ * Function: trx_register_module                                              *
  *                                                                            *
  * Purpose: add module to the list of successfully loaded modules             *
  *                                                                            *
  ******************************************************************************/
-static zbx_module_t	*zbx_register_module(void *lib, char *name)
+static trx_module_t	*trx_register_module(void *lib, char *name)
 {
-	zbx_module_t	*module;
+	trx_module_t	*module;
 
-	module = (zbx_module_t *)zbx_malloc(NULL, sizeof(zbx_module_t));
+	module = (trx_module_t *)trx_malloc(NULL, sizeof(trx_module_t));
 	module->lib = lib;
-	module->name = zbx_strdup(NULL, name);
-	zbx_vector_ptr_append(&modules, module);
+	module->name = trx_strdup(NULL, name);
+	trx_vector_ptr_append(&modules, module);
 
 	return module;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_register_history_write_cbs                                   *
+ * Function: trx_register_history_write_cbs                                   *
  *                                                                            *
  * Purpose: registers callback functions for history export                   *
  *                                                                            *
@@ -85,7 +85,7 @@ static zbx_module_t	*zbx_register_module(void *lib, char *name)
  *             history_write_cbs - callbacks                                  *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_register_history_write_cbs(zbx_module_t *module, TRX_HISTORY_WRITE_CBS history_write_cbs)
+static void	trx_register_history_write_cbs(trx_module_t *module, TRX_HISTORY_WRITE_CBS history_write_cbs)
 {
 	if (NULL != history_write_cbs.history_float_cb)
 	{
@@ -93,14 +93,14 @@ static void	zbx_register_history_write_cbs(zbx_module_t *module, TRX_HISTORY_WRI
 
 		if (NULL == history_float_cbs)
 		{
-			history_float_cbs = (zbx_history_float_cb_t *)zbx_malloc(history_float_cbs, sizeof(zbx_history_float_cb_t));
+			history_float_cbs = (trx_history_float_cb_t *)trx_malloc(history_float_cbs, sizeof(trx_history_float_cb_t));
 			history_float_cbs[0].module = NULL;
 		}
 
 		while (NULL != history_float_cbs[j].module)
 			j++;
 
-		history_float_cbs = (zbx_history_float_cb_t *)zbx_realloc(history_float_cbs, (j + 2) * sizeof(zbx_history_float_cb_t));
+		history_float_cbs = (trx_history_float_cb_t *)trx_realloc(history_float_cbs, (j + 2) * sizeof(trx_history_float_cb_t));
 		history_float_cbs[j].module = module;
 		history_float_cbs[j].history_float_cb = history_write_cbs.history_float_cb;
 		history_float_cbs[j + 1].module = NULL;
@@ -112,14 +112,14 @@ static void	zbx_register_history_write_cbs(zbx_module_t *module, TRX_HISTORY_WRI
 
 		if (NULL == history_integer_cbs)
 		{
-			history_integer_cbs = (zbx_history_integer_cb_t *)zbx_malloc(history_integer_cbs, sizeof(zbx_history_integer_cb_t));
+			history_integer_cbs = (trx_history_integer_cb_t *)trx_malloc(history_integer_cbs, sizeof(trx_history_integer_cb_t));
 			history_integer_cbs[0].module = NULL;
 		}
 
 		while (NULL != history_integer_cbs[j].module)
 			j++;
 
-		history_integer_cbs = (zbx_history_integer_cb_t *)zbx_realloc(history_integer_cbs, (j + 2) * sizeof(zbx_history_integer_cb_t));
+		history_integer_cbs = (trx_history_integer_cb_t *)trx_realloc(history_integer_cbs, (j + 2) * sizeof(trx_history_integer_cb_t));
 		history_integer_cbs[j].module = module;
 		history_integer_cbs[j].history_integer_cb = history_write_cbs.history_integer_cb;
 		history_integer_cbs[j + 1].module = NULL;
@@ -131,14 +131,14 @@ static void	zbx_register_history_write_cbs(zbx_module_t *module, TRX_HISTORY_WRI
 
 		if (NULL == history_string_cbs)
 		{
-			history_string_cbs = (zbx_history_string_cb_t *)zbx_malloc(history_string_cbs, sizeof(zbx_history_string_cb_t));
+			history_string_cbs = (trx_history_string_cb_t *)trx_malloc(history_string_cbs, sizeof(trx_history_string_cb_t));
 			history_string_cbs[0].module = NULL;
 		}
 
 		while (NULL != history_string_cbs[j].module)
 			j++;
 
-		history_string_cbs = (zbx_history_string_cb_t *)zbx_realloc(history_string_cbs, (j + 2) * sizeof(zbx_history_string_cb_t));
+		history_string_cbs = (trx_history_string_cb_t *)trx_realloc(history_string_cbs, (j + 2) * sizeof(trx_history_string_cb_t));
 		history_string_cbs[j].module = module;
 		history_string_cbs[j].history_string_cb = history_write_cbs.history_string_cb;
 		history_string_cbs[j + 1].module = NULL;
@@ -150,14 +150,14 @@ static void	zbx_register_history_write_cbs(zbx_module_t *module, TRX_HISTORY_WRI
 
 		if (NULL == history_text_cbs)
 		{
-			history_text_cbs = (zbx_history_text_cb_t *)zbx_malloc(history_text_cbs, sizeof(zbx_history_text_cb_t));
+			history_text_cbs = (trx_history_text_cb_t *)trx_malloc(history_text_cbs, sizeof(trx_history_text_cb_t));
 			history_text_cbs[0].module = NULL;
 		}
 
 		while (NULL != history_text_cbs[j].module)
 			j++;
 
-		history_text_cbs = (zbx_history_text_cb_t *)zbx_realloc(history_text_cbs, (j + 2) * sizeof(zbx_history_text_cb_t));
+		history_text_cbs = (trx_history_text_cb_t *)trx_realloc(history_text_cbs, (j + 2) * sizeof(trx_history_text_cb_t));
 		history_text_cbs[j].module = module;
 		history_text_cbs[j].history_text_cb = history_write_cbs.history_text_cb;
 		history_text_cbs[j + 1].module = NULL;
@@ -169,24 +169,24 @@ static void	zbx_register_history_write_cbs(zbx_module_t *module, TRX_HISTORY_WRI
 
 		if (NULL == history_log_cbs)
 		{
-			history_log_cbs = (zbx_history_log_cb_t *)zbx_malloc(history_log_cbs, sizeof(zbx_history_log_cb_t));
+			history_log_cbs = (trx_history_log_cb_t *)trx_malloc(history_log_cbs, sizeof(trx_history_log_cb_t));
 			history_log_cbs[0].module = NULL;
 		}
 
 		while (NULL != history_log_cbs[j].module)
 			j++;
 
-		history_log_cbs = (zbx_history_log_cb_t *)zbx_realloc(history_log_cbs, (j + 2) * sizeof(zbx_history_log_cb_t));
+		history_log_cbs = (trx_history_log_cb_t *)trx_realloc(history_log_cbs, (j + 2) * sizeof(trx_history_log_cb_t));
 		history_log_cbs[j].module = module;
 		history_log_cbs[j].history_log_cb = history_write_cbs.history_log_cb;
 		history_log_cbs[j + 1].module = NULL;
 	}
 }
 
-static int	zbx_module_compare_func(const void *d1, const void *d2)
+static int	trx_module_compare_func(const void *d1, const void *d2)
 {
-	const zbx_module_t	*m1 = *(const zbx_module_t **)d1;
-	const zbx_module_t	*m2 = *(const zbx_module_t **)d2;
+	const trx_module_t	*m1 = *(const trx_module_t **)d1;
+	const trx_module_t	*m2 = *(const trx_module_t **)d2;
 
 	TRX_RETURN_IF_NOT_EQUAL(m1->lib, m2->lib);
 
@@ -195,7 +195,7 @@ static int	zbx_module_compare_func(const void *d1, const void *d2)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_load_module                                                  *
+ * Function: trx_load_module                                                  *
  *                                                                            *
  * Purpose: load loadable module                                              *
  *                                                                            *
@@ -208,7 +208,7 @@ static int	zbx_module_compare_func(const void *d1, const void *d2)
  *               FAIL    - loading of module failed                           *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_load_module(const char *path, char *name, int timeout)
+static int	trx_load_module(const char *path, char *name, int timeout)
 {
 	void			*lib;
 	char			full_name[MAX_STRING_LEN], error[MAX_STRING_LEN];
@@ -216,12 +216,12 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 	TRX_METRIC		*(*func_list)(void);
 	void			(*func_timeout)(int);
 	TRX_HISTORY_WRITE_CBS	(*func_history_write_cbs)(void);
-	zbx_module_t		*module, module_tmp;
+	trx_module_t		*module, module_tmp;
 
 	if ('/' != *name)
-		zbx_snprintf(full_name, sizeof(full_name), "%s/%s", path, name);
+		trx_snprintf(full_name, sizeof(full_name), "%s/%s", path, name);
 	else
-		zbx_snprintf(full_name, sizeof(full_name), "%s", name);
+		trx_snprintf(full_name, sizeof(full_name), "%s", name);
 
 	treegix_log(LOG_LEVEL_DEBUG, "loading module \"%s\"", full_name);
 
@@ -232,7 +232,7 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 	}
 
 	module_tmp.lib = lib;
-	if (FAIL != zbx_vector_ptr_search(&modules, &module_tmp, zbx_module_compare_func))
+	if (FAIL != trx_vector_ptr_search(&modules, &module_tmp, trx_module_compare_func))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "module \"%s\" has already beed loaded", name);
 		return SUCCEED;
@@ -269,7 +269,7 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 	}
 	else
 	{
-		if (SUCCEED != zbx_register_module_items(func_list(), error, sizeof(error)))
+		if (SUCCEED != trx_register_module_items(func_list(), error, sizeof(error)))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "cannot load module \"%s\": %s", name, error);
 			goto fail;
@@ -285,7 +285,7 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 	}
 
 	/* module passed validation and can now be registered */
-	module = zbx_register_module(lib, name);
+	module = trx_register_module(lib, name);
 
 	if (NULL == (func_history_write_cbs = (TRX_HISTORY_WRITE_CBS (*)(void))dlsym(lib,
 			TRX_MODULE_FUNC_HISTORY_WRITE_CBS)))
@@ -294,7 +294,7 @@ static int	zbx_load_module(const char *path, char *name, int timeout)
 				" function in module \"%s\": %s", name, dlerror());
 	}
 	else
-		zbx_register_history_write_cbs(module, func_history_write_cbs());
+		trx_register_history_write_cbs(module, func_history_write_cbs());
 
 	return SUCCEED;
 fail:
@@ -305,7 +305,7 @@ fail:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_load_modules                                                 *
+ * Function: trx_load_modules                                                 *
  *                                                                            *
  * Purpose: load loadable modules (dynamic libraries)                         *
  *                                                                            *
@@ -318,21 +318,21 @@ fail:
  *               FAIL - loading of modules failed                             *
  *                                                                            *
  ******************************************************************************/
-int	zbx_load_modules(const char *path, char **file_names, int timeout, int verbose)
+int	trx_load_modules(const char *path, char **file_names, int timeout, int verbose)
 {
 	char	**file_name;
 	int	ret = SUCCEED;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&modules);
+	trx_vector_ptr_create(&modules);
 
 	if (NULL == *file_names)
 		goto out;
 
 	for (file_name = file_names; NULL != *file_name; file_name++)
 	{
-		if (SUCCEED != (ret = zbx_load_module(path, *file_name, timeout)))
+		if (SUCCEED != (ret = trx_load_module(path, *file_name, timeout)))
 			goto out;
 	}
 
@@ -342,33 +342,33 @@ int	zbx_load_modules(const char *path, char **file_names, int timeout, int verbo
 		int	i = 0;
 
 		/* if execution reached this point at least one module was loaded successfully */
-		buffer = zbx_strdcat(NULL, ((zbx_module_t *)modules.values[i++])->name);
+		buffer = trx_strdcat(NULL, ((trx_module_t *)modules.values[i++])->name);
 
 		while (i < modules.values_num)
 		{
-			buffer = zbx_strdcat(buffer, ", ");
-			buffer = zbx_strdcat(buffer, ((zbx_module_t *)modules.values[i++])->name);
+			buffer = trx_strdcat(buffer, ", ");
+			buffer = trx_strdcat(buffer, ((trx_module_t *)modules.values[i++])->name);
 		}
 
 		treegix_log(LOG_LEVEL_WARNING, "loaded modules: %s", buffer);
-		zbx_free(buffer);
+		trx_free(buffer);
 	}
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_unload_module                                                *
+ * Function: trx_unload_module                                                *
  *                                                                            *
  * Purpose: unload module and free allocated resources                        *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_unload_module(void *data)
+static void	trx_unload_module(void *data)
 {
-	zbx_module_t	*module = (zbx_module_t *)data;
+	trx_module_t	*module = (trx_module_t *)data;
 	int		(*func_uninit)(void);
 
 	if (NULL == (func_uninit = (int (*)(void))dlsym(module->lib, TRX_MODULE_FUNC_UNINIT)))
@@ -380,30 +380,30 @@ static void	zbx_unload_module(void *data)
 		treegix_log(LOG_LEVEL_WARNING, "uninitialization of module \"%s\" failed", module->name);
 
 	dlclose(module->lib);
-	zbx_free(module->name);
-	zbx_free(module);
+	trx_free(module->name);
+	trx_free(module);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_unload_modules                                               *
+ * Function: trx_unload_modules                                               *
  *                                                                            *
  * Purpose: Unload already loaded loadable modules (dynamic libraries).       *
  *          It is called on process shutdown.                                 *
  *                                                                            *
  ******************************************************************************/
-void	zbx_unload_modules(void)
+void	trx_unload_modules(void)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_free(history_float_cbs);
-	zbx_free(history_integer_cbs);
-	zbx_free(history_string_cbs);
-	zbx_free(history_text_cbs);
-	zbx_free(history_log_cbs);
+	trx_free(history_float_cbs);
+	trx_free(history_integer_cbs);
+	trx_free(history_string_cbs);
+	trx_free(history_text_cbs);
+	trx_free(history_log_cbs);
 
-	zbx_vector_ptr_clear_ext(&modules, zbx_unload_module);
-	zbx_vector_ptr_destroy(&modules);
+	trx_vector_ptr_clear_ext(&modules, trx_unload_module);
+	trx_vector_ptr_destroy(&modules);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }

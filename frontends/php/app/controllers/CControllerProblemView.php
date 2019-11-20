@@ -334,7 +334,7 @@ class CControllerProblemView extends CController {
 		$response = new CControllerResponseData($data);
 		$response->setTitle(_('Problems'));
 		if ($data['action'] === 'problem.view.csv') {
-			$response->setFileName('zbx_problems_export.csv');
+			$response->setFileName('trx_problems_export.csv');
 		}
 
 		$this->setResponse($response);

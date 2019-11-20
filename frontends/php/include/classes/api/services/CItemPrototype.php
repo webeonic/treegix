@@ -89,7 +89,7 @@ class CItemPrototype extends CItemGeneral {
 			'limit'							=> null,
 			'limitSelects'					=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -105,16 +105,16 @@ class CItemPrototype extends CItemGeneral {
 					' WHERE i.hostid=hgg.hostid'.
 					' GROUP BY hgg.hostid'.
 					' HAVING MIN(r.permission)>'.PERM_DENY.
-						' AND MAX(r.permission)>='.zbx_dbstr($permission).
+						' AND MAX(r.permission)>='.trx_dbstr($permission).
 					')';
 		}
 
 		// templateids
 		if (!is_null($options['templateids'])) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			if (!is_null($options['hostids'])) {
-				zbx_value2array($options['hostids']);
+				trx_value2array($options['hostids']);
 				$options['hostids'] = array_merge($options['hostids'], $options['templateids']);
 			}
 			else{
@@ -124,7 +124,7 @@ class CItemPrototype extends CItemGeneral {
 
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			$sqlParts['where']['hostid'] = dbConditionInt('i.hostid', $options['hostids']);
 
@@ -135,14 +135,14 @@ class CItemPrototype extends CItemGeneral {
 
 		// itemids
 		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['where']['itemid'] = dbConditionInt('i.itemid', $options['itemids']);
 		}
 
 		// discoveryids
 		if (!is_null($options['discoveryids'])) {
-			zbx_value2array($options['discoveryids']);
+			trx_value2array($options['discoveryids']);
 
 			$sqlParts['from']['item_discovery'] = 'item_discovery id';
 			$sqlParts['where'][] = dbConditionInt('id.parent_itemid', $options['discoveryids']);
@@ -155,7 +155,7 @@ class CItemPrototype extends CItemGeneral {
 
 		// triggerids
 		if (!is_null($options['triggerids'])) {
-			zbx_value2array($options['triggerids']);
+			trx_value2array($options['triggerids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['where'][] = dbConditionInt('f.triggerid', $options['triggerids']);
@@ -164,7 +164,7 @@ class CItemPrototype extends CItemGeneral {
 
 		// graphids
 		if (!is_null($options['graphids'])) {
-			zbx_value2array($options['graphids']);
+			trx_value2array($options['graphids']);
 
 			$sqlParts['from']['graphs_items'] = 'graphs_items gi';
 			$sqlParts['where'][] = dbConditionInt('gi.graphid', $options['graphids']);
@@ -206,7 +206,7 @@ class CItemPrototype extends CItemGeneral {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('items i', $options, $sqlParts);
+			trx_db_search('items i', $options, $sqlParts);
 		}
 
 		// --- FILTER ---
@@ -227,7 +227,7 @@ class CItemPrototype extends CItemGeneral {
 			$this->dbFilter('items i', $options, $sqlParts);
 
 			if (isset($options['filter']['host'])) {
-				zbx_value2array($options['filter']['host']);
+				trx_value2array($options['filter']['host']);
 
 				$sqlParts['from']['hosts'] = 'hosts h';
 				$sqlParts['where']['hi'] = 'h.hostid=i.hostid';
@@ -236,7 +236,7 @@ class CItemPrototype extends CItemGeneral {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 		//----------
@@ -282,7 +282,7 @@ class CItemPrototype extends CItemGeneral {
 		unset($item);
 
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -349,7 +349,7 @@ class CItemPrototype extends CItemGeneral {
 	 * @return array
 	 */
 	public function create($items) {
-		$items = zbx_toArray($items);
+		$items = trx_toArray($items);
 
 		$this->checkInput($items);
 
@@ -386,7 +386,7 @@ class CItemPrototype extends CItemGeneral {
 		$this->createReal($items);
 		$this->inherit($items);
 
-		return ['itemids' => zbx_objectValues($items, 'itemid')];
+		return ['itemids' => trx_objectValues($items, 'itemid')];
 	}
 
 	protected function createReal(&$items) {
@@ -435,11 +435,11 @@ class CItemPrototype extends CItemGeneral {
 				$db_application_prototypes = DBfetchArray(DBselect(
 					'SELECT ap.application_prototypeid,ap.name'.
 					' FROM application_prototype ap'.
-					' WHERE ap.itemid='.zbx_dbstr($item['ruleid']).
-						' AND '.dbConditionString('ap.name', zbx_objectValues($item['applicationPrototypes'], 'name'))
+					' WHERE ap.itemid='.trx_dbstr($item['ruleid']).
+						' AND '.dbConditionString('ap.name', trx_objectValues($item['applicationPrototypes'], 'name'))
 				));
 
-				$names = zbx_objectValues($db_application_prototypes, 'name');
+				$names = trx_objectValues($db_application_prototypes, 'name');
 
 				$application_prototypes_to_create = [];
 
@@ -462,7 +462,7 @@ class CItemPrototype extends CItemGeneral {
 					$new_ids = DB::insertBatch('application_prototype', $application_prototypes_to_create);
 				}
 
-				$ids = array_merge($new_ids, zbx_objectValues($db_application_prototypes, 'application_prototypeid'));
+				$ids = array_merge($new_ids, trx_objectValues($db_application_prototypes, 'application_prototypeid'));
 
 				foreach ($ids as $id) {
 					$item_application_prototypes[] = [
@@ -542,7 +542,7 @@ class CItemPrototype extends CItemGeneral {
 				' FROM item_discovery id'.
 				' WHERE '.dbConditionInt('id.itemid', array_keys($itemids_with_application_prototypes))
 			));
-			$discovery_rules = zbx_toHash($discovery_rules, 'itemid');
+			$discovery_rules = trx_toHash($discovery_rules, 'itemid');
 		}
 
 		// Process application prototypes.
@@ -569,8 +569,8 @@ class CItemPrototype extends CItemGeneral {
 					'SELECT DISTINCT ap.application_prototypeid,ap.name,ap.templateid,iap.item_application_prototypeid'.
 					' FROM application_prototype ap,item_application_prototype iap'.
 					' WHERE ap.application_prototypeid=iap.application_prototypeid'.
-						' AND ap.itemid='.zbx_dbstr($discovery_ruleid).
-						' AND iap.itemid='.zbx_dbstr($item['itemid'])
+						' AND ap.itemid='.trx_dbstr($discovery_ruleid).
+						' AND iap.itemid='.trx_dbstr($item['itemid'])
 				));
 
 				// Gather all item application prototype records in $old_records for each item.
@@ -585,7 +585,7 @@ class CItemPrototype extends CItemGeneral {
 					];
 				}
 
-				$application_prototypes = zbx_toHash($item['applicationPrototypes'], 'name');
+				$application_prototypes = trx_toHash($item['applicationPrototypes'], 'name');
 
 				/*
 				 * Check given application prototype names if they exist in database. If they exist, return IDs.
@@ -594,7 +594,7 @@ class CItemPrototype extends CItemGeneral {
 				$db_application_prototypes = DBfetchArray(DBselect(
 					'SELECT ap.application_prototypeid,ap.name,ap.templateid'.
 					' FROM application_prototype ap'.
-					' WHERE ap.itemid='.zbx_dbstr($discovery_ruleid).
+					' WHERE ap.itemid='.trx_dbstr($discovery_ruleid).
 						' AND '.dbConditionString('ap.name', array_keys($application_prototypes))
 				));
 
@@ -603,7 +603,7 @@ class CItemPrototype extends CItemGeneral {
 					$names[] = (string) $db_application_prototype['name'];
 				}
 
-				$db_application_prototypes = zbx_toHash($db_application_prototypes, 'name');
+				$db_application_prototypes = trx_toHash($db_application_prototypes, 'name');
 
 				// New application prototype names that need to be created in database.
 				$application_prototypes_to_create = [];
@@ -678,7 +678,7 @@ class CItemPrototype extends CItemGeneral {
 				 * Collect application prototype IDs that will be unlinked from item prototypes, in case those
 				 * application prototypes should be permanently deleted when no longer linked to any item prototypes.
 				 */
-				$db_item_application_prototypes = zbx_toHash($db_item_application_prototypes, 'name');
+				$db_item_application_prototypes = trx_toHash($db_item_application_prototypes, 'name');
 
 				$application_prototypes_to_unlink = array_diff_key($db_item_application_prototypes,
 					$application_prototypes
@@ -719,18 +719,18 @@ class CItemPrototype extends CItemGeneral {
 	 * @return array
 	 */
 	public function update($items) {
-		$items = zbx_toArray($items);
+		$items = trx_toArray($items);
 
 		$this->checkInput($items, true);
 
 		$db_items = $this->get([
 			'output' => ['type', 'master_itemid', 'authtype', 'allow_traps', 'retrieve_mode'],
-			'itemids' => zbx_objectValues($items, 'itemid'),
+			'itemids' => trx_objectValues($items, 'itemid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
 
-		$items = $this->extendFromObjects(zbx_toHash($items, 'itemid'), $db_items, ['type', 'master_itemid']);
+		$items = $this->extendFromObjects(trx_toHash($items, 'itemid'), $db_items, ['type', 'master_itemid']);
 
 		$this->validateDependentItems($items);
 
@@ -821,7 +821,7 @@ class CItemPrototype extends CItemGeneral {
 		$this->updateReal($items);
 		$this->inherit($items);
 
-		return ['itemids' => zbx_objectValues($items, 'itemid')];
+		return ['itemids' => trx_objectValues($items, 'itemid')];
 	}
 
 	/**
@@ -878,8 +878,8 @@ class CItemPrototype extends CItemGeneral {
 	}
 
 	public function syncTemplates($data) {
-		$data['templateids'] = zbx_toArray($data['templateids']);
-		$data['hostids'] = zbx_toArray($data['hostids']);
+		$data['templateids'] = trx_toArray($data['templateids']);
+		$data['hostids'] = trx_toArray($data['hostids']);
 
 		$output = [];
 		foreach ($this->fieldRules as $field_name => $rules) {
@@ -900,7 +900,7 @@ class CItemPrototype extends CItemGeneral {
 		$json = new CJson();
 
 		foreach ($tpl_items as &$tpl_item) {
-			$tpl_item['applications'] = zbx_objectValues($tpl_item['applications'], 'applicationid');
+			$tpl_item['applications'] = trx_objectValues($tpl_item['applications'], 'applicationid');
 
 			if ($tpl_item['type'] == ITEM_TYPE_HTTPAGENT) {
 				if (array_key_exists('query_fields', $tpl_item) && is_array($tpl_item['query_fields'])) {
@@ -1012,7 +1012,7 @@ class CItemPrototype extends CItemGeneral {
 				' WHERE '.dbConditionInt('ap.application_prototypeid', $relationMap->getRelatedIds())
 			));
 
-			$application_prototypes = zbx_toHash($application_prototypes, 'application_prototypeid');
+			$application_prototypes = trx_toHash($application_prototypes, 'application_prototypeid');
 
 			$result = $relationMap->mapMany($result, $application_prototypes, 'applicationPrototypes');
 		}
@@ -1038,7 +1038,7 @@ class CItemPrototype extends CItemGeneral {
 					'groupCount' => true,
 					'itemids' => $itemids
 				]);
-				$triggers = zbx_toHash($triggers, 'itemid');
+				$triggers = trx_toHash($triggers, 'itemid');
 
 				foreach ($result as $itemid => $item) {
 					$result[$itemid]['triggers'] = array_key_exists($itemid, $triggers)
@@ -1069,7 +1069,7 @@ class CItemPrototype extends CItemGeneral {
 					'groupCount' => true,
 					'itemids' => $itemids
 				]);
-				$graphs = zbx_toHash($graphs, 'itemid');
+				$graphs = trx_toHash($graphs, 'itemid');
 
 				foreach ($result as $itemid => $item) {
 					$result[$itemid]['graphs'] = array_key_exists($itemid, $graphs)

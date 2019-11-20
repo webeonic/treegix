@@ -61,7 +61,7 @@ class CScreen extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		if ($options['countOutput']) {
 			$count_output = true;
@@ -109,20 +109,20 @@ class CScreen extends CApiService {
 
 		// screenids
 		if (!is_null($options['screenids'])) {
-			zbx_value2array($options['screenids']);
+			trx_value2array($options['screenids']);
 			$sql_parts['where'][] = dbConditionInt('s.screenid', $options['screenids']);
 		}
 
 		// userids
 		if ($options['userids'] !== null) {
-			zbx_value2array($options['userids']);
+			trx_value2array($options['userids']);
 
 			$sql_parts['where'][] = dbConditionInt('s.userid', $options['userids']);
 		}
 
 		// screenitemids
 		if (!is_null($options['screenitemids'])) {
-			zbx_value2array($options['screenitemids']);
+			trx_value2array($options['screenitemids']);
 
 			$sql_parts['from']['screens_items'] = 'screens_items si';
 			$sql_parts['where']['ssi'] = 'si.screenid=s.screenid';
@@ -136,11 +136,11 @@ class CScreen extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('screens s', $options, $sql_parts);
+			trx_db_search('screens s', $options, $sql_parts);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sql_parts['limit'] = $options['limit'];
 		}
 
@@ -352,7 +352,7 @@ class CScreen extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -371,7 +371,7 @@ class CScreen extends CApiService {
 				continue;
 			}
 
-			if (!zbx_is_int($screen[$field_name])) {
+			if (!trx_is_int($screen[$field_name])) {
 				self::exception(TRX_API_ERROR_PERMISSIONS,
 					_s('Incorrect value for field "%1$s": %2$s.', $field_name, _('a numeric value is expected'))
 				);
@@ -433,7 +433,7 @@ class CScreen extends CApiService {
 		// Check if screen already exists.
 		$db_screens = $this->get([
 			'output' => ['name'],
-			'filter' => ['name' => zbx_objectValues($screens, 'name')],
+			'filter' => ['name' => trx_objectValues($screens, 'name')],
 			'nopermissions' => true,
 			'limit' => 1
 		]);
@@ -631,7 +631,7 @@ class CScreen extends CApiService {
 	 * @return array
 	 */
 	public function create(array $screens) {
-		$screens = zbx_toArray($screens);
+		$screens = trx_toArray($screens);
 
 		$this->validateCreate($screens);
 
@@ -726,7 +726,7 @@ class CScreen extends CApiService {
 			}
 		}
 
-		$screens = $this->extendFromObjects(zbx_toHash($screens, 'screenid'), $db_screens, ['name']);
+		$screens = $this->extendFromObjects(trx_toHash($screens, 'screenid'), $db_screens, ['name']);
 
 		foreach ($screens as $screen) {
 			// "templateid" is not allowed
@@ -765,10 +765,10 @@ class CScreen extends CApiService {
 
 			$db_screen_names = $this->get([
 				'output' => ['screenid', 'name'],
-				'filter' => ['name' => zbx_objectValues($check_names, 'name')],
+				'filter' => ['name' => trx_objectValues($check_names, 'name')],
 				'nopermissions' => true
 			]);
-			$db_screen_names = zbx_toHash($db_screen_names, 'name');
+			$db_screen_names = trx_toHash($db_screen_names, 'name');
 
 			// Check for existing names.
 			foreach ($check_names as $screen) {
@@ -970,7 +970,7 @@ class CScreen extends CApiService {
 	 * @return array
 	 */
 	public function update(array $screens) {
-		$screens = zbx_toArray($screens);
+		$screens = trx_toArray($screens);
 
 		// check screen IDs before doing anything
 		$this->checkObjectIds($screens, 'screenid',
@@ -984,7 +984,7 @@ class CScreen extends CApiService {
 			'selectScreenItems' => ['screenitemid', 'x', 'y', 'colspan', 'rowspan'],
 			'selectUsers' => ['screenuserid', 'screenid', 'userid', 'permission'],
 			'selectUserGroups' => ['screenusrgrpid', 'screenid', 'usrgrpid', 'permission'],
-			'screenids' => zbx_objectValues($screens, 'screenid'),
+			'screenids' => trx_objectValues($screens, 'screenid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
@@ -993,7 +993,7 @@ class CScreen extends CApiService {
 		$this->updateReal($screens, $db_screens);
 		$this->truncateScreenItems($screens, $db_screens);
 
-		return ['screenids' => zbx_objectValues($screens, 'screenid')];
+		return ['screenids' => trx_objectValues($screens, 'screenid')];
 	}
 
 	/**
@@ -1032,7 +1032,7 @@ class CScreen extends CApiService {
 
 			// Screen user shares.
 			if (array_key_exists('users', $screen)) {
-				$user_shares_diff = zbx_array_diff($screen['users'], $db_screen['users'], 'userid');
+				$user_shares_diff = trx_array_diff($screen['users'], $db_screen['users'], 'userid');
 
 				foreach ($user_shares_diff['both'] as $update_user_share) {
 					$shared_users_to_update[] = [
@@ -1047,13 +1047,13 @@ class CScreen extends CApiService {
 				}
 
 				$shared_userids_to_delete = array_merge($shared_userids_to_delete,
-					zbx_objectValues($user_shares_diff['second'], 'screenuserid')
+					trx_objectValues($user_shares_diff['second'], 'screenuserid')
 				);
 			}
 
 			// Screen user group shares.
 			if (array_key_exists('userGroups', $screen)) {
-				$user_group_shares_diff = zbx_array_diff($screen['userGroups'], $db_screen['userGroups'], 'usrgrpid');
+				$user_group_shares_diff = trx_array_diff($screen['userGroups'], $db_screen['userGroups'], 'usrgrpid');
 
 				foreach ($user_group_shares_diff['both'] as $update_user_share) {
 					$shared_user_groups_to_update[] = [
@@ -1068,7 +1068,7 @@ class CScreen extends CApiService {
 				}
 
 				$shared_user_groupids_to_delete = array_merge($shared_user_groupids_to_delete,
-					zbx_objectValues($user_group_shares_diff['second'], 'screenusrgrpid')
+					trx_objectValues($user_group_shares_diff['second'], 'screenusrgrpid')
 				);
 			}
 
@@ -1293,7 +1293,7 @@ class CScreen extends CApiService {
 				'preservekeys' => true
 			]);
 
-			$related_userids = zbx_objectValues($related_users, 'userid');
+			$related_userids = trx_objectValues($related_users, 'userid');
 
 			if ($related_userids) {
 				$users = API::getApiService()->select('screen_user', [
@@ -1333,7 +1333,7 @@ class CScreen extends CApiService {
 				'preservekeys' => true
 			]);
 
-			$related_groupids = zbx_objectValues($related_groups, 'usrgrpid');
+			$related_groupids = trx_objectValues($related_groups, 'usrgrpid');
 
 			if ($related_groupids) {
 				$user_groups = API::getApiService()->select('screen_usrgrp', [

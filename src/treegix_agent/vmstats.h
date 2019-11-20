@@ -26,10 +26,10 @@ typedef struct
 	/* --- cpu ---- */
 	double		cpu_us, cpu_sy, cpu_id, cpu_wa, cpu_pc, cpu_ec, cpu_lbusy, cpu_app;
 	/* --- disk --- */
-	zbx_uint64_t	disk_bps;
+	trx_uint64_t	disk_bps;
 	double		disk_tps;
 	/* -- memory -- */
-	zbx_uint64_t	mem_avm, mem_fre;
+	trx_uint64_t	mem_avm, mem_fre;
 }
 TRX_VMSTAT_DATA;
 

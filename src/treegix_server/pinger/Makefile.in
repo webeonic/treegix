@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxpinger_a_AR = $(AR) $(ARFLAGS)
-libzbxpinger_a_LIBADD =
-am_libzbxpinger_a_OBJECTS = pinger.$(OBJEXT)
-libzbxpinger_a_OBJECTS = $(am_libzbxpinger_a_OBJECTS)
+libtrxpinger_a_AR = $(AR) $(ARFLAGS)
+libtrxpinger_a_LIBADD =
+am_libtrxpinger_a_OBJECTS = pinger.$(OBJEXT)
+libtrxpinger_a_OBJECTS = $(am_libtrxpinger_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxpinger_a_SOURCES)
-DIST_SOURCES = $(libzbxpinger_a_SOURCES)
+SOURCES = $(libtrxpinger_a_SOURCES)
+DIST_SOURCES = $(libtrxpinger_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxpinger.a
-libzbxpinger_a_SOURCES = pinger.c pinger.h
+noinst_LIBRARIES = libtrxpinger.a
+libtrxpinger_a_SOURCES = pinger.c pinger.h
 all: all-am
 
 .SUFFIXES:
@@ -413,10 +413,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxpinger.a: $(libzbxpinger_a_OBJECTS) $(libzbxpinger_a_DEPENDENCIES) $(EXTRA_libzbxpinger_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxpinger.a
-	$(AM_V_AR)$(libzbxpinger_a_AR) libzbxpinger.a $(libzbxpinger_a_OBJECTS) $(libzbxpinger_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxpinger.a
+libtrxpinger.a: $(libtrxpinger_a_OBJECTS) $(libtrxpinger_a_DEPENDENCIES) $(EXTRA_libtrxpinger_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxpinger.a
+	$(AM_V_AR)$(libtrxpinger_a_AR) libtrxpinger.a $(libtrxpinger_a_OBJECTS) $(libtrxpinger_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxpinger.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

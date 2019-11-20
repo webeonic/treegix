@@ -1,20 +1,20 @@
 
 
-if (typeof(zbx_sysmap_widget_trigger) !== typeof(Function)) {
+if (typeof(trx_sysmap_widget_trigger) !== typeof(Function)) {
 	/**
 	 * Call widget internal processes externally.
 	 *
 	 * @param {string} hook_name - trigger name.
 	 * @param (array|null) data	 - data passed to method called.
 	 */
-	function zbx_sysmap_widget_trigger(hook_name, data) {
+	function trx_sysmap_widget_trigger(hook_name, data) {
 		var grid = Array.prototype.slice.call(arguments, -1),
 			grid = grid.length ? grid[0] : null;
 
 		switch (hook_name) {
 			case 'onWidgetRefresh':
 				var div_id = jQuery('[data-uniqueid="' + grid['widget']['uniqueid'] + '"]').attr('id');
-				jQuery('#' + div_id).zbx_mapwidget('update', grid['widget']);
+				jQuery('#' + div_id).trx_mapwidget('update', grid['widget']);
 				break;
 			case 'afterUpdateWidgetConfig':
 				jQuery('.dashbrd-grid-container').dashboardGrid('setWidgetStorageValue',
@@ -86,8 +86,8 @@ jQuery(function($) {
 	 *
 	 * @return object
 	 */
-	if (typeof($.fn.zbx_mapwidget) === 'undefined') {
-		$.fn.zbx_mapwidget = function(input, widget) {
+	if (typeof($.fn.trx_mapwidget) === 'undefined') {
+		$.fn.trx_mapwidget = function(input, widget) {
 			var methods = {
 				// Update map.
 				update: function() {

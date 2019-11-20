@@ -83,8 +83,8 @@ class DB {
 
 		$sql = 'SELECT nextid'.
 				' FROM ids'.
-				' WHERE table_name='.zbx_dbstr($table).
-					' AND field_name='.zbx_dbstr($id_name).
+				' WHERE table_name='.trx_dbstr($table).
+					' AND field_name='.trx_dbstr($id_name).
 				' FOR UPDATE';
 
 		$res = DBfetch(DBselect($sql));
@@ -98,8 +98,8 @@ class DB {
 			else {
 				$sql = 'UPDATE ids'.
 						' SET nextid='.$maxNextId.
-						' WHERE table_name='.zbx_dbstr($table).
-							' AND field_name='.zbx_dbstr($id_name);
+						' WHERE table_name='.trx_dbstr($table).
+							' AND field_name='.trx_dbstr($id_name);
 
 				if (!DBexecute($sql)) {
 					self::exception(self::DBEXECUTE_ERROR, 'DBEXECUTE_ERROR');
@@ -145,7 +145,7 @@ class DB {
 		$id_name = $tableSchema['key'];
 
 		// when we reach the maximum ID, we try to refresh them to check if any IDs have been freed
-		$sql = 'DELETE FROM ids WHERE table_name='.zbx_dbstr($table).' AND field_name='.zbx_dbstr($id_name);
+		$sql = 'DELETE FROM ids WHERE table_name='.trx_dbstr($table).' AND field_name='.trx_dbstr($id_name);
 
 		if (!DBexecute($sql)) {
 			self::exception(self::DBEXECUTE_ERROR, 'DBEXECUTE_ERROR');
@@ -164,7 +164,7 @@ class DB {
 		}
 
 		$sql = 'INSERT INTO ids (table_name,field_name,nextid)'.
-				' VALUES ('.zbx_dbstr($table).','.zbx_dbstr($id_name).','.$maxNextId.')';
+				' VALUES ('.trx_dbstr($table).','.trx_dbstr($id_name).','.$maxNextId.')';
 
 		if (!DBexecute($sql)) {
 			self::exception(self::DBEXECUTE_ERROR, 'DBEXECUTE_ERROR');
@@ -325,7 +325,7 @@ class DB {
 					$values[$field] = 'NULL';
 				}
 				elseif (isset($tableSchema['fields'][$field]['default'])) {
-					$values[$field] = zbx_dbstr($tableSchema['fields'][$field]['default']);
+					$values[$field] = trx_dbstr($tableSchema['fields'][$field]['default']);
 				}
 				else {
 					self::exception(self::DBEXECUTE_ERROR,
@@ -342,26 +342,26 @@ class DB {
 							self::exception(self::SCHEMA_ERROR, _s('Value "%1$s" is too long for field "%2$s" - %3$d characters. Allowed length is %4$d characters.',
 								$values[$field], $field, $length, $tableSchema['fields'][$field]['length']));
 						}
-						$values[$field] = zbx_dbstr($values[$field]);
+						$values[$field] = trx_dbstr($values[$field]);
 						break;
 					case self::FIELD_TYPE_ID:
 					case self::FIELD_TYPE_UINT:
-						if (!zbx_ctype_digit($values[$field])) {
+						if (!trx_ctype_digit($values[$field])) {
 							self::exception(self::DBEXECUTE_ERROR, _s('Incorrect value "%1$s" for unsigned int field "%2$s".', $values[$field], $field));
 						}
-						$values[$field] = zbx_dbstr($values[$field]);
+						$values[$field] = trx_dbstr($values[$field]);
 						break;
 					case self::FIELD_TYPE_INT:
-						if (!zbx_is_int($values[$field])) {
+						if (!trx_is_int($values[$field])) {
 							self::exception(self::DBEXECUTE_ERROR, _s('Incorrect value "%1$s" for int field "%2$s".', $values[$field], $field));
 						}
-						$values[$field] = zbx_dbstr($values[$field]);
+						$values[$field] = trx_dbstr($values[$field]);
 						break;
 					case self::FIELD_TYPE_FLOAT:
 						if (!is_numeric($values[$field])) {
 							self::exception(self::DBEXECUTE_ERROR, _s('Incorrect value "%1$s" for float field "%2$s".', $values[$field], $field));
 						}
-						$values[$field] = zbx_dbstr($values[$field]);
+						$values[$field] = trx_dbstr($values[$field]);
 						break;
 					case self::FIELD_TYPE_TEXT:
 						if ($DB['TYPE'] == TRX_DB_DB2 || $DB['TYPE'] == TRX_DB_ORACLE) {
@@ -372,7 +372,7 @@ class DB {
 									$values[$field], $field, $length, 2048));
 							}
 						}
-						$values[$field] = zbx_dbstr($values[$field]);
+						$values[$field] = trx_dbstr($values[$field]);
 						break;
 				}
 			}
@@ -399,7 +399,7 @@ class DB {
 				self::exception(self::DBEXECUTE_ERROR, _s('Table "%1$s" doesn\'t have a field named "%2$s".', $tableName, $field));
 			}
 
-			$sqlWhere[] = dbConditionString($field, zbx_toArray($value));
+			$sqlWhere[] = dbConditionString($field, trx_toArray($value));
 		}
 
 		// build query
@@ -518,7 +518,7 @@ class DB {
 
 		$tableSchema = self::getSchema($table);
 
-		$data = zbx_toArray($data);
+		$data = trx_toArray($data);
 		foreach ($data as $row) {
 			// check
 			self::checkValueTypes($table, $row['values']);
@@ -545,7 +545,7 @@ class DB {
 				if (!isset($tableSchema['fields'][$field]) || is_null($values)) {
 					self::exception(self::DBEXECUTE_ERROR, _s('Incorrect field "%1$s" name or value in where statement for table "%2$s".', $field, $table));
 				}
-				$values = zbx_toArray($values);
+				$values = trx_toArray($values);
 				sort($values); // sorting ids to prevent deadlocks when two transactions depend on each other
 
 				$sqlWhere[] = dbConditionString($field, $values);
@@ -635,7 +635,7 @@ class DB {
 	 */
 	public static function replace($tableName, array $oldRecords, array $newRecords) {
 		$pk = self::getPk($tableName);
-		$oldRecords = zbx_toHash($oldRecords, $pk);
+		$oldRecords = trx_toHash($oldRecords, $pk);
 
 		$modifiedRecords = [];
 		foreach ($newRecords as $key => $record) {
@@ -819,7 +819,7 @@ class DB {
 			if (!isset($table_schema['fields'][$field]) || is_null($values)) {
 				self::exception(self::DBEXECUTE_ERROR, _s('Incorrect field "%1$s" name or value in where statement for table "%2$s".', $field, $table));
 			}
-			$values = zbx_toArray($values);
+			$values = trx_toArray($values);
 			sort($values); // sorting ids to prevent deadlocks when two transactions depends from each other
 
 			$sqlWhere[] = dbConditionString($field, $values);
@@ -860,7 +860,7 @@ class DB {
 			}
 		}
 
-		$options = zbx_array_merge($defaults, $options);
+		$options = trx_array_merge($defaults, $options);
 
 		$sql_parts = self::createSelectQueryParts($table_name, $options, $table_alias);
 

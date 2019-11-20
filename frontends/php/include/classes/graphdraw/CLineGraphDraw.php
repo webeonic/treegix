@@ -116,7 +116,7 @@ class CLineGraphDraw extends CGraphDraw {
 		if ($value < 0) {
 			$this->graphOrientation[$yaxisside] = '-';
 		}
-		elseif (zbx_empty($this->graphOrientation[$yaxisside]) && $value > 0) {
+		elseif (trx_empty($this->graphOrientation[$yaxisside]) && $value > 0) {
 			$this->graphOrientation[$yaxisside] = '+';
 		}
 		return $this->graphOrientation[$yaxisside];
@@ -302,7 +302,7 @@ class CLineGraphDraw extends CGraphDraw {
 			$loc_min = is_array($curr_data['min']) ? min($curr_data['min']) : null;
 			$this->setGraphOrientation($loc_min, $item['yaxisside']);
 
-			$curr_data['avg_orig'] = is_array($curr_data['avg']) ? zbx_avg($curr_data['avg']) : null;
+			$curr_data['avg_orig'] = is_array($curr_data['avg']) ? trx_avg($curr_data['avg']) : null;
 
 			// calculate missed points
 			$first_idx = 0;
@@ -432,14 +432,14 @@ class CLineGraphDraw extends CGraphDraw {
 					' AND tr.status='.TRIGGER_STATUS_ENABLED.
 					' AND i.itemid=f.itemid'.
 					' AND h.hostid=i.hostid'.
-					' AND f.itemid='.zbx_dbstr($item['itemid']).
+					' AND f.itemid='.trx_dbstr($item['itemid']).
 				' ORDER BY tr.priority'
 			);
 			while (($trigger = DBfetch($db_triggers)) && $cnt < $max) {
 				$db_fnc_cnt = DBselect(
 					'SELECT COUNT(*) AS cnt'.
 					' FROM functions f'.
-					' WHERE f.triggerid='.zbx_dbstr($trigger['triggerid'])
+					' WHERE f.triggerid='.trx_dbstr($trigger['triggerid'])
 				);
 				$fnc_cnt = DBfetch($db_fnc_cnt);
 
@@ -1044,7 +1044,7 @@ class CLineGraphDraw extends CGraphDraw {
 		$gbColor = $this->getColor($this->graphtheme['gridbordercolor'], 0);
 
 		if ($this->yaxis[GRAPH_YAXIS_SIDE_LEFT]) {
-			zbx_imageline(
+			trx_imageline(
 				$this->im,
 				$this->shiftXleft + $this->shiftXCaption,
 				$this->shiftY - 5,
@@ -1065,13 +1065,13 @@ class CLineGraphDraw extends CGraphDraw {
 			);
 
 			/* draw left axis triangle */
-			zbx_imageline($this->im, $this->shiftXleft + $this->shiftXCaption - 3, $this->shiftY - 5,
+			trx_imageline($this->im, $this->shiftXleft + $this->shiftXCaption - 3, $this->shiftY - 5,
 					$this->shiftXleft + $this->shiftXCaption + 3, $this->shiftY - 5,
 					$gbColor);
-			zbx_imagealine($this->im, $this->shiftXleft + $this->shiftXCaption - 3, $this->shiftY - 5,
+			trx_imagealine($this->im, $this->shiftXleft + $this->shiftXCaption - 3, $this->shiftY - 5,
 					$this->shiftXleft + $this->shiftXCaption, $this->shiftY - 10,
 					$gbColor);
-			zbx_imagealine($this->im, $this->shiftXleft + $this->shiftXCaption + 3, $this->shiftY - 5,
+			trx_imagealine($this->im, $this->shiftXleft + $this->shiftXCaption + 3, $this->shiftY - 5,
 					$this->shiftXleft + $this->shiftXCaption, $this->shiftY - 10,
 					$gbColor);
 		}
@@ -1087,7 +1087,7 @@ class CLineGraphDraw extends CGraphDraw {
 		}
 
 		if ($this->yaxis[GRAPH_YAXIS_SIDE_RIGHT]) {
-			zbx_imageline(
+			trx_imageline(
 				$this->im,
 				$this->sizeX + $this->shiftXleft + $this->shiftXCaption,
 				$this->shiftY - 5,
@@ -1108,13 +1108,13 @@ class CLineGraphDraw extends CGraphDraw {
 			);
 
 			/* draw right axis triangle */
-			zbx_imageline($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption - 3, $this->shiftY - 5,
+			trx_imageline($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption - 3, $this->shiftY - 5,
 				$this->sizeX + $this->shiftXleft + $this->shiftXCaption + 3, $this->shiftY - 5,
 				$gbColor);
-			zbx_imagealine($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption + 3, $this->shiftY - 5,
+			trx_imagealine($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption + 3, $this->shiftY - 5,
 				$this->sizeX + $this->shiftXleft + $this->shiftXCaption, $this->shiftY - 10,
 				$gbColor);
-			zbx_imagealine($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption - 3, $this->shiftY - 5,
+			trx_imagealine($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption - 3, $this->shiftY - 5,
 				$this->sizeX + $this->shiftXleft + $this->shiftXCaption, $this->shiftY - 10,
 				$gbColor);
 		}
@@ -1129,7 +1129,7 @@ class CLineGraphDraw extends CGraphDraw {
 			);
 		}
 
-		zbx_imageline(
+		trx_imageline(
 			$this->im,
 			$this->shiftXleft + $this->shiftXCaption - 3,
 			$this->sizeY + $this->shiftY + 1,
@@ -1150,13 +1150,13 @@ class CLineGraphDraw extends CGraphDraw {
 		);
 
 		/* draw X axis triangle */
-		zbx_imageline($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption + 5, $this->sizeY + $this->shiftY - 2,
+		trx_imageline($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption + 5, $this->sizeY + $this->shiftY - 2,
 			$this->sizeX + $this->shiftXleft + $this->shiftXCaption + 5, $this->sizeY + $this->shiftY + 4,
 			$gbColor);
-		zbx_imagealine($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption + 5, $this->sizeY + $this->shiftY + 4,
+		trx_imagealine($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption + 5, $this->sizeY + $this->shiftY + 4,
 			$this->sizeX + $this->shiftXleft + $this->shiftXCaption + 10, $this->sizeY + $this->shiftY + 1,
 			$gbColor);
-		zbx_imagealine($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption + 10, $this->sizeY + $this->shiftY + 1,
+		trx_imagealine($this->im, $this->sizeX + $this->shiftXleft + $this->shiftXCaption + 10, $this->sizeY + $this->shiftY + 1,
 			$this->sizeX + $this->shiftXleft + $this->shiftXCaption + 5, $this->sizeY + $this->shiftY - 2,
 			$gbColor);
 	}
@@ -1205,7 +1205,7 @@ class CLineGraphDraw extends CGraphDraw {
 	 * @param int $position		Position on X axis.
 	 */
 	private function drawStartEndTimePeriod($value, $format, $position) {
-		$point = zbx_date2str(_($format), $value);
+		$point = trx_date2str(_($format), $value);
 		$element = imageTextSize(8, 90, $point);
 		imageText(
 			$this->im,
@@ -1680,7 +1680,7 @@ class CLineGraphDraw extends CGraphDraw {
 			);
 
 			if ($this->zero[$side] != $this->sizeY + $this->shiftY && $this->zero[$side] != $this->shiftY) {
-				zbx_imageline(
+				trx_imageline(
 					$this->im,
 					$this->shiftXleft,
 					$this->zero[$side],
@@ -1775,7 +1775,7 @@ class CLineGraphDraw extends CGraphDraw {
 					: $this->graphtheme['rightpercentilecolor'];
 
 				$y = $this->sizeY - (($percentile['value'] - $minY) / ($maxY - $minY)) * $this->sizeY + $this->shiftY;
-				zbx_imageline(
+				trx_imageline(
 					$this->im,
 					$this->shiftXleft,
 					$y,
@@ -2196,28 +2196,28 @@ class CLineGraphDraw extends CGraphDraw {
 				if ($calc_fnc == CALC_FNC_ALL) {
 					imagefilledpolygon($this->im, $a, 4, $minmax_color);
 					if (!$y1x || !$y2x) {
-						zbx_imagealine($this->im, $x1, $y1max, $x2, $y2max, $max_color, LINE_TYPE_BOLD);
+						trx_imagealine($this->im, $x1, $y1max, $x2, $y2max, $max_color, LINE_TYPE_BOLD);
 					}
 
 					if (!$y1n || !$y2n) {
-						zbx_imagealine($this->im, $x1, $y1min, $x2, $y2min, $min_color, LINE_TYPE_BOLD);
+						trx_imagealine($this->im, $x1, $y1min, $x2, $y2min, $min_color, LINE_TYPE_BOLD);
 					}
 				}
 
-				zbx_imagealine($this->im, $x1, $y1, $x2, $y2, $avg_color, LINE_TYPE_BOLD);
+				trx_imagealine($this->im, $x1, $y1, $x2, $y2, $avg_color, LINE_TYPE_BOLD);
 				break;
 			case GRAPH_ITEM_DRAWTYPE_LINE:
 				if ($calc_fnc == CALC_FNC_ALL) {
 					imagefilledpolygon($this->im, $a, 4, $minmax_color);
 					if (!$y1x || !$y2x) {
-						zbx_imagealine($this->im, $x1, $y1max, $x2, $y2max, $max_color);
+						trx_imagealine($this->im, $x1, $y1max, $x2, $y2max, $max_color);
 					}
 					if (!$y1n || !$y2n) {
-						zbx_imagealine($this->im, $x1, $y1min, $x2, $y2min, $min_color);
+						trx_imagealine($this->im, $x1, $y1min, $x2, $y2min, $min_color);
 					}
 				}
 
-				zbx_imagealine($this->im, $x1, $y1, $x2, $y2, $avg_color);
+				trx_imagealine($this->im, $x1, $y1, $x2, $y2, $avg_color);
 				break;
 			case GRAPH_ITEM_DRAWTYPE_FILLED_REGION:
 				$a[0] = $x1;
@@ -2242,7 +2242,7 @@ class CLineGraphDraw extends CGraphDraw {
 					// use imagesetstyle+imageline instead of bugged imagedashedline
 					$style = [$avg_color, $avg_color, IMG_COLOR_TRANSPARENT, IMG_COLOR_TRANSPARENT];
 					imagesetstyle($this->im, $style);
-					zbx_imageline($this->im, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
+					trx_imageline($this->im, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
 				}
 				else {
 					imagedashedline($this->im, $x1, $y1, $x2, $y2, $avg_color);
@@ -2440,7 +2440,7 @@ class CLineGraphDraw extends CGraphDraw {
 	 *
 	 */
 	private function expandItems() {
-		$items_cache = zbx_toHash($this->items, 'itemid');
+		$items_cache = trx_toHash($this->items, 'itemid');
 		$items = $this->items;
 
 		do {

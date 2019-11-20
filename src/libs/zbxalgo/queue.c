@@ -1,11 +1,11 @@
 
 
 #include "common.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_queue_ptr_values_num                                         *
+ * Function: trx_queue_ptr_values_num                                         *
  *                                                                            *
  * Purpose: calculates the number of values in queue                          *
  *                                                                            *
@@ -14,7 +14,7 @@
  * Return value: The number of values in queue                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_queue_ptr_values_num(zbx_queue_ptr_t *queue)
+int	trx_queue_ptr_values_num(trx_queue_ptr_t *queue)
 {
 	int	values_num;
 
@@ -27,7 +27,7 @@ int	zbx_queue_ptr_values_num(zbx_queue_ptr_t *queue)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_queue_ptr_reserve                                            *
+ * Function: trx_queue_ptr_reserve                                            *
  *                                                                            *
  * Purpose: reserves space in queue for additional values                     *
  *                                                                            *
@@ -35,17 +35,17 @@ int	zbx_queue_ptr_values_num(zbx_queue_ptr_t *queue)
  *             num   - [IN] the number of additional values to reserve        *
  *                                                                            *
  ******************************************************************************/
-void	zbx_queue_ptr_reserve(zbx_queue_ptr_t *queue, int num)
+void	trx_queue_ptr_reserve(trx_queue_ptr_t *queue, int num)
 {
 	int	values_num, alloc_num, resize_num;
 
-	values_num = zbx_queue_ptr_values_num(queue);
+	values_num = trx_queue_ptr_values_num(queue);
 
 	if (values_num + num + 1 <= queue->alloc_num)
 		return;
 
 	alloc_num = MAX(queue->alloc_num + num + 1, queue->alloc_num * 1.5);
-	queue->values = (void **)zbx_realloc(queue->values, alloc_num * sizeof(*queue->values));
+	queue->values = (void **)trx_realloc(queue->values, alloc_num * sizeof(*queue->values));
 
 	if (queue->tail_pos > queue->head_pos)
 	{
@@ -60,18 +60,18 @@ void	zbx_queue_ptr_reserve(zbx_queue_ptr_t *queue, int num)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_queue_ptr_compact                                            *
+ * Function: trx_queue_ptr_compact                                            *
  *                                                                            *
  * Purpose: compacts queue by freeing unused space                            *
  *                                                                            *
  * Parameters: queue - [IN] the queue                                         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_queue_ptr_compact(zbx_queue_ptr_t *queue)
+void	trx_queue_ptr_compact(trx_queue_ptr_t *queue)
 {
 	int values_num, alloc_num;
 
-	values_num = zbx_queue_ptr_values_num(queue);
+	values_num = trx_queue_ptr_values_num(queue);
 	alloc_num = values_num + 1;
 
 	if (alloc_num == queue->alloc_num)
@@ -93,41 +93,41 @@ void	zbx_queue_ptr_compact(zbx_queue_ptr_t *queue)
 		}
 	}
 
-	queue->values = (void **)zbx_realloc(queue->values, alloc_num * sizeof(*queue->values));
+	queue->values = (void **)trx_realloc(queue->values, alloc_num * sizeof(*queue->values));
 	queue->alloc_num = alloc_num;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_queue_ptr_create                                             *
+ * Function: trx_queue_ptr_create                                             *
  *                                                                            *
  * Purpose: creates queue                                                     *
  *                                                                            *
  * Parameters: queue - [IN] the queue                                         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_queue_ptr_create(zbx_queue_ptr_t *queue)
+void	trx_queue_ptr_create(trx_queue_ptr_t *queue)
 {
 	memset(queue, 0, sizeof(*queue));
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_queue_ptr_destroy                                            *
+ * Function: trx_queue_ptr_destroy                                            *
  *                                                                            *
  * Purpose: destroys queue                                                    *
  *                                                                            *
  * Parameters: queue - [IN] the queue                                         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_queue_ptr_destroy(zbx_queue_ptr_t *queue)
+void	trx_queue_ptr_destroy(trx_queue_ptr_t *queue)
 {
-	zbx_free(queue->values);
+	trx_free(queue->values);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_queue_ptr_push                                               *
+ * Function: trx_queue_ptr_push                                               *
  *                                                                            *
  * Purpose: pushes value in the queue                                         *
  *                                                                            *
@@ -135,9 +135,9 @@ void	zbx_queue_ptr_destroy(zbx_queue_ptr_t *queue)
  *             elem  - [IN] the value                                         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_queue_ptr_push(zbx_queue_ptr_t *queue, void *value)
+void	trx_queue_ptr_push(trx_queue_ptr_t *queue, void *value)
 {
-	zbx_queue_ptr_reserve(queue, 1);
+	trx_queue_ptr_reserve(queue, 1);
 	queue->values[queue->head_pos++] = value;
 
 	if (queue->head_pos == queue->alloc_num)
@@ -146,7 +146,7 @@ void	zbx_queue_ptr_push(zbx_queue_ptr_t *queue, void *value)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_queue_ptr_pop                                                *
+ * Function: trx_queue_ptr_pop                                                *
  *                                                                            *
  * Purpose: pops value in the queue                                           *
  *                                                                            *
@@ -155,7 +155,7 @@ void	zbx_queue_ptr_push(zbx_queue_ptr_t *queue, void *value)
  * Return value: The first queue element.                                     *
  *                                                                            *
  ******************************************************************************/
-void	*zbx_queue_ptr_pop(zbx_queue_ptr_t *queue)
+void	*trx_queue_ptr_pop(trx_queue_ptr_t *queue)
 {
 	void	*value;
 
@@ -177,7 +177,7 @@ void	*zbx_queue_ptr_pop(zbx_queue_ptr_t *queue)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_queue_ptr_remove_value                                       *
+ * Function: trx_queue_ptr_remove_value                                       *
  *                                                                            *
  * Purpose: removes specified value from queue                                *
  *                                                                            *
@@ -185,7 +185,7 @@ void	*zbx_queue_ptr_pop(zbx_queue_ptr_t *queue)
  *             value - [IN] the value to remove                               *
  *                                                                            *
  ******************************************************************************/
-void	zbx_queue_ptr_remove_value(zbx_queue_ptr_t *queue, const void *value)
+void	trx_queue_ptr_remove_value(trx_queue_ptr_t *queue, const void *value)
 {
 	int	i, start_pos;
 

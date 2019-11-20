@@ -47,7 +47,7 @@ class CMultilineInput extends CDiv {
 
 		$this
 			->addClass(self::TRX_STYLE_CLASS)
-			->setId(zbx_formatDomId($name))
+			->setId(trx_formatDomId($name))
 			->setAttribute('data-name', $name);
 
 		$this->name = $name;
@@ -109,7 +109,7 @@ class CMultilineInput extends CDiv {
 
 	public function toString($destroy = true) {
 		if (!array_key_exists('add_post_js', $this->options) || $this->options['add_post_js']) {
-			zbx_add_post_js($this->getPostJS());
+			trx_add_post_js($this->getPostJS());
 		}
 
 		return parent::toString($destroy);

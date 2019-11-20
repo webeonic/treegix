@@ -73,7 +73,7 @@ func (p *Plugin) releaseConnection(conn *dbus.Conn) {
 	p.connections = append(p.connections, conn)
 }
 
-func zbxNum2hex(c byte) byte {
+func trxNum2hex(c byte) byte {
 	if c >= 10 {
 		return c + 0x57 /* a-f */
 	}
@@ -174,9 +174,9 @@ func (p *Plugin) Export(key string, params []string, ctx plugin.ContextProvider)
 			}
 			nameEsc[j] = '_'
 			j++
-			nameEsc[j] = zbxNum2hex((name[i] >> 4) & 0xf)
+			nameEsc[j] = trxNum2hex((name[i] >> 4) & 0xf)
 			j++
-			nameEsc[j] = zbxNum2hex(name[i] & 0xf)
+			nameEsc[j] = trxNum2hex(name[i] & 0xf)
 			j++
 		}
 

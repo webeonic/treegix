@@ -22,7 +22,7 @@ class CServiceTree extends CTree {
 
 		switch ($colName) {
 			case 'status':
-				if (zbx_is_int($this->tree[$rowId][$colName]) && $this->tree[$rowId]['id'] > 0) {
+				if (trx_is_int($this->tree[$rowId][$colName]) && $this->tree[$rowId]['id'] > 0) {
 					$status = $this->tree[$rowId][$colName];
 
 					// do not show the severity for information and unclassified triggers

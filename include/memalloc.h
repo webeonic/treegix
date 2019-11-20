@@ -11,10 +11,10 @@ typedef struct
 	void		**buckets;
 	void		*lo_bound;
 	void		*hi_bound;
-	zbx_uint64_t	free_size;
-	zbx_uint64_t	used_size;
-	zbx_uint64_t	orig_size;
-	zbx_uint64_t	total_size;
+	trx_uint64_t	free_size;
+	trx_uint64_t	used_size;
+	trx_uint64_t	orig_size;
+	trx_uint64_t	total_size;
 	int		shm_id;
 
 	/* Continue execution in out of memory situation.                         */
@@ -25,31 +25,31 @@ typedef struct
 	const char	*mem_descr;
 	const char	*mem_param;
 }
-zbx_mem_info_t;
+trx_mem_info_t;
 
-int	zbx_mem_create(zbx_mem_info_t **info, zbx_uint64_t size, const char *descr, const char *param, int allow_oom,
+int	trx_mem_create(trx_mem_info_t **info, trx_uint64_t size, const char *descr, const char *param, int allow_oom,
 		char **error);
 
-#define	zbx_mem_malloc(info, old, size) __zbx_mem_malloc(__FILE__, __LINE__, info, old, size)
-#define	zbx_mem_realloc(info, old, size) __zbx_mem_realloc(__FILE__, __LINE__, info, old, size)
-#define	zbx_mem_free(info, ptr)				\
+#define	trx_mem_malloc(info, old, size) __trx_mem_malloc(__FILE__, __LINE__, info, old, size)
+#define	trx_mem_realloc(info, old, size) __trx_mem_realloc(__FILE__, __LINE__, info, old, size)
+#define	trx_mem_free(info, ptr)				\
 							\
 do							\
 {							\
-	__zbx_mem_free(__FILE__, __LINE__, info, ptr);	\
+	__trx_mem_free(__FILE__, __LINE__, info, ptr);	\
 	ptr = NULL;					\
 }							\
 while (0)
 
-void	*__zbx_mem_malloc(const char *file, int line, zbx_mem_info_t *info, const void *old, size_t size);
-void	*__zbx_mem_realloc(const char *file, int line, zbx_mem_info_t *info, void *old, size_t size);
-void	__zbx_mem_free(const char *file, int line, zbx_mem_info_t *info, void *ptr);
+void	*__trx_mem_malloc(const char *file, int line, trx_mem_info_t *info, const void *old, size_t size);
+void	*__trx_mem_realloc(const char *file, int line, trx_mem_info_t *info, void *old, size_t size);
+void	__trx_mem_free(const char *file, int line, trx_mem_info_t *info, void *ptr);
 
-void	zbx_mem_clear(zbx_mem_info_t *info);
+void	trx_mem_clear(trx_mem_info_t *info);
 
-void	zbx_mem_dump_stats(int level, zbx_mem_info_t *info);
+void	trx_mem_dump_stats(int level, trx_mem_info_t *info);
 
-size_t	zbx_mem_required_size(int chunks_num, const char *descr, const char *param);
+size_t	trx_mem_required_size(int chunks_num, const char *descr, const char *param);
 
 #define TRX_MEM_FUNC1_DECL_MALLOC(__prefix)				\
 static void	*__prefix ## _mem_malloc_func(void *old, size_t size)
@@ -62,21 +62,21 @@ static void	__prefix ## _mem_free_func(void *ptr)
 									\
 static void	*__prefix ## _mem_malloc_func(void *old, size_t size)	\
 {									\
-	return zbx_mem_malloc(__info, old, size);			\
+	return trx_mem_malloc(__info, old, size);			\
 }
 
 #define TRX_MEM_FUNC1_IMPL_REALLOC(__prefix, __info)			\
 									\
 static void	*__prefix ## _mem_realloc_func(void *old, size_t size)	\
 {									\
-	return zbx_mem_realloc(__info, old, size);			\
+	return trx_mem_realloc(__info, old, size);			\
 }
 
 #define TRX_MEM_FUNC1_IMPL_FREE(__prefix, __info)			\
 									\
 static void	__prefix ## _mem_free_func(void *ptr)			\
 {									\
-	zbx_mem_free(__info, ptr);					\
+	trx_mem_free(__info, ptr);					\
 }
 
 #define TRX_MEM_FUNC_DECL(__prefix)					\

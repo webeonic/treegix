@@ -10,7 +10,7 @@ import (
 	"treegix/pkg/itemutil"
 	"treegix/pkg/log"
 	"treegix/pkg/plugin"
-	"treegix/pkg/zbxlib"
+	"treegix/pkg/trxlib"
 )
 
 // task priority within the same second is done by setting nanosecond component
@@ -168,7 +168,7 @@ func (t *exporterTask) perform(s Scheduler) {
 
 func (t *exporterTask) reschedule(now time.Time) (err error) {
 	var nextcheck time.Time
-	nextcheck, err = zbxlib.GetNextcheck(t.item.itemid, t.item.delay, now, t.failed, t.client.RefreshUnsupported())
+	nextcheck, err = trxlib.GetNextcheck(t.item.itemid, t.item.delay, now, t.failed, t.client.RefreshUnsupported())
 	if err != nil {
 		return
 	}

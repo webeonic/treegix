@@ -7,7 +7,7 @@
 #include "module.h"
 #include "dbcache.h"
 #include "preproc.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
 #define TRX_IPC_SERVICE_PREPROCESSING	"preprocessing"
 
@@ -21,36 +21,36 @@
 /* item value data used in preprocessing manager */
 typedef struct
 {
-	zbx_uint64_t	itemid;		 /* item id */
+	trx_uint64_t	itemid;		 /* item id */
 	unsigned char	item_value_type; /* item value type */
 	AGENT_RESULT	*result;	 /* item value (if any) */
-	zbx_timespec_t	*ts;		 /* timestamp of a value */
+	trx_timespec_t	*ts;		 /* timestamp of a value */
 	char		*error;		 /* error message (if any) */
 	unsigned char	item_flags;	 /* item flags */
 	unsigned char	state;		 /* item state */
 }
-zbx_preproc_item_value_t;
+trx_preproc_item_value_t;
 
-zbx_uint32_t	zbx_preprocessor_pack_task(unsigned char **data, zbx_uint64_t itemid, unsigned char value_type,
-		zbx_timespec_t *ts, zbx_variant_t *value, const zbx_vector_ptr_t *history,
-		const zbx_preproc_op_t *steps, int steps_num);
-zbx_uint32_t	zbx_preprocessor_pack_result(unsigned char **data, zbx_variant_t *value,
-		const zbx_vector_ptr_t *history, char *error);
+trx_uint32_t	trx_preprocessor_pack_task(unsigned char **data, trx_uint64_t itemid, unsigned char value_type,
+		trx_timespec_t *ts, trx_variant_t *value, const trx_vector_ptr_t *history,
+		const trx_preproc_op_t *steps, int steps_num);
+trx_uint32_t	trx_preprocessor_pack_result(unsigned char **data, trx_variant_t *value,
+		const trx_vector_ptr_t *history, char *error);
 
-zbx_uint32_t	zbx_preprocessor_unpack_value(zbx_preproc_item_value_t *value, unsigned char *data);
-void	zbx_preprocessor_unpack_task(zbx_uint64_t *itemid, unsigned char *value_type, zbx_timespec_t **ts,
-		zbx_variant_t *value, zbx_vector_ptr_t *history, zbx_preproc_op_t **steps,
+trx_uint32_t	trx_preprocessor_unpack_value(trx_preproc_item_value_t *value, unsigned char *data);
+void	trx_preprocessor_unpack_task(trx_uint64_t *itemid, unsigned char *value_type, trx_timespec_t **ts,
+		trx_variant_t *value, trx_vector_ptr_t *history, trx_preproc_op_t **steps,
 		int *steps_num, const unsigned char *data);
-void	zbx_preprocessor_unpack_result(zbx_variant_t *value, zbx_vector_ptr_t *history, char **error,
+void	trx_preprocessor_unpack_result(trx_variant_t *value, trx_vector_ptr_t *history, char **error,
 		const unsigned char *data);
 
-void	zbx_preprocessor_unpack_test_request(unsigned char *value_type, char **value, zbx_timespec_t *ts,
-		zbx_vector_ptr_t *history, zbx_preproc_op_t **steps, int *steps_num, const unsigned char *data);
+void	trx_preprocessor_unpack_test_request(unsigned char *value_type, char **value, trx_timespec_t *ts,
+		trx_vector_ptr_t *history, trx_preproc_op_t **steps, int *steps_num, const unsigned char *data);
 
-zbx_uint32_t	zbx_preprocessor_pack_test_result(unsigned char **data, const zbx_preproc_result_t *results,
-		int results_num, const zbx_vector_ptr_t *history, const char *error);
+trx_uint32_t	trx_preprocessor_pack_test_result(unsigned char **data, const trx_preproc_result_t *results,
+		int results_num, const trx_vector_ptr_t *history, const char *error);
 
-void	zbx_preprocessor_unpack_test_result(zbx_vector_ptr_t *results, zbx_vector_ptr_t *history,
+void	trx_preprocessor_unpack_test_result(trx_vector_ptr_t *results, trx_vector_ptr_t *history,
 		char **error, const unsigned char *data);
 
 #endif /* TREEGIX_PREPROCESSING_H */

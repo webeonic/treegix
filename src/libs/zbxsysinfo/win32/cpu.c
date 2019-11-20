@@ -60,7 +60,7 @@ int	get_cpu_num_win32(void)
 			goto fallback;
 		}
 
-		buffer = (PSYS_LPI_EX)zbx_malloc(buffer, (size_t)buffer_length);
+		buffer = (PSYS_LPI_EX)trx_malloc(buffer, (size_t)buffer_length);
 
 		if (get_lpiex(RelationProcessorCore, buffer, &buffer_length))
 		{
@@ -101,7 +101,7 @@ fallback:
 	GetNativeSystemInfo(&sysInfo);
 	cpu_count = (int)sysInfo.dwNumberOfProcessors;
 finish:
-	zbx_free(buffer);
+	trx_free(buffer);
 
 	treegix_log(LOG_LEVEL_DEBUG, "logical CPU count %d", cpu_count);
 
@@ -176,7 +176,7 @@ int	get_numa_node_num_win32(void)
 		if (get_lpiex(RelationNumaNode, NULL, &buffer_length) || ERROR_INSUFFICIENT_BUFFER != GetLastError())
 			goto finish;
 
-		buffer = (PSYS_LPI_EX)zbx_malloc(buffer, (size_t)buffer_length);
+		buffer = (PSYS_LPI_EX)trx_malloc(buffer, (size_t)buffer_length);
 
 		if (get_lpiex(RelationNumaNode, buffer, &buffer_length))
 		{
@@ -189,7 +189,7 @@ int	get_numa_node_num_win32(void)
 			}
 		}
 
-		zbx_free(buffer);
+		trx_free(buffer);
 	}
 finish:
 	treegix_log(LOG_LEVEL_DEBUG, "NUMA node count %d", numa_node_count);
@@ -204,20 +204,20 @@ int	SYSTEM_CPU_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	/* only "online" (default) for parameter "type" is supported */
 	if (NULL != (tmp = get_rparam(request, 0)) && '\0' != *tmp && 0 != strcmp(tmp, "online"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (0 >= (cpu_num = get_cpu_num_win32()))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Error getting number of CPUs."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Error getting number of CPUs."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -234,13 +234,13 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 == CPU_COLLECTOR_STARTED(collector))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Collector is not started."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Collector is not started."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (3 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -248,14 +248,14 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 		cpu_num = TRX_CPUNUM_ALL;
 	else if (SUCCEED != is_uint_range(tmp, &cpu_num, 0, collector->cpus.count - 1))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	/* only "system" (default) for parameter "type" is supported */
 	if (NULL != (tmp = get_rparam(request, 1)) && '\0' != *tmp && 0 != strcmp(tmp, "system"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -273,7 +273,7 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -284,7 +284,7 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	SET_MSG_RESULT(result, NULL != error ? error :
-			zbx_strdup(NULL, "Cannot obtain performance information from collector."));
+			trx_strdup(NULL, "Cannot obtain performance information from collector."));
 
 	return SYSINFO_RET_FAIL;
 }
@@ -297,13 +297,13 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 == CPU_COLLECTOR_STARTED(collector))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Collector is not started."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Collector is not started."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -315,13 +315,13 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		if (0 >= (cpu_num = get_cpu_num_win32()))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain number of CPUs."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain number of CPUs."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -339,7 +339,7 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -350,7 +350,7 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	SET_MSG_RESULT(result, NULL != error ? error :
-			zbx_strdup(NULL, "Cannot obtain performance information from collector."));
+			trx_strdup(NULL, "Cannot obtain performance information from collector."));
 
 	return SYSINFO_RET_FAIL;
 }

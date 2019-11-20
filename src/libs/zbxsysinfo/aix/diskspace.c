@@ -2,11 +2,11 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "log.h"
 
-static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *free,
-		zbx_uint64_t *used, double *pfree, double *pused, char **error)
+static int	get_fs_size_stat(const char *fs, trx_uint64_t *total, trx_uint64_t *free,
+		trx_uint64_t *used, double *pfree, double *pused, char **error)
 {
 #ifdef HAVE_SYS_STATVFS_H
 #	ifdef HAVE_SYS_STATVFS64
@@ -27,7 +27,7 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 
 	if (0 != TRX_STATFS(fs, &s))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot obtain filesystem information: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain filesystem information: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -37,13 +37,13 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 		s.f_bavail = 0;
 
 	if (NULL != total)
-		*total = (zbx_uint64_t)s.f_blocks * s.TRX_BSIZE;
+		*total = (trx_uint64_t)s.f_blocks * s.TRX_BSIZE;
 
 	if (NULL != free)
-		*free = (zbx_uint64_t)s.f_bavail * s.TRX_BSIZE;
+		*free = (trx_uint64_t)s.f_bavail * s.TRX_BSIZE;
 
 	if (NULL != used)
-		*used = (zbx_uint64_t)(s.f_blocks - s.f_bfree) * s.TRX_BSIZE;
+		*used = (trx_uint64_t)(s.f_blocks - s.f_bfree) * s.TRX_BSIZE;
 
 	if (NULL != pfree)
 	{
@@ -66,7 +66,7 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 
 static int	VFS_FS_USED(const char *fs, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_fs_size_stat(fs, NULL, NULL, &value, NULL, NULL, &error))
@@ -82,7 +82,7 @@ static int	VFS_FS_USED(const char *fs, AGENT_RESULT *result)
 
 static int	VFS_FS_FREE(const char *fs, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_fs_size_stat(fs, NULL, &value, NULL, NULL, NULL, &error))
@@ -98,7 +98,7 @@ static int	VFS_FS_FREE(const char *fs, AGENT_RESULT *result)
 
 static int	VFS_FS_TOTAL(const char *fs, AGENT_RESULT *result)
 {
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_fs_size_stat(fs, &value, NULL, NULL, NULL, NULL, &error))
@@ -150,7 +150,7 @@ static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -159,7 +159,7 @@ static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == fsname || '\0' == *fsname)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -174,17 +174,17 @@ static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (0 == strcmp(mode, "pused"))
 		return VFS_FS_PUSED(fsname, result);
 
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 
 	return SYSINFO_RET_FAIL;
 }
 
 int	VFS_FS_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	return zbx_execute_threaded_metric(vfs_fs_size, request, result);
+	return trx_execute_threaded_metric(vfs_fs_size, request, result);
 }
 
-static const char	*zbx_get_vfs_name_by_type(int type)
+static const char	*trx_get_vfs_name_by_type(int type)
 {
 	extern struct vfs_ent	*getvfsbytype(int type);
 
@@ -196,13 +196,13 @@ static const char	*zbx_get_vfs_name_by_type(int type)
 	{
 		size_t	num = type + 1;
 
-		vfs_names = zbx_realloc(vfs_names, sizeof(char *) * num);
+		vfs_names = trx_realloc(vfs_names, sizeof(char *) * num);
 		memset(vfs_names + vfs_names_alloc, 0, sizeof(char *) * (num - vfs_names_alloc));
 		vfs_names_alloc = num;
 	}
 
 	if (NULL == vfs_names[type] && NULL != (vfs = getvfsbytype(type)))
-		vfs_names[type] = zbx_strdup(vfs_names[type], vfs->vfsent_name);
+		vfs_names[type] = trx_strdup(vfs_names[type], vfs->vfsent_name);
 
 	return NULL != vfs_names[type] ? vfs_names[type] : "unknown";
 }
@@ -211,47 +211,47 @@ int	VFS_FS_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int		rc, sz, i, ret = SYSINFO_RET_FAIL;
 	struct vmount	*vms = NULL, *vm;
-	struct zbx_json	j;
+	struct trx_json	j;
 
 	/* check how many bytes to allocate for the mounted filesystems */
 	if (-1 == (rc = mntctl(MCTL_QUERY, sizeof(sz), (char *)&sz)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	vms = zbx_malloc(vms, (size_t)sz);
+	vms = trx_malloc(vms, (size_t)sz);
 
 	/* get the list of mounted filesystems */
 	/* return code is number of filesystems returned */
 	if (-1 == (rc = mntctl(MCTL_QUERY, sz, (char *)vms)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		goto error;
 	}
 
-	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0, vm = vms; i < rc; i++)
 	{
-		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#FSNAME}", (char *)vm + vm->vmt_data[VMT_STUB].vmt_off, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&j, "{#FSTYPE}", zbx_get_vfs_name_by_type(vm->vmt_gfstype), TRX_JSON_TYPE_STRING);
-		zbx_json_close(&j);
+		trx_json_addobject(&j, NULL);
+		trx_json_addstring(&j, "{#FSNAME}", (char *)vm + vm->vmt_data[VMT_STUB].vmt_off, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&j, "{#FSTYPE}", trx_get_vfs_name_by_type(vm->vmt_gfstype), TRX_JSON_TYPE_STRING);
+		trx_json_close(&j);
 
 		/* go to the next vmount structure */
 		vm = (struct vmount *)((char *)vm + vm->vmt_length);
 	}
 
-	zbx_json_close(&j);
+	trx_json_close(&j);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, j.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, j.buffer));
 
-	zbx_json_free(&j);
+	trx_json_free(&j);
 
 	ret = SYSINFO_RET_OK;
 error:
-	zbx_free(vms);
+	trx_free(vms);
 
 	return ret;
 }

@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxhttp
+subdir = src/libs/trxhttp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,11 +117,11 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxhttp_a_AR = $(AR) $(ARFLAGS)
-libzbxhttp_a_LIBADD =
-am_libzbxhttp_a_OBJECTS = urlencode.$(OBJEXT) punycode.$(OBJEXT) \
+libtrxhttp_a_AR = $(AR) $(ARFLAGS)
+libtrxhttp_a_LIBADD =
+am_libtrxhttp_a_OBJECTS = urlencode.$(OBJEXT) punycode.$(OBJEXT) \
 	http.$(OBJEXT)
-libzbxhttp_a_OBJECTS = $(am_libzbxhttp_a_OBJECTS)
+libtrxhttp_a_OBJECTS = $(am_libtrxhttp_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -150,8 +150,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxhttp_a_SOURCES)
-DIST_SOURCES = $(libzbxhttp_a_SOURCES)
+SOURCES = $(libtrxhttp_a_SOURCES)
+DIST_SOURCES = $(libtrxhttp_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -375,8 +375,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxhttp.a
-libzbxhttp_a_SOURCES = \
+noinst_LIBRARIES = libtrxhttp.a
+libtrxhttp_a_SOURCES = \
 	urlencode.c \
 	punycode.c \
 	punycode.h \
@@ -395,9 +395,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxhttp/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxhttp/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxhttp/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxhttp/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -419,10 +419,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxhttp.a: $(libzbxhttp_a_OBJECTS) $(libzbxhttp_a_DEPENDENCIES) $(EXTRA_libzbxhttp_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxhttp.a
-	$(AM_V_AR)$(libzbxhttp_a_AR) libzbxhttp.a $(libzbxhttp_a_OBJECTS) $(libzbxhttp_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxhttp.a
+libtrxhttp.a: $(libtrxhttp_a_OBJECTS) $(libtrxhttp_a_DEPENDENCIES) $(EXTRA_libtrxhttp_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxhttp.a
+	$(AM_V_AR)$(libtrxhttp_a_AR) libtrxhttp.a $(libtrxhttp_a_OBJECTS) $(libtrxhttp_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxhttp.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

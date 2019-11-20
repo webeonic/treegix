@@ -188,7 +188,7 @@ elseif (hasRequest('delete') || (hasRequest('action') && getRequest('action') ==
 		$maintenanceids = getRequest('maintenanceids');
 	}
 
-	zbx_value2array($maintenanceids);
+	trx_value2array($maintenanceids);
 
 	$result = API::Maintenance()->delete($maintenanceids);
 	if ($result) {
@@ -201,7 +201,7 @@ elseif (hasRequest('delete') || (hasRequest('action') && getRequest('action') ==
 			'output' => [],
 			'editable' => true
 		]);
-		uncheckTableRows(null, zbx_objectValues($maintenances, 'maintenanceid'));
+		uncheckTableRows(null, trx_objectValues($maintenances, 'maintenanceid'));
 	}
 
 	show_messages($result, _('Maintenance deleted'), _('Cannot delete maintenance'));

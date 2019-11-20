@@ -58,7 +58,7 @@ class CIconMap extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if ($options['editable'] && self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
@@ -67,14 +67,14 @@ class CIconMap extends CApiService {
 
 		// iconmapids
 		if (!is_null($options['iconmapids'])) {
-			zbx_value2array($options['iconmapids']);
+			trx_value2array($options['iconmapids']);
 
 			$sqlParts['where'][] = dbConditionInt('im.iconmapid', $options['iconmapids']);
 		}
 
 		// sysmapids
 		if (!is_null($options['sysmapids'])) {
-			zbx_value2array($options['sysmapids']);
+			trx_value2array($options['sysmapids']);
 
 			$sqlParts['from']['sysmaps'] = 'sysmaps s';
 			$sqlParts['where'][] = dbConditionInt('s.sysmapid', $options['sysmapids']);
@@ -87,11 +87,11 @@ class CIconMap extends CApiService {
 		}
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('icon_map im', $options, $sqlParts);
+			trx_db_search('icon_map im', $options, $sqlParts);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -117,7 +117,7 @@ class CIconMap extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 		return $result;
 	}
@@ -175,7 +175,7 @@ class CIconMap extends CApiService {
 			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
-		$this->checkDuplicates(zbx_objectValues($iconmaps, 'name'));
+		$this->checkDuplicates(trx_objectValues($iconmaps, 'name'));
 		$this->checkMappings($iconmaps);
 		$this->checkIcons($iconmaps);
 	}
@@ -219,7 +219,7 @@ class CIconMap extends CApiService {
 
 		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_ICON_MAP, $iconmaps, $db_iconmaps);
 
-		return ['iconmapids' => zbx_objectValues($iconmaps, 'iconmapid')];
+		return ['iconmapids' => trx_objectValues($iconmaps, 'iconmapid')];
 	}
 
 	/**
@@ -249,7 +249,7 @@ class CIconMap extends CApiService {
 
 		$db_iconmaps = DB::select('icon_map', [
 			'output' => ['iconmapid', 'name', 'default_iconid'],
-			'iconmapids' => zbx_objectValues($iconmaps, 'iconmapid'),
+			'iconmapids' => trx_objectValues($iconmaps, 'iconmapid'),
 			'preservekeys' => true
 		]);
 
@@ -327,7 +327,7 @@ class CIconMap extends CApiService {
 				'filter' => ['name' => $names]
 			]);
 
-			$db_regexps = zbx_toHash($db_regexps, 'name');
+			$db_regexps = trx_toHash($db_regexps, 'name');
 
 			foreach ($names as $name) {
 				if (!array_key_exists($name, $db_regexps)) {

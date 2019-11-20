@@ -5,21 +5,21 @@
 
 static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 {
-	SET_UI64_RESULT(result, (zbx_uint64_t)sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE));
+	SET_UI64_RESULT(result, (trx_uint64_t)sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE));
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 {
-	SET_UI64_RESULT(result, (zbx_uint64_t)sysconf(_SC_AVPHYS_PAGES) * sysconf(_SC_PAGESIZE));
+	SET_UI64_RESULT(result, (trx_uint64_t)sysconf(_SC_AVPHYS_PAGES) * sysconf(_SC_PAGESIZE));
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_USED(AGENT_RESULT *result)
 {
-	zbx_uint64_t	used;
+	trx_uint64_t	used;
 
 	used = sysconf(_SC_PHYS_PAGES) - sysconf(_SC_AVPHYS_PAGES);
 
@@ -30,11 +30,11 @@ static int	VM_MEMORY_USED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 {
-	zbx_uint64_t	used, total;
+	trx_uint64_t	used, total;
 
 	if (0 == (total = sysconf(_SC_PHYS_PAGES)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -47,18 +47,18 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 
 static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 {
-	SET_UI64_RESULT(result, (zbx_uint64_t)sysconf(_SC_AVPHYS_PAGES) * sysconf(_SC_PAGESIZE));
+	SET_UI64_RESULT(result, (trx_uint64_t)sysconf(_SC_AVPHYS_PAGES) * sysconf(_SC_PAGESIZE));
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 {
-	zbx_uint64_t	total;
+	trx_uint64_t	total;
 
 	if (0 == (total = sysconf(_SC_PHYS_PAGES)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -74,7 +74,7 @@ int     VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -94,7 +94,7 @@ int     VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VM_MEMORY_PAVAILABLE(result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

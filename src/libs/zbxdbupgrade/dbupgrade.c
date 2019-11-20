@@ -5,15 +5,15 @@
 #include "db.h"
 #include "log.h"
 #include "sysinfo.h"
-#include "zbxdbupgrade.h"
+#include "trxdbupgrade.h"
 #include "dbupgrade.h"
 
 typedef struct
 {
-	zbx_dbpatch_t	*patches;
+	trx_dbpatch_t	*patches;
 	const char	*description;
 }
-zbx_db_version_t;
+trx_db_version_t;
 
 #ifdef HAVE_MYSQL
 #	define TRX_DB_TABLE_OPTIONS	" engine=innodb"
@@ -39,7 +39,7 @@ zbx_db_version_t;
 #	define TRX_DB_SET_TYPE		""
 #endif
 
-/* NOTE: Do not forget to sync changes in TRX_TYPE_*_STR defines for Oracle with zbx_oracle_column_type()! */
+/* NOTE: Do not forget to sync changes in TRX_TYPE_*_STR defines for Oracle with trx_oracle_column_type()! */
 
 #if defined(HAVE_IBM_DB2) || defined(HAVE_POSTGRESQL)
 #	define TRX_TYPE_ID_STR		"bigint"
@@ -98,25 +98,25 @@ static void	DBfield_type_string(char **sql, size_t *sql_alloc, size_t *sql_offse
 	switch (field->type)
 	{
 		case TRX_TYPE_ID:
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_ID_STR);
+			trx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_ID_STR);
 			break;
 		case TRX_TYPE_INT:
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_INT_STR);
+			trx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_INT_STR);
 			break;
 		case TRX_TYPE_CHAR:
-			zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s(%hu)", TRX_TYPE_CHAR_STR, field->length);
+			trx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s(%hu)", TRX_TYPE_CHAR_STR, field->length);
 			break;
 		case TRX_TYPE_FLOAT:
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_FLOAT_STR);
+			trx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_FLOAT_STR);
 			break;
 		case TRX_TYPE_UINT:
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_UINT_STR);
+			trx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_UINT_STR);
 			break;
 		case TRX_TYPE_SHORTTEXT:
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_SHORTTEXT_STR);
+			trx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_SHORTTEXT_STR);
 			break;
 		case TRX_TYPE_TEXT:
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_TEXT_STR);
+			trx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_TYPE_TEXT_STR);
 			break;
 		default:
 			assert(0);
@@ -130,11 +130,11 @@ typedef enum
 	TRX_ORACLE_COLUMN_TYPE_CHARACTER,
 	TRX_ORACLE_COLUMN_TYPE_UNKNOWN
 }
-zbx_oracle_column_type_t;
+trx_oracle_column_type_t;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_oracle_column_type                                           *
+ * Function: trx_oracle_column_type                                           *
  *                                                                            *
  * Purpose: determine whether column type is character or numeric             *
  *                                                                            *
@@ -148,7 +148,7 @@ zbx_oracle_column_type_t;
  *           column all rows of the column must contain nulls.                *
  *                                                                            *
  ******************************************************************************/
-static zbx_oracle_column_type_t	zbx_oracle_column_type(unsigned char field_type)
+static trx_oracle_column_type_t	trx_oracle_column_type(unsigned char field_type)
 {
 	switch (field_type)
 	{
@@ -170,7 +170,7 @@ static zbx_oracle_column_type_t	zbx_oracle_column_type(unsigned char field_type)
 
 static void	DBfield_definition_string(char **sql, size_t *sql_alloc, size_t *sql_offset, const TRX_FIELD *field)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, TRX_FS_SQL_NAME " ", field->name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, TRX_FS_SQL_NAME " ", field->name);
 	DBfield_type_string(sql, sql_alloc, sql_offset, field);
 	if (NULL != field->default_value)
 	{
@@ -188,8 +188,8 @@ static void	DBfield_definition_string(char **sql, size_t *sql_alloc, size_t *sql
 			default:
 #endif
 				default_value_esc = DBdyn_escape_string(field->default_value);
-				zbx_snprintf_alloc(sql, sql_alloc, sql_offset, " default '%s'", default_value_esc);
-				zbx_free(default_value_esc);
+				trx_snprintf_alloc(sql, sql_alloc, sql_offset, " default '%s'", default_value_esc);
+				trx_free(default_value_esc);
 #if defined(HAVE_MYSQL)
 		}
 #endif
@@ -205,13 +205,13 @@ static void	DBfield_definition_string(char **sql, size_t *sql_alloc, size_t *sql
 			case TRX_TYPE_BLOB:
 			case TRX_TYPE_UINT:
 			case TRX_TYPE_ID:
-				zbx_strcpy_alloc(sql, sql_alloc, sql_offset, " not null");
+				trx_strcpy_alloc(sql, sql_alloc, sql_offset, " not null");
 				break;
 			default:	/* TRX_TYPE_CHAR, TRX_TYPE_TEXT, TRX_TYPE_SHORTTEXT or TRX_TYPE_LONGTEXT */
 				/* nothing to do */;
 		}
 #else
-		zbx_strcpy_alloc(sql, sql_alloc, sql_offset, " not null");
+		trx_strcpy_alloc(sql, sql_alloc, sql_offset, " not null");
 #endif
 	}
 }
@@ -220,66 +220,66 @@ static void	DBcreate_table_sql(char **sql, size_t *sql_alloc, size_t *sql_offset
 {
 	int	i;
 
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "create table %s (\n", table->table);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "create table %s (\n", table->table);
 
 	for (i = 0; NULL != table->fields[i].name; i++)
 	{
 		if (0 != i)
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, ",\n");
+			trx_strcpy_alloc(sql, sql_alloc, sql_offset, ",\n");
 		DBfield_definition_string(sql, sql_alloc, sql_offset, &table->fields[i]);
 	}
 	if ('\0' != *table->recid)
-		zbx_snprintf_alloc(sql, sql_alloc, sql_offset, ",\nprimary key (%s)", table->recid);
+		trx_snprintf_alloc(sql, sql_alloc, sql_offset, ",\nprimary key (%s)", table->recid);
 
-	zbx_strcpy_alloc(sql, sql_alloc, sql_offset, "\n)" TRX_DB_TABLE_OPTIONS);
+	trx_strcpy_alloc(sql, sql_alloc, sql_offset, "\n)" TRX_DB_TABLE_OPTIONS);
 }
 
 static void	DBrename_table_sql(char **sql, size_t *sql_alloc, size_t *sql_offset, const char *table_name,
 		const char *new_name)
 {
 #ifdef HAVE_IBM_DB2
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "rename table " TRX_FS_SQL_NAME " to " TRX_FS_SQL_NAME,
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "rename table " TRX_FS_SQL_NAME " to " TRX_FS_SQL_NAME,
 			table_name, new_name);
 #else
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table " TRX_FS_SQL_NAME " rename to " TRX_FS_SQL_NAME,
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table " TRX_FS_SQL_NAME " rename to " TRX_FS_SQL_NAME,
 			table_name, new_name);
 #endif
 }
 
 static void	DBdrop_table_sql(char **sql, size_t *sql_alloc, size_t *sql_offset, const char *table_name)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "drop table %s", table_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "drop table %s", table_name);
 }
 
 static void	DBset_default_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, const TRX_FIELD *field)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s" TRX_DB_ALTER_COLUMN " ", table_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s" TRX_DB_ALTER_COLUMN " ", table_name);
 
 #if defined(HAVE_MYSQL)
 	DBfield_definition_string(sql, sql_alloc, sql_offset, field);
 #elif defined(HAVE_ORACLE)
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s default '%s'", field->name, field->default_value);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s default '%s'", field->name, field->default_value);
 #else
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s set default '%s'", field->name, field->default_value);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s set default '%s'", field->name, field->default_value);
 #endif
 }
 
 static void	DBmodify_field_type_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, const TRX_FIELD *field)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table " TRX_FS_SQL_NAME TRX_DB_ALTER_COLUMN " ",
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table " TRX_FS_SQL_NAME TRX_DB_ALTER_COLUMN " ",
 			table_name);
 
 #ifdef HAVE_MYSQL
 	DBfield_definition_string(sql, sql_alloc, sql_offset, field);
 #else
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s" TRX_DB_SET_TYPE " ", field->name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s" TRX_DB_SET_TYPE " ", field->name);
 	DBfield_type_string(sql, sql_alloc, sql_offset, field);
 #ifdef HAVE_POSTGRESQL
 	if (NULL != field->default_value)
 	{
-		zbx_strcpy_alloc(sql, sql_alloc, sql_offset, ";\n");
+		trx_strcpy_alloc(sql, sql_alloc, sql_offset, ";\n");
 		DBset_default_sql(sql, sql_alloc, sql_offset, table_name, field);
 	}
 #endif
@@ -289,48 +289,48 @@ static void	DBmodify_field_type_sql(char **sql, size_t *sql_alloc, size_t *sql_o
 static void	DBdrop_not_null_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, const TRX_FIELD *field)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s" TRX_DB_ALTER_COLUMN " ", table_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s" TRX_DB_ALTER_COLUMN " ", table_name);
 
 #if defined(HAVE_MYSQL)
 	DBfield_definition_string(sql, sql_alloc, sql_offset, field);
 #elif defined(HAVE_ORACLE)
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s null", field->name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s null", field->name);
 #else
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s drop not null", field->name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s drop not null", field->name);
 #endif
 }
 
 static void	DBset_not_null_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, const TRX_FIELD *field)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s" TRX_DB_ALTER_COLUMN " ", table_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s" TRX_DB_ALTER_COLUMN " ", table_name);
 
 #if defined(HAVE_MYSQL)
 	DBfield_definition_string(sql, sql_alloc, sql_offset, field);
 #elif defined(HAVE_ORACLE)
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s not null", field->name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s not null", field->name);
 #else
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s set not null", field->name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "%s set not null", field->name);
 #endif
 }
 
 static void	DBadd_field_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, const TRX_FIELD *field)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table " TRX_FS_SQL_NAME " add ", table_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table " TRX_FS_SQL_NAME " add ", table_name);
 	DBfield_definition_string(sql, sql_alloc, sql_offset, field);
 }
 
 static void	DBrename_field_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, const char *field_name, const TRX_FIELD *field)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table " TRX_FS_SQL_NAME " ", table_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table " TRX_FS_SQL_NAME " ", table_name);
 
 #ifdef HAVE_MYSQL
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "change column " TRX_FS_SQL_NAME " ", field_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "change column " TRX_FS_SQL_NAME " ", field_name);
 	DBfield_definition_string(sql, sql_alloc, sql_offset, field);
 #else
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "rename column " TRX_FS_SQL_NAME " to " TRX_FS_SQL_NAME,
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "rename column " TRX_FS_SQL_NAME " to " TRX_FS_SQL_NAME,
 			field_name, field->name);
 #endif
 }
@@ -338,24 +338,24 @@ static void	DBrename_field_sql(char **sql, size_t *sql_alloc, size_t *sql_offset
 static void	DBdrop_field_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, const char *field_name)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s drop column %s", table_name, field_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s drop column %s", table_name, field_name);
 }
 
 static void	DBcreate_index_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, const char *index_name, const char *fields, int unique)
 {
-	zbx_strcpy_alloc(sql, sql_alloc, sql_offset, "create");
+	trx_strcpy_alloc(sql, sql_alloc, sql_offset, "create");
 	if (0 != unique)
-		zbx_strcpy_alloc(sql, sql_alloc, sql_offset, " unique");
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, " index %s on %s (%s)", index_name, table_name, fields);
+		trx_strcpy_alloc(sql, sql_alloc, sql_offset, " unique");
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, " index %s on %s (%s)", index_name, table_name, fields);
 }
 
 static void	DBdrop_index_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, const char *index_name)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "drop index %s", index_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "drop index %s", index_name);
 #ifdef HAVE_MYSQL
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, " on %s", table_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, " on %s", table_name);
 #else
 	TRX_UNUSED(table_name);
 #endif
@@ -368,35 +368,35 @@ static void	DBrename_index_sql(char **sql, size_t *sql_alloc, size_t *sql_offset
 	TRX_UNUSED(table_name);
 	TRX_UNUSED(fields);
 	TRX_UNUSED(unique);
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "rename index %s to %s", old_name, new_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "rename index %s to %s", old_name, new_name);
 #elif defined(HAVE_MYSQL)
 	DBcreate_index_sql(sql, sql_alloc, sql_offset, table_name, new_name, fields, unique);
-	zbx_strcpy_alloc(sql, sql_alloc, sql_offset, ";\n");
+	trx_strcpy_alloc(sql, sql_alloc, sql_offset, ";\n");
 	DBdrop_index_sql(sql, sql_alloc, sql_offset, table_name, old_name);
-	zbx_strcpy_alloc(sql, sql_alloc, sql_offset, ";\n");
+	trx_strcpy_alloc(sql, sql_alloc, sql_offset, ";\n");
 #elif defined(HAVE_ORACLE) || defined(HAVE_POSTGRESQL)
 	TRX_UNUSED(table_name);
 	TRX_UNUSED(fields);
 	TRX_UNUSED(unique);
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter index %s rename to %s", old_name, new_name);
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter index %s rename to %s", old_name, new_name);
 #endif
 }
 
 static void	DBadd_foreign_key_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, int id, const TRX_FIELD *field)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset,
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset,
 			"alter table " TRX_FS_SQL_NAME " add constraint c_%s_%d foreign key (" TRX_FS_SQL_NAME ")"
 					" references " TRX_FS_SQL_NAME " (" TRX_FS_SQL_NAME ")", table_name, table_name,
 					id, field->name, field->fk_table, field->fk_field);
 	if (0 != (field->fk_flags & TRX_FK_CASCADE_DELETE))
-		zbx_strcpy_alloc(sql, sql_alloc, sql_offset, " on delete cascade");
+		trx_strcpy_alloc(sql, sql_alloc, sql_offset, " on delete cascade");
 }
 
 static void	DBdrop_foreign_key_sql(char **sql, size_t *sql_alloc, size_t *sql_offset,
 		const char *table_name, int id)
 {
-	zbx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s" TRX_DROP_FK " c_%s_%d",
+	trx_snprintf_alloc(sql, sql_alloc, sql_offset, "alter table %s" TRX_DROP_FK " c_%s_%d",
 			table_name, table_name, id);
 }
 
@@ -424,7 +424,7 @@ int	DBcreate_table(const TRX_TABLE *table)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = SUCCEED;
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -440,7 +440,7 @@ int	DBrename_table(const char *table_name, const char *new_name)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = DBreorg_table(new_name);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -456,7 +456,7 @@ int	DBdrop_table(const char *table_name)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = SUCCEED;
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -472,7 +472,7 @@ int	DBadd_field(const char *table_name, const TRX_FIELD *field)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = DBreorg_table(table_name);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -488,7 +488,7 @@ int	DBrename_field(const char *table_name, const char *field_name, const TRX_FIE
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = DBreorg_table(table_name);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -496,13 +496,13 @@ int	DBrename_field(const char *table_name, const char *field_name, const TRX_FIE
 #ifdef HAVE_ORACLE
 static int	DBmodify_field_type_with_copy(const char *table_name, const TRX_FIELD *field)
 {
-#define TRX_OLD_FIELD	"zbx_old_tmp"
+#define TRX_OLD_FIELD	"trx_old_tmp"
 
 	char	*sql = NULL;
 	size_t	sql_alloc = 0, sql_offset = 0;
 	int	ret = FAIL;
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "alter table %s rename column %s to " TRX_OLD_FIELD,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "alter table %s rename column %s to " TRX_OLD_FIELD,
 			table_name, field->name);
 
 	if (TRX_DB_OK > DBexecute("%s", sql))
@@ -512,7 +512,7 @@ static int	DBmodify_field_type_with_copy(const char *table_name, const TRX_FIELD
 		goto out;
 
 	sql_offset = 0;
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update %s set %s=" TRX_OLD_FIELD, table_name,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update %s set %s=" TRX_OLD_FIELD, table_name,
 			field->name);
 
 	if (TRX_DB_OK > DBexecute("%s", sql))
@@ -520,7 +520,7 @@ static int	DBmodify_field_type_with_copy(const char *table_name, const TRX_FIELD
 
 	ret = DBdrop_field(table_name, TRX_OLD_FIELD);
 out:
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 
@@ -542,7 +542,7 @@ int	DBmodify_field_type(const char *table_name, const TRX_FIELD *field, const TR
 	/* old column is copied there. Then old column is dropped. This method does not preserve column order.    */
 	/* NOTE: Existing column indexes and constraints are not respected by the current implementation!         */
 
-	if (NULL != old_field && zbx_oracle_column_type(old_field->type) != zbx_oracle_column_type(field->type))
+	if (NULL != old_field && trx_oracle_column_type(old_field->type) != trx_oracle_column_type(field->type))
 		return DBmodify_field_type_with_copy(table_name, field);
 #endif
 	DBmodify_field_type_sql(&sql, &sql_alloc, &sql_offset, table_name, field);
@@ -550,7 +550,7 @@ int	DBmodify_field_type(const char *table_name, const TRX_FIELD *field, const TR
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = DBreorg_table(table_name);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -566,7 +566,7 @@ int	DBset_not_null(const char *table_name, const TRX_FIELD *field)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = DBreorg_table(table_name);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -582,7 +582,7 @@ int	DBset_default(const char *table_name, const TRX_FIELD *field)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = DBreorg_table(table_name);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -598,7 +598,7 @@ int	DBdrop_not_null(const char *table_name, const TRX_FIELD *field)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = DBreorg_table(table_name);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -614,7 +614,7 @@ int	DBdrop_field(const char *table_name, const char *field_name)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = DBreorg_table(table_name);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -630,7 +630,7 @@ int	DBcreate_index(const char *table_name, const char *index_name, const char *f
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = SUCCEED;
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -646,7 +646,7 @@ int	DBdrop_index(const char *table_name, const char *index_name)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = SUCCEED;
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -663,7 +663,7 @@ int	DBrename_index(const char *table_name, const char *old_name, const char *new
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = SUCCEED;
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -679,7 +679,7 @@ int	DBadd_foreign_key(const char *table_name, int id, const TRX_FIELD *field)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = SUCCEED;
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -695,7 +695,7 @@ int	DBdrop_foreign_key(const char *table_name, int id)
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		ret = SUCCEED;
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -731,10 +731,10 @@ static int	DBset_version(int version, unsigned char mandatory)
 	char	sql[64];
 	size_t	offset;
 
-	offset = zbx_snprintf(sql, sizeof(sql),  "update dbversion set ");
+	offset = trx_snprintf(sql, sizeof(sql),  "update dbversion set ");
 	if (0 != mandatory)
-		offset += zbx_snprintf(sql + offset, sizeof(sql) - offset, "mandatory=%d,", version);
-	zbx_snprintf(sql + offset, sizeof(sql) - offset, "optional=%d", version);
+		offset += trx_snprintf(sql + offset, sizeof(sql) - offset, "mandatory=%d,", version);
+	trx_snprintf(sql + offset, sizeof(sql) - offset, "optional=%d", version);
 
 	if (TRX_DB_OK <= DBexecute("%s", sql))
 		return SUCCEED;
@@ -744,24 +744,24 @@ static int	DBset_version(int version, unsigned char mandatory)
 
 #endif	/* not HAVE_SQLITE3 */
 
-extern zbx_dbpatch_t	DBPATCH_VERSION(2010)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(2020)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(2030)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(2040)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(2050)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(3000)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(3010)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(3020)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(3030)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(3040)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(3050)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(4000)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(4010)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(4020)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(4030)[];
-extern zbx_dbpatch_t	DBPATCH_VERSION(4040)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(2010)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(2020)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(2030)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(2040)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(2050)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(3000)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(3010)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(3020)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(3030)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(3040)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(3050)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(4000)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(4010)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(4020)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(4030)[];
+extern trx_dbpatch_t	DBPATCH_VERSION(4040)[];
 
-static zbx_db_version_t dbversions[] = {
+static trx_db_version_t dbversions[] = {
 	{DBPATCH_VERSION(2010), "2.2 development"},
 	{DBPATCH_VERSION(2020), "2.2 maintenance"},
 	{DBPATCH_VERSION(2030), "2.4 development"},
@@ -809,8 +809,8 @@ int	DBcheck_version(void)
 {
 	const char		*dbversion_table_name = "dbversion";
 	int			db_mandatory, db_optional, required, ret = FAIL, i;
-	zbx_db_version_t	*dbversion;
-	zbx_dbpatch_t		*patches;
+	trx_db_version_t	*dbversion;
+	trx_dbpatch_t		*patches;
 
 #ifndef HAVE_SQLITE3
 	int			total = 0, current = 0, completed, last_completed = -1, optional_num = 0;
@@ -967,7 +967,7 @@ int	DBcheck_version(void)
 out:
 	DBclose();
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

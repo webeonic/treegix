@@ -3,7 +3,7 @@
 #include "common.h"
 #include "../treegix_server/alerter/alerter_protocol.h"
 
-zbx_uint32_t	zbx_alerter_serialize_alert_send(unsigned char **data, zbx_uint64_t mediatypeid, unsigned char type,
+trx_uint32_t	trx_alerter_serialize_alert_send(unsigned char **data, trx_uint64_t mediatypeid, unsigned char type,
 		const char *smtp_server, const char *smtp_helo, const char *smtp_email, const char *exec_path,
 		const char *gsm_modem, const char *username, const char *passwd, unsigned short smtp_port,
 		unsigned char smtp_security, unsigned char smtp_verify_peer, unsigned char smtp_verify_host,
@@ -43,7 +43,7 @@ zbx_uint32_t	zbx_alerter_serialize_alert_send(unsigned char **data, zbx_uint64_t
 	return 0;
 }
 
-void	zbx_alerter_deserialize_result(const unsigned char *data, char **value, int *errcode, char **errmsg)
+void	trx_alerter_deserialize_result(const unsigned char *data, char **value, int *errcode, char **errmsg)
 {
 	TRX_UNUSED(value);
 	TRX_UNUSED(data);

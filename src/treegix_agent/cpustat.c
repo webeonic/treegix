@@ -18,9 +18,9 @@ extern int get_numa_node_num_win32(void);
 #endif
 
 #if !defined(_WINDOWS)
-#	define LOCK_CPUSTATS	zbx_mutex_lock(cpustats_lock)
-#	define UNLOCK_CPUSTATS	zbx_mutex_unlock(cpustats_lock)
-static zbx_mutex_t	cpustats_lock = TRX_MUTEX_NULL;
+#	define LOCK_CPUSTATS	trx_mutex_lock(cpustats_lock)
+#	define UNLOCK_CPUSTATS	trx_mutex_unlock(cpustats_lock)
+static trx_mutex_t	cpustats_lock = TRX_MUTEX_NULL;
 #else
 #	define LOCK_CPUSTATS
 #	define UNLOCK_CPUSTATS
@@ -141,7 +141,7 @@ int	init_cpu_collector(TRX_CPUS_STAT_DATA *pcpus)
 			else
 				_itow_s(idx - 1, cpu, ARRSIZE(cpu), 10);
 
-			if (ERROR_SUCCESS != zbx_PdhMakeCounterPath(__func__, &cpe, counterPath))
+			if (ERROR_SUCCESS != trx_PdhMakeCounterPath(__func__, &cpe, counterPath))
 				goto clean;
 
 			if (NULL == (pcpus->cpu_counter[idx] = add_perf_counter(NULL, counterPath, MAX_COLLECTOR_PERIOD,
@@ -185,7 +185,7 @@ int	init_cpu_collector(TRX_CPUS_STAT_DATA *pcpus)
 					StringCchPrintf(cpu, ARRSIZE(cpu), L"%d,%d", gidx, idx - 1);
 				}
 
-				if (ERROR_SUCCESS != zbx_PdhMakeCounterPath(__func__, &cpe, counterPath))
+				if (ERROR_SUCCESS != trx_PdhMakeCounterPath(__func__, &cpe, counterPath))
 					goto clean;
 
 				if (NULL == (pcpus->cpu_counter[gidx * cpus_per_group + idx] =
@@ -202,7 +202,7 @@ int	init_cpu_collector(TRX_CPUS_STAT_DATA *pcpus)
 	cpe.szInstanceName = NULL;
 	cpe.szCounterName = get_counter_name(get_builtin_counter_index(PCI_PROCESSOR_QUEUE_LENGTH));
 
-	if (ERROR_SUCCESS != zbx_PdhMakeCounterPath(__func__, &cpe, counterPath))
+	if (ERROR_SUCCESS != trx_PdhMakeCounterPath(__func__, &cpe, counterPath))
 		goto clean;
 
 	if (NULL == (pcpus->queue_counter = add_perf_counter(NULL, counterPath, MAX_COLLECTOR_PERIOD,
@@ -216,14 +216,14 @@ clean:
 	if (NULL != error)
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot add performance counter \"%s\": %s", counterPath, error);
-		zbx_free(error);
+		trx_free(error);
 	}
 
 #else	/* not _WINDOWS */
-	if (SUCCEED != zbx_mutex_create(&cpustats_lock, TRX_MUTEX_CPUSTATS, &error))
+	if (SUCCEED != trx_mutex_create(&cpustats_lock, TRX_MUTEX_CPUSTATS, &error))
 	{
-		zbx_error("unable to create mutex for cpu collector: %s", error);
-		zbx_free(error);
+		trx_error("unable to create mutex for cpu collector: %s", error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
@@ -242,18 +242,18 @@ clean:
 
 	if (NULL == (kc = kstat_open()))
 	{
-		zbx_error("kstat_open() failed");
+		trx_error("kstat_open() failed");
 		exit(EXIT_FAILURE);
 	}
 
 	kc_id = kc->kc_chain_id;
 
 	if (NULL == ksp)
-		ksp = zbx_malloc(ksp, sizeof(kstat_t *) * pcpus->count);
+		ksp = trx_malloc(ksp, sizeof(kstat_t *) * pcpus->count);
 
 	if (SUCCEED != refresh_kstat(pcpus))
 	{
-		zbx_error("kstat_chain_update() failed");
+		trx_error("kstat_chain_update() failed");
 		exit(EXIT_FAILURE);
 	}
 #endif	/* HAVE_KSTAT_H */
@@ -261,7 +261,7 @@ clean:
 	ret = SUCCEED;
 #endif	/* _WINDOWS */
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -284,12 +284,12 @@ void	free_cpu_collector(TRX_CPUS_STAT_DATA *pcpus)
 	}
 #else
 	TRX_UNUSED(pcpus);
-	zbx_mutex_destroy(&cpustats_lock);
+	trx_mutex_destroy(&cpustats_lock);
 #endif
 
 #ifdef HAVE_KSTAT_H
 	kstat_close(kc);
-	zbx_free(ksp);
+	trx_free(ksp);
 #endif
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -310,7 +310,7 @@ int	get_cpu_perf_counter_value(int cpu_num, int interval, double *value, char **
 	return get_perf_counter_value(collector->cpus.cpu_counter[idx], interval, value, error);
 }
 
-static int	get_cpu_perf_counter_status(zbx_perf_counter_status_t pc_status)
+static int	get_cpu_perf_counter_status(trx_perf_counter_status_t pc_status)
 {
 	switch (pc_status)
 	{
@@ -323,7 +323,7 @@ static int	get_cpu_perf_counter_status(zbx_perf_counter_status_t pc_status)
 	return TRX_CPU_STATUS_OFFLINE;
 }
 #else	/* not _WINDOWS */
-static void	update_cpu_counters(TRX_SINGLE_CPU_STAT_DATA *cpu, zbx_uint64_t *counter)
+static void	update_cpu_counters(TRX_SINGLE_CPU_STAT_DATA *cpu, trx_uint64_t *counter)
 {
 	int	i, index;
 
@@ -353,7 +353,7 @@ static void	update_cpu_counters(TRX_SINGLE_CPU_STAT_DATA *cpu, zbx_uint64_t *cou
 static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 {
 	int		idx;
-	zbx_uint64_t	counter[TRX_CPU_STATE_COUNT];
+	trx_uint64_t	counter[TRX_CPU_STATE_COUNT];
 
 #if defined(HAVE_PROC_STAT)
 
@@ -375,7 +375,7 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 #elif defined(HAVE_KSTAT_H)
 
 	cpu_stat_t	*cpu;
-	zbx_uint64_t	total[TRX_CPU_STATE_COUNT];
+	trx_uint64_t	total[TRX_CPU_STATE_COUNT];
 	kid_t		id;
 
 #elif defined(HAVE_FUNCTION_SYSCTL_KERN_CPTIME)
@@ -403,12 +403,12 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 
 	if (NULL == (file = fopen(filename, "r")))
 	{
-		zbx_error("cannot open [%s]: %s", filename, zbx_strerror(errno));
+		trx_error("cannot open [%s]: %s", filename, trx_strerror(errno));
 		TRX_SET_CPUS_NOTSUPPORTED();
 		goto exit;
 	}
 
-	cpu_status = (unsigned char *)zbx_malloc(cpu_status, sizeof(unsigned char) * (pcpus->count + 1));
+	cpu_status = (unsigned char *)trx_malloc(cpu_status, sizeof(unsigned char) * (pcpus->count + 1));
 
 	for (idx = 0; idx <= pcpus->count; idx++)
 		cpu_status[idx] = SYSINFO_RET_FAIL;
@@ -447,7 +447,7 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 		update_cpu_counters(&pcpus->cpu[idx], counter);
 		cpu_status[idx] = SYSINFO_RET_OK;
 	}
-	zbx_fclose(file);
+	trx_fclose(file);
 
 	for (idx = 0; idx <= pcpus->count; idx++)
 	{
@@ -455,7 +455,7 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 			update_cpu_counters(&pcpus->cpu[idx], NULL);
 	}
 
-	zbx_free(cpu_status);
+	trx_free(cpu_status);
 
 #elif defined(HAVE_SYS_PSTAT_H)
 
@@ -471,10 +471,10 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 				continue;
 			}
 
-			counter[TRX_CPU_STATE_USER] = (zbx_uint64_t)psd.psd_cpu_time[CP_USER];
-			counter[TRX_CPU_STATE_NICE] = (zbx_uint64_t)psd.psd_cpu_time[CP_NICE];
-			counter[TRX_CPU_STATE_SYSTEM] = (zbx_uint64_t)psd.psd_cpu_time[CP_SYS];
-			counter[TRX_CPU_STATE_IDLE] = (zbx_uint64_t)psd.psd_cpu_time[CP_IDLE];
+			counter[TRX_CPU_STATE_USER] = (trx_uint64_t)psd.psd_cpu_time[CP_USER];
+			counter[TRX_CPU_STATE_NICE] = (trx_uint64_t)psd.psd_cpu_time[CP_NICE];
+			counter[TRX_CPU_STATE_SYSTEM] = (trx_uint64_t)psd.psd_cpu_time[CP_SYS];
+			counter[TRX_CPU_STATE_IDLE] = (trx_uint64_t)psd.psd_cpu_time[CP_IDLE];
 		}
 		else
 		{
@@ -484,10 +484,10 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 				continue;
 			}
 
-			counter[TRX_CPU_STATE_USER] = (zbx_uint64_t)psp.psp_cpu_time[CP_USER];
-			counter[TRX_CPU_STATE_NICE] = (zbx_uint64_t)psp.psp_cpu_time[CP_NICE];
-			counter[TRX_CPU_STATE_SYSTEM] = (zbx_uint64_t)psp.psp_cpu_time[CP_SYS];
-			counter[TRX_CPU_STATE_IDLE] = (zbx_uint64_t)psp.psp_cpu_time[CP_IDLE];
+			counter[TRX_CPU_STATE_USER] = (trx_uint64_t)psp.psp_cpu_time[CP_USER];
+			counter[TRX_CPU_STATE_NICE] = (trx_uint64_t)psp.psp_cpu_time[CP_NICE];
+			counter[TRX_CPU_STATE_SYSTEM] = (trx_uint64_t)psp.psp_cpu_time[CP_SYS];
+			counter[TRX_CPU_STATE_IDLE] = (trx_uint64_t)psp.psp_cpu_time[CP_IDLE];
 		}
 
 		update_cpu_counters(&pcpus->cpu[idx], counter);
@@ -505,11 +505,11 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 
 	memset(counter, 0, sizeof(counter));
 
-	counter[TRX_CPU_STATE_USER] = (zbx_uint64_t)cp_time[CP_USER];
-	counter[TRX_CPU_STATE_NICE] = (zbx_uint64_t)cp_time[CP_NICE];
-	counter[TRX_CPU_STATE_SYSTEM] = (zbx_uint64_t)cp_time[CP_SYS];
-	counter[TRX_CPU_STATE_INTERRUPT] = (zbx_uint64_t)cp_time[CP_INTR];
-	counter[TRX_CPU_STATE_IDLE] = (zbx_uint64_t)cp_time[CP_IDLE];
+	counter[TRX_CPU_STATE_USER] = (trx_uint64_t)cp_time[CP_USER];
+	counter[TRX_CPU_STATE_NICE] = (trx_uint64_t)cp_time[CP_NICE];
+	counter[TRX_CPU_STATE_SYSTEM] = (trx_uint64_t)cp_time[CP_SYS];
+	counter[TRX_CPU_STATE_INTERRUPT] = (trx_uint64_t)cp_time[CP_INTR];
+	counter[TRX_CPU_STATE_IDLE] = (trx_uint64_t)cp_time[CP_IDLE];
 
 	update_cpu_counters(&pcpus->cpu[0], counter);
 
@@ -521,7 +521,7 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 		goto exit;
 	}
 
-	cp_times = zbx_malloc(cp_times, nlen_alloc);
+	cp_times = trx_malloc(cp_times, nlen_alloc);
 
 	nlen = nlen_alloc;
 	if (0 == sysctlbyname("kern.cp_times", cp_times, &nlen, NULL, 0) && nlen == nlen_alloc)
@@ -532,11 +532,11 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 
 			memset(counter, 0, sizeof(counter));
 
-			counter[TRX_CPU_STATE_USER] = (zbx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_USER);
-			counter[TRX_CPU_STATE_NICE] = (zbx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_NICE);
-			counter[TRX_CPU_STATE_SYSTEM] = (zbx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_SYS);
-			counter[TRX_CPU_STATE_INTERRUPT] = (zbx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_INTR);
-			counter[TRX_CPU_STATE_IDLE] = (zbx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_IDLE);
+			counter[TRX_CPU_STATE_USER] = (trx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_USER);
+			counter[TRX_CPU_STATE_NICE] = (trx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_NICE);
+			counter[TRX_CPU_STATE_SYSTEM] = (trx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_SYS);
+			counter[TRX_CPU_STATE_INTERRUPT] = (trx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_INTR);
+			counter[TRX_CPU_STATE_IDLE] = (trx_uint64_t)*(cp_times + cpu_num * CPUSTATES + CP_IDLE);
 
 			update_cpu_counters(&pcpus->cpu[idx], counter);
 		}
@@ -547,7 +547,7 @@ static void	update_cpustats(TRX_CPUS_STAT_DATA *pcpus)
 			update_cpu_counters(&pcpus->cpu[idx], NULL);
 	}
 
-	zbx_free(cp_times);
+	trx_free(cp_times);
 
 #elif defined(HAVE_KSTAT_H)
 	/* Solaris */
@@ -614,11 +614,11 @@ read_again:
 				continue;
 			}
 
-			counter[TRX_CPU_STATE_USER] = (zbx_uint64_t)all_states[CP_USER];
-			counter[TRX_CPU_STATE_NICE] = (zbx_uint64_t)all_states[CP_NICE];
-			counter[TRX_CPU_STATE_SYSTEM] = (zbx_uint64_t)all_states[CP_SYS];
-			counter[TRX_CPU_STATE_INTERRUPT] = (zbx_uint64_t)all_states[CP_INTR];
-			counter[TRX_CPU_STATE_IDLE] = (zbx_uint64_t)all_states[CP_IDLE];
+			counter[TRX_CPU_STATE_USER] = (trx_uint64_t)all_states[CP_USER];
+			counter[TRX_CPU_STATE_NICE] = (trx_uint64_t)all_states[CP_NICE];
+			counter[TRX_CPU_STATE_SYSTEM] = (trx_uint64_t)all_states[CP_SYS];
+			counter[TRX_CPU_STATE_INTERRUPT] = (trx_uint64_t)all_states[CP_INTR];
+			counter[TRX_CPU_STATE_IDLE] = (trx_uint64_t)all_states[CP_IDLE];
 		}
 		else
 		{
@@ -634,11 +634,11 @@ read_again:
 				continue;
 			}
 
-			counter[TRX_CPU_STATE_USER] = (zbx_uint64_t)one_states[CP_USER];
-			counter[TRX_CPU_STATE_NICE] = (zbx_uint64_t)one_states[CP_NICE];
-			counter[TRX_CPU_STATE_SYSTEM] = (zbx_uint64_t)one_states[CP_SYS];
-			counter[TRX_CPU_STATE_INTERRUPT] = (zbx_uint64_t)one_states[CP_INTR];
-			counter[TRX_CPU_STATE_IDLE] = (zbx_uint64_t)one_states[CP_IDLE];
+			counter[TRX_CPU_STATE_USER] = (trx_uint64_t)one_states[CP_USER];
+			counter[TRX_CPU_STATE_NICE] = (trx_uint64_t)one_states[CP_NICE];
+			counter[TRX_CPU_STATE_SYSTEM] = (trx_uint64_t)one_states[CP_SYS];
+			counter[TRX_CPU_STATE_INTERRUPT] = (trx_uint64_t)one_states[CP_INTR];
+			counter[TRX_CPU_STATE_IDLE] = (trx_uint64_t)one_states[CP_IDLE];
 		}
 
 		update_cpu_counters(&pcpus->cpu[idx], counter);
@@ -659,14 +659,14 @@ read_again:
 				continue;
 			}
 
-			counter[TRX_CPU_STATE_USER] = (zbx_uint64_t)ps_cpu_total.user;
-			counter[TRX_CPU_STATE_SYSTEM] = (zbx_uint64_t)ps_cpu_total.sys;
-			counter[TRX_CPU_STATE_IDLE] = (zbx_uint64_t)ps_cpu_total.idle;
-			counter[TRX_CPU_STATE_IOWAIT] = (zbx_uint64_t)ps_cpu_total.wait;
+			counter[TRX_CPU_STATE_USER] = (trx_uint64_t)ps_cpu_total.user;
+			counter[TRX_CPU_STATE_SYSTEM] = (trx_uint64_t)ps_cpu_total.sys;
+			counter[TRX_CPU_STATE_IDLE] = (trx_uint64_t)ps_cpu_total.idle;
+			counter[TRX_CPU_STATE_IOWAIT] = (trx_uint64_t)ps_cpu_total.wait;
 		}
 		else
 		{
-			zbx_snprintf(ps_id.name, sizeof(ps_id.name), "cpu%d", pcpus->cpu[idx].cpu_num);
+			trx_snprintf(ps_id.name, sizeof(ps_id.name), "cpu%d", pcpus->cpu[idx].cpu_num);
 
 			if (-1 == perfstat_cpu(&ps_id, &ps_cpu, sizeof(ps_cpu), 1))
 			{
@@ -674,10 +674,10 @@ read_again:
 				continue;
 			}
 
-			counter[TRX_CPU_STATE_USER] = (zbx_uint64_t)ps_cpu.user;
-			counter[TRX_CPU_STATE_SYSTEM] = (zbx_uint64_t)ps_cpu.sys;
-			counter[TRX_CPU_STATE_IDLE] = (zbx_uint64_t)ps_cpu.idle;
-			counter[TRX_CPU_STATE_IOWAIT] = (zbx_uint64_t)ps_cpu.wait;
+			counter[TRX_CPU_STATE_USER] = (trx_uint64_t)ps_cpu.user;
+			counter[TRX_CPU_STATE_SYSTEM] = (trx_uint64_t)ps_cpu.sys;
+			counter[TRX_CPU_STATE_IDLE] = (trx_uint64_t)ps_cpu.idle;
+			counter[TRX_CPU_STATE_IOWAIT] = (trx_uint64_t)ps_cpu.wait;
 		}
 
 		update_cpu_counters(&pcpus->cpu[idx], counter);
@@ -713,7 +713,7 @@ static TRX_SINGLE_CPU_STAT_DATA	*get_cpustat_by_num(TRX_CPUS_STAT_DATA *pcpus, i
 int	get_cpustat(AGENT_RESULT *result, int cpu_num, int state, int mode)
 {
 	int				i, time, idx_curr, idx_base;
-	zbx_uint64_t			counter, total = 0;
+	trx_uint64_t			counter, total = 0;
 	TRX_SINGLE_CPU_STAT_DATA	*cpu;
 
 	if (0 > state || state >= TRX_CPU_STATE_COUNT)
@@ -736,13 +736,13 @@ int	get_cpustat(AGENT_RESULT *result, int cpu_num, int state, int mode)
 
 	if (0 == CPU_COLLECTOR_STARTED(collector))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Collector is not started."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Collector is not started."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == (cpu = get_cpustat_by_num(&collector->cpus, cpu_num)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain CPU information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain CPU information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -760,7 +760,7 @@ int	get_cpustat(AGENT_RESULT *result, int cpu_num, int state, int mode)
 	if (SYSINFO_RET_FAIL == cpu->h_status[idx_curr])
 	{
 		UNLOCK_CPUSTATS;
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain CPU information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain CPU information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -823,7 +823,7 @@ static int	get_cpu_status(int pc_status)
  * Comments: The data returned is designed for item system.cpu.discovery      *
  *                                                                            *
  ******************************************************************************/
-int	get_cpus(zbx_vector_uint64_pair_t *vector)
+int	get_cpus(trx_vector_uint64_pair_t *vector)
 {
 	TRX_CPUS_STAT_DATA	*pcpus;
 	int			idx, ret = FAIL;
@@ -838,7 +838,7 @@ int	get_cpus(zbx_vector_uint64_pair_t *vector)
 
 	for (idx = 1; idx <= pcpus->count; idx++)
 	{
-		zbx_uint64_pair_t		pair;
+		trx_uint64_pair_t		pair;
 #ifndef _WINDOWS
 		TRX_SINGLE_CPU_STAT_DATA	*cpu;
 		int				index;
@@ -854,7 +854,7 @@ int	get_cpus(zbx_vector_uint64_pair_t *vector)
 		pair.first = idx - 1;
 		pair.second = get_cpu_perf_counter_status(pcpus->cpu_counter[idx]->status);
 #endif
-		zbx_vector_uint64_pair_append(vector, pair);
+		trx_vector_uint64_pair_append(vector, pair);
 	}
 
 	UNLOCK_CPUSTATS;

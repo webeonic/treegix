@@ -72,7 +72,7 @@ if (hasRequest('action')) {
 		));
 
 		if (count($slideshows) != count(getRequest('shows'))) {
-			uncheckTableRows(null, zbx_objectValues($slideshows, 'slideshowid'));
+			uncheckTableRows(null, trx_objectValues($slideshows, 'slideshowid'));
 		}
 	}
 }
@@ -224,7 +224,7 @@ if (hasRequest('form')) {
 		$db_slideshow['users'] = DBfetchArray(DBselect(
 			'SELECT s.userid,s.permission'.
 			' FROM slideshow_user s'.
-			' WHERE s.slideshowid='.zbx_dbstr(getRequest('slideshowid'))
+			' WHERE s.slideshowid='.trx_dbstr(getRequest('slideshowid'))
 		));
 
 		foreach ($db_slideshow['users'] as $user) {
@@ -234,7 +234,7 @@ if (hasRequest('form')) {
 		$db_slideshow['userGroups'] = DBfetchArray(DBselect(
 			'SELECT s.usrgrpid,s.permission'.
 			' FROM slideshow_usrgrp s'.
-			' WHERE s.slideshowid='.zbx_dbstr(getRequest('slideshowid'))
+			' WHERE s.slideshowid='.trx_dbstr(getRequest('slideshowid'))
 		));
 
 		foreach ($db_slideshow['userGroups'] as $user_group) {
@@ -269,7 +269,7 @@ if (hasRequest('form')) {
 		$data['slideshow']['slides'] = DBfetchArray(DBselect(
 				'SELECT s.slideid, s.screenid, s.delay'.
 				' FROM slides s'.
-				' WHERE s.slideshowid='.zbx_dbstr($db_slideshow['slideshowid']).
+				' WHERE s.slideshowid='.trx_dbstr($db_slideshow['slideshowid']).
 				' ORDER BY s.step'
 		));
 	}
@@ -368,7 +368,7 @@ else {
 		$pattern = str_replace("%", "!%", $pattern);
 		$pattern = str_replace("_", "!_", $pattern);
 
-		$sql_where = ' WHERE UPPER(s.name) LIKE '.zbx_dbstr('%'.mb_strtoupper($pattern).'%')." ESCAPE '!'";
+		$sql_where = ' WHERE UPPER(s.name) LIKE '.trx_dbstr('%'.mb_strtoupper($pattern).'%')." ESCAPE '!'";
 	}
 	else {
 		$sql_where = '';

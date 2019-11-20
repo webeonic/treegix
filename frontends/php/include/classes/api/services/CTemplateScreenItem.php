@@ -18,7 +18,7 @@ class CTemplateScreenItem extends CApiService {
 	public function __construct() {
 		parent::__construct();
 
-		$this->getOptions = zbx_array_merge($this->getOptions, [
+		$this->getOptions = trx_array_merge($this->getOptions, [
 			'screenitemids'	=> null,
 			'screenids'		=> null,
 			'hostids'		=> null,
@@ -43,7 +43,7 @@ class CTemplateScreenItem extends CApiService {
 	 * @return array
 	 */
 	public function get(array $options = []) {
-		$options = zbx_array_merge($this->getOptions, $options);
+		$options = trx_array_merge($this->getOptions, $options);
 
 		// build and execute query
 		$sql = $this->createSelectQuery($this->tableName(), $options);
@@ -70,7 +70,7 @@ class CTemplateScreenItem extends CApiService {
 		// fill result with real resourceid
 		if ($options['hostids'] && $result) {
 			if (empty($options['screenitemid'])) {
-				$options['screenitemid'] = zbx_objectValues($result, 'screenitemid');
+				$options['screenitemid'] = trx_objectValues($result, 'screenitemid');
 			}
 
 			$dbTemplateScreens = API::TemplateScreen()->get([
@@ -103,7 +103,7 @@ class CTemplateScreenItem extends CApiService {
 
 		// screen ids
 		if ($options['screenids'] !== null) {
-			zbx_value2array($options['screenids']);
+			trx_value2array($options['screenids']);
 			$sqlParts = $this->addQuerySelect($this->fieldId('screenid'), $sqlParts);
 			$sqlParts['where'][] = dbConditionInt($this->fieldId('screenid'), $options['screenids']);
 		}

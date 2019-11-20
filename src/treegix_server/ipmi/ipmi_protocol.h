@@ -26,20 +26,20 @@
 #define TRX_IPC_IPMI_SCRIPT_RESULT	301
 
 
-zbx_uint32_t	zbx_ipmi_serialize_request(unsigned char **data, zbx_uint64_t objectid, const char *addr,
+trx_uint32_t	trx_ipmi_serialize_request(unsigned char **data, trx_uint64_t objectid, const char *addr,
 		unsigned short port, signed char authtype, unsigned char privilege, const char *username,
 		const char *password, const char *sensor, int command);
 
-void	zbx_ipmi_deserialize_request(const unsigned char *data, zbx_uint64_t *objectid, char **addr,
+void	trx_ipmi_deserialize_request(const unsigned char *data, trx_uint64_t *objectid, char **addr,
 		unsigned short *port, signed char *authtype, unsigned char *privilege, char **username, char **password,
 		char **sensor, int *command);
 
-void	zbx_ipmi_deserialize_request_objectid(const unsigned char *data, zbx_uint64_t *objectid);
+void	trx_ipmi_deserialize_request_objectid(const unsigned char *data, trx_uint64_t *objectid);
 
-zbx_uint32_t	zbx_ipmi_serialize_result(unsigned char **data, const zbx_timespec_t *ts, int errcode,
+trx_uint32_t	trx_ipmi_serialize_result(unsigned char **data, const trx_timespec_t *ts, int errcode,
 		const char *value);
 
-void	zbx_ipmi_deserialize_result(const unsigned char *data, zbx_timespec_t *ts, int *errcode, char **value);
+void	trx_ipmi_deserialize_result(const unsigned char *data, trx_timespec_t *ts, int *errcode, char **value);
 
 #endif
 

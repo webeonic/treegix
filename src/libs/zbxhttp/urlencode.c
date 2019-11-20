@@ -2,11 +2,11 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxhttp.h"
+#include "trxhttp.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_http_url_encode                                              *
+ * Function: trx_http_url_encode                                              *
  *                                                                            *
  * Purpose: replaces unsafe characters with a '%' followed by two hexadecimal *
  *          digits (the only allowed exception is a space character that can  *
@@ -16,12 +16,12 @@
  *              result  - [OUT] encoded string                                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_http_url_encode(const char *source, char **result)
+void	trx_http_url_encode(const char *source, char **result)
 {
 	char		*target, *buffer;
 	const char	*hex = "0123456789ABCDEF";
 
-	buffer = (char *)zbx_malloc(NULL, strlen(source) * 3 + 1);
+	buffer = (char *)trx_malloc(NULL, strlen(source) * 3 + 1);
 	target = buffer;
 
 	while ('\0' != *source)
@@ -40,13 +40,13 @@ void	zbx_http_url_encode(const char *source, char **result)
 	}
 
 	*target = '\0';
-	zbx_free(*result);
+	trx_free(*result);
 	*result = buffer;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_http_url_decode                                              *
+ * Function: trx_http_url_decode                                              *
  *                                                                            *
  * Purpose: replaces URL escape sequences ('+' or '%' followed by two         *
  *          hexadecimal digits) with matching characters.                     *
@@ -58,10 +58,10 @@ void	zbx_http_url_encode(const char *source, char **result)
  *               FAIL    - source string contains malformed percent-encoding  *
  *                                                                            *
  ******************************************************************************/
-int	zbx_http_url_decode(const char *source, char **result)
+int	trx_http_url_decode(const char *source, char **result)
 {
 	const char	*url = source;
-	char		*target, *buffer = (char *)zbx_malloc(NULL, strlen(source) + 1);
+	char		*target, *buffer = (char *)trx_malloc(NULL, strlen(source) + 1);
 
 	target = buffer;
 
@@ -74,7 +74,7 @@ int	zbx_http_url_decode(const char *source, char **result)
 			{
 				treegix_log(LOG_LEVEL_WARNING, "cannot perform URL decode of '%s' part of string '%s'",
 						source, url);
-				zbx_free(buffer);
+				trx_free(buffer);
 				break;
 			}
 			else
@@ -92,7 +92,7 @@ int	zbx_http_url_decode(const char *source, char **result)
 	if (NULL != buffer)
 	{
 		*target = '\0';
-		zbx_free(*result);
+		trx_free(*result);
 		*result = buffer;
 
 		return SUCCEED;

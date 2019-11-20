@@ -4,18 +4,18 @@
 #include "db.h"
 #include "log.h"
 #include "../events.h"
-#include "zbxalgo.h"
-#include "zbxserver.h"
-#include "zbxregexp.h"
+#include "trxalgo.h"
+#include "trxserver.h"
+#include "trxregexp.h"
 #include "proxy.h"
 
 /* lld rule filter condition (item_condition table record) */
 typedef struct
 {
-	zbx_uint64_t		id;
+	trx_uint64_t		id;
 	char			*macro;
 	char			*regexp;
-	zbx_vector_ptr_t	regexps;
+	trx_vector_ptr_t	regexps;
 	unsigned char		op;
 }
 lld_condition_t;
@@ -23,7 +23,7 @@ lld_condition_t;
 /* lld rule filter */
 typedef struct
 {
-	zbx_vector_ptr_t	conditions;
+	trx_vector_ptr_t	conditions;
 	char			*expression;
 	int			evaltype;
 }
@@ -40,12 +40,12 @@ lld_filter_t;
  ******************************************************************************/
 static void	lld_condition_free(lld_condition_t *condition)
 {
-	zbx_regexp_clean_expressions(&condition->regexps);
-	zbx_vector_ptr_destroy(&condition->regexps);
+	trx_regexp_clean_expressions(&condition->regexps);
+	trx_vector_ptr_destroy(&condition->regexps);
 
-	zbx_free(condition->macro);
-	zbx_free(condition->regexp);
-	zbx_free(condition);
+	trx_free(condition->macro);
+	trx_free(condition->regexp);
+	trx_free(condition);
 }
 
 /******************************************************************************
@@ -57,10 +57,10 @@ static void	lld_condition_free(lld_condition_t *condition)
  * Parameters: conditions - [IN] the filter conditions                        *
  *                                                                            *
  ******************************************************************************/
-static void	lld_conditions_free(zbx_vector_ptr_t *conditions)
+static void	lld_conditions_free(trx_vector_ptr_t *conditions)
 {
-	zbx_vector_ptr_clear_ext(conditions, (zbx_clean_func_t)lld_condition_free);
-	zbx_vector_ptr_destroy(conditions);
+	trx_vector_ptr_clear_ext(conditions, (trx_clean_func_t)lld_condition_free);
+	trx_vector_ptr_destroy(conditions);
 }
 
 /******************************************************************************
@@ -92,7 +92,7 @@ static int	lld_condition_compare_by_macro(const void *item1, const void *item2)
  ******************************************************************************/
 static void	lld_filter_init(lld_filter_t *filter)
 {
-	zbx_vector_ptr_create(&filter->conditions);
+	trx_vector_ptr_create(&filter->conditions);
 	filter->expression = NULL;
 	filter->evaltype = CONDITION_EVAL_TYPE_AND_OR;
 }
@@ -108,7 +108,7 @@ static void	lld_filter_init(lld_filter_t *filter)
  ******************************************************************************/
 static void	lld_filter_clean(lld_filter_t *filter)
 {
-	zbx_free(filter->expression);
+	trx_free(filter->expression);
 	lld_conditions_free(&filter->conditions);
 }
 
@@ -123,7 +123,7 @@ static void	lld_filter_clean(lld_filter_t *filter)
  *             error      - [OUT] the error description                       *
  *                                                                            *
  ******************************************************************************/
-static int	lld_filter_load(lld_filter_t *filter, zbx_uint64_t lld_ruleid, char **error)
+static int	lld_filter_load(lld_filter_t *filter, trx_uint64_t lld_ruleid, char **error)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
@@ -135,7 +135,7 @@ static int	lld_filter_load(lld_filter_t *filter, zbx_uint64_t lld_ruleid, char *
 
 	if (SUCCEED != errcode)
 	{
-		*error = zbx_dsprintf(*error, "Invalid discovery rule ID [" TRX_FS_UI64 "].",
+		*error = trx_dsprintf(*error, "Invalid discovery rule ID [" TRX_FS_UI64 "].",
 				lld_ruleid);
 		ret = FAIL;
 		goto out;
@@ -149,15 +149,15 @@ static int	lld_filter_load(lld_filter_t *filter, zbx_uint64_t lld_ruleid, char *
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		condition = (lld_condition_t *)zbx_malloc(NULL, sizeof(lld_condition_t));
+		condition = (lld_condition_t *)trx_malloc(NULL, sizeof(lld_condition_t));
 		TRX_STR2UINT64(condition->id, row[0]);
-		condition->macro = zbx_strdup(NULL, row[1]);
-		condition->regexp = zbx_strdup(NULL, row[2]);
+		condition->macro = trx_strdup(NULL, row[1]);
+		condition->regexp = trx_strdup(NULL, row[2]);
 		condition->op = (unsigned char)atoi(row[3]);
 
-		zbx_vector_ptr_create(&condition->regexps);
+		trx_vector_ptr_create(&condition->regexps);
 
-		zbx_vector_ptr_append(&filter->conditions, condition);
+		trx_vector_ptr_append(&filter->conditions, condition);
 
 		if ('@' == *condition->regexp)
 		{
@@ -165,7 +165,7 @@ static int	lld_filter_load(lld_filter_t *filter, zbx_uint64_t lld_ruleid, char *
 
 			if (0 == condition->regexps.values_num)
 			{
-				*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.",
+				*error = trx_dsprintf(*error, "Global regular expression \"%s\" does not exist.",
 						condition->regexp + 1);
 				ret = FAIL;
 				break;
@@ -182,7 +182,7 @@ static int	lld_filter_load(lld_filter_t *filter, zbx_uint64_t lld_ruleid, char *
 	if (SUCCEED != ret)
 		lld_conditions_free(&filter->conditions);
 	else if (CONDITION_EVAL_TYPE_AND_OR == filter->evaltype)
-		zbx_vector_ptr_sort(&filter->conditions, lld_condition_compare_by_macro);
+		trx_vector_ptr_sort(&filter->conditions, lld_condition_compare_by_macro);
 out:
 	DCconfig_clean_items(&item, &errcode, 1);
 
@@ -203,13 +203,13 @@ out:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	filter_condition_match(const struct zbx_json_parse *jp_row, const zbx_vector_ptr_t *lld_macro_paths,
+static int	filter_condition_match(const struct trx_json_parse *jp_row, const trx_vector_ptr_t *lld_macro_paths,
 		const lld_condition_t *condition)
 {
 	char	*value = NULL;
 	int	ret;
 
-	if (SUCCEED == (ret = zbx_lld_macro_value_by_name(jp_row, lld_macro_paths, condition->macro, &value)))
+	if (SUCCEED == (ret = trx_lld_macro_value_by_name(jp_row, lld_macro_paths, condition->macro, &value)))
 	{
 		switch (regexp_match_ex(&condition->regexps, value, condition->regexp, TRX_CASE_SENSITIVE))
 		{
@@ -224,7 +224,7 @@ static int	filter_condition_match(const struct zbx_json_parse *jp_row, const zbx
 		}
 	}
 
-	zbx_free(value);
+	trx_free(value);
 
 	return ret;
 }
@@ -243,8 +243,8 @@ static int	filter_condition_match(const struct zbx_json_parse *jp_row, const zbx
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	filter_evaluate_and_or(const lld_filter_t *filter, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths)
+static int	filter_evaluate_and_or(const lld_filter_t *filter, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths)
 {
 	int	i, ret = SUCCEED, rc = SUCCEED;
 	char	*lastmacro = NULL;
@@ -274,7 +274,7 @@ static int	filter_evaluate_and_or(const lld_filter_t *filter, const struct zbx_j
 		lastmacro = condition->macro;
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -293,8 +293,8 @@ static int	filter_evaluate_and_or(const lld_filter_t *filter, const struct zbx_j
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	filter_evaluate_and(const lld_filter_t *filter, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths)
+static int	filter_evaluate_and(const lld_filter_t *filter, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths)
 {
 	int	i, ret = SUCCEED;
 
@@ -310,7 +310,7 @@ static int	filter_evaluate_and(const lld_filter_t *filter, const struct zbx_json
 		}
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -329,8 +329,8 @@ static int	filter_evaluate_and(const lld_filter_t *filter, const struct zbx_json
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	filter_evaluate_or(const lld_filter_t *filter, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths)
+static int	filter_evaluate_or(const lld_filter_t *filter, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths)
 {
 	int	i, ret = SUCCEED;
 
@@ -346,7 +346,7 @@ static int	filter_evaluate_or(const lld_filter_t *filter, const struct zbx_json_
 		}
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -370,8 +370,8 @@ static int	filter_evaluate_or(const lld_filter_t *filter, const struct zbx_json_
  *           2) call evaluate() to calculate the final result                 *
  *                                                                            *
  ******************************************************************************/
-static int	filter_evaluate_expression(const lld_filter_t *filter, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths)
+static int	filter_evaluate_expression(const lld_filter_t *filter, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths)
 {
 	int	i, ret = FAIL, id_len;
 	char	*expression, id[TRX_MAX_UINT64_LEN + 2], *p, error[256];
@@ -379,7 +379,7 @@ static int	filter_evaluate_expression(const lld_filter_t *filter, const struct z
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() expression:%s", __func__, filter->expression);
 
-	expression = zbx_strdup(NULL, filter->expression);
+	expression = trx_strdup(NULL, filter->expression);
 
 	for (i = 0; i < filter->conditions.values_num; i++)
 	{
@@ -387,7 +387,7 @@ static int	filter_evaluate_expression(const lld_filter_t *filter, const struct z
 
 		ret = filter_condition_match(jp_row, lld_macro_paths, condition);
 
-		zbx_snprintf(id, sizeof(id), "{" TRX_FS_UI64 "}", condition->id);
+		trx_snprintf(id, sizeof(id), "{" TRX_FS_UI64 "}", condition->id);
 
 		id_len = strlen(id);
 		p = expression;
@@ -401,11 +401,11 @@ static int	filter_evaluate_expression(const lld_filter_t *filter, const struct z
 	}
 
 	if (SUCCEED == evaluate(&result, expression, error, sizeof(error), NULL))
-		ret = (SUCCEED != zbx_double_compare(result, 0) ? SUCCEED : FAIL);
+		ret = (SUCCEED != trx_double_compare(result, 0) ? SUCCEED : FAIL);
 
-	zbx_free(expression);
+	trx_free(expression);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -424,8 +424,8 @@ static int	filter_evaluate_expression(const lld_filter_t *filter, const struct z
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	filter_evaluate(const lld_filter_t *filter, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths)
+static int	filter_evaluate(const lld_filter_t *filter, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths)
 {
 	switch (filter->evaltype)
 	{
@@ -456,11 +456,11 @@ static int	filter_evaluate(const lld_filter_t *filter, const struct zbx_json_par
  *             info            - [OUT] the warning description                *
  *                                                                            *
  ******************************************************************************/
-static void	lld_check_received_data_for_filter(lld_filter_t *filter, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths, char **info)
+static void	lld_check_received_data_for_filter(lld_filter_t *filter, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths, char **info)
 {
 	int			i, index;
-	zbx_lld_macro_path_t	lld_macro_path_local, *lld_macro_path;
+	trx_lld_macro_path_t	lld_macro_path_local, *lld_macro_path;
 	char			*output = NULL;
 
 	for (i = 0; i < filter->conditions.values_num; i++)
@@ -469,44 +469,44 @@ static void	lld_check_received_data_for_filter(lld_filter_t *filter, const struc
 
 		lld_macro_path_local.lld_macro = condition->macro;
 
-		if (FAIL != (index = zbx_vector_ptr_bsearch(lld_macro_paths, &lld_macro_path_local,
-				zbx_lld_macro_paths_compare)))
+		if (FAIL != (index = trx_vector_ptr_bsearch(lld_macro_paths, &lld_macro_path_local,
+				trx_lld_macro_paths_compare)))
 		{
-			lld_macro_path = (zbx_lld_macro_path_t *)lld_macro_paths->values[index];
+			lld_macro_path = (trx_lld_macro_path_t *)lld_macro_paths->values[index];
 
-			if (FAIL == zbx_jsonpath_query(jp_row, lld_macro_path->path, &output) || NULL == output)
+			if (FAIL == trx_jsonpath_query(jp_row, lld_macro_path->path, &output) || NULL == output)
 			{
-				*info = zbx_strdcatf(*info,
+				*info = trx_strdcatf(*info,
 						"Cannot accurately apply filter: no value received for macro \"%s\""
 						" json path '%s'.\n", lld_macro_path->lld_macro, lld_macro_path->path);
 			}
-			zbx_free(output);
+			trx_free(output);
 
 			continue;
 		}
 
-		if (NULL == zbx_json_pair_by_name(jp_row, condition->macro))
+		if (NULL == trx_json_pair_by_name(jp_row, condition->macro))
 		{
-			*info = zbx_strdcatf(*info,
+			*info = trx_strdcatf(*info,
 					"Cannot accurately apply filter: no value received for macro \"%s\".\n",
 					condition->macro);
 		}
 	}
 }
 
-static int	lld_rows_get(const char *value, lld_filter_t *filter, zbx_vector_ptr_t *lld_rows,
-		const zbx_vector_ptr_t *lld_macro_paths, char **info, char **error)
+static int	lld_rows_get(const char *value, lld_filter_t *filter, trx_vector_ptr_t *lld_rows,
+		const trx_vector_ptr_t *lld_macro_paths, char **info, char **error)
 {
-	struct zbx_json_parse	jp, jp_array, jp_row;
+	struct trx_json_parse	jp, jp_array, jp_row;
 	const char		*p;
-	zbx_lld_row_t		*lld_row;
+	trx_lld_row_t		*lld_row;
 	int			ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != zbx_json_open(value, &jp))
+	if (SUCCEED != trx_json_open(value, &jp))
 	{
-		*error = zbx_dsprintf(*error, "Invalid discovery rule value: %s", zbx_json_strerror());
+		*error = trx_dsprintf(*error, "Invalid discovery rule value: %s", trx_json_strerror());
 		goto out;
 	}
 
@@ -514,17 +514,17 @@ static int	lld_rows_get(const char *value, lld_filter_t *filter, zbx_vector_ptr_
 	{
 		jp_array = jp;
 	}
-	else if (SUCCEED != zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_DATA, &jp_array))	/* deprecated */
+	else if (SUCCEED != trx_json_brackets_by_name(&jp, TRX_PROTO_TAG_DATA, &jp_array))	/* deprecated */
 	{
-		*error = zbx_dsprintf(*error, "Cannot find the \"%s\" array in the received JSON object.",
+		*error = trx_dsprintf(*error, "Cannot find the \"%s\" array in the received JSON object.",
 				TRX_PROTO_TAG_DATA);
 		goto out;
 	}
 
 	p = NULL;
-	while (NULL != (p = zbx_json_next(&jp_array, p)))
+	while (NULL != (p = trx_json_next(&jp_array, p)))
 	{
-		if (FAIL == zbx_json_brackets_open(p, &jp_row))
+		if (FAIL == trx_json_brackets_open(p, &jp_row))
 			continue;
 
 		lld_check_received_data_for_filter(filter, &jp_row, lld_macro_paths, info);
@@ -532,30 +532,30 @@ static int	lld_rows_get(const char *value, lld_filter_t *filter, zbx_vector_ptr_
 		if (SUCCEED != filter_evaluate(filter, &jp_row, lld_macro_paths))
 			continue;
 
-		lld_row = (zbx_lld_row_t *)zbx_malloc(NULL, sizeof(zbx_lld_row_t));
+		lld_row = (trx_lld_row_t *)trx_malloc(NULL, sizeof(trx_lld_row_t));
 		lld_row->jp_row = jp_row;
-		zbx_vector_ptr_create(&lld_row->item_links);
+		trx_vector_ptr_create(&lld_row->item_links);
 
-		zbx_vector_ptr_append(lld_rows, lld_row);
+		trx_vector_ptr_append(lld_rows, lld_row);
 	}
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static void	lld_item_link_free(zbx_lld_item_link_t *item_link)
+static void	lld_item_link_free(trx_lld_item_link_t *item_link)
 {
-	zbx_free(item_link);
+	trx_free(item_link);
 }
 
-static void	lld_row_free(zbx_lld_row_t *lld_row)
+static void	lld_row_free(trx_lld_row_t *lld_row)
 {
-	zbx_vector_ptr_clear_ext(&lld_row->item_links, (zbx_clean_func_t)lld_item_link_free);
-	zbx_vector_ptr_destroy(&lld_row->item_links);
-	zbx_free(lld_row);
+	trx_vector_ptr_clear_ext(&lld_row->item_links, (trx_clean_func_t)lld_item_link_free);
+	trx_vector_ptr_destroy(&lld_row->item_links);
+	trx_free(lld_row);
 }
 
 /******************************************************************************
@@ -571,21 +571,21 @@ static void	lld_row_free(zbx_lld_row_t *lld_row)
  *                               without additional information.              *
  *                                                                            *
  ******************************************************************************/
-int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char **error)
+int	lld_process_discovery_rule(trx_uint64_t lld_ruleid, const char *value, char **error)
 {
 	DB_RESULT		result;
 	DB_ROW			row;
-	zbx_uint64_t		hostid;
+	trx_uint64_t		hostid;
 	char			*discovery_key = NULL, *info = NULL;
 	int			lifetime, ret = SUCCEED;
-	zbx_vector_ptr_t	lld_rows, lld_macro_paths;
+	trx_vector_ptr_t	lld_rows, lld_macro_paths;
 	lld_filter_t		filter;
 	time_t			now;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" TRX_FS_UI64, __func__, lld_ruleid);
 
-	zbx_vector_ptr_create(&lld_rows);
-	zbx_vector_ptr_create(&lld_macro_paths);
+	trx_vector_ptr_create(&lld_rows);
+	trx_vector_ptr_create(&lld_macro_paths);
 
 	lld_filter_init(&filter);
 
@@ -600,10 +600,10 @@ int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char 
 		char	*lifetime_str;
 
 		TRX_STR2UINT64(hostid, row[0]);
-		discovery_key = zbx_strdup(discovery_key, row[1]);
+		discovery_key = trx_strdup(discovery_key, row[1]);
 		filter.evaltype = atoi(row[2]);
-		filter.expression = zbx_strdup(NULL, row[3]);
-		lifetime_str = zbx_strdup(NULL, row[4]);
+		filter.expression = trx_strdup(NULL, row[3]);
+		lifetime_str = trx_strdup(NULL, row[4]);
 		substitute_simple_macros(NULL, NULL, NULL, NULL, &hostid, NULL, NULL, NULL, NULL,
 				&lifetime_str, MACRO_TYPE_COMMON, NULL, 0);
 
@@ -611,11 +611,11 @@ int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char 
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot process lost resources for the discovery rule \"%s:%s\":"
 					" \"%s\" is not a valid value",
-					zbx_host_string(hostid), discovery_key, lifetime_str);
+					trx_host_string(hostid), discovery_key, lifetime_str);
 			lifetime = 25 * SEC_PER_YEAR;	/* max value for the field */
 		}
 
-		zbx_free(lifetime_str);
+		trx_free(lifetime_str);
 	}
 	DBfree_result(result);
 
@@ -631,7 +631,7 @@ int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char 
 		goto out;
 	}
 
-	if (SUCCEED != zbx_lld_macro_paths_get(lld_ruleid, &lld_macro_paths, error))
+	if (SUCCEED != trx_lld_macro_paths_get(lld_ruleid, &lld_macro_paths, error))
 	{
 		ret = FAIL;
 		goto out;
@@ -643,7 +643,7 @@ int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char 
 		goto out;
 	}
 
-	*error = zbx_strdup(*error, "");
+	*error = trx_strdup(*error, "");
 
 	now = time(NULL);
 
@@ -674,17 +674,17 @@ int	lld_process_discovery_rule(zbx_uint64_t lld_ruleid, const char *value, char 
 
 	/* add informative warning to the error message about lack of data for macros used in filter */
 	if (NULL != info)
-		*error = zbx_strdcat(*error, info);
+		*error = trx_strdcat(*error, info);
 out:
-	zbx_free(info);
-	zbx_free(discovery_key);
+	trx_free(info);
+	trx_free(discovery_key);
 
 	lld_filter_clean(&filter);
 
-	zbx_vector_ptr_clear_ext(&lld_rows, (zbx_clean_func_t)lld_row_free);
-	zbx_vector_ptr_destroy(&lld_rows);
-	zbx_vector_ptr_clear_ext(&lld_macro_paths, (zbx_clean_func_t)zbx_lld_macro_path_free);
-	zbx_vector_ptr_destroy(&lld_macro_paths);
+	trx_vector_ptr_clear_ext(&lld_rows, (trx_clean_func_t)lld_row_free);
+	trx_vector_ptr_destroy(&lld_rows);
+	trx_vector_ptr_clear_ext(&lld_macro_paths, (trx_clean_func_t)trx_lld_macro_path_free);
+	trx_vector_ptr_destroy(&lld_macro_paths);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 

@@ -74,7 +74,7 @@ class CAlert extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		$this->validateGet($options);
 
@@ -97,7 +97,7 @@ class CAlert extends CApiService {
 						' AND i.hostid=hgg.hostid'.
 					' GROUP BY f.triggerid'.
 					' HAVING MIN(r.permission)>'.PERM_DENY.
-					' AND MAX(r.permission)>='.zbx_dbstr($permission).
+					' AND MAX(r.permission)>='.trx_dbstr($permission).
 				')';
 			}
 			// items and LLD rules
@@ -116,7 +116,7 @@ class CAlert extends CApiService {
 						' AND i.hostid=hgg.hostid'.
 					' GROUP BY hgg.hostid'.
 					' HAVING MIN(r.permission)>'.PERM_DENY.
-					' AND MAX(r.permission)>='.zbx_dbstr($permission).
+					' AND MAX(r.permission)>='.trx_dbstr($permission).
 				')';
 			}
 		}
@@ -132,7 +132,7 @@ class CAlert extends CApiService {
 				'SELECT NULL'.
 				' FROM actions aa'.
 				' WHERE a.actionid=aa.actionid'.
-					' AND aa.eventsource='.zbx_dbstr($options['eventsource']).
+					' AND aa.eventsource='.trx_dbstr($options['eventsource']).
 			')';
 		}
 		else {
@@ -140,8 +140,8 @@ class CAlert extends CApiService {
 				'SELECT NULL'.
 				' FROM events e'.
 				' WHERE a.eventid=e.eventid'.
-					' AND e.source='.zbx_dbstr($options['eventsource']).
-					' AND e.object='.zbx_dbstr($options['eventobject']).
+					' AND e.source='.trx_dbstr($options['eventsource']).
+					' AND e.object='.trx_dbstr($options['eventobject']).
 			')';
 		}
 
@@ -158,7 +158,7 @@ class CAlert extends CApiService {
 
 		// groupids
 		if (!is_null($options['groupids'])) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			// triggers
 			if ($options['eventobject'] == EVENT_OBJECT_TRIGGER) {
@@ -189,7 +189,7 @@ class CAlert extends CApiService {
 
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			// triggers
 			if ($options['eventobject'] == EVENT_OBJECT_TRIGGER) {
@@ -218,7 +218,7 @@ class CAlert extends CApiService {
 
 		// alertids
 		if (!is_null($options['alertids'])) {
-			zbx_value2array($options['alertids']);
+			trx_value2array($options['alertids']);
 
 			$sqlParts['where'][] = dbConditionInt('a.alertid', $options['alertids']);
 		}
@@ -226,7 +226,7 @@ class CAlert extends CApiService {
 		// objectids
 		if ($options['objectids'] !== null
 				&& in_array($options['eventobject'], [EVENT_OBJECT_TRIGGER, EVENT_OBJECT_ITEM, EVENT_OBJECT_LLDRULE])) {
-			zbx_value2array($options['objectids']);
+			trx_value2array($options['objectids']);
 
 			// Oracle does not support using distinct with nclob fields, so we must use exists instead of joins
 			$sqlParts['where'][] = 'EXISTS ('.
@@ -239,21 +239,21 @@ class CAlert extends CApiService {
 
 		// eventids
 		if (!is_null($options['eventids'])) {
-			zbx_value2array($options['eventids']);
+			trx_value2array($options['eventids']);
 
 			$sqlParts['where'][] = dbConditionInt('a.eventid', $options['eventids']);
 		}
 
 		// actionids
 		if (!is_null($options['actionids'])) {
-			zbx_value2array($options['actionids']);
+			trx_value2array($options['actionids']);
 
 			$sqlParts['where'][] = dbConditionInt('a.actionid', $options['actionids']);
 		}
 
 		// userids
 		if (!is_null($options['userids'])) {
-			zbx_value2array($options['userids']);
+			trx_value2array($options['userids']);
 			$field = 'a.userid';
 
 			if (!is_null($options['time_from']) || !is_null($options['time_till'])) {
@@ -264,7 +264,7 @@ class CAlert extends CApiService {
 
 		// mediatypeids
 		if (!is_null($options['mediatypeids'])) {
-			zbx_value2array($options['mediatypeids']);
+			trx_value2array($options['mediatypeids']);
 
 			$sqlParts['where'][] = dbConditionId('a.mediatypeid', $options['mediatypeids']);
 		}
@@ -277,7 +277,7 @@ class CAlert extends CApiService {
 		// search
 		if (is_array($options['search'])) {
 			unset($options['search']['parameters']);
-			zbx_db_search('alerts a', $options, $sqlParts);
+			trx_db_search('alerts a', $options, $sqlParts);
 		}
 
 		if (!$options['countOutput'] && $this->outputIsRequested('parameters', $options['output'])) {
@@ -290,16 +290,16 @@ class CAlert extends CApiService {
 
 		// time_from
 		if (!is_null($options['time_from'])) {
-			$sqlParts['where'][] = 'a.clock>'.zbx_dbstr($options['time_from']);
+			$sqlParts['where'][] = 'a.clock>'.trx_dbstr($options['time_from']);
 		}
 
 		// time_till
 		if (!is_null($options['time_till'])) {
-			$sqlParts['where'][] = 'a.clock<'.zbx_dbstr($options['time_till']);
+			$sqlParts['where'][] = 'a.clock<'.trx_dbstr($options['time_till']);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -326,7 +326,7 @@ class CAlert extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -392,8 +392,8 @@ class CAlert extends CApiService {
 						' AND a.eventid=e.eventid'.
 						' AND e.objectid=f.triggerid'.
 						' AND f.itemid=i.itemid'.
-						' AND e.object='.zbx_dbstr($options['eventobject']).
-						' AND e.source='.zbx_dbstr($options['eventsource'])
+						' AND e.object='.trx_dbstr($options['eventobject']).
+						' AND e.source='.trx_dbstr($options['eventsource'])
 				);
 			}
 			// item and LLD rule events
@@ -404,8 +404,8 @@ class CAlert extends CApiService {
 						' WHERE '.dbConditionInt('a.alertid', $alertIds).
 						' AND a.eventid=e.eventid'.
 						' AND e.objectid=i.itemid'.
-						' AND e.object='.zbx_dbstr($options['eventobject']).
-						' AND e.source='.zbx_dbstr($options['eventsource'])
+						' AND e.object='.trx_dbstr($options['eventobject']).
+						' AND e.source='.trx_dbstr($options['eventsource'])
 				);
 			}
 

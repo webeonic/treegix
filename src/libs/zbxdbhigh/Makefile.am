@@ -5,9 +5,9 @@ dbschema.c: $(top_srcdir)/create/src/schema.tmpl
 	$(top_srcdir)/create/bin/gen_schema.pl c > dbschema.c
 endif
 
-noinst_LIBRARIES = libzbxdbhigh.a
+noinst_LIBRARIES = libtrxdbhigh.a
 
-libzbxdbhigh_a_SOURCES = \
+libtrxdbhigh_a_SOURCES = \
 	host.c \
 	db.c \
 	dbschema.c \
@@ -23,4 +23,4 @@ libzbxdbhigh_a_SOURCES = \
 	item.c \
 	lld_macro.c
 
-libzbxdbhigh_a_CFLAGS = -I@top_srcdir@/src/treegix_server/
+libtrxdbhigh_a_CFLAGS = -I@top_srcdir@/src/treegix_server/

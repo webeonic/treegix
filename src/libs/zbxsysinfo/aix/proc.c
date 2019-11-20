@@ -2,14 +2,14 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 
-static int	check_procstate(struct procentry64 *procentry, int zbx_proc_stat)
+static int	check_procstate(struct procentry64 *procentry, int trx_proc_stat)
 {
-	if (TRX_PROC_STAT_ALL == zbx_proc_stat)
+	if (TRX_PROC_STAT_ALL == trx_proc_stat)
 		return SUCCEED;
 
-	switch (zbx_proc_stat)
+	switch (trx_proc_stat)
 	{
 		case TRX_PROC_STAT_RUN:
 			return SACTIVE == procentry->pi_state && 0 != procentry->pi_cpu ? SUCCEED : FAIL;
@@ -44,7 +44,7 @@ static int	check_procargs(struct procentry64 *procentry, const char *proccomm)
 	if (i == sizeof(procargs) - 1)
 		procargs[i] = '\0';
 
-	return NULL != zbx_regexp_match(procargs, proccomm, NULL) ? SUCCEED : FAIL;
+	return NULL != trx_regexp_match(procargs, proccomm, NULL) ? SUCCEED : FAIL;
 }
 
 int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
@@ -73,12 +73,12 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	struct procentry64	procentry;
 	pid_t			pid = 0;
 	int			do_task, mem_type_code, proccount = 0, invalid_user = 0;
-	zbx_uint64_t		mem_size = 0, byte_value = 0;
+	trx_uint64_t		mem_size = 0, byte_value = 0;
 	double			pct_size = 0.0, pct_value = 0.0;
 
 	if (5 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -105,7 +105,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		do_task = TRX_DO_MIN;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -150,7 +150,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -172,12 +172,12 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			case TRX_VSIZE:
 				/* historically default proc.mem[] on AIX */
-				byte_value = (zbx_uint64_t)procentry.pi_size << 12;	/* number of pages to bytes */
+				byte_value = (trx_uint64_t)procentry.pi_size << 12;	/* number of pages to bytes */
 				break;
 			case TRX_RSS:
 				/* try to be compatible with "ps -o rssize" */
-				byte_value = ((zbx_uint64_t)procentry.pi_drss << TRX_L2PSIZE(procentry.pi_data_l2psize)) +
-						((zbx_uint64_t)procentry.pi_trss << TRX_L2PSIZE(procentry.pi_text_l2psize));
+				byte_value = ((trx_uint64_t)procentry.pi_drss << TRX_L2PSIZE(procentry.pi_data_l2psize)) +
+						((trx_uint64_t)procentry.pi_trss << TRX_L2PSIZE(procentry.pi_text_l2psize));
 				break;
 			case TRX_PMEM:
 				/* try to be compatible with "ps -o pmem" */
@@ -185,7 +185,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 				break;
 			case TRX_SIZE:
 				/* try to be compatible with "ps gvw" SIZE column */
-				byte_value = (zbx_uint64_t)procentry.pi_dvm << TRX_L2PSIZE(procentry.pi_data_l2psize);
+				byte_value = (trx_uint64_t)procentry.pi_dvm << TRX_L2PSIZE(procentry.pi_data_l2psize);
 				break;
 			case TRX_DSIZE:
 				byte_value = procentry.pi_dsize;
@@ -198,10 +198,10 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 				byte_value = procentry.pi_sdsize;
 				break;
 			case TRX_DRSS:
-				byte_value = (zbx_uint64_t)procentry.pi_drss << TRX_L2PSIZE(procentry.pi_data_l2psize);
+				byte_value = (trx_uint64_t)procentry.pi_drss << TRX_L2PSIZE(procentry.pi_data_l2psize);
 				break;
 			case TRX_TRSS:
-				byte_value = (zbx_uint64_t)procentry.pi_trss << TRX_L2PSIZE(procentry.pi_text_l2psize);
+				byte_value = (trx_uint64_t)procentry.pi_trss << TRX_L2PSIZE(procentry.pi_text_l2psize);
 				break;
 		}
 
@@ -271,11 +271,11 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	struct passwd		*usrinfo;
 	struct procentry64	procentry;
 	pid_t			pid = 0;
-	int			proccount = 0, invalid_user = 0, zbx_proc_stat;
+	int			proccount = 0, invalid_user = 0, trx_proc_stat;
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -293,16 +293,16 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = TRX_PROC_STAT_ALL;
+		trx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = TRX_PROC_STAT_RUN;
+		trx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
+		trx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
+		trx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -319,7 +319,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL != usrinfo && usrinfo->pw_uid != procentry.pi_uid)
 			continue;
 
-		if (SUCCEED != check_procstate(&procentry, zbx_proc_stat))
+		if (SUCCEED != check_procstate(&procentry, trx_proc_stat))
 			continue;
 
 		if (NULL != proccomm && '\0' != *proccomm && SUCCEED != check_procargs(&procentry, proccomm))

@@ -74,7 +74,7 @@ class CApplicationManager {
 			$dbApplicationTemplates = DBfetchArray(DBselect(
 				'SELECT * '.
 				' FROM application_template at'.
-				' WHERE '.dbConditionInt('at.applicationid', zbx_objectValues($applications, 'applicationid'))
+				' WHERE '.dbConditionInt('at.applicationid', trx_objectValues($applications, 'applicationid'))
 			));
 			DB::replace('application_template', $dbApplicationTemplates, $applicationTemplates);
 		}
@@ -91,13 +91,13 @@ class CApplicationManager {
 	 * @return bool
 	 */
 	public function link($templateId, $hostIds) {
-		$hostIds = zbx_toArray($hostIds);
+		$hostIds = trx_toArray($hostIds);
 
 		// fetch template applications
 		$applications = DBfetchArray(DBselect(
 			'SELECT a.applicationid,a.name,a.hostid'.
 			' FROM applications a'.
-			' WHERE a.hostid='.zbx_dbstr($templateId)
+			' WHERE a.hostid='.trx_dbstr($templateId)
 		));
 
 		$this->inherit($applications, $hostIds);
@@ -131,7 +131,7 @@ class CApplicationManager {
 		$preparedApps = $this->prepareInheritedApps($applications, $hostTemplateMap, $hostApps);
 		$inheritedApps = $this->save($preparedApps);
 
-		$applications = zbx_toHash($applications, 'applicationid');
+		$applications = trx_toHash($applications, 'applicationid');
 
 		// update application linkage
 		$oldApplicationTemplateIds = [];
@@ -148,7 +148,7 @@ class CApplicationManager {
 
 					// if a different child existed, find the template-application link and remove it later
 					$oldChildApp = $oldChildAppsByTemplateId[$applicationTemplate['templateid']];
-					$oldApplicationTemplates = zbx_toHash($oldChildApp['applicationTemplates'], 'templateid');
+					$oldApplicationTemplates = trx_toHash($oldChildApp['applicationTemplates'], 'templateid');
 					$oldApplicationTemplateIds[] = $oldApplicationTemplates[$applicationTemplate['templateid']]['application_templateid'];
 
 					// save the IDs of the affected templates and old
@@ -214,7 +214,7 @@ class CApplicationManager {
 			'SELECT ia.itemid,ia.applicationid'.
 			' FROM items_applications ia'.
 			' WHERE '.dbConditionInt('ia.applicationid', $appIdPairs).
-				' AND '.dbConditionInt('ia.itemid', zbx_objectValues($itemApps, 'itemid'))
+				' AND '.dbConditionInt('ia.itemid', trx_objectValues($itemApps, 'itemid'))
 		);
 		$exItemAppIds = [];
 		while ($row = DBfetch($query)) {
@@ -351,7 +351,7 @@ class CApplicationManager {
 		$dbCursor = DBselect(
 			'SELECT ht.templateid,ht.hostid'.
 			' FROM hosts_templates ht'.
-			' WHERE '.dbConditionInt('ht.templateid', zbx_objectValues($applications, 'hostid')).
+			' WHERE '.dbConditionInt('ht.templateid', trx_objectValues($applications, 'hostid')).
 				($hostIds ? ' AND '.dbConditionInt('ht.hostid', $hostIds) : '')
 		);
 		while ($dbHost = DBfetch($dbCursor)) {
@@ -431,7 +431,7 @@ class CApplicationManager {
 						? $existingApplication['applicationTemplates']
 						: [];
 
-					$applicationTemplateIds = zbx_objectValues($newApplication['applicationTemplates'], 'templateid');
+					$applicationTemplateIds = trx_objectValues($newApplication['applicationTemplates'], 'templateid');
 
 					if (!in_array($applicationId, $applicationTemplateIds)) {
 						$newApplication['applicationTemplates'][] = [

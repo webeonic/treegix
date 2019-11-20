@@ -24,7 +24,7 @@ import (
 	"treegix/pkg/log"
 	"treegix/pkg/tls"
 	"treegix/pkg/version"
-	"treegix/pkg/zbxlib"
+	"treegix/pkg/trxlib"
 	_ "treegix/plugins"
 )
 
@@ -369,7 +369,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	zbxlib.SetLogLevel(logLevel)
+	trxlib.SetLogLevel(logLevel)
 
 	greeting := fmt.Sprintf("Starting Treegix Agent 2 [%s]. (%s)", agent.Options.Hostname, version.Long())
 	log.Infof(greeting)

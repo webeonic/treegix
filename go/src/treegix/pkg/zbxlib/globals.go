@@ -1,6 +1,6 @@
 
 
-package zbxlib
+package trxlib
 
 /* cspell:disable */
 
@@ -8,24 +8,24 @@ package zbxlib
 #cgo CFLAGS: -I${SRCDIR}/../../../../../include
 
 #cgo LDFLAGS: -Wl,--start-group
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/treegix_agent/logfiles/libzbxlogfiles.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxcomms/libzbxcomms.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxcommon/libzbxcommon.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxcrypto/libzbxcrypto.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxsys/libzbxsys.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxnix/libzbxnix.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxconf/libzbxconf.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxhttp/libzbxhttp.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxcompress/libzbxcompress.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxregexp/libzbxregexp.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxsysinfo/libzbxagentsysinfo.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxsysinfo/common/libcommonsysinfo.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxsysinfo/simple/libsimplesysinfo.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxsysinfo/linux/libspechostnamesysinfo.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxsysinfo/linux/libspecsysinfo.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxexec/libzbxexec.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxalgo/libzbxalgo.a
-#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/zbxjson/libzbxjson.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/treegix_agent/logfiles/libtrxlogfiles.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxcomms/libtrxcomms.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxcommon/libtrxcommon.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxcrypto/libtrxcrypto.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxsys/libtrxsys.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxnix/libtrxnix.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxconf/libtrxconf.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxhttp/libtrxhttp.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxcompress/libtrxcompress.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxregexp/libtrxregexp.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxsysinfo/libtrxagentsysinfo.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxsysinfo/common/libcommonsysinfo.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxsysinfo/simple/libsimplesysinfo.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxsysinfo/linux/libspechostnamesysinfo.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxsysinfo/linux/libspecsysinfo.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxexec/libtrxexec.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxalgo/libtrxalgo.a
+#cgo LDFLAGS: ${SRCDIR}/../../../../../src/libs/trxjson/libtrxjson.a
 #cgo LDFLAGS: -lz -lpcre -lresolv
 #cgo LDFLAGS: -Wl,--end-group
 
@@ -36,7 +36,7 @@ package zbxlib
 #include "../src/treegix_agent/logfiles/logfiles.h"
 
 typedef TRX_ACTIVE_METRIC* TRX_ACTIVE_METRIC_LP;
-typedef zbx_vector_ptr_t * zbx_vector_ptr_lp_t;
+typedef trx_vector_ptr_t * trx_vector_ptr_lp_t;
 
 int CONFIG_MAX_LINES_PER_SECOND = 20;
 char *CONFIG_HOSTNAME = NULL;
@@ -72,16 +72,16 @@ const char	*help_message[] = {};
 TRX_METRIC	parameters_agent[] = {NULL};
 TRX_METRIC	parameters_specific[] = {NULL};
 
-void zbx_on_exit(int ret)
+void trx_on_exit(int ret)
 {
 }
 
-int	zbx_procstat_collector_started(void)
+int	trx_procstat_collector_started(void)
 {
 	return FAIL;
 }
 
-int	zbx_procstat_get_util(const char *procname, const char *username, const char *cmdline, zbx_uint64_t flags,
+int	trx_procstat_get_util(const char *procname, const char *username, const char *cmdline, trx_uint64_t flags,
 		int period, int type, double *value, char **errmsg)
 {
 	return FAIL;

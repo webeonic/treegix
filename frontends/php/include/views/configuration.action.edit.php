@@ -526,16 +526,16 @@ if ($data['action']['operations']) {
 		$operationsTable->addRow($operationRow, null, 'operations_'.$operationid);
 
 		$operation['opmessage_grp'] = isset($operation['opmessage_grp'])
-			? zbx_toHash($operation['opmessage_grp'], 'usrgrpid')
+			? trx_toHash($operation['opmessage_grp'], 'usrgrpid')
 			: null;
 		$operation['opmessage_usr'] = isset($operation['opmessage_usr'])
-			? zbx_toHash($operation['opmessage_usr'], 'userid')
+			? trx_toHash($operation['opmessage_usr'], 'userid')
 			: null;
 		$operation['opcommand_grp'] = isset($operation['opcommand_grp'])
-			? zbx_toHash($operation['opcommand_grp'], 'groupid')
+			? trx_toHash($operation['opcommand_grp'], 'groupid')
 			: null;
 		$operation['opcommand_hst'] = isset($operation['opcommand_hst'])
-			? zbx_toHash($operation['opcommand_hst'], 'hostid')
+			? trx_toHash($operation['opcommand_hst'], 'hostid')
 			: null;
 	}
 }
@@ -700,11 +700,11 @@ if (!empty($data['new_operation'])) {
 
 			// add participations
 			$usrgrpids = isset($data['new_operation']['opmessage_grp'])
-				? zbx_objectValues($data['new_operation']['opmessage_grp'], 'usrgrpid')
+				? trx_objectValues($data['new_operation']['opmessage_grp'], 'usrgrpid')
 				: [];
 
 			$userids = isset($data['new_operation']['opmessage_usr'])
-				? zbx_objectValues($data['new_operation']['opmessage_usr'], 'userid')
+				? trx_objectValues($data['new_operation']['opmessage_usr'], 'userid')
 				: [];
 
 			$usrgrps = API::UserGroup()->get([
@@ -726,12 +726,12 @@ if (!empty($data['new_operation'])) {
 			unset($user);
 
 			$js_insert = 'addPopupValues('.
-				zbx_jsvalue(['object' => 'usrgrpid', 'values' => $usrgrps, 'parentId' => 'opmsgUsrgrpListFooter']).
+				trx_jsvalue(['object' => 'usrgrpid', 'values' => $usrgrps, 'parentId' => 'opmsgUsrgrpListFooter']).
 			');';
 			$js_insert .= 'addPopupValues('.
-				zbx_jsvalue(['object' => 'userid', 'values' => $users, 'parentId' => 'opmsgUserListFooter']).
+				trx_jsvalue(['object' => 'userid', 'values' => $users, 'parentId' => 'opmsgUserListFooter']).
 			');';
-			zbx_add_post_js($js_insert);
+			trx_add_post_js($js_insert);
 
 			$new_operation_formlist
 				->addRow('', (new CLabel(_('At least one user or user group must be selected.')))->setAsteriskMark())
@@ -802,7 +802,7 @@ if (!empty($data['new_operation'])) {
 				? $data['new_operation']['opcommand']['command'] : '';
 
 			$data['new_operation']['opcommand']['script'] = '';
-			if (!zbx_empty($data['new_operation']['opcommand']['scriptid'])) {
+			if (!trx_empty($data['new_operation']['opcommand']['scriptid'])) {
 				$userScripts = API::Script()->get([
 					'scriptids' => $data['new_operation']['opcommand']['scriptid'],
 					'output' => API_OUTPUT_EXTEND
@@ -821,7 +821,7 @@ if (!empty($data['new_operation'])) {
 			}
 
 			$hosts = API::Host()->get([
-				'hostids' => zbx_objectValues($data['new_operation']['opcommand_hst'], 'hostid'),
+				'hostids' => trx_objectValues($data['new_operation']['opcommand_hst'], 'hostid'),
 				'output' => ['hostid', 'name'],
 				'preservekeys' => true,
 				'editable' => true
@@ -834,7 +834,7 @@ if (!empty($data['new_operation'])) {
 			order_result($data['new_operation']['opcommand_hst'], 'name');
 
 			$groups = API::HostGroup()->get([
-				'groupids' => zbx_objectValues($data['new_operation']['opcommand_grp'], 'groupid'),
+				'groupids' => trx_objectValues($data['new_operation']['opcommand_grp'], 'groupid'),
 				'output' => ['groupid', 'name'],
 				'preservekeys' => true,
 				'editable' => true
@@ -847,7 +847,7 @@ if (!empty($data['new_operation'])) {
 			order_result($data['new_operation']['opcommand_grp'], 'name');
 
 			// js add commands
-			$host_values = zbx_jsvalue([
+			$host_values = trx_jsvalue([
 				'object' => 'hostid',
 				'values' => $data['new_operation']['opcommand_hst'],
 				'parentId' => 'opCmdListFooter'
@@ -855,14 +855,14 @@ if (!empty($data['new_operation'])) {
 
 			$js_insert = 'addPopupValues('.$host_values.');';
 
-			$group_values = zbx_jsvalue([
+			$group_values = trx_jsvalue([
 				'object' => 'groupid',
 				'values' => $data['new_operation']['opcommand_grp'],
 				'parentId' => 'opCmdListFooter'
 			]);
 
 			$js_insert .= 'addPopupValues('.$group_values.');';
-			zbx_add_post_js($js_insert);
+			trx_add_post_js($js_insert);
 
 			// target list
 			$new_operation_formlist->addRow(
@@ -1071,7 +1071,7 @@ if (!empty($data['new_operation'])) {
 			$data['new_operation']['opconditions'] = [];
 		}
 		else {
-			zbx_rksort($data['new_operation']['opconditions']);
+			trx_rksort($data['new_operation']['opconditions']);
 		}
 
 		$allowed_opconditions = get_opconditions_by_eventsource($data['eventsource']);
@@ -1316,16 +1316,16 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 			$operationsTable->addRow($operationRow, null, 'recovery_operations_'.$operationid);
 
 			$operation['opmessage_grp'] = isset($operation['opmessage_grp'])
-				? zbx_toHash($operation['opmessage_grp'], 'usrgrpid')
+				? trx_toHash($operation['opmessage_grp'], 'usrgrpid')
 				: null;
 			$operation['opmessage_usr'] = isset($operation['opmessage_usr'])
-				? zbx_toHash($operation['opmessage_usr'], 'userid')
+				? trx_toHash($operation['opmessage_usr'], 'userid')
 				: null;
 			$operation['opcommand_grp'] = isset($operation['opcommand_grp'])
-				? zbx_toHash($operation['opcommand_grp'], 'groupid')
+				? trx_toHash($operation['opcommand_grp'], 'groupid')
 				: null;
 			$operation['opcommand_hst'] = isset($operation['opcommand_hst'])
-				? zbx_toHash($operation['opcommand_hst'], 'hostid')
+				? trx_toHash($operation['opcommand_hst'], 'hostid')
 				: null;
 		}
 	}
@@ -1452,11 +1452,11 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 
 				// add participations
 				$usrgrpids = isset($data['new_recovery_operation']['opmessage_grp'])
-					? zbx_objectValues($data['new_recovery_operation']['opmessage_grp'], 'usrgrpid')
+					? trx_objectValues($data['new_recovery_operation']['opmessage_grp'], 'usrgrpid')
 					: [];
 
 				$userids = isset($data['new_recovery_operation']['opmessage_usr'])
-					? zbx_objectValues($data['new_recovery_operation']['opmessage_usr'], 'userid')
+					? trx_objectValues($data['new_recovery_operation']['opmessage_usr'], 'userid')
 					: [];
 
 				$usrgrps = API::UserGroup()->get([
@@ -1477,13 +1477,13 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 				}
 				unset($user);
 
-				$js_insert = 'addPopupValues('.zbx_jsvalue(['object' => 'usrgrpid', 'values' => $usrgrps,
+				$js_insert = 'addPopupValues('.trx_jsvalue(['object' => 'usrgrpid', 'values' => $usrgrps,
 					'parentId' => 'recOpmsgUsrgrpListFooter']).
 				');';
-				$js_insert .= 'addPopupValues('.zbx_jsvalue(['object' => 'userid', 'values' => $users,
+				$js_insert .= 'addPopupValues('.trx_jsvalue(['object' => 'userid', 'values' => $users,
 					'parentId' => 'recOpmsgUserListFooter']).
 				');';
-				zbx_add_post_js($js_insert);
+				trx_add_post_js($js_insert);
 
 				$new_operation_formlist
 					->addRow('',
@@ -1570,7 +1570,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 					: '';
 
 				$data['new_recovery_operation']['opcommand']['script'] = '';
-				if (!zbx_empty($data['new_recovery_operation']['opcommand']['scriptid'])) {
+				if (!trx_empty($data['new_recovery_operation']['opcommand']['scriptid'])) {
 					$userScripts = API::Script()->get([
 						'scriptids' => $data['new_recovery_operation']['opcommand']['scriptid'],
 						'output' => API_OUTPUT_EXTEND
@@ -1589,7 +1589,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 				}
 
 				$hosts = API::Host()->get([
-					'hostids' => zbx_objectValues($data['new_recovery_operation']['opcommand_hst'], 'hostid'),
+					'hostids' => trx_objectValues($data['new_recovery_operation']['opcommand_hst'], 'hostid'),
 					'output' => ['hostid', 'name'],
 					'preservekeys' => true,
 					'editable' => true
@@ -1607,7 +1607,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 				order_result($data['new_recovery_operation']['opcommand_hst'], 'name');
 
 				$groups = API::HostGroup()->get([
-					'groupids' => zbx_objectValues($data['new_recovery_operation']['opcommand_grp'], 'groupid'),
+					'groupids' => trx_objectValues($data['new_recovery_operation']['opcommand_grp'], 'groupid'),
 					'output' => ['groupid', 'name'],
 					'preservekeys' => true,
 					'editable' => true
@@ -1623,7 +1623,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 				order_result($data['new_recovery_operation']['opcommand_grp'], 'name');
 
 				// js add commands
-				$host_values = zbx_jsvalue([
+				$host_values = trx_jsvalue([
 					'object' => 'hostid',
 					'values' => $data['new_recovery_operation']['opcommand_hst'],
 					'parentId' => 'recOpCmdListFooter'
@@ -1631,14 +1631,14 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS || $data['eventsource'] == EVE
 
 				$js_insert = 'addPopupValues('.$host_values.');';
 
-				$group_values = zbx_jsvalue([
+				$group_values = trx_jsvalue([
 					'object' => 'groupid',
 					'values' => $data['new_recovery_operation']['opcommand_grp'],
 					'parentId' => 'recOpCmdListFooter'
 				]);
 
 				$js_insert .= 'addPopupValues('.$group_values.');';
-				zbx_add_post_js($js_insert);
+				trx_add_post_js($js_insert);
 
 				// target list
 				$new_operation_formlist->addRow(
@@ -1921,7 +1921,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 
 			foreach ($convert_to_hash as $operation_key => $hash_key) {
 				$operation[$operation_key] = array_key_exists($operation_key, $operation)
-					? zbx_toHash($operation[$operation_key], $hash_key)
+					? trx_toHash($operation[$operation_key], $hash_key)
 					: null;
 			}
 		}
@@ -2000,11 +2000,11 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 				);
 
 			$usrgrpids = array_key_exists('opmessage_grp', $data['new_ack_operation'])
-				? zbx_objectValues($data['new_ack_operation']['opmessage_grp'], 'usrgrpid')
+				? trx_objectValues($data['new_ack_operation']['opmessage_grp'], 'usrgrpid')
 				: [];
 
 			$userids = array_key_exists('opmessage_usr', $data['new_ack_operation'])
-				? zbx_objectValues($data['new_ack_operation']['opmessage_usr'], 'userid')
+				? trx_objectValues($data['new_ack_operation']['opmessage_usr'], 'userid')
 				: [];
 
 			$usrgrps = API::UserGroup()->get([
@@ -2025,13 +2025,13 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 			}
 			unset($user);
 
-			$js_insert = 'addPopupValues('.zbx_jsvalue(['object' => 'usrgrpid', 'values' => $usrgrps,
+			$js_insert = 'addPopupValues('.trx_jsvalue(['object' => 'usrgrpid', 'values' => $usrgrps,
 				'parentId' => 'ackOpmsgUsrgrpListFooter']).
 			');';
-			$js_insert .= 'addPopupValues('.zbx_jsvalue(['object' => 'userid', 'values' => $users,
+			$js_insert .= 'addPopupValues('.trx_jsvalue(['object' => 'userid', 'values' => $users,
 				'parentId' => 'ackOpmsgUserListFooter']).
 			');';
-			zbx_add_post_js($js_insert);
+			trx_add_post_js($js_insert);
 		}
 		elseif ($data['new_ack_operation']['operationtype'] == OPERATION_TYPE_COMMAND) {
 			if (!array_key_exists('opcommand', $data['new_ack_operation'])) {
@@ -2071,7 +2071,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 
 			$hosts = API::Host()->get([
 				'output' => ['hostid', 'name'],
-				'hostids' => zbx_objectValues($data['new_ack_operation']['opcommand_hst'], 'hostid'),
+				'hostids' => trx_objectValues($data['new_ack_operation']['opcommand_hst'], 'hostid'),
 				'preservekeys' => true,
 				'editable' => true
 			]);
@@ -2087,7 +2087,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 
 			$groups = API::HostGroup()->get([
 				'output' => ['groupid', 'name'],
-				'groupids' => zbx_objectValues($data['new_ack_operation']['opcommand_grp'], 'groupid'),
+				'groupids' => trx_objectValues($data['new_ack_operation']['opcommand_grp'], 'groupid'),
 				'preservekeys' => true,
 				'editable' => true
 			]);
@@ -2102,7 +2102,7 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 			order_result($data['new_ack_operation']['opcommand_grp'], 'name');
 
 			// js add commands
-			$host_values = zbx_jsvalue([
+			$host_values = trx_jsvalue([
 				'object' => 'hostid',
 				'values' => $data['new_ack_operation']['opcommand_hst'],
 				'parentId' => 'ackOpCmdListFooter'
@@ -2110,14 +2110,14 @@ if ($data['eventsource'] == EVENT_SOURCE_TRIGGERS) {
 
 			$js_insert = 'addPopupValues('.$host_values.');';
 
-			$group_values = zbx_jsvalue([
+			$group_values = trx_jsvalue([
 				'object' => 'groupid',
 				'values' => $data['new_ack_operation']['opcommand_grp'],
 				'parentId' => 'ackOpCmdListFooter'
 			]);
 
 			$js_insert .= 'addPopupValues('.$group_values.');';
-			zbx_add_post_js($js_insert);
+			trx_add_post_js($js_insert);
 
 			$new_operation_formlist->addRow(
 					(new CLabel(_('Target list'), 'ackOpCmdList'))->setAsteriskMark(),

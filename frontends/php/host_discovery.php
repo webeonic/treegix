@@ -463,7 +463,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 		ksort($conditions);
 		$conditions = array_values($conditions);
 		foreach ($conditions as $condition) {
-			if (!zbx_empty($condition['macro'])) {
+			if (!trx_empty($condition['macro'])) {
 				$condition['macro'] = mb_strtoupper($condition['macro']);
 
 				$filter['conditions'][] = $condition;
@@ -636,7 +636,7 @@ if (hasRequest('action') && hasRequest('g_hostdruleid') && !$result) {
 		'itemids' => getRequest('g_hostdruleid'),
 		'editable' => true
 	]);
-	uncheckTableRows(getRequest('hostid'), zbx_objectValues($hostdrules, 'itemid'));
+	uncheckTableRows(getRequest('hostid'), trx_objectValues($hostdrules, 'itemid'));
 }
 
 /*

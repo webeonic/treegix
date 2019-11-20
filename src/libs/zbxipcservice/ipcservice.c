@@ -6,10 +6,10 @@
 #	include <event.h>
 #endif
 
-#include "zbxtypes.h"
-#include "zbxalgo.h"
+#include "trxtypes.h"
+#include "trxalgo.h"
 #include "log.h"
-#include "zbxipcservice.h"
+#include "trxipcservice.h"
 
 #define TRX_IPC_PATH_MAX	sizeof(((struct sockaddr_un *)0)->sun_path)
 
@@ -28,34 +28,34 @@ static size_t	ipc_path_root_len = 0;
 extern unsigned char	program_type;
 
 /* IPC client, providing nonblocking connections through socket */
-struct zbx_ipc_client
+struct trx_ipc_client
 {
-	zbx_ipc_socket_t	csocket;
-	zbx_ipc_service_t	*service;
+	trx_ipc_socket_t	csocket;
+	trx_ipc_service_t	*service;
 
-	zbx_uint32_t		rx_header[2];
+	trx_uint32_t		rx_header[2];
 	unsigned char		*rx_data;
-	zbx_uint32_t		rx_bytes;
-	zbx_queue_ptr_t		rx_queue;
+	trx_uint32_t		rx_bytes;
+	trx_queue_ptr_t		rx_queue;
 	struct event		*rx_event;
 
-	zbx_uint32_t		tx_header[2];
+	trx_uint32_t		tx_header[2];
 	unsigned char		*tx_data;
-	zbx_uint32_t		tx_bytes;
-	zbx_queue_ptr_t		tx_queue;
+	trx_uint32_t		tx_bytes;
+	trx_queue_ptr_t		tx_queue;
 	struct event		*tx_event;
 
-	zbx_uint64_t		id;
+	trx_uint64_t		id;
 	unsigned char		state;
 
-	zbx_uint32_t		refcount;
+	trx_uint32_t		refcount;
 };
 
 /*
  * Private API
  */
 
-#define TRX_IPC_HEADER_SIZE	(int)(sizeof(zbx_uint32_t) * 2)
+#define TRX_IPC_HEADER_SIZE	(int)(sizeof(trx_uint32_t) * 2)
 
 #define TRX_IPC_MESSAGE_CODE	0
 #define TRX_IPC_MESSAGE_SIZE	1
@@ -68,7 +68,7 @@ static struct event	*event_new(struct event_base *ev, evutil_socket_t fd, short 
 {
 	struct event	*event;
 
-	event = zbx_malloc(NULL, sizeof(struct event));
+	event = trx_malloc(NULL, sizeof(struct event));
 	event_set(event, fd, what, cb_func, cb_arg);
 	event_base_set(ev, event);
 
@@ -78,7 +78,7 @@ static struct event	*event_new(struct event_base *ev, evutil_socket_t fd, short 
 static void	event_free(struct event *event)
 {
 	event_del(event);
-	zbx_free(event);
+	trx_free(event);
 }
 
 #endif
@@ -145,7 +145,7 @@ static const char	*ipc_make_path(const char *service_name, char **error)
 	if (TRX_IPC_PATH_MAX < ipc_path_root_len + path_len + 1 + TRX_CONST_STRLEN(TRX_IPC_SOCKET_PREFIX) +
 			TRX_CONST_STRLEN(TRX_IPC_SOCKET_SUFFIX) + prefix_len)
 	{
-		*error = zbx_dsprintf(*error,
+		*error = trx_dsprintf(*error,
 				"Socket path \"%s%s%s%s%s\" exceeds maximum length of unix domain socket path.",
 				ipc_path, TRX_IPC_SOCKET_PREFIX, prefix, service_name, TRX_IPC_SOCKET_SUFFIX);
 		return NULL;
@@ -180,9 +180,9 @@ static const char	*ipc_make_path(const char *service_name, char **error)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	ipc_write_data(int fd, const unsigned char *data, zbx_uint32_t size, zbx_uint32_t *size_sent)
+static int	ipc_write_data(int fd, const unsigned char *data, trx_uint32_t size, trx_uint32_t *size_sent)
 {
-	zbx_uint32_t	offset = 0;
+	trx_uint32_t	offset = 0;
 	int		n, ret = SUCCEED;
 
 	while (offset != size)
@@ -227,7 +227,7 @@ static int	ipc_write_data(int fd, const unsigned char *data, zbx_uint32_t size, 
  *           returned also if there were no more data to read.                *
  *                                                                            *
  ******************************************************************************/
-static int	ipc_read_data(int fd, unsigned char *buffer, zbx_uint32_t size, zbx_uint32_t *read_size)
+static int	ipc_read_data(int fd, unsigned char *buffer, trx_uint32_t size, trx_uint32_t *read_size)
 {
 	int	n;
 
@@ -271,10 +271,10 @@ static int	ipc_read_data(int fd, unsigned char *buffer, zbx_uint32_t size, zbx_u
  *           the requested data has been read.                                *
  *                                                                            *
  ******************************************************************************/
-static int	ipc_read_data_full(int fd, unsigned char *buffer, zbx_uint32_t size, zbx_uint32_t *read_size)
+static int	ipc_read_data_full(int fd, unsigned char *buffer, trx_uint32_t size, trx_uint32_t *read_size)
 {
 	int		ret = FAIL;
-	zbx_uint32_t	offset = 0, chunk_size;
+	trx_uint32_t	offset = 0, chunk_size;
 
 	*read_size = 0;
 
@@ -318,11 +318,11 @@ out:
  *           sent successfully.                                               *
  *                                                                            *
  ******************************************************************************/
-static int	ipc_socket_write_message(zbx_ipc_socket_t *csocket, zbx_uint32_t code, const unsigned char *data,
-		zbx_uint32_t size, zbx_uint32_t *tx_size)
+static int	ipc_socket_write_message(trx_ipc_socket_t *csocket, trx_uint32_t code, const unsigned char *data,
+		trx_uint32_t size, trx_uint32_t *tx_size)
 {
 	int		ret;
-	zbx_uint32_t	size_data, buffer[TRX_IPC_SOCKET_BUFFER_SIZE / sizeof(zbx_uint32_t)];
+	trx_uint32_t	size_data, buffer[TRX_IPC_SOCKET_BUFFER_SIZE / sizeof(trx_uint32_t)];
 
 	buffer[0] = code;
 	buffer[1] = size;
@@ -366,10 +366,10 @@ static int	ipc_socket_write_message(zbx_ipc_socket_t *csocket, zbx_uint32_t code
  *               FAIL - not enough data                                       *
  *                                                                            *
  ******************************************************************************/
-static int	ipc_read_buffer(zbx_uint32_t *header, unsigned char **data, zbx_uint32_t rx_bytes,
-		const unsigned char *buffer, zbx_uint32_t size, zbx_uint32_t *read_size)
+static int	ipc_read_buffer(trx_uint32_t *header, unsigned char **data, trx_uint32_t rx_bytes,
+		const unsigned char *buffer, trx_uint32_t size, trx_uint32_t *read_size)
 {
-	zbx_uint32_t	copy_size, data_size, data_offset;
+	trx_uint32_t	copy_size, data_size, data_offset;
 
 	*read_size = 0;
 
@@ -390,7 +390,7 @@ static int	ipc_read_buffer(zbx_uint32_t *header, unsigned char **data, zbx_uint3
 			return SUCCEED;
 		}
 
-		*data = (unsigned char *)zbx_malloc(NULL, data_size);
+		*data = (unsigned char *)trx_malloc(NULL, data_size);
 		data_offset = 0;
 	}
 	else
@@ -420,7 +420,7 @@ static int	ipc_read_buffer(zbx_uint32_t *header, unsigned char **data, zbx_uint3
  *                FAIL - otherwise                                            *
  *                                                                            *
  ******************************************************************************/
-static int	ipc_message_is_completed(const zbx_uint32_t *header, zbx_uint32_t rx_bytes)
+static int	ipc_message_is_completed(const trx_uint32_t *header, trx_uint32_t rx_bytes)
 {
 	if (TRX_IPC_HEADER_SIZE > rx_bytes)
 		return FAIL;
@@ -449,10 +449,10 @@ static int	ipc_message_is_completed(const zbx_uint32_t *header, zbx_uint32_t rx_
  *                       was closed).                                         *
  *                                                                            *
  ******************************************************************************/
-static int	ipc_socket_read_message(zbx_ipc_socket_t *csocket, zbx_uint32_t *header, unsigned char **data,
-		zbx_uint32_t *rx_bytes)
+static int	ipc_socket_read_message(trx_ipc_socket_t *csocket, trx_uint32_t *header, unsigned char **data,
+		trx_uint32_t *rx_bytes)
 {
-	zbx_uint32_t	data_size, offset, read_size = 0;
+	trx_uint32_t	data_size, offset, read_size = 0;
 	int		ret = FAIL;
 
 	/* try to read message from socket buffer */
@@ -519,7 +519,7 @@ out:
  * Parameters: client - [IN] the client                                       *
  *                                                                            *
  ******************************************************************************/
-static void	ipc_client_free_events(zbx_ipc_client_t *client)
+static void	ipc_client_free_events(trx_ipc_client_t *client)
 {
 	if (NULL != client->rx_event)
 	{
@@ -543,28 +543,28 @@ static void	ipc_client_free_events(zbx_ipc_client_t *client)
  * Parameters: client - [IN] the client to free                               *
  *                                                                            *
  ******************************************************************************/
-static void	ipc_client_free(zbx_ipc_client_t *client)
+static void	ipc_client_free(trx_ipc_client_t *client)
 {
-	zbx_ipc_message_t	*message;
+	trx_ipc_message_t	*message;
 
 	ipc_client_free_events(client);
-	zbx_ipc_socket_close(&client->csocket);
+	trx_ipc_socket_close(&client->csocket);
 
-	while (NULL != (message = (zbx_ipc_message_t *)zbx_queue_ptr_pop(&client->rx_queue)))
-		zbx_ipc_message_free(message);
+	while (NULL != (message = (trx_ipc_message_t *)trx_queue_ptr_pop(&client->rx_queue)))
+		trx_ipc_message_free(message);
 
-	zbx_queue_ptr_destroy(&client->rx_queue);
-	zbx_free(client->rx_data);
+	trx_queue_ptr_destroy(&client->rx_queue);
+	trx_free(client->rx_data);
 
-	while (NULL != (message = (zbx_ipc_message_t *)zbx_queue_ptr_pop(&client->tx_queue)))
-		zbx_ipc_message_free(message);
+	while (NULL != (message = (trx_ipc_message_t *)trx_queue_ptr_pop(&client->tx_queue)))
+		trx_ipc_message_free(message);
 
-	zbx_queue_ptr_destroy(&client->tx_queue);
-	zbx_free(client->tx_data);
+	trx_queue_ptr_destroy(&client->tx_queue);
+	trx_free(client->tx_data);
 
 	ipc_client_free_events(client);
 
-	zbx_free(client);
+	trx_free(client);
 }
 
 /******************************************************************************
@@ -576,15 +576,15 @@ static void	ipc_client_free(zbx_ipc_client_t *client)
  * Parameters: client - [IN] the client to read                               *
  *                                                                            *
  ******************************************************************************/
-static void	ipc_client_push_rx_message(zbx_ipc_client_t *client)
+static void	ipc_client_push_rx_message(trx_ipc_client_t *client)
 {
-	zbx_ipc_message_t	*message;
+	trx_ipc_message_t	*message;
 
-	message = (zbx_ipc_message_t *)zbx_malloc(NULL, sizeof(zbx_ipc_message_t));
+	message = (trx_ipc_message_t *)trx_malloc(NULL, sizeof(trx_ipc_message_t));
 	message->code = client->rx_header[TRX_IPC_MESSAGE_CODE];
 	message->size = client->rx_header[TRX_IPC_MESSAGE_SIZE];
 	message->data = client->rx_data;
-	zbx_queue_ptr_push(&client->rx_queue, message);
+	trx_queue_ptr_push(&client->rx_queue, message);
 
 	client->rx_data = NULL;
 	client->rx_bytes = 0;
@@ -599,21 +599,21 @@ static void	ipc_client_push_rx_message(zbx_ipc_client_t *client)
  * Parameters: client - [IN] the client                                       *
  *                                                                            *
  ******************************************************************************/
-static void	ipc_client_pop_tx_message(zbx_ipc_client_t *client)
+static void	ipc_client_pop_tx_message(trx_ipc_client_t *client)
 {
-	zbx_ipc_message_t	*message;
+	trx_ipc_message_t	*message;
 
-	zbx_free(client->tx_data);
+	trx_free(client->tx_data);
 	client->tx_bytes = 0;
 
-	if (NULL == (message = (zbx_ipc_message_t *)zbx_queue_ptr_pop(&client->tx_queue)))
+	if (NULL == (message = (trx_ipc_message_t *)trx_queue_ptr_pop(&client->tx_queue)))
 		return;
 
 	client->tx_bytes = TRX_IPC_HEADER_SIZE + message->size;
 	client->tx_header[TRX_IPC_MESSAGE_CODE] = message->code;
 	client->tx_header[TRX_IPC_MESSAGE_SIZE] = message->size;
 	client->tx_data = message->data;
-	zbx_free(message);
+	trx_free(message);
 }
 
 /******************************************************************************
@@ -630,7 +630,7 @@ static void	ipc_client_pop_tx_message(zbx_ipc_client_t *client)
  *           parsed messages to received messages queue.                      *
  *                                                                            *
  ******************************************************************************/
-static int	ipc_client_read(zbx_ipc_client_t *client)
+static int	ipc_client_read(trx_ipc_client_t *client)
 {
 	int	rc;
 
@@ -639,7 +639,7 @@ static int	ipc_client_read(zbx_ipc_client_t *client)
 		if (FAIL == ipc_socket_read_message(&client->csocket, client->rx_header, &client->rx_data,
 				&client->rx_bytes))
 		{
-			zbx_free(client->rx_data);
+			trx_free(client->rx_data);
 			client->rx_bytes = 0;
 			return FAIL;
 		}
@@ -665,15 +665,15 @@ static int	ipc_client_read(zbx_ipc_client_t *client)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	ipc_client_write(zbx_ipc_client_t *client)
+static int	ipc_client_write(trx_ipc_client_t *client)
 {
-	zbx_uint32_t	data_size, write_size;
+	trx_uint32_t	data_size, write_size;
 
 	data_size = client->tx_header[TRX_IPC_MESSAGE_SIZE];
 
 	if (data_size < client->tx_bytes)
 	{
-		zbx_uint32_t	size, offset;
+		trx_uint32_t	size, offset;
 
 		size = client->tx_bytes - data_size;
 		offset = TRX_IPC_HEADER_SIZE - size;
@@ -721,11 +721,11 @@ static int	ipc_client_write(zbx_ipc_client_t *client)
  * Return value: The client with messages/closed socket                       *
  *                                                                            *
  ******************************************************************************/
-static zbx_ipc_client_t	*ipc_service_pop_client(zbx_ipc_service_t *service)
+static trx_ipc_client_t	*ipc_service_pop_client(trx_ipc_service_t *service)
 {
-	zbx_ipc_client_t	*client;
+	trx_ipc_client_t	*client;
 
-	if (NULL != (client = (zbx_ipc_client_t *)zbx_queue_ptr_pop(&service->clients_recv)))
+	if (NULL != (client = (trx_ipc_client_t *)trx_queue_ptr_pop(&service->clients_recv)))
 		client->state = TRX_IPC_CLIENT_STATE_NONE;
 
 	return client;
@@ -745,16 +745,16 @@ static zbx_ipc_client_t	*ipc_service_pop_client(zbx_ipc_service_t *service)
  *           closed.                                                          *
  *                                                                            *
  ******************************************************************************/
-static void	ipc_service_push_client(zbx_ipc_service_t *service, zbx_ipc_client_t *client)
+static void	ipc_service_push_client(trx_ipc_service_t *service, trx_ipc_client_t *client)
 {
 	if (TRX_IPC_CLIENT_STATE_QUEUED == client->state)
 		return;
 
-	if (0 == zbx_queue_ptr_values_num(&client->rx_queue) && NULL != client->rx_event)
+	if (0 == trx_queue_ptr_values_num(&client->rx_queue) && NULL != client->rx_event)
 		return;
 
 	client->state = TRX_IPC_CLIENT_STATE_QUEUED;
-	zbx_queue_ptr_push(&service->clients_recv, client);
+	trx_queue_ptr_push(&service->clients_recv, client);
 }
 
 /******************************************************************************
@@ -767,16 +767,16 @@ static void	ipc_service_push_client(zbx_ipc_service_t *service, zbx_ipc_client_t
  *             fd      - [IN] the client socket descriptor                    *
  *                                                                            *
  ******************************************************************************/
-static void	ipc_service_add_client(zbx_ipc_service_t *service, int fd)
+static void	ipc_service_add_client(trx_ipc_service_t *service, int fd)
 {
-	static zbx_uint64_t	next_clientid = 1;
-	zbx_ipc_client_t	*client;
+	static trx_uint64_t	next_clientid = 1;
+	trx_ipc_client_t	*client;
 	int			flags;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	client = (zbx_ipc_client_t *)zbx_malloc(NULL, sizeof(zbx_ipc_client_t));
-	memset(client, 0, sizeof(zbx_ipc_client_t));
+	client = (trx_ipc_client_t *)trx_malloc(NULL, sizeof(trx_ipc_client_t));
+	memset(client, 0, sizeof(trx_ipc_client_t));
 
 	if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
 	{
@@ -797,15 +797,15 @@ static void	ipc_service_add_client(zbx_ipc_service_t *service, int fd)
 	client->state = TRX_IPC_CLIENT_STATE_NONE;
 	client->refcount = 1;
 
-	zbx_queue_ptr_create(&client->rx_queue);
-	zbx_queue_ptr_create(&client->tx_queue);
+	trx_queue_ptr_create(&client->rx_queue);
+	trx_queue_ptr_create(&client->tx_queue);
 
 	client->service = service;
 	client->rx_event = event_new(service->ev, fd, EV_READ | EV_PERSIST, ipc_client_read_event_cb, (void *)client);
 	client->tx_event = event_new(service->ev, fd, EV_WRITE | EV_PERSIST, ipc_client_write_event_cb, (void *)client);
 	event_add(client->rx_event, NULL);
 
-	zbx_vector_ptr_append(&service->clients, client);
+	trx_vector_ptr_append(&service->clients, client);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s() clientid:" TRX_FS_UI64, __func__, client->id);
 }
@@ -820,20 +820,20 @@ static void	ipc_service_add_client(zbx_ipc_service_t *service, int fd)
  *             client  - [IN] the client to remove                            *
  *                                                                            *
  ******************************************************************************/
-static void	ipc_service_remove_client(zbx_ipc_service_t *service, zbx_ipc_client_t *client)
+static void	ipc_service_remove_client(trx_ipc_service_t *service, trx_ipc_client_t *client)
 {
 	int		i;
 
 	for (i = 0; i < service->clients.values_num; i++)
 	{
 		if (service->clients.values[i] == client)
-			zbx_vector_ptr_remove_noorder(&service->clients, i);
+			trx_vector_ptr_remove_noorder(&service->clients, i);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_client_by_id                                             *
+ * Function: trx_ipc_client_by_id                                             *
  *                                                                            *
  * Purpose: to find connected client when only it's ID is known               *
  *                                                                            *
@@ -843,14 +843,14 @@ static void	ipc_service_remove_client(zbx_ipc_service_t *service, zbx_ipc_client
  * Return value: address of client or NULL if client has already disconnected *
  *                                                                            *
  ******************************************************************************/
-zbx_ipc_client_t	*zbx_ipc_client_by_id(const zbx_ipc_service_t *service, zbx_uint64_t id)
+trx_ipc_client_t	*trx_ipc_client_by_id(const trx_ipc_service_t *service, trx_uint64_t id)
 {
 	int			i;
-	zbx_ipc_client_t	*client;
+	trx_ipc_client_t	*client;
 
 	for (i = 0; i < service->clients.values_num; i++)
 	{
-		client = (zbx_ipc_client_t *) service->clients.values[i];
+		client = (trx_ipc_client_t *) service->clients.values[i];
 
 		if (id == client->id)
 			return client;
@@ -868,7 +868,7 @@ zbx_ipc_client_t	*zbx_ipc_client_by_id(const zbx_ipc_service_t *service, zbx_uin
  ******************************************************************************/
 static void	ipc_client_read_event_cb(evutil_socket_t fd, short what, void *arg)
 {
-	zbx_ipc_client_t	*client = (zbx_ipc_client_t *)arg;
+	trx_ipc_client_t	*client = (trx_ipc_client_t *)arg;
 
 	TRX_UNUSED(fd);
 	TRX_UNUSED(what);
@@ -891,7 +891,7 @@ static void	ipc_client_read_event_cb(evutil_socket_t fd, short what, void *arg)
  ******************************************************************************/
 static void	ipc_client_write_event_cb(evutil_socket_t fd, short what, void *arg)
 {
-	zbx_ipc_client_t	*client = (zbx_ipc_client_t *)arg;
+	trx_ipc_client_t	*client = (trx_ipc_client_t *)arg;
 
 	TRX_UNUSED(fd);
 	TRX_UNUSED(what);
@@ -899,7 +899,7 @@ static void	ipc_client_write_event_cb(evutil_socket_t fd, short what, void *arg)
 	if (SUCCEED != ipc_client_write(client))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot send data to IPC client");
-		zbx_ipc_client_close(client);
+		trx_ipc_client_close(client);
 		return;
 	}
 
@@ -916,7 +916,7 @@ static void	ipc_client_write_event_cb(evutil_socket_t fd, short what, void *arg)
  ******************************************************************************/
 static void	ipc_async_socket_write_event_cb(evutil_socket_t fd, short what, void *arg)
 {
-	zbx_ipc_async_socket_t	*asocket = (zbx_ipc_async_socket_t *)arg;
+	trx_ipc_async_socket_t	*asocket = (trx_ipc_async_socket_t *)arg;
 
 	TRX_UNUSED(fd);
 	TRX_UNUSED(what);
@@ -925,7 +925,7 @@ static void	ipc_async_socket_write_event_cb(evutil_socket_t fd, short what, void
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot send data to IPC client");
 		ipc_client_free_events(asocket->client);
-		zbx_ipc_socket_close(&asocket->client->csocket);
+		trx_ipc_socket_close(&asocket->client->csocket);
 		asocket->state = TRX_IPC_ASYNC_SOCKET_STATE_ERROR;
 		return;
 	}
@@ -943,7 +943,7 @@ static void	ipc_async_socket_write_event_cb(evutil_socket_t fd, short what, void
  ******************************************************************************/
 static void	ipc_async_socket_read_event_cb(evutil_socket_t fd, short what, void *arg)
 {
-	zbx_ipc_async_socket_t	*asocket = (zbx_ipc_async_socket_t *)arg;
+	trx_ipc_async_socket_t	*asocket = (trx_ipc_async_socket_t *)arg;
 
 	TRX_UNUSED(fd);
 	TRX_UNUSED(what);
@@ -964,7 +964,7 @@ static void	ipc_async_socket_read_event_cb(evutil_socket_t fd, short what, void 
  ******************************************************************************/
 static void	ipc_async_socket_timer_cb(evutil_socket_t fd, short what, void *arg)
 {
-	zbx_ipc_async_socket_t	*asocket = (zbx_ipc_async_socket_t *)arg;
+	trx_ipc_async_socket_t	*asocket = (trx_ipc_async_socket_t *)arg;
 
 	TRX_UNUSED(fd);
 	TRX_UNUSED(what);
@@ -981,7 +981,7 @@ static void	ipc_async_socket_timer_cb(evutil_socket_t fd, short what, void *arg)
  * Parameters: service - [IN] the IPC service                                 *
  *                                                                            *
  ******************************************************************************/
-static void	ipc_service_accept(zbx_ipc_service_t *service)
+static void	ipc_service_accept(trx_ipc_service_t *service)
 {
 	int	fd;
 
@@ -993,7 +993,7 @@ static void	ipc_service_accept(zbx_ipc_service_t *service)
 		{
 			/* If there is unaccepted connection libevent will call registered callback function over and */
 			/* over again. It is better to exit straight away and cause all other processes to stop. */
-			treegix_log(LOG_LEVEL_CRIT, "cannot accept incoming IPC connection: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_CRIT, "cannot accept incoming IPC connection: %s", trx_strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -1016,18 +1016,18 @@ static void	ipc_service_accept(zbx_ipc_service_t *service)
  * Return value: The created message.                                         *
  *                                                                            *
  ******************************************************************************/
-static zbx_ipc_message_t	*ipc_message_create(zbx_uint32_t code, const unsigned char *data, zbx_uint32_t size)
+static trx_ipc_message_t	*ipc_message_create(trx_uint32_t code, const unsigned char *data, trx_uint32_t size)
 {
-	zbx_ipc_message_t	*message;
+	trx_ipc_message_t	*message;
 
-	message = (zbx_ipc_message_t *)zbx_malloc(NULL, sizeof(zbx_ipc_message_t));
+	message = (trx_ipc_message_t *)trx_malloc(NULL, sizeof(trx_ipc_message_t));
 
 	message->code = code;
 	message->size = size;
 
 	if (0 != size)
 	{
-		message->data = (unsigned char *)zbx_malloc(NULL, size);
+		message->data = (unsigned char *)trx_malloc(NULL, size);
 		memcpy(message->data, data, size);
 	}
 	else
@@ -1101,7 +1101,7 @@ static void	ipc_service_free_libevent(void)
  ******************************************************************************/
 static void	ipc_service_client_connected_cb(evutil_socket_t fd, short what, void *arg)
 {
-	zbx_ipc_service_t	*service = (zbx_ipc_service_t *)arg;
+	trx_ipc_service_t	*service = (trx_ipc_service_t *)arg;
 
 	TRX_UNUSED(fd);
 	TRX_UNUSED(what);
@@ -1134,14 +1134,14 @@ static void	ipc_service_timer_cb(evutil_socket_t fd, short what, void *arg)
  ******************************************************************************/
 static int	ipc_check_running_service(const char *service_name)
 {
-	zbx_ipc_socket_t	csocket;
+	trx_ipc_socket_t	csocket;
 	int			ret;
 	char			*error = NULL;
 
-	if (SUCCEED == (ret = zbx_ipc_socket_open(&csocket, service_name, 0, &error)))
-		zbx_ipc_socket_close(&csocket);
+	if (SUCCEED == (ret = trx_ipc_socket_open(&csocket, service_name, 0, &error)))
+		trx_ipc_socket_close(&csocket);
 	else
-		zbx_free(error);
+		trx_free(error);
 
 	return ret;
 }
@@ -1152,7 +1152,7 @@ static int	ipc_check_running_service(const char *service_name)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_socket_open                                              *
+ * Function: trx_ipc_socket_open                                              *
  *                                                                            *
  * Purpose: opens socket to an IPC service listening on the specified path    *
  *                                                                            *
@@ -1165,7 +1165,7 @@ static int	ipc_check_running_service(const char *service_name)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_socket_open(zbx_ipc_socket_t *csocket, const char *service_name, int timeout, char **error)
+int	trx_ipc_socket_open(trx_ipc_socket_t *csocket, const char *service_name, int timeout, char **error)
 {
 	struct sockaddr_un	addr;
 	time_t			start;
@@ -1180,7 +1180,7 @@ int	zbx_ipc_socket_open(zbx_ipc_socket_t *csocket, const char *service_name, int
 
 	if (-1 == (csocket->fd = socket(AF_UNIX, SOCK_STREAM, 0)))
 	{
-		*error = zbx_dsprintf(*error, "Cannot create client socket: %s.", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "Cannot create client socket: %s.", trx_strerror(errno));
 		goto out;
 	}
 
@@ -1194,8 +1194,8 @@ int	zbx_ipc_socket_open(zbx_ipc_socket_t *csocket, const char *service_name, int
 	{
 		if (time(NULL) - start > timeout)
 		{
-			*error = zbx_dsprintf(*error, "Cannot connect to service \"%s\": %s.", service_name,
-					zbx_strerror(errno));
+			*error = trx_dsprintf(*error, "Cannot connect to service \"%s\": %s.", service_name,
+					trx_strerror(errno));
 			close(csocket->fd);
 			goto out;
 		}
@@ -1208,20 +1208,20 @@ int	zbx_ipc_socket_open(zbx_ipc_socket_t *csocket, const char *service_name, int
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_socket_close                                             *
+ * Function: trx_ipc_socket_close                                             *
  *                                                                            *
  * Purpose: closes socket to an IPC service                                   *
  *                                                                            *
  * Parameters: csocket - [IN/OUT] the IPC socket to close                     *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_socket_close(zbx_ipc_socket_t *csocket)
+void	trx_ipc_socket_close(trx_ipc_socket_t *csocket)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -1236,7 +1236,7 @@ void	zbx_ipc_socket_close(zbx_ipc_socket_t *csocket)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_socket_write                                             *
+ * Function: trx_ipc_socket_write                                             *
  *                                                                            *
  * Purpose: writes a message to IPC service                                   *
  *                                                                            *
@@ -1249,10 +1249,10 @@ void	zbx_ipc_socket_close(zbx_ipc_socket_t *csocket)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_socket_write(zbx_ipc_socket_t *csocket, zbx_uint32_t code, const unsigned char *data, zbx_uint32_t size)
+int	trx_ipc_socket_write(trx_ipc_socket_t *csocket, trx_uint32_t code, const unsigned char *data, trx_uint32_t size)
 {
 	int		ret;
-	zbx_uint32_t	size_sent;
+	trx_uint32_t	size_sent;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -1264,14 +1264,14 @@ int	zbx_ipc_socket_write(zbx_ipc_socket_t *csocket, zbx_uint32_t code, const uns
 	else
 		ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_socket_read                                              *
+ * Function: trx_ipc_socket_read                                              *
  *                                                                            *
  * Purpose: reads a message from IPC service                                  *
  *                                                                            *
@@ -1285,10 +1285,10 @@ int	zbx_ipc_socket_write(zbx_ipc_socket_t *csocket, zbx_uint32_t code, const uns
  *           the caller.                                                      *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_socket_read(zbx_ipc_socket_t *csocket, zbx_ipc_message_t *message)
+int	trx_ipc_socket_read(trx_ipc_socket_t *csocket, trx_ipc_message_t *message)
 {
 	int		ret = FAIL;
-	zbx_uint32_t	rx_bytes = 0, header[2];
+	trx_uint32_t	rx_bytes = 0, header[2];
 	unsigned char	*data = NULL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -1298,7 +1298,7 @@ int	zbx_ipc_socket_read(zbx_ipc_socket_t *csocket, zbx_ipc_message_t *message)
 
 	if (SUCCEED != ipc_message_is_completed(header, rx_bytes))
 	{
-		zbx_free(data);
+		trx_free(data);
 		goto out;
 	}
 
@@ -1310,69 +1310,69 @@ int	zbx_ipc_socket_read(zbx_ipc_socket_t *csocket, zbx_ipc_message_t *message)
 	{
 		char	*msg = NULL;
 
-		zbx_ipc_message_format(message, &msg);
+		trx_ipc_message_format(message, &msg);
 
 		treegix_log(LOG_LEVEL_DEBUG, "%s() %s", __func__, msg);
 
-		zbx_free(msg);
+		trx_free(msg);
 	}
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_message_free                                             *
+ * Function: trx_ipc_message_free                                             *
  *                                                                            *
  * Purpose: frees the resources allocated to store IPC message data           *
  *                                                                            *
  * Parameters: message - [IN] the message to free                             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_message_free(zbx_ipc_message_t *message)
+void	trx_ipc_message_free(trx_ipc_message_t *message)
 {
 	if (NULL != message)
 	{
-		zbx_free(message->data);
-		zbx_free(message);
+		trx_free(message->data);
+		trx_free(message);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_message_clean                                            *
+ * Function: trx_ipc_message_clean                                            *
  *                                                                            *
  * Purpose: frees the resources allocated to store IPC message data           *
  *                                                                            *
  * Parameters: message - [IN] the message to clean                            *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_message_clean(zbx_ipc_message_t *message)
+void	trx_ipc_message_clean(trx_ipc_message_t *message)
 {
-	zbx_free(message->data);
+	trx_free(message->data);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_message_init                                             *
+ * Function: trx_ipc_message_init                                             *
  *                                                                            *
  * Purpose: initializes IPC message                                           *
  *                                                                            *
  * Parameters: message - [IN] the message to initialize                       *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_message_init(zbx_ipc_message_t *message)
+void	trx_ipc_message_init(trx_ipc_message_t *message)
 {
-	memset(message, 0, sizeof(zbx_ipc_message_t));
+	memset(message, 0, sizeof(trx_ipc_message_t));
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_message_format                                           *
+ * Function: trx_ipc_message_format                                           *
  *                                                                            *
  * Purpose: formats message to readable format for debug messages             *
  *                                                                            *
@@ -1380,10 +1380,10 @@ void	zbx_ipc_message_init(zbx_ipc_message_t *message)
  *             data    - [OUT] the formatted message                          *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_message_format(const zbx_ipc_message_t *message, char **data)
+void	trx_ipc_message_format(const trx_ipc_message_t *message, char **data)
 {
 	size_t		data_alloc = TRX_IPC_DATA_DUMP_SIZE * 4 + 32, data_offset = 0;
-	zbx_uint32_t	i, data_num;
+	trx_uint32_t	i, data_num;
 
 	if (NULL == message)
 		return;
@@ -1393,15 +1393,15 @@ void	zbx_ipc_message_format(const zbx_ipc_message_t *message, char **data)
 	if (TRX_IPC_DATA_DUMP_SIZE < data_num)
 		data_num = TRX_IPC_DATA_DUMP_SIZE;
 
-	*data = (char *)zbx_malloc(*data, data_alloc);
-	zbx_snprintf_alloc(data, &data_alloc, &data_offset, "code:%u size:%u data:", message->code, message->size);
+	*data = (char *)trx_malloc(*data, data_alloc);
+	trx_snprintf_alloc(data, &data_alloc, &data_offset, "code:%u size:%u data:", message->code, message->size);
 
 	for (i = 0; i < data_num; i++)
 	{
 		if (0 != i)
-			zbx_strcpy_alloc(data, &data_alloc, &data_offset, (0 == (i & 7) ? " | " : " "));
+			trx_strcpy_alloc(data, &data_alloc, &data_offset, (0 == (i & 7) ? " | " : " "));
 
-		zbx_snprintf_alloc(data, &data_alloc, &data_offset, "%02x", (int)message->data[i]);
+		trx_snprintf_alloc(data, &data_alloc, &data_offset, "%02x", (int)message->data[i]);
 	}
 
 	(*data)[data_offset] = '\0';
@@ -1409,7 +1409,7 @@ void	zbx_ipc_message_format(const zbx_ipc_message_t *message, char **data)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_message_copy                                             *
+ * Function: trx_ipc_message_copy                                             *
  *                                                                            *
  * Purpose: copies ipc message                                                *
  *                                                                            *
@@ -1417,11 +1417,11 @@ void	zbx_ipc_message_format(const zbx_ipc_message_t *message, char **data)
  *             src - [IN] the source message                                  *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_message_copy(zbx_ipc_message_t *dst, const zbx_ipc_message_t *src)
+void	trx_ipc_message_copy(trx_ipc_message_t *dst, const trx_ipc_message_t *src)
 {
 	dst->code = src->code;
 	dst->size = src->size;
-	dst->data = (unsigned char *)zbx_malloc(NULL, src->size);
+	dst->data = (unsigned char *)trx_malloc(NULL, src->size);
 	memcpy(dst->data, src->data, src->size);
 }
 
@@ -1431,7 +1431,7 @@ void	zbx_ipc_message_copy(zbx_ipc_message_t *dst, const zbx_ipc_message_t *src)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_service_init_env                                         *
+ * Function: trx_ipc_service_init_env                                         *
  *                                                                            *
  * Purpose: initializes IPC service environment                               *
  *                                                                            *
@@ -1442,7 +1442,7 @@ void	zbx_ipc_message_copy(zbx_ipc_message_t *dst, const zbx_ipc_message_t *src)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_service_init_env(const char *path, char **error)
+int	trx_ipc_service_init_env(const char *path, char **error)
 {
 	struct stat	fs;
 	int		ret = FAIL;
@@ -1451,34 +1451,34 @@ int	zbx_ipc_service_init_env(const char *path, char **error)
 
 	if (0 != ipc_path_root_len)
 	{
-		*error = zbx_dsprintf(*error, "The IPC service environment has been already initialized with"
+		*error = trx_dsprintf(*error, "The IPC service environment has been already initialized with"
 				" root directory at \"%s\".", ipc_get_path());
 		goto out;
 	}
 
 	if (0 != stat(path, &fs))
 	{
-		*error = zbx_dsprintf(*error, "Failed to stat the specified path \"%s\": %s.", path,
-				zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "Failed to stat the specified path \"%s\": %s.", path,
+				trx_strerror(errno));
 		goto out;
 	}
 
 	if (0 == S_ISDIR(fs.st_mode))
 	{
-		*error = zbx_dsprintf(*error, "The specified path \"%s\" is not a directory.", path);
+		*error = trx_dsprintf(*error, "The specified path \"%s\" is not a directory.", path);
 		goto out;
 	}
 
 	if (0 != access(path, W_OK | R_OK))
 	{
-		*error = zbx_dsprintf(*error, "Cannot access path \"%s\": %s.", path, zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "Cannot access path \"%s\": %s.", path, trx_strerror(errno));
 		goto out;
 	}
 
 	ipc_path_root_len = strlen(path);
 	if (TRX_IPC_PATH_MAX < ipc_path_root_len + 3)
 	{
-		*error = zbx_dsprintf(*error, "The IPC root path \"%s\" is too long.", path);
+		*error = trx_dsprintf(*error, "The IPC root path \"%s\" is too long.", path);
 		goto out;
 	}
 
@@ -1491,19 +1491,19 @@ int	zbx_ipc_service_init_env(const char *path, char **error)
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_service_free_env                                         *
+ * Function: trx_ipc_service_free_env                                         *
  *                                                                            *
  * Purpose: frees IPC service environment                                     *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_service_free_env(void)
+void	trx_ipc_service_free_env(void)
 {
 	ipc_service_free_libevent();
 }
@@ -1511,7 +1511,7 @@ void	zbx_ipc_service_free_env(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_service_start                                            *
+ * Function: trx_ipc_service_start                                            *
  *                                                                            *
  * Purpose: starts IPC service on the specified path                          *
  *                                                                            *
@@ -1523,7 +1523,7 @@ void	zbx_ipc_service_free_env(void)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_service_start(zbx_ipc_service_t *service, const char *service_name, char **error)
+int	trx_ipc_service_start(trx_ipc_service_t *service, const char *service_name, char **error)
 {
 	struct sockaddr_un	addr;
 	const char		*socket_path;
@@ -1541,13 +1541,13 @@ int	zbx_ipc_service_start(zbx_ipc_service_t *service, const char *service_name, 
 	{
 		if (0 != access(socket_path, W_OK))
 		{
-			*error = zbx_dsprintf(*error, "The file \"%s\" is used by another process.", socket_path);
+			*error = trx_dsprintf(*error, "The file \"%s\" is used by another process.", socket_path);
 			goto out;
 		}
 
 		if (SUCCEED == ipc_check_running_service(service_name))
 		{
-			*error = zbx_dsprintf(*error, "\"%s\" service is already running.", service_name);
+			*error = trx_dsprintf(*error, "\"%s\" service is already running.", service_name);
 			goto out;
 		}
 
@@ -1556,7 +1556,7 @@ int	zbx_ipc_service_start(zbx_ipc_service_t *service, const char *service_name, 
 
 	if (-1 == (service->fd = socket(AF_UNIX, SOCK_STREAM, 0)))
 	{
-		*error = zbx_dsprintf(*error, "Cannot create socket: %s.", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "Cannot create socket: %s.", trx_strerror(errno));
 		goto out;
 	}
 
@@ -1566,19 +1566,19 @@ int	zbx_ipc_service_start(zbx_ipc_service_t *service, const char *service_name, 
 
 	if (0 != bind(service->fd, (struct sockaddr*)&addr, sizeof(addr)))
 	{
-		*error = zbx_dsprintf(*error, "Cannot bind socket to \"%s\": %s.", socket_path, zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "Cannot bind socket to \"%s\": %s.", socket_path, trx_strerror(errno));
 		goto out;
 	}
 
 	if (0 != listen(service->fd, SOMAXCONN))
 	{
-		*error = zbx_dsprintf(*error, "Cannot listen socket: %s.", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "Cannot listen socket: %s.", trx_strerror(errno));
 		goto out;
 	}
 
-	service->path = zbx_strdup(NULL, service_name);
-	zbx_vector_ptr_create(&service->clients);
-	zbx_queue_ptr_create(&service->clients_recv);
+	service->path = trx_strdup(NULL, service_name);
+	trx_vector_ptr_create(&service->clients);
+	trx_queue_ptr_create(&service->clients_recv);
 
 	service->ev = event_base_new();
 	service->ev_listener = event_new(service->ev, service->fd, EV_READ | EV_PERSIST,
@@ -1591,21 +1591,21 @@ int	zbx_ipc_service_start(zbx_ipc_service_t *service, const char *service_name, 
 out:
 	umask(mode);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_service_close                                            *
+ * Function: trx_ipc_service_close                                            *
  *                                                                            *
  * Purpose: closes IPC service and frees the resources allocated by it        *
  *                                                                            *
  * Parameters: service - [IN/OUT] the IPC service                             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_service_close(zbx_ipc_service_t *service)
+void	trx_ipc_service_close(trx_ipc_service_t *service)
 {
 	int	i;
 
@@ -1614,12 +1614,12 @@ void	zbx_ipc_service_close(zbx_ipc_service_t *service)
 	close(service->fd);
 
 	for (i = 0; i < service->clients.values_num; i++)
-		ipc_client_free((zbx_ipc_client_t *)service->clients.values[i]);
+		ipc_client_free((trx_ipc_client_t *)service->clients.values[i]);
 
-	zbx_free(service->path);
+	trx_free(service->path);
 
-	zbx_vector_ptr_destroy(&service->clients);
-	zbx_queue_ptr_destroy(&service->clients_recv);
+	trx_vector_ptr_destroy(&service->clients);
+	trx_queue_ptr_destroy(&service->clients_recv);
 
 	event_free(service->ev_timer);
 	event_free(service->ev_listener);
@@ -1630,7 +1630,7 @@ void	zbx_ipc_service_close(zbx_ipc_service_t *service)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_service_recv                                             *
+ * Function: trx_ipc_service_recv                                             *
  *                                                                            *
  * Purpose: receives ipc message from a connected client                      *
  *                                                                            *
@@ -1642,7 +1642,7 @@ void	zbx_ipc_service_close(zbx_ipc_service_t *service)
  *                             NULL if there are no messages and the          *
  *                             specified timeout passed.                      *
  *                             The client must be released by caller with     *
- *                             zbx_ipc_client_release() function.             *
+ *                             trx_ipc_client_release() function.             *
  *             message - [OUT] the received message or NULL if the client     *
  *                             connection was closed.                         *
  *                             The message must be freed by caller with       *
@@ -1656,14 +1656,14 @@ void	zbx_ipc_service_close(zbx_ipc_service_t *service)
  *               TRX_IPC_RECV_TIMEOUT   - returned after timeout expired      *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_service_recv(zbx_ipc_service_t *service, int timeout, zbx_ipc_client_t **client,
-		zbx_ipc_message_t **message)
+int	trx_ipc_service_recv(trx_ipc_service_t *service, int timeout, trx_ipc_client_t **client,
+		trx_ipc_message_t **message)
 {
 	int	ret, flags;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() timeout:%d", __func__, timeout);
 
-	if (timeout != 0 && SUCCEED == zbx_queue_ptr_empty(&service->clients_recv))
+	if (timeout != 0 && SUCCEED == trx_queue_ptr_empty(&service->clients_recv))
 	{
 		if (TRX_IPC_WAIT_FOREVER != timeout)
 		{
@@ -1679,20 +1679,20 @@ int	zbx_ipc_service_recv(zbx_ipc_service_t *service, int timeout, zbx_ipc_client
 
 	if (NULL != (*client = ipc_service_pop_client(service)))
 	{
-		if (NULL != (*message = (zbx_ipc_message_t *)zbx_queue_ptr_pop(&(*client)->rx_queue)))
+		if (NULL != (*message = (trx_ipc_message_t *)trx_queue_ptr_pop(&(*client)->rx_queue)))
 		{
 			if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_TRACE))
 			{
 				char	*data = NULL;
 
-				zbx_ipc_message_format(*message, &data);
+				trx_ipc_message_format(*message, &data);
 				treegix_log(LOG_LEVEL_DEBUG, "%s() %s", __func__, data);
 
-				zbx_free(data);
+				trx_free(data);
 			}
 
 			ipc_service_push_client(service, *client);
-			zbx_ipc_client_addref(*client);
+			trx_ipc_client_addref(*client);
 		}
 
 		ret = (EVLOOP_NONBLOCK == flags ? TRX_IPC_RECV_IMMEDIATE : TRX_IPC_RECV_WAIT);
@@ -1712,7 +1712,7 @@ int	zbx_ipc_service_recv(zbx_ipc_service_t *service, int timeout, zbx_ipc_client
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_client_send                                              *
+ * Function: trx_ipc_client_send                                              *
  *                                                                            *
  * Purpose: Sends IPC message to client                                       *
  *                                                                            *
@@ -1722,14 +1722,14 @@ int	zbx_ipc_service_recv(zbx_ipc_service_t *service, int timeout, zbx_ipc_client
  *             size   - [IN] the data size                                    *
  *                                                                            *
  * Comments: If data can't be written directly to socket (buffer full) then   *
- *           the message is queued and sent during zbx_ipc_service_recv()     *
+ *           the message is queued and sent during trx_ipc_service_recv()     *
  *           messaging loop whenever socket becomes ready.                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_client_send(zbx_ipc_client_t *client, zbx_uint32_t code, const unsigned char *data, zbx_uint32_t size)
+int	trx_ipc_client_send(trx_ipc_client_t *client, trx_uint32_t code, const unsigned char *data, trx_uint32_t size)
 {
-	zbx_uint32_t		tx_size = 0;
-	zbx_ipc_message_t	*message;
+	trx_uint32_t		tx_size = 0;
+	trx_ipc_message_t	*message;
 	int			ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() clientid:" TRX_FS_UI64, __func__, client->id);
@@ -1737,7 +1737,7 @@ int	zbx_ipc_client_send(zbx_ipc_client_t *client, zbx_uint32_t code, const unsig
 	if (0 != client->tx_bytes)
 	{
 		message = ipc_message_create(code, data, size);
-		zbx_queue_ptr_push(&client->tx_queue, message);
+		trx_queue_ptr_push(&client->tx_queue, message);
 		ret = SUCCEED;
 		goto out;
 	}
@@ -1749,7 +1749,7 @@ int	zbx_ipc_client_send(zbx_ipc_client_t *client, zbx_uint32_t code, const unsig
 	{
 		client->tx_header[TRX_IPC_MESSAGE_CODE] = code;
 		client->tx_header[TRX_IPC_MESSAGE_SIZE] = size;
-		client->tx_data = (unsigned char *)zbx_malloc(NULL, size);
+		client->tx_data = (unsigned char *)trx_malloc(NULL, size);
 		memcpy(client->tx_data, data, size);
 		client->tx_bytes = TRX_IPC_HEADER_SIZE + size - tx_size;
 		event_add(client->tx_event, NULL);
@@ -1757,58 +1757,58 @@ int	zbx_ipc_client_send(zbx_ipc_client_t *client, zbx_uint32_t code, const unsig
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_client_close                                             *
+ * Function: trx_ipc_client_close                                             *
  *                                                                            *
  * Purpose: closes client socket and frees resources allocated for client     *
  *                                                                            *
  * Parameters: client - [IN] the IPC client                                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_client_close(zbx_ipc_client_t *client)
+void	trx_ipc_client_close(trx_ipc_client_t *client)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	ipc_client_free_events(client);
-	zbx_ipc_socket_close(&client->csocket);
+	trx_ipc_socket_close(&client->csocket);
 
 	ipc_service_remove_client(client->service, client);
-	zbx_queue_ptr_remove_value(&client->service->clients_recv, client);
-	zbx_ipc_client_release(client);
+	trx_queue_ptr_remove_value(&client->service->clients_recv, client);
+	trx_ipc_client_release(client);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
-void	zbx_ipc_client_addref(zbx_ipc_client_t *client)
+void	trx_ipc_client_addref(trx_ipc_client_t *client)
 {
 	client->refcount++;
 }
 
-void	zbx_ipc_client_release(zbx_ipc_client_t *client)
+void	trx_ipc_client_release(trx_ipc_client_t *client)
 {
 	if (0 == --client->refcount)
 		ipc_client_free(client);
 }
 
-int	zbx_ipc_client_connected(zbx_ipc_client_t *client)
+int	trx_ipc_client_connected(trx_ipc_client_t *client)
 {
 	return (NULL == client->rx_event ? FAIL : SUCCEED);
 }
 
-zbx_uint64_t	zbx_ipc_client_id(const zbx_ipc_client_t *client)
+trx_uint64_t	trx_ipc_client_id(const trx_ipc_client_t *client)
 {
 	return client->id;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_async_socket_open                                        *
+ * Function: trx_ipc_async_socket_open                                        *
  *                                                                            *
  * Purpose: opens asynchronous socket to IPC service client                   *
  *                                                                            *
@@ -1821,19 +1821,19 @@ zbx_uint64_t	zbx_ipc_client_id(const zbx_ipc_client_t *client)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_async_socket_open(zbx_ipc_async_socket_t *asocket, const char *service_name, int timeout, char **error)
+int	trx_ipc_async_socket_open(trx_ipc_async_socket_t *asocket, const char *service_name, int timeout, char **error)
 {
 	int	ret = FAIL, flags;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	memset(asocket, 0, sizeof(zbx_ipc_async_socket_t));
-	asocket->client = (zbx_ipc_client_t *)zbx_malloc(NULL, sizeof(zbx_ipc_client_t));
-	memset(asocket->client, 0, sizeof(zbx_ipc_client_t));
+	memset(asocket, 0, sizeof(trx_ipc_async_socket_t));
+	asocket->client = (trx_ipc_client_t *)trx_malloc(NULL, sizeof(trx_ipc_client_t));
+	memset(asocket->client, 0, sizeof(trx_ipc_client_t));
 
-	if (SUCCEED != zbx_ipc_socket_open(&asocket->client->csocket, service_name, timeout, error))
+	if (SUCCEED != trx_ipc_socket_open(&asocket->client->csocket, service_name, timeout, error))
 	{
-		zbx_free(asocket->client);
+		trx_free(asocket->client);
 		goto out;
 	}
 
@@ -1861,20 +1861,20 @@ int	zbx_ipc_async_socket_open(zbx_ipc_async_socket_t *asocket, const char *servi
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_async_socket_close                                       *
+ * Function: trx_ipc_async_socket_close                                       *
  *                                                                            *
  * Purpose: closes asynchronous IPC socket and frees allocated resources      *
  *                                                                            *
  * Parameters: asocket - [IN] the asynchronous IPC socket                     *
  *                                                                            *
  ******************************************************************************/
-void	zbx_ipc_async_socket_close(zbx_ipc_async_socket_t *asocket)
+void	trx_ipc_async_socket_close(trx_ipc_async_socket_t *asocket)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -1888,7 +1888,7 @@ void	zbx_ipc_async_socket_close(zbx_ipc_async_socket_t *asocket)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_async_socket_send                                        *
+ * Function: trx_ipc_async_socket_send                                        *
  *                                                                            *
  * Purpose: Sends message through asynchronous IPC socket                     *
  *                                                                            *
@@ -1898,28 +1898,28 @@ void	zbx_ipc_async_socket_close(zbx_ipc_async_socket_t *asocket)
  *             size    - [IN] the data size                                   *
  *                                                                            *
  * Comments: If data can't be written directly to socket (buffer full) then   *
- *           the message is queued and sent during zbx_ipc_async_socket_recv()*
- *           or zbx_ipc_async_socket_flush() functions whenever socket becomes*
+ *           the message is queued and sent during trx_ipc_async_socket_recv()*
+ *           or trx_ipc_async_socket_flush() functions whenever socket becomes*
  *           ready.                                                           *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_async_socket_send(zbx_ipc_async_socket_t *asocket, zbx_uint32_t code, const unsigned char *data,
-		zbx_uint32_t size)
+int	trx_ipc_async_socket_send(trx_ipc_async_socket_t *asocket, trx_uint32_t code, const unsigned char *data,
+		trx_uint32_t size)
 {
 	int	ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	ret = zbx_ipc_client_send(asocket->client, code, data, size);
+	ret = trx_ipc_client_send(asocket->client, code, data, size);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_async_socket_recv                                        *
+ * Function: trx_ipc_async_socket_recv                                        *
  *                                                                            *
  * Purpose: receives message through asynchronous IPC socket                  *
  *                                                                            *
@@ -1937,17 +1937,17 @@ int	zbx_ipc_async_socket_send(zbx_ipc_async_socket_t *asocket, zbx_uint32_t code
  *               FAIL    - otherwise                                          *
  *                                                                            *
  * Comments: After socket has been closed (or connection error has occurred)  *
- *           calls to zbx_ipc_client_read() will return success with buffered *
+ *           calls to trx_ipc_client_read() will return success with buffered *
  *           messages, until all buffered messages are retrieved.             *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_async_socket_recv(zbx_ipc_async_socket_t *asocket, int timeout, zbx_ipc_message_t **message)
+int	trx_ipc_async_socket_recv(trx_ipc_async_socket_t *asocket, int timeout, trx_ipc_message_t **message)
 {
 	int	ret, flags;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() timeout:%d", __func__, timeout);
 
-	if (timeout != 0 && SUCCEED == zbx_queue_ptr_empty(&asocket->client->rx_queue))
+	if (timeout != 0 && SUCCEED == trx_queue_ptr_empty(&asocket->client->rx_queue))
 	{
 		if (TRX_IPC_WAIT_FOREVER != timeout)
 		{
@@ -1964,7 +1964,7 @@ int	zbx_ipc_async_socket_recv(zbx_ipc_async_socket_t *asocket, int timeout, zbx_
 	do
 	{
 		event_base_loop(asocket->ev, flags);
-		*message = (zbx_ipc_message_t *)zbx_queue_ptr_pop(&asocket->client->rx_queue);
+		*message = (trx_ipc_message_t *)trx_queue_ptr_pop(&asocket->client->rx_queue);
 	}
 	while (NULL == *message && TRX_IPC_ASYNC_SOCKET_STATE_NONE == asocket->state);
 
@@ -1972,10 +1972,10 @@ int	zbx_ipc_async_socket_recv(zbx_ipc_async_socket_t *asocket, int timeout, zbx_
 	{
 		char	*data = NULL;
 
-		zbx_ipc_message_format(*message, &data);
+		trx_ipc_message_format(*message, &data);
 		treegix_log(LOG_LEVEL_DEBUG, "%s() %s", __func__, data);
 
-		zbx_free(data);
+		trx_free(data);
 	}
 
 	if (NULL != *message || TRX_IPC_ASYNC_SOCKET_STATE_ERROR != asocket->state)
@@ -1992,7 +1992,7 @@ int	zbx_ipc_async_socket_recv(zbx_ipc_async_socket_t *asocket, int timeout, zbx_
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_async_socket_flush                                       *
+ * Function: trx_ipc_async_socket_flush                                       *
  *                                                                            *
  * Purpose: flushes unsent through asynchronous IPC socket                    *
  *                                                                            *
@@ -2002,13 +2002,13 @@ int	zbx_ipc_async_socket_recv(zbx_ipc_async_socket_t *asocket, int timeout, zbx_
  *                            used for blocking call without timeout          *
  *                                                                            *
  * Return value: SUCCEED - the data was flushed successfully or timeout       *
- *                         occurred. Use zbx_ipc_client_unsent_data() to      *
+ *                         occurred. Use trx_ipc_client_unsent_data() to      *
  *                         check if all data was sent.                        *
  *               FAIL    - failed to send data (connection was closed or an   *
  *                         error occurred).                                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_async_socket_flush(zbx_ipc_async_socket_t *asocket, int timeout)
+int	trx_ipc_async_socket_flush(trx_ipc_async_socket_t *asocket, int timeout)
 {
 	int	ret = FAIL, flags;
 
@@ -2041,7 +2041,7 @@ int	zbx_ipc_async_socket_flush(zbx_ipc_async_socket_t *asocket, int timeout)
 	{
 		event_base_loop(asocket->ev, flags);
 
-		if (SUCCEED != zbx_ipc_client_connected(asocket->client))
+		if (SUCCEED != trx_ipc_client_connected(asocket->client))
 			goto out;
 	}
 	while (0 != timeout && 0 != asocket->client->tx_bytes && TRX_IPC_ASYNC_SOCKET_STATE_NONE == asocket->state);
@@ -2061,7 +2061,7 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_async_socket_check_unsent                                *
+ * Function: trx_ipc_async_socket_check_unsent                                *
  *                                                                            *
  * Purpose: checks if there are data to be sent                               *
  *                                                                            *
@@ -2071,14 +2071,14 @@ out:
  *               FAIL    - all data has been sent                             *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_async_socket_check_unsent(zbx_ipc_async_socket_t *asocket)
+int	trx_ipc_async_socket_check_unsent(trx_ipc_async_socket_t *asocket)
 {
 	return (0 == asocket->client->tx_bytes ? FAIL : SUCCEED);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_ipc_async_exchange                                           *
+ * Function: trx_ipc_async_exchange                                           *
  *                                                                            *
  * Purpose: connect, send message and receive response in a given timeout     *
  *                                                                            *
@@ -2090,58 +2090,58 @@ int	zbx_ipc_async_socket_check_unsent(zbx_ipc_async_socket_t *asocket)
  *             data         - [IN] the data                                   *
  *             size         - [IN] the data size                              *
  *             out          - [OUT] the received message or NULL on error     *
- *                                  The message must be freed by zbx_free()   *
+ *                                  The message must be freed by trx_free()   *
  *             error        - [OUT] the error message                         *
  *                                                                            *
  * Return value: SUCCEED - successfully sent message and received response    *
  *               FAIL    - error occurred                                     *
  *                                                                            *
  ******************************************************************************/
-int	zbx_ipc_async_exchange(const char *service_name, zbx_uint32_t code, int timeout, const unsigned char *data,
-		zbx_uint32_t size, unsigned char **out, char **error)
+int	trx_ipc_async_exchange(const char *service_name, trx_uint32_t code, int timeout, const unsigned char *data,
+		trx_uint32_t size, unsigned char **out, char **error)
 {
-	zbx_ipc_message_t	*message;
-	zbx_ipc_async_socket_t	asocket;
+	trx_ipc_message_t	*message;
+	trx_ipc_async_socket_t	asocket;
 	int			ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() service:'%s' code:%u timeout:%d", __func__, service_name, code, timeout);
 
-	if (FAIL == zbx_ipc_async_socket_open(&asocket, service_name, timeout, error))
+	if (FAIL == trx_ipc_async_socket_open(&asocket, service_name, timeout, error))
 		goto out;
 
-	if (FAIL == zbx_ipc_async_socket_send(&asocket, code, data, size))
+	if (FAIL == trx_ipc_async_socket_send(&asocket, code, data, size))
 	{
-		*error = zbx_strdup(NULL, "Cannot send request");
+		*error = trx_strdup(NULL, "Cannot send request");
 		goto fail;
 	}
 
-	if (FAIL == zbx_ipc_async_socket_flush(&asocket, timeout))
+	if (FAIL == trx_ipc_async_socket_flush(&asocket, timeout))
 	{
-		*error = zbx_strdup(NULL, "Cannot flush request");
+		*error = trx_strdup(NULL, "Cannot flush request");
 		goto fail;
 	}
 
-	if (FAIL == zbx_ipc_async_socket_recv(&asocket, timeout, &message))
+	if (FAIL == trx_ipc_async_socket_recv(&asocket, timeout, &message))
 	{
-		*error = zbx_strdup(NULL, "Cannot receive response");
+		*error = trx_strdup(NULL, "Cannot receive response");
 		goto fail;
 	}
 
 	if (NULL == message)
 	{
-		*error = zbx_strdup(NULL, "Timeout while waiting for response");
+		*error = trx_strdup(NULL, "Timeout while waiting for response");
 		goto fail;
 	}
 
 	*out = message->data;
 	message->data = NULL;
 
-	zbx_ipc_message_free(message);
+	trx_ipc_message_free(message);
 	ret = SUCCEED;
 fail:
-	zbx_ipc_async_socket_close(&asocket);
+	trx_ipc_async_socket_close(&asocket);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 	return ret;
 }
 

@@ -225,8 +225,8 @@ static int	DBpatch_4030020(void)
 	int		ret = SUCCEED;
 	DB_ROW		row;
 	DB_RESULT	result;
-	zbx_uint32_t	id, next_id = 0;
-	zbx_uint64_t	last_widgetid = 0, widgetid, fieldid;
+	trx_uint32_t	id, next_id = 0;
+	trx_uint64_t	last_widgetid = 0, widgetid, fieldid;
 
 	if (0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 		return SUCCEED;
@@ -258,17 +258,17 @@ static int	DBpatch_4030020(void)
 			last_widgetid = widgetid;
 			next_id = 0;
 
-			zbx_strlcpy(field, row[2], (pos + 1) - row[2]);
+			trx_strlcpy(field, row[2], (pos + 1) - row[2]);
 		}
 
 		id = atoi(pos + 1);
-		value = zbx_strdup(value, row[3]);
+		value = trx_strdup(value, row[3]);
 		tmp_token = strtok(value, ",\n");
 
 		while (NULL != tmp_token)
 		{
-			token = zbx_strdup(token, tmp_token);
-			zbx_lrtrim(token, " \t\r");
+			token = trx_strdup(token, tmp_token);
+			trx_lrtrim(token, " \t\r");
 
 			if ('\0' == token[0])
 			{
@@ -288,13 +288,13 @@ static int	DBpatch_4030020(void)
 						TRX_DB_OK > DBexecute("delete from widget_field where widget_fieldid="
 								TRX_FS_UI64, fieldid))
 				{
-					zbx_free(token_esc);
+					trx_free(token_esc);
 					ret = FAIL;
 
 					break;
 				}
 
-				zbx_free(token_esc);
+				trx_free(token_esc);
 			}
 
 			next_id++;
@@ -302,8 +302,8 @@ static int	DBpatch_4030020(void)
 		}
 	}
 
-	zbx_free(token);
-	zbx_free(value);
+	trx_free(token);
+	trx_free(value);
 	DBfree_result(result);
 
 #undef FIELD_LEN
@@ -381,12 +381,12 @@ static int	DBpatch_4030027(void)
 	{
 		size_t	exec_params_offset = 0;
 
-		zbx_snprintf_alloc(&exec_params, &exec_params_alloc, &exec_params_offset,
+		trx_snprintf_alloc(&exec_params, &exec_params_alloc, &exec_params_offset,
 			"-username\n%s\n-password\n%s\n", row[2], row[3]);
 
 		if (100 == atoi(row[1]))
 		{
-			zbx_snprintf_alloc(&exec_params, &exec_params_alloc, &exec_params_offset, "-size\n%d\n",
+			trx_snprintf_alloc(&exec_params, &exec_params_alloc, &exec_params_offset, "-size\n%d\n",
 				0 == atoi(row[4]) ? 160 : 136);
 		}
 
@@ -400,17 +400,17 @@ static int	DBpatch_4030027(void)
 					"passwd=''"
 				" where mediatypeid=%s", exec_params_esc, row[0]))
 		{
-			zbx_free(exec_params_esc);
+			trx_free(exec_params_esc);
 			goto out;
 		}
 
-		zbx_free(exec_params_esc);
+		trx_free(exec_params_esc);
 	}
 
 	ret = SUCCEED;
 out:
 	DBfree_result(result);
-	zbx_free(exec_params);
+	trx_free(exec_params);
 
 	return ret;
 }

@@ -2,27 +2,27 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "log.h"
 
 typedef struct
 {
-	zbx_uint64_t ibytes;
-	zbx_uint64_t ipackets;
-	zbx_uint64_t ierr;
-	zbx_uint64_t idrop;
-	zbx_uint64_t ififo;
-	zbx_uint64_t iframe;
-	zbx_uint64_t icompressed;
-	zbx_uint64_t imulticast;
-	zbx_uint64_t obytes;
-	zbx_uint64_t opackets;
-	zbx_uint64_t oerr;
-	zbx_uint64_t odrop;
-	zbx_uint64_t ocolls;
-	zbx_uint64_t ofifo;
-	zbx_uint64_t ocarrier;
-	zbx_uint64_t ocompressed;
+	trx_uint64_t ibytes;
+	trx_uint64_t ipackets;
+	trx_uint64_t ierr;
+	trx_uint64_t idrop;
+	trx_uint64_t ififo;
+	trx_uint64_t iframe;
+	trx_uint64_t icompressed;
+	trx_uint64_t imulticast;
+	trx_uint64_t obytes;
+	trx_uint64_t opackets;
+	trx_uint64_t oerr;
+	trx_uint64_t odrop;
+	trx_uint64_t ocolls;
+	trx_uint64_t ofifo;
+	trx_uint64_t ocarrier;
+	trx_uint64_t ocompressed;
 }
 net_stat_t;
 
@@ -197,13 +197,13 @@ static int	get_net_stat(const char *if_name, net_stat_t *result, char **error)
 
 	if (NULL == if_name || '\0' == *if_name)
 	{
-		*error = zbx_strdup(NULL, "Network interface name cannot be empty.");
+		*error = trx_strdup(NULL, "Network interface name cannot be empty.");
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == (f = fopen("/proc/net/dev", "r")))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot open /proc/net/dev: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot open /proc/net/dev: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -248,11 +248,11 @@ static int	get_net_stat(const char *if_name, net_stat_t *result, char **error)
 		}
 	}
 
-	zbx_fclose(f);
+	trx_fclose(f);
 
 	if (SYSINFO_RET_FAIL == ret)
 	{
-		*error = zbx_strdup(NULL, "Cannot find information for this network interface in /proc/net/dev.");
+		*error = trx_strdup(NULL, "Cannot find information for this network interface in /proc/net/dev.");
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -295,7 +295,7 @@ static int    proc_read_tcp_listen(const char *filename, char **buffer, int *buf
 		if (offset == *buffer_alloc)
 		{
 			*buffer_alloc *= 2;
-			*buffer = (char *)zbx_realloc(*buffer, *buffer_alloc);
+			*buffer = (char *)trx_realloc(*buffer, *buffer_alloc);
 		}
 
 		(*buffer)[offset] = '\0';
@@ -376,7 +376,7 @@ static int	proc_read_file(const char *filename, char **buffer, int *buffer_alloc
 		if (offset == *buffer_alloc)
 		{
 			*buffer_alloc *= 2;
-			*buffer = (char *)zbx_realloc(*buffer, *buffer_alloc);
+			*buffer = (char *)trx_realloc(*buffer, *buffer_alloc);
 		}
 	}
 
@@ -394,7 +394,7 @@ int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -425,7 +425,7 @@ int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, ns.imulticast);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -439,7 +439,7 @@ int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -470,7 +470,7 @@ int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, ns.ocompressed);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -484,7 +484,7 @@ int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -511,7 +511,7 @@ int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, ns.icompressed + ns.ocompressed);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -525,7 +525,7 @@ int	NET_IF_COLLISIONS(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -546,17 +546,17 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		line[MAX_STRING_LEN], *p;
 	FILE		*f;
-	struct zbx_json	j;
+	struct trx_json	j;
 
 	TRX_UNUSED(request);
 
 	if (NULL == (f = fopen("/proc/net/dev", "r")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc/net/dev: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc/net/dev: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	while (NULL != fgets(line, sizeof(line), f))
 	{
@@ -569,18 +569,18 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		for (p = line; ' ' == *p && '\0' != *p; p++)
 			;
 
-		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#IFNAME}", p, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&j);
+		trx_json_addobject(&j, NULL);
+		trx_json_addstring(&j, "{#IFNAME}", p, TRX_JSON_TYPE_STRING);
+		trx_json_close(&j);
 	}
 
-	zbx_fclose(f);
+	trx_fclose(f);
 
-	zbx_json_close(&j);
+	trx_json_close(&j);
 
 	SET_STR_RESULT(result, strdup(j.buffer));
 
-	zbx_json_free(&j);
+	trx_json_free(&j);
 
 	return SYSINFO_RET_OK;
 }
@@ -589,14 +589,14 @@ int	NET_TCP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		pattern[64], *port_str, *buffer = NULL;
 	unsigned short	port;
-	zbx_uint64_t	listen = 0;
+	trx_uint64_t	listen = 0;
 	int		ret = SYSINFO_RET_FAIL, n, buffer_alloc = 64 * TRX_KIBIBYTE;
 #ifdef HAVE_INET_DIAG
 	int		found;
 #endif
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -604,7 +604,7 @@ int	NET_TCP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == port_str || SUCCEED != is_ushort(port_str, &port))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -651,13 +651,13 @@ int	NET_TCP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 		treegix_log(LOG_LEVEL_DEBUG, "netlink interface error: %s", error);
 		treegix_log(LOG_LEVEL_DEBUG, "falling back on reading /proc/net/tcp...");
 #endif
-		buffer = (char *)zbx_malloc(NULL, buffer_alloc);
+		buffer = (char *)trx_malloc(NULL, buffer_alloc);
 
 		if (0 < (n = proc_read_tcp_listen("/proc/net/tcp", &buffer, &buffer_alloc)))
 		{
 			ret = SYSINFO_RET_OK;
 
-			zbx_snprintf(pattern, sizeof(pattern), "%04X 00000000:0000 0A", (unsigned int)port);
+			trx_snprintf(pattern, sizeof(pattern), "%04X 00000000:0000 0A", (unsigned int)port);
 
 			if (NULL != strstr(buffer, pattern))
 			{
@@ -670,14 +670,14 @@ int	NET_TCP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			ret = SYSINFO_RET_OK;
 
-			zbx_snprintf(pattern, sizeof(pattern), "%04X 00000000000000000000000000000000:0000 0A",
+			trx_snprintf(pattern, sizeof(pattern), "%04X 00000000000000000000000000000000:0000 0A",
 					(unsigned int)port);
 
 			if (NULL != strstr(buffer, pattern))
 				listen = 1;
 		}
 out:
-		zbx_free(buffer);
+		trx_free(buffer);
 #ifdef HAVE_INET_DIAG
 	}
 #endif
@@ -690,12 +690,12 @@ int	NET_UDP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		pattern[64], *port_str, *buffer = NULL;
 	unsigned short	port;
-	zbx_uint64_t	listen = 0;
+	trx_uint64_t	listen = 0;
 	int		ret = SYSINFO_RET_FAIL, n, buffer_alloc = 64 * TRX_KIBIBYTE;
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -703,17 +703,17 @@ int	NET_UDP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == port_str || SUCCEED != is_ushort(port_str, &port))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	buffer = (char *)zbx_malloc(NULL, buffer_alloc);
+	buffer = (char *)trx_malloc(NULL, buffer_alloc);
 
 	if (0 < (n = proc_read_file("/proc/net/udp", &buffer, &buffer_alloc)))
 	{
 		ret = SYSINFO_RET_OK;
 
-		zbx_snprintf(pattern, sizeof(pattern), "%04X 00000000:0000 07", (unsigned int)port);
+		trx_snprintf(pattern, sizeof(pattern), "%04X 00000000:0000 07", (unsigned int)port);
 
 		buffer[n] = '\0';
 
@@ -728,7 +728,7 @@ int	NET_UDP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		ret = SYSINFO_RET_OK;
 
-		zbx_snprintf(pattern, sizeof(pattern), "%04X 00000000000000000000000000000000:0000 07",
+		trx_snprintf(pattern, sizeof(pattern), "%04X 00000000000000000000000000000000:0000 07",
 				(unsigned int)port);
 
 		buffer[n] = '\0';
@@ -737,7 +737,7 @@ int	NET_UDP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 			listen = 1;
 	}
 out:
-	zbx_free(buffer);
+	trx_free(buffer);
 
 	SET_UI64_RESULT(result, listen);
 

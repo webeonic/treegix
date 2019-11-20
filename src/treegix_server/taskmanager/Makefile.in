@@ -117,11 +117,11 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxtaskmanager_a_AR = $(AR) $(ARFLAGS)
-libzbxtaskmanager_a_LIBADD =
-am_libzbxtaskmanager_a_OBJECTS = taskmanager.$(OBJEXT) \
+libtrxtaskmanager_a_AR = $(AR) $(ARFLAGS)
+libtrxtaskmanager_a_LIBADD =
+am_libtrxtaskmanager_a_OBJECTS = taskmanager.$(OBJEXT) \
 	proxy_tasks.$(OBJEXT)
-libzbxtaskmanager_a_OBJECTS = $(am_libzbxtaskmanager_a_OBJECTS)
+libtrxtaskmanager_a_OBJECTS = $(am_libtrxtaskmanager_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -150,8 +150,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxtaskmanager_a_SOURCES)
-DIST_SOURCES = $(libzbxtaskmanager_a_SOURCES)
+SOURCES = $(libtrxtaskmanager_a_SOURCES)
+DIST_SOURCES = $(libtrxtaskmanager_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -375,8 +375,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxtaskmanager.a
-libzbxtaskmanager_a_SOURCES = \
+noinst_LIBRARIES = libtrxtaskmanager.a
+libtrxtaskmanager_a_SOURCES = \
 	taskmanager.c taskmanager.h \
 	proxy_tasks.c
 
@@ -417,10 +417,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxtaskmanager.a: $(libzbxtaskmanager_a_OBJECTS) $(libzbxtaskmanager_a_DEPENDENCIES) $(EXTRA_libzbxtaskmanager_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxtaskmanager.a
-	$(AM_V_AR)$(libzbxtaskmanager_a_AR) libzbxtaskmanager.a $(libzbxtaskmanager_a_OBJECTS) $(libzbxtaskmanager_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxtaskmanager.a
+libtrxtaskmanager.a: $(libtrxtaskmanager_a_OBJECTS) $(libtrxtaskmanager_a_DEPENDENCIES) $(EXTRA_libtrxtaskmanager_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxtaskmanager.a
+	$(AM_V_AR)$(libtrxtaskmanager_a_AR) libtrxtaskmanager.a $(libtrxtaskmanager_a_OBJECTS) $(libtrxtaskmanager_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxtaskmanager.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

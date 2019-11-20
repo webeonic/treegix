@@ -35,7 +35,7 @@ class CCorrelation extends CApiService {
 	 * @return array|string
 	 */
 	public function get($options = []) {
-		$options = zbx_array_merge($this->getOptions, $options);
+		$options = trx_array_merge($this->getOptions, $options);
 
 		if ($options['editable'] && self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
 			return ($options['countOutput'] && !$options['groupCount']) ? '0' : [];
@@ -92,7 +92,7 @@ class CCorrelation extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -165,7 +165,7 @@ class CCorrelation extends CApiService {
 	 * @return array
 	 */
 	public function create($correlations) {
-		$correlations = zbx_toArray($correlations);
+		$correlations = trx_toArray($correlations);
 
 		$this->validateCreate($correlations);
 
@@ -177,7 +177,7 @@ class CCorrelation extends CApiService {
 
 		// Insert correlations into DB, get back array with new correlation IDs.
 		$correlations = DB::save('correlation', $correlations);
-		$correlations = zbx_toHash($correlations, 'correlationid');
+		$correlations = trx_toHash($correlations, 'correlationid');
 
 		$conditions_to_create = [];
 		$operations_to_create = [];
@@ -290,7 +290,7 @@ class CCorrelation extends CApiService {
 	 * @return array
 	 */
 	public function update($correlations) {
-		$correlations = zbx_toArray($correlations);
+		$correlations = trx_toArray($correlations);
 		$db_correlations = [];
 
 		$this->validateUpdate($correlations, $db_correlations);
@@ -442,7 +442,7 @@ class CCorrelation extends CApiService {
 			DB::save('corr_operation', $operations_to_create);
 		}
 
-		return ['correlationids' => zbx_objectValues($correlations, 'correlationid')];
+		return ['correlationids' => trx_objectValues($correlations, 'correlationid')];
 	}
 
 	/**
@@ -536,7 +536,7 @@ class CCorrelation extends CApiService {
 		// Check if correlation already exists.
 		$db_correlations = API::getApiService()->select('correlation', [
 			'output' => ['name'],
-			'filter' => ['name' => zbx_objectValues($correlations, 'name')],
+			'filter' => ['name' => trx_objectValues($correlations, 'name')],
 			'limit' => 1
 		]);
 
@@ -687,7 +687,7 @@ class CCorrelation extends CApiService {
 			'output' => ['correlationid', 'name', 'description', 'status'],
 			'selectFilter' => ['formula', 'eval_formula', 'evaltype', 'conditions'],
 			'selectOperations' => ['type'],
-			'correlationids' => zbx_objectValues($correlations, 'correlationid'),
+			'correlationids' => trx_objectValues($correlations, 'correlationid'),
 			'preservekeys' => true
 		]);
 
@@ -729,9 +729,9 @@ class CCorrelation extends CApiService {
 			// Check if correlation already exists.
 			$db_correlation_names = API::getApiService()->select('correlation', [
 				'output' => ['correlationid', 'name'],
-				'filter' => ['name' => zbx_objectValues($check_names, 'name')]
+				'filter' => ['name' => trx_objectValues($check_names, 'name')]
 			]);
-			$db_correlation_names = zbx_toHash($db_correlation_names, 'name');
+			$db_correlation_names = trx_toHash($db_correlation_names, 'name');
 
 			foreach ($check_names as $correlation) {
 				if (array_key_exists($correlation['name'], $db_correlation_names)
@@ -781,7 +781,7 @@ class CCorrelation extends CApiService {
 		$groupids = [];
 
 		// Populate "name" field, if not set.
-		$correlations = $this->extendFromObjects(zbx_toHash($correlations, 'correlationid'), $db_correlations,
+		$correlations = $this->extendFromObjects(trx_toHash($correlations, 'correlationid'), $db_correlations,
 			['name']
 		);
 
@@ -1221,8 +1221,8 @@ class CCorrelation extends CApiService {
 			}
 		}
 
-		$conditions = zbx_toHash($correlation['filter']['conditions'], 'formulaid');
-		$constants = array_unique(zbx_objectValues($parser->constants, 'value'));
+		$conditions = trx_toHash($correlation['filter']['conditions'], 'formulaid');
+		$constants = array_unique(trx_objectValues($parser->constants, 'value'));
 
 		foreach ($constants as $constant) {
 			if (!array_key_exists($constant, $conditions)) {

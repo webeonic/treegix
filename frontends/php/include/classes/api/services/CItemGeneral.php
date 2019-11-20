@@ -122,14 +122,14 @@ abstract class CItemGeneral extends CApiService {
 
 			$dbItems = $this->get([
 				'output' => $dbItemsFields,
-				'itemids' => zbx_objectValues($items, 'itemid'),
+				'itemids' => trx_objectValues($items, 'itemid'),
 				'editable' => true,
 				'preservekeys' => true
 			]);
 
 			$dbHosts = API::Host()->get([
 				'output' => ['hostid', 'status', 'name'],
-				'hostids' => zbx_objectValues($dbItems, 'hostid'),
+				'hostids' => trx_objectValues($dbItems, 'hostid'),
 				'templated_hosts' => true,
 				'editable' => true,
 				'selectApplications' => ['applicationid', 'flags'],
@@ -148,7 +148,7 @@ abstract class CItemGeneral extends CApiService {
 
 			$dbHosts = API::Host()->get([
 				'output' => ['hostid', 'status', 'name'],
-				'hostids' => zbx_objectValues($items, 'hostid'),
+				'hostids' => trx_objectValues($items, 'hostid'),
 				'templated_hosts' => true,
 				'editable' => true,
 				'selectApplications' => ['applicationid', 'flags'],
@@ -159,7 +159,7 @@ abstract class CItemGeneral extends CApiService {
 
 			if ($this instanceof CItemPrototype) {
 				$itemDbFields['ruleid'] = null;
-				$druleids = zbx_objectValues($items, 'ruleid');
+				$druleids = trx_objectValues($items, 'ruleid');
 
 				if ($druleids) {
 					$discovery_rules = API::DiscoveryRule()->get([
@@ -174,7 +174,7 @@ abstract class CItemGeneral extends CApiService {
 		// interfaces
 		$interfaces = API::HostInterface()->get([
 			'output' => ['interfaceid', 'hostid', 'type'],
-			'hostids' => zbx_objectValues($dbHosts, 'hostid'),
+			'hostids' => trx_objectValues($dbHosts, 'hostid'),
 			'nopermissions' => true,
 			'preservekeys' => true
 		]);
@@ -516,15 +516,15 @@ abstract class CItemGeneral extends CApiService {
 
 			// ssh, telnet
 			if ($fullItem['type'] == ITEM_TYPE_SSH || $fullItem['type'] == ITEM_TYPE_TELNET) {
-				if (zbx_empty($fullItem['username'])) {
+				if (trx_empty($fullItem['username'])) {
 					self::exception(TRX_API_ERROR_PARAMETERS, _('No authentication user name specified.'));
 				}
 
 				if ($fullItem['type'] == ITEM_TYPE_SSH && $fullItem['authtype'] == ITEM_AUTHTYPE_PUBLICKEY) {
-					if (zbx_empty($fullItem['publickey'])) {
+					if (trx_empty($fullItem['publickey'])) {
 						self::exception(TRX_API_ERROR_PARAMETERS, _('No public key file specified.'));
 					}
-					if (zbx_empty($fullItem['privatekey'])) {
+					if (trx_empty($fullItem['privatekey'])) {
 						self::exception(TRX_API_ERROR_PARAMETERS, _('No private key file specified.'));
 					}
 				}
@@ -538,18 +538,18 @@ abstract class CItemGeneral extends CApiService {
 
 			// snmp oid
 			if ((in_array($fullItem['type'], [ITEM_TYPE_SNMPV1, ITEM_TYPE_SNMPV2C, ITEM_TYPE_SNMPV3]))
-					&& zbx_empty($fullItem['snmp_oid'])) {
+					&& trx_empty($fullItem['snmp_oid'])) {
 				self::exception(TRX_API_ERROR_PARAMETERS, _('No SNMP OID specified.'));
 			}
 
 			// snmp community
 			if (in_array($fullItem['type'], [ITEM_TYPE_SNMPV1, ITEM_TYPE_SNMPV2C])
-					&& zbx_empty($fullItem['snmp_community'])) {
+					&& trx_empty($fullItem['snmp_community'])) {
 				self::exception(TRX_API_ERROR_PARAMETERS, _('No SNMP community specified.'));
 			}
 
 			// snmp port
-			if (isset($fullItem['port']) && !zbx_empty($fullItem['port']) && !validatePortNumberOrMacro($fullItem['port'])) {
+			if (isset($fullItem['port']) && !trx_empty($fullItem['port']) && !validatePortNumberOrMacro($fullItem['port'])) {
 				self::exception(TRX_API_ERROR_PARAMETERS,
 					_s('Item "%1$s:%2$s" has invalid port: "%3$s".', $fullItem['name'], $fullItem['key_'], $fullItem['port']));
 			}
@@ -557,7 +557,7 @@ abstract class CItemGeneral extends CApiService {
 			if (isset($fullItem['snmpv3_securitylevel']) && $fullItem['snmpv3_securitylevel'] != ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV) {
 				// snmpv3 authprotocol
 				if (str_in_array($fullItem['snmpv3_securitylevel'], [ITEM_SNMPV3_SECURITYLEVEL_AUTHNOPRIV, ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV])) {
-					if (isset($fullItem['snmpv3_authprotocol']) && (zbx_empty($fullItem['snmpv3_authprotocol'])
+					if (isset($fullItem['snmpv3_authprotocol']) && (trx_empty($fullItem['snmpv3_authprotocol'])
 							|| !str_in_array($fullItem['snmpv3_authprotocol'],
 								[ITEM_AUTHPROTOCOL_MD5, ITEM_AUTHPROTOCOL_SHA]))) {
 						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect authentication protocol for item "%1$s".', $fullItem['name']));
@@ -566,7 +566,7 @@ abstract class CItemGeneral extends CApiService {
 
 				// snmpv3 privprotocol
 				if ($fullItem['snmpv3_securitylevel'] == ITEM_SNMPV3_SECURITYLEVEL_AUTHPRIV) {
-					if (isset($fullItem['snmpv3_privprotocol']) && (zbx_empty($fullItem['snmpv3_privprotocol'])
+					if (isset($fullItem['snmpv3_privprotocol']) && (trx_empty($fullItem['snmpv3_privprotocol'])
 							|| !str_in_array($fullItem['snmpv3_privprotocol'],
 								[ITEM_PRIVPROTOCOL_DES, ITEM_PRIVPROTOCOL_AES]))) {
 						self::exception(TRX_API_ERROR_PARAMETERS, _s('Incorrect privacy protocol for item "%1$s".', $fullItem['name']));
@@ -588,7 +588,7 @@ abstract class CItemGeneral extends CApiService {
 				}
 
 				// check that the given applications belong to the item's host
-				$dbApplicationIds = zbx_objectValues($host['applications'], 'applicationid');
+				$dbApplicationIds = trx_objectValues($host['applications'], 'applicationid');
 				foreach ($item['applications'] as $appId) {
 					if (!in_array($appId, $dbApplicationIds)) {
 						$error = _s('Application with ID "%1$s" is not available on "%2$s".', $appId, $host['name']);
@@ -700,7 +700,7 @@ abstract class CItemGeneral extends CApiService {
 	 *                               linked hosts or templates.
 	 */
 	protected function inherit(array $tpl_items, array $hostids = null) {
-		$tpl_items = zbx_toHash($tpl_items, 'itemid');
+		$tpl_items = trx_toHash($tpl_items, 'itemid');
 
 		// Inherit starting from common items and finishing up dependent.
 		while ($tpl_items) {
@@ -772,7 +772,7 @@ abstract class CItemGeneral extends CApiService {
 			'SELECT i.itemid'.
 			' FROM items i,hosts h'.
 			' WHERE i.hostid=h.hostid'.
-				' AND '.dbConditionInt('i.itemid', zbx_objectValues($new_items, 'itemid')).
+				' AND '.dbConditionInt('i.itemid', trx_objectValues($new_items, 'itemid')).
 				' AND '.dbConditionInt('h.status', [HOST_STATUS_TEMPLATE])
 		);
 
@@ -839,7 +839,7 @@ abstract class CItemGeneral extends CApiService {
 		// Preparing list of items by item templateid.
 		$sql = 'SELECT i.itemid,i.hostid,i.type,i.key_,i.flags,i.templateid'.
 			' FROM items i'.
-			' WHERE '.dbConditionInt('i.templateid', zbx_objectValues($tpl_items, 'itemid'));
+			' WHERE '.dbConditionInt('i.templateid', trx_objectValues($tpl_items, 'itemid'));
 		if ($hostids !== null) {
 			$sql .= ' AND '.dbConditionInt('i.hostid', $hostids);
 		}
@@ -1078,7 +1078,7 @@ abstract class CItemGeneral extends CApiService {
 		if ($upd_hostids_by_key) {
 			$sql_where = [];
 			foreach ($upd_hostids_by_key as $key => $hostids) {
-				$sql_where[] = dbConditionInt('i.hostid', $hostids).' AND i.key_='.zbx_dbstr($key);
+				$sql_where[] = dbConditionInt('i.hostid', $hostids).' AND i.key_='.trx_dbstr($key);
 			}
 
 			$sql = 'SELECT i.hostid,i.key_'.
@@ -1765,7 +1765,7 @@ abstract class CItemGeneral extends CApiService {
 
 		$sqlWhere = [];
 		foreach ($itemKeysByHostId as $hostId => $keys) {
-			$sqlWhere[] = '(i.hostid='.zbx_dbstr($hostId).' AND '.dbConditionString('i.key_', $keys).')';
+			$sqlWhere[] = '(i.hostid='.trx_dbstr($hostId).' AND '.dbConditionString('i.key_', $keys).')';
 		}
 
 		if ($sqlWhere) {

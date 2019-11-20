@@ -73,7 +73,7 @@ function ipmiPrivileges($type = null) {
 function getHostInventories($orderedByTitle = false) {
 	/*
 	 * WARNING! Before modifying this array, make sure changes are synced with C
-	 * C analog is located in function DBget_inventory_field() in src/libs/zbxdbhigh/db.c
+	 * C analog is located in function DBget_inventory_field() in src/libs/trxdbhigh/db.c
 	 */
 	$inventoryFields = [
 		1 => [
@@ -461,7 +461,7 @@ function hostInterfaceTypeNumToName($type) {
 }
 
 function get_hostgroup_by_groupid($groupid) {
-	$groups = DBfetch(DBselect('SELECT g.* FROM hstgrp g WHERE g.groupid='.zbx_dbstr($groupid)));
+	$groups = DBfetch(DBselect('SELECT g.* FROM hstgrp g WHERE g.groupid='.trx_dbstr($groupid)));
 
 	if ($groups) {
 		return $groups;
@@ -474,7 +474,7 @@ function get_hostgroup_by_groupid($groupid) {
 
 function get_host_by_itemid($itemids) {
 	$res_array = is_array($itemids);
-	zbx_value2array($itemids);
+	trx_value2array($itemids);
 	$result = false;
 	$hosts = [];
 
@@ -503,7 +503,7 @@ function get_host_by_itemid($itemids) {
 }
 
 function get_host_by_hostid($hostid, $no_error_message = 0) {
-	$row = DBfetch(DBselect('SELECT h.* FROM hosts h WHERE h.hostid='.zbx_dbstr($hostid)));
+	$row = DBfetch(DBselect('SELECT h.* FROM hosts h WHERE h.hostid='.trx_dbstr($hostid)));
 
 	if ($row) {
 		return $row;
@@ -517,7 +517,7 @@ function get_host_by_hostid($hostid, $no_error_message = 0) {
 }
 
 function updateHostStatus($hostids, $status) {
-	zbx_value2array($hostids);
+	trx_value2array($hostids);
 
 	$hostIds = [];
 	$oldStatus = ($status == HOST_STATUS_MONITORED ? HOST_STATUS_NOT_MONITORED : HOST_STATUS_MONITORED);
@@ -526,7 +526,7 @@ function updateHostStatus($hostids, $status) {
 		'SELECT h.hostid,h.host,h.status'.
 		' FROM hosts h'.
 		' WHERE '.dbConditionInt('h.hostid', $hostids).
-			' AND h.status='.zbx_dbstr($oldStatus)
+			' AND h.status='.trx_dbstr($oldStatus)
 	);
 	while ($host = DBfetch($db_hosts)) {
 		$hostIds[] = $host['hostid'];
@@ -954,7 +954,7 @@ function getDeletableHostGroupIds(array $groupIds) {
 }
 
 function isTemplate($hostId) {
-	$dbHost = DBfetch(DBselect('SELECT h.status FROM hosts h WHERE h.hostid='.zbx_dbstr($hostId)));
+	$dbHost = DBfetch(DBselect('SELECT h.status FROM hosts h WHERE h.hostid='.trx_dbstr($hostId)));
 
 	return ($dbHost && $dbHost['status'] == HOST_STATUS_TEMPLATE);
 }
@@ -1020,7 +1020,7 @@ function getInheritedMacros(array $hostids) {
 			$hosts[$hostid] = [
 				'templateid' => $hostid,
 				'name' => $db_template['name'],
-				'templateids' => zbx_objectValues($db_template['parentTemplates'], 'templateid'),
+				'templateids' => trx_objectValues($db_template['parentTemplates'], 'templateid'),
 				'macros' => []
 			];
 

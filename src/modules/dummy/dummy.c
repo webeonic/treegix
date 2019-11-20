@@ -11,7 +11,7 @@
 static int	item_timeout = 0;
 
 /* module SHOULD define internal functions as static and use a naming pattern different from Treegix internal */
-/* symbols (zbx_*) and loadable module API functions (zbx_module_*) to avoid conflicts                       */
+/* symbols (trx_*) and loadable module API functions (trx_module_*) to avoid conflicts                       */
 static int	dummy_ping(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	dummy_echo(AGENT_REQUEST *request, AGENT_RESULT *result);
 static int	dummy_random(AGENT_REQUEST *request, AGENT_RESULT *result);
@@ -27,7 +27,7 @@ static TRX_METRIC keys[] =
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_module_api_version                                           *
+ * Function: trx_module_api_version                                           *
  *                                                                            *
  * Purpose: returns version number of the module interface                    *
  *                                                                            *
@@ -36,35 +36,35 @@ static TRX_METRIC keys[] =
  *               MUST be compiled with the same version of this header file   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_module_api_version(void)
+int	trx_module_api_version(void)
 {
 	return TRX_MODULE_API_VERSION;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_module_item_timeout                                          *
+ * Function: trx_module_item_timeout                                          *
  *                                                                            *
  * Purpose: set timeout value for processing of items                         *
  *                                                                            *
  * Parameters: timeout - timeout in seconds, 0 - no timeout set               *
  *                                                                            *
  ******************************************************************************/
-void	zbx_module_item_timeout(int timeout)
+void	trx_module_item_timeout(int timeout)
 {
 	item_timeout = timeout;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_module_item_list                                             *
+ * Function: trx_module_item_list                                             *
  *                                                                            *
  * Purpose: returns list of item keys supported by the module                 *
  *                                                                            *
  * Return value: list of item keys                                            *
  *                                                                            *
  ******************************************************************************/
-TRX_METRIC	*zbx_module_item_list(void)
+TRX_METRIC	*trx_module_item_list(void)
 {
 	return keys;
 }
@@ -150,7 +150,7 @@ static int	dummy_random(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_module_init                                                  *
+ * Function: trx_module_init                                                  *
  *                                                                            *
  * Purpose: the function is called on agent startup                           *
  *          It should be used to call any initialization routines             *
@@ -161,7 +161,7 @@ static int	dummy_random(AGENT_REQUEST *request, AGENT_RESULT *result)
  * Comment: the module won't be loaded in case of TRX_MODULE_FAIL             *
  *                                                                            *
  ******************************************************************************/
-int	zbx_module_init(void)
+int	trx_module_init(void)
 {
 	/* initialization for dummy.random */
 	srand(time(NULL));
@@ -171,7 +171,7 @@ int	zbx_module_init(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_module_uninit                                                *
+ * Function: trx_module_uninit                                                *
  *                                                                            *
  * Purpose: the function is called on agent shutdown                          *
  *          It should be used to cleanup used resources if there are any      *
@@ -180,7 +180,7 @@ int	zbx_module_init(void)
  *               TRX_MODULE_FAIL - function failed                            *
  *                                                                            *
  ******************************************************************************/
-int	zbx_module_uninit(void)
+int	trx_module_uninit(void)
 {
 	return TRX_MODULE_OK;
 }
@@ -252,7 +252,7 @@ static void	dummy_history_log_cb(const TRX_HISTORY_LOG *history, int history_num
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_module_history_write_cbs                                     *
+ * Function: trx_module_history_write_cbs                                     *
  *                                                                            *
  * Purpose: returns a set of module functions Treegix will call to export      *
  *          different types of historical data                                *
@@ -261,7 +261,7 @@ static void	dummy_history_log_cb(const TRX_HISTORY_LOG *history, int history_num
  *               module is not interested in data of certain types)           *
  *                                                                            *
  ******************************************************************************/
-TRX_HISTORY_WRITE_CBS	zbx_module_history_write_cbs(void)
+TRX_HISTORY_WRITE_CBS	trx_module_history_write_cbs(void)
 {
 	static TRX_HISTORY_WRITE_CBS	dummy_callbacks =
 	{

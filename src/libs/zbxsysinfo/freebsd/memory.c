@@ -11,8 +11,8 @@ static u_int	pagesize = 0;
 	len = sizeof(value);										\
 	if (0 != sysctlbyname(name, &value, &len, NULL, 0))						\
 	{												\
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain \"%s\" system parameter: %s",	\
-				name, zbx_strerror(errno)));						\
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain \"%s\" system parameter: %s",	\
+				name, trx_strerror(errno)));						\
 		return SYSINFO_RET_FAIL;								\
 	}
 
@@ -23,7 +23,7 @@ static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 
 	TRX_SYSCTLBYNAME("hw.physmem", totalbytes);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)totalbytes);
+	SET_UI64_RESULT(result, (trx_uint64_t)totalbytes);
 
 	return SYSINFO_RET_OK;
 }
@@ -35,7 +35,7 @@ static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 
 	TRX_SYSCTLBYNAME("vm.stats.vm.v_active_count", activepages);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)activepages * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)activepages * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -47,7 +47,7 @@ static int	VM_MEMORY_INACTIVE(AGENT_RESULT *result)
 
 	TRX_SYSCTLBYNAME("vm.stats.vm.v_inactive_count", inactivepages);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)inactivepages * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)inactivepages * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -59,7 +59,7 @@ static int	VM_MEMORY_WIRED(AGENT_RESULT *result)
 
 	TRX_SYSCTLBYNAME("vm.stats.vm.v_wire_count", wiredpages);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)wiredpages * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)wiredpages * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -71,7 +71,7 @@ static int	VM_MEMORY_CACHED(AGENT_RESULT *result)
 
 	TRX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)cachedpages * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)cachedpages * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -83,7 +83,7 @@ static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 
 	TRX_SYSCTLBYNAME("vm.stats.vm.v_free_count", freepages);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)freepages * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)freepages * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -97,7 +97,7 @@ static int	VM_MEMORY_USED(AGENT_RESULT *result)
 	TRX_SYSCTLBYNAME("vm.stats.vm.v_wire_count", wiredpages);
 	TRX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)(activepages + wiredpages + cachedpages) * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)(activepages + wiredpages + cachedpages) * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -115,7 +115,7 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 
 	if (0 == totalpages)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -133,7 +133,7 @@ static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 	TRX_SYSCTLBYNAME("vm.stats.vm.v_cache_count", cachedpages);
 	TRX_SYSCTLBYNAME("vm.stats.vm.v_free_count", freepages);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)(inactivepages + cachedpages + freepages) * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)(inactivepages + cachedpages + freepages) * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -151,7 +151,7 @@ static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 
 	if (0 == totalpages)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -180,11 +180,11 @@ static int	VM_MEMORY_SHARED(AGENT_RESULT *result)
 
 	if (0 != sysctl(mib, 2, &vm, &len, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)(vm.t_vmshr + vm.t_rmshr) * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)(vm.t_vmshr + vm.t_rmshr) * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -196,7 +196,7 @@ int     VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -235,7 +235,7 @@ int     VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VM_MEMORY_SHARED(result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		ret = SYSINFO_RET_FAIL;
 	}
 

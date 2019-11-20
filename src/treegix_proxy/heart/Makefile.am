@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxheart.a
+noinst_LIBRARIES = libtrxheart.a
 
-libzbxheart_a_SOURCES = heart.c heart.h
+libtrxheart_a_SOURCES = heart.c heart.h

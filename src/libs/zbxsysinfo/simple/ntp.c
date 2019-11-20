@@ -29,7 +29,7 @@ static void	make_packet(ntp_data *data)
 {
 	data->version = NTP_VERSION;
 	data->mode = NTP_MODE_CLIENT;
-	data->transmit = zbx_current_time();
+	data->transmit = trx_current_time();
 }
 
 static void	pack_ntp(const ntp_data *data, unsigned char *request, int length)
@@ -119,40 +119,40 @@ static int	unpack_ntp(ntp_data *data, const unsigned char *request, const unsign
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 int	check_ntp(char *host, unsigned short port, int timeout, int *value_int)
 {
-	zbx_socket_t	s;
+	trx_socket_t	s;
 	int		ret;
 	char		request[NTP_PACKET_SIZE];
 	ntp_data	data;
 
 	*value_int = 0;
 
-	if (SUCCEED == (ret = zbx_udp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout)))
+	if (SUCCEED == (ret = trx_udp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout)))
 	{
 		make_packet(&data);
 
 		pack_ntp(&data, (unsigned char *)request, sizeof(request));
 
-		if (SUCCEED == (ret = zbx_udp_send(&s, request, sizeof(request), timeout)))
+		if (SUCCEED == (ret = trx_udp_send(&s, request, sizeof(request), timeout)))
 		{
-			if (SUCCEED == (ret = zbx_udp_recv(&s, timeout)))
+			if (SUCCEED == (ret = trx_udp_recv(&s, timeout)))
 			{
 				*value_int = (SUCCEED == unpack_ntp(&data, (unsigned char *)request,
 						(unsigned char *)s.buffer, (int)s.read_bytes));
 			}
 		}
 
-		zbx_udp_close(&s);
+		trx_udp_close(&s);
 	}
 
 	if (FAIL == ret)
-		treegix_log(LOG_LEVEL_DEBUG, "NTP check error: %s", zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "NTP check error: %s", trx_socket_strerror());
 
 	return SYSINFO_RET_OK;
 }

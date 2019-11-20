@@ -304,9 +304,9 @@ class CPageFilter {
 		]);
 
 		if ($graph = reset($graphs)) {
-			$groups = zbx_toHash($graph['groups'], 'groupid');
-			$hosts = zbx_toHash($graph['hosts'], 'hostid');
-			$templates = zbx_toHash($graph['templates'], 'templateid');
+			$groups = trx_toHash($graph['groups'], 'groupid');
+			$hosts = trx_toHash($graph['hosts'], 'hostid');
+			$templates = trx_toHash($graph['templates'], 'templateid');
 
 			if (isset($groups[$this->_profileIds['groupid']])) {
 				$options['groupid'] = $this->_profileIds['groupid'];
@@ -350,7 +350,7 @@ class CPageFilter {
 			'output' => ['groupid', 'name'],
 			'preservekeys' => true
 		];
-		$options = zbx_array_merge($defaultOptions, $options);
+		$options = trx_array_merge($defaultOptions, $options);
 		$this->data['groups'] = API::HostGroup()->get($options);
 		$this->data['groups'] = enrichParentGroups($this->data['groups']);
 
@@ -427,7 +427,7 @@ class CPageFilter {
 
 					if ($hosts) {
 						$host = reset($hosts);
-						$groupids = zbx_objectValues($host['groups'], 'groupid');
+						$groupids = trx_objectValues($host['groups'], 'groupid');
 					}
 					else {
 						$templates = API::Template()->get([
@@ -437,7 +437,7 @@ class CPageFilter {
 						]);
 
 						$template = reset($templates);
-						$groupids = zbx_objectValues($template['groups'], 'groupid');
+						$groupids = trx_objectValues($template['groups'], 'groupid');
 					}
 
 					// Set first possible group (ordered by ID, not names), if found in list. Leave 0 (NONE) otherwise.
@@ -500,7 +500,7 @@ class CPageFilter {
 				'output' => ['hostid', 'name', 'status'],
 				'groupids' => $this->groupids
 			];
-			$hosts = API::Host()->get(zbx_array_merge($defaultOptions, $options));
+			$hosts = API::Host()->get(trx_array_merge($defaultOptions, $options));
 
 			if ($hosts) {
 				order_result($hosts, 'name');
@@ -559,7 +559,7 @@ class CPageFilter {
 				'hostids' => ($this->hostid > 0) ? $this->hostid : null,
 				'expandName' => true
 			];
-			$options = zbx_array_merge($def_ptions, $options);
+			$options = trx_array_merge($def_ptions, $options);
 			$graphs = API::Graph()->get($options);
 			order_result($graphs, 'name');
 

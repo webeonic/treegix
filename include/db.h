@@ -3,8 +3,8 @@
 #define TREEGIX_DB_H
 
 #include "common.h"
-#include "zbxalgo.h"
-#include "zbxdb.h"
+#include "trxalgo.h"
+#include "trxdb.h"
 #include "dbschema.h"
 
 extern char	*CONFIG_DBHOST;
@@ -22,7 +22,7 @@ typedef enum
 	GRAPH_TYPE_NORMAL = 0,
 	GRAPH_TYPE_STACKED = 1
 }
-zbx_graph_types;
+trx_graph_types;
 
 typedef enum
 {
@@ -31,14 +31,14 @@ typedef enum
 	CALC_FNC_MAX = 4,
 	CALC_FNC_ALL = 7
 }
-zbx_graph_item_calc_function;
+trx_graph_item_calc_function;
 
 typedef enum
 {
 	GRAPH_ITEM_SIMPLE = 0,
 	GRAPH_ITEM_AGGREGATED = 1
 }
-zbx_graph_item_type;
+trx_graph_item_type;
 
 struct	_DC_TRIGGER;
 
@@ -196,9 +196,9 @@ struct	_DC_TRIGGER;
 #	define TRX_PLSQL_BEGIN	"begin\n"
 #	define TRX_PLSQL_END	"end;"
 #	define	DBbegin_multiple_update(sql, sql_alloc, sql_offset)			\
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_PLSQL_BEGIN)
+			trx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_PLSQL_BEGIN)
 #	define	DBend_multiple_update(sql, sql_alloc, sql_offset)			\
-			zbx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_PLSQL_END)
+			trx_strcpy_alloc(sql, sql_alloc, sql_offset, TRX_PLSQL_END)
 #	if 0 == TRX_MAX_OVERFLOW_SQL_SIZE
 #		define	TRX_SQL_EXEC_FROM	TRX_CONST_STRLEN(TRX_PLSQL_BEGIN)
 #	else
@@ -236,12 +236,12 @@ struct	_DC_TRIGGER;
 					else					\
 						is_uint64(row, &uint)
 
-#define TRX_DB_MAX_ID	(zbx_uint64_t)__UINT64_C(0x7fffffffffffffff)
+#define TRX_DB_MAX_ID	(trx_uint64_t)__UINT64_C(0x7fffffffffffffff)
 
 typedef struct
 {
-	zbx_uint64_t	druleid;
-	zbx_uint64_t	unique_dcheckid;
+	trx_uint64_t	druleid;
+	trx_uint64_t	unique_dcheckid;
 	char		*iprange;
 	char		*name;
 }
@@ -249,7 +249,7 @@ DB_DRULE;
 
 typedef struct
 {
-	zbx_uint64_t	dcheckid;
+	trx_uint64_t	dcheckid;
 	char		*ports;
 	char		*key_;
 	char		*snmp_community;
@@ -266,7 +266,7 @@ DB_DCHECK;
 
 typedef struct
 {
-	zbx_uint64_t	dhostid;
+	trx_uint64_t	dhostid;
 	int		status;
 	int		lastup;
 	int		lastdown;
@@ -275,7 +275,7 @@ DB_DHOST;
 
 typedef struct
 {
-	zbx_uint64_t	dserviceid;
+	trx_uint64_t	dserviceid;
 	int		status;
 	int		lastup;
 	int		lastdown;
@@ -285,7 +285,7 @@ DB_DSERVICE;
 
 typedef struct
 {
-	zbx_uint64_t	triggerid;
+	trx_uint64_t	triggerid;
 	char		*description;
 	char		*expression;
 	char		*recovery_expression;
@@ -303,9 +303,9 @@ DB_TRIGGER;
 
 typedef struct
 {
-	zbx_uint64_t		eventid;
+	trx_uint64_t		eventid;
 	DB_TRIGGER		trigger;
-	zbx_uint64_t		objectid;
+	trx_uint64_t		objectid;
 	char			*name;
 	int			source;
 	int			object;
@@ -316,19 +316,19 @@ typedef struct
 	int			severity;
 	unsigned char		suppressed;
 
-	zbx_vector_ptr_t	tags;	/* used for both zbx_tag_t and zbx_host_tag_t */
+	trx_vector_ptr_t	tags;	/* used for both trx_tag_t and trx_host_tag_t */
 
 #define TRX_FLAGS_DB_EVENT_UNSET		0x0000
 #define TRX_FLAGS_DB_EVENT_CREATE		0x0001
 #define TRX_FLAGS_DB_EVENT_NO_ACTION		0x0002
-	zbx_uint64_t		flags;
+	trx_uint64_t		flags;
 }
 DB_EVENT;
 
 typedef struct
 {
-	zbx_uint64_t		mediatypeid;
-	zbx_media_type_t	type;
+	trx_uint64_t		mediatypeid;
+	trx_media_type_t	type;
 	char			*description;
 	char			*smtp_server;
 	char			*smtp_helo;
@@ -348,8 +348,8 @@ DB_MEDIATYPE;
 
 typedef struct
 {
-	zbx_uint64_t	conditionid;
-	zbx_uint64_t	actionid;
+	trx_uint64_t	conditionid;
+	trx_uint64_t	actionid;
 	char		*value;
 	char		*value2;
 	int		condition_result;
@@ -360,30 +360,30 @@ DB_CONDITION;
 
 typedef struct
 {
-	zbx_uint64_t	alertid;
-	zbx_uint64_t 	actionid;
+	trx_uint64_t	alertid;
+	trx_uint64_t 	actionid;
 	int		clock;
-	zbx_uint64_t	mediatypeid;
+	trx_uint64_t	mediatypeid;
 	char		*sendto;
 	char		*subject;
 	char		*message;
-	zbx_alert_status_t	status;
+	trx_alert_status_t	status;
 	int		retries;
 }
 DB_ALERT;
 
 typedef struct
 {
-	zbx_uint64_t	housekeeperid;
+	trx_uint64_t	housekeeperid;
 	char		*tablename;
 	char		*field;
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 }
 DB_HOUSEKEEPER;
 
 typedef struct
 {
-	zbx_uint64_t	httptestid;
+	trx_uint64_t	httptestid;
 	char		*name;
 	char		*agent;
 	char		*http_user;
@@ -402,8 +402,8 @@ DB_HTTPTEST;
 
 typedef struct
 {
-	zbx_uint64_t	httpstepid;
-	zbx_uint64_t	httptestid;
+	trx_uint64_t	httpstepid;
+	trx_uint64_t	httptestid;
 	char		*name;
 	char		*url;
 	char		*posts;
@@ -419,22 +419,22 @@ DB_HTTPSTEP;
 
 typedef struct
 {
-	zbx_uint64_t		escalationid;
-	zbx_uint64_t		actionid;
-	zbx_uint64_t		triggerid;
-	zbx_uint64_t		itemid;
-	zbx_uint64_t		eventid;
-	zbx_uint64_t		r_eventid;
-	zbx_uint64_t		acknowledgeid;
+	trx_uint64_t		escalationid;
+	trx_uint64_t		actionid;
+	trx_uint64_t		triggerid;
+	trx_uint64_t		itemid;
+	trx_uint64_t		eventid;
+	trx_uint64_t		r_eventid;
+	trx_uint64_t		acknowledgeid;
 	int			nextcheck;
 	int			esc_step;
-	zbx_escalation_status_t	status;
+	trx_escalation_status_t	status;
 }
 DB_ESCALATION;
 
 typedef struct
 {
-	zbx_uint64_t	actionid;
+	trx_uint64_t	actionid;
 	char		*name;
 	char		*shortdata;
 	char		*longdata;
@@ -452,8 +452,8 @@ DB_ACTION;
 
 typedef struct
 {
-	zbx_uint64_t	acknowledgeid;
-	zbx_uint64_t	userid;
+	trx_uint64_t	acknowledgeid;
+	trx_uint64_t	userid;
 	char		*message;
 	int		clock;
 	int		action;
@@ -471,10 +471,10 @@ void	DBclose(void);
 #ifdef HAVE_ORACLE
 void	DBstatement_prepare(const char *sql);
 #endif
-int		DBexecute(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
-int		DBexecute_once(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
-DB_RESULT	DBselect_once(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
-DB_RESULT	DBselect(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
+int		DBexecute(const char *fmt, ...) __trx_attr_format_printf(1, 2);
+int		DBexecute_once(const char *fmt, ...) __trx_attr_format_printf(1, 2);
+DB_RESULT	DBselect_once(const char *fmt, ...) __trx_attr_format_printf(1, 2);
+DB_RESULT	DBselect(const char *fmt, ...) __trx_attr_format_printf(1, 2);
 DB_RESULT	DBselectN(const char *query, int n);
 DB_ROW		DBfetch(DB_RESULT result);
 int		DBis_null(const char *field);
@@ -486,7 +486,7 @@ int		DBend(int ret);
 const TRX_TABLE	*DBget_table(const char *tablename);
 const TRX_FIELD	*DBget_field(const TRX_TABLE *table, const char *fieldname);
 #define DBget_maxid(table)	DBget_maxid_num(table, 1)
-zbx_uint64_t	DBget_maxid_num(const char *tablename, int num);
+trx_uint64_t	DBget_maxid_num(const char *tablename, int num);
 
 /******************************************************************************
  *                                                                            *
@@ -499,8 +499,8 @@ zbx_uint64_t	DBget_maxid_num(const char *tablename, int num);
  ******************************************************************************/
 typedef struct
 {
-	zbx_uint64_t	itemid;	/* itemid should come first for correct sorting */
-	zbx_uint64_t	gitemid;
+	trx_uint64_t	itemid;	/* itemid should come first for correct sorting */
+	trx_uint64_t	gitemid;
 	char		key[ITEM_KEY_LEN * TRX_MAX_BYTES_IN_UTF8_CHAR + 1];
 	int		drawtype;
 	int		sortorder;
@@ -514,7 +514,7 @@ TRX_GRAPH_ITEMS;
 
 typedef struct
 {
-	zbx_uint64_t	triggerid;
+	trx_uint64_t	triggerid;
 	unsigned char	value;
 	unsigned char	state;
 	unsigned char	priority;
@@ -532,15 +532,15 @@ typedef struct
 		TRX_FLAGS_TRIGGER_DIFF_UPDATE_STATE | TRX_FLAGS_TRIGGER_DIFF_UPDATE_ERROR)
 #define TRX_FLAGS_TRIGGER_DIFF_UPDATE_PROBLEM_COUNT		0x1000
 #define TRX_FLAGS_TRIGGER_DIFF_RECALCULATE_PROBLEM_COUNT	0x2000
-	zbx_uint64_t			flags;
+	trx_uint64_t			flags;
 }
-zbx_trigger_diff_t;
+trx_trigger_diff_t;
 
-void	zbx_process_triggers(zbx_vector_ptr_t *triggers, zbx_vector_ptr_t *diffs);
-void	zbx_db_save_trigger_changes(const zbx_vector_ptr_t *diffs);
-void	zbx_trigger_diff_free(zbx_trigger_diff_t *diff);
-void	zbx_append_trigger_diff(zbx_vector_ptr_t *trigger_diff, zbx_uint64_t triggerid, unsigned char priority,
-		zbx_uint64_t flags, unsigned char value, unsigned char state, int lastchange, const char *error);
+void	trx_process_triggers(trx_vector_ptr_t *triggers, trx_vector_ptr_t *diffs);
+void	trx_db_save_trigger_changes(const trx_vector_ptr_t *diffs);
+void	trx_trigger_diff_free(trx_trigger_diff_t *diff);
+void	trx_append_trigger_diff(trx_vector_ptr_t *trigger_diff, trx_uint64_t triggerid, unsigned char priority,
+		trx_uint64_t flags, unsigned char value, unsigned char state, int lastchange, const char *error);
 
 int	DBget_row_count(const char *table_name);
 int	DBget_proxy_lastaccess(const char *hostname, int *lastaccess, char **error);
@@ -550,57 +550,57 @@ char	*DBdyn_escape_string(const char *src);
 char	*DBdyn_escape_string_len(const char *src, size_t length);
 char	*DBdyn_escape_like_pattern(const char *src);
 
-zbx_uint64_t	DBadd_host(char *server, int port, int status, int useip, char *ip, int disable_until, int available);
+trx_uint64_t	DBadd_host(char *server, int port, int status, int useip, char *ip, int disable_until, int available);
 int	DBadd_templates_to_host(int hostid, int host_templateid);
 
 int	DBadd_template_linkage(int hostid, int templateid, int items, int triggers, int graphs);
 
 int	DBadd_trigger_to_linked_hosts(int triggerid, int hostid);
-void	DBdelete_sysmaps_hosts_by_hostid(zbx_uint64_t hostid);
+void	DBdelete_sysmaps_hosts_by_hostid(trx_uint64_t hostid);
 
 int	DBadd_graph_item_to_linked_hosts(int gitemid, int hostid);
 
-int	DBcopy_template_elements(zbx_uint64_t hostid, zbx_vector_uint64_t *lnk_templateids, char **error);
-int	DBdelete_template_elements(zbx_uint64_t hostid, zbx_vector_uint64_t *del_templateids, char **error);
+int	DBcopy_template_elements(trx_uint64_t hostid, trx_vector_uint64_t *lnk_templateids, char **error);
+int	DBdelete_template_elements(trx_uint64_t hostid, trx_vector_uint64_t *del_templateids, char **error);
 
-void	DBdelete_items(zbx_vector_uint64_t *itemids);
-void	DBdelete_graphs(zbx_vector_uint64_t *graphids);
-void	DBdelete_hosts(zbx_vector_uint64_t *hostids);
-void	DBdelete_hosts_with_prototypes(zbx_vector_uint64_t *hostids);
+void	DBdelete_items(trx_vector_uint64_t *itemids);
+void	DBdelete_graphs(trx_vector_uint64_t *graphids);
+void	DBdelete_hosts(trx_vector_uint64_t *hostids);
+void	DBdelete_hosts_with_prototypes(trx_vector_uint64_t *hostids);
 
-int	DBupdate_itservices(const zbx_vector_ptr_t *trigger_diff);
-int	DBremove_triggers_from_itservices(zbx_uint64_t *triggerids, int triggerids_num);
+int	DBupdate_itservices(const trx_vector_ptr_t *trigger_diff);
+int	DBremove_triggers_from_itservices(trx_uint64_t *triggerids, int triggerids_num);
 
-int	zbx_create_itservices_lock(char **error);
-void	zbx_destroy_itservices_lock(void);
+int	trx_create_itservices_lock(char **error);
+void	trx_destroy_itservices_lock(void);
 
 void	DBadd_condition_alloc(char **sql, size_t *sql_alloc, size_t *sql_offset, const char *fieldname,
-		const zbx_uint64_t *values, const int num);
+		const trx_uint64_t *values, const int num);
 void	DBadd_str_condition_alloc(char **sql, size_t *sql_alloc, size_t *sql_offset, const char *fieldname,
 		const char **values, const int num);
 
-int	zbx_check_user_permissions(const zbx_uint64_t *userid, const zbx_uint64_t *recipient_userid);
+int	trx_check_user_permissions(const trx_uint64_t *userid, const trx_uint64_t *recipient_userid);
 
-const char	*zbx_host_string(zbx_uint64_t hostid);
-const char	*zbx_host_key_string(zbx_uint64_t itemid);
-const char	*zbx_user_string(zbx_uint64_t userid);
+const char	*trx_host_string(trx_uint64_t hostid);
+const char	*trx_host_key_string(trx_uint64_t itemid);
+const char	*trx_user_string(trx_uint64_t userid);
 
-void	DBregister_host(zbx_uint64_t proxy_hostid, const char *host, const char *ip, const char *dns,
+void	DBregister_host(trx_uint64_t proxy_hostid, const char *host, const char *ip, const char *dns,
 		unsigned short port, unsigned int connection_type, const char *host_metadata, unsigned short flag,
 		int now);
-void	DBregister_host_prepare(zbx_vector_ptr_t *autoreg_hosts, const char *host, const char *ip, const char *dns,
+void	DBregister_host_prepare(trx_vector_ptr_t *autoreg_hosts, const char *host, const char *ip, const char *dns,
 		unsigned short port, unsigned int connection_type, const char *host_metadata, unsigned short flag,
 		int now);
-void	DBregister_host_flush(zbx_vector_ptr_t *autoreg_hosts, zbx_uint64_t proxy_hostid);
-void	DBregister_host_clean(zbx_vector_ptr_t *autoreg_hosts);
+void	DBregister_host_flush(trx_vector_ptr_t *autoreg_hosts, trx_uint64_t proxy_hostid);
+void	DBregister_host_clean(trx_vector_ptr_t *autoreg_hosts);
 
 void	DBproxy_register_host(const char *host, const char *ip, const char *dns, unsigned short port,
 		unsigned int connection_type, const char *host_metadata, unsigned short flag);
 int	DBexecute_overflowed_sql(char **sql, size_t *sql_alloc, size_t *sql_offset);
 char	*DBget_unique_hostname_by_sample(const char *host_name_sample, const char *field_name);
 
-const char	*DBsql_id_ins(zbx_uint64_t id);
-const char	*DBsql_id_cmp(zbx_uint64_t id);
+const char	*DBsql_id_ins(trx_uint64_t id);
+const char	*DBsql_id_cmp(trx_uint64_t id);
 
 typedef enum
 {
@@ -608,15 +608,15 @@ typedef enum
 	TRX_CONN_IP,
 	TRX_CONN_DNS,
 }
-zbx_conn_flags_t;
+trx_conn_flags_t;
 
-zbx_uint64_t	DBadd_interface(zbx_uint64_t hostid, unsigned char type, unsigned char useip, const char *ip,
-		const char *dns, unsigned short port, zbx_conn_flags_t flags);
+trx_uint64_t	DBadd_interface(trx_uint64_t hostid, unsigned char type, unsigned char useip, const char *ip,
+		const char *dns, unsigned short port, trx_conn_flags_t flags);
 
 const char	*DBget_inventory_field(unsigned char inventory_link);
 
-void	DBset_host_inventory(zbx_uint64_t hostid, int inventory_mode);
-void	DBadd_host_inventory(zbx_uint64_t hostid, int inventory_mode);
+void	DBset_host_inventory(trx_uint64_t hostid, int inventory_mode);
+void	DBadd_host_inventory(trx_uint64_t hostid, int inventory_mode);
 
 int	DBtxn_status(void);
 int	DBtxn_ongoing(void);
@@ -627,19 +627,19 @@ int	DBfield_exists(const char *table_name, const char *field_name);
 int	DBindex_exists(const char *table_name, const char *index_name);
 #endif
 
-int	DBexecute_multiple_query(const char *query, const char *field_name, zbx_vector_uint64_t *ids);
-int	DBlock_record(const char *table, zbx_uint64_t id, const char *add_field, zbx_uint64_t add_id);
-int	DBlock_records(const char *table, const zbx_vector_uint64_t *ids);
-int	DBlock_ids(const char *table_name, const char *field_name, zbx_vector_uint64_t *ids);
+int	DBexecute_multiple_query(const char *query, const char *field_name, trx_vector_uint64_t *ids);
+int	DBlock_record(const char *table, trx_uint64_t id, const char *add_field, trx_uint64_t add_id);
+int	DBlock_records(const char *table, const trx_vector_uint64_t *ids);
+int	DBlock_ids(const char *table_name, const char *field_name, trx_vector_uint64_t *ids);
 
 #define DBlock_hostid(id)			DBlock_record("hosts", id, NULL, 0)
 #define DBlock_druleid(id)			DBlock_record("drules", id, NULL, 0)
 #define DBlock_dcheckid(dcheckid, druleid)	DBlock_record("dchecks", dcheckid, "druleid", druleid)
 #define DBlock_hostids(ids)			DBlock_records("hosts", ids)
 
-void	DBdelete_groups(zbx_vector_uint64_t *groupids);
+void	DBdelete_groups(trx_vector_uint64_t *groupids);
 
-void	DBselect_uint64(const char *sql, zbx_vector_uint64_t *ids);
+void	DBselect_uint64(const char *sql, trx_vector_uint64_t *ids);
 
 /* bulk insert support */
 
@@ -649,23 +649,23 @@ typedef struct
 	/* the target table */
 	const TRX_TABLE		*table;
 	/* the fields to insert (pointers to the TRX_FIELD structures from database schema) */
-	zbx_vector_ptr_t	fields;
-	/* the values rows to insert (pointers to arrays of zbx_db_value_t structures) */
-	zbx_vector_ptr_t	rows;
+	trx_vector_ptr_t	fields;
+	/* the values rows to insert (pointers to arrays of trx_db_value_t structures) */
+	trx_vector_ptr_t	rows;
 	/* index of autoincrement field */
 	int			autoincrement;
 }
-zbx_db_insert_t;
+trx_db_insert_t;
 
-void	zbx_db_insert_prepare_dyn(zbx_db_insert_t *self, const TRX_TABLE *table, const TRX_FIELD **fields,
+void	trx_db_insert_prepare_dyn(trx_db_insert_t *self, const TRX_TABLE *table, const TRX_FIELD **fields,
 		int fields_num);
-void	zbx_db_insert_prepare(zbx_db_insert_t *self, const char *table, ...);
-void	zbx_db_insert_add_values_dyn(zbx_db_insert_t *self, const zbx_db_value_t **values, int values_num);
-void	zbx_db_insert_add_values(zbx_db_insert_t *self, ...);
-int	zbx_db_insert_execute(zbx_db_insert_t *self);
-void	zbx_db_insert_clean(zbx_db_insert_t *self);
-void	zbx_db_insert_autoincrement(zbx_db_insert_t *self, const char *field_name);
-int	zbx_db_get_database_type(void);
+void	trx_db_insert_prepare(trx_db_insert_t *self, const char *table, ...);
+void	trx_db_insert_add_values_dyn(trx_db_insert_t *self, const trx_db_value_t **values, int values_num);
+void	trx_db_insert_add_values(trx_db_insert_t *self, ...);
+int	trx_db_insert_execute(trx_db_insert_t *self);
+void	trx_db_insert_clean(trx_db_insert_t *self);
+void	trx_db_insert_autoincrement(trx_db_insert_t *self, const char *field_name);
+int	trx_db_get_database_type(void);
 
 /* agent (TREEGIX, SNMP, IPMI, JMX) availability data */
 typedef struct
@@ -679,7 +679,7 @@ typedef struct
 	int		errors_from;
 	int		disable_until;
 }
-zbx_agent_availability_t;
+trx_agent_availability_t;
 
 #define TRX_FLAGS_AGENT_STATUS_NONE		0x00000000
 #define TRX_FLAGS_AGENT_STATUS_AVAILABLE	0x00000001
@@ -701,27 +701,27 @@ zbx_agent_availability_t;
 
 typedef struct
 {
-	zbx_uint64_t			hostid;
+	trx_uint64_t			hostid;
 
-	zbx_agent_availability_t	agents[TRX_AGENT_MAX];
+	trx_agent_availability_t	agents[TRX_AGENT_MAX];
 }
-zbx_host_availability_t;
+trx_host_availability_t;
 
 
-int	zbx_sql_add_host_availability(char **sql, size_t *sql_alloc, size_t *sql_offset,
-		const zbx_host_availability_t *ha);
-int	DBget_user_by_active_session(const char *sessionid, zbx_user_t *user);
+int	trx_sql_add_host_availability(char **sql, size_t *sql_alloc, size_t *sql_offset,
+		const trx_host_availability_t *ha);
+int	DBget_user_by_active_session(const char *sessionid, trx_user_t *user);
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
-	zbx_uint64_t	lastlogsize;
+	trx_uint64_t	itemid;
+	trx_uint64_t	lastlogsize;
 	unsigned char	state;
 	int		mtime;
 	int		lastclock;
 	const char	*error;
 
-	zbx_uint64_t	flags;
+	trx_uint64_t	flags;
 #define TRX_FLAGS_ITEM_DIFF_UNSET			__UINT64_C(0x0000)
 #define TRX_FLAGS_ITEM_DIFF_UPDATE_STATE		__UINT64_C(0x0001)
 #define TRX_FLAGS_ITEM_DIFF_UPDATE_ERROR		__UINT64_C(0x0002)
@@ -733,20 +733,20 @@ typedef struct
 	TRX_FLAGS_ITEM_DIFF_UPDATE_MTIME | TRX_FLAGS_ITEM_DIFF_UPDATE_LASTLOGSIZE)
 #define TRX_FLAGS_ITEM_DIFF_UPDATE	(TRX_FLAGS_ITEM_DIFF_UPDATE_DB | TRX_FLAGS_ITEM_DIFF_UPDATE_LASTCLOCK)
 }
-zbx_item_diff_t;
+trx_item_diff_t;
 
 /* event support */
-void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr_t *events);
-void	zbx_db_free_event(DB_EVENT *event);
-void	zbx_db_get_eventid_r_eventid_pairs(zbx_vector_uint64_t *eventids, zbx_vector_uint64_pair_t *event_pairs,
-		zbx_vector_uint64_t *r_eventids);
+void	trx_db_get_events_by_eventids(trx_vector_uint64_t *eventids, trx_vector_ptr_t *events);
+void	trx_db_free_event(DB_EVENT *event);
+void	trx_db_get_eventid_r_eventid_pairs(trx_vector_uint64_t *eventids, trx_vector_uint64_pair_t *event_pairs,
+		trx_vector_uint64_t *r_eventids);
 
-void	zbx_db_trigger_clean(DB_TRIGGER *trigger);
+void	trx_db_trigger_clean(DB_TRIGGER *trigger);
 
 
 typedef struct
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 	unsigned char	compress;
 	int		version;
 	int		lastaccess;
@@ -761,13 +761,13 @@ typedef struct
 		TRX_FLAGS_PROXY_DIFF_UPDATE_COMPRESS |	\
 		TRX_FLAGS_PROXY_DIFF_UPDATE_VERSION | 	\
 		TRX_FLAGS_PROXY_DIFF_UPDATE_LASTACCESS)
-	zbx_uint64_t	flags;
+	trx_uint64_t	flags;
 }
-zbx_proxy_diff_t;
+trx_proxy_diff_t;
 
-int	zbx_db_lock_maintenanceids(zbx_vector_uint64_t *maintenanceids);
+int	trx_db_lock_maintenanceids(trx_vector_uint64_t *maintenanceids);
 
-void	zbx_db_save_item_changes(char **sql, size_t *sql_alloc, size_t *sql_offset, const zbx_vector_ptr_t *item_diff);
+void	trx_db_save_item_changes(char **sql, size_t *sql_alloc, size_t *sql_offset, const trx_vector_ptr_t *item_diff);
 
 /* mock field to estimate how much data can be stored in characters, bytes or both, */
 /* depending on database backend                                                    */
@@ -777,9 +777,9 @@ typedef struct
 	int	bytes_num;
 	int	chars_num;
 }
-zbx_db_mock_field_t;
+trx_db_mock_field_t;
 
-void	zbx_db_mock_field_init(zbx_db_mock_field_t *field, int field_type, int field_len);
-int	zbx_db_mock_field_append(zbx_db_mock_field_t *field, const char *text);
+void	trx_db_mock_field_init(trx_db_mock_field_t *field, int field_type, int field_len);
+int	trx_db_mock_field_append(trx_db_mock_field_t *field, const char *text);
 
 #endif

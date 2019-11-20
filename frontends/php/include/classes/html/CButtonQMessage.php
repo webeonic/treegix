@@ -29,7 +29,7 @@ class CButtonQMessage extends CSubmit {
 			$value = _('Are you sure you want perform this action?');
 		}
 		// if message will contain single quotes, it will break everything, so it must be escaped
-		$this->msg = zbx_jsvalue(
+		$this->msg = trx_jsvalue(
 			$value,
 			false, // not as object
 			false // do not add quotes to the string

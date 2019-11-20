@@ -11,6 +11,6 @@
 #define TRX_FATAL_LOG_FULL_INFO		(TRX_FATAL_LOG_PC_REG_SF | TRX_FATAL_LOG_BACKTRACE | TRX_FATAL_LOG_MEM_MAP)
 
 const char	*get_signal_name(int sig);
-void	zbx_log_fatal_info(void *context, unsigned int flags);
+void	trx_log_fatal_info(void *context, unsigned int flags);
 
 #endif

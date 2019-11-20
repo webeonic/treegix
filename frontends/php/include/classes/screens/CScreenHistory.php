@@ -97,7 +97,7 @@ class CScreenHistory extends CScreenBase {
 				'output' => ['itemid'],
 				'graphids' => [$options['graphid']]
 			]);
-			$this->itemids = zbx_objectValues($itemids, 'itemid');
+			$this->itemids = trx_objectValues($itemids, 'itemid');
 			$this->graphid = $options['graphid'];
 		}
 	}
@@ -207,7 +207,7 @@ class CScreenHistory extends CScreenBase {
 						sscanf($value, '%f', $value);
 					}
 
-					$row = zbx_date2str(DATE_TIME_FORMAT_SECONDS, $history_row['clock']).' '.$history_row['clock'].
+					$row = trx_date2str(DATE_TIME_FORMAT_SECONDS, $history_row['clock']).' '.$history_row['clock'].
 						' '.$value;
 
 					if (count($items) > 1) {
@@ -293,7 +293,7 @@ class CScreenHistory extends CScreenBase {
 
 					$row = [];
 
-					$row[] = (new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $data['clock'])))
+					$row[] = (new CCol(trx_date2str(DATE_TIME_FORMAT_SECONDS, $data['clock'])))
 						->addClass(TRX_STYLE_NOWRAP)
 						->addClass($color);
 
@@ -304,7 +304,7 @@ class CScreenHistory extends CScreenBase {
 
 					if ($useLogItem) {
 						$row[] = ($data['timestamp'] != 0)
-							? (new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $data['timestamp'])))
+							? (new CCol(trx_date2str(DATE_TIME_FORMAT_SECONDS, $data['timestamp'])))
 								->addClass(TRX_STYLE_NOWRAP)
 								->addClass($color)
 							: '';
@@ -325,7 +325,7 @@ class CScreenHistory extends CScreenBase {
 						}
 					}
 
-					$row[] = (new CCol(new CPre(zbx_nl2br($data['value']))))->addClass($color);
+					$row[] = (new CCol(new CPre(trx_nl2br($data['value']))))->addClass($color);
 
 					$history_table->addRow($row);
 				}
@@ -362,9 +362,9 @@ class CScreenHistory extends CScreenBase {
 					}
 
 					$history_table->addRow([
-						(new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $history_row['clock'])))
+						(new CCol(trx_date2str(DATE_TIME_FORMAT_SECONDS, $history_row['clock'])))
 							->addClass(TRX_STYLE_NOWRAP),
-						new CPre(zbx_nl2br($value))
+						new CPre(trx_nl2br($value))
 					]);
 				}
 
@@ -429,7 +429,7 @@ class CScreenHistory extends CScreenBase {
 				$history_table = (new CTableInfo())->makeVerticalRotation()->setHeader($table_header);
 
 				foreach ($history_data as $history_data_row) {
-					$row = [(new CCol(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $history_data_row['clock'])))
+					$row = [(new CCol(trx_date2str(DATE_TIME_FORMAT_SECONDS, $history_data_row['clock'])))
 						->addClass(TRX_STYLE_NOWRAP)
 					];
 					$values = $history_data_row['values'];
@@ -488,7 +488,7 @@ class CScreenHistory extends CScreenBase {
 				return 'timeControl.addObject("'.$this->getDataId().'", '.CJs::encodeJson($this->timeline).', '.CJs::encodeJson($timeControlData).');';
 			}
 			else {
-				zbx_add_post_js('timeControl.addObject("'.$this->getDataId().'", '.CJs::encodeJson($this->timeline).', '.CJs::encodeJson($timeControlData).');');
+				trx_add_post_js('timeControl.addObject("'.$this->getDataId().'", '.CJs::encodeJson($this->timeline).', '.CJs::encodeJson($timeControlData).');');
 			}
 		}
 

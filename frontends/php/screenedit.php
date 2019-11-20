@@ -114,39 +114,39 @@ if (!empty($_REQUEST['ajaxAction']) && $_REQUEST['ajaxAction'] == 'sw_pos') {
 		$fitem = DBfetch(DBselect(
 			'SELECT s.screenitemid,s.colspan,s.rowspan'.
 			' FROM screens_items s'.
-			' WHERE s.y='.zbx_dbstr($sw_pos[0]).
-				' AND s.x='.zbx_dbstr($sw_pos[1]).
-				' AND s.screenid='.zbx_dbstr($screen['screenid'])
+			' WHERE s.y='.trx_dbstr($sw_pos[0]).
+				' AND s.x='.trx_dbstr($sw_pos[1]).
+				' AND s.screenid='.trx_dbstr($screen['screenid'])
 		));
 
 		$sitem = DBfetch(DBselect(
 			'SELECT s.screenitemid,s.colspan,s.rowspan'.
 			' FROM screens_items s'.
-			' WHERE s.y='.zbx_dbstr($sw_pos[2]).
-				' AND s.x='.zbx_dbstr($sw_pos[3]).
-				' AND s.screenid='.zbx_dbstr($screen['screenid'])
+			' WHERE s.y='.trx_dbstr($sw_pos[2]).
+				' AND s.x='.trx_dbstr($sw_pos[3]).
+				' AND s.screenid='.trx_dbstr($screen['screenid'])
 		));
 
 		if ($fitem) {
 			DBexecute('UPDATE screens_items'.
-						' SET y='.zbx_dbstr($sw_pos[2]).',x='.zbx_dbstr($sw_pos[3]).
-						',colspan='.(isset($sitem['colspan']) ? zbx_dbstr($sitem['colspan']) : 1).
-						',rowspan='.(isset($sitem['rowspan']) ? zbx_dbstr($sitem['rowspan']) : 1).
-						' WHERE y='.zbx_dbstr($sw_pos[0]).
-							' AND x='.zbx_dbstr($sw_pos[1]).
-							' AND screenid='.zbx_dbstr($screen['screenid']).
-							' AND screenitemid='.zbx_dbstr($fitem['screenitemid'])
+						' SET y='.trx_dbstr($sw_pos[2]).',x='.trx_dbstr($sw_pos[3]).
+						',colspan='.(isset($sitem['colspan']) ? trx_dbstr($sitem['colspan']) : 1).
+						',rowspan='.(isset($sitem['rowspan']) ? trx_dbstr($sitem['rowspan']) : 1).
+						' WHERE y='.trx_dbstr($sw_pos[0]).
+							' AND x='.trx_dbstr($sw_pos[1]).
+							' AND screenid='.trx_dbstr($screen['screenid']).
+							' AND screenitemid='.trx_dbstr($fitem['screenitemid'])
 			);
 		}
 		if ($sitem) {
 			DBexecute('UPDATE screens_items '.
-						' SET y='.zbx_dbstr($sw_pos[0]).',x='.zbx_dbstr($sw_pos[1]).
-						',colspan='.(isset($fitem['colspan']) ? zbx_dbstr($fitem['colspan']) : 1).
-						',rowspan='.(isset($fitem['rowspan']) ? zbx_dbstr($fitem['rowspan']) : 1).
-						' WHERE y='.zbx_dbstr($sw_pos[2]).
-							' AND x='.zbx_dbstr($sw_pos[3]).
-							' AND screenid='.zbx_dbstr($screen['screenid']).
-							' AND screenitemid='.zbx_dbstr($sitem['screenitemid'])
+						' SET y='.trx_dbstr($sw_pos[0]).',x='.trx_dbstr($sw_pos[1]).
+						',colspan='.(isset($fitem['colspan']) ? trx_dbstr($fitem['colspan']) : 1).
+						',rowspan='.(isset($fitem['rowspan']) ? trx_dbstr($fitem['rowspan']) : 1).
+						' WHERE y='.trx_dbstr($sw_pos[2]).
+							' AND x='.trx_dbstr($sw_pos[3]).
+							' AND screenid='.trx_dbstr($screen['screenid']).
+							' AND screenitemid='.trx_dbstr($sitem['screenitemid'])
 			);
 		}
 		add_audit_details(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_SCREEN, $screen['screenid'], $screen['name'], 'Screen items switched');

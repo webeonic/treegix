@@ -1,6 +1,6 @@
 
 
-package zbxlib
+package trxlib
 
 import (
 	"C"

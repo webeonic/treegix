@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxtimer.a
+noinst_LIBRARIES = libtrxtimer.a
 
-libzbxtimer_a_SOURCES = timer.c timer.h
+libtrxtimer_a_SOURCES = timer.c timer.h

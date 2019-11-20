@@ -1751,7 +1751,7 @@ class C44XmlValidator {
 	 * @return bool
 	 */
 	public function requiredMapElement(array $parent_data = null) {
-		if (zbx_is_int($parent_data['elementtype'])) {
+		if (trx_is_int($parent_data['elementtype'])) {
 			switch ($parent_data['elementtype']) {
 				case SYSMAP_ELEMENT_TYPE_HOST:
 				case SYSMAP_ELEMENT_TYPE_MAP:
@@ -1793,7 +1793,7 @@ class C44XmlValidator {
 	 * @return array|string
 	 */
 	public function validateScreenItemResource($data, array $parent_data = null, $path) {
-		if (zbx_is_int($parent_data['resourcetype'])) {
+		if (trx_is_int($parent_data['resourcetype'])) {
 			switch ($parent_data['resourcetype']) {
 				case SCREEN_RESOURCE_GRAPH:
 				case SCREEN_RESOURCE_LLD_GRAPH:

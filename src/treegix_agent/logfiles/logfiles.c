@@ -66,15 +66,15 @@ static int	split_string(const char *str, const char *del, char **part1, char **p
 	part1_length = (size_t)(del - str + 1);
 	part2_length = str_length - part1_length;
 
-	*part1 = (char *)zbx_malloc(*part1, part1_length + 1);
-	zbx_strlcpy(*part1, str, part1_length + 1);
+	*part1 = (char *)trx_malloc(*part1, part1_length + 1);
+	trx_strlcpy(*part1, str, part1_length + 1);
 
-	*part2 = (char *)zbx_malloc(*part2, part2_length + 1);
-	zbx_strlcpy(*part2, str + part1_length, part2_length + 1);
+	*part2 = (char *)trx_malloc(*part2, part2_length + 1);
+	trx_strlcpy(*part2, str + part1_length, part2_length + 1);
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s part1:'%s' part2:'%s'", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s part1:'%s' part2:'%s'", __func__, trx_result_string(ret),
 			*part1, *part2);
 
 	return ret;
@@ -110,7 +110,7 @@ out:
 static int	split_filename(const char *filename, char **directory, char **filename_regexp, char **err_msg)
 {
 	const char	*separator = NULL;
-	zbx_stat_t	buf;
+	trx_stat_t	buf;
 	int		ret = FAIL;
 #ifdef _WINDOWS
 	size_t		sz;
@@ -119,7 +119,7 @@ static int	split_filename(const char *filename, char **directory, char **filenam
 
 	if (NULL == filename || '\0' == *filename)
 	{
-		*err_msg = zbx_strdup(*err_msg, "Cannot split empty path.");
+		*err_msg = trx_strdup(*err_msg, "Cannot split empty path.");
 		goto out;
 	}
 
@@ -136,7 +136,7 @@ static int	split_filename(const char *filename, char **directory, char **filenam
 		/* separator must be relative delimiter of the original filename */
 		if (FAIL == split_string(filename, separator, directory, filename_regexp))
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot split path by \"%c\".", PATH_SEPARATOR);
+			*err_msg = trx_dsprintf(*err_msg, "Cannot split path by \"%c\".", PATH_SEPARATOR);
 			goto out;
 		}
 
@@ -145,22 +145,22 @@ static int	split_filename(const char *filename, char **directory, char **filenam
 		/* Windows world verification */
 		if (sz + 1 > MAX_PATH)
 		{
-			*err_msg = zbx_strdup(*err_msg, "Directory path is too long.");
-			zbx_free(*directory);
-			zbx_free(*filename_regexp);
+			*err_msg = trx_strdup(*err_msg, "Directory path is too long.");
+			trx_free(*directory);
+			trx_free(*filename_regexp);
 			goto out;
 		}
 
 		/* Windows "stat" functions cannot get info about directories with '\' at the end of the path, */
 		/* except for root directories 'x:\' */
-		if (0 == zbx_stat(*directory, &buf) && S_ISDIR(buf.st_mode))
+		if (0 == trx_stat(*directory, &buf) && S_ISDIR(buf.st_mode))
 			break;
 
 		if (sz > 0 && PATH_SEPARATOR == (*directory)[sz - 1])
 		{
 			(*directory)[sz - 1] = '\0';
 
-			if (0 == zbx_stat(*directory, &buf) && S_ISDIR(buf.st_mode))
+			if (0 == trx_stat(*directory, &buf) && S_ISDIR(buf.st_mode))
 			{
 				(*directory)[sz - 1] = PATH_SEPARATOR;
 				break;
@@ -168,41 +168,41 @@ static int	split_filename(const char *filename, char **directory, char **filenam
 		}
 
 		treegix_log(LOG_LEVEL_DEBUG, "cannot find directory '%s'", *directory);
-		zbx_free(*directory);
-		zbx_free(*filename_regexp);
+		trx_free(*directory);
+		trx_free(*filename_regexp);
 	}
 
 	if (separator < filename)
 	{
-		*err_msg = zbx_strdup(*err_msg, "Non-existing disk or directory.");
+		*err_msg = trx_strdup(*err_msg, "Non-existing disk or directory.");
 		goto out;
 	}
 #else	/* not _WINDOWS */
 	if (NULL == (separator = strrchr(filename, PATH_SEPARATOR)))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot find separator \"%c\" in path.", PATH_SEPARATOR);
+		*err_msg = trx_dsprintf(*err_msg, "Cannot find separator \"%c\" in path.", PATH_SEPARATOR);
 		goto out;
 	}
 
 	if (SUCCEED != split_string(filename, separator, directory, filename_regexp))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot split path by \"%c\".", PATH_SEPARATOR);
+		*err_msg = trx_dsprintf(*err_msg, "Cannot split path by \"%c\".", PATH_SEPARATOR);
 		goto out;
 	}
 
-	if (-1 == zbx_stat(*directory, &buf))
+	if (-1 == trx_stat(*directory, &buf))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot obtain directory information: %s", zbx_strerror(errno));
-		zbx_free(*directory);
-		zbx_free(*filename_regexp);
+		*err_msg = trx_dsprintf(*err_msg, "Cannot obtain directory information: %s", trx_strerror(errno));
+		trx_free(*directory);
+		trx_free(*filename_regexp);
 		goto out;
 	}
 
 	if (0 == S_ISDIR(buf.st_mode))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Base path \"%s\" is not a directory.", *directory);
-		zbx_free(*directory);
-		zbx_free(*filename_regexp);
+		*err_msg = trx_dsprintf(*err_msg, "Base path \"%s\" is not a directory.", *directory);
+		trx_free(*directory);
+		trx_free(*filename_regexp);
 		goto out;
 	}
 #endif	/* _WINDOWS */
@@ -210,7 +210,7 @@ static int	split_filename(const char *filename, char **directory, char **filenam
 	ret = SUCCEED;
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s directory:'%s' filename_regexp:'%s'", __func__,
-			zbx_result_string(ret), *directory, *filename_regexp);
+			trx_result_string(ret), *directory, *filename_regexp);
 
 	return ret;
 }
@@ -240,15 +240,15 @@ static int	file_start_md5(int f, int length, md5_byte_t *md5buf, const char *fil
 
 	if (MAX_LEN_MD5 < length)
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Length %d exceeds maximum MD5 fragment length of %d.", length,
+		*err_msg = trx_dsprintf(*err_msg, "Length %d exceeds maximum MD5 fragment length of %d.", length,
 				MAX_LEN_MD5);
 		return FAIL;
 	}
 
-	if ((zbx_offset_t)-1 == zbx_lseek(f, 0, SEEK_SET))
+	if ((trx_offset_t)-1 == trx_lseek(f, 0, SEEK_SET))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to 0 for file \"%s\": %s", filename,
-				zbx_strerror(errno));
+		*err_msg = trx_dsprintf(*err_msg, "Cannot set position to 0 for file \"%s\": %s", filename,
+				trx_strerror(errno));
 		return FAIL;
 	}
 
@@ -256,21 +256,21 @@ static int	file_start_md5(int f, int length, md5_byte_t *md5buf, const char *fil
 	{
 		if (-1 == rc)
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot read %d bytes from file \"%s\": %s", length, filename,
-					zbx_strerror(errno));
+			*err_msg = trx_dsprintf(*err_msg, "Cannot read %d bytes from file \"%s\": %s", length, filename,
+					trx_strerror(errno));
 		}
 		else
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot read %d bytes from file \"%s\". Read %d bytes only.",
+			*err_msg = trx_dsprintf(*err_msg, "Cannot read %d bytes from file \"%s\". Read %d bytes only.",
 					length, filename, rc);
 		}
 
 		return FAIL;
 	}
 
-	zbx_md5_init(&state);
-	zbx_md5_append(&state, (const md5_byte_t *)buf, length);
-	zbx_md5_finish(&state, md5buf);
+	trx_md5_init(&state);
+	trx_md5_append(&state, (const md5_byte_t *)buf, length);
+	trx_md5_finish(&state, md5buf);
 
 	return SUCCEED;
 }
@@ -295,7 +295,7 @@ static int	file_start_md5(int f, int length, md5_byte_t *md5buf, const char *fil
  * Return value: SUCCEED or FAIL                                              *
  *                                                                            *
  ******************************************************************************/
-static int	file_id(int f, int use_ino, zbx_uint64_t *dev, zbx_uint64_t *ino_lo, zbx_uint64_t *ino_hi,
+static int	file_id(int f, int use_ino, trx_uint64_t *dev, trx_uint64_t *ino_lo, trx_uint64_t *ino_hi,
 		const char *filename, char **err_msg)
 {
 	int				ret = FAIL;
@@ -305,8 +305,8 @@ static int	file_id(int f, int use_ino, zbx_uint64_t *dev, zbx_uint64_t *ino_lo, 
 
 	if (-1 == (h = _get_osfhandle(f)))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot obtain handle from descriptor of file \"%s\": %s",
-				filename, zbx_strerror(errno));
+		*err_msg = trx_dsprintf(*err_msg, "Cannot obtain handle from descriptor of file \"%s\": %s",
+				filename, trx_strerror(errno));
 		return ret;
 	}
 
@@ -317,21 +317,21 @@ static int	file_id(int f, int use_ino, zbx_uint64_t *dev, zbx_uint64_t *ino_lo, 
 		if (0 != GetFileInformationByHandle((HANDLE)h, &hfi))
 		{
 			*dev = hfi.dwVolumeSerialNumber;
-			*ino_lo = (zbx_uint64_t)hfi.nFileIndexHigh << 32 | (zbx_uint64_t)hfi.nFileIndexLow;
+			*ino_lo = (trx_uint64_t)hfi.nFileIndexHigh << 32 | (trx_uint64_t)hfi.nFileIndexLow;
 			*ino_hi = 0;
 		}
 		else
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot obtain information for file \"%s\": %s",
+			*err_msg = trx_dsprintf(*err_msg, "Cannot obtain information for file \"%s\": %s",
 					filename, strerror_from_system(GetLastError()));
 			return ret;
 		}
 	}
 	else if (2 == use_ino)
 	{
-		if (NULL != zbx_GetFileInformationByHandleEx)
+		if (NULL != trx_GetFileInformationByHandleEx)
 		{
-			if (0 != zbx_GetFileInformationByHandleEx((HANDLE)h, zbx_FileIdInfo, &fid, sizeof(fid)))
+			if (0 != trx_GetFileInformationByHandleEx((HANDLE)h, trx_FileIdInfo, &fid, sizeof(fid)))
 			{
 				*dev = fid.VolumeSerialNumber;
 				*ino_lo = fid.FileId.LowPart;
@@ -339,7 +339,7 @@ static int	file_id(int f, int use_ino, zbx_uint64_t *dev, zbx_uint64_t *ino_lo, 
 			}
 			else
 			{
-				*err_msg = zbx_dsprintf(*err_msg, "Cannot obtain extended information for file"
+				*err_msg = trx_dsprintf(*err_msg, "Cannot obtain extended information for file"
 						" \"%s\": %s", filename, strerror_from_system(GetLastError()));
 				return ret;
 			}
@@ -375,32 +375,32 @@ static int	set_use_ino_by_fs_type(const char *path, int *use_ino, char **err_msg
 	char	*utf8;
 	wchar_t	*path_uni, mount_point[MAX_PATH + 1], fs_type[MAX_PATH + 1];
 
-	path_uni = zbx_utf8_to_unicode(path);
+	path_uni = trx_utf8_to_unicode(path);
 
 	/* get volume mount point */
 	if (0 == GetVolumePathName(path_uni, mount_point,
 			sizeof(mount_point) / sizeof(wchar_t)))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot obtain volume mount point for file \"%s\": %s", path,
+		*err_msg = trx_dsprintf(*err_msg, "Cannot obtain volume mount point for file \"%s\": %s", path,
 				strerror_from_system(GetLastError()));
-		zbx_free(path_uni);
+		trx_free(path_uni);
 		return FAIL;
 	}
 
-	zbx_free(path_uni);
+	trx_free(path_uni);
 
 	/* Which file system type this directory resides on ? */
 	if (0 == GetVolumeInformation(mount_point, NULL, 0, NULL, NULL, NULL, fs_type,
 			sizeof(fs_type) / sizeof(wchar_t)))
 	{
-		utf8 = zbx_unicode_to_utf8(mount_point);
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot obtain volume information for directory \"%s\": %s", utf8,
+		utf8 = trx_unicode_to_utf8(mount_point);
+		*err_msg = trx_dsprintf(*err_msg, "Cannot obtain volume information for directory \"%s\": %s", utf8,
 				strerror_from_system(GetLastError()));
-		zbx_free(utf8);
+		trx_free(utf8);
 		return FAIL;
 	}
 
-	utf8 = zbx_unicode_to_utf8(fs_type);
+	utf8 = trx_unicode_to_utf8(fs_type);
 
 	if (0 == strcmp(utf8, "NTFS"))
 		*use_ino = 1;			/* 64-bit FileIndex */
@@ -410,7 +410,7 @@ static int	set_use_ino_by_fs_type(const char *path, int *use_ino, char **err_msg
 		*use_ino = 0;			/* cannot use inodes to identify files (e.g. FAT32) */
 
 	treegix_log(LOG_LEVEL_DEBUG, "log files reside on '%s' file system", utf8);
-	zbx_free(utf8);
+	trx_free(utf8);
 
 	return SUCCEED;
 }
@@ -498,8 +498,8 @@ static int	open_file_helper(const char *pathname, char **err_msg)
 {
 	int	fd;
 
-	if (-1 == (fd = zbx_open(pathname, O_RDONLY)))
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot open file \"%s\": %s", pathname, zbx_strerror(errno));
+	if (-1 == (fd = trx_open(pathname, O_RDONLY)))
+		*err_msg = trx_dsprintf(*err_msg, "Cannot open file \"%s\": %s", pathname, trx_strerror(errno));
 
 	return fd;
 }
@@ -522,7 +522,7 @@ static int	close_file_helper(int fd, const char *pathname, char **err_msg)
 	if (0 == close(fd))
 		return SUCCEED;
 
-	*err_msg = zbx_dsprintf(*err_msg, "Cannot close file \"%s\": %s", pathname, zbx_strerror(errno));
+	*err_msg = trx_dsprintf(*err_msg, "Cannot close file \"%s\": %s", pathname, trx_strerror(errno));
 
 	return FAIL;
 }
@@ -641,8 +641,8 @@ static int	is_same_file_logrt(const struct st_logfile *old_file, const struct st
 		{
 			if (TRX_SAME_FILE_ERROR != ret)
 			{
-				*err_msg = zbx_dsprintf(*err_msg, "Cannot close file \"%s\": %s", new_file->filename,
-						zbx_strerror(errno));
+				*err_msg = trx_dsprintf(*err_msg, "Cannot close file \"%s\": %s", new_file->filename,
+						trx_strerror(errno));
 				ret = TRX_SAME_FILE_ERROR;
 			}
 		}
@@ -770,8 +770,8 @@ static int	is_same_file_logcpt(const struct st_logfile *old_file, const struct s
 		{
 			if (TRX_SAME_FILE_ERROR != ret)
 			{
-				*err_msg = zbx_dsprintf(*err_msg, "Cannot close file \"%s\": %s", p_larger->filename,
-						zbx_strerror(errno));
+				*err_msg = trx_dsprintf(*err_msg, "Cannot close file \"%s\": %s", p_larger->filename,
+						trx_strerror(errno));
 				ret = TRX_SAME_FILE_ERROR;
 			}
 		}
@@ -990,8 +990,8 @@ static void	resolve_old2new(char *old2new, int num_old, int num_new)
 
 	/* protect unique mappings from further modifications */
 
-	protected_rows = (char *)zbx_calloc(protected_rows, (size_t)num_old, sizeof(char));
-	protected_cols = (char *)zbx_calloc(protected_cols, (size_t)num_new, sizeof(char));
+	protected_rows = (char *)trx_calloc(protected_rows, (size_t)num_old, sizeof(char));
+	protected_cols = (char *)trx_calloc(protected_cols, (size_t)num_new, sizeof(char));
 
 	for (i = 0; i < num_old; i++)
 	{
@@ -1112,8 +1112,8 @@ static void	resolve_old2new(char *old2new, int num_old, int num_new)
 		}
 	}
 
-	zbx_free(protected_cols);
-	zbx_free(protected_rows);
+	trx_free(protected_cols);
+	trx_free(protected_rows);
 }
 
 /******************************************************************************
@@ -1151,7 +1151,7 @@ static char	*create_old2new_and_copy_of(int rotation_type, struct st_logfile *ol
 	char		*old2new, *p;
 
 	/* set up a two dimensional array of possible mappings from old files to new files */
-	old2new = (char *)zbx_malloc(NULL, (size_t)num_new * (size_t)num_old * sizeof(char));
+	old2new = (char *)trx_malloc(NULL, (size_t)num_new * (size_t)num_old * sizeof(char));
 	p = old2new;
 
 	for (i = 0; i < num_old; i++)
@@ -1187,10 +1187,10 @@ static char	*create_old2new_and_copy_of(int rotation_type, struct st_logfile *ol
 					break;
 				case TRX_SAME_FILE_RETRY:
 					old_files[i].retry = 1;
-					zbx_free(old2new);
+					trx_free(old2new);
 					return NULL;
 				case TRX_SAME_FILE_ERROR:
-					zbx_free(old2new);
+					trx_free(old2new);
 					return NULL;
 			}
 
@@ -1254,17 +1254,17 @@ static int	find_old2new(const char * const old2new, int num_new, int i_old)
  *                                                                            *
  ******************************************************************************/
 static void	add_logfile(struct st_logfile **logfiles, int *logfiles_alloc, int *logfiles_num, const char *filename,
-		zbx_stat_t *st)
+		trx_stat_t *st)
 {
 	int	i = 0, cmp = 0;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() filename:'%s' mtime:%d size:" TRX_FS_UI64, __func__, filename,
-			(int)st->st_mtime, (zbx_uint64_t)st->st_size);
+			(int)st->st_mtime, (trx_uint64_t)st->st_size);
 
 	if (*logfiles_alloc == *logfiles_num)
 	{
 		*logfiles_alloc += 64;
-		*logfiles = (struct st_logfile *)zbx_realloc(*logfiles,
+		*logfiles = (struct st_logfile *)trx_realloc(*logfiles,
 				(size_t)*logfiles_alloc * sizeof(struct st_logfile));
 
 		treegix_log(LOG_LEVEL_DEBUG, "%s() logfiles:%p logfiles_alloc:%d",
@@ -1318,18 +1318,18 @@ static void	add_logfile(struct st_logfile **logfiles, int *logfiles_alloc, int *
 				(size_t)(*logfiles_num - i) * sizeof(struct st_logfile));
 	}
 
-	(*logfiles)[i].filename = zbx_strdup(NULL, filename);
+	(*logfiles)[i].filename = trx_strdup(NULL, filename);
 	(*logfiles)[i].mtime = (int)st->st_mtime;
 	(*logfiles)[i].md5size = -1;
 	(*logfiles)[i].seq = 0;
 	(*logfiles)[i].incomplete = 0;
 	(*logfiles)[i].copy_of = -1;
 #ifndef _WINDOWS
-	(*logfiles)[i].dev = (zbx_uint64_t)st->st_dev;
-	(*logfiles)[i].ino_lo = (zbx_uint64_t)st->st_ino;
+	(*logfiles)[i].dev = (trx_uint64_t)st->st_dev;
+	(*logfiles)[i].ino_lo = (trx_uint64_t)st->st_ino;
 	(*logfiles)[i].ino_hi = 0;
 #endif
-	(*logfiles)[i].size = (zbx_uint64_t)st->st_size;
+	(*logfiles)[i].size = (trx_uint64_t)st->st_size;
 	(*logfiles)[i].processed_size = 0;
 	(*logfiles)[i].retry = 0;
 
@@ -1356,14 +1356,14 @@ void	destroy_logfile_list(struct st_logfile **logfiles, int *logfiles_alloc, int
 	int	i;
 
 	for (i = 0; i < *logfiles_num; i++)
-		zbx_free((*logfiles)[i].filename);
+		trx_free((*logfiles)[i].filename);
 
 	*logfiles_num = 0;
 
 	if (NULL != logfiles_alloc)
 		*logfiles_alloc = 0;
 
-	zbx_free(*logfiles);
+	trx_free(*logfiles);
 }
 
 /******************************************************************************
@@ -1388,27 +1388,27 @@ void	destroy_logfile_list(struct st_logfile **logfiles, int *logfiles_alloc, int
  * Comments: This is a helper function for pick_logfiles()                    *
  *                                                                            *
  ******************************************************************************/
-static void	pick_logfile(const char *directory, const char *filename, int mtime, const zbx_regexp_t *re,
+static void	pick_logfile(const char *directory, const char *filename, int mtime, const trx_regexp_t *re,
 		struct st_logfile **logfiles, int *logfiles_alloc, int *logfiles_num)
 {
 	char		*logfile_candidate;
-	zbx_stat_t	file_buf;
+	trx_stat_t	file_buf;
 
-	logfile_candidate = zbx_dsprintf(NULL, "%s%s", directory, filename);
+	logfile_candidate = trx_dsprintf(NULL, "%s%s", directory, filename);
 
-	if (0 == zbx_stat(logfile_candidate, &file_buf))
+	if (0 == trx_stat(logfile_candidate, &file_buf))
 	{
 		if (S_ISREG(file_buf.st_mode) &&
 				mtime <= file_buf.st_mtime &&
-				0 == zbx_regexp_match_precompiled(filename, re))
+				0 == trx_regexp_match_precompiled(filename, re))
 		{
 			add_logfile(logfiles, logfiles_alloc, logfiles_num, logfile_candidate, &file_buf);
 		}
 	}
 	else
-		treegix_log(LOG_LEVEL_DEBUG, "cannot process entry '%s': %s", logfile_candidate, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_DEBUG, "cannot process entry '%s': %s", logfile_candidate, trx_strerror(errno));
 
-	zbx_free(logfile_candidate);
+	trx_free(logfile_candidate);
 }
 
 /******************************************************************************
@@ -1440,7 +1440,7 @@ static void	pick_logfile(const char *directory, const char *filename, int mtime,
  *           between threads.                                                 *
  *                                                                            *
  ******************************************************************************/
-static int	pick_logfiles(const char *directory, int mtime, const zbx_regexp_t *re, int *use_ino,
+static int	pick_logfiles(const char *directory, int mtime, const trx_regexp_t *re, int *use_ino,
 		struct st_logfile **logfiles, int *logfiles_alloc, int *logfiles_num, char **err_msg)
 {
 #ifdef _WINDOWS
@@ -1451,15 +1451,15 @@ static int	pick_logfiles(const char *directory, int mtime, const zbx_regexp_t *r
 	struct _wfinddata_t	find_data;
 
 	/* "open" Windows directory */
-	find_path = zbx_dsprintf(find_path, "%s*", directory);
-	find_wpath = zbx_utf8_to_unicode(find_path);
+	find_path = trx_dsprintf(find_path, "%s*", directory);
+	find_wpath = trx_utf8_to_unicode(find_path);
 
 	if (-1 == (find_handle = _wfindfirst(find_wpath, &find_data)))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot open directory \"%s\" for reading: %s", directory,
-				zbx_strerror(errno));
-		zbx_free(find_wpath);
-		zbx_free(find_path);
+		*err_msg = trx_dsprintf(*err_msg, "Cannot open directory \"%s\" for reading: %s", directory,
+				trx_strerror(errno));
+		trx_free(find_wpath);
+		trx_free(find_path);
 		return FAIL;
 	}
 
@@ -1468,9 +1468,9 @@ static int	pick_logfiles(const char *directory, int mtime, const zbx_regexp_t *r
 
 	do
 	{
-		file_name_utf8 = zbx_unicode_to_utf8(find_data.name);
+		file_name_utf8 = trx_unicode_to_utf8(find_data.name);
 		pick_logfile(directory, file_name_utf8, mtime, re, logfiles, logfiles_alloc, logfiles_num);
-		zbx_free(file_name_utf8);
+		trx_free(file_name_utf8);
 	}
 	while (0 == _wfindnext(find_handle, &find_data));
 
@@ -1478,12 +1478,12 @@ static int	pick_logfiles(const char *directory, int mtime, const zbx_regexp_t *r
 clean:
 	if (-1 == _findclose(find_handle))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot close directory \"%s\": %s", directory, zbx_strerror(errno));
+		*err_msg = trx_dsprintf(*err_msg, "Cannot close directory \"%s\": %s", directory, trx_strerror(errno));
 		ret = FAIL;
 	}
 
-	zbx_free(find_wpath);
-	zbx_free(find_path);
+	trx_free(find_wpath);
+	trx_free(find_path);
 
 	return ret;
 #else
@@ -1492,8 +1492,8 @@ clean:
 
 	if (NULL == (dir = opendir(directory)))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot open directory \"%s\" for reading: %s", directory,
-				zbx_strerror(errno));
+		*err_msg = trx_dsprintf(*err_msg, "Cannot open directory \"%s\" for reading: %s", directory,
+				trx_strerror(errno));
 		return FAIL;
 	}
 
@@ -1507,7 +1507,7 @@ clean:
 
 	if (-1 == closedir(dir))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot close directory \"%s\": %s", directory, zbx_strerror(errno));
+		*err_msg = trx_dsprintf(*err_msg, "Cannot close directory \"%s\": %s", directory, trx_strerror(errno));
 		return FAIL;
 	}
 
@@ -1530,13 +1530,13 @@ clean:
  * Return value: SUCCEED or FAIL                                              *
  *                                                                            *
  ******************************************************************************/
-static int	compile_filename_regexp(const char *filename_regexp, zbx_regexp_t **re, char **err_msg)
+static int	compile_filename_regexp(const char *filename_regexp, trx_regexp_t **re, char **err_msg)
 {
 	const char	*regexp_err;
 
-	if (SUCCEED != zbx_regexp_compile(filename_regexp, re, &regexp_err))
+	if (SUCCEED != trx_regexp_compile(filename_regexp, re, &regexp_err))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot compile a regular expression describing filename pattern: %s",
+		*err_msg = trx_dsprintf(*err_msg, "Cannot compile a regular expression describing filename pattern: %s",
 				regexp_err);
 		return FAIL;
 	}
@@ -1580,7 +1580,7 @@ static int	fill_file_details(struct st_logfile **logfiles, int logfiles_num, cha
 		if (-1 == (f = open_file_helper(p->filename, err_msg)))
 			return FAIL;
 
-		p->md5size = (zbx_uint64_t)MAX_LEN_MD5 > p->size ? (int)p->size : MAX_LEN_MD5;
+		p->md5size = (trx_uint64_t)MAX_LEN_MD5 > p->size ? (int)p->size : MAX_LEN_MD5;
 
 		if (SUCCEED != (ret = file_start_md5(f, p->md5size, p->md5buf, p->filename, err_msg)))
 			goto clean;
@@ -1628,19 +1628,19 @@ static int	make_logfile_list(unsigned char flags, const char *filename, int mtim
 
 	if (0 != (TRX_METRIC_FLAG_LOG_LOG & flags))	/* log[] or log.count[] item */
 	{
-		zbx_stat_t	file_buf;
+		trx_stat_t	file_buf;
 
-		if (0 != zbx_stat(filename, &file_buf))
+		if (0 != trx_stat(filename, &file_buf))
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot obtain information for file \"%s\": %s", filename,
-					zbx_strerror(errno));
+			*err_msg = trx_dsprintf(*err_msg, "Cannot obtain information for file \"%s\": %s", filename,
+					trx_strerror(errno));
 			ret = TRX_NO_FILE_ERROR;
 			goto clean;
 		}
 
 		if (!S_ISREG(file_buf.st_mode))
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "\"%s\" is not a regular file.", filename);
+			*err_msg = trx_dsprintf(*err_msg, "\"%s\" is not a regular file.", filename);
 			ret = FAIL;
 			goto clean;
 		}
@@ -1657,7 +1657,7 @@ static int	make_logfile_list(unsigned char flags, const char *filename, int mtim
 	else if (0 != (TRX_METRIC_FLAG_LOG_LOGRT & flags))	/* logrt[] or logrt.count[] item */
 	{
 		char	*directory = NULL, *filename_regexp = NULL;
-		zbx_regexp_t	*re;
+		trx_regexp_t	*re;
 
 		/* split a filename into directory and file name regular expression parts */
 		if (SUCCEED != (ret = split_filename(filename, &directory, &filename_regexp, err_msg)))
@@ -1685,7 +1685,7 @@ static int	make_logfile_list(unsigned char flags, const char *filename, int mtim
 			if (0 != access(directory, X_OK))
 			{
 				treegix_log(LOG_LEVEL_WARNING, "insufficient access rights (no \"execute\" permission) "
-						"to directory \"%s\": %s", directory, zbx_strerror(errno));
+						"to directory \"%s\": %s", directory, trx_strerror(errno));
 			}
 			else
 			{
@@ -1696,10 +1696,10 @@ static int	make_logfile_list(unsigned char flags, const char *filename, int mtim
 #endif
 		}
 clean2:
-		zbx_regexp_free(re);
+		trx_regexp_free(re);
 clean1:
-		zbx_free(directory);
-		zbx_free(filename_regexp);
+		trx_free(directory);
+		trx_free(filename_regexp);
 
 		if (FAIL == ret || TRX_NO_FILE_ERROR == ret)
 			goto clean;
@@ -1785,11 +1785,11 @@ static char	*buf_find_newline(char *p, char **p_next, const char *p_end, const c
  * Comments: Thread-safe                                                      *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int *mtime, int *big_rec,
-		int *incomplete, char **err_msg, const char *encoding, zbx_vector_ptr_t *regexps, const char *pattern,
-		const char *output_template, int *p_count, int *s_count, zbx_process_value_func_t process_value,
+static int	trx_read2(int fd, unsigned char flags, trx_uint64_t *lastlogsize, int *mtime, int *big_rec,
+		int *incomplete, char **err_msg, const char *encoding, trx_vector_ptr_t *regexps, const char *pattern,
+		const char *output_template, int *p_count, int *s_count, trx_process_value_func_t process_value,
 		const char *server, unsigned short port, const char *hostname, const char *key,
-		zbx_uint64_t *lastlogsize_sent, int *mtime_sent)
+		trx_uint64_t *lastlogsize_sent, int *mtime_sent)
 {
 	static TRX_THREAD_LOCAL char	*buf = NULL;
 
@@ -1797,16 +1797,16 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 	const char			*cr, *lf, *p_end;
 	char				*p_start, *p, *p_nl, *p_next, *item_value = NULL;
 	size_t				szbyte;
-	zbx_offset_t			offset;
+	trx_offset_t			offset;
 	int				send_err;
-	zbx_uint64_t			lastlogsize1;
+	trx_uint64_t			lastlogsize1;
 
 #define BUF_SIZE	(256 * TRX_KIBIBYTE)	/* The longest encodings use 4 bytes for every character. To send */
 						/* up to 64 k characters to Treegix server a 256 kB buffer might be */
 						/* required. */
 
 	if (NULL == buf)
-		buf = (char *)zbx_malloc(buf, (size_t)(BUF_SIZE + 1));
+		buf = (char *)trx_malloc(buf, (size_t)(BUF_SIZE + 1));
 
 	find_cr_lf_szbyte(encoding, &cr, &lf, &szbyte);
 
@@ -1819,10 +1819,10 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 			goto out;
 		}
 
-		if ((zbx_offset_t)-1 == (offset = zbx_lseek(fd, 0, SEEK_CUR)))
+		if ((trx_offset_t)-1 == (offset = trx_lseek(fd, 0, SEEK_CUR)))
 		{
 			*big_rec = 0;
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to 0 in file: %s", zbx_strerror(errno));
+			*err_msg = trx_dsprintf(*err_msg, "Cannot set position to 0 in file: %s", trx_strerror(errno));
 			ret = FAIL;
 			goto out;
 		}
@@ -1833,7 +1833,7 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 		{
 			/* error on read */
 			*big_rec = 0;
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot read from file: %s", zbx_strerror(errno));
+			*err_msg = trx_dsprintf(*err_msg, "Cannot read from file: %s", trx_strerror(errno));
 			ret = FAIL;
 			goto out;
 		}
@@ -1860,7 +1860,7 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 				/* Do not analyze it now, keep the same position in the file and wait the next check, */
 				/* maybe more data will come. */
 
-				*lastlogsize = (zbx_uint64_t)offset;
+				*lastlogsize = (trx_uint64_t)offset;
 				ret = SUCCEED;
 				goto out;
 			}
@@ -1909,7 +1909,7 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 								(*s_count)--;
 							}
 
-							zbx_free(item_value);
+							trx_free(item_value);
 						}
 					}
 					else	/* log.count[] or logrt.count[] */
@@ -1922,11 +1922,11 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 					}
 
 					if ('\0' != *encoding)
-						zbx_free(value);
+						trx_free(value);
 
 					if (FAIL == regexp_ret)
 					{
-						*err_msg = zbx_dsprintf(*err_msg, "cannot compile regular expression");
+						*err_msg = trx_dsprintf(*err_msg, "cannot compile regular expression");
 						ret = FAIL;
 						goto out;
 					}
@@ -1995,7 +1995,7 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 								(*s_count)--;
 							}
 
-							zbx_free(item_value);
+							trx_free(item_value);
 						}
 					}
 					else	/* log.count[] or logrt.count[] */
@@ -2008,11 +2008,11 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 					}
 
 					if ('\0' != *encoding)
-						zbx_free(value);
+						trx_free(value);
 
 					if (FAIL == regexp_ret)
 					{
-						*err_msg = zbx_dsprintf(*err_msg, "cannot compile regular expression");
+						*err_msg = trx_dsprintf(*err_msg, "cannot compile regular expression");
 						ret = FAIL;
 						goto out;
 					}
@@ -2043,10 +2043,10 @@ static int	zbx_read2(int fd, unsigned char flags, zbx_uint64_t *lastlogsize, int
 					if (p_end > p)
 						*incomplete = 1;
 
-					if ((zbx_offset_t)-1 == zbx_lseek(fd, *lastlogsize, SEEK_SET))
+					if ((trx_offset_t)-1 == trx_lseek(fd, *lastlogsize, SEEK_SET))
 					{
-						*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64
-								" in file: %s", *lastlogsize, zbx_strerror(errno));
+						*err_msg = trx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64
+								" in file: %s", *lastlogsize, trx_strerror(errno));
 						ret = FAIL;
 						goto out;
 					}
@@ -2118,12 +2118,12 @@ out:
  *           Thread-safe                                                      *
  *                                                                            *
  ******************************************************************************/
-static int	process_log(unsigned char flags, const char *filename, zbx_uint64_t *lastlogsize, int *mtime,
-		zbx_uint64_t *lastlogsize_sent, int *mtime_sent, unsigned char *skip_old_data, int *big_rec,
-		int *incomplete, char **err_msg, const char *encoding, zbx_vector_ptr_t *regexps, const char *pattern,
-		const char *output_template, int *p_count, int *s_count, zbx_process_value_func_t process_value,
+static int	process_log(unsigned char flags, const char *filename, trx_uint64_t *lastlogsize, int *mtime,
+		trx_uint64_t *lastlogsize_sent, int *mtime_sent, unsigned char *skip_old_data, int *big_rec,
+		int *incomplete, char **err_msg, const char *encoding, trx_vector_ptr_t *regexps, const char *pattern,
+		const char *output_template, int *p_count, int *s_count, trx_process_value_func_t process_value,
 		const char *server, unsigned short port, const char *hostname, const char *key,
-		zbx_uint64_t *processed_bytes, zbx_uint64_t seek_offset)
+		trx_uint64_t *processed_bytes, trx_uint64_t seek_offset)
 {
 	int		f, ret = FAIL;
 
@@ -2133,12 +2133,12 @@ static int	process_log(unsigned char flags, const char *filename, zbx_uint64_t *
 	if (-1 == (f = open_file_helper(filename, err_msg)))
 		goto out;
 
-	if ((zbx_offset_t)-1 != zbx_lseek(f, seek_offset, SEEK_SET))
+	if ((trx_offset_t)-1 != trx_lseek(f, seek_offset, SEEK_SET))
 	{
 		*lastlogsize = seek_offset;
 		*skip_old_data = 0;
 
-		if (SUCCEED == (ret = zbx_read2(f, flags, lastlogsize, mtime, big_rec, incomplete, err_msg, encoding,
+		if (SUCCEED == (ret = trx_read2(f, flags, lastlogsize, mtime, big_rec, incomplete, err_msg, encoding,
 				regexps, pattern, output_template, p_count, s_count, process_value, server, port,
 				hostname, key, lastlogsize_sent, mtime_sent)))
 		{
@@ -2147,8 +2147,8 @@ static int	process_log(unsigned char flags, const char *filename, zbx_uint64_t *
 	}
 	else
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64 " in file \"%s\": %s",
-				seek_offset, filename, zbx_strerror(errno));
+		*err_msg = trx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64 " in file \"%s\": %s",
+				seek_offset, filename, trx_strerror(errno));
 	}
 
 	if (SUCCEED != close_file_helper(f, filename, err_msg))
@@ -2156,8 +2156,8 @@ static int	process_log(unsigned char flags, const char *filename, zbx_uint64_t *
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s() filename:'%s' lastlogsize:" TRX_FS_UI64 " mtime:%d ret:%s"
 			" processed_bytes:" TRX_FS_UI64, __func__, filename, *lastlogsize,
-			NULL != mtime ? *mtime : 0, zbx_result_string(ret),
-			SUCCEED == ret ? *processed_bytes : (zbx_uint64_t)0);
+			NULL != mtime ? *mtime : 0, trx_result_string(ret),
+			SUCCEED == ret ? *processed_bytes : (trx_uint64_t)0);
 
 	return ret;
 }
@@ -2292,7 +2292,7 @@ static int	files_start_with_same_md5(const struct st_logfile *log1, const struct
 			file_larger = log1;
 		}
 
-		if (-1 == (fd = zbx_open(file_larger->filename, O_RDONLY)))
+		if (-1 == (fd = trx_open(file_larger->filename, O_RDONLY)))
 			return FAIL;
 
 		if (SUCCEED == file_start_md5(fd, file_smaller->md5size, md5tmp, "", &err_msg))
@@ -2301,7 +2301,7 @@ static int	files_start_with_same_md5(const struct st_logfile *log1, const struct
 				ret = SUCCEED;
 		}
 
-		zbx_free(err_msg);
+		trx_free(err_msg);
 		close(fd);
 
 		return ret;
@@ -2350,7 +2350,7 @@ static void	handle_multiple_copies(struct st_logfile *logfiles, int logfiles_num
 }
 
 static void	delay_update_if_copies(struct st_logfile *logfiles, int logfiles_num, int *mtime,
-		zbx_uint64_t *lastlogsize)
+		trx_uint64_t *lastlogsize)
 {
 	int	i, idx_to_keep = logfiles_num - 1;
 
@@ -2405,9 +2405,9 @@ static void	delay_update_if_copies(struct st_logfile *logfiles, int logfiles_num
 	}
 }
 
-static zbx_uint64_t	max_processed_size_in_copies(const struct st_logfile *logfiles, int logfiles_num, int i)
+static trx_uint64_t	max_processed_size_in_copies(const struct st_logfile *logfiles, int logfiles_num, int i)
 {
-	zbx_uint64_t	max_processed = 0;
+	trx_uint64_t	max_processed = 0;
 	int		j;
 
 	for (j = 0; j < logfiles_num; j++)
@@ -2439,7 +2439,7 @@ static zbx_uint64_t	max_processed_size_in_copies(const struct st_logfile *logfil
  *     delay in seconds or 0 (if cannot be calculated)                        *
  *                                                                            *
  ******************************************************************************/
-static double	calculate_delay(zbx_uint64_t processed_bytes, zbx_uint64_t remaining_bytes, double t_proc)
+static double	calculate_delay(trx_uint64_t processed_bytes, trx_uint64_t remaining_bytes, double t_proc)
 {
 	double	delay = 0.0;
 
@@ -2460,7 +2460,7 @@ static double	calculate_delay(zbx_uint64_t processed_bytes, zbx_uint64_t remaini
 }
 
 static void	jump_remaining_bytes_logrt(struct st_logfile *logfiles, int logfiles_num, const char *key,
-		int start_from, zbx_uint64_t bytes_to_jump, int *seq, zbx_uint64_t *lastlogsize, int *mtime,
+		int start_from, trx_uint64_t bytes_to_jump, int *seq, trx_uint64_t *lastlogsize, int *mtime,
 		int *jumped_to)
 {
 	int	first_pass = 1;
@@ -2471,7 +2471,7 @@ static void	jump_remaining_bytes_logrt(struct st_logfile *logfiles, int logfiles
 	{
 		if (logfiles[i].size != logfiles[i].processed_size)
 		{
-			zbx_uint64_t	bytes_jumped, new_processed_size;
+			trx_uint64_t	bytes_jumped, new_processed_size;
 
 			bytes_jumped = MIN(bytes_to_jump, logfiles[i].size - logfiles[i].processed_size);
 			new_processed_size = logfiles[i].processed_size + bytes_jumped;
@@ -2526,7 +2526,7 @@ static void	jump_remaining_bytes_logrt(struct st_logfile *logfiles, int logfiles
  * Return value: SUCCEED or FAIL (with error message allocated in 'err_msg')  *
  *                                                                            *
  ******************************************************************************/
-static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *lastlogsize, zbx_uint64_t min_size,
+static int	adjust_position_after_jump(struct st_logfile *logfile, trx_uint64_t *lastlogsize, trx_uint64_t min_size,
 		const char *encoding, char **err_msg)
 {
 	int		fd, ret = FAIL;
@@ -2534,7 +2534,7 @@ static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *
 	ssize_t		nbytes;
 	const char	*cr, *lf, *p_end;
 	char		*p, *p_nl, *p_next;
-	zbx_uint64_t	lastlogsize_tmp, lastlogsize_aligned, lastlogsize_org, seek_pos, remainder;
+	trx_uint64_t	lastlogsize_tmp, lastlogsize_aligned, lastlogsize_org, seek_pos, remainder;
 	char   		buf[32 * TRX_KIBIBYTE];		/* buffer must be of size multiple of 4 as some character */
 							/* encodings use 4 bytes for every character */
 
@@ -2557,10 +2557,10 @@ static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *
 			lastlogsize_aligned = min_size;
 	}
 
-	if ((zbx_offset_t)-1 == zbx_lseek(fd, lastlogsize_aligned, SEEK_SET))
+	if ((trx_offset_t)-1 == trx_lseek(fd, lastlogsize_aligned, SEEK_SET))
 	{
-		*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64 " in file \"%s\": %s",
-				lastlogsize_aligned, logfile->filename, zbx_strerror(errno));
+		*err_msg = trx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64 " in file \"%s\": %s",
+				lastlogsize_aligned, logfile->filename, trx_strerror(errno));
 		goto out;
 	}
 
@@ -2572,8 +2572,8 @@ static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *
 	{
 		if (-1 == (nbytes = read(fd, buf, sizeof(buf))))
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot read from file \"%s\": %s", logfile->filename,
-					zbx_strerror(errno));
+			*err_msg = trx_dsprintf(*err_msg, "Cannot read from file \"%s\": %s", logfile->filename,
+					trx_strerror(errno));
 			goto out;
 		}
 
@@ -2587,13 +2587,13 @@ static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *
 		{
 			/* found the beginning of line */
 
-			*lastlogsize = lastlogsize_tmp + (zbx_uint64_t)(p_next - buf);
+			*lastlogsize = lastlogsize_tmp + (trx_uint64_t)(p_next - buf);
 			logfile->processed_size = *lastlogsize;
 			ret = SUCCEED;
 			goto out;
 		}
 
-		lastlogsize_tmp += (zbx_uint64_t)nbytes;
+		lastlogsize_tmp += (trx_uint64_t)nbytes;
 	}
 
 	/* Searching forward did not find a newline. Now search backwards until 'min_size'. */
@@ -2607,23 +2607,23 @@ static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *
 		else
 			seek_pos = min_size;
 
-		if ((zbx_offset_t)-1 == zbx_lseek(fd, seek_pos, SEEK_SET))
+		if ((trx_offset_t)-1 == trx_lseek(fd, seek_pos, SEEK_SET))
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64 " in file \"%s\": %s",
-					lastlogsize_aligned, logfile->filename, zbx_strerror(errno));
+			*err_msg = trx_dsprintf(*err_msg, "Cannot set position to " TRX_FS_UI64 " in file \"%s\": %s",
+					lastlogsize_aligned, logfile->filename, trx_strerror(errno));
 			goto out;
 		}
 
 		if (-1 == (nbytes = read(fd, buf, sizeof(buf))))
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Cannot read from file \"%s\": %s", logfile->filename,
-					zbx_strerror(errno));
+			*err_msg = trx_dsprintf(*err_msg, "Cannot read from file \"%s\": %s", logfile->filename,
+					trx_strerror(errno));
 			goto out;
 		}
 
 		if (0 == nbytes)	/* end of file reached */
 		{
-			*err_msg = zbx_dsprintf(*err_msg, "Unexpected end of file while reading file \"%s\"",
+			*err_msg = trx_dsprintf(*err_msg, "Unexpected end of file while reading file \"%s\"",
 					logfile->filename);
 			goto out;
 		}
@@ -2636,7 +2636,7 @@ static int	adjust_position_after_jump(struct st_logfile *logfile, zbx_uint64_t *
 			/* Found the beginning of line. It may not be the one closest to place we jumped to */
 			/* (it could be about sizeof(buf) bytes away) but it is ok for our purposes. */
 
-			*lastlogsize = seek_pos + (zbx_uint64_t)(p_next - buf);
+			*lastlogsize = seek_pos + (trx_uint64_t)(p_next - buf);
 			logfile->processed_size = *lastlogsize;
 			ret = SUCCEED;
 			goto out;
@@ -2669,9 +2669,9 @@ out:
 		treegix_log(LOG_LEVEL_DEBUG, "adjust_position_after_jump(): szbyte:" TRX_FS_SIZE_T " lastlogsize_org:"
 				TRX_FS_UI64 " lastlogsize_aligned:" TRX_FS_UI64 " (change " TRX_FS_I64 " bytes)"
 				" lastlogsize_after:" TRX_FS_UI64 " (change " TRX_FS_I64 " bytes) %s %s",
-				(zbx_fs_size_t)szbyte, lastlogsize_org, lastlogsize_aligned,
-				(zbx_int64_t)lastlogsize_aligned - (zbx_int64_t)lastlogsize_org, *lastlogsize,
-				(zbx_int64_t)*lastlogsize - (zbx_int64_t)lastlogsize_aligned,
+				(trx_fs_size_t)szbyte, lastlogsize_org, lastlogsize_aligned,
+				(trx_int64_t)lastlogsize_aligned - (trx_int64_t)lastlogsize_org, *lastlogsize,
+				(trx_int64_t)*lastlogsize - (trx_int64_t)lastlogsize_aligned,
 				dbg_msg, TRX_NULL2EMPTY_STR(*err_msg));
 	}
 
@@ -2703,10 +2703,10 @@ out:
  *                                                                            *
  ******************************************************************************/
 static int	jump_ahead(const char *key, struct st_logfile *logfiles, int logfiles_num,
-		int *jump_from_to, int *seq, zbx_uint64_t *lastlogsize, int *mtime, const char *encoding,
-		zbx_uint64_t bytes_to_jump, char **err_msg)
+		int *jump_from_to, int *seq, trx_uint64_t *lastlogsize, int *mtime, const char *encoding,
+		trx_uint64_t bytes_to_jump, char **err_msg)
 {
-	zbx_uint64_t	lastlogsize_org, min_size;
+	trx_uint64_t	lastlogsize_org, min_size;
 	int		jumped_to = -1;		/* number of file in 'logfiles' list we jumped to */
 
 	lastlogsize_org = *lastlogsize;
@@ -2736,9 +2736,9 @@ static int	jump_ahead(const char *key, struct st_logfile *logfiles, int logfiles
 	return adjust_position_after_jump(&logfiles[jumped_to], lastlogsize, min_size, encoding, err_msg);
 }
 
-static zbx_uint64_t	calculate_remaining_bytes(struct st_logfile *logfiles, int logfiles_num)
+static trx_uint64_t	calculate_remaining_bytes(struct st_logfile *logfiles, int logfiles_num)
 {
-	zbx_uint64_t	remaining_bytes = 0;
+	trx_uint64_t	remaining_bytes = 0;
 	int		i;
 
 	for (i = 0; i < logfiles_num; i++)
@@ -2852,7 +2852,7 @@ static void	transfer_for_copytruncate(const struct st_logfile *logfiles_old, int
  ******************************************************************************/
 static int	update_new_list_from_old(int rotation_type, struct st_logfile *logfiles_old, int logfiles_num_old,
 		struct st_logfile *logfiles, int logfiles_num, int use_ino, int *seq, int *start_idx,
-		zbx_uint64_t *lastlogsize, char **err_msg)
+		trx_uint64_t *lastlogsize, char **err_msg)
 {
 	char	*old2new;
 	int	i, max_old_seq = 0, old_last;
@@ -2888,7 +2888,7 @@ static int	update_new_list_from_old(int rotation_type, struct st_logfile *logfil
 		*lastlogsize = logfiles[*start_idx].processed_size;
 	}
 
-	zbx_free(old2new);
+	trx_free(old2new);
 
 	return SUCCEED;
 }
@@ -2945,19 +2945,19 @@ static int	update_new_list_from_old(int rotation_type, struct st_logfile *logfil
  * Comments: Supposed to be thread-safe, see pick_logfiles() comments.        *
  *                                                                            *
  ******************************************************************************/
-int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastlogsize, int *mtime,
-		zbx_uint64_t *lastlogsize_sent, int *mtime_sent, unsigned char *skip_old_data, int *big_rec,
+int	process_logrt(unsigned char flags, const char *filename, trx_uint64_t *lastlogsize, int *mtime,
+		trx_uint64_t *lastlogsize_sent, int *mtime_sent, unsigned char *skip_old_data, int *big_rec,
 		int *use_ino, char **err_msg, struct st_logfile **logfiles_old, const int *logfiles_num_old,
 		struct st_logfile **logfiles_new, int *logfiles_num_new, const char *encoding,
-		zbx_vector_ptr_t *regexps, const char *pattern, const char *output_template, int *p_count, int *s_count,
-		zbx_process_value_func_t process_value, const char *server, unsigned short port, const char *hostname,
-		const char *key, int *jumped, float max_delay, double *start_time, zbx_uint64_t *processed_bytes,
+		trx_vector_ptr_t *regexps, const char *pattern, const char *output_template, int *p_count, int *s_count,
+		trx_process_value_func_t process_value, const char *server, unsigned short port, const char *hostname,
+		const char *key, int *jumped, float max_delay, double *start_time, trx_uint64_t *processed_bytes,
 		int rotation_type)
 {
 	int			i, start_idx, ret = FAIL, logfiles_num = 0, logfiles_alloc = 0, seq = 1,
 				from_first_file = 1, last_processed, limit_reached = 0, res;
 	struct st_logfile	*logfiles = NULL;
-	zbx_uint64_t		processed_bytes_sum = 0;
+	trx_uint64_t		processed_bytes_sum = 0;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() flags:0x%02x filename:'%s' lastlogsize:" TRX_FS_UI64 " mtime:%d",
 			__func__, (unsigned int)flags, filename, *lastlogsize, *mtime);
@@ -3050,7 +3050,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 	{
 		if (0.0 != *start_time)
 		{
-			zbx_uint64_t	remaining_bytes;
+			trx_uint64_t	remaining_bytes;
 
 			if (0 != (remaining_bytes = calculate_remaining_bytes(logfiles, logfiles_num)))
 			{
@@ -3059,11 +3059,11 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 				double	delay;
 
 				if ((double)max_delay < (delay = calculate_delay(*processed_bytes, remaining_bytes,
-						zbx_time() - *start_time)))
+						trx_time() - *start_time)))
 				{
-					zbx_uint64_t	bytes_to_jump;
+					trx_uint64_t	bytes_to_jump;
 
-					bytes_to_jump = (zbx_uint64_t)((double)remaining_bytes *
+					bytes_to_jump = (trx_uint64_t)((double)remaining_bytes *
 							(delay - (double)max_delay) / delay);
 
 					if (SUCCEED == (ret = jump_ahead(key, logfiles, logfiles_num,
@@ -3076,7 +3076,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 			}
 		}
 
-		*start_time = zbx_time();	/* mark new start time for using in the next check */
+		*start_time = trx_time();	/* mark new start time for using in the next check */
 	}
 
 	/* enter the loop with index of the first file to be processed, later continue the loop from the start */
@@ -3087,7 +3087,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 		if (0 == logfiles[i].incomplete &&
 				(logfiles[i].size != logfiles[i].processed_size || 0 == logfiles[i].seq))
 		{
-			zbx_uint64_t	processed_bytes_tmp = 0, seek_offset;
+			trx_uint64_t	processed_bytes_tmp = 0, seek_offset;
 			int		process_this_file = 1;
 
 			*mtime = logfiles[i].mtime;
@@ -3109,7 +3109,7 @@ int	process_logrt(unsigned char flags, const char *filename, zbx_uint64_t *lastl
 
 			if (TRX_LOG_ROTATION_LOGCPT == rotation_type)
 			{
-				zbx_uint64_t	max_processed;
+				trx_uint64_t	max_processed;
 
 				if (seek_offset < (max_processed = max_processed_size_in_copies(logfiles, logfiles_num,
 						i)))
@@ -3210,7 +3210,7 @@ out:
 		}
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -3221,7 +3221,7 @@ static int	check_number_of_parameters(unsigned char flags, const AGENT_REQUEST *
 
 	if (0 == (parameter_num = get_rparams_num(request)))
 	{
-		*error = zbx_strdup(*error, "Invalid number of parameters.");
+		*error = trx_strdup(*error, "Invalid number of parameters.");
 		return FAIL;
 	}
 
@@ -3234,7 +3234,7 @@ static int	check_number_of_parameters(unsigned char flags, const AGENT_REQUEST *
 
 	if (max_parameter_num < parameter_num)
 	{
-		*error = zbx_strdup(*error, "Too many parameters.");
+		*error = trx_strdup(*error, "Too many parameters.");
 		return FAIL;
 	}
 
@@ -3269,7 +3269,7 @@ static int	init_max_lines_per_sec(int is_count_item, const AGENT_REQUEST *reques
 			(0 == is_count_item && MAX_VALUE_LINES < rate) ||
 			(0 != is_count_item && MAX_VALUE_LINES_MULTIPLIER * MAX_VALUE_LINES < rate))
 	{
-		*error = zbx_strdup(*error, "Invalid fourth parameter.");
+		*error = trx_strdup(*error, "Invalid fourth parameter.");
 		return FAIL;
 	}
 
@@ -3298,7 +3298,7 @@ static int	init_max_delay(int is_count_item, const AGENT_REQUEST *request, float
 
 	if (SUCCEED != is_double(max_delay_str) || 0.0f > (max_delay_tmp = (float)atof(max_delay_str)))
 	{
-		*error = zbx_dsprintf(*error, "Invalid %s parameter.", (5 == max_delay_par_nr) ? "sixth" : "seventh");
+		*error = trx_dsprintf(*error, "Invalid %s parameter.", (5 == max_delay_par_nr) ? "sixth" : "seventh");
 		return FAIL;
 	}
 
@@ -3328,7 +3328,7 @@ static int	init_rotation_type(unsigned char flags, const AGENT_REQUEST *request,
 
 			if (0 != strcmp(options, "rotate"))
 			{
-				*error = zbx_dsprintf(*error, "Invalid %s parameter.", (6 == options_par_nr) ?
+				*error = trx_dsprintf(*error, "Invalid %s parameter.", (6 == options_par_nr) ?
 						"seventh" : "eighth");
 				return FAIL;
 			}
@@ -3350,8 +3350,8 @@ static int	init_rotation_type(unsigned char flags, const AGENT_REQUEST *request,
  *           comments.                                                        *
  *                                                                            *
  ******************************************************************************/
-int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regexps, TRX_ACTIVE_METRIC *metric,
-		zbx_process_value_func_t process_value_cb, zbx_uint64_t *lastlogsize_sent, int *mtime_sent,
+int	process_log_check(char *server, unsigned short port, trx_vector_ptr_t *regexps, TRX_ACTIVE_METRIC *metric,
+		trx_process_value_func_t process_value_cb, trx_uint64_t *lastlogsize_sent, int *mtime_sent,
 		char **error)
 {
 	AGENT_REQUEST		request;
@@ -3359,7 +3359,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 	char			*encoding_uc = NULL;
 	int			max_lines_per_sec, ret = FAIL, s_count, p_count, s_count_orig, is_count_item,
 				mtime_orig, big_rec_orig, logfiles_num_new = 0, jumped = 0, rotation_type;
-	zbx_uint64_t		lastlogsize_orig;
+	trx_uint64_t		lastlogsize_orig;
 	float			max_delay;
 	struct st_logfile	*logfiles_new = NULL;
 
@@ -3378,7 +3378,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 
 	if (SUCCEED != parse_item_key(metric->key, &request))
 	{
-		*error = zbx_strdup(*error, "Invalid item key format.");
+		*error = trx_strdup(*error, "Invalid item key format.");
 		goto out;
 	}
 
@@ -3389,7 +3389,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 
 	if (NULL == (filename = get_rparam(&request, 0)) || '\0' == *filename)
 	{
-		*error = zbx_strdup(*error, "Invalid first parameter.");
+		*error = trx_strdup(*error, "Invalid first parameter.");
 		goto out;
 	}
 
@@ -3399,9 +3399,9 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 	{
 		regexp = "";
 	}
-	else if ('@' == *regexp && SUCCEED != zbx_global_regexp_exists(regexp + 1, regexps))
+	else if ('@' == *regexp && SUCCEED != trx_global_regexp_exists(regexp + 1, regexps))
 	{
-		*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", regexp + 1);
+		*error = trx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", regexp + 1);
 		goto out;
 	}
 
@@ -3413,8 +3413,8 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 	}
 	else
 	{
-		encoding_uc = zbx_strdup(encoding_uc, encoding);
-		zbx_strupper(encoding_uc);
+		encoding_uc = trx_strdup(encoding_uc, encoding);
+		trx_strupper(encoding_uc);
 		encoding = encoding_uc;
 	}
 
@@ -3430,7 +3430,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 	}
 	else if (0 != strcmp(skip, "skip"))
 	{
-		*error = zbx_strdup(*error, "Invalid fifth parameter.");
+		*error = trx_strdup(*error, "Invalid fifth parameter.");
 		goto out;
 	}
 
@@ -3449,7 +3449,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 	/* jumping over fast growing log files is not supported with 'copytruncate' */
 	if (TRX_LOG_ROTATION_LOGCPT == rotation_type && 0.0f != max_delay)
 	{
-		*error = zbx_strdup(*error, "maxdelay > 0 is not supported with copytruncate option.");
+		*error = trx_strdup(*error, "maxdelay > 0 is not supported with copytruncate option.");
 		goto out;
 	}
 
@@ -3511,7 +3511,7 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 
 			match_count = s_count_orig - s_count;
 
-			zbx_snprintf(buf, sizeof(buf), "%d", match_count);
+			trx_snprintf(buf, sizeof(buf), "%d", match_count);
 
 			if (SUCCEED == process_value_cb(server, port, CONFIG_HOSTNAME, metric->key_orig, buf,
 					ITEM_STATE_NORMAL, &metric->lastlogsize, &metric->mtime, NULL, NULL, NULL, NULL,
@@ -3565,12 +3565,12 @@ int	process_log_check(char *server, unsigned short port, zbx_vector_ptr_t *regex
 			treegix_log(LOG_LEVEL_DEBUG, "suppressing log(rt)(.count) processing error #%d: %s",
 					metric->error_count, NULL != *error ? *error : "unknown error");
 
-			zbx_free(*error);
+			trx_free(*error);
 			ret = SUCCEED;
 		}
 	}
 out:
-	zbx_free(encoding_uc);
+	trx_free(encoding_uc);
 	free_request(&request);
 
 	return ret;

@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxsnmptrapper_a_AR = $(AR) $(ARFLAGS)
-libzbxsnmptrapper_a_LIBADD =
-am_libzbxsnmptrapper_a_OBJECTS = snmptrapper.$(OBJEXT)
-libzbxsnmptrapper_a_OBJECTS = $(am_libzbxsnmptrapper_a_OBJECTS)
+libtrxsnmptrapper_a_AR = $(AR) $(ARFLAGS)
+libtrxsnmptrapper_a_LIBADD =
+am_libtrxsnmptrapper_a_OBJECTS = snmptrapper.$(OBJEXT)
+libtrxsnmptrapper_a_OBJECTS = $(am_libtrxsnmptrapper_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxsnmptrapper_a_SOURCES)
-DIST_SOURCES = $(libzbxsnmptrapper_a_SOURCES)
+SOURCES = $(libtrxsnmptrapper_a_SOURCES)
+DIST_SOURCES = $(libtrxsnmptrapper_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxsnmptrapper.a
-libzbxsnmptrapper_a_SOURCES = \
+noinst_LIBRARIES = libtrxsnmptrapper.a
+libtrxsnmptrapper_a_SOURCES = \
 	snmptrapper.c snmptrapper.h
 
 all: all-am
@@ -415,10 +415,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxsnmptrapper.a: $(libzbxsnmptrapper_a_OBJECTS) $(libzbxsnmptrapper_a_DEPENDENCIES) $(EXTRA_libzbxsnmptrapper_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxsnmptrapper.a
-	$(AM_V_AR)$(libzbxsnmptrapper_a_AR) libzbxsnmptrapper.a $(libzbxsnmptrapper_a_OBJECTS) $(libzbxsnmptrapper_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxsnmptrapper.a
+libtrxsnmptrapper.a: $(libtrxsnmptrapper_a_OBJECTS) $(libtrxsnmptrapper_a_DEPENDENCIES) $(EXTRA_libtrxsnmptrapper_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxsnmptrapper.a
+	$(AM_V_AR)$(libtrxsnmptrapper_a_AR) libtrxsnmptrapper.a $(libtrxsnmptrapper_a_OBJECTS) $(libtrxsnmptrapper_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxsnmptrapper.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

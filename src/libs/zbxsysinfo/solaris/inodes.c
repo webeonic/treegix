@@ -14,12 +14,12 @@ static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 #	define TRX_FFREE	f_ffree
 #endif
 	char			*fsname, *mode;
-	zbx_uint64_t		total;
+	trx_uint64_t		total;
 	struct TRX_STATFS	s;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -28,14 +28,14 @@ static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == fsname || '\0' == *fsname)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (0 != TRX_STATFS(fsname, &s))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain filesystem information: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain filesystem information: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -63,7 +63,7 @@ static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -79,13 +79,13 @@ static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -94,5 +94,5 @@ static int	vfs_fs_inode(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 int	VFS_FS_INODE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	return zbx_execute_threaded_metric(vfs_fs_inode, request, result);
+	return trx_execute_threaded_metric(vfs_fs_inode, request, result);
 }

@@ -26,7 +26,7 @@ class CMultiSelect extends CTag {
 		$options = $this->mapOptions($options);
 
 		$this
-			->setId(zbx_formatDomId($options['name']))
+			->setId(trx_formatDomId($options['name']))
 			->addClass('multiselect')
 			->setAttribute('role', 'application')
 			->addItem((new CDiv())
@@ -64,7 +64,7 @@ class CMultiSelect extends CTag {
 		];
 
 		if (array_key_exists('data', $options)) {
-			$params['data'] = zbx_cleanHashes($options['data']);
+			$params['data'] = trx_cleanHashes($options['data']);
 		}
 
 		foreach (['defaultValue', 'disabled', 'selectedLimit', 'addNew', 'styles'] as $option) {
@@ -94,7 +94,7 @@ class CMultiSelect extends CTag {
 		$this->params = $params;
 
 		if (!array_key_exists('add_post_js', $options) || $options['add_post_js']) {
-			zbx_add_post_js($this->getPostJS());
+			trx_add_post_js($this->getPostJS());
 		}
 	}
 

@@ -6,11 +6,11 @@
 #include "comms.h"
 #include "cfg.h"
 #include "log.h"
-#include "zbxgetopt.h"
-#include "../libs/zbxcrypto/tls.h"
+#include "trxgetopt.h"
+#include "../libs/trxcrypto/tls.h"
 
 #ifndef _WINDOWS
-#	include "zbxnix.h"
+#	include "trxnix.h"
 #endif
 
 const char	*progname = NULL;
@@ -122,7 +122,7 @@ int	CONFIG_ACTIVE_FORKS		= 0;	/* not used in treegix_get, just for linking with 
 /* COMMAND LINE OPTIONS */
 
 /* long options */
-struct zbx_option	longopts[] =
+struct trx_option	longopts[] =
 {
 	{"host",			1,	NULL,	's'},
 	{"port",			1,	NULL,	'p'},
@@ -168,11 +168,11 @@ static void	get_signal_handler(int sig)
 		return;
 
 	if (SIGALRM == sig)
-		zbx_error("Timeout while executing operation");
+		trx_error("Timeout while executing operation");
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
-		zbx_tls_free_on_signal();
+		trx_tls_free_on_signal();
 #endif
 	exit(EXIT_FAILURE);
 }
@@ -192,7 +192,7 @@ static void	get_signal_handler(int sig)
  ******************************************************************************/
 static int	get_value(const char *source_ip, const char *host, unsigned short port, const char *key)
 {
-	zbx_socket_t	s;
+	trx_socket_t	s;
 	int		ret;
 	ssize_t		bytes_received = -1;
 	char		*tls_arg1, *tls_arg2;
@@ -210,7 +210,7 @@ static int	get_value(const char *source_ip, const char *host, unsigned short por
 			break;
 		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = CONFIG_TLS_PSK_IDENTITY;
-			tls_arg2 = NULL;	/* zbx_tls_connect() will find PSK */
+			tls_arg2 = NULL;	/* trx_tls_connect() will find PSK */
 			break;
 #endif
 		default:
@@ -218,42 +218,42 @@ static int	get_value(const char *source_ip, const char *host, unsigned short por
 			return FAIL;
 	}
 
-	if (SUCCEED == (ret = zbx_tcp_connect(&s, source_ip, host, port, GET_SENDER_TIMEOUT,
+	if (SUCCEED == (ret = trx_tcp_connect(&s, source_ip, host, port, GET_SENDER_TIMEOUT,
 			configured_tls_connect_mode, tls_arg1, tls_arg2)))
 	{
-		if (SUCCEED == (ret = zbx_tcp_send(&s, key)))
+		if (SUCCEED == (ret = trx_tcp_send(&s, key)))
 		{
-			if (0 < (bytes_received = zbx_tcp_recv_ext(&s, 0)))
+			if (0 < (bytes_received = trx_tcp_recv_ext(&s, 0)))
 			{
 				if (0 == strcmp(s.buffer, TRX_NOTSUPPORTED) && sizeof(TRX_NOTSUPPORTED) < s.read_bytes)
 				{
-					zbx_rtrim(s.buffer + sizeof(TRX_NOTSUPPORTED), "\r\n");
+					trx_rtrim(s.buffer + sizeof(TRX_NOTSUPPORTED), "\r\n");
 					printf("%s: %s\n", s.buffer, s.buffer + sizeof(TRX_NOTSUPPORTED));
 				}
 				else
 				{
-					zbx_rtrim(s.buffer, "\r\n");
+					trx_rtrim(s.buffer, "\r\n");
 					printf("%s\n", s.buffer);
 				}
 			}
 			else
 			{
 				if (0 == bytes_received)
-					zbx_error("Check access restrictions in Treegix agent configuration");
+					trx_error("Check access restrictions in Treegix agent configuration");
 				ret = FAIL;
 			}
 		}
 
-		zbx_tcp_close(&s);
+		trx_tcp_close(&s);
 
 		if (SUCCEED != ret && 0 != bytes_received)
 		{
-			zbx_error("Get value error: %s", zbx_socket_strerror());
-			zbx_error("Check access restrictions in Treegix agent configuration");
+			trx_error("Get value error: %s", trx_socket_strerror());
+			trx_error("Check access restrictions in Treegix agent configuration");
 		}
 	}
 	else
-		zbx_error("Get value error: %s", zbx_socket_strerror());
+		trx_error("Get value error: %s", trx_socket_strerror());
 
 	return ret;
 }
@@ -281,16 +281,16 @@ int	main(int argc, char **argv)
 #endif
 
 #if !defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
-	if (SUCCEED != zbx_coredump_disable())
+	if (SUCCEED != trx_coredump_disable())
 	{
-		zbx_error("cannot disable core dump, exiting...");
+		trx_error("cannot disable core dump, exiting...");
 		exit(EXIT_FAILURE);
 	}
 #endif
 	progname = get_program_name(argv[0]);
 
 	/* parse the command-line */
-	while ((char)EOF != (ch = (char)zbx_getopt_long(argc, argv, shortopts, longopts, NULL)))
+	while ((char)EOF != (ch = (char)trx_getopt_long(argc, argv, shortopts, longopts, NULL)))
 	{
 		opt_count[(unsigned char)ch]++;
 
@@ -298,18 +298,18 @@ int	main(int argc, char **argv)
 		{
 			case 'k':
 				if (NULL == key)
-					key = zbx_strdup(NULL, zbx_optarg);
+					key = trx_strdup(NULL, trx_optarg);
 				break;
 			case 'p':
-				port = (unsigned short)atoi(zbx_optarg);
+				port = (unsigned short)atoi(trx_optarg);
 				break;
 			case 's':
 				if (NULL == host)
-					host = zbx_strdup(NULL, zbx_optarg);
+					host = trx_strdup(NULL, trx_optarg);
 				break;
 			case 'I':
 				if (NULL == source_ip)
-					source_ip = zbx_strdup(NULL, zbx_optarg);
+					source_ip = trx_strdup(NULL, trx_optarg);
 				break;
 			case 'h':
 				help();
@@ -321,31 +321,31 @@ int	main(int argc, char **argv)
 				break;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 			case '1':
-				CONFIG_TLS_CONNECT = zbx_strdup(CONFIG_TLS_CONNECT, zbx_optarg);
+				CONFIG_TLS_CONNECT = trx_strdup(CONFIG_TLS_CONNECT, trx_optarg);
 				break;
 			case '2':
-				CONFIG_TLS_CA_FILE = zbx_strdup(CONFIG_TLS_CA_FILE, zbx_optarg);
+				CONFIG_TLS_CA_FILE = trx_strdup(CONFIG_TLS_CA_FILE, trx_optarg);
 				break;
 			case '3':
-				CONFIG_TLS_CRL_FILE = zbx_strdup(CONFIG_TLS_CRL_FILE, zbx_optarg);
+				CONFIG_TLS_CRL_FILE = trx_strdup(CONFIG_TLS_CRL_FILE, trx_optarg);
 				break;
 			case '4':
-				CONFIG_TLS_SERVER_CERT_ISSUER = zbx_strdup(CONFIG_TLS_SERVER_CERT_ISSUER, zbx_optarg);
+				CONFIG_TLS_SERVER_CERT_ISSUER = trx_strdup(CONFIG_TLS_SERVER_CERT_ISSUER, trx_optarg);
 				break;
 			case '5':
-				CONFIG_TLS_SERVER_CERT_SUBJECT = zbx_strdup(CONFIG_TLS_SERVER_CERT_SUBJECT, zbx_optarg);
+				CONFIG_TLS_SERVER_CERT_SUBJECT = trx_strdup(CONFIG_TLS_SERVER_CERT_SUBJECT, trx_optarg);
 				break;
 			case '6':
-				CONFIG_TLS_CERT_FILE = zbx_strdup(CONFIG_TLS_CERT_FILE, zbx_optarg);
+				CONFIG_TLS_CERT_FILE = trx_strdup(CONFIG_TLS_CERT_FILE, trx_optarg);
 				break;
 			case '7':
-				CONFIG_TLS_KEY_FILE = zbx_strdup(CONFIG_TLS_KEY_FILE, zbx_optarg);
+				CONFIG_TLS_KEY_FILE = trx_strdup(CONFIG_TLS_KEY_FILE, trx_optarg);
 				break;
 			case '8':
-				CONFIG_TLS_PSK_IDENTITY = zbx_strdup(CONFIG_TLS_PSK_IDENTITY, zbx_optarg);
+				CONFIG_TLS_PSK_IDENTITY = trx_strdup(CONFIG_TLS_PSK_IDENTITY, trx_optarg);
 				break;
 			case '9':
-				CONFIG_TLS_PSK_FILE = zbx_strdup(CONFIG_TLS_PSK_FILE, zbx_optarg);
+				CONFIG_TLS_PSK_FILE = trx_strdup(CONFIG_TLS_PSK_FILE, trx_optarg);
 				break;
 #else
 			case '1':
@@ -357,7 +357,7 @@ int	main(int argc, char **argv)
 			case '7':
 			case '8':
 			case '9':
-				zbx_error("TLS parameters cannot be used: 'treegix_get' was compiled without TLS"
+				trx_error("TLS parameters cannot be used: 'treegix_get' was compiled without TLS"
 						" support");
 				exit(EXIT_FAILURE);
 				break;
@@ -370,10 +370,10 @@ int	main(int argc, char **argv)
 	}
 
 #if defined(_WINDOWS)
-	if (SUCCEED != zbx_socket_start(&error))
+	if (SUCCEED != trx_socket_start(&error))
 	{
-		zbx_error(error);
-		zbx_free(error);
+		trx_error(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 #endif
@@ -393,9 +393,9 @@ int	main(int argc, char **argv)
 		if (1 < opt_count[(unsigned char)ch])
 		{
 			if (NULL == strchr(shortopts, ch))
-				zbx_error("option \"--%s\" specified multiple times", longopts[i].name);
+				trx_error("option \"--%s\" specified multiple times", longopts[i].name);
 			else
-				zbx_error("option \"-%c\" or \"--%s\" specified multiple times", ch, longopts[i].name);
+				trx_error("option \"-%c\" or \"--%s\" specified multiple times", ch, longopts[i].name);
 
 			ret = FAIL;
 		}
@@ -404,12 +404,12 @@ int	main(int argc, char **argv)
 	if (FAIL == ret)
 		goto out;
 
-	/* Parameters which are not option values are invalid. The check relies on zbx_getopt_internal() which */
+	/* Parameters which are not option values are invalid. The check relies on trx_getopt_internal() which */
 	/* always permutes command line arguments regardless of POSIXLY_CORRECT environment variable. */
-	if (argc > zbx_optind)
+	if (argc > trx_optind)
 	{
-		for (i = zbx_optind; i < argc; i++)
-			zbx_error("invalid parameter \"%s\"", argv[i]);
+		for (i = trx_optind; i < argc; i++)
+			trx_error("invalid parameter \"%s\"", argv[i]);
 
 		ret = FAIL;
 	}
@@ -426,14 +426,14 @@ int	main(int argc, char **argv)
 			NULL != CONFIG_TLS_PSK_IDENTITY || NULL != CONFIG_TLS_PSK_FILE)
 	{
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		zbx_tls_validate_config();
+		trx_tls_validate_config();
 
 		if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 		{
 #if defined(_WINDOWS)
-			zbx_tls_init_parent();
+			trx_tls_init_parent();
 #endif
-			zbx_tls_init_child();
+			trx_tls_init_child();
 		}
 #endif
 	}
@@ -447,15 +447,15 @@ int	main(int argc, char **argv)
 #endif
 	ret = get_value(source_ip, host, port, key);
 out:
-	zbx_free(host);
-	zbx_free(key);
-	zbx_free(source_ip);
+	trx_free(host);
+	trx_free(key);
+	trx_free(source_ip);
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 	{
-		zbx_tls_free();
+		trx_tls_free();
 #if defined(_WINDOWS)
-		zbx_tls_library_deinit();
+		trx_tls_library_deinit();
 #endif
 	}
 #endif

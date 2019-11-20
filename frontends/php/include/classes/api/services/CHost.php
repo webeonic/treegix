@@ -122,7 +122,7 @@ class CHost extends CHostGeneral {
 			'limit'								=> null,
 			'limitSelects'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -138,19 +138,19 @@ class CHost extends CHostGeneral {
 					' WHERE h.hostid=hgg.hostid'.
 					' GROUP BY hgg.hostid'.
 					' HAVING MIN(r.permission)>'.PERM_DENY.
-						' AND MAX(r.permission)>='.zbx_dbstr($permission).
+						' AND MAX(r.permission)>='.trx_dbstr($permission).
 					')';
 		}
 
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 			$sqlParts['where']['hostid'] = dbConditionInt('h.hostid', $options['hostids']);
 		}
 
 		// groupids
 		if (!is_null($options['groupids'])) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			$sqlParts['from']['hosts_groups'] = 'hosts_groups hg';
 			$sqlParts['where'][] = dbConditionInt('hg.groupid', $options['groupids']);
@@ -163,14 +163,14 @@ class CHost extends CHostGeneral {
 
 		// proxyids
 		if (!is_null($options['proxyids'])) {
-			zbx_value2array($options['proxyids']);
+			trx_value2array($options['proxyids']);
 
 			$sqlParts['where'][] = dbConditionId('h.proxy_hostid', $options['proxyids']);
 		}
 
 		// templateids
 		if (!is_null($options['templateids'])) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			$sqlParts['from']['hosts_templates'] = 'hosts_templates ht';
 			$sqlParts['where'][] = dbConditionInt('ht.templateid', $options['templateids']);
@@ -183,7 +183,7 @@ class CHost extends CHostGeneral {
 
 		// interfaceids
 		if (!is_null($options['interfaceids'])) {
-			zbx_value2array($options['interfaceids']);
+			trx_value2array($options['interfaceids']);
 
 			$sqlParts['from']['interface'] = 'interface hi';
 			$sqlParts['where'][] = dbConditionInt('hi.interfaceid', $options['interfaceids']);
@@ -192,7 +192,7 @@ class CHost extends CHostGeneral {
 
 		// itemids
 		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['from']['items'] = 'items i';
 			$sqlParts['where'][] = dbConditionInt('i.itemid', $options['itemids']);
@@ -201,7 +201,7 @@ class CHost extends CHostGeneral {
 
 		// triggerids
 		if (!is_null($options['triggerids'])) {
-			zbx_value2array($options['triggerids']);
+			trx_value2array($options['triggerids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['from']['items'] = 'items i';
@@ -212,7 +212,7 @@ class CHost extends CHostGeneral {
 
 		// httptestids
 		if (!is_null($options['httptestids'])) {
-			zbx_value2array($options['httptestids']);
+			trx_value2array($options['httptestids']);
 
 			$sqlParts['from']['httptest'] = 'httptest ht';
 			$sqlParts['where'][] = dbConditionInt('ht.httptestid', $options['httptestids']);
@@ -221,7 +221,7 @@ class CHost extends CHostGeneral {
 
 		// graphids
 		if (!is_null($options['graphids'])) {
-			zbx_value2array($options['graphids']);
+			trx_value2array($options['graphids']);
 
 			$sqlParts['from']['graphs_items'] = 'graphs_items gi';
 			$sqlParts['from']['items'] = 'items i';
@@ -232,7 +232,7 @@ class CHost extends CHostGeneral {
 
 		// applicationids
 		if (!is_null($options['applicationids'])) {
-			zbx_value2array($options['applicationids']);
+			trx_value2array($options['applicationids']);
 
 			$sqlParts['from']['applications'] = 'applications a';
 			$sqlParts['where'][] = dbConditionInt('a.applicationid', $options['applicationids']);
@@ -241,7 +241,7 @@ class CHost extends CHostGeneral {
 
 		// dserviceids
 		if (!is_null($options['dserviceids'])) {
-			zbx_value2array($options['dserviceids']);
+			trx_value2array($options['dserviceids']);
 
 			$sqlParts['from']['dservices'] = 'dservices ds';
 			$sqlParts['from']['interface'] = 'interface i';
@@ -256,7 +256,7 @@ class CHost extends CHostGeneral {
 
 		// maintenanceids
 		if (!is_null($options['maintenanceids'])) {
-			zbx_value2array($options['maintenanceids']);
+			trx_value2array($options['maintenanceids']);
 
 			$sqlParts['from']['maintenances_hosts'] = 'maintenances_hosts mh';
 			$sqlParts['where'][] = dbConditionInt('mh.maintenanceid', $options['maintenanceids']);
@@ -407,9 +407,9 @@ class CHost extends CHostGeneral {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('hosts h', $options, $sqlParts);
+			trx_db_search('hosts h', $options, $sqlParts);
 
-			if (zbx_db_search('interface hi', $options, $sqlParts)) {
+			if (trx_db_search('interface hi', $options, $sqlParts)) {
 				$sqlParts['from']['interface'] = 'interface hi';
 				$sqlParts['where']['hi'] = 'h.hostid=hi.hostid';
 			}
@@ -420,7 +420,7 @@ class CHost extends CHostGeneral {
 			$sqlParts['from']['host_inventory'] = 'host_inventory hii';
 			$sqlParts['where']['hii'] = 'h.hostid=hii.hostid';
 
-			zbx_db_search('host_inventory hii',
+			trx_db_search('host_inventory hii',
 				[
 					'search' => $options['searchInventory'],
 					'startSearch' => $options['startSearch'],
@@ -443,7 +443,7 @@ class CHost extends CHostGeneral {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -475,7 +475,7 @@ class CHost extends CHostGeneral {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -568,7 +568,7 @@ class CHost extends CHostGeneral {
 	 * @return array
 	 */
 	public function create($hosts) {
-		$hosts = zbx_toArray($hosts);
+		$hosts = trx_toArray($hosts);
 
 		$this->validateCreate($hosts);
 
@@ -691,8 +691,8 @@ class CHost extends CHostGeneral {
 	 * @return array
 	 */
 	public function update($hosts) {
-		$hosts = zbx_toArray($hosts);
-		$hostids = zbx_objectValues($hosts, 'hostid');
+		$hosts = trx_toArray($hosts);
+		$hostids = trx_objectValues($hosts, 'hostid');
 
 		$db_hosts = $this->get([
 			'output' => ['hostid', 'host', 'flags', 'tls_connect', 'tls_accept', 'tls_issuer', 'tls_subject',
@@ -723,7 +723,7 @@ class CHost extends CHostGeneral {
 		unset($host);
 
 		$inventories = $this->extendObjects('host_inventory', $inventories, ['inventory_mode']);
-		$inventories = zbx_toHash($inventories, 'hostid');
+		$inventories = trx_toHash($inventories, 'hostid');
 
 		$macros = [];
 		foreach ($hosts as &$host) {
@@ -783,8 +783,8 @@ class CHost extends CHostGeneral {
 	 * @return array
 	 */
 	public function massAdd(array $data) {
-		$hosts = isset($data['hosts']) ? zbx_toArray($data['hosts']) : [];
-		$hostIds = zbx_objectValues($hosts, 'hostid');
+		$hosts = isset($data['hosts']) ? trx_toArray($data['hosts']) : [];
+		$hostIds = trx_objectValues($hosts, 'hostid');
 
 		$this->checkPermissions($hostIds, _('You do not have permission to perform this operation.'));
 
@@ -792,7 +792,7 @@ class CHost extends CHostGeneral {
 		if (!empty($data['interfaces'])) {
 			API::HostInterface()->massAdd([
 				'hosts' => $data['hosts'],
-				'interfaces' => zbx_toArray($data['interfaces'])
+				'interfaces' => trx_toArray($data['interfaces'])
 			]);
 		}
 
@@ -833,8 +833,8 @@ class CHost extends CHostGeneral {
 			self::exception(TRX_API_ERROR_PARAMETERS, _s('Field "%1$s" is mandatory.', 'hosts'));
 		}
 
-		$hosts = zbx_toArray($data['hosts']);
-		$inputHostIds = zbx_objectValues($hosts, 'hostid');
+		$hosts = trx_toArray($data['hosts']);
+		$inputHostIds = trx_objectValues($hosts, 'hostid');
 		$hostids = array_unique($inputHostIds);
 
 		sort($hostids);
@@ -958,7 +958,7 @@ class CHost extends CHostGeneral {
 		}
 
 		if (array_key_exists('templates_clear', $data)) {
-			$updateTemplatesClear = zbx_toArray($data['templates_clear']);
+			$updateTemplatesClear = trx_toArray($data['templates_clear']);
 		}
 
 		if (isset($data['templates'])) {
@@ -993,7 +993,7 @@ class CHost extends CHostGeneral {
 		unset($data['hosts'], $data['groups'], $data['interfaces'], $data['templates_clear'], $data['templates'],
 			$data['macros'], $data['inventory'], $data['inventory_mode'], $data['status']);
 
-		if (!zbx_empty($data)) {
+		if (!trx_empty($data)) {
 			DB::update('hosts', [
 				'values' => $data,
 				'where' => ['hostid' => $hostids]
@@ -1008,7 +1008,7 @@ class CHost extends CHostGeneral {
 		 * Update template linkage
 		 */
 		if (isset($updateTemplatesClear)) {
-			$templateIdsClear = zbx_objectValues($updateTemplatesClear, 'templateid');
+			$templateIdsClear = trx_objectValues($updateTemplatesClear, 'templateid');
 
 			if ($updateTemplatesClear) {
 				$this->massRemove(['hostids' => $hostids, 'templateids_clear' => $templateIdsClear]);
@@ -1027,7 +1027,7 @@ class CHost extends CHostGeneral {
 			]);
 
 			$hostTemplateids = array_keys($hostTemplates);
-			$newTemplateids = zbx_objectValues($updateTemplates, 'templateid');
+			$newTemplateids = trx_objectValues($updateTemplates, 'templateid');
 
 			$templatesToDel = array_diff($hostTemplateids, $newTemplateids);
 			$templatesToDel = array_diff($templatesToDel, $templateIdsClear);
@@ -1169,20 +1169,20 @@ class CHost extends CHostGeneral {
 		 * host-template linkage, inventory update, macros update, must be done before this.
 		 */
 		if (isset($updateGroups)) {
-			$updateGroups = zbx_toArray($updateGroups);
+			$updateGroups = trx_toArray($updateGroups);
 
 			$hostGroups = API::HostGroup()->get([
 				'output' => ['groupid'],
 				'hostids' => $hostids
 			]);
-			$hostGroupIds = zbx_objectValues($hostGroups, 'groupid');
-			$newGroupIds = zbx_objectValues($updateGroups, 'groupid');
+			$hostGroupIds = trx_objectValues($hostGroups, 'groupid');
+			$newGroupIds = trx_objectValues($updateGroups, 'groupid');
 
 			$groupsToAdd = array_diff($newGroupIds, $hostGroupIds);
 			if ($groupsToAdd) {
 				$this->massAdd([
 					'hosts' => $hosts,
-					'groups' => zbx_toObject($groupsToAdd, 'groupid')
+					'groups' => trx_toObject($groupsToAdd, 'groupid')
 				]);
 			}
 
@@ -1211,14 +1211,14 @@ class CHost extends CHostGeneral {
 	 * @return array
 	 */
 	public function massRemove(array $data) {
-		$hostids = zbx_toArray($data['hostids']);
+		$hostids = trx_toArray($data['hostids']);
 
 		$this->checkPermissions($hostids, _('No permissions to referred object or it does not exist!'));
 
 		if (isset($data['interfaces'])) {
 			$options = [
 				'hostids' => $hostids,
-				'interfaces' => zbx_toArray($data['interfaces'])
+				'interfaces' => trx_toArray($data['interfaces'])
 			];
 			API::HostInterface()->massRemove($options);
 		}
@@ -1494,7 +1494,7 @@ class CHost extends CHostGeneral {
 					'groupCount' => true
 				]);
 
-				$interfaces = zbx_toHash($interfaces, 'hostid');
+				$interfaces = trx_toHash($interfaces, 'hostid');
 				foreach ($result as $hostid => $host) {
 					$result[$hostid]['interfaces'] = array_key_exists($hostid, $interfaces)
 						? $interfaces[$hostid]['rowscount']
@@ -1531,7 +1531,7 @@ class CHost extends CHostGeneral {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$screens = zbx_toHash($screens, 'hostid');
+				$screens = trx_toHash($screens, 'hostid');
 
 				foreach ($result as $hostid => $host) {
 					$result[$hostid]['screens'] = array_key_exists($hostid, $screens)
@@ -1756,7 +1756,7 @@ class CHost extends CHostGeneral {
 				);
 			}
 
-			$groupids = array_merge($groupids, zbx_objectValues($host['groups'], 'groupid'));
+			$groupids = array_merge($groupids, trx_objectValues($host['groups'], 'groupid'));
 
 			// Validate tags.
 			if (array_key_exists('tags', $host)) {
@@ -1800,7 +1800,7 @@ class CHost extends CHostGeneral {
 			}
 		}
 
-		$inventory_fields = zbx_objectValues(getHostInventories(), 'db_field');
+		$inventory_fields = trx_objectValues(getHostInventories(), 'db_field');
 
 		$valid_inventory_modes = [HOST_INVENTORY_DISABLED, HOST_INVENTORY_MANUAL, HOST_INVENTORY_AUTOMATIC];
 		$inventory_mode = new CLimitedSetValidator([
@@ -1940,7 +1940,7 @@ class CHost extends CHostGeneral {
 			// Permissions to host groups is validated in massUpdate().
 		}
 
-		$inventory_fields = zbx_objectValues(getHostInventories(), 'db_field');
+		$inventory_fields = trx_objectValues(getHostInventories(), 'db_field');
 
 		$valid_inventory_modes = [HOST_INVENTORY_DISABLED, HOST_INVENTORY_MANUAL, HOST_INVENTORY_AUTOMATIC];
 		$inventory_mode = new CLimitedSetValidator([
@@ -2018,7 +2018,7 @@ class CHost extends CHostGeneral {
 
 			if (array_key_exists('name', $host)) {
 				// if visible name is empty replace it with host name
-				if (zbx_empty(trim($host['name']))) {
+				if (trx_empty(trim($host['name']))) {
 					if (!array_key_exists('host', $host)) {
 						self::exception(TRX_API_ERROR_PARAMETERS,
 							_s('Visible name cannot be empty if host name is missing.')

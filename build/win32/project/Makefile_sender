@@ -28,29 +28,29 @@ ADD_RFLAGS = /d "TREEGIX_SENDER"
 
 # the main object file must be already added in master Makefile
 OBJS = \
-	..\..\..\src\libs\zbxcommon\comms.o \
-	..\..\..\src\libs\zbxcommon\iprange.o \
-	..\..\..\src\libs\zbxcommon\misc.o \
-	..\..\..\src\libs\zbxcommon\variant.o \
-	..\..\..\src\libs\zbxcommon\str.o \
-	..\..\..\src\libs\zbxcommon\xml.o \
-	..\..\..\src\libs\zbxcommon\zbxgetopt.o \
-	..\..\..\src\libs\zbxcomms\comms.o \
-	..\..\..\src\libs\zbxcompress\compress.o \
-	..\..\..\src\libs\zbxconf\cfg.o \
-	..\..\..\src\libs\zbxcrypto\base64.o \
-	..\..\..\src\libs\zbxcrypto\md5.o \
-	..\..\..\src\libs\zbxjson\json.o \
-	..\..\..\src\libs\zbxjson\json_parser.o \
-	..\..\..\src\libs\zbxjson\jsonpath.o \
-	..\..\..\src\libs\zbxlog\log.o \
-	..\..\..\src\libs\zbxsys\mutexs.o \
-	..\..\..\src\libs\zbxsys\symbols.o \
-	..\..\..\src\libs\zbxsys\threads.o \
-	..\..\..\src\libs\zbxwin32\fatal.o \
-	..\..\..\src\libs\zbxalgo\algodefs.o \
-	..\..\..\src\libs\zbxalgo\vector.o \
-	..\..\..\src\libs\zbxregexp\zbxregexp.o \
+	..\..\..\src\libs\trxcommon\comms.o \
+	..\..\..\src\libs\trxcommon\iprange.o \
+	..\..\..\src\libs\trxcommon\misc.o \
+	..\..\..\src\libs\trxcommon\variant.o \
+	..\..\..\src\libs\trxcommon\str.o \
+	..\..\..\src\libs\trxcommon\xml.o \
+	..\..\..\src\libs\trxcommon\trxgetopt.o \
+	..\..\..\src\libs\trxcomms\comms.o \
+	..\..\..\src\libs\trxcompress\compress.o \
+	..\..\..\src\libs\trxconf\cfg.o \
+	..\..\..\src\libs\trxcrypto\base64.o \
+	..\..\..\src\libs\trxcrypto\md5.o \
+	..\..\..\src\libs\trxjson\json.o \
+	..\..\..\src\libs\trxjson\json_parser.o \
+	..\..\..\src\libs\trxjson\jsonpath.o \
+	..\..\..\src\libs\trxlog\log.o \
+	..\..\..\src\libs\trxsys\mutexs.o \
+	..\..\..\src\libs\trxsys\symbols.o \
+	..\..\..\src\libs\trxsys\threads.o \
+	..\..\..\src\libs\trxwin32\fatal.o \
+	..\..\..\src\libs\trxalgo\algodefs.o \
+	..\..\..\src\libs\trxalgo\vector.o \
+	..\..\..\src\libs\trxregexp\trxregexp.o \
 	..\..\..\src\treegix_sender\treegix_sender.o
 
 LIBS = ws2_32.lib psapi.lib pdh.lib Wldap32.lib advapi32.lib uuid.lib Iphlpapi.lib user32.lib

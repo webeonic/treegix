@@ -86,7 +86,7 @@ class CDiscoveryRule extends CItemGeneral {
 			'limit'							=> null,
 			'limitSelects'					=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -102,16 +102,16 @@ class CDiscoveryRule extends CItemGeneral {
 				' WHERE i.hostid=hgg.hostid'.
 				' GROUP BY hgg.hostid'.
 				' HAVING MIN(r.permission)>'.PERM_DENY.
-					' AND MAX(r.permission)>='.zbx_dbstr($permission).
+					' AND MAX(r.permission)>='.trx_dbstr($permission).
 				')';
 		}
 
 		// templateids
 		if (!is_null($options['templateids'])) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			if (!is_null($options['hostids'])) {
-				zbx_value2array($options['hostids']);
+				trx_value2array($options['hostids']);
 				$options['hostids'] = array_merge($options['hostids'], $options['templateids']);
 			}
 			else {
@@ -121,7 +121,7 @@ class CDiscoveryRule extends CItemGeneral {
 
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			$sqlParts['where']['hostid'] = dbConditionInt('i.hostid', $options['hostids']);
 
@@ -132,14 +132,14 @@ class CDiscoveryRule extends CItemGeneral {
 
 		// itemids
 		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['where']['itemid'] = dbConditionInt('i.itemid', $options['itemids']);
 		}
 
 		// interfaceids
 		if (!is_null($options['interfaceids'])) {
-			zbx_value2array($options['interfaceids']);
+			trx_value2array($options['interfaceids']);
 
 			$sqlParts['where']['interfaceid'] = dbConditionId('i.interfaceid', $options['interfaceids']);
 
@@ -188,12 +188,12 @@ class CDiscoveryRule extends CItemGeneral {
 		// search
 		if (is_array($options['search'])) {
 			if (array_key_exists('error', $options['search']) && $options['search']['error'] !== null) {
-				zbx_db_search('item_rtdata ir', ['search' => ['error' => $options['search']['error']]] + $options,
+				trx_db_search('item_rtdata ir', ['search' => ['error' => $options['search']['error']]] + $options,
 					$sqlParts
 				);
 			}
 
-			zbx_db_search('items i', $options, $sqlParts);
+			trx_db_search('items i', $options, $sqlParts);
 		}
 
 		// filter
@@ -216,7 +216,7 @@ class CDiscoveryRule extends CItemGeneral {
 			$this->dbFilter('items i', $options, $sqlParts);
 
 			if (isset($options['filter']['host'])) {
-				zbx_value2array($options['filter']['host']);
+				trx_value2array($options['filter']['host']);
 
 				$sqlParts['from']['hosts'] = 'hosts h';
 				$sqlParts['where']['hi'] = 'h.hostid=i.hostid';
@@ -225,7 +225,7 @@ class CDiscoveryRule extends CItemGeneral {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -295,7 +295,7 @@ class CDiscoveryRule extends CItemGeneral {
 		}
 
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -309,7 +309,7 @@ class CDiscoveryRule extends CItemGeneral {
 	 * @return array
 	 */
 	public function create($items) {
-		$items = zbx_toArray($items);
+		$items = trx_toArray($items);
 		$this->checkInput($items);
 		$json = new CJson();
 
@@ -341,7 +341,7 @@ class CDiscoveryRule extends CItemGeneral {
 		// Get only hosts not templates from items
 		$hosts = API::Host()->get([
 			'output' => [],
-			'hostids' => zbx_objectValues($items, 'hostid'),
+			'hostids' => trx_objectValues($items, 'hostid'),
 			'preservekeys' => true
 		]);
 		foreach ($items as &$item) {
@@ -356,7 +356,7 @@ class CDiscoveryRule extends CItemGeneral {
 		$this->createReal($items);
 		$this->inherit($items);
 
-		return ['itemids' => zbx_objectValues($items, 'itemid')];
+		return ['itemids' => trx_objectValues($items, 'itemid')];
 	}
 
 	/**
@@ -367,19 +367,19 @@ class CDiscoveryRule extends CItemGeneral {
 	 * @return array
 	 */
 	public function update($items) {
-		$items = zbx_toArray($items);
+		$items = trx_toArray($items);
 
 		$db_items = $this->get([
 			'output' => ['itemid', 'name', 'type', 'master_itemid', 'authtype', 'allow_traps', 'retrieve_mode'],
 			'selectFilter' => ['evaltype', 'formula', 'conditions'],
-			'itemids' => zbx_objectValues($items, 'itemid'),
+			'itemids' => trx_objectValues($items, 'itemid'),
 			'preservekeys' => true
 		]);
 
 		$this->checkInput($items, true, $db_items);
 		$this->validateUpdateLLDMacroPaths($items);
 
-		$items = $this->extendFromObjects(zbx_toHash($items, 'itemid'), $db_items, ['flags', 'type', 'master_itemid']);
+		$items = $this->extendFromObjects(trx_toHash($items, 'itemid'), $db_items, ['flags', 'type', 'master_itemid']);
 		$this->validateDependentItems($items);
 
 		$defaults = DB::getDefaults('items');
@@ -476,7 +476,7 @@ class CDiscoveryRule extends CItemGeneral {
 		$this->updateReal($items);
 		$this->inherit($items);
 
-		return ['itemids' => zbx_objectValues($items, 'itemid')];
+		return ['itemids' => trx_objectValues($items, 'itemid')];
 	}
 
 	/**
@@ -656,8 +656,8 @@ class CDiscoveryRule extends CItemGeneral {
 	}
 
 	public function syncTemplates($data) {
-		$data['templateids'] = zbx_toArray($data['templateids']);
-		$data['hostids'] = zbx_toArray($data['hostids']);
+		$data['templateids'] = trx_toArray($data['templateids']);
+		$data['hostids'] = trx_toArray($data['hostids']);
 
 		$output = [];
 		foreach ($this->fieldRules as $field_name => $rules) {
@@ -971,7 +971,7 @@ class CDiscoveryRule extends CItemGeneral {
 	protected function updateReal(array $items) {
 		CArrayHelper::sort($items, ['itemid']);
 
-		$ruleIds = zbx_objectValues($items, 'itemid');
+		$ruleIds = trx_objectValues($items, 'itemid');
 
 		$data = [];
 		foreach ($items as $item) {
@@ -1144,7 +1144,7 @@ class CDiscoveryRule extends CItemGeneral {
 		}
 
 		// After all data has been collected, proceed with record update in DB.
-		$lld_macro_pathids_to_delete = zbx_objectValues($db_lld_macro_paths, 'lld_macro_pathid');
+		$lld_macro_pathids_to_delete = trx_objectValues($db_lld_macro_paths, 'lld_macro_pathid');
 
 		if ($lld_macro_pathids_to_delete) {
 			DB::delete('lld_macro_path', ['lld_macro_pathid' => $lld_macro_pathids_to_delete]);
@@ -1212,7 +1212,7 @@ class CDiscoveryRule extends CItemGeneral {
 
 		$validateItems = $items;
 		if ($update) {
-			$validateItems = $this->extendFromObjects(zbx_toHash($validateItems, 'itemid'), $dbItems, ['name']);
+			$validateItems = $this->extendFromObjects(trx_toHash($validateItems, 'itemid'), $dbItems, ['name']);
 		}
 
 		// filter validator
@@ -1486,7 +1486,7 @@ class CDiscoveryRule extends CItemGeneral {
 						$db_lld_macro_paths = DBfetchArrayAssoc(DBselect(
 							'SELECT lmp.lld_macro_pathid,lmp.lld_macro'.
 							' FROM lld_macro_path lmp'.
-							' WHERE lmp.itemid='.zbx_dbstr($itemid).
+							' WHERE lmp.itemid='.trx_dbstr($itemid).
 								' AND '.dbConditionId('lmp.lld_macro_pathid', $lld_macro_pathids)
 						), 'lld_macro_pathid');
 
@@ -1593,8 +1593,8 @@ class CDiscoveryRule extends CItemGeneral {
 				'SELECT i1.itemid'.
 				' FROM items i1,items i2'.
 				' WHERE i1.key_=i2.key_'.
-					' AND i1.hostid='.zbx_dbstr($dstDiscovery['hostid']).
-					' AND i2.itemid='.zbx_dbstr($srcDiscovery['master_itemid'])
+					' AND i1.hostid='.trx_dbstr($dstDiscovery['hostid']).
+					' AND i2.itemid='.trx_dbstr($srcDiscovery['master_itemid'])
 			));
 
 			if (!$master_items) {
@@ -1772,7 +1772,7 @@ class CDiscoveryRule extends CItemGeneral {
 
 				// add new applications
 				$item_prototype['applications'] = get_same_applications_for_host(
-					zbx_objectValues($item_prototype['applications'], 'applicationid'),
+					trx_objectValues($item_prototype['applications'], 'applicationid'),
 					$dstHost['hostid']
 				);
 
@@ -2052,7 +2052,7 @@ class CDiscoveryRule extends CItemGeneral {
 					'groupCount' => true
 				]);
 
-				$items = zbx_toHash($items, 'parent_itemid');
+				$items = trx_toHash($items, 'parent_itemid');
 				foreach ($result as $itemid => $item) {
 					$result[$itemid]['items'] = array_key_exists($itemid, $items) ? $items[$itemid]['rowscount'] : '0';
 				}
@@ -2088,7 +2088,7 @@ class CDiscoveryRule extends CItemGeneral {
 					'groupCount' => true
 				]);
 
-				$triggers = zbx_toHash($triggers, 'parent_itemid');
+				$triggers = trx_toHash($triggers, 'parent_itemid');
 				foreach ($result as $itemid => $item) {
 					$result[$itemid]['triggers'] = array_key_exists($itemid, $triggers)
 						? $triggers[$itemid]['rowscount']
@@ -2126,7 +2126,7 @@ class CDiscoveryRule extends CItemGeneral {
 					'groupCount' => true
 				]);
 
-				$graphs = zbx_toHash($graphs, 'parent_itemid');
+				$graphs = trx_toHash($graphs, 'parent_itemid');
 				foreach ($result as $itemid => $item) {
 					$result[$itemid]['graphs'] = array_key_exists($itemid, $graphs)
 						? $graphs[$itemid]['rowscount']
@@ -2154,7 +2154,7 @@ class CDiscoveryRule extends CItemGeneral {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$hostPrototypes = zbx_toHash($hostPrototypes, 'parent_itemid');
+				$hostPrototypes = trx_toHash($hostPrototypes, 'parent_itemid');
 
 				foreach ($result as $itemid => $item) {
 					$result[$itemid]['hostPrototypes'] = array_key_exists($itemid, $hostPrototypes)
@@ -2215,7 +2215,7 @@ class CDiscoveryRule extends CItemGeneral {
 					// in other cases - generate the formula automatically
 					else {
 						// sort the conditions by macro before generating the formula
-						$conditions = zbx_toHash($filter['conditions'], 'item_conditionid');
+						$conditions = trx_toHash($filter['conditions'], 'item_conditionid');
 						$conditions = order_macros($conditions, 'macro');
 
 						$formulaConditions = [];

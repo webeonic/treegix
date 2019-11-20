@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxdbsyncer_a_AR = $(AR) $(ARFLAGS)
-libzbxdbsyncer_a_LIBADD =
-am_libzbxdbsyncer_a_OBJECTS = dbsyncer.$(OBJEXT)
-libzbxdbsyncer_a_OBJECTS = $(am_libzbxdbsyncer_a_OBJECTS)
+libtrxdbsyncer_a_AR = $(AR) $(ARFLAGS)
+libtrxdbsyncer_a_LIBADD =
+am_libtrxdbsyncer_a_OBJECTS = dbsyncer.$(OBJEXT)
+libtrxdbsyncer_a_OBJECTS = $(am_libtrxdbsyncer_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxdbsyncer_a_SOURCES)
-DIST_SOURCES = $(libzbxdbsyncer_a_SOURCES)
+SOURCES = $(libtrxdbsyncer_a_SOURCES)
+DIST_SOURCES = $(libtrxdbsyncer_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxdbsyncer.a
-libzbxdbsyncer_a_SOURCES = dbsyncer.c dbsyncer.h
+noinst_LIBRARIES = libtrxdbsyncer.a
+libtrxdbsyncer_a_SOURCES = dbsyncer.c dbsyncer.h
 all: all-am
 
 .SUFFIXES:
@@ -413,10 +413,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxdbsyncer.a: $(libzbxdbsyncer_a_OBJECTS) $(libzbxdbsyncer_a_DEPENDENCIES) $(EXTRA_libzbxdbsyncer_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxdbsyncer.a
-	$(AM_V_AR)$(libzbxdbsyncer_a_AR) libzbxdbsyncer.a $(libzbxdbsyncer_a_OBJECTS) $(libzbxdbsyncer_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxdbsyncer.a
+libtrxdbsyncer.a: $(libtrxdbsyncer_a_OBJECTS) $(libtrxdbsyncer_a_DEPENDENCIES) $(EXTRA_libtrxdbsyncer_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxdbsyncer.a
+	$(AM_V_AR)$(libtrxdbsyncer_a_AR) libtrxdbsyncer.a $(libtrxdbsyncer_a_OBJECTS) $(libtrxdbsyncer_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxdbsyncer.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

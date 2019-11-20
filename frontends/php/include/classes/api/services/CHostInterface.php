@@ -66,7 +66,7 @@ class CHostInterface extends CApiService {
 			'limit'						=> null,
 			'limitSelects'				=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -82,25 +82,25 @@ class CHostInterface extends CApiService {
 				' WHERE hi.hostid=hgg.hostid'.
 				' GROUP BY hgg.hostid'.
 				' HAVING MIN(r.permission)>'.PERM_DENY.
-					' AND MAX(r.permission)>='.zbx_dbstr($permission).
+					' AND MAX(r.permission)>='.trx_dbstr($permission).
 				')';
 		}
 
 		// interfaceids
 		if (!is_null($options['interfaceids'])) {
-			zbx_value2array($options['interfaceids']);
+			trx_value2array($options['interfaceids']);
 			$sqlParts['where']['interfaceid'] = dbConditionInt('hi.interfaceid', $options['interfaceids']);
 		}
 
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 			$sqlParts['where']['hostid'] = dbConditionInt('hi.hostid', $options['hostids']);
 		}
 
 		// itemids
 		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['from']['items'] = 'items i';
 			$sqlParts['where'][] = dbConditionInt('i.itemid', $options['itemids']);
@@ -109,7 +109,7 @@ class CHostInterface extends CApiService {
 
 		// triggerids
 		if (!is_null($options['triggerids'])) {
-			zbx_value2array($options['triggerids']);
+			trx_value2array($options['triggerids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['from']['items'] = 'items i';
@@ -120,7 +120,7 @@ class CHostInterface extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('interface hi', $options, $sqlParts);
+			trx_db_search('interface hi', $options, $sqlParts);
 		}
 
 		// filter
@@ -129,7 +129,7 @@ class CHostInterface extends CApiService {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -161,7 +161,7 @@ class CHostInterface extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -181,7 +181,7 @@ class CHostInterface extends CApiService {
 			$interfaceDBfields = ['interfaceid' => null];
 			$dbInterfaces = $this->get([
 				'output' => API_OUTPUT_EXTEND,
-				'interfaceids' => zbx_objectValues($interfaces, 'interfaceid'),
+				'interfaceids' => trx_objectValues($interfaces, 'interfaceid'),
 				'editable' => true,
 				'preservekeys' => true
 			]);
@@ -199,14 +199,14 @@ class CHostInterface extends CApiService {
 
 		$dbHosts = API::Host()->get([
 			'output' => ['host'],
-			'hostids' => zbx_objectValues($interfaces, 'hostid'),
+			'hostids' => trx_objectValues($interfaces, 'hostid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
 
 		$dbProxies = API::Proxy()->get([
 			'output' => ['host'],
-			'proxyids' => zbx_objectValues($interfaces, 'hostid'),
+			'proxyids' => trx_objectValues($interfaces, 'hostid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
@@ -235,7 +235,7 @@ class CHostInterface extends CApiService {
 
 				// we check all fields on "updated" interface
 				$updInterface = $interface;
-				$interface = zbx_array_merge($dbInterface, $interface);
+				$interface = trx_array_merge($dbInterface, $interface);
 			}
 			else {
 				if (!isset($dbHosts[$interface['hostid']]) && !isset($dbProxies[$interface['hostid']])) {
@@ -250,15 +250,15 @@ class CHostInterface extends CApiService {
 				}
 			}
 
-			if (zbx_empty($interface['ip']) && zbx_empty($interface['dns'])) {
+			if (trx_empty($interface['ip']) && trx_empty($interface['dns'])) {
 				self::exception(TRX_API_ERROR_PARAMETERS, _('IP and DNS cannot be empty for host interface.'));
 			}
 
-			if ($interface['useip'] == INTERFACE_USE_IP && zbx_empty($interface['ip'])) {
+			if ($interface['useip'] == INTERFACE_USE_IP && trx_empty($interface['ip'])) {
 				self::exception(TRX_API_ERROR_PARAMETERS, _s('Interface with DNS "%1$s" cannot have empty IP address.', $interface['dns']));
 			}
 
-			if ($interface['useip'] == INTERFACE_USE_DNS && zbx_empty($interface['dns'])) {
+			if ($interface['useip'] == INTERFACE_USE_DNS && trx_empty($interface['dns'])) {
 				if ($dbHosts && !empty($dbHosts[$interface['hostid']]['host'])) {
 					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Interface with IP "%1$s" cannot have empty DNS name while having "Use DNS" property on "%2$s".',
@@ -304,7 +304,7 @@ class CHostInterface extends CApiService {
 				$this->checkIfInterfaceHasItems($check_have_items);
 			}
 		}
-		$this->checkValidator(zbx_objectValues($interfaces, 'hostid'), new CHostNormalValidator([
+		$this->checkValidator(trx_objectValues($interfaces, 'hostid'), new CHostNormalValidator([
 			'message' => _('Cannot update interface for discovered host "%1$s".')
 		]));
 	}
@@ -317,7 +317,7 @@ class CHostInterface extends CApiService {
 	 * @return array
 	 */
 	public function create(array $interfaces) {
-		$interfaces = zbx_toArray($interfaces);
+		$interfaces = trx_toArray($interfaces);
 
 		$this->checkInput($interfaces, __FUNCTION__);
 		$this->checkMainInterfacesOnCreate($interfaces);
@@ -335,7 +335,7 @@ class CHostInterface extends CApiService {
 	 * @return array
 	 */
 	public function update(array $interfaces) {
-		$interfaces = zbx_toArray($interfaces);
+		$interfaces = trx_toArray($interfaces);
 
 		$this->checkInput($interfaces, __FUNCTION__);
 		$this->checkMainInterfacesOnUpdate($interfaces);
@@ -349,7 +349,7 @@ class CHostInterface extends CApiService {
 		}
 		DB::update('interface', $data);
 
-		return ['interfaceids' => zbx_objectValues($interfaces, 'interfaceid')];
+		return ['interfaceids' => trx_objectValues($interfaces, 'interfaceid')];
 	}
 
 	/**
@@ -386,8 +386,8 @@ class CHostInterface extends CApiService {
 	}
 
 	public function massAdd(array $data) {
-		$interfaces = zbx_toArray($data['interfaces']);
-		$hosts = zbx_toArray($data['hosts']);
+		$interfaces = trx_toArray($data['interfaces']);
+		$hosts = trx_toArray($data['hosts']);
 
 		$insertData = [];
 		foreach ($interfaces as $interface) {
@@ -431,7 +431,7 @@ class CHostInterface extends CApiService {
 				]
 			]);
 			if ($interfacesToRemove) {
-				$this->checkMainInterfacesOnDelete(zbx_objectValues($interfacesToRemove, 'interfaceid'));
+				$this->checkMainInterfacesOnDelete(trx_objectValues($interfacesToRemove, 'interfaceid'));
 			}
 		}
 	}
@@ -447,8 +447,8 @@ class CHostInterface extends CApiService {
 	 * @return array
 	 */
 	public function massRemove(array $data) {
-		$data['interfaces'] = zbx_toArray($data['interfaces']);
-		$data['hostids'] = zbx_toArray($data['hostids']);
+		$data['interfaces'] = trx_toArray($data['interfaces']);
+		$data['hostids'] = trx_toArray($data['hostids']);
 
 		$this->validateMassRemove($data);
 
@@ -487,7 +487,7 @@ class CHostInterface extends CApiService {
 	 */
 	public function replaceHostInterfaces(array $host) {
 		if (isset($host['interfaces']) && !is_null($host['interfaces'])) {
-			$host['interfaces'] = zbx_toArray($host['interfaces']);
+			$host['interfaces'] = trx_toArray($host['interfaces']);
 
 			$this->checkHostInterfaces($host['interfaces'], $host['hostid']);
 
@@ -539,10 +539,10 @@ class CHostInterface extends CApiService {
 			}
 
 			if ($interfacesToDelete) {
-				$this->delete(zbx_objectValues($interfacesToDelete, 'interfaceid'));
+				$this->delete(trx_objectValues($interfacesToDelete, 'interfaceid'));
 			}
 
-			return ['interfaceids' => zbx_objectValues($host['interfaces'], 'interfaceid')];
+			return ['interfaceids' => trx_objectValues($host['interfaces'], 'interfaceid')];
 		}
 
 		return ['interfaceids' => []];
@@ -606,7 +606,7 @@ class CHostInterface extends CApiService {
 	 * @param array $interface
 	 */
 	protected function checkPort(array $interface) {
-		if (!isset($interface['port']) || zbx_empty($interface['port'])) {
+		if (!isset($interface['port']) || trx_empty($interface['port'])) {
 			self::exception(TRX_API_ERROR_PARAMETERS, _('Port cannot be empty for host interface.'));
 		}
 		elseif (!validatePortNumberOrMacro($interface['port'])) {
@@ -652,7 +652,7 @@ class CHostInterface extends CApiService {
 		if ($interface['type'] !== null && (($interface['type'] != INTERFACE_TYPE_SNMP && isset($interface['bulk'])
 				&& $interface['bulk'] != SNMP_BULK_ENABLED)
 				|| ($interface['type'] == INTERFACE_TYPE_SNMP && isset($interface['bulk'])
-					&& (zbx_empty($interface['bulk'])
+					&& (trx_empty($interface['bulk'])
 						|| ($interface['bulk'] != SNMP_BULK_DISABLED && $interface['bulk'] != SNMP_BULK_ENABLED))))) {
 			self::exception(TRX_API_ERROR_PARAMETERS, _('Incorrect bulk value for interface.'));
 		}
@@ -713,7 +713,7 @@ class CHostInterface extends CApiService {
 	 * @throws APIException
 	 */
 	private function checkMainInterfacesOnUpdate(array $interfaces) {
-		$hostids = array_keys(array_flip(zbx_objectValues($interfaces, 'hostid')));
+		$hostids = array_keys(array_flip(trx_objectValues($interfaces, 'hostid')));
 
 		$dbInterfaces = API::HostInterface()->get([
 			'hostids' => $hostids,
@@ -872,7 +872,7 @@ class CHostInterface extends CApiService {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$items = zbx_toHash($items, 'interfaceid');
+				$items = trx_toHash($items, 'interfaceid');
 				foreach ($result as $interfaceid => $interface) {
 					$result[$interfaceid]['items'] = array_key_exists($interfaceid, $items)
 						? $items[$interfaceid]['rowscount']

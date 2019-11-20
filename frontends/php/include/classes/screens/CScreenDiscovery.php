@@ -64,7 +64,7 @@ class CScreenDiscovery extends CScreenBase {
 			'output' => ['macro', 'value'],
 			'globalmacro' => true
 		]);
-		$macros = zbx_toHash($macros, 'macro');
+		$macros = trx_toHash($macros, 'macro');
 
 		$dchecks = API::DCheck()->get([
 			'output' => ['type', 'key_'],
@@ -217,7 +217,7 @@ class CScreenDiscovery extends CScreenBase {
 
 				foreach ($services as $name => $foo) {
 					$row[] = array_key_exists($name, $h_data['services'])
-						? (new CCol(zbx_date2age($h_data['services'][$name]['time'])))
+						? (new CCol(trx_date2age($h_data['services'][$name]['time'])))
 							->addClass($h_data['services'][$name]['class'])
 						: '';
 				}

@@ -30,7 +30,7 @@ class CScreenSystemStatus extends CScreenBase {
 		$table = makeSystemStatus([], $data, $severity_config, $this->pageFile.'?screenid='.$this->screenid);
 
 		$footer = (new CList())
-			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
+			->addItem(_s('Updated: %s', trx_date2str(TIME_FORMAT_SECONDS)))
 			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(

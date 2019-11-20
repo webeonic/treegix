@@ -370,7 +370,7 @@ class CApiService {
 	 */
 	protected function createSelectQueryParts($tableName, $tableAlias, array $options) {
 		// extend default options
-		$options = zbx_array_merge($this->globalGetOptions, $options);
+		$options = trx_array_merge($this->globalGetOptions, $options);
 
 		$sqlParts = [
 			'select' => [$this->fieldId($this->pk($tableName), $tableAlias)],
@@ -419,7 +419,7 @@ class CApiService {
 		$sqlGroup = empty($sqlParts['group']) ? '' : ' GROUP BY '.implode(',', array_unique($sqlParts['group']));
 		$sqlOrder = empty($sqlParts['order']) ? '' : ' ORDER BY '.implode(',', array_unique($sqlParts['order']));
 
-		return 'SELECT'.zbx_db_distinct($sqlParts).' '.$sqlSelect.
+		return 'SELECT'.trx_db_distinct($sqlParts).' '.$sqlSelect.
 				' FROM '.$sqlFrom.
 				$sql_left_join.
 				$sqlWhere.
@@ -493,7 +493,7 @@ class CApiService {
 
 		// pks
 		if (isset($options[$pkOption])) {
-			zbx_value2array($options[$pkOption]);
+			trx_value2array($options[$pkOption]);
 			$sqlParts['where'][] = dbConditionString($this->fieldId($this->pk($tableName), $tableAlias), $options[$pkOption]);
 		}
 
@@ -504,7 +504,7 @@ class CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search($tableId, $options, $sqlParts);
+			trx_db_search($tableId, $options, $sqlParts);
 		}
 
 		return $sqlParts;
@@ -522,7 +522,7 @@ class CApiService {
 	 * @return array
 	 */
 	protected function applyQuerySortOptions($tableName, $tableAlias, array $options, array $sqlParts) {
-		if ($this->sortColumns && !zbx_empty($options['sortfield'])) {
+		if ($this->sortColumns && !trx_empty($options['sortfield'])) {
 			$options['sortfield'] = is_array($options['sortfield'])
 				? array_unique($options['sortfield'])
 				: [$options['sortfield']];
@@ -667,7 +667,7 @@ class CApiService {
 		if ($objects) {
 			$dbObjects = API::getApiService()->select($tableName, [
 				'output' => $fields,
-				$this->pkOption($tableName) => zbx_objectValues($objects, $this->pk($tableName)),
+				$this->pkOption($tableName) => trx_objectValues($objects, $this->pk($tableName)),
 				'preservekeys' => true
 			]);
 
@@ -857,11 +857,11 @@ class CApiService {
 			// skip missing fields and text fields (not supported by Oracle)
 			// skip empty values
 			if (!isset($tableSchema['fields'][$field]) || $tableSchema['fields'][$field]['type'] == DB::FIELD_TYPE_TEXT
-					|| zbx_empty($value)) {
+					|| trx_empty($value)) {
 				continue;
 			}
 
-			zbx_value2array($value);
+			trx_value2array($value);
 
 			$fieldName = $this->fieldId($field, $tableShort);
 			switch ($tableSchema['fields'][$field]['type']) {

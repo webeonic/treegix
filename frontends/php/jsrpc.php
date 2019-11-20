@@ -287,7 +287,7 @@ switch ($data['method']) {
 			case 'applications':
 				$applications = API::Application()->get([
 					'output' => ['applicationid', 'name'],
-					'hostids' => zbx_toArray($data['hostid']),
+					'hostids' => trx_toArray($data['hostid']),
 					'search' => isset($data['search']) ? ['name' => $data['search']] : null,
 					'limit' => $config['search_limit']
 				]);
@@ -509,7 +509,7 @@ switch ($data['method']) {
 		];
 
 		if ($db_result) {
-			$db_result = array_flip(zbx_objectValues($db_result, 'name'));
+			$db_result = array_flip(trx_objectValues($db_result, 'name'));
 
 			if (array_key_exists($search, $db_result)) {
 				unset($db_result[$search]);

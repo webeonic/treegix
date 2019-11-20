@@ -2,7 +2,7 @@
 
 
 
-zbx_add_post_js('jqBlink.blink();');
+trx_add_post_js('jqBlink.blink();');
 
 // hint table
 $help_hint = (new CList())

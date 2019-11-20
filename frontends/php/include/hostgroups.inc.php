@@ -77,7 +77,7 @@ function inheritPermissions($groupid, $name) {
 	$upd_usrgrps = [];
 
 	foreach ($usrgrps as $usrgrp) {
-		$rights = zbx_toHash($usrgrp['rights'], 'id');
+		$rights = trx_toHash($usrgrp['rights'], 'id');
 
 		if (array_key_exists($groupid, $rights)) {
 			foreach ($child_groupids as $child_groupid) {

@@ -22,7 +22,7 @@ static int	AGENT_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	TRX_UNUSED(request);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, CONFIG_HOSTNAME));
+	SET_STR_RESULT(result, trx_strdup(NULL, CONFIG_HOSTNAME));
 
 	return SYSINFO_RET_OK;
 }
@@ -40,7 +40,7 @@ static int	AGENT_VERSION(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	TRX_UNUSED(request);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, TREEGIX_VERSION));
+	SET_STR_RESULT(result, trx_strdup(NULL, TREEGIX_VERSION));
 
 	return SYSINFO_RET_OK;
 }

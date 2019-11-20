@@ -33,7 +33,7 @@ class CTabView extends CDiv {
 			$this->setDisabled($data['disabled']);
 		}
 		parent::__construct();
-		$this->setId(zbx_formatDomId($this->id));
+		$this->setId(trx_formatDomId($this->id));
 		$this->addClass(TRX_STYLE_TABLE_FORMS_CONTAINER);
 	}
 
@@ -68,7 +68,7 @@ class CTabView extends CDiv {
 	public function addTab($id, $header, $body) {
 		$this->headers[$id] = $header;
 		$this->tabs[$id] = new CDiv($body);
-		$this->tabs[$id]->setId(zbx_formatDomId($id));
+		$this->tabs[$id]->setId(trx_formatDomId($id));
 		return $this;
 	}
 
@@ -95,7 +95,7 @@ class CTabView extends CDiv {
 			$this->addItem($headersList);
 			$this->addItem($this->tabs);
 
-			zbx_add_post_js($this->makeJavascript());
+			trx_add_post_js($this->makeJavascript());
 		}
 
 		$this->addItem($this->footer);

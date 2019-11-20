@@ -3,7 +3,7 @@
 #include "common.h"
 #include "comms.h"
 #include "log.h"
-#include "../../libs/zbxcrypto/tls_tcp_active.h"
+#include "../../libs/trxcrypto/tls_tcp_active.h"
 
 #include "checks_agent.h"
 
@@ -33,13 +33,13 @@ extern unsigned char	program_type;
  ******************************************************************************/
 int	get_value_agent(DC_ITEM *item, AGENT_RESULT *result)
 {
-	zbx_socket_t	s;
+	trx_socket_t	s;
 	char		*tls_arg1, *tls_arg2;
 	int		ret = SUCCEED;
 	ssize_t		received_len;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() host:'%s' addr:'%s' key:'%s' conn:'%s'", __func__, item->host.host,
-			item->interface.addr, item->key, zbx_tcp_connection_type_name(item->host.tls_connect));
+			item->interface.addr, item->key, trx_tcp_connection_type_name(item->host.tls_connect));
 
 	switch (item->host.tls_connect)
 	{
@@ -59,7 +59,7 @@ int	get_value_agent(DC_ITEM *item, AGENT_RESULT *result)
 #else
 		case TRX_TCP_SEC_TLS_CERT:
 		case TRX_TCP_SEC_TLS_PSK:
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "A TLS connection is configured to be used with agent"
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "A TLS connection is configured to be used with agent"
 					" but support for TLS was not compiled into %s.",
 					get_program_type_string(program_type)));
 			ret = CONFIG_ERROR;
@@ -67,21 +67,21 @@ int	get_value_agent(DC_ITEM *item, AGENT_RESULT *result)
 #endif
 		default:
 			THIS_SHOULD_NEVER_HAPPEN;
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid TLS connection parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid TLS connection parameters."));
 			ret = CONFIG_ERROR;
 			goto out;
 	}
 
-	if (SUCCEED == (ret = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, item->interface.addr, item->interface.port, 0,
+	if (SUCCEED == (ret = trx_tcp_connect(&s, CONFIG_SOURCE_IP, item->interface.addr, item->interface.port, 0,
 			item->host.tls_connect, tls_arg1, tls_arg2)))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "Sending [%s]", item->key);
 
-		if (SUCCEED != zbx_tcp_send(&s, item->key))
+		if (SUCCEED != trx_tcp_send(&s, item->key))
 			ret = NETWORK_ERROR;
-		else if (FAIL != (received_len = zbx_tcp_recv_ext(&s, 0)))
+		else if (FAIL != (received_len = trx_tcp_recv_ext(&s, 0)))
 			ret = SUCCEED;
-		else if (SUCCEED == zbx_alarm_timed_out())
+		else if (SUCCEED == trx_alarm_timed_out())
 			ret = TIMEOUT_ERROR;
 		else
 			ret = NETWORK_ERROR;
@@ -97,20 +97,20 @@ int	get_value_agent(DC_ITEM *item, AGENT_RESULT *result)
 		{
 			/* 'TRX_NOTSUPPORTED\0<error message>' */
 			if (sizeof(TRX_NOTSUPPORTED) < s.read_bytes)
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "%s", s.buffer + sizeof(TRX_NOTSUPPORTED)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "%s", s.buffer + sizeof(TRX_NOTSUPPORTED)));
 			else
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Not supported by Treegix Agent"));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Not supported by Treegix Agent"));
 
 			ret = NOTSUPPORTED;
 		}
 		else if (0 == strcmp(s.buffer, TRX_ERROR))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Treegix Agent non-critical error"));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Treegix Agent non-critical error"));
 			ret = AGENT_ERROR;
 		}
 		else if (0 == received_len)
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Received empty response from Treegix Agent at [%s]."
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Received empty response from Treegix Agent at [%s]."
 					" Assuming that agent dropped connection because of access permissions.",
 					item->interface.addr));
 			ret = NETWORK_ERROR;
@@ -119,11 +119,11 @@ int	get_value_agent(DC_ITEM *item, AGENT_RESULT *result)
 			set_result_type(result, ITEM_VALUE_TYPE_TEXT, s.buffer);
 	}
 	else
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Get value from agent failed: %s", zbx_socket_strerror()));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Get value from agent failed: %s", trx_socket_strerror()));
 
-	zbx_tcp_close(&s);
+	trx_tcp_close(&s);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

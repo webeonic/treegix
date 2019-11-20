@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxcommon
+subdir = src/libs/trxcommon
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,18 +117,18 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxcommon_a_AR = $(AR) $(ARFLAGS)
-libzbxcommon_a_LIBADD =
-am_libzbxcommon_a_OBJECTS = libzbxcommon_a-misc.$(OBJEXT) \
-	libzbxcommon_a-xml.$(OBJEXT) libzbxcommon_a-comms.$(OBJEXT) \
-	libzbxcommon_a-str.$(OBJEXT) \
-	libzbxcommon_a-zbxgetopt.$(OBJEXT) \
-	libzbxcommon_a-alias.$(OBJEXT) libzbxcommon_a-file.$(OBJEXT) \
-	libzbxcommon_a-setproctitle.$(OBJEXT) \
-	libzbxcommon_a-iprange.$(OBJEXT) \
-	libzbxcommon_a-variant.$(OBJEXT) \
-	libzbxcommon_a-variant_misc.$(OBJEXT)
-libzbxcommon_a_OBJECTS = $(am_libzbxcommon_a_OBJECTS)
+libtrxcommon_a_AR = $(AR) $(ARFLAGS)
+libtrxcommon_a_LIBADD =
+am_libtrxcommon_a_OBJECTS = libtrxcommon_a-misc.$(OBJEXT) \
+	libtrxcommon_a-xml.$(OBJEXT) libtrxcommon_a-comms.$(OBJEXT) \
+	libtrxcommon_a-str.$(OBJEXT) \
+	libtrxcommon_a-trxgetopt.$(OBJEXT) \
+	libtrxcommon_a-alias.$(OBJEXT) libtrxcommon_a-file.$(OBJEXT) \
+	libtrxcommon_a-setproctitle.$(OBJEXT) \
+	libtrxcommon_a-iprange.$(OBJEXT) \
+	libtrxcommon_a-variant.$(OBJEXT) \
+	libtrxcommon_a-variant_misc.$(OBJEXT)
+libtrxcommon_a_OBJECTS = $(am_libtrxcommon_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -161,8 +161,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxcommon_a_SOURCES)
-DIST_SOURCES = $(libzbxcommon_a_SOURCES)
+SOURCES = $(libtrxcommon_a_SOURCES)
+DIST_SOURCES = $(libtrxcommon_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -386,13 +386,13 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxcommon.a
-libzbxcommon_a_SOURCES = \
+noinst_LIBRARIES = libtrxcommon.a
+libtrxcommon_a_SOURCES = \
 	misc.c \
 	xml.c \
 	comms.c \
 	str.c \
-	zbxgetopt.c \
+	trxgetopt.c \
 	alias.c \
 	file.c \
 	setproctitle.c \
@@ -400,7 +400,7 @@ libzbxcommon_a_SOURCES = \
 	variant.c \
 	variant_misc.c
 
-libzbxcommon_a_CFLAGS = @ICONV_CFLAGS@
+libtrxcommon_a_CFLAGS = @ICONV_CFLAGS@
 all: all-am
 
 .SUFFIXES:
@@ -414,9 +414,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxcommon/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxcommon/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxcommon/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxcommon/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -438,10 +438,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxcommon.a: $(libzbxcommon_a_OBJECTS) $(libzbxcommon_a_DEPENDENCIES) $(EXTRA_libzbxcommon_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxcommon.a
-	$(AM_V_AR)$(libzbxcommon_a_AR) libzbxcommon.a $(libzbxcommon_a_OBJECTS) $(libzbxcommon_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxcommon.a
+libtrxcommon.a: $(libtrxcommon_a_OBJECTS) $(libtrxcommon_a_DEPENDENCIES) $(EXTRA_libtrxcommon_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxcommon.a
+	$(AM_V_AR)$(libtrxcommon_a_AR) libtrxcommon.a $(libtrxcommon_a_OBJECTS) $(libtrxcommon_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxcommon.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -449,17 +449,17 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-alias.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-comms.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-file.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-iprange.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-misc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-setproctitle.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-str.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-variant.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-variant_misc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-xml.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcommon_a-zbxgetopt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-alias.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-comms.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-iprange.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-misc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-setproctitle.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-str.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-variant.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-variant_misc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-xml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcommon_a-trxgetopt.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -477,159 +477,159 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxcommon_a-misc.o: misc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-misc.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-misc.Tpo -c -o libzbxcommon_a-misc.o `test -f 'misc.c' || echo '$(srcdir)/'`misc.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-misc.Tpo $(DEPDIR)/libzbxcommon_a-misc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='misc.c' object='libzbxcommon_a-misc.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-misc.o: misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-misc.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-misc.Tpo -c -o libtrxcommon_a-misc.o `test -f 'misc.c' || echo '$(srcdir)/'`misc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-misc.Tpo $(DEPDIR)/libtrxcommon_a-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='misc.c' object='libtrxcommon_a-misc.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-misc.o `test -f 'misc.c' || echo '$(srcdir)/'`misc.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-misc.o `test -f 'misc.c' || echo '$(srcdir)/'`misc.c
 
-libzbxcommon_a-misc.obj: misc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-misc.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-misc.Tpo -c -o libzbxcommon_a-misc.obj `if test -f 'misc.c'; then $(CYGPATH_W) 'misc.c'; else $(CYGPATH_W) '$(srcdir)/misc.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-misc.Tpo $(DEPDIR)/libzbxcommon_a-misc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='misc.c' object='libzbxcommon_a-misc.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-misc.obj: misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-misc.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-misc.Tpo -c -o libtrxcommon_a-misc.obj `if test -f 'misc.c'; then $(CYGPATH_W) 'misc.c'; else $(CYGPATH_W) '$(srcdir)/misc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-misc.Tpo $(DEPDIR)/libtrxcommon_a-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='misc.c' object='libtrxcommon_a-misc.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-misc.obj `if test -f 'misc.c'; then $(CYGPATH_W) 'misc.c'; else $(CYGPATH_W) '$(srcdir)/misc.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-misc.obj `if test -f 'misc.c'; then $(CYGPATH_W) 'misc.c'; else $(CYGPATH_W) '$(srcdir)/misc.c'; fi`
 
-libzbxcommon_a-xml.o: xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-xml.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-xml.Tpo -c -o libzbxcommon_a-xml.o `test -f 'xml.c' || echo '$(srcdir)/'`xml.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-xml.Tpo $(DEPDIR)/libzbxcommon_a-xml.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml.c' object='libzbxcommon_a-xml.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-xml.o: xml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-xml.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-xml.Tpo -c -o libtrxcommon_a-xml.o `test -f 'xml.c' || echo '$(srcdir)/'`xml.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-xml.Tpo $(DEPDIR)/libtrxcommon_a-xml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml.c' object='libtrxcommon_a-xml.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-xml.o `test -f 'xml.c' || echo '$(srcdir)/'`xml.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-xml.o `test -f 'xml.c' || echo '$(srcdir)/'`xml.c
 
-libzbxcommon_a-xml.obj: xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-xml.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-xml.Tpo -c -o libzbxcommon_a-xml.obj `if test -f 'xml.c'; then $(CYGPATH_W) 'xml.c'; else $(CYGPATH_W) '$(srcdir)/xml.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-xml.Tpo $(DEPDIR)/libzbxcommon_a-xml.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml.c' object='libzbxcommon_a-xml.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-xml.obj: xml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-xml.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-xml.Tpo -c -o libtrxcommon_a-xml.obj `if test -f 'xml.c'; then $(CYGPATH_W) 'xml.c'; else $(CYGPATH_W) '$(srcdir)/xml.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-xml.Tpo $(DEPDIR)/libtrxcommon_a-xml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml.c' object='libtrxcommon_a-xml.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-xml.obj `if test -f 'xml.c'; then $(CYGPATH_W) 'xml.c'; else $(CYGPATH_W) '$(srcdir)/xml.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-xml.obj `if test -f 'xml.c'; then $(CYGPATH_W) 'xml.c'; else $(CYGPATH_W) '$(srcdir)/xml.c'; fi`
 
-libzbxcommon_a-comms.o: comms.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-comms.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-comms.Tpo -c -o libzbxcommon_a-comms.o `test -f 'comms.c' || echo '$(srcdir)/'`comms.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-comms.Tpo $(DEPDIR)/libzbxcommon_a-comms.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='comms.c' object='libzbxcommon_a-comms.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-comms.o: comms.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-comms.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-comms.Tpo -c -o libtrxcommon_a-comms.o `test -f 'comms.c' || echo '$(srcdir)/'`comms.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-comms.Tpo $(DEPDIR)/libtrxcommon_a-comms.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='comms.c' object='libtrxcommon_a-comms.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-comms.o `test -f 'comms.c' || echo '$(srcdir)/'`comms.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-comms.o `test -f 'comms.c' || echo '$(srcdir)/'`comms.c
 
-libzbxcommon_a-comms.obj: comms.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-comms.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-comms.Tpo -c -o libzbxcommon_a-comms.obj `if test -f 'comms.c'; then $(CYGPATH_W) 'comms.c'; else $(CYGPATH_W) '$(srcdir)/comms.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-comms.Tpo $(DEPDIR)/libzbxcommon_a-comms.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='comms.c' object='libzbxcommon_a-comms.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-comms.obj: comms.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-comms.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-comms.Tpo -c -o libtrxcommon_a-comms.obj `if test -f 'comms.c'; then $(CYGPATH_W) 'comms.c'; else $(CYGPATH_W) '$(srcdir)/comms.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-comms.Tpo $(DEPDIR)/libtrxcommon_a-comms.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='comms.c' object='libtrxcommon_a-comms.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-comms.obj `if test -f 'comms.c'; then $(CYGPATH_W) 'comms.c'; else $(CYGPATH_W) '$(srcdir)/comms.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-comms.obj `if test -f 'comms.c'; then $(CYGPATH_W) 'comms.c'; else $(CYGPATH_W) '$(srcdir)/comms.c'; fi`
 
-libzbxcommon_a-str.o: str.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-str.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-str.Tpo -c -o libzbxcommon_a-str.o `test -f 'str.c' || echo '$(srcdir)/'`str.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-str.Tpo $(DEPDIR)/libzbxcommon_a-str.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='str.c' object='libzbxcommon_a-str.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-str.o: str.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-str.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-str.Tpo -c -o libtrxcommon_a-str.o `test -f 'str.c' || echo '$(srcdir)/'`str.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-str.Tpo $(DEPDIR)/libtrxcommon_a-str.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='str.c' object='libtrxcommon_a-str.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-str.o `test -f 'str.c' || echo '$(srcdir)/'`str.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-str.o `test -f 'str.c' || echo '$(srcdir)/'`str.c
 
-libzbxcommon_a-str.obj: str.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-str.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-str.Tpo -c -o libzbxcommon_a-str.obj `if test -f 'str.c'; then $(CYGPATH_W) 'str.c'; else $(CYGPATH_W) '$(srcdir)/str.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-str.Tpo $(DEPDIR)/libzbxcommon_a-str.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='str.c' object='libzbxcommon_a-str.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-str.obj: str.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-str.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-str.Tpo -c -o libtrxcommon_a-str.obj `if test -f 'str.c'; then $(CYGPATH_W) 'str.c'; else $(CYGPATH_W) '$(srcdir)/str.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-str.Tpo $(DEPDIR)/libtrxcommon_a-str.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='str.c' object='libtrxcommon_a-str.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-str.obj `if test -f 'str.c'; then $(CYGPATH_W) 'str.c'; else $(CYGPATH_W) '$(srcdir)/str.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-str.obj `if test -f 'str.c'; then $(CYGPATH_W) 'str.c'; else $(CYGPATH_W) '$(srcdir)/str.c'; fi`
 
-libzbxcommon_a-zbxgetopt.o: zbxgetopt.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-zbxgetopt.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-zbxgetopt.Tpo -c -o libzbxcommon_a-zbxgetopt.o `test -f 'zbxgetopt.c' || echo '$(srcdir)/'`zbxgetopt.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-zbxgetopt.Tpo $(DEPDIR)/libzbxcommon_a-zbxgetopt.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='zbxgetopt.c' object='libzbxcommon_a-zbxgetopt.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-trxgetopt.o: trxgetopt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-trxgetopt.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-trxgetopt.Tpo -c -o libtrxcommon_a-trxgetopt.o `test -f 'trxgetopt.c' || echo '$(srcdir)/'`trxgetopt.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-trxgetopt.Tpo $(DEPDIR)/libtrxcommon_a-trxgetopt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='trxgetopt.c' object='libtrxcommon_a-trxgetopt.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-zbxgetopt.o `test -f 'zbxgetopt.c' || echo '$(srcdir)/'`zbxgetopt.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-trxgetopt.o `test -f 'trxgetopt.c' || echo '$(srcdir)/'`trxgetopt.c
 
-libzbxcommon_a-zbxgetopt.obj: zbxgetopt.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-zbxgetopt.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-zbxgetopt.Tpo -c -o libzbxcommon_a-zbxgetopt.obj `if test -f 'zbxgetopt.c'; then $(CYGPATH_W) 'zbxgetopt.c'; else $(CYGPATH_W) '$(srcdir)/zbxgetopt.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-zbxgetopt.Tpo $(DEPDIR)/libzbxcommon_a-zbxgetopt.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='zbxgetopt.c' object='libzbxcommon_a-zbxgetopt.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-trxgetopt.obj: trxgetopt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-trxgetopt.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-trxgetopt.Tpo -c -o libtrxcommon_a-trxgetopt.obj `if test -f 'trxgetopt.c'; then $(CYGPATH_W) 'trxgetopt.c'; else $(CYGPATH_W) '$(srcdir)/trxgetopt.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-trxgetopt.Tpo $(DEPDIR)/libtrxcommon_a-trxgetopt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='trxgetopt.c' object='libtrxcommon_a-trxgetopt.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-zbxgetopt.obj `if test -f 'zbxgetopt.c'; then $(CYGPATH_W) 'zbxgetopt.c'; else $(CYGPATH_W) '$(srcdir)/zbxgetopt.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-trxgetopt.obj `if test -f 'trxgetopt.c'; then $(CYGPATH_W) 'trxgetopt.c'; else $(CYGPATH_W) '$(srcdir)/trxgetopt.c'; fi`
 
-libzbxcommon_a-alias.o: alias.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-alias.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-alias.Tpo -c -o libzbxcommon_a-alias.o `test -f 'alias.c' || echo '$(srcdir)/'`alias.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-alias.Tpo $(DEPDIR)/libzbxcommon_a-alias.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='alias.c' object='libzbxcommon_a-alias.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-alias.o: alias.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-alias.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-alias.Tpo -c -o libtrxcommon_a-alias.o `test -f 'alias.c' || echo '$(srcdir)/'`alias.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-alias.Tpo $(DEPDIR)/libtrxcommon_a-alias.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='alias.c' object='libtrxcommon_a-alias.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-alias.o `test -f 'alias.c' || echo '$(srcdir)/'`alias.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-alias.o `test -f 'alias.c' || echo '$(srcdir)/'`alias.c
 
-libzbxcommon_a-alias.obj: alias.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-alias.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-alias.Tpo -c -o libzbxcommon_a-alias.obj `if test -f 'alias.c'; then $(CYGPATH_W) 'alias.c'; else $(CYGPATH_W) '$(srcdir)/alias.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-alias.Tpo $(DEPDIR)/libzbxcommon_a-alias.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='alias.c' object='libzbxcommon_a-alias.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-alias.obj: alias.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-alias.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-alias.Tpo -c -o libtrxcommon_a-alias.obj `if test -f 'alias.c'; then $(CYGPATH_W) 'alias.c'; else $(CYGPATH_W) '$(srcdir)/alias.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-alias.Tpo $(DEPDIR)/libtrxcommon_a-alias.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='alias.c' object='libtrxcommon_a-alias.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-alias.obj `if test -f 'alias.c'; then $(CYGPATH_W) 'alias.c'; else $(CYGPATH_W) '$(srcdir)/alias.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-alias.obj `if test -f 'alias.c'; then $(CYGPATH_W) 'alias.c'; else $(CYGPATH_W) '$(srcdir)/alias.c'; fi`
 
-libzbxcommon_a-file.o: file.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-file.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-file.Tpo -c -o libzbxcommon_a-file.o `test -f 'file.c' || echo '$(srcdir)/'`file.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-file.Tpo $(DEPDIR)/libzbxcommon_a-file.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='file.c' object='libzbxcommon_a-file.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-file.o: file.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-file.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-file.Tpo -c -o libtrxcommon_a-file.o `test -f 'file.c' || echo '$(srcdir)/'`file.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-file.Tpo $(DEPDIR)/libtrxcommon_a-file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='file.c' object='libtrxcommon_a-file.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-file.o `test -f 'file.c' || echo '$(srcdir)/'`file.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-file.o `test -f 'file.c' || echo '$(srcdir)/'`file.c
 
-libzbxcommon_a-file.obj: file.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-file.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-file.Tpo -c -o libzbxcommon_a-file.obj `if test -f 'file.c'; then $(CYGPATH_W) 'file.c'; else $(CYGPATH_W) '$(srcdir)/file.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-file.Tpo $(DEPDIR)/libzbxcommon_a-file.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='file.c' object='libzbxcommon_a-file.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-file.obj: file.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-file.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-file.Tpo -c -o libtrxcommon_a-file.obj `if test -f 'file.c'; then $(CYGPATH_W) 'file.c'; else $(CYGPATH_W) '$(srcdir)/file.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-file.Tpo $(DEPDIR)/libtrxcommon_a-file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='file.c' object='libtrxcommon_a-file.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-file.obj `if test -f 'file.c'; then $(CYGPATH_W) 'file.c'; else $(CYGPATH_W) '$(srcdir)/file.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-file.obj `if test -f 'file.c'; then $(CYGPATH_W) 'file.c'; else $(CYGPATH_W) '$(srcdir)/file.c'; fi`
 
-libzbxcommon_a-setproctitle.o: setproctitle.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-setproctitle.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-setproctitle.Tpo -c -o libzbxcommon_a-setproctitle.o `test -f 'setproctitle.c' || echo '$(srcdir)/'`setproctitle.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-setproctitle.Tpo $(DEPDIR)/libzbxcommon_a-setproctitle.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='setproctitle.c' object='libzbxcommon_a-setproctitle.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-setproctitle.o: setproctitle.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-setproctitle.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-setproctitle.Tpo -c -o libtrxcommon_a-setproctitle.o `test -f 'setproctitle.c' || echo '$(srcdir)/'`setproctitle.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-setproctitle.Tpo $(DEPDIR)/libtrxcommon_a-setproctitle.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='setproctitle.c' object='libtrxcommon_a-setproctitle.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-setproctitle.o `test -f 'setproctitle.c' || echo '$(srcdir)/'`setproctitle.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-setproctitle.o `test -f 'setproctitle.c' || echo '$(srcdir)/'`setproctitle.c
 
-libzbxcommon_a-setproctitle.obj: setproctitle.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-setproctitle.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-setproctitle.Tpo -c -o libzbxcommon_a-setproctitle.obj `if test -f 'setproctitle.c'; then $(CYGPATH_W) 'setproctitle.c'; else $(CYGPATH_W) '$(srcdir)/setproctitle.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-setproctitle.Tpo $(DEPDIR)/libzbxcommon_a-setproctitle.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='setproctitle.c' object='libzbxcommon_a-setproctitle.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-setproctitle.obj: setproctitle.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-setproctitle.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-setproctitle.Tpo -c -o libtrxcommon_a-setproctitle.obj `if test -f 'setproctitle.c'; then $(CYGPATH_W) 'setproctitle.c'; else $(CYGPATH_W) '$(srcdir)/setproctitle.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-setproctitle.Tpo $(DEPDIR)/libtrxcommon_a-setproctitle.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='setproctitle.c' object='libtrxcommon_a-setproctitle.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-setproctitle.obj `if test -f 'setproctitle.c'; then $(CYGPATH_W) 'setproctitle.c'; else $(CYGPATH_W) '$(srcdir)/setproctitle.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-setproctitle.obj `if test -f 'setproctitle.c'; then $(CYGPATH_W) 'setproctitle.c'; else $(CYGPATH_W) '$(srcdir)/setproctitle.c'; fi`
 
-libzbxcommon_a-iprange.o: iprange.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-iprange.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-iprange.Tpo -c -o libzbxcommon_a-iprange.o `test -f 'iprange.c' || echo '$(srcdir)/'`iprange.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-iprange.Tpo $(DEPDIR)/libzbxcommon_a-iprange.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='iprange.c' object='libzbxcommon_a-iprange.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-iprange.o: iprange.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-iprange.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-iprange.Tpo -c -o libtrxcommon_a-iprange.o `test -f 'iprange.c' || echo '$(srcdir)/'`iprange.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-iprange.Tpo $(DEPDIR)/libtrxcommon_a-iprange.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='iprange.c' object='libtrxcommon_a-iprange.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-iprange.o `test -f 'iprange.c' || echo '$(srcdir)/'`iprange.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-iprange.o `test -f 'iprange.c' || echo '$(srcdir)/'`iprange.c
 
-libzbxcommon_a-iprange.obj: iprange.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-iprange.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-iprange.Tpo -c -o libzbxcommon_a-iprange.obj `if test -f 'iprange.c'; then $(CYGPATH_W) 'iprange.c'; else $(CYGPATH_W) '$(srcdir)/iprange.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-iprange.Tpo $(DEPDIR)/libzbxcommon_a-iprange.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='iprange.c' object='libzbxcommon_a-iprange.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-iprange.obj: iprange.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-iprange.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-iprange.Tpo -c -o libtrxcommon_a-iprange.obj `if test -f 'iprange.c'; then $(CYGPATH_W) 'iprange.c'; else $(CYGPATH_W) '$(srcdir)/iprange.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-iprange.Tpo $(DEPDIR)/libtrxcommon_a-iprange.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='iprange.c' object='libtrxcommon_a-iprange.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-iprange.obj `if test -f 'iprange.c'; then $(CYGPATH_W) 'iprange.c'; else $(CYGPATH_W) '$(srcdir)/iprange.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-iprange.obj `if test -f 'iprange.c'; then $(CYGPATH_W) 'iprange.c'; else $(CYGPATH_W) '$(srcdir)/iprange.c'; fi`
 
-libzbxcommon_a-variant.o: variant.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-variant.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-variant.Tpo -c -o libzbxcommon_a-variant.o `test -f 'variant.c' || echo '$(srcdir)/'`variant.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-variant.Tpo $(DEPDIR)/libzbxcommon_a-variant.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='variant.c' object='libzbxcommon_a-variant.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-variant.o: variant.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-variant.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-variant.Tpo -c -o libtrxcommon_a-variant.o `test -f 'variant.c' || echo '$(srcdir)/'`variant.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-variant.Tpo $(DEPDIR)/libtrxcommon_a-variant.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='variant.c' object='libtrxcommon_a-variant.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-variant.o `test -f 'variant.c' || echo '$(srcdir)/'`variant.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-variant.o `test -f 'variant.c' || echo '$(srcdir)/'`variant.c
 
-libzbxcommon_a-variant.obj: variant.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-variant.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-variant.Tpo -c -o libzbxcommon_a-variant.obj `if test -f 'variant.c'; then $(CYGPATH_W) 'variant.c'; else $(CYGPATH_W) '$(srcdir)/variant.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-variant.Tpo $(DEPDIR)/libzbxcommon_a-variant.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='variant.c' object='libzbxcommon_a-variant.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-variant.obj: variant.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-variant.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-variant.Tpo -c -o libtrxcommon_a-variant.obj `if test -f 'variant.c'; then $(CYGPATH_W) 'variant.c'; else $(CYGPATH_W) '$(srcdir)/variant.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-variant.Tpo $(DEPDIR)/libtrxcommon_a-variant.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='variant.c' object='libtrxcommon_a-variant.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-variant.obj `if test -f 'variant.c'; then $(CYGPATH_W) 'variant.c'; else $(CYGPATH_W) '$(srcdir)/variant.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-variant.obj `if test -f 'variant.c'; then $(CYGPATH_W) 'variant.c'; else $(CYGPATH_W) '$(srcdir)/variant.c'; fi`
 
-libzbxcommon_a-variant_misc.o: variant_misc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-variant_misc.o -MD -MP -MF $(DEPDIR)/libzbxcommon_a-variant_misc.Tpo -c -o libzbxcommon_a-variant_misc.o `test -f 'variant_misc.c' || echo '$(srcdir)/'`variant_misc.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-variant_misc.Tpo $(DEPDIR)/libzbxcommon_a-variant_misc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='variant_misc.c' object='libzbxcommon_a-variant_misc.o' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-variant_misc.o: variant_misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-variant_misc.o -MD -MP -MF $(DEPDIR)/libtrxcommon_a-variant_misc.Tpo -c -o libtrxcommon_a-variant_misc.o `test -f 'variant_misc.c' || echo '$(srcdir)/'`variant_misc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-variant_misc.Tpo $(DEPDIR)/libtrxcommon_a-variant_misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='variant_misc.c' object='libtrxcommon_a-variant_misc.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-variant_misc.o `test -f 'variant_misc.c' || echo '$(srcdir)/'`variant_misc.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-variant_misc.o `test -f 'variant_misc.c' || echo '$(srcdir)/'`variant_misc.c
 
-libzbxcommon_a-variant_misc.obj: variant_misc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -MT libzbxcommon_a-variant_misc.obj -MD -MP -MF $(DEPDIR)/libzbxcommon_a-variant_misc.Tpo -c -o libzbxcommon_a-variant_misc.obj `if test -f 'variant_misc.c'; then $(CYGPATH_W) 'variant_misc.c'; else $(CYGPATH_W) '$(srcdir)/variant_misc.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcommon_a-variant_misc.Tpo $(DEPDIR)/libzbxcommon_a-variant_misc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='variant_misc.c' object='libzbxcommon_a-variant_misc.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcommon_a-variant_misc.obj: variant_misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -MT libtrxcommon_a-variant_misc.obj -MD -MP -MF $(DEPDIR)/libtrxcommon_a-variant_misc.Tpo -c -o libtrxcommon_a-variant_misc.obj `if test -f 'variant_misc.c'; then $(CYGPATH_W) 'variant_misc.c'; else $(CYGPATH_W) '$(srcdir)/variant_misc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcommon_a-variant_misc.Tpo $(DEPDIR)/libtrxcommon_a-variant_misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='variant_misc.c' object='libtrxcommon_a-variant_misc.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcommon_a_CFLAGS) $(CFLAGS) -c -o libzbxcommon_a-variant_misc.obj `if test -f 'variant_misc.c'; then $(CYGPATH_W) 'variant_misc.c'; else $(CYGPATH_W) '$(srcdir)/variant_misc.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcommon_a_CFLAGS) $(CFLAGS) -c -o libtrxcommon_a-variant_misc.obj `if test -f 'variant_misc.c'; then $(CYGPATH_W) 'variant_misc.c'; else $(CYGPATH_W) '$(srcdir)/variant_misc.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

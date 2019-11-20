@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxregexp.a
+noinst_LIBRARIES = libtrxregexp.a
 
-libzbxregexp_a_SOURCES = \
-	zbxregexp.c
+libtrxregexp_a_SOURCES = \
+	trxregexp.c

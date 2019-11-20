@@ -30,7 +30,7 @@ $widget = (new CWidget())
 							'parameters' => [
 								'srctbl' => 'drules',
 								'srcfld1' => 'druleid',
-								'dstfrm' => 'zbx_filter',
+								'dstfrm' => 'trx_filter',
 								'dstfld1' => 'filter_druleids_'
 							]
 						]

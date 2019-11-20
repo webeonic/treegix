@@ -76,7 +76,7 @@ class CGraph extends CGraphGeneral {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// permission check
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -94,7 +94,7 @@ class CGraph extends CGraphGeneral {
 					' AND gi.itemid=i.itemid'.
 					' AND i.hostid=hgg.hostid'.
 				' GROUP BY i.hostid'.
-				' HAVING MAX(permission)<'.zbx_dbstr($permission).
+				' HAVING MAX(permission)<'.trx_dbstr($permission).
 					' OR MIN(permission) IS NULL'.
 					' OR MIN(permission)='.PERM_DENY.
 				')';
@@ -109,7 +109,7 @@ class CGraph extends CGraphGeneral {
 					' AND g.ymin_itemid=i.itemid'.
 					' AND i.hostid=hgg.hostid'.
 				' GROUP BY i.hostid'.
-				' HAVING MAX(permission)<'.zbx_dbstr($permission).
+				' HAVING MAX(permission)<'.trx_dbstr($permission).
 					' OR MIN(permission) IS NULL'.
 					' OR MIN(permission)='.PERM_DENY.
 				')';
@@ -124,7 +124,7 @@ class CGraph extends CGraphGeneral {
 					' AND g.ymax_itemid=i.itemid'.
 					' AND i.hostid=hgg.hostid'.
 				' GROUP BY i.hostid'.
-				' HAVING MAX(permission)<'.zbx_dbstr($permission).
+				' HAVING MAX(permission)<'.trx_dbstr($permission).
 					' OR MIN(permission) IS NULL'.
 					' OR MIN(permission)='.PERM_DENY.
 				')';
@@ -132,7 +132,7 @@ class CGraph extends CGraphGeneral {
 
 		// groupids
 		if (!is_null($options['groupids'])) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			$sqlParts['from']['graphs_items'] = 'graphs_items gi';
 			$sqlParts['from']['items'] = 'items i';
@@ -150,10 +150,10 @@ class CGraph extends CGraphGeneral {
 
 		// templateids
 		if (!is_null($options['templateids'])) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			if (!is_null($options['hostids'])) {
-				zbx_value2array($options['hostids']);
+				trx_value2array($options['hostids']);
 				$options['hostids'] = array_merge($options['hostids'], $options['templateids']);
 			}
 			else {
@@ -163,7 +163,7 @@ class CGraph extends CGraphGeneral {
 
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			$sqlParts['from']['graphs_items'] = 'graphs_items gi';
 			$sqlParts['from']['items'] = 'items i';
@@ -178,14 +178,14 @@ class CGraph extends CGraphGeneral {
 
 		// graphids
 		if (!is_null($options['graphids'])) {
-			zbx_value2array($options['graphids']);
+			trx_value2array($options['graphids']);
 
 			$sqlParts['where'][] = dbConditionInt('g.graphid', $options['graphids']);
 		}
 
 		// itemids
 		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['from']['graphs_items'] = 'graphs_items gi';
 			$sqlParts['where']['gig'] = 'gi.graphid=g.graphid';
@@ -225,7 +225,7 @@ class CGraph extends CGraphGeneral {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('graphs g', $options, $sqlParts);
+			trx_db_search('graphs g', $options, $sqlParts);
 		}
 
 		// filter
@@ -241,7 +241,7 @@ class CGraph extends CGraphGeneral {
 			$this->dbFilter('graphs g', $options, $sqlParts);
 
 			if (isset($options['filter']['host'])) {
-				zbx_value2array($options['filter']['host']);
+				trx_value2array($options['filter']['host']);
 
 				$sqlParts['from']['graphs_items'] = 'graphs_items gi';
 				$sqlParts['from']['items'] = 'items i';
@@ -253,7 +253,7 @@ class CGraph extends CGraphGeneral {
 			}
 
 			if (isset($options['filter']['hostid'])) {
-				zbx_value2array($options['filter']['hostid']);
+				trx_value2array($options['filter']['hostid']);
 
 				$sqlParts['from']['graphs_items'] = 'graphs_items gi';
 				$sqlParts['from']['items'] = 'items i';
@@ -264,7 +264,7 @@ class CGraph extends CGraphGeneral {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -299,7 +299,7 @@ class CGraph extends CGraphGeneral {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -307,7 +307,7 @@ class CGraph extends CGraphGeneral {
 
 	protected function inherit($graph, $hostids = null) {
 		$graphTemplates = API::Template()->get([
-			'itemids' => zbx_objectValues($graph['gitems'], 'itemid'),
+			'itemids' => trx_objectValues($graph['gitems'], 'itemid'),
 			'output' => ['templateid'],
 			'nopermissions' => true
 		]);
@@ -417,7 +417,7 @@ class CGraph extends CGraphGeneral {
 
 					$chdGraphItemItems = API::Item()->get([
 						'output' => ['itemid', 'key_', 'hostid'],
-						'itemids' => zbx_objectValues($chdGraph['gitems'], 'itemid'),
+						'itemids' => trx_objectValues($chdGraph['gitems'], 'itemid'),
 						'preservekeys' => true
 					]);
 
@@ -457,8 +457,8 @@ class CGraph extends CGraphGeneral {
 	 * @return bool
 	 */
 	public function syncTemplates($data) {
-		$data['templateids'] = zbx_toArray($data['templateids']);
-		$data['hostids'] = zbx_toArray($data['hostids']);
+		$data['templateids'] = trx_toArray($data['templateids']);
+		$data['hostids'] = trx_toArray($data['hostids']);
 
 		$dbLinks = DBSelect(
 			'SELECT ht.hostid,ht.templateid'.
@@ -629,7 +629,7 @@ class CGraph extends CGraphGeneral {
 			if (isset($graph['gitems'])) {
 				foreach ($graph['gitems'] as &$gitem) {
 					if (isset($gitem['gitemid']) && !isset($gitem['itemid'])) {
-						$dbGitems = zbx_toHash($dbGraphs[$graph['graphid']]['gitems'], 'gitemid');
+						$dbGitems = trx_toHash($dbGraphs[$graph['graphid']]['gitems'], 'gitemid');
 						$gitem['itemid'] = $dbGitems[$gitem['gitemid']]['itemid'];
 					}
 				}

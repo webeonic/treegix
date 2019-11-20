@@ -255,18 +255,18 @@ class CSetupWizard extends CForm {
 		$table = new CFormList();
 
 		$table->addRow(_('Host'),
-			(new CTextBox('zbx_server', $this->getConfig('TRX_SERVER', 'localhost')))
+			(new CTextBox('trx_server', $this->getConfig('TRX_SERVER', 'localhost')))
 				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 
 		$table->addRow(_('Port'),
-			(new CNumericBox('zbx_server_port', $this->getConfig('TRX_SERVER_PORT', '10051'), 5, false, false, false))
+			(new CNumericBox('trx_server_port', $this->getConfig('TRX_SERVER_PORT', '10051'), 5, false, false, false))
 				->removeAttribute('style')
 				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 
 		$table->addRow('Name',
-			(new CTextBox('zbx_server_name', $this->getConfig('TRX_SERVER_NAME', '')))
+			(new CTextBox('trx_server_name', $this->getConfig('TRX_SERVER_NAME', '')))
 				->setWidth(TRX_TEXTAREA_SMALL_WIDTH)
 		);
 
@@ -402,12 +402,12 @@ class CSetupWizard extends CForm {
 		}
 		else {
 			$result = true;
-			if (!zbx_empty($DB['SCHEMA']) && $DB['TYPE'] == TRX_DB_DB2) {
+			if (!trx_empty($DB['SCHEMA']) && $DB['TYPE'] == TRX_DB_DB2) {
 				$db_schema = DBselect('SELECT schemaname FROM syscat.schemata WHERE schemaname=\''.db2_escape_string($DB['SCHEMA']).'\'');
 				$result = DBfetch($db_schema);
 			}
 
-			if (!zbx_empty($DB['SCHEMA']) && $DB['TYPE'] == TRX_DB_POSTGRESQL) {
+			if (!trx_empty($DB['SCHEMA']) && $DB['TYPE'] == TRX_DB_POSTGRESQL) {
 				$db_schema = DBselect('SELECT schema_name FROM information_schema.schemata WHERE schema_name = \''.pg_escape_string($DB['SCHEMA']).'\';');
 				$result = DBfetch($db_schema);
 			}
@@ -467,9 +467,9 @@ class CSetupWizard extends CForm {
 			}
 		}
 		elseif ($this->getStep() == 3) {
-			$this->setConfig('TRX_SERVER', getRequest('zbx_server', $this->getConfig('TRX_SERVER', 'localhost')));
-			$this->setConfig('TRX_SERVER_PORT', getRequest('zbx_server_port', $this->getConfig('TRX_SERVER_PORT', '10051')));
-			$this->setConfig('TRX_SERVER_NAME', getRequest('zbx_server_name', $this->getConfig('TRX_SERVER_NAME', '')));
+			$this->setConfig('TRX_SERVER', getRequest('trx_server', $this->getConfig('TRX_SERVER', 'localhost')));
+			$this->setConfig('TRX_SERVER_PORT', getRequest('trx_server_port', $this->getConfig('TRX_SERVER_PORT', '10051')));
+			$this->setConfig('TRX_SERVER_NAME', getRequest('trx_server_name', $this->getConfig('TRX_SERVER_NAME', '')));
 
 			if (hasRequest('next') && array_key_exists(3, getRequest('next'))) {
 				$this->doNext();

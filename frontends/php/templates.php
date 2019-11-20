@@ -271,10 +271,10 @@ elseif (hasRequest('action') && getRequest('action') === 'template.massupdate' &
 					'hostids' => $templateids
 				]);
 
-				$template_templateids = zbx_objectValues($template_templates, 'templateid');
+				$template_templateids = trx_objectValues($template_templates, 'templateid');
 				$templates_to_delete = array_diff($template_templateids, $linked_templateids);
 
-				$new_values['templates_clear'] = zbx_toObject($templates_to_delete, 'templateid');
+				$new_values['templates_clear'] = trx_toObject($templates_to_delete, 'templateid');
 			}
 
 			$new_values['templates'] = $linked_templateids;
@@ -283,23 +283,23 @@ elseif (hasRequest('action') && getRequest('action') === 'template.massupdate' &
 		foreach ($templates as &$template) {
 			if (array_key_exists('groups', $visible)) {
 				if ($new_groupids && $mass_update_groups == TRX_ACTION_ADD) {
-					$current_groupids = zbx_objectValues($template['groups'], 'groupid');
-					$template['groups'] = zbx_toObject(array_unique(array_merge($current_groupids, $new_groupids)),
+					$current_groupids = trx_objectValues($template['groups'], 'groupid');
+					$template['groups'] = trx_toObject(array_unique(array_merge($current_groupids, $new_groupids)),
 						'groupid'
 					);
 				}
 				elseif ($new_groupids && $mass_update_groups == TRX_ACTION_REPLACE) {
-					$template['groups'] = zbx_toObject($new_groupids, 'groupid');
+					$template['groups'] = trx_toObject($new_groupids, 'groupid');
 				}
 				elseif ($remove_groupids) {
-					$current_groupids = zbx_objectValues($template['groups'], 'groupid');
-					$template['groups'] = zbx_toObject(array_diff($current_groupids, $remove_groupids), 'groupid');
+					$current_groupids = trx_objectValues($template['groups'], 'groupid');
+					$template['groups'] = trx_toObject(array_diff($current_groupids, $remove_groupids), 'groupid');
 				}
 			}
 
 			if ($linked_templateids && array_key_exists('parentTemplates', $template)) {
 				$template['templates'] = array_unique(
-					array_merge($linked_templateids, zbx_objectValues($template['parentTemplates'], 'templateid'))
+					array_merge($linked_templateids, trx_objectValues($template['parentTemplates'], 'templateid'))
 				);
 			}
 
@@ -407,14 +407,14 @@ elseif (hasRequest('add') || hasRequest('update')) {
 		}
 
 		$templatesClear = getRequest('clear_templates', []);
-		$templatesClear = zbx_toObject($templatesClear, 'templateid');
+		$templatesClear = trx_toObject($templatesClear, 'templateid');
 		$templateName = getRequest('template_name', '');
 
 		// create / update template
 		$template = [
 			'host' => $templateName,
 			'name' => getRequest('visiblename', ''),
-			'groups' => zbx_toObject($groups, 'groupid'),
+			'groups' => trx_toObject($groups, 'groupid'),
 			'templates' => $templates,
 			'macros' => getRequest('macros', []),
 			'tags' => $tags,
@@ -468,7 +468,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 			]);
 
 			if ($dbTriggers) {
-				$result &= copyTriggersToHosts(zbx_objectValues($dbTriggers, 'triggerid'),
+				$result &= copyTriggersToHosts(trx_objectValues($dbTriggers, 'triggerid'),
 						$templateId, $cloneTemplateId);
 
 				if (!$result) {
@@ -496,7 +496,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 
 			if ($dbDiscoveryRules) {
 				$result &= API::DiscoveryRule()->copy([
-					'discoveryids' => zbx_objectValues($dbDiscoveryRules, 'itemid'),
+					'discoveryids' => trx_objectValues($dbDiscoveryRules, 'itemid'),
 					'hostids' => [$templateId]
 				]);
 
@@ -515,7 +515,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 
 			if ($dbTemplateScreens) {
 				$result &= API::TemplateScreen()->copy([
-					'screenIds' => zbx_objectValues($dbTemplateScreens, 'screenid'),
+					'screenIds' => trx_objectValues($dbTemplateScreens, 'screenid'),
 					'templateIds' => $templateId
 				]);
 
@@ -546,7 +546,7 @@ elseif (hasRequest('templateid') && hasRequest('delete')) {
 	DBstart();
 
 	$result = API::Template()->massUpdate([
-		'templates' => zbx_toObject($_REQUEST['templateid'], 'templateid'),
+		'templates' => trx_toObject($_REQUEST['templateid'], 'templateid'),
 		'hosts' => []
 	]);
 	if ($result) {
@@ -585,7 +585,7 @@ elseif (hasRequest('templates') && hasRequest('action') && str_in_array(getReque
 
 	if (getRequest('action') === 'template.massdelete') {
 		$result = API::Template()->massUpdate([
-			'templates' => zbx_toObject($templates, 'templateid'),
+			'templates' => trx_toObject($templates, 'templateid'),
 			'hosts' => []
 		]);
 	}
@@ -605,7 +605,7 @@ elseif (hasRequest('templates') && hasRequest('action') && str_in_array(getReque
 			'templateids' => $templates,
 			'editable' => true
 		]);
-		uncheckTableRows(null, zbx_objectValues($templateids, 'templateid'));
+		uncheckTableRows(null, trx_objectValues($templateids, 'templateid'));
 	}
 	show_messages($result, _('Template deleted'), _('Cannot delete template'));
 }
@@ -721,7 +721,7 @@ elseif (hasRequest('form')) {
 
 	if (!hasRequest('form_refresh')) {
 		if ($data['templateid'] != 0) {
-			$groups = zbx_objectValues($data['dbTemplate']['groups'], 'groupid');
+			$groups = trx_objectValues($data['dbTemplate']['groups'], 'groupid');
 		}
 		elseif (getRequest('groupid', 0) != 0) {
 			$groups[] = getRequest('groupid');
@@ -884,7 +884,7 @@ else {
 		'selectScreens' => API_OUTPUT_COUNT,
 		'selectHttpTests' => API_OUTPUT_COUNT,
 		'selectTags' => ['tag', 'value'],
-		'templateids' => zbx_objectValues($templates, 'templateid'),
+		'templateids' => trx_objectValues($templates, 'templateid'),
 		'editable' => true,
 		'preservekeys' => true
 	]);
@@ -899,14 +899,14 @@ else {
 	foreach ($templates as $template) {
 		$linked_template_ids = array_merge(
 			$linked_template_ids,
-			zbx_objectValues($template['parentTemplates'], 'templateid'),
-			zbx_objectValues($template['templates'], 'templateid'),
-			zbx_objectValues($template['hosts'], 'hostid')
+			trx_objectValues($template['parentTemplates'], 'templateid'),
+			trx_objectValues($template['templates'], 'templateid'),
+			trx_objectValues($template['hosts'], 'hostid')
 		);
 
 		$linked_hosts_ids = array_merge(
 			$linked_hosts_ids,
-			zbx_objectValues($template['hosts'], 'hostid')
+			trx_objectValues($template['hosts'], 'hostid')
 		);
 	}
 	if ($linked_template_ids) {

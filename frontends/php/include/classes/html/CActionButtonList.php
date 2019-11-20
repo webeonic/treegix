@@ -112,8 +112,8 @@ class CActionButtonList extends CObject {
 	 * @return string
 	 */
 	public function toString($destroy = true) {
-		zbx_add_post_js('chkbxRange.pageGoName = '.CJs::encodeJson($this->checkboxes_name).';');
-		zbx_add_post_js('chkbxRange.prefix = '.CJs::encodeJson($this->name_prefix).';');
+		trx_add_post_js('chkbxRange.pageGoName = '.CJs::encodeJson($this->checkboxes_name).';');
+		trx_add_post_js('chkbxRange.prefix = '.CJs::encodeJson($this->name_prefix).';');
 
 		$this->items[] = (new CDiv([$this->getSelectedCountElement(), $this->buttons]))
 			->setId('action_buttons')

@@ -581,7 +581,7 @@ function makeFormFooter(CButtonInterface $main_button = null, array $other_butto
 }
 
 /**
- * Returns zbx, snmp, jmx, ipmi availability status icons and the discovered host lifetime indicator.
+ * Returns trx, snmp, jmx, ipmi availability status icons and the discovered host lifetime indicator.
  *
  * @param array $host		an array of host data
  *
@@ -590,7 +590,7 @@ function makeFormFooter(CButtonInterface $main_button = null, array $other_butto
 function getHostAvailabilityTable($host) {
 	$container = (new CDiv())->addClass(TRX_STYLE_STATUS_CONTAINER);
 
-	foreach (['zbx' => '', 'snmp' => 'snmp_', 'jmx' => 'jmx_', 'ipmi' => 'ipmi_'] as $type => $prefix) {
+	foreach (['trx' => '', 'snmp' => 'snmp_', 'jmx' => 'jmx_', 'ipmi' => 'ipmi_'] as $type => $prefix) {
 		switch ($host[$prefix.'available']) {
 			case HOST_AVAILABLE_TRUE:
 				$ai = (new CSpan($type))->addClass(TRX_STYLE_STATUS_GREEN);
@@ -633,9 +633,9 @@ function getHostGroupLifetimeIndicator($current_time, $ts_delete) {
 	else {
 		$warning = _s(
 			'The host group is not discovered anymore and will be deleted in %1$s (on %2$s at %3$s).',
-			zbx_date2age($current_time, $ts_delete),
-			zbx_date2str(DATE_FORMAT, $ts_delete),
-			zbx_date2str(TIME_FORMAT, $ts_delete)
+			trx_date2age($current_time, $ts_delete),
+			trx_date2str(DATE_FORMAT, $ts_delete),
+			trx_date2str(TIME_FORMAT, $ts_delete)
 		);
 	}
 
@@ -660,9 +660,9 @@ function getHostLifetimeIndicator($current_time, $ts_delete) {
 	else {
 		$warning = _s(
 			'The host is not discovered anymore and will be deleted in %1$s (on %2$s at %3$s).',
-			zbx_date2age($current_time, $ts_delete),
-			zbx_date2str(DATE_FORMAT, $ts_delete),
-			zbx_date2str(TIME_FORMAT, $ts_delete)
+			trx_date2age($current_time, $ts_delete),
+			trx_date2str(DATE_FORMAT, $ts_delete),
+			trx_date2str(TIME_FORMAT, $ts_delete)
 		);
 	}
 
@@ -687,9 +687,9 @@ function getApplicationLifetimeIndicator($current_time, $ts_delete) {
 	else {
 		$warning = _s(
 			'The application is not discovered anymore and will be deleted in %1$s (on %2$s at %3$s).',
-			zbx_date2age($current_time, $ts_delete),
-			zbx_date2str(DATE_FORMAT, $ts_delete),
-			zbx_date2str(TIME_FORMAT, $ts_delete)
+			trx_date2age($current_time, $ts_delete),
+			trx_date2str(DATE_FORMAT, $ts_delete),
+			trx_date2str(TIME_FORMAT, $ts_delete)
 		);
 	}
 
@@ -714,9 +714,9 @@ function getItemLifetimeIndicator($current_time, $ts_delete) {
 	else {
 		$warning = _s(
 			'The item is not discovered anymore and will be deleted in %1$s (on %2$s at %3$s).',
-			zbx_date2age($current_time, $ts_delete),
-			zbx_date2str(DATE_FORMAT, $ts_delete),
-			zbx_date2str(TIME_FORMAT, $ts_delete)
+			trx_date2age($current_time, $ts_delete),
+			trx_date2str(DATE_FORMAT, $ts_delete),
+			trx_date2str(TIME_FORMAT, $ts_delete)
 		);
 	}
 
@@ -811,18 +811,18 @@ function makeMaintenanceIcon($type, $name, $description) {
  * @return CSpan
  */
 function makeSuppressedProblemIcon(array $icon_data) {
-	$suppress_until = max(zbx_objectValues($icon_data, 'suppress_until'));
+	$suppress_until = max(trx_objectValues($icon_data, 'suppress_until'));
 
 	CArrayHelper::sort($icon_data, ['maintenance_name']);
-	$maintenance_names = implode(', ', zbx_objectValues($icon_data, 'maintenance_name'));
+	$maintenance_names = implode(', ', trx_objectValues($icon_data, 'maintenance_name'));
 
 	return (new CSpan())
 		->addClass(TRX_STYLE_ICON_INVISIBLE)
 		->addClass(TRX_STYLE_CURSOR_POINTER)
 		->setHint(
 			_s('Suppressed till: %1$s', ($suppress_until < strtotime('tomorrow'))
-				? zbx_date2str(TIME_FORMAT, $suppress_until)
-				: zbx_date2str(DATE_TIME_FORMAT, $suppress_until)
+				? trx_date2str(TIME_FORMAT, $suppress_until)
+				: trx_date2str(DATE_TIME_FORMAT, $suppress_until)
 			).
 			"\n".
 			_s('Maintenance: %1$s', $maintenance_names)
@@ -878,7 +878,7 @@ function makeDescriptionIcon($description) {
 	return (new CSpan())
 		->addClass(TRX_STYLE_ICON_DESCRIPTION)
 		->addClass(TRX_STYLE_CURSOR_POINTER)
-		->setHint(zbx_str2links($description), '', true, 'max-width: '.TRX_ACTIONS_POPUP_MAX_WIDTH.'px;');
+		->setHint(trx_str2links($description), '', true, 'max-width: '.TRX_ACTIONS_POPUP_MAX_WIDTH.'px;');
 }
 
 /**
@@ -936,7 +936,7 @@ function makeDebugButton() {
 				"jQuery(this)".
 					".text(this.state == 'none' ? ".CJs::encodeJson(_('Debug'))." : ".CJs::encodeJson(_('Hide debug')).")".
 					".blur();".
-				"showHideByName('zbx_debug_info', this.state);"
+				"showHideByName('trx_debug_info', this.state);"
 			)
 	))->addClass(TRX_STYLE_BTN_DEBUG);
 }

@@ -25,7 +25,7 @@ extern unsigned char	program_type;
 extern int	get_process_info_by_thread(int local_server_num, unsigned char *local_process_type,
 		int *local_process_num);
 
-static void	(*zbx_sigusr_handler)(int flags);
+static void	(*trx_sigusr_handler)(int flags);
 
 #ifdef HAVE_SIGQUEUE
 /******************************************************************************
@@ -64,13 +64,13 @@ static void	common_sigusr_handler(int flags)
 			}
 			break;
 		default:
-			if (NULL != zbx_sigusr_handler)
-				zbx_sigusr_handler(flags);
+			if (NULL != trx_sigusr_handler)
+				trx_sigusr_handler(flags);
 			break;
 	}
 }
 
-static void	zbx_signal_process_by_type(int proc_type, int proc_num, int flags)
+static void	trx_signal_process_by_type(int proc_type, int proc_num, int flags)
 {
 	int		process_num, found = 0, i;
 	union sigval	s;
@@ -103,7 +103,7 @@ static void	zbx_signal_process_by_type(int proc_type, int proc_num, int flags)
 					" pid:%d", get_process_type_string(process_type), threads[i]);
 		}
 		else
-			treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: %s", trx_strerror(errno));
 	}
 
 	if (0 == found)
@@ -123,7 +123,7 @@ static void	zbx_signal_process_by_type(int proc_type, int proc_num, int flags)
 	}
 }
 
-static void	zbx_signal_process_by_pid(int pid, int flags)
+static void	trx_signal_process_by_pid(int pid, int flags)
 {
 	union sigval	s;
 	int		i, found = 0;
@@ -143,7 +143,7 @@ static void	zbx_signal_process_by_pid(int pid, int flags)
 					threads[i]);
 		}
 		else
-			treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_ERR, "cannot redirect signal: %s", trx_strerror(errno));
 	}
 
 	if (0 != TRX_RTC_GET_DATA(flags) && 0 == found)
@@ -155,9 +155,9 @@ static void	zbx_signal_process_by_pid(int pid, int flags)
 
 #endif
 
-void	zbx_set_sigusr_handler(void (*handler)(int flags))
+void	trx_set_sigusr_handler(void (*handler)(int flags))
 {
-	zbx_sigusr_handler = handler;
+	trx_sigusr_handler = handler;
 }
 
 /******************************************************************************
@@ -205,17 +205,17 @@ static void	user1_signal_handler(int sig, siginfo_t *siginfo, void *context)
 				return;
 			}
 
-			zbx_signal_process_by_type(TRX_PROCESS_TYPE_CONFSYNCER, 1, flags);
+			trx_signal_process_by_type(TRX_PROCESS_TYPE_CONFSYNCER, 1, flags);
 			break;
 		case TRX_RTC_HOUSEKEEPER_EXECUTE:
-			zbx_signal_process_by_type(TRX_PROCESS_TYPE_HOUSEKEEPER, 1, flags);
+			trx_signal_process_by_type(TRX_PROCESS_TYPE_HOUSEKEEPER, 1, flags);
 			break;
 		case TRX_RTC_LOG_LEVEL_INCREASE:
 		case TRX_RTC_LOG_LEVEL_DECREASE:
 			if ((TRX_RTC_LOG_SCOPE_FLAG | TRX_RTC_LOG_SCOPE_PID) == TRX_RTC_GET_SCOPE(flags))
-				zbx_signal_process_by_pid(TRX_RTC_GET_DATA(flags), flags);
+				trx_signal_process_by_pid(TRX_RTC_GET_DATA(flags), flags);
 			else
-				zbx_signal_process_by_type(TRX_RTC_GET_SCOPE(flags), TRX_RTC_GET_DATA(flags), flags);
+				trx_signal_process_by_type(TRX_RTC_GET_SCOPE(flags), TRX_RTC_GET_DATA(flags), flags);
 			break;
 	}
 #endif
@@ -290,42 +290,42 @@ int	daemon_start(int allow_root, const char *user, unsigned int flags)
 
 		if (NULL == pwd)
 		{
-			zbx_error("user %s does not exist", user);
-			zbx_error("cannot run as root!");
+			trx_error("user %s does not exist", user);
+			trx_error("cannot run as root!");
 			exit(EXIT_FAILURE);
 		}
 
 		if (0 == pwd->pw_uid)
 		{
-			zbx_error("User=%s contradicts AllowRoot=0", user);
-			zbx_error("cannot run as root!");
+			trx_error("User=%s contradicts AllowRoot=0", user);
+			trx_error("cannot run as root!");
 			exit(EXIT_FAILURE);
 		}
 
 		if (-1 == setgid(pwd->pw_gid))
 		{
-			zbx_error("cannot setgid to %s: %s", user, zbx_strerror(errno));
+			trx_error("cannot setgid to %s: %s", user, trx_strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 
 #ifdef HAVE_FUNCTION_INITGROUPS
 		if (-1 == initgroups(user, pwd->pw_gid))
 		{
-			zbx_error("cannot initgroups to %s: %s", user, zbx_strerror(errno));
+			trx_error("cannot initgroups to %s: %s", user, trx_strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 #endif
 
 		if (-1 == setuid(pwd->pw_uid))
 		{
-			zbx_error("cannot setuid to %s: %s", user, zbx_strerror(errno));
+			trx_error("cannot setuid to %s: %s", user, trx_strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 
 #ifdef HAVE_FUNCTION_SETEUID
 		if (-1 == setegid(pwd->pw_gid) || -1 == seteuid(pwd->pw_uid))
 		{
-			zbx_error("cannot setegid or seteuid to %s: %s", user, zbx_strerror(errno));
+			trx_error("cannot setegid or seteuid to %s: %s", user, trx_strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 #endif
@@ -335,20 +335,20 @@ int	daemon_start(int allow_root, const char *user, unsigned int flags)
 
 	if (0 == (flags & TRX_TASK_FLAG_FOREGROUND))
 	{
-		if (0 != (pid = zbx_fork()))
+		if (0 != (pid = trx_fork()))
 			exit(EXIT_SUCCESS);
 
 		setsid();
 
 		signal(SIGHUP, SIG_IGN);
 
-		if (0 != (pid = zbx_fork()))
+		if (0 != (pid = trx_fork()))
 			exit(EXIT_SUCCESS);
 
 		if (-1 == chdir("/"))	/* this is to eliminate warning: ignoring return value of chdir */
 			assert(0);
 
-		if (FAIL == zbx_redirect_stdio(LOG_TYPE_FILE == CONFIG_LOG_TYPE ? CONFIG_LOG_FILE : NULL))
+		if (FAIL == trx_redirect_stdio(LOG_TYPE_FILE == CONFIG_LOG_TYPE ? CONFIG_LOG_FILE : NULL))
 			exit(EXIT_FAILURE);
 	}
 
@@ -359,13 +359,13 @@ int	daemon_start(int allow_root, const char *user, unsigned int flags)
 
 	parent_pid = (int)getpid();
 
-	zbx_set_common_signal_handlers();
+	trx_set_common_signal_handlers();
 	set_daemon_signal_handlers();
 
 	/* Set SIGCHLD now to avoid race conditions when a child process is created before */
-	/* sigaction() is called. To avoid problems when scripts exit in zbx_execute() and */
-	/* other cases, SIGCHLD is set to SIG_DFL in zbx_child_fork(). */
-	zbx_set_child_signal_handler();
+	/* sigaction() is called. To avoid problems when scripts exit in trx_execute() and */
+	/* other cases, SIGCHLD is set to SIG_DFL in trx_child_fork(). */
+	trx_set_child_signal_handler();
 
 	return MAIN_TREEGIX_ENTRY(flags);
 }
@@ -381,7 +381,7 @@ void	daemon_stop(void)
 	drop_pid_file(CONFIG_PID_FILE);
 }
 
-int	zbx_sigusr_send(int flags)
+int	trx_sigusr_send(int flags)
 {
 	int	ret = FAIL;
 	char	error[256];
@@ -396,20 +396,20 @@ int	zbx_sigusr_send(int flags)
 
 		if (-1 != sigqueue(pid, SIGUSR1, s))
 		{
-			zbx_error("command sent successfully");
+			trx_error("command sent successfully");
 			ret = SUCCEED;
 		}
 		else
 		{
-			zbx_snprintf(error, sizeof(error), "cannot send command to PID [%d]: %s",
-					(int)pid, zbx_strerror(errno));
+			trx_snprintf(error, sizeof(error), "cannot send command to PID [%d]: %s",
+					(int)pid, trx_strerror(errno));
 		}
 	}
 #else
-	zbx_snprintf(error, sizeof(error), "operation is not supported on the given operating system");
+	trx_snprintf(error, sizeof(error), "operation is not supported on the given operating system");
 #endif
 	if (SUCCEED != ret)
-		zbx_error("%s", error);
+		trx_error("%s", error);
 
 	return ret;
 }

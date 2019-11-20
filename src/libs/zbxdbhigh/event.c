@@ -7,7 +7,7 @@
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_events_by_eventids                                       *
+ * Function: trx_get_events_by_eventids                                       *
  *                                                                            *
  * Purpose: get events and flags that indicate what was filled in DB_EVENT    *
  *          structure                                                         *
@@ -18,29 +18,29 @@
  * Comments: use 'free_db_event' function to release allocated memory         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr_t *events)
+void	trx_db_get_events_by_eventids(trx_vector_uint64_t *eventids, trx_vector_ptr_t *events)
 {
 	DB_RESULT		result;
 	DB_ROW			row;
 	char			*sql = NULL;
 	size_t			sql_alloc = 0, sql_offset = 0;
-	zbx_vector_uint64_t	trigger_eventids, triggerids;
+	trx_vector_uint64_t	trigger_eventids, triggerids;
 	int			i, index;
 
-	zbx_vector_uint64_create(&trigger_eventids);
-	zbx_vector_uint64_create(&triggerids);
+	trx_vector_uint64_create(&trigger_eventids);
+	trx_vector_uint64_create(&triggerids);
 
-	zbx_vector_uint64_sort(eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_uniq(eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	/* read event data */
 
-	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
 			"select eventid,source,object,objectid,clock,value,acknowledged,ns,name,severity"
 			" from events"
 			" where");
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "eventid", eventids->values, eventids->values_num);
-	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by eventid");
+	trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by eventid");
 
 	result = DBselect("%s", sql);
 
@@ -48,7 +48,7 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 	{
 		DB_EVENT	*event = NULL;
 
-		event = (DB_EVENT *)zbx_malloc(event, sizeof(DB_EVENT));
+		event = (DB_EVENT *)trx_malloc(event, sizeof(DB_EVENT));
 		TRX_STR2UINT64(event->eventid, row[0]);
 		event->source = atoi(row[1]);
 		event->object = atoi(row[2]);
@@ -57,7 +57,7 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 		event->value = atoi(row[5]);
 		event->acknowledged = atoi(row[6]);
 		event->ns = atoi(row[7]);
-		event->name = zbx_strdup(NULL, row[8]);
+		event->name = trx_strdup(NULL, row[8]);
 		event->severity = atoi(row[9]);
 		event->suppressed = TRX_PROBLEM_SUPPRESSED_FALSE;
 
@@ -65,21 +65,21 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 
 		if (EVENT_SOURCE_TRIGGERS == event->source)
 		{
-			zbx_vector_ptr_create(&event->tags);
-			zbx_vector_uint64_append(&trigger_eventids, event->eventid);
+			trx_vector_ptr_create(&event->tags);
+			trx_vector_uint64_append(&trigger_eventids, event->eventid);
 		}
 
 		if (EVENT_OBJECT_TRIGGER == event->object)
-			zbx_vector_uint64_append(&triggerids, event->objectid);
+			trx_vector_uint64_append(&triggerids, event->objectid);
 
-		zbx_vector_ptr_append(events, event);
+		trx_vector_ptr_append(events, event);
 	}
 	DBfree_result(result);
 
 	/* read event_suppress data */
 
 	sql_offset = 0;
-	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "select distinct eventid from event_suppress where");
+	trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "select distinct eventid from event_suppress where");
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "eventid", eventids->values, eventids->values_num);
 
 	result = DBselect("%s", sql);
@@ -87,10 +87,10 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 	while (NULL != (row = DBfetch(result)))
 	{
 		DB_EVENT	*event;
-		zbx_uint64_t	eventid;
+		trx_uint64_t	eventid;
 
 		TRX_STR2UINT64(eventid, row[0]);
-		if (FAIL == (index = zbx_vector_ptr_bsearch(events, &eventid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+		if (FAIL == (index = trx_vector_ptr_bsearch(events, &eventid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
@@ -113,14 +113,14 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 
 		while (NULL != (row = DBfetch(result)))
 		{
-			zbx_uint64_t	eventid;
-			zbx_tag_t	*tag;
+			trx_uint64_t	eventid;
+			trx_tag_t	*tag;
 
 			TRX_STR2UINT64(eventid, row[0]);
 
 			if (NULL == event || eventid != event->eventid)
 			{
-				if (FAIL == (index = zbx_vector_ptr_bsearch(events, &eventid,
+				if (FAIL == (index = trx_vector_ptr_bsearch(events, &eventid,
 						TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 				{
 					THIS_SHOULD_NEVER_HAPPEN;
@@ -130,18 +130,18 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 				event = (DB_EVENT *)events->values[index];
 			}
 
-			tag = (zbx_tag_t *)zbx_malloc(NULL, sizeof(zbx_tag_t));
-			tag->tag = zbx_strdup(NULL, row[1]);
-			tag->value = zbx_strdup(NULL, row[2]);
-			zbx_vector_ptr_append(&event->tags, tag);
+			tag = (trx_tag_t *)trx_malloc(NULL, sizeof(trx_tag_t));
+			tag->tag = trx_strdup(NULL, row[1]);
+			tag->value = trx_strdup(NULL, row[2]);
+			trx_vector_ptr_append(&event->tags, tag);
 		}
 		DBfree_result(result);
 	}
 
 	if (0 != triggerids.values_num)	/* EVENT_OBJECT_TRIGGER */
 	{
-		zbx_vector_uint64_sort(&triggerids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&triggerids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_sort(&triggerids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_uniq(&triggerids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		sql_offset = 0;
 		DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "triggerid", triggerids.values,
@@ -156,7 +156,7 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 
 		while (NULL != (row = DBfetch(result)))
 		{
-			zbx_uint64_t	triggerid;
+			trx_uint64_t	triggerid;
 
 			TRX_STR2UINT64(triggerid, row[0]);
 
@@ -170,68 +170,68 @@ void	zbx_db_get_events_by_eventids(zbx_vector_uint64_t *eventids, zbx_vector_ptr
 				if (triggerid == event->objectid)
 				{
 					event->trigger.triggerid = triggerid;
-					event->trigger.description = zbx_strdup(NULL, row[1]);
-					event->trigger.expression = zbx_strdup(NULL, row[2]);
+					event->trigger.description = trx_strdup(NULL, row[1]);
+					event->trigger.expression = trx_strdup(NULL, row[2]);
 					TRX_STR2UCHAR(event->trigger.priority, row[3]);
-					event->trigger.comments = zbx_strdup(NULL, row[4]);
-					event->trigger.url = zbx_strdup(NULL, row[5]);
-					event->trigger.recovery_expression = zbx_strdup(NULL, row[6]);
+					event->trigger.comments = trx_strdup(NULL, row[4]);
+					event->trigger.url = trx_strdup(NULL, row[5]);
+					event->trigger.recovery_expression = trx_strdup(NULL, row[6]);
 					TRX_STR2UCHAR(event->trigger.recovery_mode, row[7]);
 					TRX_STR2UCHAR(event->trigger.value, row[8]);
-					event->trigger.opdata = zbx_strdup(NULL, row[9]);
+					event->trigger.opdata = trx_strdup(NULL, row[9]);
 				}
 			}
 		}
 		DBfree_result(result);
 	}
 
-	zbx_free(sql);
+	trx_free(sql);
 
-	zbx_vector_uint64_destroy(&trigger_eventids);
-	zbx_vector_uint64_destroy(&triggerids);
+	trx_vector_uint64_destroy(&trigger_eventids);
+	trx_vector_uint64_destroy(&triggerids);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_trigger_clean                                             *
+ * Function: trx_db_trigger_clean                                             *
  *                                                                            *
  * Purpose: frees resources allocated to store trigger data                   *
  *                                                                            *
  * Parameters: trigger -                                                      *
  *                                                                            *
  ******************************************************************************/
-void	zbx_db_trigger_clean(DB_TRIGGER *trigger)
+void	trx_db_trigger_clean(DB_TRIGGER *trigger)
 {
-	zbx_free(trigger->description);
-	zbx_free(trigger->expression);
-	zbx_free(trigger->recovery_expression);
-	zbx_free(trigger->comments);
-	zbx_free(trigger->url);
-	zbx_free(trigger->opdata);
+	trx_free(trigger->description);
+	trx_free(trigger->expression);
+	trx_free(trigger->recovery_expression);
+	trx_free(trigger->comments);
+	trx_free(trigger->url);
+	trx_free(trigger->opdata);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_free_event                                                   *
+ * Function: trx_free_event                                                   *
  *                                                                            *
  * Purpose: deallocate memory allocated in function 'get_db_events_info'      *
  *                                                                            *
  * Parameters: event - [IN] event data                                        *
  *                                                                            *
  ******************************************************************************/
-void	zbx_db_free_event(DB_EVENT *event)
+void	trx_db_free_event(DB_EVENT *event)
 {
 	if (EVENT_SOURCE_TRIGGERS == event->source)
 	{
-		zbx_vector_ptr_clear_ext(&event->tags, (zbx_clean_func_t)zbx_free_tag);
-		zbx_vector_ptr_destroy(&event->tags);
+		trx_vector_ptr_clear_ext(&event->tags, (trx_clean_func_t)trx_free_tag);
+		trx_vector_ptr_destroy(&event->tags);
 	}
 
 	if (0 != event->trigger.triggerid)
-		zbx_db_trigger_clean(&event->trigger);
+		trx_db_trigger_clean(&event->trigger);
 
-	zbx_free(event->name);
-	zbx_free(event);
+	trx_free(event->name);
+	trx_free(event);
 }
 
 /******************************************************************************
@@ -247,8 +247,8 @@ void	zbx_db_free_event(DB_EVENT *event)
  *             r_eventids  - [OUT] array of recovery event IDs                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_db_get_eventid_r_eventid_pairs(zbx_vector_uint64_t *eventids, zbx_vector_uint64_pair_t *event_pairs,
-		zbx_vector_uint64_t *r_eventids)
+void	trx_db_get_eventid_r_eventid_pairs(trx_vector_uint64_t *eventids, trx_vector_uint64_pair_t *event_pairs,
+		trx_vector_uint64_t *r_eventids)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
@@ -265,15 +265,15 @@ void	zbx_db_get_eventid_r_eventid_pairs(zbx_vector_uint64_t *eventids, zbx_vecto
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_uint64_pair_t	r_event;
+		trx_uint64_pair_t	r_event;
 
 		TRX_STR2UINT64(r_event.first, row[0]);
 		TRX_STR2UINT64(r_event.second, row[1]);
 
-		zbx_vector_uint64_pair_append(event_pairs, r_event);
-		zbx_vector_uint64_append(r_eventids, r_event.second);
+		trx_vector_uint64_pair_append(event_pairs, r_event);
+		trx_vector_uint64_append(r_eventids, r_event.second);
 	}
 	DBfree_result(result);
 
-	zbx_free(filter);
+	trx_free(filter);
 }

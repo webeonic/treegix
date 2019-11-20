@@ -2,9 +2,9 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxlld.h"
+#include "trxlld.h"
 
-void	zbx_lld_process_agent_result(zbx_uint64_t itemid, AGENT_RESULT *result, zbx_timespec_t *ts, char *error)
+void	trx_lld_process_agent_result(trx_uint64_t itemid, AGENT_RESULT *result, trx_timespec_t *ts, char *error)
 {
 	TRX_UNUSED(itemid);
 	TRX_UNUSED(result);

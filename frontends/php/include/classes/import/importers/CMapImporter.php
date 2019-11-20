@@ -10,7 +10,7 @@ class CMapImporter extends CImporter {
 	 * @param array $maps
 	 */
 	public function import(array $maps) {
-		$maps = zbx_toHash($maps, 'name');
+		$maps = trx_toHash($maps, 'name');
 
 		$maps = $this->resolveMapElementReferences($maps);
 

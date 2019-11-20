@@ -76,7 +76,7 @@ jQuery(function ($) {
 		}
 	};
 
-	$.fn.zbx_vertical_accordion = function(method) {
+	$.fn.trx_vertical_accordion = function(method) {
 		if (methods[method]) {
 			return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
 		}

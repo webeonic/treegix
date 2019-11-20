@@ -33,11 +33,11 @@ foreach ($data['alerts'] as $alert) {
 	}
 
 	$table->addRow([
-		zbx_date2str(DATE_TIME_FORMAT_SECONDS, $alert['clock']),
+		trx_date2str(DATE_TIME_FORMAT_SECONDS, $alert['clock']),
 		array_key_exists($alert['actionid'], $data['actions']) ? $data['actions'][$alert['actionid']]['name'] : '',
 		$alert['description'],
 		makeEventDetailsTableUser($alert, $data['db_users']),
-		[bold($alert['subject']), BR(), BR(), zbx_nl2br($alert['message'])],
+		[bold($alert['subject']), BR(), BR(), trx_nl2br($alert['message'])],
 		makeActionTableStatus($alert),
 		makeInformationList($info_icons)
 	]);

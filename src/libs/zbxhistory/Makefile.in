@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxhistory
+subdir = src/libs/trxhistory
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,11 +117,11 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxhistory_a_AR = $(AR) $(ARFLAGS)
-libzbxhistory_a_LIBADD =
-am_libzbxhistory_a_OBJECTS = history.$(OBJEXT) history_sql.$(OBJEXT) \
+libtrxhistory_a_AR = $(AR) $(ARFLAGS)
+libtrxhistory_a_LIBADD =
+am_libtrxhistory_a_OBJECTS = history.$(OBJEXT) history_sql.$(OBJEXT) \
 	history_elastic.$(OBJEXT)
-libzbxhistory_a_OBJECTS = $(am_libzbxhistory_a_OBJECTS)
+libtrxhistory_a_OBJECTS = $(am_libtrxhistory_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -150,8 +150,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxhistory_a_SOURCES)
-DIST_SOURCES = $(libzbxhistory_a_SOURCES)
+SOURCES = $(libtrxhistory_a_SOURCES)
+DIST_SOURCES = $(libtrxhistory_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -375,8 +375,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxhistory.a
-libzbxhistory_a_SOURCES = \
+noinst_LIBRARIES = libtrxhistory.a
+libtrxhistory_a_SOURCES = \
 	history.c history.h \
 	history_sql.c \
 	history_elastic.c 
@@ -394,9 +394,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxhistory/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxhistory/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxhistory/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxhistory/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -418,10 +418,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxhistory.a: $(libzbxhistory_a_OBJECTS) $(libzbxhistory_a_DEPENDENCIES) $(EXTRA_libzbxhistory_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxhistory.a
-	$(AM_V_AR)$(libzbxhistory_a_AR) libzbxhistory.a $(libzbxhistory_a_OBJECTS) $(libzbxhistory_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxhistory.a
+libtrxhistory.a: $(libtrxhistory_a_OBJECTS) $(libtrxhistory_a_DEPENDENCIES) $(EXTRA_libtrxhistory_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxhistory.a
+	$(AM_V_AR)$(libtrxhistory_a_AR) libtrxhistory.a $(libtrxhistory_a_OBJECTS) $(libtrxhistory_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxhistory.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

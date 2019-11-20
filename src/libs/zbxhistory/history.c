@@ -2,22 +2,22 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxalgo.h"
-#include "zbxhistory.h"
+#include "trxalgo.h"
+#include "trxhistory.h"
 #include "history.h"
 
-#include "../zbxalgo/vectorimpl.h"
+#include "../trxalgo/vectorimpl.h"
 
-TRX_VECTOR_IMPL(history_record, zbx_history_record_t)
+TRX_VECTOR_IMPL(history_record, trx_history_record_t)
 
 extern char	*CONFIG_HISTORY_STORAGE_URL;
 extern char	*CONFIG_HISTORY_STORAGE_OPTS;
 
-zbx_history_iface_t	history_ifaces[ITEM_VALUE_TYPE_MAX];
+trx_history_iface_t	history_ifaces[ITEM_VALUE_TYPE_MAX];
 
 /************************************************************************************
  *                                                                                  *
- * Function: zbx_history_init                                                       *
+ * Function: trx_history_init                                                       *
  *                                                                                  *
  * Purpose: initializes history storage                                             *
  *                                                                                  *
@@ -26,7 +26,7 @@ zbx_history_iface_t	history_ifaces[ITEM_VALUE_TYPE_MAX];
  *           backend.                                                               *
  *                                                                                  *
  ************************************************************************************/
-int	zbx_history_init(char **error)
+int	trx_history_init(char **error)
 {
 	int		i, ret;
 
@@ -37,9 +37,9 @@ int	zbx_history_init(char **error)
 	for (i = 0; i < ITEM_VALUE_TYPE_MAX; i++)
 	{
 		if (NULL == CONFIG_HISTORY_STORAGE_URL || NULL == strstr(CONFIG_HISTORY_STORAGE_OPTS, opts[i]))
-			ret = zbx_history_sql_init(&history_ifaces[i], i, error);
+			ret = trx_history_sql_init(&history_ifaces[i], i, error);
 		else
-			ret = zbx_history_elastic_init(&history_ifaces[i], i, error);
+			ret = trx_history_elastic_init(&history_ifaces[i], i, error);
 
 		if (FAIL == ret)
 			return FAIL;
@@ -50,21 +50,21 @@ int	zbx_history_init(char **error)
 
 /************************************************************************************
  *                                                                                  *
- * Function: zbx_history_destroy                                                    *
+ * Function: trx_history_destroy                                                    *
  *                                                                                  *
  * Purpose: destroys history storage                                                *
  *                                                                                  *
- * Comments: All interfaces created by zbx_history_init() function are destroyed    *
+ * Comments: All interfaces created by trx_history_init() function are destroyed    *
  *           here.                                                                  *
  *                                                                                  *
  ************************************************************************************/
-void	zbx_history_destroy(void)
+void	trx_history_destroy(void)
 {
 	int	i;
 
 	for (i = 0; i < ITEM_VALUE_TYPE_MAX; i++)
 	{
-		zbx_history_iface_t	*writer = &history_ifaces[i];
+		trx_history_iface_t	*writer = &history_ifaces[i];
 
 		writer->destroy(writer);
 	}
@@ -72,7 +72,7 @@ void	zbx_history_destroy(void)
 
 /************************************************************************************
  *                                                                                  *
- * Function: zbx_history_add_values                                                 *
+ * Function: trx_history_add_values                                                 *
  *                                                                                  *
  * Purpose: Sends values to the history storage                                     *
  *                                                                                  *
@@ -81,7 +81,7 @@ void	zbx_history_destroy(void)
  * Comments: add history values to the configured storage backends                  *
  *                                                                                  *
  ************************************************************************************/
-int	zbx_history_add_values(const zbx_vector_ptr_t *history)
+int	trx_history_add_values(const trx_vector_ptr_t *history)
 {
 	int	i, flags = 0, ret = SUCCEED;
 
@@ -89,7 +89,7 @@ int	zbx_history_add_values(const zbx_vector_ptr_t *history)
 
 	for (i = 0; i < ITEM_VALUE_TYPE_MAX; i++)
 	{
-		zbx_history_iface_t	*writer = &history_ifaces[i];
+		trx_history_iface_t	*writer = &history_ifaces[i];
 
 		if (0 < writer->add_values(writer, history))
 			flags |= (1 << i);
@@ -97,7 +97,7 @@ int	zbx_history_add_values(const zbx_vector_ptr_t *history)
 
 	for (i = 0; i < ITEM_VALUE_TYPE_MAX; i++)
 	{
-		zbx_history_iface_t	*writer = &history_ifaces[i];
+		trx_history_iface_t	*writer = &history_ifaces[i];
 
 		if (0 != (flags & (1 << i)))
 			ret = writer->flush(writer);
@@ -110,7 +110,7 @@ int	zbx_history_add_values(const zbx_vector_ptr_t *history)
 
 /************************************************************************************
  *                                                                                  *
- * Function: zbx_history_get_values                                                 *
+ * Function: trx_history_get_values                                                 *
  *                                                                                  *
  * Purpose: gets item values from history storage                                   *
  *                                                                                  *
@@ -128,11 +128,11 @@ int	zbx_history_add_values(const zbx_vector_ptr_t *history)
  *           all values from the specified interval if count is zero.               *
  *                                                                                  *
  ************************************************************************************/
-int	zbx_history_get_values(zbx_uint64_t itemid, int value_type, int start, int count, int end,
-		zbx_vector_history_record_t *values)
+int	trx_history_get_values(trx_uint64_t itemid, int value_type, int start, int count, int end,
+		trx_vector_history_record_t *values)
 {
 	int			ret, pos;
-	zbx_history_iface_t	*writer = &history_ifaces[value_type];
+	trx_history_iface_t	*writer = &history_ifaces[value_type];
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid:" TRX_FS_UI64 " value_type:%d start:%d count:%d end:%d",
 			__func__, itemid, value_type, start, count, end);
@@ -147,14 +147,14 @@ int	zbx_history_get_values(zbx_uint64_t itemid, int value_type, int start, int c
 
 		for (i = pos; i < values->values_num; i++)
 		{
-			zbx_history_record_t	*h = &values->values[i];
+			trx_history_record_t	*h = &values->values[i];
 
-			zbx_history_value2str(buffer, sizeof(buffer), &h->value, value_type);
+			trx_history_value2str(buffer, sizeof(buffer), &h->value, value_type);
 			treegix_log(LOG_LEVEL_TRACE, "  %d.%09d %s", h->timestamp.sec, h->timestamp.ns, buffer);
 		}
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s values:%d", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s values:%d", __func__, trx_result_string(ret),
 			values->values_num - pos);
 
 	return ret;
@@ -162,7 +162,7 @@ int	zbx_history_get_values(zbx_uint64_t itemid, int value_type, int start, int c
 
 /************************************************************************************
  *                                                                                  *
- * Function: zbx_history_requires_trends                                            *
+ * Function: trx_history_requires_trends                                            *
  *                                                                                  *
  * Purpose: checks if the value type requires trends data calculations              *
  *                                                                                  *
@@ -175,9 +175,9 @@ int	zbx_history_get_values(zbx_uint64_t itemid, int value_type, int start, int c
  *           the specified value type based on the history storage used.            *
  *                                                                                  *
  ************************************************************************************/
-int	zbx_history_requires_trends(int value_type)
+int	trx_history_requires_trends(int value_type)
 {
-	zbx_history_iface_t	*writer = &history_ifaces[value_type];
+	trx_history_iface_t	*writer = &history_ifaces[value_type];
 
 	return 0 != writer->requires_trends ? SUCCEED : FAIL;
 }
@@ -191,37 +191,37 @@ int	zbx_history_requires_trends(int value_type)
  * Parameters: log   - [IN] the history log to free                           *
  *                                                                            *
  ******************************************************************************/
-static void	history_logfree(zbx_log_value_t *log)
+static void	history_logfree(trx_log_value_t *log)
 {
-	zbx_free(log->source);
-	zbx_free(log->value);
-	zbx_free(log);
+	trx_free(log->source);
+	trx_free(log->value);
+	trx_free(log);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_history_record_vector_destroy                                *
+ * Function: trx_history_record_vector_destroy                                *
  *                                                                            *
  * Purpose: destroys value vector and frees resources allocated for it        *
  *                                                                            *
  * Parameters: vector    - [IN] the value vector                              *
  *                                                                            *
  * Comments: Use this function to destroy value vectors created by            *
- *           zbx_vc_get_values_by_* functions.                                *
+ *           trx_vc_get_values_by_* functions.                                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_history_record_vector_destroy(zbx_vector_history_record_t *vector, int value_type)
+void	trx_history_record_vector_destroy(trx_vector_history_record_t *vector, int value_type)
 {
 	if (NULL != vector->values)
 	{
-		zbx_history_record_vector_clean(vector, value_type);
-		zbx_vector_history_record_destroy(vector);
+		trx_history_record_vector_clean(vector, value_type);
+		trx_vector_history_record_destroy(vector);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_history_record_clear                                         *
+ * Function: trx_history_record_clear                                         *
  *                                                                            *
  * Purpose: frees resources allocated by a cached value                       *
  *                                                                            *
@@ -229,13 +229,13 @@ void	zbx_history_record_vector_destroy(zbx_vector_history_record_t *vector, int 
  *             value_type - [IN] the history value type                       *
  *                                                                            *
  ******************************************************************************/
-void	zbx_history_record_clear(zbx_history_record_t *value, int value_type)
+void	trx_history_record_clear(trx_history_record_t *value, int value_type)
 {
 	switch (value_type)
 	{
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:
-			zbx_free(value->value.str);
+			trx_free(value->value.str);
 			break;
 		case ITEM_VALUE_TYPE_LOG:
 			history_logfree(value->value.log);
@@ -244,7 +244,7 @@ void	zbx_history_record_clear(zbx_history_record_t *value, int value_type)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_history_value2str                                            *
+ * Function: trx_history_value2str                                            *
  *                                                                            *
  * Purpose: converts history value to string format                           *
  *                                                                            *
@@ -254,28 +254,28 @@ void	zbx_history_record_clear(zbx_history_record_t *value, int value_type)
  *             value_type - [IN] the history value type                       *
  *                                                                            *
  ******************************************************************************/
-void	zbx_history_value2str(char *buffer, size_t size, const history_value_t *value, int value_type)
+void	trx_history_value2str(char *buffer, size_t size, const history_value_t *value, int value_type)
 {
 	switch (value_type)
 	{
 		case ITEM_VALUE_TYPE_FLOAT:
-			zbx_snprintf(buffer, size, TRX_FS_DBL, value->dbl);
+			trx_snprintf(buffer, size, TRX_FS_DBL, value->dbl);
 			break;
 		case ITEM_VALUE_TYPE_UINT64:
-			zbx_snprintf(buffer, size, TRX_FS_UI64, value->ui64);
+			trx_snprintf(buffer, size, TRX_FS_UI64, value->ui64);
 			break;
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:
-			zbx_strlcpy_utf8(buffer, value->str, size);
+			trx_strlcpy_utf8(buffer, value->str, size);
 			break;
 		case ITEM_VALUE_TYPE_LOG:
-			zbx_strlcpy_utf8(buffer, value->log->value, size);
+			trx_strlcpy_utf8(buffer, value->log->value, size);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_history_record_vector_clean                                  *
+ * Function: trx_history_record_vector_clean                                  *
  *                                                                            *
  * Purpose: releases resources allocated to store history records             *
  *                                                                            *
@@ -283,7 +283,7 @@ void	zbx_history_value2str(char *buffer, size_t size, const history_value_t *val
  *             value_type  - [IN] the type of vector values                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_history_record_vector_clean(zbx_vector_history_record_t *vector, int value_type)
+void	trx_history_record_vector_clean(trx_vector_history_record_t *vector, int value_type)
 {
 	int	i;
 
@@ -292,7 +292,7 @@ void	zbx_history_record_vector_clean(zbx_vector_history_record_t *vector, int va
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:
 			for (i = 0; i < vector->values_num; i++)
-				zbx_free(vector->values[i].value.str);
+				trx_free(vector->values[i].value.str);
 
 			break;
 		case ITEM_VALUE_TYPE_LOG:
@@ -300,12 +300,12 @@ void	zbx_history_record_vector_clean(zbx_vector_history_record_t *vector, int va
 				history_logfree(vector->values[i].value.log);
 	}
 
-	zbx_vector_history_record_clear(vector);
+	trx_vector_history_record_clear(vector);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_history_record_compare_asc_func                              *
+ * Function: trx_history_record_compare_asc_func                              *
  *                                                                            *
  * Purpose: compares two cache values by their timestamps                     *
  *                                                                            *
@@ -320,7 +320,7 @@ void	zbx_history_record_vector_clean(zbx_vector_history_record_t *vector, int va
  *           order.                                                           *
  *                                                                            *
  ******************************************************************************/
-int	zbx_history_record_compare_asc_func(const zbx_history_record_t *d1, const zbx_history_record_t *d2)
+int	trx_history_record_compare_asc_func(const trx_history_record_t *d1, const trx_history_record_t *d2)
 {
 	if (d1->timestamp.sec == d2->timestamp.sec)
 		return d1->timestamp.ns - d2->timestamp.ns;
@@ -345,7 +345,7 @@ int	zbx_history_record_compare_asc_func(const zbx_history_record_t *d1, const zb
  *           order.                                                           *
  *                                                                            *
  ******************************************************************************/
-int	zbx_history_record_compare_desc_func(const zbx_history_record_t *d1, const zbx_history_record_t *d2)
+int	trx_history_record_compare_desc_func(const trx_history_record_t *d1, const trx_history_record_t *d2)
 {
 	if (d1->timestamp.sec == d2->timestamp.sec)
 		return d2->timestamp.ns - d1->timestamp.ns;

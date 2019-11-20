@@ -5,8 +5,8 @@
 #if defined(HAVE_LIBXML2) && defined(HAVE_LIBCURL)
 
 #include "log.h"
-#include "zbxjson.h"
-#include "zbxalgo.h"
+#include "trxjson.h"
+#include "trxalgo.h"
 #include "checks_simple_vmware.h"
 #include"../vmware/vmware.h"
 
@@ -50,17 +50,17 @@ static int	vmware_set_powerstate_result(AGENT_RESULT *result)
  * Parameters: hvs  - [IN] the hashset with all Hypervisors                   *
  *             uuid - [IN] the uuid of Hypervisor                             *
  *                                                                            *
- * Return value: zbx_vmware_hv_t* - the operation has completed successfully  *
+ * Return value: trx_vmware_hv_t* - the operation has completed successfully  *
  *               NULL             - the operation has failed                  *
  *                                                                            *
  ******************************************************************************/
-static zbx_vmware_hv_t	*hv_get(zbx_hashset_t *hvs, const char *uuid)
+static trx_vmware_hv_t	*hv_get(trx_hashset_t *hvs, const char *uuid)
 {
-	zbx_vmware_hv_t	*hv, hv_local = {.uuid = (char *)uuid};
+	trx_vmware_hv_t	*hv, hv_local = {.uuid = (char *)uuid};
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() uuid:'%s'", __func__, uuid);
 
-	hv = (zbx_vmware_hv_t *)zbx_hashset_search(hvs, &hv_local);
+	hv = (trx_vmware_hv_t *)trx_hashset_search(hvs, &hv_local);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%p", __func__, (void *)hv);
 
@@ -77,32 +77,32 @@ static zbx_vmware_hv_t	*hv_get(zbx_hashset_t *hvs, const char *uuid)
  *             id  - [IN] the id of Datastore                                 *
  *                                                                            *
  * Return value:                                                              *
- *        zbx_vmware_datastore_t* - the operation has completed successfully  *
+ *        trx_vmware_datastore_t* - the operation has completed successfully  *
  *        NULL                    - the operation has failed                  *
  *                                                                            *
  ******************************************************************************/
-static zbx_vmware_datastore_t	*ds_get(const zbx_vector_vmware_datastore_t *dss, const char *name)
+static trx_vmware_datastore_t	*ds_get(const trx_vector_vmware_datastore_t *dss, const char *name)
 {
 	int			i;
-	zbx_vmware_datastore_t	ds_cmp;
+	trx_vmware_datastore_t	ds_cmp;
 
 	ds_cmp.name = (char *)name;
 
-	if (FAIL == (i = zbx_vector_vmware_datastore_bsearch(dss, &ds_cmp, vmware_ds_name_compare)))
+	if (FAIL == (i = trx_vector_vmware_datastore_bsearch(dss, &ds_cmp, vmware_ds_name_compare)))
 		return NULL;
 
 	return dss->values[i];
 }
 
-static zbx_vmware_hv_t	*service_hv_get_by_vm_uuid(zbx_vmware_service_t *service, const char *uuid)
+static trx_vmware_hv_t	*service_hv_get_by_vm_uuid(trx_vmware_service_t *service, const char *uuid)
 {
-	zbx_vmware_vm_t		vm_local = {.uuid = (char *)uuid};
-	zbx_vmware_vm_index_t	vmi_local = {&vm_local, NULL}, *vmi;
-	zbx_vmware_hv_t		*hv = NULL;
+	trx_vmware_vm_t		vm_local = {.uuid = (char *)uuid};
+	trx_vmware_vm_index_t	vmi_local = {&vm_local, NULL}, *vmi;
+	trx_vmware_hv_t		*hv = NULL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() uuid:'%s'", __func__, uuid);
 
-	if (NULL != (vmi = (zbx_vmware_vm_index_t *)zbx_hashset_search(&service->data->vms_index, &vmi_local)))
+	if (NULL != (vmi = (trx_vmware_vm_index_t *)trx_hashset_search(&service->data->vms_index, &vmi_local)))
 		hv = vmi->hv;
 	else
 		hv = NULL;
@@ -113,14 +113,14 @@ static zbx_vmware_hv_t	*service_hv_get_by_vm_uuid(zbx_vmware_service_t *service,
 
 }
 
-static zbx_vmware_vm_t	*service_vm_get(zbx_vmware_service_t *service, const char *uuid)
+static trx_vmware_vm_t	*service_vm_get(trx_vmware_service_t *service, const char *uuid)
 {
-	zbx_vmware_vm_t		vm_local = {.uuid = (char *)uuid}, *vm;
-	zbx_vmware_vm_index_t	vmi_local = {&vm_local, NULL}, *vmi;
+	trx_vmware_vm_t		vm_local = {.uuid = (char *)uuid}, *vm;
+	trx_vmware_vm_index_t	vmi_local = {&vm_local, NULL}, *vmi;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() uuid:'%s'", __func__, uuid);
 
-	if (NULL != (vmi = (zbx_vmware_vm_index_t *)zbx_hashset_search(&service->data->vms_index, &vmi_local)))
+	if (NULL != (vmi = (trx_vmware_vm_index_t *)trx_hashset_search(&service->data->vms_index, &vmi_local)))
 		vm = vmi->vm;
 	else
 		vm = NULL;
@@ -130,16 +130,16 @@ static zbx_vmware_vm_t	*service_vm_get(zbx_vmware_service_t *service, const char
 	return vm;
 }
 
-static zbx_vmware_cluster_t	*cluster_get(zbx_vector_ptr_t *clusters, const char *clusterid)
+static trx_vmware_cluster_t	*cluster_get(trx_vector_ptr_t *clusters, const char *clusterid)
 {
 	int			i;
-	zbx_vmware_cluster_t	*cluster;
+	trx_vmware_cluster_t	*cluster;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() uuid:'%s'", __func__, clusterid);
 
 	for (i = 0; i < clusters->values_num; i++)
 	{
-		cluster = (zbx_vmware_cluster_t *)clusters->values[i];
+		cluster = (trx_vmware_cluster_t *)clusters->values[i];
 
 		if (0 == strcmp(cluster->id, clusterid))
 			goto out;
@@ -152,16 +152,16 @@ out:
 	return cluster;
 }
 
-static zbx_vmware_cluster_t	*cluster_get_by_name(zbx_vector_ptr_t *clusters, const char *name)
+static trx_vmware_cluster_t	*cluster_get_by_name(trx_vector_ptr_t *clusters, const char *name)
 {
 	int			i;
-	zbx_vmware_cluster_t	*cluster;
+	trx_vmware_cluster_t	*cluster;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() name:'%s'", __func__, name);
 
 	for (i = 0; i < clusters->values_num; i++)
 	{
-		cluster = (zbx_vmware_cluster_t *)clusters->values[i];
+		cluster = (trx_vmware_cluster_t *)clusters->values[i];
 
 		if (0 == strcmp(cluster->name, name))
 			goto out;
@@ -202,19 +202,19 @@ out:
  *           ignored by server rather than generating error.                  *
  *                                                                            *
  ******************************************************************************/
-static int	vmware_service_get_counter_value_by_id(zbx_vmware_service_t *service, const char *type, const char *id,
-		zbx_uint64_t counterid, const char *instance, int coeff, AGENT_RESULT *result)
+static int	vmware_service_get_counter_value_by_id(trx_vmware_service_t *service, const char *type, const char *id,
+		trx_uint64_t counterid, const char *instance, int coeff, AGENT_RESULT *result)
 {
-	zbx_vmware_perf_entity_t	*entity;
-	zbx_vmware_perf_counter_t	*perfcounter;
-	zbx_str_uint64_pair_t		*perfvalue;
+	trx_vmware_perf_entity_t	*entity;
+	trx_vmware_perf_counter_t	*perfcounter;
+	trx_str_uint64_pair_t		*perfvalue;
 	int				i, ret = SYSINFO_RET_FAIL;
-	zbx_uint64_t			value;
+	trx_uint64_t			value;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() type:%s id:%s counterid:" TRX_FS_UI64 " instance:%s", __func__,
 			type, id, counterid, instance);
 
-	if (NULL == (entity = zbx_vmware_service_get_perf_entity(service, type, id)))
+	if (NULL == (entity = trx_vmware_service_get_perf_entity(service, type, id)))
 	{
 		/* the requested counter has not been queried yet */
 		treegix_log(LOG_LEVEL_DEBUG, "performance data is not yet ready, ignoring request");
@@ -224,17 +224,17 @@ static int	vmware_service_get_counter_value_by_id(zbx_vmware_service_t *service,
 
 	if (NULL != entity->error)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, entity->error));
+		SET_MSG_RESULT(result, trx_strdup(NULL, entity->error));
 		goto out;
 	}
 
-	if (FAIL == (i = zbx_vector_ptr_bsearch(&entity->counters, &counterid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+	if (FAIL == (i = trx_vector_ptr_bsearch(&entity->counters, &counterid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Performance counter data was not found."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Performance counter data was not found."));
 		goto out;
 	}
 
-	perfcounter = (zbx_vmware_perf_counter_t *)entity->counters.values[i];
+	perfcounter = (trx_vmware_perf_counter_t *)entity->counters.values[i];
 
 	if (0 == (perfcounter->state & TRX_VMWARE_COUNTER_READY))
 	{
@@ -244,7 +244,7 @@ static int	vmware_service_get_counter_value_by_id(zbx_vmware_service_t *service,
 
 	if (0 == perfcounter->values.values_num)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Performance counter data is not available."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Performance counter data is not available."));
 		goto out;
 	}
 
@@ -258,7 +258,7 @@ static int	vmware_service_get_counter_value_by_id(zbx_vmware_service_t *service,
 
 	if (i == perfcounter->values.values_num)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Performance counter instance was not found."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Performance counter instance was not found."));
 		goto out;
 	}
 
@@ -273,7 +273,7 @@ static int	vmware_service_get_counter_value_by_id(zbx_vmware_service_t *service,
 	SET_UI64_RESULT(result, value);
 	ret = SYSINFO_RET_OK;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -307,38 +307,38 @@ out:
  *           ignored by server rather than generating error.                  *
  *                                                                            *
  ******************************************************************************/
-static int	vmware_service_get_counter_value_by_path(zbx_vmware_service_t *service, const char *type,
+static int	vmware_service_get_counter_value_by_path(trx_vmware_service_t *service, const char *type,
 		const char *id, const char *path, const char *instance, int coeff, AGENT_RESULT *result)
 {
-	zbx_uint64_t	counterid;
+	trx_uint64_t	counterid;
 
-	if (FAIL == zbx_vmware_service_get_counterid(service, path, &counterid))
+	if (FAIL == trx_vmware_service_get_counterid(service, path, &counterid))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Performance counter is not available."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Performance counter is not available."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	return vmware_service_get_counter_value_by_id(service, type, id, counterid, instance, coeff, result);
 }
 
-static int	vmware_service_get_vm_counter(zbx_vmware_service_t *service, const char *uuid, const char *instance,
+static int	vmware_service_get_vm_counter(trx_vmware_service_t *service, const char *uuid, const char *instance,
 		const char *path, int coeff, AGENT_RESULT *result)
 {
-	zbx_vmware_vm_t	*vm;
+	trx_vmware_vm_t	*vm;
 	int		ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() uuid:%s instance:%s path:%s", __func__, uuid, instance, path);
 
 	if (NULL == (vm = service_vm_get(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto out;
 	}
 
 	ret = vmware_service_get_counter_value_by_path(service, "VirtualMachine", vm->id, path, instance, coeff,
 			result);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -373,14 +373,14 @@ out:
  *                is not set.                                                 *
  *                                                                            *
  ******************************************************************************/
-static zbx_vmware_service_t	*get_vmware_service(const char *url, const char *username, const char *password,
+static trx_vmware_service_t	*get_vmware_service(const char *url, const char *username, const char *password,
 		AGENT_RESULT *result, int *ret)
 {
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() '%s'@'%s'", __func__, username, url);
 
-	if (NULL == (service = zbx_vmware_get_service(url, username, password)))
+	if (NULL == (service = trx_vmware_get_service(url, username, password)))
 	{
 		*ret = SYSINFO_RET_OK;
 		goto out;
@@ -388,7 +388,7 @@ static zbx_vmware_service_t	*get_vmware_service(const char *url, const char *use
 
 	if (0 != (service->state & TRX_VMWARE_STATE_FAILED))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, NULL != service->data->error ? service->data->error :
+		SET_MSG_RESULT(result, trx_strdup(NULL, NULL != service->data->error ? service->data->error :
 				"Unknown VMware service error."));
 
 		treegix_log(LOG_LEVEL_DEBUG, "failed to query VMware service: %s",
@@ -421,8 +421,8 @@ out:
 static int	get_vcenter_vmprop(AGENT_REQUEST *request, const char *username, const char *password,
 		int propid, AGENT_RESULT *result)
 {
-	zbx_vmware_service_t	*service;
-	zbx_vmware_vm_t		*vm = NULL;
+	trx_vmware_service_t	*service;
+	trx_vmware_vm_t		*vm = NULL;
 	char			*url, *uuid, *value;
 	int			ret = SYSINFO_RET_FAIL;
 
@@ -430,7 +430,7 @@ static int	get_vcenter_vmprop(AGENT_REQUEST *request, const char *username, cons
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -439,34 +439,34 @@ static int	get_vcenter_vmprop(AGENT_REQUEST *request, const char *username, cons
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (vm = service_vm_get(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto unlock;
 	}
 
 	if (NULL == (value = vm->props[propid]))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Value is not available."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Value is not available."));
 		goto unlock;
 	}
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, value));
+	SET_STR_RESULT(result, trx_strdup(NULL, value));
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -489,16 +489,16 @@ out:
 static int	get_vcenter_hvprop(AGENT_REQUEST *request, const char *username, const char *password, int propid,
 		AGENT_RESULT *result)
 {
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	const char		*uuid, *url, *value;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_hv_t		*hv;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() propid:%d", __func__, propid);
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -507,33 +507,33 @@ static int	get_vcenter_hvprop(AGENT_REQUEST *request, const char *username, cons
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
 	if (NULL == (value = hv->props[propid]))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Value is not available."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Value is not available."));
 		goto unlock;
 	}
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, value));
+	SET_STR_RESULT(result, trx_strdup(NULL, value));
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -541,49 +541,49 @@ out:
 int	check_vcenter_cluster_discovery(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	struct zbx_json		json_data;
+	struct trx_json		json_data;
 	char			*url;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	int			i, ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (1 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
-	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < service->data->clusters.values_num; i++)
 	{
-		zbx_vmware_cluster_t	*cluster = (zbx_vmware_cluster_t *)service->data->clusters.values[i];
+		trx_vmware_cluster_t	*cluster = (trx_vmware_cluster_t *)service->data->clusters.values[i];
 
-		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#CLUSTER.ID}", cluster->id, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#CLUSTER.NAME}", cluster->name, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&json_data);
+		trx_json_addobject(&json_data, NULL);
+		trx_json_addstring(&json_data, "{#CLUSTER.ID}", cluster->id, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json_data, "{#CLUSTER.NAME}", cluster->name, TRX_JSON_TYPE_STRING);
+		trx_json_close(&json_data);
 	}
 
-	zbx_json_close(&json_data);
+	trx_json_close(&json_data);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, json_data.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, json_data.buffer));
 
-	zbx_json_free(&json_data);
+	trx_json_free(&json_data);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -592,15 +592,15 @@ int	check_vcenter_cluster_status(AGENT_REQUEST *request, const char *username, c
 		AGENT_RESULT *result)
 {
 	char			*url, *name;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_cluster_t	*cluster;
+	trx_vmware_service_t	*service;
+	trx_vmware_cluster_t	*cluster;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -610,14 +610,14 @@ int	check_vcenter_cluster_status(AGENT_REQUEST *request, const char *username, c
 	if ('\0' == *name)
 		goto out;
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (cluster = cluster_get_by_name(&service->data->clusters, name)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown cluster name."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown cluster name."));
 		goto unlock;
 	}
 
@@ -638,15 +638,15 @@ int	check_vcenter_cluster_status(AGENT_REQUEST *request, const char *username, c
 		ret = SYSINFO_RET_FAIL;
 
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
 
-static void	vmware_get_events(const zbx_vector_ptr_t *events, zbx_uint64_t eventlog_last_key, const DC_ITEM *item,
-		zbx_vector_ptr_t *add_results)
+static void	vmware_get_events(const trx_vector_ptr_t *events, trx_uint64_t eventlog_last_key, const DC_ITEM *item,
+		trx_vector_ptr_t *add_results)
 {
 	int	i;
 
@@ -655,13 +655,13 @@ static void	vmware_get_events(const zbx_vector_ptr_t *events, zbx_uint64_t event
 	/* events were retrieved in reverse chronological order */
 	for (i = events->values_num - 1; i >= 0; i--)
 	{
-		const zbx_vmware_event_t	*event = (zbx_vmware_event_t *)events->values[i];
+		const trx_vmware_event_t	*event = (trx_vmware_event_t *)events->values[i];
 		AGENT_RESULT			*add_result = NULL;
 
 		if (event->key <= eventlog_last_key)
 			continue;
 
-		add_result = (AGENT_RESULT *)zbx_malloc(add_result, sizeof(AGENT_RESULT));
+		add_result = (AGENT_RESULT *)trx_malloc(add_result, sizeof(AGENT_RESULT));
 		init_result(add_result);
 
 		if (SUCCEED == set_result_type(add_result, item->value_type, event->message))
@@ -674,7 +674,7 @@ static void	vmware_get_events(const zbx_vector_ptr_t *events, zbx_uint64_t event
 				add_result->log->timestamp = event->timestamp;
 			}
 
-			zbx_vector_ptr_append(add_results, add_result);
+			trx_vector_ptr_append(add_results, add_result);
 		}
 	}
 
@@ -682,18 +682,18 @@ static void	vmware_get_events(const zbx_vector_ptr_t *events, zbx_uint64_t event
 }
 
 int	check_vcenter_eventlog(AGENT_REQUEST *request, const DC_ITEM *item, AGENT_RESULT *result,
-		zbx_vector_ptr_t *add_results)
+		trx_vector_ptr_t *add_results)
 {
 	const char		*url, *skip;
 	unsigned char		skip_old;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 < request->nparam || 0 == request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -709,11 +709,11 @@ int	check_vcenter_eventlog(AGENT_REQUEST *request, const DC_ITEM *item, AGENT_RE
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, item->username, item->password, result, &ret)))
 		goto unlock;
@@ -727,20 +727,20 @@ int	check_vcenter_eventlog(AGENT_REQUEST *request, const DC_ITEM *item, AGENT_RE
 	{
 		/* this may happen if there are multiple vmware.eventlog items for the same service URL or item has  */
 		/* been polled, but values got stuck in history cache and item's lastlogsize hasn't been updated yet */
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too old events requested."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too old events requested."));
 		goto unlock;
 	}
 	else if (0 < service->data->events.values_num)
 	{
 		vmware_get_events(&service->data->events, request->lastlogsize, item, add_results);
-		service->eventlog.last_key = ((const zbx_vmware_event_t *)service->data->events.values[0])->key;
+		service->eventlog.last_key = ((const trx_vmware_event_t *)service->data->events.values[0])->key;
 	}
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -749,20 +749,20 @@ int	check_vcenter_version(AGENT_REQUEST *request, const char *username, const ch
 		AGENT_RESULT *result)
 {
 	char			*url;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (1 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -770,13 +770,13 @@ int	check_vcenter_version(AGENT_REQUEST *request, const char *username, const ch
 	if (NULL == service->version)
 		goto unlock;
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, service->version));
+	SET_STR_RESULT(result, trx_strdup(NULL, service->version));
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -785,20 +785,20 @@ int	check_vcenter_fullname(AGENT_REQUEST *request, const char *username, const c
 		AGENT_RESULT *result)
 {
 	char			*url;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (1 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -806,13 +806,13 @@ int	check_vcenter_fullname(AGENT_REQUEST *request, const char *username, const c
 	if (NULL == service->fullname)
 		goto unlock;
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, service->fullname));
+	SET_STR_RESULT(result, trx_strdup(NULL, service->fullname));
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -821,16 +821,16 @@ int	check_vcenter_hv_cluster_name(AGENT_REQUEST *request, const char *username, 
 		AGENT_RESULT *result)
 {
 	char			*url, *uuid;
-	zbx_vmware_hv_t		*hv;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_cluster_t	*cluster = NULL;
+	trx_vmware_hv_t		*hv;
+	trx_vmware_service_t	*service;
+	trx_vmware_cluster_t	*cluster = NULL;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -839,31 +839,31 @@ int	check_vcenter_hv_cluster_name(AGENT_REQUEST *request, const char *username, 
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
 	if (NULL != hv->clusterid)
 		cluster = cluster_get(&service->data->clusters, hv->clusterid);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, NULL != cluster ? cluster->name : ""));
+	SET_STR_RESULT(result, trx_strdup(NULL, NULL != cluster ? cluster->name : ""));
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -880,7 +880,7 @@ int	check_vcenter_hv_cpu_usage(AGENT_REQUEST *request, const char *username, con
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * 1000000;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -888,34 +888,34 @@ int	check_vcenter_hv_cpu_usage(AGENT_REQUEST *request, const char *username, con
 int	check_vcenter_hv_discovery(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	struct zbx_json		json_data;
+	struct trx_json		json_data;
 	char			*url, *name;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	int			ret = SYSINFO_RET_FAIL;
-	zbx_vmware_hv_t		*hv;
-	zbx_hashset_iter_t	iter;
+	trx_vmware_hv_t		*hv;
+	trx_hashset_iter_t	iter;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (1 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
-	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
-	zbx_hashset_iter_reset(&service->data->hvs, &iter);
-	while (NULL != (hv = (zbx_vmware_hv_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&service->data->hvs, &iter);
+	while (NULL != (hv = (trx_vmware_hv_t *)trx_hashset_iter_next(&iter)))
 	{
-		zbx_vmware_cluster_t	*cluster = NULL;
+		trx_vmware_cluster_t	*cluster = NULL;
 
 		if (NULL == (name = hv->props[TRX_VMWARE_HVPROP_NAME]))
 			continue;
@@ -923,29 +923,29 @@ int	check_vcenter_hv_discovery(AGENT_REQUEST *request, const char *username, con
 		if (NULL != hv->clusterid)
 			cluster = cluster_get(&service->data->clusters, hv->clusterid);
 
-		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#HV.UUID}", hv->uuid, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#HV.ID}", hv->id, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#HV.NAME}", name, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#DATACENTER.NAME}", hv->datacenter_name, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#CLUSTER.NAME}",
+		trx_json_addobject(&json_data, NULL);
+		trx_json_addstring(&json_data, "{#HV.UUID}", hv->uuid, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json_data, "{#HV.ID}", hv->id, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json_data, "{#HV.NAME}", name, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json_data, "{#DATACENTER.NAME}", hv->datacenter_name, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json_data, "{#CLUSTER.NAME}",
 				NULL != cluster ? cluster->name : "", TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#PARENT.NAME}", hv->parent_name, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json_data, "{#PARENT.TYPE}", hv->parent_type, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&json_data);
+		trx_json_addstring(&json_data, "{#PARENT.NAME}", hv->parent_name, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json_data, "{#PARENT.TYPE}", hv->parent_type, TRX_JSON_TYPE_STRING);
+		trx_json_close(&json_data);
 	}
 
-	zbx_json_close(&json_data);
+	trx_json_close(&json_data);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, json_data.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, json_data.buffer));
 
-	zbx_json_free(&json_data);
+	trx_json_free(&json_data);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -959,7 +959,7 @@ int	check_vcenter_hv_fullname(AGENT_REQUEST *request, const char *username, cons
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_FULL_NAME, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -973,7 +973,7 @@ int	check_vcenter_hv_hw_cpu_num(AGENT_REQUEST *request, const char *username, co
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_NUM_CPU_CORES, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -990,7 +990,7 @@ int	check_vcenter_hv_hw_cpu_freq(AGENT_REQUEST *request, const char *username, c
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * 1000000;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1004,7 +1004,7 @@ int	check_vcenter_hv_hw_cpu_model(AGENT_REQUEST *request, const char *username, 
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_CPU_MODEL, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1018,7 +1018,7 @@ int	check_vcenter_hv_hw_cpu_threads(AGENT_REQUEST *request, const char *username
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_NUM_CPU_THREADS, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1032,7 +1032,7 @@ int	check_vcenter_hv_hw_memory(AGENT_REQUEST *request, const char *username, con
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_MEMORY_SIZE, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1046,7 +1046,7 @@ int	check_vcenter_hv_hw_model(AGENT_REQUEST *request, const char *username, cons
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_MODEL, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1060,7 +1060,7 @@ int	check_vcenter_hv_hw_uuid(AGENT_REQUEST *request, const char *username, const
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_UUID, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1074,7 +1074,7 @@ int	check_vcenter_hv_hw_vendor(AGENT_REQUEST *request, const char *username, con
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_HW_VENDOR, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1083,16 +1083,16 @@ int	check_vcenter_hv_memory_size_ballooned(AGENT_REQUEST *request, const char *u
 		AGENT_RESULT *result)
 {
 	int			i, ret = SYSINFO_RET_FAIL;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	const char		*uuid, *url;
-	zbx_vmware_hv_t		*hv;
-	zbx_uint64_t		value = 0;
+	trx_vmware_hv_t		*hv;
+	trx_uint64_t		value = 0;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -1101,26 +1101,26 @@ int	check_vcenter_hv_memory_size_ballooned(AGENT_REQUEST *request, const char *u
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
 	for (i = 0; i < hv->vms.values_num; i++)
 	{
-		zbx_uint64_t	mem;
+		trx_uint64_t	mem;
 		const char	*value_str;
-		zbx_vmware_vm_t	*vm = (zbx_vmware_vm_t *)hv->vms.values[i];
+		trx_vmware_vm_t	*vm = (trx_vmware_vm_t *)hv->vms.values[i];
 
 		if (NULL == (value_str = vm->props[TRX_VMWARE_VMPROP_MEMORY_SIZE_BALLOONED]))
 			continue;
@@ -1136,9 +1136,9 @@ int	check_vcenter_hv_memory_size_ballooned(AGENT_REQUEST *request, const char *u
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1155,7 +1155,7 @@ int	check_vcenter_hv_memory_used(AGENT_REQUEST *request, const char *username, c
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1185,7 +1185,7 @@ int	check_vcenter_hv_sensor_health_state(AGENT_REQUEST *request, const char *use
 		UNSET_STR_RESULT(result);
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1215,7 +1215,7 @@ int	check_vcenter_hv_status(AGENT_REQUEST *request, const char *username, const 
 		UNSET_STR_RESULT(result);
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1229,7 +1229,7 @@ int	check_vcenter_hv_uptime(AGENT_REQUEST *request, const char *username, const 
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_UPTIME, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1243,7 +1243,7 @@ int	check_vcenter_hv_version(AGENT_REQUEST *request, const char *username, const
 
 	ret = get_vcenter_hvprop(request, username, password, TRX_VMWARE_HVPROP_VERSION, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1252,15 +1252,15 @@ int	check_vcenter_hv_vm_num(AGENT_REQUEST *request, const char *username, const 
 		AGENT_RESULT *result)
 {
 	int			ret = SYSINFO_RET_FAIL;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	const char		*uuid, *url;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_hv_t		*hv;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -1269,27 +1269,27 @@ int	check_vcenter_hv_vm_num(AGENT_REQUEST *request, const char *username, const 
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
 	SET_UI64_RESULT(result, hv->vms.values_num);
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1298,15 +1298,15 @@ int	check_vcenter_hv_network_in(AGENT_REQUEST *request, const char *username, co
 		AGENT_RESULT *result)
 {
 	char			*url, *mode, *uuid;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 > request->nparam || request->nparam > 3)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -1316,27 +1316,27 @@ int	check_vcenter_hv_network_in(AGENT_REQUEST *request, const char *username, co
 
 	if (NULL != mode && '\0' != *mode && 0 != strcmp(mode, "bps"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
 	ret = vmware_service_get_counter_value_by_path(service, "HostSystem", hv->id, "net/received[average]", "",
 			TRX_KIBIBYTE, result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1345,15 +1345,15 @@ int	check_vcenter_hv_network_out(AGENT_REQUEST *request, const char *username, c
 		AGENT_RESULT *result)
 {
 	char			*url, *mode, *uuid;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 > request->nparam || request->nparam > 3)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -1363,27 +1363,27 @@ int	check_vcenter_hv_network_out(AGENT_REQUEST *request, const char *username, c
 
 	if (NULL != mode && '\0' != *mode && 0 != strcmp(mode, "bps"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
 	ret = vmware_service_get_counter_value_by_path(service, "HostSystem", hv->id, "net/transmitted[average]", "",
 			TRX_KIBIBYTE, result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1392,39 +1392,39 @@ int	check_vcenter_hv_datacenter_name(AGENT_REQUEST *request, const char *usernam
 		AGENT_RESULT *result)
 {
 	char			*url, *uuid;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 	uuid = get_rparam(request, 1);
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, hv->datacenter_name));
+	SET_STR_RESULT(result, trx_strdup(NULL, hv->datacenter_name));
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1433,53 +1433,53 @@ int	check_vcenter_hv_datastore_discovery(AGENT_REQUEST *request, const char *use
 		AGENT_RESULT *result)
 {
 	char			*url, *uuid;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
-	struct zbx_json		json_data;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
+	struct trx_json		json_data;
 	int			i, ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 	uuid = get_rparam(request, 1);
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
-	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < hv->ds_names.values_num; i++)
 	{
-		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#DATASTORE}", hv->ds_names.values[i], TRX_JSON_TYPE_STRING);
-		zbx_json_close(&json_data);
+		trx_json_addobject(&json_data, NULL);
+		trx_json_addstring(&json_data, "{#DATASTORE}", hv->ds_names.values[i], TRX_JSON_TYPE_STRING);
+		trx_json_close(&json_data);
 	}
 
-	zbx_json_close(&json_data);
+	trx_json_close(&json_data);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, json_data.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, json_data.buffer));
 
-	zbx_json_free(&json_data);
+	trx_json_free(&json_data);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1488,16 +1488,16 @@ static int	check_vcenter_hv_datastore_latency(AGENT_REQUEST *request, const char
 		const char *perfcounter, AGENT_RESULT *result)
 {
 	char			*url, *mode, *uuid, *name;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
-	zbx_vmware_datastore_t	*datastore;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
+	trx_vmware_datastore_t	*datastore;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() perfcounter:%s", __func__, perfcounter);
 
 	if (3 > request->nparam || request->nparam > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -1508,18 +1508,18 @@ static int	check_vcenter_hv_datastore_latency(AGENT_REQUEST *request, const char
 
 	if (NULL != mode && '\0' != *mode && 0 != strcmp(mode, "latency"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
@@ -1527,29 +1527,29 @@ static int	check_vcenter_hv_datastore_latency(AGENT_REQUEST *request, const char
 
 	if (NULL == datastore)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown datastore name."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown datastore name."));
 		goto unlock;
 	}
 
-	if (FAIL == zbx_vector_str_bsearch(&hv->ds_names, datastore->name, TRX_DEFAULT_STR_COMPARE_FUNC))
+	if (FAIL == trx_vector_str_bsearch(&hv->ds_names, datastore->name, TRX_DEFAULT_STR_COMPARE_FUNC))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Datastore \"%s\" not found on this hypervisor.",
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Datastore \"%s\" not found on this hypervisor.",
 				datastore->name));
 		goto unlock;
 	}
 
 	if (NULL == datastore->uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown datastore uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown datastore uuid."));
 		goto unlock;
 	}
 
 	ret = vmware_service_get_counter_value_by_path(service, "HostSystem", hv->id, perfcounter, datastore->uuid, 1,
 			result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1568,7 +1568,7 @@ int	check_vcenter_hv_datastore_write(AGENT_REQUEST *request, const char *usernam
 			result);
 }
 
-static int	check_vcenter_hv_datastore_size_vsphere(int mode, const zbx_vmware_datastore_t *datastore,
+static int	check_vcenter_hv_datastore_size_vsphere(int mode, const trx_vmware_datastore_t *datastore,
 		AGENT_RESULT *result)
 {
 	switch (mode)
@@ -1576,7 +1576,7 @@ static int	check_vcenter_hv_datastore_size_vsphere(int mode, const zbx_vmware_da
 		case TRX_VMWARE_DATASTORE_SIZE_TOTAL:
 			if (TRX_MAX_UINT64 == datastore->capacity)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"capacity\" is not available."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Datastore \"capacity\" is not available."));
 				return SYSINFO_RET_FAIL;
 			}
 			SET_UI64_RESULT(result, datastore->capacity);
@@ -1584,7 +1584,7 @@ static int	check_vcenter_hv_datastore_size_vsphere(int mode, const zbx_vmware_da
 		case TRX_VMWARE_DATASTORE_SIZE_FREE:
 			if (TRX_MAX_UINT64 == datastore->free_space)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"free space\" is not available."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Datastore \"free space\" is not available."));
 				return SYSINFO_RET_FAIL;
 			}
 			SET_UI64_RESULT(result, datastore->free_space);
@@ -1592,7 +1592,7 @@ static int	check_vcenter_hv_datastore_size_vsphere(int mode, const zbx_vmware_da
 		case TRX_VMWARE_DATASTORE_SIZE_UNCOMMITTED:
 			if (TRX_MAX_UINT64 == datastore->uncommitted)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"uncommitted\" is not available."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Datastore \"uncommitted\" is not available."));
 				return SYSINFO_RET_FAIL;
 			}
 			SET_UI64_RESULT(result, datastore->uncommitted);
@@ -1600,17 +1600,17 @@ static int	check_vcenter_hv_datastore_size_vsphere(int mode, const zbx_vmware_da
 		case TRX_VMWARE_DATASTORE_SIZE_PFREE:
 			if (TRX_MAX_UINT64 == datastore->capacity)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"capacity\" is not available."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Datastore \"capacity\" is not available."));
 				return SYSINFO_RET_FAIL;
 			}
 			if (TRX_MAX_UINT64 == datastore->free_space)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"free space\" is not available."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Datastore \"free space\" is not available."));
 				return SYSINFO_RET_FAIL;
 			}
 			if (0 == datastore->capacity)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Datastore \"capacity\" is zero."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Datastore \"capacity\" is zero."));
 				return SYSINFO_RET_FAIL;
 			}
 			SET_DBL_RESULT(result, (double)datastore->free_space / datastore->capacity * 100);
@@ -1648,15 +1648,15 @@ static int	check_vcenter_ds_param(const char *param, int *mode)
 static int	check_vcenter_ds_size(const char *url, const char *hv_uuid, const char *name, const int mode,
 		const char *username, const char *password, AGENT_RESULT *result)
 {
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	int			ret = SYSINFO_RET_FAIL;
-	zbx_vmware_datastore_t	*datastore = NULL;
-	zbx_uint64_t		disk_used, disk_provisioned, disk_capacity;
+	trx_vmware_datastore_t	*datastore = NULL;
+	trx_uint64_t		disk_used, disk_provisioned, disk_capacity;
 	unsigned int		flags;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -1665,14 +1665,14 @@ static int	check_vcenter_ds_size(const char *url, const char *hv_uuid, const cha
 
 	if (NULL == datastore)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown datastore name."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown datastore name."));
 		goto unlock;
 	}
 
 	if (NULL != hv_uuid &&
-			FAIL == zbx_vector_str_bsearch(&datastore->hv_uuids, hv_uuid, TRX_DEFAULT_STR_COMPARE_FUNC))
+			FAIL == trx_vector_str_bsearch(&datastore->hv_uuids, hv_uuid, TRX_DEFAULT_STR_COMPARE_FUNC))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Hypervisor '%s' not found on this datastore.", hv_uuid));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Hypervisor '%s' not found on this datastore.", hv_uuid));
 		goto unlock;
 	}
 
@@ -1753,9 +1753,9 @@ static int	check_vcenter_ds_size(const char *url, const char *hv_uuid, const cha
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1770,7 +1770,7 @@ int	check_vcenter_hv_datastore_size(AGENT_REQUEST *request, const char *username
 
 	if (3 > request->nparam || request->nparam > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -1782,9 +1782,9 @@ int	check_vcenter_hv_datastore_size(AGENT_REQUEST *request, const char *username
 	if (SUCCEED == check_vcenter_ds_param(param, &mode))
 		ret = check_vcenter_ds_size(url, uuid, name, mode, username, password, result);
 	else
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1794,16 +1794,16 @@ int	check_vcenter_hv_perfcounter(AGENT_REQUEST *request, const char *username, c
 {
 	char			*url, *uuid, *path;
 	const char 		*instance;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
-	zbx_uint64_t		counterid;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
+	trx_uint64_t		counterid;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (3 > request->nparam || request->nparam > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -1815,25 +1815,25 @@ int	check_vcenter_hv_perfcounter(AGENT_REQUEST *request, const char *username, c
 	if (NULL == instance)
 		instance = "";
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
-	if (FAIL == zbx_vmware_service_get_counterid(service, path, &counterid))
+	if (FAIL == trx_vmware_service_get_counterid(service, path, &counterid))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Performance counter is not available."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Performance counter is not available."));
 		goto unlock;
 	}
 
 	/* FAIL is returned if counter already exists */
-	if (SUCCEED == zbx_vmware_service_add_perf_counter(service, "HostSystem", hv->id, counterid, "*"))
+	if (SUCCEED == trx_vmware_service_add_perf_counter(service, "HostSystem", hv->id, counterid, "*"))
 	{
 		ret = SYSINFO_RET_OK;
 		goto unlock;
@@ -1842,9 +1842,9 @@ int	check_vcenter_hv_perfcounter(AGENT_REQUEST *request, const char *username, c
 	/* the performance counter is already being monitored, try to get the results from statistics */
 	ret = vmware_service_get_counter_value_by_id(service, "HostSystem", hv->id, counterid, instance, 1, result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1853,48 +1853,48 @@ int	check_vcenter_hv_datastore_list(AGENT_REQUEST *request, const char *username
 		AGENT_RESULT *result)
 {
 	char			*url, *hv_uuid, *ds_list = NULL;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
 	int			i, ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 != request->nparam )
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 	hv_uuid = get_rparam(request, 1);
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = hv_get(&service->data->hvs, hv_uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 		goto unlock;
 	}
 
 	for (i = 0; i < hv->ds_names.values_num; i++)
 	{
-		ds_list = zbx_strdcatf(ds_list, "%s\n", hv->ds_names.values[i]);
+		ds_list = trx_strdcatf(ds_list, "%s\n", hv->ds_names.values[i]);
 	}
 
 	if (NULL != ds_list)
 		ds_list[strlen(ds_list)-1] = '\0';
 	else
-		ds_list = zbx_strdup(NULL, "");
+		ds_list = trx_strdup(NULL, "");
 
 	SET_TEXT_RESULT(result, ds_list);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1903,23 +1903,23 @@ int	check_vcenter_datastore_hv_list(AGENT_REQUEST *request, const char *username
 		AGENT_RESULT *result)
 {
 	char			*url, *ds_name, *hv_list = NULL, *hv_name;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	int			i, ret = SYSINFO_RET_FAIL;
-	zbx_vmware_datastore_t	*datastore = NULL;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_datastore_t	*datastore = NULL;
+	trx_vmware_hv_t		*hv;
 
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 != request->nparam )
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 	ds_name = get_rparam(request, 1);
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -1935,7 +1935,7 @@ int	check_vcenter_datastore_hv_list(AGENT_REQUEST *request, const char *username
 
 	if (NULL == datastore)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown datastore name."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown datastore name."));
 		goto unlock;
 	}
 
@@ -1943,29 +1943,29 @@ int	check_vcenter_datastore_hv_list(AGENT_REQUEST *request, const char *username
 	{
 		if (NULL == (hv = hv_get(&service->data->hvs, datastore->hv_uuids.values[i])))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
-			zbx_free(hv_list);
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
+			trx_free(hv_list);
 			goto unlock;
 		}
 
 		if (NULL == (hv_name = hv->props[TRX_VMWARE_HVPROP_NAME]))
 			hv_name = datastore->hv_uuids.values[i];
 
-		hv_list = zbx_strdcatf(hv_list, "%s\n", hv_name);
+		hv_list = trx_strdcatf(hv_list, "%s\n", hv_name);
 	}
 
 	if (NULL != hv_list)
 		hv_list[strlen(hv_list)-1] = '\0';
 	else
-		hv_list = zbx_strdup(NULL, "");
+		hv_list = trx_strdup(NULL, "");
 
 	SET_TEXT_RESULT(result, hv_list);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -1980,7 +1980,7 @@ int	check_vcenter_datastore_size(AGENT_REQUEST *request, const char *username, c
 
 	if (2 > request->nparam || request->nparam > 3)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -1991,9 +1991,9 @@ int	check_vcenter_datastore_size(AGENT_REQUEST *request, const char *username, c
 	if (SUCCEED == check_vcenter_ds_param(param, &mode))
 		ret = check_vcenter_ds_size(url, NULL, name, mode, username, password, result);
 	else
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2002,47 +2002,47 @@ int	check_vcenter_datastore_discovery(AGENT_REQUEST *request, const char *userna
 		AGENT_RESULT *result)
 {
 	char			*url;
-	zbx_vmware_service_t	*service;
-	struct zbx_json		json_data;
+	trx_vmware_service_t	*service;
+	struct trx_json		json_data;
 	int			i, ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (1 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
-	zbx_json_init(&json_data, TRX_JSON_STAT_BUF_LEN);
-	zbx_json_addarray(&json_data, TRX_PROTO_TAG_DATA);
+	trx_json_init(&json_data, TRX_JSON_STAT_BUF_LEN);
+	trx_json_addarray(&json_data, TRX_PROTO_TAG_DATA);
 
 	for (i = 0; i < service->data->datastores.values_num; i++)
 	{
-		zbx_vmware_datastore_t	*datastore = service->data->datastores.values[i];
-		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#DATASTORE}", datastore->name, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&json_data);
+		trx_vmware_datastore_t	*datastore = service->data->datastores.values[i];
+		trx_json_addobject(&json_data, NULL);
+		trx_json_addstring(&json_data, "{#DATASTORE}", datastore->name, TRX_JSON_TYPE_STRING);
+		trx_json_close(&json_data);
 	}
 
-	zbx_json_close(&json_data);
+	trx_json_close(&json_data);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, json_data.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, json_data.buffer));
 
-	zbx_json_free(&json_data);
+	trx_json_free(&json_data);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2051,18 +2051,18 @@ static int	check_vcenter_datastore_latency(AGENT_REQUEST *request, const char *u
 		const char *perfcounter, AGENT_RESULT *result)
 {
 	char			*url, *mode, *name;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
-	zbx_vmware_datastore_t	*datastore;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
+	trx_vmware_datastore_t	*datastore;
 	int			i, ret = SYSINFO_RET_FAIL, count = 0;
-	zbx_uint64_t		latency = 0, counterid;
+	trx_uint64_t		latency = 0, counterid;
 	unsigned char		is_maxlatency = 0;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() perfcounter:%s", __func__, perfcounter);
 
 	if (2 > request->nparam || request->nparam > 3)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2072,14 +2072,14 @@ static int	check_vcenter_datastore_latency(AGENT_REQUEST *request, const char *u
 
 	if (NULL != mode && '\0' != *mode && 0 != strcmp(mode, "latency") && 0 != strcmp(mode, "maxlatency"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		goto out;
 	}
 
 	if (NULL != mode && 0 == strcmp(mode, "maxlatency"))
 		is_maxlatency = 1;
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -2088,19 +2088,19 @@ static int	check_vcenter_datastore_latency(AGENT_REQUEST *request, const char *u
 
 	if (NULL == datastore)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown datastore name."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown datastore name."));
 		goto unlock;
 	}
 
 	if (NULL == datastore->uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown datastore uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown datastore uuid."));
 		goto unlock;
 	}
 
-	if (FAIL == zbx_vmware_service_get_counterid(service, perfcounter, &counterid))
+	if (FAIL == trx_vmware_service_get_counterid(service, perfcounter, &counterid))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Performance counter is not available."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Performance counter is not available."));
 		goto unlock;
 	}
 
@@ -2108,7 +2108,7 @@ static int	check_vcenter_datastore_latency(AGENT_REQUEST *request, const char *u
 	{
 		if (NULL == (hv = hv_get(&service->data->hvs, datastore->hv_uuids.values[i])))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown hypervisor uuid."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown hypervisor uuid."));
 			goto unlock;
 		}
 
@@ -2137,9 +2137,9 @@ static int	check_vcenter_datastore_latency(AGENT_REQUEST *request, const char *u
 
 	SET_UI64_RESULT(result, latency);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2167,7 +2167,7 @@ int	check_vcenter_vm_cpu_num(AGENT_REQUEST *request, const char *username, const
 
 	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_CPU_NUM, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2176,16 +2176,16 @@ int	check_vcenter_vm_cluster_name(AGENT_REQUEST *request, const char *username, 
 		AGENT_RESULT *result)
 {
 	char			*url, *uuid;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_cluster_t	*cluster = NULL;
+	trx_vmware_service_t	*service;
+	trx_vmware_cluster_t	*cluster = NULL;
 	int			ret = SYSINFO_RET_FAIL;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_hv_t		*hv;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2194,30 +2194,30 @@ int	check_vcenter_vm_cluster_name(AGENT_REQUEST *request, const char *username, 
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = service_hv_get_by_vm_uuid(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto unlock;
 	}
 	if (NULL != hv->clusterid)
 		cluster = cluster_get(&service->data->clusters, hv->clusterid);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, NULL != cluster ? cluster->name : ""));
+	SET_STR_RESULT(result, trx_strdup(NULL, NULL != cluster ? cluster->name : ""));
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2225,7 +2225,7 @@ out:
 int	check_vcenter_vm_cpu_ready(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	int			ret = SYSINFO_RET_FAIL;
 	const char		*url, *uuid;
 
@@ -2233,7 +2233,7 @@ int	check_vcenter_vm_cpu_ready(AGENT_REQUEST *request, const char *username, con
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2242,20 +2242,20 @@ int	check_vcenter_vm_cpu_ready(AGENT_REQUEST *request, const char *username, con
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	ret = vmware_service_get_vm_counter(service, uuid, "", "cpu/ready[summation]", 1, result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2272,7 +2272,7 @@ int	check_vcenter_vm_cpu_usage(AGENT_REQUEST *request, const char *username, con
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * 1000000;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2280,8 +2280,8 @@ int	check_vcenter_vm_cpu_usage(AGENT_REQUEST *request, const char *username, con
 int	check_vcenter_vm_datacenter_name(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
 	char			*url, *uuid;
 	int			ret = SYSINFO_RET_FAIL;
 
@@ -2289,7 +2289,7 @@ int	check_vcenter_vm_datacenter_name(AGENT_REQUEST *request, const char *usernam
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2298,27 +2298,27 @@ int	check_vcenter_vm_datacenter_name(AGENT_REQUEST *request, const char *usernam
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (hv = service_hv_get_by_vm_uuid(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto unlock;
 	}
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, hv->datacenter_name));
+	SET_STR_RESULT(result, trx_strdup(NULL, hv->datacenter_name));
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2326,42 +2326,42 @@ out:
 int	check_vcenter_vm_discovery(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	struct zbx_json		json_data;
+	struct trx_json		json_data;
 	char			*url, *vm_name, *hv_name;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
-	zbx_vmware_vm_t		*vm;
-	zbx_hashset_iter_t	iter;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
+	trx_vmware_vm_t		*vm;
+	trx_hashset_iter_t	iter;
 	int			i, ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (1 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	url = get_rparam(request, 0);
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
-	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
-	zbx_hashset_iter_reset(&service->data->hvs, &iter);
-	while (NULL != (hv = (zbx_vmware_hv_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&service->data->hvs, &iter);
+	while (NULL != (hv = (trx_vmware_hv_t *)trx_hashset_iter_next(&iter)))
 	{
-		zbx_vmware_cluster_t	*cluster = NULL;
+		trx_vmware_cluster_t	*cluster = NULL;
 
 		if (NULL != hv->clusterid)
 			cluster = cluster_get(&service->data->clusters, hv->clusterid);
 
 		for (i = 0; i < hv->vms.values_num; i++)
 		{
-			vm = (zbx_vmware_vm_t *)hv->vms.values[i];
+			vm = (trx_vmware_vm_t *)hv->vms.values[i];
 
 			if (NULL == (vm_name = vm->props[TRX_VMWARE_VMPROP_NAME]))
 				continue;
@@ -2369,29 +2369,29 @@ int	check_vcenter_vm_discovery(AGENT_REQUEST *request, const char *username, con
 			if (NULL == (hv_name = hv->props[TRX_VMWARE_HVPROP_NAME]))
 				continue;
 
-			zbx_json_addobject(&json_data, NULL);
-			zbx_json_addstring(&json_data, "{#VM.UUID}", vm->uuid, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json_data, "{#VM.ID}", vm->id, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json_data, "{#VM.NAME}", vm_name, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json_data, "{#HV.NAME}", hv_name, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json_data, "{#DATACENTER.NAME}", hv->datacenter_name, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json_data, "{#CLUSTER.NAME}",
+			trx_json_addobject(&json_data, NULL);
+			trx_json_addstring(&json_data, "{#VM.UUID}", vm->uuid, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json_data, "{#VM.ID}", vm->id, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json_data, "{#VM.NAME}", vm_name, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json_data, "{#HV.NAME}", hv_name, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json_data, "{#DATACENTER.NAME}", hv->datacenter_name, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json_data, "{#CLUSTER.NAME}",
 					NULL != cluster ? cluster->name : "", TRX_JSON_TYPE_STRING);
-			zbx_json_close(&json_data);
+			trx_json_close(&json_data);
 		}
 	}
 
-	zbx_json_close(&json_data);
+	trx_json_close(&json_data);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, json_data.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, json_data.buffer));
 
-	zbx_json_free(&json_data);
+	trx_json_free(&json_data);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2399,8 +2399,8 @@ out:
 int	check_vcenter_vm_hv_name(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	zbx_vmware_service_t	*service;
-	zbx_vmware_hv_t		*hv;
+	trx_vmware_service_t	*service;
+	trx_vmware_hv_t		*hv;
 	char			*url, *uuid, *name;
 	int			ret = SYSINFO_RET_FAIL;
 
@@ -2408,7 +2408,7 @@ int	check_vcenter_vm_hv_name(AGENT_REQUEST *request, const char *username, const
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2417,11 +2417,11 @@ int	check_vcenter_vm_hv_name(AGENT_REQUEST *request, const char *username, const
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -2429,22 +2429,22 @@ int	check_vcenter_vm_hv_name(AGENT_REQUEST *request, const char *username, const
 
 	if (NULL == (hv = service_hv_get_by_vm_uuid(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto unlock;
 	}
 
 	if (NULL == (name = hv->props[TRX_VMWARE_HVPROP_NAME]))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "No hypervisor name found."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "No hypervisor name found."));
 		goto unlock;
 	}
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, name));
+	SET_STR_RESULT(result, trx_strdup(NULL, name));
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2461,7 +2461,7 @@ int	check_vcenter_vm_memory_size(AGENT_REQUEST *request, const char *username, c
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2478,7 +2478,7 @@ int	check_vcenter_vm_memory_size_ballooned(AGENT_REQUEST *request, const char *u
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2495,7 +2495,7 @@ int	check_vcenter_vm_memory_size_compressed(AGENT_REQUEST *request, const char *
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2512,7 +2512,7 @@ int	check_vcenter_vm_memory_size_swapped(AGENT_REQUEST *request, const char *use
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2529,7 +2529,7 @@ int	check_vcenter_vm_memory_size_usage_guest(AGENT_REQUEST *request, const char 
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2546,7 +2546,7 @@ int	check_vcenter_vm_memory_size_usage_host(AGENT_REQUEST *request, const char *
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2563,7 +2563,7 @@ int	check_vcenter_vm_memory_size_private(AGENT_REQUEST *request, const char *use
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2580,7 +2580,7 @@ int	check_vcenter_vm_memory_size_shared(AGENT_REQUEST *request, const char *user
 	if (SYSINFO_RET_OK == ret && NULL != GET_UI64_RESULT(result))
 		result->ui64 = result->ui64 * TRX_MEBIBYTE;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2597,7 +2597,7 @@ int	check_vcenter_vm_powerstate(AGENT_REQUEST *request, const char *username, co
 	if (SYSINFO_RET_OK == ret)
 		ret = vmware_set_powerstate_result(result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2605,10 +2605,10 @@ int	check_vcenter_vm_powerstate(AGENT_REQUEST *request, const char *username, co
 int	check_vcenter_vm_net_if_discovery(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	struct zbx_json		json_data;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_vm_t		*vm = NULL;
-	zbx_vmware_dev_t	*dev;
+	struct trx_json		json_data;
+	trx_vmware_service_t	*service;
+	trx_vmware_vm_t		*vm = NULL;
+	trx_vmware_dev_t	*dev;
 	char			*url, *uuid;
 	int			i, ret = SYSINFO_RET_FAIL;
 
@@ -2616,7 +2616,7 @@ int	check_vcenter_vm_net_if_discovery(AGENT_REQUEST *request, const char *userna
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2625,49 +2625,49 @@ int	check_vcenter_vm_net_if_discovery(AGENT_REQUEST *request, const char *userna
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (vm = service_vm_get(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto unlock;
 	}
 
-	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < vm->devs.values_num; i++)
 	{
-		dev = (zbx_vmware_dev_t *)vm->devs.values[i];
+		dev = (trx_vmware_dev_t *)vm->devs.values[i];
 
 		if (TRX_VMWARE_DEV_TYPE_NIC != dev->type)
 			continue;
 
-		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#IFNAME}", dev->instance, TRX_JSON_TYPE_STRING);
+		trx_json_addobject(&json_data, NULL);
+		trx_json_addstring(&json_data, "{#IFNAME}", dev->instance, TRX_JSON_TYPE_STRING);
 		if (NULL != dev->label)
-			zbx_json_addstring(&json_data, "{#IFDESC}", dev->label, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json_data, "{#IFDESC}", dev->label, TRX_JSON_TYPE_STRING);
 
-		zbx_json_close(&json_data);
+		trx_json_close(&json_data);
 	}
 
-	zbx_json_close(&json_data);
+	trx_json_close(&json_data);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, json_data.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, json_data.buffer));
 
-	zbx_json_free(&json_data);
+	trx_json_free(&json_data);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2676,7 +2676,7 @@ int	check_vcenter_vm_net_if_in(AGENT_REQUEST *request, const char *username, con
 		AGENT_RESULT *result)
 {
 	char			*url, *uuid, *instance, *mode;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	const char		*path;
 	int 			coeff, ret = SYSINFO_RET_FAIL;
 
@@ -2684,7 +2684,7 @@ int	check_vcenter_vm_net_if_in(AGENT_REQUEST *request, const char *username, con
 
 	if (3 > request->nparam || request->nparam > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2695,17 +2695,17 @@ int	check_vcenter_vm_net_if_in(AGENT_REQUEST *request, const char *username, con
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
 	if ('\0' == *instance)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -2722,15 +2722,15 @@ int	check_vcenter_vm_net_if_in(AGENT_REQUEST *request, const char *username, con
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		goto unlock;
 	}
 
 	ret = vmware_service_get_vm_counter(service, uuid, instance, path, coeff, result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2739,7 +2739,7 @@ int	check_vcenter_vm_net_if_out(AGENT_REQUEST *request, const char *username, co
 		AGENT_RESULT *result)
 {
 	char			*url, *uuid, *instance, *mode;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	const char		*path;
 	int 			coeff, ret = SYSINFO_RET_FAIL;
 
@@ -2747,7 +2747,7 @@ int	check_vcenter_vm_net_if_out(AGENT_REQUEST *request, const char *username, co
 
 	if (3 > request->nparam || request->nparam > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2758,17 +2758,17 @@ int	check_vcenter_vm_net_if_out(AGENT_REQUEST *request, const char *username, co
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
 	if ('\0' == *instance)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -2785,15 +2785,15 @@ int	check_vcenter_vm_net_if_out(AGENT_REQUEST *request, const char *username, co
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		goto unlock;
 	}
 
 	ret = vmware_service_get_vm_counter(service, uuid, instance, path, coeff, result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2807,7 +2807,7 @@ int	check_vcenter_vm_storage_committed(AGENT_REQUEST *request, const char *usern
 
 	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_STORAGE_COMMITED, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2821,7 +2821,7 @@ int	check_vcenter_vm_storage_unshared(AGENT_REQUEST *request, const char *userna
 
 	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_STORAGE_UNSHARED, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2835,7 +2835,7 @@ int	check_vcenter_vm_storage_uncommitted(AGENT_REQUEST *request, const char *use
 
 	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_STORAGE_UNCOMMITTED, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2849,7 +2849,7 @@ int	check_vcenter_vm_uptime(AGENT_REQUEST *request, const char *username, const 
 
 	ret = get_vcenter_vmprop(request, username, password, TRX_VMWARE_VMPROP_UPTIME, result);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2857,10 +2857,10 @@ int	check_vcenter_vm_uptime(AGENT_REQUEST *request, const char *username, const 
 int	check_vcenter_vm_vfs_dev_discovery(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	struct zbx_json		json_data;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_vm_t		*vm = NULL;
-	zbx_vmware_dev_t	*dev;
+	struct trx_json		json_data;
+	trx_vmware_service_t	*service;
+	trx_vmware_vm_t		*vm = NULL;
+	trx_vmware_dev_t	*dev;
 	char			*url, *uuid;
 	int			i, ret = SYSINFO_RET_FAIL;
 
@@ -2868,7 +2868,7 @@ int	check_vcenter_vm_vfs_dev_discovery(AGENT_REQUEST *request, const char *usern
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2877,48 +2877,48 @@ int	check_vcenter_vm_vfs_dev_discovery(AGENT_REQUEST *request, const char *usern
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (vm = service_vm_get(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto unlock;
 	}
 
-	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < vm->devs.values_num; i++)
 	{
-		dev = (zbx_vmware_dev_t *)vm->devs.values[i];
+		dev = (trx_vmware_dev_t *)vm->devs.values[i];
 
 		if (TRX_VMWARE_DEV_TYPE_DISK != dev->type)
 			continue;
 
-		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#DISKNAME}", dev->instance, TRX_JSON_TYPE_STRING);
+		trx_json_addobject(&json_data, NULL);
+		trx_json_addstring(&json_data, "{#DISKNAME}", dev->instance, TRX_JSON_TYPE_STRING);
 		if (NULL != dev->label)
-			zbx_json_addstring(&json_data, "{#DISKDESC}", dev->label, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&json_data);
+			trx_json_addstring(&json_data, "{#DISKDESC}", dev->label, TRX_JSON_TYPE_STRING);
+		trx_json_close(&json_data);
 	}
 
-	zbx_json_close(&json_data);
+	trx_json_close(&json_data);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, json_data.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, json_data.buffer));
 
-	zbx_json_free(&json_data);
+	trx_json_free(&json_data);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2927,7 +2927,7 @@ int	check_vcenter_vm_vfs_dev_read(AGENT_REQUEST *request, const char *username, 
 		AGENT_RESULT *result)
 {
 	char			*url, *uuid, *instance, *mode;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	const char		*path;
 	int			coeff, ret = SYSINFO_RET_FAIL;
 
@@ -2935,7 +2935,7 @@ int	check_vcenter_vm_vfs_dev_read(AGENT_REQUEST *request, const char *username, 
 
 	if (3 > request->nparam || request->nparam > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -2946,17 +2946,17 @@ int	check_vcenter_vm_vfs_dev_read(AGENT_REQUEST *request, const char *username, 
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
 	if ('\0' == *instance)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -2973,15 +2973,15 @@ int	check_vcenter_vm_vfs_dev_read(AGENT_REQUEST *request, const char *username, 
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		goto unlock;
 	}
 
 	ret =  vmware_service_get_vm_counter(service, uuid, instance, path, coeff, result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -2990,7 +2990,7 @@ int	check_vcenter_vm_vfs_dev_write(AGENT_REQUEST *request, const char *username,
 		AGENT_RESULT *result)
 {
 	char			*url, *uuid, *instance, *mode;
-	zbx_vmware_service_t	*service;
+	trx_vmware_service_t	*service;
 	const char		*path;
 	int			coeff, ret = SYSINFO_RET_FAIL;
 
@@ -2998,7 +2998,7 @@ int	check_vcenter_vm_vfs_dev_write(AGENT_REQUEST *request, const char *username,
 
 	if (3 > request->nparam || request->nparam > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -3009,17 +3009,17 @@ int	check_vcenter_vm_vfs_dev_write(AGENT_REQUEST *request, const char *username,
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
 	if ('\0' == *instance)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
@@ -3036,15 +3036,15 @@ int	check_vcenter_vm_vfs_dev_write(AGENT_REQUEST *request, const char *username,
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		goto unlock;
 	}
 
 	ret =  vmware_service_get_vm_counter(service, uuid, instance, path, coeff, result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -3052,9 +3052,9 @@ out:
 int	check_vcenter_vm_vfs_fs_discovery(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	struct zbx_json		json_data;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_vm_t		*vm = NULL;
+	struct trx_json		json_data;
+	trx_vmware_service_t	*service;
+	trx_vmware_vm_t		*vm = NULL;
 	char			*url, *uuid;
 	int			i, ret = SYSINFO_RET_FAIL;
 
@@ -3062,7 +3062,7 @@ int	check_vcenter_vm_vfs_fs_discovery(AGENT_REQUEST *request, const char *userna
 
 	if (2 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -3071,43 +3071,43 @@ int	check_vcenter_vm_vfs_fs_discovery(AGENT_REQUEST *request, const char *userna
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (vm = service_vm_get(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto unlock;
 	}
 
-	zbx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&json_data, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < vm->file_systems.values_num; i++)
 	{
-		zbx_vmware_fs_t	*fs = (zbx_vmware_fs_t *)vm->file_systems.values[i];
+		trx_vmware_fs_t	*fs = (trx_vmware_fs_t *)vm->file_systems.values[i];
 
-		zbx_json_addobject(&json_data, NULL);
-		zbx_json_addstring(&json_data, "{#FSNAME}", fs->path, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&json_data);
+		trx_json_addobject(&json_data, NULL);
+		trx_json_addstring(&json_data, "{#FSNAME}", fs->path, TRX_JSON_TYPE_STRING);
+		trx_json_close(&json_data);
 	}
 
-	zbx_json_close(&json_data);
+	trx_json_close(&json_data);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, json_data.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, json_data.buffer));
 
-	zbx_json_free(&json_data);
+	trx_json_free(&json_data);
 
 	ret = SYSINFO_RET_OK;
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -3115,17 +3115,17 @@ out:
 int	check_vcenter_vm_vfs_fs_size(AGENT_REQUEST *request, const char *username, const char *password,
 		AGENT_RESULT *result)
 {
-	zbx_vmware_service_t	*service;
-	zbx_vmware_vm_t		*vm;
+	trx_vmware_service_t	*service;
+	trx_vmware_vm_t		*vm;
 	char			*url, *uuid, *fsname, *mode;
 	int			i, ret = SYSINFO_RET_FAIL;
-	zbx_vmware_fs_t		*fs = NULL;
+	trx_vmware_fs_t		*fs = NULL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (3 > request->nparam || request->nparam > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -3136,24 +3136,24 @@ int	check_vcenter_vm_vfs_fs_size(AGENT_REQUEST *request, const char *username, c
 
 	if ('\0' == *uuid)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (vm = service_vm_get(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto unlock;
 	}
 
 	for (i = 0; i < vm->file_systems.values_num; i++)
 	{
-		fs = (zbx_vmware_fs_t *)vm->file_systems.values[i];
+		fs = (trx_vmware_fs_t *)vm->file_systems.values[i];
 
 		if (0 == strcmp(fs->path, fsname))
 			break;
@@ -3161,7 +3161,7 @@ int	check_vcenter_vm_vfs_fs_size(AGENT_REQUEST *request, const char *username, c
 
 	if (NULL == fs)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown file system path."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown file system path."));
 		goto unlock;
 	}
 
@@ -3179,13 +3179,13 @@ int	check_vcenter_vm_vfs_fs_size(AGENT_REQUEST *request, const char *username, c
 		SET_DBL_RESULT(result, 100.0 - (0 != fs->capacity ? 100.0 * fs->free_space / fs->capacity : 0));
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		ret = SYSINFO_RET_FAIL;
 	}
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }
@@ -3195,16 +3195,16 @@ int	check_vcenter_vm_perfcounter(AGENT_REQUEST *request, const char *username, c
 {
 	char			*url, *uuid, *path;
 	const char 		*instance;
-	zbx_vmware_service_t	*service;
-	zbx_vmware_vm_t		*vm;
-	zbx_uint64_t		counterid;
+	trx_vmware_service_t	*service;
+	trx_vmware_vm_t		*vm;
+	trx_uint64_t		counterid;
 	int			ret = SYSINFO_RET_FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (3 > request->nparam || request->nparam > 4)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -3216,25 +3216,25 @@ int	check_vcenter_vm_perfcounter(AGENT_REQUEST *request, const char *username, c
 	if (NULL == instance)
 		instance = "";
 
-	zbx_vmware_lock();
+	trx_vmware_lock();
 
 	if (NULL == (service = get_vmware_service(url, username, password, result, &ret)))
 		goto unlock;
 
 	if (NULL == (vm = service_vm_get(service, uuid)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unknown virtual machine uuid."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unknown virtual machine uuid."));
 		goto unlock;
 	}
 
-	if (FAIL == zbx_vmware_service_get_counterid(service, path, &counterid))
+	if (FAIL == trx_vmware_service_get_counterid(service, path, &counterid))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Performance counter is not available."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Performance counter is not available."));
 		goto unlock;
 	}
 
 	/* FAIL is returned if counter already exists */
-	if (SUCCEED == zbx_vmware_service_add_perf_counter(service, "VirtualMachine", vm->id, counterid, "*"))
+	if (SUCCEED == trx_vmware_service_add_perf_counter(service, "VirtualMachine", vm->id, counterid, "*"))
 	{
 		ret = SYSINFO_RET_OK;
 		goto unlock;
@@ -3243,9 +3243,9 @@ int	check_vcenter_vm_perfcounter(AGENT_REQUEST *request, const char *username, c
 	/* the performance counter is already being monitored, try to get the results from statistics */
 	ret = vmware_service_get_counter_value_by_id(service, "VirtualMachine", vm->id, counterid, instance, 1, result);
 unlock:
-	zbx_vmware_unlock();
+	trx_vmware_unlock();
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_sysinfo_ret_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_sysinfo_ret_string(ret));
 
 	return ret;
 }

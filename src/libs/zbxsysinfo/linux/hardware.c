@@ -5,9 +5,9 @@
 #include <sys/mman.h>
 #include <setjmp.h>
 #include <signal.h>
-#include "zbxalgo.h"
+#include "trxalgo.h"
 #include "hardware.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 
 
@@ -69,7 +69,7 @@ static size_t	get_dmi_string(char *buf, int bufsize, unsigned char *data, int nu
 		num--;
 	}
 
-	return zbx_snprintf(buf, bufsize, " %s", c);
+	return trx_snprintf(buf, bufsize, " %s", c);
 }
 
 static size_t	get_chassis_type(char *buf, int bufsize, int type)
@@ -114,7 +114,7 @@ static size_t	get_chassis_type(char *buf, int bufsize, int type)
 	if (1 > type || MAX_CHASSIS_TYPE < type)
 		return 0;
 
-	return zbx_snprintf(buf, bufsize, " %s", chassis_types[type]);
+	return trx_snprintf(buf, bufsize, " %s", chassis_types[type]);
 }
 
 static int	get_dmi_info(char *buf, int bufsize, volatile int flags)
@@ -130,12 +130,12 @@ static int	get_dmi_info(char *buf, int bufsize, volatile int flags)
 	if (-1 != (fd = open(SYS_TABLE_FILE, O_RDONLY)))
 	{
 		ssize_t		nbytes;
-		zbx_stat_t	file_buf;
+		trx_stat_t	file_buf;
 
 		if (-1 == fstat(fd, &file_buf))
 			goto close;
 
-		smbuf = (unsigned char *)zbx_malloc(NULL, file_buf.st_size);
+		smbuf = (unsigned char *)trx_malloc(NULL, file_buf.st_size);
 
 		smbios_len = 0;
 
@@ -200,7 +200,7 @@ static int	get_dmi_info(char *buf, int bufsize, volatile int flags)
 			goto close;
 		}
 
-		smbuf = (unsigned char *)zbx_malloc(smbuf, smbios_len);
+		smbuf = (unsigned char *)trx_malloc(smbuf, smbios_len);
 
 		len = smbios % pagesize;	/* mmp needs to be a multiple of pagesize for munmap */
 		if (MAP_FAILED == (mmp = mmap(0, len + smbios_len, PROT_READ, MAP_SHARED, fd, smbios - len)))
@@ -257,7 +257,7 @@ static int	get_dmi_info(char *buf, int bufsize, volatile int flags)
 	if (0 < offset)
 		ret = SYSINFO_RET_OK;
 clean:
-	zbx_free(smbuf);
+	trx_free(smbuf);
 close:
 	close(fd);
 	remove_sigbus_handler();
@@ -272,7 +272,7 @@ int	SYSTEM_HW_CHASSIS(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -290,28 +290,28 @@ int	SYSTEM_HW_CHASSIS(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = get_dmi_info(buf, sizeof(buf), DMI_GET_SERIAL);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (SYSINFO_RET_FAIL == ret)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain hardware information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain hardware information."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, buf + 1));	/* buf has a leading space */
+	SET_STR_RESULT(result, trx_strdup(NULL, buf + 1));	/* buf has a leading space */
 
 	return ret;
 }
 
-static zbx_uint64_t	get_cpu_max_freq(int cpu_num)
+static trx_uint64_t	get_cpu_max_freq(int cpu_num)
 {
-	zbx_uint64_t	freq = FAIL;
+	trx_uint64_t	freq = FAIL;
 	char		filename[MAX_STRING_LEN];
 	FILE		*f;
 
-	zbx_snprintf(filename, sizeof(filename), CPU_MAX_FREQ_FILE, cpu_num);
+	trx_snprintf(filename, sizeof(filename), CPU_MAX_FREQ_FILE, cpu_num);
 
 	f = fopen(filename, "r");
 
@@ -326,31 +326,31 @@ static zbx_uint64_t	get_cpu_max_freq(int cpu_num)
 	return freq;
 }
 
-static size_t	print_freq(char *buffer, size_t size, int filter, int cpu, zbx_uint64_t maxfreq, zbx_uint64_t curfreq)
+static size_t	print_freq(char *buffer, size_t size, int filter, int cpu, trx_uint64_t maxfreq, trx_uint64_t curfreq)
 {
 	size_t	offset = 0;
 
 	if (HW_CPU_SHOW_MAXFREQ == filter && FAIL != (int)maxfreq)
 	{
 		if (HW_CPU_ALL_CPUS == cpu)
-			offset += zbx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64 "MHz", maxfreq / 1000);
+			offset += trx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64 "MHz", maxfreq / 1000);
 		else
-			offset += zbx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64, maxfreq * 1000);
+			offset += trx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64, maxfreq * 1000);
 	}
 	else if (HW_CPU_SHOW_CURFREQ == filter && FAIL != (int)curfreq)
 	{
 		if (HW_CPU_ALL_CPUS == cpu)
-			offset += zbx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64 "MHz", curfreq);
+			offset += trx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64 "MHz", curfreq);
 		else
-			offset += zbx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64, curfreq * 1000000);
+			offset += trx_snprintf(buffer + offset, size - offset, " " TRX_FS_UI64, curfreq * 1000000);
 	}
 	else if (HW_CPU_SHOW_ALL == filter)
 	{
 		if (FAIL != (int)curfreq)
-			offset += zbx_snprintf(buffer + offset, size - offset, " working at " TRX_FS_UI64 "MHz", curfreq);
+			offset += trx_snprintf(buffer + offset, size - offset, " working at " TRX_FS_UI64 "MHz", curfreq);
 
 		if (FAIL != (int)maxfreq)
-			offset += zbx_snprintf(buffer + offset, size - offset, " (maximum " TRX_FS_UI64 "MHz)", maxfreq / 1000);
+			offset += trx_snprintf(buffer + offset, size - offset, " (maximum " TRX_FS_UI64 "MHz)", maxfreq / 1000);
 	}
 
 	return offset;
@@ -359,13 +359,13 @@ static size_t	print_freq(char *buffer, size_t size, int filter, int cpu, zbx_uin
 int     SYSTEM_HW_CPU(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int		ret = SYSINFO_RET_FAIL, filter, cpu, cur_cpu = -1, offset = 0;
-	zbx_uint64_t	maxfreq = FAIL, curfreq = FAIL;
+	trx_uint64_t	maxfreq = FAIL, curfreq = FAIL;
 	char		line[MAX_STRING_LEN], name[MAX_STRING_LEN], tmp[MAX_STRING_LEN], buffer[MAX_BUFFER_LEN], *param;
 	FILE		*f;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -375,7 +375,7 @@ int     SYSTEM_HW_CPU(AGENT_REQUEST *request, AGENT_RESULT *result)
 		cpu = HW_CPU_ALL_CPUS;	/* show all CPUs by default */
 	else if (FAIL == is_uint31(param, &cpu))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -393,13 +393,13 @@ int     SYSTEM_HW_CPU(AGENT_REQUEST *request, AGENT_RESULT *result)
 		filter = HW_CPU_SHOW_CURFREQ;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == (f = fopen(HW_CPU_INFO_FILE, "r")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open " HW_CPU_INFO_FILE ": %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open " HW_CPU_INFO_FILE ": %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -422,7 +422,7 @@ int     SYSTEM_HW_CPU(AGENT_REQUEST *request, AGENT_RESULT *result)
 				continue;
 
 			if (HW_CPU_ALL_CPUS == cpu || HW_CPU_SHOW_ALL == filter)
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "\nprocessor %d:", cur_cpu);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "\nprocessor %d:", cur_cpu);
 
 			if ((HW_CPU_SHOW_ALL == filter || HW_CPU_SHOW_MAXFREQ == filter) &&
 					FAIL != (int)(maxfreq = get_cpu_max_freq(cur_cpu)))
@@ -437,12 +437,12 @@ int     SYSTEM_HW_CPU(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (0 == strncmp(name, "vendor_id", 9) && (HW_CPU_SHOW_ALL == filter || HW_CPU_SHOW_VENDOR == filter))
 		{
 			ret = SYSINFO_RET_OK;
-			offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", tmp);
+			offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", tmp);
 		}
 		else if (0 == strncmp(name, "model name", 10) && (HW_CPU_SHOW_ALL == filter || HW_CPU_SHOW_MODEL == filter))
 		{
 			ret = SYSINFO_RET_OK;
-			offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", tmp);
+			offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", tmp);
 		}
 		else if (0 == strncmp(name, "cpu MHz", 7) && (HW_CPU_SHOW_ALL == filter || HW_CPU_SHOW_CURFREQ == filter))
 		{
@@ -451,18 +451,18 @@ int     SYSTEM_HW_CPU(AGENT_REQUEST *request, AGENT_RESULT *result)
 		}
 	}
 
-	zbx_fclose(f);
+	trx_fclose(f);
 
 	if (SYSINFO_RET_FAIL == ret)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain CPU information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain CPU information."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (-1 != cur_cpu && (HW_CPU_ALL_CPUS == cpu || cpu == cur_cpu))	/* print info about the last cpu */
 		print_freq(buffer + offset, sizeof(buffer) - offset, filter, cpu, maxfreq, curfreq);
 
-	SET_TEXT_RESULT(result, zbx_strdup(NULL, buffer + 1));	/* buf has a leading space or '\n' */
+	SET_TEXT_RESULT(result, trx_strdup(NULL, buffer + 1));	/* buf has a leading space or '\n' */
 
 	return ret;
 }
@@ -473,7 +473,7 @@ int	SYSTEM_HW_DEVICES(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -485,7 +485,7 @@ int	SYSTEM_HW_DEVICES(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return EXECUTE_STR("lsusb", result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 }
@@ -497,11 +497,11 @@ int     SYSTEM_HW_MACADDR(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char			*format, *p, *regex, address[MAX_STRING_LEN], buffer[MAX_STRING_LEN];
 	struct ifreq		*ifr;
 	struct ifconf		ifc;
-	zbx_vector_str_t	addresses;
+	trx_vector_str_t	addresses;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -514,13 +514,13 @@ int     SYSTEM_HW_MACADDR(AGENT_REQUEST *request, AGENT_RESULT *result)
 		show_names = 0;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (-1 == (s = socket(AF_INET, SOCK_DGRAM, 0)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot create socket: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot create socket: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -530,18 +530,18 @@ int     SYSTEM_HW_MACADDR(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (-1 == ioctl(s, SIOCGIFCONF, &ifc))
 	{
 		close(s);
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot set socket parameters: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot set socket parameters: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 	ifr = ifc.ifc_req;
 
-	zbx_vector_str_create(&addresses);
-	zbx_vector_str_reserve(&addresses, 8);
+	trx_vector_str_create(&addresses);
+	trx_vector_str_reserve(&addresses, 8);
 
 	/* go through the list */
 	for (i = ifc.ifc_len / sizeof(struct ifreq); 0 < i--; ifr++)
 	{
-		if (NULL != regex && '\0' != *regex && NULL == zbx_regexp_match(ifr->ifr_name, regex, NULL))
+		if (NULL != regex && '\0' != *regex && NULL == trx_regexp_match(ifr->ifr_name, regex, NULL))
 			continue;
 
 		if (-1 != ioctl(s, SIOCGIFFLAGS, ifr) &&		/* get the interface */
@@ -551,9 +551,9 @@ int     SYSTEM_HW_MACADDR(AGENT_REQUEST *request, AGENT_RESULT *result)
 			offset = 0;
 
 			if (1 == show_names)
-				offset += zbx_snprintf(address + offset, sizeof(address) - offset, "[%s  ", ifr->ifr_name);
+				offset += trx_snprintf(address + offset, sizeof(address) - offset, "[%s  ", ifr->ifr_name);
 
-			zbx_snprintf(address + offset, sizeof(address) - offset, "%.2hx:%.2hx:%.2hx:%.2hx:%.2hx:%.2hx",
+			trx_snprintf(address + offset, sizeof(address) - offset, "%.2hx:%.2hx:%.2hx:%.2hx:%.2hx:%.2hx",
 					(unsigned short int)(unsigned char)ifr->ifr_hwaddr.sa_data[0],
 					(unsigned short int)(unsigned char)ifr->ifr_hwaddr.sa_data[1],
 					(unsigned short int)(unsigned char)ifr->ifr_hwaddr.sa_data[2],
@@ -561,10 +561,10 @@ int     SYSTEM_HW_MACADDR(AGENT_REQUEST *request, AGENT_RESULT *result)
 					(unsigned short int)(unsigned char)ifr->ifr_hwaddr.sa_data[4],
 					(unsigned short int)(unsigned char)ifr->ifr_hwaddr.sa_data[5]);
 
-			if (0 == show_names && FAIL != zbx_vector_str_search(&addresses, address, TRX_DEFAULT_STR_COMPARE_FUNC))
+			if (0 == show_names && FAIL != trx_vector_str_search(&addresses, address, TRX_DEFAULT_STR_COMPARE_FUNC))
 				continue;
 
-			zbx_vector_str_append(&addresses, zbx_strdup(NULL, address));
+			trx_vector_str_append(&addresses, trx_strdup(NULL, address));
 		}
 	}
 
@@ -572,15 +572,15 @@ int     SYSTEM_HW_MACADDR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 != addresses.values_num)
 	{
-		zbx_vector_str_sort(&addresses, TRX_DEFAULT_STR_COMPARE_FUNC);
+		trx_vector_str_sort(&addresses, TRX_DEFAULT_STR_COMPARE_FUNC);
 
 		for (i = 0; i < addresses.values_num; i++)
 		{
 			if (1 == show_names && NULL != (p = strchr(addresses.values[i], ' ')))
 				*p = ']';
 
-			offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%s, ", addresses.values[i]);
-			zbx_free(addresses.values[i]);
+			offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "%s, ", addresses.values[i]);
+			trx_free(addresses.values[i]);
 		}
 
 		offset -= 2;
@@ -588,9 +588,9 @@ int     SYSTEM_HW_MACADDR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	buffer[offset] = '\0';
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, buffer));
 
-	zbx_vector_str_destroy(&addresses);
+	trx_vector_str_destroy(&addresses);
 	close(s);
 
 	return SYSINFO_RET_OK;

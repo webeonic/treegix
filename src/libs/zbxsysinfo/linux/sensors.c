@@ -1,7 +1,7 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 
 #ifdef KERNEL_2_4
 #define DEVICE_DIR	"/proc/sys/dev/sensors"
@@ -23,11 +23,11 @@ static void	count_sensor(int do_task, const char *filename, double *aggr, int *c
 
 	if (NULL == fgets(line, sizeof(line), f))
 	{
-		zbx_fclose(f);
+		trx_fclose(f);
 		return;
 	}
 
-	zbx_fclose(f);
+	trx_fclose(f);
 
 #ifdef KERNEL_2_4
 	if (1 == sscanf(line, "%*f\t%*f\t%lf\n", &value))
@@ -81,12 +81,12 @@ static const char	*sysfs_read_attr(const char *device, char **attribute)
 
 	for (location = locations; NULL != *location; location++)
 	{
-		zbx_snprintf(path, MAX_STRING_LEN, "%s%s/name", device, *location);
+		trx_snprintf(path, MAX_STRING_LEN, "%s%s/name", device, *location);
 
 		if (NULL != (f = fopen(path, "r")))
 		{
 			p = fgets(buf, ATTR_MAX, f);
-			zbx_fclose(f);
+			trx_fclose(f);
 
 			if (NULL == p)
 				break;
@@ -95,7 +95,7 @@ static const char	*sysfs_read_attr(const char *device, char **attribute)
 			buf[strlen(buf) - 1] = '\0';
 
 			if (NULL != attribute)
-				*attribute = zbx_strdup(*attribute, buf);
+				*attribute = trx_strdup(*attribute, buf);
 
 			return *location;
 		}
@@ -119,21 +119,21 @@ static int	get_device_info(const char *dev_path, const char *dev_name, char *dev
 	{
 		/* Virtual device */
 		/* Assuming that virtual devices are unique */
-		zbx_snprintf(device_info, MAX_STRING_LEN, "%s-virtual-0", prefix);
+		trx_snprintf(device_info, MAX_STRING_LEN, "%s-virtual-0", prefix);
 		ret = SUCCEED;
 
 		goto out;
 	}
 
 	/* Find bus type */
-	zbx_snprintf(linkpath, MAX_STRING_LEN, "%s/device/subsystem", dev_path);
+	trx_snprintf(linkpath, MAX_STRING_LEN, "%s/device/subsystem", dev_path);
 
 	sub_len = readlink(linkpath, subsys_path, MAX_STRING_LEN - 1);
 
 	if (0 > sub_len && ENOENT == errno)
 	{
 		/* Fallback to "bus" link for kernels <= 2.6.17 */
-		zbx_snprintf(linkpath, MAX_STRING_LEN, "%s/device/bus", dev_path);
+		trx_snprintf(linkpath, MAX_STRING_LEN, "%s/device/bus", dev_path);
 		sub_len = readlink(linkpath, subsys_path, MAX_STRING_LEN - 1);
 	}
 
@@ -161,30 +161,30 @@ static int	get_device_info(const char *dev_path, const char *dev_name, char *dev
 		/* find out if legacy ISA or not */
 		if (9191 == bus_i2c)
 		{
-			zbx_snprintf(device_info, MAX_STRING_LEN, "%s-isa-%04x", prefix, addr);
+			trx_snprintf(device_info, MAX_STRING_LEN, "%s-isa-%04x", prefix, addr);
 		}
 		else
 		{
 			const char	*bus_subfolder;
 			char		*bus_attr = NULL, bus_path[MAX_STRING_LEN];
 
-			zbx_snprintf(bus_path, sizeof(bus_path), "/sys/class/i2c-adapter/i2c-%d", bus_i2c);
+			trx_snprintf(bus_path, sizeof(bus_path), "/sys/class/i2c-adapter/i2c-%d", bus_i2c);
 			bus_subfolder = sysfs_read_attr(bus_path, &bus_attr);
 
 			if (NULL != bus_subfolder && '\0' != *bus_subfolder)
 			{
 				if (0 != strncmp(bus_attr, "ISA ", 4))
 				{
-					zbx_free(bus_attr);
+					trx_free(bus_attr);
 					goto out;
 				}
 
-				zbx_snprintf(device_info, MAX_STRING_LEN, "%s-isa-%04x", prefix, addr);
+				trx_snprintf(device_info, MAX_STRING_LEN, "%s-isa-%04x", prefix, addr);
 			}
 			else
-				zbx_snprintf(device_info, MAX_STRING_LEN, "%s-i2c-%hd-%02x", prefix, bus_i2c, addr);
+				trx_snprintf(device_info, MAX_STRING_LEN, "%s-i2c-%hd-%02x", prefix, bus_i2c, addr);
 
-			zbx_free(bus_attr);
+			trx_free(bus_attr);
 		}
 
 		ret = SUCCEED;
@@ -198,7 +198,7 @@ static int	get_device_info(const char *dev_path, const char *dev_name, char *dev
 		if (2 != sscanf(dev_name, "spi%hd.%d", &bus_spi, &address))
 			goto out;
 
-		zbx_snprintf(device_info, MAX_STRING_LEN, "%s-spi-%hd-%x", prefix, bus_spi, (unsigned int)address);
+		trx_snprintf(device_info, MAX_STRING_LEN, "%s-spi-%hd-%x", prefix, bus_spi, (unsigned int)address);
 
 		ret = SUCCEED;
 	}
@@ -211,7 +211,7 @@ static int	get_device_info(const char *dev_path, const char *dev_name, char *dev
 			goto out;
 
 		addr = (domain << 16) + (bus << 8) + (slot << 3) + fn;
-		zbx_snprintf(device_info, MAX_STRING_LEN, "%s-pci-%04x", prefix, addr);
+		trx_snprintf(device_info, MAX_STRING_LEN, "%s-pci-%04x", prefix, addr);
 
 		ret = SUCCEED;
 	}
@@ -223,14 +223,14 @@ static int	get_device_info(const char *dev_path, const char *dev_name, char *dev
 		if (1 != sscanf(dev_name, "%*[a-z0-9_].%d", &address))
 			address = 0;
 
-		zbx_snprintf(device_info, MAX_STRING_LEN, "%s-isa-%04x", prefix, (unsigned int)address);
+		trx_snprintf(device_info, MAX_STRING_LEN, "%s-isa-%04x", prefix, (unsigned int)address);
 
 		ret = SUCCEED;
 	}
 	else if (0 == strcmp(subsys, "acpi"))
 	{
 		/* Assuming that acpi devices are unique */
-		zbx_snprintf(device_info, MAX_STRING_LEN, "%s-acpi-0", prefix);
+		trx_snprintf(device_info, MAX_STRING_LEN, "%s-acpi-0", prefix);
 
 		ret = SUCCEED;
 	}
@@ -242,12 +242,12 @@ static int	get_device_info(const char *dev_path, const char *dev_name, char *dev
 		if (4 != sscanf(dev_name, "%x:%x:%x.%x", &bus, &vendor, &product, &addr))
 			goto out;
 
-		zbx_snprintf(device_info, MAX_STRING_LEN, "%s-hid-%hd-%x", prefix, (short int)bus, addr);
+		trx_snprintf(device_info, MAX_STRING_LEN, "%s-hid-%hd-%x", prefix, (short int)bus, addr);
 
 		ret = SUCCEED;
 	}
 out:
-	zbx_free(prefix);
+	trx_free(prefix);
 
 	return ret;
 }
@@ -260,7 +260,7 @@ static void	get_device_sensors(int do_task, const char *device, const char *name
 #ifdef KERNEL_2_4
 	if (TRX_DO_ONE == do_task)
 	{
-		zbx_snprintf(sensorname, sizeof(sensorname), "%s/%s/%s", DEVICE_DIR, device, name);
+		trx_snprintf(sensorname, sizeof(sensorname), "%s/%s/%s", DEVICE_DIR, device, name);
 		count_sensor(do_task, sensorname, aggr, cnt);
 	}
 	else
@@ -277,10 +277,10 @@ static void	get_device_sensors(int do_task, const char *device, const char *name
 			if (0 == strcmp(deviceent->d_name, ".") || 0 == strcmp(deviceent->d_name, ".."))
 				continue;
 
-			if (NULL == zbx_regexp_match(deviceent->d_name, device, NULL))
+			if (NULL == trx_regexp_match(deviceent->d_name, device, NULL))
 				continue;
 
-			zbx_snprintf(devicename, sizeof(devicename), "%s/%s", DEVICE_DIR, deviceent->d_name);
+			trx_snprintf(devicename, sizeof(devicename), "%s/%s", DEVICE_DIR, deviceent->d_name);
 
 			if (NULL == (sensordir = opendir(devicename)))
 				continue;
@@ -290,10 +290,10 @@ static void	get_device_sensors(int do_task, const char *device, const char *name
 				if (0 == strcmp(sensorent->d_name, ".") || 0 == strcmp(sensorent->d_name, ".."))
 					continue;
 
-				if (NULL == zbx_regexp_match(sensorent->d_name, name, NULL))
+				if (NULL == trx_regexp_match(sensorent->d_name, name, NULL))
 					continue;
 
-				zbx_snprintf(sensorname, sizeof(sensorname), "%s/%s", devicename, sensorent->d_name);
+				trx_snprintf(sensorname, sizeof(sensorname), "%s/%s", devicename, sensorent->d_name);
 				count_sensor(do_task, sensorname, aggr, cnt);
 			}
 			closedir(sensordir);
@@ -308,7 +308,7 @@ static void	get_device_sensors(int do_task, const char *device, const char *name
 	const char	*subfolder;
 	int		err;
 
-	zbx_snprintf(hwmon_dir, sizeof(hwmon_dir), "%s", DEVICE_DIR);
+	trx_snprintf(hwmon_dir, sizeof(hwmon_dir), "%s", DEVICE_DIR);
 
 	if (NULL == (devicedir = opendir(hwmon_dir)))
 		return;
@@ -320,9 +320,9 @@ static void	get_device_sensors(int do_task, const char *device, const char *name
 		if (0 == strcmp(deviceent->d_name, ".") || 0 == strcmp(deviceent->d_name, ".."))
 			continue;
 
-		zbx_snprintf(devicepath, sizeof(devicepath), "%s/%s/device", DEVICE_DIR, deviceent->d_name);
+		trx_snprintf(devicepath, sizeof(devicepath), "%s/%s/device", DEVICE_DIR, deviceent->d_name);
 		dev_len = readlink(devicepath, deviced, MAX_STRING_LEN - 1);
-		zbx_snprintf(devicepath, sizeof(devicepath), "%s/%s", DEVICE_DIR, deviceent->d_name);
+		trx_snprintf(devicepath, sizeof(devicepath), "%s/%s", DEVICE_DIR, deviceent->d_name);
 
 		if (0 > dev_len)
 		{
@@ -336,7 +336,7 @@ static void	get_device_sensors(int do_task, const char *device, const char *name
 
 			if (0 == strcmp(device, device_p))
 			{
-				zbx_snprintf(device_info, sizeof(device_info), "%s", device);
+				trx_snprintf(device_info, sizeof(device_info), "%s", device);
 				err = (NULL != (subfolder = sysfs_read_attr(devicepath, NULL)) ? SUCCEED : FAIL);
 			}
 			else
@@ -345,17 +345,17 @@ static void	get_device_sensors(int do_task, const char *device, const char *name
 
 		if (SUCCEED == err && 0 == strcmp(device_info, device))
 		{
-			zbx_snprintf(devicepath, sizeof(devicepath), "%s/%s%s", DEVICE_DIR, deviceent->d_name,
+			trx_snprintf(devicepath, sizeof(devicepath), "%s/%s%s", DEVICE_DIR, deviceent->d_name,
 					subfolder);
 
 			if (TRX_DO_ONE == do_task)
 			{
-				zbx_snprintf(sensorname, sizeof(sensorname), "%s/%s_input", devicepath, name);
+				trx_snprintf(sensorname, sizeof(sensorname), "%s/%s_input", devicepath, name);
 				count_sensor(do_task, sensorname, aggr, cnt);
 			}
 			else
 			{
-				zbx_snprintf(regex, sizeof(regex), "%s[0-9]*_input", name);
+				trx_snprintf(regex, sizeof(regex), "%s[0-9]*_input", name);
 
 				if (NULL == (sensordir = opendir(devicepath)))
 					goto out;
@@ -366,10 +366,10 @@ static void	get_device_sensors(int do_task, const char *device, const char *name
 							0 == strcmp(sensorent->d_name, ".."))
 						continue;
 
-					if (NULL == zbx_regexp_match(sensorent->d_name, regex, NULL))
+					if (NULL == trx_regexp_match(sensorent->d_name, regex, NULL))
 						continue;
 
-					zbx_snprintf(sensorname, sizeof(sensorname), "%s/%s", devicepath,
+					trx_snprintf(sensorname, sizeof(sensorname), "%s/%s", devicepath,
 							sensorent->d_name);
 					count_sensor(do_task, sensorname, aggr, cnt);
 				}
@@ -390,7 +390,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (3 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -400,13 +400,13 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == device || '\0' == *device)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == name || '\0' == *name)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -420,7 +420,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 		do_task = TRX_DO_MIN;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -429,7 +429,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (TRX_DO_ONE != do_task && 0 == isalpha(name[strlen(name) - 1]))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Generic sensor name must be specified for selected mode."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Generic sensor name must be specified for selected mode."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -437,7 +437,7 @@ int	GET_SENSOR(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 == cnt)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain sensor information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain sensor information."));
 		return SYSINFO_RET_FAIL;
 	}
 

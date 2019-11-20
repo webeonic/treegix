@@ -117,12 +117,12 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxtrapper_a_AR = $(AR) $(ARFLAGS)
-libzbxtrapper_a_LIBADD =
-am_libzbxtrapper_a_OBJECTS = active.$(OBJEXT) trapper.$(OBJEXT) \
+libtrxtrapper_a_AR = $(AR) $(ARFLAGS)
+libtrxtrapper_a_LIBADD =
+am_libtrxtrapper_a_OBJECTS = active.$(OBJEXT) trapper.$(OBJEXT) \
 	nodecommand.$(OBJEXT) proxyconfig.$(OBJEXT) \
 	proxydata.$(OBJEXT) trapper_preproc.$(OBJEXT)
-libzbxtrapper_a_OBJECTS = $(am_libzbxtrapper_a_OBJECTS)
+libtrxtrapper_a_OBJECTS = $(am_libtrxtrapper_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -151,8 +151,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxtrapper_a_SOURCES)
-DIST_SOURCES = $(libzbxtrapper_a_SOURCES)
+SOURCES = $(libtrxtrapper_a_SOURCES)
+DIST_SOURCES = $(libtrxtrapper_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -376,8 +376,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxtrapper.a
-libzbxtrapper_a_SOURCES = \
+noinst_LIBRARIES = libtrxtrapper.a
+libtrxtrapper_a_SOURCES = \
 	active.c active.h \
 	trapper.c trapper.h \
 	nodecommand.c nodecommand.h \
@@ -422,10 +422,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxtrapper.a: $(libzbxtrapper_a_OBJECTS) $(libzbxtrapper_a_DEPENDENCIES) $(EXTRA_libzbxtrapper_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxtrapper.a
-	$(AM_V_AR)$(libzbxtrapper_a_AR) libzbxtrapper.a $(libzbxtrapper_a_OBJECTS) $(libzbxtrapper_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxtrapper.a
+libtrxtrapper.a: $(libtrxtrapper_a_OBJECTS) $(libtrxtrapper_a_DEPENDENCIES) $(EXTRA_libtrxtrapper_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxtrapper.a
+	$(AM_V_AR)$(libtrxtrapper_a_AR) libtrxtrapper.a $(libtrxtrapper_a_OBJECTS) $(libtrxtrapper_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxtrapper.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

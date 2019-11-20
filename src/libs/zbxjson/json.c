@@ -1,14 +1,14 @@
 
 
 #include "common.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "json_parser.h"
 #include "json.h"
 #include "jsonpath.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_strerror                                                *
+ * Function: trx_json_strerror                                                *
  *                                                                            *
  * Purpose: return string describing json error                               *
  *                                                                            *
@@ -19,32 +19,32 @@
  ******************************************************************************/
 #define TRX_JSON_MAX_STRERROR	255
 
-static TRX_THREAD_LOCAL char	zbx_json_strerror_message[TRX_JSON_MAX_STRERROR];
+static TRX_THREAD_LOCAL char	trx_json_strerror_message[TRX_JSON_MAX_STRERROR];
 
-const char	*zbx_json_strerror(void)
+const char	*trx_json_strerror(void)
 {
-	return zbx_json_strerror_message;
+	return trx_json_strerror_message;
 }
 
-void	zbx_set_json_strerror(const char *fmt, ...)
+void	trx_set_json_strerror(const char *fmt, ...)
 {
 	va_list	args;
 
 	va_start(args, fmt);
 
-	zbx_vsnprintf(zbx_json_strerror_message, sizeof(zbx_json_strerror_message), fmt, args);
+	trx_vsnprintf(trx_json_strerror_message, sizeof(trx_json_strerror_message), fmt, args);
 
 	va_end(args);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: __zbx_json_realloc                                               *
+ * Function: __trx_json_realloc                                               *
  *                                                                            *
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static void	__zbx_json_realloc(struct zbx_json *j, size_t need)
+static void	__trx_json_realloc(struct trx_json *j, size_t need)
 {
 	int	realloc = 0;
 
@@ -53,7 +53,7 @@ static void	__zbx_json_realloc(struct zbx_json *j, size_t need)
 		if (need > sizeof(j->buf_stat))
 		{
 			j->buffer_allocated = need;
-			j->buffer = (char *)zbx_malloc(j->buffer, j->buffer_allocated);
+			j->buffer = (char *)trx_malloc(j->buffer, j->buffer_allocated);
 		}
 		else
 		{
@@ -77,15 +77,15 @@ static void	__zbx_json_realloc(struct zbx_json *j, size_t need)
 		if (j->buffer == j->buf_stat)
 		{
 			j->buffer = NULL;
-			j->buffer = (char *)zbx_malloc(j->buffer, j->buffer_allocated);
+			j->buffer = (char *)trx_malloc(j->buffer, j->buffer_allocated);
 			memcpy(j->buffer, j->buf_stat, sizeof(j->buf_stat));
 		}
 		else
-			j->buffer = (char *)zbx_realloc(j->buffer, j->buffer_allocated);
+			j->buffer = (char *)trx_realloc(j->buffer, j->buffer_allocated);
 	}
 }
 
-void	zbx_json_init(struct zbx_json *j, size_t allocate)
+void	trx_json_init(struct trx_json *j, size_t allocate)
 {
 	assert(j);
 
@@ -95,13 +95,13 @@ void	zbx_json_init(struct zbx_json *j, size_t allocate)
 	j->buffer_size = 0;
 	j->status = TRX_JSON_EMPTY;
 	j->level = 0;
-	__zbx_json_realloc(j, allocate);
+	__trx_json_realloc(j, allocate);
 	*j->buffer = '\0';
 
-	zbx_json_addobject(j, NULL);
+	trx_json_addobject(j, NULL);
 }
 
-void	zbx_json_initarray(struct zbx_json *j, size_t allocate)
+void	trx_json_initarray(struct trx_json *j, size_t allocate)
 {
 	assert(j);
 
@@ -111,13 +111,13 @@ void	zbx_json_initarray(struct zbx_json *j, size_t allocate)
 	j->buffer_size = 0;
 	j->status = TRX_JSON_EMPTY;
 	j->level = 0;
-	__zbx_json_realloc(j, allocate);
+	__trx_json_realloc(j, allocate);
 	*j->buffer = '\0';
 
-	zbx_json_addarray(j, NULL);
+	trx_json_addarray(j, NULL);
 }
 
-void	zbx_json_clean(struct zbx_json *j)
+void	trx_json_clean(struct trx_json *j)
 {
 	assert(j);
 
@@ -127,18 +127,18 @@ void	zbx_json_clean(struct zbx_json *j)
 	j->level = 0;
 	*j->buffer = '\0';
 
-	zbx_json_addobject(j, NULL);
+	trx_json_addobject(j, NULL);
 }
 
-void	zbx_json_free(struct zbx_json *j)
+void	trx_json_free(struct trx_json *j)
 {
 	assert(j);
 
 	if (j->buffer != j->buf_stat)
-		zbx_free(j->buffer);
+		trx_free(j->buffer);
 }
 
-static size_t	__zbx_json_stringsize(const char *string, zbx_json_type_t type)
+static size_t	__trx_json_stringsize(const char *string, trx_json_type_t type)
 {
 	size_t		len = 0;
 	const char	*sptr;
@@ -176,7 +176,7 @@ static size_t	__zbx_json_stringsize(const char *string, zbx_json_type_t type)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_num2hex                                                      *
+ * Function: trx_num2hex                                                      *
  *                                                                            *
  * Purpose: convert parameter c (0-15) to hexadecimal value ('0'-'f')         *
  *                                                                            *
@@ -189,7 +189,7 @@ static size_t	__zbx_json_stringsize(const char *string, zbx_json_type_t type)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static char	zbx_num2hex(unsigned char c)
+static char	trx_num2hex(unsigned char c)
 {
 	if (c >= 10)
 		return (char)(c + 0x57);	/* a-f */
@@ -197,7 +197,7 @@ static char	zbx_num2hex(unsigned char c)
 		return (char)(c + 0x30);	/* 0-9 */
 }
 
-static char	*__zbx_json_insstring(char *p, const char *string, zbx_json_type_t type)
+static char	*__trx_json_insstring(char *p, const char *string, trx_json_type_t type)
 {
 	const char	*sptr;
 	char		buffer[] = {"null"};
@@ -247,8 +247,8 @@ static char	*__zbx_json_insstring(char *p, const char *string, zbx_json_type_t t
 					*p++ = 'u';
 					*p++ = '0';
 					*p++ = '0';
-					*p++ = zbx_num2hex((((unsigned char)*sptr) >> 4) & 0xf);
-					*p++ = zbx_num2hex(((unsigned char)*sptr) & 0xf);
+					*p++ = trx_num2hex((((unsigned char)*sptr) >> 4) & 0xf);
+					*p++ = trx_num2hex(((unsigned char)*sptr) & 0xf);
 				}
 				else
 					*p++ = *sptr;
@@ -261,22 +261,22 @@ static char	*__zbx_json_insstring(char *p, const char *string, zbx_json_type_t t
 	return p;
 }
 
-void	zbx_json_escape(char **string)
+void	trx_json_escape(char **string)
 {
 	size_t	size;
 	char	*buffer;
 
-	if (0 == (size = __zbx_json_stringsize(*string, TRX_JSON_TYPE_UNKNOWN)))
+	if (0 == (size = __trx_json_stringsize(*string, TRX_JSON_TYPE_UNKNOWN)))
 		return;
 
-	buffer = zbx_malloc(NULL, size + 1);
+	buffer = trx_malloc(NULL, size + 1);
 	buffer[size] = '\0';
-	__zbx_json_insstring(buffer, *string, TRX_JSON_TYPE_UNKNOWN);
-	zbx_free(*string);
+	__trx_json_insstring(buffer, *string, TRX_JSON_TYPE_UNKNOWN);
+	trx_free(*string);
 	*string = buffer;
 }
 
-static void	__zbx_json_addobject(struct zbx_json *j, const char *name, int object)
+static void	__trx_json_addobject(struct trx_json *j, const char *name, int object)
 {
 	size_t	len = 2; /* brackets */
 	char	*p, *psrc, *pdst;
@@ -288,11 +288,11 @@ static void	__zbx_json_addobject(struct zbx_json *j, const char *name, int objec
 
 	if (NULL != name)
 	{
-		len += __zbx_json_stringsize(name, TRX_JSON_TYPE_STRING);
+		len += __trx_json_stringsize(name, TRX_JSON_TYPE_STRING);
 		len += 1; /* : */
 	}
 
-	__zbx_json_realloc(j, j->buffer_size + len + 1/*'\0'*/);
+	__trx_json_realloc(j, j->buffer_size + len + 1/*'\0'*/);
 
 	psrc = j->buffer + j->buffer_offset;
 	pdst = j->buffer + j->buffer_offset + len;
@@ -306,7 +306,7 @@ static void	__zbx_json_addobject(struct zbx_json *j, const char *name, int objec
 
 	if (NULL != name)
 	{
-		p = __zbx_json_insstring(p, name, TRX_JSON_TYPE_STRING);
+		p = __trx_json_insstring(p, name, TRX_JSON_TYPE_STRING);
 		*p++ = ':';
 	}
 
@@ -319,17 +319,17 @@ static void	__zbx_json_addobject(struct zbx_json *j, const char *name, int objec
 	j->status = TRX_JSON_EMPTY;
 }
 
-void	zbx_json_addobject(struct zbx_json *j, const char *name)
+void	trx_json_addobject(struct trx_json *j, const char *name)
 {
-	__zbx_json_addobject(j, name, 1);
+	__trx_json_addobject(j, name, 1);
 }
 
-void	zbx_json_addarray(struct zbx_json *j, const char *name)
+void	trx_json_addarray(struct trx_json *j, const char *name)
 {
-	__zbx_json_addobject(j, name, 0);
+	__trx_json_addobject(j, name, 0);
 }
 
-void	zbx_json_addstring(struct zbx_json *j, const char *name, const char *string, zbx_json_type_t type)
+void	trx_json_addstring(struct trx_json *j, const char *name, const char *string, trx_json_type_t type)
 {
 	size_t	len = 0;
 	char	*p, *psrc, *pdst;
@@ -341,12 +341,12 @@ void	zbx_json_addstring(struct zbx_json *j, const char *name, const char *string
 
 	if (NULL != name)
 	{
-		len += __zbx_json_stringsize(name, TRX_JSON_TYPE_STRING);
+		len += __trx_json_stringsize(name, TRX_JSON_TYPE_STRING);
 		len += 1; /* : */
 	}
-	len += __zbx_json_stringsize(string, type);
+	len += __trx_json_stringsize(string, type);
 
-	__zbx_json_realloc(j, j->buffer_size + len + 1/*'\0'*/);
+	__trx_json_realloc(j, j->buffer_size + len + 1/*'\0'*/);
 
 	psrc = j->buffer + j->buffer_offset;
 	pdst = j->buffer + j->buffer_offset + len;
@@ -360,17 +360,17 @@ void	zbx_json_addstring(struct zbx_json *j, const char *name, const char *string
 
 	if (NULL != name)
 	{
-		p = __zbx_json_insstring(p, name, TRX_JSON_TYPE_STRING);
+		p = __trx_json_insstring(p, name, TRX_JSON_TYPE_STRING);
 		*p++ = ':';
 	}
-	p = __zbx_json_insstring(p, string, type);
+	p = __trx_json_insstring(p, string, type);
 
 	j->buffer_offset = p - j->buffer;
 	j->buffer_size += len;
 	j->status = TRX_JSON_COMMA;
 }
 
-void	zbx_json_addraw(struct zbx_json *j, const char *name, const char *data)
+void	trx_json_addraw(struct trx_json *j, const char *name, const char *data)
 {
 	size_t	len = 0, len_data;
 	char	*p, *psrc, *pdst;
@@ -383,12 +383,12 @@ void	zbx_json_addraw(struct zbx_json *j, const char *name, const char *data)
 
 	if (NULL != name)
 	{
-		len += __zbx_json_stringsize(name, TRX_JSON_TYPE_STRING);
+		len += __trx_json_stringsize(name, TRX_JSON_TYPE_STRING);
 		len += 1; /* : */
 	}
 	len += len_data;
 
-	__zbx_json_realloc(j, j->buffer_size + len + 1/*'\0'*/);
+	__trx_json_realloc(j, j->buffer_size + len + 1/*'\0'*/);
 
 	psrc = j->buffer + j->buffer_offset;
 	pdst = j->buffer + j->buffer_offset + len;
@@ -402,7 +402,7 @@ void	zbx_json_addraw(struct zbx_json *j, const char *name, const char *data)
 
 	if (NULL != name)
 	{
-		p = __zbx_json_insstring(p, name, TRX_JSON_TYPE_STRING);
+		p = __trx_json_insstring(p, name, TRX_JSON_TYPE_STRING);
 		*p++ = ':';
 	}
 
@@ -414,35 +414,35 @@ void	zbx_json_addraw(struct zbx_json *j, const char *name, const char *data)
 	j->status = TRX_JSON_COMMA;
 }
 
-void	zbx_json_adduint64(struct zbx_json *j, const char *name, zbx_uint64_t value)
+void	trx_json_adduint64(struct trx_json *j, const char *name, trx_uint64_t value)
 {
 	char	buffer[MAX_ID_LEN];
 
-	zbx_snprintf(buffer, sizeof(buffer), TRX_FS_UI64, value);
-	zbx_json_addstring(j, name, buffer, TRX_JSON_TYPE_INT);
+	trx_snprintf(buffer, sizeof(buffer), TRX_FS_UI64, value);
+	trx_json_addstring(j, name, buffer, TRX_JSON_TYPE_INT);
 }
 
-void	zbx_json_addint64(struct zbx_json *j, const char *name, zbx_int64_t value)
+void	trx_json_addint64(struct trx_json *j, const char *name, trx_int64_t value)
 {
 	char	buffer[MAX_ID_LEN];
 
-	zbx_snprintf(buffer, sizeof(buffer), TRX_FS_I64, value);
-	zbx_json_addstring(j, name, buffer, TRX_JSON_TYPE_INT);
+	trx_snprintf(buffer, sizeof(buffer), TRX_FS_I64, value);
+	trx_json_addstring(j, name, buffer, TRX_JSON_TYPE_INT);
 }
 
-void	zbx_json_addfloat(struct zbx_json *j, const char *name, double value)
+void	trx_json_addfloat(struct trx_json *j, const char *name, double value)
 {
 	char	buffer[MAX_ID_LEN];
 
-	zbx_snprintf(buffer, sizeof(buffer), TRX_FS_DBL, value);
-	zbx_json_addstring(j, name, buffer, TRX_JSON_TYPE_INT);
+	trx_snprintf(buffer, sizeof(buffer), TRX_FS_DBL, value);
+	trx_json_addstring(j, name, buffer, TRX_JSON_TYPE_INT);
 }
 
-int	zbx_json_close(struct zbx_json *j)
+int	trx_json_close(struct trx_json *j)
 {
 	if (1 == j->level)
 	{
-		zbx_set_json_strerror("cannot close top level object");
+		trx_set_json_strerror("cannot close top level object");
 		return FAIL;
 	}
 
@@ -455,7 +455,7 @@ int	zbx_json_close(struct zbx_json *j)
 
 /******************************************************************************
  *                                                                            *
- * Function: __zbx_json_type                                                  *
+ * Function: __trx_json_type                                                  *
  *                                                                            *
  * Purpose: return type of pointed value                                      *
  *                                                                            *
@@ -464,7 +464,7 @@ int	zbx_json_close(struct zbx_json *j)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static zbx_json_type_t	__zbx_json_type(const char *p)
+static trx_json_type_t	__trx_json_type(const char *p)
 {
 	if ('"' == *p)
 		return TRX_JSON_TYPE_STRING;
@@ -481,14 +481,14 @@ static zbx_json_type_t	__zbx_json_type(const char *p)
 	if ('f' == p[0] && 'a' == p[1] && 'l' == p[2] && 's' == p[3] && 'e' == p[4])
 		return TRX_JSON_TYPE_FALSE;
 
-	zbx_set_json_strerror("invalid type of JSON value \"%.64s\"", p);
+	trx_set_json_strerror("invalid type of JSON value \"%.64s\"", p);
 
 	return TRX_JSON_TYPE_UNKNOWN;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: __zbx_json_rbracket                                              *
+ * Function: __trx_json_rbracket                                              *
  *                                                                            *
  * Purpose: return position of right bracket                                  *
  *                                                                            *
@@ -498,7 +498,7 @@ static zbx_json_type_t	__zbx_json_type(const char *p)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static const char	*__zbx_json_rbracket(const char *p)
+static const char	*__trx_json_rbracket(const char *p)
 {
 	int	level = 0;
 	int	state = 0; /* 0 - outside string; 1 - inside string */
@@ -548,7 +548,7 @@ static const char	*__zbx_json_rbracket(const char *p)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_open                                                    *
+ * Function: trx_json_open                                                    *
  *                                                                            *
  * Purpose: open json buffer and check for brackets                           *
  *                                                                            *
@@ -556,7 +556,7 @@ static const char	*__zbx_json_rbracket(const char *p)
  *               FAIL - an error occurred                                     *
  *                                                                            *
  ******************************************************************************/
-int	zbx_json_open(const char *buffer, struct zbx_json_parse *jp)
+int	trx_json_open(const char *buffer, struct trx_json_parse *jp)
 {
 	char	*error = NULL;
 	int	len;
@@ -570,16 +570,16 @@ int	zbx_json_open(const char *buffer, struct zbx_json_parse *jp)
 	jp->start = buffer;
 	jp->end = NULL;
 
-	if (0 == (len = zbx_json_validate(jp->start, &error)))
+	if (0 == (len = trx_json_validate(jp->start, &error)))
 	{
 		if (NULL != error)
 		{
-			zbx_set_json_strerror("cannot parse as a valid JSON object: %s", error);
-			zbx_free(error);
+			trx_set_json_strerror("cannot parse as a valid JSON object: %s", error);
+			trx_free(error);
 		}
 		else
 		{
-			zbx_set_json_strerror("cannot parse as a valid JSON object \"%.64s\"", buffer);
+			trx_set_json_strerror("cannot parse as a valid JSON object \"%.64s\"", buffer);
 		}
 
 		return FAIL;
@@ -592,7 +592,7 @@ int	zbx_json_open(const char *buffer, struct zbx_json_parse *jp)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_next                                                    *
+ * Function: trx_json_next                                                    *
  *                                                                            *
  * Purpose: locate next pair or element                                       *
  *                                                                            *
@@ -604,7 +604,7 @@ int	zbx_json_open(const char *buffer, struct zbx_json_parse *jp)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-const char	*zbx_json_next(const struct zbx_json_parse *jp, const char *p)
+const char	*trx_json_next(const struct trx_json_parse *jp, const char *p)
 {
 	int	level = 0;
 	int	state = 0;	/* 0 - outside string; 1 - inside string */
@@ -661,7 +661,7 @@ const char	*zbx_json_next(const struct zbx_json_parse *jp, const char *p)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_is_valid_json_hex                                            *
+ * Function: trx_is_valid_json_hex                                            *
  *                                                                            *
  * Purpose: check if a 4 character sequence is a valid hex number 0000 - FFFF *
  *                                                                            *
@@ -671,7 +671,7 @@ const char	*zbx_json_next(const struct zbx_json_parse *jp, const char *p)
  * Return value: SUCCEED or FAIL                                              *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_is_valid_json_hex(const char *p)
+static int	trx_is_valid_json_hex(const char *p)
 {
 	int	i;
 
@@ -686,7 +686,7 @@ static int	zbx_is_valid_json_hex(const char *p)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_hex2num                                                      *
+ * Function: trx_hex2num                                                      *
  *                                                                            *
  * Purpose: convert hexit c ('0'-'9''a'-'f''A'-'F') to number (0-15)          *
  *                                                                            *
@@ -699,7 +699,7 @@ static int	zbx_is_valid_json_hex(const char *p)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static unsigned int	zbx_hex2num(char c)
+static unsigned int	trx_hex2num(char c)
 {
 	int	res;
 
@@ -715,7 +715,7 @@ static unsigned int	zbx_hex2num(char c)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_decode_character                                        *
+ * Function: trx_json_decode_character                                        *
  *                                                                            *
  * Purpose: decodes JSON escape character into UTF-8                          *
  *                                                                            *
@@ -727,7 +727,7 @@ static unsigned int	zbx_hex2num(char c)
  *               0 on error (invalid escape sequence)                         *
  *                                                                            *
  ******************************************************************************/
-static unsigned int	zbx_json_decode_character(const char **p, unsigned char *bytes)
+static unsigned int	trx_json_decode_character(const char **p, unsigned char *bytes)
 {
 	bytes[0] = '\0';
 
@@ -771,13 +771,13 @@ static unsigned int	zbx_json_decode_character(const char **p, unsigned char *byt
 	{
 		unsigned int	num;
 
-		if (FAIL == zbx_is_valid_json_hex(++*p))
+		if (FAIL == trx_is_valid_json_hex(++*p))
 			return 0;
 
-		num = zbx_hex2num(**p) << 12;
-		num += zbx_hex2num(*(++*p)) << 8;
-		num += zbx_hex2num(*(++*p)) << 4;
-		num += zbx_hex2num(*(++*p));
+		num = trx_hex2num(**p) << 12;
+		num += trx_hex2num(*(++*p)) << 8;
+		num += trx_hex2num(*(++*p)) << 4;
+		num += trx_hex2num(*(++*p));
 		++*p;
 
 		if (0x007f >= num)	/* 0000 - 007f */
@@ -804,13 +804,13 @@ static unsigned int	zbx_json_decode_character(const char **p, unsigned char *byt
 
 			/* collect the low surrogate */
 
-			if ('\\' != **p || 'u' != *(++*p) || FAIL == zbx_is_valid_json_hex(++*p))
+			if ('\\' != **p || 'u' != *(++*p) || FAIL == trx_is_valid_json_hex(++*p))
 				return 0;
 
-			num_lo = zbx_hex2num(**p) << 12;
-			num_lo += zbx_hex2num(*(++*p)) << 8;
-			num_lo += zbx_hex2num(*(++*p)) << 4;
-			num_lo += zbx_hex2num(*(++*p));
+			num_lo = trx_hex2num(**p) << 12;
+			num_lo += trx_hex2num(*(++*p)) << 8;
+			num_lo += trx_hex2num(*(++*p)) << 4;
+			num_lo += trx_hex2num(*(++*p));
 			++*p;
 
 			if (num_lo < 0xdc00 || 0xdfff < num_lo)		/* low surrogate range is dc00 - dfff */
@@ -834,7 +834,7 @@ static unsigned int	zbx_json_decode_character(const char **p, unsigned char *byt
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_copy_string                                             *
+ * Function: trx_json_copy_string                                             *
  *                                                                            *
  * Purpose: copies json name/string value by omitting leading/trailing " and  *
  *          converting escape sequences                                       *
@@ -847,7 +847,7 @@ static unsigned int	zbx_json_decode_character(const char **p, unsigned char *byt
  *               string copying failed.                                       *
  *                                                                            *
  ******************************************************************************/
-static const char	*zbx_json_copy_string(const char *p, char *out, size_t size)
+static const char	*trx_json_copy_string(const char *p, char *out, size_t size)
 {
 	char	*start = out;
 
@@ -865,7 +865,7 @@ static const char	*zbx_json_copy_string(const char *p, char *out, size_t size)
 
 			case '\\':
 				++p;
-				if (0 == (nbytes = zbx_json_decode_character(&p, uc)))
+				if (0 == (nbytes = trx_json_decode_character(&p, uc)))
 					return NULL;
 
 				if ((size_t)(out - start) + nbytes >= size)
@@ -891,7 +891,7 @@ static const char	*zbx_json_copy_string(const char *p, char *out, size_t size)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_copy_value                                              *
+ * Function: trx_json_copy_value                                              *
  *                                                                            *
  * Purpose: copies unquoted (numeric, boolean) json value                     *
  *                                                                            *
@@ -904,7 +904,7 @@ static const char	*zbx_json_copy_string(const char *p, char *out, size_t size)
  *               string copying failed.                                       *
  *                                                                            *
  ******************************************************************************/
-static const char	*zbx_json_copy_unquoted_value(const char *p, size_t len, char *out, size_t size)
+static const char	*trx_json_copy_unquoted_value(const char *p, size_t len, char *out, size_t size)
 {
 	if (size < len + 1)
 		return NULL;
@@ -915,12 +915,12 @@ static const char	*zbx_json_copy_unquoted_value(const char *p, size_t len, char 
 	return p + len;
 }
 
-const char	*zbx_json_decodevalue(const char *p, char *string, size_t size, zbx_json_type_t *type)
+const char	*trx_json_decodevalue(const char *p, char *string, size_t size, trx_json_type_t *type)
 {
 	size_t		len;
-	zbx_json_type_t	type_local;
+	trx_json_type_t	type_local;
 
-	switch (type_local = __zbx_json_type(p))
+	switch (type_local = __trx_json_type(p))
 	{
 		case TRX_JSON_TYPE_ARRAY:
 		case TRX_JSON_TYPE_OBJECT:
@@ -938,23 +938,23 @@ const char	*zbx_json_decodevalue(const char *p, char *string, size_t size, zbx_j
 	switch (type_local)
 	{
 		case TRX_JSON_TYPE_STRING:
-			return zbx_json_copy_string(p, string, size);
+			return trx_json_copy_string(p, string, size);
 		case TRX_JSON_TYPE_NULL:
 			if (0 == size)
 				return NULL;
 			*string = '\0';
 			return p + len;
 		default: /* TRX_JSON_TYPE_INT, TRX_JSON_TYPE_TRUE, TRX_JSON_TYPE_FALSE */
-			return zbx_json_copy_unquoted_value(p, len, string, size);
+			return trx_json_copy_unquoted_value(p, len, string, size);
 	}
 }
 
-const char	*zbx_json_decodevalue_dyn(const char *p, char **string, size_t *string_alloc, zbx_json_type_t *type)
+const char	*trx_json_decodevalue_dyn(const char *p, char **string, size_t *string_alloc, trx_json_type_t *type)
 {
 	size_t		len;
-	zbx_json_type_t	type_local;
+	trx_json_type_t	type_local;
 
-	switch (type_local = __zbx_json_type(p))
+	switch (type_local = __trx_json_type(p))
 	{
 		case TRX_JSON_TYPE_ARRAY:
 		case TRX_JSON_TYPE_OBJECT:
@@ -969,7 +969,7 @@ const char	*zbx_json_decodevalue_dyn(const char *p, char **string, size_t *strin
 	if (*string_alloc <= len)
 	{
 		*string_alloc = len + 1;
-		*string = (char *)zbx_realloc(*string, *string_alloc);
+		*string = (char *)trx_realloc(*string, *string_alloc);
 	}
 
 	if (NULL != type)
@@ -978,24 +978,24 @@ const char	*zbx_json_decodevalue_dyn(const char *p, char **string, size_t *strin
 	switch (type_local)
 	{
 		case TRX_JSON_TYPE_STRING:
-			return zbx_json_copy_string(p, *string, *string_alloc);
+			return trx_json_copy_string(p, *string, *string_alloc);
 		case TRX_JSON_TYPE_NULL:
 			**string = '\0';
 			return p + len;
 		default: /* TRX_JSON_TYPE_INT, TRX_JSON_TYPE_TRUE, TRX_JSON_TYPE_FALSE */
-			return zbx_json_copy_unquoted_value(p, len, *string, *string_alloc);
+			return trx_json_copy_unquoted_value(p, len, *string, *string_alloc);
 	}
 }
 
-const char	*zbx_json_pair_next(const struct zbx_json_parse *jp, const char *p, char *name, size_t len)
+const char	*trx_json_pair_next(const struct trx_json_parse *jp, const char *p, char *name, size_t len)
 {
-	if (NULL == (p = zbx_json_next(jp, p)))
+	if (NULL == (p = trx_json_next(jp, p)))
 		return NULL;
 
-	if (TRX_JSON_TYPE_STRING != __zbx_json_type(p))
+	if (TRX_JSON_TYPE_STRING != __trx_json_type(p))
 		return NULL;
 
-	if (NULL == (p = zbx_json_copy_string(p, name, len)))
+	if (NULL == (p = trx_json_copy_string(p, name, len)))
 		return NULL;
 
 	SKIP_WHITESPACE(p);
@@ -1010,7 +1010,7 @@ const char	*zbx_json_pair_next(const struct zbx_json_parse *jp, const char *p, c
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_pair_by_name                                            *
+ * Function: trx_json_pair_by_name                                            *
  *                                                                            *
  * Purpose: find pair by name and return pointer to value                     *
  *                                                                            *
@@ -1021,53 +1021,53 @@ const char	*zbx_json_pair_next(const struct zbx_json_parse *jp, const char *p, c
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-const char	*zbx_json_pair_by_name(const struct zbx_json_parse *jp, const char *name)
+const char	*trx_json_pair_by_name(const struct trx_json_parse *jp, const char *name)
 {
 	char		buffer[MAX_STRING_LEN];
 	const char	*p = NULL;
 
-	while (NULL != (p = zbx_json_pair_next(jp, p, buffer, sizeof(buffer))))
+	while (NULL != (p = trx_json_pair_next(jp, p, buffer, sizeof(buffer))))
 		if (0 == strcmp(name, buffer))
 			return p;
 
-	zbx_set_json_strerror("cannot find pair with name \"%s\"", name);
+	trx_set_json_strerror("cannot find pair with name \"%s\"", name);
 
 	return NULL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_next_value                                              *
+ * Function: trx_json_next_value                                              *
  *                                                                            *
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-const char	*zbx_json_next_value(const struct zbx_json_parse *jp, const char *p, char *string, size_t len,
-		zbx_json_type_t *type)
+const char	*trx_json_next_value(const struct trx_json_parse *jp, const char *p, char *string, size_t len,
+		trx_json_type_t *type)
 {
-	if (NULL == (p = zbx_json_next(jp, p)))
+	if (NULL == (p = trx_json_next(jp, p)))
 		return NULL;
 
-	return zbx_json_decodevalue(p, string, len, type);
+	return trx_json_decodevalue(p, string, len, type);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_next_value_dyn                                          *
+ * Function: trx_json_next_value_dyn                                          *
  *                                                                            *
  ******************************************************************************/
-const char	*zbx_json_next_value_dyn(const struct zbx_json_parse *jp, const char *p, char **string,
-		size_t *string_alloc, zbx_json_type_t *type)
+const char	*trx_json_next_value_dyn(const struct trx_json_parse *jp, const char *p, char **string,
+		size_t *string_alloc, trx_json_type_t *type)
 {
-	if (NULL == (p = zbx_json_next(jp, p)))
+	if (NULL == (p = trx_json_next(jp, p)))
 		return NULL;
 
-	return zbx_json_decodevalue_dyn(p, string, string_alloc, type);
+	return trx_json_decodevalue_dyn(p, string, string_alloc, type);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_value_by_name                                           *
+ * Function: trx_json_value_by_name                                           *
  *                                                                            *
  * Purpose: return value by pair name                                         *
  *                                                                            *
@@ -1076,14 +1076,14 @@ const char	*zbx_json_next_value_dyn(const struct zbx_json_parse *jp, const char 
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_json_value_by_name(const struct zbx_json_parse *jp, const char *name, char *string, size_t len)
+int	trx_json_value_by_name(const struct trx_json_parse *jp, const char *name, char *string, size_t len)
 {
 	const char	*p;
 
-	if (NULL == (p = zbx_json_pair_by_name(jp, name)))
+	if (NULL == (p = trx_json_pair_by_name(jp, name)))
 		return FAIL;
 
-	if (NULL == zbx_json_decodevalue(p, string, len, NULL))
+	if (NULL == trx_json_decodevalue(p, string, len, NULL))
 		return FAIL;
 
 	return SUCCEED;
@@ -1091,7 +1091,7 @@ int	zbx_json_value_by_name(const struct zbx_json_parse *jp, const char *name, ch
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_value_by_name_dyn                                       *
+ * Function: trx_json_value_by_name_dyn                                       *
  *                                                                            *
  * Purpose: return value by pair name                                         *
  *                                                                            *
@@ -1100,14 +1100,14 @@ int	zbx_json_value_by_name(const struct zbx_json_parse *jp, const char *name, ch
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_json_value_by_name_dyn(const struct zbx_json_parse *jp, const char *name, char **string, size_t *string_alloc)
+int	trx_json_value_by_name_dyn(const struct trx_json_parse *jp, const char *name, char **string, size_t *string_alloc)
 {
 	const char	*p;
 
-	if (NULL == (p = zbx_json_pair_by_name(jp, name)))
+	if (NULL == (p = trx_json_pair_by_name(jp, name)))
 		return FAIL;
 
-	if (NULL == zbx_json_decodevalue_dyn(p, string, string_alloc, NULL))
+	if (NULL == trx_json_decodevalue_dyn(p, string, string_alloc, NULL))
 		return FAIL;
 
 	return SUCCEED;
@@ -1115,7 +1115,7 @@ int	zbx_json_value_by_name_dyn(const struct zbx_json_parse *jp, const char *name
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_brackets_open                                           *
+ * Function: trx_json_brackets_open                                           *
  *                                                                            *
  * Return value: SUCCESS - processed successfully                             *
  *               FAIL - an error occurred                                     *
@@ -1123,11 +1123,11 @@ int	zbx_json_value_by_name_dyn(const struct zbx_json_parse *jp, const char *name
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_json_brackets_open(const char *p, struct zbx_json_parse *jp)
+int	trx_json_brackets_open(const char *p, struct trx_json_parse *jp)
 {
-	if (NULL == (jp->end = __zbx_json_rbracket(p)))
+	if (NULL == (jp->end = __trx_json_rbracket(p)))
 	{
-		zbx_set_json_strerror("cannot open JSON object or array \"%.64s\"", p);
+		trx_set_json_strerror("cannot open JSON object or array \"%.64s\"", p);
 		return FAIL;
 	}
 
@@ -1140,7 +1140,7 @@ int	zbx_json_brackets_open(const char *p, struct zbx_json_parse *jp)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_brackets_by_name                                        *
+ * Function: trx_json_brackets_by_name                                        *
  *                                                                            *
  * Return value: SUCCESS - processed successfully                             *
  *               FAIL - an error occurred                                     *
@@ -1148,14 +1148,14 @@ int	zbx_json_brackets_open(const char *p, struct zbx_json_parse *jp)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_json_brackets_by_name(const struct zbx_json_parse *jp, const char *name, struct zbx_json_parse *out)
+int	trx_json_brackets_by_name(const struct trx_json_parse *jp, const char *name, struct trx_json_parse *out)
 {
 	const char	*p;
 
-	if (NULL == (p = zbx_json_pair_by_name(jp, name)))
+	if (NULL == (p = trx_json_pair_by_name(jp, name)))
 		return FAIL;
 
-	if (FAIL == zbx_json_brackets_open(p, out))
+	if (FAIL == trx_json_brackets_open(p, out))
 		return FAIL;
 
 	return SUCCEED;
@@ -1163,7 +1163,7 @@ int	zbx_json_brackets_by_name(const struct zbx_json_parse *jp, const char *name,
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_object_is_empty                                         *
+ * Function: trx_json_object_is_empty                                         *
  *                                                                            *
  * Return value: SUCCESS - if object is empty                                 *
  *               FAIL - if object contains data                               *
@@ -1171,26 +1171,26 @@ int	zbx_json_brackets_by_name(const struct zbx_json_parse *jp, const char *name,
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_json_object_is_empty(const struct zbx_json_parse *jp)
+int	trx_json_object_is_empty(const struct trx_json_parse *jp)
 {
 	return jp->end - jp->start > 1 ? FAIL : SUCCEED;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_count                                                   *
+ * Function: trx_json_count                                                   *
  *                                                                            *
- * Return value: number of elements in zbx_json_parse object                  *
+ * Return value: number of elements in trx_json_parse object                  *
  *                                                                            *
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_json_count(const struct zbx_json_parse *jp)
+int	trx_json_count(const struct trx_json_parse *jp)
 {
 	int		num = 0;
 	const char	*p = NULL;
 
-	while (NULL != (p = zbx_json_next(jp, p)))
+	while (NULL != (p = trx_json_next(jp, p)))
 		num++;
 
 	return num;
@@ -1198,7 +1198,7 @@ int	zbx_json_count(const struct zbx_json_parse *jp)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_open_path                                               *
+ * Function: trx_json_open_path                                               *
  *                                                                            *
  * Purpose: opens an object by definite json path                             *
  *                                                                            *
@@ -1209,31 +1209,31 @@ int	zbx_json_count(const struct zbx_json_parse *jp)
  *           is supported.                                                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_json_open_path(const struct zbx_json_parse *jp, const char *path, struct zbx_json_parse *out)
+int	trx_json_open_path(const struct trx_json_parse *jp, const char *path, struct trx_json_parse *out)
 {
 	int			i, ret = FAIL;
-	struct zbx_json_parse	object;
-	zbx_jsonpath_t		jsonpath;
+	struct trx_json_parse	object;
+	trx_jsonpath_t		jsonpath;
 
 	object = *jp;
 
-	if (FAIL == zbx_jsonpath_compile(path, &jsonpath))
+	if (FAIL == trx_jsonpath_compile(path, &jsonpath))
 		return FAIL;
 
 	if (0 == jsonpath.definite)
 	{
-		zbx_set_json_strerror("cannot use indefinite path when opening sub element");
+		trx_set_json_strerror("cannot use indefinite path when opening sub element");
 		goto out;
 	}
 
 	for (i = 0; i < jsonpath.segments_num; i++)
 	{
 		const char		*p;
-		zbx_jsonpath_segment_t	*segment = &jsonpath.segments[i];
+		trx_jsonpath_segment_t	*segment = &jsonpath.segments[i];
 
 		if (TRX_JSONPATH_SEGMENT_MATCH_LIST != segment->type)
 		{
-			zbx_set_json_strerror("jsonpath segment %d is not a name or index", i + 1);
+			trx_set_json_strerror("jsonpath segment %d is not a name or index", i + 1);
 			goto out;
 		}
 
@@ -1246,33 +1246,33 @@ int	zbx_json_open_path(const struct zbx_json_parse *jp, const char *path, struct
 
 			memcpy(&index, segment->data.list.values->data, sizeof(int));
 
-			for (p = NULL; NULL != (p = zbx_json_next(&object, p)) && 0 != index; index--)
+			for (p = NULL; NULL != (p = trx_json_next(&object, p)) && 0 != index; index--)
 				;
 
 			if (0 != index || NULL == p)
 			{
-				zbx_set_json_strerror("array index out of bounds in jsonpath segment %d", i + 1);
+				trx_set_json_strerror("array index out of bounds in jsonpath segment %d", i + 1);
 				goto out;
 			}
 		}
 		else
 		{
-			if (NULL == (p = zbx_json_pair_by_name(&object, (char *)&segment->data.list.values->data)))
+			if (NULL == (p = trx_json_pair_by_name(&object, (char *)&segment->data.list.values->data)))
 			{
-				zbx_set_json_strerror("object not found in jsonpath segment %d", i + 1);
+				trx_set_json_strerror("object not found in jsonpath segment %d", i + 1);
 				goto out;
 			}
 		}
 
 		object.start = p;
 
-		if (NULL == (object.end = __zbx_json_rbracket(p)))
+		if (NULL == (object.end = __trx_json_rbracket(p)))
 			object.end = p + json_parse_value(p, NULL) - 1;
 	}
 
 	*out = object;
 	ret = SUCCEED;
 out:
-	zbx_jsonpath_clear(&jsonpath);
+	trx_jsonpath_clear(&jsonpath);
 	return ret;
 }

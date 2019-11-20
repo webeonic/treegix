@@ -78,13 +78,13 @@ extern "C"
 #endif
 
 /* Initialize the algorithm. */
-void zbx_md5_init(md5_state_t *pms);
+void trx_md5_init(md5_state_t *pms);
 
 /* Append a string to the message. */
-void zbx_md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes);
+void trx_md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes);
 
 /* Finish the message and return the digest. */
-void zbx_md5_finish(md5_state_t *pms, md5_byte_t digest[16]);
+void trx_md5_finish(md5_state_t *pms, md5_byte_t digest[16]);
 
 #ifdef __cplusplus
 }  /* end extern "C" */

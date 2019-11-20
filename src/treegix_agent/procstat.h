@@ -20,28 +20,28 @@ typedef struct
 	/* errno error code */
 	int		error;
 
-	zbx_uint64_t	utime;
-	zbx_uint64_t	stime;
+	trx_uint64_t	utime;
+	trx_uint64_t	stime;
 
 	/* process start time, used to validate if the old */
 	/* snapshot data belongs to the same process       */
-	zbx_uint64_t	starttime;
+	trx_uint64_t	starttime;
 }
-zbx_procstat_util_t;
+trx_procstat_util_t;
 
-void	zbx_procstat_init(void);
-void	zbx_procstat_destroy(void);
-int	zbx_procstat_collector_started(void);
-int	zbx_procstat_get_util(const char *procname, const char *username, const char *cmdline, zbx_uint64_t flags,
+void	trx_procstat_init(void);
+void	trx_procstat_destroy(void);
+int	trx_procstat_collector_started(void);
+int	trx_procstat_get_util(const char *procname, const char *username, const char *cmdline, trx_uint64_t flags,
 		int period, int type, double *value, char **errmsg);
-void	zbx_procstat_collect(void);
+void	trx_procstat_collect(void);
 
 /* external functions used by procstat collector */
-int	zbx_proc_get_processes(zbx_vector_ptr_t *processes, unsigned int flags);
-void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *procname, const char *username,
-		const char *cmdline, zbx_uint64_t flags, zbx_vector_uint64_t *pids);
-void	zbx_proc_get_process_stats(zbx_procstat_util_t *procs, int procs_num);
-void	zbx_proc_free_processes(zbx_vector_ptr_t *processes);
+int	trx_proc_get_processes(trx_vector_ptr_t *processes, unsigned int flags);
+void	trx_proc_get_matching_pids(const trx_vector_ptr_t *processes, const char *procname, const char *username,
+		const char *cmdline, trx_uint64_t flags, trx_vector_uint64_t *pids);
+void	trx_proc_get_process_stats(trx_procstat_util_t *procs, int procs_num);
+void	trx_proc_free_processes(trx_vector_ptr_t *processes);
 
 #endif	/* TRX_PROCSTAT_COLLECTOR */
 

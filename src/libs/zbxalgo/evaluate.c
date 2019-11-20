@@ -1,7 +1,7 @@
 
 
 #include "common.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
 #include "log.h"
 
@@ -95,7 +95,7 @@ static double	evaluate_number(int *unknown_idx)
 		return TRX_INFINITY;
 	}
 
-	if (SUCCEED == zbx_suffixed_number_parse(ptr, &len) && SUCCEED == is_number_delimiter(*(ptr + len)))
+	if (SUCCEED == trx_suffixed_number_parse(ptr, &len) && SUCCEED == is_number_delimiter(*(ptr + len)))
 	{
 		result = atof(ptr) * suffix2factor(*(ptr + len - 1));
 		ptr += len;
@@ -122,7 +122,7 @@ static double	evaluate_term9(int *unknown_idx)
 
 	if ('\0' == *ptr)
 	{
-		zbx_strlcpy(buffer, "Cannot evaluate expression: unexpected end of expression.", max_buffer_len);
+		trx_strlcpy(buffer, "Cannot evaluate expression: unexpected end of expression.", max_buffer_len);
 		return TRX_INFINITY;
 	}
 
@@ -137,7 +137,7 @@ static double	evaluate_term9(int *unknown_idx)
 
 		if (')' != *ptr)
 		{
-			zbx_snprintf(buffer, max_buffer_len, "Cannot evaluate expression:"
+			trx_snprintf(buffer, max_buffer_len, "Cannot evaluate expression:"
 					" expected closing parenthesis at \"%s\".", ptr);
 			return TRX_INFINITY;
 		}
@@ -148,7 +148,7 @@ static double	evaluate_term9(int *unknown_idx)
 	{
 		if (TRX_INFINITY == (result = evaluate_number(unknown_idx)))
 		{
-			zbx_snprintf(buffer, max_buffer_len, "Cannot evaluate expression:"
+			trx_snprintf(buffer, max_buffer_len, "Cannot evaluate expression:"
 					" expected numeric token at \"%s\".", ptr);
 			return TRX_INFINITY;
 		}
@@ -214,7 +214,7 @@ static double	evaluate_term7(int *unknown_idx)
 		if (TRX_UNKNOWN == (result = evaluate_term8(unknown_idx)) || TRX_INFINITY == result)
 			return result;
 
-		result = (SUCCEED == zbx_double_compare(result, 0.0) ? 1.0 : 0.0);
+		result = (SUCCEED == trx_double_compare(result, 0.0) ? 1.0 : 0.0);
 	}
 	else
 		result = evaluate_term8(unknown_idx);
@@ -281,9 +281,9 @@ static double	evaluate_term6(int *unknown_idx)
 		{
 			/* catch division by 0 even if 1st operand is Unknown */
 
-			if (TRX_UNKNOWN != operand && SUCCEED == zbx_double_compare(operand, 0.0))
+			if (TRX_UNKNOWN != operand && SUCCEED == trx_double_compare(operand, 0.0))
 			{
-				zbx_strlcpy(buffer, "Cannot evaluate expression: division by zero.", max_buffer_len);
+				trx_strlcpy(buffer, "Cannot evaluate expression: division by zero.", max_buffer_len);
 				return TRX_INFINITY;
 			}
 
@@ -489,10 +489,10 @@ static double	evaluate_term3(int *unknown_idx)
 		}
 		else if ('=' == op)
 		{
-			result = (SUCCEED == zbx_double_compare(result, operand));
+			result = (SUCCEED == trx_double_compare(result, operand));
 		}
 		else
-			result = (SUCCEED != zbx_double_compare(result, operand));
+			result = (SUCCEED != trx_double_compare(result, operand));
 	}
 
 	return result;
@@ -537,7 +537,7 @@ static double	evaluate_term2(int *unknown_idx)
 				res_idx = oper_idx;
 				result = TRX_UNKNOWN;
 			}
-			else if (SUCCEED == zbx_double_compare(operand, 0.0))	/* Unknown and 0 */
+			else if (SUCCEED == trx_double_compare(operand, 0.0))	/* Unknown and 0 */
 			{
 				result = 0.0;
 			}
@@ -546,7 +546,7 @@ static double	evaluate_term2(int *unknown_idx)
 		}
 		else if (TRX_UNKNOWN == operand)
 		{
-			if (SUCCEED == zbx_double_compare(result, 0.0))		/* 0 and Unknown */
+			if (SUCCEED == trx_double_compare(result, 0.0))		/* 0 and Unknown */
 			{
 				result = 0.0;
 			}
@@ -559,8 +559,8 @@ static double	evaluate_term2(int *unknown_idx)
 		}
 		else
 		{
-			result = (SUCCEED != zbx_double_compare(result, 0.0) &&
-					SUCCEED != zbx_double_compare(operand, 0.0));
+			result = (SUCCEED != trx_double_compare(result, 0.0) &&
+					SUCCEED != trx_double_compare(operand, 0.0));
 		}
 	}
 
@@ -587,7 +587,7 @@ static double	evaluate_term1(int *unknown_idx)
 
 	if (32 < level)
 	{
-		zbx_strlcpy(buffer, "Cannot evaluate expression: nesting level is too deep.", max_buffer_len);
+		trx_strlcpy(buffer, "Cannot evaluate expression: nesting level is too deep.", max_buffer_len);
 		return TRX_INFINITY;
 	}
 
@@ -614,7 +614,7 @@ static double	evaluate_term1(int *unknown_idx)
 				res_idx = oper_idx;
 				result = TRX_UNKNOWN;
 			}
-			else if (SUCCEED != zbx_double_compare(operand, 0.0))	/* Unknown or 1 */
+			else if (SUCCEED != trx_double_compare(operand, 0.0))	/* Unknown or 1 */
 			{
 				result = 1;
 			}
@@ -623,7 +623,7 @@ static double	evaluate_term1(int *unknown_idx)
 		}
 		else if (TRX_UNKNOWN == operand)
 		{
-			if (SUCCEED != zbx_double_compare(result, 0.0))		/* 1 or Unknown */
+			if (SUCCEED != trx_double_compare(result, 0.0))		/* 1 or Unknown */
 			{
 				result = 1;
 			}
@@ -636,8 +636,8 @@ static double	evaluate_term1(int *unknown_idx)
 		}
 		else
 		{
-			result = (SUCCEED != zbx_double_compare(result, 0.0) ||
-					SUCCEED != zbx_double_compare(operand, 0.0));
+			result = (SUCCEED != trx_double_compare(result, 0.0) ||
+					SUCCEED != trx_double_compare(operand, 0.0));
 		}
 	}
 
@@ -652,7 +652,7 @@ static double	evaluate_term1(int *unknown_idx)
  *                                                                            *
  ******************************************************************************/
 int	evaluate(double *value, const char *expression, char *error, size_t max_error_len,
-		zbx_vector_ptr_t *unknown_msgs)
+		trx_vector_ptr_t *unknown_msgs)
 {
 	int	unknown_idx = -13;	/* index of message in 'unknown_msgs' vector, set to invalid value */
 					/* to catch errors */
@@ -669,7 +669,7 @@ int	evaluate(double *value, const char *expression, char *error, size_t max_erro
 
 	if ('\0' != *ptr && TRX_INFINITY != *value)
 	{
-		zbx_snprintf(error, max_error_len, "Cannot evaluate expression: unexpected token at \"%s\".", ptr);
+		trx_snprintf(error, max_error_len, "Cannot evaluate expression: unexpected token at \"%s\".", ptr);
 		*value = TRX_INFINITY;
 	}
 
@@ -683,17 +683,17 @@ int	evaluate(double *value, const char *expression, char *error, size_t max_erro
 				THIS_SHOULD_NEVER_HAPPEN;
 				treegix_log(LOG_LEVEL_WARNING, "%s() internal error: " TRX_UNKNOWN_STR " index:%d"
 						" expression:'%s'", __func__, unknown_idx, expression);
-				zbx_snprintf(error, max_error_len, "Internal error: " TRX_UNKNOWN_STR " index %d."
+				trx_snprintf(error, max_error_len, "Internal error: " TRX_UNKNOWN_STR " index %d."
 						" Please report this to Treegix developers.", unknown_idx);
 			}
 			else if (unknown_msgs->values_num > unknown_idx)
 			{
-				zbx_snprintf(error, max_error_len, "Cannot evaluate expression: \"%s\".",
+				trx_snprintf(error, max_error_len, "Cannot evaluate expression: \"%s\".",
 						(char *)(unknown_msgs->values[unknown_idx]));
 			}
 			else
 			{
-				zbx_snprintf(error, max_error_len, "Cannot evaluate expression: unsupported "
+				trx_snprintf(error, max_error_len, "Cannot evaluate expression: unsupported "
 						TRX_UNKNOWN_STR "%d value.", unknown_idx);
 			}
 		}
@@ -701,7 +701,7 @@ int	evaluate(double *value, const char *expression, char *error, size_t max_erro
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			/* do not leave garbage in error buffer, write something helpful */
-			zbx_snprintf(error, max_error_len, "%s(): internal error: no message for unknown result",
+			trx_snprintf(error, max_error_len, "%s(): internal error: no message for unknown result",
 					__func__);
 		}
 

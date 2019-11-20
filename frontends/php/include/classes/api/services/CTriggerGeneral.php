@@ -89,7 +89,7 @@ abstract class CTriggerGeneral extends CApiService {
 		unset($trigger['triggerid']);
 
 		if (array_key_exists('dependencies', $trigger)) {
-			$deps = zbx_objectValues($trigger['dependencies'], 'triggerid');
+			$deps = trx_objectValues($trigger['dependencies'], 'triggerid');
 			$trigger['dependencies'] = replace_template_dependencies($deps, $host['hostid']);
 		}
 
@@ -673,7 +673,7 @@ abstract class CTriggerGeneral extends CApiService {
 				'manual_close', 'opdata'
 			],
 			'selectDependencies' => ['triggerid'],
-			'triggerids' => zbx_objectValues($triggers, 'triggerid'),
+			'triggerids' => trx_objectValues($triggers, 'triggerid'),
 			'editable' => true,
 			'preservekeys' => true
 		];
@@ -1559,8 +1559,8 @@ abstract class CTriggerGeneral extends CApiService {
 
 		foreach ($templates as &$template) {
 			$template = array_merge(
-				zbx_objectValues($template['hosts'], 'hostid'),
-				zbx_objectValues($template['templates'], 'templateid')
+				trx_objectValues($template['hosts'], 'hostid'),
+				trx_objectValues($template['templates'], 'templateid')
 			);
 		}
 		unset($template);
@@ -1615,8 +1615,8 @@ abstract class CTriggerGeneral extends CApiService {
 	 * @param array $data
 	 */
 	public function syncTemplates(array $data) {
-		$data['templateids'] = zbx_toArray($data['templateids']);
-		$data['hostids'] = zbx_toArray($data['hostids']);
+		$data['templateids'] = trx_toArray($data['templateids']);
+		$data['hostids'] = trx_toArray($data['hostids']);
 
 		$triggers = $this->get([
 			'output' => [

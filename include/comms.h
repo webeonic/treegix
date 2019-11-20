@@ -13,10 +13,10 @@ typedef long	ssize_t;
 #ifdef _WINDOWS
 #	define TRX_TCP_WRITE(s, b, bl)		((ssize_t)send((s), (b), (int)(bl), 0))
 #	define TRX_TCP_READ(s, b, bl)		((ssize_t)recv((s), (b), (int)(bl), 0))
-#	define zbx_socket_close(s)		if (TRX_SOCKET_ERROR != (s)) closesocket(s)
-#	define zbx_socket_last_error()		WSAGetLastError()
-#	define zbx_bind(s, a, l)		(bind((s), (a), (int)(l)))
-#	define zbx_sendto(fd, b, n, f, a, l)	(sendto((fd), (b), (int)(n), (f), (a), (l)))
+#	define trx_socket_close(s)		if (TRX_SOCKET_ERROR != (s)) closesocket(s)
+#	define trx_socket_last_error()		WSAGetLastError()
+#	define trx_bind(s, a, l)		(bind((s), (a), (int)(l)))
+#	define trx_sendto(fd, b, n, f, a, l)	(sendto((fd), (b), (int)(n), (f), (a), (l)))
 
 #	define TRX_PROTO_AGAIN			WSAEINTR
 #	define TRX_PROTO_ERROR			SOCKET_ERROR
@@ -25,10 +25,10 @@ typedef long	ssize_t;
 #else
 #	define TRX_TCP_WRITE(s, b, bl)		((ssize_t)write((s), (b), (bl)))
 #	define TRX_TCP_READ(s, b, bl)		((ssize_t)read((s), (b), (bl)))
-#	define zbx_socket_close(s)		if (TRX_SOCKET_ERROR != (s)) close(s)
-#	define zbx_socket_last_error()		errno
-#	define zbx_bind(s, a, l)		(bind((s), (a), (l)))
-#	define zbx_sendto(fd, b, n, f, a, l)	(sendto((fd), (b), (n), (f), (a), (l)))
+#	define trx_socket_close(s)		if (TRX_SOCKET_ERROR != (s)) close(s)
+#	define trx_socket_last_error()		errno
+#	define trx_bind(s, a, l)		(bind((s), (a), (l)))
+#	define trx_sendto(fd, b, n, f, a, l)	(sendto((fd), (b), (n), (f), (a), (l)))
 
 #	define TRX_PROTO_AGAIN		EINTR
 #	define TRX_PROTO_ERROR		-1
@@ -53,13 +53,13 @@ typedef enum
 	TRX_BUF_TYPE_STAT = 0,
 	TRX_BUF_TYPE_DYN
 }
-zbx_buf_type_t;
+trx_buf_type_t;
 
 #define TRX_SOCKET_COUNT	256
 #define TRX_STAT_BUF_LEN	2048
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-typedef struct zbx_tls_context	zbx_tls_context_t;
+typedef struct trx_tls_context	trx_tls_context_t;
 #endif
 
 typedef struct
@@ -70,13 +70,13 @@ typedef struct
 	char				*buffer;
 	char				*next_line;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_context_t		*tls_ctx;
+	trx_tls_context_t		*tls_ctx;
 #endif
 	unsigned int 			connection_type;	/* type of connection actually established: */
 								/* TRX_TCP_SEC_UNENCRYPTED, TRX_TCP_SEC_TLS_PSK or */
 								/* TRX_TCP_SEC_TLS_CERT */
 	int				timeout;
-	zbx_buf_type_t			buf_type;
+	trx_buf_type_t			buf_type;
 	unsigned char			accepted;
 	int				num_socks;
 	TRX_SOCKET			sockets[TRX_SOCKET_COUNT];
@@ -87,16 +87,16 @@ typedef struct
 	char				peer[MAX_TRX_DNSNAME_LEN + 1];
 	int				protocol;
 }
-zbx_socket_t;
+trx_socket_t;
 
-const char	*zbx_socket_strerror(void);
+const char	*trx_socket_strerror(void);
 
 #ifndef _WINDOWS
-void	zbx_gethost_by_ip(const char *ip, char *host, size_t hostlen);
-void	zbx_getip_by_host(const char *host, char *ip, size_t iplen);
+void	trx_gethost_by_ip(const char *ip, char *host, size_t hostlen);
+void	trx_getip_by_host(const char *host, char *ip, size_t iplen);
 #endif
 
-int	zbx_tcp_connect(zbx_socket_t *s, const char *source_ip, const char *ip, unsigned short port, int timeout,
+int	trx_tcp_connect(trx_socket_t *s, const char *source_ip, const char *ip, unsigned short port, int timeout,
 		unsigned int tls_connect, const char *tls_arg1, const char *tls_arg2);
 
 #define TRX_TCP_PROTOCOL		0x01
@@ -109,43 +109,43 @@ int	zbx_tcp_connect(zbx_socket_t *s, const char *source_ip, const char *ip, unsi
 #define TRX_TCP_SEC_TLS_PSK_TXT		"psk"
 #define TRX_TCP_SEC_TLS_CERT_TXT	"cert"
 
-const char	*zbx_tcp_connection_type_name(unsigned int type);
+const char	*trx_tcp_connection_type_name(unsigned int type);
 
-#define zbx_tcp_send(s, d)				zbx_tcp_send_ext((s), (d), strlen(d), TRX_TCP_PROTOCOL, 0)
-#define zbx_tcp_send_to(s, d, timeout)			zbx_tcp_send_ext((s), (d), strlen(d), TRX_TCP_PROTOCOL, timeout)
-#define zbx_tcp_send_bytes_to(s, d, len, timeout)	zbx_tcp_send_ext((s), (d), len, TRX_TCP_PROTOCOL, timeout)
-#define zbx_tcp_send_raw(s, d)				zbx_tcp_send_ext((s), (d), strlen(d), 0, 0)
+#define trx_tcp_send(s, d)				trx_tcp_send_ext((s), (d), strlen(d), TRX_TCP_PROTOCOL, 0)
+#define trx_tcp_send_to(s, d, timeout)			trx_tcp_send_ext((s), (d), strlen(d), TRX_TCP_PROTOCOL, timeout)
+#define trx_tcp_send_bytes_to(s, d, len, timeout)	trx_tcp_send_ext((s), (d), len, TRX_TCP_PROTOCOL, timeout)
+#define trx_tcp_send_raw(s, d)				trx_tcp_send_ext((s), (d), strlen(d), 0, 0)
 
-int	zbx_tcp_send_ext(zbx_socket_t *s, const char *data, size_t len, unsigned char flags, int timeout);
+int	trx_tcp_send_ext(trx_socket_t *s, const char *data, size_t len, unsigned char flags, int timeout);
 
-void	zbx_tcp_close(zbx_socket_t *s);
+void	trx_tcp_close(trx_socket_t *s);
 
 #ifdef HAVE_IPV6
 int	get_address_family(const char *addr, int *family, char *error, int max_error_len);
 #endif
 
-int	zbx_tcp_listen(zbx_socket_t *s, const char *listen_ip, unsigned short listen_port);
+int	trx_tcp_listen(trx_socket_t *s, const char *listen_ip, unsigned short listen_port);
 
-int	zbx_tcp_accept(zbx_socket_t *s, unsigned int tls_accept);
-void	zbx_tcp_unaccept(zbx_socket_t *s);
+int	trx_tcp_accept(trx_socket_t *s, unsigned int tls_accept);
+void	trx_tcp_unaccept(trx_socket_t *s);
 
 #define TRX_TCP_READ_UNTIL_CLOSE 0x01
 
-#define	zbx_tcp_recv(s)			SUCCEED_OR_FAIL(zbx_tcp_recv_ext(s, 0))
-#define	zbx_tcp_recv_to(s, timeout)	SUCCEED_OR_FAIL(zbx_tcp_recv_ext(s, timeout))
-#define	zbx_tcp_recv_raw(s)		SUCCEED_OR_FAIL(zbx_tcp_recv_raw_ext(s, 0))
+#define	trx_tcp_recv(s)			SUCCEED_OR_FAIL(trx_tcp_recv_ext(s, 0))
+#define	trx_tcp_recv_to(s, timeout)	SUCCEED_OR_FAIL(trx_tcp_recv_ext(s, timeout))
+#define	trx_tcp_recv_raw(s)		SUCCEED_OR_FAIL(trx_tcp_recv_raw_ext(s, 0))
 
-ssize_t		zbx_tcp_recv_ext(zbx_socket_t *s, int timeout);
-ssize_t		zbx_tcp_recv_raw_ext(zbx_socket_t *s, int timeout);
-const char	*zbx_tcp_recv_line(zbx_socket_t *s);
+ssize_t		trx_tcp_recv_ext(trx_socket_t *s, int timeout);
+ssize_t		trx_tcp_recv_raw_ext(trx_socket_t *s, int timeout);
+const char	*trx_tcp_recv_line(trx_socket_t *s);
 
-int	zbx_validate_peer_list(const char *peer_list, char **error);
-int	zbx_tcp_check_allowed_peers(const zbx_socket_t *s, const char *peer_list);
+int	trx_validate_peer_list(const char *peer_list, char **error);
+int	trx_tcp_check_allowed_peers(const trx_socket_t *s, const char *peer_list);
 
-int	zbx_udp_connect(zbx_socket_t *s, const char *source_ip, const char *ip, unsigned short port, int timeout);
-int	zbx_udp_send(zbx_socket_t *s, const char *data, size_t data_len, int timeout);
-int	zbx_udp_recv(zbx_socket_t *s, int timeout);
-void	zbx_udp_close(zbx_socket_t *s);
+int	trx_udp_connect(trx_socket_t *s, const char *source_ip, const char *ip, unsigned short port, int timeout);
+int	trx_udp_send(trx_socket_t *s, const char *data, size_t data_len, int timeout);
+int	trx_udp_recv(trx_socket_t *s, int timeout);
+void	trx_udp_close(trx_socket_t *s);
 
 #define TRX_DEFAULT_FTP_PORT		21
 #define TRX_DEFAULT_SSH_PORT		22
@@ -166,19 +166,19 @@ void	zbx_udp_close(zbx_socket_t *s);
 #define TRX_DEFAULT_AGENT_PORT_STR	"10050"
 #define TRX_DEFAULT_SERVER_PORT_STR	"10051"
 
-int	zbx_send_response_ext(zbx_socket_t *sock, int result, const char *info, const char *version, int protocol,
+int	trx_send_response_ext(trx_socket_t *sock, int result, const char *info, const char *version, int protocol,
 		int timeout);
 
-#define zbx_send_response(sock, result, info, timeout) \
-		zbx_send_response_ext(sock, result, info, NULL, TRX_TCP_PROTOCOL, timeout)
+#define trx_send_response(sock, result, info, timeout) \
+		trx_send_response_ext(sock, result, info, NULL, TRX_TCP_PROTOCOL, timeout)
 
-#define zbx_send_proxy_response(sock, result, info, timeout) \
-		zbx_send_response_ext(sock, result, info, TREEGIX_VERSION, TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS, timeout)
+#define trx_send_proxy_response(sock, result, info, timeout) \
+		trx_send_response_ext(sock, result, info, TREEGIX_VERSION, TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS, timeout)
 
-int	zbx_recv_response(zbx_socket_t *sock, int timeout, char **error);
+int	trx_recv_response(trx_socket_t *sock, int timeout, char **error);
 
 #ifdef HAVE_IPV6
-#	define zbx_getnameinfo(sa, host, hostlen, serv, servlen, flags)		\
+#	define trx_getnameinfo(sa, host, hostlen, serv, servlen, flags)		\
 			getnameinfo(sa, AF_INET == (sa)->sa_family ?		\
 					sizeof(struct sockaddr_in) :		\
 					sizeof(struct sockaddr_in6),		\
@@ -186,7 +186,7 @@ int	zbx_recv_response(zbx_socket_t *sock, int timeout, char **error);
 #endif
 
 #ifdef _WINDOWS
-int	zbx_socket_start(char **error);
+int	trx_socket_start(char **error);
 #endif
 
 #endif

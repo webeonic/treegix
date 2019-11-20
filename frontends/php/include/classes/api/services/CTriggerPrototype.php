@@ -74,7 +74,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			'limit'							=> null,
 			'limitSelects'					=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + permission check
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -91,7 +91,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 					' AND f.itemid=i.itemid'.
 					' AND i.hostid=hgg.hostid'.
 				' GROUP BY i.hostid'.
-				' HAVING MAX(permission)<'.zbx_dbstr($permission).
+				' HAVING MAX(permission)<'.trx_dbstr($permission).
 					' OR MIN(permission) IS NULL'.
 					' OR MIN(permission)='.PERM_DENY.
 			')';
@@ -99,7 +99,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		// groupids
 		if ($options['groupids'] !== null) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['from']['items'] = 'items i';
@@ -116,10 +116,10 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		// templateids
 		if ($options['templateids'] !== null) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			if ($options['hostids'] !== null) {
-				zbx_value2array($options['hostids']);
+				trx_value2array($options['hostids']);
 				$options['hostids'] = array_merge($options['hostids'], $options['templateids']);
 			}
 			else {
@@ -129,7 +129,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		// hostids
 		if ($options['hostids'] !== null) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['from']['items'] = 'items i';
@@ -144,14 +144,14 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		// triggerids
 		if ($options['triggerids'] !== null) {
-			zbx_value2array($options['triggerids']);
+			trx_value2array($options['triggerids']);
 
 			$sqlParts['where']['triggerid'] = dbConditionInt('t.triggerid', $options['triggerids']);
 		}
 
 		// itemids
 		if ($options['itemids'] !== null) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['where']['itemid'] = dbConditionInt('f.itemid', $options['itemids']);
@@ -164,7 +164,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		// applicationids
 		if ($options['applicationids'] !== null) {
-			zbx_value2array($options['applicationids']);
+			trx_value2array($options['applicationids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['from']['items'] = 'items i';
@@ -177,7 +177,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		// discoveryids
 		if ($options['discoveryids'] !== null) {
-			zbx_value2array($options['discoveryids']);
+			trx_value2array($options['discoveryids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['from']['item_discovery'] = 'item_discovery id';
@@ -192,7 +192,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		// functions
 		if ($options['functions'] !== null) {
-			zbx_value2array($options['functions']);
+			trx_value2array($options['functions']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['where']['ft'] = 'f.triggerid=t.triggerid';
@@ -285,7 +285,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('triggers t', $options, $sqlParts);
+			trx_db_search('triggers t', $options, $sqlParts);
 		}
 
 		// filter
@@ -293,7 +293,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			$this->dbFilter('triggers t', $options, $sqlParts);
 
 			if (isset($options['filter']['host']) && $options['filter']['host'] !== null) {
-				zbx_value2array($options['filter']['host']);
+				trx_value2array($options['filter']['host']);
 
 				$sqlParts['from']['functions'] = 'functions f';
 				$sqlParts['from']['items'] = 'items i';
@@ -306,7 +306,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			}
 
 			if (isset($options['filter']['hostid']) && $options['filter']['hostid'] !== null) {
-				zbx_value2array($options['filter']['hostid']);
+				trx_value2array($options['filter']['hostid']);
 
 				$sqlParts['from']['functions'] = 'functions f';
 				$sqlParts['from']['items'] = 'items i';
@@ -327,7 +327,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			$sqlParts['where']['fi'] = 'f.itemid=i.itemid';
 			$sqlParts['where']['hgi'] = 'hg.hostid=i.hostid';
 			$sqlParts['where']['ghg'] = 'g.groupid=hg.groupid';
-			$sqlParts['where']['group'] = ' g.name='.zbx_dbstr($options['group']);
+			$sqlParts['where']['group'] = ' g.name='.trx_dbstr($options['group']);
 		}
 
 		// host
@@ -339,16 +339,16 @@ class CTriggerPrototype extends CTriggerGeneral {
 			$sqlParts['where']['ft'] = 'f.triggerid=t.triggerid';
 			$sqlParts['where']['fi'] = 'f.itemid=i.itemid';
 			$sqlParts['where']['hi'] = 'h.hostid=i.hostid';
-			$sqlParts['where']['host'] = ' h.host='.zbx_dbstr($options['host']);
+			$sqlParts['where']['host'] = ' h.host='.trx_dbstr($options['host']);
 		}
 
 		// min_severity
 		if ($options['min_severity'] !== null) {
-			$sqlParts['where'][] = 't.priority>='.zbx_dbstr($options['min_severity']);
+			$sqlParts['where'][] = 't.priority>='.trx_dbstr($options['min_severity']);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -396,7 +396,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -410,7 +410,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 	 * @return array
 	 */
 	public function create(array $trigger_prototypes) {
-		$trigger_prototypes = zbx_toArray($trigger_prototypes);
+		$trigger_prototypes = trx_toArray($trigger_prototypes);
 
 		$this->validateCreate($trigger_prototypes);
 		$this->createReal($trigger_prototypes);
@@ -433,7 +433,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			$this->addDependencies($trigger_prototypes);
 		}
 
-		return ['triggerids' => zbx_objectValues($trigger_prototypes, 'triggerid')];
+		return ['triggerids' => trx_objectValues($trigger_prototypes, 'triggerid')];
 	}
 
 	/**
@@ -444,7 +444,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 	 * @return array
 	 */
 	public function update(array $trigger_prototypes) {
-		$trigger_prototypes = zbx_toArray($trigger_prototypes);
+		$trigger_prototypes = trx_toArray($trigger_prototypes);
 		$db_triggers = [];
 
 		$this->validateUpdate($trigger_prototypes, $db_triggers);
@@ -467,7 +467,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			$this->updateDependencies($trigger_prototypes);
 		}
 
-		return ['triggerids' => zbx_objectValues($trigger_prototypes, 'triggerid')];
+		return ['triggerids' => trx_objectValues($trigger_prototypes, 'triggerid')];
 	}
 
 	/**
@@ -547,7 +547,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 	 * @param string $triggerPrototypes[]['triggerid']
 	 */
 	protected function deleteDependencies(array $triggerPrototypes) {
-		$triggerPrototypeIds = zbx_objectValues($triggerPrototypes, 'triggerid');
+		$triggerPrototypeIds = trx_objectValues($triggerPrototypes, 'triggerid');
 
 		try {
 			// Delete the dependencies from the child trigger prototypes.
@@ -673,7 +673,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			$dRules = $this->get([
 				'output' => ['triggerid'],
 				'selectDiscoveryRule' => ['itemid'],
-				'triggerids' => zbx_objectValues($triggerPrototypes, 'triggerid'),
+				'triggerids' => trx_objectValues($triggerPrototypes, 'triggerid'),
 				'preservekeys' => true
 			]);
 
@@ -728,7 +728,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 	 * @throws APIException if any of the dependencies are invalid.
 	 */
 	protected function checkDependencies(array $triggerPrototypes) {
-		$triggerPrototypes = zbx_toHash($triggerPrototypes, 'triggerid');
+		$triggerPrototypes = trx_toHash($triggerPrototypes, 'triggerid');
 
 		foreach ($triggerPrototypes as $triggerPrototype) {
 			if (!array_key_exists('dependencies', $triggerPrototype)) {
@@ -736,7 +736,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			}
 
 			$triggerid_down = $triggerPrototype['triggerid'];
-			$triggerids_up = zbx_objectValues($triggerPrototype['dependencies'], 'triggerid');
+			$triggerids_up = trx_objectValues($triggerPrototype['dependencies'], 'triggerid');
 
 			foreach ($triggerids_up as $triggerid_up) {
 				if (bccomp($triggerid_down, $triggerid_up) == 0) {
@@ -752,7 +752,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 				continue;
 			}
 
-			$depTriggerIds = zbx_objectValues($triggerPrototype['dependencies'], 'triggerid');
+			$depTriggerIds = trx_objectValues($triggerPrototype['dependencies'], 'triggerid');
 
 			$triggerTemplates = API::Template()->get([
 				'output' => ['hostid', 'status'],
@@ -793,7 +793,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 				foreach ($downTriggerIds as $id) {
 					if (isset($triggerPrototypes[$id]) && isset($triggerPrototypes[$id]['dependencies'])) {
 						$upTriggersIds = array_merge($upTriggersIds,
-							zbx_objectValues($triggerPrototypes[$id]['dependencies'], 'triggerid')
+							trx_objectValues($triggerPrototypes[$id]['dependencies'], 'triggerid')
 						);
 					}
 				}
@@ -819,11 +819,11 @@ class CTriggerPrototype extends CTriggerGeneral {
 			$depTemplateIds = array_keys($triggerDepTemplates);
 
 			// run the check only if a templated trigger has dependencies on other templates
-			$triggerTemplateIds = zbx_toHash(zbx_objectValues($triggerTemplates, 'templateid'));
+			$triggerTemplateIds = trx_toHash(trx_objectValues($triggerTemplates, 'templateid'));
 			$tdiff = array_diff($depTemplateIds, $triggerTemplateIds);
 
 			if (!empty($triggerTemplateIds) && !empty($depTemplateIds) && !empty($tdiff)) {
-				$affectedTemplateIds = zbx_array_merge($triggerTemplateIds, $depTemplateIds);
+				$affectedTemplateIds = trx_array_merge($triggerTemplateIds, $depTemplateIds);
 
 				// create a list of all hosts, that are children of the affected templates
 				$dbLowlvltpl = DBselect(
@@ -895,7 +895,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 		));
 
 		if ($parentDepTriggers) {
-			$parentDepTriggers = zbx_toHash($parentDepTriggers, 'triggerid');
+			$parentDepTriggers = trx_toHash($parentDepTriggers, 'triggerid');
 
 			foreach ($triggerPrototypes as $triggerPrototype) {
 				foreach ($triggerPrototype['dependencies'] as $dependency) {
@@ -956,7 +956,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 					'SELECT td.triggerid_up'.
 					' FROM trigger_depends td'.
 					' WHERE '.dbConditionInt('td.triggerid_up', $depTriggerIds).
-					' AND td.triggerid_down='.zbx_dbstr($triggerPrototype['triggerid'])
+					' AND td.triggerid_down='.trx_dbstr($triggerPrototype['triggerid'])
 				, 1);
 				if (DBfetch($dbUpTriggers)) {
 					$duplicateTriggerId = $triggerPrototype['triggerid'];
@@ -969,7 +969,7 @@ class CTriggerPrototype extends CTriggerGeneral {
 			$duplicateTrigger = DBfetch(DBselect(
 				'SELECT t.description'.
 				' FROM triggers t'.
-				' WHERE t.triggerid='.zbx_dbstr($duplicateTriggerId)
+				' WHERE t.triggerid='.trx_dbstr($duplicateTriggerId)
 			));
 			self::exception(TRX_API_ERROR_PARAMETERS,
 				_s('Duplicate dependencies in trigger prototype "%1$s".', $duplicateTrigger['description'])
@@ -989,8 +989,8 @@ class CTriggerPrototype extends CTriggerGeneral {
 	 * @param array|string	$data['hostids']
 	 */
 	public function syncTemplateDependencies(array $data) {
-		$templateIds = zbx_toArray($data['templateids']);
-		$hostIds = zbx_toArray($data['hostids']);
+		$templateIds = trx_toArray($data['templateids']);
+		$hostIds = trx_toArray($data['hostids']);
 
 		$parentTriggers = $this->get([
 			'output' => ['triggerid'],

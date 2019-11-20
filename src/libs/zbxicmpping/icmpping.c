@@ -1,9 +1,9 @@
 
 
-#include "zbxicmpping.h"
+#include "trxicmpping.h"
 #include "threads.h"
 #include "comms.h"
-#include "zbxexec.h"
+#include "trxexec.h"
 #include "log.h"
 
 extern char	*CONFIG_SOURCE_IP;
@@ -36,7 +36,7 @@ static void	get_source_ip_option(const char *fping, const char **option, unsigne
 	FILE	*f;
 	char	*p, tmp[MAX_STRING_LEN];
 
-	zbx_snprintf(tmp, sizeof(tmp), "%s -h 2>&1", fping);
+	trx_snprintf(tmp, sizeof(tmp), "%s -h 2>&1", fping);
 
 	if (NULL == (f = popen(tmp, "r")))
 		return;
@@ -87,9 +87,9 @@ static int	get_interval_option(const char * fping, const char *dst, int *value, 
 	int	ret_exec, ret = FAIL;
 	char	tmp[MAX_STRING_LEN], err[255], *out = NULL;
 
-	zbx_snprintf(tmp, sizeof(tmp), "%s -c1 -t50 -i0 %s", fping, dst);
+	trx_snprintf(tmp, sizeof(tmp), "%s -c1 -t50 -i0 %s", fping, dst);
 
-	if (SUCCEED == (ret_exec = zbx_execute(tmp, &out, err, sizeof(err), 1, TRX_EXIT_CODE_CHECKS_DISABLED)) &&
+	if (SUCCEED == (ret_exec = trx_execute(tmp, &out, err, sizeof(err), 1, TRX_EXIT_CODE_CHECKS_DISABLED)) &&
 			TRX_KIBIBYTE > strlen(out) && NULL != strstr(out, dst))
 	{
 		*value = 0;
@@ -97,19 +97,19 @@ static int	get_interval_option(const char * fping, const char *dst, int *value, 
 	}
 	else if (TIMEOUT_ERROR == ret_exec)
 	{
-		zbx_snprintf(error, max_error_len, "Timeout while executing: %s", fping);
+		trx_snprintf(error, max_error_len, "Timeout while executing: %s", fping);
 	}
 	else if (FAIL == ret_exec)
-		zbx_snprintf(error, max_error_len, "Failed to execute command \"%s\": %s", fping, err);
+		trx_snprintf(error, max_error_len, "Failed to execute command \"%s\": %s", fping, err);
 
-	zbx_free(out);
+	trx_free(out);
 
 	if (SUCCEED == ret || SUCCEED != ret_exec)
 		return ret;
 
-	zbx_snprintf(tmp, sizeof(tmp), "%s -c1 -t50 -i1 %s", fping, dst);
+	trx_snprintf(tmp, sizeof(tmp), "%s -c1 -t50 -i1 %s", fping, dst);
 
-	if (SUCCEED == (ret_exec = zbx_execute(tmp, &out, err, sizeof(err), 1, TRX_EXIT_CODE_CHECKS_DISABLED))
+	if (SUCCEED == (ret_exec = trx_execute(tmp, &out, err, sizeof(err), 1, TRX_EXIT_CODE_CHECKS_DISABLED))
 			&& TRX_KIBIBYTE > strlen(out) && NULL != strstr(out, dst))
 	{
 		*value = 1;
@@ -117,11 +117,11 @@ static int	get_interval_option(const char * fping, const char *dst, int *value, 
 	}
 	else if (TIMEOUT_ERROR == ret_exec)
 	{
-		zbx_snprintf(error, max_error_len, "Timeout while executing: %s", fping);
+		trx_snprintf(error, max_error_len, "Timeout while executing: %s", fping);
 	}
 	else if (FAIL == ret_exec)
 	{
-		zbx_snprintf(error, max_error_len, "Failed to execute command \"%s\": %s", fping, err);
+		trx_snprintf(error, max_error_len, "Failed to execute command \"%s\": %s", fping, err);
 	}
 	else
 	{
@@ -129,7 +129,7 @@ static int	get_interval_option(const char * fping, const char *dst, int *value, 
 		ret = SUCCEED;
 	}
 
-	zbx_free(out);
+	trx_free(out);
 
 	return ret;
 }
@@ -153,9 +153,9 @@ static int	get_ipv6_support(const char * fping, const char *dst)
 	int	ret;
 	char	tmp[MAX_STRING_LEN], error[255], *out = NULL;
 
-	zbx_snprintf(tmp, sizeof(tmp), "%s -6 -c1 -t50 %s", fping, dst);
+	trx_snprintf(tmp, sizeof(tmp), "%s -6 -c1 -t50 %s", fping, dst);
 
-	if ((SUCCEED == (ret = zbx_execute(tmp, &out, error, sizeof(error), 1, TRX_EXIT_CODE_CHECKS_DISABLED)) &&
+	if ((SUCCEED == (ret = trx_execute(tmp, &out, error, sizeof(error), 1, TRX_EXIT_CODE_CHECKS_DISABLED)) &&
 				TRX_KIBIBYTE > strlen(out) && NULL != strstr(out, dst)) || TIMEOUT_ERROR == ret)
 	{
 		ret = SUCCEED;
@@ -165,7 +165,7 @@ static int	get_ipv6_support(const char * fping, const char *dst)
 		ret = FAIL;
 	}
 
-	zbx_free(out);
+	trx_free(out);
 
 	return ret;
 
@@ -200,7 +200,7 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 	if (-1 == access(CONFIG_FPING_LOCATION, X_OK))
 	{
 #if !defined(HAVE_IPV6)
-		zbx_snprintf(error, max_error_len, "%s: %s", CONFIG_FPING_LOCATION, zbx_strerror(errno));
+		trx_snprintf(error, max_error_len, "%s: %s", CONFIG_FPING_LOCATION, trx_strerror(errno));
 		return ret;
 #endif
 	}
@@ -213,7 +213,7 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 		{
 			if (FAIL == is_ip4(CONFIG_SOURCE_IP)) /* we do not have IPv4 family address in CONFIG_SOURCE_IP */
 			{
-				zbx_snprintf(error, max_error_len,
+				trx_snprintf(error, max_error_len,
 					"You should enable IPv6 support to use IPv6 family address for SourceIP '%s'.", CONFIG_SOURCE_IP);
 				return ret;
 			}
@@ -226,7 +226,7 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 	{
 		if (0 == (fping_existence & FPING_EXISTS))
 		{
-			zbx_snprintf(error, max_error_len, "At least one of '%s', '%s' must exist. Both are missing in the system.",
+			trx_snprintf(error, max_error_len, "At least one of '%s', '%s' must exist. Both are missing in the system.",
 					CONFIG_FPING_LOCATION,
 					CONFIG_FPING6_LOCATION);
 			return ret;
@@ -236,13 +236,13 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 		fping_existence |= FPING6_EXISTS;
 #endif	/* HAVE_IPV6 */
 
-	offset = zbx_snprintf(params, sizeof(params), "-C%d", count);
+	offset = trx_snprintf(params, sizeof(params), "-C%d", count);
 	if (0 != interval)
-		offset += zbx_snprintf(params + offset, sizeof(params) - offset, " -p%d", interval);
+		offset += trx_snprintf(params + offset, sizeof(params) - offset, " -p%d", interval);
 	if (0 != size)
-		offset += zbx_snprintf(params + offset, sizeof(params) - offset, " -b%d", size);
+		offset += trx_snprintf(params + offset, sizeof(params) - offset, " -b%d", size);
 	if (0 != timeout)
-		offset += zbx_snprintf(params + offset, sizeof(params) - offset, " -t%d", timeout);
+		offset += trx_snprintf(params + offset, sizeof(params) - offset, " -t%d", timeout);
 
 #ifdef HAVE_IPV6
 	strscpy(params6, params);
@@ -257,7 +257,7 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 			return ret;
 		}
 
-		offset += zbx_snprintf(params + offset, sizeof(params) - offset, " -i%d", packet_interval);
+		offset += trx_snprintf(params + offset, sizeof(params) - offset, " -i%d", packet_interval);
 	}
 
 	if (0 != (fping_existence & FPING6_EXISTS) && 0 != hosts_count)
@@ -269,7 +269,7 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 			return ret;
 		}
 
-		offset6 += zbx_snprintf(params6 + offset6, sizeof(params6) - offset6, " -i%d", packet_interval6);
+		offset6 += trx_snprintf(params6 + offset6, sizeof(params6) - offset6, " -i%d", packet_interval6);
 	}
 #else
 	if (0 != hosts_count)
@@ -281,7 +281,7 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 			return ret;
 		}
 
-		offset += zbx_snprintf(params + offset, sizeof(params) - offset, " -i%d", packet_interval);
+		offset += trx_snprintf(params + offset, sizeof(params) - offset, " -i%d", packet_interval);
 	}
 #endif	/* HAVE_IPV6 */
 
@@ -293,7 +293,7 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 			if (0 == source_ip_checked)
 				get_source_ip_option(CONFIG_FPING_LOCATION, &source_ip_option, &source_ip_checked);
 			if (NULL != source_ip_option)
-				zbx_snprintf(params + offset, sizeof(params) - offset,
+				trx_snprintf(params + offset, sizeof(params) - offset,
 						" %s%s", source_ip_option, CONFIG_SOURCE_IP);
 		}
 
@@ -302,19 +302,19 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 			if (0 == source_ip6_checked)
 				get_source_ip_option(CONFIG_FPING6_LOCATION, &source_ip6_option, &source_ip6_checked);
 			if (NULL != source_ip6_option)
-				zbx_snprintf(params6 + offset6, sizeof(params6) - offset6,
+				trx_snprintf(params6 + offset6, sizeof(params6) - offset6,
 						" %s%s", source_ip6_option, CONFIG_SOURCE_IP);
 		}
 #else
 		if (0 == source_ip_checked)
 			get_source_ip_option(CONFIG_FPING_LOCATION, &source_ip_option, &source_ip_checked);
 		if (NULL != source_ip_option)
-			zbx_snprintf(params + offset, sizeof(params) - offset,
+			trx_snprintf(params + offset, sizeof(params) - offset,
 					" %s%s", source_ip_option, CONFIG_SOURCE_IP);
 #endif	/* HAVE_IPV6 */
 	}
 
-	zbx_snprintf(filename, sizeof(filename), "%s/%s_%li.pinger", CONFIG_TMPDIR, progname, zbx_get_thread_id());
+	trx_snprintf(filename, sizeof(filename), "%s/%s_%li.pinger", CONFIG_TMPDIR, progname, trx_get_thread_id());
 
 #ifdef HAVE_IPV6
 	if (NULL != CONFIG_SOURCE_IP)
@@ -326,23 +326,23 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 		{
 			if (0 == (fping_existence & FPING_EXISTS))
 			{
-				zbx_snprintf(error, max_error_len, "File '%s' cannot be found in the system.",
+				trx_snprintf(error, max_error_len, "File '%s' cannot be found in the system.",
 						CONFIG_FPING_LOCATION);
 				return ret;
 			}
 
-			zbx_snprintf(tmp, sizeof(tmp), "%s %s 2>&1 <%s", CONFIG_FPING_LOCATION, params, filename);
+			trx_snprintf(tmp, sizeof(tmp), "%s %s 2>&1 <%s", CONFIG_FPING_LOCATION, params, filename);
 		}
 		else
 		{
 			if (0 == (fping_existence & FPING6_EXISTS))
 			{
-				zbx_snprintf(error, max_error_len, "File '%s' cannot be found in the system.",
+				trx_snprintf(error, max_error_len, "File '%s' cannot be found in the system.",
 						CONFIG_FPING6_LOCATION);
 				return ret;
 			}
 
-			zbx_snprintf(tmp, sizeof(tmp), "%s %s 2>&1 <%s", CONFIG_FPING6_LOCATION, params6, filename);
+			trx_snprintf(tmp, sizeof(tmp), "%s %s 2>&1 <%s", CONFIG_FPING6_LOCATION, params6, filename);
 		}
 	}
 	else
@@ -354,23 +354,23 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 			if (FPING_UNINITIALIZED_VALUE == fping_ipv6_supported)
 				fping_ipv6_supported = get_ipv6_support(CONFIG_FPING_LOCATION,hosts[0].addr);
 
-			offset += zbx_snprintf(tmp + offset, sizeof(tmp) - offset,
+			offset += trx_snprintf(tmp + offset, sizeof(tmp) - offset,
 					"%s %s 2>&1 <%s;", CONFIG_FPING_LOCATION, params, filename);
 		}
 
 		if (0 != (fping_existence & FPING6_EXISTS) && SUCCEED != fping_ipv6_supported)
 		{
-			zbx_snprintf(tmp + offset, sizeof(tmp) - offset,
+			trx_snprintf(tmp + offset, sizeof(tmp) - offset,
 					"%s %s 2>&1 <%s;", CONFIG_FPING6_LOCATION, params6, filename);
 		}
 	}
 #else
-	zbx_snprintf(tmp, sizeof(tmp), "%s %s 2>&1 <%s", CONFIG_FPING_LOCATION, params, filename);
+	trx_snprintf(tmp, sizeof(tmp), "%s %s 2>&1 <%s", CONFIG_FPING_LOCATION, params, filename);
 #endif	/* HAVE_IPV6 */
 
 	if (NULL == (f = fopen(filename, "w")))
 	{
-		zbx_snprintf(error, max_error_len, "%s: %s", filename, zbx_strerror(errno));
+		trx_snprintf(error, max_error_len, "%s: %s", filename, trx_strerror(errno));
 		return ret;
 	}
 
@@ -388,7 +388,7 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 
 	if (NULL == (f = popen(tmp, "r")))
 	{
-		zbx_snprintf(error, max_error_len, "%s: %s", tmp, zbx_strerror(errno));
+		trx_snprintf(error, max_error_len, "%s: %s", tmp, trx_strerror(errno));
 
 		unlink(filename);
 
@@ -403,13 +403,13 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 	{
 		for (i = 0; i < hosts_count; i++)
 		{
-			hosts[i].status = (char *)zbx_malloc(NULL, count);
+			hosts[i].status = (char *)trx_malloc(NULL, count);
 			memset(hosts[i].status, 0, count);
 		}
 
 		do
 		{
-			zbx_rtrim(tmp, "\n");
+			trx_rtrim(tmp, "\n");
 			treegix_log(LOG_LEVEL_DEBUG, "read line [%s]", tmp);
 
 			host = NULL;
@@ -498,14 +498,14 @@ static int	process_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int i
 		while (NULL != fgets(tmp, sizeof(tmp), f));
 
 		for (i = 0; i < hosts_count; i++)
-			zbx_free(hosts[i].status);
+			trx_free(hosts[i].status);
 	}
 	pclose(f);
 
 	unlink(filename);
 
 	if (NOTSUPPORTED == ret)
-		zbx_snprintf(error, max_error_len, "fping failed: %s", tmp);
+		trx_snprintf(error, max_error_len, "fping failed: %s", tmp);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -537,7 +537,7 @@ int	do_ping(TRX_FPING_HOST *hosts, int hosts_count, int count, int interval, int
 	if (NOTSUPPORTED == (res = process_ping(hosts, hosts_count, count, interval, size, timeout, error, max_error_len)))
 		treegix_log(LOG_LEVEL_ERR, "%s", error);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(res));
 
 	return res;
 }

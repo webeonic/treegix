@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "log.h"
 
 #include <sys/ioctl.h>
@@ -27,10 +27,10 @@ static struct nlist kernel_symbols[] =
 #define IFNET_ID 0
 
 static int	get_ifdata(const char *if_name,
-		zbx_uint64_t *ibytes, zbx_uint64_t *ipackets, zbx_uint64_t *ierrors, zbx_uint64_t *idropped,
-		zbx_uint64_t *obytes, zbx_uint64_t *opackets, zbx_uint64_t *oerrors,
-		zbx_uint64_t *tbytes, zbx_uint64_t *tpackets, zbx_uint64_t *terrors,
-		zbx_uint64_t *icollisions, char **error)
+		trx_uint64_t *ibytes, trx_uint64_t *ipackets, trx_uint64_t *ierrors, trx_uint64_t *idropped,
+		trx_uint64_t *obytes, trx_uint64_t *opackets, trx_uint64_t *oerrors,
+		trx_uint64_t *tbytes, trx_uint64_t *tpackets, trx_uint64_t *terrors,
+		trx_uint64_t *icollisions, char **error)
 {
 	struct ifnet_head	head;
 	struct ifnet		*ifp;
@@ -41,7 +41,7 @@ static int	get_ifdata(const char *if_name,
 
 	if (NULL == if_name || '\0' == *if_name)
 	{
-		*error = zbx_strdup(NULL, "Network interface name cannot be empty.");
+		*error = trx_strdup(NULL, "Network interface name cannot be empty.");
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -131,7 +131,7 @@ static int	get_ifdata(const char *if_name,
 		kvm_close(kp);
 
 		if (SYSINFO_RET_FAIL == ret)
-			*error = zbx_strdup(NULL, "Cannot find information for this network interface.");
+			*error = trx_strdup(NULL, "Cannot find information for this network interface.");
 	}
 	else
 	{
@@ -143,16 +143,16 @@ static int	get_ifdata(const char *if_name,
 
 		if ((if_s = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 		{
-			*error = zbx_dsprintf(NULL, "Cannot create socket: %s", zbx_strerror(errno));
+			*error = trx_dsprintf(NULL, "Cannot create socket: %s", trx_strerror(errno));
 			goto clean;
 		}
 
-		zbx_strlcpy(ifr.ifr_name, if_name, IFNAMSIZ - 1);
+		trx_strlcpy(ifr.ifr_name, if_name, IFNAMSIZ - 1);
 		ifr.ifr_data = (caddr_t)&v;
 
 		if (ioctl(if_s, SIOCGIFDATA, &ifr) < 0)
 		{
-			*error = zbx_dsprintf(NULL, "Cannot set socket parameters: %s", zbx_strerror(errno));
+			*error = trx_dsprintf(NULL, "Cannot set socket parameters: %s", trx_strerror(errno));
 			goto clean;
 		}
 
@@ -191,11 +191,11 @@ clean:
 int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		*if_name, *mode, *error;
-	zbx_uint64_t	ibytes, ipackets, ierrors, idropped;
+	trx_uint64_t	ibytes, ipackets, ierrors, idropped;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -219,7 +219,7 @@ int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, idropped);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -229,11 +229,11 @@ int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		*if_name, *mode, *error;
-	zbx_uint64_t	obytes, opackets, oerrors;
+	trx_uint64_t	obytes, opackets, oerrors;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -255,7 +255,7 @@ int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, oerrors);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -265,11 +265,11 @@ int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		*if_name, *mode, *error;
-	zbx_uint64_t	tbytes, tpackets, terrors;
+	trx_uint64_t	tbytes, tpackets, terrors;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -291,7 +291,7 @@ int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, terrors);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -301,11 +301,11 @@ int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 int	NET_IF_COLLISIONS(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		*if_name, *error;
-	zbx_uint64_t	icollisions;
+	trx_uint64_t	icollisions;
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -326,29 +326,29 @@ int	NET_IF_COLLISIONS(AGENT_REQUEST *request, AGENT_RESULT *result)
 int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int			i;
-	struct zbx_json		j;
+	struct trx_json		j;
 	struct if_nameindex	*interfaces;
 
 	if (NULL == (interfaces = if_nameindex()))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; 0 != interfaces[i].if_index; i++)
 	{
-		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#IFNAME}", interfaces[i].if_name, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&j);
+		trx_json_addobject(&j, NULL);
+		trx_json_addstring(&j, "{#IFNAME}", interfaces[i].if_name, TRX_JSON_TYPE_STRING);
+		trx_json_close(&j);
 	}
 
-	zbx_json_close(&j);
+	trx_json_close(&j);
 
 	SET_STR_RESULT(result, strdup(j.buffer));
 
-	zbx_json_free(&j);
+	trx_json_free(&j);
 
 	if_freenameindex(interfaces);
 

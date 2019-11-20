@@ -6,7 +6,7 @@
 #include "events.h"
 #include "discovery.h"
 
-static DB_RESULT	discovery_get_dhost_by_value(zbx_uint64_t dcheckid, const char *value)
+static DB_RESULT	discovery_get_dhost_by_value(trx_uint64_t dcheckid, const char *value)
 {
 	DB_RESULT	result;
 	char		*value_esc;
@@ -22,12 +22,12 @@ static DB_RESULT	discovery_get_dhost_by_value(zbx_uint64_t dcheckid, const char 
 			" order by dh.dhostid",
 			dcheckid, TRX_SQL_STRVAL_EQ(value_esc));
 
-	zbx_free(value_esc);
+	trx_free(value_esc);
 
 	return result;
 }
 
-static DB_RESULT	discovery_get_dhost_by_ip_port(zbx_uint64_t druleid, const char *ip, int port)
+static DB_RESULT	discovery_get_dhost_by_ip_port(trx_uint64_t druleid, const char *ip, int port)
 {
 	DB_RESULT	result;
 	char		*ip_esc;
@@ -44,7 +44,7 @@ static DB_RESULT	discovery_get_dhost_by_ip_port(zbx_uint64_t druleid, const char
 			" order by dh.dhostid",
 			druleid, TRX_SQL_STRVAL_EQ(ip_esc), port);
 
-	zbx_free(ip_esc);
+	trx_free(ip_esc);
 
 	return result;
 }
@@ -63,13 +63,13 @@ static void	discovery_separate_host(const DB_DRULE *drule, DB_DHOST *dhost, cons
 	DB_RESULT	result;
 	DB_ROW		row;
 	char		*ip_esc, *sql = NULL;
-	zbx_uint64_t	dhostid;
+	trx_uint64_t	dhostid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s'", __func__, ip);
 
 	ip_esc = DBdyn_escape_field("dservices", "ip", ip);
 
-	sql = zbx_dsprintf(sql,
+	sql = trx_dsprintf(sql,
 			"select dserviceid"
 			" from dservices"
 			" where dhostid=" TRX_FS_UI64
@@ -99,8 +99,8 @@ static void	discovery_separate_host(const DB_DRULE *drule, DB_DHOST *dhost, cons
 	}
 	DBfree_result(result);
 
-	zbx_free(sql);
-	zbx_free(ip_esc);
+	trx_free(sql);
+	trx_free(ip_esc);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -114,7 +114,7 @@ static void	discovery_separate_host(const DB_DRULE *drule, DB_DHOST *dhost, cons
  * Parameters: host ip address                                                *
  *                                                                            *
  ******************************************************************************/
-static void	discovery_register_host(const DB_DRULE *drule, zbx_uint64_t dcheckid, DB_DHOST *dhost,
+static void	discovery_register_host(const DB_DRULE *drule, trx_uint64_t dcheckid, DB_DHOST *dhost,
 		const char *ip, int port, int status, const char *value)
 {
 	DB_RESULT	result;
@@ -186,14 +186,14 @@ static void	discovery_register_host(const DB_DRULE *drule, zbx_uint64_t dcheckid
  * Parameters: host ip address                                                *
  *                                                                            *
  ******************************************************************************/
-static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, DB_DSERVICE *dservice,
+static void	discovery_register_service(trx_uint64_t dcheckid, DB_DHOST *dhost, DB_DSERVICE *dservice,
 		const char *ip, const char *dns, int port, int status)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
 	char		*ip_esc, *dns_esc;
 
-	zbx_uint64_t	dhostid;
+	trx_uint64_t	dhostid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() ip:'%s' port:%d", __func__, ip, port);
 
@@ -215,7 +215,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 
 			dservice->dserviceid = DBget_maxid("dservices");
 			dservice->status = DOBJECT_STATUS_DOWN;
-			dservice->value = zbx_strdup(dservice->value, "");
+			dservice->value = trx_strdup(dservice->value, "");
 
 			dns_esc = DBdyn_escape_field("dservices", "dns", dns);
 
@@ -224,7 +224,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 					dservice->dserviceid, dhost->dhostid, dcheckid, ip_esc, dns_esc, port,
 					dservice->status);
 
-			zbx_free(dns_esc);
+			trx_free(dns_esc);
 		}
 	}
 	else
@@ -236,7 +236,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 		dservice->status = atoi(row[2]);
 		dservice->lastup = atoi(row[3]);
 		dservice->lastdown = atoi(row[4]);
-		dservice->value = zbx_strdup(dservice->value, row[5]);
+		dservice->value = trx_strdup(dservice->value, row[5]);
 
 		if (dhostid != dhost->dhostid)
 		{
@@ -259,12 +259,12 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
 					" where dserviceid=" TRX_FS_UI64,
 					dns_esc, dservice->dserviceid);
 
-			zbx_free(dns_esc);
+			trx_free(dns_esc);
 		}
 	}
 	DBfree_result(result);
 
-	zbx_free(ip_esc);
+	trx_free(ip_esc);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -276,7 +276,7 @@ static void	discovery_register_service(zbx_uint64_t dcheckid, DB_DHOST *dhost, D
  * Purpose: update discovered service details                                 *
  *                                                                            *
  ******************************************************************************/
-static void	discovery_update_dservice(zbx_uint64_t dserviceid, int status, int lastup, int lastdown,
+static void	discovery_update_dservice(trx_uint64_t dserviceid, int status, int lastup, int lastdown,
 		const char *value)
 {
 	char	*value_esc;
@@ -286,7 +286,7 @@ static void	discovery_update_dservice(zbx_uint64_t dserviceid, int status, int l
 	DBexecute("update dservices set status=%d,lastup=%d,lastdown=%d,value='%s' where dserviceid=" TRX_FS_UI64,
 			status, lastup, lastdown, value_esc, dserviceid);
 
-	zbx_free(value_esc);
+	trx_free(value_esc);
 }
 
 /******************************************************************************
@@ -296,7 +296,7 @@ static void	discovery_update_dservice(zbx_uint64_t dserviceid, int status, int l
  * Purpose: update discovered service details                                 *
  *                                                                            *
  ******************************************************************************/
-static void	discovery_update_dservice_value(zbx_uint64_t dserviceid, const char *value)
+static void	discovery_update_dservice_value(trx_uint64_t dserviceid, const char *value)
 {
 	char	*value_esc;
 
@@ -304,7 +304,7 @@ static void	discovery_update_dservice_value(zbx_uint64_t dserviceid, const char 
 
 	DBexecute("update dservices set value='%s' where dserviceid=" TRX_FS_UI64, value_esc, dserviceid);
 
-	zbx_free(value_esc);
+	trx_free(value_esc);
 }
 
 /******************************************************************************
@@ -330,7 +330,7 @@ static void	discovery_update_dhost(const DB_DHOST *dhost)
 static void	discovery_update_service_status(DB_DHOST *dhost, const DB_DSERVICE *dservice, int service_status,
 		const char *value, int now)
 {
-	zbx_timespec_t	ts;
+	trx_timespec_t	ts;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -342,7 +342,7 @@ static void	discovery_update_service_status(DB_DHOST *dhost, const DB_DSERVICE *
 		if (DOBJECT_STATUS_DOWN == dservice->status || 0 == dservice->lastup)
 		{
 			discovery_update_dservice(dservice->dserviceid, service_status, now, 0, value);
-			zbx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DSERVICE, dservice->dserviceid, &ts,
+			trx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DSERVICE, dservice->dserviceid, &ts,
 					DOBJECT_STATUS_DISCOVER, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL, NULL);
 
 			if (DOBJECT_STATUS_DOWN == dhost->status)
@@ -354,7 +354,7 @@ static void	discovery_update_service_status(DB_DHOST *dhost, const DB_DSERVICE *
 				dhost->lastdown = 0;
 
 				discovery_update_dhost(dhost);
-				zbx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DHOST, dhost->dhostid, &ts,
+				trx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DHOST, dhost->dhostid, &ts,
 						DOBJECT_STATUS_DISCOVER, NULL, NULL, NULL, 0, 0, NULL,
 						0, NULL, 0, NULL, NULL);
 			}
@@ -369,13 +369,13 @@ static void	discovery_update_service_status(DB_DHOST *dhost, const DB_DSERVICE *
 		if (DOBJECT_STATUS_UP == dservice->status || 0 == dservice->lastdown)
 		{
 			discovery_update_dservice(dservice->dserviceid, service_status, 0, now, dservice->value);
-			zbx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DSERVICE, dservice->dserviceid, &ts,
+			trx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DSERVICE, dservice->dserviceid, &ts,
 					DOBJECT_STATUS_LOST, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL, NULL);
 
 			/* service went DOWN, no need to update host status here as other services may be UP */
 		}
 	}
-	zbx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DSERVICE, dservice->dserviceid, &ts, service_status,
+	trx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DSERVICE, dservice->dserviceid, &ts, service_status,
 			NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL, NULL);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -390,7 +390,7 @@ static void	discovery_update_service_status(DB_DHOST *dhost, const DB_DSERVICE *
  ******************************************************************************/
 static void	discovery_update_host_status(DB_DHOST *dhost, int status, int now)
 {
-	zbx_timespec_t	ts;
+	trx_timespec_t	ts;
 
 	ts.sec = now;
 	ts.ns = 0;
@@ -405,7 +405,7 @@ static void	discovery_update_host_status(DB_DHOST *dhost, int status, int now)
 			dhost->lastup = now;
 
 			discovery_update_dhost(dhost);
-			zbx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DHOST, dhost->dhostid, &ts,
+			trx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DHOST, dhost->dhostid, &ts,
 					DOBJECT_STATUS_DISCOVER, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL, NULL);
 		}
 	}
@@ -418,11 +418,11 @@ static void	discovery_update_host_status(DB_DHOST *dhost, int status, int now)
 			dhost->lastup = 0;
 
 			discovery_update_dhost(dhost);
-			zbx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DHOST, dhost->dhostid, &ts,
+			trx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DHOST, dhost->dhostid, &ts,
 					DOBJECT_STATUS_LOST, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL, NULL);
 		}
 	}
-	zbx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DHOST, dhost->dhostid, &ts, status, NULL, NULL, NULL, 0, 0,
+	trx_add_event(EVENT_SOURCE_DISCOVERY, EVENT_OBJECT_DHOST, dhost->dhostid, &ts, status, NULL, NULL, NULL, 0, 0,
 			NULL, 0, NULL, 0, NULL, NULL);
 }
 
@@ -442,8 +442,8 @@ void	discovery_update_host(DB_DHOST *dhost, int status, int now)
 	if (0 != dhost->dhostid)
 		discovery_update_host_status(dhost, status, now);
 
-	zbx_process_events(NULL, NULL);
-	zbx_clean_events();
+	trx_process_events(NULL, NULL);
+	trx_clean_events();
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -457,7 +457,7 @@ void	discovery_update_host(DB_DHOST *dhost, int status, int now)
  * Parameters: service - service info                                         *
  *                                                                            *
  ******************************************************************************/
-void	discovery_update_service(const DB_DRULE *drule, zbx_uint64_t dcheckid, DB_DHOST *dhost, const char *ip,
+void	discovery_update_service(const DB_DRULE *drule, trx_uint64_t dcheckid, DB_DHOST *dhost, const char *ip,
 		const char *dns, int port, int status, const char *value, int now)
 {
 	DB_DSERVICE	dservice;
@@ -479,7 +479,7 @@ void	discovery_update_service(const DB_DRULE *drule, zbx_uint64_t dcheckid, DB_D
 	if (0 != dservice.dserviceid)
 		discovery_update_service_status(dhost, &dservice, status, value, now);
 
-	zbx_free(dservice.value);
+	trx_free(dservice.value);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }

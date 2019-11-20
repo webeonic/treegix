@@ -1692,13 +1692,13 @@ class CConfigurationImport {
 			return;
 		}
 
-		$allImages = zbx_toHash($allImages, 'name');
+		$allImages = trx_toHash($allImages, 'name');
 
 		$dbImages = API::Image()->get([
 			'output' => ['imageid', 'name'],
 			'filter' => ['name' => array_keys($allImages)]
 		]);
-		$dbImages = zbx_toHash($dbImages, 'name');
+		$dbImages = trx_toHash($dbImages, 'name');
 
 		$imagesToUpdate = [];
 		$imagesToCreate = [];
@@ -1781,13 +1781,13 @@ class CConfigurationImport {
 			return;
 		}
 
-		$all_media_types = zbx_toHash($all_media_types, 'name');
+		$all_media_types = trx_toHash($all_media_types, 'name');
 
 		$db_media_types = API::MediaType()->get([
 			'output' => ['mediatypeid', 'name'],
 			'filter' => ['name' => array_keys($all_media_types)]
 		]);
-		$db_media_types = zbx_toHash($db_media_types, 'name');
+		$db_media_types = trx_toHash($db_media_types, 'name');
 
 		$upd_media_types = [];
 		$new_media_types = [];
@@ -1976,7 +1976,7 @@ class CConfigurationImport {
 		$processedHostIds = array_flip($processedHostIds);
 
 		foreach ($triggersToDelete as $triggerId => $trigger) {
-			$triggerHostIds = array_flip(zbx_objectValues($trigger['hosts'], 'hostid'));
+			$triggerHostIds = array_flip(trx_objectValues($trigger['hosts'], 'hostid'));
 			if (!array_diff_key($triggerHostIds, $processedHostIds)) {
 				$triggerIdsToDelete[] = $triggerId;
 			}
@@ -2047,7 +2047,7 @@ class CConfigurationImport {
 		$processedHostIds = array_flip($processedHostIds);
 
 		foreach ($graphsToDelete as $graphId => $graph) {
-			$graphHostIds = array_flip(zbx_objectValues($graph['hosts'], 'hostid'));
+			$graphHostIds = array_flip(trx_objectValues($graph['hosts'], 'hostid'));
 
 			if (!array_diff_key($graphHostIds, $processedHostIds)) {
 				$graphIdsToDelete[] = $graphId;

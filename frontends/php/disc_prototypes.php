@@ -352,7 +352,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 	$result = true;
 	DBstart();
 
-	if (!zbx_empty($_REQUEST['new_application'])) {
+	if (!trx_empty($_REQUEST['new_application'])) {
 		$new_appid = API::Application()->create([
 			'name' => $_REQUEST['new_application'],
 			'hostid' => $discoveryRule['hostid']
@@ -616,7 +616,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 			$item = CArrayHelper::unsetEqualValues($item, $db_item);
 			$item['itemid'] = $itemId;
 
-			$db_item['applications'] = zbx_objectValues($db_item['applications'], 'applicationid');
+			$db_item['applications'] = trx_objectValues($db_item['applications'], 'applicationid');
 
 			// compare applications
 			natsort($db_item['applications']);
@@ -627,10 +627,10 @@ elseif (hasRequest('add') || hasRequest('update')) {
 			}
 
 			// compare application prototypes
-			$db_application_prototype_names = zbx_objectValues($db_item['applicationPrototypes'], 'name');
+			$db_application_prototype_names = trx_objectValues($db_item['applicationPrototypes'], 'name');
 			natsort($db_application_prototype_names);
 
-			$application_prototype_names = zbx_objectValues($application_prototypes, 'name');
+			$application_prototype_names = trx_objectValues($application_prototypes, 'name');
 			natsort($application_prototype_names);
 
 			if (array_values($db_application_prototype_names) !== array_values($application_prototype_names)) {
@@ -1001,7 +1001,7 @@ elseif ($valid_input && hasRequest('massupdate') && hasRequest('group_itemid')) 
 							if (array_key_exists('applications', $visible)) {
 								if ($applicationids) {
 									// If there are existing applications submitted.
-									$db_applicationids = zbx_objectValues(
+									$db_applicationids = trx_objectValues(
 										$item_prototypes[$item_prototypeid]['applications'],
 										'applicationid'
 									);
@@ -1042,7 +1042,7 @@ elseif ($valid_input && hasRequest('massupdate') && hasRequest('group_itemid')) 
 							if (array_key_exists('applicationPrototypes', $visible)) {
 								$ex_application_prototypes
 									= $item_prototypes[$item_prototypeid]['applicationPrototypes'];
-								$ex_application_prototypeids = zbx_objectValues($ex_application_prototypes,
+								$ex_application_prototypeids = trx_objectValues($ex_application_prototypes,
 									'application_prototypeid'
 								);
 								$upd_application_prototypeids = [];
@@ -1061,7 +1061,7 @@ elseif ($valid_input && hasRequest('massupdate') && hasRequest('group_itemid')) 
 										if ($new_application_prototypes) {
 											foreach ($new_application_prototypes as $new_application_prototype) {
 												if (!in_array($new_application_prototype['name'],
-														zbx_objectValues($application_prototypes, 'name'))) {
+														trx_objectValues($application_prototypes, 'name'))) {
 													$application_prototypes[] = $new_application_prototype;
 												}
 											}
@@ -1084,7 +1084,7 @@ elseif ($valid_input && hasRequest('massupdate') && hasRequest('group_itemid')) 
 										if ($new_application_prototypes) {
 											foreach ($new_application_prototypes as $new_application_prototype) {
 												if (!in_array($new_application_prototype['name'],
-														zbx_objectValues($application_prototypes, 'name'))) {
+														trx_objectValues($application_prototypes, 'name'))) {
 													$application_prototypes[] = $new_application_prototype;
 												}
 											}
@@ -1117,7 +1117,7 @@ elseif ($valid_input && hasRequest('massupdate') && hasRequest('group_itemid')) 
 									// Append those application prototypes to update list.
 									foreach ($db_application_prototypes as $db_application_prototype) {
 										if (!in_array($db_application_prototype['application_prototypeid'],
-												zbx_objectValues($application_prototypes,
+												trx_objectValues($application_prototypes,
 													'application_prototypeid'))) {
 											$application_prototypes[] = $db_application_prototype;
 										}
@@ -1179,7 +1179,7 @@ if (hasRequest('action') && getRequest('action') !== 'itemprototype.massupdatefo
 		'output' => [],
 		'editable' => true
 	]);
-	uncheckTableRows(getRequest('parent_discoveryid'), zbx_objectValues($item_prototypes, 'itemid'));
+	uncheckTableRows(getRequest('parent_discoveryid'), trx_objectValues($item_prototypes, 'itemid'));
 }
 
 /*

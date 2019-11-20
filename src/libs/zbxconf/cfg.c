@@ -56,7 +56,7 @@ static int	match_glob(const char *file, const char *pattern)
 		if (pattern == p)
 		{
 #ifdef _WINDOWS
-			if (0 != zbx_strncasecmp(f, p, q - p))
+			if (0 != trx_strncasecmp(f, p, q - p))
 #else
 			if (0 != strncmp(f, p, q - p))
 #endif
@@ -91,7 +91,7 @@ static int	match_glob(const char *file, const char *pattern)
 			if ('\0' == *f)
 				return FAIL;
 #ifdef _WINDOWS
-			if (0 == zbx_strncasecmp(f, p, q - p))
+			if (0 == trx_strncasecmp(f, p, q - p))
 #else
 			if (0 == strncmp(f, p, q - p))
 #endif
@@ -128,7 +128,7 @@ static int	parse_glob(const char *glob, char **path, char **pattern)
 
 	if (NULL == (p = strchr(glob, '*')))
 	{
-		*path = zbx_strdup(NULL, glob);
+		*path = trx_strdup(NULL, glob);
 		*pattern = NULL;
 
 		goto trim;
@@ -136,7 +136,7 @@ static int	parse_glob(const char *glob, char **path, char **pattern)
 
 	if (NULL != strchr(p + 1, PATH_SEPARATOR))
 	{
-		zbx_error("%s: glob pattern should be the last component of the path", glob);
+		trx_error("%s: glob pattern should be the last component of the path", glob);
 		return FAIL;
 	}
 
@@ -144,7 +144,7 @@ static int	parse_glob(const char *glob, char **path, char **pattern)
 	{
 		if (glob == p)
 		{
-			zbx_error("%s: path should be absolute", glob);
+			trx_error("%s: path should be absolute", glob);
 			return FAIL;
 		}
 
@@ -152,14 +152,14 @@ static int	parse_glob(const char *glob, char **path, char **pattern)
 	}
 	while (PATH_SEPARATOR != *p);
 
-	*path = zbx_strdup(NULL, glob);
+	*path = trx_strdup(NULL, glob);
 	(*path)[p - glob] = '\0';
 
-	*pattern = zbx_strdup(NULL, p + 1);
+	*pattern = trx_strdup(NULL, p + 1);
 trim:
 #ifdef _WINDOWS
-	if (0 != zbx_rtrim(*path, "\\") && NULL == *pattern)
-		*pattern = zbx_strdup(NULL, "*");			/* make sure path is a directory */
+	if (0 != trx_rtrim(*path, "\\") && NULL == *pattern)
+		*pattern = trx_strdup(NULL, "*");			/* make sure path is a directory */
 
 	if (':' == (*path)[1] && '\0' == (*path)[2] && '\\' == glob[2])	/* retain backslash for "C:\" */
 	{
@@ -167,8 +167,8 @@ trim:
 		(*path)[3] = '\0';
 	}
 #else
-	if (0 != zbx_rtrim(*path, "/") && NULL == *pattern)
-		*pattern = zbx_strdup(NULL, "*");			/* make sure path is a directory */
+	if (0 != trx_rtrim(*path, "/") && NULL == *pattern)
+		*pattern = trx_strdup(NULL, "*");			/* make sure path is a directory */
 
 	if ('\0' == (*path)[0] && '/' == glob[0])			/* retain forward slash for "/" */
 	{
@@ -204,8 +204,8 @@ static int	parse_cfg_dir(const char *path, const char *pattern, struct cfg_line 
 	wchar_t			*wfind_path = NULL;
 	int			ret = FAIL;
 
-	find_path = zbx_dsprintf(find_path, "%s\\*", path);
-	wfind_path = zbx_utf8_to_unicode(find_path);
+	find_path = trx_dsprintf(find_path, "%s\\*", path);
+	wfind_path = trx_utf8_to_unicode(find_path);
 
 	if (INVALID_HANDLE_VALUE == (h_find = FindFirstFileW(wfind_path, &find_file_data)))
 		goto clean;
@@ -215,17 +215,17 @@ static int	parse_cfg_dir(const char *path, const char *pattern, struct cfg_line 
 		if (0 != (find_file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			continue;
 
-		file_name = zbx_unicode_to_utf8(find_file_data.cFileName);
+		file_name = trx_unicode_to_utf8(find_file_data.cFileName);
 
 		if (NULL != pattern && SUCCEED != match_glob(file_name, pattern))
 		{
-			zbx_free(file_name);
+			trx_free(file_name);
 			continue;
 		}
 
-		file = zbx_dsprintf(file, "%s\\%s", path, file_name);
+		file = trx_dsprintf(file, "%s\\%s", path, file_name);
 
-		zbx_free(file_name);
+		trx_free(file_name);
 
 		if (SUCCEED != __parse_cfg_file(file, cfg, level, TRX_CFG_FILE_REQUIRED, strict))
 			goto close;
@@ -233,11 +233,11 @@ static int	parse_cfg_dir(const char *path, const char *pattern, struct cfg_line 
 
 	ret = SUCCEED;
 close:
-	zbx_free(file);
+	trx_free(file);
 	FindClose(h_find);
 clean:
-	zbx_free(wfind_path);
-	zbx_free(find_path);
+	trx_free(wfind_path);
+	trx_free(find_path);
 
 	return ret;
 }
@@ -246,21 +246,21 @@ static int	parse_cfg_dir(const char *path, const char *pattern, struct cfg_line 
 {
 	DIR		*dir;
 	struct dirent	*d;
-	zbx_stat_t	sb;
+	trx_stat_t	sb;
 	char		*file = NULL;
 	int		ret = FAIL;
 
 	if (NULL == (dir = opendir(path)))
 	{
-		zbx_error("%s: %s", path, zbx_strerror(errno));
+		trx_error("%s: %s", path, trx_strerror(errno));
 		goto out;
 	}
 
 	while (NULL != (d = readdir(dir)))
 	{
-		file = zbx_dsprintf(file, "%s/%s", path, d->d_name);
+		file = trx_dsprintf(file, "%s/%s", path, d->d_name);
 
-		if (0 != zbx_stat(file, &sb) || 0 == S_ISREG(sb.st_mode))
+		if (0 != trx_stat(file, &sb) || 0 == S_ISREG(sb.st_mode))
 			continue;
 
 		if (NULL != pattern && SUCCEED != match_glob(d->d_name, pattern))
@@ -274,11 +274,11 @@ static int	parse_cfg_dir(const char *path, const char *pattern, struct cfg_line 
 close:
 	if (0 != closedir(dir))
 	{
-		zbx_error("%s: %s", path, zbx_strerror(errno));
+		trx_error("%s: %s", path, trx_strerror(errno));
 		ret = FAIL;
 	}
 
-	zbx_free(file);
+	trx_free(file);
 out:
 	return ret;
 }
@@ -303,14 +303,14 @@ static int	parse_cfg_object(const char *cfg_file, struct cfg_line *cfg, int leve
 {
 	int		ret = FAIL;
 	char		*path = NULL, *pattern = NULL;
-	zbx_stat_t	sb;
+	trx_stat_t	sb;
 
 	if (SUCCEED != parse_glob(cfg_file, &path, &pattern))
 		goto clean;
 
-	if (0 != zbx_stat(path, &sb))
+	if (0 != trx_stat(path, &sb))
 	{
-		zbx_error("%s: %s", path, zbx_strerror(errno));
+		trx_error("%s: %s", path, trx_strerror(errno));
 		goto clean;
 	}
 
@@ -322,14 +322,14 @@ static int	parse_cfg_object(const char *cfg_file, struct cfg_line *cfg, int leve
 			goto clean;
 		}
 
-		zbx_error("%s: base path is not a directory", cfg_file);
+		trx_error("%s: base path is not a directory", cfg_file);
 		goto clean;
 	}
 
 	ret = parse_cfg_dir(path, pattern, cfg, level, strict);
 clean:
-	zbx_free(pattern);
-	zbx_free(path);
+	trx_free(pattern);
+	trx_free(path);
 
 	return ret;
 }
@@ -362,23 +362,23 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 	FILE		*file;
 	int		i, lineno, param_valid;
 	char		line[MAX_STRING_LEN + 3], *parameter, *value;
-	zbx_uint64_t	var;
+	trx_uint64_t	var;
 	size_t		len;
 #ifdef _WINDOWS
 	wchar_t		*wcfg_file;
 #endif
 	if (++level > TRX_MAX_INCLUDE_LEVEL)
 	{
-		zbx_error("Recursion detected! Skipped processing of '%s'.", cfg_file);
+		trx_error("Recursion detected! Skipped processing of '%s'.", cfg_file);
 		return FAIL;
 	}
 
 	if (NULL != cfg_file)
 	{
 #ifdef _WINDOWS
-		wcfg_file = zbx_utf8_to_unicode(cfg_file);
+		wcfg_file = trx_utf8_to_unicode(cfg_file);
 		file = _wfopen(wcfg_file, L"r");
-		zbx_free(wcfg_file);
+		trx_free(wcfg_file);
 
 		if (NULL == file)
 			goto cannot_open;
@@ -393,14 +393,14 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 			if (MAX_STRING_LEN < len && NULL == strchr("\r\n", line[MAX_STRING_LEN]))
 				goto line_too_long;
 
-			zbx_ltrim(line, TRX_CFG_LTRIM_CHARS);
-			zbx_rtrim(line, TRX_CFG_RTRIM_CHARS);
+			trx_ltrim(line, TRX_CFG_LTRIM_CHARS);
+			trx_rtrim(line, TRX_CFG_RTRIM_CHARS);
 
 			if ('#' == *line || '\0' == *line)
 				continue;
 
 			/* we only support UTF-8 characters in the config file */
-			if (SUCCEED != zbx_is_utf8(line))
+			if (SUCCEED != trx_is_utf8(line))
 				goto non_utf8;
 
 			parameter = line;
@@ -409,8 +409,8 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 
 			*value++ = '\0';
 
-			zbx_rtrim(parameter, TRX_CFG_RTRIM_CHARS);
-			zbx_ltrim(value, TRX_CFG_LTRIM_CHARS);
+			trx_rtrim(parameter, TRX_CFG_RTRIM_CHARS);
+			trx_ltrim(value, TRX_CFG_LTRIM_CHARS);
 
 			treegix_log(LOG_LEVEL_DEBUG, "cfg: para: [%s] val [%s]", parameter, value);
 
@@ -449,14 +449,14 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 						*((int *)cfg[i].variable) = (int)var;
 						break;
 					case TYPE_STRING_LIST:
-						zbx_trim_str_list(value, ',');
+						trx_trim_str_list(value, ',');
 						TRX_FALLTHROUGH;
 					case TYPE_STRING:
 						*((char **)cfg[i].variable) =
-								zbx_strdup(*((char **)cfg[i].variable), value);
+								trx_strdup(*((char **)cfg[i].variable), value);
 						break;
 					case TYPE_MULTISTRING:
-						zbx_strarr_add((char ***)cfg[i].variable, value);
+						trx_strarr_add((char ***)cfg[i].variable, value);
 						break;
 					case TYPE_UINT64:
 						if (FAIL == str2uint64(value, "KMGT", &var))
@@ -465,7 +465,7 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 						if (cfg[i].min > var || (0 != cfg[i].max && var > cfg[i].max))
 							goto incorrect_config;
 
-						*((zbx_uint64_t *)cfg[i].variable) = var;
+						*((trx_uint64_t *)cfg[i].variable) = var;
 						break;
 					default:
 						assert(0);
@@ -506,31 +506,31 @@ static int	__parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int leve
 cannot_open:
 	if (TRX_CFG_FILE_REQUIRED != optional)
 		return SUCCEED;
-	zbx_error("cannot open config file \"%s\": %s", cfg_file, zbx_strerror(errno));
+	trx_error("cannot open config file \"%s\": %s", cfg_file, trx_strerror(errno));
 	goto error;
 line_too_long:
 	fclose(file);
-	zbx_error("line %d exceeds %d byte length limit in config file \"%s\"", lineno, MAX_STRING_LEN, cfg_file);
+	trx_error("line %d exceeds %d byte length limit in config file \"%s\"", lineno, MAX_STRING_LEN, cfg_file);
 	goto error;
 non_utf8:
 	fclose(file);
-	zbx_error("non-UTF-8 character at line %d \"%s\" in config file \"%s\"", lineno, line, cfg_file);
+	trx_error("non-UTF-8 character at line %d \"%s\" in config file \"%s\"", lineno, line, cfg_file);
 	goto error;
 non_key_value:
 	fclose(file);
-	zbx_error("invalid entry \"%s\" (not following \"parameter=value\" notation) in config file \"%s\", line %d",
+	trx_error("invalid entry \"%s\" (not following \"parameter=value\" notation) in config file \"%s\", line %d",
 			line, cfg_file, lineno);
 	goto error;
 incorrect_config:
 	fclose(file);
-	zbx_error("wrong value of \"%s\" in config file \"%s\", line %d", cfg[i].parameter, cfg_file, lineno);
+	trx_error("wrong value of \"%s\" in config file \"%s\", line %d", cfg[i].parameter, cfg_file, lineno);
 	goto error;
 unknown_parameter:
 	fclose(file);
-	zbx_error("unknown parameter \"%s\" in config file \"%s\", line %d", parameter, cfg_file, lineno);
+	trx_error("unknown parameter \"%s\" in config file \"%s\", line %d", parameter, cfg_file, lineno);
 	goto error;
 missing_mandatory:
-	zbx_error("missing mandatory parameter \"%s\" in config file \"%s\"", cfg[i].parameter, cfg_file);
+	trx_error("missing mandatory parameter \"%s\" in config file \"%s\"", cfg[i].parameter, cfg_file);
 error:
 	exit(EXIT_FAILURE);
 }
@@ -544,7 +544,7 @@ int	check_cfg_feature_int(const char *parameter, int value, const char *feature)
 {
 	if (0 != value)
 	{
-		zbx_error("\"%s\" configuration parameter cannot be used: Treegix %s was compiled without %s",
+		trx_error("\"%s\" configuration parameter cannot be used: Treegix %s was compiled without %s",
 				parameter, get_program_type_string(program_type), feature);
 		return FAIL;
 	}
@@ -556,7 +556,7 @@ int	check_cfg_feature_str(const char *parameter, const char *value, const char *
 {
 	if (NULL != value)
 	{
-		zbx_error("\"%s\" configuration parameter cannot be used: Treegix %s was compiled without %s",
+		trx_error("\"%s\" configuration parameter cannot be used: Treegix %s was compiled without %s",
 				parameter, get_program_type_string(program_type), feature);
 		return FAIL;
 	}
@@ -566,13 +566,13 @@ int	check_cfg_feature_str(const char *parameter, const char *value, const char *
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_set_data_destination_hosts                                   *
+ * Function: trx_set_data_destination_hosts                                   *
  *                                                                            *
  * Purpose: parse "ServerActive' parameter value and set destination servers  *
  *          using a callback function                                         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_set_data_destination_hosts(char *active_hosts, add_serveractive_host_f cb)
+void	trx_set_data_destination_hosts(char *active_hosts, add_serveractive_host_f cb)
 {
 	char	*l = active_hosts, *r;
 
@@ -586,19 +586,19 @@ void	zbx_set_data_destination_hosts(char *active_hosts, add_serveractive_host_f 
 
 		if (SUCCEED != parse_serveractive_element(l, &host, &port, (unsigned short)TRX_DEFAULT_SERVER_PORT))
 		{
-			zbx_error("error parsing the \"ServerActive\" parameter: address \"%s\" is invalid", l);
+			trx_error("error parsing the \"ServerActive\" parameter: address \"%s\" is invalid", l);
 			exit(EXIT_FAILURE);
 		}
 
 		if (SUCCEED != cb(host, port))
 		{
-			zbx_error("error parsing the \"ServerActive\" parameter: address \"%s\" specified more than"
+			trx_error("error parsing the \"ServerActive\" parameter: address \"%s\" specified more than"
 					" once", l);
-			zbx_free(host);
+			trx_free(host);
 			exit(EXIT_FAILURE);
 		}
 
-		zbx_free(host);
+		trx_free(host);
 
 		if (NULL != r)
 		{

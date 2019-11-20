@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxconf.a
+noinst_LIBRARIES = libtrxconf.a
 
-libzbxconf_a_SOURCES = cfg.c
+libtrxconf_a_SOURCES = cfg.c

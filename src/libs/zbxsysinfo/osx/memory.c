@@ -14,21 +14,21 @@ static mach_msg_type_number_t	count;
 	count = HOST_VM_INFO_COUNT;										\
 	if (KERN_SUCCESS != host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&value, &count))	\
 	{													\
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain host statistics."));			\
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain host statistics."));			\
 		return SYSINFO_RET_FAIL;									\
 	}
 
 static int		mib[] = {CTL_HW, HW_MEMSIZE};
 static size_t		len;
-static zbx_uint64_t	memsize;
+static trx_uint64_t	memsize;
 
 #define TRX_SYSCTL(value)											\
 														\
 	len = sizeof(value);											\
 	if (0 != sysctl(mib, 2, &value, &len, NULL, 0))								\
 	{													\
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s",		\
-				zbx_strerror(errno)));								\
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s",		\
+				trx_strerror(errno)));								\
 		return SYSINFO_RET_FAIL;									\
 	}
 
@@ -45,7 +45,7 @@ static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 {
 	TRX_HOST_STATISTICS(vm);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)vm.active_count * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)vm.active_count * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -54,7 +54,7 @@ static int	VM_MEMORY_INACTIVE(AGENT_RESULT *result)
 {
 	TRX_HOST_STATISTICS(vm);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)vm.inactive_count * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)vm.inactive_count * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -63,7 +63,7 @@ static int	VM_MEMORY_WIRED(AGENT_RESULT *result)
 {
 	TRX_HOST_STATISTICS(vm);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)vm.wire_count * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)vm.wire_count * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -72,7 +72,7 @@ static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 {
 	TRX_HOST_STATISTICS(vm);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)vm.free_count * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)vm.free_count * pagesize);
 
 	return SYSINFO_RET_OK;
 }
@@ -81,26 +81,26 @@ static int	VM_MEMORY_USED(AGENT_RESULT *result)
 {
 	TRX_HOST_STATISTICS(vm);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)(vm.active_count + vm.wire_count) * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)(vm.active_count + vm.wire_count) * pagesize);
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 {
-	zbx_uint64_t	used;
+	trx_uint64_t	used;
 
 	TRX_SYSCTL(memsize);
 
 	if (0 == memsize)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	TRX_HOST_STATISTICS(vm);
 
-	used = (zbx_uint64_t)(vm.active_count + vm.wire_count) * pagesize;
+	used = (trx_uint64_t)(vm.active_count + vm.wire_count) * pagesize;
 
 	SET_DBL_RESULT(result, used / (double)memsize * 100);
 
@@ -111,26 +111,26 @@ static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 {
 	TRX_HOST_STATISTICS(vm);
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)(vm.inactive_count + vm.free_count) * pagesize);
+	SET_UI64_RESULT(result, (trx_uint64_t)(vm.inactive_count + vm.free_count) * pagesize);
 
 	return SYSINFO_RET_OK;
 }
 
 static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 {
-	zbx_uint64_t	available;
+	trx_uint64_t	available;
 
 	TRX_SYSCTL(memsize);
 
 	if (0 == memsize)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	TRX_HOST_STATISTICS(vm);
 
-	available = (zbx_uint64_t)(vm.inactive_count + vm.free_count) * pagesize;
+	available = (trx_uint64_t)(vm.inactive_count + vm.free_count) * pagesize;
 
 	SET_DBL_RESULT(result, available / (double)memsize * 100);
 
@@ -144,7 +144,7 @@ int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -152,7 +152,7 @@ int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		if (KERN_SUCCESS != host_page_size(mach_host_self(), &pagesize))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain host page size."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain host page size."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -179,7 +179,7 @@ int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VM_MEMORY_PAVAILABLE(result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

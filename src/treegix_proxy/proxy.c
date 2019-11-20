@@ -6,20 +6,20 @@
 #include "pid.h"
 #include "db.h"
 #include "dbcache.h"
-#include "zbxdbupgrade.h"
+#include "trxdbupgrade.h"
 #include "log.h"
-#include "zbxgetopt.h"
+#include "trxgetopt.h"
 #include "mutexs.h"
 #include "proxy.h"
 
 #include "sysinfo.h"
-#include "zbxmodules.h"
-#include "zbxserver.h"
+#include "trxmodules.h"
+#include "trxserver.h"
 
-#include "zbxnix.h"
+#include "trxnix.h"
 #include "daemon.h"
-#include "zbxself.h"
-#include "../libs/zbxnix/control.h"
+#include "trxself.h"
+#include "../libs/trxnix/control.h"
 
 #include "../treegix_server/dbsyncer/dbsyncer.h"
 #include "../treegix_server/discoverer/discoverer.h"
@@ -37,8 +37,8 @@
 #include "../treegix_server/selfmon/selfmon.h"
 #include "../treegix_server/vmware/vmware.h"
 #include "setproctitle.h"
-#include "../libs/zbxcrypto/tls.h"
-#include "zbxipcservice.h"
+#include "../libs/trxcrypto/tls.h"
+#include "trxipcservice.h"
 #include "../treegix_server/preprocessor/preproc_manager.h"
 #include "../treegix_server/preprocessor/preproc_worker.h"
 
@@ -105,7 +105,7 @@ const char	*help_message[] = {
 /* COMMAND LINE OPTIONS */
 
 /* long options */
-static struct zbx_option	longopts[] =
+static struct trx_option	longopts[] =
 {
 	{"config",		1,	NULL,	'c'},
 	{"foreground",		0,	NULL,	'f'},
@@ -183,13 +183,13 @@ int	CONFIG_VMWARE_FREQUENCY		= 60;
 int	CONFIG_VMWARE_PERF_FREQUENCY	= 60;
 int	CONFIG_VMWARE_TIMEOUT		= 10;
 
-zbx_uint64_t	CONFIG_CONF_CACHE_SIZE		= 8 * TRX_MEBIBYTE;
-zbx_uint64_t	CONFIG_HISTORY_CACHE_SIZE	= 16 * TRX_MEBIBYTE;
-zbx_uint64_t	CONFIG_HISTORY_INDEX_CACHE_SIZE	= 4 * TRX_MEBIBYTE;
-zbx_uint64_t	CONFIG_TRENDS_CACHE_SIZE	= 0;
-zbx_uint64_t	CONFIG_VALUE_CACHE_SIZE		= 0;
-zbx_uint64_t	CONFIG_VMWARE_CACHE_SIZE	= 8 * TRX_MEBIBYTE;
-zbx_uint64_t	CONFIG_EXPORT_FILE_SIZE;
+trx_uint64_t	CONFIG_CONF_CACHE_SIZE		= 8 * TRX_MEBIBYTE;
+trx_uint64_t	CONFIG_HISTORY_CACHE_SIZE	= 16 * TRX_MEBIBYTE;
+trx_uint64_t	CONFIG_HISTORY_INDEX_CACHE_SIZE	= 4 * TRX_MEBIBYTE;
+trx_uint64_t	CONFIG_TRENDS_CACHE_SIZE	= 0;
+trx_uint64_t	CONFIG_VALUE_CACHE_SIZE		= 0;
+trx_uint64_t	CONFIG_VMWARE_CACHE_SIZE	= 8 * TRX_MEBIBYTE;
+trx_uint64_t	CONFIG_EXPORT_FILE_SIZE;
 
 int	CONFIG_UNREACHABLE_PERIOD	= 45;
 int	CONFIG_UNREACHABLE_DELAY	= 15;
@@ -381,14 +381,14 @@ int	get_process_info_by_thread(int local_server_num, unsigned char *local_proces
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_set_defaults                                                 *
+ * Function: trx_set_defaults                                                 *
  *                                                                            *
  * Purpose: set configuration defaults                                        *
  *                                                                            *
  * Author: Rudolfs Kreicbergs                                                 *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_set_defaults(void)
+static void	trx_set_defaults(void)
 {
 	AGENT_RESULT	result;
 	char		**value = NULL;
@@ -398,7 +398,7 @@ static void	zbx_set_defaults(void)
 	if (NULL == CONFIG_HOSTNAME)
 	{
 		if (NULL == CONFIG_HOSTNAME_ITEM)
-			CONFIG_HOSTNAME_ITEM = zbx_strdup(CONFIG_HOSTNAME_ITEM, "system.hostname");
+			CONFIG_HOSTNAME_ITEM = trx_strdup(CONFIG_HOSTNAME_ITEM, "system.hostname");
 
 		init_result(&result);
 
@@ -413,7 +413,7 @@ static void	zbx_set_defaults(void)
 				treegix_log(LOG_LEVEL_WARNING, "proxy name truncated to [%s])", *value);
 			}
 
-			CONFIG_HOSTNAME = zbx_strdup(CONFIG_HOSTNAME, *value);
+			CONFIG_HOSTNAME = trx_strdup(CONFIG_HOSTNAME, *value);
 		}
 		else
 			treegix_log(LOG_LEVEL_WARNING, "failed to get proxy name from [%s])", CONFIG_HOSTNAME_ITEM);
@@ -426,34 +426,34 @@ static void	zbx_set_defaults(void)
 	}
 
 	if (NULL == CONFIG_DBHOST)
-		CONFIG_DBHOST = zbx_strdup(CONFIG_DBHOST, "localhost");
+		CONFIG_DBHOST = trx_strdup(CONFIG_DBHOST, "localhost");
 
 	if (NULL == CONFIG_SNMPTRAP_FILE)
-		CONFIG_SNMPTRAP_FILE = zbx_strdup(CONFIG_SNMPTRAP_FILE, "/tmp/treegix_traps.tmp");
+		CONFIG_SNMPTRAP_FILE = trx_strdup(CONFIG_SNMPTRAP_FILE, "/tmp/treegix_traps.tmp");
 
 	if (NULL == CONFIG_PID_FILE)
-		CONFIG_PID_FILE = zbx_strdup(CONFIG_PID_FILE, "/tmp/treegix_proxy.pid");
+		CONFIG_PID_FILE = trx_strdup(CONFIG_PID_FILE, "/tmp/treegix_proxy.pid");
 
 	if (NULL == CONFIG_TMPDIR)
-		CONFIG_TMPDIR = zbx_strdup(CONFIG_TMPDIR, "/tmp");
+		CONFIG_TMPDIR = trx_strdup(CONFIG_TMPDIR, "/tmp");
 
 	if (NULL == CONFIG_FPING_LOCATION)
-		CONFIG_FPING_LOCATION = zbx_strdup(CONFIG_FPING_LOCATION, "/usr/sbin/fping");
+		CONFIG_FPING_LOCATION = trx_strdup(CONFIG_FPING_LOCATION, "/usr/sbin/fping");
 #ifdef HAVE_IPV6
 	if (NULL == CONFIG_FPING6_LOCATION)
-		CONFIG_FPING6_LOCATION = zbx_strdup(CONFIG_FPING6_LOCATION, "/usr/sbin/fping6");
+		CONFIG_FPING6_LOCATION = trx_strdup(CONFIG_FPING6_LOCATION, "/usr/sbin/fping6");
 #endif
 	if (NULL == CONFIG_EXTERNALSCRIPTS)
-		CONFIG_EXTERNALSCRIPTS = zbx_strdup(CONFIG_EXTERNALSCRIPTS, DEFAULT_EXTERNAL_SCRIPTS_PATH);
+		CONFIG_EXTERNALSCRIPTS = trx_strdup(CONFIG_EXTERNALSCRIPTS, DEFAULT_EXTERNAL_SCRIPTS_PATH);
 
 	if (NULL == CONFIG_LOAD_MODULE_PATH)
-		CONFIG_LOAD_MODULE_PATH = zbx_strdup(CONFIG_LOAD_MODULE_PATH, DEFAULT_LOAD_MODULE_PATH);
+		CONFIG_LOAD_MODULE_PATH = trx_strdup(CONFIG_LOAD_MODULE_PATH, DEFAULT_LOAD_MODULE_PATH);
 #ifdef HAVE_LIBCURL
 	if (NULL == CONFIG_SSL_CERT_LOCATION)
-		CONFIG_SSL_CERT_LOCATION = zbx_strdup(CONFIG_SSL_CERT_LOCATION, DEFAULT_SSL_CERT_LOCATION);
+		CONFIG_SSL_CERT_LOCATION = trx_strdup(CONFIG_SSL_CERT_LOCATION, DEFAULT_SSL_CERT_LOCATION);
 
 	if (NULL == CONFIG_SSL_KEY_LOCATION)
-		CONFIG_SSL_KEY_LOCATION = zbx_strdup(CONFIG_SSL_KEY_LOCATION, DEFAULT_SSL_KEY_LOCATION);
+		CONFIG_SSL_KEY_LOCATION = trx_strdup(CONFIG_SSL_KEY_LOCATION, DEFAULT_SSL_KEY_LOCATION);
 #endif
 	if (TRX_PROXYMODE_ACTIVE != CONFIG_PROXYMODE || 0 == CONFIG_HEARTBEAT_FREQUENCY)
 		CONFIG_HEARTBEAT_FORKS = 0;
@@ -465,10 +465,10 @@ static void	zbx_set_defaults(void)
 	}
 
 	if (NULL == CONFIG_LOG_TYPE_STR)
-		CONFIG_LOG_TYPE_STR = zbx_strdup(CONFIG_LOG_TYPE_STR, TRX_OPTION_LOGTYPE_FILE);
+		CONFIG_LOG_TYPE_STR = trx_strdup(CONFIG_LOG_TYPE_STR, TRX_OPTION_LOGTYPE_FILE);
 
 	if (NULL == CONFIG_SOCKET_PATH)
-		CONFIG_SOCKET_PATH = zbx_strdup(CONFIG_SOCKET_PATH, "/tmp");
+		CONFIG_SOCKET_PATH = trx_strdup(CONFIG_SOCKET_PATH, "/tmp");
 
 	if (0 != CONFIG_IPMIPOLLER_FORKS)
 		CONFIG_IPMIMANAGER_FORKS = 1;
@@ -476,14 +476,14 @@ static void	zbx_set_defaults(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_validate_config                                              *
+ * Function: trx_validate_config                                              *
  *                                                                            *
  * Purpose: validate configuration parameters                                 *
  *                                                                            *
  * Author: Alexei Vladishev, Rudolfs Kreicbergs                               *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_validate_config(TRX_TASK_EX *task)
+static void	trx_validate_config(TRX_TASK_EX *task)
 {
 	char	*ch_error;
 	int	err = 0;
@@ -493,11 +493,11 @@ static void	zbx_validate_config(TRX_TASK_EX *task)
 		treegix_log(LOG_LEVEL_CRIT, "\"Hostname\" configuration parameter is not defined");
 		err = 1;
 	}
-	else if (FAIL == zbx_check_hostname(CONFIG_HOSTNAME, &ch_error))
+	else if (FAIL == trx_check_hostname(CONFIG_HOSTNAME, &ch_error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "invalid \"Hostname\" configuration parameter '%s': %s", CONFIG_HOSTNAME,
 				ch_error);
-		zbx_free(ch_error);
+		trx_free(ch_error);
 		err = 1;
 	}
 
@@ -515,15 +515,15 @@ static void	zbx_validate_config(TRX_TASK_EX *task)
 	}
 
 	if (TRX_PROXYMODE_ACTIVE == CONFIG_PROXYMODE && FAIL == is_supported_ip(CONFIG_SERVER) &&
-			FAIL == zbx_validate_hostname(CONFIG_SERVER))
+			FAIL == trx_validate_hostname(CONFIG_SERVER))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "invalid \"Server\" configuration parameter: '%s'", CONFIG_SERVER);
 		err = 1;
 	}
-	else if (TRX_PROXYMODE_PASSIVE == CONFIG_PROXYMODE && FAIL == zbx_validate_peer_list(CONFIG_SERVER, &ch_error))
+	else if (TRX_PROXYMODE_PASSIVE == CONFIG_PROXYMODE && FAIL == trx_validate_peer_list(CONFIG_SERVER, &ch_error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "invalid entry in \"Server\" configuration parameter: %s", ch_error);
-		zbx_free(ch_error);
+		trx_free(ch_error);
 		err = 1;
 	}
 
@@ -533,10 +533,10 @@ static void	zbx_validate_config(TRX_TASK_EX *task)
 		err = 1;
 	}
 
-	if (NULL != CONFIG_STATS_ALLOWED_IP && FAIL == zbx_validate_peer_list(CONFIG_STATS_ALLOWED_IP, &ch_error))
+	if (NULL != CONFIG_STATS_ALLOWED_IP && FAIL == trx_validate_peer_list(CONFIG_STATS_ALLOWED_IP, &ch_error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "invalid entry in \"StatsAllowedIP\" configuration parameter: %s", ch_error);
-		zbx_free(ch_error);
+		trx_free(ch_error);
 		err = 1;
 	}
 #if !defined(HAVE_IPV6)
@@ -554,7 +554,7 @@ static void	zbx_validate_config(TRX_TASK_EX *task)
 	/* because they have non-zero default values */
 #endif
 
-	if (SUCCEED != zbx_validate_log_parameters(task))
+	if (SUCCEED != trx_validate_log_parameters(task))
 		err = 1;
 
 #if !(defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
@@ -580,7 +580,7 @@ static void	zbx_validate_config(TRX_TASK_EX *task)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_load_config                                                  *
+ * Function: trx_load_config                                                  *
  *                                                                            *
  * Purpose: parse config file and update configuration parameters             *
  *                                                                            *
@@ -589,7 +589,7 @@ static void	zbx_validate_config(TRX_TASK_EX *task)
  * Comments: will terminate process if parsing fails                          *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_load_config(TRX_TASK_EX *task)
+static void	trx_load_config(TRX_TASK_EX *task)
 {
 	static struct cfg_line	cfg[] =
 	{
@@ -759,30 +759,30 @@ static void	zbx_load_config(TRX_TASK_EX *task)
 	};
 
 	/* initialize multistrings */
-	zbx_strarr_init(&CONFIG_LOAD_MODULE);
+	trx_strarr_init(&CONFIG_LOAD_MODULE);
 
 	parse_cfg_file(CONFIG_FILE, cfg, TRX_CFG_FILE_REQUIRED, TRX_CFG_STRICT);
 
-	zbx_set_defaults();
+	trx_set_defaults();
 
-	CONFIG_LOG_TYPE = zbx_get_log_type(CONFIG_LOG_TYPE_STR);
+	CONFIG_LOG_TYPE = trx_get_log_type(CONFIG_LOG_TYPE_STR);
 
-	zbx_validate_config(task);
+	trx_validate_config(task);
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_validate_config();
+	trx_tls_validate_config();
 #endif
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_free_config                                                  *
+ * Function: trx_free_config                                                  *
  *                                                                            *
  * Purpose: free configuration memory                                         *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_free_config(void)
+static void	trx_free_config(void)
 {
-	zbx_strarr_free(CONFIG_LOAD_MODULE);
+	trx_strarr_free(CONFIG_LOAD_MODULE);
 }
 
 /******************************************************************************
@@ -807,18 +807,18 @@ int	main(int argc, char **argv)
 	progname = get_program_name(argv[0]);
 
 	/* parse the command-line */
-	while ((char)EOF != (ch = (char)zbx_getopt_long(argc, argv, shortopts, longopts, NULL)))
+	while ((char)EOF != (ch = (char)trx_getopt_long(argc, argv, shortopts, longopts, NULL)))
 	{
 		switch (ch)
 		{
 			case 'c':
 				opt_c++;
 				if (NULL == CONFIG_FILE)
-					CONFIG_FILE = zbx_strdup(CONFIG_FILE, zbx_optarg);
+					CONFIG_FILE = trx_strdup(CONFIG_FILE, trx_optarg);
 				break;
 			case 'R':
 				opt_r++;
-				if (SUCCEED != parse_rtc_options(zbx_optarg, program_type, &t.data))
+				if (SUCCEED != parse_rtc_options(trx_optarg, program_type, &t.data))
 					exit(EXIT_FAILURE);
 
 				t.task = TRX_TASK_RUNTIME_CONTROL;
@@ -845,40 +845,40 @@ int	main(int argc, char **argv)
 	if (1 < opt_c || 1 < opt_r)
 	{
 		if (1 < opt_c)
-			zbx_error("option \"-c\" or \"--config\" specified multiple times");
+			trx_error("option \"-c\" or \"--config\" specified multiple times");
 		if (1 < opt_r)
-			zbx_error("option \"-R\" or \"--runtime-control\" specified multiple times");
+			trx_error("option \"-R\" or \"--runtime-control\" specified multiple times");
 
 		exit(EXIT_FAILURE);
 	}
 
-	/* Parameters which are not option values are invalid. The check relies on zbx_getopt_internal() which */
+	/* Parameters which are not option values are invalid. The check relies on trx_getopt_internal() which */
 	/* always permutes command line arguments regardless of POSIXLY_CORRECT environment variable. */
-	if (argc > zbx_optind)
+	if (argc > trx_optind)
 	{
 		int	i;
 
-		for (i = zbx_optind; i < argc; i++)
-			zbx_error("invalid parameter \"%s\"", argv[i]);
+		for (i = trx_optind; i < argc; i++)
+			trx_error("invalid parameter \"%s\"", argv[i]);
 
 		exit(EXIT_FAILURE);
 	}
 
 	if (NULL == CONFIG_FILE)
-		CONFIG_FILE = zbx_strdup(NULL, DEFAULT_CONFIG_FILE);
+		CONFIG_FILE = trx_strdup(NULL, DEFAULT_CONFIG_FILE);
 
 	/* required for simple checks */
 	init_metrics();
 
-	zbx_load_config(&t);
+	trx_load_config(&t);
 
 	if (TRX_TASK_RUNTIME_CONTROL == t.task)
-		exit(SUCCEED == zbx_sigusr_send(t.data) ? EXIT_SUCCESS : EXIT_FAILURE);
+		exit(SUCCEED == trx_sigusr_send(t.data) ? EXIT_SUCCESS : EXIT_FAILURE);
 
-	if (FAIL == zbx_ipc_service_init_env(CONFIG_SOCKET_PATH, &error))
+	if (FAIL == trx_ipc_service_init_env(CONFIG_SOCKET_PATH, &error))
 	{
-		zbx_error("Cannot initialize IPC services: %s", error);
-		zbx_free(error);
+		trx_error("Cannot initialize IPC services: %s", error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
@@ -887,7 +887,7 @@ int	main(int argc, char **argv)
 
 int	MAIN_TREEGIX_ENTRY(int flags)
 {
-	zbx_socket_t	listen_sock;
+	trx_socket_t	listen_sock;
 	char		*error = NULL;
 	int		i, db_type;
 
@@ -898,17 +898,17 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 				CONFIG_HOSTNAME, TREEGIX_VERSION, TREEGIX_REVISION);
 	}
 
-	if (SUCCEED != zbx_locks_create(&error))
+	if (SUCCEED != trx_locks_create(&error))
 	{
-		zbx_error("cannot create locks: %s", error);
-		zbx_free(error);
+		trx_error("cannot create locks: %s", error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
 	if (SUCCEED != treegix_open_log(CONFIG_LOG_TYPE, CONFIG_LOG_LEVEL, CONFIG_LOG_FILE, &error))
 	{
-		zbx_error("cannot open log:%s", error);
-		zbx_free(error);
+		trx_error("cannot open log:%s", error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
@@ -971,63 +971,63 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	treegix_log(LOG_LEVEL_INFORMATION, "using configuration file: %s", CONFIG_FILE);
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	if (SUCCEED != zbx_coredump_disable())
+	if (SUCCEED != trx_coredump_disable())
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot disable core dump, exiting...");
 		exit(EXIT_FAILURE);
 	}
 #endif
-	if (FAIL == zbx_load_modules(CONFIG_LOAD_MODULE_PATH, CONFIG_LOAD_MODULE, CONFIG_TIMEOUT, 1))
+	if (FAIL == trx_load_modules(CONFIG_LOAD_MODULE_PATH, CONFIG_LOAD_MODULE, CONFIG_TIMEOUT, 1))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "loading modules failed, exiting...");
 		exit(EXIT_FAILURE);
 	}
 
-	zbx_free_config();
+	trx_free_config();
 
 	if (SUCCEED != init_database_cache(&error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize database cache: %s", error);
-		zbx_free(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
 	if (SUCCEED != init_proxy_history_lock(&error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize lock for passive proxy history: %s", error);
-		zbx_free(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
 	if (SUCCEED != init_configuration_cache(&error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize configuration cache: %s", error);
-		zbx_free(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
 	if (SUCCEED != init_selfmon_collector(&error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize self-monitoring: %s", error);
-		zbx_free(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
-	if (0 != CONFIG_VMWARE_FORKS && SUCCEED != zbx_vmware_init(&error))
+	if (0 != CONFIG_VMWARE_FORKS && SUCCEED != trx_vmware_init(&error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize VMware cache: %s", error);
-		zbx_free(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
 	if (SUCCEED != DBinit(&error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize database: %s", error);
-		zbx_free(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
-	if (TRX_DB_UNKNOWN == (db_type = zbx_db_get_database_type()))
+	if (TRX_DB_UNKNOWN == (db_type = trx_db_get_database_type()))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot use database \"%s\": database is not a Treegix database",
 				CONFIG_DBNAME);
@@ -1055,26 +1055,26 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 			+ CONFIG_VMWARE_FORKS + CONFIG_IPMIMANAGER_FORKS + CONFIG_TASKMANAGER_FORKS
 			+ CONFIG_PREPROCMAN_FORKS + CONFIG_PREPROCESSOR_FORKS;
 
-	threads = (pid_t *)zbx_calloc(threads, threads_num, sizeof(pid_t));
-	threads_flags = (int *)zbx_calloc(threads_flags, threads_num, sizeof(int));
+	threads = (pid_t *)trx_calloc(threads, threads_num, sizeof(pid_t));
+	threads_flags = (int *)trx_calloc(threads_flags, threads_num, sizeof(int));
 
 	if (0 != CONFIG_TRAPPER_FORKS)
 	{
-		if (FAIL == zbx_tcp_listen(&listen_sock, CONFIG_LISTEN_IP, (unsigned short)CONFIG_LISTEN_PORT))
+		if (FAIL == trx_tcp_listen(&listen_sock, CONFIG_LISTEN_IP, (unsigned short)CONFIG_LISTEN_PORT))
 		{
-			treegix_log(LOG_LEVEL_CRIT, "listener failed: %s", zbx_socket_strerror());
+			treegix_log(LOG_LEVEL_CRIT, "listener failed: %s", trx_socket_strerror());
 			exit(EXIT_FAILURE);
 		}
 	}
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_parent();
+	trx_tls_init_parent();
 #endif
 	treegix_log(LOG_LEVEL_INFORMATION, "proxy #0 started [main process]");
 
 	for (i = 0; i < threads_num; i++)
 	{
-		zbx_thread_args_t	thread_args;
+		trx_thread_args_t	thread_args;
 		unsigned char		poller_type;
 
 		if (FAIL == get_process_info_by_thread(i + 1, &thread_args.process_type, &thread_args.process_num))
@@ -1089,74 +1089,74 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 		switch (thread_args.process_type)
 		{
 			case TRX_PROCESS_TYPE_CONFSYNCER:
-				zbx_thread_start(proxyconfig_thread, &thread_args, &threads[i]);
+				trx_thread_start(proxyconfig_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_HEARTBEAT:
-				zbx_thread_start(heart_thread, &thread_args, &threads[i]);
+				trx_thread_start(heart_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_DATASENDER:
-				zbx_thread_start(datasender_thread, &thread_args, &threads[i]);
+				trx_thread_start(datasender_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_POLLER:
 				poller_type = TRX_POLLER_TYPE_NORMAL;
 				thread_args.args = &poller_type;
-				zbx_thread_start(poller_thread, &thread_args, &threads[i]);
+				trx_thread_start(poller_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_UNREACHABLE:
 				poller_type = TRX_POLLER_TYPE_UNREACHABLE;
 				thread_args.args = &poller_type;
-				zbx_thread_start(poller_thread, &thread_args, &threads[i]);
+				trx_thread_start(poller_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_TRAPPER:
 				thread_args.args = &listen_sock;
-				zbx_thread_start(trapper_thread, &thread_args, &threads[i]);
+				trx_thread_start(trapper_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_PINGER:
-				zbx_thread_start(pinger_thread, &thread_args, &threads[i]);
+				trx_thread_start(pinger_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_HOUSEKEEPER:
-				zbx_thread_start(housekeeper_thread, &thread_args, &threads[i]);
+				trx_thread_start(housekeeper_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_HTTPPOLLER:
-				zbx_thread_start(httppoller_thread, &thread_args, &threads[i]);
+				trx_thread_start(httppoller_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_DISCOVERER:
-				zbx_thread_start(discoverer_thread, &thread_args, &threads[i]);
+				trx_thread_start(discoverer_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_HISTSYNCER:
 				threads_flags[i] = TRX_THREAD_WAIT_EXIT;
-				zbx_thread_start(dbsyncer_thread, &thread_args, &threads[i]);
+				trx_thread_start(dbsyncer_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_JAVAPOLLER:
 				poller_type = TRX_POLLER_TYPE_JAVA;
 				thread_args.args = &poller_type;
-				zbx_thread_start(poller_thread, &thread_args, &threads[i]);
+				trx_thread_start(poller_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_SNMPTRAPPER:
-				zbx_thread_start(snmptrapper_thread, &thread_args, &threads[i]);
+				trx_thread_start(snmptrapper_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_SELFMON:
-				zbx_thread_start(selfmon_thread, &thread_args, &threads[i]);
+				trx_thread_start(selfmon_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_VMWARE:
-				zbx_thread_start(vmware_thread, &thread_args, &threads[i]);
+				trx_thread_start(vmware_thread, &thread_args, &threads[i]);
 				break;
 #ifdef HAVE_OPENIPMI
 			case TRX_PROCESS_TYPE_IPMIMANAGER:
-				zbx_thread_start(ipmi_manager_thread, &thread_args, &threads[i]);
+				trx_thread_start(ipmi_manager_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_IPMIPOLLER:
-				zbx_thread_start(ipmi_poller_thread, &thread_args, &threads[i]);
+				trx_thread_start(ipmi_poller_thread, &thread_args, &threads[i]);
 				break;
 #endif
 			case TRX_PROCESS_TYPE_TASKMANAGER:
-				zbx_thread_start(taskmanager_thread, &thread_args, &threads[i]);
+				trx_thread_start(taskmanager_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_PREPROCMAN:
-				zbx_thread_start(preprocessing_manager_thread, &thread_args, &threads[i]);
+				trx_thread_start(preprocessing_manager_thread, &thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_PREPROCESSOR:
-				zbx_thread_start(preprocessing_worker_thread, &thread_args, &threads[i]);
+				trx_thread_start(preprocessing_worker_thread, &thread_args, &threads[i]);
 				break;
 		}
 	}
@@ -1165,7 +1165,7 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	{
 		if (EINTR != errno)
 		{
-			treegix_log(LOG_LEVEL_ERR, "failed to wait on child processes: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_ERR, "failed to wait on child processes: %s", trx_strerror(errno));
 			break;
 		}
 	}
@@ -1173,26 +1173,26 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	/* all exiting child processes should be caught by signal handlers */
 	THIS_SHOULD_NEVER_HAPPEN;
 
-	zbx_on_exit(FAIL);
+	trx_on_exit(FAIL);
 
 	return SUCCEED;
 }
 
-void	zbx_on_exit(int ret)
+void	trx_on_exit(int ret)
 {
-	treegix_log(LOG_LEVEL_DEBUG, "zbx_on_exit() called");
+	treegix_log(LOG_LEVEL_DEBUG, "trx_on_exit() called");
 
 	if (NULL != threads)
 	{
-		zbx_threads_wait(threads, threads_flags, threads_num, ret);	/* wait for all child processes to exit */
-		zbx_free(threads);
-		zbx_free(threads_flags);
+		trx_threads_wait(threads, threads_flags, threads_num, ret);	/* wait for all child processes to exit */
+		trx_free(threads);
+		trx_free(threads_flags);
 	}
 #ifdef HAVE_PTHREAD_PROCESS_SHARED
-	zbx_locks_disable();
+	trx_locks_disable();
 #endif
 	free_metrics();
-	zbx_ipc_service_free_env();
+	trx_ipc_service_free_env();
 
 	DBconnect(TRX_DB_CONNECT_EXIT);
 	free_database_cache();
@@ -1203,12 +1203,12 @@ void	zbx_on_exit(int ret)
 
 	/* free vmware support */
 	if (0 != CONFIG_VMWARE_FORKS)
-		zbx_vmware_destroy();
+		trx_vmware_destroy();
 
 	free_selfmon_collector();
 	free_proxy_history_lock();
 
-	zbx_unload_modules();
+	trx_unload_modules();
 
 	treegix_log(LOG_LEVEL_INFORMATION, "Treegix Proxy stopped. Treegix %s (revision %s).",
 			TREEGIX_VERSION, TREEGIX_REVISION);

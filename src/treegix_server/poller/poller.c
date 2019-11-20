@@ -5,8 +5,8 @@
 #include "db.h"
 #include "dbcache.h"
 #include "daemon.h"
-#include "zbxserver.h"
-#include "zbxself.h"
+#include "trxserver.h"
+#include "trxself.h"
 #include "preproc.h"
 #include "../events.h"
 
@@ -24,9 +24,9 @@
 #include "checks_java.h"
 #include "checks_calculated.h"
 #include "checks_http.h"
-#include "../../libs/zbxcrypto/tls.h"
-#include "zbxjson.h"
-#include "zbxhttp.h"
+#include "../../libs/trxcrypto/tls.h"
+#include "trxjson.h"
+#include "trxhttp.h"
 
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
@@ -43,18 +43,18 @@ extern int		server_num, process_num;
  *               FAIL    - no changes in availability data were detected      *
  *                                                                            *
  ******************************************************************************/
-static int	db_host_update_availability(const zbx_host_availability_t *ha)
+static int	db_host_update_availability(const trx_host_availability_t *ha)
 {
 	char	*sql = NULL;
 	size_t	sql_alloc = 0, sql_offset = 0;
 
-	if (SUCCEED == zbx_sql_add_host_availability(&sql, &sql_alloc, &sql_offset, ha))
+	if (SUCCEED == trx_sql_add_host_availability(&sql, &sql_alloc, &sql_offset, ha))
 	{
 		DBbegin();
 		DBexecute("%s", sql);
 		DBcommit();
 
-		zbx_free(sql);
+		trx_free(sql);
 
 		return SUCCEED;
 	}
@@ -78,9 +78,9 @@ static int	db_host_update_availability(const zbx_host_availability_t *ha)
  *                         invalid agent type was specified                   *
  *                                                                            *
  ******************************************************************************/
-static int	host_get_availability(const DC_HOST *dc_host, unsigned char agent, zbx_host_availability_t *ha)
+static int	host_get_availability(const DC_HOST *dc_host, unsigned char agent, trx_host_availability_t *ha)
 {
-	zbx_agent_availability_t	*availability = &ha->agents[agent];
+	trx_agent_availability_t	*availability = &ha->agents[agent];
 
 	availability->flags = TRX_FLAGS_AGENT_STATUS;
 
@@ -88,25 +88,25 @@ static int	host_get_availability(const DC_HOST *dc_host, unsigned char agent, zb
 	{
 		case TRX_AGENT_TREEGIX:
 			availability->available = dc_host->available;
-			availability->error = zbx_strdup(NULL, dc_host->error);
+			availability->error = trx_strdup(NULL, dc_host->error);
 			availability->errors_from = dc_host->errors_from;
 			availability->disable_until = dc_host->disable_until;
 			break;
 		case TRX_AGENT_SNMP:
 			availability->available = dc_host->snmp_available;
-			availability->error = zbx_strdup(NULL, dc_host->snmp_error);
+			availability->error = trx_strdup(NULL, dc_host->snmp_error);
 			availability->errors_from = dc_host->snmp_errors_from;
 			availability->disable_until = dc_host->snmp_disable_until;
 			break;
 		case TRX_AGENT_IPMI:
 			availability->available = dc_host->ipmi_available;
-			availability->error = zbx_strdup(NULL, dc_host->ipmi_error);
+			availability->error = trx_strdup(NULL, dc_host->ipmi_error);
 			availability->errors_from = dc_host->ipmi_errors_from;
 			availability->disable_until = dc_host->ipmi_disable_until;
 			break;
 		case TRX_AGENT_JMX:
 			availability->available = dc_host->jmx_available;
-			availability->error = zbx_strdup(NULL, dc_host->jmx_error);
+			availability->error = trx_strdup(NULL, dc_host->jmx_error);
 			availability->disable_until = dc_host->jmx_disable_until;
 			availability->errors_from = dc_host->jmx_errors_from;
 			break;
@@ -134,9 +134,9 @@ static int	host_get_availability(const DC_HOST *dc_host, unsigned char agent, zb
  *                         invalid agent type was specified                   *
  *                                                                            *
  ******************************************************************************/
-static int	host_set_availability(DC_HOST *dc_host, unsigned char agent, const zbx_host_availability_t *ha)
+static int	host_set_availability(DC_HOST *dc_host, unsigned char agent, const trx_host_availability_t *ha)
 {
-	const zbx_agent_availability_t	*availability = &ha->agents[agent];
+	const trx_agent_availability_t	*availability = &ha->agents[agent];
 	unsigned char			*pavailable;
 	int				*perrors_from, *pdisable_until;
 	char				*perror;
@@ -175,7 +175,7 @@ static int	host_set_availability(DC_HOST *dc_host, unsigned char agent, const zb
 		*pavailable = availability->available;
 
 	if (0 != (availability->flags & TRX_FLAGS_AGENT_STATUS_ERROR))
-		zbx_strlcpy(perror, availability->error, HOST_ERROR_LEN_MAX);
+		trx_strlcpy(perror, availability->error, HOST_ERROR_LEN_MAX);
 
 	if (0 != (availability->flags & TRX_FLAGS_AGENT_STATUS_ERRORS_FROM))
 		*perrors_from = availability->errors_from;
@@ -209,16 +209,16 @@ static unsigned char	host_availability_agent_by_item_type(unsigned char type)
 	}
 }
 
-void	zbx_activate_item_host(DC_ITEM *item, zbx_timespec_t *ts)
+void	trx_activate_item_host(DC_ITEM *item, trx_timespec_t *ts)
 {
-	zbx_host_availability_t	in, out;
+	trx_host_availability_t	in, out;
 	unsigned char		agent_type;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" TRX_FS_UI64 " itemid:" TRX_FS_UI64 " type:%d",
 			__func__, item->host.hostid, item->itemid, (int)item->type);
 
-	zbx_host_availability_init(&in, item->host.hostid);
-	zbx_host_availability_init(&out, item->host.hostid);
+	trx_host_availability_init(&in, item->host.hostid);
+	trx_host_availability_init(&out, item->host.hostid);
 
 	if (TRX_AGENT_UNKNOWN == (agent_type = host_availability_agent_by_item_type(item->type)))
 		goto out;
@@ -237,30 +237,30 @@ void	zbx_activate_item_host(DC_ITEM *item, zbx_timespec_t *ts)
 	if (HOST_AVAILABLE_TRUE == in.agents[agent_type].available)
 	{
 		treegix_log(LOG_LEVEL_WARNING, "resuming %s checks on host \"%s\": connection restored",
-				zbx_agent_type_string(item->type), item->host.host);
+				trx_agent_type_string(item->type), item->host.host);
 	}
 	else
 	{
 		treegix_log(LOG_LEVEL_WARNING, "enabling %s checks on host \"%s\": host became available",
-				zbx_agent_type_string(item->type), item->host.host);
+				trx_agent_type_string(item->type), item->host.host);
 	}
 out:
-	zbx_host_availability_clean(&out);
-	zbx_host_availability_clean(&in);
+	trx_host_availability_clean(&out);
+	trx_host_availability_clean(&in);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
-void	zbx_deactivate_item_host(DC_ITEM *item, zbx_timespec_t *ts, const char *error)
+void	trx_deactivate_item_host(DC_ITEM *item, trx_timespec_t *ts, const char *error)
 {
-	zbx_host_availability_t	in, out;
+	trx_host_availability_t	in, out;
 	unsigned char		agent_type;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() hostid:" TRX_FS_UI64 " itemid:" TRX_FS_UI64 " type:%d",
 			__func__, item->host.hostid, item->itemid, (int)item->type);
 
-	zbx_host_availability_init(&in, item->host.hostid);
-	zbx_host_availability_init(&out,item->host.hostid);
+	trx_host_availability_init(&in, item->host.hostid);
+	trx_host_availability_init(&out,item->host.hostid);
 
 	if (TRX_AGENT_UNKNOWN == (agent_type = host_availability_agent_by_item_type(item->type)))
 		goto out;
@@ -283,7 +283,7 @@ void	zbx_deactivate_item_host(DC_ITEM *item, zbx_timespec_t *ts, const char *err
 	{
 		treegix_log(LOG_LEVEL_WARNING, "%s item \"%s\" on host \"%s\" failed:"
 				" first network error, wait for %d seconds",
-				zbx_agent_type_string(item->type), item->key_orig, item->host.host,
+				trx_agent_type_string(item->type), item->key_orig, item->host.host,
 				out.agents[agent_type].disable_until - ts->sec);
 	}
 	else
@@ -294,14 +294,14 @@ void	zbx_deactivate_item_host(DC_ITEM *item, zbx_timespec_t *ts, const char *err
 			{
 				treegix_log(LOG_LEVEL_WARNING, "%s item \"%s\" on host \"%s\" failed:"
 						" another network error, wait for %d seconds",
-						zbx_agent_type_string(item->type), item->key_orig, item->host.host,
+						trx_agent_type_string(item->type), item->key_orig, item->host.host,
 						out.agents[agent_type].disable_until - ts->sec);
 			}
 			else
 			{
 				treegix_log(LOG_LEVEL_WARNING, "temporarily disabling %s checks on host \"%s\":"
 						" host unavailable",
-						zbx_agent_type_string(item->type), item->host.host);
+						trx_agent_type_string(item->type), item->host.host);
 			}
 		}
 	}
@@ -309,8 +309,8 @@ void	zbx_deactivate_item_host(DC_ITEM *item, zbx_timespec_t *ts, const char *err
 	treegix_log(LOG_LEVEL_DEBUG, "%s() errors_from:%d available:%d", __func__,
 			out.agents[agent_type].errors_from, out.agents[agent_type].available);
 out:
-	zbx_host_availability_clean(&out);
-	zbx_host_availability_clean(&in);
+	trx_host_availability_clean(&out);
+	trx_host_availability_clean(&in);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -318,10 +318,10 @@ out:
 static void	free_result_ptr(AGENT_RESULT *result)
 {
 	free_result(result);
-	zbx_free(result);
+	trx_free(result);
 }
 
-static int	get_value(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_results)
+static int	get_value(DC_ITEM *item, AGENT_RESULT *result, trx_vector_ptr_t *add_results)
 {
 	int	res = FAIL;
 
@@ -330,9 +330,9 @@ static int	get_value(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 	switch (item->type)
 	{
 		case ITEM_TYPE_TREEGIX:
-			zbx_alarm_on(CONFIG_TIMEOUT);
+			trx_alarm_on(CONFIG_TIMEOUT);
 			res = get_value_agent(item, result);
-			zbx_alarm_off();
+			trx_alarm_off();
 			break;
 		case ITEM_TYPE_SIMPLE:
 			/* simple checks use their own timeouts */
@@ -346,7 +346,7 @@ static int	get_value(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 			res = get_value_db(item, result);
 #else
 			SET_MSG_RESULT(result,
-					zbx_strdup(NULL, "Support for Database monitor checks was not compiled in."));
+					trx_strdup(NULL, "Support for Database monitor checks was not compiled in."));
 			res = CONFIG_ERROR;
 #endif
 			break;
@@ -359,18 +359,18 @@ static int	get_value(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 			break;
 		case ITEM_TYPE_SSH:
 #ifdef HAVE_SSH2
-			zbx_alarm_on(CONFIG_TIMEOUT);
+			trx_alarm_on(CONFIG_TIMEOUT);
 			res = get_value_ssh(item, result);
-			zbx_alarm_off();
+			trx_alarm_off();
 #else
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for SSH checks was not compiled in."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Support for SSH checks was not compiled in."));
 			res = CONFIG_ERROR;
 #endif
 			break;
 		case ITEM_TYPE_TELNET:
-			zbx_alarm_on(CONFIG_TIMEOUT);
+			trx_alarm_on(CONFIG_TIMEOUT);
 			res = get_value_telnet(item, result);
-			zbx_alarm_off();
+			trx_alarm_off();
 			break;
 		case ITEM_TYPE_CALCULATED:
 			res = get_value_calculated(item, result);
@@ -379,31 +379,31 @@ static int	get_value(DC_ITEM *item, AGENT_RESULT *result, zbx_vector_ptr_t *add_
 #ifdef HAVE_LIBCURL
 			res = get_value_http(item, result);
 #else
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for HTTP agent checks was not compiled in."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Support for HTTP agent checks was not compiled in."));
 			res = CONFIG_ERROR;
 #endif
 			break;
 		default:
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Not supported item type:%d", item->type));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Not supported item type:%d", item->type));
 			res = CONFIG_ERROR;
 	}
 
 	if (SUCCEED != res)
 	{
 		if (!ISSET_MSG(result))
-			SET_MSG_RESULT(result, zbx_strdup(NULL, TRX_NOTSUPPORTED_MSG));
+			SET_MSG_RESULT(result, trx_strdup(NULL, TRX_NOTSUPPORTED_MSG));
 
 		treegix_log(LOG_LEVEL_DEBUG, "Item [%s:%s] error: %s", item->host.host, item->key_orig, result->msg);
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(res));
 
 	return res;
 }
 
 static int	parse_query_fields(const DC_ITEM *item, char **query_fields)
 {
-	struct zbx_json_parse	jp_array, jp_object;
+	struct trx_json_parse	jp_array, jp_object;
 	char			name[MAX_STRING_LEN], value[MAX_STRING_LEN];
 	const char		*member, *element = NULL;
 	size_t			alloc_len, offset;
@@ -414,13 +414,13 @@ static int	parse_query_fields(const DC_ITEM *item, char **query_fields)
 		return SUCCEED;
 	}
 
-	if (SUCCEED != zbx_json_open(item->query_fields_orig, &jp_array))
+	if (SUCCEED != trx_json_open(item->query_fields_orig, &jp_array))
 	{
-		treegix_log(LOG_LEVEL_ERR, "cannot parse query fields: %s", zbx_json_strerror());
+		treegix_log(LOG_LEVEL_ERR, "cannot parse query fields: %s", trx_json_strerror());
 		return FAIL;
 	}
 
-	if (NULL == (element = zbx_json_next(&jp_array, element)))
+	if (NULL == (element = trx_json_next(&jp_array, element)))
 	{
 		treegix_log(LOG_LEVEL_ERR, "cannot parse query fields: array is empty");
 		return FAIL;
@@ -430,35 +430,35 @@ static int	parse_query_fields(const DC_ITEM *item, char **query_fields)
 	{
 		char	*data = NULL;
 
-		if (SUCCEED != zbx_json_brackets_open(element, &jp_object) ||
-				NULL == (member = zbx_json_pair_next(&jp_object, NULL, name, sizeof(name))) ||
-				NULL == zbx_json_decodevalue(member, value, sizeof(value), NULL))
+		if (SUCCEED != trx_json_brackets_open(element, &jp_object) ||
+				NULL == (member = trx_json_pair_next(&jp_object, NULL, name, sizeof(name))) ||
+				NULL == trx_json_decodevalue(member, value, sizeof(value), NULL))
 		{
-			treegix_log(LOG_LEVEL_ERR, "cannot parse query fields: %s", zbx_json_strerror());
+			treegix_log(LOG_LEVEL_ERR, "cannot parse query fields: %s", trx_json_strerror());
 			return FAIL;
 		}
 
 		if (NULL == *query_fields && NULL == strchr(item->url, '?'))
-			zbx_chrcpy_alloc(query_fields, &alloc_len, &offset, '?');
+			trx_chrcpy_alloc(query_fields, &alloc_len, &offset, '?');
 		else
-			zbx_chrcpy_alloc(query_fields, &alloc_len, &offset, '&');
+			trx_chrcpy_alloc(query_fields, &alloc_len, &offset, '&');
 
-		data = zbx_strdup(data, name);
+		data = trx_strdup(data, name);
 		substitute_simple_macros(NULL, NULL, NULL,NULL, NULL, &item->host, item, NULL, NULL, &data,
 				MACRO_TYPE_HTTP_RAW, NULL, 0);
-		zbx_http_url_encode(data, &data);
-		zbx_strcpy_alloc(query_fields, &alloc_len, &offset, data);
-		zbx_chrcpy_alloc(query_fields, &alloc_len, &offset, '=');
+		trx_http_url_encode(data, &data);
+		trx_strcpy_alloc(query_fields, &alloc_len, &offset, data);
+		trx_chrcpy_alloc(query_fields, &alloc_len, &offset, '=');
 
-		data = zbx_strdup(data, value);
+		data = trx_strdup(data, value);
 		substitute_simple_macros(NULL, NULL, NULL,NULL, NULL, &item->host, item, NULL, NULL, &data,
 				MACRO_TYPE_HTTP_RAW, NULL, 0);
-		zbx_http_url_encode(data, &data);
-		zbx_strcpy_alloc(query_fields, &alloc_len, &offset, data);
+		trx_http_url_encode(data, &data);
+		trx_strcpy_alloc(query_fields, &alloc_len, &offset, data);
 
 		free(data);
 	}
-	while (NULL != (element = zbx_json_next(&jp_array, element)));
+	while (NULL != (element = trx_json_next(&jp_array, element)));
 
 	return SUCCEED;
 }
@@ -484,10 +484,10 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 	DC_ITEM			items[MAX_POLLER_ITEMS];
 	AGENT_RESULT		results[MAX_POLLER_ITEMS];
 	int			errcodes[MAX_POLLER_ITEMS];
-	zbx_timespec_t		timespec;
+	trx_timespec_t		timespec;
 	char			*port = NULL, error[ITEM_ERROR_LEN_MAX];
 	int			i, num, last_available = HOST_AVAILABLE_UNKNOWN;
-	zbx_vector_ptr_t	add_results;
+	trx_vector_ptr_t	add_results;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -509,7 +509,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 		if (SUCCEED != substitute_key_macros(&items[i].key, NULL, &items[i], NULL, NULL,
 				MACRO_TYPE_ITEM_KEY, error, sizeof(error)))
 		{
-			SET_MSG_RESULT(&results[i], zbx_strdup(NULL, error));
+			SET_MSG_RESULT(&results[i], trx_strdup(NULL, error));
 			errcodes[i] = CONFIG_ERROR;
 			continue;
 		}
@@ -526,7 +526,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 						NULL, NULL, NULL, &port, MACRO_TYPE_COMMON, NULL, 0);
 				if (FAIL == is_ushort(port, &items[i].interface.port))
 				{
-					SET_MSG_RESULT(&results[i], zbx_dsprintf(NULL, "Invalid port number [%s]",
+					SET_MSG_RESULT(&results[i], trx_dsprintf(NULL, "Invalid port number [%s]",
 								items[i].interface.port_orig));
 					errcodes[i] = CONFIG_ERROR;
 					continue;
@@ -565,7 +565,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 				if (SUCCEED != substitute_key_macros(&items[i].snmp_oid, &items[i].host.hostid, NULL,
 						NULL, NULL, MACRO_TYPE_SNMP_OID, error, sizeof(error)))
 				{
-					SET_MSG_RESULT(&results[i], zbx_strdup(NULL, error));
+					SET_MSG_RESULT(&results[i], trx_strdup(NULL, error));
 					errcodes[i] = CONFIG_ERROR;
 					continue;
 				}
@@ -585,8 +585,8 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 						NULL, NULL, &items[i].params, MACRO_TYPE_PARAMS_FIELD, NULL, 0);
 				TRX_FALLTHROUGH;
 			case ITEM_TYPE_SIMPLE:
-				items[i].username = zbx_strdup(items[i].username, items[i].username_orig);
-				items[i].password = zbx_strdup(items[i].password, items[i].password_orig);
+				items[i].username = trx_strdup(items[i].username, items[i].username_orig);
+				items[i].password = trx_strdup(items[i].password, items[i].password_orig);
 
 				substitute_simple_macros(NULL, NULL, NULL, NULL, &items[i].host.hostid, NULL,
 						NULL, NULL, NULL, &items[i].username, MACRO_TYPE_COMMON, NULL, 0);
@@ -594,9 +594,9 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 						NULL, NULL, NULL, &items[i].password, MACRO_TYPE_COMMON, NULL, 0);
 				break;
 			case ITEM_TYPE_JMX:
-				items[i].username = zbx_strdup(items[i].username, items[i].username_orig);
-				items[i].password = zbx_strdup(items[i].password, items[i].password_orig);
-				items[i].jmx_endpoint = zbx_strdup(items[i].jmx_endpoint, items[i].jmx_endpoint_orig);
+				items[i].username = trx_strdup(items[i].username, items[i].username_orig);
+				items[i].password = trx_strdup(items[i].password, items[i].password_orig);
+				items[i].jmx_endpoint = trx_strdup(items[i].jmx_endpoint, items[i].jmx_endpoint_orig);
 
 				substitute_simple_macros(NULL, NULL, NULL, NULL, &items[i].host.hostid, NULL,
 						NULL, NULL, NULL, &items[i].username, MACRO_TYPE_COMMON, NULL, 0);
@@ -621,16 +621,16 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 				substitute_simple_macros(NULL, NULL, NULL,NULL, NULL, &items[i].host, &items[i], NULL,
 						NULL, &items[i].url, MACRO_TYPE_HTTP_RAW, NULL, 0);
 
-				if (SUCCEED != zbx_http_punycode_encode_url(&items[i].url))
+				if (SUCCEED != trx_http_punycode_encode_url(&items[i].url))
 				{
-					SET_MSG_RESULT(&results[i], zbx_strdup(NULL, "Cannot encode URL into punycode"));
+					SET_MSG_RESULT(&results[i], trx_strdup(NULL, "Cannot encode URL into punycode"));
 					errcodes[i] = CONFIG_ERROR;
 					continue;
 				}
 
 				if (FAIL == parse_query_fields(&items[i], &items[i].query_fields))
 				{
-					SET_MSG_RESULT(&results[i], zbx_strdup(NULL, "Invalid query fields"));
+					SET_MSG_RESULT(&results[i], trx_strdup(NULL, "Invalid query fields"));
 					errcodes[i] = CONFIG_ERROR;
 					continue;
 				}
@@ -641,7 +641,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 						if (SUCCEED != substitute_macros_xml(&items[i].posts, &items[i], NULL,
 								NULL, error, sizeof(error)))
 						{
-							SET_MSG_RESULT(&results[i], zbx_dsprintf(NULL, "%s.", error));
+							SET_MSG_RESULT(&results[i], trx_dsprintf(NULL, "%s.", error));
 							errcodes[i] = CONFIG_ERROR;
 							continue;
 						}
@@ -678,9 +678,9 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 		}
 	}
 
-	zbx_free(port);
+	trx_free(port);
 
-	zbx_vector_ptr_create(&add_results);
+	trx_vector_ptr_create(&add_results);
 
 	/* retrieve item values */
 	if (SUCCEED == is_snmp_type(items[0].type))
@@ -694,16 +694,16 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 			if (SUCCEED != errcodes[i])
 				continue;
 
-			SET_MSG_RESULT(&results[i], zbx_strdup(NULL, "Support for SNMP checks was not compiled in."));
+			SET_MSG_RESULT(&results[i], trx_strdup(NULL, "Support for SNMP checks was not compiled in."));
 			errcodes[i] = CONFIG_ERROR;
 		}
 #endif
 	}
 	else if (ITEM_TYPE_JMX == items[0].type)
 	{
-		zbx_alarm_on(CONFIG_TIMEOUT);
+		trx_alarm_on(CONFIG_TIMEOUT);
 		get_values_java(TRX_JAVA_GATEWAY_REQUEST_JMX, items, results, errcodes, num);
-		zbx_alarm_off();
+		trx_alarm_off();
 	}
 	else if (1 == num)
 	{
@@ -713,7 +713,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 	else
 		THIS_SHOULD_NEVER_HAPPEN;
 
-	zbx_timespec(&timespec);
+	trx_timespec(&timespec);
 
 	/* process item values */
 	for (i = 0; i < num; i++)
@@ -725,7 +725,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 			case AGENT_ERROR:
 				if (HOST_AVAILABLE_TRUE != last_available)
 				{
-					zbx_activate_item_host(&items[i], &timespec);
+					trx_activate_item_host(&items[i], &timespec);
 					last_available = HOST_AVAILABLE_TRUE;
 				}
 				break;
@@ -734,7 +734,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 			case TIMEOUT_ERROR:
 				if (HOST_AVAILABLE_FALSE != last_available)
 				{
-					zbx_deactivate_item_host(&items[i], &timespec, results[i].msg);
+					trx_deactivate_item_host(&items[i], &timespec, results[i].msg);
 					last_available = HOST_AVAILABLE_FALSE;
 				}
 				break;
@@ -742,7 +742,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 				/* nothing to do */
 				break;
 			default:
-				zbx_error("unknown response code returned: %d", errcodes[i]);
+				trx_error("unknown response code returned: %d", errcodes[i]);
 				THIS_SHOULD_NEVER_HAPPEN;
 		}
 
@@ -751,7 +751,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 			if (0 == add_results.values_num)
 			{
 				items[i].state = ITEM_STATE_NORMAL;
-				zbx_preprocess_item_value(items[i].itemid, items[i].value_type, items[i].flags,
+				trx_preprocess_item_value(items[i].itemid, items[i].value_type, items[i].flags,
 						&results[i], &timespec, items[i].state, NULL);
 			}
 			else
@@ -759,7 +759,7 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 				/* vmware.eventlog item returns vector of AGENT_RESULT representing events */
 
 				int		j;
-				zbx_timespec_t	ts_tmp = timespec;
+				trx_timespec_t	ts_tmp = timespec;
 
 				for (j = 0; j < add_results.values_num; j++)
 				{
@@ -768,14 +768,14 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 					if (ISSET_MSG(add_result))
 					{
 						items[i].state = ITEM_STATE_NOTSUPPORTED;
-						zbx_preprocess_item_value(items[i].itemid, items[i].value_type,
+						trx_preprocess_item_value(items[i].itemid, items[i].value_type,
 								items[i].flags, NULL, &ts_tmp, items[i].state,
 								add_result->msg);
 					}
 					else
 					{
 						items[i].state = ITEM_STATE_NORMAL;
-						zbx_preprocess_item_value(items[i].itemid, items[i].value_type,
+						trx_preprocess_item_value(items[i].itemid, items[i].value_type,
 								items[i].flags, add_result, &ts_tmp, items[i].state,
 								NULL);
 					}
@@ -792,63 +792,63 @@ static int	get_values(unsigned char poller_type, int *nextcheck)
 		else if (NOTSUPPORTED == errcodes[i] || AGENT_ERROR == errcodes[i] || CONFIG_ERROR == errcodes[i])
 		{
 			items[i].state = ITEM_STATE_NOTSUPPORTED;
-			zbx_preprocess_item_value(items[i].itemid, items[i].value_type, items[i].flags, NULL, &timespec,
+			trx_preprocess_item_value(items[i].itemid, items[i].value_type, items[i].flags, NULL, &timespec,
 					items[i].state, results[i].msg);
 		}
 
 		DCpoller_requeue_items(&items[i].itemid, &items[i].state, &timespec.sec, &errcodes[i], 1, poller_type,
 				nextcheck);
 
-		zbx_free(items[i].key);
+		trx_free(items[i].key);
 
 		switch (items[i].type)
 		{
 			case ITEM_TYPE_SNMPv3:
-				zbx_free(items[i].snmpv3_securityname);
-				zbx_free(items[i].snmpv3_authpassphrase);
-				zbx_free(items[i].snmpv3_privpassphrase);
-				zbx_free(items[i].snmpv3_contextname);
+				trx_free(items[i].snmpv3_securityname);
+				trx_free(items[i].snmpv3_authpassphrase);
+				trx_free(items[i].snmpv3_privpassphrase);
+				trx_free(items[i].snmpv3_contextname);
 				TRX_FALLTHROUGH;
 			case ITEM_TYPE_SNMPv1:
 			case ITEM_TYPE_SNMPv2c:
-				zbx_free(items[i].snmp_community);
-				zbx_free(items[i].snmp_oid);
+				trx_free(items[i].snmp_community);
+				trx_free(items[i].snmp_oid);
 				break;
 			case ITEM_TYPE_HTTPAGENT:
-				zbx_free(items[i].timeout);
-				zbx_free(items[i].url);
-				zbx_free(items[i].query_fields);
-				zbx_free(items[i].status_codes);
-				zbx_free(items[i].http_proxy);
-				zbx_free(items[i].ssl_cert_file);
-				zbx_free(items[i].ssl_key_file);
-				zbx_free(items[i].ssl_key_password);
-				zbx_free(items[i].username);
-				zbx_free(items[i].password);
+				trx_free(items[i].timeout);
+				trx_free(items[i].url);
+				trx_free(items[i].query_fields);
+				trx_free(items[i].status_codes);
+				trx_free(items[i].http_proxy);
+				trx_free(items[i].ssl_cert_file);
+				trx_free(items[i].ssl_key_file);
+				trx_free(items[i].ssl_key_password);
+				trx_free(items[i].username);
+				trx_free(items[i].password);
 				break;
 			case ITEM_TYPE_SSH:
-				zbx_free(items[i].publickey);
-				zbx_free(items[i].privatekey);
+				trx_free(items[i].publickey);
+				trx_free(items[i].privatekey);
 				TRX_FALLTHROUGH;
 			case ITEM_TYPE_TELNET:
 			case ITEM_TYPE_DB_MONITOR:
 			case ITEM_TYPE_SIMPLE:
-				zbx_free(items[i].username);
-				zbx_free(items[i].password);
+				trx_free(items[i].username);
+				trx_free(items[i].password);
 				break;
 			case ITEM_TYPE_JMX:
-				zbx_free(items[i].username);
-				zbx_free(items[i].password);
-				zbx_free(items[i].jmx_endpoint);
+				trx_free(items[i].username);
+				trx_free(items[i].password);
+				trx_free(items[i].jmx_endpoint);
 				break;
 		}
 
 		free_result(&results[i]);
 	}
 
-	zbx_preprocessor_flush();
-	zbx_vector_ptr_clear_ext(&add_results, (zbx_mem_free_func_t)free_result_ptr);
-	zbx_vector_ptr_destroy(&add_results);
+	trx_preprocessor_flush();
+	trx_vector_ptr_clear_ext(&add_results, (trx_mem_free_func_t)free_result_ptr);
+	trx_vector_ptr_destroy(&add_results);
 
 	DCconfig_clean_items(items, NULL, num);
 exit:
@@ -867,41 +867,41 @@ TRX_THREAD_ENTRY(poller_thread, args)
 #define	STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
 
-	poller_type = *(unsigned char *)((zbx_thread_args_t *)args)->args;
-	process_type = ((zbx_thread_args_t *)args)->process_type;
+	poller_type = *(unsigned char *)((trx_thread_args_t *)args)->args;
+	process_type = ((trx_thread_args_t *)args)->process_type;
 
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 #ifdef HAVE_NETSNMP
 	if (TRX_POLLER_TYPE_NORMAL == poller_type || TRX_POLLER_TYPE_UNREACHABLE == poller_type)
-		zbx_init_snmp();
+		trx_init_snmp();
 #endif
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_child();
+	trx_tls_init_child();
 #endif
-	zbx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
 	last_stat_time = time(NULL);
 
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	while (TRX_IS_RUNNING())
 	{
-		sec = zbx_time();
-		zbx_update_env(sec);
+		sec = trx_time();
+		trx_update_env(sec);
 
 		if (0 != sleeptime)
 		{
-			zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
+			trx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
 					get_process_type_string(process_type), process_num, old_processed,
 					old_total_sec);
 		}
 
 		processed += get_values(poller_type, &nextcheck);
-		total_sec += zbx_time() - sec;
+		total_sec += trx_time() - sec;
 
 		sleeptime = calculate_sleeptime(nextcheck, POLLER_DELAY);
 
@@ -909,12 +909,12 @@ TRX_THREAD_ENTRY(poller_thread, args)
 		{
 			if (0 == sleeptime)
 			{
-				zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
+				trx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
 					get_process_type_string(process_type), process_num, processed, total_sec);
 			}
 			else
 			{
-				zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, idle %d sec]",
+				trx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, idle %d sec]",
 					get_process_type_string(process_type), process_num, processed, total_sec,
 					sleeptime);
 				old_processed = processed;
@@ -925,12 +925,12 @@ TRX_THREAD_ENTRY(poller_thread, args)
 			last_stat_time = time(NULL);
 		}
 
-		zbx_sleep_loop(sleeptime);
+		trx_sleep_loop(sleeptime);
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 #undef STAT_INTERVAL
 }

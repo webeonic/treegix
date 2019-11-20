@@ -65,14 +65,14 @@ class CScreenChart extends CScreenBase {
 			$timeControlData['dynamic'] = 0;
 			$timeControlData['loadSBox'] = 0;
 
-			return 'timeControl.addObject("'.$this->getDataId().'", '.zbx_jsvalue($this->timeline).', '.zbx_jsvalue($timeControlData).')';
+			return 'timeControl.addObject("'.$this->getDataId().'", '.trx_jsvalue($this->timeline).', '.trx_jsvalue($timeControlData).')';
 		}
 		else {
 			if ($this->mode == SCREEN_MODE_SLIDESHOW) {
-				insert_js('timeControl.addObject("'.$this->getDataId().'", '.zbx_jsvalue($this->timeline).', '.zbx_jsvalue($timeControlData).');');
+				insert_js('timeControl.addObject("'.$this->getDataId().'", '.trx_jsvalue($this->timeline).', '.trx_jsvalue($timeControlData).');');
 			}
 			else {
-				zbx_add_post_js('timeControl.addObject("'.$this->getDataId().'", '.zbx_jsvalue($this->timeline).', '.zbx_jsvalue($timeControlData).');');
+				trx_add_post_js('timeControl.addObject("'.$this->getDataId().'", '.trx_jsvalue($this->timeline).', '.trx_jsvalue($timeControlData).');');
 			}
 
 			return $this->getOutput(

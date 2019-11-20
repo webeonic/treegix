@@ -7,7 +7,7 @@
 
 #define	TRX_VECTOR_IMPL(__id, __type)										\
 														\
-static void	__vector_ ## __id ## _ensure_free_space(zbx_vector_ ## __id ## _t *vector)			\
+static void	__vector_ ## __id ## _ensure_free_space(trx_vector_ ## __id ## _t *vector)			\
 {														\
 	if (NULL == vector->values)										\
 	{													\
@@ -22,18 +22,18 @@ static void	__vector_ ## __id ## _ensure_free_space(zbx_vector_ ## __id ## _t *v
 	}													\
 }														\
 														\
-void	zbx_vector_ ## __id ## _create(zbx_vector_ ## __id ## _t *vector)					\
+void	trx_vector_ ## __id ## _create(trx_vector_ ## __id ## _t *vector)					\
 {														\
-	zbx_vector_ ## __id ## _create_ext(vector,								\
+	trx_vector_ ## __id ## _create_ext(vector,								\
 						TRX_DEFAULT_MEM_MALLOC_FUNC,					\
 						TRX_DEFAULT_MEM_REALLOC_FUNC,					\
 						TRX_DEFAULT_MEM_FREE_FUNC);					\
 }														\
 														\
-void	zbx_vector_ ## __id ## _create_ext(zbx_vector_ ## __id ## _t *vector,					\
-						zbx_mem_malloc_func_t mem_malloc_func,				\
-						zbx_mem_realloc_func_t mem_realloc_func,			\
-						zbx_mem_free_func_t mem_free_func)				\
+void	trx_vector_ ## __id ## _create_ext(trx_vector_ ## __id ## _t *vector,					\
+						trx_mem_malloc_func_t mem_malloc_func,				\
+						trx_mem_realloc_func_t mem_realloc_func,			\
+						trx_mem_free_func_t mem_free_func)				\
 {														\
 	vector->values = NULL;											\
 	vector->values_num = 0;											\
@@ -44,7 +44,7 @@ void	zbx_vector_ ## __id ## _create_ext(zbx_vector_ ## __id ## _t *vector,					\
 	vector->mem_free_func = mem_free_func;									\
 }														\
 														\
-void	zbx_vector_ ## __id ## _destroy(zbx_vector_ ## __id ## _t *vector)					\
+void	trx_vector_ ## __id ## _destroy(trx_vector_ ## __id ## _t *vector)					\
 {														\
 	if (NULL != vector->values)										\
 	{													\
@@ -59,27 +59,27 @@ void	zbx_vector_ ## __id ## _destroy(zbx_vector_ ## __id ## _t *vector)					\
 	vector->mem_free_func = NULL;										\
 }														\
 														\
-void	zbx_vector_ ## __id ## _append(zbx_vector_ ## __id ## _t *vector, __type value)				\
+void	trx_vector_ ## __id ## _append(trx_vector_ ## __id ## _t *vector, __type value)				\
 {														\
 	__vector_ ## __id ## _ensure_free_space(vector);							\
 	vector->values[vector->values_num++] = value;								\
 }														\
 														\
-void	zbx_vector_ ## __id ## _append_ptr(zbx_vector_ ## __id ## _t *vector, __type *value)			\
+void	trx_vector_ ## __id ## _append_ptr(trx_vector_ ## __id ## _t *vector, __type *value)			\
 {														\
 	__vector_ ## __id ## _ensure_free_space(vector);							\
 	vector->values[vector->values_num++] = *value;								\
 }														\
 														\
-void	zbx_vector_ ## __id ## _append_array(zbx_vector_ ## __id ## _t *vector, __type const *values,		\
+void	trx_vector_ ## __id ## _append_array(trx_vector_ ## __id ## _t *vector, __type const *values,		\
 									int values_num)				\
 {														\
-	zbx_vector_ ## __id ## _reserve(vector, vector->values_num + values_num);				\
+	trx_vector_ ## __id ## _reserve(vector, vector->values_num + values_num);				\
 	memcpy(vector->values + vector->values_num, values, values_num * sizeof(__type));			\
 	vector->values_num = vector->values_num + values_num;							\
 }														\
 														\
-void	zbx_vector_ ## __id ## _remove_noorder(zbx_vector_ ## __id ## _t *vector, int index)			\
+void	trx_vector_ ## __id ## _remove_noorder(trx_vector_ ## __id ## _t *vector, int index)			\
 {														\
 	if (!(0 <= index && index < vector->values_num))							\
 	{													\
@@ -90,7 +90,7 @@ void	zbx_vector_ ## __id ## _remove_noorder(zbx_vector_ ## __id ## _t *vector, i
 	vector->values[index] = vector->values[--vector->values_num];						\
 }														\
 														\
-void	zbx_vector_ ## __id ## _remove(zbx_vector_ ## __id ## _t *vector, int index)				\
+void	trx_vector_ ## __id ## _remove(trx_vector_ ## __id ## _t *vector, int index)				\
 {														\
 	if (!(0 <= index && index < vector->values_num))							\
 	{													\
@@ -103,13 +103,13 @@ void	zbx_vector_ ## __id ## _remove(zbx_vector_ ## __id ## _t *vector, int index
 			sizeof(__type) * (vector->values_num - index));						\
 }														\
 														\
-void	zbx_vector_ ## __id ## _sort(zbx_vector_ ## __id ## _t *vector, zbx_compare_func_t compare_func)	\
+void	trx_vector_ ## __id ## _sort(trx_vector_ ## __id ## _t *vector, trx_compare_func_t compare_func)	\
 {														\
 	if (2 <= vector->values_num)										\
 		qsort(vector->values, vector->values_num, sizeof(__type), compare_func);			\
 }														\
 														\
-void	zbx_vector_ ## __id ## _uniq(zbx_vector_ ## __id ## _t *vector, zbx_compare_func_t compare_func)	\
+void	trx_vector_ ## __id ## _uniq(trx_vector_ ## __id ## _t *vector, trx_compare_func_t compare_func)	\
 {														\
 	if (2 <= vector->values_num)										\
 	{													\
@@ -125,8 +125,8 @@ void	zbx_vector_ ## __id ## _uniq(zbx_vector_ ## __id ## _t *vector, zbx_compare
 	}													\
 }														\
 														\
-int	zbx_vector_ ## __id ## _nearestindex(const zbx_vector_ ## __id ## _t *vector, const __type value,	\
-									zbx_compare_func_t compare_func)	\
+int	trx_vector_ ## __id ## _nearestindex(const trx_vector_ ## __id ## _t *vector, const __type value,	\
+									trx_compare_func_t compare_func)	\
 {														\
 	int	lo = 0, hi = vector->values_num, mid, c;							\
 														\
@@ -151,12 +151,12 @@ int	zbx_vector_ ## __id ## _nearestindex(const zbx_vector_ ## __id ## _t *vector
 	return hi;												\
 }														\
 														\
-int	zbx_vector_ ## __id ## _bsearch(const zbx_vector_ ## __id ## _t *vector, const __type value,		\
-									zbx_compare_func_t compare_func)	\
+int	trx_vector_ ## __id ## _bsearch(const trx_vector_ ## __id ## _t *vector, const __type value,		\
+									trx_compare_func_t compare_func)	\
 {														\
 	__type	*ptr;												\
 														\
-	ptr = (__type *)zbx_bsearch(&value, vector->values, vector->values_num, sizeof(__type), compare_func);	\
+	ptr = (__type *)trx_bsearch(&value, vector->values, vector->values_num, sizeof(__type), compare_func);	\
 														\
 	if (NULL != ptr)											\
 		return (int)(ptr - vector->values);								\
@@ -164,8 +164,8 @@ int	zbx_vector_ ## __id ## _bsearch(const zbx_vector_ ## __id ## _t *vector, con
 		return FAIL;											\
 }														\
 														\
-int	zbx_vector_ ## __id ## _lsearch(const zbx_vector_ ## __id ## _t *vector, const __type value, int *index,\
-									zbx_compare_func_t compare_func)	\
+int	trx_vector_ ## __id ## _lsearch(const trx_vector_ ## __id ## _t *vector, const __type value, int *index,\
+									trx_compare_func_t compare_func)	\
 {														\
 	while (*index < vector->values_num)									\
 	{													\
@@ -187,8 +187,8 @@ int	zbx_vector_ ## __id ## _lsearch(const zbx_vector_ ## __id ## _t *vector, con
 	return FAIL;												\
 }														\
 														\
-int	zbx_vector_ ## __id ## _search(const zbx_vector_ ## __id ## _t *vector, const __type value,		\
-									zbx_compare_func_t compare_func)	\
+int	trx_vector_ ## __id ## _search(const trx_vector_ ## __id ## _t *vector, const __type value,		\
+									trx_compare_func_t compare_func)	\
 {														\
 	int	index;												\
 														\
@@ -202,8 +202,8 @@ int	zbx_vector_ ## __id ## _search(const zbx_vector_ ## __id ## _t *vector, cons
 }														\
 														\
 														\
-void	zbx_vector_ ## __id ## _setdiff(zbx_vector_ ## __id ## _t *left, const zbx_vector_ ## __id ## _t *right,\
-									zbx_compare_func_t compare_func)	\
+void	trx_vector_ ## __id ## _setdiff(trx_vector_ ## __id ## _t *left, const trx_vector_ ## __id ## _t *right,\
+									trx_compare_func_t compare_func)	\
 {														\
 	int	c, block_start, deleted = 0, left_index = 0, right_index = 0;					\
 														\
@@ -237,7 +237,7 @@ void	zbx_vector_ ## __id ## _setdiff(zbx_vector_ ## __id ## _t *left, const zbx_
 	}													\
 }														\
 														\
-void	zbx_vector_ ## __id ## _reserve(zbx_vector_ ## __id ## _t *vector, size_t size)				\
+void	trx_vector_ ## __id ## _reserve(trx_vector_ ## __id ## _t *vector, size_t size)				\
 {														\
 	if ((int)size > vector->values_alloc)									\
 	{													\
@@ -246,7 +246,7 @@ void	zbx_vector_ ## __id ## _reserve(zbx_vector_ ## __id ## _t *vector, size_t s
 	}													\
 }														\
 														\
-void	zbx_vector_ ## __id ## _clear(zbx_vector_ ## __id ## _t *vector)					\
+void	trx_vector_ ## __id ## _clear(trx_vector_ ## __id ## _t *vector)					\
 {														\
 	vector->values_num = 0;											\
 }
@@ -255,7 +255,7 @@ void	zbx_vector_ ## __id ## _clear(zbx_vector_ ## __id ## _t *vector)					\
 														\
 TRX_VECTOR_IMPL(__id, __type)											\
 														\
-void	zbx_vector_ ## __id ## _clear_ext(zbx_vector_ ## __id ## _t *vector, zbx_ ## __id ## _free_func_t free_func)	\
+void	trx_vector_ ## __id ## _clear_ext(trx_vector_ ## __id ## _t *vector, trx_ ## __id ## _free_func_t free_func)	\
 {														\
 	if (0 != vector->values_num)										\
 	{													\

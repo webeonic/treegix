@@ -6,12 +6,12 @@
 #include "log.h"
 
 #include "db.h"
-#include "zbxjson.h"
-#include "zbxtasks.h"
+#include "trxjson.h"
+#include "trxtasks.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_get_remote_tasks                                          *
+ * Function: trx_tm_get_remote_tasks                                          *
  *                                                                            *
  * Purpose: get tasks scheduled to be executed on the server                  *
  *                                                                            *
@@ -22,7 +22,7 @@
  *           server.                                                          *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tm_get_remote_tasks(zbx_vector_ptr_t *tasks, zbx_uint64_t proxy_hostid)
+void	trx_tm_get_remote_tasks(trx_vector_ptr_t *tasks, trx_uint64_t proxy_hostid)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
@@ -41,17 +41,17 @@ void	zbx_tm_get_remote_tasks(zbx_vector_ptr_t *tasks, zbx_uint64_t proxy_hostid)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_uint64_t	taskid, parent_taskid;
-		zbx_tm_task_t	*task;
+		trx_uint64_t	taskid, parent_taskid;
+		trx_tm_task_t	*task;
 
 		TRX_STR2UINT64(taskid, row[0]);
 		TRX_DBROW2UINT64(parent_taskid, row[5]);
 
-		task = zbx_tm_task_create(taskid, atoi(row[1]), TRX_TM_STATUS_NEW, atoi(row[2]), atoi(row[3]), 0);
+		task = trx_tm_task_create(taskid, atoi(row[1]), TRX_TM_STATUS_NEW, atoi(row[2]), atoi(row[3]), 0);
 
-		task->data = zbx_tm_remote_command_result_create(parent_taskid, atoi(row[4]), row[6]);
+		task->data = trx_tm_remote_command_result_create(parent_taskid, atoi(row[4]), row[6]);
 
-		zbx_vector_ptr_append(tasks, task);
+		trx_vector_ptr_append(tasks, task);
 	}
 
 	DBfree_result(result);

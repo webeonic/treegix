@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxipcservice
+subdir = src/libs/trxipcservice
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,11 +117,11 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxipcservice_a_AR = $(AR) $(ARFLAGS)
-libzbxipcservice_a_LIBADD =
-am_libzbxipcservice_a_OBJECTS =  \
-	libzbxipcservice_a-ipcservice.$(OBJEXT)
-libzbxipcservice_a_OBJECTS = $(am_libzbxipcservice_a_OBJECTS)
+libtrxipcservice_a_AR = $(AR) $(ARFLAGS)
+libtrxipcservice_a_LIBADD =
+am_libtrxipcservice_a_OBJECTS =  \
+	libtrxipcservice_a-ipcservice.$(OBJEXT)
+libtrxipcservice_a_OBJECTS = $(am_libtrxipcservice_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -154,8 +154,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxipcservice_a_SOURCES)
-DIST_SOURCES = $(libzbxipcservice_a_SOURCES)
+SOURCES = $(libtrxipcservice_a_SOURCES)
+DIST_SOURCES = $(libtrxipcservice_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -379,11 +379,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxipcservice.a
-libzbxipcservice_a_SOURCES = \
+noinst_LIBRARIES = libtrxipcservice.a
+libtrxipcservice_a_SOURCES = \
 	ipcservice.c
 
-libzbxipcservice_a_CFLAGS = @LIBEVENT_CFLAGS@
+libtrxipcservice_a_CFLAGS = @LIBEVENT_CFLAGS@
 all: all-am
 
 .SUFFIXES:
@@ -397,9 +397,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxipcservice/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxipcservice/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxipcservice/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxipcservice/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -421,10 +421,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxipcservice.a: $(libzbxipcservice_a_OBJECTS) $(libzbxipcservice_a_DEPENDENCIES) $(EXTRA_libzbxipcservice_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxipcservice.a
-	$(AM_V_AR)$(libzbxipcservice_a_AR) libzbxipcservice.a $(libzbxipcservice_a_OBJECTS) $(libzbxipcservice_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxipcservice.a
+libtrxipcservice.a: $(libtrxipcservice_a_OBJECTS) $(libtrxipcservice_a_DEPENDENCIES) $(EXTRA_libtrxipcservice_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxipcservice.a
+	$(AM_V_AR)$(libtrxipcservice_a_AR) libtrxipcservice.a $(libtrxipcservice_a_OBJECTS) $(libtrxipcservice_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxipcservice.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -432,7 +432,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxipcservice_a-ipcservice.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxipcservice_a-ipcservice.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -450,19 +450,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxipcservice_a-ipcservice.o: ipcservice.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxipcservice_a_CFLAGS) $(CFLAGS) -MT libzbxipcservice_a-ipcservice.o -MD -MP -MF $(DEPDIR)/libzbxipcservice_a-ipcservice.Tpo -c -o libzbxipcservice_a-ipcservice.o `test -f 'ipcservice.c' || echo '$(srcdir)/'`ipcservice.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxipcservice_a-ipcservice.Tpo $(DEPDIR)/libzbxipcservice_a-ipcservice.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ipcservice.c' object='libzbxipcservice_a-ipcservice.o' libtool=no @AMDEPBACKSLASH@
+libtrxipcservice_a-ipcservice.o: ipcservice.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxipcservice_a_CFLAGS) $(CFLAGS) -MT libtrxipcservice_a-ipcservice.o -MD -MP -MF $(DEPDIR)/libtrxipcservice_a-ipcservice.Tpo -c -o libtrxipcservice_a-ipcservice.o `test -f 'ipcservice.c' || echo '$(srcdir)/'`ipcservice.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxipcservice_a-ipcservice.Tpo $(DEPDIR)/libtrxipcservice_a-ipcservice.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ipcservice.c' object='libtrxipcservice_a-ipcservice.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxipcservice_a_CFLAGS) $(CFLAGS) -c -o libzbxipcservice_a-ipcservice.o `test -f 'ipcservice.c' || echo '$(srcdir)/'`ipcservice.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxipcservice_a_CFLAGS) $(CFLAGS) -c -o libtrxipcservice_a-ipcservice.o `test -f 'ipcservice.c' || echo '$(srcdir)/'`ipcservice.c
 
-libzbxipcservice_a-ipcservice.obj: ipcservice.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxipcservice_a_CFLAGS) $(CFLAGS) -MT libzbxipcservice_a-ipcservice.obj -MD -MP -MF $(DEPDIR)/libzbxipcservice_a-ipcservice.Tpo -c -o libzbxipcservice_a-ipcservice.obj `if test -f 'ipcservice.c'; then $(CYGPATH_W) 'ipcservice.c'; else $(CYGPATH_W) '$(srcdir)/ipcservice.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxipcservice_a-ipcservice.Tpo $(DEPDIR)/libzbxipcservice_a-ipcservice.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ipcservice.c' object='libzbxipcservice_a-ipcservice.obj' libtool=no @AMDEPBACKSLASH@
+libtrxipcservice_a-ipcservice.obj: ipcservice.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxipcservice_a_CFLAGS) $(CFLAGS) -MT libtrxipcservice_a-ipcservice.obj -MD -MP -MF $(DEPDIR)/libtrxipcservice_a-ipcservice.Tpo -c -o libtrxipcservice_a-ipcservice.obj `if test -f 'ipcservice.c'; then $(CYGPATH_W) 'ipcservice.c'; else $(CYGPATH_W) '$(srcdir)/ipcservice.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxipcservice_a-ipcservice.Tpo $(DEPDIR)/libtrxipcservice_a-ipcservice.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ipcservice.c' object='libtrxipcservice_a-ipcservice.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxipcservice_a_CFLAGS) $(CFLAGS) -c -o libzbxipcservice_a-ipcservice.obj `if test -f 'ipcservice.c'; then $(CYGPATH_W) 'ipcservice.c'; else $(CYGPATH_W) '$(srcdir)/ipcservice.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxipcservice_a_CFLAGS) $(CFLAGS) -c -o libtrxipcservice_a-ipcservice.obj `if test -f 'ipcservice.c'; then $(CYGPATH_W) 'ipcservice.c'; else $(CYGPATH_W) '$(srcdir)/ipcservice.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

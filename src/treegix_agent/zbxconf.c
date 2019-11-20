@@ -1,7 +1,7 @@
 
 
 #include "common.h"
-#include "zbxconf.h"
+#include "trxconf.h"
 
 #include "cfg.h"
 #include "log.h"
@@ -119,41 +119,41 @@ void	load_perf_counters(const char **def_lines, const char **eng_lines)
 
 	for (lines = def_lines;; lines = eng_lines)
 	{
-		zbx_perf_counter_lang_t lang = (lines == def_lines) ? PERF_COUNTER_LANG_DEFAULT : PERF_COUNTER_LANG_EN;
+		trx_perf_counter_lang_t lang = (lines == def_lines) ? PERF_COUNTER_LANG_DEFAULT : PERF_COUNTER_LANG_EN;
 
 		for (pline = lines; NULL != *pline; pline++)
 		{
 			if (3 < num_param(*pline))
 			{
-				error = zbx_strdup(error, "Required parameter missing.");
+				error = trx_strdup(error, "Required parameter missing.");
 				goto pc_fail;
 			}
 
 			if (0 != get_param(*pline, 1, name, sizeof(name)))
 			{
-				error = zbx_strdup(error, "Cannot parse key.");
+				error = trx_strdup(error, "Cannot parse key.");
 				goto pc_fail;
 			}
 
 			if (0 != get_param(*pline, 2, counterpath, sizeof(counterpath)))
 			{
-				error = zbx_strdup(error, "Cannot parse counter path.");
+				error = trx_strdup(error, "Cannot parse counter path.");
 				goto pc_fail;
 			}
 
 			if (0 != get_param(*pline, 3, interval, sizeof(interval)))
 			{
-				error = zbx_strdup(error, "Cannot parse interval.");
+				error = trx_strdup(error, "Cannot parse interval.");
 				goto pc_fail;
 			}
 
-			wcounterPath = zbx_acp_to_unicode(counterpath);
-			zbx_unicode_to_utf8_static(wcounterPath, counterpath, PDH_MAX_COUNTER_PATH);
-			zbx_free(wcounterPath);
+			wcounterPath = trx_acp_to_unicode(counterpath);
+			trx_unicode_to_utf8_static(wcounterPath, counterpath, PDH_MAX_COUNTER_PATH);
+			trx_free(wcounterPath);
 
 			if (FAIL == check_counter_path(counterpath, lang == PERF_COUNTER_LANG_DEFAULT))
 			{
-				error = zbx_strdup(error, "Invalid counter path.");
+				error = trx_strdup(error, "Invalid counter path.");
 				goto pc_fail;
 			}
 
@@ -161,21 +161,21 @@ void	load_perf_counters(const char **def_lines, const char **eng_lines)
 
 			if (1 > period || MAX_COLLECTOR_PERIOD < period)
 			{
-				error = zbx_strdup(NULL, "Interval out of range.");
+				error = trx_strdup(NULL, "Interval out of range.");
 				goto pc_fail;
 			}
 
 			if (NULL == add_perf_counter(name, counterpath, period, lang, &error))
 			{
 				if (NULL == error)
-					error = zbx_strdup(error, "Failed to add new performance counter.");
+					error = trx_strdup(error, "Failed to add new performance counter.");
 				goto pc_fail;
 			}
 
 			continue;
 	pc_fail:
 			treegix_log(LOG_LEVEL_CRIT, "cannot add performance counter \"%s\": %s", *pline, error);
-			zbx_free(error);
+			trx_free(error);
 
 			exit(EXIT_FAILURE);
 		}

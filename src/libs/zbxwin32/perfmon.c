@@ -5,10 +5,10 @@
 #include "perfmon.h"
 #include "log.h"
 
-static TRX_THREAD_LOCAL zbx_perf_counter_id_t	*PerfCounterList = NULL;
+static TRX_THREAD_LOCAL trx_perf_counter_id_t	*PerfCounterList = NULL;
 
 /* This struct contains mapping between built-in English counter names and PDH indexes. */
-/* If you change it then you also need to add enum values to zbx_builtin_counter_ref_t.  */
+/* If you change it then you also need to add enum values to trx_builtin_counter_ref_t.  */
 static struct builtin_counter_ref
 {
 	unsigned long	pdhIndex;
@@ -26,36 +26,36 @@ builtin_counter_map[] =
 	{ 0, L"Total Sessions" }
 };
 
-PDH_STATUS	zbx_PdhMakeCounterPath(const char *function, PDH_COUNTER_PATH_ELEMENTS *cpe, char *counterpath)
+PDH_STATUS	trx_PdhMakeCounterPath(const char *function, PDH_COUNTER_PATH_ELEMENTS *cpe, char *counterpath)
 {
 	DWORD		dwSize = PDH_MAX_COUNTER_PATH;
 	wchar_t		*wcounterPath = NULL;
 	PDH_STATUS	pdh_status;
 
-	wcounterPath = zbx_malloc(wcounterPath, sizeof(wchar_t) * PDH_MAX_COUNTER_PATH);
+	wcounterPath = trx_malloc(wcounterPath, sizeof(wchar_t) * PDH_MAX_COUNTER_PATH);
 
 	if (ERROR_SUCCESS != (pdh_status = PdhMakeCounterPath(cpe, wcounterPath, &dwSize, 0)))
 	{
 		char	*object, *counter;
 
-		object = zbx_unicode_to_utf8(cpe->szObjectName);
-		counter = zbx_unicode_to_utf8(cpe->szCounterName);
+		object = trx_unicode_to_utf8(cpe->szObjectName);
+		counter = trx_unicode_to_utf8(cpe->szCounterName);
 
 		treegix_log(LOG_LEVEL_ERR, "%s(): cannot make counterpath for \"\\%s\\%s\": %s",
 				function, object, counter, strerror_from_module(pdh_status, L"PDH.DLL"));
 
-		zbx_free(counter);
-		zbx_free(object);
+		trx_free(counter);
+		trx_free(object);
 	}
 	else
-		zbx_unicode_to_utf8_static(wcounterPath, counterpath, PDH_MAX_COUNTER_PATH);
+		trx_unicode_to_utf8_static(wcounterPath, counterpath, PDH_MAX_COUNTER_PATH);
 
-	zbx_free(wcounterPath);
+	trx_free(wcounterPath);
 
 	return pdh_status;
 }
 
-PDH_STATUS	zbx_PdhOpenQuery(const char *function, PDH_HQUERY query)
+PDH_STATUS	trx_PdhOpenQuery(const char *function, PDH_HQUERY query)
 {
 	PDH_STATUS	pdh_status;
 
@@ -74,8 +74,8 @@ PDH_STATUS	zbx_PdhOpenQuery(const char *function, PDH_HQUERY query)
  *           do not call it for PERF_COUNTER_ACTIVE counters                  *
  *                                                                            *
  ******************************************************************************/
-PDH_STATUS	zbx_PdhAddCounter(const char *function, zbx_perf_counter_data_t *counter, PDH_HQUERY query,
-		const char *counterpath, zbx_perf_counter_lang_t lang, PDH_HCOUNTER *handle)
+PDH_STATUS	trx_PdhAddCounter(const char *function, trx_perf_counter_data_t *counter, PDH_HQUERY query,
+		const char *counterpath, trx_perf_counter_lang_t lang, PDH_HCOUNTER *handle)
 {
 	/* pointer type to PdhAddEnglishCounterW() */
 	typedef PDH_STATUS (WINAPI *ADD_ENG_COUNTER)(PDH_HQUERY, LPCWSTR, DWORD_PTR, PDH_HCOUNTER);
@@ -111,7 +111,7 @@ PDH_STATUS	zbx_PdhAddCounter(const char *function, zbx_perf_counter_data_t *coun
 
 	if (ERROR_SUCCESS == pdh_status)
 	{
-		wcounterPath = zbx_utf8_to_unicode(counterpath);
+		wcounterPath = trx_utf8_to_unicode(counterpath);
 	}
 
 	if (ERROR_SUCCESS == pdh_status && NULL == *handle)
@@ -143,12 +143,12 @@ PDH_STATUS	zbx_PdhAddCounter(const char *function, zbx_perf_counter_data_t *coun
 				function, counterpath, strerror_from_module(pdh_status, L"PDH.DLL"));
 	}
 
-	zbx_free(wcounterPath);
+	trx_free(wcounterPath);
 
 	return pdh_status;
 }
 
-PDH_STATUS	zbx_PdhCollectQueryData(const char *function, const char *counterpath, PDH_HQUERY query)
+PDH_STATUS	trx_PdhCollectQueryData(const char *function, const char *counterpath, PDH_HQUERY query)
 {
 	PDH_STATUS	pdh_status;
 
@@ -161,7 +161,7 @@ PDH_STATUS	zbx_PdhCollectQueryData(const char *function, const char *counterpath
 	return pdh_status;
 }
 
-PDH_STATUS	zbx_PdhGetRawCounterValue(const char *function, const char *counterpath, PDH_HCOUNTER handle, PPDH_RAW_COUNTER value)
+PDH_STATUS	trx_PdhGetRawCounterValue(const char *function, const char *counterpath, PDH_HCOUNTER handle, PPDH_RAW_COUNTER value)
 {
 	PDH_STATUS	pdh_status;
 
@@ -185,7 +185,7 @@ PDH_STATUS	zbx_PdhGetRawCounterValue(const char *function, const char *counterpa
  *                                                                            *
  ******************************************************************************/
 PDH_STATUS	calculate_counter_value(const char *function, const char *counterpath,
-		zbx_perf_counter_lang_t lang, double *value)
+		trx_perf_counter_lang_t lang, double *value)
 {
 	PDH_HQUERY		query;
 	PDH_HCOUNTER		handle = NULL;
@@ -193,16 +193,16 @@ PDH_STATUS	calculate_counter_value(const char *function, const char *counterpath
 	PDH_RAW_COUNTER		rawData, rawData2;
 	PDH_FMT_COUNTERVALUE	counterValue;
 
-	if (ERROR_SUCCESS != (pdh_status = zbx_PdhOpenQuery(function, &query)))
+	if (ERROR_SUCCESS != (pdh_status = trx_PdhOpenQuery(function, &query)))
 		return pdh_status;
 
-	if (ERROR_SUCCESS != (pdh_status = zbx_PdhAddCounter(function, NULL, query, counterpath, lang, &handle)))
+	if (ERROR_SUCCESS != (pdh_status = trx_PdhAddCounter(function, NULL, query, counterpath, lang, &handle)))
 		goto close_query;
 
-	if (ERROR_SUCCESS != (pdh_status = zbx_PdhCollectQueryData(function, counterpath, query)))
+	if (ERROR_SUCCESS != (pdh_status = trx_PdhCollectQueryData(function, counterpath, query)))
 		goto remove_counter;
 
-	if (ERROR_SUCCESS != (pdh_status = zbx_PdhGetRawCounterValue(function, counterpath, handle, &rawData)))
+	if (ERROR_SUCCESS != (pdh_status = trx_PdhGetRawCounterValue(function, counterpath, handle, &rawData)))
 		goto remove_counter;
 
 	if (PDH_CSTATUS_INVALID_DATA == (pdh_status = PdhCalculateCounterFromRawValue(handle, PDH_FMT_DOUBLE |
@@ -211,10 +211,10 @@ PDH_STATUS	calculate_counter_value(const char *function, const char *counterpath
 		/* some (e.g., rate) counters require two raw values, MSDN lacks documentation */
 		/* about what happens but tests show that PDH_CSTATUS_INVALID_DATA is returned */
 
-		zbx_sleep(1);
+		trx_sleep(1);
 
-		if (ERROR_SUCCESS == (pdh_status = zbx_PdhCollectQueryData(function, counterpath, query)) &&
-				ERROR_SUCCESS == (pdh_status = zbx_PdhGetRawCounterValue(function, counterpath,
+		if (ERROR_SUCCESS == (pdh_status = trx_PdhCollectQueryData(function, counterpath, query)) &&
+				ERROR_SUCCESS == (pdh_status = trx_PdhGetRawCounterValue(function, counterpath,
 				handle, &rawData2)))
 		{
 			pdh_status = PdhCalculateCounterFromRawValue(handle, PDH_FMT_DOUBLE | PDH_FMT_NOCAP100,
@@ -248,7 +248,7 @@ close_query:
  * Function: get_builtin_counter_index                                        *
  *                                                                            *
  * Purpose: get performance counter index by reference value described by     *
- *          zbx_builtin_counter_ref_t enum                                    *
+ *          trx_builtin_counter_ref_t enum                                    *
  *                                                                            *
  * Parameters: counter_ref    - [IN] built-in performance counter             *
  *                                                                            *
@@ -258,7 +258,7 @@ close_query:
  *           installations for the same names                                 *
  *                                                                            *
  ******************************************************************************/
-DWORD	get_builtin_counter_index(zbx_builtin_counter_ref_t counter_ref)
+DWORD	get_builtin_counter_index(trx_builtin_counter_ref_t counter_ref)
 {
 	if (PCI_MAX_INDEX < counter_ref)
 	{
@@ -311,13 +311,13 @@ static wchar_t	*get_all_counter_eng_names(wchar_t *reg_value_name)
 		goto finish;
 	}
 
-	buffer = (wchar_t*)zbx_malloc(buffer, (size_t)buffer_size);
+	buffer = (wchar_t*)trx_malloc(buffer, (size_t)buffer_size);
 
 	if (ERROR_SUCCESS != (status = RegQueryValueEx(reg_key, reg_value_name, NULL, NULL, (LPBYTE)buffer,
 			&buffer_size)))
 	{
 		treegix_log(LOG_LEVEL_ERR, "RegQueryValueEx() failed with 0x%lx", (unsigned long)status);
-		zbx_free(buffer);
+		trx_free(buffer);
 		goto finish;
 	}
 finish:
@@ -372,16 +372,16 @@ int	init_builtin_counter_indexes(void)
 	}
 
 	ret = SUCCEED;
-	zbx_free(saved_ptr);
+	trx_free(saved_ptr);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 wchar_t	*get_counter_name(DWORD pdhIndex)
 {
-	zbx_perf_counter_id_t	*counterName;
+	trx_perf_counter_id_t	*counterName;
 	DWORD			dwSize;
 	PDH_STATUS		pdh_status;
 
@@ -397,9 +397,9 @@ wchar_t	*get_counter_name(DWORD pdhIndex)
 
 	if (NULL == counterName)
 	{
-		counterName = (zbx_perf_counter_id_t *)zbx_malloc(counterName, sizeof(zbx_perf_counter_id_t));
+		counterName = (trx_perf_counter_id_t *)trx_malloc(counterName, sizeof(trx_perf_counter_id_t));
 
-		memset(counterName, 0, sizeof(zbx_perf_counter_id_t));
+		memset(counterName, 0, sizeof(trx_perf_counter_id_t));
 		counterName->pdhIndex = pdhIndex;
 		counterName->next = PerfCounterList;
 
@@ -410,7 +410,7 @@ wchar_t	*get_counter_name(DWORD pdhIndex)
 		{
 			treegix_log(LOG_LEVEL_ERR, "PdhLookupPerfNameByIndex() failed: %s",
 					strerror_from_module(pdh_status, L"PDH.DLL"));
-			zbx_free(counterName);
+			trx_free(counterName);
 			treegix_log(LOG_LEVEL_DEBUG, "End of %s():FAIL", __func__);
 			return L"UnknownPerformanceCounter";
 		}
@@ -429,12 +429,12 @@ int	check_counter_path(char *counterPath, int convert_from_numeric)
 	DWORD				dwSize = 0;
 	wchar_t				*wcounterPath;
 
-	wcounterPath = zbx_utf8_to_unicode(counterPath);
+	wcounterPath = trx_utf8_to_unicode(counterPath);
 
 	status = PdhParseCounterPath(wcounterPath, NULL, &dwSize, 0);
 	if (PDH_MORE_DATA == status || ERROR_SUCCESS == status)
 	{
-		cpe = (PDH_COUNTER_PATH_ELEMENTS *)zbx_malloc(cpe, dwSize);
+		cpe = (PDH_COUNTER_PATH_ELEMENTS *)trx_malloc(cpe, dwSize);
 	}
 	else
 	{
@@ -462,7 +462,7 @@ int	check_counter_path(char *counterPath, int convert_from_numeric)
 			if (0x02 & is_numeric)
 				cpe->szCounterName = get_counter_name(_wtoi(cpe->szCounterName));
 
-			if (ERROR_SUCCESS != zbx_PdhMakeCounterPath(__func__, cpe, counterPath))
+			if (ERROR_SUCCESS != trx_PdhMakeCounterPath(__func__, cpe, counterPath))
 				goto clean;
 
 			treegix_log(LOG_LEVEL_DEBUG, "counter path converted to '%s'", counterPath);
@@ -471,8 +471,8 @@ int	check_counter_path(char *counterPath, int convert_from_numeric)
 
 	ret = SUCCEED;
 clean:
-	zbx_free(cpe);
-	zbx_free(wcounterPath);
+	trx_free(cpe);
+	trx_free(wcounterPath);
 
 	return ret;
 }

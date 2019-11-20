@@ -149,7 +149,7 @@ if ($triggerId !== null) {
 
 // Validate permissions to a group of triggers for mass enable/disable actions.
 $triggerIds = getRequest('g_triggerid', []);
-$triggerIds = zbx_toArray($triggerIds);
+$triggerIds = trx_toArray($triggerIds);
 
 if ($triggerIds) {
 	$triggerIds = array_unique($triggerIds);
@@ -161,7 +161,7 @@ if ($triggerIds) {
 	]);
 
 	if (count($triggers) != count($triggerIds)) {
-		uncheckTableRows(getRequest('checkbox_hash'), zbx_objectValues($triggers, 'triggerid'));
+		uncheckTableRows(getRequest('checkbox_hash'), trx_objectValues($triggers, 'triggerid'));
 	}
 }
 
@@ -232,7 +232,7 @@ if (hasRequest('clone') && hasRequest('triggerid')) {
 	$_REQUEST['form'] = 'clone';
 }
 elseif (hasRequest('add') || hasRequest('update')) {
-	$dependencies = zbx_toObject(getRequest('dependencies', []), 'triggerid');
+	$dependencies = trx_toObject(getRequest('dependencies', []), 'triggerid');
 	$description = getRequest('description', '');
 	$opdata = getRequest('opdata', '');
 	$expression = getRequest('expression', '');
@@ -452,7 +452,7 @@ elseif (hasRequest('action') && getRequest('action') === 'trigger.massupdate'
 						$trigger['priority'] = getRequest('priority');
 					}
 					if (array_key_exists('dependencies', $visible)) {
-						$trigger['dependencies'] = zbx_toObject(getRequest('dependencies', []), 'triggerid');
+						$trigger['dependencies'] = trx_toObject(getRequest('dependencies', []), 'triggerid');
 					}
 					if (array_key_exists('tags', $visible)) {
 						if ($tags && $mass_update_tags == TRX_ACTION_ADD) {

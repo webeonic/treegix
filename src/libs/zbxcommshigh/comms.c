@@ -2,12 +2,12 @@
 
 #include "common.h"
 #include "comms.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "log.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_send_response                                                *
+ * Function: trx_send_response                                                *
  *                                                                            *
  * Purpose: send json SUCCEED or FAIL to socket along with an info message    *
  *                                                                            *
@@ -26,45 +26,45 @@
  * Comments:                                                                  *
  *                                                                            *
  ******************************************************************************/
-int	zbx_send_response_ext(zbx_socket_t *sock, int result, const char *info, const char *version, int protocol,
+int	trx_send_response_ext(trx_socket_t *sock, int result, const char *info, const char *version, int protocol,
 		int timeout)
 {
-	struct zbx_json	json;
+	struct trx_json	json;
 	const char	*resp;
 	int		ret = SUCCEED;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
 	resp = SUCCEED == result ? TRX_PROTO_VALUE_SUCCESS : TRX_PROTO_VALUE_FAILED;
 
-	zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, resp, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, resp, TRX_JSON_TYPE_STRING);
 
 	if (NULL != info && '\0' != *info)
-		zbx_json_addstring(&json, TRX_PROTO_TAG_INFO, info, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_INFO, info, TRX_JSON_TYPE_STRING);
 
 	if (NULL != version)
-		zbx_json_addstring(&json, TRX_PROTO_TAG_VERSION, version, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_VERSION, version, TRX_JSON_TYPE_STRING);
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() '%s'", __func__, json.buffer);
 
-	if (FAIL == (ret = zbx_tcp_send_ext(sock, json.buffer, strlen(json.buffer), protocol, timeout)))
+	if (FAIL == (ret = trx_tcp_send_ext(sock, json.buffer, strlen(json.buffer), protocol, timeout)))
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "Error sending result back: %s", zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "Error sending result back: %s", trx_socket_strerror());
 		ret = NETWORK_ERROR;
 	}
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_recv_response                                                *
+ * Function: trx_recv_response                                                *
  *                                                                            *
  * Purpose: read a response message (in JSON format) from socket, optionally  *
  *          extract "info" value.                                             *
@@ -90,40 +90,40 @@ int	zbx_send_response_ext(zbx_socket_t *sock, int result, const char *info, cons
  *                "error" memory !                                            *
  *                                                                            *
  ******************************************************************************/
-int	zbx_recv_response(zbx_socket_t *sock, int timeout, char **error)
+int	trx_recv_response(trx_socket_t *sock, int timeout, char **error)
 {
-	struct zbx_json_parse	jp;
+	struct trx_json_parse	jp;
 	char			value[16];
 	int			ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != zbx_tcp_recv_to(sock, timeout))
+	if (SUCCEED != trx_tcp_recv_to(sock, timeout))
 	{
 		/* since we have successfully sent data earlier, we assume the other */
 		/* side is just too busy processing our data if there is no response */
-		*error = zbx_strdup(*error, zbx_socket_strerror());
+		*error = trx_strdup(*error, trx_socket_strerror());
 		goto out;
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() '%s'", __func__, sock->buffer);
 
-	/* deal with empty string here because zbx_json_open() does not produce an error message in this case */
+	/* deal with empty string here because trx_json_open() does not produce an error message in this case */
 	if ('\0' == *sock->buffer)
 	{
-		*error = zbx_strdup(*error, "empty string received");
+		*error = trx_strdup(*error, "empty string received");
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_open(sock->buffer, &jp))
+	if (SUCCEED != trx_json_open(sock->buffer, &jp))
 	{
-		*error = zbx_strdup(*error, zbx_json_strerror());
+		*error = trx_strdup(*error, trx_json_strerror());
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value)))
+	if (SUCCEED != trx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value)))
 	{
-		*error = zbx_strdup(*error, "no \"" TRX_PROTO_TAG_RESPONSE "\" tag");
+		*error = trx_strdup(*error, "no \"" TRX_PROTO_TAG_RESPONSE "\" tag");
 		goto out;
 	}
 
@@ -132,17 +132,17 @@ int	zbx_recv_response(zbx_socket_t *sock, int timeout, char **error)
 		char	*info = NULL;
 		size_t	info_alloc = 0;
 
-		if (SUCCEED == zbx_json_value_by_name_dyn(&jp, TRX_PROTO_TAG_INFO, &info, &info_alloc))
-			*error = zbx_strdup(*error, info);
+		if (SUCCEED == trx_json_value_by_name_dyn(&jp, TRX_PROTO_TAG_INFO, &info, &info_alloc))
+			*error = trx_strdup(*error, info);
 		else
-			*error = zbx_dsprintf(*error, "negative response \"%s\"", value);
-		zbx_free(info);
+			*error = trx_dsprintf(*error, "negative response \"%s\"", value);
+		trx_free(info);
 		goto out;
 	}
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

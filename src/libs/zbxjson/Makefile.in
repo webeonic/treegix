@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxjson
+subdir = src/libs/trxjson
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,11 +117,11 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxjson_a_AR = $(AR) $(ARFLAGS)
-libzbxjson_a_LIBADD =
-am_libzbxjson_a_OBJECTS = json.$(OBJEXT) json_parser.$(OBJEXT) \
+libtrxjson_a_AR = $(AR) $(ARFLAGS)
+libtrxjson_a_LIBADD =
+am_libtrxjson_a_OBJECTS = json.$(OBJEXT) json_parser.$(OBJEXT) \
 	jsonpath.$(OBJEXT)
-libzbxjson_a_OBJECTS = $(am_libzbxjson_a_OBJECTS)
+libtrxjson_a_OBJECTS = $(am_libtrxjson_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -150,8 +150,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxjson_a_SOURCES)
-DIST_SOURCES = $(libzbxjson_a_SOURCES)
+SOURCES = $(libtrxjson_a_SOURCES)
+DIST_SOURCES = $(libtrxjson_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -375,8 +375,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxjson.a
-libzbxjson_a_SOURCES = \
+noinst_LIBRARIES = libtrxjson.a
+libtrxjson_a_SOURCES = \
 	json.c json.h \
 	json_parser.c json_parser.h \
 	jsonpath.c jsonpath.h
@@ -394,9 +394,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxjson/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxjson/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxjson/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxjson/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -418,10 +418,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxjson.a: $(libzbxjson_a_OBJECTS) $(libzbxjson_a_DEPENDENCIES) $(EXTRA_libzbxjson_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxjson.a
-	$(AM_V_AR)$(libzbxjson_a_AR) libzbxjson.a $(libzbxjson_a_OBJECTS) $(libzbxjson_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxjson.a
+libtrxjson.a: $(libtrxjson_a_OBJECTS) $(libtrxjson_a_DEPENDENCIES) $(EXTRA_libtrxjson_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxjson.a
+	$(AM_V_AR)$(libtrxjson_a_AR) libtrxjson.a $(libtrxjson_a_OBJECTS) $(libtrxjson_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxjson.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

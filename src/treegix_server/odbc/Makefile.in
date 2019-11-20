@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxodbc_a_AR = $(AR) $(ARFLAGS)
-libzbxodbc_a_LIBADD =
-am_libzbxodbc_a_OBJECTS = libzbxodbc_a-odbc.$(OBJEXT)
-libzbxodbc_a_OBJECTS = $(am_libzbxodbc_a_OBJECTS)
+libtrxodbc_a_AR = $(AR) $(ARFLAGS)
+libtrxodbc_a_LIBADD =
+am_libtrxodbc_a_OBJECTS = libtrxodbc_a-odbc.$(OBJEXT)
+libtrxodbc_a_OBJECTS = $(am_libtrxodbc_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -153,8 +153,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxodbc_a_SOURCES)
-DIST_SOURCES = $(libzbxodbc_a_SOURCES)
+SOURCES = $(libtrxodbc_a_SOURCES)
+DIST_SOURCES = $(libtrxodbc_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -378,9 +378,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxodbc.a
-libzbxodbc_a_SOURCES = odbc.c odbc.h
-libzbxodbc_a_CFLAGS = @UNIXODBC_CFLAGS@
+noinst_LIBRARIES = libtrxodbc.a
+libtrxodbc_a_SOURCES = odbc.c odbc.h
+libtrxodbc_a_CFLAGS = @UNIXODBC_CFLAGS@
 all: all-am
 
 .SUFFIXES:
@@ -418,10 +418,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxodbc.a: $(libzbxodbc_a_OBJECTS) $(libzbxodbc_a_DEPENDENCIES) $(EXTRA_libzbxodbc_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxodbc.a
-	$(AM_V_AR)$(libzbxodbc_a_AR) libzbxodbc.a $(libzbxodbc_a_OBJECTS) $(libzbxodbc_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxodbc.a
+libtrxodbc.a: $(libtrxodbc_a_OBJECTS) $(libtrxodbc_a_DEPENDENCIES) $(EXTRA_libtrxodbc_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxodbc.a
+	$(AM_V_AR)$(libtrxodbc_a_AR) libtrxodbc.a $(libtrxodbc_a_OBJECTS) $(libtrxodbc_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxodbc.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -429,7 +429,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxodbc_a-odbc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxodbc_a-odbc.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -447,19 +447,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxodbc_a-odbc.o: odbc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxodbc_a_CFLAGS) $(CFLAGS) -MT libzbxodbc_a-odbc.o -MD -MP -MF $(DEPDIR)/libzbxodbc_a-odbc.Tpo -c -o libzbxodbc_a-odbc.o `test -f 'odbc.c' || echo '$(srcdir)/'`odbc.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxodbc_a-odbc.Tpo $(DEPDIR)/libzbxodbc_a-odbc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='odbc.c' object='libzbxodbc_a-odbc.o' libtool=no @AMDEPBACKSLASH@
+libtrxodbc_a-odbc.o: odbc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxodbc_a_CFLAGS) $(CFLAGS) -MT libtrxodbc_a-odbc.o -MD -MP -MF $(DEPDIR)/libtrxodbc_a-odbc.Tpo -c -o libtrxodbc_a-odbc.o `test -f 'odbc.c' || echo '$(srcdir)/'`odbc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxodbc_a-odbc.Tpo $(DEPDIR)/libtrxodbc_a-odbc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='odbc.c' object='libtrxodbc_a-odbc.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxodbc_a_CFLAGS) $(CFLAGS) -c -o libzbxodbc_a-odbc.o `test -f 'odbc.c' || echo '$(srcdir)/'`odbc.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxodbc_a_CFLAGS) $(CFLAGS) -c -o libtrxodbc_a-odbc.o `test -f 'odbc.c' || echo '$(srcdir)/'`odbc.c
 
-libzbxodbc_a-odbc.obj: odbc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxodbc_a_CFLAGS) $(CFLAGS) -MT libzbxodbc_a-odbc.obj -MD -MP -MF $(DEPDIR)/libzbxodbc_a-odbc.Tpo -c -o libzbxodbc_a-odbc.obj `if test -f 'odbc.c'; then $(CYGPATH_W) 'odbc.c'; else $(CYGPATH_W) '$(srcdir)/odbc.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxodbc_a-odbc.Tpo $(DEPDIR)/libzbxodbc_a-odbc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='odbc.c' object='libzbxodbc_a-odbc.obj' libtool=no @AMDEPBACKSLASH@
+libtrxodbc_a-odbc.obj: odbc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxodbc_a_CFLAGS) $(CFLAGS) -MT libtrxodbc_a-odbc.obj -MD -MP -MF $(DEPDIR)/libtrxodbc_a-odbc.Tpo -c -o libtrxodbc_a-odbc.obj `if test -f 'odbc.c'; then $(CYGPATH_W) 'odbc.c'; else $(CYGPATH_W) '$(srcdir)/odbc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxodbc_a-odbc.Tpo $(DEPDIR)/libtrxodbc_a-odbc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='odbc.c' object='libtrxodbc_a-odbc.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxodbc_a_CFLAGS) $(CFLAGS) -c -o libzbxodbc_a-odbc.obj `if test -f 'odbc.c'; then $(CYGPATH_W) 'odbc.c'; else $(CYGPATH_W) '$(srcdir)/odbc.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxodbc_a_CFLAGS) $(CFLAGS) -c -o libtrxodbc_a-odbc.obj `if test -f 'odbc.c'; then $(CYGPATH_W) 'odbc.c'; else $(CYGPATH_W) '$(srcdir)/odbc.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

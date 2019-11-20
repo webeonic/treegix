@@ -1,6 +1,6 @@
 
 
-#include "zbxtypes.h"
-#include "zbxalgo.h"
+#include "trxtypes.h"
+#include "trxalgo.h"
 
-void	DBcopy_template_items(zbx_uint64_t hostid, const zbx_vector_uint64_t *templateids);
+void	DBcopy_template_items(trx_uint64_t hostid, const trx_vector_uint64_t *templateids);

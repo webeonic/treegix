@@ -230,7 +230,7 @@ class CControllerPopupTriggerWizard extends CController {
 				$result = DBselect(
 					'SELECT t.expression,t.description,t.priority,t.comments,t.url,t.status,t.type,t.opdata'.
 					' FROM triggers t'.
-					' WHERE t.triggerid='.zbx_dbstr($page_options['triggerid']).
+					' WHERE t.triggerid='.trx_dbstr($page_options['triggerid']).
 						' AND EXISTS ('.
 							'SELECT NULL'.
 							' FROM functions f,items i'.

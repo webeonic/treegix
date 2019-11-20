@@ -10,15 +10,15 @@
 #include "common.h"
 #include "sysinfo.h"
 #include <sys/pstat.h>
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 
-static int	check_procstate(struct pst_status pst, int zbx_proc_stat)
+static int	check_procstate(struct pst_status pst, int trx_proc_stat)
 {
-	if (TRX_PROC_STAT_ALL == zbx_proc_stat)
+	if (TRX_PROC_STAT_ALL == trx_proc_stat)
 		return SUCCEED;
 
-	switch (zbx_proc_stat)
+	switch (trx_proc_stat)
 	{
 		case TRX_PROC_STAT_RUN:
 			return PS_RUN == pst.pst_stat ? SUCCEED : FAIL;
@@ -37,12 +37,12 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	char			*procname, *proccomm, *param;
 	struct passwd		*usrinfo;
-	int			proccount = 0, invalid_user = 0, zbx_proc_stat, count, idx = 0;
+	int			proccount = 0, invalid_user = 0, trx_proc_stat, count, idx = 0;
 	struct pst_status	pst[TRX_BURST];
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -59,8 +59,8 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-							zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+							trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -72,16 +72,16 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	param = get_rparam(request, 2);
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = TRX_PROC_STAT_ALL;
+		trx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = TRX_PROC_STAT_RUN;
+		trx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
+		trx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
+		trx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -117,11 +117,11 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 				if (-1 == pstat(PSTAT_GETCOMMANDLINE, un, sizeof(cmdline), 1, pst[i].pst_pid))
 					continue;
 
-				if (NULL == zbx_regexp_match(cmdline, proccomm, NULL))
+				if (NULL == trx_regexp_match(cmdline, proccomm, NULL))
 					continue;
 			}
 
-			if (FAIL == check_procstate(pst[i], zbx_proc_stat))
+			if (FAIL == check_procstate(pst[i], trx_proc_stat))
 				continue;
 
 			proccount++;
@@ -133,7 +133,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (-1 == count)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain process information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain process information."));
 		return SYSINFO_RET_FAIL;
 	}
 out:

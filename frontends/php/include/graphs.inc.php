@@ -114,7 +114,7 @@ function getGraphDims($graphid = null) {
 	$dbGraphs = DBselect(
 		'SELECT MAX(g.graphtype) AS graphtype,MIN(gi.yaxisside) AS yaxissidel,MAX(gi.yaxisside) AS yaxissider,MAX(g.height) AS height'.
 		' FROM graphs g,graphs_items gi'.
-		' WHERE g.graphid='.zbx_dbstr($graphid).
+		' WHERE g.graphid='.trx_dbstr($graphid).
 			' AND gi.graphid=g.graphid'
 	);
 	if ($graph = DBfetch($dbGraphs)) {
@@ -145,7 +145,7 @@ function getGraphDims($graphid = null) {
 }
 
 function getGraphByGraphId($graphId) {
-	$dbGraph = DBfetch(DBselect('SELECT g.* FROM graphs g WHERE g.graphid='.zbx_dbstr($graphId)));
+	$dbGraph = DBfetch(DBselect('SELECT g.* FROM graphs g WHERE g.graphid='.trx_dbstr($graphId)));
 
 	if ($dbGraph) {
 		return $dbGraph;
@@ -387,8 +387,8 @@ function getSameGraphItemsForHost($gitems, $destinationHostId, $error = true, ar
 			'SELECT dest.itemid,src.key_'.
 			' FROM items dest,items src'.
 			' WHERE dest.key_=src.key_'.
-				' AND dest.hostid='.zbx_dbstr($destinationHostId).
-				' AND src.itemid='.zbx_dbstr($gitem['itemid']).
+				' AND dest.hostid='.trx_dbstr($destinationHostId).
+				' AND src.itemid='.trx_dbstr($gitem['itemid']).
 				$flagsSql
 		));
 
@@ -737,7 +737,7 @@ function dashedLine($image, $x1, $y1, $x2, $y2, $color) {
 	}
 
 	imagesetstyle($image, $style);
-	zbx_imageline($image, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
+	trx_imageline($image, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
 }
 
 function dashedRectangle($image, $x1, $y1, $x2, $y2, $color) {

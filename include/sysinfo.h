@@ -24,7 +24,7 @@
 do									\
 {									\
 	(res)->type &= ~AR_UINT64;					\
-	(res)->ui64 = (zbx_uint64_t)0;					\
+	(res)->ui64 = (trx_uint64_t)0;					\
 }									\
 while (0)
 
@@ -43,7 +43,7 @@ do									\
 {									\
 	if ((res)->type & AR_STRING)					\
 	{								\
-		zbx_free((res)->str);					\
+		trx_free((res)->str);					\
 		(res)->type &= ~AR_STRING;				\
 	}								\
 }									\
@@ -55,7 +55,7 @@ do									\
 {									\
 	if ((res)->type & AR_TEXT)					\
 	{								\
-		zbx_free((res)->text);					\
+		trx_free((res)->text);					\
 		(res)->type &= ~AR_TEXT;				\
 	}								\
 }									\
@@ -67,7 +67,7 @@ do									\
 {									\
 	if ((res)->type & AR_LOG)					\
 	{								\
-		zbx_log_free((res)->log);				\
+		trx_log_free((res)->log);				\
 		(res)->log = NULL;					\
 		(res)->type &= ~AR_LOG;					\
 	}								\
@@ -80,7 +80,7 @@ do									\
 {									\
 	if ((res)->type & AR_MESSAGE)					\
 	{								\
-		zbx_free((res)->msg);					\
+		trx_free((res)->msg);					\
 		(res)->type &= ~AR_MESSAGE;				\
 	}								\
 }									\
@@ -101,11 +101,11 @@ while (0)
 
 /* RETRIEVE RESULT VALUE */
 
-#define GET_UI64_RESULT(res)	((zbx_uint64_t *)get_result_value_by_type(res, AR_UINT64))
+#define GET_UI64_RESULT(res)	((trx_uint64_t *)get_result_value_by_type(res, AR_UINT64))
 #define GET_DBL_RESULT(res)	((double *)get_result_value_by_type(res, AR_DOUBLE))
 #define GET_STR_RESULT(res)	((char **)get_result_value_by_type(res, AR_STRING))
 #define GET_TEXT_RESULT(res)	((char **)get_result_value_by_type(res, AR_TEXT))
-#define GET_LOG_RESULT(res)	((zbx_log_t *)get_result_value_by_type(res, AR_LOG))
+#define GET_LOG_RESULT(res)	((trx_log_t *)get_result_value_by_type(res, AR_LOG))
 #define GET_MSG_RESULT(res)	((char **)get_result_value_by_type(res, AR_MESSAGE))
 
 void	*get_result_value_by_type(AGENT_RESULT *result, int require_type);
@@ -167,7 +167,7 @@ extern int	CONFIG_UNSAFE_USER_PARAMETERS;
 #define TRX_DSTAT_W_OPER	4
 #define TRX_DSTAT_W_BYTE	5
 #define TRX_DSTAT_MAX		6
-int	get_diskstat(const char *devname, zbx_uint64_t *dstat);
+int	get_diskstat(const char *devname, trx_uint64_t *dstat);
 
 /* flags for process */
 #define PROCESS_LOCAL_COMMAND	0x1
@@ -186,7 +186,7 @@ void	test_parameters(void);
 void	test_parameter(const char *key);
 
 void	init_result(AGENT_RESULT *result);
-void	zbx_log_free(zbx_log_t *log);
+void	trx_log_free(trx_log_t *log);
 void	free_result(AGENT_RESULT *result);
 
 void	init_request(AGENT_REQUEST *request);
@@ -198,10 +198,10 @@ void	unquote_key_param(char *param);
 int	quote_key_param(char **param, int forced);
 
 int	set_result_type(AGENT_RESULT *result, int value_type, char *c);
-void	set_result_meta(AGENT_RESULT *result, zbx_uint64_t lastlogsize, int mtime);
+void	set_result_meta(AGENT_RESULT *result, trx_uint64_t lastlogsize, int mtime);
 
 #ifdef HAVE_KSTAT_H
-zbx_uint64_t	get_kstat_numeric_value(const kstat_named_t *kn);
+trx_uint64_t	get_kstat_numeric_value(const kstat_named_t *kn);
 #endif
 
 /* external system functions */
@@ -271,9 +271,9 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result);
 #endif
 
 #ifdef _WINDOWS
-typedef int (*zbx_metric_func_t)(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE timeout_event);
+typedef int (*trx_metric_func_t)(AGENT_REQUEST *request, AGENT_RESULT *result, HANDLE timeout_event);
 #else
-typedef int (*zbx_metric_func_t)(AGENT_REQUEST *request, AGENT_RESULT *result);
+typedef int (*trx_metric_func_t)(AGENT_REQUEST *request, AGENT_RESULT *result);
 #endif
 
 typedef struct
@@ -283,7 +283,7 @@ typedef struct
 }
 MODE_FUNCTION;
 
-int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *request, AGENT_RESULT *result);
+int	trx_execute_threaded_metric(trx_metric_func_t metric_func, AGENT_REQUEST *request, AGENT_RESULT *result);
 
 /* the fields used by proc queries */
 #define TRX_SYSINFO_PROC_NONE		0x0000
@@ -296,7 +296,7 @@ int	zbx_execute_threaded_metric(zbx_metric_func_t metric_func, AGENT_REQUEST *re
 #define TRX_MUTEX_ALL_ALLOW		0
 #define TRX_MUTEX_THREAD_DENIED		1
 #define TRX_MUTEX_LOGGING_DENIED	2
-zbx_uint32_t get_thread_global_mutex_flag(void);
+trx_uint32_t get_thread_global_mutex_flag(void);
 #endif
 
 #endif

@@ -6,7 +6,7 @@
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_shm_create                                                   *
+ * Function: trx_shm_create                                                   *
  *                                                                            *
  * Purpose: Create block of shared memory                                     *
  *                                                                            *
@@ -18,14 +18,14 @@
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_shm_create(size_t size)
+int	trx_shm_create(size_t size)
 {
 	int	shm_id;
 
 	if (-1 == (shm_id = shmget(IPC_PRIVATE, size, IPC_CREAT | IPC_EXCL | 0600)))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot allocate shared memory of size " TRX_FS_SIZE_T ": %s",
-				(zbx_fs_size_t)size, zbx_strerror(errno));
+				(trx_fs_size_t)size, trx_strerror(errno));
 		return -1;
 	}
 
@@ -34,7 +34,7 @@ int	zbx_shm_create(size_t size)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_shm_destroy                                                  *
+ * Function: trx_shm_destroy                                                  *
  *                                                                            *
  * Purpose: Destroy block of shared memory                                    *
  *                                                                            *
@@ -46,11 +46,11 @@ int	zbx_shm_create(size_t size)
  * Author: Andrea Biscuola                                                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_shm_destroy(int shmid)
+int	trx_shm_destroy(int shmid)
 {
 	if (-1 == shmctl(shmid, IPC_RMID, 0))
 	{
-		zbx_error("cannot remove existing shared memory: %s", zbx_strerror(errno));
+		trx_error("cannot remove existing shared memory: %s", trx_strerror(errno));
 		return -1;
 	}
 

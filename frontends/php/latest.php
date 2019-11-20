@@ -179,7 +179,7 @@ if ($hosts) {
 		],
 		'selectApplications' => ['applicationid'],
 		'selectItemDiscovery' => ['ts_delete'],
-		'applicationids' => ($applications !== null) ? zbx_objectValues($applications, 'applicationid') : null,
+		'applicationids' => ($applications !== null) ? trx_objectValues($applications, 'applicationid') : null,
 		'webitems' => true,
 		'filter' => [
 			'status' => [ITEM_STATUS_ACTIVE]
@@ -192,7 +192,7 @@ if ($hosts) {
 	if ($applications === null) {
 		$applications = API::Application()->get([
 			'output' => API_OUTPUT_EXTEND,
-			'hostids' => array_keys(array_flip(zbx_objectValues($items, 'hostid'))),
+			'hostids' => array_keys(array_flip(trx_objectValues($items, 'hostid'))),
 			'search' => ['name' => $filter['application']],
 			'preservekeys' => true
 		]);
@@ -312,7 +312,7 @@ if (in_array($page['web_layout_mode'], [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN
 							'parameters' => [
 								'srctbl' => 'host_groups',
 								'srcfld1' => 'groupid',
-								'dstfrm' => 'zbx_filter',
+								'dstfrm' => 'trx_filter',
 								'dstfld1' => 'groupids_',
 								'real_hosts' => true,
 								'enrich_parent_groups' => true
@@ -329,7 +329,7 @@ if (in_array($page['web_layout_mode'], [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN
 							'parameters' => [
 								'srctbl' => 'hosts',
 								'srcfld1' => 'hostid',
-								'dstfrm' => 'zbx_filter',
+								'dstfrm' => 'trx_filter',
 								'dstfld1' => 'hostids_'
 							]
 						]
@@ -344,7 +344,7 @@ if (in_array($page['web_layout_mode'], [TRX_LAYOUT_NORMAL, TRX_LAYOUT_FULLSCREEN
 							CJs::encodeJson([
 								'srctbl' => 'applications',
 								'srcfld1' => 'name',
-								'dstfrm' => 'zbx_filter',
+								'dstfrm' => 'trx_filter',
 								'dstfld1' => 'application',
 								'real_hosts' => '1',
 								'with_applications' => '1'
@@ -486,7 +486,7 @@ foreach ($items as $key => $item) {
 
 	// last check time and last value
 	if ($lastHistory) {
-		$lastClock = zbx_date2str(DATE_TIME_FORMAT_SECONDS, $lastHistory['clock']);
+		$lastClock = trx_date2str(DATE_TIME_FORMAT_SECONDS, $lastHistory['clock']);
 		$lastValue = formatHistoryValue($lastHistory['value'], $item, false);
 	}
 	else {
@@ -644,7 +644,7 @@ foreach ($items as $item) {
 
 	// last check time and last value
 	if ($lastHistory) {
-		$lastClock = zbx_date2str(DATE_TIME_FORMAT_SECONDS, $lastHistory['clock']);
+		$lastClock = trx_date2str(DATE_TIME_FORMAT_SECONDS, $lastHistory['clock']);
 		$lastValue = formatHistoryValue($lastHistory['value'], $item, false);
 	}
 	else {

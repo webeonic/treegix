@@ -775,7 +775,7 @@ function getSelementsInfo(array $sysmap, array $options = []) {
 		$allHosts = array_merge($allHosts, $hostsFromHostGroups);
 	}
 
-	$allHosts = zbx_toHash($allHosts, 'hostid');
+	$allHosts = trx_toHash($allHosts, 'hostid');
 
 	// Get triggers data, triggers from current map, select all.
 	if ($triggerIdToSelementIds) {
@@ -961,7 +961,7 @@ function getSelementsInfo(array $sysmap, array $options = []) {
 
 		$critical_problem = [];
 		$trigger_order = ($selement['elementtype'] == SYSMAP_ELEMENT_TYPE_TRIGGER)
-			? zbx_objectValues($selement['elements'], 'triggerid')
+			? trx_objectValues($selement['elements'], 'triggerid')
 			: [];
 		$lately_changed = 0;
 
@@ -1165,7 +1165,7 @@ function getSelementsInfo(array $sysmap, array $options = []) {
 	}
 
 	if ($elems['triggers'] && $tlabel) {
-		$selements = zbx_toHash($selements, 'selementid');
+		$selements = trx_toHash($selements, 'selementid');
 		foreach ($elems['triggers'] as $selementid => $selement) {
 			foreach ($selement['elements'] as $element) {
 				if ($selement['permission'] >= PERM_READ) {

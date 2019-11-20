@@ -91,7 +91,7 @@ elseif (hasRequest('action')) {
 		]);
 
 		if (count($group_users) != count(getRequest('group_groupid'))) {
-			uncheckTableRows(null, zbx_objectValues($group_users, 'usrgrpid'));
+			uncheckTableRows(null, trx_objectValues($group_users, 'usrgrpid'));
 		}
 	}
 }

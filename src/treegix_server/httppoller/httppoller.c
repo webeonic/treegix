@@ -5,7 +5,7 @@
 #include "db.h"
 #include "log.h"
 #include "daemon.h"
-#include "zbxself.h"
+#include "trxself.h"
 
 #include "httptest.h"
 #include "httppoller.h"
@@ -79,9 +79,9 @@ TRX_THREAD_ENTRY(httppoller_thread, args)
 	double	sec, total_sec = 0.0, old_total_sec = 0.0;
 	time_t	last_stat_time;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
@@ -89,26 +89,26 @@ TRX_THREAD_ENTRY(httppoller_thread, args)
 #define STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
 
-	zbx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [connecting to the database]", get_process_type_string(process_type), process_num);
 	last_stat_time = time(NULL);
 
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	while (TRX_IS_RUNNING())
 	{
-		sec = zbx_time();
-		zbx_update_env(sec);
+		sec = trx_time();
+		trx_update_env(sec);
 
 		if (0 != sleeptime)
 		{
-			zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
+			trx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
 					get_process_type_string(process_type), process_num, old_httptests_count,
 					old_total_sec);
 		}
 
 		now = time(NULL);
 		httptests_count += process_httptests(process_num, now);
-		total_sec += zbx_time() - sec;
+		total_sec += trx_time() - sec;
 
 		nextcheck = get_minnextcheck();
 		sleeptime = calculate_sleeptime(nextcheck, POLLER_DELAY);
@@ -117,13 +117,13 @@ TRX_THREAD_ENTRY(httppoller_thread, args)
 		{
 			if (0 == sleeptime)
 			{
-				zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
+				trx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, getting values]",
 						get_process_type_string(process_type), process_num, httptests_count,
 						total_sec);
 			}
 			else
 			{
-				zbx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, idle %d sec]",
+				trx_setproctitle("%s #%d [got %d values in " TRX_FS_DBL " sec, idle %d sec]",
 						get_process_type_string(process_type), process_num, httptests_count,
 						total_sec, sleeptime);
 				old_httptests_count = httptests_count;
@@ -134,12 +134,12 @@ TRX_THREAD_ENTRY(httppoller_thread, args)
 			last_stat_time = time(NULL);
 		}
 
-		zbx_sleep_loop(sleeptime);
+		trx_sleep_loop(sleeptime);
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 #undef STAT_INTERVAL
 }

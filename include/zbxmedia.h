@@ -14,7 +14,7 @@ typedef struct
 	char		*addr;
 	char		*disp_name;
 }
-zbx_mailaddr_t;
+trx_mailaddr_t;
 
 int	send_email(const char *smtp_server, unsigned short smtp_port, const char *smtp_helo,
 		const char *smtp_email, const char *mailto, const char *mailsubject, const char *mailbody,

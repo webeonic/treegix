@@ -27,23 +27,23 @@ ADD_RFLAGS = /d "TREEGIX_GET"
 !INCLUDE Makefile_common.inc
 
 OBJS = \
-	..\..\..\src\libs\zbxcommon\comms.o \
-	..\..\..\src\libs\zbxcommon\iprange.o \
-	..\..\..\src\libs\zbxcommon\misc.o \
-	..\..\..\src\libs\zbxcommon\str.o \
-	..\..\..\src\libs\zbxcommon\xml.o \
-	..\..\..\src\libs\zbxcommon\zbxgetopt.o \
-	..\..\..\src\libs\zbxcomms\comms.o \
-	..\..\..\src\libs\zbxcompress\compress.o \
-	..\..\..\src\libs\zbxconf\cfg.o \
-	..\..\..\src\libs\zbxcrypto\base64.o \
-	..\..\..\src\libs\zbxcrypto\md5.o \
-	..\..\..\src\libs\zbxlog\log.o \
-	..\..\..\src\libs\zbxsys\mutexs.o \
-	..\..\..\src\libs\zbxsys\symbols.o \
-	..\..\..\src\libs\zbxsys\threads.o \
+	..\..\..\src\libs\trxcommon\comms.o \
+	..\..\..\src\libs\trxcommon\iprange.o \
+	..\..\..\src\libs\trxcommon\misc.o \
+	..\..\..\src\libs\trxcommon\str.o \
+	..\..\..\src\libs\trxcommon\xml.o \
+	..\..\..\src\libs\trxcommon\trxgetopt.o \
+	..\..\..\src\libs\trxcomms\comms.o \
+	..\..\..\src\libs\trxcompress\compress.o \
+	..\..\..\src\libs\trxconf\cfg.o \
+	..\..\..\src\libs\trxcrypto\base64.o \
+	..\..\..\src\libs\trxcrypto\md5.o \
+	..\..\..\src\libs\trxlog\log.o \
+	..\..\..\src\libs\trxsys\mutexs.o \
+	..\..\..\src\libs\trxsys\symbols.o \
+	..\..\..\src\libs\trxsys\threads.o \
 	..\..\..\src\treegix_get\treegix_get.o \
-	..\..\..\src\libs\zbxwin32\fatal.o
+	..\..\..\src\libs\trxwin32\fatal.o
 
 LIBS = ws2_32.lib psapi.lib pdh.lib Wldap32.lib advapi32.lib uuid.lib Iphlpapi.lib user32.lib
 

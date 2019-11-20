@@ -76,7 +76,7 @@ class CClock extends CDiv {
 	public function getScriptRun() {
 		return ($this->error === null)
 			? 'jQuery(function($) {'.
-				'$("#'.$this->getId().'").zbx_clock('.
+				'$("#'.$this->getId().'").trx_clock('.
 					CJs::encodeJson([
 						'time' => $this->time,
 						'time_zone_string' => $this->time_zone_string,

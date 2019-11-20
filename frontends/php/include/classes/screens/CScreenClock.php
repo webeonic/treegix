@@ -102,7 +102,7 @@ class CScreenClock extends CScreenBase {
 				define('TRX_CLOCK', 1);
 				insert_js(file_get_contents($clock->getScriptFile()));
 			}
-			zbx_add_post_js($clock->getScriptRun());
+			trx_add_post_js($clock->getScriptRun());
 		}
 
 		$item = [];

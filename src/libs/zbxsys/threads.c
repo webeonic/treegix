@@ -7,7 +7,7 @@
 #if !defined(_WINDOWS)
 /******************************************************************************
  *                                                                            *
- * Function: zbx_fork                                                         *
+ * Function: trx_fork                                                         *
  *                                                                            *
  * Purpose: Flush stdout and stderr before forking                            *
  *                                                                            *
@@ -16,7 +16,7 @@
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_fork(void)
+int	trx_fork(void)
 {
 	fflush(stdout);
 	fflush(stderr);
@@ -25,7 +25,7 @@ int	zbx_fork(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_child_fork                                                   *
+ * Function: trx_child_fork                                                   *
  *                                                                            *
  * Purpose: fork from master process and set SIGCHLD handler                  *
  *                                                                            *
@@ -36,7 +36,7 @@ int	zbx_fork(void)
  * Comments: use this function only for forks from the main process           *
  *                                                                            *
  ******************************************************************************/
-void	zbx_child_fork(pid_t *pid)
+void	trx_child_fork(pid_t *pid)
 {
 	sigset_t	mask, orig_mask;
 
@@ -52,28 +52,28 @@ void	zbx_child_fork(pid_t *pid)
 	sigprocmask(SIG_BLOCK, &mask, &orig_mask);
 
 	/* set process id instead of returning, this is to avoid race condition when signal arrives before return */
-	*pid = zbx_fork();
+	*pid = trx_fork();
 
 	sigprocmask(SIG_SETMASK, &orig_mask, NULL);
 
-	/* ignore SIGCHLD to avoid problems with exiting scripts in zbx_execute() and other cases */
+	/* ignore SIGCHLD to avoid problems with exiting scripts in trx_execute() and other cases */
 	if (0 == *pid)
 		signal(SIGCHLD, SIG_DFL);
 }
 #else
-int	zbx_win_exception_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep);
+int	trx_win_exception_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep);
 
-static TRX_THREAD_ENTRY(zbx_win_thread_entry, args)
+static TRX_THREAD_ENTRY(trx_win_thread_entry, args)
 {
 	__try
 	{
-		zbx_thread_args_t	*thread_args = (zbx_thread_args_t *)args;
+		trx_thread_args_t	*thread_args = (trx_thread_args_t *)args;
 
 		return thread_args->entry(thread_args);
 	}
-	__except(zbx_win_exception_filter(GetExceptionCode(), GetExceptionInformation()))
+	__except(trx_win_exception_filter(GetExceptionCode(), GetExceptionInformation()))
 	{
-		zbx_thread_exit(EXIT_SUCCESS);
+		trx_thread_exit(EXIT_SUCCESS);
 	}
 }
 
@@ -85,7 +85,7 @@ void CALLBACK	TRXEndThread(ULONG_PTR dwParam)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_thread_start                                                 *
+ * Function: trx_thread_start                                                 *
  *                                                                            *
  * Purpose: Start the handled function as "thread"                            *
  *                                                                            *
@@ -96,36 +96,36 @@ void CALLBACK	TRXEndThread(ULONG_PTR dwParam)
  *                                                                            *
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
- * Comments: The zbx_thread_exit must be called from the handler!             *
+ * Comments: The trx_thread_exit must be called from the handler!             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_thread_start(TRX_THREAD_ENTRY_POINTER(handler), zbx_thread_args_t *thread_args, TRX_THREAD_HANDLE *thread)
+void	trx_thread_start(TRX_THREAD_ENTRY_POINTER(handler), trx_thread_args_t *thread_args, TRX_THREAD_HANDLE *thread)
 {
 #ifdef _WINDOWS
 	unsigned		thrdaddr;
 
 	thread_args->entry = handler;
 	/* NOTE: _beginthreadex returns 0 on failure, rather than 1 */
-	if (0 == (*thread = (TRX_THREAD_HANDLE)_beginthreadex(NULL, 0, zbx_win_thread_entry, thread_args, 0, &thrdaddr)))
+	if (0 == (*thread = (TRX_THREAD_HANDLE)_beginthreadex(NULL, 0, trx_win_thread_entry, thread_args, 0, &thrdaddr)))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "failed to create a thread: %s", strerror_from_system(GetLastError()));
 		*thread = (TRX_THREAD_HANDLE)TRX_THREAD_ERROR;
 	}
 #else
-	zbx_child_fork(thread);
+	trx_child_fork(thread);
 
 	if (0 == *thread)	/* child process */
 	{
 		(*handler)(thread_args);
 
-		/* The zbx_thread_exit must be called from the handler. */
+		/* The trx_thread_exit must be called from the handler. */
 		/* And in normal case the program will never reach this point. */
 		THIS_SHOULD_NEVER_HAPPEN;
 		/* program will never reach this point */
 	}
 	else if (-1 == *thread)
 	{
-		zbx_error("failed to fork: %s", zbx_strerror(errno));
+		trx_error("failed to fork: %s", trx_strerror(errno));
 		*thread = (TRX_THREAD_HANDLE)TRX_THREAD_ERROR;
 	}
 #endif
@@ -133,7 +133,7 @@ void	zbx_thread_start(TRX_THREAD_ENTRY_POINTER(handler), zbx_thread_args_t *thre
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_thread_wait                                                  *
+ * Function: trx_thread_wait                                                  *
  *                                                                            *
  * Purpose: Waits until the "thread" is in the signalled state                *
  *                                                                            *
@@ -144,7 +144,7 @@ void	zbx_thread_start(TRX_THREAD_ENTRY_POINTER(handler), zbx_thread_args_t *thre
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_thread_wait(TRX_THREAD_HANDLE thread)
+int	trx_thread_wait(TRX_THREAD_HANDLE thread)
 {
 	int	status = 0;	/* significant 8 bits of the status */
 
@@ -152,19 +152,19 @@ int	zbx_thread_wait(TRX_THREAD_HANDLE thread)
 
 	if (WAIT_OBJECT_0 != WaitForSingleObject(thread, INFINITE))
 	{
-		zbx_error("Error on thread waiting. [%s]", strerror_from_system(GetLastError()));
+		trx_error("Error on thread waiting. [%s]", strerror_from_system(GetLastError()));
 		return TRX_THREAD_ERROR;
 	}
 
 	if (0 == GetExitCodeThread(thread, &status))
 	{
-		zbx_error("Error on thread exit code receiving. [%s]", strerror_from_system(GetLastError()));
+		trx_error("Error on thread exit code receiving. [%s]", strerror_from_system(GetLastError()));
 		return TRX_THREAD_ERROR;
 	}
 
 	if (0 == CloseHandle(thread))
 	{
-		zbx_error("Error on thread closing. [%s]", strerror_from_system(GetLastError()));
+		trx_error("Error on thread closing. [%s]", strerror_from_system(GetLastError()));
 		return TRX_THREAD_ERROR;
 	}
 
@@ -172,7 +172,7 @@ int	zbx_thread_wait(TRX_THREAD_HANDLE thread)
 
 	if (0 >= waitpid(thread, &status, 0))
 	{
-		zbx_error("Error waiting for process with PID %d: %s", (int)thread, zbx_strerror(errno));
+		trx_error("Error waiting for process with PID %d: %s", (int)thread, trx_strerror(errno));
 		return TRX_THREAD_ERROR;
 	}
 
@@ -205,15 +205,15 @@ static void	threads_kill(TRX_THREAD_HANDLE *threads, int threads_num, int ret)
 			continue;
 
 		if (SUCCEED != ret)
-			zbx_thread_kill_fatal(threads[i]);
+			trx_thread_kill_fatal(threads[i]);
 		else
-			zbx_thread_kill(threads[i]);
+			trx_thread_kill(threads[i]);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_threads_wait                                                 *
+ * Function: trx_threads_wait                                                 *
  *                                                                            *
  * Purpose: Waits until the "threads" are in the signalled state              *
  *                                                                            *
@@ -221,13 +221,13 @@ static void	threads_kill(TRX_THREAD_HANDLE *threads, int threads_num, int ret)
  *                                                                            *
  *                                                                            *
  ******************************************************************************/
-void	zbx_threads_wait(TRX_THREAD_HANDLE *threads, const int *threads_flags, int threads_num, int ret)
+void	trx_threads_wait(TRX_THREAD_HANDLE *threads, const int *threads_flags, int threads_num, int ret)
 {
 	int		i;
 #if !defined(_WINDOWS)
 	sigset_t	set;
 
-	/* ignore SIGCHLD signals in order for zbx_sleep() to work */
+	/* ignore SIGCHLD signals in order for trx_sleep() to work */
 	sigemptyset(&set);
 	sigaddset(&set, SIGCHLD);
 	sigprocmask(SIG_BLOCK, &set, NULL);
@@ -240,7 +240,7 @@ void	zbx_threads_wait(TRX_THREAD_HANDLE *threads, const int *threads_flags, int 
 		if (!threads[i] || TRX_THREAD_WAIT_EXIT != threads_flags[i])
 			continue;
 
-		zbx_thread_wait(threads[i]);
+		trx_thread_wait(threads[i]);
 
 		threads[i] = TRX_THREAD_HANDLE_NULL;
 	}
@@ -258,13 +258,13 @@ void	zbx_threads_wait(TRX_THREAD_HANDLE *threads, const int *threads_flags, int 
 		if (!threads[i])
 			continue;
 
-		zbx_thread_wait(threads[i]);
+		trx_thread_wait(threads[i]);
 
 		threads[i] = TRX_THREAD_HANDLE_NULL;
 	}
 }
 
-long int	zbx_get_thread_id(void)
+long int	trx_get_thread_id(void)
 {
 #ifdef _WINDOWS
 	return (long int)GetCurrentThreadId();

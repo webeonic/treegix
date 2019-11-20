@@ -120,61 +120,61 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxserver_a_AR = $(AR) $(ARFLAGS)
-libzbxserver_a_LIBADD =
-am_libzbxserver_a_OBJECTS = libzbxserver_a-actions.$(OBJEXT) \
-	libzbxserver_a-operations.$(OBJEXT) \
-	libzbxserver_a-events.$(OBJEXT) \
-	libzbxserver_a-postinit.$(OBJEXT)
-libzbxserver_a_OBJECTS = $(am_libzbxserver_a_OBJECTS)
+libtrxserver_a_AR = $(AR) $(ARFLAGS)
+libtrxserver_a_LIBADD =
+am_libtrxserver_a_OBJECTS = libtrxserver_a-actions.$(OBJEXT) \
+	libtrxserver_a-operations.$(OBJEXT) \
+	libtrxserver_a-events.$(OBJEXT) \
+	libtrxserver_a-postinit.$(OBJEXT)
+libtrxserver_a_OBJECTS = $(am_libtrxserver_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(sbindir)"
 PROGRAMS = $(sbin_PROGRAMS)
 am_treegix_server_OBJECTS = treegix_server-server.$(OBJEXT)
 treegix_server_OBJECTS = $(am_treegix_server_OBJECTS)
-treegix_server_DEPENDENCIES = alerter/libzbxalerter.a \
-	dbsyncer/libzbxdbsyncer.a dbconfig/libzbxdbconfig.a \
-	discoverer/libzbxdiscoverer.a pinger/libzbxpinger.a \
-	poller/libzbxpoller.a housekeeper/libzbxhousekeeper.a \
-	timer/libzbxtimer.a trapper/libzbxtrapper.a \
-	snmptrapper/libzbxsnmptrapper.a httppoller/libzbxhttppoller.a \
-	escalator/libzbxescalator.a proxypoller/libzbxproxypoller.a \
-	selfmon/libzbxselfmon.a vmware/libzbxvmware.a \
-	taskmanager/libzbxtaskmanager.a odbc/libzbxodbc.a \
-	scripts/libzbxscripts.a preprocessor/libpreprocessor.a \
-	$(top_srcdir)/src/libs/zbxembed/libzbxembed.a \
-	poller/libzbxpoller_server.a lld/libzbxlld.a libzbxserver.a \
-	$(top_srcdir)/src/libs/zbxprometheus/libzbxprometheus.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/libzbxserversysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver.a \
-	$(top_srcdir)/src/libs/zbxdbcache/libzbxdbcache.a \
-	$(top_srcdir)/src/libs/zbxhistory/libzbxhistory.a \
-	$(top_srcdir)/src/libs/zbxmemory/libzbxmemory.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxself/libzbxself.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxmedia/libzbxmedia.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxcommshigh/libzbxcommshigh.a \
-	$(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxhttp/libzbxhttp.a \
-	$(top_srcdir)/src/libs/zbxipcservice/libzbxipcservice.a \
-	$(top_srcdir)/src/libs/zbxexec/libzbxexec.a \
-	$(top_srcdir)/src/libs/zbxicmpping/libzbxicmpping.a \
-	$(top_srcdir)/src/libs/zbxdbupgrade/libzbxdbupgrade.a \
-	$(top_srcdir)/src/libs/zbxdbhigh/libzbxdbhigh.a \
-	$(top_srcdir)/src/libs/zbxdb/libzbxdb.a \
-	$(top_srcdir)/src/libs/zbxmodules/libzbxmodules.a \
-	$(top_srcdir)/src/libs/zbxtasks/libzbxtasks.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver_server.a \
+treegix_server_DEPENDENCIES = alerter/libtrxalerter.a \
+	dbsyncer/libtrxdbsyncer.a dbconfig/libtrxdbconfig.a \
+	discoverer/libtrxdiscoverer.a pinger/libtrxpinger.a \
+	poller/libtrxpoller.a housekeeper/libtrxhousekeeper.a \
+	timer/libtrxtimer.a trapper/libtrxtrapper.a \
+	snmptrapper/libtrxsnmptrapper.a httppoller/libtrxhttppoller.a \
+	escalator/libtrxescalator.a proxypoller/libtrxproxypoller.a \
+	selfmon/libtrxselfmon.a vmware/libtrxvmware.a \
+	taskmanager/libtrxtaskmanager.a odbc/libtrxodbc.a \
+	scripts/libtrxscripts.a preprocessor/libpreprocessor.a \
+	$(top_srcdir)/src/libs/trxembed/libtrxembed.a \
+	poller/libtrxpoller_server.a lld/libtrxlld.a libtrxserver.a \
+	$(top_srcdir)/src/libs/trxprometheus/libtrxprometheus.a \
+	$(top_srcdir)/src/libs/trxsysinfo/libtrxserversysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver.a \
+	$(top_srcdir)/src/libs/trxdbcache/libtrxdbcache.a \
+	$(top_srcdir)/src/libs/trxhistory/libtrxhistory.a \
+	$(top_srcdir)/src/libs/trxmemory/libtrxmemory.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxself/libtrxself.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxalgo/libtrxalgo.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxmedia/libtrxmedia.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxcommshigh/libtrxcommshigh.a \
+	$(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxhttp/libtrxhttp.a \
+	$(top_srcdir)/src/libs/trxipcservice/libtrxipcservice.a \
+	$(top_srcdir)/src/libs/trxexec/libtrxexec.a \
+	$(top_srcdir)/src/libs/trxicmpping/libtrxicmpping.a \
+	$(top_srcdir)/src/libs/trxdbupgrade/libtrxdbupgrade.a \
+	$(top_srcdir)/src/libs/trxdbhigh/libtrxdbhigh.a \
+	$(top_srcdir)/src/libs/trxdb/libtrxdb.a \
+	$(top_srcdir)/src/libs/trxmodules/libtrxmodules.a \
+	$(top_srcdir)/src/libs/trxtasks/libtrxtasks.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver_server.a \
 	$(am__append_1)
 treegix_server_LINK = $(CCLD) $(treegix_server_CFLAGS) $(CFLAGS) \
 	$(treegix_server_LDFLAGS) $(LDFLAGS) -o $@
@@ -210,8 +210,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxserver_a_SOURCES) $(treegix_server_SOURCES)
-DIST_SOURCES = $(libzbxserver_a_SOURCES) $(treegix_server_SOURCES)
+SOURCES = $(libtrxserver_a_SOURCES) $(treegix_server_SOURCES)
+DIST_SOURCES = $(libtrxserver_a_SOURCES) $(treegix_server_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -500,62 +500,62 @@ SUBDIRS = \
 	preprocessor \
 	lld
 
-noinst_LIBRARIES = libzbxserver.a
-libzbxserver_a_SOURCES = \
+noinst_LIBRARIES = libtrxserver.a
+libtrxserver_a_SOURCES = \
 	actions.c actions.h \
 	operations.c operations.h \
 	events.c events.h \
 	postinit.c postinit.h
 
-libzbxserver_a_CFLAGS = \
+libtrxserver_a_CFLAGS = \
 	-DTREEGIX_DAEMON \
-	-I@top_srcdir@/src/libs/zbxdbcache
+	-I@top_srcdir@/src/libs/trxdbcache
 
 treegix_server_SOURCES = server.c
-treegix_server_LDADD = alerter/libzbxalerter.a \
-	dbsyncer/libzbxdbsyncer.a dbconfig/libzbxdbconfig.a \
-	discoverer/libzbxdiscoverer.a pinger/libzbxpinger.a \
-	poller/libzbxpoller.a housekeeper/libzbxhousekeeper.a \
-	timer/libzbxtimer.a trapper/libzbxtrapper.a \
-	snmptrapper/libzbxsnmptrapper.a httppoller/libzbxhttppoller.a \
-	escalator/libzbxescalator.a proxypoller/libzbxproxypoller.a \
-	selfmon/libzbxselfmon.a vmware/libzbxvmware.a \
-	taskmanager/libzbxtaskmanager.a odbc/libzbxodbc.a \
-	scripts/libzbxscripts.a preprocessor/libpreprocessor.a \
-	$(top_srcdir)/src/libs/zbxembed/libzbxembed.a \
-	poller/libzbxpoller_server.a lld/libzbxlld.a libzbxserver.a \
-	$(top_srcdir)/src/libs/zbxprometheus/libzbxprometheus.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/libzbxserversysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver.a \
-	$(top_srcdir)/src/libs/zbxdbcache/libzbxdbcache.a \
-	$(top_srcdir)/src/libs/zbxhistory/libzbxhistory.a \
-	$(top_srcdir)/src/libs/zbxmemory/libzbxmemory.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxself/libzbxself.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxmedia/libzbxmedia.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxcommshigh/libzbxcommshigh.a \
-	$(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxhttp/libzbxhttp.a \
-	$(top_srcdir)/src/libs/zbxipcservice/libzbxipcservice.a \
-	$(top_srcdir)/src/libs/zbxexec/libzbxexec.a \
-	$(top_srcdir)/src/libs/zbxicmpping/libzbxicmpping.a \
-	$(top_srcdir)/src/libs/zbxdbupgrade/libzbxdbupgrade.a \
-	$(top_srcdir)/src/libs/zbxdbhigh/libzbxdbhigh.a \
-	$(top_srcdir)/src/libs/zbxdb/libzbxdb.a \
-	$(top_srcdir)/src/libs/zbxmodules/libzbxmodules.a \
-	$(top_srcdir)/src/libs/zbxtasks/libzbxtasks.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver_server.a \
+treegix_server_LDADD = alerter/libtrxalerter.a \
+	dbsyncer/libtrxdbsyncer.a dbconfig/libtrxdbconfig.a \
+	discoverer/libtrxdiscoverer.a pinger/libtrxpinger.a \
+	poller/libtrxpoller.a housekeeper/libtrxhousekeeper.a \
+	timer/libtrxtimer.a trapper/libtrxtrapper.a \
+	snmptrapper/libtrxsnmptrapper.a httppoller/libtrxhttppoller.a \
+	escalator/libtrxescalator.a proxypoller/libtrxproxypoller.a \
+	selfmon/libtrxselfmon.a vmware/libtrxvmware.a \
+	taskmanager/libtrxtaskmanager.a odbc/libtrxodbc.a \
+	scripts/libtrxscripts.a preprocessor/libpreprocessor.a \
+	$(top_srcdir)/src/libs/trxembed/libtrxembed.a \
+	poller/libtrxpoller_server.a lld/libtrxlld.a libtrxserver.a \
+	$(top_srcdir)/src/libs/trxprometheus/libtrxprometheus.a \
+	$(top_srcdir)/src/libs/trxsysinfo/libtrxserversysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver.a \
+	$(top_srcdir)/src/libs/trxdbcache/libtrxdbcache.a \
+	$(top_srcdir)/src/libs/trxhistory/libtrxhistory.a \
+	$(top_srcdir)/src/libs/trxmemory/libtrxmemory.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxself/libtrxself.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxalgo/libtrxalgo.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxmedia/libtrxmedia.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxcommshigh/libtrxcommshigh.a \
+	$(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxhttp/libtrxhttp.a \
+	$(top_srcdir)/src/libs/trxipcservice/libtrxipcservice.a \
+	$(top_srcdir)/src/libs/trxexec/libtrxexec.a \
+	$(top_srcdir)/src/libs/trxicmpping/libtrxicmpping.a \
+	$(top_srcdir)/src/libs/trxdbupgrade/libtrxdbupgrade.a \
+	$(top_srcdir)/src/libs/trxdbhigh/libtrxdbhigh.a \
+	$(top_srcdir)/src/libs/trxdb/libtrxdb.a \
+	$(top_srcdir)/src/libs/trxmodules/libtrxmodules.a \
+	$(top_srcdir)/src/libs/trxtasks/libtrxtasks.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver_server.a \
 	$(am__append_1) @SERVER_LIBS@
 treegix_server_LDFLAGS = @SERVER_LDFLAGS@
 treegix_server_CFLAGS = \
@@ -603,10 +603,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxserver.a: $(libzbxserver_a_OBJECTS) $(libzbxserver_a_DEPENDENCIES) $(EXTRA_libzbxserver_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxserver.a
-	$(AM_V_AR)$(libzbxserver_a_AR) libzbxserver.a $(libzbxserver_a_OBJECTS) $(libzbxserver_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxserver.a
+libtrxserver.a: $(libtrxserver_a_OBJECTS) $(libtrxserver_a_DEPENDENCIES) $(EXTRA_libtrxserver_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxserver.a
+	$(AM_V_AR)$(libtrxserver_a_AR) libtrxserver.a $(libtrxserver_a_OBJECTS) $(libtrxserver_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxserver.a
 install-sbinPROGRAMS: $(sbin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(sbin_PROGRAMS)'; test -n "$(sbindir)" || list=; \
@@ -660,10 +660,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserver_a-actions.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserver_a-events.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserver_a-operations.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserver_a-postinit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserver_a-actions.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserver_a-events.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserver_a-operations.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserver_a-postinit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/treegix_server-server.Po@am__quote@
 
 .c.o:
@@ -682,61 +682,61 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxserver_a-actions.o: actions.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-actions.o -MD -MP -MF $(DEPDIR)/libzbxserver_a-actions.Tpo -c -o libzbxserver_a-actions.o `test -f 'actions.c' || echo '$(srcdir)/'`actions.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-actions.Tpo $(DEPDIR)/libzbxserver_a-actions.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions.c' object='libzbxserver_a-actions.o' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-actions.o: actions.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-actions.o -MD -MP -MF $(DEPDIR)/libtrxserver_a-actions.Tpo -c -o libtrxserver_a-actions.o `test -f 'actions.c' || echo '$(srcdir)/'`actions.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-actions.Tpo $(DEPDIR)/libtrxserver_a-actions.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions.c' object='libtrxserver_a-actions.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-actions.o `test -f 'actions.c' || echo '$(srcdir)/'`actions.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-actions.o `test -f 'actions.c' || echo '$(srcdir)/'`actions.c
 
-libzbxserver_a-actions.obj: actions.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-actions.obj -MD -MP -MF $(DEPDIR)/libzbxserver_a-actions.Tpo -c -o libzbxserver_a-actions.obj `if test -f 'actions.c'; then $(CYGPATH_W) 'actions.c'; else $(CYGPATH_W) '$(srcdir)/actions.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-actions.Tpo $(DEPDIR)/libzbxserver_a-actions.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions.c' object='libzbxserver_a-actions.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-actions.obj: actions.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-actions.obj -MD -MP -MF $(DEPDIR)/libtrxserver_a-actions.Tpo -c -o libtrxserver_a-actions.obj `if test -f 'actions.c'; then $(CYGPATH_W) 'actions.c'; else $(CYGPATH_W) '$(srcdir)/actions.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-actions.Tpo $(DEPDIR)/libtrxserver_a-actions.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions.c' object='libtrxserver_a-actions.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-actions.obj `if test -f 'actions.c'; then $(CYGPATH_W) 'actions.c'; else $(CYGPATH_W) '$(srcdir)/actions.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-actions.obj `if test -f 'actions.c'; then $(CYGPATH_W) 'actions.c'; else $(CYGPATH_W) '$(srcdir)/actions.c'; fi`
 
-libzbxserver_a-operations.o: operations.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-operations.o -MD -MP -MF $(DEPDIR)/libzbxserver_a-operations.Tpo -c -o libzbxserver_a-operations.o `test -f 'operations.c' || echo '$(srcdir)/'`operations.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-operations.Tpo $(DEPDIR)/libzbxserver_a-operations.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='operations.c' object='libzbxserver_a-operations.o' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-operations.o: operations.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-operations.o -MD -MP -MF $(DEPDIR)/libtrxserver_a-operations.Tpo -c -o libtrxserver_a-operations.o `test -f 'operations.c' || echo '$(srcdir)/'`operations.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-operations.Tpo $(DEPDIR)/libtrxserver_a-operations.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='operations.c' object='libtrxserver_a-operations.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-operations.o `test -f 'operations.c' || echo '$(srcdir)/'`operations.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-operations.o `test -f 'operations.c' || echo '$(srcdir)/'`operations.c
 
-libzbxserver_a-operations.obj: operations.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-operations.obj -MD -MP -MF $(DEPDIR)/libzbxserver_a-operations.Tpo -c -o libzbxserver_a-operations.obj `if test -f 'operations.c'; then $(CYGPATH_W) 'operations.c'; else $(CYGPATH_W) '$(srcdir)/operations.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-operations.Tpo $(DEPDIR)/libzbxserver_a-operations.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='operations.c' object='libzbxserver_a-operations.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-operations.obj: operations.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-operations.obj -MD -MP -MF $(DEPDIR)/libtrxserver_a-operations.Tpo -c -o libtrxserver_a-operations.obj `if test -f 'operations.c'; then $(CYGPATH_W) 'operations.c'; else $(CYGPATH_W) '$(srcdir)/operations.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-operations.Tpo $(DEPDIR)/libtrxserver_a-operations.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='operations.c' object='libtrxserver_a-operations.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-operations.obj `if test -f 'operations.c'; then $(CYGPATH_W) 'operations.c'; else $(CYGPATH_W) '$(srcdir)/operations.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-operations.obj `if test -f 'operations.c'; then $(CYGPATH_W) 'operations.c'; else $(CYGPATH_W) '$(srcdir)/operations.c'; fi`
 
-libzbxserver_a-events.o: events.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-events.o -MD -MP -MF $(DEPDIR)/libzbxserver_a-events.Tpo -c -o libzbxserver_a-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-events.Tpo $(DEPDIR)/libzbxserver_a-events.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='events.c' object='libzbxserver_a-events.o' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-events.o: events.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-events.o -MD -MP -MF $(DEPDIR)/libtrxserver_a-events.Tpo -c -o libtrxserver_a-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-events.Tpo $(DEPDIR)/libtrxserver_a-events.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='events.c' object='libtrxserver_a-events.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
 
-libzbxserver_a-events.obj: events.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-events.obj -MD -MP -MF $(DEPDIR)/libzbxserver_a-events.Tpo -c -o libzbxserver_a-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-events.Tpo $(DEPDIR)/libzbxserver_a-events.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='events.c' object='libzbxserver_a-events.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-events.obj: events.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-events.obj -MD -MP -MF $(DEPDIR)/libtrxserver_a-events.Tpo -c -o libtrxserver_a-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-events.Tpo $(DEPDIR)/libtrxserver_a-events.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='events.c' object='libtrxserver_a-events.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
 
-libzbxserver_a-postinit.o: postinit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-postinit.o -MD -MP -MF $(DEPDIR)/libzbxserver_a-postinit.Tpo -c -o libzbxserver_a-postinit.o `test -f 'postinit.c' || echo '$(srcdir)/'`postinit.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-postinit.Tpo $(DEPDIR)/libzbxserver_a-postinit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='postinit.c' object='libzbxserver_a-postinit.o' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-postinit.o: postinit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-postinit.o -MD -MP -MF $(DEPDIR)/libtrxserver_a-postinit.Tpo -c -o libtrxserver_a-postinit.o `test -f 'postinit.c' || echo '$(srcdir)/'`postinit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-postinit.Tpo $(DEPDIR)/libtrxserver_a-postinit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='postinit.c' object='libtrxserver_a-postinit.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-postinit.o `test -f 'postinit.c' || echo '$(srcdir)/'`postinit.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-postinit.o `test -f 'postinit.c' || echo '$(srcdir)/'`postinit.c
 
-libzbxserver_a-postinit.obj: postinit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-postinit.obj -MD -MP -MF $(DEPDIR)/libzbxserver_a-postinit.Tpo -c -o libzbxserver_a-postinit.obj `if test -f 'postinit.c'; then $(CYGPATH_W) 'postinit.c'; else $(CYGPATH_W) '$(srcdir)/postinit.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-postinit.Tpo $(DEPDIR)/libzbxserver_a-postinit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='postinit.c' object='libzbxserver_a-postinit.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-postinit.obj: postinit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-postinit.obj -MD -MP -MF $(DEPDIR)/libtrxserver_a-postinit.Tpo -c -o libtrxserver_a-postinit.obj `if test -f 'postinit.c'; then $(CYGPATH_W) 'postinit.c'; else $(CYGPATH_W) '$(srcdir)/postinit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-postinit.Tpo $(DEPDIR)/libtrxserver_a-postinit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='postinit.c' object='libtrxserver_a-postinit.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-postinit.obj `if test -f 'postinit.c'; then $(CYGPATH_W) 'postinit.c'; else $(CYGPATH_W) '$(srcdir)/postinit.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-postinit.obj `if test -f 'postinit.c'; then $(CYGPATH_W) 'postinit.c'; else $(CYGPATH_W) '$(srcdir)/postinit.c'; fi`
 
 treegix_server-server.o: server.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(treegix_server_CFLAGS) $(CFLAGS) -MT treegix_server-server.o -MD -MP -MF $(DEPDIR)/treegix_server-server.Tpo -c -o treegix_server-server.o `test -f 'server.c' || echo '$(srcdir)/'`server.c
