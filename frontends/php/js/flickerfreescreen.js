@@ -332,9 +332,9 @@
 				$('img', '#flickerfreescreen_' + id).each(function() {
 					var domImg = $(this),
 						url = new Curl(domImg.attr('src'), false),
-						zbx_sbox = domImg.data('zbx_sbox');
+						trx_sbox = domImg.data('trx_sbox');
 
-					if (zbx_sbox && zbx_sbox.prevent_refresh) {
+					if (trx_sbox && trx_sbox.prevent_refresh) {
 						screen.isRefreshing = false;
 						window.flickerfreeScreen.setElementProgressState(id, false);
 						return;
@@ -385,9 +385,9 @@
 						});
 
 					var async = flickerfreeScreen.getImageSboxHeight(url, function(height) {
-							zbx_sbox.height = parseInt(height, 10);
+							trx_sbox.height = parseInt(height, 10);
 							// 'src' should be added only here to trigger load event after new height is received.
-							img.data('zbx_sbox', zbx_sbox)
+							img.data('trx_sbox', trx_sbox)
 								.attr('src', url.getUrl());
 						});
 
@@ -395,8 +395,8 @@
 						img.attr('src', url.getUrl());
 					}
 
-					if (zbx_sbox) {
-						img.data('zbx_sbox', jQuery.extend(zbx_sbox, {
+					if (trx_sbox) {
+						img.data('trx_sbox', jQuery.extend(trx_sbox, {
 							from: screen.timeline.from,
 							from_ts: screen.timeline.from_ts,
 							to: screen.timeline.to,

@@ -13,16 +13,16 @@
  */
 static int	telnet_run(DC_ITEM *item, AGENT_RESULT *result, const char *encoding)
 {
-	zbx_socket_t	s;
+	trx_socket_t	s;
 	int		ret = NOTSUPPORTED, flags;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (FAIL == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, item->interface.addr, item->interface.port, 0,
+	if (FAIL == trx_tcp_connect(&s, CONFIG_SOURCE_IP, item->interface.addr, item->interface.port, 0,
 			TRX_TCP_SEC_UNENCRYPTED, NULL, NULL))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot connect to TELNET server: %s",
-				zbx_socket_strerror()));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot connect to TELNET server: %s",
+				trx_socket_strerror()));
 		goto close;
 	}
 
@@ -38,9 +38,9 @@ static int	telnet_run(DC_ITEM *item, AGENT_RESULT *result, const char *encoding)
 
 	ret = SUCCEED;
 tcp_close:
-	zbx_tcp_close(&s);
+	trx_tcp_close(&s);
 close:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -55,19 +55,19 @@ int	get_value_telnet(DC_ITEM *item, AGENT_RESULT *result)
 
 	if (SUCCEED != parse_item_key(item->key, &request))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid item key format."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid item key format."));
 		goto out;
 	}
 
 	if (0 != strcmp(TELNET_RUN_KEY, get_rkey(&request)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unsupported item key for this item type."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unsupported item key for this item type."));
 		goto out;
 	}
 
 	if (4 < get_rparams_num(&request))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto out;
 	}
 
@@ -81,7 +81,7 @@ int	get_value_telnet(DC_ITEM *item, AGENT_RESULT *result)
 	{
 		if (FAIL == is_ushort(port, &item->interface.port))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 			goto out;
 		}
 	}

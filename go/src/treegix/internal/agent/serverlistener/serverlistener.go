@@ -12,12 +12,12 @@ import (
 	"treegix/internal/monitor"
 	"treegix/pkg/log"
 	"treegix/pkg/tls"
-	"treegix/pkg/zbxcomms"
+	"treegix/pkg/trxcomms"
 )
 
 type ServerListener struct {
 	listenerID   int
-	listener     *zbxcomms.Listener
+	listener     *trxcomms.Listener
 	scheduler    scheduler.Scheduler
 	options      *agent.AgentOptions
 	tlsConfig    *tls.Config
@@ -25,7 +25,7 @@ type ServerListener struct {
 	bindIP       string
 }
 
-func (sl *ServerListener) processConnection(conn *zbxcomms.Connection) (err error) {
+func (sl *ServerListener) processConnection(conn *trxcomms.Connection) (err error) {
 	defer func() {
 		if err != nil {
 			conn.Close()
@@ -84,7 +84,7 @@ func (sl *ServerListener) Start() (err error) {
 	if sl.allowedPeers, err = GetAllowedPeers(sl.options); err != nil {
 		return
 	}
-	if sl.listener, err = zbxcomms.Listen(fmt.Sprintf("%s:%d", sl.bindIP, sl.options.ListenPort), sl.tlsConfig); err != nil {
+	if sl.listener, err = trxcomms.Listen(fmt.Sprintf("%s:%d", sl.bindIP, sl.options.ListenPort), sl.tlsConfig); err != nil {
 		return
 	}
 	monitor.Register()

@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxmodules
+subdir = src/libs/trxmodules
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxmodules_a_AR = $(AR) $(ARFLAGS)
-libzbxmodules_a_LIBADD =
-am_libzbxmodules_a_OBJECTS = modules.$(OBJEXT)
-libzbxmodules_a_OBJECTS = $(am_libzbxmodules_a_OBJECTS)
+libtrxmodules_a_AR = $(AR) $(ARFLAGS)
+libtrxmodules_a_LIBADD =
+am_libtrxmodules_a_OBJECTS = modules.$(OBJEXT)
+libtrxmodules_a_OBJECTS = $(am_libtrxmodules_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxmodules_a_SOURCES)
-DIST_SOURCES = $(libzbxmodules_a_SOURCES)
+SOURCES = $(libtrxmodules_a_SOURCES)
+DIST_SOURCES = $(libtrxmodules_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxmodules.a
-libzbxmodules_a_SOURCES = \
+noinst_LIBRARIES = libtrxmodules.a
+libtrxmodules_a_SOURCES = \
 	modules.c
 
 all: all-am
@@ -391,9 +391,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxmodules/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxmodules/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxmodules/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxmodules/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -415,10 +415,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxmodules.a: $(libzbxmodules_a_OBJECTS) $(libzbxmodules_a_DEPENDENCIES) $(EXTRA_libzbxmodules_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxmodules.a
-	$(AM_V_AR)$(libzbxmodules_a_AR) libzbxmodules.a $(libzbxmodules_a_OBJECTS) $(libzbxmodules_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxmodules.a
+libtrxmodules.a: $(libtrxmodules_a_OBJECTS) $(libtrxmodules_a_DEPENDENCIES) $(EXTRA_libtrxmodules_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxmodules.a
+	$(AM_V_AR)$(libtrxmodules_a_AR) libtrxmodules.a $(libtrxmodules_a_OBJECTS) $(libtrxmodules_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxmodules.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

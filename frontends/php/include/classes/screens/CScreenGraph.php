@@ -176,7 +176,7 @@ class CScreenGraph extends CScreenBase {
 				);
 			}
 			else {
-				zbx_add_post_js('timeControl.addObject("'.$this->getDataId().'", '.CJs::encodeJson($this->timeline).
+				trx_add_post_js('timeControl.addObject("'.$this->getDataId().'", '.CJs::encodeJson($this->timeline).
 					', '.CJs::encodeJson($timeControlData).');'
 				);
 			}

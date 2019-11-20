@@ -54,17 +54,17 @@ typedef struct
 }
 TRX_THREAD_SENDVAL_TLS_ARGS;
 
-void	zbx_tls_pass_vars(TRX_THREAD_SENDVAL_TLS_ARGS *args);
-void	zbx_tls_take_vars(TRX_THREAD_SENDVAL_TLS_ARGS *args);
+void	trx_tls_pass_vars(TRX_THREAD_SENDVAL_TLS_ARGS *args);
+void	trx_tls_take_vars(TRX_THREAD_SENDVAL_TLS_ARGS *args);
 #endif	/* #if defined(_WINDOWS) */
 
-void	zbx_tls_validate_config(void);
-void	zbx_tls_library_deinit(void);
-void	zbx_tls_init_parent(void);
-void	zbx_tls_init_child(void);
-void	zbx_tls_free(void);
-void	zbx_tls_free_on_signal(void);
-void	zbx_tls_version(void);
+void	trx_tls_validate_config(void);
+void	trx_tls_library_deinit(void);
+void	trx_tls_init_parent(void);
+void	trx_tls_init_child(void);
+void	trx_tls_free(void);
+void	trx_tls_free_on_signal(void);
+void	trx_tls_version(void);
 
 #endif	/* #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL) */
 

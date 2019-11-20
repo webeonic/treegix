@@ -612,7 +612,7 @@ class CControllerPopupTriggerExpr extends CController {
 					if ($data['paramtype'] == PARAM_TYPE_COUNTS
 							&& array_key_exists('last', $data['params'])
 							&& $data['params']['last'] !== '') {
-						$data['params']['last'] = zbx_is_int($data['params']['last'])
+						$data['params']['last'] = trx_is_int($data['params']['last'])
 							? '#'.$data['params']['last']
 							: $data['params']['last'];
 					}

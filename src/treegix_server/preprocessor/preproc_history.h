@@ -9,21 +9,21 @@
 typedef struct
 {
 	int		index;
-	zbx_variant_t	value;
-	zbx_timespec_t	ts;
+	trx_variant_t	value;
+	trx_timespec_t	ts;
 }
-zbx_preproc_op_history_t;
+trx_preproc_op_history_t;
 
 typedef struct
 {
-	zbx_uint64_t		itemid;
-	zbx_vector_ptr_t	history;
+	trx_uint64_t		itemid;
+	trx_vector_ptr_t	history;
 }
-zbx_preproc_history_t;
+trx_preproc_history_t;
 
-void	zbx_preproc_op_history_free(zbx_preproc_op_history_t *ophistory);
-void	zbx_preproc_history_pop_value(zbx_vector_ptr_t *history, int index, zbx_variant_t *value, zbx_timespec_t *ts);
-void	zbx_preproc_history_add_value(zbx_vector_ptr_t *history, int index, zbx_variant_t *data,
-		const zbx_timespec_t *ts);
+void	trx_preproc_op_history_free(trx_preproc_op_history_t *ophistory);
+void	trx_preproc_history_pop_value(trx_vector_ptr_t *history, int index, trx_variant_t *value, trx_timespec_t *ts);
+void	trx_preproc_history_add_value(trx_vector_ptr_t *history, int index, trx_variant_t *data,
+		const trx_timespec_t *ts);
 
 #endif

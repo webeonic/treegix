@@ -4,7 +4,7 @@
 #define TREEGIX_COMMON_H
 
 #include "sysinc.h"
-#include "zbxtypes.h"
+#include "trxtypes.h"
 #include "version.h"
 #include "md5.h"
 
@@ -78,8 +78,8 @@ extern char TREEGIX_EVENT_SOURCE[TRX_SERVICE_NAME_LEN];
 #define	CONFIG_ERROR	-7
 
 #define SUCCEED_OR_FAIL(result) (FAIL != (result) ? SUCCEED : FAIL)
-const char	*zbx_sysinfo_ret_string(int ret);
-const char	*zbx_result_string(int result);
+const char	*trx_sysinfo_ret_string(int ret);
+const char	*trx_result_string(int result);
 
 #define MAX_ID_LEN		21
 #define MAX_STRING_LEN		2048
@@ -110,7 +110,7 @@ typedef struct
 	int	sec;	/* seconds */
 	int	ns;	/* nanoseconds */
 }
-zbx_timespec_t;
+trx_timespec_t;
 
 /* time zone offset */
 typedef struct
@@ -119,13 +119,13 @@ typedef struct
 	int	tz_hour;
 	int	tz_min;
 }
-zbx_timezone_t;
+trx_timezone_t;
 
-#define zbx_timespec_compare(t1, t2)	\
+#define trx_timespec_compare(t1, t2)	\
 	((t1)->sec == (t2)->sec ? (t1)->ns - (t2)->ns : (t1)->sec - (t2)->sec)
 
 #define TRX_DOUBLE_EPSILON	0.000001
-int	zbx_double_compare(double a, double b);
+int	trx_double_compare(double a, double b);
 
 /* item types */
 typedef enum
@@ -151,8 +151,8 @@ typedef enum
 	ITEM_TYPE_DEPENDENT,
 	ITEM_TYPE_HTTPAGENT	/* 19 */
 }
-zbx_item_type_t;
-const char	*zbx_agent_type_string(zbx_item_type_t item_type);
+trx_item_type_t;
+const char	*trx_agent_type_string(trx_item_type_t item_type);
 
 typedef enum
 {
@@ -163,8 +163,8 @@ typedef enum
 	INTERFACE_TYPE_JMX,
 	INTERFACE_TYPE_ANY = 255
 }
-zbx_interface_type_t;
-const char	*zbx_interface_type_string(zbx_interface_type_t type);
+trx_interface_type_t;
+const char	*trx_interface_type_string(trx_interface_type_t type);
 
 #define INTERFACE_TYPE_COUNT	4	/* number of interface types */
 extern const int	INTERFACE_TYPE_PRIORITY[INTERFACE_TYPE_COUNT];
@@ -182,7 +182,7 @@ typedef enum
 	ITEM_AUTHTYPE_PASSWORD = 0,
 	ITEM_AUTHTYPE_PUBLICKEY
 }
-zbx_item_authtype_t;
+trx_item_authtype_t;
 
 /* event status */
 #define EVENT_STATUS_RESOLVED		0
@@ -214,7 +214,7 @@ typedef enum
 	DOBJECT_STATUS_DISCOVER,
 	DOBJECT_STATUS_LOST
 }
-zbx_dstatus_t;
+trx_dstatus_t;
 
 /* item value types */
 typedef enum
@@ -228,8 +228,8 @@ typedef enum
 	ITEM_VALUE_TYPE_MAX,
 	ITEM_VALUE_TYPE_NONE,
 }
-zbx_item_value_type_t;
-const char	*zbx_item_value_type_string(zbx_item_value_type_t value_type);
+trx_item_value_type_t;
+const char	*trx_item_value_type_string(trx_item_value_type_t value_type);
 
 typedef struct
 {
@@ -239,15 +239,15 @@ typedef struct
 	char	*source;
 	char	*value;
 }
-zbx_log_value_t;
+trx_log_value_t;
 
 typedef union
 {
 	double		dbl;
-	zbx_uint64_t	ui64;
+	trx_uint64_t	ui64;
 	char		*str;
 	char		*err;
-	zbx_log_value_t	*log;
+	trx_log_value_t	*log;
 }
 history_value_t;
 
@@ -259,7 +259,7 @@ typedef enum
 	ITEM_DATA_TYPE_HEXADECIMAL,
 	ITEM_DATA_TYPE_BOOLEAN
 }
-zbx_item_data_type_t;
+trx_item_data_type_t;
 
 /* service supported by discoverer */
 typedef enum
@@ -281,8 +281,8 @@ typedef enum
 	SVC_HTTPS,
 	SVC_TELNET
 }
-zbx_dservice_type_t;
-const char	*zbx_dservice_type_string(zbx_dservice_type_t service);
+trx_dservice_type_t;
+const char	*trx_dservice_type_string(trx_dservice_type_t service);
 
 /* item snmpv3 security levels */
 #define ITEM_SNMPV3_SECURITYLEVEL_NOAUTHNOPRIV	0
@@ -387,7 +387,7 @@ typedef enum
 	SYSMAP_ELEMENT_TYPE_HOST_GROUP,
 	SYSMAP_ELEMENT_TYPE_IMAGE
 }
-zbx_sysmap_element_types_t;
+trx_sysmap_element_types_t;
 
 typedef enum
 {
@@ -395,7 +395,7 @@ typedef enum
 	GRAPH_YAXIS_TYPE_FIXED,
 	GRAPH_YAXIS_TYPE_ITEM_VALUE
 }
-zbx_graph_yaxis_types_t;
+trx_graph_yaxis_types_t;
 
 /* special item key used for ICMP pings */
 #define SERVER_ICMPPING_KEY	"icmpping"
@@ -426,7 +426,7 @@ typedef enum
 	MEDIA_TYPE_SMS,
 	MEDIA_TYPE_WEBHOOK = 4
 }
-zbx_media_type_t;
+trx_media_type_t;
 
 /* alert statuses */
 typedef enum
@@ -436,8 +436,8 @@ typedef enum
 	ALERT_STATUS_FAILED,
 	ALERT_STATUS_NEW
 }
-zbx_alert_status_t;
-const char	*zbx_alert_status_string(unsigned char type, unsigned char status);
+trx_alert_status_t;
+const char	*trx_alert_status_string(unsigned char type, unsigned char status);
 
 /* escalation statuses */
 typedef enum
@@ -447,8 +447,8 @@ typedef enum
 	ESCALATION_STATUS_SLEEP,
 	ESCALATION_STATUS_COMPLETED	/* only in server code, never in DB */
 }
-zbx_escalation_status_t;
-const char	*zbx_escalation_status_string(unsigned char status);
+trx_escalation_status_t;
+const char	*trx_escalation_status_string(unsigned char status);
 
 /* alert types */
 typedef enum
@@ -456,8 +456,8 @@ typedef enum
 	ALERT_TYPE_MESSAGE = 0,
 	ALERT_TYPE_COMMAND
 }
-zbx_alert_type_t;
-const char	*zbx_alert_type_string(unsigned char type);
+trx_alert_type_t;
+const char	*trx_alert_type_string(unsigned char type);
 
 /* item statuses */
 #define ITEM_STATUS_ACTIVE		0
@@ -466,7 +466,7 @@ const char	*zbx_alert_type_string(unsigned char type);
 /* item states */
 #define ITEM_STATE_NORMAL		0
 #define ITEM_STATE_NOTSUPPORTED		1
-const char	*zbx_item_state_string(unsigned char state);
+const char	*trx_item_state_string(unsigned char state);
 
 /* group statuses */
 typedef enum
@@ -474,7 +474,7 @@ typedef enum
 	GROUP_STATUS_ACTIVE = 0,
 	GROUP_STATUS_DISABLED
 }
-zbx_group_status_type_t;
+trx_group_status_type_t;
 
 /* group internal flag */
 #define TRX_INTERNAL_GROUP		1
@@ -535,14 +535,14 @@ typedef enum
 	TIMEPERIOD_TYPE_WEEKLY,
 	TIMEPERIOD_TYPE_MONTHLY
 }
-zbx_timeperiod_type_t;
+trx_timeperiod_type_t;
 
 typedef enum
 {
 	MAINTENANCE_TYPE_NORMAL = 0,
 	MAINTENANCE_TYPE_NODATA
 }
-zbx_maintenance_type_t;
+trx_maintenance_type_t;
 
 /* regular expressions */
 #define EXPRESSION_TYPE_INCLUDED	0
@@ -601,12 +601,12 @@ zbx_maintenance_type_t;
 #define TRIGGER_VALUE_PROBLEM		1
 #define TRIGGER_VALUE_UNKNOWN		2	/* only in server code, never in DB */
 #define TRIGGER_VALUE_NONE		3	/* only in server code, never in DB */
-const char	*zbx_trigger_value_string(unsigned char value);
+const char	*trx_trigger_value_string(unsigned char value);
 
 /* trigger states */
 #define TRIGGER_STATE_NORMAL		0
 #define TRIGGER_STATE_UNKNOWN		1
-const char	*zbx_trigger_state_string(unsigned char state);
+const char	*trx_trigger_state_string(unsigned char state);
 
 /* trigger severity */
 #define TRIGGER_SEVERITY_NOT_CLASSIFIED	0
@@ -629,7 +629,7 @@ const char	*zbx_trigger_state_string(unsigned char state);
 #define ITEM_LOGTYPE_SUCCESS_AUDIT	8
 #define ITEM_LOGTYPE_CRITICAL		9
 #define ITEM_LOGTYPE_VERBOSE		10
-const char	*zbx_item_logtype_string(unsigned char logtype);
+const char	*trx_item_logtype_string(unsigned char logtype);
 
 /* media statuses */
 #define MEDIA_STATUS_ACTIVE	0
@@ -733,14 +733,14 @@ typedef enum
 	USER_TYPE_TREEGIX_ADMIN,
 	USER_TYPE_SUPER_ADMIN
 }
-zbx_user_type_t;
+trx_user_type_t;
 
 typedef struct
 {
-	zbx_uint64_t	userid;
-	zbx_user_type_t	type;
+	trx_uint64_t	userid;
+	trx_user_type_t	type;
 }
-zbx_user_t;
+trx_user_t;
 
 typedef enum
 {
@@ -748,9 +748,9 @@ typedef enum
 	PERM_READ = 2,
 	PERM_READ_WRITE
 }
-zbx_user_permission_t;
+trx_user_permission_t;
 
-const char	*zbx_permission_string(int perm);
+const char	*trx_permission_string(int perm);
 
 typedef struct
 {
@@ -763,10 +763,10 @@ typedef struct
 	char		*publickey;
 	char		*privatekey;
 	char		*command;
-	zbx_uint64_t	scriptid;
+	trx_uint64_t	scriptid;
 	unsigned char	host_access;
 }
-zbx_script_t;
+trx_script_t;
 
 #define TRX_SCRIPT_TYPE_CUSTOM_SCRIPT	0
 #define TRX_SCRIPT_TYPE_IPMI		1
@@ -793,21 +793,21 @@ zbx_script_t;
 #	define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-#define zbx_calloc(old, nmemb, size)	zbx_calloc2(__FILE__, __LINE__, old, nmemb, size)
-#define zbx_malloc(old, size)		zbx_malloc2(__FILE__, __LINE__, old, size)
-#define zbx_realloc(src, size)		zbx_realloc2(__FILE__, __LINE__, src, size)
-#define zbx_strdup(old, str)		zbx_strdup2(__FILE__, __LINE__, old, str)
+#define trx_calloc(old, nmemb, size)	trx_calloc2(__FILE__, __LINE__, old, nmemb, size)
+#define trx_malloc(old, size)		trx_malloc2(__FILE__, __LINE__, old, size)
+#define trx_realloc(src, size)		trx_realloc2(__FILE__, __LINE__, src, size)
+#define trx_strdup(old, str)		trx_strdup2(__FILE__, __LINE__, old, str)
 
-#define TRX_STRDUP(var, str)	(var = zbx_strdup(var, str))
+#define TRX_STRDUP(var, str)	(var = trx_strdup(var, str))
 
-void	*zbx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_t size);
-void	*zbx_malloc2(const char *filename, int line, void *old, size_t size);
-void	*zbx_realloc2(const char *filename, int line, void *old, size_t size);
-char	*zbx_strdup2(const char *filename, int line, char *old, const char *str);
+void	*trx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_t size);
+void	*trx_malloc2(const char *filename, int line, void *old, size_t size);
+void	*trx_realloc2(const char *filename, int line, void *old, size_t size);
+char	*trx_strdup2(const char *filename, int line, char *old, const char *str);
 
-void	*zbx_guaranteed_memset(void *v, int c, size_t n);
+void	*trx_guaranteed_memset(void *v, int c, size_t n);
 
-#define zbx_free(ptr)		\
+#define trx_free(ptr)		\
 				\
 do				\
 {				\
@@ -819,7 +819,7 @@ do				\
 }				\
 while (0)
 
-#define zbx_fclose(file)	\
+#define trx_fclose(file)	\
 				\
 do				\
 {				\
@@ -835,8 +835,8 @@ while (0)
 														\
 do														\
 {														\
-	zbx_error("ERROR [file:%s,line:%d] Something impossible has just happened.", __FILE__, __LINE__);	\
-	zbx_backtrace();											\
+	trx_error("ERROR [file:%s,line:%d] Something impossible has just happened.", __FILE__, __LINE__);	\
+	trx_backtrace();											\
 }														\
 while (0)
 
@@ -871,7 +871,7 @@ typedef enum
 	TRX_TASK_RUNTIME_CONTROL
 #endif
 }
-zbx_task_t;
+trx_task_t;
 
 #define TRX_RTC_LOG_LEVEL_INCREASE	1
 #define TRX_RTC_LOG_LEVEL_DECREASE	2
@@ -885,14 +885,14 @@ typedef enum
 	HTTPTEST_AUTH_NTLM,
 	HTTPTEST_AUTH_NEGOTIATE
 }
-zbx_httptest_auth_t;
+trx_httptest_auth_t;
 
 #define TRX_TASK_FLAG_MULTIPLE_AGENTS	0x01
 #define TRX_TASK_FLAG_FOREGROUND	0x02
 
 typedef struct
 {
-	zbx_task_t	task;
+	trx_task_t	task;
 	int		flags;
 	int		data;
 }
@@ -921,8 +921,8 @@ int	is_double_suffix(const char *str, unsigned char flags);
 int	is_double(const char *c);
 #define TRX_LENGTH_UNLIMITED	0x7fffffff
 int	is_time_suffix(const char *c, int *value, int length);
-int	is_uint_n_range(const char *str, size_t n, void *value, size_t size, zbx_uint64_t min, zbx_uint64_t max);
-int	is_hex_n_range(const char *str, size_t n, void *value, size_t size, zbx_uint64_t min, zbx_uint64_t max);
+int	is_uint_n_range(const char *str, size_t n, void *value, size_t size, trx_uint64_t min, trx_uint64_t max);
+int	is_hex_n_range(const char *str, size_t n, void *value, size_t size, trx_uint64_t min, trx_uint64_t max);
 
 #define TRX_SIZE_T_MAX	(~(size_t)0)
 
@@ -947,19 +947,19 @@ int	is_hex_n_range(const char *str, size_t n, void *value, size_t size, zbx_uint
 #define is_uint_range(str, value, min, max) \
 	is_uint_n_range(str, TRX_SIZE_T_MAX, value, sizeof(unsigned int), min, max)
 
-int	is_boolean(const char *str, zbx_uint64_t *value);
+int	is_boolean(const char *str, trx_uint64_t *value);
 int	is_uoct(const char *str);
 int	is_uhex(const char *str);
 int	is_hex_string(const char *str);
 int	is_ascii_string(const char *str);
-int	zbx_rtrim(char *str, const char *charlist);
-void	zbx_ltrim(char *str, const char *charlist);
-void	zbx_lrtrim(char *str, const char *charlist);
-void	zbx_trim_integer(char *str);
-void	zbx_trim_float(char *str);
-void	zbx_remove_chars(char *str, const char *charlist);
+int	trx_rtrim(char *str, const char *charlist);
+void	trx_ltrim(char *str, const char *charlist);
+void	trx_lrtrim(char *str, const char *charlist);
+void	trx_trim_integer(char *str);
+void	trx_trim_float(char *str);
+void	trx_remove_chars(char *str, const char *charlist);
 #define TRX_WHITESPACE			" \t\r\n"
-#define zbx_remove_whitespace(str)	zbx_remove_chars(str, TRX_WHITESPACE)
+#define trx_remove_whitespace(str)	trx_remove_chars(str, TRX_WHITESPACE)
 void	del_zeros(char *s);
 int	get_param(const char *param, int num, char *buf, size_t max_len);
 int	num_param(const char *param);
@@ -998,34 +998,34 @@ int	replace_key_params_dyn(char **data, int key_type, replace_key_param_f cb, vo
 void	remove_param(char *param, int num);
 int	get_key_param(char *param, int num, char *buf, size_t max_len);
 int	num_key_param(char *param);
-size_t	zbx_get_escape_string_len(const char *src, const char *charlist);
-char	*zbx_dyn_escape_string(const char *src, const char *charlist);
+size_t	trx_get_escape_string_len(const char *src, const char *charlist);
+char	*trx_dyn_escape_string(const char *src, const char *charlist);
 
-typedef struct zbx_custom_interval	zbx_custom_interval_t;
-int	zbx_interval_preproc(const char *interval_str, int *simple_interval, zbx_custom_interval_t **custom_intervals,
+typedef struct trx_custom_interval	trx_custom_interval_t;
+int	trx_interval_preproc(const char *interval_str, int *simple_interval, trx_custom_interval_t **custom_intervals,
 		char **error);
-int	zbx_validate_interval(const char *str, char **error);
-void	zbx_custom_interval_free(zbx_custom_interval_t *custom_intervals);
-int	calculate_item_nextcheck(zbx_uint64_t seed, int item_type, int simple_interval,
-		const zbx_custom_interval_t *custom_intervals, time_t now);
-int	calculate_item_nextcheck_unreachable(int simple_interval, const zbx_custom_interval_t *custom_intervals,
+int	trx_validate_interval(const char *str, char **error);
+void	trx_custom_interval_free(trx_custom_interval_t *custom_intervals);
+int	calculate_item_nextcheck(trx_uint64_t seed, int item_type, int simple_interval,
+		const trx_custom_interval_t *custom_intervals, time_t now);
+int	calculate_item_nextcheck_unreachable(int simple_interval, const trx_custom_interval_t *custom_intervals,
 		time_t disable_until);
-time_t	calculate_proxy_nextcheck(zbx_uint64_t hostid, unsigned int delay, time_t now);
-int	zbx_check_time_period(const char *period, time_t time, int *res);
-void	zbx_hex2octal(const char *input, char **output, int *olen);
+time_t	calculate_proxy_nextcheck(trx_uint64_t hostid, unsigned int delay, time_t now);
+int	trx_check_time_period(const char *period, time_t time, int *res);
+void	trx_hex2octal(const char *input, char **output, int *olen);
 int	str_in_list(const char *list, const char *value, char delimiter);
 char	*str_linefeed(const char *src, size_t maxline, const char *delim);
-void	zbx_strarr_init(char ***arr);
-void	zbx_strarr_add(char ***arr, const char *entry);
-void	zbx_strarr_free(char **arr);
+void	trx_strarr_init(char ***arr);
+void	trx_strarr_add(char ***arr, const char *entry);
+void	trx_strarr_free(char **arr);
 
 #if defined(__GNUC__) || defined(__clang__)
-#	define __zbx_attr_format_printf(idx1, idx2) __attribute__((__format__(__printf__, (idx1), (idx2))))
+#	define __trx_attr_format_printf(idx1, idx2) __attribute__((__format__(__printf__, (idx1), (idx2))))
 #else
-#	define __zbx_attr_format_printf(idx1, idx2)
+#	define __trx_attr_format_printf(idx1, idx2)
 #endif
 
-void	zbx_setproctitle(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
+void	trx_setproctitle(const char *fmt, ...) __trx_attr_format_printf(1, 2);
 
 #define TRX_KIBIBYTE		1024
 #define TRX_MEBIBYTE		1048576
@@ -1046,41 +1046,41 @@ void	zbx_setproctitle(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
 /* max length of base64 data */
 #define TRX_MAX_B64_LEN		(16 * TRX_KIBIBYTE)
 
-double	zbx_time(void);
-void	zbx_timespec(zbx_timespec_t *ts);
-double	zbx_current_time(void);
-void	zbx_get_time(struct tm *tm, long *milliseconds, zbx_timezone_t *tz);
-int	zbx_utc_time(int year, int mon, int mday, int hour, int min, int sec, int *t);
-int	zbx_day_in_month(int year, int mon);
+double	trx_time(void);
+void	trx_timespec(trx_timespec_t *ts);
+double	trx_current_time(void);
+void	trx_get_time(struct tm *tm, long *milliseconds, trx_timezone_t *tz);
+int	trx_utc_time(int year, int mon, int mday, int hour, int min, int sec, int *t);
+int	trx_day_in_month(int year, int mon);
 
-void	zbx_error(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
+void	trx_error(const char *fmt, ...) __trx_attr_format_printf(1, 2);
 
-size_t	zbx_snprintf(char *str, size_t count, const char *fmt, ...) __zbx_attr_format_printf(3, 4);
+size_t	trx_snprintf(char *str, size_t count, const char *fmt, ...) __trx_attr_format_printf(3, 4);
 
-void	zbx_snprintf_alloc(char **str, size_t *alloc_len, size_t *offset, const char *fmt, ...)
-		__zbx_attr_format_printf(4, 5);
+void	trx_snprintf_alloc(char **str, size_t *alloc_len, size_t *offset, const char *fmt, ...)
+		__trx_attr_format_printf(4, 5);
 
-size_t	zbx_vsnprintf(char *str, size_t count, const char *fmt, va_list args);
+size_t	trx_vsnprintf(char *str, size_t count, const char *fmt, va_list args);
 
-void	zbx_strncpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src, size_t n);
-void	zbx_strcpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src);
-void	zbx_chrcpy_alloc(char **str, size_t *alloc_len, size_t *offset, char c);
-void	zbx_str_memcpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src, size_t n);
+void	trx_strncpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src, size_t n);
+void	trx_strcpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src);
+void	trx_chrcpy_alloc(char **str, size_t *alloc_len, size_t *offset, char c);
+void	trx_str_memcpy_alloc(char **str, size_t *alloc_len, size_t *offset, const char *src, size_t n);
 
-void	zbx_strsplit(const char *src, char delimiter, char **left, char **right);
+void	trx_strsplit(const char *src, char delimiter, char **left, char **right);
 
 /* secure string copy */
-#define strscpy(x, y)	zbx_strlcpy(x, y, sizeof(x))
-#define strscat(x, y)	zbx_strlcat(x, y, sizeof(x))
-size_t	zbx_strlcpy(char *dst, const char *src, size_t siz);
-void	zbx_strlcat(char *dst, const char *src, size_t siz);
-size_t	zbx_strlcpy_utf8(char *dst, const char *src, size_t size);
+#define strscpy(x, y)	trx_strlcpy(x, y, sizeof(x))
+#define strscat(x, y)	trx_strlcat(x, y, sizeof(x))
+size_t	trx_strlcpy(char *dst, const char *src, size_t siz);
+void	trx_strlcat(char *dst, const char *src, size_t siz);
+size_t	trx_strlcpy_utf8(char *dst, const char *src, size_t size);
 
-char	*zbx_dvsprintf(char *dest, const char *f, va_list args);
+char	*trx_dvsprintf(char *dest, const char *f, va_list args);
 
-char	*zbx_dsprintf(char *dest, const char *f, ...) __zbx_attr_format_printf(2, 3);
-char	*zbx_strdcat(char *dest, const char *src);
-char	*zbx_strdcatf(char *dest, const char *f, ...) __zbx_attr_format_printf(2, 3);
+char	*trx_dsprintf(char *dest, const char *f, ...) __trx_attr_format_printf(2, 3);
+char	*trx_strdcat(char *dest, const char *src);
+char	*trx_strdcatf(char *dest, const char *f, ...) __trx_attr_format_printf(2, 3);
 
 int	xml_get_data_dyn(const char *xml, const char *tag, char **data);
 void	xml_free_data_dyn(char **data);
@@ -1098,10 +1098,10 @@ int	is_ip4(const char *ip);
 int	is_supported_ip(const char *ip);
 int	is_ip(const char *ip);
 
-int	zbx_validate_hostname(const char *hostname);
+int	trx_validate_hostname(const char *hostname);
 
-void	zbx_on_exit(int ret); /* calls exit() at the end! */
-void	zbx_backtrace(void);
+void	trx_on_exit(int ret); /* calls exit() at the end! */
+void	trx_backtrace(void);
 
 int	int_in_list(char *list, int value);
 int	ip_in_list(const char *list, const char *ip);
@@ -1118,14 +1118,14 @@ typedef struct
 	int	from;
 	int	to;
 }
-zbx_range_t;
+trx_range_t;
 
 typedef struct
 {
 	/* contains groups of ranges for either TRX_IPRANGE_V4 or TRX_IPRANGE_V6 */
 	/* ex. 127-127.0-0.0-0.2-254 (from-to.from-to.from-to.from-to)           */
 	/*                                  0       1       2       3            */
-	zbx_range_t	range[TRX_IPRANGE_GROUPS_V6];
+	trx_range_t	range[TRX_IPRANGE_GROUPS_V6];
 
 	/* range type - TRX_IPRANGE_V4 or TRX_IPRANGE_V6 */
 	unsigned char	type;
@@ -1133,88 +1133,88 @@ typedef struct
 	/* 1 if the range was defined with network mask, 0 otherwise */
 	unsigned char   mask;
 }
-zbx_iprange_t;
+trx_iprange_t;
 
-int	iprange_parse(zbx_iprange_t *range, const char *address);
-void	iprange_first(const zbx_iprange_t *range, int *address);
-int	iprange_next(const zbx_iprange_t *range, int *address);
-int	iprange_validate(const zbx_iprange_t *range, const int *address);
-zbx_uint64_t	iprange_volume(const zbx_iprange_t *range);
+int	iprange_parse(trx_iprange_t *range, const char *address);
+void	iprange_first(const trx_iprange_t *range, int *address);
+int	iprange_next(const trx_iprange_t *range, int *address);
+int	iprange_validate(const trx_iprange_t *range, const int *address);
+trx_uint64_t	iprange_volume(const trx_iprange_t *range);
 
 /* time related functions */
-char	*zbx_age2str(int age);
-char	*zbx_date2str(time_t date);
-char	*zbx_time2str(time_t time);
+char	*trx_age2str(int age);
+char	*trx_date2str(time_t date);
+char	*trx_time2str(time_t time);
 
 #define TRX_NULL2STR(str)	(NULL != str ? str : "(null)")
 #define TRX_NULL2EMPTY_STR(str)	(NULL != (str) ? (str) : "")
 
-char	*zbx_strcasestr(const char *haystack, const char *needle);
+char	*trx_strcasestr(const char *haystack, const char *needle);
 int	cmp_key_id(const char *key_1, const char *key_2);
-int	zbx_strncasecmp(const char *s1, const char *s2, size_t n);
+int	trx_strncasecmp(const char *s1, const char *s2, size_t n);
 
-int	get_nearestindex(const void *p, size_t sz, int num, zbx_uint64_t id);
-int	uint64_array_add(zbx_uint64_t **values, int *alloc, int *num, zbx_uint64_t value, int alloc_step);
-int	uint64_array_exists(const zbx_uint64_t *values, int num, zbx_uint64_t value);
-void	uint64_array_remove(zbx_uint64_t *values, int *num, const zbx_uint64_t *rm_values, int rm_num);
+int	get_nearestindex(const void *p, size_t sz, int num, trx_uint64_t id);
+int	uint64_array_add(trx_uint64_t **values, int *alloc, int *num, trx_uint64_t value, int alloc_step);
+int	uint64_array_exists(const trx_uint64_t *values, int num, trx_uint64_t value);
+void	uint64_array_remove(trx_uint64_t *values, int *num, const trx_uint64_t *rm_values, int rm_num);
 
-const char	*zbx_event_value_string(unsigned char source, unsigned char object, unsigned char value);
+const char	*trx_event_value_string(unsigned char source, unsigned char object, unsigned char value);
 
 #ifdef _WINDOWS
-const OSVERSIONINFOEX	*zbx_win_getversion(void);
-void	zbx_wmi_get(const char *wmi_namespace, const char *wmi_query, char **utf8_value);
-wchar_t	*zbx_acp_to_unicode(const char *acp_string);
-wchar_t	*zbx_oemcp_to_unicode(const char *oemcp_string);
-int	zbx_acp_to_unicode_static(const char *acp_string, wchar_t *wide_string, int wide_size);
-wchar_t	*zbx_utf8_to_unicode(const char *utf8_string);
-char	*zbx_unicode_to_utf8(const wchar_t *wide_string);
-char	*zbx_unicode_to_utf8_static(const wchar_t *wide_string, char *utf8_string, int utf8_size);
+const OSVERSIONINFOEX	*trx_win_getversion(void);
+void	trx_wmi_get(const char *wmi_namespace, const char *wmi_query, char **utf8_value);
+wchar_t	*trx_acp_to_unicode(const char *acp_string);
+wchar_t	*trx_oemcp_to_unicode(const char *oemcp_string);
+int	trx_acp_to_unicode_static(const char *acp_string, wchar_t *wide_string, int wide_size);
+wchar_t	*trx_utf8_to_unicode(const char *utf8_string);
+char	*trx_unicode_to_utf8(const wchar_t *wide_string);
+char	*trx_unicode_to_utf8_static(const wchar_t *wide_string, char *utf8_string, int utf8_size);
 int	_wis_uint(const wchar_t *wide_string);
 #endif
-void	zbx_strlower(char *str);
-void	zbx_strupper(char *str);
+void	trx_strlower(char *str);
+void	trx_strupper(char *str);
 #if defined(_WINDOWS) || defined(HAVE_ICONV)
 char	*convert_to_utf8(char *in, size_t in_size, const char *encoding);
 #endif	/* HAVE_ICONV */
 #define TRX_MAX_BYTES_IN_UTF8_CHAR	4
-size_t	zbx_utf8_char_len(const char *text);
-size_t	zbx_strlen_utf8(const char *text);
-size_t	zbx_strlen_utf8_nchars(const char *text, size_t utf8_maxlen);
-size_t	zbx_strlen_utf8_nbytes(const char *text, size_t maxlen);
+size_t	trx_utf8_char_len(const char *text);
+size_t	trx_strlen_utf8(const char *text);
+size_t	trx_strlen_utf8_nchars(const char *text, size_t utf8_maxlen);
+size_t	trx_strlen_utf8_nbytes(const char *text, size_t maxlen);
 
-int	zbx_is_utf8(const char *text);
+int	trx_is_utf8(const char *text);
 #define TRX_UTF8_REPLACE_CHAR	'?'
-void	zbx_replace_invalid_utf8(char *text);
+void	trx_replace_invalid_utf8(char *text);
 
 void	dos2unix(char *str);
-int	str2uint64(const char *str, const char *suffixes, zbx_uint64_t *value);
+int	str2uint64(const char *str, const char *suffixes, trx_uint64_t *value);
 double	str2double(const char *str);
 
 /* time and memory size suffixes */
 #define TRX_UNIT_SYMBOLS	"KMGTsmhdw"
-zbx_uint64_t	suffix2factor(char c);
+trx_uint64_t	suffix2factor(char c);
 
 #if defined(_WINDOWS)
-typedef struct __stat64	zbx_stat_t;
-int	__zbx_stat(const char *path, zbx_stat_t *buf);
-int	__zbx_open(const char *pathname, int flags);
+typedef struct __stat64	trx_stat_t;
+int	__trx_stat(const char *path, trx_stat_t *buf);
+int	__trx_open(const char *pathname, int flags);
 #else
-typedef struct stat	zbx_stat_t;
+typedef struct stat	trx_stat_t;
 #endif	/* _WINDOWS */
 
 void	find_cr_lf_szbyte(const char *encoding, const char **cr, const char **lf, size_t *szbyte);
-int	zbx_read(int fd, char *buf, size_t count, const char *encoding);
-int	zbx_is_regular_file(const char *path);
+int	trx_read(int fd, char *buf, size_t count, const char *encoding);
+int	trx_is_regular_file(const char *path);
 
 int	MAIN_TREEGIX_ENTRY(int flags);
 
-zbx_uint64_t	zbx_letoh_uint64(zbx_uint64_t data);
-zbx_uint64_t	zbx_htole_uint64(zbx_uint64_t data);
+trx_uint64_t	trx_letoh_uint64(trx_uint64_t data);
+trx_uint64_t	trx_htole_uint64(trx_uint64_t data);
 
-zbx_uint32_t	zbx_letoh_uint32(zbx_uint32_t data);
-zbx_uint32_t	zbx_htole_uint32(zbx_uint32_t data);
+trx_uint32_t	trx_letoh_uint32(trx_uint32_t data);
+trx_uint32_t	trx_htole_uint32(trx_uint32_t data);
 
-int	zbx_check_hostname(const char *hostname, char **error);
+int	trx_check_hostname(const char *hostname, char **error);
 
 int	is_hostname_char(unsigned char c);
 int	is_key_char(unsigned char c);
@@ -1232,32 +1232,32 @@ int	parse_host_key(char *exp, char **host, char **key);
 
 void	make_hostname(char *host);
 
-int	zbx_number_parse(const char *number, int *len);
-int	zbx_suffixed_number_parse(const char *number, int *len);
+int	trx_number_parse(const char *number, int *len);
+int	trx_suffixed_number_parse(const char *number, int *len);
 
 unsigned char	get_interface_type_by_item_type(unsigned char type);
 
 int	calculate_sleeptime(int nextcheck, int max_sleeptime);
 
-void	zbx_replace_string(char **data, size_t l, size_t *r, const char *value);
-int	zbx_replace_mem_dyn(char **data, size_t *data_alloc, size_t *data_len, size_t offset, size_t sz_to,
+void	trx_replace_string(char **data, size_t l, size_t *r, const char *value);
+int	trx_replace_mem_dyn(char **data, size_t *data_alloc, size_t *data_len, size_t offset, size_t sz_to,
 		const char *from, size_t sz_from);
 
-void	zbx_trim_str_list(char *list, char delimiter);
+void	trx_trim_str_list(char *list, char delimiter);
 
 int	parse_serveractive_element(char *str, char **host, unsigned short *port, unsigned short port_default);
 
-int	zbx_strcmp_null(const char *s1, const char *s2);
+int	trx_strcmp_null(const char *s1, const char *s2);
 
-int	zbx_user_macro_parse(const char *macro, int *macro_r, int *context_l, int *context_r);
-int	zbx_user_macro_parse_dyn(const char *macro, char **name, char **context, int *length);
-char	*zbx_user_macro_unquote_context_dyn(const char *context, int len);
-char	*zbx_user_macro_quote_context_dyn(const char *context, int force_quote);
+int	trx_user_macro_parse(const char *macro, int *macro_r, int *context_l, int *context_r);
+int	trx_user_macro_parse_dyn(const char *macro, char **name, char **context, int *length);
+char	*trx_user_macro_unquote_context_dyn(const char *context, int len);
+char	*trx_user_macro_quote_context_dyn(const char *context, int force_quote);
 
 #define TRX_SESSION_ACTIVE	0
 #define TRX_SESSION_PASSIVE	1
 
-char	*zbx_dyn_escape_shell_single_quote(const char *text);
+char	*trx_dyn_escape_shell_single_quote(const char *text);
 
 #define TRX_DO_NOT_SEND_RESPONSE	0
 #define TRX_SEND_RESPONSE		1
@@ -1277,30 +1277,30 @@ char	*zbx_dyn_escape_shell_single_quote(const char *text);
 #define TRX_PSK_FOR_AUTOREG		0x02				/* PSK can be used for host autoregistration */
 #define TRX_PSK_FOR_PROXY		0x04				/* PSK is configured on proxy */
 
-void	zbx_function_param_parse(const char *expr, size_t *param_pos, size_t *length, size_t *sep_pos);
-char	*zbx_function_param_unquote_dyn(const char *param, size_t len, int *quoted);
-int	zbx_function_param_quote(char **param, int forced);
-int	zbx_function_validate_parameters(const char *expr, size_t *length);
-int	zbx_function_find(const char *expr, size_t *func_pos, size_t *par_l, size_t *par_r,
+void	trx_function_param_parse(const char *expr, size_t *param_pos, size_t *length, size_t *sep_pos);
+char	*trx_function_param_unquote_dyn(const char *param, size_t len, int *quoted);
+int	trx_function_param_quote(char **param, int forced);
+int	trx_function_validate_parameters(const char *expr, size_t *length);
+int	trx_function_find(const char *expr, size_t *func_pos, size_t *par_l, size_t *par_r,
 		char *error, int max_error_len);
-char	*zbx_function_get_param_dyn(const char *params, int Nparam);
+char	*trx_function_get_param_dyn(const char *params, int Nparam);
 
-void	zbx_alarm_flag_set(void);
-void	zbx_alarm_flag_clear(void);
+void	trx_alarm_flag_set(void);
+void	trx_alarm_flag_clear(void);
 
 #ifndef _WINDOWS
-unsigned int	zbx_alarm_on(unsigned int seconds);
-unsigned int	zbx_alarm_off(void);
+unsigned int	trx_alarm_on(unsigned int seconds);
+unsigned int	trx_alarm_off(void);
 #if defined(HAVE_RESOLV_H)
-void	zbx_update_resolver_conf(void);		/* handle /etc/resolv.conf update */
+void	trx_update_resolver_conf(void);		/* handle /etc/resolv.conf update */
 #endif
 #endif
 
-int	zbx_alarm_timed_out(void);
+int	trx_alarm_timed_out(void);
 
-#define zbx_bsearch(key, base, nmemb, size, compar)	(0 == (nmemb) ? NULL : bsearch(key, base, nmemb, size, compar))
+#define trx_bsearch(key, base, nmemb, size, compar)	(0 == (nmemb) ? NULL : bsearch(key, base, nmemb, size, compar))
 
-int	zbx_strcmp_natural(const char *s1, const char *s2);
+int	trx_strcmp_natural(const char *s1, const char *s2);
 
 /* tokens used in expressions */
 #define TRX_TOKEN_OBJECTID		0x00001
@@ -1329,50 +1329,50 @@ typedef struct
 	/* right position */
 	size_t	r;
 }
-zbx_strloc_t;
+trx_strloc_t;
 
 /* data used by macros, ldd macros and objectid tokens */
 typedef struct
 {
-	zbx_strloc_t	name;
+	trx_strloc_t	name;
 }
-zbx_token_macro_t;
+trx_token_macro_t;
 
 /* data used by user macros */
 typedef struct
 {
 	/* macro name */
-	zbx_strloc_t	name;
+	trx_strloc_t	name;
 	/* macro context, for macros without context the context.l and context.r fields are set to 0 */
-	zbx_strloc_t	context;
+	trx_strloc_t	context;
 }
-zbx_token_user_macro_t;
+trx_token_user_macro_t;
 
 /* data used by macro functions */
 typedef struct
 {
 	/* the macro including the opening and closing brackets {}, for example: {ITEM.VALUE} */
-	zbx_strloc_t	macro;
+	trx_strloc_t	macro;
 	/* function + parameters, for example: regsub("([0-9]+)", \1) */
-	zbx_strloc_t	func;
+	trx_strloc_t	func;
 	/* parameters, for example: ("([0-9]+)", \1) */
-	zbx_strloc_t	func_param;
+	trx_strloc_t	func_param;
 }
-zbx_token_func_macro_t;
+trx_token_func_macro_t;
 
 /* data used by simple (host:key) macros */
 typedef struct
 {
 	/* host name, supporting simple macros as a host name, for example Treegix server or {HOST.HOST} */
-	zbx_strloc_t	host;
+	trx_strloc_t	host;
 	/* key + parameters, supporting {ITEM.KEYn} macro, for example system.uname or {ITEM.KEY1}  */
-	zbx_strloc_t	key;
+	trx_strloc_t	key;
 	/* function + parameters, for example avg(5m) */
-	zbx_strloc_t	func;
+	trx_strloc_t	func;
 	/* parameters, for example (5m) */
-	zbx_strloc_t	func_param;
+	trx_strloc_t	func_param;
 }
-zbx_token_simple_macro_t;
+trx_token_simple_macro_t;
 
 /* data used by references */
 typedef struct
@@ -1380,21 +1380,21 @@ typedef struct
 	/* index of constant being referenced (1 for $1, 2 for $2, ..., 9 for $9) */
 	int	index;
 }
-zbx_token_reference_t;
+trx_token_reference_t;
 
 /* the token type specific data */
 typedef union
 {
-	zbx_token_macro_t		objectid;
-	zbx_token_macro_t		macro;
-	zbx_token_macro_t		lld_macro;
-	zbx_token_user_macro_t		user_macro;
-	zbx_token_func_macro_t		func_macro;
-	zbx_token_func_macro_t		lld_func_macro;
-	zbx_token_simple_macro_t	simple_macro;
-	zbx_token_reference_t		reference;
+	trx_token_macro_t		objectid;
+	trx_token_macro_t		macro;
+	trx_token_macro_t		lld_macro;
+	trx_token_user_macro_t		user_macro;
+	trx_token_func_macro_t		func_macro;
+	trx_token_func_macro_t		lld_func_macro;
+	trx_token_simple_macro_t	simple_macro;
+	trx_token_reference_t		reference;
 }
-zbx_token_data_t;
+trx_token_data_t;
 
 /* {} token data */
 typedef struct
@@ -1402,22 +1402,22 @@ typedef struct
 	/* token type, see TRX_TOKEN_ defines */
 	int			type;
 	/* the token location in expression including opening and closing brackets {} */
-	zbx_strloc_t		loc;
+	trx_strloc_t		loc;
 	/* the token type specific data */
-	zbx_token_data_t	data;
+	trx_token_data_t	data;
 }
-zbx_token_t;
+trx_token_t;
 
 typedef enum
 {
 	TRX_TOKEN_SEARCH_BASIC,
 	TRX_TOKEN_SEARCH_REFERENCES
 }
-zbx_token_search_t;
+trx_token_search_t;
 
-int	zbx_token_find(const char *expression, int pos, zbx_token_t *token, zbx_token_search_t token_search);
-int	zbx_number_find(const char *str, size_t pos, zbx_strloc_t *number_loc);
-int	zbx_strmatch_condition(const char *value, const char *pattern, unsigned char op);
+int	trx_token_find(const char *expression, int pos, trx_token_t *token, trx_token_search_t token_search);
+int	trx_number_find(const char *str, size_t pos, trx_strloc_t *number_loc);
+int	trx_strmatch_condition(const char *value, const char *pattern, unsigned char op);
 
 #define TRX_COMPONENT_VERSION(major, minor)	((major << 16) | minor)
 #define TRX_COMPONENT_VERSION_MAJOR(version)	(version >> 16)
@@ -1471,11 +1471,11 @@ int	zbx_strmatch_condition(const char *value, const char *pattern, unsigned char
 #define TRX_RETRIEVE_MODE_HEADERS	1
 #define TRX_RETRIEVE_MODE_BOTH		2
 
-zbx_log_value_t	*zbx_log_value_dup(const zbx_log_value_t *src);
+trx_log_value_t	*trx_log_value_dup(const trx_log_value_t *src);
 
 typedef union
 {
-	zbx_uint64_t	ui64;
+	trx_uint64_t	ui64;
 	double		dbl;
 
 	/* null terminated string */
@@ -1484,14 +1484,14 @@ typedef union
 	/* length prefixed (4 bytes) binary data */
 	void		*bin;
 }
-zbx_variant_data_t;
+trx_variant_data_t;
 
 typedef struct
 {
 	unsigned char		type;
-	zbx_variant_data_t	data;
+	trx_variant_data_t	data;
 }
-zbx_variant_t;
+trx_variant_t;
 
 #define TRX_VARIANT_NONE	0
 #define TRX_VARIANT_STR		1
@@ -1499,34 +1499,34 @@ zbx_variant_t;
 #define TRX_VARIANT_UI64	3
 #define TRX_VARIANT_BIN		4
 
-void	zbx_variant_clear(zbx_variant_t *value);
-void	zbx_variant_set_none(zbx_variant_t *value);
-void	zbx_variant_set_str(zbx_variant_t *value, char *text);
-void	zbx_variant_set_dbl(zbx_variant_t *value, double dbl);
-void	zbx_variant_set_ui64(zbx_variant_t *value, zbx_uint64_t ui64);
-void	zbx_variant_set_bin(zbx_variant_t *value, void *value_bin);
-void	zbx_variant_copy(zbx_variant_t *value, const zbx_variant_t *source);
-int	zbx_variant_set_numeric(zbx_variant_t *value, const char *text);
+void	trx_variant_clear(trx_variant_t *value);
+void	trx_variant_set_none(trx_variant_t *value);
+void	trx_variant_set_str(trx_variant_t *value, char *text);
+void	trx_variant_set_dbl(trx_variant_t *value, double dbl);
+void	trx_variant_set_ui64(trx_variant_t *value, trx_uint64_t ui64);
+void	trx_variant_set_bin(trx_variant_t *value, void *value_bin);
+void	trx_variant_copy(trx_variant_t *value, const trx_variant_t *source);
+int	trx_variant_set_numeric(trx_variant_t *value, const char *text);
 
-int	zbx_variant_convert(zbx_variant_t *value, int type);
-const char	*zbx_get_variant_type_desc(unsigned char type);
-const char	*zbx_variant_value_desc(const zbx_variant_t *value);
-const char	*zbx_variant_type_desc(const zbx_variant_t *value);
+int	trx_variant_convert(trx_variant_t *value, int type);
+const char	*trx_get_variant_type_desc(unsigned char type);
+const char	*trx_variant_value_desc(const trx_variant_t *value);
+const char	*trx_variant_type_desc(const trx_variant_t *value);
 
-int	zbx_variant_compare(const zbx_variant_t *value1, const zbx_variant_t *value2);
+int	trx_variant_compare(const trx_variant_t *value1, const trx_variant_t *value2);
 
-void	*zbx_variant_data_bin_copy(const void *bin);
-void	*zbx_variant_data_bin_create(const void *data, zbx_uint32_t size);
-zbx_uint32_t	zbx_variant_data_bin_get(const void *bin, void **data);
+void	*trx_variant_data_bin_copy(const void *bin);
+void	*trx_variant_data_bin_create(const void *data, trx_uint32_t size);
+trx_uint32_t	trx_variant_data_bin_get(const void *bin, void **data);
 
-int	zbx_validate_value_dbl(double value);
+int	trx_validate_value_dbl(double value);
 
-void	zbx_update_env(double time_now);
-int	zbx_get_agent_item_nextcheck(zbx_uint64_t itemid, const char *delay, unsigned char state, int now,
+void	trx_update_env(double time_now);
+int	trx_get_agent_item_nextcheck(trx_uint64_t itemid, const char *delay, unsigned char state, int now,
 		int refresh_unsupported, int *nextcheck, char **error);
 
 #define TRX_DATA_SESSION_TOKEN_SIZE	(MD5_DIGEST_SIZE * 2)
-char	*zbx_create_token(zbx_uint64_t seed);
+char	*trx_create_token(trx_uint64_t seed);
 
 #define TRX_MAINTENANCE_IDLE		0
 #define TRX_MAINTENANCE_RUNNING		1
@@ -1534,7 +1534,7 @@ char	*zbx_create_token(zbx_uint64_t seed);
 #define TRX_PROBLEM_SUPPRESSED_FALSE	0
 #define TRX_PROBLEM_SUPPRESSED_TRUE	1
 
-int	zbx_variant_to_value_type(zbx_variant_t *value, unsigned char value_type, char **errmsg);
+int	trx_variant_to_value_type(trx_variant_t *value, unsigned char value_type, char **errmsg);
 
 #ifdef _WINDOWS
 #define TRX_PCRE_RECURSION_LIMIT	2000	/* assume ~1 MB stack and ~500 bytes per recursion */

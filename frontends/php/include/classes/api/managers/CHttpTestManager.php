@@ -109,7 +109,7 @@ class CHttpTestManager {
 	 * @return array
 	 */
 	public function update(array $httptests) {
-		$httptestids = zbx_objectValues($httptests, 'httptestid');
+		$httptestids = trx_objectValues($httptests, 'httptestid');
 
 		$db_httptests = API::HttpTest()->get([
 			'output' => ['httptestid', 'name', 'applicationid', 'delay', 'status', 'agent', 'authentication',
@@ -146,7 +146,7 @@ class CHttpTestManager {
 			$dbCheckItems = DBselect(
 				'SELECT i.itemid,hi.type'.
 				' FROM items i,httptestitem hi'.
-				' WHERE hi.httptestid='.zbx_dbstr($httptest['httptestid']).
+				' WHERE hi.httptestid='.trx_dbstr($httptest['httptestid']).
 					' AND hi.itemid=i.itemid'
 			);
 			while ($checkitem = DBfetch($dbCheckItems)) {
@@ -176,7 +176,7 @@ class CHttpTestManager {
 			}
 
 			if (array_key_exists('steps', $httptest)) {
-				$dbSteps = zbx_toHash($db_httptest['steps'], 'httpstepid');
+				$dbSteps = trx_toHash($db_httptest['steps'], 'httpstepid');
 
 				foreach ($httptest['steps'] as $webstep) {
 					if (isset($webstep['httpstepid']) && isset($dbSteps[$webstep['httpstepid']])) {
@@ -233,7 +233,7 @@ class CHttpTestManager {
 						'SELECT i.itemid'.
 						' FROM items i'.
 							' INNER JOIN httpstepitem hi ON hi.itemid=i.itemid'.
-						' WHERE '.dbConditionInt('hi.httpstepid', zbx_objectValues($db_httptests[$httptest['httptestid']]['steps'], 'httpstepid')))
+						' WHERE '.dbConditionInt('hi.httpstepid', trx_objectValues($db_httptests[$httptest['httptestid']]['steps'], 'httpstepid')))
 						, 'itemid'
 					);
 					$this->updateItemsApplications($dbStepIds, $httptest['applicationid']);
@@ -246,7 +246,7 @@ class CHttpTestManager {
 						'SELECT hsi.itemid'.
 							' FROM httpstep hs,httpstepitem hsi'.
 							' WHERE hs.httpstepid=hsi.httpstepid'.
-								' AND hs.httptestid='.zbx_dbstr($httptest['httptestid'])
+								' AND hs.httptestid='.trx_dbstr($httptest['httptestid'])
 					), 'itemid');
 
 					DB::update('items', [
@@ -269,7 +269,7 @@ class CHttpTestManager {
 	 * @param $hostIds
 	 */
 	public function link($templateId, $hostIds) {
-		$hostIds = zbx_toArray($hostIds);
+		$hostIds = trx_toArray($hostIds);
 
 		$httpTests = API::HttpTest()->get([
 			'output' => ['httptestid', 'name', 'applicationid', 'delay', 'status', 'agent', 'authentication',
@@ -326,7 +326,7 @@ class CHttpTestManager {
 		$dbCursor = DBselect(
 			'SELECT ht.templateid,ht.hostid'.
 			' FROM hosts_templates ht'.
-			' WHERE '.dbConditionInt('ht.templateid', zbx_objectValues($httpTests, 'hostid')).
+			' WHERE '.dbConditionInt('ht.templateid', trx_objectValues($httpTests, 'hostid')).
 				$sqlWhere
 		);
 		while ($dbHost = DBfetch($dbCursor)) {
@@ -369,7 +369,7 @@ class CHttpTestManager {
 					 */
 					if (isset($httpTest['name']) && isset($hostHttpTest['byName'][$httpTest['name']])
 							&& !idcmp($exHttpTest['templateid'], $hostHttpTest['byName'][$httpTest['name']]['templateid'])) {
-						$host = DBfetch(DBselect('SELECT h.name FROM hosts h WHERE h.hostid='.zbx_dbstr($hostId)));
+						$host = DBfetch(DBselect('SELECT h.name FROM hosts h WHERE h.hostid='.trx_dbstr($hostId)));
 						throw new Exception(
 							_s('Web scenario "%1$s" already exists on host "%2$s".', $exHttpTest['name'], $host['name'])
 						);
@@ -382,7 +382,7 @@ class CHttpTestManager {
 					if (bccomp($exHttpTest['templateid'], $httpTestId) == 0
 							|| $exHttpTest['templateid'] != 0
 							|| !$this->compareHttpSteps($httpTest, $exHttpTest)) {
-						$host = DBfetch(DBselect('SELECT h.name FROM hosts h WHERE h.hostid='.zbx_dbstr($hostId)));
+						$host = DBfetch(DBselect('SELECT h.name FROM hosts h WHERE h.hostid='.trx_dbstr($hostId)));
 						throw new Exception(
 							_s('Web scenario "%1$s" already exists on host "%2$s".', $exHttpTest['name'], $host['name'])
 						);
@@ -452,8 +452,8 @@ class CHttpTestManager {
 		$dbCursor = DBselect(
 			'SELECT i1.itemid AS parentid,i2.itemid AS childid'.
 			' FROM httptestitem hti1,httptestitem hti2,items i1,items i2'.
-			' WHERE hti1.httptestid='.zbx_dbstr($parentId).
-				' AND hti2.httptestid='.zbx_dbstr($childId).
+			' WHERE hti1.httptestid='.trx_dbstr($parentId).
+				' AND hti2.httptestid='.trx_dbstr($childId).
 				' AND hti1.itemid=i1.itemid'.
 				' AND hti2.itemid=i2.itemid'.
 				' AND i1.key_=i2.key_'
@@ -468,8 +468,8 @@ class CHttpTestManager {
 		$dbCursor = DBselect(
 			'SELECT i1.itemid AS parentid,i2.itemid AS childid'.
 			' FROM httpstepitem hsi1,httpstepitem hsi2,httpstep hs1,httpstep hs2,items i1,items i2'.
-			' WHERE hs1.httptestid='.zbx_dbstr($parentId).
-				' AND hs2.httptestid='.zbx_dbstr($childId).
+			' WHERE hs1.httptestid='.trx_dbstr($parentId).
+				' AND hs2.httptestid='.trx_dbstr($childId).
 				' AND hsi1.itemid=i1.itemid'.
 				' AND hsi2.itemid=i2.itemid'.
 				' AND hs1.httpstepid=hsi1.httpstepid'.
@@ -497,8 +497,8 @@ class CHttpTestManager {
 			'SELECT a2.applicationid'.
 			' FROM applications a1'.
 				' INNER JOIN applications a2 ON a1.name=a2.name'.
-			' WHERE a1.applicationid='.zbx_dbstr($parentAppId).
-				' AND a2.hostid='.zbx_dbstr($childHostId))
+			' WHERE a1.applicationid='.trx_dbstr($parentAppId).
+				' AND a2.hostid='.trx_dbstr($childHostId))
 		);
 
 		return $childAppId['applicationid'];
@@ -575,7 +575,7 @@ class CHttpTestManager {
 		$dbHttpTestSteps = DBfetchArray(DBselect(
 			'SELECT hs.name,hs.no'.
 			' FROM httpstep hs'.
-			' WHERE hs.httptestid='.zbx_dbstr($exHttpTest['httptestid'])
+			' WHERE hs.httptestid='.trx_dbstr($exHttpTest['httptestid'])
 		));
 
 		CArrayHelper::sort($dbHttpTestSteps, ['no']);
@@ -643,7 +643,7 @@ class CHttpTestManager {
 		$dbCursor = DBselect(
 			'SELECT hs.httpstepid,hs.name'.
 			' FROM httpstep hs'.
-			' WHERE hs.httptestid='.zbx_dbstr($exHttpTestId)
+			' WHERE hs.httptestid='.trx_dbstr($exHttpTestId)
 		);
 		while ($dbHttpStep = DBfetch($dbCursor)) {
 			$exSteps[$dbHttpStep['name']] = $dbHttpStep['httpstepid'];
@@ -709,7 +709,7 @@ class CHttpTestManager {
 				'SELECT i.itemid,i.key_'.
 					' FROM items i,httptestitem hti'.
 					' WHERE i.itemid=hti.itemid'.
-					' AND hti.httptestid='.zbx_dbstr($http_test['templateid'])
+					' AND hti.httptestid='.trx_dbstr($http_test['templateid'])
 			), 'key_');
 		}
 
@@ -984,7 +984,7 @@ class CHttpTestManager {
 				' FROM items i,httpstepitem hsi,httpstep hs'.
 				' WHERE i.itemid=hsi.itemid'.
 					' AND hsi.httpstepid=hs.httpstepid'.
-					' AND hs.httptestid='.zbx_dbstr($http_test['templateid'])
+					' AND hs.httptestid='.trx_dbstr($http_test['templateid'])
 			), 'key_');
 		}
 
@@ -1022,7 +1022,7 @@ class CHttpTestManager {
 				$db_httptest = DBfetch(DBselect(
 					'SELECT ht.delay,ht.status'.
 					' FROM httptest ht'.
-					' WHERE ht.httptestid='.zbx_dbstr($http_test['httptestid'])
+					' WHERE ht.httptestid='.trx_dbstr($http_test['httptestid'])
 				));
 				$delay = $db_httptest['delay'];
 				$status = $db_httptest['status'];
@@ -1085,7 +1085,7 @@ class CHttpTestManager {
 		$item_key_parser = new CItemKey();
 
 		// get all used keys
-		$webstepids = zbx_objectValues($websteps, 'httpstepid');
+		$webstepids = trx_objectValues($websteps, 'httpstepid');
 		$dbKeys = DBfetchArrayAssoc(DBselect(
 			'SELECT i.key_'.
 			' FROM items i,httpstepitem hi'.
@@ -1121,7 +1121,7 @@ class CHttpTestManager {
 			$dbStepItems = DBselect(
 				'SELECT i.itemid,i.key_,hi.type'.
 				' FROM items i,httpstepitem hi'.
-				' WHERE hi.httpstepid='.zbx_dbstr($webstep['httpstepid']).
+				' WHERE hi.httpstepid='.trx_dbstr($webstep['httpstepid']).
 					' AND hi.itemid=i.itemid'
 			);
 			while ($stepitem = DBfetch($dbStepItems)) {

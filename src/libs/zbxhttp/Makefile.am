@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxhttp.a
+noinst_LIBRARIES = libtrxhttp.a
 
-libzbxhttp_a_SOURCES = \
+libtrxhttp_a_SOURCES = \
 	urlencode.c \
 	punycode.c \
 	punycode.h \

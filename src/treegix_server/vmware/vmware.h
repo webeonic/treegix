@@ -29,27 +29,27 @@
 typedef struct
 {
 	char		*name;
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 }
-zbx_str_uint64_pair_t;
+trx_str_uint64_pair_t;
 
-TRX_VECTOR_DECL(str_uint64_pair, zbx_str_uint64_pair_t)
+TRX_VECTOR_DECL(str_uint64_pair, trx_str_uint64_pair_t)
 
 /* performance counter data */
 typedef struct
 {
 	/* the counter id */
-	zbx_uint64_t			counterid;
+	trx_uint64_t			counterid;
 
 	/* the counter values for various instances */
 	/*    pair->name  - instance                */
 	/*    pair->value - value                   */
-	zbx_vector_str_uint64_pair_t	values;
+	trx_vector_str_uint64_pair_t	values;
 
 	/* the counter state, see TRX_VMAWRE_COUNTER_* defines */
 	unsigned char			state;
 }
-zbx_vmware_perf_counter_t;
+trx_vmware_perf_counter_t;
 
 /* an entity monitored with performance counters */
 typedef struct
@@ -67,7 +67,7 @@ typedef struct
 	int			last_seen;
 
 	/* the performance counters to monitor */
-	zbx_vector_ptr_t	counters;
+	trx_vector_ptr_t	counters;
 
 	/* the performance counter query instance name */
 	char			*query_instance;
@@ -75,22 +75,22 @@ typedef struct
 	/* error information */
 	char			*error;
 }
-zbx_vmware_perf_entity_t;
+trx_vmware_perf_entity_t;
 
 typedef struct
 {
 	char			*name;
 	char			*uuid;
 	char			*id;
-	zbx_uint64_t		capacity;
-	zbx_uint64_t		free_space;
-	zbx_uint64_t		uncommitted;
-	zbx_vector_str_t	hv_uuids;
+	trx_uint64_t		capacity;
+	trx_uint64_t		free_space;
+	trx_uint64_t		uncommitted;
+	trx_vector_str_t	hv_uuids;
 }
-zbx_vmware_datastore_t;
+trx_vmware_datastore_t;
 
 int	vmware_ds_name_compare(const void *d1, const void *d2);
-TRX_PTR_VECTOR_DECL(vmware_datastore, zbx_vmware_datastore_t *)
+TRX_PTR_VECTOR_DECL(vmware_datastore, trx_vmware_datastore_t *)
 
 #define TRX_VMWARE_DEV_TYPE_NIC		1
 #define TRX_VMWARE_DEV_TYPE_DISK	2
@@ -100,16 +100,16 @@ typedef struct
 	char	*instance;
 	char	*label;
 }
-zbx_vmware_dev_t;
+trx_vmware_dev_t;
 
 /* file system data */
 typedef struct
 {
 	char		*path;
-	zbx_uint64_t	capacity;
-	zbx_uint64_t	free_space;
+	trx_uint64_t	capacity;
+	trx_uint64_t	free_space;
 }
-zbx_vmware_fs_t;
+trx_vmware_fs_t;
 
 /* the vmware virtual machine data */
 typedef struct
@@ -117,10 +117,10 @@ typedef struct
 	char			*uuid;
 	char			*id;
 	char			**props;
-	zbx_vector_ptr_t	devs;
-	zbx_vector_ptr_t	file_systems;
+	trx_vector_ptr_t	devs;
+	trx_vector_ptr_t	file_systems;
 }
-zbx_vmware_vm_t;
+trx_vmware_vm_t;
 
 /* the vmware hypervisor data */
 typedef struct
@@ -132,18 +132,18 @@ typedef struct
 	char			*parent_name;
 	char			*parent_type;
 	char			**props;
-	zbx_vector_str_t	ds_names;
-	zbx_vector_ptr_t	vms;
+	trx_vector_str_t	ds_names;
+	trx_vector_ptr_t	vms;
 }
-zbx_vmware_hv_t;
+trx_vmware_hv_t;
 
 /* index virtual machines by uuids */
 typedef struct
 {
-	zbx_vmware_vm_t	*vm;
-	zbx_vmware_hv_t	*hv;
+	trx_vmware_vm_t	*vm;
+	trx_vmware_hv_t	*hv;
 }
-zbx_vmware_vm_index_t;
+trx_vmware_vm_index_t;
 
 /* the vmware cluster data */
 typedef struct
@@ -152,39 +152,39 @@ typedef struct
 	char	*name;
 	char	*status;
 }
-zbx_vmware_cluster_t;
+trx_vmware_cluster_t;
 
 /* the vmware eventlog state */
 typedef struct
 {
-	zbx_uint64_t	last_key;	/* lastlogsize when vmware.eventlog[] item was polled last time */
+	trx_uint64_t	last_key;	/* lastlogsize when vmware.eventlog[] item was polled last time */
 	unsigned char	skip_old;	/* skip old event log records */
 
 }
-zbx_vmware_eventlog_state_t;
+trx_vmware_eventlog_state_t;
 
 /* the vmware event data */
 typedef struct
 {
-	zbx_uint64_t	key;		/* event's key, used to fill logeventid */
+	trx_uint64_t	key;		/* event's key, used to fill logeventid */
 	char		*message;	/* event's fullFormattedMessage */
 	int		timestamp;	/* event's time stamp */
 }
-zbx_vmware_event_t;
+trx_vmware_event_t;
 
 /* the vmware service data object */
 typedef struct
 {
 	char	*error;
 
-	zbx_hashset_t			hvs;
-	zbx_hashset_t			vms_index;
-	zbx_vector_ptr_t		clusters;
-	zbx_vector_ptr_t		events;			/* vector of pointers to zbx_vmware_event_t structures */
+	trx_hashset_t			hvs;
+	trx_hashset_t			vms_index;
+	trx_vector_ptr_t		clusters;
+	trx_vector_ptr_t		events;			/* vector of pointers to trx_vmware_event_t structures */
 	int				max_query_metrics;	/* max count of Datastore perfCounters in one request */
-	zbx_vector_vmware_datastore_t	datastores;
+	trx_vector_vmware_datastore_t	datastores;
 }
-zbx_vmware_data_t;
+trx_vmware_data_t;
 
 /* the vmware service data */
 typedef struct
@@ -212,18 +212,18 @@ typedef struct
 	char				*fullname;
 
 	/* the performance counters */
-	zbx_hashset_t			counters;
+	trx_hashset_t			counters;
 
 	/* list of entities to monitor with performance counters */
-	zbx_hashset_t			entities;
+	trx_hashset_t			entities;
 
 	/* the service data object that is swapped with a new one during service update */
-	zbx_vmware_data_t		*data;
+	trx_vmware_data_t		*data;
 
 	/* lastlogsize when vmware.eventlog[] item was polled last time and skip old flag*/
-	zbx_vmware_eventlog_state_t	eventlog;
+	trx_vmware_eventlog_state_t	eventlog;
 }
-zbx_vmware_service_t;
+trx_vmware_service_t;
 
 #define TRX_VMWARE_PERF_INTERVAL_UNKNOWN	0
 #define TRX_VMWARE_PERF_INTERVAL_NONE		-1
@@ -231,37 +231,37 @@ zbx_vmware_service_t;
 /* the vmware collector data */
 typedef struct
 {
-	zbx_vector_ptr_t	services;
-	zbx_hashset_t		strpool;
+	trx_vector_ptr_t	services;
+	trx_hashset_t		strpool;
 }
-zbx_vmware_t;
+trx_vmware_t;
 
 /* the vmware collector statistics */
 typedef struct
 {
-	zbx_uint64_t	memory_used;
-	zbx_uint64_t	memory_total;
+	trx_uint64_t	memory_used;
+	trx_uint64_t	memory_total;
 }
-zbx_vmware_stats_t;
+trx_vmware_stats_t;
 
 TRX_THREAD_ENTRY(vmware_thread, args);
 
-int	zbx_vmware_init(char **error);
-void	zbx_vmware_destroy(void);
+int	trx_vmware_init(char **error);
+void	trx_vmware_destroy(void);
 
-void	zbx_vmware_lock(void);
-void	zbx_vmware_unlock(void);
+void	trx_vmware_lock(void);
+void	trx_vmware_unlock(void);
 
-int	zbx_vmware_get_statistics(zbx_vmware_stats_t *stats);
+int	trx_vmware_get_statistics(trx_vmware_stats_t *stats);
 
 #if defined(HAVE_LIBXML2) && defined(HAVE_LIBCURL)
 
-zbx_vmware_service_t	*zbx_vmware_get_service(const char* url, const char* username, const char* password);
+trx_vmware_service_t	*trx_vmware_get_service(const char* url, const char* username, const char* password);
 
-int	zbx_vmware_service_get_counterid(zbx_vmware_service_t *service, const char *path, zbx_uint64_t *counterid);
-int	zbx_vmware_service_add_perf_counter(zbx_vmware_service_t *service, const char *type, const char *id,
-		zbx_uint64_t counterid, const char *instance);
-zbx_vmware_perf_entity_t	*zbx_vmware_service_get_perf_entity(zbx_vmware_service_t *service, const char *type,
+int	trx_vmware_service_get_counterid(trx_vmware_service_t *service, const char *path, trx_uint64_t *counterid);
+int	trx_vmware_service_add_perf_counter(trx_vmware_service_t *service, const char *type, const char *id,
+		trx_uint64_t counterid, const char *instance);
+trx_vmware_perf_entity_t	*trx_vmware_service_get_perf_entity(trx_vmware_service_t *service, const char *type,
 		const char *id);
 
 /* hypervisor properties */

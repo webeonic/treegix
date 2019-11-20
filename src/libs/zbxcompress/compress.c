@@ -2,42 +2,42 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxcompress.h"
+#include "trxcompress.h"
 
 #ifdef HAVE_ZLIB
 #include "zlib.h"
 
 #define TRX_COMPRESS_STRERROR_LEN	512
 
-static int	zbx_zlib_errno = 0;
+static int	trx_zlib_errno = 0;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_compress_strerror                                            *
+ * Function: trx_compress_strerror                                            *
  *                                                                            *
  * Purpose: returns last conversion error message                             *
  *                                                                            *
  ******************************************************************************/
-const char	*zbx_compress_strerror(void)
+const char	*trx_compress_strerror(void)
 {
 	static char	message[TRX_COMPRESS_STRERROR_LEN];
 
-	switch (zbx_zlib_errno)
+	switch (trx_zlib_errno)
 	{
 		case Z_ERRNO:
-			zbx_strlcpy(message, zbx_strerror(errno), sizeof(message));
+			trx_strlcpy(message, trx_strerror(errno), sizeof(message));
 			break;
 		case Z_MEM_ERROR:
-			zbx_strlcpy(message, "not enough memory", sizeof(message));
+			trx_strlcpy(message, "not enough memory", sizeof(message));
 			break;
 		case Z_BUF_ERROR:
-			zbx_strlcpy(message, "not enough space in output buffer", sizeof(message));
+			trx_strlcpy(message, "not enough space in output buffer", sizeof(message));
 			break;
 		case Z_DATA_ERROR:
-			zbx_strlcpy(message, "corrupted input data", sizeof(message));
+			trx_strlcpy(message, "corrupted input data", sizeof(message));
 			break;
 		default:
-			zbx_snprintf(message, sizeof(message), "unknown error (%d)", zbx_zlib_errno);
+			trx_snprintf(message, sizeof(message), "unknown error (%d)", trx_zlib_errno);
 			break;
 	}
 
@@ -46,7 +46,7 @@ const char	*zbx_compress_strerror(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_compress                                                     *
+ * Function: trx_compress                                                     *
  *                                                                            *
  * Purpose: compress data                                                     *
  *                                                                            *
@@ -62,17 +62,17 @@ const char	*zbx_compress_strerror(void)
  *           caller.                                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_compress(const char *in, size_t size_in, char **out, size_t *size_out)
+int	trx_compress(const char *in, size_t size_in, char **out, size_t *size_out)
 {
 	Bytef	*buf;
 	uLongf	buf_size;
 
 	buf_size = compressBound(size_in);
-	buf = (Bytef *)zbx_malloc(NULL, buf_size);
+	buf = (Bytef *)trx_malloc(NULL, buf_size);
 
-	if (Z_OK != (zbx_zlib_errno = compress(buf, &buf_size, (const Bytef *)in, size_in)))
+	if (Z_OK != (trx_zlib_errno = compress(buf, &buf_size, (const Bytef *)in, size_in)))
 	{
-		zbx_free(buf);
+		trx_free(buf);
 		return FAIL;
 	}
 
@@ -84,7 +84,7 @@ int	zbx_compress(const char *in, size_t size_in, char **out, size_t *size_out)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_uncompress                                                   *
+ * Function: trx_uncompress                                                   *
  *                                                                            *
  * Purpose: uncompress data                                                   *
  *                                                                            *
@@ -97,11 +97,11 @@ int	zbx_compress(const char *in, size_t size_in, char **out, size_t *size_out)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_uncompress(const char *in, size_t size_in, char *out, size_t *size_out)
+int	trx_uncompress(const char *in, size_t size_in, char *out, size_t *size_out)
 {
 	uLongf	size_o = *size_out;
 
-	if (Z_OK != (zbx_zlib_errno = uncompress((Bytef *)out, &size_o, (const Bytef *)in, size_in)))
+	if (Z_OK != (trx_zlib_errno = uncompress((Bytef *)out, &size_o, (const Bytef *)in, size_in)))
 		return FAIL;
 
 	*size_out = size_o;
@@ -111,7 +111,7 @@ int	zbx_uncompress(const char *in, size_t size_in, char *out, size_t *size_out)
 
 #else
 
-int zbx_compress(const char *in, size_t size_in, char **out, size_t *size_out)
+int trx_compress(const char *in, size_t size_in, char **out, size_t *size_out)
 {
 	TRX_UNUSED(in);
 	TRX_UNUSED(size_in);
@@ -120,7 +120,7 @@ int zbx_compress(const char *in, size_t size_in, char **out, size_t *size_out)
 	return FAIL;
 }
 
-int zbx_uncompress(const char *in, size_t size_in, char *out, size_t *size_out)
+int trx_uncompress(const char *in, size_t size_in, char *out, size_t *size_out)
 {
 	TRX_UNUSED(in);
 	TRX_UNUSED(size_in);
@@ -129,7 +129,7 @@ int zbx_uncompress(const char *in, size_t size_in, char *out, size_t *size_out)
 	return FAIL;
 }
 
-const char	*zbx_compress_strerror(void)
+const char	*trx_compress_strerror(void)
 {
 	return "";
 }

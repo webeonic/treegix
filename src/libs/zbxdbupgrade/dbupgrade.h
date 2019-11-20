@@ -10,11 +10,11 @@ typedef struct
 	int		duplicates;
 	unsigned char	mandatory;
 }
-zbx_dbpatch_t;
+trx_dbpatch_t;
 
-#define DBPATCH_VERSION(treegix_version)			zbx_dbpatches_##treegix_version
+#define DBPATCH_VERSION(treegix_version)			trx_dbpatches_##treegix_version
 
-#define DBPATCH_START(treegix_version)			zbx_dbpatch_t	DBPATCH_VERSION(treegix_version)[] = {
+#define DBPATCH_START(treegix_version)			trx_dbpatch_t	DBPATCH_VERSION(treegix_version)[] = {
 #define DBPATCH_END()					{NULL}};
 
 #ifdef HAVE_SQLITE3

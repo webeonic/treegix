@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxserver
+subdir = src/libs/trxserver
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,22 +117,22 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxserver_a_AR = $(AR) $(ARFLAGS)
-libzbxserver_a_LIBADD =
-am_libzbxserver_a_OBJECTS = libzbxserver_a-evalfunc.$(OBJEXT) \
-	libzbxserver_a-expression.$(OBJEXT) \
-	libzbxserver_a-macrofunc.$(OBJEXT) \
-	libzbxserver_a-treegix_stats.$(OBJEXT)
-libzbxserver_a_OBJECTS = $(am_libzbxserver_a_OBJECTS)
-libzbxserver_proxy_a_AR = $(AR) $(ARFLAGS)
-libzbxserver_proxy_a_LIBADD =
-am_libzbxserver_proxy_a_OBJECTS = treegix_stats_proxy.$(OBJEXT)
-libzbxserver_proxy_a_OBJECTS = $(am_libzbxserver_proxy_a_OBJECTS)
-libzbxserver_server_a_AR = $(AR) $(ARFLAGS)
-libzbxserver_server_a_LIBADD =
-am_libzbxserver_server_a_OBJECTS =  \
-	libzbxserver_server_a-treegix_stats_server.$(OBJEXT)
-libzbxserver_server_a_OBJECTS = $(am_libzbxserver_server_a_OBJECTS)
+libtrxserver_a_AR = $(AR) $(ARFLAGS)
+libtrxserver_a_LIBADD =
+am_libtrxserver_a_OBJECTS = libtrxserver_a-evalfunc.$(OBJEXT) \
+	libtrxserver_a-expression.$(OBJEXT) \
+	libtrxserver_a-macrofunc.$(OBJEXT) \
+	libtrxserver_a-treegix_stats.$(OBJEXT)
+libtrxserver_a_OBJECTS = $(am_libtrxserver_a_OBJECTS)
+libtrxserver_proxy_a_AR = $(AR) $(ARFLAGS)
+libtrxserver_proxy_a_LIBADD =
+am_libtrxserver_proxy_a_OBJECTS = treegix_stats_proxy.$(OBJEXT)
+libtrxserver_proxy_a_OBJECTS = $(am_libtrxserver_proxy_a_OBJECTS)
+libtrxserver_server_a_AR = $(AR) $(ARFLAGS)
+libtrxserver_server_a_LIBADD =
+am_libtrxserver_server_a_OBJECTS =  \
+	libtrxserver_server_a-treegix_stats_server.$(OBJEXT)
+libtrxserver_server_a_OBJECTS = $(am_libtrxserver_server_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -165,11 +165,11 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxserver_a_SOURCES) $(libzbxserver_proxy_a_SOURCES) \
-	$(libzbxserver_server_a_SOURCES)
-DIST_SOURCES = $(libzbxserver_a_SOURCES) \
-	$(libzbxserver_proxy_a_SOURCES) \
-	$(libzbxserver_server_a_SOURCES)
+SOURCES = $(libtrxserver_a_SOURCES) $(libtrxserver_proxy_a_SOURCES) \
+	$(libtrxserver_server_a_SOURCES)
+DIST_SOURCES = $(libtrxserver_a_SOURCES) \
+	$(libtrxserver_proxy_a_SOURCES) \
+	$(libtrxserver_server_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -393,21 +393,21 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxserver.a libzbxserver_server.a libzbxserver_proxy.a
-libzbxserver_a_SOURCES = \
+noinst_LIBRARIES = libtrxserver.a libtrxserver_server.a libtrxserver_proxy.a
+libtrxserver_a_SOURCES = \
 	evalfunc.c evalfunc.h \
 	expression.c \
 	macrofunc.c macrofunc.h \
 	treegix_stats.c treegix_stats.h
 
-libzbxserver_server_a_SOURCES = \
+libtrxserver_server_a_SOURCES = \
 	treegix_stats_server.c treegix_stats.h
 
-libzbxserver_proxy_a_SOURCES = \
+libtrxserver_proxy_a_SOURCES = \
 	treegix_stats_proxy.c treegix_stats.h
 
-libzbxserver_a_CFLAGS = -I@top_srcdir@/src/libs/zbxdbcache @LIBXML2_CFLAGS@
-libzbxserver_server_a_CFLAGS = -I@top_srcdir@/src/libs/zbxdbcache
+libtrxserver_a_CFLAGS = -I@top_srcdir@/src/libs/trxdbcache @LIBXML2_CFLAGS@
+libtrxserver_server_a_CFLAGS = -I@top_srcdir@/src/libs/trxdbcache
 all: all-am
 
 .SUFFIXES:
@@ -421,9 +421,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxserver/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxserver/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxserver/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxserver/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -445,20 +445,20 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxserver.a: $(libzbxserver_a_OBJECTS) $(libzbxserver_a_DEPENDENCIES) $(EXTRA_libzbxserver_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxserver.a
-	$(AM_V_AR)$(libzbxserver_a_AR) libzbxserver.a $(libzbxserver_a_OBJECTS) $(libzbxserver_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxserver.a
+libtrxserver.a: $(libtrxserver_a_OBJECTS) $(libtrxserver_a_DEPENDENCIES) $(EXTRA_libtrxserver_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxserver.a
+	$(AM_V_AR)$(libtrxserver_a_AR) libtrxserver.a $(libtrxserver_a_OBJECTS) $(libtrxserver_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxserver.a
 
-libzbxserver_proxy.a: $(libzbxserver_proxy_a_OBJECTS) $(libzbxserver_proxy_a_DEPENDENCIES) $(EXTRA_libzbxserver_proxy_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxserver_proxy.a
-	$(AM_V_AR)$(libzbxserver_proxy_a_AR) libzbxserver_proxy.a $(libzbxserver_proxy_a_OBJECTS) $(libzbxserver_proxy_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxserver_proxy.a
+libtrxserver_proxy.a: $(libtrxserver_proxy_a_OBJECTS) $(libtrxserver_proxy_a_DEPENDENCIES) $(EXTRA_libtrxserver_proxy_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxserver_proxy.a
+	$(AM_V_AR)$(libtrxserver_proxy_a_AR) libtrxserver_proxy.a $(libtrxserver_proxy_a_OBJECTS) $(libtrxserver_proxy_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxserver_proxy.a
 
-libzbxserver_server.a: $(libzbxserver_server_a_OBJECTS) $(libzbxserver_server_a_DEPENDENCIES) $(EXTRA_libzbxserver_server_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxserver_server.a
-	$(AM_V_AR)$(libzbxserver_server_a_AR) libzbxserver_server.a $(libzbxserver_server_a_OBJECTS) $(libzbxserver_server_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxserver_server.a
+libtrxserver_server.a: $(libtrxserver_server_a_OBJECTS) $(libtrxserver_server_a_DEPENDENCIES) $(EXTRA_libtrxserver_server_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxserver_server.a
+	$(AM_V_AR)$(libtrxserver_server_a_AR) libtrxserver_server.a $(libtrxserver_server_a_OBJECTS) $(libtrxserver_server_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxserver_server.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -466,11 +466,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserver_a-evalfunc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserver_a-expression.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserver_a-macrofunc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserver_a-treegix_stats.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserver_server_a-treegix_stats_server.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserver_a-evalfunc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserver_a-expression.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserver_a-macrofunc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserver_a-treegix_stats.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserver_server_a-treegix_stats_server.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/treegix_stats_proxy.Po@am__quote@
 
 .c.o:
@@ -489,75 +489,75 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxserver_a-evalfunc.o: evalfunc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-evalfunc.o -MD -MP -MF $(DEPDIR)/libzbxserver_a-evalfunc.Tpo -c -o libzbxserver_a-evalfunc.o `test -f 'evalfunc.c' || echo '$(srcdir)/'`evalfunc.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-evalfunc.Tpo $(DEPDIR)/libzbxserver_a-evalfunc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='evalfunc.c' object='libzbxserver_a-evalfunc.o' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-evalfunc.o: evalfunc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-evalfunc.o -MD -MP -MF $(DEPDIR)/libtrxserver_a-evalfunc.Tpo -c -o libtrxserver_a-evalfunc.o `test -f 'evalfunc.c' || echo '$(srcdir)/'`evalfunc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-evalfunc.Tpo $(DEPDIR)/libtrxserver_a-evalfunc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='evalfunc.c' object='libtrxserver_a-evalfunc.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-evalfunc.o `test -f 'evalfunc.c' || echo '$(srcdir)/'`evalfunc.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-evalfunc.o `test -f 'evalfunc.c' || echo '$(srcdir)/'`evalfunc.c
 
-libzbxserver_a-evalfunc.obj: evalfunc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-evalfunc.obj -MD -MP -MF $(DEPDIR)/libzbxserver_a-evalfunc.Tpo -c -o libzbxserver_a-evalfunc.obj `if test -f 'evalfunc.c'; then $(CYGPATH_W) 'evalfunc.c'; else $(CYGPATH_W) '$(srcdir)/evalfunc.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-evalfunc.Tpo $(DEPDIR)/libzbxserver_a-evalfunc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='evalfunc.c' object='libzbxserver_a-evalfunc.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-evalfunc.obj: evalfunc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-evalfunc.obj -MD -MP -MF $(DEPDIR)/libtrxserver_a-evalfunc.Tpo -c -o libtrxserver_a-evalfunc.obj `if test -f 'evalfunc.c'; then $(CYGPATH_W) 'evalfunc.c'; else $(CYGPATH_W) '$(srcdir)/evalfunc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-evalfunc.Tpo $(DEPDIR)/libtrxserver_a-evalfunc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='evalfunc.c' object='libtrxserver_a-evalfunc.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-evalfunc.obj `if test -f 'evalfunc.c'; then $(CYGPATH_W) 'evalfunc.c'; else $(CYGPATH_W) '$(srcdir)/evalfunc.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-evalfunc.obj `if test -f 'evalfunc.c'; then $(CYGPATH_W) 'evalfunc.c'; else $(CYGPATH_W) '$(srcdir)/evalfunc.c'; fi`
 
-libzbxserver_a-expression.o: expression.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-expression.o -MD -MP -MF $(DEPDIR)/libzbxserver_a-expression.Tpo -c -o libzbxserver_a-expression.o `test -f 'expression.c' || echo '$(srcdir)/'`expression.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-expression.Tpo $(DEPDIR)/libzbxserver_a-expression.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='expression.c' object='libzbxserver_a-expression.o' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-expression.o: expression.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-expression.o -MD -MP -MF $(DEPDIR)/libtrxserver_a-expression.Tpo -c -o libtrxserver_a-expression.o `test -f 'expression.c' || echo '$(srcdir)/'`expression.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-expression.Tpo $(DEPDIR)/libtrxserver_a-expression.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='expression.c' object='libtrxserver_a-expression.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-expression.o `test -f 'expression.c' || echo '$(srcdir)/'`expression.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-expression.o `test -f 'expression.c' || echo '$(srcdir)/'`expression.c
 
-libzbxserver_a-expression.obj: expression.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-expression.obj -MD -MP -MF $(DEPDIR)/libzbxserver_a-expression.Tpo -c -o libzbxserver_a-expression.obj `if test -f 'expression.c'; then $(CYGPATH_W) 'expression.c'; else $(CYGPATH_W) '$(srcdir)/expression.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-expression.Tpo $(DEPDIR)/libzbxserver_a-expression.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='expression.c' object='libzbxserver_a-expression.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-expression.obj: expression.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-expression.obj -MD -MP -MF $(DEPDIR)/libtrxserver_a-expression.Tpo -c -o libtrxserver_a-expression.obj `if test -f 'expression.c'; then $(CYGPATH_W) 'expression.c'; else $(CYGPATH_W) '$(srcdir)/expression.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-expression.Tpo $(DEPDIR)/libtrxserver_a-expression.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='expression.c' object='libtrxserver_a-expression.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-expression.obj `if test -f 'expression.c'; then $(CYGPATH_W) 'expression.c'; else $(CYGPATH_W) '$(srcdir)/expression.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-expression.obj `if test -f 'expression.c'; then $(CYGPATH_W) 'expression.c'; else $(CYGPATH_W) '$(srcdir)/expression.c'; fi`
 
-libzbxserver_a-macrofunc.o: macrofunc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-macrofunc.o -MD -MP -MF $(DEPDIR)/libzbxserver_a-macrofunc.Tpo -c -o libzbxserver_a-macrofunc.o `test -f 'macrofunc.c' || echo '$(srcdir)/'`macrofunc.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-macrofunc.Tpo $(DEPDIR)/libzbxserver_a-macrofunc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='macrofunc.c' object='libzbxserver_a-macrofunc.o' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-macrofunc.o: macrofunc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-macrofunc.o -MD -MP -MF $(DEPDIR)/libtrxserver_a-macrofunc.Tpo -c -o libtrxserver_a-macrofunc.o `test -f 'macrofunc.c' || echo '$(srcdir)/'`macrofunc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-macrofunc.Tpo $(DEPDIR)/libtrxserver_a-macrofunc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='macrofunc.c' object='libtrxserver_a-macrofunc.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-macrofunc.o `test -f 'macrofunc.c' || echo '$(srcdir)/'`macrofunc.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-macrofunc.o `test -f 'macrofunc.c' || echo '$(srcdir)/'`macrofunc.c
 
-libzbxserver_a-macrofunc.obj: macrofunc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-macrofunc.obj -MD -MP -MF $(DEPDIR)/libzbxserver_a-macrofunc.Tpo -c -o libzbxserver_a-macrofunc.obj `if test -f 'macrofunc.c'; then $(CYGPATH_W) 'macrofunc.c'; else $(CYGPATH_W) '$(srcdir)/macrofunc.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-macrofunc.Tpo $(DEPDIR)/libzbxserver_a-macrofunc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='macrofunc.c' object='libzbxserver_a-macrofunc.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-macrofunc.obj: macrofunc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-macrofunc.obj -MD -MP -MF $(DEPDIR)/libtrxserver_a-macrofunc.Tpo -c -o libtrxserver_a-macrofunc.obj `if test -f 'macrofunc.c'; then $(CYGPATH_W) 'macrofunc.c'; else $(CYGPATH_W) '$(srcdir)/macrofunc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-macrofunc.Tpo $(DEPDIR)/libtrxserver_a-macrofunc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='macrofunc.c' object='libtrxserver_a-macrofunc.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-macrofunc.obj `if test -f 'macrofunc.c'; then $(CYGPATH_W) 'macrofunc.c'; else $(CYGPATH_W) '$(srcdir)/macrofunc.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-macrofunc.obj `if test -f 'macrofunc.c'; then $(CYGPATH_W) 'macrofunc.c'; else $(CYGPATH_W) '$(srcdir)/macrofunc.c'; fi`
 
-libzbxserver_a-treegix_stats.o: treegix_stats.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-treegix_stats.o -MD -MP -MF $(DEPDIR)/libzbxserver_a-treegix_stats.Tpo -c -o libzbxserver_a-treegix_stats.o `test -f 'treegix_stats.c' || echo '$(srcdir)/'`treegix_stats.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-treegix_stats.Tpo $(DEPDIR)/libzbxserver_a-treegix_stats.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='treegix_stats.c' object='libzbxserver_a-treegix_stats.o' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-treegix_stats.o: treegix_stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-treegix_stats.o -MD -MP -MF $(DEPDIR)/libtrxserver_a-treegix_stats.Tpo -c -o libtrxserver_a-treegix_stats.o `test -f 'treegix_stats.c' || echo '$(srcdir)/'`treegix_stats.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-treegix_stats.Tpo $(DEPDIR)/libtrxserver_a-treegix_stats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='treegix_stats.c' object='libtrxserver_a-treegix_stats.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-treegix_stats.o `test -f 'treegix_stats.c' || echo '$(srcdir)/'`treegix_stats.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-treegix_stats.o `test -f 'treegix_stats.c' || echo '$(srcdir)/'`treegix_stats.c
 
-libzbxserver_a-treegix_stats.obj: treegix_stats.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -MT libzbxserver_a-treegix_stats.obj -MD -MP -MF $(DEPDIR)/libzbxserver_a-treegix_stats.Tpo -c -o libzbxserver_a-treegix_stats.obj `if test -f 'treegix_stats.c'; then $(CYGPATH_W) 'treegix_stats.c'; else $(CYGPATH_W) '$(srcdir)/treegix_stats.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_a-treegix_stats.Tpo $(DEPDIR)/libzbxserver_a-treegix_stats.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='treegix_stats.c' object='libzbxserver_a-treegix_stats.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserver_a-treegix_stats.obj: treegix_stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -MT libtrxserver_a-treegix_stats.obj -MD -MP -MF $(DEPDIR)/libtrxserver_a-treegix_stats.Tpo -c -o libtrxserver_a-treegix_stats.obj `if test -f 'treegix_stats.c'; then $(CYGPATH_W) 'treegix_stats.c'; else $(CYGPATH_W) '$(srcdir)/treegix_stats.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_a-treegix_stats.Tpo $(DEPDIR)/libtrxserver_a-treegix_stats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='treegix_stats.c' object='libtrxserver_a-treegix_stats.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_a-treegix_stats.obj `if test -f 'treegix_stats.c'; then $(CYGPATH_W) 'treegix_stats.c'; else $(CYGPATH_W) '$(srcdir)/treegix_stats.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_a-treegix_stats.obj `if test -f 'treegix_stats.c'; then $(CYGPATH_W) 'treegix_stats.c'; else $(CYGPATH_W) '$(srcdir)/treegix_stats.c'; fi`
 
-libzbxserver_server_a-treegix_stats_server.o: treegix_stats_server.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_server_a_CFLAGS) $(CFLAGS) -MT libzbxserver_server_a-treegix_stats_server.o -MD -MP -MF $(DEPDIR)/libzbxserver_server_a-treegix_stats_server.Tpo -c -o libzbxserver_server_a-treegix_stats_server.o `test -f 'treegix_stats_server.c' || echo '$(srcdir)/'`treegix_stats_server.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_server_a-treegix_stats_server.Tpo $(DEPDIR)/libzbxserver_server_a-treegix_stats_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='treegix_stats_server.c' object='libzbxserver_server_a-treegix_stats_server.o' libtool=no @AMDEPBACKSLASH@
+libtrxserver_server_a-treegix_stats_server.o: treegix_stats_server.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_server_a_CFLAGS) $(CFLAGS) -MT libtrxserver_server_a-treegix_stats_server.o -MD -MP -MF $(DEPDIR)/libtrxserver_server_a-treegix_stats_server.Tpo -c -o libtrxserver_server_a-treegix_stats_server.o `test -f 'treegix_stats_server.c' || echo '$(srcdir)/'`treegix_stats_server.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_server_a-treegix_stats_server.Tpo $(DEPDIR)/libtrxserver_server_a-treegix_stats_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='treegix_stats_server.c' object='libtrxserver_server_a-treegix_stats_server.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_server_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_server_a-treegix_stats_server.o `test -f 'treegix_stats_server.c' || echo '$(srcdir)/'`treegix_stats_server.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_server_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_server_a-treegix_stats_server.o `test -f 'treegix_stats_server.c' || echo '$(srcdir)/'`treegix_stats_server.c
 
-libzbxserver_server_a-treegix_stats_server.obj: treegix_stats_server.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_server_a_CFLAGS) $(CFLAGS) -MT libzbxserver_server_a-treegix_stats_server.obj -MD -MP -MF $(DEPDIR)/libzbxserver_server_a-treegix_stats_server.Tpo -c -o libzbxserver_server_a-treegix_stats_server.obj `if test -f 'treegix_stats_server.c'; then $(CYGPATH_W) 'treegix_stats_server.c'; else $(CYGPATH_W) '$(srcdir)/treegix_stats_server.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserver_server_a-treegix_stats_server.Tpo $(DEPDIR)/libzbxserver_server_a-treegix_stats_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='treegix_stats_server.c' object='libzbxserver_server_a-treegix_stats_server.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserver_server_a-treegix_stats_server.obj: treegix_stats_server.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_server_a_CFLAGS) $(CFLAGS) -MT libtrxserver_server_a-treegix_stats_server.obj -MD -MP -MF $(DEPDIR)/libtrxserver_server_a-treegix_stats_server.Tpo -c -o libtrxserver_server_a-treegix_stats_server.obj `if test -f 'treegix_stats_server.c'; then $(CYGPATH_W) 'treegix_stats_server.c'; else $(CYGPATH_W) '$(srcdir)/treegix_stats_server.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserver_server_a-treegix_stats_server.Tpo $(DEPDIR)/libtrxserver_server_a-treegix_stats_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='treegix_stats_server.c' object='libtrxserver_server_a-treegix_stats_server.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserver_server_a_CFLAGS) $(CFLAGS) -c -o libzbxserver_server_a-treegix_stats_server.obj `if test -f 'treegix_stats_server.c'; then $(CYGPATH_W) 'treegix_stats_server.c'; else $(CYGPATH_W) '$(srcdir)/treegix_stats_server.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserver_server_a_CFLAGS) $(CFLAGS) -c -o libtrxserver_server_a-treegix_stats_server.obj `if test -f 'treegix_stats_server.c'; then $(CYGPATH_W) 'treegix_stats_server.c'; else $(CYGPATH_W) '$(srcdir)/treegix_stats_server.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

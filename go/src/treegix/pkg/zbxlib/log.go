@@ -1,6 +1,6 @@
 
 
-package zbxlib
+package trxlib
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../../../../include
@@ -8,15 +8,15 @@ package zbxlib
 #include "common.h"
 #include "log.h"
 
-int zbx_log_level = LOG_LEVEL_WARNING;
+int trx_log_level = LOG_LEVEL_WARNING;
 
-int	zbx_agent_pid;
+int	trx_agent_pid;
 
 void handleTreegixLog(int level, const char *message);
 
-void __zbx_treegix_log(int level, const char *format, ...)
+void __trx_treegix_log(int level, const char *format, ...)
 {
-	if (zbx_agent_pid == getpid())
+	if (trx_agent_pid == getpid())
 	{
 		va_list	args;
 		char *message = NULL;
@@ -25,36 +25,36 @@ void __zbx_treegix_log(int level, const char *format, ...)
 		va_start(args, format);
 		size = vsnprintf(NULL, 0, format, args) + 2;
 		va_end(args);
-		message = (char *)zbx_malloc(NULL, size);
+		message = (char *)trx_malloc(NULL, size);
 		va_start(args, format);
 		vsnprintf(message, size, format, args);
 		va_end(args);
 
 		handleTreegixLog(level, message);
-		zbx_free(message);
+		trx_free(message);
 	}
 }
 
 #define TRX_MESSAGE_BUF_SIZE	1024
 
-char	*zbx_strerror(int errnum)
+char	*trx_strerror(int errnum)
 {
 	static __thread char	utf8_string[TRX_MESSAGE_BUF_SIZE];
-	zbx_snprintf(utf8_string, sizeof(utf8_string), "[%d] %s", errnum, strerror(errnum));
+	trx_snprintf(utf8_string, sizeof(utf8_string), "[%d] %s", errnum, strerror(errnum));
 	return utf8_string;
 }
 
-void	zbx_handle_log(void)
+void	trx_handle_log(void)
 {
 	// rotation is handled by go logger backend
 }
 
 char	*strerror_from_system(unsigned long error)
 {
-	return zbx_strerror(errno);
+	return trx_strerror(errno);
 }
 
-int	zbx_redirect_stdio(const char *filename)
+int	trx_redirect_stdio(const char *filename)
 {
 	// rotation is handled by go logger backend
 	return FAIL;
@@ -64,9 +64,9 @@ int	zbx_redirect_stdio(const char *filename)
 import "C"
 
 func SetLogLevel(level int) {
-	C.zbx_log_level = C.int(level)
+	C.trx_log_level = C.int(level)
 }
 
 func init() {
-	C.zbx_agent_pid = C.getpid()
+	C.trx_agent_pid = C.getpid()
 }

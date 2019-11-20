@@ -12,7 +12,7 @@ import (
 	"time"
 	"treegix/pkg/conf"
 	"treegix/pkg/log"
-	"treegix/pkg/zbxcomms"
+	"treegix/pkg/trxcomms"
 )
 
 type MockServerOptions struct {
@@ -26,7 +26,7 @@ type MockServerOptions struct {
 
 var options MockServerOptions
 
-func handleConnection(c *zbxcomms.Connection, tFlag int) {
+func handleConnection(c *trxcomms.Connection, tFlag int) {
 	defer c.Close()
 
 	js, err := c.Read(time.Second * time.Duration(tFlag))
@@ -129,7 +129,7 @@ func main() {
 
 	log.Infof("using configuration file: %s", confFlag)
 
-	listener, err := zbxcomms.Listen(":" + strconv.Itoa(options.Port))
+	listener, err := trxcomms.Listen(":" + strconv.Itoa(options.Port))
 	if err != nil {
 		log.Critf("Listen failed: %s\n", err)
 		return

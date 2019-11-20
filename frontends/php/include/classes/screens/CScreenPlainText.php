@@ -68,11 +68,11 @@ class CScreenPlainText extends CScreenBase {
 				$value = new CPre($value);
 			}
 
-			$table->addRow([zbx_date2str(DATE_TIME_FORMAT_SECONDS, $history['clock']), $value]);
+			$table->addRow([trx_date2str(DATE_TIME_FORMAT_SECONDS, $history['clock']), $value]);
 		}
 
 		$footer = (new CList())
-			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
+			->addItem(_s('Updated: %s', trx_date2str(TIME_FORMAT_SECONDS)))
 			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(

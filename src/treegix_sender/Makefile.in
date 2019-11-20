@@ -116,17 +116,17 @@ PROGRAMS = $(bin_PROGRAMS)
 am_treegix_sender_OBJECTS = treegix_sender.$(OBJEXT)
 treegix_sender_OBJECTS = $(am_treegix_sender_OBJECTS)
 treegix_sender_DEPENDENCIES =  \
-	$(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a
+	$(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxalgo/libtrxalgo.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a
 treegix_sender_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(treegix_sender_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
@@ -383,17 +383,17 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 treegix_sender_SOURCES = treegix_sender.c
-treegix_sender_LDADD = $(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
+treegix_sender_LDADD = $(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxalgo/libtrxalgo.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
 	@SENDER_LIBS@ $(am__empty)
 treegix_sender_LDFLAGS = @SENDER_LDFLAGS@
 EXTRA_DIST = win32

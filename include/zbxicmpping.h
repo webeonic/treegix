@@ -36,7 +36,7 @@ typedef struct
 	int			interval;
 	int			size;
 	int			timeout;
-	zbx_uint64_t		itemid;
+	trx_uint64_t		itemid;
 	char			*addr;
 	icmpping_t		icmpping;
 	icmppingsec_type_t	type;

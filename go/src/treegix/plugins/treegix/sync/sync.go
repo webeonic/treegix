@@ -4,7 +4,7 @@ package treegixsync
 
 import (
 	"treegix/pkg/plugin"
-	"treegix/pkg/zbxlib"
+	"treegix/pkg/trxlib"
 )
 
 // Plugin -
@@ -15,7 +15,7 @@ type Plugin struct {
 var impl Plugin
 
 func (p *Plugin) Export(key string, params []string, ctx plugin.ContextProvider) (result interface{}, err error) {
-	return zbxlib.ExecuteCheck(key, params)
+	return trxlib.ExecuteCheck(key, params)
 }
 
 func init() {

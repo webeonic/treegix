@@ -432,10 +432,10 @@ EXTRA_DIST = \
 	go
 
 @TRXCMOCKA_TRUE@WRAP_DB_FUNCS = \
-@TRXCMOCKA_TRUE@	-Wl,--wrap=zbx_db_vselect \
-@TRXCMOCKA_TRUE@	-Wl,--wrap=zbx_db_select_n \
-@TRXCMOCKA_TRUE@	-Wl,--wrap=zbx_db_fetch \
-@TRXCMOCKA_TRUE@	-Wl,--wrap=__zbx_DBexecute \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=trx_db_vselect \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=trx_db_select_n \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=trx_db_fetch \
+@TRXCMOCKA_TRUE@	-Wl,--wrap=__trx_DBexecute \
 @TRXCMOCKA_TRUE@	-Wl,--wrap=DBbegin \
 @TRXCMOCKA_TRUE@	-Wl,--wrap=DBcommit \
 @TRXCMOCKA_TRUE@	-Wl,--wrap=DBexecute_multiple_query \
@@ -462,7 +462,7 @@ EXTRA_DIST = \
 @TRXCMOCKA_TRUE@	-Wl,--wrap=connect
 
 @TRXCMOCKA_TRUE@WRAP_LOG = \
-@TRXCMOCKA_TRUE@	-Wl,--wrap=__zbx_treegix_log
+@TRXCMOCKA_TRUE@	-Wl,--wrap=__trx_treegix_log
 
 @TRXCMOCKA_TRUE@COMMON_WRAP_FUNCS = \
 @TRXCMOCKA_TRUE@	$(WRAP_DB_FUNCS) \
@@ -1019,7 +1019,7 @@ dist-hook:
 @DBSCHEMA_TRUE@	$(MAKE) $(AM_MAKEFLAGS) schema.sql
 
 @DBSCHEMA_TRUE@dbschema_c:
-@DBSCHEMA_TRUE@	cd src/libs/zbxdbhigh && \
+@DBSCHEMA_TRUE@	cd src/libs/trxdbhigh && \
 @DBSCHEMA_TRUE@	$(MAKE) $(AM_MAKEFLAGS) dbschema.c
 
 @DBSCHEMA_TRUE@dbschema: dbschema_ibm_db2 dbschema_mysql dbschema_oracle dbschema_postgresql dbschema_sqlite3 dbschema_c

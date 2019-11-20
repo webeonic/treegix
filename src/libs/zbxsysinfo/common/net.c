@@ -8,7 +8,7 @@
 #include "cfg.h"
 
 #include "net.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
 #ifdef _WINDOWS
 #	include <windns.h>
@@ -18,26 +18,26 @@
 int	tcp_expect(const char *host, unsigned short port, int timeout, const char *request,
 		int (*validate_func)(const char *), const char *sendtoclose, int *value_int)
 {
-	zbx_socket_t	s;
+	trx_socket_t	s;
 	const char	*buf;
 	int		net, val = TRX_TCP_EXPECT_OK;
 
 	*value_int = 0;
 
-	if (SUCCEED != (net = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL,
+	if (SUCCEED != (net = trx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL,
 			NULL)))
 	{
 		goto out;
 	}
 
 	if (NULL != request)
-		net = zbx_tcp_send_raw(&s, request);
+		net = trx_tcp_send_raw(&s, request);
 
 	if (NULL != validate_func && SUCCEED == net)
 	{
 		val = TRX_TCP_EXPECT_FAIL;
 
-		while (NULL != (buf = zbx_tcp_recv_line(&s)))
+		while (NULL != (buf = trx_tcp_recv_line(&s)))
 		{
 			val = validate_func(buf);
 
@@ -53,15 +53,15 @@ int	tcp_expect(const char *host, unsigned short port, int timeout, const char *r
 	}
 
 	if (NULL != sendtoclose && SUCCEED == net && TRX_TCP_EXPECT_OK == val)
-		(void)zbx_tcp_send_raw(&s, sendtoclose);
+		(void)trx_tcp_send_raw(&s, sendtoclose);
 
 	if (SUCCEED == net && TRX_TCP_EXPECT_OK == val)
 		*value_int = 1;
 
-	zbx_tcp_close(&s);
+	trx_tcp_close(&s);
 out:
 	if (SUCCEED != net)
-		treegix_log(LOG_LEVEL_DEBUG, "TCP expect network error: %s", zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "TCP expect network error: %s", trx_socket_strerror());
 
 	return SYSINFO_RET_OK;
 }
@@ -74,7 +74,7 @@ int	NET_TCP_PORT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -88,7 +88,7 @@ int	NET_TCP_PORT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == port_str || SUCCEED != is_ushort(port_str, &port))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -143,7 +143,7 @@ static const char	*decode_type(int q_type)
 		case T_SRV:
 			return "SRV";	/* service locator */
 		default:
-			zbx_snprintf(buf, sizeof(buf), "T_%d", q_type);
+			trx_snprintf(buf, sizeof(buf), "T_%d", q_type);
 			return buf;
 	}
 }
@@ -163,9 +163,9 @@ static char	*get_name(unsigned char *msg, unsigned char *msg_end, unsigned char 
 }
 #endif	/* !defined(_WINDOWS) */
 
-/* Replace zbx_inet_ntop with inet_ntop in case of drop Windows XP/W2k3 support */
+/* Replace trx_inet_ntop with inet_ntop in case of drop Windows XP/W2k3 support */
 #if defined(_WINDOWS)
-const char *zbx_inet_ntop(int af, const void *src, char *dst, size_t size)
+const char *trx_inet_ntop(int af, const void *src, char *dst, size_t size)
 {
 	struct sockaddr_storage ss;
 	unsigned long s = size;
@@ -290,13 +290,13 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 
 	answer_t	answer;
 #endif	/* _WINDOWS */
-	zbx_vector_str_t	answers;
+	trx_vector_str_t	answers;
 
 	*buffer = '\0';
 
 	if (6 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -336,7 +336,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 
 		if (NULL == qt[i].name)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -347,7 +347,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 		retrans = 1;
 	else if (SUCCEED != is_uint31(param, &retrans) || 0 == retrans)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fourth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fourth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -357,7 +357,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 		retry = 2;
 	else if (SUCCEED != is_uint31(param, &retry) || 0 == retry)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -369,7 +369,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 		use_tcp = 1;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid sixth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid sixth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -378,9 +378,9 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	if (0 != use_tcp)
 		options |= DNS_QUERY_USE_TCP_ONLY;
 
-	wzone = zbx_utf8_to_unicode(zone);
+	wzone = trx_utf8_to_unicode(zone);
 	res = DnsQuery(wzone, type, options, NULL, &pQueryResults, NULL);
-	zbx_free(wzone);
+	trx_free(wzone);
 
 	if (1 == short_answer)
 	{
@@ -391,12 +391,12 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 
 	if (DNS_RCODE_NOERROR != res)
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot perform DNS query: [%d]", res));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot perform DNS query: [%d]", res));
 		return SYSINFO_RET_FAIL;
 	}
 
 	pDnsRecord = pQueryResults;
-	zbx_vector_str_create(&answers);
+	trx_vector_str_create(&answers);
 
 	while (NULL != pDnsRecord)
 	{
@@ -409,43 +409,43 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 		if (NULL == pDnsRecord->pName)
 			goto clean;
 
-		offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%-20s",
-				zbx_unicode_to_utf8_static(pDnsRecord->pName, tmp, sizeof(tmp)));
-		offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %-8s",
+		offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "%-20s",
+				trx_unicode_to_utf8_static(pDnsRecord->pName, tmp, sizeof(tmp)));
+		offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %-8s",
 				decode_type(pDnsRecord->wType));
 
 		switch (pDnsRecord->wType)
 		{
 			case T_A:
 				inaddr.s_addr = pDnsRecord->Data.A.IpAddress;
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
 						inet_ntoa(inaddr));
 				break;
 			case T_AAAA:
 				memcpy(&in6addr.s6_addr, &(pDnsRecord->Data.AAAA.Ip6Address), sizeof(in6addr.s6_addr));
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
-						zbx_inet_ntop(AF_INET6, &in6addr, tmp, sizeof(tmp)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						trx_inet_ntop(AF_INET6, &in6addr, tmp, sizeof(tmp)));
 				break;
 			case T_NS:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.NS.pNameHost, tmp, sizeof(tmp)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.NS.pNameHost, tmp, sizeof(tmp)));
 				break;
 			case T_MD:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.MD.pNameHost, tmp, sizeof(tmp)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.MD.pNameHost, tmp, sizeof(tmp)));
 				break;
 			case T_MF:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.MF.pNameHost, tmp, sizeof(tmp)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.MF.pNameHost, tmp, sizeof(tmp)));
 				break;
 			case T_CNAME:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.CNAME.pNameHost, tmp, sizeof(tmp)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.CNAME.pNameHost, tmp, sizeof(tmp)));
 				break;
 			case T_SOA:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s %s %lu %lu %lu %lu %lu",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.SOA.pNamePrimaryServer, tmp, sizeof(tmp)),
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.SOA.pNameAdministrator, tmp2, sizeof(tmp2)),
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s %s %lu %lu %lu %lu %lu",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.SOA.pNamePrimaryServer, tmp, sizeof(tmp)),
+						trx_unicode_to_utf8_static(pDnsRecord->Data.SOA.pNameAdministrator, tmp2, sizeof(tmp2)),
 						pDnsRecord->Data.SOA.dwSerialNo,
 						pDnsRecord->Data.SOA.dwRefresh,
 						pDnsRecord->Data.SOA.dwRetry,
@@ -453,68 +453,68 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 						pDnsRecord->Data.SOA.dwDefaultTtl);
 				break;
 			case T_MB:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.MB.pNameHost, tmp, sizeof(tmp)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.MB.pNameHost, tmp, sizeof(tmp)));
 				break;
 			case T_MG:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.MG.pNameHost, tmp, sizeof(tmp)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.MG.pNameHost, tmp, sizeof(tmp)));
 				break;
 			case T_MR:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.MR.pNameHost, tmp, sizeof(tmp)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.MR.pNameHost, tmp, sizeof(tmp)));
 				break;
 			case T_NULL:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " len:%lu",
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " len:%lu",
 						pDnsRecord->Data.Null.dwByteCount);
 				break;
 			case T_PTR:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.PTR.pNameHost, tmp, sizeof(tmp)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.PTR.pNameHost, tmp, sizeof(tmp)));
 				break;
 			case T_HINFO:
 				for (i = 0; i < (int)(pDnsRecord->Data.HINFO.dwStringCount); i++)
-					offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"%s\"",
-							zbx_unicode_to_utf8_static(pDnsRecord->Data.HINFO.pStringArray[i], tmp, sizeof(tmp)));
+					offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"%s\"",
+							trx_unicode_to_utf8_static(pDnsRecord->Data.HINFO.pStringArray[i], tmp, sizeof(tmp)));
 				break;
 			case T_MINFO:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s %s",
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.MINFO.pNameMailbox, tmp, sizeof(tmp)),
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.MINFO.pNameErrorsMailbox, tmp2, sizeof(tmp2)));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s %s",
+						trx_unicode_to_utf8_static(pDnsRecord->Data.MINFO.pNameMailbox, tmp, sizeof(tmp)),
+						trx_unicode_to_utf8_static(pDnsRecord->Data.MINFO.pNameErrorsMailbox, tmp2, sizeof(tmp2)));
 				break;
 			case T_MX:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %hu %s",
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %hu %s",
 						pDnsRecord->Data.MX.wPreference,
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.MX.pNameExchange, tmp, sizeof(tmp)));
+						trx_unicode_to_utf8_static(pDnsRecord->Data.MX.pNameExchange, tmp, sizeof(tmp)));
 				break;
 			case T_TXT:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"");
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"");
 
 				for (i = 0; i < (int)(pDnsRecord->Data.TXT.dwStringCount); i++)
-					offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%s ",
-							zbx_unicode_to_utf8_static(pDnsRecord->Data.TXT.pStringArray[i], tmp, sizeof(tmp)));
+					offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "%s ",
+							trx_unicode_to_utf8_static(pDnsRecord->Data.TXT.pStringArray[i], tmp, sizeof(tmp)));
 
 				if (0 < i)
 					offset -= 1;	/* remove the trailing space */
 
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "\"");
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "\"");
 
 				break;
 			case T_SRV:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %hu %hu %hu %s",
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %hu %hu %hu %s",
 						pDnsRecord->Data.SRV.wPriority,
 						pDnsRecord->Data.SRV.wWeight,
 						pDnsRecord->Data.SRV.wPort,
-						zbx_unicode_to_utf8_static(pDnsRecord->Data.SRV.pNameTarget, tmp, sizeof(tmp)));
+						trx_unicode_to_utf8_static(pDnsRecord->Data.SRV.pNameTarget, tmp, sizeof(tmp)));
 				break;
 			default:
 				break;
 		}
 
-		zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "\n");
+		trx_snprintf(buffer + offset, sizeof(buffer) - offset, "\n");
 
 		pDnsRecord = pDnsRecord->pNext;
-		zbx_vector_str_append(&answers, zbx_strdup(NULL, buffer));
+		trx_vector_str_append(&answers, trx_strdup(NULL, buffer));
 		offset = 0;
 		*buffer = '\0';
 	}
@@ -526,7 +526,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	if (-1 == res_init())	/* initialize always, settings might have changed */
 #endif
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot initialize DNS subsystem: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot initialize DNS subsystem: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -536,7 +536,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	if (-1 == (res = res_mkquery(QUERY, zone, C_IN, type, NULL, 0, NULL, buf, sizeof(buf))))
 #endif
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot create DNS query: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot create DNS query: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -544,7 +544,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	{
 		if (0 == inet_aton(ip, &inaddr))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid IP address."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid IP address."));
 			return SYSINFO_RET_FAIL;
 		}
 
@@ -567,7 +567,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	{
 		if (0 == inet_pton(ip_type, ip, &in6addr))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid IPv6 address."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid IPv6 address."));
 			return SYSINFO_RET_FAIL;
 		}
 
@@ -684,7 +684,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 
 	if (NOERROR != hp->rcode || 0 == ntohs(hp->ancount) || -1 == res)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot perform DNS query."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot perform DNS query."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -694,7 +694,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	num_query = ntohs(answer.h.qdcount);
 
 	msg_ptr = answer.buffer + HFIXEDSZ;
-	zbx_vector_str_create(&answers);
+	trx_vector_str_create(&answers);
 
 	/* skipping query records */
 	for (; 0 < num_query && msg_ptr < msg_end; num_query--)
@@ -704,18 +704,18 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	{
 		if (NULL == (name = get_name(answer.buffer, msg_end, &msg_ptr)))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot decode DNS response."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot decode DNS response."));
 			ret = SYSINFO_RET_FAIL;
 			goto clean;
 		}
 
-		offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%-20s", name);
+		offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "%-20s", name);
 
 		GETSHORT(q_type, msg_ptr);
 		GETSHORT(q_class, msg_ptr);
 		msg_ptr += INT32SZ;		/* skipping TTL */
 		GETSHORT(q_len, msg_ptr);
-		offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %-8s", decode_type(q_type));
+		offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %-8s", decode_type(q_type));
 
 		switch (q_type)
 		{
@@ -725,7 +725,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 					case C_IN:
 					case C_HS:
 						memcpy(&inaddr, msg_ptr, INADDRSZ);
-						offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
 								inet_ntoa(inaddr));
 						break;
 					default:
@@ -741,7 +741,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 					case C_IN:
 					case C_HS:
 						memcpy(&in6addr, msg_ptr, IN6ADDRSZ);
-						offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
+						offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s",
 								inet_ntop(AF_INET6, &in6addr, tmp, sizeof(tmp)));
 						break;
 					default:
@@ -761,62 +761,62 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 			case T_PTR:
 				if (NULL == (name = get_name(answer.buffer, msg_end, &msg_ptr)))
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot decode DNS response."));
+					SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot decode DNS response."));
 					return SYSINFO_RET_FAIL;
 				}
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
 				break;
 			case T_MX:
 				GETSHORT(value, msg_ptr);	/* preference */
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
 
 				if (NULL == (name = get_name(answer.buffer, msg_end, &msg_ptr)))	/* exchange */
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot decode DNS response."));
+					SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot decode DNS response."));
 					return SYSINFO_RET_FAIL;
 				}
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
 
 				break;
 			case T_SOA:
 				if (NULL == (name = get_name(answer.buffer, msg_end, &msg_ptr)))	/* source host */
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot decode DNS response."));
+					SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot decode DNS response."));
 					return SYSINFO_RET_FAIL;
 				}
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
 
 				if (NULL == (name = get_name(answer.buffer, msg_end, &msg_ptr)))	/* administrator */
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot decode DNS response."));
+					SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot decode DNS response."));
 					return SYSINFO_RET_FAIL;
 				}
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
 
 				GETLONG(value, msg_ptr);	/* serial number */
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
 
 				GETLONG(value, msg_ptr);	/* refresh time */
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
 
 				GETLONG(value, msg_ptr);	/* retry time */
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
 
 				GETLONG(value, msg_ptr);	/* expire time */
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
 
 				GETLONG(value, msg_ptr);	/* minimum TTL */
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
 
 				break;
 			case T_NULL:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " len:%d", q_len);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " len:%d", q_len);
 				msg_ptr += q_len;
 				break;
 			case T_WKS:
 				if (INT32SZ + 1 > q_len)
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot decode DNS response."));
+					SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot decode DNS response."));
 					return SYSINFO_RET_FAIL;
 				}
 
@@ -825,12 +825,12 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 				memcpy(&inaddr, msg_ptr, INADDRSZ);
 				msg_ptr += INT32SZ;
 
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", inet_ntoa(inaddr));
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", inet_ntoa(inaddr));
 
 				if (NULL != (pr = getprotobynumber(*msg_ptr)))
-					offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", pr->p_name);
+					offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", pr->p_name);
 				else
-					offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", (int)*msg_ptr);
+					offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", (int)*msg_ptr);
 
 				msg_ptr++;
 				n = 0;
@@ -846,9 +846,9 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 							s = getservbyport((int)htons(n), pr ? pr->p_name : NULL);
 
 							if (NULL != s)
-								offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", s->s_name);
+								offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", s->s_name);
 							else
-								offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " #%d", n);
+								offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " #%d", n);
 						}
 
 						c <<= 1;
@@ -863,7 +863,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 
 				if (0 != c)
 				{
-					offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"%.*s\"", c, msg_ptr);
+					offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"%.*s\"", c, msg_ptr);
 					msg_ptr += c;
 				}
 
@@ -873,7 +873,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 
 					if (0 != c)
 					{
-						offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"%.*s\"", c, msg_ptr);
+						offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"%.*s\"", c, msg_ptr);
 						msg_ptr += c;
 					}
 				}
@@ -882,48 +882,48 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 			case T_MINFO:
 				if (NULL == (name = get_name(answer.buffer, msg_end, &msg_ptr)))	/* mailbox responsible for mailing lists */
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot decode DNS response."));
+					SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot decode DNS response."));
 					return SYSINFO_RET_FAIL;
 				}
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
 
 				if (NULL == (name = get_name(answer.buffer, msg_end, &msg_ptr)))	/* mailbox for error messages */
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot decode DNS response."));
+					SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot decode DNS response."));
 					return SYSINFO_RET_FAIL;
 				}
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
 
 				break;
 			case T_TXT:
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"");
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " \"");
 				p = msg_ptr + q_len;
 
 				while (msg_ptr < p)
 				{
 					for (c = *msg_ptr++; 0 < c && msg_ptr < p; c--)
-						offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%c", *msg_ptr++);
+						offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "%c", *msg_ptr++);
 				}
 
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "\"");
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "\"");
 
 				break;
 			case T_SRV:
 				GETSHORT(value, msg_ptr);       /* priority */
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
 
 				GETSHORT(value, msg_ptr);       /* weight */
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
 
 				GETSHORT(value, msg_ptr);       /* port */
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %d", value);
 
 				if (NULL == (name = get_name(answer.buffer, msg_end, &msg_ptr)))	/* target */
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot decode DNS response."));
+					SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot decode DNS response."));
 					return SYSINFO_RET_FAIL;
 				}
-				offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
+				offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, " %s", name);
 
 				break;
 			default:
@@ -931,28 +931,28 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 				break;
 		}
 
-		zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "\n");
+		trx_snprintf(buffer + offset, sizeof(buffer) - offset, "\n");
 
-		zbx_vector_str_append(&answers, zbx_strdup(NULL, buffer));
+		trx_vector_str_append(&answers, trx_strdup(NULL, buffer));
 		offset = 0;
 		*buffer = '\0';
 	}
 #endif	/* _WINDOWS */
 
-	zbx_vector_str_sort(&answers, TRX_DEFAULT_STR_COMPARE_FUNC);
+	trx_vector_str_sort(&answers, TRX_DEFAULT_STR_COMPARE_FUNC);
 
 	for (i = 0; i < answers.values_num; i++)
-		offset += zbx_snprintf(buffer + offset, sizeof(buffer) - offset, "%s", answers.values[i]);
+		offset += trx_snprintf(buffer + offset, sizeof(buffer) - offset, "%s", answers.values[i]);
 
 	if (0 != offset)
 		buffer[--offset] = '\0';
 
-	SET_TEXT_RESULT(result, zbx_strdup(NULL, buffer));
+	SET_TEXT_RESULT(result, trx_strdup(NULL, buffer));
 	ret = SYSINFO_RET_OK;
 
 clean:
-	zbx_vector_str_clear_ext(&answers, zbx_str_free);
-	zbx_vector_str_destroy(&answers);
+	trx_vector_str_clear_ext(&answers, trx_str_free);
+	trx_vector_str_destroy(&answers);
 #ifdef _WINDOWS
 clean_dns:
 	if (DNS_RCODE_NOERROR == res)

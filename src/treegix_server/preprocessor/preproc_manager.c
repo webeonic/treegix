@@ -4,13 +4,13 @@
 
 #include "dbcache.h"
 #include "daemon.h"
-#include "zbxself.h"
+#include "trxself.h"
 #include "log.h"
-#include "zbxserver.h"
+#include "trxserver.h"
 #include "sysinfo.h"
-#include "zbxserialize.h"
-#include "zbxipcservice.h"
-#include "zbxlld.h"
+#include "trxserialize.h"
+#include "trxipcservice.h"
+#include "trxlld.h"
 
 #include "preprocessing.h"
 #include "preproc_manager.h"
@@ -33,94 +33,94 @@ typedef enum
 	REQUEST_STATE_PENDING		= 3		/* value requires preprocessing, */
 							/* but is waiting on other request to complete */
 }
-zbx_preprocessing_states_t;
+trx_preprocessing_states_t;
 
 /* preprocessing request */
 typedef struct preprocessing_request
 {
-	zbx_preprocessing_states_t	state;		/* request state */
+	trx_preprocessing_states_t	state;		/* request state */
 	struct preprocessing_request	*pending;	/* the request waiting on this request to complete */
-	zbx_preproc_item_value_t	value;		/* unpacked item value */
-	zbx_preproc_op_t		*steps;		/* preprocessing steps */
+	trx_preproc_item_value_t	value;		/* unpacked item value */
+	trx_preproc_op_t		*steps;		/* preprocessing steps */
 	int				steps_num;	/* number of preprocessing steps */
 	unsigned char			value_type;	/* value type from configuration */
 							/* at the beginning of preprocessing queue */
 }
-zbx_preprocessing_request_t;
+trx_preprocessing_request_t;
 
 /* preprocessing worker data */
 typedef struct
 {
-	zbx_ipc_client_t	*client;	/* the connected preprocessing worker client */
+	trx_ipc_client_t	*client;	/* the connected preprocessing worker client */
 	void			*task;		/* the current task data */
 }
-zbx_preprocessing_worker_t;
+trx_preprocessing_worker_t;
 
 /* item link index */
 typedef struct
 {
-	zbx_uint64_t		itemid;		/* item id */
-	zbx_list_item_t		*queue_item;	/* queued item */
+	trx_uint64_t		itemid;		/* item id */
+	trx_list_item_t		*queue_item;	/* queued item */
 }
-zbx_item_link_t;
+trx_item_link_t;
 
 /* direct request to be forwarded to worker, bypassing the preprocessing queue */
 typedef struct
 {
-	zbx_ipc_client_t	*client;	/* the IPC client sending forward message to worker */
-	zbx_ipc_message_t	message;
+	trx_ipc_client_t	*client;	/* the IPC client sending forward message to worker */
+	trx_ipc_message_t	message;
 }
-zbx_preprocessing_direct_request_t;
+trx_preprocessing_direct_request_t;
 
 /* preprocessing manager data */
 typedef struct
 {
-	zbx_preprocessing_worker_t	*workers;	/* preprocessing worker array */
+	trx_preprocessing_worker_t	*workers;	/* preprocessing worker array */
 	int				worker_count;	/* preprocessing worker count */
-	zbx_list_t			queue;		/* queue of item values */
-	zbx_hashset_t			item_config;	/* item configuration L2 cache */
-	zbx_hashset_t			history_cache;	/* item value history cache */
-	zbx_hashset_t			linked_items;	/* linked items placed in queue */
+	trx_list_t			queue;		/* queue of item values */
+	trx_hashset_t			item_config;	/* item configuration L2 cache */
+	trx_hashset_t			history_cache;	/* item value history cache */
+	trx_hashset_t			linked_items;	/* linked items placed in queue */
 	int				cache_ts;	/* cache timestamp */
-	zbx_uint64_t			processed_num;	/* processed value counter */
-	zbx_uint64_t			queued_num;	/* queued value counter */
-	zbx_uint64_t			preproc_num;	/* queued values with preprocessing steps */
-	zbx_list_iterator_t		priority_tail;	/* iterator to the last queued priority item */
+	trx_uint64_t			processed_num;	/* processed value counter */
+	trx_uint64_t			queued_num;	/* queued value counter */
+	trx_uint64_t			preproc_num;	/* queued values with preprocessing steps */
+	trx_list_iterator_t		priority_tail;	/* iterator to the last queued priority item */
 
-	zbx_list_t			direct_queue;	/* Queue of external requests that have to be */
+	trx_list_t			direct_queue;	/* Queue of external requests that have to be */
 							/* forwarded to workers for preprocessing.    */
 }
-zbx_preprocessing_manager_t;
+trx_preprocessing_manager_t;
 
-static void	preprocessor_enqueue_dependent(zbx_preprocessing_manager_t *manager,
-		zbx_preproc_item_value_t *value, zbx_list_item_t *master);
+static void	preprocessor_enqueue_dependent(trx_preprocessing_manager_t *manager,
+		trx_preproc_item_value_t *value, trx_list_item_t *master);
 
 /* cleanup functions */
 
-static void	preproc_item_clear(zbx_preproc_item_t *item)
+static void	preproc_item_clear(trx_preproc_item_t *item)
 {
 	int	i;
 
-	zbx_free(item->dep_itemids);
+	trx_free(item->dep_itemids);
 
 	for (i = 0; i < item->preproc_ops_num; i++)
 	{
-		zbx_free(item->preproc_ops[i].params);
-		zbx_free(item->preproc_ops[i].error_handler_params);
+		trx_free(item->preproc_ops[i].params);
+		trx_free(item->preproc_ops[i].error_handler_params);
 	}
 
-	zbx_free(item->preproc_ops);
+	trx_free(item->preproc_ops);
 }
 
-static void	request_free_steps(zbx_preprocessing_request_t *request)
+static void	request_free_steps(trx_preprocessing_request_t *request)
 {
 	while (0 < request->steps_num--)
 	{
-		zbx_free(request->steps[request->steps_num].params);
-		zbx_free(request->steps[request->steps_num].error_handler_params);
+		trx_free(request->steps[request->steps_num].params);
+		trx_free(request->steps[request->steps_num].error_handler_params);
 	}
 
-	zbx_free(request->steps);
+	trx_free(request->steps);
 }
 
 /******************************************************************************
@@ -132,12 +132,12 @@ static void	request_free_steps(zbx_preprocessing_request_t *request)
  * Parameters: manager - [IN] the manager to be synchronized                  *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_sync_configuration(zbx_preprocessing_manager_t *manager)
+static void	preprocessor_sync_configuration(trx_preprocessing_manager_t *manager)
 {
-	zbx_hashset_iter_t	iter;
+	trx_hashset_iter_t	iter;
 	int			ts;
-	zbx_preproc_history_t	*vault;
-	zbx_preproc_item_t	*item;
+	trx_preproc_history_t	*vault;
+	trx_preproc_item_t	*item;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -147,33 +147,33 @@ static void	preprocessor_sync_configuration(zbx_preprocessing_manager_t *manager
 	if (ts != manager->cache_ts)
 	{
 		/* drop items with removed preprocessing steps from preprocessing history cache */
-		zbx_hashset_iter_reset(&manager->history_cache, &iter);
-		while (NULL != (vault = (zbx_preproc_history_t *)zbx_hashset_iter_next(&iter)))
+		trx_hashset_iter_reset(&manager->history_cache, &iter);
+		while (NULL != (vault = (trx_preproc_history_t *)trx_hashset_iter_next(&iter)))
 		{
-			if (NULL != zbx_hashset_search(&manager->item_config, &vault->itemid))
+			if (NULL != trx_hashset_search(&manager->item_config, &vault->itemid))
 				continue;
 
-			zbx_vector_ptr_clear_ext(&vault->history, (zbx_clean_func_t)zbx_preproc_op_history_free);
-			zbx_vector_ptr_destroy(&vault->history);
-			zbx_hashset_iter_remove(&iter);
+			trx_vector_ptr_clear_ext(&vault->history, (trx_clean_func_t)trx_preproc_op_history_free);
+			trx_vector_ptr_destroy(&vault->history);
+			trx_hashset_iter_remove(&iter);
 		}
 
 		/* reset preprocessing history for an item if its preprocessing step was modified */
-		zbx_hashset_iter_reset(&manager->item_config, &iter);
-		while (NULL != (item = (zbx_preproc_item_t *)zbx_hashset_iter_next(&iter)))
+		trx_hashset_iter_reset(&manager->item_config, &iter);
+		while (NULL != (item = (trx_preproc_item_t *)trx_hashset_iter_next(&iter)))
 		{
 			if (ts >= item->update_time)
 				continue;
 
-			if (NULL == (vault = (zbx_preproc_history_t *)zbx_hashset_search(&manager->history_cache,
+			if (NULL == (vault = (trx_preproc_history_t *)trx_hashset_search(&manager->history_cache,
 					&item->itemid)))
 			{
 				continue;
 			}
 
-			zbx_vector_ptr_clear_ext(&vault->history, (zbx_clean_func_t)zbx_preproc_op_history_free);
-			zbx_vector_ptr_destroy(&vault->history);
-			zbx_hashset_remove_direct(&manager->history_cache, vault);
+			trx_vector_ptr_clear_ext(&vault->history, (trx_clean_func_t)trx_preproc_op_history_free);
+			trx_vector_ptr_destroy(&vault->history);
+			trx_hashset_remove_direct(&manager->history_cache, vault);
 		}
 	}
 
@@ -192,27 +192,27 @@ static void	preprocessor_sync_configuration(zbx_preprocessing_manager_t *manager
  *             task    - [OUT] preprocessing task data                        *
  *                                                                            *
  ******************************************************************************/
-static zbx_uint32_t	preprocessor_create_task(zbx_preprocessing_manager_t *manager,
-		zbx_preprocessing_request_t *request, unsigned char **task)
+static trx_uint32_t	preprocessor_create_task(trx_preprocessing_manager_t *manager,
+		trx_preprocessing_request_t *request, unsigned char **task)
 {
-	zbx_variant_t		value;
-	zbx_preproc_history_t	*vault;
-	zbx_vector_ptr_t	*phistory;
+	trx_variant_t		value;
+	trx_preproc_history_t	*vault;
+	trx_vector_ptr_t	*phistory;
 
 	if (ISSET_LOG(request->value.result))
-		zbx_variant_set_str(&value, request->value.result->log->value);
+		trx_variant_set_str(&value, request->value.result->log->value);
 	else if (ISSET_UI64(request->value.result))
-		zbx_variant_set_ui64(&value, request->value.result->ui64);
+		trx_variant_set_ui64(&value, request->value.result->ui64);
 	else if (ISSET_DBL(request->value.result))
-		zbx_variant_set_dbl(&value, request->value.result->dbl);
+		trx_variant_set_dbl(&value, request->value.result->dbl);
 	else if (ISSET_STR(request->value.result))
-		zbx_variant_set_str(&value, request->value.result->str);
+		trx_variant_set_str(&value, request->value.result->str);
 	else if (ISSET_TEXT(request->value.result))
-		zbx_variant_set_str(&value, request->value.result->text);
+		trx_variant_set_str(&value, request->value.result->text);
 	else
 		THIS_SHOULD_NEVER_HAPPEN;
 
-	if (NULL != (vault = (zbx_preproc_history_t *)zbx_hashset_search(&manager->history_cache,
+	if (NULL != (vault = (trx_preproc_history_t *)trx_hashset_search(&manager->history_cache,
 				&request->value.itemid)))
 	{
 		phistory = &vault->history;
@@ -221,7 +221,7 @@ static zbx_uint32_t	preprocessor_create_task(zbx_preprocessing_manager_t *manage
 		phistory = NULL;
 
 
-	return zbx_preprocessor_pack_task(task, request->value.itemid, request->value_type, request->value.ts, &value,
+	return trx_preprocessor_pack_task(task, request->value.itemid, request->value_type, request->value.ts, &value,
 			phistory, request->steps, request->steps_num);
 }
 
@@ -236,10 +236,10 @@ static zbx_uint32_t	preprocessor_create_task(zbx_preprocessing_manager_t *manage
  *             queue_item - [IN] queued item                                  *
  *                                                                            *
  ******************************************************************************/
-static	void	preprocessor_set_request_state_done(zbx_preprocessing_manager_t *manager,
-		zbx_preprocessing_request_t *request, const zbx_list_item_t *queue_item)
+static	void	preprocessor_set_request_state_done(trx_preprocessing_manager_t *manager,
+		trx_preprocessing_request_t *request, const trx_list_item_t *queue_item)
 {
-	zbx_item_link_t	*index;
+	trx_item_link_t	*index;
 
 	request->state = REQUEST_STATE_DONE;
 
@@ -247,10 +247,10 @@ static	void	preprocessor_set_request_state_done(zbx_preprocessing_manager_t *man
 	if (NULL != request->pending)
 		request->pending->state = REQUEST_STATE_QUEUED;
 
-	if (NULL != (index = (zbx_item_link_t *)zbx_hashset_search(&manager->linked_items, &request->value.itemid)) &&
+	if (NULL != (index = (trx_item_link_t *)trx_hashset_search(&manager->linked_items, &request->value.itemid)) &&
 			queue_item == index->queue_item)
 	{
-		zbx_hashset_remove_direct(&manager->linked_items, index);
+		trx_hashset_remove_direct(&manager->linked_items, index);
 	}
 }
 
@@ -266,42 +266,42 @@ static	void	preprocessor_set_request_state_done(zbx_preprocessing_manager_t *man
  * Return value: pointer to the task object                                   *
  *                                                                            *
  ******************************************************************************/
-static void	*preprocessor_get_next_task(zbx_preprocessing_manager_t *manager, zbx_ipc_message_t *message)
+static void	*preprocessor_get_next_task(trx_preprocessing_manager_t *manager, trx_ipc_message_t *message)
 {
-	zbx_list_iterator_t			iterator;
-	zbx_preprocessing_request_t		*request = NULL;
+	trx_list_iterator_t			iterator;
+	trx_preprocessing_request_t		*request = NULL;
 	void					*task = NULL;
-	zbx_preprocessing_direct_request_t	*direct_request;
+	trx_preprocessing_direct_request_t	*direct_request;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED == zbx_list_pop(&manager->direct_queue, (void **)&direct_request))
+	if (SUCCEED == trx_list_pop(&manager->direct_queue, (void **)&direct_request))
 	{
 		*message = direct_request->message;
-		zbx_ipc_message_init(&direct_request->message);
+		trx_ipc_message_init(&direct_request->message);
 		task = direct_request;
 		goto out;
 	}
 
-	zbx_list_iterator_init(&manager->queue, &iterator);
-	while (SUCCEED == zbx_list_iterator_next(&iterator))
+	trx_list_iterator_init(&manager->queue, &iterator);
+	while (SUCCEED == trx_list_iterator_next(&iterator))
 	{
-		zbx_list_iterator_peek(&iterator, (void **)&request);
+		trx_list_iterator_peek(&iterator, (void **)&request);
 
 		if (REQUEST_STATE_QUEUED != request->state)
 			continue;
 
 		if (ITEM_STATE_NOTSUPPORTED == request->value.state)
 		{
-			zbx_preproc_history_t	*vault;
+			trx_preproc_history_t	*vault;
 
-			if (NULL != (vault = (zbx_preproc_history_t *) zbx_hashset_search(&manager->history_cache,
+			if (NULL != (vault = (trx_preproc_history_t *) trx_hashset_search(&manager->history_cache,
 					&request->value.itemid)))
 			{
-				zbx_vector_ptr_clear_ext(&vault->history,
-						(zbx_clean_func_t) zbx_preproc_op_history_free);
-				zbx_vector_ptr_destroy(&vault->history);
-				zbx_hashset_remove_direct(&manager->history_cache, vault);
+				trx_vector_ptr_clear_ext(&vault->history,
+						(trx_clean_func_t) trx_preproc_op_history_free);
+				trx_vector_ptr_destroy(&vault->history);
+				trx_hashset_remove_direct(&manager->history_cache, vault);
 			}
 
 			preprocessor_set_request_state_done(manager, request, iterator.current);
@@ -333,11 +333,11 @@ out:
  * Return value: pointer to the worker data                                   *
  *                                                                            *
  ******************************************************************************/
-static zbx_preprocessing_worker_t	*preprocessor_get_worker_by_client(zbx_preprocessing_manager_t *manager,
-		zbx_ipc_client_t *client)
+static trx_preprocessing_worker_t	*preprocessor_get_worker_by_client(trx_preprocessing_manager_t *manager,
+		trx_ipc_client_t *client)
 {
 	int				i;
-	zbx_preprocessing_worker_t	*worker = NULL;
+	trx_preprocessing_worker_t	*worker = NULL;
 
 	for (i = 0; i < manager->worker_count; i++)
 	{
@@ -368,7 +368,7 @@ static zbx_preprocessing_worker_t	*preprocessor_get_worker_by_client(zbx_preproc
  * Return value: pointer to the worker data or NULL if none                   *
  *                                                                            *
  ******************************************************************************/
-static zbx_preprocessing_worker_t	*preprocessor_get_free_worker(zbx_preprocessing_manager_t *manager)
+static trx_preprocessing_worker_t	*preprocessor_get_free_worker(trx_preprocessing_manager_t *manager)
 {
 	int	i;
 
@@ -390,25 +390,25 @@ static zbx_preprocessing_worker_t	*preprocessor_get_free_worker(zbx_preprocessin
  * Parameters: manager - [IN] preprocessing manager                           *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_assign_tasks(zbx_preprocessing_manager_t *manager)
+static void	preprocessor_assign_tasks(trx_preprocessing_manager_t *manager)
 {
-	zbx_preprocessing_worker_t	*worker;
+	trx_preprocessing_worker_t	*worker;
 	void				*data;
-	zbx_ipc_message_t		message;
+	trx_ipc_message_t		message;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	while (NULL != (worker = preprocessor_get_free_worker(manager)) &&
 			NULL != (data = preprocessor_get_next_task(manager, &message)))
 	{
-		if (FAIL == zbx_ipc_client_send(worker->client, message.code, message.data, message.size))
+		if (FAIL == trx_ipc_client_send(worker->client, message.code, message.data, message.size))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "cannot send data to preprocessing worker");
 			exit(EXIT_FAILURE);
 		}
 
 		worker->task = data;
-		zbx_ipc_message_clean(&message);
+		trx_ipc_message_clean(&message);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -423,15 +423,15 @@ static void	preprocessor_assign_tasks(zbx_preprocessing_manager_t *manager)
  * Parameters: value - [IN] value to be freed                                 *
  *                                                                            *
  ******************************************************************************/
-static void	preproc_item_value_clear(zbx_preproc_item_value_t *value)
+static void	preproc_item_value_clear(trx_preproc_item_value_t *value)
 {
-	zbx_free(value->error);
+	trx_free(value->error);
 	if (NULL != value->result)
 	{
 		free_result(value->result);
-		zbx_free(value->result);
+		trx_free(value->result);
 	}
-	zbx_free(value->ts);
+	trx_free(value->ts);
 }
 
 /******************************************************************************
@@ -443,11 +443,11 @@ static void	preproc_item_value_clear(zbx_preproc_item_value_t *value)
  * Parameters: request - [IN] request data to be freed                        *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_free_request(zbx_preprocessing_request_t *request)
+static void	preprocessor_free_request(trx_preprocessing_request_t *request)
 {
 	preproc_item_value_clear(&request->value);
 	request_free_steps(request);
-	zbx_free(request);
+	trx_free(request);
 }
 
 /******************************************************************************
@@ -459,11 +459,11 @@ static void	preprocessor_free_request(zbx_preprocessing_request_t *request)
  * Parameters: forward - [IN] forward data to be freed                        *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_free_direct_request(zbx_preprocessing_direct_request_t *direct_request)
+static void	preprocessor_free_direct_request(trx_preprocessing_direct_request_t *direct_request)
 {
-	zbx_ipc_client_release(direct_request->client);
-	zbx_ipc_message_clean(&direct_request->message);
-	zbx_free(direct_request);
+	trx_ipc_client_release(direct_request->client);
+	trx_ipc_message_clean(&direct_request->message);
+	trx_free(direct_request);
 }
 
 /******************************************************************************
@@ -475,7 +475,7 @@ static void	preprocessor_free_direct_request(zbx_preprocessing_direct_request_t 
  * Parameters: value - [IN] value to be added or sent                         *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_flush_value(const zbx_preproc_item_value_t *value)
+static void	preprocessor_flush_value(const trx_preproc_item_value_t *value)
 {
 	if (0 == (value->item_flags & TRX_FLAG_DISCOVERY_RULE) || 0 == (program_type & TRX_PROGRAM_TYPE_SERVER))
 	{
@@ -483,7 +483,7 @@ static void	preprocessor_flush_value(const zbx_preproc_item_value_t *value)
 				value->state, value->error);
 	}
 	else
-		zbx_lld_process_agent_result(value->itemid, value->result, value->ts, value->error);
+		trx_lld_process_agent_result(value->itemid, value->result, value->ts, value->error);
 }
 
 /******************************************************************************
@@ -496,15 +496,15 @@ static void	preprocessor_flush_value(const zbx_preproc_item_value_t *value)
  * Parameters: manager - [IN] preprocessing manager                           *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessing_flush_queue(zbx_preprocessing_manager_t *manager)
+static void	preprocessing_flush_queue(trx_preprocessing_manager_t *manager)
 {
-	zbx_preprocessing_request_t	*request;
-	zbx_list_iterator_t		iterator;
+	trx_preprocessing_request_t	*request;
+	trx_list_iterator_t		iterator;
 
-	zbx_list_iterator_init(&manager->queue, &iterator);
-	while (SUCCEED == zbx_list_iterator_next(&iterator))
+	trx_list_iterator_init(&manager->queue, &iterator);
+	while (SUCCEED == trx_list_iterator_next(&iterator))
 	{
-		zbx_list_iterator_peek(&iterator, (void **)&request);
+		trx_list_iterator_peek(&iterator, (void **)&request);
 
 		if (REQUEST_STATE_DONE != request->state)
 			break;
@@ -512,10 +512,10 @@ static void	preprocessing_flush_queue(zbx_preprocessing_manager_t *manager)
 		preprocessor_flush_value(&request->value);
 		preprocessor_free_request(request);
 
-		if (SUCCEED == zbx_list_iterator_equal(&iterator, &manager->priority_tail))
-			zbx_list_iterator_clear(&manager->priority_tail);
+		if (SUCCEED == trx_list_iterator_equal(&iterator, &manager->priority_tail))
+			trx_list_iterator_clear(&manager->priority_tail);
 
-		zbx_list_pop(&manager->queue, NULL);
+		trx_list_pop(&manager->queue, NULL);
 
 		manager->processed_num++;
 		manager->queued_num--;
@@ -533,13 +533,13 @@ static void	preprocessing_flush_queue(zbx_preprocessing_manager_t *manager)
  *             item        - [IN] item configuration data                     *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_link_items(zbx_preprocessing_manager_t *manager, zbx_list_item_t *enqueued_at,
-		zbx_preproc_item_t *item)
+static void	preprocessor_link_items(trx_preprocessing_manager_t *manager, trx_list_item_t *enqueued_at,
+		trx_preproc_item_t *item)
 {
 	int				i;
-	zbx_preprocessing_request_t	*request, *dep_request;
-	zbx_item_link_t			*index, index_local;
-	zbx_preproc_op_t		*op;
+	trx_preprocessing_request_t	*request, *dep_request;
+	trx_item_link_t			*index, index_local;
+	trx_preproc_op_t		*op;
 
 	for (i = 0; i < item->preproc_ops_num; i++)
 	{
@@ -555,10 +555,10 @@ static void	preprocessor_link_items(zbx_preprocessing_manager_t *manager, zbx_li
 	if (i != item->preproc_ops_num)
 	{
 		/* existing linked item*/
-		if (NULL != (index = (zbx_item_link_t *)zbx_hashset_search(&manager->linked_items, &item->itemid)))
+		if (NULL != (index = (trx_item_link_t *)trx_hashset_search(&manager->linked_items, &item->itemid)))
 		{
-			dep_request = (zbx_preprocessing_request_t *)(enqueued_at->data);
-			request = (zbx_preprocessing_request_t *)(index->queue_item->data);
+			dep_request = (trx_preprocessing_request_t *)(enqueued_at->data);
+			request = (trx_preprocessing_request_t *)(index->queue_item->data);
 
 			if (REQUEST_STATE_DONE != request->state)
 			{
@@ -573,7 +573,7 @@ static void	preprocessor_link_items(zbx_preprocessing_manager_t *manager, zbx_li
 			index_local.itemid = item->itemid;
 			index_local.queue_item = enqueued_at;
 
-			zbx_hashset_insert(&manager->linked_items, &index_local, sizeof(zbx_item_link_t));
+			trx_hashset_insert(&manager->linked_items, &index_local, sizeof(trx_item_link_t));
 		}
 	}
 }
@@ -588,43 +588,43 @@ static void	preprocessor_link_items(zbx_preprocessing_manager_t *manager, zbx_li
  *             source  - [IN]  value to be copied                             *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_copy_value(zbx_preproc_item_value_t *target, zbx_preproc_item_value_t *source)
+static void	preprocessor_copy_value(trx_preproc_item_value_t *target, trx_preproc_item_value_t *source)
 {
-	memcpy(target, source, sizeof(zbx_preproc_item_value_t));
+	memcpy(target, source, sizeof(trx_preproc_item_value_t));
 
 	if (NULL != source->error)
-		target->error = zbx_strdup(NULL, source->error);
+		target->error = trx_strdup(NULL, source->error);
 
 	if (NULL != source->ts)
 	{
-		target->ts = (zbx_timespec_t *)zbx_malloc(NULL, sizeof(zbx_timespec_t));
-		memcpy(target->ts, source->ts, sizeof(zbx_timespec_t));
+		target->ts = (trx_timespec_t *)trx_malloc(NULL, sizeof(trx_timespec_t));
+		memcpy(target->ts, source->ts, sizeof(trx_timespec_t));
 	}
 
 	if (NULL != source->result)
 	{
-		target->result = (AGENT_RESULT *)zbx_malloc(NULL, sizeof(AGENT_RESULT));
+		target->result = (AGENT_RESULT *)trx_malloc(NULL, sizeof(AGENT_RESULT));
 		memcpy(target->result, source->result, sizeof(AGENT_RESULT));
 
 		if (NULL != source->result->str)
-			target->result->str = zbx_strdup(NULL, source->result->str);
+			target->result->str = trx_strdup(NULL, source->result->str);
 
 		if (NULL != source->result->text)
-			target->result->text = zbx_strdup(NULL, source->result->text);
+			target->result->text = trx_strdup(NULL, source->result->text);
 
 		if (NULL != source->result->msg)
-			target->result->msg = zbx_strdup(NULL, source->result->msg);
+			target->result->msg = trx_strdup(NULL, source->result->msg);
 
 		if (NULL != source->result->log)
 		{
-			target->result->log = (zbx_log_t *)zbx_malloc(NULL, sizeof(zbx_log_t));
-			memcpy(target->result->log, source->result->log, sizeof(zbx_log_t));
+			target->result->log = (trx_log_t *)trx_malloc(NULL, sizeof(trx_log_t));
+			memcpy(target->result->log, source->result->log, sizeof(trx_log_t));
 
 			if (NULL != source->result->log->value)
-				target->result->log->value = zbx_strdup(NULL, source->result->log->value);
+				target->result->log->value = trx_strdup(NULL, source->result->log->value);
 
 			if (NULL != source->result->log->source)
-				target->result->log->source = zbx_strdup(NULL, source->result->log->source);
+				target->result->log->source = trx_strdup(NULL, source->result->log->source);
 		}
 	}
 }
@@ -641,20 +641,20 @@ static void	preprocessor_copy_value(zbx_preproc_item_value_t *target, zbx_prepro
  *                             (NULL for the end of the queue)                *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_enqueue(zbx_preprocessing_manager_t *manager, zbx_preproc_item_value_t *value,
-		zbx_list_item_t *master)
+static void	preprocessor_enqueue(trx_preprocessing_manager_t *manager, trx_preproc_item_value_t *value,
+		trx_list_item_t *master)
 {
-	zbx_preprocessing_request_t	*request;
-	zbx_preproc_item_t		*item, item_local;
-	zbx_list_item_t			*enqueued_at;
+	trx_preprocessing_request_t	*request;
+	trx_preproc_item_t		*item, item_local;
+	trx_list_item_t			*enqueued_at;
 	int				i;
-	zbx_preprocessing_states_t	state;
+	trx_preprocessing_states_t	state;
 	unsigned char			priority = TRX_PREPROC_PRIORITY_NONE;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid: " TRX_FS_UI64, __func__, value->itemid);
 
 	item_local.itemid = value->itemid;
-	item = (zbx_preproc_item_t *)zbx_hashset_search(&manager->item_config, &item_local);
+	item = (trx_preproc_item_t *)trx_hashset_search(&manager->item_config, &item_local);
 
 	/* override priority based on item type */
 	if (NULL != item && ITEM_TYPE_INTERNAL == item->type)
@@ -679,23 +679,23 @@ static void	preprocessor_enqueue(zbx_preprocessing_manager_t *manager, zbx_prepr
 	else
 		state = REQUEST_STATE_QUEUED;
 
-	request = (zbx_preprocessing_request_t *)zbx_malloc(NULL, sizeof(zbx_preprocessing_request_t));
-	memset(request, 0, sizeof(zbx_preprocessing_request_t));
-	memcpy(&request->value, value, sizeof(zbx_preproc_item_value_t));
+	request = (trx_preprocessing_request_t *)trx_malloc(NULL, sizeof(trx_preprocessing_request_t));
+	memset(request, 0, sizeof(trx_preprocessing_request_t));
+	memcpy(&request->value, value, sizeof(trx_preproc_item_value_t));
 	request->state = state;
 
 	if (REQUEST_STATE_QUEUED == state && ITEM_STATE_NOTSUPPORTED != value->state)
 	{
 		request->value_type = item->value_type;
-		request->steps = (zbx_preproc_op_t *)zbx_malloc(NULL, sizeof(zbx_preproc_op_t) * item->preproc_ops_num);
+		request->steps = (trx_preproc_op_t *)trx_malloc(NULL, sizeof(trx_preproc_op_t) * item->preproc_ops_num);
 		request->steps_num = item->preproc_ops_num;
 
 		for (i = 0; i < item->preproc_ops_num; i++)
 		{
 			request->steps[i].type = item->preproc_ops[i].type;
-			request->steps[i].params = zbx_strdup(NULL, item->preproc_ops[i].params);
+			request->steps[i].params = trx_strdup(NULL, item->preproc_ops[i].params);
 			request->steps[i].error_handler = item->preproc_ops[i].error_handler;
-			request->steps[i].error_handler_params = zbx_strdup(NULL,
+			request->steps[i].error_handler_params = trx_strdup(NULL,
 					item->preproc_ops[i].error_handler_params);
 		}
 
@@ -705,29 +705,29 @@ static void	preprocessor_enqueue(zbx_preprocessing_manager_t *manager, zbx_prepr
 	/* priority items are enqueued at the beginning of the line */
 	if (NULL == master && TRX_PREPROC_PRIORITY_FIRST == priority)
 	{
-		if (SUCCEED == zbx_list_iterator_isset(&manager->priority_tail))
+		if (SUCCEED == trx_list_iterator_isset(&manager->priority_tail))
 		{
 			/* insert after the last internal item */
-			zbx_list_insert_after(&manager->queue, manager->priority_tail.current, request, &enqueued_at);
-			zbx_list_iterator_update(&manager->priority_tail);
+			trx_list_insert_after(&manager->queue, manager->priority_tail.current, request, &enqueued_at);
+			trx_list_iterator_update(&manager->priority_tail);
 		}
 		else
 		{
 			/* no internal items in queue, insert at the beginning */
-			zbx_list_prepend(&manager->queue, request, &enqueued_at);
-			zbx_list_iterator_init(&manager->queue, &manager->priority_tail);
+			trx_list_prepend(&manager->queue, request, &enqueued_at);
+			trx_list_iterator_init(&manager->queue, &manager->priority_tail);
 		}
 
-		zbx_list_iterator_next(&manager->priority_tail);
+		trx_list_iterator_next(&manager->priority_tail);
 	}
 	else
 	{
-		zbx_list_insert_after(&manager->queue, master, request, &enqueued_at);
-		zbx_list_iterator_update(&manager->priority_tail);
+		trx_list_insert_after(&manager->queue, master, request, &enqueued_at);
+		trx_list_iterator_update(&manager->priority_tail);
 
 		/* move internal item tail position if we are inserting after last internal item */
 		if (NULL != master && master == manager->priority_tail.current)
-			zbx_list_iterator_next(&manager->priority_tail);
+			trx_list_iterator_next(&manager->priority_tail);
 	}
 
 	if (REQUEST_STATE_QUEUED == request->state)
@@ -754,19 +754,19 @@ out:
  *                                 this item                                  *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_enqueue_dependent(zbx_preprocessing_manager_t *manager,
-		zbx_preproc_item_value_t *source_value, zbx_list_item_t *master)
+static void	preprocessor_enqueue_dependent(trx_preprocessing_manager_t *manager,
+		trx_preproc_item_value_t *source_value, trx_list_item_t *master)
 {
 	int				i;
-	zbx_preproc_item_t		*item, item_local;
-	zbx_preproc_item_value_t	value;
+	trx_preproc_item_t		*item, item_local;
+	trx_preproc_item_value_t	value;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() itemid: " TRX_FS_UI64, __func__, source_value->itemid);
 
 	if (NULL != source_value->result && ISSET_VALUE(source_value->result))
 	{
 		item_local.itemid = source_value->itemid;
-		if (NULL != (item = (zbx_preproc_item_t *)zbx_hashset_search(&manager->item_config, &item_local)) &&
+		if (NULL != (item = (trx_preproc_item_t *)trx_hashset_search(&manager->item_config, &item_local)) &&
 				0 != item->dep_itemids_num)
 		{
 			for (i = item->dep_itemids_num - 1; i >= 0; i--)
@@ -795,10 +795,10 @@ static void	preprocessor_enqueue_dependent(zbx_preprocessing_manager_t *manager,
  *             message - [IN] packed preprocessing request                    *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_add_request(zbx_preprocessing_manager_t *manager, zbx_ipc_message_t *message)
+static void	preprocessor_add_request(trx_preprocessing_manager_t *manager, trx_ipc_message_t *message)
 {
-	zbx_uint32_t			offset = 0;
-	zbx_preproc_item_value_t	value;
+	trx_uint32_t			offset = 0;
+	trx_preproc_item_value_t	value;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -806,7 +806,7 @@ static void	preprocessor_add_request(zbx_preprocessing_manager_t *manager, zbx_i
 
 	while (offset < message->size)
 	{
-		offset += zbx_preprocessor_unpack_value(&value, message->data + offset);
+		offset += trx_preprocessor_unpack_value(&value, message->data + offset);
 		preprocessor_enqueue(manager, &value, NULL);
 	}
 
@@ -826,18 +826,18 @@ static void	preprocessor_add_request(zbx_preprocessing_manager_t *manager, zbx_i
  *             message - [IN] packed preprocessing request                    *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_add_test_request(zbx_preprocessing_manager_t *manager, zbx_ipc_client_t *client,
-		zbx_ipc_message_t *message)
+static void	preprocessor_add_test_request(trx_preprocessing_manager_t *manager, trx_ipc_client_t *client,
+		trx_ipc_message_t *message)
 {
-	zbx_preprocessing_direct_request_t	*direct_request;
+	trx_preprocessing_direct_request_t	*direct_request;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_ipc_client_addref(client);
-	direct_request = zbx_malloc(NULL, sizeof(zbx_preprocessing_direct_request_t));
+	trx_ipc_client_addref(client);
+	direct_request = trx_malloc(NULL, sizeof(trx_preprocessing_direct_request_t));
 	direct_request->client = client;
-	zbx_ipc_message_copy(&direct_request->message, message);
-	zbx_list_append(&manager->direct_queue, direct_request, NULL);
+	trx_ipc_message_copy(&direct_request->message, message);
+	trx_list_append(&manager->direct_queue, direct_request, NULL);
 
 	preprocessor_assign_tasks(manager);
 	preprocessing_flush_queue(manager);
@@ -856,10 +856,10 @@ static void	preprocessor_add_test_request(zbx_preprocessing_manager_t *manager, 
  *             error   - [IN] error message (if any)                          *
  *                                                                            *
  ******************************************************************************/
-static int	preprocessor_set_variant_result(zbx_preprocessing_request_t *request, zbx_variant_t *value, char *error)
+static int	preprocessor_set_variant_result(trx_preprocessing_request_t *request, trx_variant_t *value, char *error)
 {
 	int		type, ret = FAIL;
-	zbx_log_t	*log;
+	trx_log_t	*log;
 
 	if (NULL != error)
 	{
@@ -897,7 +897,7 @@ static int	preprocessor_set_variant_result(zbx_preprocessing_request_t *request,
 			type = TRX_VARIANT_STR;
 	}
 
-	if (FAIL != (ret = zbx_variant_convert(value, type)))
+	if (FAIL != (ret = trx_variant_convert(value, type)))
 	{
 		switch (request->value_type)
 		{
@@ -915,12 +915,12 @@ static int	preprocessor_set_variant_result(zbx_preprocessing_request_t *request,
 				if (ISSET_LOG(request->value.result))
 				{
 					log = GET_LOG_RESULT(request->value.result);
-					zbx_free(log->value);
+					trx_free(log->value);
 				}
 				else
 				{
-					log = (zbx_log_t *)zbx_malloc(NULL, sizeof(zbx_log_t));
-					memset(log, 0, sizeof(zbx_log_t));
+					log = (trx_log_t *)trx_malloc(NULL, sizeof(trx_log_t));
+					memset(log, 0, sizeof(trx_log_t));
 					SET_LOG_RESULT(request->value.result, log);
 				}
 				log->value = value->data.str;
@@ -936,14 +936,14 @@ static int	preprocessor_set_variant_result(zbx_preprocessing_request_t *request,
 				break;
 		}
 
-		zbx_variant_set_none(value);
+		trx_variant_set_none(value);
 	}
 	else
 	{
-		zbx_free(request->value.error);
-		request->value.error = zbx_dsprintf(NULL, "Value \"%s\" of type \"%s\" is not suitable for"
-			" value type \"%s\"", zbx_variant_value_desc(value), zbx_variant_type_desc(value),
-			zbx_item_value_type_string((zbx_item_value_type_t)request->value_type));
+		trx_free(request->value.error);
+		request->value.error = trx_dsprintf(NULL, "Value \"%s\" of type \"%s\" is not suitable for"
+			" value type \"%s\"", trx_variant_value_desc(value), trx_variant_type_desc(value),
+			trx_item_value_type_string((trx_item_value_type_t)request->value_type));
 
 		request->value.state = ITEM_STATE_NOTSUPPORTED;
 		ret = FAIL;
@@ -964,53 +964,53 @@ out:
  *             message - [IN] packed preprocessing result                     *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_add_result(zbx_preprocessing_manager_t *manager, zbx_ipc_client_t *client,
-		zbx_ipc_message_t *message)
+static void	preprocessor_add_result(trx_preprocessing_manager_t *manager, trx_ipc_client_t *client,
+		trx_ipc_message_t *message)
 {
-	zbx_preprocessing_worker_t	*worker;
-	zbx_preprocessing_request_t	*request;
-	zbx_variant_t			value;
+	trx_preprocessing_worker_t	*worker;
+	trx_preprocessing_request_t	*request;
+	trx_variant_t			value;
 	char				*error;
-	zbx_vector_ptr_t		history;
-	zbx_preproc_history_t		*vault;
-	zbx_list_item_t			*node;
+	trx_vector_ptr_t		history;
+	trx_preproc_history_t		*vault;
+	trx_list_item_t			*node;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	worker = preprocessor_get_worker_by_client(manager, client);
-	node = (zbx_list_item_t *)worker->task;
-	request = (zbx_preprocessing_request_t *)node->data;
+	node = (trx_list_item_t *)worker->task;
+	request = (trx_preprocessing_request_t *)node->data;
 
-	zbx_vector_ptr_create(&history);
-	zbx_preprocessor_unpack_result(&value, &history, &error, message->data);
+	trx_vector_ptr_create(&history);
+	trx_preprocessor_unpack_result(&value, &history, &error, message->data);
 
-	if (NULL != (vault = (zbx_preproc_history_t *)zbx_hashset_search(&manager->history_cache,
+	if (NULL != (vault = (trx_preproc_history_t *)trx_hashset_search(&manager->history_cache,
 			&request->value.itemid)))
 	{
-		zbx_vector_ptr_clear_ext(&vault->history, (zbx_clean_func_t)zbx_preproc_op_history_free);
+		trx_vector_ptr_clear_ext(&vault->history, (trx_clean_func_t)trx_preproc_op_history_free);
 	}
 
 	if (0 != history.values_num)
 	{
 		if (NULL == vault)
 		{
-			zbx_preproc_history_t	history_local;
+			trx_preproc_history_t	history_local;
 
 			history_local.itemid = request->value.itemid;
-			vault = (zbx_preproc_history_t *)zbx_hashset_insert(&manager->history_cache, &history_local,
+			vault = (trx_preproc_history_t *)trx_hashset_insert(&manager->history_cache, &history_local,
 					sizeof(history_local));
-			zbx_vector_ptr_create(&vault->history);
+			trx_vector_ptr_create(&vault->history);
 		}
 
-		zbx_vector_ptr_append_array(&vault->history, history.values, history.values_num);
-		zbx_vector_ptr_clear(&history);
+		trx_vector_ptr_append_array(&vault->history, history.values, history.values_num);
+		trx_vector_ptr_clear(&history);
 	}
 	else
 	{
 		if (NULL != vault)
 		{
-			zbx_vector_ptr_destroy(&vault->history);
-			zbx_hashset_remove_direct(&manager->history_cache, vault);
+			trx_vector_ptr_destroy(&vault->history);
+			trx_hashset_remove_direct(&manager->history_cache, vault);
 		}
 	}
 
@@ -1020,14 +1020,14 @@ static void	preprocessor_add_result(zbx_preprocessing_manager_t *manager, zbx_ip
 		preprocessor_enqueue_dependent(manager, &request->value, worker->task);
 
 	worker->task = NULL;
-	zbx_variant_clear(&value);
+	trx_variant_clear(&value);
 
 	manager->preproc_num--;
 
 	preprocessor_assign_tasks(manager);
 	preprocessing_flush_queue(manager);
 
-	zbx_vector_ptr_destroy(&history);
+	trx_vector_ptr_destroy(&history);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -1046,20 +1046,20 @@ static void	preprocessor_add_result(zbx_preprocessing_manager_t *manager, zbx_ip
  *           client as they are.                                              *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_flush_test_result(zbx_preprocessing_manager_t *manager, zbx_ipc_client_t *client,
-		zbx_ipc_message_t *message)
+static void	preprocessor_flush_test_result(trx_preprocessing_manager_t *manager, trx_ipc_client_t *client,
+		trx_ipc_message_t *message)
 {
-	zbx_preprocessing_worker_t		*worker;
-	zbx_preprocessing_direct_request_t	*direct_request;
+	trx_preprocessing_worker_t		*worker;
+	trx_preprocessing_direct_request_t	*direct_request;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	worker = preprocessor_get_worker_by_client(manager, client);
-	direct_request = (zbx_preprocessing_direct_request_t *)worker->task;
+	direct_request = (trx_preprocessing_direct_request_t *)worker->task;
 
 	/* forward the response to the client */
-	if (SUCCEED == zbx_ipc_client_connected(direct_request->client))
-		zbx_ipc_client_send(direct_request->client, message->code, message->data, message->size);
+	if (SUCCEED == trx_ipc_client_connected(direct_request->client))
+		trx_ipc_client_send(direct_request->client, message->code, message->data, message->size);
 
 	worker->task = NULL;
 	preprocessor_free_direct_request(direct_request);
@@ -1079,21 +1079,21 @@ static void	preprocessor_flush_test_result(zbx_preprocessing_manager_t *manager,
  * Parameters: manager - [IN] the manager to initialize                       *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_init_manager(zbx_preprocessing_manager_t *manager)
+static void	preprocessor_init_manager(trx_preprocessing_manager_t *manager)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() workers: %d", __func__, CONFIG_PREPROCESSOR_FORKS);
 
-	memset(manager, 0, sizeof(zbx_preprocessing_manager_t));
+	memset(manager, 0, sizeof(trx_preprocessing_manager_t));
 
-	manager->workers = (zbx_preprocessing_worker_t *)zbx_calloc(NULL, CONFIG_PREPROCESSOR_FORKS,
-			sizeof(zbx_preprocessing_worker_t));
-	zbx_list_create(&manager->queue);
-	zbx_list_create(&manager->direct_queue);
-	zbx_hashset_create_ext(&manager->item_config, 0, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC,
-			(zbx_clean_func_t)preproc_item_clear,
+	manager->workers = (trx_preprocessing_worker_t *)trx_calloc(NULL, CONFIG_PREPROCESSOR_FORKS,
+			sizeof(trx_preprocessing_worker_t));
+	trx_list_create(&manager->queue);
+	trx_list_create(&manager->direct_queue);
+	trx_hashset_create_ext(&manager->item_config, 0, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC,
+			(trx_clean_func_t)preproc_item_clear,
 			TRX_DEFAULT_MEM_MALLOC_FUNC, TRX_DEFAULT_MEM_REALLOC_FUNC, TRX_DEFAULT_MEM_FREE_FUNC);
-	zbx_hashset_create(&manager->linked_items, 0, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_hashset_create(&manager->history_cache, 1000, TRX_DEFAULT_UINT64_HASH_FUNC,
+	trx_hashset_create(&manager->linked_items, 0, TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_hashset_create(&manager->history_cache, 1000, TRX_DEFAULT_UINT64_HASH_FUNC,
 			TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -1110,10 +1110,10 @@ static void	preprocessor_init_manager(zbx_preprocessing_manager_t *manager)
  *             message - [IN] message received by preprocessing manager       *
  *                                                                            *
  ******************************************************************************/
-static void preprocessor_register_worker(zbx_preprocessing_manager_t *manager, zbx_ipc_client_t *client,
-		zbx_ipc_message_t *message)
+static void preprocessor_register_worker(trx_preprocessing_manager_t *manager, trx_ipc_client_t *client,
+		trx_ipc_message_t *message)
 {
-	zbx_preprocessing_worker_t	*worker = NULL;
+	trx_preprocessing_worker_t	*worker = NULL;
 	pid_t				ppid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -1122,7 +1122,7 @@ static void preprocessor_register_worker(zbx_preprocessing_manager_t *manager, z
 
 	if (ppid != getppid())
 	{
-		zbx_ipc_client_close(client);
+		trx_ipc_client_close(client);
 		treegix_log(LOG_LEVEL_DEBUG, "refusing connection from foreign process");
 	}
 	else
@@ -1133,7 +1133,7 @@ static void preprocessor_register_worker(zbx_preprocessing_manager_t *manager, z
 			exit(EXIT_FAILURE);
 		}
 
-		worker = (zbx_preprocessing_worker_t *)&manager->workers[manager->worker_count++];
+		worker = (trx_preprocessing_worker_t *)&manager->workers[manager->worker_count++];
 		worker->client = client;
 
 		preprocessor_assign_tasks(manager);
@@ -1151,75 +1151,75 @@ static void preprocessor_register_worker(zbx_preprocessing_manager_t *manager, z
  * Parameters: manager - [IN] the manager to destroy                          *
  *                                                                            *
  ******************************************************************************/
-static void	preprocessor_destroy_manager(zbx_preprocessing_manager_t *manager)
+static void	preprocessor_destroy_manager(trx_preprocessing_manager_t *manager)
 {
-	zbx_preprocessing_request_t		*request;
-	zbx_preprocessing_direct_request_t	*direct_request;
+	trx_preprocessing_request_t		*request;
+	trx_preprocessing_direct_request_t	*direct_request;
 
-	zbx_free(manager->workers);
+	trx_free(manager->workers);
 
 	/* this is the place where values are lost */
-	while (SUCCEED == zbx_list_pop(&manager->direct_queue, (void **)&direct_request))
+	while (SUCCEED == trx_list_pop(&manager->direct_queue, (void **)&direct_request))
 		preprocessor_free_direct_request(direct_request);
 
-	zbx_list_destroy(&manager->direct_queue);
+	trx_list_destroy(&manager->direct_queue);
 
-	while (SUCCEED == zbx_list_pop(&manager->queue, (void **)&request))
+	while (SUCCEED == trx_list_pop(&manager->queue, (void **)&request))
 		preprocessor_free_request(request);
 
-	zbx_list_destroy(&manager->queue);
+	trx_list_destroy(&manager->queue);
 
-	zbx_hashset_destroy(&manager->item_config);
-	zbx_hashset_destroy(&manager->linked_items);
-	zbx_hashset_destroy(&manager->history_cache);
+	trx_hashset_destroy(&manager->item_config);
+	trx_hashset_destroy(&manager->linked_items);
+	trx_hashset_destroy(&manager->history_cache);
 }
 
 TRX_THREAD_ENTRY(preprocessing_manager_thread, args)
 {
-	zbx_ipc_service_t		service;
+	trx_ipc_service_t		service;
 	char				*error = NULL;
-	zbx_ipc_client_t		*client;
-	zbx_ipc_message_t		*message;
-	zbx_preprocessing_manager_t	manager;
+	trx_ipc_client_t		*client;
+	trx_ipc_message_t		*message;
+	trx_preprocessing_manager_t	manager;
 	int				ret;
 	double				time_stat, time_idle = 0, time_now, time_flush, sec;
 
 #define	STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
-	zbx_setproctitle("%s #%d starting", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d starting", get_process_type_string(process_type), process_num);
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
-	if (FAIL == zbx_ipc_service_start(&service, TRX_IPC_SERVICE_PREPROCESSING, &error))
+	if (FAIL == trx_ipc_service_start(&service, TRX_IPC_SERVICE_PREPROCESSING, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot start preprocessing service: %s", error);
-		zbx_free(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
 	preprocessor_init_manager(&manager);
 
 	/* initialize statistics */
-	time_stat = zbx_time();
+	time_stat = trx_time();
 	time_flush = time_stat;
 
-	zbx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
 
 	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
 	while (TRX_IS_RUNNING())
 	{
-		time_now = zbx_time();
+		time_now = trx_time();
 
 		if (STAT_INTERVAL < time_now - time_stat)
 		{
-			zbx_setproctitle("%s #%d [queued " TRX_FS_UI64 ", processed " TRX_FS_UI64 " values, idle "
+			trx_setproctitle("%s #%d [queued " TRX_FS_UI64 ", processed " TRX_FS_UI64 " values, idle "
 					TRX_FS_DBL " sec during " TRX_FS_DBL " sec]",
 					get_process_type_string(process_type), process_num,
 					manager.queued_num, manager.processed_num, time_idle, time_now - time_stat);
@@ -1230,10 +1230,10 @@ TRX_THREAD_ENTRY(preprocessing_manager_thread, args)
 		}
 
 		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
-		ret = zbx_ipc_service_recv(&service, TRX_PREPROCESSING_MANAGER_DELAY, &client, &message);
+		ret = trx_ipc_service_recv(&service, TRX_PREPROCESSING_MANAGER_DELAY, &client, &message);
 		update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
-		sec = zbx_time();
-		zbx_update_env(sec);
+		sec = trx_time();
+		trx_update_env(sec);
 
 		if (TRX_IPC_RECV_IMMEDIATE != ret)
 			time_idle += sec - time_now;
@@ -1252,8 +1252,8 @@ TRX_THREAD_ENTRY(preprocessing_manager_thread, args)
 					preprocessor_add_result(&manager, client, message);
 					break;
 				case TRX_IPC_PREPROCESSOR_QUEUE:
-					zbx_ipc_client_send(client, message->code, (unsigned char *)&manager.queued_num,
-							sizeof(zbx_uint64_t));
+					trx_ipc_client_send(client, message->code, (unsigned char *)&manager.queued_num,
+							sizeof(trx_uint64_t));
 					break;
 				case TRX_IPC_PREPROCESSOR_TEST_REQUEST:
 					preprocessor_add_test_request(&manager, client, message);
@@ -1263,11 +1263,11 @@ TRX_THREAD_ENTRY(preprocessing_manager_thread, args)
 					break;
 			}
 
-			zbx_ipc_message_free(message);
+			trx_ipc_message_free(message);
 		}
 
 		if (NULL != client)
-			zbx_ipc_client_release(client);
+			trx_ipc_client_release(client);
 
 		if (0 == manager.preproc_num || 1 < time_now - time_flush)
 		{
@@ -1276,12 +1276,12 @@ TRX_THREAD_ENTRY(preprocessing_manager_thread, args)
 		}
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 
-	zbx_ipc_service_close(&service);
+	trx_ipc_service_close(&service);
 	preprocessor_destroy_manager(&manager);
 #undef STAT_INTERVAL
 }

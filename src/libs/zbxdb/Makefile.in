@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxdb
+subdir = src/libs/trxdb
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxdb_a_AR = $(AR) $(ARFLAGS)
-libzbxdb_a_LIBADD =
-am_libzbxdb_a_OBJECTS = libzbxdb_a-db.$(OBJEXT)
-libzbxdb_a_OBJECTS = $(am_libzbxdb_a_OBJECTS)
+libtrxdb_a_AR = $(AR) $(ARFLAGS)
+libtrxdb_a_LIBADD =
+am_libtrxdb_a_OBJECTS = libtrxdb_a-db.$(OBJEXT)
+libtrxdb_a_OBJECTS = $(am_libtrxdb_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -153,8 +153,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxdb_a_SOURCES)
-DIST_SOURCES = $(libzbxdb_a_SOURCES)
+SOURCES = $(libtrxdb_a_SOURCES)
+DIST_SOURCES = $(libtrxdb_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -378,11 +378,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxdb.a
-libzbxdb_a_SOURCES = \
+noinst_LIBRARIES = libtrxdb.a
+libtrxdb_a_SOURCES = \
 	db.c
 
-libzbxdb_a_CFLAGS = @DB_CFLAGS@
+libtrxdb_a_CFLAGS = @DB_CFLAGS@
 all: all-am
 
 .SUFFIXES:
@@ -396,9 +396,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxdb/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxdb/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxdb/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxdb/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -420,10 +420,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxdb.a: $(libzbxdb_a_OBJECTS) $(libzbxdb_a_DEPENDENCIES) $(EXTRA_libzbxdb_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxdb.a
-	$(AM_V_AR)$(libzbxdb_a_AR) libzbxdb.a $(libzbxdb_a_OBJECTS) $(libzbxdb_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxdb.a
+libtrxdb.a: $(libtrxdb_a_OBJECTS) $(libtrxdb_a_DEPENDENCIES) $(EXTRA_libtrxdb_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxdb.a
+	$(AM_V_AR)$(libtrxdb_a_AR) libtrxdb.a $(libtrxdb_a_OBJECTS) $(libtrxdb_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxdb.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -431,7 +431,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdb_a-db.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdb_a-db.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -449,19 +449,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxdb_a-db.o: db.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdb_a_CFLAGS) $(CFLAGS) -MT libzbxdb_a-db.o -MD -MP -MF $(DEPDIR)/libzbxdb_a-db.Tpo -c -o libzbxdb_a-db.o `test -f 'db.c' || echo '$(srcdir)/'`db.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdb_a-db.Tpo $(DEPDIR)/libzbxdb_a-db.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='db.c' object='libzbxdb_a-db.o' libtool=no @AMDEPBACKSLASH@
+libtrxdb_a-db.o: db.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdb_a_CFLAGS) $(CFLAGS) -MT libtrxdb_a-db.o -MD -MP -MF $(DEPDIR)/libtrxdb_a-db.Tpo -c -o libtrxdb_a-db.o `test -f 'db.c' || echo '$(srcdir)/'`db.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdb_a-db.Tpo $(DEPDIR)/libtrxdb_a-db.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='db.c' object='libtrxdb_a-db.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdb_a_CFLAGS) $(CFLAGS) -c -o libzbxdb_a-db.o `test -f 'db.c' || echo '$(srcdir)/'`db.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdb_a_CFLAGS) $(CFLAGS) -c -o libtrxdb_a-db.o `test -f 'db.c' || echo '$(srcdir)/'`db.c
 
-libzbxdb_a-db.obj: db.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdb_a_CFLAGS) $(CFLAGS) -MT libzbxdb_a-db.obj -MD -MP -MF $(DEPDIR)/libzbxdb_a-db.Tpo -c -o libzbxdb_a-db.obj `if test -f 'db.c'; then $(CYGPATH_W) 'db.c'; else $(CYGPATH_W) '$(srcdir)/db.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdb_a-db.Tpo $(DEPDIR)/libzbxdb_a-db.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='db.c' object='libzbxdb_a-db.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdb_a-db.obj: db.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdb_a_CFLAGS) $(CFLAGS) -MT libtrxdb_a-db.obj -MD -MP -MF $(DEPDIR)/libtrxdb_a-db.Tpo -c -o libtrxdb_a-db.obj `if test -f 'db.c'; then $(CYGPATH_W) 'db.c'; else $(CYGPATH_W) '$(srcdir)/db.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdb_a-db.Tpo $(DEPDIR)/libtrxdb_a-db.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='db.c' object='libtrxdb_a-db.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdb_a_CFLAGS) $(CFLAGS) -c -o libzbxdb_a-db.obj `if test -f 'db.c'; then $(CYGPATH_W) 'db.c'; else $(CYGPATH_W) '$(srcdir)/db.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdb_a_CFLAGS) $(CFLAGS) -c -o libtrxdb_a-db.obj `if test -f 'db.c'; then $(CYGPATH_W) 'db.c'; else $(CYGPATH_W) '$(srcdir)/db.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

@@ -200,7 +200,7 @@ foreach ($data['triggers'] as $tnum => $trigger) {
 		TRX_FLAG_DISCOVERY_NORMAL
 	);
 
-	$trigger['hosts'] = zbx_toHash($trigger['hosts'], 'hostid');
+	$trigger['hosts'] = trx_toHash($trigger['hosts'], 'hostid');
 
 	if ($trigger['discoveryRule']) {
 		$description[] = (new CLink(
@@ -227,7 +227,7 @@ foreach ($data['triggers'] as $tnum => $trigger) {
 			$dep_trigger = $data['dep_triggers'][$dependency['triggerid']];
 
 			$dep_trigger_desc = CHtml::encode(
-				implode(', ', zbx_objectValues($dep_trigger['hosts'], 'name')).NAME_DELIMITER.$dep_trigger['description']
+				implode(', ', trx_objectValues($dep_trigger['hosts'], 'name')).NAME_DELIMITER.$dep_trigger['description']
 			);
 
 			$trigger_deps[] = (new CLink($dep_trigger_desc,

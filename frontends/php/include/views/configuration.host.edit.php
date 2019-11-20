@@ -81,7 +81,7 @@ $hostList
 
 // interfaces for normal hosts
 if ($data['flags'] != TRX_FLAG_DISCOVERY_CREATED) {
-	zbx_add_post_js($data['interfaces']
+	trx_add_post_js($data['interfaces']
 		? 'hostInterfacesManager.add('.CJs::encodeJson($data['interfaces']).');'
 		: 'hostInterfacesManager.addNew("agent");');
 
@@ -166,8 +166,8 @@ else {
 	foreach ($data['interfaces'] as $interface) {
 		$existingInterfaceTypes[$interface['type']] = true;
 	}
-	zbx_add_post_js('hostInterfacesManager.add('.CJs::encodeJson($data['interfaces']).');');
-	zbx_add_post_js('hostInterfacesManager.disable();');
+	trx_add_post_js('hostInterfacesManager.add('.CJs::encodeJson($data['interfaces']).');');
+	trx_add_post_js('hostInterfacesManager.disable();');
 
 	$hostList->addVar('interfaces', $data['interfaces']);
 

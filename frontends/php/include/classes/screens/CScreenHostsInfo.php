@@ -21,7 +21,7 @@ class CScreenHostsInfo extends CScreenBase {
 
 		if ($this->screenitem['resourceid'] != 0) {
 			$cond_from = ',hosts_groups hg';
-			$cond_where = ' AND hg.hostid=h.hostid AND hg.groupid='.zbx_dbstr($this->screenitem['resourceid']);
+			$cond_where = ' AND hg.hostid=h.hostid AND hg.groupid='.trx_dbstr($this->screenitem['resourceid']);
 		}
 		else {
 			$cond_from = '';
@@ -98,7 +98,7 @@ class CScreenHostsInfo extends CScreenBase {
 		}
 
 		$footer = (new CList())
-			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
+			->addItem(_s('Updated: %s', trx_date2str(TIME_FORMAT_SECONDS)))
 			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput(new CUiWidget(uniqid(), [$header, $table, $footer]));

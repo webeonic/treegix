@@ -37,8 +37,8 @@ static int	DBpatch_2050001(void)
 		char	*param, *oid_esc;
 		size_t	oid_offset = 0;
 
-		param = zbx_strdup(NULL, row[1]);
-		zbx_snprintf_alloc(&oid, &oid_alloc, &oid_offset, "discovery[{#SNMPVALUE},%s]", param);
+		param = trx_strdup(NULL, row[1]);
+		trx_snprintf_alloc(&oid, &oid_alloc, &oid_offset, "discovery[{#SNMPVALUE},%s]", param);
 
 		if (FAIL == quote_key_param(&param, 0))
 		{
@@ -46,7 +46,7 @@ static int	DBpatch_2050001(void)
 					" OID contains invalid character(s)", row[1]);
 			rc = TRX_DB_OK;
 		}
-		else if (255 < oid_offset && 255 < zbx_strlen_utf8(oid)) /* 255 - ITEM_SNMP_OID_LEN */
+		else if (255 < oid_offset && 255 < trx_strlen_utf8(oid)) /* 255 - ITEM_SNMP_OID_LEN */
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot convert SNMP discovery OID \"%s\":"
 					" resulting OID is too long", row[1]);
@@ -58,10 +58,10 @@ static int	DBpatch_2050001(void)
 
 			rc = DBexecute("update items set snmp_oid='%s' where itemid=%s", oid_esc, row[0]);
 
-			zbx_free(oid_esc);
+			trx_free(oid_esc);
 		}
 
-		zbx_free(param);
+		trx_free(param);
 
 		if (TRX_DB_OK > rc)
 			goto out;
@@ -70,7 +70,7 @@ static int	DBpatch_2050001(void)
 	ret = SUCCEED;
 out:
 	DBfree_result(result);
-	zbx_free(oid);
+	trx_free(oid);
 
 	return ret;
 }
@@ -178,7 +178,7 @@ static int	DBpatch_2050012(void)
 			continue;
 		}
 
-		key = zbx_strdup(key, row[2]);
+		key = trx_strdup(key, row[2]);
 
 		if (0 == strcmp("service.ntp", param))
 		{
@@ -220,11 +220,11 @@ static int	DBpatch_2050012(void)
 		}
 		DBfree_result(result2);
 
-		zbx_free(key_esc);
+		trx_free(key_esc);
 	}
 	DBfree_result(result);
 
-	zbx_free(key);
+	trx_free(key);
 
 	return ret;
 }
@@ -806,14 +806,14 @@ static int	DBpatch_2050092(void)
 			continue;
 
 		url_offset = 0;
-		zbx_strncpy_alloc(&url, &url_alloc, &url_offset, row[1], start - row[1]);
-		zbx_strcpy_alloc(&url, &url_alloc, &url_offset, "treegix.php?action=");
-		zbx_strcpy_alloc(&url, &url_alloc, &url_offset, url_map[i + 1]);
+		trx_strncpy_alloc(&url, &url_alloc, &url_offset, row[1], start - row[1]);
+		trx_strcpy_alloc(&url, &url_alloc, &url_offset, "treegix.php?action=");
+		trx_strcpy_alloc(&url, &url_alloc, &url_offset, url_map[i + 1]);
 
 		if ('\0' != *end)
 		{
-			zbx_chrcpy_alloc(&url, &url_alloc, &url_offset, '&');
-			zbx_strcpy_alloc(&url, &url_alloc, &url_offset, end + 1);
+			trx_chrcpy_alloc(&url, &url_alloc, &url_offset, '&');
+			trx_strcpy_alloc(&url, &url_alloc, &url_offset, end + 1);
 		}
 
 		/* 255 - user url field size */
@@ -826,7 +826,7 @@ static int	DBpatch_2050092(void)
 
 		url_esc = DBdyn_escape_string(url);
 		rc = DBexecute("update users set url='%s' where userid=%s", url_esc, row[0]);
-		zbx_free(url_esc);
+		trx_free(url_esc);
 
 		if (TRX_DB_OK > rc)
 			goto out;
@@ -834,7 +834,7 @@ static int	DBpatch_2050092(void)
 
 	ret = SUCCEED;
 out:
-	zbx_free(url);
+	trx_free(url);
 	DBfree_result(result);
 
 	return ret;

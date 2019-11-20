@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "comms.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 
 #include "treegix_stats.h"
 
@@ -21,27 +21,27 @@
  ******************************************************************************/
 static int	check_response(const char *response, AGENT_RESULT *result)
 {
-	struct zbx_json_parse	jp;
+	struct trx_json_parse	jp;
 	char			buffer[MAX_STRING_LEN];
 
-	if (SUCCEED != zbx_json_open(response, &jp))
+	if (SUCCEED != trx_json_open(response, &jp))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Value should be a JSON object."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Value should be a JSON object."));
 		return FAIL;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, buffer, sizeof(buffer)))
+	if (SUCCEED != trx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, buffer, sizeof(buffer)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot find tag: %s.", TRX_PROTO_TAG_RESPONSE));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot find tag: %s.", TRX_PROTO_TAG_RESPONSE));
 		return FAIL;
 	}
 
 	if (0 != strcmp(buffer, TRX_PROTO_VALUE_SUCCESS))
 	{
-		if (SUCCEED != zbx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, buffer, sizeof(buffer)))
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot find tag: %s.", TRX_PROTO_TAG_INFO));
+		if (SUCCEED != trx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, buffer, sizeof(buffer)))
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot find tag: %s.", TRX_PROTO_TAG_INFO));
 		else
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain internal statistics: %s", buffer));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain internal statistics: %s", buffer));
 
 		return FAIL;
 	}
@@ -61,21 +61,21 @@ static int	check_response(const char *response, AGENT_RESULT *result)
  *             result - [OUT] check result                                    *
  *                                                                            *
  ******************************************************************************/
-static void	get_remote_treegix_stats(const struct zbx_json *json, const char *ip, unsigned short port,
+static void	get_remote_treegix_stats(const struct trx_json *json, const char *ip, unsigned short port,
 		AGENT_RESULT *result)
 {
-	zbx_socket_t	s;
+	trx_socket_t	s;
 
-	if (SUCCEED == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, ip, port, CONFIG_TIMEOUT, TRX_TCP_SEC_UNENCRYPTED,
+	if (SUCCEED == trx_tcp_connect(&s, CONFIG_SOURCE_IP, ip, port, CONFIG_TIMEOUT, TRX_TCP_SEC_UNENCRYPTED,
 			NULL, NULL))
 	{
-		if (SUCCEED == zbx_tcp_send(&s, json->buffer))
+		if (SUCCEED == trx_tcp_send(&s, json->buffer))
 		{
-			if (SUCCEED == zbx_tcp_recv(&s) && NULL != s.buffer)
+			if (SUCCEED == trx_tcp_recv(&s) && NULL != s.buffer)
 			{
 				if ('\0' == *s.buffer)
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL,
+					SET_MSG_RESULT(result, trx_strdup(NULL,
 							"Cannot obtain internal statistics: received empty response."));
 				}
 				else if (SUCCEED == check_response(s.buffer, result))
@@ -83,28 +83,28 @@ static void	get_remote_treegix_stats(const struct zbx_json *json, const char *ip
 			}
 			else
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain internal statistics: %s",
-						zbx_socket_strerror()));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain internal statistics: %s",
+						trx_socket_strerror()));
 			}
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain internal statistics: %s",
-					zbx_socket_strerror()));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain internal statistics: %s",
+					trx_socket_strerror()));
 		}
 
-		zbx_tcp_close(&s);
+		trx_tcp_close(&s);
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain internal statistics: %s",
-				zbx_socket_strerror()));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain internal statistics: %s",
+				trx_socket_strerror()));
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_remote_treegix_stats                                      *
+ * Function: trx_get_remote_treegix_stats                                      *
  *                                                                            *
  * Purpose: create Treegix stats request                                       *
  *                                                                            *
@@ -116,23 +116,23 @@ static void	get_remote_treegix_stats(const struct zbx_json *json, const char *ip
  *                FAIL - an error occurred                                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_get_remote_treegix_stats(const char *ip, unsigned short port, AGENT_RESULT *result)
+int	trx_get_remote_treegix_stats(const char *ip, unsigned short port, AGENT_RESULT *result)
 {
-	struct zbx_json	json;
+	struct trx_json	json;
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_TREEGIX_STATS, TRX_JSON_TYPE_STRING);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_TREEGIX_STATS, TRX_JSON_TYPE_STRING);
 
 	get_remote_treegix_stats(&json, ip, port, result);
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
 	return 0 == ISSET_MSG(result) ? SUCCEED : FAIL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_remote_treegix_stats_queue                                *
+ * Function: trx_get_remote_treegix_stats_queue                                *
  *                                                                            *
  * Purpose: create Treegix stats queue request                                 *
  *                                                                            *
@@ -146,27 +146,27 @@ int	zbx_get_remote_treegix_stats(const char *ip, unsigned short port, AGENT_RESU
  *                FAIL - an error occurred                                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_get_remote_treegix_stats_queue(const char *ip, unsigned short port, const char *from, const char *to,
+int	trx_get_remote_treegix_stats_queue(const char *ip, unsigned short port, const char *from, const char *to,
 		AGENT_RESULT *result)
 {
-	struct zbx_json	json;
+	struct trx_json	json;
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_TREEGIX_STATS, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_TYPE, TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE, TRX_JSON_TYPE_STRING);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_TREEGIX_STATS, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&json, TRX_PROTO_TAG_TYPE, TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE, TRX_JSON_TYPE_STRING);
 
-	zbx_json_addobject(&json, TRX_PROTO_TAG_PARAMS);
+	trx_json_addobject(&json, TRX_PROTO_TAG_PARAMS);
 
 	if (NULL != from && '\0' != *from)
-		zbx_json_addstring(&json, TRX_PROTO_TAG_FROM, from, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_FROM, from, TRX_JSON_TYPE_STRING);
 	if (NULL != to && '\0' != *to)
-		zbx_json_addstring(&json, TRX_PROTO_TAG_TO, to, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_TO, to, TRX_JSON_TYPE_STRING);
 
-	zbx_json_close(&json);
+	trx_json_close(&json);
 
 	get_remote_treegix_stats(&json, ip, port, result);
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
 	return 0 == ISSET_MSG(result) ? SUCCEED : FAIL;
 }
@@ -178,7 +178,7 @@ int	TREEGIX_STATS(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (5 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -191,18 +191,18 @@ int	TREEGIX_STATS(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else if (SUCCEED != is_ushort(port_str, &port_number))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (3 > request->nparam)
 	{
-		if (SUCCEED != zbx_get_remote_treegix_stats(ip_str, port_number, result))
+		if (SUCCEED != trx_get_remote_treegix_stats(ip_str, port_number, result))
 			return SYSINFO_RET_FAIL;
 	}
 	else if (0 == strcmp((tmp = get_rparam(request, 2)), TRX_PROTO_VALUE_TREEGIX_STATS_QUEUE))
 	{
-		if (SUCCEED != zbx_get_remote_treegix_stats_queue(ip_str, port_number, get_rparam(request, 3),
+		if (SUCCEED != trx_get_remote_treegix_stats_queue(ip_str, port_number, get_rparam(request, 3),
 				get_rparam(request, 4), result))
 		{
 			return SYSINFO_RET_FAIL;
@@ -210,7 +210,7 @@ int	TREEGIX_STATS(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

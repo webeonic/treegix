@@ -170,8 +170,8 @@ foreach ($data['times'] as $service_time) {
 
 		case SERVICE_TIME_TYPE_ONETIME_DOWNTIME:
 			$type = (new CSpan(_('One-time downtime')))->addClass('disabled');
-			$from = zbx_date2str(DATE_TIME_FORMAT, $service_time['ts_from']);
-			$till = zbx_date2str(DATE_TIME_FORMAT, $service_time['ts_to']);
+			$from = trx_date2str(DATE_TIME_FORMAT, $service_time['ts_from']);
+			$till = trx_date2str(DATE_TIME_FORMAT, $service_time['ts_to']);
 			break;
 	}
 

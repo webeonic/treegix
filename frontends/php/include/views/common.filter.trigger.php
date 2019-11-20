@@ -58,7 +58,7 @@ $column1
 				CJs::encodeJson([
 					'srctbl' => 'applications',
 					'srcfld1' => 'name',
-					'dstfrm' => 'zbx_filter',
+					'dstfrm' => 'trx_filter',
 					'dstfld1' => 'application',
 					'real_hosts' => '1',
 					'with_applications' => '1'

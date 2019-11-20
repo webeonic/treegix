@@ -26,7 +26,7 @@ int	SYSTEM_CPU_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -36,13 +36,13 @@ int	SYSTEM_CPU_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		online = 1;
 	else if (0 != strcmp(tmp, "max"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (-1 == (cpu_num = get_cpu_num(online)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain number of CPUs."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain number of CPUs."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -59,7 +59,7 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -69,7 +69,7 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 		per_cpu = 0;
 	else if (0 != strcmp(tmp, "percpu"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -83,13 +83,13 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 		mode = TRX_AVG15;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (mode >= getloadavg(load, 3))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain load average: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain load average: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -99,7 +99,7 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		if (0 >= (cpu_num = get_cpu_num(1)))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain number of CPUs."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain number of CPUs."));
 			return SYSINFO_RET_FAIL;
 		}
 		value /= cpu_num;

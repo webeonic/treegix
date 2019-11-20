@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxipcservice.a
+noinst_LIBRARIES = libtrxipcservice.a
 
-libzbxipcservice_a_SOURCES = \
+libtrxipcservice_a_SOURCES = \
 	ipcservice.c
 
-libzbxipcservice_a_CFLAGS = @LIBEVENT_CFLAGS@
+libtrxipcservice_a_CFLAGS = @LIBEVENT_CFLAGS@

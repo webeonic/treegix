@@ -388,94 +388,94 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 DIST_SUBDIRS = \
-	zbxdbcache \
-	zbxdbhigh \
-	zbxdb \
-	zbxdbupgrade \
-	zbxmemory \
-	zbxalgo \
-	zbxmedia \
-	zbxcrypto \
-	zbxcommon \
-	zbxcomms \
-	zbxcommshigh \
-	zbxlog \
-	zbxnix \
-	zbxconf \
-	zbxsysinfo \
-	zbxsys \
-	zbxjson \
-	zbxserver \
-	zbxicmpping \
-	zbxexec \
-	zbxself \
-	zbxmodules \
-	zbxregexp \
-	zbxtasks \
-	zbxhttp \
-	zbxipcservice \
-	zbxhistory \
-	zbxcompress \
-	zbxembed \
-	zbxprometheus
+	trxdbcache \
+	trxdbhigh \
+	trxdb \
+	trxdbupgrade \
+	trxmemory \
+	trxalgo \
+	trxmedia \
+	trxcrypto \
+	trxcommon \
+	trxcomms \
+	trxcommshigh \
+	trxlog \
+	trxnix \
+	trxconf \
+	trxsysinfo \
+	trxsys \
+	trxjson \
+	trxserver \
+	trxicmpping \
+	trxexec \
+	trxself \
+	trxmodules \
+	trxregexp \
+	trxtasks \
+	trxhttp \
+	trxipcservice \
+	trxhistory \
+	trxcompress \
+	trxembed \
+	trxprometheus
 
 @SERVER_TRUE@SERVER_SUBDIRS = \
-@SERVER_TRUE@	zbxcommshigh \
-@SERVER_TRUE@	zbxdb \
-@SERVER_TRUE@	zbxdbupgrade \
-@SERVER_TRUE@	zbxdbcache \
-@SERVER_TRUE@	zbxdbhigh \
-@SERVER_TRUE@	zbxhttp \
-@SERVER_TRUE@	zbxmemory \
-@SERVER_TRUE@	zbxserver \
-@SERVER_TRUE@	zbxicmpping \
-@SERVER_TRUE@	zbxmedia \
-@SERVER_TRUE@	zbxself \
-@SERVER_TRUE@	zbxtasks \
-@SERVER_TRUE@	zbxhistory \
-@SERVER_TRUE@	zbxcompress \
-@SERVER_TRUE@	zbxembed \
-@SERVER_TRUE@	zbxprometheus
+@SERVER_TRUE@	trxcommshigh \
+@SERVER_TRUE@	trxdb \
+@SERVER_TRUE@	trxdbupgrade \
+@SERVER_TRUE@	trxdbcache \
+@SERVER_TRUE@	trxdbhigh \
+@SERVER_TRUE@	trxhttp \
+@SERVER_TRUE@	trxmemory \
+@SERVER_TRUE@	trxserver \
+@SERVER_TRUE@	trxicmpping \
+@SERVER_TRUE@	trxmedia \
+@SERVER_TRUE@	trxself \
+@SERVER_TRUE@	trxtasks \
+@SERVER_TRUE@	trxhistory \
+@SERVER_TRUE@	trxcompress \
+@SERVER_TRUE@	trxembed \
+@SERVER_TRUE@	trxprometheus
 
 @PROXY_TRUE@@SERVER_FALSE@PROXY_SUBDIRS = \
-@PROXY_TRUE@@SERVER_FALSE@	zbxcommshigh \
-@PROXY_TRUE@@SERVER_FALSE@	zbxdb \
-@PROXY_TRUE@@SERVER_FALSE@	zbxdbupgrade \
-@PROXY_TRUE@@SERVER_FALSE@	zbxdbcache \
-@PROXY_TRUE@@SERVER_FALSE@	zbxdbhigh \
-@PROXY_TRUE@@SERVER_FALSE@	zbxhttp \
-@PROXY_TRUE@@SERVER_FALSE@	zbxmemory \
-@PROXY_TRUE@@SERVER_FALSE@	zbxserver \
-@PROXY_TRUE@@SERVER_FALSE@	zbxicmpping \
-@PROXY_TRUE@@SERVER_FALSE@	zbxself \
-@PROXY_TRUE@@SERVER_FALSE@	zbxtasks \
-@PROXY_TRUE@@SERVER_FALSE@	zbxhistory \
-@PROXY_TRUE@@SERVER_FALSE@	zbxcompress \
-@PROXY_TRUE@@SERVER_FALSE@	zbxembed \
-@PROXY_TRUE@@SERVER_FALSE@	zbxprometheus
+@PROXY_TRUE@@SERVER_FALSE@	trxcommshigh \
+@PROXY_TRUE@@SERVER_FALSE@	trxdb \
+@PROXY_TRUE@@SERVER_FALSE@	trxdbupgrade \
+@PROXY_TRUE@@SERVER_FALSE@	trxdbcache \
+@PROXY_TRUE@@SERVER_FALSE@	trxdbhigh \
+@PROXY_TRUE@@SERVER_FALSE@	trxhttp \
+@PROXY_TRUE@@SERVER_FALSE@	trxmemory \
+@PROXY_TRUE@@SERVER_FALSE@	trxserver \
+@PROXY_TRUE@@SERVER_FALSE@	trxicmpping \
+@PROXY_TRUE@@SERVER_FALSE@	trxself \
+@PROXY_TRUE@@SERVER_FALSE@	trxtasks \
+@PROXY_TRUE@@SERVER_FALSE@	trxhistory \
+@PROXY_TRUE@@SERVER_FALSE@	trxcompress \
+@PROXY_TRUE@@SERVER_FALSE@	trxembed \
+@PROXY_TRUE@@SERVER_FALSE@	trxprometheus
 
 SUBDIRS = \
-	zbxcrypto \
-	zbxcommon \
-	zbxlog \
-	zbxalgo \
-	zbxnix \
-	zbxconf \
-	zbxhttp \
-	zbxsysinfo \
-	zbxsys \
-	zbxcomms \
-	zbxjson \
-	zbxexec \
-	zbxmodules \
-	zbxregexp \
-	zbxipcservice \
-	zbxcompress \
+	trxcrypto \
+	trxcommon \
+	trxlog \
+	trxalgo \
+	trxnix \
+	trxconf \
+	trxhttp \
+	trxsysinfo \
+	trxsys \
+	trxcomms \
+	trxjson \
+	trxexec \
+	trxmodules \
+	trxregexp \
+	trxipcservice \
+	trxcompress \
 	$(PROXY_SUBDIRS) \
 	$(SERVER_SUBDIRS) \
 	$(AGENT_SUBDIRS)
 
-EXTRA_DIST = zbxwin32
+EXTRA_DIST = trxwin32
 all: all-recursive
 
 .SUFFIXES:

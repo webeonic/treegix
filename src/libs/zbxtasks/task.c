@@ -6,8 +6,8 @@
 #include "log.h"
 
 #include "db.h"
-#include "zbxjson.h"
-#include "zbxtasks.h"
+#include "trxjson.h"
+#include "trxtasks.h"
 
 /******************************************************************************
  *                                                                            *
@@ -18,13 +18,13 @@
  * Parameters: data - [IN] the remote command task data                       *
  *                                                                            *
  ******************************************************************************/
-static void	tm_remote_command_clear(zbx_tm_remote_command_t *data)
+static void	tm_remote_command_clear(trx_tm_remote_command_t *data)
 {
-	zbx_free(data->command);
-	zbx_free(data->username);
-	zbx_free(data->password);
-	zbx_free(data->publickey);
-	zbx_free(data->privatekey);
+	trx_free(data->command);
+	trx_free(data->username);
+	trx_free(data->password);
+	trx_free(data->publickey);
+	trx_free(data->privatekey);
 }
 
 /******************************************************************************
@@ -36,31 +36,31 @@ static void	tm_remote_command_clear(zbx_tm_remote_command_t *data)
  * Parameters: data - [IN] the remote command result task data                *
  *                                                                            *
  ******************************************************************************/
-static void	tm_remote_command_result_clear(zbx_tm_remote_command_result_t *data)
+static void	tm_remote_command_result_clear(trx_tm_remote_command_result_t *data)
 {
-	zbx_free(data->info);
+	trx_free(data->info);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_task_clear                                                *
+ * Function: trx_tm_task_clear                                                *
  *                                                                            *
  * Purpose: frees task resources                                              *
  *                                                                            *
  * Parameters: task - [IN]                                                    *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tm_task_clear(zbx_tm_task_t *task)
+void	trx_tm_task_clear(trx_tm_task_t *task)
 {
 	if (NULL != task->data)
 	{
 		switch (task->type)
 		{
 			case TRX_TM_TASK_REMOTE_COMMAND:
-				tm_remote_command_clear((zbx_tm_remote_command_t *)task->data);
+				tm_remote_command_clear((trx_tm_remote_command_t *)task->data);
 				break;
 			case TRX_TM_TASK_REMOTE_COMMAND_RESULT:
-				tm_remote_command_result_clear((zbx_tm_remote_command_result_t *)task->data);
+				tm_remote_command_result_clear((trx_tm_remote_command_result_t *)task->data);
 				break;
 			case TRX_TM_TASK_CHECK_NOW:
 				/* nothing to clear */
@@ -70,28 +70,28 @@ void	zbx_tm_task_clear(zbx_tm_task_t *task)
 		}
 	}
 
-	zbx_free(task->data);
+	trx_free(task->data);
 	task->type = TRX_TM_TASK_UNDEFINED;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_task_free                                                 *
+ * Function: trx_tm_task_free                                                 *
  *                                                                            *
  * Purpose: frees task and its resources                                      *
  *                                                                            *
  * Parameters: task - [IN] the task to free                                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tm_task_free(zbx_tm_task_t *task)
+void	trx_tm_task_free(trx_tm_task_t *task)
 {
-	zbx_tm_task_clear(task);
-	zbx_free(task);
+	trx_tm_task_clear(task);
+	trx_free(task);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_remote_command_create                                     *
+ * Function: trx_tm_remote_command_create                                     *
  *                                                                            *
  * Purpose: create a remote command task data                                 *
  *                                                                            *
@@ -111,22 +111,22 @@ void	zbx_tm_task_free(zbx_tm_task_t *task)
  * Return value: The created remote command data.                             *
  *                                                                            *
  ******************************************************************************/
-zbx_tm_remote_command_t	*zbx_tm_remote_command_create(int command_type, const char *command, int execute_on, int port,
+trx_tm_remote_command_t	*trx_tm_remote_command_create(int command_type, const char *command, int execute_on, int port,
 		int authtype, const char *username, const char *password, const char *publickey, const char *privatekey,
-		zbx_uint64_t parent_taskid, zbx_uint64_t hostid, zbx_uint64_t alertid)
+		trx_uint64_t parent_taskid, trx_uint64_t hostid, trx_uint64_t alertid)
 {
-	zbx_tm_remote_command_t	*data;
+	trx_tm_remote_command_t	*data;
 
-	data = (zbx_tm_remote_command_t *)zbx_malloc(NULL, sizeof(zbx_tm_remote_command_t));
+	data = (trx_tm_remote_command_t *)trx_malloc(NULL, sizeof(trx_tm_remote_command_t));
 	data->command_type = command_type;
-	data->command = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(command));
+	data->command = trx_strdup(NULL, TRX_NULL2EMPTY_STR(command));
 	data->execute_on = execute_on;
 	data->port = port;
 	data->authtype = authtype;
-	data->username = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(username));
-	data->password = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(password));
-	data->publickey = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(publickey));
-	data->privatekey = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(privatekey));
+	data->username = trx_strdup(NULL, TRX_NULL2EMPTY_STR(username));
+	data->password = trx_strdup(NULL, TRX_NULL2EMPTY_STR(password));
+	data->publickey = trx_strdup(NULL, TRX_NULL2EMPTY_STR(publickey));
+	data->privatekey = trx_strdup(NULL, TRX_NULL2EMPTY_STR(privatekey));
 	data->parent_taskid = parent_taskid;
 	data->hostid = hostid;
 	data->alertid = alertid;
@@ -136,7 +136,7 @@ zbx_tm_remote_command_t	*zbx_tm_remote_command_create(int command_type, const ch
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_remote_command_result_create                              *
+ * Function: trx_tm_remote_command_result_create                              *
  *                                                                            *
  * Purpose: create a remote command result task data                          *
  *                                                                            *
@@ -147,22 +147,22 @@ zbx_tm_remote_command_t	*zbx_tm_remote_command_create(int command_type, const ch
  * Return value: The created remote command result data.                      *
  *                                                                            *
  ******************************************************************************/
-zbx_tm_remote_command_result_t	*zbx_tm_remote_command_result_create(zbx_uint64_t parent_taskid, int status,
+trx_tm_remote_command_result_t	*trx_tm_remote_command_result_create(trx_uint64_t parent_taskid, int status,
 		const char *info)
 {
-	zbx_tm_remote_command_result_t	*data;
+	trx_tm_remote_command_result_t	*data;
 
-	data = (zbx_tm_remote_command_result_t *)zbx_malloc(NULL, sizeof(zbx_tm_remote_command_result_t));
+	data = (trx_tm_remote_command_result_t *)trx_malloc(NULL, sizeof(trx_tm_remote_command_result_t));
 	data->status = status;
 	data->parent_taskid = parent_taskid;
-	data->info = zbx_strdup(NULL, TRX_NULL2EMPTY_STR(info));
+	data->info = trx_strdup(NULL, TRX_NULL2EMPTY_STR(info));
 
 	return data;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_check_now_create                                          *
+ * Function: trx_tm_check_now_create                                          *
  *                                                                            *
  * Purpose: create a check now task data                                      *
  *                                                                            *
@@ -171,11 +171,11 @@ zbx_tm_remote_command_result_t	*zbx_tm_remote_command_result_create(zbx_uint64_t
  * Return value: The created check now data.                                  *
  *                                                                            *
  ******************************************************************************/
-zbx_tm_check_now_t	*zbx_tm_check_now_create(zbx_uint64_t itemid)
+trx_tm_check_now_t	*trx_tm_check_now_create(trx_uint64_t itemid)
 {
-	zbx_tm_check_now_t	*data;
+	trx_tm_check_now_t	*data;
 
-	data = (zbx_tm_check_now_t *)zbx_malloc(NULL, sizeof(zbx_tm_check_now_t));
+	data = (trx_tm_check_now_t *)trx_malloc(NULL, sizeof(trx_tm_check_now_t));
 	data->itemid = itemid;
 
 	return data;
@@ -183,7 +183,7 @@ zbx_tm_check_now_t	*zbx_tm_check_now_create(zbx_uint64_t itemid)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_task_create                                               *
+ * Function: trx_tm_task_create                                               *
  *                                                                            *
  * Purpose: create a new task                                                 *
  *                                                                            *
@@ -197,12 +197,12 @@ zbx_tm_check_now_t	*zbx_tm_check_now_create(zbx_uint64_t itemid)
  * Return value: The created task.                                            *
  *                                                                            *
  ******************************************************************************/
-zbx_tm_task_t	*zbx_tm_task_create(zbx_uint64_t taskid, unsigned char type, unsigned char status, int clock, int ttl,
-		zbx_uint64_t proxy_hostid)
+trx_tm_task_t	*trx_tm_task_create(trx_uint64_t taskid, unsigned char type, unsigned char status, int clock, int ttl,
+		trx_uint64_t proxy_hostid)
 {
-	zbx_tm_task_t	*task;
+	trx_tm_task_t	*task;
 
-	task = (zbx_tm_task_t *)zbx_malloc(NULL, sizeof(zbx_tm_task_t));
+	task = (trx_tm_task_t *)trx_malloc(NULL, sizeof(trx_tm_task_t));
 
 	task->taskid = taskid;
 	task->type = type;
@@ -230,33 +230,33 @@ zbx_tm_task_t	*zbx_tm_task_create(zbx_uint64_t taskid, unsigned char type, unsig
  * Comments: The tasks array can contain mixture of task types.               *
  *                                                                            *
  ******************************************************************************/
-static int	tm_save_remote_command_tasks(zbx_tm_task_t **tasks, int tasks_num)
+static int	tm_save_remote_command_tasks(trx_tm_task_t **tasks, int tasks_num)
 {
 	int			i, ret;
-	zbx_db_insert_t		db_insert;
-	zbx_tm_remote_command_t	*data;
+	trx_db_insert_t		db_insert;
+	trx_tm_remote_command_t	*data;
 
-	zbx_db_insert_prepare(&db_insert, "task_remote_command", "taskid", "command_type", "execute_on", "port",
+	trx_db_insert_prepare(&db_insert, "task_remote_command", "taskid", "command_type", "execute_on", "port",
 			"authtype", "username", "password", "publickey", "privatekey", "command", "alertid",
 			"parent_taskid", "hostid", NULL);
 
 	for (i = 0; i < tasks_num; i++)
 	{
-		zbx_tm_task_t	*task = tasks[i];
+		trx_tm_task_t	*task = tasks[i];
 
 		switch (task->type)
 		{
 			case TRX_TM_TASK_REMOTE_COMMAND:
-				data = (zbx_tm_remote_command_t *)task->data;
-				zbx_db_insert_add_values(&db_insert, task->taskid, data->command_type, data->execute_on,
+				data = (trx_tm_remote_command_t *)task->data;
+				trx_db_insert_add_values(&db_insert, task->taskid, data->command_type, data->execute_on,
 						data->port, data->authtype, data->username, data->password,
 						data->publickey, data->privatekey, data->command, data->alertid,
 						data->parent_taskid, data->hostid);
 		}
 	}
 
-	ret = zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	ret = trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 
 	return ret;
 }
@@ -276,30 +276,30 @@ static int	tm_save_remote_command_tasks(zbx_tm_task_t **tasks, int tasks_num)
  * Comments: The tasks array can contain mixture of task types.               *
  *                                                                            *
  ******************************************************************************/
-static int	tm_save_remote_command_result_tasks(zbx_tm_task_t **tasks, int tasks_num)
+static int	tm_save_remote_command_result_tasks(trx_tm_task_t **tasks, int tasks_num)
 {
 	int				i, ret;
-	zbx_db_insert_t			db_insert;
-	zbx_tm_remote_command_result_t	*data;
+	trx_db_insert_t			db_insert;
+	trx_tm_remote_command_result_t	*data;
 
-	zbx_db_insert_prepare(&db_insert, "task_remote_command_result", "taskid", "status", "parent_taskid", "info",
+	trx_db_insert_prepare(&db_insert, "task_remote_command_result", "taskid", "status", "parent_taskid", "info",
 			NULL);
 
 	for (i = 0; i < tasks_num; i++)
 	{
-		zbx_tm_task_t	*task = tasks[i];
+		trx_tm_task_t	*task = tasks[i];
 
 		switch (task->type)
 		{
 			case TRX_TM_TASK_REMOTE_COMMAND_RESULT:
-				data = (zbx_tm_remote_command_result_t *)task->data;
-				zbx_db_insert_add_values(&db_insert, task->taskid, data->status, data->parent_taskid,
+				data = (trx_tm_remote_command_result_t *)task->data;
+				trx_db_insert_add_values(&db_insert, task->taskid, data->status, data->parent_taskid,
 						data->info);
 		}
 	}
 
-	ret = zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	ret = trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 
 	return ret;
 }
@@ -319,28 +319,28 @@ static int	tm_save_remote_command_result_tasks(zbx_tm_task_t **tasks, int tasks_
  * Comments: The tasks array can contain mixture of task types.               *
  *                                                                            *
  ******************************************************************************/
-static int	tm_save_check_now_tasks(zbx_tm_task_t **tasks, int tasks_num)
+static int	tm_save_check_now_tasks(trx_tm_task_t **tasks, int tasks_num)
 {
 	int			i, ret;
-	zbx_db_insert_t		db_insert;
-	zbx_tm_check_now_t	*data;
+	trx_db_insert_t		db_insert;
+	trx_tm_check_now_t	*data;
 
-	zbx_db_insert_prepare(&db_insert, "task_check_now", "taskid", "itemid", NULL);
+	trx_db_insert_prepare(&db_insert, "task_check_now", "taskid", "itemid", NULL);
 
 	for (i = 0; i < tasks_num; i++)
 	{
-		const zbx_tm_task_t	*task = tasks[i];
+		const trx_tm_task_t	*task = tasks[i];
 
 		switch (task->type)
 		{
 			case TRX_TM_TASK_CHECK_NOW:
-				data = (zbx_tm_check_now_t *)task->data;
-				zbx_db_insert_add_values(&db_insert, task->taskid, data->itemid);
+				data = (trx_tm_check_now_t *)task->data;
+				trx_db_insert_add_values(&db_insert, task->taskid, data->itemid);
 		}
 	}
 
-	ret = zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	ret = trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 
 	return ret;
 }
@@ -358,11 +358,11 @@ static int	tm_save_check_now_tasks(zbx_tm_task_t **tasks, int tasks_num)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	tm_save_tasks(zbx_tm_task_t **tasks, int tasks_num)
+static int	tm_save_tasks(trx_tm_task_t **tasks, int tasks_num)
 {
 	int		i, ret, remote_command_num = 0, remote_command_result_num = 0, check_now_num = 0, ids_num = 0;
-	zbx_uint64_t	taskid;
-	zbx_db_insert_t	db_insert;
+	trx_uint64_t	taskid;
+	trx_db_insert_t	db_insert;
 
 	for (i = 0; i < tasks_num; i++)
 	{
@@ -395,19 +395,19 @@ static int	tm_save_tasks(zbx_tm_task_t **tasks, int tasks_num)
 			tasks[i]->taskid = taskid++;
 	}
 
-	zbx_db_insert_prepare(&db_insert, "task", "taskid", "type", "status", "clock", "ttl", "proxy_hostid", NULL);
+	trx_db_insert_prepare(&db_insert, "task", "taskid", "type", "status", "clock", "ttl", "proxy_hostid", NULL);
 
 	for (i = 0; i < tasks_num; i++)
 	{
 		if (0 == tasks[i]->taskid)
 			continue;
 
-		zbx_db_insert_add_values(&db_insert, tasks[i]->taskid, (int)tasks[i]->type, (int)tasks[i]->status,
+		trx_db_insert_add_values(&db_insert, tasks[i]->taskid, (int)tasks[i]->type, (int)tasks[i]->status,
 				tasks[i]->clock, tasks[i]->ttl, tasks[i]->proxy_hostid);
 	}
 
-	ret = zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	ret = trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 
 	if (SUCCEED == ret && 0 != remote_command_num)
 		ret = tm_save_remote_command_tasks(tasks, tasks_num);
@@ -423,25 +423,25 @@ static int	tm_save_tasks(zbx_tm_task_t **tasks, int tasks_num)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_save_tasks                                                *
+ * Function: trx_tm_save_tasks                                                *
  *                                                                            *
  * Purpose: saves tasks and their data into database                          *
  *                                                                            *
  * Parameters: tasks - [IN] the tasks                                         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tm_save_tasks(zbx_vector_ptr_t *tasks)
+void	trx_tm_save_tasks(trx_vector_ptr_t *tasks)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() tasks_num:%d", __func__, tasks->values_num);
 
-	tm_save_tasks((zbx_tm_task_t **)tasks->values, tasks->values_num);
+	tm_save_tasks((trx_tm_task_t **)tasks->values, tasks->values_num);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_save_task                                                 *
+ * Function: trx_tm_save_task                                                 *
  *                                                                            *
  * Purpose: saves task and its data into database                             *
  *                                                                            *
@@ -451,7 +451,7 @@ void	zbx_tm_save_tasks(zbx_vector_ptr_t *tasks)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_tm_save_task(zbx_tm_task_t *task)
+int	trx_tm_save_task(trx_tm_task_t *task)
 {
 	int	ret;
 
@@ -459,14 +459,14 @@ int	zbx_tm_save_task(zbx_tm_task_t *task)
 
 	ret = tm_save_tasks(&task, 1);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_update_task_status                                        *
+ * Function: trx_tm_update_task_status                                        *
  *                                                                            *
  * Purpose: update status of the specified tasks in database                  *
  *                                                                            *
@@ -474,31 +474,31 @@ int	zbx_tm_save_task(zbx_tm_task_t *task)
  *             status - [IN] the new status                                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tm_update_task_status(zbx_vector_ptr_t *tasks, int status)
+void	trx_tm_update_task_status(trx_vector_ptr_t *tasks, int status)
 {
-	zbx_vector_uint64_t	taskids;
+	trx_vector_uint64_t	taskids;
 	int			i;
 	char			*sql = NULL;
 	size_t			sql_alloc = 0, sql_offset = 0;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_uint64_create(&taskids);
+	trx_vector_uint64_create(&taskids);
 
 	for (i = 0; i < tasks->values_num; i++)
 	{
-		zbx_tm_task_t	*task = (zbx_tm_task_t *)tasks->values[i];
-		zbx_vector_uint64_append(&taskids, task->taskid);
+		trx_tm_task_t	*task = (trx_tm_task_t *)tasks->values[i];
+		trx_vector_uint64_append(&taskids, task->taskid);
 	}
 
-	zbx_vector_uint64_sort(&taskids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(&taskids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update task set status=%d where", status);
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update task set status=%d where", status);
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "taskid", taskids.values, taskids.values_num);
 	DBexecute("%s", sql);
-	zbx_free(sql);
+	trx_free(sql);
 
-	zbx_vector_uint64_destroy(&taskids);
+	trx_vector_uint64_destroy(&taskids);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -513,11 +513,11 @@ void	zbx_tm_update_task_status(zbx_vector_ptr_t *tasks, int status)
  *             data - [IN] the task to serialize                              *
  *                                                                            *
  ******************************************************************************/
-static void	tm_json_serialize_task(struct zbx_json *json, const zbx_tm_task_t *task)
+static void	tm_json_serialize_task(struct trx_json *json, const trx_tm_task_t *task)
 {
-	zbx_json_addint64(json, TRX_PROTO_TAG_TYPE, task->type);
-	zbx_json_addint64(json, TRX_PROTO_TAG_CLOCK, task->clock);
-	zbx_json_addint64(json, TRX_PROTO_TAG_TTL, task->ttl);
+	trx_json_addint64(json, TRX_PROTO_TAG_TYPE, task->type);
+	trx_json_addint64(json, TRX_PROTO_TAG_CLOCK, task->clock);
+	trx_json_addint64(json, TRX_PROTO_TAG_TTL, task->ttl);
 }
 
 /******************************************************************************
@@ -530,20 +530,20 @@ static void	tm_json_serialize_task(struct zbx_json *json, const zbx_tm_task_t *t
  *             data - [IN] the remote command to serialize                    *
  *                                                                            *
  ******************************************************************************/
-static void	tm_json_serialize_remote_command(struct zbx_json *json, const zbx_tm_remote_command_t *data)
+static void	tm_json_serialize_remote_command(struct trx_json *json, const trx_tm_remote_command_t *data)
 {
-	zbx_json_addint64(json, TRX_PROTO_TAG_COMMANDTYPE, data->command_type);
-	zbx_json_addstring(json, TRX_PROTO_TAG_COMMAND, data->command, TRX_JSON_TYPE_STRING);
-	zbx_json_addint64(json, TRX_PROTO_TAG_EXECUTE_ON, data->execute_on);
-	zbx_json_addint64(json, TRX_PROTO_TAG_PORT, data->port);
-	zbx_json_addint64(json, TRX_PROTO_TAG_AUTHTYPE, data->authtype);
-	zbx_json_addstring(json, TRX_PROTO_TAG_USERNAME, data->username, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(json, TRX_PROTO_TAG_PASSWORD, data->password, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(json, TRX_PROTO_TAG_PUBLICKEY, data->publickey, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(json, TRX_PROTO_TAG_PRIVATEKEY, data->privatekey, TRX_JSON_TYPE_STRING);
-	zbx_json_adduint64(json, TRX_PROTO_TAG_ALERTID, data->alertid);
-	zbx_json_adduint64(json, TRX_PROTO_TAG_PARENT_TASKID, data->parent_taskid);
-	zbx_json_adduint64(json, TRX_PROTO_TAG_HOSTID, data->hostid);
+	trx_json_addint64(json, TRX_PROTO_TAG_COMMANDTYPE, data->command_type);
+	trx_json_addstring(json, TRX_PROTO_TAG_COMMAND, data->command, TRX_JSON_TYPE_STRING);
+	trx_json_addint64(json, TRX_PROTO_TAG_EXECUTE_ON, data->execute_on);
+	trx_json_addint64(json, TRX_PROTO_TAG_PORT, data->port);
+	trx_json_addint64(json, TRX_PROTO_TAG_AUTHTYPE, data->authtype);
+	trx_json_addstring(json, TRX_PROTO_TAG_USERNAME, data->username, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(json, TRX_PROTO_TAG_PASSWORD, data->password, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(json, TRX_PROTO_TAG_PUBLICKEY, data->publickey, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(json, TRX_PROTO_TAG_PRIVATEKEY, data->privatekey, TRX_JSON_TYPE_STRING);
+	trx_json_adduint64(json, TRX_PROTO_TAG_ALERTID, data->alertid);
+	trx_json_adduint64(json, TRX_PROTO_TAG_PARENT_TASKID, data->parent_taskid);
+	trx_json_adduint64(json, TRX_PROTO_TAG_HOSTID, data->hostid);
 }
 
 /******************************************************************************
@@ -556,12 +556,12 @@ static void	tm_json_serialize_remote_command(struct zbx_json *json, const zbx_tm
  *             data - [IN] the remote command result to serialize             *
  *                                                                            *
  ******************************************************************************/
-static void	tm_json_serialize_remote_command_result(struct zbx_json *json,
-		const zbx_tm_remote_command_result_t *data)
+static void	tm_json_serialize_remote_command_result(struct trx_json *json,
+		const trx_tm_remote_command_result_t *data)
 {
-	zbx_json_addint64(json, TRX_PROTO_TAG_STATUS, data->status);
-	zbx_json_addstring(json, TRX_PROTO_TAG_INFO, data->info, TRX_JSON_TYPE_STRING);
-	zbx_json_adduint64(json, TRX_PROTO_TAG_PARENT_TASKID, data->parent_taskid);
+	trx_json_addint64(json, TRX_PROTO_TAG_STATUS, data->status);
+	trx_json_addstring(json, TRX_PROTO_TAG_INFO, data->info, TRX_JSON_TYPE_STRING);
+	trx_json_adduint64(json, TRX_PROTO_TAG_PARENT_TASKID, data->parent_taskid);
 }
 
 /******************************************************************************
@@ -574,14 +574,14 @@ static void	tm_json_serialize_remote_command_result(struct zbx_json *json,
  *             data - [IN] the check now to serialize                         *
  *                                                                            *
  ******************************************************************************/
-static void	tm_json_serialize_check_now(struct zbx_json *json, const zbx_tm_check_now_t *data)
+static void	tm_json_serialize_check_now(struct trx_json *json, const trx_tm_check_now_t *data)
 {
-	zbx_json_addint64(json, TRX_PROTO_TAG_ITEMID, data->itemid);
+	trx_json_addint64(json, TRX_PROTO_TAG_ITEMID, data->itemid);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_json_serialize_tasks                                      *
+ * Function: trx_tm_json_serialize_tasks                                      *
  *                                                                            *
  * Purpose: serializes remote command data in json format                     *
  *                                                                            *
@@ -589,39 +589,39 @@ static void	tm_json_serialize_check_now(struct zbx_json *json, const zbx_tm_chec
  *             tasks - [IN] the tasks to serialize                            *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tm_json_serialize_tasks(struct zbx_json *json, const zbx_vector_ptr_t *tasks)
+void	trx_tm_json_serialize_tasks(struct trx_json *json, const trx_vector_ptr_t *tasks)
 {
 	int	i;
 
-	zbx_json_addarray(json, TRX_PROTO_TAG_TASKS);
+	trx_json_addarray(json, TRX_PROTO_TAG_TASKS);
 
 	for (i = 0; i < tasks->values_num; i++)
 	{
-		const zbx_tm_task_t	*task = (const zbx_tm_task_t *)tasks->values[i];
+		const trx_tm_task_t	*task = (const trx_tm_task_t *)tasks->values[i];
 
-		zbx_json_addobject(json, NULL);
+		trx_json_addobject(json, NULL);
 		tm_json_serialize_task(json, task);
 
 		switch (task->type)
 		{
 			case TRX_TM_TASK_REMOTE_COMMAND:
-				tm_json_serialize_remote_command(json, (zbx_tm_remote_command_t *)task->data);
+				tm_json_serialize_remote_command(json, (trx_tm_remote_command_t *)task->data);
 				break;
 			case TRX_TM_TASK_REMOTE_COMMAND_RESULT:
-				tm_json_serialize_remote_command_result(json, (zbx_tm_remote_command_result_t *)task->data);
+				tm_json_serialize_remote_command_result(json, (trx_tm_remote_command_result_t *)task->data);
 				break;
 			case TRX_TM_TASK_CHECK_NOW:
-				tm_json_serialize_check_now(json, (zbx_tm_check_now_t *)task->data);
+				tm_json_serialize_check_now(json, (trx_tm_check_now_t *)task->data);
 				break;
 			default:
 				THIS_SHOULD_NEVER_HAPPEN;
 				break;
 		}
 
-		zbx_json_close(json);
+		trx_json_close(json);
 	}
 
-	zbx_json_close(json);
+	trx_json_close(json);
 }
 
 /******************************************************************************
@@ -636,78 +636,78 @@ void	zbx_tm_json_serialize_tasks(struct zbx_json *json, const zbx_vector_ptr_t *
  *               deserialization failed.                                      *
  *                                                                            *
  ******************************************************************************/
-static zbx_tm_remote_command_t	*tm_json_deserialize_remote_command(const struct zbx_json_parse *jp)
+static trx_tm_remote_command_t	*tm_json_deserialize_remote_command(const struct trx_json_parse *jp)
 {
 	char			value[MAX_STRING_LEN];
 	int			commandtype, execute_on, port, authtype;
-	zbx_uint64_t		alertid, parent_taskid, hostid;
+	trx_uint64_t		alertid, parent_taskid, hostid;
 	char			*username = NULL, *password = NULL, *publickey = NULL, *privatekey = NULL,
 				*command = NULL;
 	size_t			username_alloc = 0, password_alloc = 0, publickey_alloc = 0, privatekey_alloc = 0,
 				command_alloc = 0;
-	zbx_tm_remote_command_t	*data = NULL;
+	trx_tm_remote_command_t	*data = NULL;
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_COMMANDTYPE, value, sizeof(value)))
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_COMMANDTYPE, value, sizeof(value)))
 		goto out;
 
 	commandtype = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_EXECUTE_ON, value, sizeof(value)))
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_EXECUTE_ON, value, sizeof(value)))
 		goto out;
 
 	execute_on = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_PORT, value, sizeof(value)))
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_PORT, value, sizeof(value)))
 		goto out;
 
 	port = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_AUTHTYPE, value, sizeof(value)))
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_AUTHTYPE, value, sizeof(value)))
 		goto out;
 
 	authtype = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_ALERTID, value, sizeof(value)) ||
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_ALERTID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &alertid))
 	{
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_PARENT_TASKID, value, sizeof(value)) ||
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_PARENT_TASKID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &parent_taskid))
 	{
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_HOSTID, value, sizeof(value)) ||
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_HOSTID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &hostid))
 	{
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_USERNAME, &username, &username_alloc))
+	if (SUCCEED != trx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_USERNAME, &username, &username_alloc))
 		goto out;
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_PASSWORD, &password, &password_alloc))
+	if (SUCCEED != trx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_PASSWORD, &password, &password_alloc))
 		goto out;
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_PUBLICKEY, &publickey, &publickey_alloc))
+	if (SUCCEED != trx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_PUBLICKEY, &publickey, &publickey_alloc))
 		goto out;
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_PRIVATEKEY, &privatekey, &privatekey_alloc))
+	if (SUCCEED != trx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_PRIVATEKEY, &privatekey, &privatekey_alloc))
 		goto out;
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_COMMAND, &command, &command_alloc))
+	if (SUCCEED != trx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_COMMAND, &command, &command_alloc))
 		goto out;
 
-	data = zbx_tm_remote_command_create(commandtype, command, execute_on, port, authtype, username, password,
+	data = trx_tm_remote_command_create(commandtype, command, execute_on, port, authtype, username, password,
 			publickey, privatekey, parent_taskid, hostid, alertid);
 out:
-	zbx_free(command);
-	zbx_free(privatekey);
-	zbx_free(publickey);
-	zbx_free(password);
-	zbx_free(username);
+	trx_free(command);
+	trx_free(privatekey);
+	trx_free(publickey);
+	trx_free(password);
+	trx_free(username);
 
 	return data;
 }
@@ -724,32 +724,32 @@ out:
  *               deserialization failed.                                      *
  *                                                                            *
  ******************************************************************************/
-static zbx_tm_remote_command_result_t	*tm_json_deserialize_remote_command_result(const struct zbx_json_parse *jp)
+static trx_tm_remote_command_result_t	*tm_json_deserialize_remote_command_result(const struct trx_json_parse *jp)
 {
 	char				value[MAX_STRING_LEN];
 	int				status;
-	zbx_uint64_t			parent_taskid;
+	trx_uint64_t			parent_taskid;
 	char				*info = NULL;
 	size_t				info_alloc = 0;
-	zbx_tm_remote_command_result_t	*data = NULL;
+	trx_tm_remote_command_result_t	*data = NULL;
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_STATUS, value, sizeof(value)))
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_STATUS, value, sizeof(value)))
 		goto out;
 
 	status = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_PARENT_TASKID, value, sizeof(value)) ||
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_PARENT_TASKID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &parent_taskid))
 	{
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_INFO, &info, &info_alloc))
+	if (SUCCEED != trx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_INFO, &info, &info_alloc))
 		goto out;
 
-	data = zbx_tm_remote_command_result_create(parent_taskid, status, info);
+	data = trx_tm_remote_command_result_create(parent_taskid, status, info);
 out:
-	zbx_free(info);
+	trx_free(info);
 
 	return data;
 }
@@ -766,18 +766,18 @@ out:
  *               failed.                                                      *
  *                                                                            *
  ******************************************************************************/
-static zbx_tm_check_now_t	*tm_json_deserialize_check_now(const struct zbx_json_parse *jp)
+static trx_tm_check_now_t	*tm_json_deserialize_check_now(const struct trx_json_parse *jp)
 {
 	char		value[MAX_ID_LEN + 1];
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_ITEMID, value, sizeof(value)) ||
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_ITEMID, value, sizeof(value)) ||
 			SUCCEED != is_uint64(value, &itemid))
 	{
 		return NULL;
 	}
 
-	return zbx_tm_check_now_create(itemid);
+	return trx_tm_check_now_create(itemid);
 }
 
 /******************************************************************************
@@ -791,32 +791,32 @@ static zbx_tm_check_now_t	*tm_json_deserialize_check_now(const struct zbx_json_p
  * Return value: The deserialized task data or NULL if deserialization failed.*
  *                                                                            *
  ******************************************************************************/
-static zbx_tm_task_t	*tm_json_deserialize_task(const struct zbx_json_parse *jp)
+static trx_tm_task_t	*tm_json_deserialize_task(const struct trx_json_parse *jp)
 {
 	char	value[MAX_STRING_LEN];
 	int	type, clock, ttl;
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_TYPE, value, sizeof(value)))
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_TYPE, value, sizeof(value)))
 		return NULL;
 
 	TRX_STR2UCHAR(type, value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_CLOCK, value, sizeof(value)))
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_CLOCK, value, sizeof(value)))
 		return NULL;
 
 	clock = atoi(value);
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_TTL, value, sizeof(value)))
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_TTL, value, sizeof(value)))
 		return NULL;
 
 	ttl = atoi(value);
 
-	return zbx_tm_task_create(0, type, TRX_TM_STATUS_NEW, clock, ttl, 0);
+	return trx_tm_task_create(0, type, TRX_TM_STATUS_NEW, clock, ttl, 0);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_json_deserialize_tasks                                    *
+ * Function: trx_tm_json_deserialize_tasks                                    *
  *                                                                            *
  * Purpose: deserializes tasks from json data                                 *
  *                                                                            *
@@ -824,16 +824,16 @@ static zbx_tm_task_t	*tm_json_deserialize_task(const struct zbx_json_parse *jp)
  *             tasks - [OUT] the deserialized tasks                           *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tm_json_deserialize_tasks(const struct zbx_json_parse *jp, zbx_vector_ptr_t *tasks)
+void	trx_tm_json_deserialize_tasks(const struct trx_json_parse *jp, trx_vector_ptr_t *tasks)
 {
 	const char		*pnext = NULL;
-	struct zbx_json_parse	jp_task;
+	struct trx_json_parse	jp_task;
 
-	while (NULL != (pnext = zbx_json_next(jp, pnext)))
+	while (NULL != (pnext = trx_json_next(jp, pnext)))
 	{
-		zbx_tm_task_t	*task;
+		trx_tm_task_t	*task;
 
-		if (SUCCEED != zbx_json_brackets_open(pnext, &jp_task))
+		if (SUCCEED != trx_json_brackets_open(pnext, &jp_task))
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "Cannot deserialize task record: %s", jp->start);
 			continue;
@@ -866,10 +866,10 @@ void	zbx_tm_json_deserialize_tasks(const struct zbx_json_parse *jp, zbx_vector_p
 		if (NULL == task->data)
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "Cannot deserialize task data at: %s", jp_task.start);
-			zbx_tm_task_free(task);
+			trx_tm_task_free(task);
 			continue;
 		}
 
-		zbx_vector_ptr_append(tasks, task);
+		trx_vector_ptr_append(tasks, task);
 	}
 }

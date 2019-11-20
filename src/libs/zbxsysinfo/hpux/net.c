@@ -8,7 +8,7 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 
 #define PPA(n) (*(dl_hp_ppa_info_t *)(ppa_data_buf + n * sizeof(dl_hp_ppa_info_t)))
 
@@ -37,9 +37,9 @@ static void	add_if_name(char **if_list, size_t *if_list_alloc, size_t *if_list_o
 	if (FAIL == str_in_list(*if_list, name, TRX_IF_SEP))
 	{
 		if ('\0' != **if_list)
-			zbx_chrcpy_alloc(if_list, if_list_alloc, if_list_offset, TRX_IF_SEP);
+			trx_chrcpy_alloc(if_list, if_list_alloc, if_list_offset, TRX_IF_SEP);
 
-		zbx_strcpy_alloc(if_list, if_list_alloc, if_list_offset, name);
+		trx_strcpy_alloc(if_list, if_list_alloc, if_list_offset, name);
 	}
 }
 
@@ -65,7 +65,7 @@ static int	get_if_names(char **if_list, size_t *if_list_alloc, size_t *if_list_o
 	else
 		ifreq_size = 2 * 512;
 
-	buffer = zbx_malloc(buffer, ifreq_size);
+	buffer = trx_malloc(buffer, ifreq_size);
 	memset(buffer, 0, ifreq_size);
 
 	ifc.ifc_buf = (caddr_t)buffer;
@@ -92,7 +92,7 @@ static int	get_if_names(char **if_list, size_t *if_list_alloc, size_t *if_list_o
 #endif
 	}
 next:
-	zbx_free(buffer);
+	trx_free(buffer);
 	close(s);
 
 #if defined (SIOCGLIFCONF)
@@ -109,7 +109,7 @@ next:
 	}
 
 	lifc.iflc_len = numifs * sizeof(struct if_laddrreq);
-	lifc.iflc_buf = zbx_malloc(NULL, lifc.iflc_len);
+	lifc.iflc_buf = trx_malloc(NULL, lifc.iflc_len);
 	buffer = (u_char *)lifc.iflc_buf;
 
 	if (-1 == ioctl(s, SIOCGLIFCONF, &lifc))
@@ -126,7 +126,7 @@ next:
 		add_if_name(if_list, if_list_alloc, if_list_offset, lifr->iflr_name);
 	}
 end:
-	zbx_free(buffer);
+	trx_free(buffer);
 	close(s);
 #endif
 	return SUCCEED;
@@ -136,23 +136,23 @@ end:
 
 int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	struct zbx_json	j;
+	struct trx_json	j;
 	char		*if_name;
 #if HPUX_VERSION < 1131
 	char		*if_list = NULL, *if_name_end;
 	size_t		if_list_alloc = 64, if_list_offset = 0;
 
-	if_list = zbx_malloc(if_list, if_list_alloc);
+	if_list = trx_malloc(if_list, if_list_alloc);
 	*if_list = '\0';
 
 	if (FAIL == get_if_names(&if_list, &if_list_alloc, &if_list_offset))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain network interface information."));
-		zbx_free(if_list);
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain network interface information."));
+		trx_free(if_list);
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	if_name = if_list;
 
@@ -161,9 +161,9 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL != (if_name_end = strchr(if_name, TRX_IF_SEP)))
 			*if_name_end = '\0';
 
-		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#IFNAME}", if_name, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&j);
+		trx_json_addobject(&j, NULL);
+		trx_json_addstring(&j, "{#IFNAME}", if_name, TRX_JSON_TYPE_STRING);
+		trx_json_close(&j);
 
 		if (NULL != if_name_end)
 		{
@@ -174,33 +174,33 @@ int	NET_IF_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if_name = NULL;
 	}
 
-	zbx_free(if_list);
+	trx_free(if_list);
 #else
 	struct if_nameindex	*ni;
 	int			i;
 
 	if (NULL == (ni = if_nameindex()))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; 0 != ni[i].if_index; i++)
 	{
-		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#IFNAME}", ni[i].if_name, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&j);
+		trx_json_addobject(&j, NULL);
+		trx_json_addstring(&j, "{#IFNAME}", ni[i].if_name, TRX_JSON_TYPE_STRING);
+		trx_json_close(&j);
 	}
 
 	if_freenameindex(ni);
 #endif
-	zbx_json_close(&j);
+	trx_json_close(&j);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, j.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, j.buffer));
 
-	zbx_json_free(&j);
+	trx_json_free(&j);
 
 	return SYSINFO_RET_OK;
 }
@@ -329,22 +329,22 @@ static int get_ppa(int fd, const char *if_name, int *ppa)
 		ctlbuf.maxlen = dlp->dl_count * sizeof(dl_hp_ppa_info_t);
 		ctlbuf.len = 0;
 
-		ppa_data_buf = zbx_malloc(ppa_data_buf, (size_t)ctlbuf.maxlen);
+		ppa_data_buf = trx_malloc(ppa_data_buf, (size_t)ctlbuf.maxlen);
 
 		ctlbuf.buf = ppa_data_buf;
 
 		/* get the data */
 		if (0 > getmsg(fd, &ctlbuf, NULL, &flags) || ctlbuf.len < dlp->dl_length)
 		{
-			zbx_free(ppa_data_buf);
+			trx_free(ppa_data_buf);
 			return ret;
 		}
 
-		buf = zbx_malloc(buf, if_name_sz);
+		buf = trx_malloc(buf, if_name_sz);
 
 		for (i = 0; i < dlp->dl_count; i++)
 		{
-			zbx_snprintf(buf, if_name_sz, "%s%d", PPA(i).dl_module_id_1, PPA(i).dl_ppa);
+			trx_snprintf(buf, if_name_sz, "%s%d", PPA(i).dl_module_id_1, PPA(i).dl_ppa);
 
 			if (0 == strcmp(if_name, buf))
 			{
@@ -354,8 +354,8 @@ static int get_ppa(int fd, const char *if_name, int *ppa)
 			}
 		}
 
-		zbx_free(buf);
-		zbx_free(ppa_data_buf);
+		trx_free(buf);
+		trx_free(ppa_data_buf);
 	}
 
 	return ret;
@@ -394,7 +394,7 @@ int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -403,7 +403,7 @@ int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (FAIL == get_net_stat(&mib, if_name))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain network interface information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain network interface information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -417,7 +417,7 @@ int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, mib.mib_if.ifInDiscards);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -431,7 +431,7 @@ int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -440,7 +440,7 @@ int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (FAIL == get_net_stat(&mib, if_name))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain network interface information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain network interface information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -454,7 +454,7 @@ int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, mib.mib_if.ifOutDiscards);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -468,7 +468,7 @@ int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -477,7 +477,7 @@ int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (FAIL == get_net_stat(&mib, if_name))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain network interface information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain network interface information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -500,7 +500,7 @@ int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

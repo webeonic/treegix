@@ -3,7 +3,7 @@
 
 
 function getImageByIdent($ident) {
-	zbx_value2array($ident);
+	trx_value2array($ident);
 
 	if (!array_key_exists('name', $ident) || $ident['name'] === '') {
 		return 0;

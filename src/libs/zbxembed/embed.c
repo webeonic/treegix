@@ -1,8 +1,8 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxjson.h"
-#include "zbxembed.h"
+#include "trxjson.h"
+#include "trxembed.h"
 #include "embed.h"
 #include "httprequest.h"
 #include "treegix.h"
@@ -29,12 +29,12 @@
  ******************************************************************************/
 static void	es_handle_error(void *udata, const char *msg)
 {
-	zbx_es_env_t	*env = (zbx_es_env_t *)udata;
+	trx_es_env_t	*env = (trx_es_env_t *)udata;
 
 	treegix_log(LOG_LEVEL_WARNING, "Cannot process javascript, fatal error: %s", msg);
 
 	env->fatal_error = 1;
-	env->error = zbx_strdup(env->error, msg);
+	env->error = trx_strdup(env->error, msg);
 	longjmp(env->loc, 1);
 }
 
@@ -44,19 +44,19 @@ static void	es_handle_error(void *udata, const char *msg)
 
 static void	*es_malloc(void *udata, duk_size_t size)
 {
-	zbx_es_env_t	*env = (zbx_es_env_t *)udata;
+	trx_es_env_t	*env = (trx_es_env_t *)udata;
 	uint64_t	*uptr;
 
 	if (env->total_alloc + size + 8 > TRX_ES_MEMORY_LIMIT)
 	{
 		if (NULL == env->ctx)
-			env->error = zbx_strdup(env->error, "cannot allocate memory");
+			env->error = trx_strdup(env->error, "cannot allocate memory");
 
 		return NULL;
 	}
 
 	env->total_alloc += (size + 8);
-	uptr = zbx_malloc(NULL, size + 8);
+	uptr = trx_malloc(NULL, size + 8);
 	*uptr++ = size;
 
 	return uptr;
@@ -64,7 +64,7 @@ static void	*es_malloc(void *udata, duk_size_t size)
 
 static void	*es_realloc(void *udata, void *ptr, duk_size_t size)
 {
-	zbx_es_env_t	*env = (zbx_es_env_t *)udata;
+	trx_es_env_t	*env = (trx_es_env_t *)udata;
 	uint64_t	*uptr = ptr;
 	size_t		old_size;
 
@@ -79,13 +79,13 @@ static void	*es_realloc(void *udata, void *ptr, duk_size_t size)
 	if (env->total_alloc + size + 8 - old_size > TRX_ES_MEMORY_LIMIT)
 	{
 		if (NULL == env->ctx)
-			env->error = zbx_strdup(env->error, "cannot allocate memory");
+			env->error = trx_strdup(env->error, "cannot allocate memory");
 
 		return NULL;
 	}
 
 	env->total_alloc += size + 8 - old_size;
-	uptr = zbx_realloc(uptr, size + 8);
+	uptr = trx_realloc(uptr, size + 8);
 	*uptr++ = size;
 
 	return uptr;
@@ -93,26 +93,26 @@ static void	*es_realloc(void *udata, void *ptr, duk_size_t size)
 
 static void	es_free(void *udata, void *ptr)
 {
-	zbx_es_env_t	*env = (zbx_es_env_t *)udata;
+	trx_es_env_t	*env = (trx_es_env_t *)udata;
 	uint64_t	*uptr = ptr;
 
 	if (NULL != ptr)
 	{
 		env->total_alloc -= (*(--uptr) + 8);
-		zbx_free(uptr);
+		trx_free(uptr);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_check_timeout                                             *
+ * Function: trx_es_check_timeout                                             *
  *                                                                            *
  * Purpose: timeout checking callback                                         *
  *                                                                            *
  ******************************************************************************/
-int	zbx_es_check_timeout(void *udata)
+int	trx_es_check_timeout(void *udata)
 {
-	zbx_es_env_t	*env = (zbx_es_env_t *)udata;
+	trx_es_env_t	*env = (trx_es_env_t *)udata;
 
 	if (time(NULL) - env->start_time > env->timeout)
 		return 1;
@@ -122,28 +122,28 @@ int	zbx_es_check_timeout(void *udata)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_init                                                      *
+ * Function: trx_es_init                                                      *
  *                                                                            *
  * Purpose: initializes embedded scripting engine                             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_es_init(zbx_es_t *es)
+void	trx_es_init(trx_es_t *es)
 {
 	es->env = NULL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_destroy                                                   *
+ * Function: trx_es_destroy                                                   *
  *                                                                            *
  * Purpose: destroys embedded scripting engine                                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_es_destroy(zbx_es_t *es)
+void	trx_es_destroy(trx_es_t *es)
 {
 	char	*error = NULL;
 
-	if (SUCCEED != zbx_es_destroy_env(es, &error))
+	if (SUCCEED != trx_es_destroy_env(es, &error))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "Cannot destroy embedded scripting engine environment: %s", error);
 	}
@@ -151,7 +151,7 @@ void	zbx_es_destroy(zbx_es_t *es)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_init_env                                                  *
+ * Function: trx_es_init_env                                                  *
  *                                                                            *
  * Purpose: initializes embedded scripting engine environment                 *
  *                                                                            *
@@ -162,29 +162,29 @@ void	zbx_es_destroy(zbx_es_t *es)
  *               FAIL                                                         *
  *                                                                            *
  ******************************************************************************/
-int	zbx_es_init_env(zbx_es_t *es, char **error)
+int	trx_es_init_env(trx_es_t *es, char **error)
 {
 	volatile int	ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	es->env = zbx_malloc(NULL, sizeof(zbx_es_env_t));
-	memset(es->env, 0, sizeof(zbx_es_env_t));
+	es->env = trx_malloc(NULL, sizeof(trx_es_env_t));
+	memset(es->env, 0, sizeof(trx_es_env_t));
 
 	if (0 != setjmp(es->env->loc))
 	{
-		*error = zbx_strdup(*error, es->env->error);
+		*error = trx_strdup(*error, es->env->error);
 		goto out;
 	}
 
 	if (NULL == (es->env->ctx = duk_create_heap(es_malloc, es_realloc, es_free, es->env, es_handle_error)))
 	{
-		*error = zbx_strdup(*error, "cannot create context");
+		*error = trx_strdup(*error, "cannot create context");
 		goto out;
 	}
 
 	/* initialize Treegix object */
-	zbx_es_init_treegix(es, error);
+	trx_es_init_treegix(es, error);
 
 	/* remove Duktape object */
 	duk_push_global_object(es->env->ctx);
@@ -194,15 +194,15 @@ int	zbx_es_init_env(zbx_es_t *es, char **error)
 	/* put environment object to be accessible from duktape C calls */
 	duk_push_global_stash(es->env->ctx);
 	duk_push_pointer(es->env->ctx, (void *)es->env);
-	if (1 != duk_put_prop_string(es->env->ctx, -2, "\xff""\xff""zbx_env"))
+	if (1 != duk_put_prop_string(es->env->ctx, -2, "\xff""\xff""trx_env"))
 	{
-		*error = zbx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
+		*error = trx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
 		duk_pop(es->env->ctx);
 		return FAIL;
 	}
 
 	/* initialize CurlHttpRequest prototype */
-	if (FAIL == zbx_es_init_httprequest(es, error))
+	if (FAIL == trx_es_init_httprequest(es, error))
 		goto out;
 
 	es->env->timeout = TRX_ES_TIMEOUT;
@@ -210,11 +210,11 @@ int	zbx_es_init_env(zbx_es_t *es, char **error)
 out:
 	if (SUCCEED != ret)
 	{
-		zbx_free(es->env->error);
-		zbx_free(es->env);
+		trx_free(es->env->error);
+		trx_free(es->env);
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, trx_result_string(ret),
 			TRX_NULL2EMPTY_STR(*error));
 
 	return ret;
@@ -222,7 +222,7 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_destroy_env                                               *
+ * Function: trx_es_destroy_env                                               *
  *                                                                            *
  * Purpose: destroys initialized embedded scripting engine environment        *
  *                                                                            *
@@ -233,7 +233,7 @@ out:
  *               FAIL                                                         *
  *                                                                            *
  ******************************************************************************/
-int	zbx_es_destroy_env(zbx_es_t *es, char **error)
+int	trx_es_destroy_env(trx_es_t *es, char **error)
 {
 	int	ret;
 
@@ -242,17 +242,17 @@ int	zbx_es_destroy_env(zbx_es_t *es, char **error)
 	if (0 != setjmp(es->env->loc))
 	{
 		ret = FAIL;
-		*error = zbx_strdup(*error, es->env->error);
+		*error = trx_strdup(*error, es->env->error);
 		goto out;
 	}
 
 	duk_destroy_heap(es->env->ctx);
-	zbx_free(es->env->error);
-	zbx_free(es->env);
+	trx_free(es->env->error);
+	trx_free(es->env);
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, trx_result_string(ret),
 		TRX_NULL2EMPTY_STR(*error));
 
 	return ret;
@@ -260,7 +260,7 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_ready                                                     *
+ * Function: trx_es_ready                                                     *
  *                                                                            *
  * Purpose: checks if the scripting engine environment is initialized         *
  *                                                                            *
@@ -270,14 +270,14 @@ out:
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-int	zbx_es_is_env_initialized(zbx_es_t *es)
+int	trx_es_is_env_initialized(trx_es_t *es)
 {
 	return (NULL == es->env ? FAIL : SUCCEED);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_fatal_error                                               *
+ * Function: trx_es_fatal_error                                               *
  *                                                                            *
  * Purpose: checks if fatal error has occurred                                *
  *                                                                            *
@@ -285,7 +285,7 @@ int	zbx_es_is_env_initialized(zbx_es_t *es)
  *           safer to destroy it instead of continuing to work with it.       *
  *                                                                            *
  ******************************************************************************/
-int	zbx_es_fatal_error(zbx_es_t *es)
+int	trx_es_fatal_error(trx_es_t *es)
 {
 	if (0 != es->env->fatal_error || TRX_ES_MAX_CONSEQUENT_RT_ERROR < es->env->rt_error_num)
 		return SUCCEED;
@@ -302,7 +302,7 @@ int	zbx_es_fatal_error(zbx_es_t *es)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_compile                                                   *
+ * Function: trx_es_compile                                                   *
  *                                                                            *
  * Purpose: compiles script into bytecode                                     *
  *                                                                            *
@@ -319,7 +319,7 @@ int	zbx_es_fatal_error(zbx_es_t *es)
  *           freed by the caller after being used.                            *
  *                                                                            *
  ******************************************************************************/
-int	zbx_es_compile(zbx_es_t *es, const char *script, char **code, int *size, char **error)
+int	trx_es_compile(trx_es_t *es, const char *script, char **code, int *size, char **error)
 {
 	unsigned char	*buffer;
 	duk_size_t	sz;
@@ -329,21 +329,21 @@ int	zbx_es_compile(zbx_es_t *es, const char *script, char **code, int *size, cha
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED == zbx_es_fatal_error(es))
+	if (SUCCEED == trx_es_fatal_error(es))
 	{
-		*error = zbx_strdup(*error, "cannot continue javascript processing after fatal scripting engine error");
+		*error = trx_strdup(*error, "cannot continue javascript processing after fatal scripting engine error");
 		goto out;
 	}
 
 	if (0 != setjmp(es->env->loc))
 	{
-		*error = zbx_strdup(*error, es->env->error);
+		*error = trx_strdup(*error, es->env->error);
 		goto out;
 	}
 
 	/* wrap the code block into a function: function(value){<code>\n} */
 	len = strlen(script);
-	ptr = func = zbx_malloc(NULL, len + TRX_CONST_STRLEN(TRX_ES_SCRIPT_HEADER) +
+	ptr = func = trx_malloc(NULL, len + TRX_CONST_STRLEN(TRX_ES_SCRIPT_HEADER) +
 			TRX_CONST_STRLEN(TRX_ES_SCRIPT_FOOTER) + 1);
 	memcpy(ptr, TRX_ES_SCRIPT_HEADER, TRX_CONST_STRLEN(TRX_ES_SCRIPT_HEADER));
 	ptr += TRX_CONST_STRLEN(TRX_ES_SCRIPT_HEADER);
@@ -358,7 +358,7 @@ int	zbx_es_compile(zbx_es_t *es, const char *script, char **code, int *size, cha
 
 	if (0 != duk_pcompile(es->env->ctx, DUK_COMPILE_FUNCTION))
 	{
-		*error = zbx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
+		*error = trx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
 		duk_pop(es->env->ctx);
 		goto out;
 	}
@@ -368,25 +368,25 @@ int	zbx_es_compile(zbx_es_t *es, const char *script, char **code, int *size, cha
 	if (NULL != (buffer = (unsigned char *)duk_get_buffer(es->env->ctx, -1, &sz)))
 	{
 		*size = sz;
-		*code = zbx_malloc(NULL, sz);
+		*code = trx_malloc(NULL, sz);
 		memcpy(*code, buffer, sz);
 		ret = SUCCEED;
 	}
 	else
-		*error = zbx_strdup(*error, "empty function compilation result");
+		*error = trx_strdup(*error, "empty function compilation result");
 
 	duk_pop(es->env->ctx);
 out:
-	zbx_free(func);
+	trx_free(func);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), TRX_NULL2EMPTY_STR(*error));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, trx_result_string(ret), TRX_NULL2EMPTY_STR(*error));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_execute                                                   *
+ * Function: trx_es_execute                                                   *
  *                                                                            *
  * Purpose: executes script                                                   *
  *                                                                            *
@@ -407,7 +407,7 @@ out:
  *           bytecode parameters.                                             *
  *                                                                            *
  ******************************************************************************/
-int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size, const char *param, char **output,
+int	trx_es_execute(trx_es_t *es, const char *script, const char *code, int size, const char *param, char **output,
 	char **error)
 {
 	void		*buffer;
@@ -415,9 +415,9 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED == zbx_es_fatal_error(es))
+	if (SUCCEED == trx_es_fatal_error(es))
 	{
-		*error = zbx_strdup(*error, "cannot continue javascript processing after fatal scripting engine error");
+		*error = trx_strdup(*error, "cannot continue javascript processing after fatal scripting engine error");
 		goto out;
 	}
 
@@ -425,7 +425,7 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 
 	if (0 != setjmp(es->env->loc))
 	{
-		*error = zbx_strdup(*error, es->env->error);
+		*error = trx_strdup(*error, es->env->error);
 		goto out;
 	}
 
@@ -446,7 +446,7 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 		{
 			/* try to get 'stack' property of the object on stack, assuming it's an Error object */
 			if (0 != (rc = duk_get_prop_string(es->env->ctx, -1, "stack")))
-				*error = zbx_strdup(*error, duk_get_string(es->env->ctx, -1));
+				*error = trx_strdup(*error, duk_get_string(es->env->ctx, -1));
 
 			duk_pop(es->env->ctx);
 		}
@@ -454,7 +454,7 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 		/* If the object does not have stack property, return the object itself as error. */
 		/* This allows to simply throw "error message" from scripts                       */
 		if (0 == rc)
-			*error = zbx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
+			*error = trx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
 
 		duk_pop(es->env->ctx);
 
@@ -466,25 +466,25 @@ int	zbx_es_execute(zbx_es_t *es, const char *script, const char *code, int size,
 		if (0 != duk_check_type(es->env->ctx, -1, DUK_TYPE_NULL))
 			*output = NULL;
 		else
-			*output = zbx_strdup(NULL, duk_safe_to_string(es->env->ctx, -1));
+			*output = trx_strdup(NULL, duk_safe_to_string(es->env->ctx, -1));
 
 		treegix_log(LOG_LEVEL_DEBUG, "%s() output:'%s'", __func__, TRX_NULL2EMPTY_STR(*output));
 		ret = SUCCEED;
 	}
 	else
-		*error = zbx_strdup(*error, "undefined return value");
+		*error = trx_strdup(*error, "undefined return value");
 
 	duk_pop(es->env->ctx);
 	es->env->rt_error_num = 0;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, zbx_result_string(ret), TRX_NULL2EMPTY_STR(*error));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s %s", __func__, trx_result_string(ret), TRX_NULL2EMPTY_STR(*error));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_es_set_timeout                                               *
+ * Function: trx_es_set_timeout                                               *
  *                                                                            *
  * Purpose: sets script execution timeout                                     *
  *                                                                            *
@@ -492,7 +492,7 @@ out:
  *             timeout - [IN] the script execution timeout in seconds         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_es_set_timeout(zbx_es_t *es, int timeout)
+void	trx_es_set_timeout(trx_es_t *es, int timeout)
 {
 	es->env->timeout = timeout;
 }

@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxdatasender_a_AR = $(AR) $(ARFLAGS)
-libzbxdatasender_a_LIBADD =
-am_libzbxdatasender_a_OBJECTS = datasender.$(OBJEXT)
-libzbxdatasender_a_OBJECTS = $(am_libzbxdatasender_a_OBJECTS)
+libtrxdatasender_a_AR = $(AR) $(ARFLAGS)
+libtrxdatasender_a_LIBADD =
+am_libtrxdatasender_a_OBJECTS = datasender.$(OBJEXT)
+libtrxdatasender_a_OBJECTS = $(am_libtrxdatasender_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxdatasender_a_SOURCES)
-DIST_SOURCES = $(libzbxdatasender_a_SOURCES)
+SOURCES = $(libtrxdatasender_a_SOURCES)
+DIST_SOURCES = $(libtrxdatasender_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxdatasender.a
-libzbxdatasender_a_SOURCES = \
+noinst_LIBRARIES = libtrxdatasender.a
+libtrxdatasender_a_SOURCES = \
 	datasender.c datasender.h
 
 all: all-am
@@ -415,10 +415,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxdatasender.a: $(libzbxdatasender_a_OBJECTS) $(libzbxdatasender_a_DEPENDENCIES) $(EXTRA_libzbxdatasender_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxdatasender.a
-	$(AM_V_AR)$(libzbxdatasender_a_AR) libzbxdatasender.a $(libzbxdatasender_a_OBJECTS) $(libzbxdatasender_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxdatasender.a
+libtrxdatasender.a: $(libtrxdatasender_a_OBJECTS) $(libtrxdatasender_a_DEPENDENCIES) $(EXTRA_libtrxdatasender_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxdatasender.a
+	$(AM_V_AR)$(libtrxdatasender_a_AR) libtrxdatasender.a $(libtrxdatasender_a_OBJECTS) $(libtrxdatasender_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxdatasender.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

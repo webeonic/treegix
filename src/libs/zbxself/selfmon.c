@@ -1,6 +1,6 @@
 
 
-#include "zbxself.h"
+#include "trxself.h"
 #include "common.h"
 
 #ifndef _WINDOWS
@@ -16,7 +16,7 @@
 typedef struct
 {
 	/* the current usage statistics */
-	zbx_uint64_t	counter[TRX_PROCESS_STATE_COUNT];
+	trx_uint64_t	counter[TRX_PROCESS_STATE_COUNT];
 
 	/* ticks of the last self monitoring update */
 	clock_t		ticks;
@@ -39,16 +39,16 @@ typedef struct
 	unsigned short			counter[TRX_PROCESS_STATE_COUNT];
 
 	/* the process state that was already applied to the historical state data */
-	zbx_uint64_t			counter_used[TRX_PROCESS_STATE_COUNT];
+	trx_uint64_t			counter_used[TRX_PROCESS_STATE_COUNT];
 
 	/* the process state cache */
 	zxb_stat_process_cache_t	cache;
 }
-zbx_stat_process_t;
+trx_stat_process_t;
 
 typedef struct
 {
-	zbx_stat_process_t	**process;
+	trx_stat_process_t	**process;
 	int			first;
 	int			count;
 
@@ -58,15 +58,15 @@ typedef struct
 	/* ticks of the last self monitoring sync (data gathering) */
 	clock_t			ticks_sync;
 }
-zbx_selfmon_collector_t;
+trx_selfmon_collector_t;
 
-static zbx_selfmon_collector_t	*collector = NULL;
+static trx_selfmon_collector_t	*collector = NULL;
 static int			shm_id;
 
-#	define LOCK_SM		zbx_mutex_lock(sm_lock)
-#	define UNLOCK_SM	zbx_mutex_unlock(sm_lock)
+#	define LOCK_SM		trx_mutex_lock(sm_lock)
+#	define UNLOCK_SM	trx_mutex_unlock(sm_lock)
 
-static zbx_mutex_t	sm_lock = TRX_MUTEX_NULL;
+static trx_mutex_t	sm_lock = TRX_MUTEX_NULL;
 #endif
 
 extern char	*CONFIG_FILE;
@@ -211,44 +211,44 @@ int	init_selfmon_collector(char **error)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	sz_total = sz = sizeof(zbx_selfmon_collector_t);
-	sz_total += sz_array = sizeof(zbx_stat_process_t *) * TRX_PROCESS_TYPE_COUNT;
+	sz_total = sz = sizeof(trx_selfmon_collector_t);
+	sz_total += sz_array = sizeof(trx_stat_process_t *) * TRX_PROCESS_TYPE_COUNT;
 
 	for (proc_type = 0; TRX_PROCESS_TYPE_COUNT > proc_type; proc_type++)
-		sz_total += sz_process[proc_type] = sizeof(zbx_stat_process_t) * get_process_type_forks(proc_type);
+		sz_total += sz_process[proc_type] = sizeof(trx_stat_process_t) * get_process_type_forks(proc_type);
 
-	treegix_log(LOG_LEVEL_DEBUG, "%s() size:" TRX_FS_SIZE_T, __func__, (zbx_fs_size_t)sz_total);
+	treegix_log(LOG_LEVEL_DEBUG, "%s() size:" TRX_FS_SIZE_T, __func__, (trx_fs_size_t)sz_total);
 
-	if (SUCCEED != zbx_mutex_create(&sm_lock, TRX_MUTEX_SELFMON, error))
+	if (SUCCEED != trx_mutex_create(&sm_lock, TRX_MUTEX_SELFMON, error))
 	{
-		zbx_error("unable to create mutex for a self-monitoring collector");
+		trx_error("unable to create mutex for a self-monitoring collector");
 		exit(EXIT_FAILURE);
 	}
 
 	if (-1 == (shm_id = shmget(IPC_PRIVATE, sz_total, 0600)))
 	{
-		*error = zbx_strdup(*error, "cannot allocate shared memory for a self-monitoring collector");
+		*error = trx_strdup(*error, "cannot allocate shared memory for a self-monitoring collector");
 		goto out;
 	}
 
 	if ((void *)(-1) == (p = (char *)shmat(shm_id, NULL, 0)))
 	{
-		*error = zbx_dsprintf(*error, "cannot attach shared memory for a self-monitoring collector: %s",
-				zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot attach shared memory for a self-monitoring collector: %s",
+				trx_strerror(errno));
 		goto out;
 	}
 
 	if (-1 == shmctl(shm_id, IPC_RMID, NULL))
-		zbx_error("cannot mark shared memory %d for destruction: %s", shm_id, zbx_strerror(errno));
+		trx_error("cannot mark shared memory %d for destruction: %s", shm_id, trx_strerror(errno));
 
-	collector = (zbx_selfmon_collector_t *)p; p += sz;
-	collector->process = (zbx_stat_process_t **)p; p += sz_array;
+	collector = (trx_selfmon_collector_t *)p; p += sz;
+	collector->process = (trx_stat_process_t **)p; p += sz_array;
 	collector->ticks_per_sec = sysconf(_SC_CLK_TCK);
 	collector->ticks_sync = times(&buf);
 
 	for (proc_type = 0; TRX_PROCESS_TYPE_COUNT > proc_type; proc_type++)
 	{
-		collector->process[proc_type] = (zbx_stat_process_t *)p; p += sz_process[proc_type];
+		collector->process[proc_type] = (trx_stat_process_t *)p; p += sz_process[proc_type];
 		memset(collector->process[proc_type], 0, sz_process[proc_type]);
 
 		process_forks = get_process_type_forks(proc_type);
@@ -290,12 +290,12 @@ void	free_selfmon_collector(void)
 	if (-1 == shmctl(shm_id, IPC_RMID, 0))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot remove shared memory for self-monitoring collector: %s",
-				zbx_strerror(errno));
+				trx_strerror(errno));
 	}
 
 	UNLOCK_SM;
 
-	zbx_mutex_destroy(&sm_lock);
+	trx_mutex_destroy(&sm_lock);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -311,7 +311,7 @@ void	free_selfmon_collector(void)
  ******************************************************************************/
 void	update_selfmon_counter(unsigned char state)
 {
-	zbx_stat_process_t	*process;
+	trx_stat_process_t	*process;
 	clock_t			ticks;
 	struct tms		buf;
 	int			i;
@@ -366,7 +366,7 @@ void	update_selfmon_counter(unsigned char state)
  ******************************************************************************/
 void	collect_selfmon_stats(void)
 {
-	zbx_stat_process_t	*process;
+	trx_stat_process_t	*process;
 	clock_t			ticks, ticks_done;
 	struct tms		buf;
 	unsigned char		proc_type, i;
@@ -480,7 +480,7 @@ void	get_selfmon_stats(unsigned char proc_type, unsigned char aggr_func, int pro
 
 	for (; proc_num < process_forks; proc_num++)
 	{
-		zbx_stat_process_t	*process;
+		trx_stat_process_t	*process;
 		unsigned short		one_total = 0, one_counter;
 
 		process = &collector->process[proc_type][proc_num];
@@ -524,7 +524,7 @@ unlock:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_all_process_stats                                        *
+ * Function: trx_get_all_process_stats                                        *
  *                                                                            *
  * Purpose: retrieves internal metrics of all running processes based on      *
  *          process type                                                      *
@@ -532,7 +532,7 @@ unlock:
  * Parameters: stats - [OUT] process metrics                                  *
  *                                                                            *
  ******************************************************************************/
-int	zbx_get_all_process_stats(zbx_process_info_t *stats)
+int	trx_get_all_process_stats(trx_process_info_t *stats)
 {
 	int		current, ret = FAIL;
 	unsigned char	proc_type;
@@ -558,7 +558,7 @@ int	zbx_get_all_process_stats(zbx_process_info_t *stats)
 
 		for (proc_num = 0; proc_num < stats[proc_type].count; proc_num++)
 		{
-			zbx_stat_process_t	*process;
+			trx_stat_process_t	*process;
 			unsigned short		one_total = 0, busy_counter, idle_counter;
 			unsigned char		s;
 
@@ -615,7 +615,7 @@ int	zbx_get_all_process_stats(zbx_process_info_t *stats)
 unlock:
 	UNLOCK_SM;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -624,7 +624,7 @@ static int	sleep_remains;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_sleep_loop                                                   *
+ * Function: trx_sleep_loop                                                   *
  *                                                                            *
  * Purpose: sleeping process                                                  *
  *                                                                            *
@@ -633,7 +633,7 @@ static int	sleep_remains;
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_sleep_loop(int sleeptime)
+void	trx_sleep_loop(int sleeptime)
 {
 	if (0 >= sleeptime)
 		return;
@@ -651,7 +651,7 @@ void	zbx_sleep_loop(int sleeptime)
 	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 }
 
-void	zbx_sleep_forever(void)
+void	trx_sleep_forever(void)
 {
 	sleep_remains = 1;
 
@@ -666,12 +666,12 @@ void	zbx_sleep_forever(void)
 	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 }
 
-void	zbx_wakeup(void)
+void	trx_wakeup(void)
 {
 	sleep_remains = 0;
 }
 
-int	zbx_sleep_get_remainder(void)
+int	trx_sleep_get_remainder(void)
 {
 	return sleep_remains;
 }

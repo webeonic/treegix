@@ -67,14 +67,14 @@ class CMaintenance extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		$maintenanceids = [];
 		if (self::$userData['type'] == USER_TYPE_SUPER_ADMIN || $options['nopermissions']) {
 			if (!is_null($options['groupids']) || !is_null($options['hostids'])) {
 				if (!is_null($options['groupids'])) {
-					zbx_value2array($options['groupids']);
+					trx_value2array($options['groupids']);
 					$res = DBselect(
 						'SELECT mmg.maintenanceid'.
 						' FROM maintenances_groups mmg'.
@@ -90,12 +90,12 @@ class CMaintenance extends CApiService {
 						' WHERE hg.hostid=mmh.hostid';
 
 				if (!is_null($options['groupids'])) {
-					zbx_value2array($options['groupids']);
+					trx_value2array($options['groupids']);
 					$sql .= ' AND '.dbConditionInt('hg.groupid', $options['groupids']);
 				}
 
 				if (!is_null($options['hostids'])) {
-					zbx_value2array($options['hostids']);
+					trx_value2array($options['hostids']);
 					$sql .= ' AND '.dbConditionInt('hg.hostid', $options['hostids']);
 				}
 				$res = DBselect($sql);
@@ -122,7 +122,7 @@ class CMaintenance extends CApiService {
 						' GROUP by mh.hostid'.
 						' HAVING MIN(r.permission) IS NULL'.
 							' OR MIN(r.permission)='.PERM_DENY.
-							' OR MAX(r.permission)<'.zbx_dbstr($permission).
+							' OR MAX(r.permission)<'.trx_dbstr($permission).
 						')'.
 					' AND NOT EXISTS ('.
 						'SELECT NULL'.
@@ -134,11 +134,11 @@ class CMaintenance extends CApiService {
 						' GROUP by mg.groupid'.
 						' HAVING MIN(r.permission) IS NULL'.
 							' OR MIN(r.permission)='.PERM_DENY.
-							' OR MAX(r.permission)<'.zbx_dbstr($permission).
+							' OR MAX(r.permission)<'.trx_dbstr($permission).
 						')';
 
 			if (!is_null($options['groupids'])) {
-				zbx_value2array($options['groupids']);
+				trx_value2array($options['groupids']);
 				$sql .= ' AND ('.
 						'EXISTS ('.
 							'SELECT NULL'.
@@ -157,7 +157,7 @@ class CMaintenance extends CApiService {
 			}
 
 			if (!is_null($options['hostids'])) {
-				zbx_value2array($options['hostids']);
+				trx_value2array($options['hostids']);
 				$sql .= ' AND EXISTS ('.
 						'SELECT NULL'.
 							' FROM maintenances_hosts mh'.
@@ -167,7 +167,7 @@ class CMaintenance extends CApiService {
 			}
 
 			if (!is_null($options['maintenanceids'])) {
-				zbx_value2array($options['maintenanceids']);
+				trx_value2array($options['maintenanceids']);
 				$sql .= ' AND '.dbConditionInt('m.maintenanceid', $options['maintenanceids']);
 			}
 
@@ -180,7 +180,7 @@ class CMaintenance extends CApiService {
 
 		// maintenanceids
 		if (!is_null($options['maintenanceids'])) {
-			zbx_value2array($options['maintenanceids']);
+			trx_value2array($options['maintenanceids']);
 
 			$sqlParts['where'][] = dbConditionInt('m.maintenanceid', $options['maintenanceids']);
 		}
@@ -192,11 +192,11 @@ class CMaintenance extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('maintenances m', $options, $sqlParts);
+			trx_db_search('maintenances m', $options, $sqlParts);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -226,7 +226,7 @@ class CMaintenance extends CApiService {
 		}
 
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 		return $result;
 	}
@@ -241,7 +241,7 @@ class CMaintenance extends CApiService {
 	 * @return array
 	 */
 	public function create(array $maintenances) {
-		$maintenances = zbx_toArray($maintenances);
+		$maintenances = trx_toArray($maintenances);
 		if (self::$userData['type'] == USER_TYPE_TREEGIX_USER) {
 			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
@@ -320,7 +320,7 @@ class CMaintenance extends CApiService {
 		// validate if maintenance name already exists
 		$dbMaintenances = $this->get([
 			'output' => ['name'],
-			'filter' => ['name' => zbx_objectValues($maintenances, 'name')],
+			'filter' => ['name' => trx_objectValues($maintenances, 'name')],
 			'nopermissions' => true,
 			'limit' => 1
 		]);
@@ -488,8 +488,8 @@ class CMaintenance extends CApiService {
 			self::exception(TRX_API_ERROR_PERMISSIONS, _('You do not have permission to perform this operation.'));
 		}
 
-		$maintenances = zbx_toArray($maintenances);
-		$maintenanceids = zbx_objectValues($maintenances, 'maintenanceid');
+		$maintenances = trx_toArray($maintenances);
+		$maintenanceids = trx_objectValues($maintenances, 'maintenanceid');
 
 		if (!$maintenances) {
 			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameter.'));
@@ -584,7 +584,7 @@ class CMaintenance extends CApiService {
 					self::exception(TRX_API_ERROR_PARAMETERS, _('At least one maintenance period must be created.'));
 				}
 
-				$db_timeperiods = zbx_toHash($db_maintenance['timeperiods'], 'timeperiodid');
+				$db_timeperiods = trx_toHash($db_maintenance['timeperiods'], 'timeperiodid');
 
 				foreach ($maintenance['timeperiods'] as &$timeperiod) {
 					if (!is_array($timeperiod)) {
@@ -752,8 +752,8 @@ class CMaintenance extends CApiService {
 				// $hosts_diff['first'] - new hosts, that should be inserted;
 				// $hosts_diff['second'] - hosts, that should be deleted;
 				// $hosts_diff['both'] - hosts, that should not be touched;
-				$hosts_diff = zbx_array_diff(
-					zbx_toObject($maintenance['hostids'], 'hostid'),
+				$hosts_diff = trx_array_diff(
+					trx_toObject($maintenance['hostids'], 'hostid'),
 					$db_maintenances[$maintenance['maintenanceid']]['hosts'],
 					'hostid'
 				);
@@ -774,8 +774,8 @@ class CMaintenance extends CApiService {
 
 			if (array_key_exists('groupids', $maintenance)) {
 				// Now the same with the groups.
-				$groups_diff = zbx_array_diff(
-					zbx_toObject($maintenance['groupids'], 'groupid'),
+				$groups_diff = trx_array_diff(
+					trx_toObject($maintenance['groupids'], 'groupid'),
 					$db_maintenances[$maintenance['maintenanceid']]['groups'],
 					'groupid'
 				);
@@ -996,7 +996,7 @@ class CMaintenance extends CApiService {
 		$timePeriods = DB::replace('timeperiods', $oldMaintenance['timeperiods'], $maintenance['timeperiods']);
 
 		// link new time periods to maintenance
-		$oldTimePeriods = zbx_toHash($oldMaintenance['timeperiods'], 'timeperiodid');
+		$oldTimePeriods = trx_toHash($oldMaintenance['timeperiods'], 'timeperiodid');
 		$newMaintenanceWindows = [];
 		foreach ($timePeriods as $tp) {
 			if (!isset($oldTimePeriods[$tp['timeperiodid']])) {

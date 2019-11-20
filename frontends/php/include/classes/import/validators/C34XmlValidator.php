@@ -1105,7 +1105,7 @@ class C34XmlValidator {
 	 * @throws Exception			if the check is failed
 	 */
 	public function requiredMapElement(array $parent_data = null) {
-		if (zbx_is_int($parent_data['elementtype'])) {
+		if (trx_is_int($parent_data['elementtype'])) {
 			switch ($parent_data['elementtype']) {
 				case SYSMAP_ELEMENT_TYPE_HOST:
 				case SYSMAP_ELEMENT_TYPE_MAP:
@@ -1128,7 +1128,7 @@ class C34XmlValidator {
 	 * @throws Exception			if the map elements are invalid
 	 */
 	public function validateMapElements($data, array $parent_data = null, $path) {
-		if (zbx_is_int($parent_data['elementtype'])) {
+		if (trx_is_int($parent_data['elementtype'])) {
 			switch ($parent_data['elementtype']) {
 				case SYSMAP_ELEMENT_TYPE_HOST:
 					$rules = ['type' => XML_INDEXED_ARRAY, 'prefix' => 'element', 'rules' => [
@@ -1177,7 +1177,7 @@ class C34XmlValidator {
 	 * @throws Exception			if the map element is invalid
 	 */
 	public function validateScreenItemResource($data, array $parent_data = null, $path) {
-		if (zbx_is_int($parent_data['resourcetype'])) {
+		if (trx_is_int($parent_data['resourcetype'])) {
 			switch ($parent_data['resourcetype']) {
 				case SCREEN_RESOURCE_GRAPH:
 				case SCREEN_RESOURCE_LLD_GRAPH:
@@ -1243,7 +1243,7 @@ class C34XmlValidator {
 	 * @throws Exception			if the element is invalid
 	 */
 	public function validateYMinItem($data, array $parent_data = null, $path) {
-		if (zbx_is_int($parent_data['ymin_type_1']) && $parent_data['ymin_type_1'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
+		if (trx_is_int($parent_data['ymin_type_1']) && $parent_data['ymin_type_1'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 			$rules = ['type' => XML_ARRAY, 'rules' => [
 				'host' =>	['type' => XML_STRING | XML_REQUIRED],
 				'key' =>	['type' => XML_STRING | XML_REQUIRED]
@@ -1266,7 +1266,7 @@ class C34XmlValidator {
 	 * @throws Exception			if the element is invalid
 	 */
 	public function validateYMaxItem($data, array $parent_data = null, $path) {
-		if (zbx_is_int($parent_data['ymax_type_1']) && $parent_data['ymax_type_1'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
+		if (trx_is_int($parent_data['ymax_type_1']) && $parent_data['ymax_type_1'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 			$rules = ['type' => XML_ARRAY, 'rules' => [
 				'host' =>	['type' => XML_STRING | XML_REQUIRED],
 				'key' =>	['type' => XML_STRING | XML_REQUIRED]

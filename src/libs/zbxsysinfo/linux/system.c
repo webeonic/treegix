@@ -15,11 +15,11 @@ int	SYSTEM_UNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (-1 == uname(&name))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_STR_RESULT(result, zbx_dsprintf(NULL, "%s %s %s %s %s", name.sysname, name.nodename, name.release,
+	SET_STR_RESULT(result, trx_dsprintf(NULL, "%s %s %s %s %s", name.sysname, name.nodename, name.release,
 			name.version, name.machine));
 
 	return SYSINFO_RET_OK;

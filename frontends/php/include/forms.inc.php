@@ -15,8 +15,8 @@ function prepareSubfilterOutput($label, $data, $subfilter, $subfilterName) {
 			$output[] = (new CSpan([
 				(new CLinkAction($element['name']))
 					->onClick(CHtml::encode(
-						'javascript: create_var("zbx_filter", "subfilter_set", "1", false);'.
-						'create_var("zbx_filter", '.CJs::encodeJson($subfilterName.'['.$id.']').', null, true);'
+						'javascript: create_var("trx_filter", "subfilter_set", "1", false);'.
+						'create_var("trx_filter", '.CJs::encodeJson($subfilterName.'['.$id.']').', null, true);'
 					)),
 				' ',
 				new CSup($element['count'])
@@ -38,8 +38,8 @@ function prepareSubfilterOutput($label, $data, $subfilter, $subfilterName) {
 			else {
 				$link = (new CLinkAction($element['name']))
 					->onClick(CHtml::encode(
-						'javascript: create_var("zbx_filter", "subfilter_set", "1", false);'.
-						'create_var("zbx_filter", '.
+						'javascript: create_var("trx_filter", "subfilter_set", "1", false);'.
+						'create_var("trx_filter", '.
 							CJs::encodeJson($subfilterName.'['.$id.']').', '.
 							CJs::encodeJson($id).', '.
 							'true'.
@@ -117,7 +117,7 @@ function getItemFilterForm(&$items) {
 	// type select
 	$fTypeVisibility = [];
 	$cmbType = new CComboBox('filter_type', $filter_type, null, [-1 => _('all')]);
-	zbx_subarray_push($fTypeVisibility, -1, 'filter_delay_row');
+	trx_subarray_push($fTypeVisibility, -1, 'filter_delay_row');
 
 	$item_types = item_type2str();
 	unset($item_types[ITEM_TYPE_HTTPTEST]); // httptest items are only for internal treegix logic
@@ -126,26 +126,26 @@ function getItemFilterForm(&$items) {
 
 	foreach ($item_types as $type => $name) {
 		if ($type != ITEM_TYPE_TRAPPER && $type != ITEM_TYPE_SNMPTRAP) {
-			zbx_subarray_push($fTypeVisibility, $type, 'filter_delay_row');
+			trx_subarray_push($fTypeVisibility, $type, 'filter_delay_row');
 		}
 
 		switch ($type) {
 			case ITEM_TYPE_SNMPV1:
 			case ITEM_TYPE_SNMPV2C:
-				zbx_subarray_push($fTypeVisibility, $type, 'filter_snmp_community_row');
-				zbx_subarray_push($fTypeVisibility, $type, 'filter_snmp_oid_row');
-				zbx_subarray_push($fTypeVisibility, $type, 'filter_port_row');
+				trx_subarray_push($fTypeVisibility, $type, 'filter_snmp_community_row');
+				trx_subarray_push($fTypeVisibility, $type, 'filter_snmp_oid_row');
+				trx_subarray_push($fTypeVisibility, $type, 'filter_port_row');
 				break;
 
 			case ITEM_TYPE_SNMPV3:
-				zbx_subarray_push($fTypeVisibility, $type, 'filter_snmpv3_securityname_row');
-				zbx_subarray_push($fTypeVisibility, $type, 'filter_snmp_oid_row');
-				zbx_subarray_push($fTypeVisibility, $type, 'filter_port_row');
+				trx_subarray_push($fTypeVisibility, $type, 'filter_snmpv3_securityname_row');
+				trx_subarray_push($fTypeVisibility, $type, 'filter_snmp_oid_row');
+				trx_subarray_push($fTypeVisibility, $type, 'filter_port_row');
 				break;
 		}
 	}
 
-	zbx_add_post_js("var filterTypeSwitcher = new CViewSwitcher('filter_type', 'change', ".zbx_jsvalue($fTypeVisibility, true).');');
+	trx_add_post_js("var filterTypeSwitcher = new CViewSwitcher('filter_type', 'change', ".trx_jsvalue($fTypeVisibility, true).');');
 
 	// row 1
 	$group_filter = !empty($filter_groupids)
@@ -697,17 +697,17 @@ function getItemFilterForm(&$items) {
 		$table_subfilter->addRow([$discovery_output]);
 	}
 
-	if (zbx_empty($filter_history) && count($item_params['history']) > 1) {
+	if (trx_empty($filter_history) && count($item_params['history']) > 1) {
 		$history_output = prepareSubfilterOutput(_('History'), $item_params['history'], $subfilter_history, 'subfilter_history');
 		$table_subfilter->addRow([$history_output]);
 	}
 
-	if (zbx_empty($filter_trends) && (count($item_params['trends']) > 1)) {
+	if (trx_empty($filter_trends) && (count($item_params['trends']) > 1)) {
 		$trends_output = prepareSubfilterOutput(_('Trends'), $item_params['trends'], $subfilter_trends, 'subfilter_trends');
 		$table_subfilter->addRow([$trends_output]);
 	}
 
-	if (zbx_empty($filter_delay) && $filter_type != ITEM_TYPE_TRAPPER && count($item_params['interval']) > 1) {
+	if (trx_empty($filter_delay) && $filter_type != ITEM_TYPE_TRAPPER && count($item_params['interval']) > 1) {
 		$interval_output = prepareSubfilterOutput(_('Interval'), $item_params['interval'], $subfilter_interval, 'subfilter_interval');
 		$table_subfilter->addRow([$interval_output]);
 	}
@@ -1085,7 +1085,7 @@ function getItemFormData(array $item = [], array $options = []) {
 			$data['status'] = $data['item']['status'];
 			$data['trends'] = $data['item']['trends'];
 
-			$data['applications'] = array_unique(zbx_array_merge($data['applications'], get_applications_by_itemid($data['itemid'])));
+			$data['applications'] = array_unique(trx_array_merge($data['applications'], get_applications_by_itemid($data['itemid'])));
 
 			if ($data['parent_discoveryid'] != 0) {
 				/*
@@ -1096,13 +1096,13 @@ function getItemFormData(array $item = [], array $options = []) {
 					'SELECT ap.name'.
 					' FROM application_prototype ap,item_application_prototype iap'.
 					' WHERE ap.application_prototypeid=iap.application_prototypeid'.
-						' AND ap.itemid='.zbx_dbstr($data['parent_discoveryid']).
-						' AND iap.itemid='.zbx_dbstr($data['itemid'])
+						' AND ap.itemid='.trx_dbstr($data['parent_discoveryid']).
+						' AND iap.itemid='.trx_dbstr($data['itemid'])
 				));
 
 				// Merge form submitted data with data existing in DB to find diff and correctly display ListBox.
 				$data['application_prototypes'] = array_unique(
-					zbx_array_merge($data['application_prototypes'], zbx_objectValues($application_prototypes, 'name'))
+					trx_array_merge($data['application_prototypes'], trx_objectValues($application_prototypes, 'name'))
 				);
 			}
 		}
@@ -1119,7 +1119,7 @@ function getItemFormData(array $item = [], array $options = []) {
 	$data['db_applications'] = DBfetchArray(DBselect(
 		'SELECT DISTINCT a.applicationid,a.name'.
 		' FROM applications a'.
-		' WHERE a.hostid='.zbx_dbstr($data['hostid']).
+		' WHERE a.hostid='.trx_dbstr($data['hostid']).
 			(($data['parent_discoveryid'] != 0) ? ' AND a.flags='.TRX_FLAG_DISCOVERY_NORMAL : '')
 	));
 	order_result($data['db_applications'], 'name');
@@ -1134,7 +1134,7 @@ function getItemFormData(array $item = [], array $options = []) {
 		$data['db_application_prototypes'] = DBfetchArray(DBselect(
 			'SELECT ap.application_prototypeid,ap.name'.
 			' FROM application_prototype ap'.
-			' WHERE ap.itemid='.zbx_dbstr($data['parent_discoveryid'])
+			' WHERE ap.itemid='.trx_dbstr($data['parent_discoveryid'])
 		));
 		order_result($data['db_application_prototypes'], 'name');
 	}
@@ -1176,7 +1176,7 @@ function getItemFormData(array $item = [], array $options = []) {
 			'filter' => ['hostid' => $data['hostid']],
 			'nopermissions' => true
 		]);
-		$data['alreadyPopulated'] = zbx_toHash($data['alreadyPopulated'], 'inventory_link');
+		$data['alreadyPopulated'] = trx_toHash($data['alreadyPopulated'], 'inventory_link');
 	}
 
 	// unset snmpv3 fields
@@ -1784,7 +1784,7 @@ function getTriggerFormData(array $data) {
 				'SELECT t.triggerid,t.description'.
 				' FROM triggers t,trigger_depends d'.
 				' WHERE t.triggerid=d.triggerid_up'.
-					' AND d.triggerid_down='.zbx_dbstr($data['triggerid'])
+					' AND d.triggerid_down='.trx_dbstr($data['triggerid'])
 			);
 			while ($db_trigger = DBfetch($db_triggers)) {
 				if (uint_in_array($db_trigger['triggerid'], $data['dependencies'])) {
@@ -2012,7 +2012,7 @@ function getTimeperiodForm(array $data) {
 	$dayofweek .= !isset($new_timeperiod['dayofweek_sa']) ? '0' : '1';
 	$dayofweek .= !isset($new_timeperiod['dayofweek_su']) ? '0' : '1';
 	if (isset($new_timeperiod['dayofweek'])) {
-		$dayofweek = zbx_num2bitstr($new_timeperiod['dayofweek'], true);
+		$dayofweek = trx_num2bitstr($new_timeperiod['dayofweek'], true);
 	}
 
 	$new_timeperiod['dayofweek_mo'] = $dayofweek[0];
@@ -2038,7 +2038,7 @@ function getTimeperiodForm(array $data) {
 	$month .= !isset($new_timeperiod['month_nov']) ? '0' : '1';
 	$month .= !isset($new_timeperiod['month_dec']) ? '0' : '1';
 	if (isset($new_timeperiod['month'])) {
-		$month = zbx_num2bitstr($new_timeperiod['month'], true);
+		$month = trx_num2bitstr($new_timeperiod['month'], true);
 	}
 
 	$new_timeperiod['month_jan'] = $month[0];

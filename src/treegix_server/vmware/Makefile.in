@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxvmware_a_AR = $(AR) $(ARFLAGS)
-libzbxvmware_a_LIBADD =
-am_libzbxvmware_a_OBJECTS = libzbxvmware_a-vmware.$(OBJEXT)
-libzbxvmware_a_OBJECTS = $(am_libzbxvmware_a_OBJECTS)
+libtrxvmware_a_AR = $(AR) $(ARFLAGS)
+libtrxvmware_a_LIBADD =
+am_libtrxvmware_a_OBJECTS = libtrxvmware_a-vmware.$(OBJEXT)
+libtrxvmware_a_OBJECTS = $(am_libtrxvmware_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -153,8 +153,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxvmware_a_SOURCES)
-DIST_SOURCES = $(libzbxvmware_a_SOURCES)
+SOURCES = $(libtrxvmware_a_SOURCES)
+DIST_SOURCES = $(libtrxvmware_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -378,9 +378,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxvmware.a
-libzbxvmware_a_SOURCES = vmware.c vmware.h
-libzbxvmware_a_CFLAGS = @LIBXML2_CFLAGS@
+noinst_LIBRARIES = libtrxvmware.a
+libtrxvmware_a_SOURCES = vmware.c vmware.h
+libtrxvmware_a_CFLAGS = @LIBXML2_CFLAGS@
 all: all-am
 
 .SUFFIXES:
@@ -418,10 +418,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxvmware.a: $(libzbxvmware_a_OBJECTS) $(libzbxvmware_a_DEPENDENCIES) $(EXTRA_libzbxvmware_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxvmware.a
-	$(AM_V_AR)$(libzbxvmware_a_AR) libzbxvmware.a $(libzbxvmware_a_OBJECTS) $(libzbxvmware_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxvmware.a
+libtrxvmware.a: $(libtrxvmware_a_OBJECTS) $(libtrxvmware_a_DEPENDENCIES) $(EXTRA_libtrxvmware_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxvmware.a
+	$(AM_V_AR)$(libtrxvmware_a_AR) libtrxvmware.a $(libtrxvmware_a_OBJECTS) $(libtrxvmware_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxvmware.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -429,7 +429,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxvmware_a-vmware.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxvmware_a-vmware.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -447,19 +447,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxvmware_a-vmware.o: vmware.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxvmware_a_CFLAGS) $(CFLAGS) -MT libzbxvmware_a-vmware.o -MD -MP -MF $(DEPDIR)/libzbxvmware_a-vmware.Tpo -c -o libzbxvmware_a-vmware.o `test -f 'vmware.c' || echo '$(srcdir)/'`vmware.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxvmware_a-vmware.Tpo $(DEPDIR)/libzbxvmware_a-vmware.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vmware.c' object='libzbxvmware_a-vmware.o' libtool=no @AMDEPBACKSLASH@
+libtrxvmware_a-vmware.o: vmware.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxvmware_a_CFLAGS) $(CFLAGS) -MT libtrxvmware_a-vmware.o -MD -MP -MF $(DEPDIR)/libtrxvmware_a-vmware.Tpo -c -o libtrxvmware_a-vmware.o `test -f 'vmware.c' || echo '$(srcdir)/'`vmware.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxvmware_a-vmware.Tpo $(DEPDIR)/libtrxvmware_a-vmware.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vmware.c' object='libtrxvmware_a-vmware.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxvmware_a_CFLAGS) $(CFLAGS) -c -o libzbxvmware_a-vmware.o `test -f 'vmware.c' || echo '$(srcdir)/'`vmware.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxvmware_a_CFLAGS) $(CFLAGS) -c -o libtrxvmware_a-vmware.o `test -f 'vmware.c' || echo '$(srcdir)/'`vmware.c
 
-libzbxvmware_a-vmware.obj: vmware.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxvmware_a_CFLAGS) $(CFLAGS) -MT libzbxvmware_a-vmware.obj -MD -MP -MF $(DEPDIR)/libzbxvmware_a-vmware.Tpo -c -o libzbxvmware_a-vmware.obj `if test -f 'vmware.c'; then $(CYGPATH_W) 'vmware.c'; else $(CYGPATH_W) '$(srcdir)/vmware.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxvmware_a-vmware.Tpo $(DEPDIR)/libzbxvmware_a-vmware.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vmware.c' object='libzbxvmware_a-vmware.obj' libtool=no @AMDEPBACKSLASH@
+libtrxvmware_a-vmware.obj: vmware.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxvmware_a_CFLAGS) $(CFLAGS) -MT libtrxvmware_a-vmware.obj -MD -MP -MF $(DEPDIR)/libtrxvmware_a-vmware.Tpo -c -o libtrxvmware_a-vmware.obj `if test -f 'vmware.c'; then $(CYGPATH_W) 'vmware.c'; else $(CYGPATH_W) '$(srcdir)/vmware.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxvmware_a-vmware.Tpo $(DEPDIR)/libtrxvmware_a-vmware.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vmware.c' object='libtrxvmware_a-vmware.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxvmware_a_CFLAGS) $(CFLAGS) -c -o libzbxvmware_a-vmware.obj `if test -f 'vmware.c'; then $(CYGPATH_W) 'vmware.c'; else $(CYGPATH_W) '$(srcdir)/vmware.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxvmware_a_CFLAGS) $(CFLAGS) -c -o libtrxvmware_a-vmware.obj `if test -f 'vmware.c'; then $(CYGPATH_W) 'vmware.c'; else $(CYGPATH_W) '$(srcdir)/vmware.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

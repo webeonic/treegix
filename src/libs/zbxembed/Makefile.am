@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxembed.a
+noinst_LIBRARIES = libtrxembed.a
 
-libzbxembed_a_SOURCES = \
+libtrxembed_a_SOURCES = \
 	embed.c embed.h \
 	httprequest.c httprequest.h \
 	treegix.c treegix.h \

@@ -474,10 +474,10 @@ elseif (hasRequest('filter_hostid')) {
 		'dynamic' => 0,
 		'mainObject' => 1
 	];
-	zbx_add_post_js(
-		'timeControl.addObject("avail_report", '.zbx_jsvalue($data['filter']).', '.zbx_jsvalue($obj_data).');'
+	trx_add_post_js(
+		'timeControl.addObject("avail_report", '.trx_jsvalue($data['filter']).', '.trx_jsvalue($obj_data).');'
 	);
-	zbx_add_post_js('timeControl.processObjects();');
+	trx_add_post_js('timeControl.processObjects();');
 
 	$reportWidget
 		->addItem([$triggerTable, $paging])

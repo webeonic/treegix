@@ -176,7 +176,7 @@ class CControllerNotificationsGet extends CController {
 						'body' => [
 							'[url='.$url_events.']'.CHtml::encode($notification['name']).'[/url]',
 							'[url='.$url_trigger_events.']'.
-								zbx_date2str(DATE_TIME_FORMAT_SECONDS, $notification['clock']).
+								trx_date2str(DATE_TIME_FORMAT_SECONDS, $notification['clock']).
 							'[/url]',
 						]
 					];

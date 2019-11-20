@@ -3,12 +3,12 @@
 #include "common.h"
 #include "valuecache.h"
 #include "preproc.h"
-#include "zbxlld.h"
+#include "trxlld.h"
 #include "checks_internal.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_value_internal_ext                                       *
+ * Function: trx_get_value_internal_ext                                       *
  *                                                                            *
  * Purpose: processes program type (server) specific internal checks          *
  *                                                                            *
@@ -24,7 +24,7 @@
  *           before generic internal checks are processed.                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request, AGENT_RESULT *result)
+int	trx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int	nparams, ret = NOTSUPPORTED;
 	char	*param2, *param3;
@@ -35,7 +35,7 @@ int	zbx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request,
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -49,7 +49,7 @@ int	zbx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request,
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -60,7 +60,7 @@ int	zbx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request,
 	{
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -75,14 +75,14 @@ int	zbx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request,
 
 		if (3 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
 		param2 = get_rparam(request, 2);
 		if ('\0' == *param2 || 0 != strcmp(param2, "lastaccess"))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 			goto out;
 		}
 
@@ -96,17 +96,17 @@ int	zbx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request,
 	}
 	else if (0 == strcmp(param1, "vcache"))
 	{
-		zbx_vc_stats_t	stats;
+		trx_vc_stats_t	stats;
 
-		if (FAIL == zbx_vc_get_statistics(&stats))
+		if (FAIL == trx_vc_get_statistics(&stats))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Value cache is disabled."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Value cache is disabled."));
 			goto out;
 		}
 
 		if (2 > nparams || nparams > 3)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
@@ -129,7 +129,7 @@ int	zbx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request,
 						stats.total_size * 100);
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				goto out;
 			}
 		}
@@ -145,28 +145,28 @@ int	zbx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request,
 				SET_UI64_RESULT(result, stats.mode);
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				goto out;
 			}
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			goto out;
 		}
 	}
 	else if (0 == strcmp(param1, "lld_queue"))
 	{
-		zbx_uint64_t	value;
+		trx_uint64_t	value;
 		char		*error = NULL;
 
 		if (1 != nparams)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			goto out;
 		}
 
-		if (FAIL == zbx_lld_get_queue_size(&value, &error))
+		if (FAIL == trx_lld_get_queue_size(&value, &error))
 		{
 			SET_MSG_RESULT(result, error);
 			goto out;

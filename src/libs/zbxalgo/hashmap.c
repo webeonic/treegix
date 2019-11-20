@@ -3,9 +3,9 @@
 #include "common.h"
 #include "log.h"
 
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
-static void	__hashmap_ensure_free_entry(zbx_hashmap_t *hm, TRX_HASHMAP_SLOT_T *slot);
+static void	__hashmap_ensure_free_entry(trx_hashmap_t *hm, TRX_HASHMAP_SLOT_T *slot);
 
 #define	CRIT_LOAD_FACTOR	5/1
 #define	SLOT_GROWTH_FACTOR	3/2
@@ -16,7 +16,7 @@ static void	__hashmap_ensure_free_entry(zbx_hashmap_t *hm, TRX_HASHMAP_SLOT_T *s
 
 /* private hashmap functions */
 
-static void	__hashmap_ensure_free_entry(zbx_hashmap_t *hm, TRX_HASHMAP_SLOT_T *slot)
+static void	__hashmap_ensure_free_entry(trx_hashmap_t *hm, TRX_HASHMAP_SLOT_T *slot)
 {
 	if (NULL == slot->entries)
 	{
@@ -31,7 +31,7 @@ static void	__hashmap_ensure_free_entry(zbx_hashmap_t *hm, TRX_HASHMAP_SLOT_T *s
 	}
 }
 
-static void	zbx_hashmap_init_slots(zbx_hashmap_t *hm, size_t init_size)
+static void	trx_hashmap_init_slots(trx_hashmap_t *hm, size_t init_size)
 {
 	hm->num_data = 0;
 
@@ -50,9 +50,9 @@ static void	zbx_hashmap_init_slots(zbx_hashmap_t *hm, size_t init_size)
 
 /* public hashmap interface */
 
-void	zbx_hashmap_create(zbx_hashmap_t *hm, size_t init_size)
+void	trx_hashmap_create(trx_hashmap_t *hm, size_t init_size)
 {
-	zbx_hashmap_create_ext(hm, init_size,
+	trx_hashmap_create_ext(hm, init_size,
 				TRX_DEFAULT_UINT64_HASH_FUNC,
 				TRX_DEFAULT_UINT64_COMPARE_FUNC,
 				TRX_DEFAULT_MEM_MALLOC_FUNC,
@@ -60,12 +60,12 @@ void	zbx_hashmap_create(zbx_hashmap_t *hm, size_t init_size)
 				TRX_DEFAULT_MEM_FREE_FUNC);
 }
 
-void	zbx_hashmap_create_ext(zbx_hashmap_t *hm, size_t init_size,
-				zbx_hash_func_t hash_func,
-				zbx_compare_func_t compare_func,
-				zbx_mem_malloc_func_t mem_malloc_func,
-				zbx_mem_realloc_func_t mem_realloc_func,
-				zbx_mem_free_func_t mem_free_func)
+void	trx_hashmap_create_ext(trx_hashmap_t *hm, size_t init_size,
+				trx_hash_func_t hash_func,
+				trx_compare_func_t compare_func,
+				trx_mem_malloc_func_t mem_malloc_func,
+				trx_mem_realloc_func_t mem_realloc_func,
+				trx_mem_free_func_t mem_free_func)
 {
 	hm->hash_func = hash_func;
 	hm->compare_func = compare_func;
@@ -73,10 +73,10 @@ void	zbx_hashmap_create_ext(zbx_hashmap_t *hm, size_t init_size,
 	hm->mem_realloc_func = mem_realloc_func;
 	hm->mem_free_func = mem_free_func;
 
-	zbx_hashmap_init_slots(hm, init_size);
+	trx_hashmap_init_slots(hm, init_size);
 }
 
-void	zbx_hashmap_destroy(zbx_hashmap_t *hm)
+void	trx_hashmap_destroy(trx_hashmap_t *hm)
 {
 	int	i;
 
@@ -102,10 +102,10 @@ void	zbx_hashmap_destroy(zbx_hashmap_t *hm)
 	hm->mem_free_func = NULL;
 }
 
-int	zbx_hashmap_get(zbx_hashmap_t *hm, zbx_uint64_t key)
+int	trx_hashmap_get(trx_hashmap_t *hm, trx_uint64_t key)
 {
 	int			i, value = FAIL;
-	zbx_hash_t		hash;
+	trx_hash_t		hash;
 	TRX_HASHMAP_SLOT_T	*slot;
 
 	if (0 == hm->num_slots)
@@ -126,14 +126,14 @@ int	zbx_hashmap_get(zbx_hashmap_t *hm, zbx_uint64_t key)
 	return value;
 }
 
-void	zbx_hashmap_set(zbx_hashmap_t *hm, zbx_uint64_t key, int value)
+void	trx_hashmap_set(trx_hashmap_t *hm, trx_uint64_t key, int value)
 {
 	int			i;
-	zbx_hash_t		hash;
+	trx_hash_t		hash;
 	TRX_HASHMAP_SLOT_T	*slot;
 
 	if (0 == hm->num_slots)
-		zbx_hashmap_init_slots(hm, TRX_HASHMAP_DEFAULT_SLOTS);
+		trx_hashmap_init_slots(hm, TRX_HASHMAP_DEFAULT_SLOTS);
 
 	hash = hm->hash_func(&key);
 	slot = &hm->slots[hash % hm->num_slots];
@@ -192,10 +192,10 @@ void	zbx_hashmap_set(zbx_hashmap_t *hm, zbx_uint64_t key, int value)
 	}
 }
 
-void	zbx_hashmap_remove(zbx_hashmap_t *hm, zbx_uint64_t key)
+void	trx_hashmap_remove(trx_hashmap_t *hm, trx_uint64_t key)
 {
 	int			i;
-	zbx_hash_t		hash;
+	trx_hash_t		hash;
 	TRX_HASHMAP_SLOT_T	*slot;
 
 	if (0 == hm->num_slots)
@@ -216,7 +216,7 @@ void	zbx_hashmap_remove(zbx_hashmap_t *hm, zbx_uint64_t key)
 	}
 }
 
-void	zbx_hashmap_clear(zbx_hashmap_t *hm)
+void	trx_hashmap_clear(trx_hashmap_t *hm)
 {
 	int	i;
 

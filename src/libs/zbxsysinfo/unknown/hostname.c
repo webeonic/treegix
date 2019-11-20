@@ -8,6 +8,6 @@ TRX_METRIC	parameter_hostname =
 
 int	SYSTEM_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Not supported because the system is unknown."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Not supported because the system is unknown."));
 	return SYSINFO_RET_FAIL;
 }

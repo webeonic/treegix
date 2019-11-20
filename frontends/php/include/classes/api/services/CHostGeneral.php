@@ -60,8 +60,8 @@ abstract class CHostGeneral extends CHostBase {
 	 * @return array
 	 */
 	public function massAdd(array $data) {
-		$hostIds = zbx_objectValues($data['hosts'], 'hostid');
-		$templateIds = zbx_objectValues($data['templates'], 'templateid');
+		$hostIds = trx_objectValues($data['hosts'], 'hostid');
+		$templateIds = trx_objectValues($data['templates'], 'templateid');
 
 		$allHostIds = array_merge($hostIds, $templateIds);
 
@@ -78,12 +78,12 @@ abstract class CHostGeneral extends CHostBase {
 		if (!empty($data['templates_link'])) {
 			$this->checkHostPermissions($allHostIds);
 
-			$this->link(zbx_objectValues(zbx_toArray($data['templates_link']), 'templateid'), $allHostIds);
+			$this->link(trx_objectValues(trx_toArray($data['templates_link']), 'templateid'), $allHostIds);
 		}
 
 		// create macros
 		if (!empty($data['macros'])) {
-			$data['macros'] = zbx_toArray($data['macros']);
+			$data['macros'] = trx_toArray($data['macros']);
 
 			$hostMacrosToAdd = [];
 			foreach ($data['macros'] as $hostMacro) {
@@ -125,11 +125,11 @@ abstract class CHostGeneral extends CHostBase {
 		$this->checkHostPermissions($allHostIds);
 
 		if (!empty($data['templateids_link'])) {
-			$this->unlink(zbx_toArray($data['templateids_link']), $allHostIds);
+			$this->unlink(trx_toArray($data['templateids_link']), $allHostIds);
 		}
 
 		if (isset($data['templateids_clear'])) {
-			$this->unlink(zbx_toArray($data['templateids_clear']), $allHostIds, true);
+			$this->unlink(trx_toArray($data['templateids_clear']), $allHostIds, true);
 		}
 
 		if (isset($data['macros'])) {
@@ -140,7 +140,7 @@ abstract class CHostGeneral extends CHostBase {
 					'macro' => $data['macros']
 				]
 			]);
-			$hostMacroIds = zbx_objectValues($hostMacros, 'hostmacroid');
+			$hostMacroIds = trx_objectValues($hostMacros, 'hostmacroid');
 			API::UserMacro()->delete($hostMacroIds);
 		}
 
@@ -470,7 +470,7 @@ abstract class CHostGeneral extends CHostBase {
 				));
 
 				if ($application_prototypes) {
-					$application_prototypeids = zbx_objectValues($application_prototypes, 'application_prototypeid');
+					$application_prototypeids = trx_objectValues($application_prototypes, 'application_prototypeid');
 
 					DB::update('application_prototype', [
 						'values' => ['templateid' => 0],
@@ -574,12 +574,12 @@ abstract class CHostGeneral extends CHostBase {
 		if ($applicationTemplates) {
 			// unlink applications from templates
 			DB::delete('application_template', [
-				'application_templateid' => zbx_objectValues($applicationTemplates, 'application_templateid')
+				'application_templateid' => trx_objectValues($applicationTemplates, 'application_templateid')
 			]);
 
 			if ($clear) {
 				// Delete inherited applications that are no longer linked to any templates and items.
-				$applicationids = zbx_objectValues($applicationTemplates, 'applicationid');
+				$applicationids = trx_objectValues($applicationTemplates, 'applicationid');
 
 				$applications = DBfetchArray(DBselect(
 					'SELECT a.applicationid'.
@@ -594,7 +594,7 @@ abstract class CHostGeneral extends CHostBase {
 						')'
 				));
 				if ($applications) {
-					$result = API::Application()->delete(zbx_objectValues($applications, 'applicationid'), true);
+					$result = API::Application()->delete(trx_objectValues($applications, 'applicationid'), true);
 					if (!$result) {
 						self::exception(TRX_API_ERROR_INTERNAL, _('Cannot unlink and clear applications.'));
 					}
@@ -681,7 +681,7 @@ abstract class CHostGeneral extends CHostBase {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$templates = zbx_toHash($templates, 'hostid');
+				$templates = trx_toHash($templates, 'hostid');
 				foreach ($result as $hostid => $host) {
 					$result[$hostid]['parentTemplates'] = array_key_exists($hostid, $templates)
 						? $templates[$hostid]['rowscount']
@@ -716,7 +716,7 @@ abstract class CHostGeneral extends CHostBase {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$items = zbx_toHash($items, 'hostid');
+				$items = trx_toHash($items, 'hostid');
 				foreach ($result as $hostid => $host) {
 					$result[$hostid]['items'] = array_key_exists($hostid, $items) ? $items[$hostid]['rowscount'] : '0';
 				}
@@ -749,7 +749,7 @@ abstract class CHostGeneral extends CHostBase {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$items = zbx_toHash($items, 'hostid');
+				$items = trx_toHash($items, 'hostid');
 				foreach ($result as $hostid => $host) {
 					$result[$hostid]['discoveries'] = array_key_exists($hostid, $items)
 						? $items[$hostid]['rowscount']
@@ -789,7 +789,7 @@ abstract class CHostGeneral extends CHostBase {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$triggers = zbx_toHash($triggers, 'hostid');
+				$triggers = trx_toHash($triggers, 'hostid');
 
 				foreach ($result as $hostid => $host) {
 					$result[$hostid]['triggers'] = array_key_exists($hostid, $triggers)
@@ -830,7 +830,7 @@ abstract class CHostGeneral extends CHostBase {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$graphs = zbx_toHash($graphs, 'hostid');
+				$graphs = trx_toHash($graphs, 'hostid');
 				foreach ($result as $hostid => $host) {
 					$result[$hostid]['graphs'] = array_key_exists($hostid, $graphs)
 						? $graphs[$hostid]['rowscount']
@@ -865,7 +865,7 @@ abstract class CHostGeneral extends CHostBase {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$httpTests = zbx_toHash($httpTests, 'hostid');
+				$httpTests = trx_toHash($httpTests, 'hostid');
 				foreach ($result as $hostid => $host) {
 					$result[$hostid]['httpTests'] = array_key_exists($hostid, $httpTests)
 						? $httpTests[$hostid]['rowscount']
@@ -904,7 +904,7 @@ abstract class CHostGeneral extends CHostBase {
 					'groupCount' => true
 				]);
 
-				$applications = zbx_toHash($applications, 'hostid');
+				$applications = trx_toHash($applications, 'hostid');
 				foreach ($result as $hostid => $host) {
 					$result[$hostid]['applications'] = array_key_exists($hostid, $applications)
 						? $applications[$hostid]['rowscount']

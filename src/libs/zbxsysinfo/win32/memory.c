@@ -13,7 +13,7 @@ int     VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -21,24 +21,24 @@ int     VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL != mode && 0 == strcmp(mode, "cached"))
 	{
-		if (NULL == zbx_GetPerformanceInfo)
+		if (NULL == trx_GetPerformanceInfo)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system information."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system information."));
 			return SYSINFO_RET_FAIL;
 		}
 
-		zbx_GetPerformanceInfo(&pfi, sizeof(PERFORMANCE_INFORMATION));
+		trx_GetPerformanceInfo(&pfi, sizeof(PERFORMANCE_INFORMATION));
 
-		SET_UI64_RESULT(result, (zbx_uint64_t)pfi.SystemCache * pfi.PageSize);
+		SET_UI64_RESULT(result, (trx_uint64_t)pfi.SystemCache * pfi.PageSize);
 
 		return SYSINFO_RET_OK;
 	}
 
-	if (NULL != zbx_GlobalMemoryStatusEx)
+	if (NULL != trx_GlobalMemoryStatusEx)
 	{
 		ms_ex.dwLength = sizeof(MEMORYSTATUSEX);
 
-		zbx_GlobalMemoryStatusEx(&ms_ex);
+		trx_GlobalMemoryStatusEx(&ms_ex);
 
 		if (NULL == mode || '\0' == *mode || 0 == strcmp(mode, "total"))
 			SET_UI64_RESULT(result, ms_ex.ullTotalPhys);
@@ -54,7 +54,7 @@ int     VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 			SET_DBL_RESULT(result, ms_ex.ullAvailPhys / (double)ms_ex.ullTotalPhys * 100);
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -76,7 +76,7 @@ int     VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 			SET_DBL_RESULT(result, ms.dwAvailPhys / (double)ms.dwTotalPhys * 100);
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 			return SYSINFO_RET_FAIL;
 		}
 	}

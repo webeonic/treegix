@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxmedia.a
+noinst_LIBRARIES = libtrxmedia.a
 
-libzbxmedia_a_SOURCES = \
+libtrxmedia_a_SOURCES = \
 			email.c \
 			sms.c

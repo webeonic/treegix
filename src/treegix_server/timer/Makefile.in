@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxtimer_a_AR = $(AR) $(ARFLAGS)
-libzbxtimer_a_LIBADD =
-am_libzbxtimer_a_OBJECTS = timer.$(OBJEXT)
-libzbxtimer_a_OBJECTS = $(am_libzbxtimer_a_OBJECTS)
+libtrxtimer_a_AR = $(AR) $(ARFLAGS)
+libtrxtimer_a_LIBADD =
+am_libtrxtimer_a_OBJECTS = timer.$(OBJEXT)
+libtrxtimer_a_OBJECTS = $(am_libtrxtimer_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxtimer_a_SOURCES)
-DIST_SOURCES = $(libzbxtimer_a_SOURCES)
+SOURCES = $(libtrxtimer_a_SOURCES)
+DIST_SOURCES = $(libtrxtimer_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxtimer.a
-libzbxtimer_a_SOURCES = timer.c timer.h
+noinst_LIBRARIES = libtrxtimer.a
+libtrxtimer_a_SOURCES = timer.c timer.h
 all: all-am
 
 .SUFFIXES:
@@ -413,10 +413,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxtimer.a: $(libzbxtimer_a_OBJECTS) $(libzbxtimer_a_DEPENDENCIES) $(EXTRA_libzbxtimer_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxtimer.a
-	$(AM_V_AR)$(libzbxtimer_a_AR) libzbxtimer.a $(libzbxtimer_a_OBJECTS) $(libzbxtimer_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxtimer.a
+libtrxtimer.a: $(libtrxtimer_a_OBJECTS) $(libtrxtimer_a_DEPENDENCIES) $(EXTRA_libtrxtimer_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxtimer.a
+	$(AM_V_AR)$(libtrxtimer_a_AR) libtrxtimer.a $(libtrxtimer_a_OBJECTS) $(libtrxtimer_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxtimer.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

@@ -134,7 +134,7 @@ class CHistoryManager {
 				$clock_max = DBfetch(DBselect(
 					'SELECT MAX(h.clock)'.
 					' FROM '.self::getTableName($item['value_type']).' h'.
-					' WHERE h.itemid='.zbx_dbstr($item['itemid']).
+					' WHERE h.itemid='.trx_dbstr($item['itemid']).
 						($period ? ' AND h.clock>'.$period : '')
 				), false);
 
@@ -145,8 +145,8 @@ class CHistoryManager {
 						$values = DBfetchArray(DBselect(
 							'SELECT *'.
 							' FROM '.self::getTableName($item['value_type']).' h'.
-							' WHERE h.itemid='.zbx_dbstr($item['itemid']).
-								' AND h.clock='.zbx_dbstr($clock_max).
+							' WHERE h.itemid='.trx_dbstr($item['itemid']).
+								' AND h.clock='.trx_dbstr($clock_max).
 							' ORDER BY h.ns DESC',
 							$limit
 						));
@@ -164,7 +164,7 @@ class CHistoryManager {
 				$values = DBfetchArray(DBselect(
 					'SELECT *'.
 					' FROM '.self::getTableName($item['value_type']).' h'.
-					' WHERE h.itemid='.zbx_dbstr($item['itemid']).
+					' WHERE h.itemid='.trx_dbstr($item['itemid']).
 						($period ? ' AND h.clock>'.$period : '').
 					' ORDER BY h.clock DESC',
 					$limit + 1
@@ -187,7 +187,7 @@ class CHistoryManager {
 						$db_values = DBselect(
 							'SELECT *'.
 							' FROM '.self::getTableName($item['value_type']).' h'.
-							' WHERE h.itemid='.zbx_dbstr($item['itemid']).
+							' WHERE h.itemid='.trx_dbstr($item['itemid']).
 								' AND h.clock='.$clock.
 							' ORDER BY h.ns DESC',
 							$limit - $count
@@ -321,9 +321,9 @@ class CHistoryManager {
 
 		$sql = 'SELECT *'.
 				' FROM '.$table.
-				' WHERE itemid='.zbx_dbstr($item['itemid']).
-					' AND clock='.zbx_dbstr($clock).
-					' AND ns='.zbx_dbstr($ns);
+				' WHERE itemid='.trx_dbstr($item['itemid']).
+					' AND clock='.trx_dbstr($clock).
+					' AND ns='.trx_dbstr($ns);
 
 		if (($row = DBfetch(DBselect($sql, 1))) !== false) {
 			$result = $row;
@@ -336,9 +336,9 @@ class CHistoryManager {
 		$max_clock = 0;
 		$sql = 'SELECT DISTINCT clock'.
 				' FROM '.$table.
-				' WHERE itemid='.zbx_dbstr($item['itemid']).
-					' AND clock='.zbx_dbstr($clock).
-					' AND ns<'.zbx_dbstr($ns);
+				' WHERE itemid='.trx_dbstr($item['itemid']).
+					' AND clock='.trx_dbstr($clock).
+					' AND ns<'.trx_dbstr($ns);
 
 		if (($row = DBfetch(DBselect($sql))) !== false) {
 			$max_clock = $row['clock'];
@@ -347,9 +347,9 @@ class CHistoryManager {
 		if ($max_clock == 0) {
 			$sql = 'SELECT MAX(clock) AS clock'.
 					' FROM '.$table.
-					' WHERE itemid='.zbx_dbstr($item['itemid']).
-						' AND clock<'.zbx_dbstr($clock).
-						(TRX_HISTORY_PERIOD ? ' AND clock>='.zbx_dbstr($clock - TRX_HISTORY_PERIOD) : '');
+					' WHERE itemid='.trx_dbstr($item['itemid']).
+						' AND clock<'.trx_dbstr($clock).
+						(TRX_HISTORY_PERIOD ? ' AND clock>='.trx_dbstr($clock - TRX_HISTORY_PERIOD) : '');
 
 			if (($row = DBfetch(DBselect($sql))) !== false) {
 				$max_clock = $row['clock'];
@@ -363,15 +363,15 @@ class CHistoryManager {
 		if ($clock == $max_clock) {
 			$sql = 'SELECT *'.
 					' FROM '.$table.
-					' WHERE itemid='.zbx_dbstr($item['itemid']).
-						' AND clock='.zbx_dbstr($clock).
-						' AND ns<'.zbx_dbstr($ns);
+					' WHERE itemid='.trx_dbstr($item['itemid']).
+						' AND clock='.trx_dbstr($clock).
+						' AND ns<'.trx_dbstr($ns);
 		}
 		else {
 			$sql = 'SELECT *'.
 					' FROM '.$table.
-					' WHERE itemid='.zbx_dbstr($item['itemid']).
-						' AND clock='.zbx_dbstr($max_clock).
+					' WHERE itemid='.trx_dbstr($item['itemid']).
+						' AND clock='.trx_dbstr($max_clock).
 					' ORDER BY itemid,clock desc,ns desc';
 		}
 
@@ -553,7 +553,7 @@ class CHistoryManager {
 				$sql_select = ['itemid'];
 				$sql_group_by = ['itemid'];
 
-				$calc_field = zbx_dbcast_2bigint('clock').'-'.zbx_sql_mod(zbx_dbcast_2bigint('clock'), $interval);
+				$calc_field = trx_dbcast_2bigint('clock').'-'.trx_sql_mod(trx_dbcast_2bigint('clock'), $interval);
 				$sql_select[] = $calc_field.' AS tick';
 				$sql_group_by[] = $calc_field;
 
@@ -614,8 +614,8 @@ class CHistoryManager {
 				$sql = 'SELECT '.implode(', ', $sql_select).
 					' FROM '.$sql_from.
 					' WHERE '.dbConditionInt('itemid', $itemids).
-					' AND clock >= '.zbx_dbstr($time_from).
-					' AND clock <= '.zbx_dbstr($time_to).
+					' AND clock >= '.trx_dbstr($time_from).
+					' AND clock <= '.trx_dbstr($time_to).
 					' GROUP BY '.implode(', ', $sql_group_by);
 
 				if ($function == GRAPH_AGGREGATE_FIRST || $function == GRAPH_AGGREGATE_LAST) {
@@ -845,7 +845,7 @@ class CHistoryManager {
 			$delta = $size - $time_from % $size;
 
 			// Required for 'group by' support of Oracle.
-			$calc_field = 'round('.$width.'*'.zbx_sql_mod(zbx_dbcast_2bigint('clock').'+'.$delta, $size)
+			$calc_field = 'round('.$width.'*'.trx_sql_mod(trx_dbcast_2bigint('clock').'+'.$delta, $size)
 					.'/('.$size.'),0)';
 
 			$sql_select_extra = ','.$calc_field.' AS i';
@@ -867,9 +867,9 @@ class CHistoryManager {
 			$result = DBselect(
 				'SELECT itemid,'.$sql_select.$sql_select_extra.',MAX(clock) AS clock'.
 				' FROM '.$sql_from.
-				' WHERE itemid='.zbx_dbstr($item['itemid']).
-					' AND clock>='.zbx_dbstr($time_from).
-					' AND clock<='.zbx_dbstr($time_to).
+				' WHERE itemid='.trx_dbstr($item['itemid']).
+					' AND clock>='.trx_dbstr($time_from).
+					' AND clock<='.trx_dbstr($time_to).
 				' GROUP BY '.$group_by
 			);
 
@@ -965,7 +965,7 @@ class CHistoryManager {
 			'SELECT '.$aggregation.'(value) AS value'.
 			' FROM '.self::getTableName($item['value_type']).
 			' WHERE clock>'.$time_from.
-			' AND itemid='.zbx_dbstr($item['itemid']).
+			' AND itemid='.trx_dbstr($item['itemid']).
 			' HAVING COUNT(*)>0' // Necessary because DBselect() return 0 if empty data set, for graph templates.
 		);
 

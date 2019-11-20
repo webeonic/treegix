@@ -3,14 +3,14 @@
 #include "common.h"
 #include "log.h"
 
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
-static void	swap(zbx_binary_heap_t *heap, int index_1, int index_2);
+static void	swap(trx_binary_heap_t *heap, int index_1, int index_2);
 
-static void	__binary_heap_ensure_free_space(zbx_binary_heap_t *heap);
+static void	__binary_heap_ensure_free_space(trx_binary_heap_t *heap);
 
-static int	__binary_heap_bubble_up(zbx_binary_heap_t *heap, int index);
-static int	__binary_heap_bubble_down(zbx_binary_heap_t *heap, int index);
+static int	__binary_heap_bubble_up(trx_binary_heap_t *heap, int index);
+static int	__binary_heap_bubble_down(trx_binary_heap_t *heap, int index);
 
 #define	ARRAY_GROWTH_FACTOR	3/2
 
@@ -18,9 +18,9 @@ static int	__binary_heap_bubble_down(zbx_binary_heap_t *heap, int index);
 
 /* helper functions */
 
-static void	swap(zbx_binary_heap_t *heap, int index_1, int index_2)
+static void	swap(trx_binary_heap_t *heap, int index_1, int index_2)
 {
-	zbx_binary_heap_elem_t	tmp;
+	trx_binary_heap_elem_t	tmp;
 
 	tmp = heap->elems[index_1];
 	heap->elems[index_1] = heap->elems[index_2];
@@ -28,14 +28,14 @@ static void	swap(zbx_binary_heap_t *heap, int index_1, int index_2)
 
 	if (HAS_DIRECT_OPTION(heap))
 	{
-		zbx_hashmap_set(heap->key_index, heap->elems[index_1].key, index_1);
-		zbx_hashmap_set(heap->key_index, heap->elems[index_2].key, index_2);
+		trx_hashmap_set(heap->key_index, heap->elems[index_1].key, index_1);
+		trx_hashmap_set(heap->key_index, heap->elems[index_2].key, index_2);
 	}
 }
 
 /* private binary heap functions */
 
-static void	__binary_heap_ensure_free_space(zbx_binary_heap_t *heap)
+static void	__binary_heap_ensure_free_space(trx_binary_heap_t *heap)
 {
 	int	tmp_elems_alloc = heap->elems_alloc;
 
@@ -53,7 +53,7 @@ static void	__binary_heap_ensure_free_space(zbx_binary_heap_t *heap)
 
 	if (heap->elems_alloc != tmp_elems_alloc)
 	{
-		heap->elems = (zbx_binary_heap_elem_t *)heap->mem_realloc_func(heap->elems, tmp_elems_alloc * sizeof(zbx_binary_heap_elem_t));
+		heap->elems = (trx_binary_heap_elem_t *)heap->mem_realloc_func(heap->elems, tmp_elems_alloc * sizeof(trx_binary_heap_elem_t));
 
 		if (NULL == heap->elems)
 		{
@@ -65,7 +65,7 @@ static void	__binary_heap_ensure_free_space(zbx_binary_heap_t *heap)
 	}
 }
 
-static int	__binary_heap_bubble_up(zbx_binary_heap_t *heap, int index)
+static int	__binary_heap_bubble_up(trx_binary_heap_t *heap, int index)
 {
 	while (0 != index)
 	{
@@ -79,7 +79,7 @@ static int	__binary_heap_bubble_up(zbx_binary_heap_t *heap, int index)
 	return index;
 }
 
-static int	__binary_heap_bubble_down(zbx_binary_heap_t *heap, int index)
+static int	__binary_heap_bubble_down(trx_binary_heap_t *heap, int index)
 {
 	while (1)
 	{
@@ -127,18 +127,18 @@ static int	__binary_heap_bubble_down(zbx_binary_heap_t *heap, int index)
 
 /* public binary heap interface */
 
-void	zbx_binary_heap_create(zbx_binary_heap_t *heap, zbx_compare_func_t compare_func, int options)
+void	trx_binary_heap_create(trx_binary_heap_t *heap, trx_compare_func_t compare_func, int options)
 {
-	zbx_binary_heap_create_ext(heap, compare_func, options,
+	trx_binary_heap_create_ext(heap, compare_func, options,
 					TRX_DEFAULT_MEM_MALLOC_FUNC,
 					TRX_DEFAULT_MEM_REALLOC_FUNC,
 					TRX_DEFAULT_MEM_FREE_FUNC);
 }
 
-void	zbx_binary_heap_create_ext(zbx_binary_heap_t *heap, zbx_compare_func_t compare_func, int options,
-					zbx_mem_malloc_func_t mem_malloc_func,
-					zbx_mem_realloc_func_t mem_realloc_func,
-					zbx_mem_free_func_t mem_free_func)
+void	trx_binary_heap_create_ext(trx_binary_heap_t *heap, trx_compare_func_t compare_func, int options,
+					trx_mem_malloc_func_t mem_malloc_func,
+					trx_mem_realloc_func_t mem_realloc_func,
+					trx_mem_free_func_t mem_free_func)
 {
 	heap->elems = NULL;
 	heap->elems_num = 0;
@@ -148,8 +148,8 @@ void	zbx_binary_heap_create_ext(zbx_binary_heap_t *heap, zbx_compare_func_t comp
 
 	if (HAS_DIRECT_OPTION(heap))
 	{
-		heap->key_index = (zbx_hashmap_t *)mem_malloc_func(NULL, sizeof(zbx_hashmap_t));
-		zbx_hashmap_create_ext(heap->key_index, 512,
+		heap->key_index = (trx_hashmap_t *)mem_malloc_func(NULL, sizeof(trx_hashmap_t));
+		trx_hashmap_create_ext(heap->key_index, 512,
 					TRX_DEFAULT_UINT64_HASH_FUNC,
 					TRX_DEFAULT_UINT64_COMPARE_FUNC,
 					mem_malloc_func,
@@ -164,7 +164,7 @@ void	zbx_binary_heap_create_ext(zbx_binary_heap_t *heap, zbx_compare_func_t comp
 	heap->mem_free_func = mem_free_func;
 }
 
-void	zbx_binary_heap_destroy(zbx_binary_heap_t *heap)
+void	trx_binary_heap_destroy(trx_binary_heap_t *heap)
 {
 	if (NULL != heap->elems)
 	{
@@ -178,7 +178,7 @@ void	zbx_binary_heap_destroy(zbx_binary_heap_t *heap)
 
 	if (HAS_DIRECT_OPTION(heap))
 	{
-		zbx_hashmap_destroy(heap->key_index);
+		trx_hashmap_destroy(heap->key_index);
 		heap->mem_free_func(heap->key_index);
 		heap->key_index = NULL;
 		heap->options = 0;
@@ -189,12 +189,12 @@ void	zbx_binary_heap_destroy(zbx_binary_heap_t *heap)
 	heap->mem_free_func = NULL;
 }
 
-int	zbx_binary_heap_empty(zbx_binary_heap_t *heap)
+int	trx_binary_heap_empty(trx_binary_heap_t *heap)
 {
 	return (0 == heap->elems_num ? SUCCEED : FAIL);
 }
 
-zbx_binary_heap_elem_t	*zbx_binary_heap_find_min(zbx_binary_heap_t *heap)
+trx_binary_heap_elem_t	*trx_binary_heap_find_min(trx_binary_heap_t *heap)
 {
 	if (0 == heap->elems_num)
 	{
@@ -205,11 +205,11 @@ zbx_binary_heap_elem_t	*zbx_binary_heap_find_min(zbx_binary_heap_t *heap)
 	return &heap->elems[0];
 }
 
-void	zbx_binary_heap_insert(zbx_binary_heap_t *heap, zbx_binary_heap_elem_t *elem)
+void	trx_binary_heap_insert(trx_binary_heap_t *heap, trx_binary_heap_elem_t *elem)
 {
 	int	index;
 
-	if (HAS_DIRECT_OPTION(heap) && FAIL != zbx_hashmap_get(heap->key_index, elem->key))
+	if (HAS_DIRECT_OPTION(heap) && FAIL != trx_hashmap_get(heap->key_index, elem->key))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "inserting a duplicate key into a heap with direct option");
 		exit(EXIT_FAILURE);
@@ -223,10 +223,10 @@ void	zbx_binary_heap_insert(zbx_binary_heap_t *heap, zbx_binary_heap_elem_t *ele
 	index = __binary_heap_bubble_up(heap, index);
 
 	if (HAS_DIRECT_OPTION(heap) && index == heap->elems_num - 1)
-		zbx_hashmap_set(heap->key_index, elem->key, index);
+		trx_hashmap_set(heap->key_index, elem->key, index);
 }
 
-void	zbx_binary_heap_update_direct(zbx_binary_heap_t *heap, zbx_binary_heap_elem_t *elem)
+void	trx_binary_heap_update_direct(trx_binary_heap_t *heap, trx_binary_heap_elem_t *elem)
 {
 	int	index;
 
@@ -236,7 +236,7 @@ void	zbx_binary_heap_update_direct(zbx_binary_heap_t *heap, zbx_binary_heap_elem
 		exit(EXIT_FAILURE);
 	}
 
-	if (FAIL != (index = zbx_hashmap_get(heap->key_index, elem->key)))
+	if (FAIL != (index = trx_hashmap_get(heap->key_index, elem->key)))
 	{
 		heap->elems[index] = *elem;
 
@@ -250,7 +250,7 @@ void	zbx_binary_heap_update_direct(zbx_binary_heap_t *heap, zbx_binary_heap_elem
 	}
 }
 
-void	zbx_binary_heap_remove_min(zbx_binary_heap_t *heap)
+void	trx_binary_heap_remove_min(trx_binary_heap_t *heap)
 {
 	int	index;
 
@@ -261,7 +261,7 @@ void	zbx_binary_heap_remove_min(zbx_binary_heap_t *heap)
 	}
 
 	if (HAS_DIRECT_OPTION(heap))
-		zbx_hashmap_remove(heap->key_index, heap->elems[0].key);
+		trx_hashmap_remove(heap->key_index, heap->elems[0].key);
 
 	if (0 != (--heap->elems_num))
 	{
@@ -269,11 +269,11 @@ void	zbx_binary_heap_remove_min(zbx_binary_heap_t *heap)
 		index = __binary_heap_bubble_down(heap, 0);
 
 		if (HAS_DIRECT_OPTION(heap) && index == 0)
-			zbx_hashmap_set(heap->key_index, heap->elems[index].key, index);
+			trx_hashmap_set(heap->key_index, heap->elems[index].key, index);
 	}
 }
 
-void	zbx_binary_heap_remove_direct(zbx_binary_heap_t *heap, zbx_uint64_t key)
+void	trx_binary_heap_remove_direct(trx_binary_heap_t *heap, trx_uint64_t key)
 {
 	int	index;
 
@@ -283,9 +283,9 @@ void	zbx_binary_heap_remove_direct(zbx_binary_heap_t *heap, zbx_uint64_t key)
 		exit(EXIT_FAILURE);
 	}
 
-	if (FAIL != (index = zbx_hashmap_get(heap->key_index, key)))
+	if (FAIL != (index = trx_hashmap_get(heap->key_index, key)))
 	{
-		zbx_hashmap_remove(heap->key_index, key);
+		trx_hashmap_remove(heap->key_index, key);
 
 		if (index != (--heap->elems_num))
 		{
@@ -293,7 +293,7 @@ void	zbx_binary_heap_remove_direct(zbx_binary_heap_t *heap, zbx_uint64_t key)
 
 			if (index == __binary_heap_bubble_up(heap, index))
 				if (index == __binary_heap_bubble_down(heap, index))
-					zbx_hashmap_set(heap->key_index, heap->elems[index].key, index);
+					trx_hashmap_set(heap->key_index, heap->elems[index].key, index);
 		}
 	}
 	else
@@ -303,10 +303,10 @@ void	zbx_binary_heap_remove_direct(zbx_binary_heap_t *heap, zbx_uint64_t key)
 	}
 }
 
-void	zbx_binary_heap_clear(zbx_binary_heap_t *heap)
+void	trx_binary_heap_clear(trx_binary_heap_t *heap)
 {
 	heap->elems_num = 0;
 
 	if (HAS_DIRECT_OPTION(heap))
-		zbx_hashmap_clear(heap->key_index);
+		trx_hashmap_clear(heap->key_index);
 }

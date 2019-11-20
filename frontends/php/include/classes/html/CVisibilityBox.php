@@ -9,8 +9,8 @@ class CVisibilityBox extends CCheckBox {
 		$this->replace_to = unpack_object($replace_to);
 
 		parent::__construct($name);
-		$this->onClick('visibility_status_changeds(this.checked, '.zbx_jsvalue($this->object_id).', '.
-			zbx_jsvalue($this->replace_to).');');
+		$this->onClick('visibility_status_changeds(this.checked, '.trx_jsvalue($this->object_id).', '.
+			trx_jsvalue($this->replace_to).');');
 		insert_javascript_for_visibilitybox();
 	}
 
@@ -30,8 +30,8 @@ class CVisibilityBox extends CCheckBox {
 
 	public function toString($destroy = true) {
 		if (!isset($this->attributes['checked'])) {
-			zbx_add_post_js('visibility_status_changeds(false, '.zbx_jsvalue($this->object_id).', '.
-				zbx_jsvalue($this->replace_to).');');
+			trx_add_post_js('visibility_status_changeds(false, '.trx_jsvalue($this->object_id).', '.
+				trx_jsvalue($this->replace_to).');');
 		}
 
 		return parent::toString($destroy);

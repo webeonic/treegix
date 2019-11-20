@@ -9,8 +9,8 @@ jQuery(function($) {
 	 *
 	 * @return object
 	 */
-	if (typeof($.fn.zbx_clock) === 'undefined') {
-		$.fn.zbx_clock = function(options) {
+	if (typeof($.fn.trx_clock) === 'undefined') {
+		$.fn.trx_clock = function(options) {
 			var obj = $(this);
 
 			if (obj.length == 0) {

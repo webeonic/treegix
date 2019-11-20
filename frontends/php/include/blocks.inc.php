@@ -580,7 +580,7 @@ function getSeverityTableCell($severity, array $data, array $stat, $is_total = f
 	}
 }
 
-function make_status_of_zbx() {
+function make_status_of_trx() {
 	if (CWebUser::getType() == USER_TYPE_SUPER_ADMIN) {
 		global $TRX_SERVER, $TRX_SERVER_PORT;
 
@@ -753,8 +753,8 @@ function makeProblemsPopup(array $problems, array $triggers, $backurl, array $ac
 			->setArgument('eventid', $problem['eventid']);
 
 		$cell_clock = ($problem['clock'] >= $today)
-			? zbx_date2str(TIME_FORMAT_SECONDS, $problem['clock'])
-			: zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']);
+			? trx_date2str(TIME_FORMAT_SECONDS, $problem['clock'])
+			: trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']);
 		$cell_clock = new CCol(new CLink($cell_clock, $url_details));
 
 		if ($show_timeline) {
@@ -837,7 +837,7 @@ function makeProblemsPopup(array $problems, array $triggers, $backurl, array $ac
 				)
 			),
 			($show_opdata == OPERATIONAL_DATA_SHOW_SEPARATELY) ? $opdata : null,
-			zbx_date2age($problem['clock']),
+			trx_date2age($problem['clock']),
 			$ack,
 			makeEventActionsIcons($problem['eventid'], $actions['all_actions'], $actions['mediatypes'],
 				$actions['users'], $config

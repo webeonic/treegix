@@ -616,7 +616,7 @@ class CScreenBuilder {
 			'mainObject' => 1
 		];
 
-		zbx_add_post_js('timeControl.addObject("scrollbar", '.zbx_jsvalue($timeline).', '.zbx_jsvalue($obj_data).');');
+		trx_add_post_js('timeControl.addObject("scrollbar", '.trx_jsvalue($timeline).', '.trx_jsvalue($obj_data).');');
 	}
 
 	/**
@@ -627,7 +627,7 @@ class CScreenBuilder {
 	 * @param string $screenid
 	 */
 	public static function insertInitScreenJs($screenid) {
-		zbx_add_post_js('init_screen("'.$screenid.'", "'.self::makeScreenTableId($screenid).'", "'.$screenid.'");');
+		trx_add_post_js('init_screen("'.$screenid.'", "'.self::makeScreenTableId($screenid).'", "'.$screenid.'");');
 	}
 
 	/**
@@ -636,7 +636,7 @@ class CScreenBuilder {
 	 * @static
 	 */
 	public static function insertProcessObjectsJs() {
-		zbx_add_post_js('timeControl.processObjects();');
+		trx_add_post_js('timeControl.processObjects();');
 	}
 
 	/**
@@ -645,7 +645,7 @@ class CScreenBuilder {
 	 * @static
 	 */
 	public static function insertScreenCleanJs() {
-		zbx_add_post_js('window.flickerfreeScreen.cleanAll();');
+		trx_add_post_js('window.flickerfreeScreen.cleanAll();');
 	}
 
 	/**

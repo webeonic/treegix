@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxcomms.a
+noinst_LIBRARIES = libtrxcomms.a
 
-libzbxcomms_a_SOURCES = \
+libtrxcomms_a_SOURCES = \
 	comms.c \
 	telnet.c

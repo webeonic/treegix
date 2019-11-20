@@ -88,15 +88,15 @@ function deleteHistoryByHttpTestIds(array $http_testids) {
 }
 
 function get_httptest_by_httptestid($httptestid) {
-	return DBfetch(DBselect('SELECT ht.* FROM httptest ht WHERE ht.httptestid='.zbx_dbstr($httptestid)));
+	return DBfetch(DBselect('SELECT ht.* FROM httptest ht WHERE ht.httptestid='.trx_dbstr($httptestid)));
 }
 
 function get_httpstep_by_no($httptestid, $no) {
-	return DBfetch(DBselect('SELECT hs.* FROM httpstep hs WHERE hs.httptestid='.zbx_dbstr($httptestid).' AND hs.no='.zbx_dbstr($no)));
+	return DBfetch(DBselect('SELECT hs.* FROM httpstep hs WHERE hs.httptestid='.trx_dbstr($httptestid).' AND hs.no='.trx_dbstr($no)));
 }
 
 function get_httptests_by_hostid($hostids) {
-	zbx_value2array($hostids);
+	trx_value2array($hostids);
 
 	return DBselect('SELECT DISTINCT ht.* FROM httptest ht WHERE '.dbConditionInt('ht.hostid', $hostids));
 }

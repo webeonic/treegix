@@ -57,7 +57,7 @@ char	**setproctitle_save_env(int argc, char **argv)
 
 	/* measure a size of continuous argv[] area and make a copy */
 
-	argv_int = (char **)zbx_malloc(argv_int, ((unsigned int)argc + 1) * sizeof(char *));
+	argv_int = (char **)trx_malloc(argv_int, ((unsigned int)argc + 1) * sizeof(char *));
 
 #if defined(PS_APPEND_ARGV)
 	argc_ext_copied_first = argc - 1;
@@ -70,7 +70,7 @@ char	**setproctitle_save_env(int argc, char **argv)
 	for (i = argc_ext_copied_first, arg_next = argv[argc_ext_copied_first]; arg_next == argv[i]; i++)
 	{
 		arg_next = argv[i] + strlen(argv[i]) + 1;
-		argv_int[i] = zbx_strdup(NULL, argv[i]);
+		argv_int[i] = trx_strdup(NULL, argv[i]);
 
 		/* argv[argc_ext_copied_first] will be used to display status messages. The rest of arguments can be */
 		/* overwritten and their argv[] pointers will point to wrong strings. */
@@ -94,12 +94,12 @@ char	**setproctitle_save_env(int argc, char **argv)
 
 		/* measure a size of continuous environment area and make a copy */
 
-		environ_int = (char **)zbx_malloc(environ_int, ((unsigned int)envc + 1) * sizeof(char *));
+		environ_int = (char **)trx_malloc(environ_int, ((unsigned int)envc + 1) * sizeof(char *));
 
 		for (i = 0; arg_next == environ[i]; i++)
 		{
 			arg_next = environ[i] + strlen(environ[i]) + 1;
-			environ_int[i] = zbx_strdup(NULL, environ[i]);
+			environ_int[i] = trx_strdup(NULL, environ[i]);
 
 			/* environment variables can be overwritten by status messages in argv[0] */
 			/* and environ[] pointers will point to wrong strings */
@@ -129,8 +129,8 @@ char	**setproctitle_save_env(int argc, char **argv)
 			size -= len;
 			if (2 >= size)
 				break;
-			zbx_strlcpy(p++, " ", size--);
-			zbx_strlcpy(p, argv_int[i], size);
+			trx_strlcpy(p++, " ", size--);
+			trx_strlcpy(p, argv_int[i], size);
 		}
 	}
 #endif
@@ -152,8 +152,8 @@ char	**setproctitle_save_env(int argc, char **argv)
 
 	if (len0 + 2 < ps_buf_size)	/* is there space for ": " ? */
 	{
-		zbx_strlcpy(ps_buf, argv[0], ps_buf_size);
-		zbx_strlcpy(ps_buf + len0, ": ", (size_t)3);
+		trx_strlcpy(ps_buf, argv[0], ps_buf_size);
+		trx_strlcpy(ps_buf + len0, ": ", (size_t)3);
 		p_msg = ps_buf + len0 + 2;
 		ps_buf_size_msg = ps_buf_size - len0 - 2;	/* space after "argv[0]: " for status message */
 	}
@@ -181,7 +181,7 @@ void	setproctitle_set_status(const char *status)
 	{
 		size_t	msg_size;
 
-		msg_size = zbx_strlcpy(ps_buf, status, ps_buf_size);
+		msg_size = trx_strlcpy(ps_buf, status, ps_buf_size);
 
 		if (prev_msg_size > msg_size)
 			memset(ps_buf + msg_size + 1, '\0', ps_buf_size - msg_size - 1);
@@ -203,12 +203,12 @@ void	setproctitle_set_status(const char *status)
 #endif
 		if (start_pos + 2 < ps_buf_size)	/* is there space for ": " ? */
 		{
-			zbx_strlcpy(ps_buf + start_pos, ": ", (size_t)3);
+			trx_strlcpy(ps_buf + start_pos, ": ", (size_t)3);
 			ps_buf += start_pos + 2;
 			ps_buf_size -= start_pos + 2;	/* space after "argv[copy_first]: " for status message */
 
 			memset(ps_buf, '\0', ps_buf_size);
-			prev_msg_size = zbx_strlcpy(ps_buf, status, ps_buf_size);
+			prev_msg_size = trx_strlcpy(ps_buf, status, ps_buf_size);
 
 			initialized = 1;
 		}
@@ -218,7 +218,7 @@ void	setproctitle_set_status(const char *status)
 	{
 		union pstun	pst;
 
-		zbx_strlcpy(p_msg, status, ps_buf_size_msg);
+		trx_strlcpy(p_msg, status, ps_buf_size_msg);
 		pst.pst_command = ps_buf;
 		pstat(PSTAT_SETCMD, pst, strlen(ps_buf), 0, 0);
 	}
@@ -245,12 +245,12 @@ void	setproctitle_free_env(void)
 		environ = environ_ext;
 
 	for (i = argc_ext_copied_first; i <= argc_ext_copied_last; i++)
-		zbx_free(argv_int[i]);
+		trx_free(argv_int[i]);
 
 	for (i = 0; i <= environ_ext_copied; i++)
-		zbx_free(environ_int[i]);
+		trx_free(environ_int[i]);
 
-	zbx_free(argv_int);
-	zbx_free(environ_int);
+	trx_free(argv_int);
+	trx_free(environ_int);
 }
 #endif	/* PS_OVERWRITE_ARGV */

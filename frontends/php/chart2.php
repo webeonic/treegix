@@ -74,8 +74,8 @@ CArrayHelper::sort($dbGraph['gitems'], [
 	['field' => 'itemid', 'order' => TRX_SORT_DOWN]
 ]);
 
-$hosts = zbx_toHash($dbGraph['hosts'], 'hostid');
-$items = zbx_toHash($dbGraph['items'], 'itemid');
+$hosts = trx_toHash($dbGraph['hosts'], 'hostid');
+$items = trx_toHash($dbGraph['items'], 'itemid');
 
 foreach ($dbGraph['gitems'] as $graph_item) {
 	$item = $items[$graph_item['itemid']];

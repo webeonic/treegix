@@ -98,7 +98,7 @@ if ($config == QUEUE_OVERVIEW) {
 		_('More than 10 minutes')
 	]);
 
-	$queueData = zbx_toHash($queueData, 'itemtype');
+	$queueData = trx_toHash($queueData, 'itemtype');
 
 	foreach ($itemTypes as $type) {
 		if (isset($queueData[$type])) {
@@ -159,7 +159,7 @@ elseif ($config == QUEUE_OVERVIEW_BY_PROXY) {
 		_('More than 10 minutes')
 	]);
 
-	$queueData = zbx_toHash($queueData, 'proxyid');
+	$queueData = trx_toHash($queueData, 'proxyid');
 	foreach ($proxies as $proxyId => $proxy) {
 		if (isset($queueData[$proxyId])) {
 			$proxyData = $queueData[$proxyId];
@@ -193,7 +193,7 @@ elseif ($config == QUEUE_OVERVIEW_BY_PROXY) {
 
 // details
 elseif ($config == QUEUE_DETAILS) {
-	$queueData = zbx_toHash($queueData, 'itemid');
+	$queueData = trx_toHash($queueData, 'itemid');
 
 	$items = API::Item()->get([
 		'output' => ['itemid', 'hostid', 'name', 'key_'],
@@ -215,7 +215,7 @@ elseif ($config == QUEUE_DETAILS) {
 	$items = CMacrosResolverHelper::resolveItemNames($items);
 
 	// get hosts for queue items
-	$hostIds = zbx_objectValues($items, 'hostid');
+	$hostIds = trx_objectValues($items, 'hostid');
 	$hostIds = array_keys(array_flip($hostIds));
 
 	$hosts = API::Host()->get([
@@ -266,8 +266,8 @@ elseif ($config == QUEUE_DETAILS) {
 		$host = reset($item['hosts']);
 
 		$table->addRow([
-			zbx_date2str(DATE_TIME_FORMAT_SECONDS, $itemData['nextcheck']),
-			zbx_date2age($itemData['nextcheck']),
+			trx_date2str(DATE_TIME_FORMAT_SECONDS, $itemData['nextcheck']),
+			trx_date2age($itemData['nextcheck']),
 			$host['name'],
 			$item['name_expanded'],
 			array_key_exists($hosts[$item['hostid']]['proxy_hostid'], $proxies)

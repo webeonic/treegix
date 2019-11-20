@@ -5,7 +5,7 @@
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_lock_maintenanceids                                       *
+ * Function: trx_db_lock_maintenanceids                                       *
  *                                                                            *
  * Purpose: lock maintenances in database                                     *
  *                                                                            *
@@ -25,46 +25,46 @@
  *           a maintenance was removed before lock attempt.                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_db_lock_maintenanceids(zbx_vector_uint64_t *maintenanceids)
+int	trx_db_lock_maintenanceids(trx_vector_uint64_t *maintenanceids)
 {
 	char		*sql = NULL;
 	size_t		sql_alloc = 0, sql_offset = 0;
-	zbx_uint64_t	maintenanceid;
+	trx_uint64_t	maintenanceid;
 	int		i;
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	zbx_vector_uint64_sort(maintenanceids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(maintenanceids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
-	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "select maintenanceid from maintenances where");
+	trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "select maintenanceid from maintenances where");
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "maintenanceid", maintenanceids->values,
 			maintenanceids->values_num);
 #if defined(HAVE_MYSQL)
-	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by maintenanceid lock in share mode");
+	trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by maintenanceid lock in share mode");
 #elif defined(HAVE_IBM_DB2)
-	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by maintenanceid with rs use and keep share locks");
+	trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by maintenanceid with rs use and keep share locks");
 #else
 	/* Row level shared locks are not supported in Oracle. For PostgreSQL table level locks */
 	/* are used because row level shared locks have reader preference, which could lead to  */
 	/* theoretical situation when server blocks out frontend from maintenances updates.     */
 	DBexecute("lock table maintenances in share mode");
-	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by maintenanceid");
+	trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, " order by maintenanceid");
 #endif
 
 	result = DBselect("%s", sql);
-	zbx_free(sql);
+	trx_free(sql);
 
 	for (i = 0; NULL != (row = DBfetch(result)); i++)
 	{
 		TRX_STR2UINT64(maintenanceid, row[0]);
 
 		while (maintenanceid != maintenanceids->values[i])
-			zbx_vector_uint64_remove(maintenanceids, i);
+			trx_vector_uint64_remove(maintenanceids, i);
 	}
 	DBfree_result(result);
 
 	while (i != maintenanceids->values_num)
-		zbx_vector_uint64_remove_noorder(maintenanceids, i);
+		trx_vector_uint64_remove_noorder(maintenanceids, i);
 
 	return (0 != maintenanceids->values_num ? SUCCEED : FAIL);
 }

@@ -24,10 +24,10 @@
 
 #define LOG_ENTRY_INTERVAL_DELAY	60	/* seconds */
 
-extern int	zbx_log_level;
+extern int	trx_log_level;
 #define TRX_CHECK_LOG_LEVEL(level)			\
 		((LOG_LEVEL_INFORMATION != (level) &&	\
-		((level) > zbx_log_level || LOG_LEVEL_EMPTY == (level))) ? FAIL : SUCCEED)
+		((level) > trx_log_level || LOG_LEVEL_EMPTY == (level))) ? FAIL : SUCCEED)
 
 typedef enum
 {
@@ -39,7 +39,7 @@ typedef enum
 	ERR_Z3006,
 	ERR_Z3007
 }
-zbx_err_codes_t;
+trx_err_codes_t;
 
 #ifdef HAVE___VA_ARGS__
 #	define TRX_TREEGIX_LOG_CHECK
@@ -48,15 +48,15 @@ zbx_err_codes_t;
 	do												\
 	{												\
 		if (SUCCEED == TRX_CHECK_LOG_LEVEL(level))						\
-			__zbx_treegix_log(level, __VA_ARGS__);						\
+			__trx_treegix_log(level, __VA_ARGS__);						\
 	}												\
 	while (0)
 #else
-#	define treegix_log __zbx_treegix_log
+#	define treegix_log __trx_treegix_log
 #endif
 
 int		treegix_open_log(int type, int level, const char *filename, char **error);
-void		__zbx_treegix_log(int level, const char *fmt, ...) __zbx_attr_format_printf(2, 3);
+void		__trx_treegix_log(int level, const char *fmt, ...) __trx_attr_format_printf(2, 3);
 void		treegix_close_log(void);
 
 #ifndef _WINDOWS
@@ -65,18 +65,18 @@ int		treegix_decrease_log_level(void);
 const char	*treegix_get_log_level_string(void);
 #endif
 
-char		*zbx_strerror(int errnum);
+char		*trx_strerror(int errnum);
 char		*strerror_from_system(unsigned long error);
 
 #ifdef _WINDOWS
 char		*strerror_from_module(unsigned long error, const wchar_t *module);
 #endif
 
-int		zbx_redirect_stdio(const char *filename);
+int		trx_redirect_stdio(const char *filename);
 
-void		zbx_handle_log(void);
+void		trx_handle_log(void);
 
-int		zbx_get_log_type(const char *logtype);
-int		zbx_validate_log_parameters(TRX_TASK_EX *task);
+int		trx_get_log_type(const char *logtype);
+int		trx_validate_log_parameters(TRX_TASK_EX *task);
 
 #endif

@@ -26,10 +26,10 @@ int	get_value_db(DC_ITEM *item, AGENT_RESULT *result)
 {
 	AGENT_REQUEST		request;
 	const char		*dsn;
-	zbx_odbc_data_source_t	*data_source;
-	zbx_odbc_query_result_t	*query_result;
+	trx_odbc_data_source_t	*data_source;
+	trx_odbc_query_result_t	*query_result;
 	char			*error = NULL;
-	int			(*query_result_to_text)(zbx_odbc_query_result_t *query_result, char **text, char **error),
+	int			(*query_result_to_text)(trx_odbc_query_result_t *query_result, char **text, char **error),
 				ret = NOTSUPPORTED;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() key_orig:'%s' query:'%s'", __func__, item->key_orig, item->params);
@@ -38,31 +38,31 @@ int	get_value_db(DC_ITEM *item, AGENT_RESULT *result)
 
 	if (SUCCEED != parse_item_key(item->key, &request))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid item key format."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid item key format."));
 		goto out;
 	}
 
 	if (0 == strcmp(request.key, "db.odbc.select"))
 	{
-		query_result_to_text = zbx_odbc_query_result_to_string;
+		query_result_to_text = trx_odbc_query_result_to_string;
 	}
 	else if (0 == strcmp(request.key, "db.odbc.discovery"))
 	{
-		query_result_to_text = zbx_odbc_query_result_to_lld_json;
+		query_result_to_text = trx_odbc_query_result_to_lld_json;
 	}
 	else if (0 == strcmp(request.key, "db.odbc.get"))
 	{
-		query_result_to_text = zbx_odbc_query_result_to_json;
+		query_result_to_text = trx_odbc_query_result_to_json;
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Unsupported item key for this item type."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Unsupported item key for this item type."));
 		goto out;
 	}
 
 	if (2 != request.nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
@@ -72,13 +72,13 @@ int	get_value_db(DC_ITEM *item, AGENT_RESULT *result)
 
 	if (NULL == dsn || '\0' == *dsn)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
-	if (NULL != (data_source = zbx_odbc_connect(dsn, item->username, item->password, CONFIG_TIMEOUT, &error)))
+	if (NULL != (data_source = trx_odbc_connect(dsn, item->username, item->password, CONFIG_TIMEOUT, &error)))
 	{
-		if (NULL != (query_result = zbx_odbc_select(data_source, item->params, &error)))
+		if (NULL != (query_result = trx_odbc_select(data_source, item->params, &error)))
 		{
 			char	*text = NULL;
 
@@ -88,10 +88,10 @@ int	get_value_db(DC_ITEM *item, AGENT_RESULT *result)
 				ret = SUCCEED;
 			}
 
-			zbx_odbc_query_result_free(query_result);
+			trx_odbc_query_result_free(query_result);
 		}
 
-		zbx_odbc_data_source_free(data_source);
+		trx_odbc_data_source_free(data_source);
 	}
 
 	if (SUCCEED != ret)
@@ -99,7 +99,7 @@ int	get_value_db(DC_ITEM *item, AGENT_RESULT *result)
 out:
 	free_request(&request);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

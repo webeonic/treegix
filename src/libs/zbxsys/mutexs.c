@@ -13,9 +13,9 @@ typedef struct
 	pthread_mutex_t		mutexes[TRX_MUTEX_COUNT];
 	pthread_rwlock_t	rwlocks[TRX_RWLOCK_COUNT];
 }
-zbx_shared_lock_t;
+trx_shared_lock_t;
 
-static zbx_shared_lock_t	*shared_lock;
+static trx_shared_lock_t	*shared_lock;
 static int			shm_id, locks_disabled;
 #else
 #	if !HAVE_SEMUN
@@ -40,7 +40,7 @@ static int			shm_id, locks_disabled;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_locks_create                                                 *
+ * Function: trx_locks_create                                                 *
  *                                                                            *
  * Purpose: if pthread mutexes and read-write locks can be shared between     *
  *          processes then create them, otherwise fallback to System V        *
@@ -51,45 +51,45 @@ static int			shm_id, locks_disabled;
  * Return value: SUCCEED if mutexes successfully created, otherwise FAIL      *
  *                                                                            *
  ******************************************************************************/
-int	zbx_locks_create(char **error)
+int	trx_locks_create(char **error)
 {
 #ifdef HAVE_PTHREAD_PROCESS_SHARED
 	int			i;
 	pthread_mutexattr_t	mta;
 	pthread_rwlockattr_t	rwa;
 
-	if (-1 == (shm_id = shmget(IPC_PRIVATE, TRX_SIZE_T_ALIGN8(sizeof(zbx_shared_lock_t)),
+	if (-1 == (shm_id = shmget(IPC_PRIVATE, TRX_SIZE_T_ALIGN8(sizeof(trx_shared_lock_t)),
 			IPC_CREAT | IPC_EXCL | 0600)))
 	{
-		*error = zbx_dsprintf(*error, "cannot allocate shared memory for locks");
+		*error = trx_dsprintf(*error, "cannot allocate shared memory for locks");
 		return FAIL;
 	}
 
-	if ((void *)(-1) == (shared_lock = (zbx_shared_lock_t *)shmat(shm_id, NULL, 0)))
+	if ((void *)(-1) == (shared_lock = (trx_shared_lock_t *)shmat(shm_id, NULL, 0)))
 	{
-		*error = zbx_dsprintf(*error, "cannot attach shared memory for locks: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot attach shared memory for locks: %s", trx_strerror(errno));
 		return FAIL;
 	}
 
-	memset(shared_lock, 0, sizeof(zbx_shared_lock_t));
+	memset(shared_lock, 0, sizeof(trx_shared_lock_t));
 
 	/* immediately mark the new shared memory for destruction after attaching to it */
 	if (-1 == shmctl(shm_id, IPC_RMID, 0))
 	{
-		*error = zbx_dsprintf(*error, "cannot mark the new shared memory for destruction: %s",
-				zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot mark the new shared memory for destruction: %s",
+				trx_strerror(errno));
 		return FAIL;
 	}
 
 	if (0 != pthread_mutexattr_init(&mta))
 	{
-		*error = zbx_dsprintf(*error, "cannot initialize mutex attribute: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot initialize mutex attribute: %s", trx_strerror(errno));
 		return FAIL;
 	}
 
 	if (0 != pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_SHARED))
 	{
-		*error = zbx_dsprintf(*error, "cannot set shared mutex attribute: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot set shared mutex attribute: %s", trx_strerror(errno));
 		return FAIL;
 	}
 
@@ -97,20 +97,20 @@ int	zbx_locks_create(char **error)
 	{
 		if (0 != pthread_mutex_init(&shared_lock->mutexes[i], &mta))
 		{
-			*error = zbx_dsprintf(*error, "cannot create mutex: %s", zbx_strerror(errno));
+			*error = trx_dsprintf(*error, "cannot create mutex: %s", trx_strerror(errno));
 			return FAIL;
 		}
 	}
 
 	if (0 != pthread_rwlockattr_init(&rwa))
 	{
-		*error = zbx_dsprintf(*error, "cannot initialize read write lock attribute: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot initialize read write lock attribute: %s", trx_strerror(errno));
 		return FAIL;
 	}
 
 	if (0 != pthread_rwlockattr_setpshared(&rwa, PTHREAD_PROCESS_SHARED))
 	{
-		*error = zbx_dsprintf(*error, "cannot set shared read write lock attribute: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot set shared read write lock attribute: %s", trx_strerror(errno));
 		return FAIL;
 	}
 
@@ -118,7 +118,7 @@ int	zbx_locks_create(char **error)
 	{
 		if (0 != pthread_rwlock_init(&shared_lock->rwlocks[i], &rwa))
 		{
-			*error = zbx_dsprintf(*error, "cannot create rwlock: %s", zbx_strerror(errno));
+			*error = trx_dsprintf(*error, "cannot create rwlock: %s", trx_strerror(errno));
 			return FAIL;
 		}
 	}
@@ -128,7 +128,7 @@ int	zbx_locks_create(char **error)
 
 	if (-1 == (TRX_SEM_LIST_ID = semget(IPC_PRIVATE, TRX_MUTEX_COUNT + TRX_RWLOCK_COUNT, 0600)))
 	{
-		*error = zbx_dsprintf(*error, "cannot create semaphore set: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot create semaphore set: %s", trx_strerror(errno));
 		return FAIL;
 	}
 
@@ -140,10 +140,10 @@ int	zbx_locks_create(char **error)
 		if (-1 != semctl(TRX_SEM_LIST_ID, i, SETVAL, semopts))
 			continue;
 
-		*error = zbx_dsprintf(*error, "cannot initialize semaphore: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot initialize semaphore: %s", trx_strerror(errno));
 
 		if (-1 == semctl(TRX_SEM_LIST_ID, 0, IPC_RMID, 0))
-			zbx_error("cannot remove semaphore set %d: %s", TRX_SEM_LIST_ID, zbx_strerror(errno));
+			trx_error("cannot remove semaphore set %d: %s", TRX_SEM_LIST_ID, trx_strerror(errno));
 
 		TRX_SEM_LIST_ID = -1;
 
@@ -155,9 +155,9 @@ int	zbx_locks_create(char **error)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_rwlock_create                                                *
+ * Function: trx_rwlock_create                                                *
  *                                                                            *
- * Purpose: read-write locks are created using zbx_locks_create() function    *
+ * Purpose: read-write locks are created using trx_locks_create() function    *
  *          this is only to obtain handle, if read write locks are not        *
  *          supported, then outputs numeric handle of mutex that can be used  *
  *          with mutex handling functions                                     *
@@ -169,7 +169,7 @@ int	zbx_locks_create(char **error)
  * Return value: SUCCEED if mutexes successfully created, otherwise FAIL      *
  *                                                                            *
  ******************************************************************************/
-int	zbx_rwlock_create(zbx_rwlock_t *rwlock, zbx_rwlock_name_t name, char **error)
+int	trx_rwlock_create(trx_rwlock_t *rwlock, trx_rwlock_name_t name, char **error)
 {
 	TRX_UNUSED(error);
 #ifdef HAVE_PTHREAD_PROCESS_SHARED
@@ -183,14 +183,14 @@ int	zbx_rwlock_create(zbx_rwlock_t *rwlock, zbx_rwlock_name_t name, char **error
 #ifdef HAVE_PTHREAD_PROCESS_SHARED
 /******************************************************************************
  *                                                                            *
- * Function: __zbx_rwlock_wrlock                                              *
+ * Function: __trx_rwlock_wrlock                                              *
  *                                                                            *
  * Purpose: acquire write lock for read-write lock (exclusive access)         *
  *                                                                            *
  * Parameters: rwlock - handle of read-write lock                             *
  *                                                                            *
  ******************************************************************************/
-void	__zbx_rwlock_wrlock(const char *filename, int line, zbx_rwlock_t rwlock)
+void	__trx_rwlock_wrlock(const char *filename, int line, trx_rwlock_t rwlock)
 {
 	if (TRX_RWLOCK_NULL == rwlock)
 		return;
@@ -200,21 +200,21 @@ void	__zbx_rwlock_wrlock(const char *filename, int line, zbx_rwlock_t rwlock)
 
 	if (0 != pthread_rwlock_wrlock(rwlock))
 	{
-		zbx_error("[file:'%s',line:%d] write lock failed: %s", filename, line, zbx_strerror(errno));
+		trx_error("[file:'%s',line:%d] write lock failed: %s", filename, line, trx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: __zbx_rwlock_rdlock                                              *
+ * Function: __trx_rwlock_rdlock                                              *
  *                                                                            *
  * Purpose: acquire read lock for read-write lock (there can be many readers) *
  *                                                                            *
  * Parameters: rwlock - handle of read-write lock                             *
  *                                                                            *
  ******************************************************************************/
-void	__zbx_rwlock_rdlock(const char *filename, int line, zbx_rwlock_t rwlock)
+void	__trx_rwlock_rdlock(const char *filename, int line, trx_rwlock_t rwlock)
 {
 	if (TRX_RWLOCK_NULL == rwlock)
 		return;
@@ -224,21 +224,21 @@ void	__zbx_rwlock_rdlock(const char *filename, int line, zbx_rwlock_t rwlock)
 
 	if (0 != pthread_rwlock_rdlock(rwlock))
 	{
-		zbx_error("[file:'%s',line:%d] read lock failed: %s", filename, line, zbx_strerror(errno));
+		trx_error("[file:'%s',line:%d] read lock failed: %s", filename, line, trx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: __zbx_rwlock_unlock                                              *
+ * Function: __trx_rwlock_unlock                                              *
  *                                                                            *
  * Purpose: unlock read-write lock                                            *
  *                                                                            *
  * Parameters: rwlock - handle of read-write lock                             *
  *                                                                            *
  ******************************************************************************/
-void	__zbx_rwlock_unlock(const char *filename, int line, zbx_rwlock_t rwlock)
+void	__trx_rwlock_unlock(const char *filename, int line, trx_rwlock_t rwlock)
 {
 	if (TRX_RWLOCK_NULL == rwlock)
 		return;
@@ -248,14 +248,14 @@ void	__zbx_rwlock_unlock(const char *filename, int line, zbx_rwlock_t rwlock)
 
 	if (0 != pthread_rwlock_unlock(rwlock))
 	{
-		zbx_error("[file:'%s',line:%d] read-write lock unlock failed: %s", filename, line, zbx_strerror(errno));
+		trx_error("[file:'%s',line:%d] read-write lock unlock failed: %s", filename, line, trx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_rwlock_destroy                                               *
+ * Function: trx_rwlock_destroy                                               *
  *                                                                            *
  * Purpose: Destroy read-write lock                                           *
  *                                                                            *
@@ -264,7 +264,7 @@ void	__zbx_rwlock_unlock(const char *filename, int line, zbx_rwlock_t rwlock)
  *                                                                            *
  ******************************************************************************/
 
-void	zbx_rwlock_destroy(zbx_rwlock_t *rwlock)
+void	trx_rwlock_destroy(trx_rwlock_t *rwlock)
 {
 	if (TRX_RWLOCK_NULL == *rwlock)
 		return;
@@ -273,19 +273,19 @@ void	zbx_rwlock_destroy(zbx_rwlock_t *rwlock)
 		return;
 
 	if (0 != pthread_rwlock_destroy(*rwlock))
-		zbx_error("cannot remove read-write lock: %s", zbx_strerror(errno));
+		trx_error("cannot remove read-write lock: %s", trx_strerror(errno));
 
 	*rwlock = TRX_RWLOCK_NULL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_locks_disable                                                *
+ * Function: trx_locks_disable                                                *
  *                                                                            *
  * Purpose:  disable locks                                                    *
  *                                                                            *
  ******************************************************************************/
-void	zbx_locks_disable(void)
+void	trx_locks_disable(void)
 {
 	/* attempting to destroy a locked pthread mutex results in undefined behavior */
 	locks_disabled = 1;
@@ -295,7 +295,7 @@ void	zbx_locks_disable(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_mutex_create                                                 *
+ * Function: trx_mutex_create                                                 *
  *                                                                            *
  * Purpose: Create the mutex                                                  *
  *                                                                            *
@@ -308,12 +308,12 @@ void	zbx_locks_disable(void)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_mutex_create(zbx_mutex_t *mutex, zbx_mutex_name_t name, char **error)
+int	trx_mutex_create(trx_mutex_t *mutex, trx_mutex_name_t name, char **error)
 {
 #ifdef _WINDOWS
 	if (NULL == (*mutex = CreateMutex(NULL, FALSE, name)))
 	{
-		*error = zbx_dsprintf(*error, "error on mutex creating: %s", strerror_from_system(GetLastError()));
+		*error = trx_dsprintf(*error, "error on mutex creating: %s", strerror_from_system(GetLastError()));
 		return FAIL;
 	}
 #else
@@ -330,7 +330,7 @@ int	zbx_mutex_create(zbx_mutex_t *mutex, zbx_mutex_name_t name, char **error)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_mutex_lock                                                   *
+ * Function: trx_mutex_lock                                                   *
  *                                                                            *
  * Purpose: Waits until the mutex is in the signalled state                   *
  *                                                                            *
@@ -339,7 +339,7 @@ int	zbx_mutex_create(zbx_mutex_t *mutex, zbx_mutex_name_t name, char **error)
  * Author: Eugene Grigorjev, Alexander Vladishev                              *
  *                                                                            *
  ******************************************************************************/
-void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
+void	__trx_mutex_lock(const char *filename, int line, trx_mutex_t mutex)
 {
 #ifndef _WINDOWS
 #ifndef	HAVE_PTHREAD_PROCESS_SHARED
@@ -356,8 +356,8 @@ void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
 #ifdef TREEGIX_AGENT
 	if (0 != (TRX_MUTEX_THREAD_DENIED & get_thread_global_mutex_flag()))
 	{
-		zbx_error("[file:'%s',line:%d] lock failed: TRX_MUTEX_THREAD_DENIED is set for thread with id = %d",
-				filename, line, zbx_get_thread_id());
+		trx_error("[file:'%s',line:%d] lock failed: TRX_MUTEX_THREAD_DENIED is set for thread with id = %d",
+				filename, line, trx_get_thread_id());
 		exit(EXIT_FAILURE);
 	}
 #endif
@@ -371,7 +371,7 @@ void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
 			THIS_SHOULD_NEVER_HAPPEN;
 			exit(EXIT_FAILURE);
 		default:
-			zbx_error("[file:'%s',line:%d] lock failed: %s",
+			trx_error("[file:'%s',line:%d] lock failed: %s",
 				filename, line, strerror_from_system(GetLastError()));
 			exit(EXIT_FAILURE);
 	}
@@ -382,7 +382,7 @@ void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
 
 	if (0 != pthread_mutex_lock(mutex))
 	{
-		zbx_error("[file:'%s',line:%d] lock failed: %s", filename, line, zbx_strerror(errno));
+		trx_error("[file:'%s',line:%d] lock failed: %s", filename, line, trx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 #else
@@ -394,7 +394,7 @@ void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
 	{
 		if (EINTR != errno)
 		{
-			zbx_error("[file:'%s',line:%d] lock failed: %s", filename, line, zbx_strerror(errno));
+			trx_error("[file:'%s',line:%d] lock failed: %s", filename, line, trx_strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -404,7 +404,7 @@ void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_mutex_unlock                                                 *
+ * Function: trx_mutex_unlock                                                 *
  *                                                                            *
  * Purpose: Unlock the mutex                                                  *
  *                                                                            *
@@ -413,7 +413,7 @@ void	__zbx_mutex_lock(const char *filename, int line, zbx_mutex_t mutex)
  * Author: Eugene Grigorjev, Alexander Vladishev                              *
  *                                                                            *
  ******************************************************************************/
-void	__zbx_mutex_unlock(const char *filename, int line, zbx_mutex_t mutex)
+void	__trx_mutex_unlock(const char *filename, int line, trx_mutex_t mutex)
 {
 #ifndef _WINDOWS
 #ifndef	HAVE_PTHREAD_PROCESS_SHARED
@@ -427,7 +427,7 @@ void	__zbx_mutex_unlock(const char *filename, int line, zbx_mutex_t mutex)
 #ifdef _WINDOWS
 	if (0 == ReleaseMutex(mutex))
 	{
-		zbx_error("[file:'%s',line:%d] unlock failed: %s",
+		trx_error("[file:'%s',line:%d] unlock failed: %s",
 				filename, line, strerror_from_system(GetLastError()));
 		exit(EXIT_FAILURE);
 	}
@@ -438,7 +438,7 @@ void	__zbx_mutex_unlock(const char *filename, int line, zbx_mutex_t mutex)
 
 	if (0 != pthread_mutex_unlock(mutex))
 	{
-		zbx_error("[file:'%s',line:%d] unlock failed: %s", filename, line, zbx_strerror(errno));
+		trx_error("[file:'%s',line:%d] unlock failed: %s", filename, line, trx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 #else
@@ -450,7 +450,7 @@ void	__zbx_mutex_unlock(const char *filename, int line, zbx_mutex_t mutex)
 	{
 		if (EINTR != errno)
 		{
-			zbx_error("[file:'%s',line:%d] unlock failed: %s", filename, line, zbx_strerror(errno));
+			trx_error("[file:'%s',line:%d] unlock failed: %s", filename, line, trx_strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -460,7 +460,7 @@ void	__zbx_mutex_unlock(const char *filename, int line, zbx_mutex_t mutex)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_mutex_destroy                                                *
+ * Function: trx_mutex_destroy                                                *
  *                                                                            *
  * Purpose: Destroy the mutex                                                 *
  *                                                                            *
@@ -469,24 +469,24 @@ void	__zbx_mutex_unlock(const char *filename, int line, zbx_mutex_t mutex)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_mutex_destroy(zbx_mutex_t *mutex)
+void	trx_mutex_destroy(trx_mutex_t *mutex)
 {
 #ifdef _WINDOWS
 	if (TRX_MUTEX_NULL == *mutex)
 		return;
 
 	if (0 == CloseHandle(*mutex))
-		zbx_error("error on mutex destroying: %s", strerror_from_system(GetLastError()));
+		trx_error("error on mutex destroying: %s", strerror_from_system(GetLastError()));
 #else
 #ifdef	HAVE_PTHREAD_PROCESS_SHARED
 	if (0 != locks_disabled)
 		return;
 
 	if (0 != pthread_mutex_destroy(*mutex))
-		zbx_error("cannot remove mutex %p: %s", (void *)mutex, zbx_strerror(errno));
+		trx_error("cannot remove mutex %p: %s", (void *)mutex, trx_strerror(errno));
 #else
 	if (0 == --mutexes && -1 == semctl(TRX_SEM_LIST_ID, 0, IPC_RMID, 0))
-		zbx_error("cannot remove semaphore set %d: %s", TRX_SEM_LIST_ID, zbx_strerror(errno));
+		trx_error("cannot remove semaphore set %d: %s", TRX_SEM_LIST_ID, trx_strerror(errno));
 #endif
 #endif
 	*mutex = TRX_MUTEX_NULL;
@@ -495,7 +495,7 @@ void	zbx_mutex_destroy(zbx_mutex_t *mutex)
 #ifdef _WINDOWS
 /******************************************************************************
  *                                                                            *
- * Function: zbx_mutex_create_per_process_name                                *
+ * Function: trx_mutex_create_per_process_name                                *
  *                                                                            *
  * Purpose: Appends PID to the prefix of the mutex                            *
  *                                                                            *
@@ -507,9 +507,9 @@ void	zbx_mutex_destroy(zbx_mutex_t *mutex)
  *           otherwise the function calls exit()                              *
  *                                                                            *
  ******************************************************************************/
-zbx_mutex_name_t	zbx_mutex_create_per_process_name(const zbx_mutex_name_t prefix)
+trx_mutex_name_t	trx_mutex_create_per_process_name(const trx_mutex_name_t prefix)
 {
-	zbx_mutex_name_t	name = TRX_MUTEX_NULL;
+	trx_mutex_name_t	name = TRX_MUTEX_NULL;
 	int			size;
 	wchar_t			*format = L"%s_PID_%lx";
 	DWORD			pid = GetCurrentProcessId();
@@ -524,7 +524,7 @@ zbx_mutex_name_t	zbx_mutex_create_per_process_name(const zbx_mutex_name_t prefix
 
 	size = size + 1; /* for terminating '\0' */
 
-	name = zbx_malloc(NULL, sizeof(wchar_t) * size);
+	name = trx_malloc(NULL, sizeof(wchar_t) * size);
 	(void)_snwprintf_s(name, size, size - 1, format, prefix, pid);
 	name[size - 1] = L'\0';
 

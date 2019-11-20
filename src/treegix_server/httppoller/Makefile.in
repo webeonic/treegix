@@ -117,11 +117,11 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxhttppoller_a_AR = $(AR) $(ARFLAGS)
-libzbxhttppoller_a_LIBADD =
-am_libzbxhttppoller_a_OBJECTS = httpmacro.$(OBJEXT) httptest.$(OBJEXT) \
+libtrxhttppoller_a_AR = $(AR) $(ARFLAGS)
+libtrxhttppoller_a_LIBADD =
+am_libtrxhttppoller_a_OBJECTS = httpmacro.$(OBJEXT) httptest.$(OBJEXT) \
 	httppoller.$(OBJEXT)
-libzbxhttppoller_a_OBJECTS = $(am_libzbxhttppoller_a_OBJECTS)
+libtrxhttppoller_a_OBJECTS = $(am_libtrxhttppoller_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -150,8 +150,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxhttppoller_a_SOURCES)
-DIST_SOURCES = $(libzbxhttppoller_a_SOURCES)
+SOURCES = $(libtrxhttppoller_a_SOURCES)
+DIST_SOURCES = $(libtrxhttppoller_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -375,8 +375,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxhttppoller.a
-libzbxhttppoller_a_SOURCES = \
+noinst_LIBRARIES = libtrxhttppoller.a
+libtrxhttppoller_a_SOURCES = \
 	httpmacro.c httpmacro.h \
 	httptest.c httptest.h \
 	httppoller.c httppoller.h
@@ -418,10 +418,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxhttppoller.a: $(libzbxhttppoller_a_OBJECTS) $(libzbxhttppoller_a_DEPENDENCIES) $(EXTRA_libzbxhttppoller_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxhttppoller.a
-	$(AM_V_AR)$(libzbxhttppoller_a_AR) libzbxhttppoller.a $(libzbxhttppoller_a_OBJECTS) $(libzbxhttppoller_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxhttppoller.a
+libtrxhttppoller.a: $(libtrxhttppoller_a_OBJECTS) $(libtrxhttppoller_a_DEPENDENCIES) $(EXTRA_libtrxhttppoller_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxhttppoller.a
+	$(AM_V_AR)$(libtrxhttppoller_a_AR) libtrxhttppoller.a $(libtrxhttppoller_a_OBJECTS) $(libtrxhttppoller_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxhttppoller.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

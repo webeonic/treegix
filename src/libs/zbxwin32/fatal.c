@@ -88,14 +88,14 @@ static void	print_fatal_info(CONTEXT *pctx)
 typedef BOOL (WINAPI *SymGetLineFromAddrW64_func_t)(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
 typedef BOOL (WINAPI *SymFromAddr_func_t)(HANDLE a, DWORD64 b , PDWORD64 c, PSYMBOL_INFO d);
 
-void	zbx_backtrace(void)
+void	trx_backtrace(void)
 {
 }
 
 static void	print_backtrace(CONTEXT *pctx)
 {
-	SymGetLineFromAddrW64_func_t	zbx_SymGetLineFromAddrW64 = NULL;
-	SymFromAddr_func_t		zbx_SymFromAddr	= NULL;
+	SymGetLineFromAddrW64_func_t	trx_SymGetLineFromAddrW64 = NULL;
+	SymFromAddr_func_t		trx_SymFromAddr	= NULL;
 
 	CONTEXT			ctx, ctxcount;
 	STACKFRAME64		s, scount;
@@ -135,26 +135,26 @@ static void	print_backtrace(CONTEXT *pctx)
 		char	*ptr;
 		size_t	path_alloc = 0, path_offset = 0;
 
-		process_name = zbx_unicode_to_utf8(szProcessName);
+		process_name = trx_unicode_to_utf8(szProcessName);
 
 		if (NULL != (ptr = strstr(process_name, progname)))
-			zbx_strncpy_alloc(&process_path, &path_alloc, &path_offset, process_name, ptr - process_name);
+			trx_strncpy_alloc(&process_path, &path_alloc, &path_offset, process_name, ptr - process_name);
 	}
 
 	if (NULL != (hModule = GetModuleHandle(TEXT("DbgHelp.DLL"))))
 	{
-		zbx_SymGetLineFromAddrW64 = (SymGetLineFromAddrW64_func_t)GetProcAddress(hModule,
+		trx_SymGetLineFromAddrW64 = (SymGetLineFromAddrW64_func_t)GetProcAddress(hModule,
 				"SymGetLineFromAddr64");
-		zbx_SymFromAddr = (SymFromAddr_func_t)GetProcAddress(hModule, "SymFromAddr");
+		trx_SymFromAddr = (SymFromAddr_func_t)GetProcAddress(hModule, "SymFromAddr");
 	}
 
-	if (NULL != zbx_SymFromAddr || NULL != zbx_SymGetLineFromAddrW64)
+	if (NULL != trx_SymFromAddr || NULL != trx_SymGetLineFromAddrW64)
 	{
 		SymSetOptions(SymGetOptions() | SYMOPT_LOAD_LINES);
 
 		if (FALSE != SymInitialize(hProcess, process_path, TRUE))
 		{
-			pSym = (PSYMBOL_INFO) zbx_malloc(NULL, sizeof(SYMBOL_INFO) + MAX_SYM_NAME);
+			pSym = (PSYMBOL_INFO) trx_malloc(NULL, sizeof(SYMBOL_INFO) + MAX_SYM_NAME);
 			memset(pSym, 0, sizeof(SYMBOL_INFO) + MAX_SYM_NAME);
 			pSym->SizeOfStruct = sizeof(SYMBOL_INFO);
 			pSym->MaxNameLen = MAX_SYM_NAME;
@@ -176,7 +176,7 @@ static void	print_backtrace(CONTEXT *pctx)
 	while (TRUE == StackWalk64(TRX_IMAGE_FILE_MACHINE, hProcess, hThread, &s, &ctx, NULL, NULL, NULL, NULL))
 	{
 		frame_offset = 0;
-		zbx_snprintf_alloc(&frame, &frame_alloc, &frame_offset, "%d: %s", nframes--,
+		trx_snprintf_alloc(&frame, &frame_alloc, &frame_offset, "%d: %s", nframes--,
 				NULL == process_name ? "(unknown)" : process_name);
 
 		if (NULL != pSym)
@@ -184,20 +184,20 @@ static void	print_backtrace(CONTEXT *pctx)
 			DWORD		dwDisplacement;
 			IMAGEHLP_LINE64	line = {sizeof(IMAGEHLP_LINE64)};
 
-			zbx_chrcpy_alloc(&frame, &frame_alloc, &frame_offset, '(');
-			if (NULL != zbx_SymFromAddr &&
-					TRUE == zbx_SymFromAddr(hProcess, s.AddrPC.Offset, &offset, pSym))
+			trx_chrcpy_alloc(&frame, &frame_alloc, &frame_offset, '(');
+			if (NULL != trx_SymFromAddr &&
+					TRUE == trx_SymFromAddr(hProcess, s.AddrPC.Offset, &offset, pSym))
 			{
-				zbx_snprintf_alloc(&frame, &frame_alloc, &frame_offset, "%s+0x%lx", pSym->Name, offset);
+				trx_snprintf_alloc(&frame, &frame_alloc, &frame_offset, "%s+0x%lx", pSym->Name, offset);
 			}
 
-			if (NULL != zbx_SymGetLineFromAddrW64 && TRUE == zbx_SymGetLineFromAddrW64(hProcess,
+			if (NULL != trx_SymGetLineFromAddrW64 && TRUE == trx_SymGetLineFromAddrW64(hProcess,
 					s.AddrPC.Offset, &dwDisplacement, &line))
 			{
-				zbx_snprintf_alloc(&frame, &frame_alloc, &frame_offset, " %s:%d", line.FileName,
+				trx_snprintf_alloc(&frame, &frame_alloc, &frame_offset, " %s:%d", line.FileName,
 						line.LineNumber);
 			}
-			zbx_chrcpy_alloc(&frame, &frame_alloc, &frame_offset, ')');
+			trx_chrcpy_alloc(&frame, &frame_alloc, &frame_offset, ')');
 		}
 
 		treegix_log(LOG_LEVEL_CRIT, "%s [0x%lx]", frame, s.AddrPC.Offset);
@@ -208,13 +208,13 @@ static void	print_backtrace(CONTEXT *pctx)
 
 	SymCleanup(hProcess);
 
-	zbx_free(frame);
-	zbx_free(process_path);
-	zbx_free(process_name);
-	zbx_free(pSym);
+	trx_free(frame);
+	trx_free(process_path);
+	trx_free(process_name);
+	trx_free(pSym);
 }
 
-int	zbx_win_exception_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep)
+int	trx_win_exception_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep)
 {
 	treegix_log(LOG_LEVEL_CRIT, "Unhandled exception %x detected at 0x%p. Crashing ...", code,
 			ep->ExceptionRecord->ExceptionAddress);

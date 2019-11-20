@@ -86,7 +86,7 @@ class CTemplate extends CHostGeneral {
 			'limit'						=> null,
 			'limitSelects'				=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -102,13 +102,13 @@ class CTemplate extends CHostGeneral {
 					' WHERE h.hostid=hgg.hostid'.
 					' GROUP BY hgg.hostid'.
 					' HAVING MIN(r.permission)>'.PERM_DENY.
-						' AND MAX(r.permission)>='.zbx_dbstr($permission).
+						' AND MAX(r.permission)>='.trx_dbstr($permission).
 					')';
 		}
 
 		// groupids
 		if (!is_null($options['groupids'])) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			$sqlParts['from']['hosts_groups'] = 'hosts_groups hg';
 			$sqlParts['where'][] = dbConditionInt('hg.groupid', $options['groupids']);
@@ -121,14 +121,14 @@ class CTemplate extends CHostGeneral {
 
 		// templateids
 		if (!is_null($options['templateids'])) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			$sqlParts['where']['templateid'] = dbConditionInt('h.hostid', $options['templateids']);
 		}
 
 		// parentTemplateids
 		if (!is_null($options['parentTemplateids'])) {
-			zbx_value2array($options['parentTemplateids']);
+			trx_value2array($options['parentTemplateids']);
 
 			$sqlParts['from']['hosts_templates'] = 'hosts_templates ht';
 			$sqlParts['where'][] = dbConditionInt('ht.templateid', $options['parentTemplateids']);
@@ -141,7 +141,7 @@ class CTemplate extends CHostGeneral {
 
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			$sqlParts['from']['hosts_templates'] = 'hosts_templates ht';
 			$sqlParts['where'][] = dbConditionInt('ht.hostid', $options['hostids']);
@@ -154,7 +154,7 @@ class CTemplate extends CHostGeneral {
 
 		// itemids
 		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['from']['items'] = 'items i';
 			$sqlParts['where'][] = dbConditionInt('i.itemid', $options['itemids']);
@@ -163,7 +163,7 @@ class CTemplate extends CHostGeneral {
 
 		// triggerids
 		if (!is_null($options['triggerids'])) {
-			zbx_value2array($options['triggerids']);
+			trx_value2array($options['triggerids']);
 
 			$sqlParts['from']['functions'] = 'functions f';
 			$sqlParts['from']['items'] = 'items i';
@@ -174,7 +174,7 @@ class CTemplate extends CHostGeneral {
 
 		// graphids
 		if (!is_null($options['graphids'])) {
-			zbx_value2array($options['graphids']);
+			trx_value2array($options['graphids']);
 
 			$sqlParts['from']['graphs_items'] = 'graphs_items gi';
 			$sqlParts['from']['items'] = 'items i';
@@ -236,11 +236,11 @@ class CTemplate extends CHostGeneral {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('hosts h', $options, $sqlParts);
+			trx_db_search('hosts h', $options, $sqlParts);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -275,7 +275,7 @@ class CTemplate extends CHostGeneral {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -289,20 +289,20 @@ class CTemplate extends CHostGeneral {
 	 * @return array
 	 */
 	public function create(array $templates) {
-		$templates = zbx_toArray($templates);
+		$templates = trx_toArray($templates);
 
 		$this->validateCreate($templates);
 
 		$templateIds = [];
 
 		foreach ($templates as $key => $template) {
-			$templates[$key]['groups'] = zbx_toArray($template['groups']);
+			$templates[$key]['groups'] = trx_toArray($template['groups']);
 		}
 
 		$ins_tags = [];
 		foreach ($templates as $template) {
 			// if visible name is not given or empty it should be set to host name
-			if ((!isset($template['name']) || zbx_empty(trim($template['name']))) && isset($template['host'])) {
+			if ((!isset($template['name']) || trx_empty(trim($template['name']))) && isset($template['host'])) {
 				$template['name'] = $template['host'];
 			}
 
@@ -328,7 +328,7 @@ class CTemplate extends CHostGeneral {
 
 				$result = DBexecute(
 					'INSERT INTO hosts_groups (hostgroupid,hostid,groupid)'.
-					' VALUES ('.zbx_dbstr($hostGroupId).','.zbx_dbstr($templateId).','.zbx_dbstr($group['groupid']).')'
+					' VALUES ('.trx_dbstr($hostGroupId).','.trx_dbstr($templateId).','.trx_dbstr($group['groupid']).')'
 				);
 
 				if (!$result) {
@@ -375,7 +375,7 @@ class CTemplate extends CHostGeneral {
 				);
 			}
 
-			$template['groups'] = zbx_toArray($template['groups']);
+			$template['groups'] = trx_toArray($template['groups']);
 
 			foreach ($template['groups'] as $group) {
 				$groupIds[$group['groupid']] = $group['groupid'];
@@ -401,7 +401,7 @@ class CTemplate extends CHostGeneral {
 
 		foreach ($templates as $template) {
 			// if visible name is not given or empty it should be set to host name
-			if ((!isset($template['name']) || zbx_empty(trim($template['name']))) && isset($template['host'])) {
+			if ((!isset($template['name']) || trx_empty(trim($template['name']))) && isset($template['host'])) {
 				$template['name'] = $template['host'];
 			}
 
@@ -485,7 +485,7 @@ class CTemplate extends CHostGeneral {
 	 * @return array
 	 */
 	public function update(array $templates) {
-		$templates = zbx_toArray($templates);
+		$templates = trx_toArray($templates);
 
 		$this->validateUpdate($templates);
 
@@ -505,7 +505,7 @@ class CTemplate extends CHostGeneral {
 
 		foreach ($templates as $template) {
 			// if visible name is not given or empty it should be set to host name
-			if ((!isset($template['name']) || zbx_empty(trim($template['name']))) && isset($template['host'])) {
+			if ((!isset($template['name']) || trx_empty(trim($template['name']))) && isset($template['host'])) {
 				$template['name'] = $template['host'];
 			}
 
@@ -522,7 +522,7 @@ class CTemplate extends CHostGeneral {
 
 		$this->updateTags($templates, 'templateid');
 
-		return ['templateids' => zbx_objectValues($templates, 'templateid')];
+		return ['templateids' => trx_objectValues($templates, 'templateid')];
 	}
 
 	/**
@@ -535,7 +535,7 @@ class CTemplate extends CHostGeneral {
 	protected function validateUpdate(array $templates) {
 		$dbTemplates = $this->get([
 			'output' => ['templateid'],
-			'templateids' => zbx_objectValues($templates, 'templateid'),
+			'templateids' => trx_objectValues($templates, 'templateid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
@@ -759,14 +759,14 @@ class CTemplate extends CHostGeneral {
 	 * @return array
 	 */
 	public function massAdd(array $data) {
-		$templates = isset($data['templates']) ? zbx_toArray($data['templates']) : [];
-		$templateIds = zbx_objectValues($templates, 'templateid');
+		$templates = isset($data['templates']) ? trx_toArray($data['templates']) : [];
+		$templateIds = trx_objectValues($templates, 'templateid');
 
 		$this->checkPermissions($templateIds, _('No permissions to referred object or it does not exist!'));
 
 		// link hosts to the given templates
 		if (isset($data['hosts']) && !empty($data['hosts'])) {
-			$hostIds = zbx_objectValues($data['hosts'], 'hostid');
+			$hostIds = trx_objectValues($data['hosts'], 'hostid');
 
 			$this->checkHostPermissions($hostIds);
 
@@ -805,39 +805,39 @@ class CTemplate extends CHostGeneral {
 
 		$this->validateMassUpdate($data);
 
-		$templates = zbx_toArray($data['templates']);
-		$templateIds = zbx_objectValues($templates, 'templateid');
+		$templates = trx_toArray($data['templates']);
+		$templateIds = trx_objectValues($templates, 'templateid');
 
 		$fieldsToUpdate = [];
 
 		if (isset($data['host'])) {
-			$fieldsToUpdate[] = 'host='.zbx_dbstr($data['host']);
+			$fieldsToUpdate[] = 'host='.trx_dbstr($data['host']);
 		}
 
 		if (isset($data['name'])) {
 			// if visible name is empty replace it with host name
-			if (zbx_empty(trim($data['name'])) && isset($data['host'])) {
-				$fieldsToUpdate[] = 'name='.zbx_dbstr($data['host']);
+			if (trx_empty(trim($data['name'])) && isset($data['host'])) {
+				$fieldsToUpdate[] = 'name='.trx_dbstr($data['host']);
 			}
 			// we cannot have empty visible name
-			elseif (zbx_empty(trim($data['name'])) && !isset($data['host'])) {
+			elseif (trx_empty(trim($data['name'])) && !isset($data['host'])) {
 				self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot have empty visible template name.'));
 			}
 			else {
-				$fieldsToUpdate[] = 'name='.zbx_dbstr($data['name']);
+				$fieldsToUpdate[] = 'name='.trx_dbstr($data['name']);
 			}
 		}
 
 		if (isset($data['description'])) {
-			$fieldsToUpdate[] = 'description='.zbx_dbstr($data['description']);
+			$fieldsToUpdate[] = 'description='.trx_dbstr($data['description']);
 		}
 
 		if ($fieldsToUpdate) {
 			DBexecute('UPDATE hosts SET '.implode(', ', $fieldsToUpdate).' WHERE '.dbConditionInt('hostid', $templateIds));
 		}
 
-		$data['templates_clear'] = isset($data['templates_clear']) ? zbx_toArray($data['templates_clear']) : [];
-		$templateIdsClear = zbx_objectValues($data['templates_clear'], 'templateid');
+		$data['templates_clear'] = isset($data['templates_clear']) ? trx_toArray($data['templates_clear']) : [];
+		$templateIdsClear = trx_objectValues($data['templates_clear'], 'templateid');
 
 		if ($data['templates_clear']) {
 			$this->massRemove([
@@ -859,8 +859,8 @@ class CTemplate extends CHostGeneral {
 				'templated_hosts' => true,
 				'filter' => ['flags' => TRX_FLAG_DISCOVERY_NORMAL]
 			]);
-			$templateHostIds = zbx_objectValues($templateHosts, 'hostid');
-			$newHostIds = zbx_objectValues($data['hosts'], 'hostid');
+			$templateHostIds = trx_objectValues($templateHosts, 'hostid');
+			$newHostIds = trx_objectValues($data['hosts'], 'hostid');
 
 			$hostsToDelete = array_diff($templateHostIds, $newHostIds);
 			$hostIdsToDelete = array_diff($hostsToDelete, $templateIdsClear);
@@ -883,8 +883,8 @@ class CTemplate extends CHostGeneral {
 				'output' => ['templateid'],
 				'hostids' => $templateIds
 			]);
-			$templateTemplateIds = zbx_objectValues($templateTemplates, 'templateid');
-			$newTemplateIds = zbx_objectValues($data['templates_link'], 'templateid');
+			$templateTemplateIds = trx_objectValues($templateTemplates, 'templateid');
+			$newTemplateIds = trx_objectValues($data['templates_link'], 'templateid');
 
 			$templatesToDelete = array_diff($templateTemplateIds, $newTemplateIds);
 			$templateIdsToDelete = array_diff($templatesToDelete, $templateIdsClear);
@@ -943,20 +943,20 @@ class CTemplate extends CHostGeneral {
 		 * host-template linking, macros update, must be done before this.
 		 */
 		if (isset($data['groups']) && $data['groups'] !== null && is_array($data['groups'])) {
-			$updateGroups = zbx_toArray($data['groups']);
+			$updateGroups = trx_toArray($data['groups']);
 
 			$templateGroups = API::HostGroup()->get([
 				'output' => ['groupid'],
 				'templateids' => $templateIds
 			]);
-			$templateGroupIds = zbx_objectValues($templateGroups, 'groupid');
-			$newGroupIds = zbx_objectValues($updateGroups, 'groupid');
+			$templateGroupIds = trx_objectValues($templateGroups, 'groupid');
+			$newGroupIds = trx_objectValues($updateGroups, 'groupid');
 
 			$groupsToAdd = array_diff($newGroupIds, $templateGroupIds);
 			if ($groupsToAdd) {
 				$this->massAdd([
 					'templates' => $templates,
-					'groups' => zbx_toObject($groupsToAdd, 'groupid')
+					'groups' => trx_toObject($groupsToAdd, 'groupid')
 				]);
 			}
 
@@ -984,11 +984,11 @@ class CTemplate extends CHostGeneral {
 	 * @return array
 	 */
 	protected function validateMassUpdate(array $data) {
-		$templates = zbx_toArray($data['templates']);
+		$templates = trx_toArray($data['templates']);
 
 		$dbTemplates = $this->get([
 			'output' => ['templateid', 'host'],
-			'templateids' => zbx_objectValues($templates, 'templateid'),
+			'templateids' => trx_objectValues($templates, 'templateid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
@@ -1100,7 +1100,7 @@ class CTemplate extends CHostGeneral {
 	 * @return array
 	 */
 	public function massRemove(array $data) {
-		$templateids = zbx_toArray($data['templateids']);
+		$templateids = trx_toArray($data['templateids']);
 
 		$this->checkPermissions($templateids, _('You do not have permission to perform this operation.'));
 
@@ -1110,7 +1110,7 @@ class CTemplate extends CHostGeneral {
 				'message' => _('Cannot update templates on discovered host "%1$s".')
 			]));
 
-			API::Template()->unlink($templateids, zbx_toArray($data['hostids']));
+			API::Template()->unlink($templateids, trx_toArray($data['hostids']));
 		}
 
 		$data['hostids'] = [];
@@ -1167,7 +1167,7 @@ class CTemplate extends CHostGeneral {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$templates = zbx_toHash($templates, 'templateid');
+				$templates = trx_toHash($templates, 'templateid');
 				foreach ($result as $templateid => $template) {
 					$result[$templateid]['templates'] = array_key_exists($templateid, $templates)
 						? $templates[$templateid]['rowscount']
@@ -1196,7 +1196,7 @@ class CTemplate extends CHostGeneral {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$hosts = zbx_toHash($hosts, 'templateid');
+				$hosts = trx_toHash($hosts, 'templateid');
 				foreach ($result as $templateid => $template) {
 					$result[$templateid]['hosts'] = array_key_exists($templateid, $hosts)
 						? $hosts[$templateid]['rowscount']
@@ -1233,7 +1233,7 @@ class CTemplate extends CHostGeneral {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$screens = zbx_toHash($screens, 'templateid');
+				$screens = trx_toHash($screens, 'templateid');
 				foreach ($result as $templateid => $template) {
 					$result[$templateid]['screens'] = array_key_exists($templateid, $screens)
 						? $screens[$templateid]['rowscount']

@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "active.h"
-#include "zbxconf.h"
+#include "trxconf.h"
 
 #include "cfg.h"
 #include "log.h"
@@ -14,7 +14,7 @@
 #endif
 #include "comms.h"
 #include "threads.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "alias.h"
 #include "metrics.h"
 
@@ -28,13 +28,13 @@ extern TRX_THREAD_LOCAL int		server_num, process_num;
 #	include "daemon.h"
 #endif
 
-#include "../libs/zbxcrypto/tls.h"
+#include "../libs/trxcrypto/tls.h"
 
 static TRX_THREAD_LOCAL TRX_ACTIVE_BUFFER	buffer;
-static TRX_THREAD_LOCAL zbx_vector_ptr_t	active_metrics;
-static TRX_THREAD_LOCAL zbx_vector_ptr_t	regexps;
+static TRX_THREAD_LOCAL trx_vector_ptr_t	active_metrics;
+static TRX_THREAD_LOCAL trx_vector_ptr_t	regexps;
 static TRX_THREAD_LOCAL char			*session_token;
-static TRX_THREAD_LOCAL zbx_uint64_t		last_valueid = 0;
+static TRX_THREAD_LOCAL trx_uint64_t		last_valueid = 0;
 
 #ifdef _WINDOWS
 LONG WINAPI	DelayLoadDllExceptionFilter(PEXCEPTION_POINTERS excpointers)
@@ -79,7 +79,7 @@ static void	init_active_metrics(void)
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "buffer: first allocation for %d elements", CONFIG_BUFFER_SIZE);
 		sz = CONFIG_BUFFER_SIZE * sizeof(TRX_ACTIVE_BUFFER_ELEMENT);
-		buffer.data = (TRX_ACTIVE_BUFFER_ELEMENT *)zbx_malloc(buffer.data, sz);
+		buffer.data = (TRX_ACTIVE_BUFFER_ELEMENT *)trx_malloc(buffer.data, sz);
 		memset(buffer.data, 0, sz);
 		buffer.count = 0;
 		buffer.pcount = 0;
@@ -87,8 +87,8 @@ static void	init_active_metrics(void)
 		buffer.first_error = 0;
 	}
 
-	zbx_vector_ptr_create(&active_metrics);
-	zbx_vector_ptr_create(&regexps);
+	trx_vector_ptr_create(&active_metrics);
+	trx_vector_ptr_create(&regexps);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -97,14 +97,14 @@ static void	free_active_metric(TRX_ACTIVE_METRIC *metric)
 {
 	int	i;
 
-	zbx_free(metric->key);
-	zbx_free(metric->key_orig);
+	trx_free(metric->key);
+	trx_free(metric->key_orig);
 
 	for (i = 0; i < metric->logfiles_num; i++)
-		zbx_free(metric->logfiles[i].filename);
+		trx_free(metric->logfiles[i].filename);
 
-	zbx_free(metric->logfiles);
-	zbx_free(metric);
+	trx_free(metric->logfiles);
+	trx_free(metric);
 }
 
 #ifdef _WINDOWS
@@ -112,11 +112,11 @@ static void	free_active_metrics(void)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_regexp_clean_expressions(&regexps);
-	zbx_vector_ptr_destroy(&regexps);
+	trx_regexp_clean_expressions(&regexps);
+	trx_vector_ptr_destroy(&regexps);
 
-	zbx_vector_ptr_clear_ext(&active_metrics, (zbx_clean_func_t)free_active_metric);
-	zbx_vector_ptr_destroy(&active_metrics);
+	trx_vector_ptr_clear_ext(&active_metrics, (trx_clean_func_t)free_active_metric);
+	trx_vector_ptr_destroy(&active_metrics);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -155,7 +155,7 @@ static int	get_min_nextcheck(void)
 	return min;
 }
 
-static void	add_check(const char *key, const char *key_orig, int refresh, zbx_uint64_t lastlogsize, int mtime)
+static void	add_check(const char *key, const char *key_orig, int refresh, trx_uint64_t lastlogsize, int mtime)
 {
 	TRX_ACTIVE_METRIC	*metric;
 	int			i;
@@ -174,8 +174,8 @@ static void	add_check(const char *key, const char *key_orig, int refresh, zbx_ui
 		{
 			int	j;
 
-			zbx_free(metric->key);
-			metric->key = zbx_strdup(NULL, key);
+			trx_free(metric->key);
+			metric->key = trx_strdup(NULL, key);
 			metric->lastlogsize = lastlogsize;
 			metric->mtime = mtime;
 			metric->big_rec = 0;
@@ -183,9 +183,9 @@ static void	add_check(const char *key, const char *key_orig, int refresh, zbx_ui
 			metric->error_count = 0;
 
 			for (j = 0; j < metric->logfiles_num; j++)
-				zbx_free(metric->logfiles[j].filename);
+				trx_free(metric->logfiles[j].filename);
 
-			zbx_free(metric->logfiles);
+			trx_free(metric->logfiles);
 			metric->logfiles_num = 0;
 			metric->start_time = 0.0;
 			metric->processed_bytes = 0;
@@ -210,11 +210,11 @@ static void	add_check(const char *key, const char *key_orig, int refresh, zbx_ui
 		goto out;
 	}
 
-	metric = (TRX_ACTIVE_METRIC *)zbx_malloc(NULL, sizeof(TRX_ACTIVE_METRIC));
+	metric = (TRX_ACTIVE_METRIC *)trx_malloc(NULL, sizeof(TRX_ACTIVE_METRIC));
 
 	/* add new metric */
-	metric->key = zbx_strdup(NULL, key);
-	metric->key_orig = zbx_strdup(NULL, key_orig);
+	metric->key = trx_strdup(NULL, key);
+	metric->key_orig = trx_strdup(NULL, key_orig);
 	metric->refresh = refresh;
 	metric->nextcheck = 0;
 	metric->state = ITEM_STATE_NORMAL;
@@ -247,7 +247,7 @@ static void	add_check(const char *key, const char *key_orig, int refresh, zbx_ui
 	metric->start_time = 0.0;
 	metric->processed_bytes = 0;
 
-	zbx_vector_ptr_append(&active_metrics, metric);
+	trx_vector_ptr_append(&active_metrics, metric);
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -315,32 +315,32 @@ static int	parse_list_of_checks(char *str, const char *host, unsigned short port
 	const char		*p;
 	char			name[MAX_STRING_LEN], key_orig[MAX_STRING_LEN], expression[MAX_STRING_LEN],
 				tmp[MAX_STRING_LEN], exp_delimiter;
-	zbx_uint64_t		lastlogsize;
-	struct zbx_json_parse	jp;
-	struct zbx_json_parse	jp_data, jp_row;
+	trx_uint64_t		lastlogsize;
+	struct trx_json_parse	jp;
+	struct trx_json_parse	jp_data, jp_row;
 	TRX_ACTIVE_METRIC	*metric;
-	zbx_vector_str_t	received_metrics;
+	trx_vector_str_t	received_metrics;
 	int			delay, mtime, expression_type, case_sensitive, i, j, ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_str_create(&received_metrics);
+	trx_vector_str_create(&received_metrics);
 
-	if (SUCCEED != zbx_json_open(str, &jp))
+	if (SUCCEED != trx_json_open(str, &jp))
 	{
-		treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", zbx_json_strerror());
+		treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", trx_json_strerror());
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, tmp, sizeof(tmp)))
+	if (SUCCEED != trx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, tmp, sizeof(tmp)))
 	{
-		treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", zbx_json_strerror());
+		treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", trx_json_strerror());
 		goto out;
 	}
 
 	if (0 != strcmp(tmp, TRX_PROTO_VALUE_SUCCESS))
 	{
-		if (SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, tmp, sizeof(tmp)))
+		if (SUCCEED == trx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, tmp, sizeof(tmp)))
 			treegix_log(LOG_LEVEL_WARNING, "no active checks on server [%s:%hu]: %s", host, port, tmp);
 		else
 			treegix_log(LOG_LEVEL_WARNING, "no active checks on server");
@@ -348,35 +348,35 @@ static int	parse_list_of_checks(char *str, const char *host, unsigned short port
 		goto out;
 	}
 
-	if (SUCCEED != zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_DATA, &jp_data))
+	if (SUCCEED != trx_json_brackets_by_name(&jp, TRX_PROTO_TAG_DATA, &jp_data))
 	{
-		treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", zbx_json_strerror());
+		treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", trx_json_strerror());
 		goto out;
 	}
 
  	p = NULL;
-	while (NULL != (p = zbx_json_next(&jp_data, p)))
+	while (NULL != (p = trx_json_next(&jp_data, p)))
 	{
 /* {"data":[{"key":"system.cpu.num",...,...},{...},...]}
  *          ^------------------------------^
- */ 		if (SUCCEED != zbx_json_brackets_open(p, &jp_row))
+ */ 		if (SUCCEED != trx_json_brackets_open(p, &jp_row))
 		{
-			treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", zbx_json_strerror());
+			treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", trx_json_strerror());
 			goto out;
 		}
 
-		if (SUCCEED != zbx_json_value_by_name(&jp_row, TRX_PROTO_TAG_KEY, name, sizeof(name)) || '\0' == *name)
+		if (SUCCEED != trx_json_value_by_name(&jp_row, TRX_PROTO_TAG_KEY, name, sizeof(name)) || '\0' == *name)
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot retrieve value of tag \"%s\"", TRX_PROTO_TAG_KEY);
 			continue;
 		}
 
-		if (SUCCEED != zbx_json_value_by_name(&jp_row, TRX_PROTO_TAG_KEY_ORIG, key_orig, sizeof(key_orig))
+		if (SUCCEED != trx_json_value_by_name(&jp_row, TRX_PROTO_TAG_KEY_ORIG, key_orig, sizeof(key_orig))
 				|| '\0' == *key_orig) {
-			zbx_strlcpy(key_orig, name, sizeof(key_orig));
+			trx_strlcpy(key_orig, name, sizeof(key_orig));
 		}
 
-		if (SUCCEED != zbx_json_value_by_name(&jp_row, TRX_PROTO_TAG_DELAY, tmp, sizeof(tmp)) || '\0' == *tmp)
+		if (SUCCEED != trx_json_value_by_name(&jp_row, TRX_PROTO_TAG_DELAY, tmp, sizeof(tmp)) || '\0' == *tmp)
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot retrieve value of tag \"%s\"", TRX_PROTO_TAG_DELAY);
 			continue;
@@ -384,14 +384,14 @@ static int	parse_list_of_checks(char *str, const char *host, unsigned short port
 
 		delay = atoi(tmp);
 
-		if (SUCCEED != zbx_json_value_by_name(&jp_row, TRX_PROTO_TAG_LASTLOGSIZE, tmp, sizeof(tmp)) ||
+		if (SUCCEED != trx_json_value_by_name(&jp_row, TRX_PROTO_TAG_LASTLOGSIZE, tmp, sizeof(tmp)) ||
 				SUCCEED != is_uint64(tmp, &lastlogsize))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot retrieve value of tag \"%s\"", TRX_PROTO_TAG_LASTLOGSIZE);
 			continue;
 		}
 
-		if (SUCCEED != zbx_json_value_by_name(&jp_row, TRX_PROTO_TAG_MTIME, tmp, sizeof(tmp)) || '\0' == *tmp)
+		if (SUCCEED != trx_json_value_by_name(&jp_row, TRX_PROTO_TAG_MTIME, tmp, sizeof(tmp)) || '\0' == *tmp)
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot retrieve value of tag \"%s\"", TRX_PROTO_TAG_MTIME);
 			mtime = 0;
@@ -399,10 +399,10 @@ static int	parse_list_of_checks(char *str, const char *host, unsigned short port
 		else
 			mtime = atoi(tmp);
 
-		add_check(zbx_alias_get(name), key_orig, delay, lastlogsize, mtime);
+		add_check(trx_alias_get(name), key_orig, delay, lastlogsize, mtime);
 
 		/* remember what was received */
-		zbx_vector_str_append(&received_metrics, zbx_strdup(NULL, key_orig));
+		trx_vector_str_append(&received_metrics, trx_strdup(NULL, key_orig));
 	}
 
 	/* remove what wasn't received */
@@ -434,41 +434,41 @@ static int	parse_list_of_checks(char *str, const char *host, unsigned short port
 
 		if (0 == found)
 		{
-			zbx_vector_ptr_remove_noorder(&active_metrics, i);
+			trx_vector_ptr_remove_noorder(&active_metrics, i);
 			free_active_metric(metric);
 			i--;	/* consider the same index on the next run */
 		}
 	}
 
-	zbx_regexp_clean_expressions(&regexps);
+	trx_regexp_clean_expressions(&regexps);
 
-	if (SUCCEED == zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_REGEXP, &jp_data))
+	if (SUCCEED == trx_json_brackets_by_name(&jp, TRX_PROTO_TAG_REGEXP, &jp_data))
 	{
 	 	p = NULL;
-		while (NULL != (p = zbx_json_next(&jp_data, p)))
+		while (NULL != (p = trx_json_next(&jp_data, p)))
 		{
 /* {"regexp":[{"name":"regexp1",...,...},{...},...]}
  *            ^------------------------^
- */			if (SUCCEED != zbx_json_brackets_open(p, &jp_row))
+ */			if (SUCCEED != trx_json_brackets_open(p, &jp_row))
 			{
-				treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", zbx_json_strerror());
+				treegix_log(LOG_LEVEL_ERR, "cannot parse list of active checks: %s", trx_json_strerror());
 				goto out;
 			}
 
-			if (SUCCEED != zbx_json_value_by_name(&jp_row, "name", name, sizeof(name)))
+			if (SUCCEED != trx_json_value_by_name(&jp_row, "name", name, sizeof(name)))
 			{
 				treegix_log(LOG_LEVEL_WARNING, "cannot retrieve value of tag \"%s\"", "name");
 				continue;
 			}
 
-			if (SUCCEED != zbx_json_value_by_name(&jp_row, "expression", expression, sizeof(expression)) ||
+			if (SUCCEED != trx_json_value_by_name(&jp_row, "expression", expression, sizeof(expression)) ||
 					'\0' == *expression)
 			{
 				treegix_log(LOG_LEVEL_WARNING, "cannot retrieve value of tag \"%s\"", "expression");
 				continue;
 			}
 
-			if (SUCCEED != zbx_json_value_by_name(&jp_row, "expression_type", tmp, sizeof(tmp)) ||
+			if (SUCCEED != trx_json_value_by_name(&jp_row, "expression_type", tmp, sizeof(tmp)) ||
 					'\0' == *tmp)
 			{
 				treegix_log(LOG_LEVEL_WARNING, "cannot retrieve value of tag \"%s\"", "expression_type");
@@ -477,7 +477,7 @@ static int	parse_list_of_checks(char *str, const char *host, unsigned short port
 
 			expression_type = atoi(tmp);
 
-			if (SUCCEED != zbx_json_value_by_name(&jp_row, "exp_delimiter", tmp, sizeof(tmp)))
+			if (SUCCEED != trx_json_value_by_name(&jp_row, "exp_delimiter", tmp, sizeof(tmp)))
 			{
 				treegix_log(LOG_LEVEL_WARNING, "cannot retrieve value of tag \"%s\"", "exp_delimiter");
 				continue;
@@ -485,7 +485,7 @@ static int	parse_list_of_checks(char *str, const char *host, unsigned short port
 
 			exp_delimiter = tmp[0];
 
-			if (SUCCEED != zbx_json_value_by_name(&jp_row, "case_sensitive", tmp,
+			if (SUCCEED != trx_json_value_by_name(&jp_row, "case_sensitive", tmp,
 					sizeof(tmp)) || '\0' == *tmp)
 			{
 				treegix_log(LOG_LEVEL_WARNING, "cannot retrieve value of tag \"%s\"", "case_sensitive");
@@ -500,10 +500,10 @@ static int	parse_list_of_checks(char *str, const char *host, unsigned short port
 
 	ret = SUCCEED;
 out:
-	zbx_vector_str_clear_ext(&received_metrics, zbx_str_free);
-	zbx_vector_str_destroy(&received_metrics);
+	trx_vector_str_clear_ext(&received_metrics, trx_str_free);
+	trx_vector_str_destroy(&received_metrics);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -520,7 +520,7 @@ out:
  *             proto  - configuration parameter prototype                        *
  *                                                                               *
  ********************************************************************************/
-static void process_config_item(struct zbx_json *json, char *config, size_t length, const char *proto)
+static void process_config_item(struct trx_json *json, char *config, size_t length, const char *proto)
 {
 	char		**value;
 	AGENT_RESULT	result;
@@ -543,7 +543,7 @@ static void process_config_item(struct zbx_json *json, char *config, size_t leng
 	if (SUCCEED == process(config, PROCESS_LOCAL_COMMAND | PROCESS_WITH_ALIAS, &result) &&
 			NULL != (value = GET_STR_RESULT(&result)) && NULL != *value)
 	{
-		if (SUCCEED != zbx_is_utf8(*value))
+		if (SUCCEED != trx_is_utf8(*value))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot get host %s using \"%s\" item specified by"
 					" \"%s\" configuration parameter: returned value is not"
@@ -551,7 +551,7 @@ static void process_config_item(struct zbx_json *json, char *config, size_t leng
 		}
 		else
 		{
-			if (length < zbx_strlen_utf8(*value))
+			if (length < trx_strlen_utf8(*value))
 			{
 				size_t	bytes;
 
@@ -559,10 +559,10 @@ static void process_config_item(struct zbx_json *json, char *config, size_t leng
 						" \"%s\" configuration parameter is too long,"
 						" using first %d characters", config, config_name, (int)length);
 
-				bytes = zbx_strlen_utf8_nchars(*value, length);
+				bytes = trx_strlen_utf8_nchars(*value, length);
 				(*value)[bytes] = '\0';
 			}
-			zbx_json_addstring(json, proto, *value, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(json, proto, *value, TRX_JSON_TYPE_STRING);
 		}
 	}
 	else
@@ -594,19 +594,19 @@ static int	refresh_active_checks(const char *host, unsigned short port)
 	static TRX_THREAD_LOCAL int	last_ret = SUCCEED;
 	int				ret;
 	char				*tls_arg1, *tls_arg2;
-	zbx_socket_t			s;
-	struct zbx_json			json;
+	trx_socket_t			s;
+	struct trx_json			json;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() host:'%s' port:%hu", __func__, host, port);
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
-	zbx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_GET_ACTIVE_CHECKS, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_HOST, CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_GET_ACTIVE_CHECKS, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&json, TRX_PROTO_TAG_HOST, CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
 
 	if (NULL != CONFIG_HOST_METADATA)
 	{
-		zbx_json_addstring(&json, TRX_PROTO_TAG_HOST_METADATA, CONFIG_HOST_METADATA, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_HOST_METADATA, CONFIG_HOST_METADATA, TRX_JSON_TYPE_STRING);
 	}
 	else if (NULL != CONFIG_HOST_METADATA_ITEM)
 	{
@@ -615,7 +615,7 @@ static int	refresh_active_checks(const char *host, unsigned short port)
 
 	if (NULL != CONFIG_HOST_INTERFACE)
 	{
-		zbx_json_addstring(&json, TRX_PROTO_TAG_INTERFACE, CONFIG_HOST_INTERFACE, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_INTERFACE, CONFIG_HOST_INTERFACE, TRX_JSON_TYPE_STRING);
 	}
 	else if (NULL != CONFIG_HOST_INTERFACE_ITEM)
 	{
@@ -629,14 +629,14 @@ static int	refresh_active_checks(const char *host, unsigned short port)
 		if (NULL != (p = strchr(CONFIG_LISTEN_IP, ',')))
 			*p = '\0';
 
-		zbx_json_addstring(&json, TRX_PROTO_TAG_IP, CONFIG_LISTEN_IP, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_IP, CONFIG_LISTEN_IP, TRX_JSON_TYPE_STRING);
 
 		if (NULL != p)
 			*p = ',';
 	}
 
 	if (TRX_DEFAULT_AGENT_PORT != CONFIG_LISTEN_PORT)
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_PORT, CONFIG_LISTEN_PORT);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_PORT, CONFIG_LISTEN_PORT);
 
 	switch (configured_tls_connect_mode)
 	{
@@ -651,7 +651,7 @@ static int	refresh_active_checks(const char *host, unsigned short port)
 			break;
 		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = CONFIG_TLS_PSK_IDENTITY;
-			tls_arg2 = NULL;	/* zbx_tls_connect() will find PSK */
+			tls_arg2 = NULL;	/* trx_tls_connect() will find PSK */
 			break;
 #endif
 		default:
@@ -660,16 +660,16 @@ static int	refresh_active_checks(const char *host, unsigned short port)
 			goto out;
 	}
 
-	if (SUCCEED == (ret = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, CONFIG_TIMEOUT,
+	if (SUCCEED == (ret = trx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, CONFIG_TIMEOUT,
 			configured_tls_connect_mode, tls_arg1, tls_arg2)))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "sending [%s]", json.buffer);
 
-		if (SUCCEED == (ret = zbx_tcp_send(&s, json.buffer)))
+		if (SUCCEED == (ret = trx_tcp_send(&s, json.buffer)))
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "before read");
 
-			if (SUCCEED == (ret = zbx_tcp_recv(&s)))
+			if (SUCCEED == (ret = trx_tcp_recv(&s)))
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "got [%s]", s.buffer);
 
@@ -682,21 +682,21 @@ static int	refresh_active_checks(const char *host, unsigned short port)
 			}
 		}
 
-		zbx_tcp_close(&s);
+		trx_tcp_close(&s);
 	}
 out:
 	if (SUCCEED != ret && SUCCEED == last_ret)
 	{
 		treegix_log(LOG_LEVEL_WARNING,
 				"active check configuration update from [%s:%hu] started to fail (%s)",
-				host, port, zbx_socket_strerror());
+				host, port, trx_socket_strerror());
 	}
 
 	last_ret = ret;
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -719,25 +719,25 @@ out:
  ******************************************************************************/
 static int	check_response(char *response)
 {
-	struct zbx_json_parse	jp;
+	struct trx_json_parse	jp;
 	char			value[MAX_STRING_LEN];
 	char			info[MAX_STRING_LEN];
 	int			ret;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() response:'%s'", __func__, response);
 
-	ret = zbx_json_open(response, &jp);
+	ret = trx_json_open(response, &jp);
 
 	if (SUCCEED == ret)
-		ret = zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value));
+		ret = trx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value));
 
 	if (SUCCEED == ret && 0 != strcmp(value, TRX_PROTO_VALUE_SUCCESS))
 		ret = FAIL;
 
-	if (SUCCEED == ret && SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, info, sizeof(info)))
+	if (SUCCEED == ret && SUCCEED == trx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, info, sizeof(info)))
 		treegix_log(LOG_LEVEL_DEBUG, "info from server: '%s'", info);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -762,10 +762,10 @@ static int	send_buffer(const char *host, unsigned short port)
 	TRX_ACTIVE_BUFFER_ELEMENT	*el;
 	int				ret = SUCCEED, i, now;
 	char				*tls_arg1, *tls_arg2;
-	zbx_timespec_t			ts;
+	trx_timespec_t			ts;
 	const char			*err_send_step = "";
-	zbx_socket_t			s;
-	struct zbx_json 		json;
+	trx_socket_t			s;
+	struct trx_json 		json;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() host:'%s' port:%d entries:%d/%d",
 			__func__, host, port, buffer.count, CONFIG_BUFFER_SIZE);
@@ -783,55 +783,55 @@ static int	send_buffer(const char *host, unsigned short port)
 		goto ret;
 	}
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_AGENT_DATA, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_SESSION, session_token, TRX_JSON_TYPE_STRING);
-	zbx_json_addarray(&json, TRX_PROTO_TAG_DATA);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_addstring(&json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_AGENT_DATA, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&json, TRX_PROTO_TAG_SESSION, session_token, TRX_JSON_TYPE_STRING);
+	trx_json_addarray(&json, TRX_PROTO_TAG_DATA);
 
 	for (i = 0; i < buffer.count; i++)
 	{
 		el = &buffer.data[i];
 
-		zbx_json_addobject(&json, NULL);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_HOST, el->host, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_KEY, el->key, TRX_JSON_TYPE_STRING);
+		trx_json_addobject(&json, NULL);
+		trx_json_addstring(&json, TRX_PROTO_TAG_HOST, el->host, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_KEY, el->key, TRX_JSON_TYPE_STRING);
 
 		if (NULL != el->value)
-			zbx_json_addstring(&json, TRX_PROTO_TAG_VALUE, el->value, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, TRX_PROTO_TAG_VALUE, el->value, TRX_JSON_TYPE_STRING);
 
 		if (ITEM_STATE_NOTSUPPORTED == el->state)
 		{
-			zbx_json_adduint64(&json, TRX_PROTO_TAG_STATE, ITEM_STATE_NOTSUPPORTED);
+			trx_json_adduint64(&json, TRX_PROTO_TAG_STATE, ITEM_STATE_NOTSUPPORTED);
 		}
 		else
 		{
 			/* add item meta information only for items in normal state */
 			if (0 != (TRX_METRIC_FLAG_LOG & el->flags))
-				zbx_json_adduint64(&json, TRX_PROTO_TAG_LASTLOGSIZE, el->lastlogsize);
+				trx_json_adduint64(&json, TRX_PROTO_TAG_LASTLOGSIZE, el->lastlogsize);
 			if (0 != (TRX_METRIC_FLAG_LOG_LOGRT & el->flags))
-				zbx_json_adduint64(&json, TRX_PROTO_TAG_MTIME, el->mtime);
+				trx_json_adduint64(&json, TRX_PROTO_TAG_MTIME, el->mtime);
 		}
 
 		if (0 != el->timestamp)
-			zbx_json_adduint64(&json, TRX_PROTO_TAG_LOGTIMESTAMP, el->timestamp);
+			trx_json_adduint64(&json, TRX_PROTO_TAG_LOGTIMESTAMP, el->timestamp);
 
 		if (NULL != el->source)
-			zbx_json_addstring(&json, TRX_PROTO_TAG_LOGSOURCE, el->source, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, TRX_PROTO_TAG_LOGSOURCE, el->source, TRX_JSON_TYPE_STRING);
 
 		if (0 != el->severity)
-			zbx_json_adduint64(&json, TRX_PROTO_TAG_LOGSEVERITY, el->severity);
+			trx_json_adduint64(&json, TRX_PROTO_TAG_LOGSEVERITY, el->severity);
 
 		if (0 != el->logeventid)
-			zbx_json_adduint64(&json, TRX_PROTO_TAG_LOGEVENTID, el->logeventid);
+			trx_json_adduint64(&json, TRX_PROTO_TAG_LOGEVENTID, el->logeventid);
 
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_ID, el->id);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_ID, el->id);
 
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_CLOCK, el->ts.sec);
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_NS, el->ts.ns);
-		zbx_json_close(&json);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_CLOCK, el->ts.sec);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_NS, el->ts.ns);
+		trx_json_close(&json);
 	}
 
-	zbx_json_close(&json);
+	trx_json_close(&json);
 
 	switch (configured_tls_connect_mode)
 	{
@@ -846,7 +846,7 @@ static int	send_buffer(const char *host, unsigned short port)
 			break;
 		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = CONFIG_TLS_PSK_IDENTITY;
-			tls_arg2 = NULL;	/* zbx_tls_connect() will find PSK */
+			tls_arg2 = NULL;	/* trx_tls_connect() will find PSK */
 			break;
 #endif
 		default:
@@ -855,18 +855,18 @@ static int	send_buffer(const char *host, unsigned short port)
 			goto out;
 	}
 
-	if (SUCCEED == (ret = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, MIN(buffer.count * CONFIG_TIMEOUT, 60),
+	if (SUCCEED == (ret = trx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, MIN(buffer.count * CONFIG_TIMEOUT, 60),
 			configured_tls_connect_mode, tls_arg1, tls_arg2)))
 	{
-		zbx_timespec(&ts);
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_CLOCK, ts.sec);
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_NS, ts.ns);
+		trx_timespec(&ts);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_CLOCK, ts.sec);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_NS, ts.ns);
 
 		treegix_log(LOG_LEVEL_DEBUG, "JSON before sending [%s]", json.buffer);
 
-		if (SUCCEED == (ret = zbx_tcp_send(&s, json.buffer)))
+		if (SUCCEED == (ret = trx_tcp_send(&s, json.buffer)))
 		{
-			if (SUCCEED == (ret = zbx_tcp_recv(&s)))
+			if (SUCCEED == (ret = trx_tcp_recv(&s)))
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "JSON back [%s]", s.buffer);
 
@@ -884,12 +884,12 @@ static int	send_buffer(const char *host, unsigned short port)
 		else
 			err_send_step = "[send] ";
 
-		zbx_tcp_close(&s);
+		trx_tcp_close(&s);
 	}
 	else
 		err_send_step = "[connect] ";
 out:
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
 	if (SUCCEED == ret)
 	{
@@ -898,10 +898,10 @@ out:
 		{
 			el = &buffer.data[i];
 
-			zbx_free(el->host);
-			zbx_free(el->key);
-			zbx_free(el->value);
-			zbx_free(el->source);
+			trx_free(el->host);
+			trx_free(el->key);
+			trx_free(el->value);
+			trx_free(el->source);
 		}
 		buffer.count = 0;
 		buffer.pcount = 0;
@@ -918,13 +918,13 @@ out:
 		if (0 == buffer.first_error)
 		{
 			treegix_log(LOG_LEVEL_WARNING, "active check data upload to [%s:%hu] started to fail (%s%s)",
-					host, port, err_send_step, zbx_socket_strerror());
+					host, port, err_send_step, trx_socket_strerror());
 			buffer.first_error = now;
 		}
-		treegix_log(LOG_LEVEL_DEBUG, "send value error: %s%s", err_send_step, zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "send value error: %s%s", err_send_step, trx_socket_strerror());
 	}
 ret:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -958,16 +958,16 @@ ret:
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
  * Comments: ATTENTION! This function's address and pointers to arguments     *
- *           are described in Treegix defined type "zbx_process_value_func_t"  *
+ *           are described in Treegix defined type "trx_process_value_func_t"  *
  *           and used when calling process_log(), process_logrt() and         *
- *           zbx_read2(). If you ever change this process_value() arguments   *
+ *           trx_read2(). If you ever change this process_value() arguments   *
  *           or return value do not forget to synchronize changes with the    *
- *           defined type "zbx_process_value_func_t" and implementations of   *
- *           process_log(), process_logrt(), zbx_read2() and their callers.   *
+ *           defined type "trx_process_value_func_t" and implementations of   *
+ *           process_log(), process_logrt(), trx_read2() and their callers.   *
  *                                                                            *
  ******************************************************************************/
 static int	process_value(const char *server, unsigned short port, const char *host, const char *key,
-		const char *value, unsigned char state, zbx_uint64_t *lastlogsize, const int *mtime,
+		const char *value, unsigned char state, trx_uint64_t *lastlogsize, const int *mtime,
 		unsigned long *timestamp, const char *source, unsigned short *severity, unsigned long *logeventid,
 		unsigned char flags)
 {
@@ -1041,10 +1041,10 @@ static int	process_value(const char *server, unsigned short port, const char *ho
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "remove element [%d] Key:'%s:%s'", i, el->host, el->key);
 
-			zbx_free(el->host);
-			zbx_free(el->key);
-			zbx_free(el->value);
-			zbx_free(el->source);
+			trx_free(el->host);
+			trx_free(el->key);
+			trx_free(el->value);
+			trx_free(el->source);
 		}
 
 		sz = (CONFIG_BUFFER_SIZE - i - 1) * sizeof(TRX_ACTIVE_BUFFER_ELEMENT);
@@ -1056,10 +1056,10 @@ static int	process_value(const char *server, unsigned short port, const char *ho
 	}
 
 	memset(el, 0, sizeof(TRX_ACTIVE_BUFFER_ELEMENT));
-	el->host = zbx_strdup(NULL, host);
-	el->key = zbx_strdup(NULL, key);
+	el->host = trx_strdup(NULL, host);
+	el->key = trx_strdup(NULL, key);
 	if (NULL != value)
-		el->value = zbx_strdup(NULL, value);
+		el->value = trx_strdup(NULL, value);
 	el->state = state;
 
 	if (NULL != source)
@@ -1075,7 +1075,7 @@ static int	process_value(const char *server, unsigned short port, const char *ho
 	if (NULL != logeventid)
 		el->logeventid = (int)*logeventid;
 
-	zbx_timespec(&el->ts);
+	trx_timespec(&el->ts);
 	el->flags = flags;
 	el->id = ++last_valueid;
 
@@ -1084,13 +1084,13 @@ static int	process_value(const char *server, unsigned short port, const char *ho
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static int	need_meta_update(TRX_ACTIVE_METRIC *metric, zbx_uint64_t lastlogsize_sent, int mtime_sent,
-		unsigned char old_state, zbx_uint64_t lastlogsize_last, int mtime_last)
+static int	need_meta_update(TRX_ACTIVE_METRIC *metric, trx_uint64_t lastlogsize_sent, int mtime_sent,
+		unsigned char old_state, trx_uint64_t lastlogsize_last, int mtime_last)
 {
 	int	ret = FAIL;
 
@@ -1112,13 +1112,13 @@ static int	need_meta_update(TRX_ACTIVE_METRIC *metric, zbx_uint64_t lastlogsize_
 		}
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 static int	process_eventlog_check(char *server, unsigned short port, TRX_ACTIVE_METRIC *metric,
-		zbx_uint64_t *lastlogsize_sent, char **error)
+		trx_uint64_t *lastlogsize_sent, char **error)
 {
 	int 		ret = FAIL;
 
@@ -1132,25 +1132,25 @@ static int	process_eventlog_check(char *server, unsigned short port, TRX_ACTIVE_
 
 	if (SUCCEED != parse_item_key(metric->key, &request))
 	{
-		*error = zbx_strdup(*error, "Invalid item key format.");
+		*error = trx_strdup(*error, "Invalid item key format.");
 		goto out;
 	}
 
 	if (0 == get_rparams_num(&request))
 	{
-		*error = zbx_strdup(*error, "Invalid number of parameters.");
+		*error = trx_strdup(*error, "Invalid number of parameters.");
 		goto out;
 	}
 
 	if (7 < get_rparams_num(&request))
 	{
-		*error = zbx_strdup(*error, "Too many parameters.");
+		*error = trx_strdup(*error, "Too many parameters.");
 		goto out;
 	}
 
 	if (NULL == (filename = get_rparam(&request, 0)) || '\0' == *filename)
 	{
-		*error = zbx_strdup(*error, "Invalid first parameter.");
+		*error = trx_strdup(*error, "Invalid first parameter.");
 		goto out;
 	}
 
@@ -1158,9 +1158,9 @@ static int	process_eventlog_check(char *server, unsigned short port, TRX_ACTIVE_
 	{
 		pattern = "";
 	}
-	else if ('@' == *pattern && SUCCEED != zbx_global_regexp_exists(pattern + 1, &regexps))
+	else if ('@' == *pattern && SUCCEED != trx_global_regexp_exists(pattern + 1, &regexps))
 	{
-		*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", pattern + 1);
+		*error = trx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", pattern + 1);
 		goto out;
 	}
 
@@ -1168,9 +1168,9 @@ static int	process_eventlog_check(char *server, unsigned short port, TRX_ACTIVE_
 	{
 		key_severity = "";
 	}
-	else if ('@' == *key_severity && SUCCEED != zbx_global_regexp_exists(key_severity + 1, &regexps))
+	else if ('@' == *key_severity && SUCCEED != trx_global_regexp_exists(key_severity + 1, &regexps))
 	{
-		*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", key_severity + 1);
+		*error = trx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", key_severity + 1);
 		goto out;
 	}
 
@@ -1178,9 +1178,9 @@ static int	process_eventlog_check(char *server, unsigned short port, TRX_ACTIVE_
 	{
 		key_source = "";
 	}
-	else if ('@' == *key_source && SUCCEED != zbx_global_regexp_exists(key_source + 1, &regexps))
+	else if ('@' == *key_source && SUCCEED != trx_global_regexp_exists(key_source + 1, &regexps))
 	{
-		*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", key_source + 1);
+		*error = trx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", key_source + 1);
 		goto out;
 	}
 
@@ -1188,9 +1188,9 @@ static int	process_eventlog_check(char *server, unsigned short port, TRX_ACTIVE_
 	{
 		key_logeventid = "";
 	}
-	else if ('@' == *key_logeventid && SUCCEED != zbx_global_regexp_exists(key_logeventid + 1, &regexps))
+	else if ('@' == *key_logeventid && SUCCEED != trx_global_regexp_exists(key_logeventid + 1, &regexps))
 	{
-		*error = zbx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", key_logeventid + 1);
+		*error = trx_dsprintf(*error, "Global regular expression \"%s\" does not exist.", key_logeventid + 1);
 		goto out;
 	}
 
@@ -1200,7 +1200,7 @@ static int	process_eventlog_check(char *server, unsigned short port, TRX_ACTIVE_
 	}
 	else if (MIN_VALUE_LINES > (rate = atoi(maxlines_persec)) || MAX_VALUE_LINES < rate)
 	{
-		*error = zbx_strdup(*error, "Invalid sixth parameter.");
+		*error = trx_strdup(*error, "Invalid sixth parameter.");
 		goto out;
 	}
 
@@ -1210,7 +1210,7 @@ static int	process_eventlog_check(char *server, unsigned short port, TRX_ACTIVE_
 	}
 	else if (0 != strcmp(skip, "skip"))
 	{
-		*error = zbx_strdup(*error, "Invalid seventh parameter.");
+		*error = trx_strdup(*error, "Invalid seventh parameter.");
 		goto out;
 	}
 
@@ -1221,11 +1221,11 @@ static int	process_eventlog_check(char *server, unsigned short port, TRX_ACTIVE_
 	{
 		__try
 		{
-			zbx_uint64_t	lastlogsize = metric->lastlogsize;
+			trx_uint64_t	lastlogsize = metric->lastlogsize;
 			EVT_HANDLE	eventlog6_render_context = NULL;
 			EVT_HANDLE	eventlog6_query = NULL;
-			zbx_uint64_t	eventlog6_firstid = 0;
-			zbx_uint64_t	eventlog6_lastid = 0;
+			trx_uint64_t	eventlog6_firstid = 0;
+			trx_uint64_t	eventlog6_lastid = 0;
 
 			if (SUCCEED != initialize_eventlog6(filename, &lastlogsize, &eventlog6_firstid,
 					&eventlog6_lastid, &eventlog6_render_context, &eventlog6_query, error))
@@ -1275,7 +1275,7 @@ static int	process_common_check(char *server, unsigned short port, TRX_ACTIVE_ME
 	if (SUCCEED != (ret = process(metric->key, 0, &result)))
 	{
 		if (NULL != (pvalue = GET_MSG_RESULT(&result)))
-			*error = zbx_strdup(*error, *pvalue);
+			*error = trx_strdup(*error, *pvalue);
 		goto out;
 	}
 
@@ -1303,7 +1303,7 @@ static void	process_active_checks(char *server, unsigned short port)
 
 	for (i = 0; i < active_metrics.values_num; i++)
 	{
-		zbx_uint64_t		lastlogsize_last, lastlogsize_sent;
+		trx_uint64_t		lastlogsize_last, lastlogsize_sent;
 		int			mtime_last, mtime_sent;
 		TRX_ACTIVE_METRIC	*metric;
 
@@ -1326,7 +1326,7 @@ static void	process_active_checks(char *server, unsigned short port)
 		if (0 == metric->refresh)
 		{
 			ret = FAIL;
-			error = zbx_strdup(error, "Incorrect update interval.");
+			error = trx_strdup(error, "Incorrect update interval.");
 		}
 		else if (0 != ((TRX_METRIC_FLAG_LOG_LOG | TRX_METRIC_FLAG_LOG_LOGRT) & metric->flags))
 		{
@@ -1355,7 +1355,7 @@ static void	process_active_checks(char *server, unsigned short port)
 			process_value(server, port, CONFIG_HOSTNAME, metric->key_orig, perror, ITEM_STATE_NOTSUPPORTED,
 					&metric->lastlogsize, &metric->mtime, NULL, NULL, NULL, NULL, metric->flags);
 
-			zbx_free(error);
+			trx_free(error);
 		}
 		else
 		{
@@ -1426,30 +1426,30 @@ TRX_THREAD_ENTRY(active_checks_thread, args)
 	time_t	nextcheck = 0, nextrefresh = 0, nextsend = 0, now, delta, lastcheck = 0;
 
 	assert(args);
-	assert(((zbx_thread_args_t *)args)->args);
+	assert(((trx_thread_args_t *)args)->args);
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
-	activechk_args.host = zbx_strdup(NULL, ((TRX_THREAD_ACTIVECHK_ARGS *)((zbx_thread_args_t *)args)->args)->host);
-	activechk_args.port = ((TRX_THREAD_ACTIVECHK_ARGS *)((zbx_thread_args_t *)args)->args)->port;
+	activechk_args.host = trx_strdup(NULL, ((TRX_THREAD_ACTIVECHK_ARGS *)((trx_thread_args_t *)args)->args)->host);
+	activechk_args.port = ((TRX_THREAD_ACTIVECHK_ARGS *)((trx_thread_args_t *)args)->args)->port;
 
-	zbx_free(args);
+	trx_free(args);
 
-	session_token = zbx_create_token(0);
+	session_token = trx_create_token(0);
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_child();
+	trx_tls_init_child();
 #endif
 	init_active_metrics();
 
 	while (TRX_IS_RUNNING())
 	{
-		zbx_update_env(zbx_time());
+		trx_update_env(trx_time());
 
 		if ((now = time(NULL)) >= nextsend)
 		{
@@ -1459,7 +1459,7 @@ TRX_THREAD_ENTRY(active_checks_thread, args)
 
 		if (now >= nextrefresh)
 		{
-			zbx_setproctitle("active checks #%d [getting list of active checks]", process_num);
+			trx_setproctitle("active checks #%d [getting list of active checks]", process_num);
 
 			if (FAIL == refresh_active_checks(activechk_args.host, activechk_args.port))
 			{
@@ -1473,7 +1473,7 @@ TRX_THREAD_ENTRY(active_checks_thread, args)
 
 		if (now >= nextcheck && CONFIG_BUFFER_SIZE / 2 > buffer.pcount)
 		{
-			zbx_setproctitle("active checks #%d [processing active checks]", process_num);
+			trx_setproctitle("active checks #%d [processing active checks]", process_num);
 
 			process_active_checks(activechk_args.host, activechk_args.port);
 
@@ -1496,26 +1496,26 @@ TRX_THREAD_ENTRY(active_checks_thread, args)
 				nextrefresh += delta;
 			}
 
-			zbx_setproctitle("active checks #%d [idle 1 sec]", process_num);
-			zbx_sleep(1);
+			trx_setproctitle("active checks #%d [idle 1 sec]", process_num);
+			trx_sleep(1);
 		}
 
 		lastcheck = now;
 	}
 
-	zbx_free(session_token);
+	trx_free(session_token);
 
 #ifdef _WINDOWS
-	zbx_free(activechk_args.host);
+	trx_free(activechk_args.host);
 	free_active_metrics();
 
 	TRX_DO_EXIT();
 
-	zbx_thread_exit(EXIT_SUCCESS);
+	trx_thread_exit(EXIT_SUCCESS);
 #else
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 #endif
 }

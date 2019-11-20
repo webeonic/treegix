@@ -423,6 +423,6 @@ class CScreenBase {
 			$jsData['data'] = $data;
 		}
 
-		zbx_add_post_js('window.flickerfreeScreen.add('.zbx_jsvalue($jsData).');');
+		trx_add_post_js('window.flickerfreeScreen.add('.trx_jsvalue($jsData).');');
 	}
 }

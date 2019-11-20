@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "json_parser.h"
 #include "json.h"
 
@@ -31,9 +31,9 @@ static int	json_error(const char *message, const char *json_buffer, char **error
 	if (NULL != error)
 	{
 		if (NULL != json_buffer)
-			*error = zbx_dsprintf(*error, "%s at: '%s'", message, json_buffer);
+			*error = trx_dsprintf(*error, "%s at: '%s'", message, json_buffer);
 		else
-			*error = zbx_strdup(*error, message);
+			*error = trx_strdup(*error, message);
 	}
 
 	return 0;
@@ -418,7 +418,7 @@ static int	json_parse_object(const char *start, char **error)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_json_validate                                                *
+ * Function: trx_json_validate                                                *
  *                                                                            *
  * Purpose: Validates JSON object                                             *
  *                                                                            *
@@ -434,7 +434,7 @@ static int	json_parse_object(const char *start, char **error)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-int	zbx_json_validate(const char *start, char **error)
+int	trx_json_validate(const char *start, char **error)
 {
 	int	len;
 

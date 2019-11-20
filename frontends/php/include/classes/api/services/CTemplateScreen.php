@@ -61,7 +61,7 @@ class CTemplateScreen extends CScreen {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		if ($options['editable'] || (is_null($options['hostids']) && is_null($options['templateids']))) {
 			$options['noInheritance'] = 1;
@@ -104,20 +104,20 @@ class CTemplateScreen extends CScreen {
 						' WHERE s.templateid=hgg.hostid'.
 						' GROUP BY hgg.hostid'.
 						' HAVING MIN(r.permission)>'.PERM_DENY.
-							' AND MAX(r.permission)>='.zbx_dbstr($permission).
+							' AND MAX(r.permission)>='.trx_dbstr($permission).
 						')';
 			}
 		}
 
 		// screenids
 		if (!is_null($options['screenids'])) {
-			zbx_value2array($options['screenids']);
+			trx_value2array($options['screenids']);
 			$sqlParts['where'][] = dbConditionInt('s.screenid', $options['screenids']);
 		}
 
 		// screenitemids
 		if (!is_null($options['screenitemids'])) {
-			zbx_value2array($options['screenitemids']);
+			trx_value2array($options['screenitemids']);
 
 			$sqlParts['from']['screens_items'] = 'screens_items si';
 			$sqlParts['where']['ssi'] = 'si.screenid=s.screenid';
@@ -126,10 +126,10 @@ class CTemplateScreen extends CScreen {
 
 		// templateids
 		if (!is_null($options['templateids'])) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			if (isset($options['hostids']) && !is_null($options['hostids'])) {
-				zbx_value2array($options['hostids']);
+				trx_value2array($options['hostids']);
 				$options['hostids'] = array_merge($options['hostids'], $options['templateids']);
 			}
 			else {
@@ -140,7 +140,7 @@ class CTemplateScreen extends CScreen {
 		// hostids
 		$templatesChain = [];
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			// collecting template chain
 			$linkedTemplateids = $options['hostids'];
@@ -173,11 +173,11 @@ class CTemplateScreen extends CScreen {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('screens s', $options, $sqlParts);
+			trx_db_search('screens s', $options, $sqlParts);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -264,7 +264,7 @@ class CTemplateScreen extends CScreen {
 					'output' => ['graphid', 'name'],
 					'selectHosts' => ['hostid'],
 					'hostids' => $options['hostids'],
-					'filter' => ['name' => zbx_objectValues($tplGraphs, 'name')],
+					'filter' => ['name' => trx_objectValues($tplGraphs, 'name')],
 					'nopermissions' => true,
 					'preservekeys' => true
 				]);
@@ -293,7 +293,7 @@ class CTemplateScreen extends CScreen {
 					'output' => ['graphid', 'name'],
 					'selectHosts' => ['hostid'],
 					'hostids' => $options['hostids'],
-					'filter' => ['name' => zbx_objectValues($tpl_graph_prototypes, 'name')],
+					'filter' => ['name' => trx_objectValues($tpl_graph_prototypes, 'name')],
 					'nopermissions' => true,
 					'preservekeys' => true
 				]);
@@ -322,7 +322,7 @@ class CTemplateScreen extends CScreen {
 				$dbItems = API::Item()->get([
 					'output' => ['itemid', 'key_', 'hostid'],
 					'hostids' => $options['hostids'],
-					'filter' => ['key_' => zbx_objectValues($tplItems, 'key_')],
+					'filter' => ['key_' => trx_objectValues($tplItems, 'key_')],
 					'webitems' => true,
 					'nopermissions' => true,
 					'preservekeys' => true
@@ -350,7 +350,7 @@ class CTemplateScreen extends CScreen {
 				$db_item_prototypes = API::ItemPrototype()->get([
 					'output' => ['itemid', 'key_', 'hostid'],
 					'hostids' => $options['hostids'],
-					'filter' => ['key_' => zbx_objectValues($tpl_item_prototypes, 'key_')],
+					'filter' => ['key_' => trx_objectValues($tpl_item_prototypes, 'key_')],
 					'nopermissions' => true,
 					'preservekeys' => true
 				]);
@@ -367,7 +367,7 @@ class CTemplateScreen extends CScreen {
 		}
 
 		// hashing
-		$options['hostids'] = zbx_toHash($options['hostids']);
+		$options['hostids'] = trx_toHash($options['hostids']);
 		if (!$options['countOutput'] || ($options['countOutput'] && $options['groupCount'])) {
 			// creating copies of templated screens (inheritance)
 			// screenNum is needed due to we can't refer to screenid/hostid/templateid as they will repeat
@@ -434,18 +434,18 @@ class CTemplateScreen extends CScreen {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 		elseif (!is_null($options['noInheritance'])) {
-			$result = zbx_toHash($result, 'screenid');
+			$result = trx_toHash($result, 'screenid');
 		}
 
 		return $result;
 	}
 
 	public function copy(array $data) {
-		$screenIds = $data['screenIds'] = zbx_toArray($data['screenIds']);
-		$templateIds = $data['templateIds'] = zbx_toArray($data['templateIds']);
+		$screenIds = $data['screenIds'] = trx_toArray($data['screenIds']);
+		$templateIds = $data['templateIds'] = trx_toArray($data['templateIds']);
 
 		$this->validateCopy($data);
 
@@ -483,7 +483,7 @@ class CTemplateScreen extends CScreen {
 				'SELECT src.itemid AS srcid,dest.itemid as destid'.
 				' FROM items dest,items src'.
 				' WHERE dest.key_=src.key_'.
-					' AND dest.hostid='.zbx_dbstr($templateId).
+					' AND dest.hostid='.trx_dbstr($templateId).
 					' AND '.dbConditionInt('src.itemid', $resourceItemIds)
 			);
 			while ($dbItem = DBfetch($dbItems)) {
@@ -498,7 +498,7 @@ class CTemplateScreen extends CScreen {
 				' WHERE dest.name=src.name'.
 					' AND destgi.graphid=dest.graphid'.
 					' AND destgi.itemid=desti.itemid'.
-					' AND desti.hostid='.zbx_dbstr($templateId).
+					' AND desti.hostid='.trx_dbstr($templateId).
 					' AND '.dbConditionInt('src.graphid', $resourceGraphIds)
 			);
 			while ($dbGraph = DBfetch($dbGraphs)) {
@@ -519,10 +519,10 @@ class CTemplateScreen extends CScreen {
 						case SCREEN_RESOURCE_LLD_GRAPH:
 							if ($resourceId && !isset($resourceGraphsMap[$resourceId])) {
 								$graph = DBfetch(DBselect(
-									'SELECT g.name FROM graphs g WHERE g.graphid='.zbx_dbstr($resourceId)
+									'SELECT g.name FROM graphs g WHERE g.graphid='.trx_dbstr($resourceId)
 								));
 								$template = DBfetch(DBselect(
-									'SELECT h.name FROM hosts h WHERE h.hostid='.zbx_dbstr($templateId)
+									'SELECT h.name FROM hosts h WHERE h.hostid='.trx_dbstr($templateId)
 								));
 
 								self::exception(TRX_API_ERROR_PARAMETERS, _s(
@@ -537,10 +537,10 @@ class CTemplateScreen extends CScreen {
 						default:
 							if ($resourceId && !isset($resourceItemsMap[$resourceId])) {
 								$item = DBfetch(DBselect(
-									'SELECT i.name FROM items i WHERE i.itemid='.zbx_dbstr($resourceId)
+									'SELECT i.name FROM items i WHERE i.itemid='.trx_dbstr($resourceId)
 								));
 								$template = DBfetch(DBselect(
-									'SELECT h.name FROM hosts h WHERE h.hostid='.zbx_dbstr($templateId)
+									'SELECT h.name FROM hosts h WHERE h.hostid='.trx_dbstr($templateId)
 								));
 
 								self::exception(TRX_API_ERROR_PARAMETERS, _s(
@@ -591,11 +591,11 @@ class CTemplateScreen extends CScreen {
 			}
 		}
 
-		$templateIds = zbx_objectValues($screens, 'templateid');
+		$templateIds = trx_objectValues($screens, 'templateid');
 
 		$dbScreens = $this->get([
 			'filter' => [
-				'name' => zbx_objectValues($screens, 'name'),
+				'name' => trx_objectValues($screens, 'name'),
 				'templateid' => $templateIds
 			],
 			'output' => ['name', 'templateid'],
@@ -635,7 +635,7 @@ class CTemplateScreen extends CScreen {
 	 * @return array
 	 */
 	public function update(array $screens) {
-		$screens = zbx_toArray($screens);
+		$screens = trx_toArray($screens);
 
 		// check hostids before doing anything
 		$this->checkObjectIds($screens, 'screenid',
@@ -647,7 +647,7 @@ class CTemplateScreen extends CScreen {
 		$db_screens = $this->get([
 			'output' => ['screenid', 'name', 'hsize', 'vsize', 'templateid'],
 			'selectScreenItems' => ['screenitemid', 'x', 'y', 'colspan', 'rowspan'],
-			'screenids' => zbx_objectValues($screens, 'screenid'),
+			'screenids' => trx_objectValues($screens, 'screenid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
@@ -656,7 +656,7 @@ class CTemplateScreen extends CScreen {
 		$this->updateReal($screens, $db_screens);
 		$this->truncateScreenItems($screens, $db_screens);
 
-		return ['screenids' => zbx_objectValues($screens, 'screenid')];
+		return ['screenids' => trx_objectValues($screens, 'screenid')];
 	}
 
 	protected function validateUpdate(array $screens, array $dbScreens) {
@@ -742,7 +742,7 @@ class CTemplateScreen extends CScreen {
 		// check if screen with same name exists
 		$dbExistingScreens = $this->get([
 			'filter' => [
-				'name' => zbx_objectValues($dbScreens, 'name'),
+				'name' => trx_objectValues($dbScreens, 'name'),
 				'templateid' => $templateIds
 			],
 			'output' => ['name', 'templateid'],
@@ -753,7 +753,7 @@ class CTemplateScreen extends CScreen {
 			$dbTemplate = DBfetch(DBselect(
 				'SELECT h.name'.
 				' FROM hosts h'.
-				' WHERE h.hostid='.zbx_dbstr($dbExistingScreen['templateid'])
+				' WHERE h.hostid='.trx_dbstr($dbExistingScreen['templateid'])
 			));
 
 			self::exception(

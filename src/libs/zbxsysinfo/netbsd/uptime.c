@@ -16,7 +16,7 @@ int	SYSTEM_UPTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 #elif defined(HAVE_FUNCTION_SYSCTL_KERN_BOOTTIME)
@@ -31,7 +31,7 @@ int	SYSTEM_UPTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (0 != sysctl(mib, 2, &uptime, &len, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -41,7 +41,7 @@ int	SYSTEM_UPTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	return SYSINFO_RET_OK;
 #else
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Agent was compiled without support for uptime information."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Agent was compiled without support for uptime information."));
 	return SYSINFO_RET_FAIL;
 #endif
 }

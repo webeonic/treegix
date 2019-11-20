@@ -468,7 +468,7 @@ class CTriggerExpression {
 			return [];
 		}
 
-		return array_unique(zbx_objectValues($this->expressions, 'host'));
+		return array_unique(trx_objectValues($this->expressions, 'host'));
 	}
 
 	/**

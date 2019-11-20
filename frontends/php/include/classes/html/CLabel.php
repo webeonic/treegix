@@ -8,7 +8,7 @@ class CLabel extends CTag {
 		parent::__construct('label', true, $label);
 
 		if ($for !== null) {
-			$this->setAttribute('for', zbx_formatDomId($for));
+			$this->setAttribute('for', trx_formatDomId($for));
 		}
 	}
 

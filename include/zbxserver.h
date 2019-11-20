@@ -6,7 +6,7 @@
 #include "common.h"
 #include "db.h"
 #include "dbcache.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 
 #define MACRO_TYPE_MESSAGE_NORMAL	0x00000001
 #define MACRO_TYPE_MESSAGE_RECOVERY	0x00000002
@@ -35,22 +35,22 @@
 
 #define STR_CONTAINS_MACROS(str)	(NULL != strchr(str, '{'))
 
-int	get_N_functionid(const char *expression, int N_functionid, zbx_uint64_t *functionid, const char **end);
-void	get_functionids(zbx_vector_uint64_t *functionids, const char *expression);
+int	get_N_functionid(const char *expression, int N_functionid, trx_uint64_t *functionid, const char **end);
+void	get_functionids(trx_vector_uint64_t *functionids, const char *expression);
 
 int	evaluate_function(char *value, DC_ITEM *item, const char *function, const char *parameters,
-		const zbx_timespec_t *ts, char **error);
+		const trx_timespec_t *ts, char **error);
 
-int	substitute_simple_macros(zbx_uint64_t *actionid, const DB_EVENT *event, const DB_EVENT *r_event,
-		zbx_uint64_t *userid, const zbx_uint64_t *hostid, const DC_HOST *dc_host, const DC_ITEM *dc_item,
+int	substitute_simple_macros(trx_uint64_t *actionid, const DB_EVENT *event, const DB_EVENT *r_event,
+		trx_uint64_t *userid, const trx_uint64_t *hostid, const DC_HOST *dc_host, const DC_ITEM *dc_item,
 		DB_ALERT *alert, const DB_ACKNOWLEDGE *ack, char **data, int macro_type, char *error, int maxerrlen);
 
-void	evaluate_expressions(zbx_vector_ptr_t *triggers);
+void	evaluate_expressions(trx_vector_ptr_t *triggers);
 
-void	zbx_format_value(char *value, size_t max_len, zbx_uint64_t valuemapid,
+void	trx_format_value(char *value, size_t max_len, trx_uint64_t valuemapid,
 		const char *units, unsigned char value_type);
 
-void	zbx_determine_items_in_expressions(zbx_vector_ptr_t *trigger_order, const zbx_uint64_t *itemids, int item_num);
+void	trx_determine_items_in_expressions(trx_vector_ptr_t *trigger_order, const trx_uint64_t *itemids, int item_num);
 
 /* lld macro context */
 #define TRX_MACRO_ANY		(TRX_TOKEN_LLD_MACRO | TRX_TOKEN_LLD_FUNC_MACRO | TRX_TOKEN_USER_MACRO)
@@ -60,18 +60,18 @@ void	zbx_determine_items_in_expressions(zbx_vector_ptr_t *trigger_order, const z
 #define TRX_MACRO_SIMPLE	(TRX_MACRO_ANY | TRX_TOKEN_SIMPLE_MACRO)
 #define TRX_MACRO_FUNC		(TRX_MACRO_ANY | TRX_TOKEN_FUNC_MACRO)
 
-int	substitute_lld_macros(char **data, const struct zbx_json_parse *jp_row, const zbx_vector_ptr_t *lld_macro_paths,
+int	substitute_lld_macros(char **data, const struct trx_json_parse *jp_row, const trx_vector_ptr_t *lld_macro_paths,
 		int flags, char *error, size_t max_error_len);
-int	substitute_key_macros(char **data, zbx_uint64_t *hostid, DC_ITEM *dc_item, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths, int macro_type, char *error, size_t mexerrlen);
+int	substitute_key_macros(char **data, trx_uint64_t *hostid, DC_ITEM *dc_item, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths, int macro_type, char *error, size_t mexerrlen);
 int	substitute_function_lld_param(const char *e, size_t len, unsigned char key_in_param,
-		char **exp, size_t *exp_alloc, size_t *exp_offset, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths, char *error, size_t max_error_len);
-int	substitute_macros_xml(char **data, const DC_ITEM *item, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths, char *error, int maxerrlen);
-int	zbx_substitute_item_name_macros(DC_ITEM *dc_item, const char *name, char **replace_to);
-int	substitute_macros_in_json_pairs(char **data, const struct zbx_json_parse *jp_row,
-		const zbx_vector_ptr_t *lld_macro_paths, char *error, int maxerrlen);
+		char **exp, size_t *exp_alloc, size_t *exp_offset, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths, char *error, size_t max_error_len);
+int	substitute_macros_xml(char **data, const DC_ITEM *item, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths, char *error, int maxerrlen);
+int	trx_substitute_item_name_macros(DC_ITEM *dc_item, const char *name, char **replace_to);
+int	substitute_macros_in_json_pairs(char **data, const struct trx_json_parse *jp_row,
+		const trx_vector_ptr_t *lld_macro_paths, char *error, int maxerrlen);
 int	xml_xpath_check(const char *xpath, char *error, size_t errlen);
 
 #endif

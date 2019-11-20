@@ -94,7 +94,7 @@ dbschema_sqlite3:
 	$(MAKE) $(AM_MAKEFLAGS) schema.sql
 
 dbschema_c:
-	cd src/libs/zbxdbhigh && \
+	cd src/libs/trxdbhigh && \
 	$(MAKE) $(AM_MAKEFLAGS) dbschema.c
 
 dbschema: dbschema_ibm_db2 dbschema_mysql dbschema_oracle dbschema_postgresql dbschema_sqlite3 dbschema_c
@@ -135,10 +135,10 @@ css: css_theme_blue css_theme_dark css_hc_light css_hc_dark css_icons
 ## cmocka test support
 if TRXCMOCKA
 WRAP_DB_FUNCS = \
-	-Wl,--wrap=zbx_db_vselect \
-	-Wl,--wrap=zbx_db_select_n \
-	-Wl,--wrap=zbx_db_fetch \
-	-Wl,--wrap=__zbx_DBexecute \
+	-Wl,--wrap=trx_db_vselect \
+	-Wl,--wrap=trx_db_select_n \
+	-Wl,--wrap=trx_db_fetch \
+	-Wl,--wrap=__trx_DBexecute \
 	-Wl,--wrap=DBbegin \
 	-Wl,--wrap=DBcommit \
 	-Wl,--wrap=DBexecute_multiple_query \
@@ -165,7 +165,7 @@ WRAP_COMM_FUNCS = \
 	-Wl,--wrap=connect
 
 WRAP_LOG = \
-	-Wl,--wrap=__zbx_treegix_log
+	-Wl,--wrap=__trx_treegix_log
 
 COMMON_WRAP_FUNCS = \
 	$(WRAP_DB_FUNCS) \

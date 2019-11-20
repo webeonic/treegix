@@ -79,7 +79,7 @@ class CMap extends CMapElement {
 	 *						 parameter has been used.
 	 */
 	public function get(array $options = []) {
-		$options = zbx_array_merge($this->defOptions, $options);
+		$options = trx_array_merge($this->defOptions, $options);
 
 		$limit = $options['limit'];
 		$options['limit'] = null;
@@ -119,7 +119,7 @@ class CMap extends CMapElement {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -172,20 +172,20 @@ class CMap extends CMapElement {
 
 		// sysmapids
 		if ($options['sysmapids'] !== null) {
-			zbx_value2array($options['sysmapids']);
+			trx_value2array($options['sysmapids']);
 			$sql_parts['where']['sysmapid'] = dbConditionInt('s.sysmapid', $options['sysmapids']);
 		}
 
 		// userids
 		if ($options['userids'] !== null) {
-			zbx_value2array($options['userids']);
+			trx_value2array($options['userids']);
 
 			$sql_parts['where'][] = dbConditionInt('s.userid', $options['userids']);
 		}
 
 		// search
 		if ($options['search'] !== null) {
-			zbx_db_search('sysmaps s', $options, $sql_parts);
+			trx_db_search('sysmaps s', $options, $sql_parts);
 		}
 
 		// filter
@@ -194,7 +194,7 @@ class CMap extends CMapElement {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sql_parts['limit'] = $options['limit'];
 		}
 
@@ -593,7 +593,7 @@ class CMap extends CMapElement {
 		// Check if map already exists.
 		$db_maps = $this->get([
 			'output' => ['name'],
-			'filter' => ['name' => zbx_objectValues($maps, 'name')],
+			'filter' => ['name' => trx_objectValues($maps, 'name')],
 			'nopermissions' => true,
 			'limit' => 1
 		]);
@@ -859,7 +859,7 @@ class CMap extends CMapElement {
 						);
 					}
 
-					if (!array_key_exists($label_data['string'], $map) || zbx_empty($map[$label_data['string']])) {
+					if (!array_key_exists($label_data['string'], $map) || trx_empty($map[$label_data['string']])) {
 						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 								'Custom label for map "%2$s" elements of type "%1$s" may not be empty.',
 								$label_data['typeName'],
@@ -922,7 +922,7 @@ class CMap extends CMapElement {
 
 			// Urls.
 			if (array_key_exists('urls', $map) && $map['urls']) {
-				$url_names = zbx_toHash($map['urls'], 'name');
+				$url_names = trx_toHash($map['urls'], 'name');
 
 				foreach ($map['urls'] as $url) {
 					if ($url['name'] === '' || $url['url'] === '') {
@@ -969,7 +969,7 @@ class CMap extends CMapElement {
 
 			// Map selement links.
 			if (array_key_exists('links', $map) && $map['links']) {
-				$selementids = zbx_objectValues($map['selements'], 'selementid');
+				$selementids = trx_objectValues($map['selements'], 'selementid');
 
 				foreach ($map['links'] as $link) {
 					if (!in_array($link['selementid1'], $selementids)) {
@@ -1050,10 +1050,10 @@ class CMap extends CMapElement {
 
 			$db_map_names = $this->get([
 				'output' => ['sysmapid', 'name'],
-				'filter' => ['name' => zbx_objectValues($check_names, 'name')],
+				'filter' => ['name' => trx_objectValues($check_names, 'name')],
 				'nopermissions' => true
 			]);
-			$db_map_names = zbx_toHash($db_map_names, 'name');
+			$db_map_names = trx_toHash($db_map_names, 'name');
 
 			// Check for existing names.
 			foreach ($check_names as $map) {
@@ -1327,7 +1327,7 @@ class CMap extends CMapElement {
 						));
 					}
 
-					if (!array_key_exists($labelData['string'], $map) || zbx_empty($map[$labelData['string']])) {
+					if (!array_key_exists($labelData['string'], $map) || trx_empty($map[$labelData['string']])) {
 						self::exception(TRX_API_ERROR_PARAMETERS, _s(
 							'Custom label for map "%2$s" elements of type "%1$s" may not be empty.',
 							$labelData['typeName'],
@@ -1393,7 +1393,7 @@ class CMap extends CMapElement {
 
 			// Urls.
 			if (array_key_exists('urls', $map) && !empty($map['urls'])) {
-				$urlNames = zbx_toHash($map['urls'], 'name');
+				$urlNames = trx_toHash($map['urls'], 'name');
 
 				foreach ($map['urls'] as $url) {
 					if ($url['name'] === '' || $url['url'] === '') {
@@ -1433,7 +1433,7 @@ class CMap extends CMapElement {
 
 			// Map selement links.
 			if (array_key_exists('links', $map) && $map['links']) {
-				$selementids = zbx_objectValues($map['selements'], 'selementid');
+				$selementids = trx_objectValues($map['selements'], 'selementid');
 
 				foreach ($map['links'] as $link) {
 					if (!in_array($link['selementid1'], $selementids)) {
@@ -1585,7 +1585,7 @@ class CMap extends CMapElement {
 	 * @return array
 	 */
 	public function create($maps) {
-		$maps = zbx_toArray($maps);
+		$maps = trx_toArray($maps);
 
 		$this->validateCreate($maps);
 
@@ -1792,12 +1792,12 @@ class CMap extends CMapElement {
 	 * @return array
 	 */
 	public function update(array $maps) {
-		$maps = zbx_toArray($maps);
-		$sysmapids = zbx_objectValues($maps, 'sysmapid');
+		$maps = trx_toArray($maps);
+		$sysmapids = trx_objectValues($maps, 'sysmapid');
 
 		$db_maps = $this->get([
 			'output' => API_OUTPUT_EXTEND,
-			'sysmapids' => zbx_objectValues($maps, 'sysmapid'),
+			'sysmapids' => trx_objectValues($maps, 'sysmapid'),
 			'selectLinks' => API_OUTPUT_EXTEND,
 			'selectSelements' => API_OUTPUT_EXTEND,
 			'selectShapes' => ['sysmap_shapeid', 'type', 'x', 'y', 'width', 'height', 'text', 'font', 'font_size',
@@ -1878,7 +1878,7 @@ class CMap extends CMapElement {
 
 			// Map user shares.
 			if (array_key_exists('users', $map)) {
-				$user_shares_diff = zbx_array_diff($map['users'], $db_map['users'], 'userid');
+				$user_shares_diff = trx_array_diff($map['users'], $db_map['users'], 'userid');
 
 				foreach ($user_shares_diff['both'] as $update_user_share) {
 					$shared_users_to_update[] = [
@@ -1893,13 +1893,13 @@ class CMap extends CMapElement {
 				}
 
 				$shared_userids_to_delete = array_merge($shared_userids_to_delete,
-					zbx_objectValues($user_shares_diff['second'], 'sysmapuserid')
+					trx_objectValues($user_shares_diff['second'], 'sysmapuserid')
 				);
 			}
 
 			// Map user group shares.
 			if (array_key_exists('userGroups', $map)) {
-				$user_group_shares_diff = zbx_array_diff($map['userGroups'], $db_map['userGroups'],
+				$user_group_shares_diff = trx_array_diff($map['userGroups'], $db_map['userGroups'],
 					'usrgrpid'
 				);
 
@@ -1916,13 +1916,13 @@ class CMap extends CMapElement {
 				}
 
 				$shared_user_groupids_to_delete = array_merge($shared_user_groupids_to_delete,
-					zbx_objectValues($user_group_shares_diff['second'], 'sysmapusrgrpid')
+					trx_objectValues($user_group_shares_diff['second'], 'sysmapusrgrpid')
 				);
 			}
 
 			// Urls.
 			if (array_key_exists('urls', $map)) {
-				$url_diff = zbx_array_diff($map['urls'], $db_map['urls'], 'name');
+				$url_diff = trx_array_diff($map['urls'], $db_map['urls'], 'name');
 
 				foreach ($url_diff['both'] as $updateUrl) {
 					$urls_to_update[] = [
@@ -1937,13 +1937,13 @@ class CMap extends CMapElement {
 				}
 
 				$url_ids_to_delete = array_merge($url_ids_to_delete,
-					zbx_objectValues($url_diff['second'], 'sysmapurlid')
+					trx_objectValues($url_diff['second'], 'sysmapurlid')
 				);
 			}
 
 			// Map elements.
 			if (array_key_exists('selements', $map)) {
-				$selement_diff = zbx_array_diff($map['selements'], $db_map['selements'], 'selementid');
+				$selement_diff = trx_array_diff($map['selements'], $db_map['selements'], 'selementid');
 
 				// We need sysmapid for add operations.
 				foreach ($selement_diff['first'] as $new_selement) {
@@ -1973,7 +1973,7 @@ class CMap extends CMapElement {
 				}
 				unset($shape);
 
-				$shape_diff = zbx_array_diff($map['shapes'], $db_map['shapes'], 'sysmap_shapeid');
+				$shape_diff = trx_array_diff($map['shapes'], $db_map['shapes'], 'sysmap_shapeid');
 
 				$path = '/'.($index + 1).'/shape';
 				foreach ($shape_diff['first'] as $new_shape) {
@@ -2036,7 +2036,7 @@ class CMap extends CMapElement {
 					$shapes[] = CMapHelper::convertLineToShape($line);
 				}
 
-				$line_diff = zbx_array_diff($shapes, $db_map['lines'], 'sysmap_shapeid');
+				$line_diff = trx_array_diff($shapes, $db_map['lines'], 'sysmap_shapeid');
 
 				foreach ($line_diff['first'] as $new_line) {
 					if (array_key_exists('sysmap_shapeid', $new_line)) {
@@ -2058,7 +2058,7 @@ class CMap extends CMapElement {
 
 			// Links.
 			if (array_key_exists('links', $map)) {
-				$link_diff = zbx_array_diff($map['links'], $db_map['links'], 'linkid');
+				$link_diff = trx_array_diff($map['links'], $db_map['links'], 'linkid');
 
 				// We need sysmapId for add operations.
 				foreach ($link_diff['first'] as $newLink) {
@@ -2193,7 +2193,7 @@ class CMap extends CMapElement {
 			'SELECT slt.* FROM sysmaps_link_triggers slt WHERE '.dbConditionInt('slt.linkid', $update_linkids['linkids'])
 		);
 		while ($db_link_trigger = DBfetch($link_trigger_resource)) {
-			zbx_subarray_push($db_links, $db_link_trigger['linkid'], $db_link_trigger);
+			trx_subarray_push($db_links, $db_link_trigger['linkid'], $db_link_trigger);
 		}
 
 		foreach ($update_linkids['linkids'] as $key => $linkid) {
@@ -2202,7 +2202,7 @@ class CMap extends CMapElement {
 			}
 
 			$db_link_triggers = array_key_exists($linkid, $db_links) ? $db_links[$linkid] : [];
-			$db_link_triggers_diff = zbx_array_diff($links_to_update[$key]['linktriggers'],
+			$db_link_triggers_diff = trx_array_diff($links_to_update[$key]['linktriggers'],
 				$db_link_triggers, 'linktriggerid'
 			);
 
@@ -2568,7 +2568,7 @@ class CMap extends CMapElement {
 
 			$iconMaps = API::IconMap()->get([
 				'output' => $this->outputExtend($options['selectIconMap'], ['iconmapid']),
-				'iconmapids' => zbx_objectValues($iconMaps, 'iconmapid'),
+				'iconmapids' => trx_objectValues($iconMaps, 'iconmapid'),
 				'preservekeys' => true
 			]);
 
@@ -2675,7 +2675,7 @@ class CMap extends CMapElement {
 				'preservekeys' => true
 			]);
 
-			$related_userids = zbx_objectValues($related_users, 'userid');
+			$related_userids = trx_objectValues($related_users, 'userid');
 
 			if ($related_userids) {
 				$users = API::getApiService()->select('sysmap_user', [
@@ -2715,7 +2715,7 @@ class CMap extends CMapElement {
 				'preservekeys' => true
 			]);
 
-			$related_groupids = zbx_objectValues($related_groups, 'usrgrpid');
+			$related_groupids = trx_objectValues($related_groups, 'usrgrpid');
 
 			if ($related_groupids) {
 				$user_groups = API::getApiService()->select('sysmap_usrgrp', [

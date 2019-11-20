@@ -3,14 +3,14 @@
 #include "common.h"
 
 #if defined(_WINDOWS)
-int	__zbx_open(const char *pathname, int flags)
+int	__trx_open(const char *pathname, int flags)
 {
 	int	ret;
 	wchar_t	*wpathname;
 
-	wpathname = zbx_utf8_to_unicode(pathname);
+	wpathname = trx_utf8_to_unicode(pathname);
 	ret = _wopen(wpathname, flags);
-	zbx_free(wpathname);
+	trx_free(wpathname);
 
 	return ret;
 }
@@ -60,7 +60,7 @@ void	find_cr_lf_szbyte(const char *encoding, const char **cr, const char **lf, s
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_read                                                         *
+ * Function: trx_read                                                         *
  *                                                                            *
  * Purpose: Read one text line from a file descriptor into buffer             *
  *                                                                            *
@@ -80,13 +80,13 @@ void	find_cr_lf_szbyte(const char *encoding, const char **cr, const char **lf, s
  *           stored into the buffer.                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_read(int fd, char *buf, size_t count, const char *encoding)
+int	trx_read(int fd, char *buf, size_t count, const char *encoding)
 {
 	size_t		i, szbyte, nbytes;
 	const char	*cr, *lf;
-	zbx_offset_t	offset;
+	trx_offset_t	offset;
 
-	if ((zbx_offset_t)-1 == (offset = zbx_lseek(fd, 0, SEEK_CUR)))
+	if ((trx_offset_t)-1 == (offset = trx_lseek(fd, 0, SEEK_CUR)))
 		return -1;
 
 	if (0 >= (nbytes = read(fd, buf, (unsigned int)count)))
@@ -113,17 +113,17 @@ int	zbx_read(int fd, char *buf, size_t count, const char *encoding)
 		}
 	}
 
-	if ((zbx_offset_t)-1 == zbx_lseek(fd, offset + (zbx_offset_t)i, SEEK_SET))
+	if ((trx_offset_t)-1 == trx_lseek(fd, offset + (trx_offset_t)i, SEEK_SET))
 		return -1;
 
 	return (int)i;
 }
 
-int	zbx_is_regular_file(const char *path)
+int	trx_is_regular_file(const char *path)
 {
-	zbx_stat_t	st;
+	trx_stat_t	st;
 
-	if (0 == zbx_stat(path, &st) && 0 != S_ISREG(st.st_mode))
+	if (0 == trx_stat(path, &st) && 0 != S_ISREG(st.st_mode))
 		return SUCCEED;
 
 	return FAIL;

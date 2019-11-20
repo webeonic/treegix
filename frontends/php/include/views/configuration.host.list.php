@@ -133,7 +133,7 @@ $filter
 							'srctbl' => 'proxies',
 							'srcfld1' => 'proxyid',
 							'srcfld2' => 'host',
-							'dstfrm' => 'zbx_filter',
+							'dstfrm' => 'trx_filter',
 							'dstfld1' => 'filter_proxyids_'
 						]
 					]

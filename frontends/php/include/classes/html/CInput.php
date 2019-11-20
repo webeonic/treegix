@@ -16,7 +16,7 @@ class CInput extends CTag {
 		$this->setType($type);
 
 		if ($name !== null) {
-			$this->setId(zbx_formatDomId($name));
+			$this->setId(trx_formatDomId($name));
 			$this->setAttribute('name', $name);
 		}
 

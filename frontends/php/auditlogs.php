@@ -90,20 +90,20 @@ $config = select_config();
 
 $sqlWhere = [];
 if (!empty($data['alias'])) {
-	$sqlWhere['alias'] = ' AND u.alias='.zbx_dbstr($data['alias']);
+	$sqlWhere['alias'] = ' AND u.alias='.trx_dbstr($data['alias']);
 }
 if ($data['action'] > -1) {
-	$sqlWhere['action'] = ' AND a.action='.zbx_dbstr($data['action']);
+	$sqlWhere['action'] = ' AND a.action='.trx_dbstr($data['action']);
 }
 if ($data['resourcetype'] > -1) {
-	$sqlWhere['resourcetype'] = ' AND a.resourcetype='.zbx_dbstr($data['resourcetype']);
+	$sqlWhere['resourcetype'] = ' AND a.resourcetype='.trx_dbstr($data['resourcetype']);
 }
 
 $sql = 'SELECT a.auditid,a.clock,u.alias,a.ip,a.resourcetype,a.action,a.resourceid,a.resourcename,a.details'.
 		' FROM auditlog a,users u'.
 		' WHERE a.userid=u.userid'.
 			implode('', $sqlWhere).
-			' AND a.clock BETWEEN '.zbx_dbstr($data['timeline']['from_ts']).' AND '.zbx_dbstr($data['timeline']['to_ts']).
+			' AND a.clock BETWEEN '.trx_dbstr($data['timeline']['from_ts']).' AND '.trx_dbstr($data['timeline']['to_ts']).
 		' ORDER BY a.clock DESC';
 $dbAudit = DBselect($sql, $config['search_limit'] + 1);
 while ($audit = DBfetch($dbAudit)) {
@@ -139,7 +139,7 @@ while ($audit = DBfetch($dbAudit)) {
 		$audit['details'] = DBfetchArray(DBselect(
 			'SELECT ad.table_name,ad.field_name,ad.oldvalue,ad.newvalue'.
 			' FROM auditlog_details ad'.
-			' WHERE ad.auditid='.zbx_dbstr($audit['auditid'])
+			' WHERE ad.auditid='.trx_dbstr($audit['auditid'])
 		));
 	}
 	$data['actions'][$audit['auditid']] = $audit;

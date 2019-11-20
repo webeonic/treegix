@@ -6,7 +6,7 @@
 #include "proxy.h"
 
 #include "proxyconfig.h"
-#include "../../libs/zbxcrypto/tls_tcp_active.h"
+#include "../../libs/trxcrypto/tls_tcp_active.h"
 
 /******************************************************************************
  *                                                                            *
@@ -18,10 +18,10 @@
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-void	send_proxyconfig(zbx_socket_t *sock, struct zbx_json_parse *jp)
+void	send_proxyconfig(trx_socket_t *sock, struct trx_json_parse *jp)
 {
 	char		*error = NULL;
-	struct zbx_json	j;
+	struct trx_json	j;
 	DC_PROXY	proxy;
 	int		flags = TRX_TCP_PROTOCOL;
 
@@ -34,42 +34,42 @@ void	send_proxyconfig(zbx_socket_t *sock, struct zbx_json_parse *jp)
 		goto out;
 	}
 
-	if (SUCCEED != zbx_proxy_check_permissions(&proxy, sock, &error))
+	if (SUCCEED != trx_proxy_check_permissions(&proxy, sock, &error))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot accept connection from proxy \"%s\" at \"%s\", allowed address:"
 				" \"%s\": %s", proxy.host, sock->peer, proxy.proxy_address, error);
 		goto out;
 	}
 
-	zbx_update_proxy_data(&proxy, zbx_get_proxy_protocol_version(jp), time(NULL),
+	trx_update_proxy_data(&proxy, trx_get_proxy_protocol_version(jp), time(NULL),
 			(0 != (sock->protocol & TRX_TCP_COMPRESS) ? 1 : 0));
 
 	if (0 != proxy.auto_compress)
 		flags |= TRX_TCP_COMPRESS;
 
-	zbx_json_init(&j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_init(&j, TRX_JSON_STAT_BUF_LEN);
 
 	if (SUCCEED != get_proxyconfig_data(proxy.hostid, &j, &error))
 	{
-		zbx_send_response_ext(sock, FAIL, error, NULL, flags, CONFIG_TIMEOUT);
+		trx_send_response_ext(sock, FAIL, error, NULL, flags, CONFIG_TIMEOUT);
 		treegix_log(LOG_LEVEL_WARNING, "cannot collect configuration data for proxy \"%s\" at \"%s\": %s",
 				proxy.host, sock->peer, error);
 		goto clean;
 	}
 
 	treegix_log(LOG_LEVEL_WARNING, "sending configuration data to proxy \"%s\" at \"%s\", datalen " TRX_FS_SIZE_T,
-			proxy.host, sock->peer, (zbx_fs_size_t)j.buffer_size);
+			proxy.host, sock->peer, (trx_fs_size_t)j.buffer_size);
 	treegix_log(LOG_LEVEL_DEBUG, "%s", j.buffer);
 
-	if (SUCCEED != zbx_tcp_send_ext(sock, j.buffer, strlen(j.buffer), flags, CONFIG_TRAPPER_TIMEOUT))
+	if (SUCCEED != trx_tcp_send_ext(sock, j.buffer, strlen(j.buffer), flags, CONFIG_TRAPPER_TIMEOUT))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot send configuration data to proxy \"%s\" at \"%s\": %s",
-				proxy.host, sock->peer, zbx_socket_strerror());
+				proxy.host, sock->peer, trx_socket_strerror());
 	}
 clean:
-	zbx_json_free(&j);
+	trx_json_free(&j);
 out:
-	zbx_free(error);
+	trx_free(error);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -83,18 +83,18 @@ out:
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-void	recv_proxyconfig(zbx_socket_t *sock, struct zbx_json_parse *jp)
+void	recv_proxyconfig(trx_socket_t *sock, struct trx_json_parse *jp)
 {
-	struct zbx_json_parse	jp_data;
+	struct trx_json_parse	jp_data;
 	int			ret;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != (ret = zbx_json_brackets_by_name(jp, TRX_PROTO_TAG_DATA, &jp_data)))
+	if (SUCCEED != (ret = trx_json_brackets_by_name(jp, TRX_PROTO_TAG_DATA, &jp_data)))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot parse proxy configuration data received from server at"
-				" \"%s\": %s", sock->peer, zbx_json_strerror());
-		zbx_send_proxy_response(sock, ret, zbx_json_strerror(), CONFIG_TIMEOUT);
+				" \"%s\": %s", sock->peer, trx_json_strerror());
+		trx_send_proxy_response(sock, ret, trx_json_strerror(), CONFIG_TIMEOUT);
 		goto out;
 	}
 
@@ -102,7 +102,7 @@ void	recv_proxyconfig(zbx_socket_t *sock, struct zbx_json_parse *jp)
 		goto out;
 
 	process_proxyconfig(&jp_data);
-	zbx_send_proxy_response(sock, ret, NULL, CONFIG_TIMEOUT);
+	trx_send_proxy_response(sock, ret, NULL, CONFIG_TIMEOUT);
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }

@@ -127,7 +127,7 @@ abstract class CGraphDraw {
 
 	public function setSTime($stime) {
 		if ($stime > 19000000000000 && $stime < 21000000000000) {
-			$this->stime = zbxDateToTime($stime);
+			$this->stime = trxDateToTime($stime);
 		}
 		else {
 			$this->stime = $stime;

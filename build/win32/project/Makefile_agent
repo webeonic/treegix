@@ -35,63 +35,63 @@ ADD_RFLAGS = /d "TREEGIX_AGENT"
 !INCLUDE Makefile_common.inc
 
 OBJS = \
-	..\..\..\src\libs\zbxalgo\algodefs.o \
-	..\..\..\src\libs\zbxalgo\vector.o \
-	..\..\..\src\libs\zbxcommon\alias.o \
-	..\..\..\src\libs\zbxcommon\comms.o \
-	..\..\..\src\libs\zbxcommon\iprange.o \
-	..\..\..\src\libs\zbxcommon\misc.o \
-	..\..\..\src\libs\zbxcommon\variant.o \
-	..\..\..\src\libs\zbxcommon\str.o \
-	..\..\..\src\libs\zbxcommon\xml.o \
-	..\..\..\src\libs\zbxcommon\zbxgetopt.o \
-	..\..\..\src\libs\zbxcommon\file.o \
-	..\..\..\src\libs\zbxcomms\comms.o \
-	..\..\..\src\libs\zbxcomms\telnet.o \
-	..\..\..\src\libs\zbxcompress\compress.o \
-	..\..\..\src\libs\zbxconf\cfg.o \
-	..\..\..\src\libs\zbxcrypto\base64.o \
-	..\..\..\src\libs\zbxcrypto\md5.o \
-	..\..\..\src\libs\zbxjson\json.o \
-	..\..\..\src\libs\zbxjson\json_parser.o \
-	..\..\..\src\libs\zbxjson\jsonpath.o \
-	..\..\..\src\libs\zbxlog\log.o \
-	..\..\..\src\libs\zbxsys\mutexs.o \
-	..\..\..\src\libs\zbxsys\symbols.o \
-	..\..\..\src\libs\zbxsys\threads.o \
-	..\..\..\src\libs\zbxexec\execute.o \
-	..\..\..\src\libs\zbxhttp\http.o \
-	..\..\..\src\libs\zbxhttp\punycode.o \
-	..\..\..\src\libs\zbxhttp\urlencode.o \
-	..\..\..\src\libs\zbxsysinfo\agent\agent.o \
-	..\..\..\src\libs\zbxsysinfo\common\common.o \
-	..\..\..\src\libs\zbxsysinfo\common\cpu.o \
-	..\..\..\src\libs\zbxsysinfo\common\dir.o \
-	..\..\..\src\libs\zbxsysinfo\common\file.o \
-	..\..\..\src\libs\zbxsysinfo\common\http.o \
-	..\..\..\src\libs\zbxsysinfo\common\net.o \
-	..\..\..\src\libs\zbxsysinfo\common\system.o \
-	..\..\..\src\libs\zbxsysinfo\common\treegix_stats.o \
-	..\..\..\src\libs\zbxsysinfo\simple\ntp.o \
-	..\..\..\src\libs\zbxsysinfo\simple\simple.o \
-	..\..\..\src\libs\zbxsysinfo\win32\cpu.o \
-	..\..\..\src\libs\zbxsysinfo\win32\diskio.o \
-	..\..\..\src\libs\zbxsysinfo\win32\diskspace.o \
-	..\..\..\src\libs\zbxsysinfo\win32\memory.o \
-	..\..\..\src\libs\zbxsysinfo\win32\net.o \
-	..\..\..\src\libs\zbxsysinfo\win32\pdhmon.o \
-	..\..\..\src\libs\zbxsysinfo\win32\proc.o \
-	..\..\..\src\libs\zbxsysinfo\win32\services.o \
-	..\..\..\src\libs\zbxsysinfo\win32\swap.o \
-	..\..\..\src\libs\zbxsysinfo\win32\uptime.o \
-	..\..\..\src\libs\zbxsysinfo\win32\win32.o \
-	..\..\..\src\libs\zbxsysinfo\win32\wmi.o \
-	..\..\..\src\libs\zbxsysinfo\sysinfo.o \
-	..\..\..\src\libs\zbxsysinfo\win32\software.o \
-	..\..\..\src\libs\zbxsysinfo\win32\system.o \
-	..\..\..\src\libs\zbxsysinfo\win32\hostname.o \
-	..\..\..\src\libs\zbxwin32\perfmon.o \
-	..\..\..\src\libs\zbxwin32\service.o \
+	..\..\..\src\libs\trxalgo\algodefs.o \
+	..\..\..\src\libs\trxalgo\vector.o \
+	..\..\..\src\libs\trxcommon\alias.o \
+	..\..\..\src\libs\trxcommon\comms.o \
+	..\..\..\src\libs\trxcommon\iprange.o \
+	..\..\..\src\libs\trxcommon\misc.o \
+	..\..\..\src\libs\trxcommon\variant.o \
+	..\..\..\src\libs\trxcommon\str.o \
+	..\..\..\src\libs\trxcommon\xml.o \
+	..\..\..\src\libs\trxcommon\trxgetopt.o \
+	..\..\..\src\libs\trxcommon\file.o \
+	..\..\..\src\libs\trxcomms\comms.o \
+	..\..\..\src\libs\trxcomms\telnet.o \
+	..\..\..\src\libs\trxcompress\compress.o \
+	..\..\..\src\libs\trxconf\cfg.o \
+	..\..\..\src\libs\trxcrypto\base64.o \
+	..\..\..\src\libs\trxcrypto\md5.o \
+	..\..\..\src\libs\trxjson\json.o \
+	..\..\..\src\libs\trxjson\json_parser.o \
+	..\..\..\src\libs\trxjson\jsonpath.o \
+	..\..\..\src\libs\trxlog\log.o \
+	..\..\..\src\libs\trxsys\mutexs.o \
+	..\..\..\src\libs\trxsys\symbols.o \
+	..\..\..\src\libs\trxsys\threads.o \
+	..\..\..\src\libs\trxexec\execute.o \
+	..\..\..\src\libs\trxhttp\http.o \
+	..\..\..\src\libs\trxhttp\punycode.o \
+	..\..\..\src\libs\trxhttp\urlencode.o \
+	..\..\..\src\libs\trxsysinfo\agent\agent.o \
+	..\..\..\src\libs\trxsysinfo\common\common.o \
+	..\..\..\src\libs\trxsysinfo\common\cpu.o \
+	..\..\..\src\libs\trxsysinfo\common\dir.o \
+	..\..\..\src\libs\trxsysinfo\common\file.o \
+	..\..\..\src\libs\trxsysinfo\common\http.o \
+	..\..\..\src\libs\trxsysinfo\common\net.o \
+	..\..\..\src\libs\trxsysinfo\common\system.o \
+	..\..\..\src\libs\trxsysinfo\common\treegix_stats.o \
+	..\..\..\src\libs\trxsysinfo\simple\ntp.o \
+	..\..\..\src\libs\trxsysinfo\simple\simple.o \
+	..\..\..\src\libs\trxsysinfo\win32\cpu.o \
+	..\..\..\src\libs\trxsysinfo\win32\diskio.o \
+	..\..\..\src\libs\trxsysinfo\win32\diskspace.o \
+	..\..\..\src\libs\trxsysinfo\win32\memory.o \
+	..\..\..\src\libs\trxsysinfo\win32\net.o \
+	..\..\..\src\libs\trxsysinfo\win32\pdhmon.o \
+	..\..\..\src\libs\trxsysinfo\win32\proc.o \
+	..\..\..\src\libs\trxsysinfo\win32\services.o \
+	..\..\..\src\libs\trxsysinfo\win32\swap.o \
+	..\..\..\src\libs\trxsysinfo\win32\uptime.o \
+	..\..\..\src\libs\trxsysinfo\win32\win32.o \
+	..\..\..\src\libs\trxsysinfo\win32\wmi.o \
+	..\..\..\src\libs\trxsysinfo\sysinfo.o \
+	..\..\..\src\libs\trxsysinfo\win32\software.o \
+	..\..\..\src\libs\trxsysinfo\win32\system.o \
+	..\..\..\src\libs\trxsysinfo\win32\hostname.o \
+	..\..\..\src\libs\trxwin32\perfmon.o \
+	..\..\..\src\libs\trxwin32\service.o \
 	..\..\..\src\treegix_agent\active.o \
 	..\..\..\src\treegix_agent\cpustat.o \
 	..\..\..\src\treegix_agent\eventlog.o \
@@ -100,10 +100,10 @@ OBJS = \
 	..\..\..\src\treegix_agent\perfstat.o \
 	..\..\..\src\treegix_agent\stats.o \
 	..\..\..\src\treegix_agent\treegix_agentd.o \
-	..\..\..\src\treegix_agent\zbxconf.o \
-	..\..\..\src\libs\zbxregexp\zbxregexp.o \
-	..\..\..\src\libs\zbxwin32\fatal.o \
-	..\..\..\src\libs\zbxwin32\disk.o
+	..\..\..\src\treegix_agent\trxconf.o \
+	..\..\..\src\libs\trxregexp\trxregexp.o \
+	..\..\..\src\libs\trxwin32\fatal.o \
+	..\..\..\src\libs\trxwin32\disk.o
 
 LIBS = ws2_32.lib psapi.lib pdh.lib Wldap32.lib advapi32.lib uuid.lib Iphlpapi.lib delayimp.lib wevtapi.lib
 

@@ -8,32 +8,32 @@
 #include "dbcache.h"
 #include "ipc.h"
 #include "mutexs.h"
-#include "zbxserver.h"
+#include "trxserver.h"
 #include "proxy.h"
 #include "events.h"
 #include "memalloc.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 #include "valuecache.h"
-#include "zbxmodules.h"
+#include "trxmodules.h"
 #include "module.h"
 #include "export.h"
-#include "zbxjson.h"
-#include "zbxhistory.h"
+#include "trxjson.h"
+#include "trxhistory.h"
 
-static zbx_mem_info_t	*hc_index_mem = NULL;
-static zbx_mem_info_t	*hc_mem = NULL;
-static zbx_mem_info_t	*trend_mem = NULL;
+static trx_mem_info_t	*hc_index_mem = NULL;
+static trx_mem_info_t	*hc_mem = NULL;
+static trx_mem_info_t	*trend_mem = NULL;
 
-#define	LOCK_CACHE	zbx_mutex_lock(cache_lock)
-#define	UNLOCK_CACHE	zbx_mutex_unlock(cache_lock)
-#define	LOCK_TRENDS	zbx_mutex_lock(trends_lock)
-#define	UNLOCK_TRENDS	zbx_mutex_unlock(trends_lock)
-#define	LOCK_CACHE_IDS		zbx_mutex_lock(cache_ids_lock)
-#define	UNLOCK_CACHE_IDS	zbx_mutex_unlock(cache_ids_lock)
+#define	LOCK_CACHE	trx_mutex_lock(cache_lock)
+#define	UNLOCK_CACHE	trx_mutex_unlock(cache_lock)
+#define	LOCK_TRENDS	trx_mutex_lock(trends_lock)
+#define	UNLOCK_TRENDS	trx_mutex_unlock(trends_lock)
+#define	LOCK_CACHE_IDS		trx_mutex_lock(cache_ids_lock)
+#define	UNLOCK_CACHE_IDS	trx_mutex_unlock(cache_ids_lock)
 
-static zbx_mutex_t	cache_lock = TRX_MUTEX_NULL;
-static zbx_mutex_t	trends_lock = TRX_MUTEX_NULL;
-static zbx_mutex_t	cache_ids_lock = TRX_MUTEX_NULL;
+static trx_mutex_t	cache_lock = TRX_MUTEX_NULL;
+static trx_mutex_t	trends_lock = TRX_MUTEX_NULL;
+static trx_mutex_t	cache_ids_lock = TRX_MUTEX_NULL;
 
 static char		*sql = NULL;
 static size_t		sql_alloc = 64 * TRX_KIBIBYTE;
@@ -67,7 +67,7 @@ extern unsigned char	program_type;
 typedef struct
 {
 	char		table_name[TRX_TABLENAME_LEN_MAX];
-	zbx_uint64_t	lastid;
+	trx_uint64_t	lastid;
 }
 TRX_DC_ID;
 
@@ -81,11 +81,11 @@ static TRX_DC_IDS	*ids = NULL;
 
 typedef struct
 {
-	zbx_hashset_t		trends;
+	trx_hashset_t		trends;
 	TRX_DC_STATS		stats;
 
-	zbx_hashset_t		history_items;
-	zbx_binary_heap_t	history_queue;
+	trx_hashset_t		history_items;
+	trx_binary_heap_t	history_queue;
 
 	int			history_num;
 	int			trends_num;
@@ -112,18 +112,18 @@ dc_value_str_t;
 typedef struct
 {
 	double		value_dbl;
-	zbx_uint64_t	value_uint;
+	trx_uint64_t	value_uint;
 	dc_value_str_t	value_str;
 }
 dc_value_t;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	dc_value_t	value;
-	zbx_timespec_t	ts;
+	trx_timespec_t	ts;
 	dc_value_str_t	source;		/* for log items only */
-	zbx_uint64_t	lastlogsize;
+	trx_uint64_t	lastlogsize;
 	int		timestamp;	/* for log items only */
 	int		severity;	/* for log items only */
 	int		logeventid;	/* for log items only */
@@ -141,11 +141,11 @@ static dc_item_value_t	*item_values = NULL;
 static size_t		item_values_alloc = 0, item_values_num = 0;
 
 static void	hc_add_item_values(dc_item_value_t *values, int values_num);
-static void	hc_pop_items(zbx_vector_ptr_t *history_items);
-static void	hc_get_item_values(TRX_DC_HISTORY *history, zbx_vector_ptr_t *history_items);
-static void	hc_push_items(zbx_vector_ptr_t *history_items);
+static void	hc_pop_items(trx_vector_ptr_t *history_items);
+static void	hc_get_item_values(TRX_DC_HISTORY *history, trx_vector_ptr_t *history_items);
+static void	hc_push_items(trx_vector_ptr_t *history_items);
 static void	hc_free_item_values(TRX_DC_HISTORY *history, int history_num);
-static void	hc_queue_item(zbx_hc_item_t *item);
+static void	hc_queue_item(trx_hc_item_t *item);
 static int	hc_queue_elem_compare_func(const void *d1, const void *d2);
 static int	hc_queue_get_size(void);
 
@@ -158,7 +158,7 @@ static int	hc_queue_get_size(void);
  * Parameters: stats - [OUT] write cache metrics                              *
  *                                                                            *
  ******************************************************************************/
-void	DCget_stats_all(zbx_wcache_info_t *wcache_info)
+void	DCget_stats_all(trx_wcache_info_t *wcache_info)
 {
 	LOCK_CACHE;
 
@@ -188,7 +188,7 @@ void	DCget_stats_all(zbx_wcache_info_t *wcache_info)
  ******************************************************************************/
 void	*DCget_stats(int request)
 {
-	static zbx_uint64_t	value_uint;
+	static trx_uint64_t	value_uint;
 	static double		value_double;
 	void			*ret;
 
@@ -306,17 +306,17 @@ void	*DCget_stats(int request)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static TRX_DC_TREND	*DCget_trend(zbx_uint64_t itemid)
+static TRX_DC_TREND	*DCget_trend(trx_uint64_t itemid)
 {
 	TRX_DC_TREND	*ptr, trend;
 
-	if (NULL != (ptr = (TRX_DC_TREND *)zbx_hashset_search(&cache->trends, &itemid)))
+	if (NULL != (ptr = (TRX_DC_TREND *)trx_hashset_search(&cache->trends, &itemid)))
 		return ptr;
 
 	memset(&trend, 0, sizeof(TRX_DC_TREND));
 	trend.itemid = itemid;
 
-	return (TRX_DC_TREND *)zbx_hashset_insert(&cache->trends, &trend, sizeof(TRX_DC_TREND));
+	return (TRX_DC_TREND *)trx_hashset_insert(&cache->trends, &trend, sizeof(TRX_DC_TREND));
 }
 
 /******************************************************************************
@@ -326,7 +326,7 @@ static TRX_DC_TREND	*DCget_trend(zbx_uint64_t itemid)
  * Purpose: apply disable_from changes to cache                               *
  *                                                                            *
  ******************************************************************************/
-static void	DCupdate_trends(zbx_vector_uint64_pair_t *trends_diff)
+static void	DCupdate_trends(trx_vector_uint64_pair_t *trends_diff)
 {
 	int	i;
 
@@ -338,7 +338,7 @@ static void	DCupdate_trends(zbx_vector_uint64_pair_t *trends_diff)
 	{
 		TRX_DC_TREND	*trend;
 
-		if (NULL != (trend = (TRX_DC_TREND *)zbx_hashset_search(&cache->trends, &trends_diff->values[i].first)))
+		if (NULL != (trend = (TRX_DC_TREND *)trx_hashset_search(&cache->trends, &trends_diff->values[i].first)))
 			trend->disable_from = trends_diff->values[i].second;
 	}
 
@@ -359,9 +359,9 @@ static void	dc_insert_trends_in_db(TRX_DC_TREND *trends, int trends_num, unsigne
 {
 	TRX_DC_TREND	*trend;
 	int		i;
-	zbx_db_insert_t	db_insert;
+	trx_db_insert_t	db_insert;
 
-	zbx_db_insert_prepare(&db_insert, table_name, "itemid", "clock", "num", "value_min", "value_avg",
+	trx_db_insert_prepare(&db_insert, table_name, "itemid", "clock", "num", "value_min", "value_avg",
 			"value_max", NULL);
 
 	for (i = 0; i < trends_num; i++)
@@ -376,25 +376,25 @@ static void	dc_insert_trends_in_db(TRX_DC_TREND *trends, int trends_num, unsigne
 
 		if (ITEM_VALUE_TYPE_FLOAT == value_type)
 		{
-			zbx_db_insert_add_values(&db_insert, trend->itemid, trend->clock, trend->num,
+			trx_db_insert_add_values(&db_insert, trend->itemid, trend->clock, trend->num,
 					trend->value_min.dbl, trend->value_avg.dbl, trend->value_max.dbl);
 		}
 		else
 		{
-			zbx_uint128_t	avg;
+			trx_uint128_t	avg;
 
 			/* calculate the trend average value */
 			udiv128_64(&avg, &trend->value_avg.ui64, trend->num);
 
-			zbx_db_insert_add_values(&db_insert, trend->itemid, trend->clock, trend->num,
+			trx_db_insert_add_values(&db_insert, trend->itemid, trend->clock, trend->num,
 					trend->value_min.ui64, avg.lo, trend->value_max.ui64);
 		}
 
 		trend->itemid = 0;
 	}
 
-	zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 }
 
 /******************************************************************************
@@ -405,17 +405,17 @@ static void	dc_insert_trends_in_db(TRX_DC_TREND *trends, int trends_num, unsigne
  *                                                                            *
  ******************************************************************************/
 static void	dc_remove_updated_trends(TRX_DC_TREND *trends, int trends_num, const char *table_name,
-		int value_type, zbx_uint64_t *itemids, int *itemids_num, int clock)
+		int value_type, trx_uint64_t *itemids, int *itemids_num, int clock)
 {
 	int		i;
 	TRX_DC_TREND	*trend;
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	size_t		sql_offset;
 	DB_RESULT	result;
 	DB_ROW		row;
 
 	sql_offset = 0;
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select distinct itemid"
 			" from %s"
 			" where clock>=%d and",
@@ -475,7 +475,7 @@ static void	dc_trends_update_float(TRX_DC_TREND *trend, DB_ROW row, int num, siz
 			+ num * value_avg.dbl) / (trend->num + num);
 	trend->num += num;
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, sql_offset,
 			"update trends set num=%d,value_min=" TRX_FS_DBL ",value_avg="
 			TRX_FS_DBL ",value_max=" TRX_FS_DBL " where itemid=" TRX_FS_UI64
 			" and clock=%d;\n",
@@ -497,7 +497,7 @@ static void	dc_trends_update_float(TRX_DC_TREND *trend, DB_ROW row, int num, siz
 static void	dc_trends_update_uint(TRX_DC_TREND *trend, DB_ROW row, int num, size_t *sql_offset)
 {
 	history_value_t	value_min, value_avg, value_max;
-	zbx_uint128_t	avg;
+	trx_uint128_t	avg;
 
 	TRX_STR2UINT64(value_min.ui64, row[2]);
 	TRX_STR2UINT64(value_avg.ui64, row[3]);
@@ -515,7 +515,7 @@ static void	dc_trends_update_uint(TRX_DC_TREND *trend, DB_ROW row, int num, size
 
 	trend->num += num;
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, sql_offset,
 			"update trends_uint set num=%d,value_min=" TRX_FS_UI64 ",value_avg="
 			TRX_FS_UI64 ",value_max=" TRX_FS_UI64 " where itemid=" TRX_FS_UI64
 			" and clock=%d;\n",
@@ -534,7 +534,7 @@ static void	dc_trends_update_uint(TRX_DC_TREND *trend, DB_ROW row, int num, size
  * Purpose: helper function for DCflush trends                                *
  *                                                                            *
  ******************************************************************************/
-static void	dc_trends_fetch_and_update(TRX_DC_TREND *trends, int trends_num, zbx_uint64_t *itemids,
+static void	dc_trends_fetch_and_update(TRX_DC_TREND *trends, int trends_num, trx_uint64_t *itemids,
 		int itemids_num, int *inserts_num, unsigned char value_type,
 		const char *table_name, int clock)
 {
@@ -542,12 +542,12 @@ static void	dc_trends_fetch_and_update(TRX_DC_TREND *trends, int trends_num, zbx
 	int		i, num;
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	TRX_DC_TREND	*trend;
 	size_t		sql_offset;
 
 	sql_offset = 0;
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select itemid,num,value_min,value_avg,value_max"
 			" from %s"
 			" where clock=%d and",
@@ -614,11 +614,11 @@ static void	dc_trends_fetch_and_update(TRX_DC_TREND *trends, int trends_num, zbx
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static void	DBflush_trends(TRX_DC_TREND *trends, int *trends_num, zbx_vector_uint64_pair_t *trends_diff)
+static void	DBflush_trends(TRX_DC_TREND *trends, int *trends_num, trx_vector_uint64_pair_t *trends_diff)
 {
 	int		num, i, clock, inserts_num = 0, itemids_alloc, itemids_num = 0, trends_to = *trends_num;
 	unsigned char	value_type;
-	zbx_uint64_t	*itemids = NULL;
+	trx_uint64_t	*itemids = NULL;
 	TRX_DC_TREND	*trend = NULL;
 	const char	*table_name;
 
@@ -640,7 +640,7 @@ static void	DBflush_trends(TRX_DC_TREND *trends, int *trends_num, zbx_vector_uin
 	}
 
 	itemids_alloc = MIN(TRX_HC_SYNC_MAX, *trends_num);
-	itemids = (zbx_uint64_t *)zbx_malloc(itemids, itemids_alloc * sizeof(zbx_uint64_t));
+	itemids = (trx_uint64_t *)trx_malloc(itemids, itemids_alloc * sizeof(trx_uint64_t));
 
 	for (i = 0; i < *trends_num; i++)
 	{
@@ -688,7 +688,7 @@ static void	DBflush_trends(TRX_DC_TREND *trends, int *trends_num, zbx_vector_uin
 				&inserts_num, value_type, table_name, clock);
 	}
 
-	zbx_free(itemids);
+	trx_free(itemids);
 
 	/* if 'trends' is not a primary trends buffer */
 	if (NULL != trends_diff)
@@ -696,7 +696,7 @@ static void	DBflush_trends(TRX_DC_TREND *trends, int *trends_num, zbx_vector_uin
 		/* we update it too */
 		for (i = 0; i < trends_to; i++)
 		{
-			zbx_uint64_pair_t	pair;
+			trx_uint64_pair_t	pair;
 
 			if (0 == trends[i].itemid)
 				continue;
@@ -709,7 +709,7 @@ static void	DBflush_trends(TRX_DC_TREND *trends, int *trends_num, zbx_vector_uin
 
 			pair.first = trends[i].itemid;
 			pair.second = clock + SEC_PER_HOUR;
-			zbx_vector_uint64_pair_append(trends_diff, pair);
+			trx_vector_uint64_pair_append(trends_diff, pair);
 		}
 	}
 
@@ -743,7 +743,7 @@ static void	DCflush_trend(TRX_DC_TREND *trend, TRX_DC_TREND **trends, int *trend
 	if (*trends_num == *trends_alloc)
 	{
 		*trends_alloc += 256;
-		*trends = (TRX_DC_TREND *)zbx_realloc(*trends, *trends_alloc * sizeof(TRX_DC_TREND));
+		*trends = (TRX_DC_TREND *)trx_realloc(*trends, *trends_alloc * sizeof(TRX_DC_TREND));
 	}
 
 	memcpy(&(*trends)[*trends_num], trend, sizeof(TRX_DC_TREND));
@@ -775,7 +775,7 @@ static void	DCadd_trend(const TRX_DC_HISTORY *history, TRX_DC_TREND **trends, in
 	trend = DCget_trend(history->itemid);
 
 	if (trend->num > 0 && (trend->clock != hour || trend->value_type != history->value_type) &&
-			SUCCEED == zbx_history_requires_trends(trend->value_type))
+			SUCCEED == trx_history_requires_trends(trend->value_type))
 	{
 		DCflush_trend(trend, trends, trends_alloc, trends_num);
 	}
@@ -821,12 +821,12 @@ static void	DCadd_trend(const TRX_DC_HISTORY *history, TRX_DC_TREND **trends, in
 static void	DCmass_update_trends(const TRX_DC_HISTORY *history, int history_num, TRX_DC_TREND **trends,
 		int *trends_num)
 {
-	zbx_timespec_t	ts;
+	trx_timespec_t	ts;
 	int		trends_alloc = 0, i, hour, seconds;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_timespec(&ts);
+	trx_timespec(&ts);
 	seconds = ts.sec % SEC_PER_HOUR;
 	hour = ts.sec - seconds;
 
@@ -844,20 +844,20 @@ static void	DCmass_update_trends(const TRX_DC_HISTORY *history, int history_num,
 
 	if (cache->trends_last_cleanup_hour < hour && TRX_TRENDS_CLEANUP_TIME < seconds)
 	{
-		zbx_hashset_iter_t	iter;
+		trx_hashset_iter_t	iter;
 		TRX_DC_TREND		*trend;
 
-		zbx_hashset_iter_reset(&cache->trends, &iter);
+		trx_hashset_iter_reset(&cache->trends, &iter);
 
-		while (NULL != (trend = (TRX_DC_TREND *)zbx_hashset_iter_next(&iter)))
+		while (NULL != (trend = (TRX_DC_TREND *)trx_hashset_iter_next(&iter)))
 		{
 			if (trend->clock == hour)
 				continue;
 
-			if (SUCCEED == zbx_history_requires_trends(trend->value_type))
+			if (SUCCEED == trx_history_requires_trends(trend->value_type))
 				DCflush_trend(trend, trends, &trends_alloc, trends_num);
 
-			zbx_hashset_iter_remove(&iter);
+			trx_hashset_iter_remove(&iter);
 		}
 
 		cache->trends_last_cleanup_hour = hour;
@@ -880,42 +880,42 @@ static void	DCmass_update_trends(const TRX_DC_HISTORY *history, int history_num,
  *                                                                            *
  ******************************************************************************/
 static void	DBmass_update_trends(const TRX_DC_TREND *trends, int trends_num,
-		zbx_vector_uint64_pair_t *trends_diff)
+		trx_vector_uint64_pair_t *trends_diff)
 {
 	TRX_DC_TREND	*trends_tmp;
 
 	if (0 != trends_num)
 	{
-		trends_tmp = (TRX_DC_TREND *)zbx_malloc(NULL, trends_num * sizeof(TRX_DC_TREND));
+		trends_tmp = (TRX_DC_TREND *)trx_malloc(NULL, trends_num * sizeof(TRX_DC_TREND));
 		memcpy(trends_tmp, trends, trends_num * sizeof(TRX_DC_TREND));
 
 		while (0 < trends_num)
 			DBflush_trends(trends_tmp, &trends_num, trends_diff);
 
-		zbx_free(trends_tmp);
+		trx_free(trends_tmp);
 	}
 }
 
 typedef struct
 {
-	zbx_uint64_t		hostid;
-	zbx_vector_ptr_t	groups;
+	trx_uint64_t		hostid;
+	trx_vector_ptr_t	groups;
 }
-zbx_host_info_t;
+trx_host_info_t;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_host_info_clean                                              *
+ * Function: trx_host_info_clean                                              *
  *                                                                            *
  * Purpose: frees resources allocated to store host groups names              *
  *                                                                            *
  * Parameters: host_info - [IN] host information                              *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_host_info_clean(zbx_host_info_t *host_info)
+static void	trx_host_info_clean(trx_host_info_t *host_info)
 {
-	zbx_vector_ptr_clear_ext(&host_info->groups, zbx_ptr_free);
-	zbx_vector_ptr_destroy(&host_info->groups);
+	trx_vector_ptr_clear_ext(&host_info->groups, trx_ptr_free);
+	trx_vector_ptr_destroy(&host_info->groups);
 }
 
 /******************************************************************************
@@ -928,7 +928,7 @@ static void	zbx_host_info_clean(zbx_host_info_t *host_info)
  *             hostids    - [IN] hosts identifiers                            *
  *                                                                            *
  ******************************************************************************/
-static void	db_get_hosts_info_by_hostid(zbx_hashset_t *hosts_info, const zbx_vector_uint64_t *hostids)
+static void	db_get_hosts_info_by_hostid(trx_hashset_t *hosts_info, const trx_vector_uint64_t *hostids)
 {
 	int		i;
 	size_t		sql_offset = 0;
@@ -937,13 +937,13 @@ static void	db_get_hosts_info_by_hostid(zbx_hashset_t *hosts_info, const zbx_vec
 
 	for (i = 0; i < hostids->values_num; i++)
 	{
-		zbx_host_info_t	host_info = {.hostid = hostids->values[i]};
+		trx_host_info_t	host_info = {.hostid = hostids->values[i]};
 
-		zbx_vector_ptr_create(&host_info.groups);
-		zbx_hashset_insert(hosts_info, &host_info, sizeof(host_info));
+		trx_vector_ptr_create(&host_info.groups);
+		trx_hashset_insert(hosts_info, &host_info, sizeof(host_info));
 	}
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 				"select distinct hg.hostid,g.name"
 				" from hstgrp g,hosts_groups hg"
 				" where g.groupid=hg.groupid"
@@ -955,30 +955,30 @@ static void	db_get_hosts_info_by_hostid(zbx_hashset_t *hosts_info, const zbx_vec
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_uint64_t	hostid;
-		zbx_host_info_t	*host_info;
+		trx_uint64_t	hostid;
+		trx_host_info_t	*host_info;
 
 		TRX_DBROW2UINT64(hostid, row[0]);
 
-		if (NULL == (host_info = (zbx_host_info_t *)zbx_hashset_search(hosts_info, &hostid)))
+		if (NULL == (host_info = (trx_host_info_t *)trx_hashset_search(hosts_info, &hostid)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
 		}
 
-		zbx_vector_ptr_append(&host_info->groups, zbx_strdup(NULL, row[1]));
+		trx_vector_ptr_append(&host_info->groups, trx_strdup(NULL, row[1]));
 	}
 	DBfree_result(result);
 }
 
 typedef struct
 {
-	zbx_uint64_t		itemid;
+	trx_uint64_t		itemid;
 	char			*name;
 	DC_ITEM			*item;
-	zbx_vector_ptr_t	applications;
+	trx_vector_ptr_t	applications;
 }
-zbx_item_info_t;
+trx_item_info_t;
 
 /******************************************************************************
  *                                                                            *
@@ -990,36 +990,36 @@ zbx_item_info_t;
  *             itemids    - [IN] the item identifiers                         *
  *                                                                            *
  ******************************************************************************/
-static void	db_get_items_info_by_itemid(zbx_hashset_t *items_info, const zbx_vector_uint64_t *itemids)
+static void	db_get_items_info_by_itemid(trx_hashset_t *items_info, const trx_vector_uint64_t *itemids)
 {
 	size_t		sql_offset = 0;
 	DB_RESULT	result;
 	DB_ROW		row;
 
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "select itemid,name from items where");
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "select itemid,name from items where");
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "itemid", itemids->values, itemids->values_num);
 
 	result = DBselect("%s", sql);
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_uint64_t	itemid;
-		zbx_item_info_t	*item_info;
+		trx_uint64_t	itemid;
+		trx_item_info_t	*item_info;
 
 		TRX_DBROW2UINT64(itemid, row[0]);
 
-		if (NULL == (item_info = (zbx_item_info_t *)zbx_hashset_search(items_info, &itemid)))
+		if (NULL == (item_info = (trx_item_info_t *)trx_hashset_search(items_info, &itemid)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
 		}
 
-		zbx_substitute_item_name_macros(item_info->item, row[1], &item_info->name);
+		trx_substitute_item_name_macros(item_info->item, row[1], &item_info->name);
 	}
 	DBfree_result(result);
 
 	sql_offset = 0;
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select i.itemid,a.name"
 			" from applications a,items_applications i"
 			" where a.applicationid=i.applicationid"
@@ -1031,36 +1031,36 @@ static void	db_get_items_info_by_itemid(zbx_hashset_t *items_info, const zbx_vec
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_uint64_t	itemid;
-		zbx_item_info_t	*item_info;
+		trx_uint64_t	itemid;
+		trx_item_info_t	*item_info;
 
 		TRX_DBROW2UINT64(itemid, row[0]);
 
-		if (NULL == (item_info = (zbx_item_info_t *)zbx_hashset_search(items_info, &itemid)))
+		if (NULL == (item_info = (trx_item_info_t *)trx_hashset_search(items_info, &itemid)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
 		}
 
-		zbx_vector_ptr_append(&item_info->applications, zbx_strdup(NULL, row[1]));
+		trx_vector_ptr_append(&item_info->applications, trx_strdup(NULL, row[1]));
 	}
 	DBfree_result(result);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_item_info_clean                                              *
+ * Function: trx_item_info_clean                                              *
  *                                                                            *
  * Purpose: frees resources allocated to store item applications and name     *
  *                                                                            *
  * Parameters: item_info - [IN] item information                              *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_item_info_clean(zbx_item_info_t *item_info)
+static void	trx_item_info_clean(trx_item_info_t *item_info)
 {
-	zbx_vector_ptr_clear_ext(&item_info->applications, zbx_ptr_free);
-	zbx_vector_ptr_destroy(&item_info->applications);
-	zbx_free(item_info->name);
+	trx_vector_ptr_clear_ext(&item_info->applications, trx_ptr_free);
+	trx_vector_ptr_destroy(&item_info->applications);
+	trx_free(item_info->name);
 }
 
 /******************************************************************************
@@ -1075,85 +1075,85 @@ static void	zbx_item_info_clean(zbx_item_info_t *item_info)
  *             items_info - [IN] item names and applications                  *
  *                                                                            *
  ******************************************************************************/
-static void	DCexport_trends(const TRX_DC_TREND *trends, int trends_num, zbx_hashset_t *hosts_info,
-		zbx_hashset_t *items_info)
+static void	DCexport_trends(const TRX_DC_TREND *trends, int trends_num, trx_hashset_t *hosts_info,
+		trx_hashset_t *items_info)
 {
-	struct zbx_json		json;
+	struct trx_json		json;
 	const TRX_DC_TREND	*trend = NULL;
 	int			i, j;
 	const DC_ITEM		*item;
-	zbx_host_info_t		*host_info;
-	zbx_item_info_t		*item_info;
-	zbx_uint128_t		avg;	/* calculate the trend average value */
+	trx_host_info_t		*host_info;
+	trx_item_info_t		*item_info;
+	trx_uint128_t		avg;	/* calculate the trend average value */
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < trends_num; i++)
 	{
 		trend = &trends[i];
 
-		if (NULL == (item_info = (zbx_item_info_t *)zbx_hashset_search(items_info, &trend->itemid)))
+		if (NULL == (item_info = (trx_item_info_t *)trx_hashset_search(items_info, &trend->itemid)))
 			continue;
 
 		item = item_info->item;
 
-		if (NULL == (host_info = (zbx_host_info_t *)zbx_hashset_search(hosts_info, &item->host.hostid)))
+		if (NULL == (host_info = (trx_host_info_t *)trx_hashset_search(hosts_info, &item->host.hostid)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
 		}
 
-		zbx_json_clean(&json);
+		trx_json_clean(&json);
 
-		zbx_json_addobject(&json,TRX_PROTO_TAG_HOST);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_HOST, item->host.host, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_NAME, item->host.name, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&json);
+		trx_json_addobject(&json,TRX_PROTO_TAG_HOST);
+		trx_json_addstring(&json, TRX_PROTO_TAG_HOST, item->host.host, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_NAME, item->host.name, TRX_JSON_TYPE_STRING);
+		trx_json_close(&json);
 
-		zbx_json_addarray(&json, TRX_PROTO_TAG_GROUPS);
+		trx_json_addarray(&json, TRX_PROTO_TAG_GROUPS);
 
 		for (j = 0; j < host_info->groups.values_num; j++)
-			zbx_json_addstring(&json, NULL, host_info->groups.values[j], TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, NULL, host_info->groups.values[j], TRX_JSON_TYPE_STRING);
 
-		zbx_json_close(&json);
+		trx_json_close(&json);
 
-		zbx_json_addarray(&json, TRX_PROTO_TAG_APPLICATIONS);
+		trx_json_addarray(&json, TRX_PROTO_TAG_APPLICATIONS);
 
 		for (j = 0; j < item_info->applications.values_num; j++)
-			zbx_json_addstring(&json, NULL, item_info->applications.values[j], TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, NULL, item_info->applications.values[j], TRX_JSON_TYPE_STRING);
 
-		zbx_json_close(&json);
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_ITEMID, item->itemid);
+		trx_json_close(&json);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_ITEMID, item->itemid);
 
 		if (NULL != item_info->name)
-			zbx_json_addstring(&json, TRX_PROTO_TAG_NAME, item_info->name, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, TRX_PROTO_TAG_NAME, item_info->name, TRX_JSON_TYPE_STRING);
 
-		zbx_json_addint64(&json, TRX_PROTO_TAG_CLOCK, trend->clock);
-		zbx_json_addint64(&json, TRX_PROTO_TAG_COUNT, trend->num);
+		trx_json_addint64(&json, TRX_PROTO_TAG_CLOCK, trend->clock);
+		trx_json_addint64(&json, TRX_PROTO_TAG_COUNT, trend->num);
 
 		switch (trend->value_type)
 		{
 			case ITEM_VALUE_TYPE_FLOAT:
-				zbx_json_addfloat(&json, TRX_PROTO_TAG_MIN, trend->value_min.dbl);
-				zbx_json_addfloat(&json, TRX_PROTO_TAG_AVG, trend->value_avg.dbl);
-				zbx_json_addfloat(&json, TRX_PROTO_TAG_MAX, trend->value_max.dbl);
+				trx_json_addfloat(&json, TRX_PROTO_TAG_MIN, trend->value_min.dbl);
+				trx_json_addfloat(&json, TRX_PROTO_TAG_AVG, trend->value_avg.dbl);
+				trx_json_addfloat(&json, TRX_PROTO_TAG_MAX, trend->value_max.dbl);
 				break;
 			case ITEM_VALUE_TYPE_UINT64:
-				zbx_json_adduint64(&json, TRX_PROTO_TAG_MIN, trend->value_min.ui64);
+				trx_json_adduint64(&json, TRX_PROTO_TAG_MIN, trend->value_min.ui64);
 				udiv128_64(&avg, &trend->value_avg.ui64, trend->num);
-				zbx_json_adduint64(&json, TRX_PROTO_TAG_AVG, avg.lo);
-				zbx_json_adduint64(&json, TRX_PROTO_TAG_MAX, trend->value_max.ui64);
+				trx_json_adduint64(&json, TRX_PROTO_TAG_AVG, avg.lo);
+				trx_json_adduint64(&json, TRX_PROTO_TAG_MAX, trend->value_max.ui64);
 				break;
 			default:
 				THIS_SHOULD_NEVER_HAPPEN;
 		}
 
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_TYPE, trend->value_type);
-		zbx_trends_export_write(json.buffer, json.buffer_size);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_TYPE, trend->value_type);
+		trx_trends_export_write(json.buffer, json.buffer_size);
 	}
 
-	zbx_trends_export_flush();
-	zbx_json_free(&json);
+	trx_trends_export_flush();
+	trx_json_free(&json);
 }
 
 /******************************************************************************
@@ -1168,17 +1168,17 @@ static void	DCexport_trends(const TRX_DC_TREND *trends, int trends_num, zbx_hash
  *             items_info  - [IN] item names and applications                 *
  *                                                                            *
  ******************************************************************************/
-static void	DCexport_history(const TRX_DC_HISTORY *history, int history_num, zbx_hashset_t *hosts_info,
-		zbx_hashset_t *items_info)
+static void	DCexport_history(const TRX_DC_HISTORY *history, int history_num, trx_hashset_t *hosts_info,
+		trx_hashset_t *items_info)
 {
 	const TRX_DC_HISTORY	*h;
 	const DC_ITEM		*item;
 	int			i, j;
-	zbx_host_info_t		*host_info;
-	zbx_item_info_t		*item_info;
-	struct zbx_json		json;
+	trx_host_info_t		*host_info;
+	trx_item_info_t		*item_info;
+	struct trx_json		json;
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
 
 	for (i = 0; i < history_num; i++)
 	{
@@ -1187,7 +1187,7 @@ static void	DCexport_history(const TRX_DC_HISTORY *history, int history_num, zbx
 		if (0 != (TRX_DC_FLAGS_NOT_FOR_MODULES & h->flags))
 			continue;
 
-		if (NULL == (item_info = (zbx_item_info_t *)zbx_hashset_search(items_info, &h->itemid)))
+		if (NULL == (item_info = (trx_item_info_t *)trx_hashset_search(items_info, &h->itemid)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
@@ -1195,73 +1195,73 @@ static void	DCexport_history(const TRX_DC_HISTORY *history, int history_num, zbx
 
 		item = item_info->item;
 
-		if (NULL == (host_info = (zbx_host_info_t *)zbx_hashset_search(hosts_info, &item->host.hostid)))
+		if (NULL == (host_info = (trx_host_info_t *)trx_hashset_search(hosts_info, &item->host.hostid)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
 		}
 
-		zbx_json_clean(&json);
+		trx_json_clean(&json);
 
-		zbx_json_addobject(&json,TRX_PROTO_TAG_HOST);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_HOST, item->host.host, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_NAME, item->host.name, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&json);
+		trx_json_addobject(&json,TRX_PROTO_TAG_HOST);
+		trx_json_addstring(&json, TRX_PROTO_TAG_HOST, item->host.host, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_NAME, item->host.name, TRX_JSON_TYPE_STRING);
+		trx_json_close(&json);
 
-		zbx_json_addarray(&json, TRX_PROTO_TAG_GROUPS);
+		trx_json_addarray(&json, TRX_PROTO_TAG_GROUPS);
 
 		for (j = 0; j < host_info->groups.values_num; j++)
-			zbx_json_addstring(&json, NULL, host_info->groups.values[j], TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, NULL, host_info->groups.values[j], TRX_JSON_TYPE_STRING);
 
-		zbx_json_close(&json);
+		trx_json_close(&json);
 
-		zbx_json_addarray(&json, TRX_PROTO_TAG_APPLICATIONS);
+		trx_json_addarray(&json, TRX_PROTO_TAG_APPLICATIONS);
 
 		for (j = 0; j < item_info->applications.values_num; j++)
-			zbx_json_addstring(&json, NULL, item_info->applications.values[j], TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, NULL, item_info->applications.values[j], TRX_JSON_TYPE_STRING);
 
-		zbx_json_close(&json);
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_ITEMID, item->itemid);
+		trx_json_close(&json);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_ITEMID, item->itemid);
 
 		if (NULL != item_info->name)
-			zbx_json_addstring(&json, TRX_PROTO_TAG_NAME, item_info->name, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, TRX_PROTO_TAG_NAME, item_info->name, TRX_JSON_TYPE_STRING);
 
-		zbx_json_addint64(&json, TRX_PROTO_TAG_CLOCK, h->ts.sec);
-		zbx_json_addint64(&json, TRX_PROTO_TAG_NS, h->ts.ns);
+		trx_json_addint64(&json, TRX_PROTO_TAG_CLOCK, h->ts.sec);
+		trx_json_addint64(&json, TRX_PROTO_TAG_NS, h->ts.ns);
 
 		switch (h->value_type)
 		{
 			case ITEM_VALUE_TYPE_FLOAT:
-				zbx_json_addfloat(&json, TRX_PROTO_TAG_VALUE, h->value.dbl);
+				trx_json_addfloat(&json, TRX_PROTO_TAG_VALUE, h->value.dbl);
 				break;
 			case ITEM_VALUE_TYPE_UINT64:
-				zbx_json_adduint64(&json, TRX_PROTO_TAG_VALUE, h->value.ui64);
+				trx_json_adduint64(&json, TRX_PROTO_TAG_VALUE, h->value.ui64);
 				break;
 			case ITEM_VALUE_TYPE_STR:
-				zbx_json_addstring(&json, TRX_PROTO_TAG_VALUE, h->value.str, TRX_JSON_TYPE_STRING);
+				trx_json_addstring(&json, TRX_PROTO_TAG_VALUE, h->value.str, TRX_JSON_TYPE_STRING);
 				break;
 			case ITEM_VALUE_TYPE_TEXT:
-				zbx_json_addstring(&json, TRX_PROTO_TAG_VALUE, h->value.str, TRX_JSON_TYPE_STRING);
+				trx_json_addstring(&json, TRX_PROTO_TAG_VALUE, h->value.str, TRX_JSON_TYPE_STRING);
 				break;
 			case ITEM_VALUE_TYPE_LOG:
-				zbx_json_addint64(&json, TRX_PROTO_TAG_LOGTIMESTAMP, h->value.log->timestamp);
-				zbx_json_addstring(&json, TRX_PROTO_TAG_LOGSOURCE,
+				trx_json_addint64(&json, TRX_PROTO_TAG_LOGTIMESTAMP, h->value.log->timestamp);
+				trx_json_addstring(&json, TRX_PROTO_TAG_LOGSOURCE,
 						TRX_NULL2EMPTY_STR(h->value.log->source), TRX_JSON_TYPE_STRING);
-				zbx_json_addint64(&json, TRX_PROTO_TAG_LOGSEVERITY, h->value.log->severity);
-				zbx_json_addint64(&json, TRX_PROTO_TAG_LOGEVENTID, h->value.log->logeventid);
-				zbx_json_addstring(&json, TRX_PROTO_TAG_VALUE, h->value.log->value,
+				trx_json_addint64(&json, TRX_PROTO_TAG_LOGSEVERITY, h->value.log->severity);
+				trx_json_addint64(&json, TRX_PROTO_TAG_LOGEVENTID, h->value.log->logeventid);
+				trx_json_addstring(&json, TRX_PROTO_TAG_VALUE, h->value.log->value,
 						TRX_JSON_TYPE_STRING);
 				break;
 			default:
 				THIS_SHOULD_NEVER_HAPPEN;
 		}
 
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_TYPE, h->value_type);
-		zbx_history_export_write(json.buffer, json.buffer_size);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_TYPE, h->value_type);
+		trx_history_export_write(json.buffer, json.buffer_size);
 	}
 
-	zbx_history_export_flush();
-	zbx_json_free(&json);
+	trx_history_export_flush();
+	trx_json_free(&json);
 }
 
 /******************************************************************************
@@ -1281,21 +1281,21 @@ static void	DCexport_history(const TRX_DC_HISTORY *history, int history_num, zbx
  *                                                                            *
  ******************************************************************************/
 static void	DCexport_history_and_trends(const TRX_DC_HISTORY *history, int history_num,
-		const zbx_vector_uint64_t *itemids, DC_ITEM *items, const int *errcodes, const TRX_DC_TREND *trends,
+		const trx_vector_uint64_t *itemids, DC_ITEM *items, const int *errcodes, const TRX_DC_TREND *trends,
 		int trends_num)
 {
 	int			i, index;
-	zbx_vector_uint64_t	hostids, item_info_ids;
-	zbx_hashset_t		hosts_info, items_info;
+	trx_vector_uint64_t	hostids, item_info_ids;
+	trx_hashset_t		hosts_info, items_info;
 	DC_ITEM			*item;
-	zbx_item_info_t		item_info;
+	trx_item_info_t		item_info;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d trends_num:%d", __func__, history_num, trends_num);
 
-	zbx_vector_uint64_create(&hostids);
-	zbx_vector_uint64_create(&item_info_ids);
-	zbx_hashset_create_ext(&items_info, itemids->values_num, TRX_DEFAULT_UINT64_HASH_FUNC,
-			TRX_DEFAULT_UINT64_COMPARE_FUNC, (zbx_clean_func_t)zbx_item_info_clean,
+	trx_vector_uint64_create(&hostids);
+	trx_vector_uint64_create(&item_info_ids);
+	trx_hashset_create_ext(&items_info, itemids->values_num, TRX_DEFAULT_UINT64_HASH_FUNC,
+			TRX_DEFAULT_UINT64_COMPARE_FUNC, (trx_clean_func_t)trx_item_info_clean,
 			TRX_DEFAULT_MEM_MALLOC_FUNC, TRX_DEFAULT_MEM_REALLOC_FUNC, TRX_DEFAULT_MEM_FREE_FUNC);
 
 	for (i = 0; i < history_num; i++)
@@ -1305,7 +1305,7 @@ static void	DCexport_history_and_trends(const TRX_DC_HISTORY *history, int histo
 		if (0 != (TRX_DC_FLAGS_NOT_FOR_EXPORT & h->flags))
 			continue;
 
-		if (FAIL == (index = zbx_vector_uint64_bsearch(itemids, h->itemid, TRX_DEFAULT_UINT64_COMPARE_FUNC)))
+		if (FAIL == (index = trx_vector_uint64_bsearch(itemids, h->itemid, TRX_DEFAULT_UINT64_COMPARE_FUNC)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			continue;
@@ -1316,14 +1316,14 @@ static void	DCexport_history_and_trends(const TRX_DC_HISTORY *history, int histo
 
 		item = &items[index];
 
-		zbx_vector_uint64_append(&hostids, item->host.hostid);
-		zbx_vector_uint64_append(&item_info_ids, item->itemid);
+		trx_vector_uint64_append(&hostids, item->host.hostid);
+		trx_vector_uint64_append(&item_info_ids, item->itemid);
 
 		item_info.itemid = item->itemid;
 		item_info.name = NULL;
 		item_info.item = item;
-		zbx_vector_ptr_create(&item_info.applications);
-		zbx_hashset_insert(&items_info, &item_info, sizeof(item_info));
+		trx_vector_ptr_create(&item_info.applications);
+		trx_hashset_insert(&items_info, &item_info, sizeof(item_info));
 	}
 
 	if (0 == history_num)
@@ -1332,7 +1332,7 @@ static void	DCexport_history_and_trends(const TRX_DC_HISTORY *history, int histo
 		{
 			const TRX_DC_TREND	*trend = &trends[i];
 
-			if (FAIL == (index = zbx_vector_uint64_bsearch(itemids, trend->itemid,
+			if (FAIL == (index = trx_vector_uint64_bsearch(itemids, trend->itemid,
 					TRX_DEFAULT_UINT64_COMPARE_FUNC)))
 			{
 				THIS_SHOULD_NEVER_HAPPEN;
@@ -1344,26 +1344,26 @@ static void	DCexport_history_and_trends(const TRX_DC_HISTORY *history, int histo
 
 			item = &items[index];
 
-			zbx_vector_uint64_append(&hostids, item->host.hostid);
-			zbx_vector_uint64_append(&item_info_ids, item->itemid);
+			trx_vector_uint64_append(&hostids, item->host.hostid);
+			trx_vector_uint64_append(&item_info_ids, item->itemid);
 
 			item_info.itemid = item->itemid;
 			item_info.name = NULL;
 			item_info.item = item;
-			zbx_vector_ptr_create(&item_info.applications);
-			zbx_hashset_insert(&items_info, &item_info, sizeof(item_info));
+			trx_vector_ptr_create(&item_info.applications);
+			trx_hashset_insert(&items_info, &item_info, sizeof(item_info));
 		}
 	}
 
 	if (0 == item_info_ids.values_num)
 		goto clean;
 
-	zbx_vector_uint64_sort(&item_info_ids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_sort(&hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(&hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(&item_info_ids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(&hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_uniq(&hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
-	zbx_hashset_create_ext(&hosts_info, hostids.values_num, TRX_DEFAULT_UINT64_HASH_FUNC,
-			TRX_DEFAULT_UINT64_COMPARE_FUNC, (zbx_clean_func_t)zbx_host_info_clean,
+	trx_hashset_create_ext(&hosts_info, hostids.values_num, TRX_DEFAULT_UINT64_HASH_FUNC,
+			TRX_DEFAULT_UINT64_COMPARE_FUNC, (trx_clean_func_t)trx_host_info_clean,
 			TRX_DEFAULT_MEM_MALLOC_FUNC, TRX_DEFAULT_MEM_REALLOC_FUNC, TRX_DEFAULT_MEM_FREE_FUNC);
 
 	db_get_hosts_info_by_hostid(&hosts_info, &hostids);
@@ -1376,11 +1376,11 @@ static void	DCexport_history_and_trends(const TRX_DC_HISTORY *history, int histo
 	if (0 != trends_num)
 		DCexport_trends(trends, trends_num, &hosts_info, &items_info);
 
-	zbx_hashset_destroy(&hosts_info);
+	trx_hashset_destroy(&hosts_info);
 clean:
-	zbx_hashset_destroy(&items_info);
-	zbx_vector_uint64_destroy(&item_info_ids);
-	zbx_vector_uint64_destroy(&hostids);
+	trx_hashset_destroy(&items_info);
+	trx_vector_uint64_destroy(&item_info_ids);
+	trx_vector_uint64_destroy(&hostids);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -1398,7 +1398,7 @@ clean:
 static void	DCexport_all_trends(const TRX_DC_TREND *trends, int trends_num)
 {
 	DC_ITEM			*items;
-	zbx_vector_uint64_t	itemids;
+	trx_vector_uint64_t	itemids;
 	int			*errcodes, i, num;
 
 	treegix_log(LOG_LEVEL_WARNING, "exporting trend data...");
@@ -1407,25 +1407,25 @@ static void	DCexport_all_trends(const TRX_DC_TREND *trends, int trends_num)
 	{
 		num = MIN(TRX_HC_SYNC_MAX, trends_num);
 
-		items = (DC_ITEM *)zbx_malloc(NULL, sizeof(DC_ITEM) * (size_t)num);
-		errcodes = (int *)zbx_malloc(NULL, sizeof(int) * (size_t)num);
+		items = (DC_ITEM *)trx_malloc(NULL, sizeof(DC_ITEM) * (size_t)num);
+		errcodes = (int *)trx_malloc(NULL, sizeof(int) * (size_t)num);
 
-		zbx_vector_uint64_create(&itemids);
-		zbx_vector_uint64_reserve(&itemids, num);
+		trx_vector_uint64_create(&itemids);
+		trx_vector_uint64_reserve(&itemids, num);
 
 		for (i = 0; i < num; i++)
-			zbx_vector_uint64_append(&itemids, trends[i].itemid);
+			trx_vector_uint64_append(&itemids, trends[i].itemid);
 
-		zbx_vector_uint64_sort(&itemids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_sort(&itemids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		DCconfig_get_items_by_itemids(items, itemids.values, errcodes, num);
 
 		DCexport_history_and_trends(NULL, 0, &itemids, items, errcodes, trends, num);
 
 		DCconfig_clean_items(items, errcodes, num);
-		zbx_vector_uint64_destroy(&itemids);
-		zbx_free(items);
-		zbx_free(errcodes);
+		trx_vector_uint64_destroy(&itemids);
+		trx_free(items);
+		trx_free(errcodes);
 
 		trends += num;
 		trends_num -= num;
@@ -1445,7 +1445,7 @@ static void	DCexport_all_trends(const TRX_DC_TREND *trends, int trends_num)
  ******************************************************************************/
 static void	DCsync_trends(void)
 {
-	zbx_hashset_iter_t	iter;
+	trx_hashset_iter_t	iter;
 	TRX_DC_TREND		*trends = NULL, *trend;
 	int			trends_alloc = 0, trends_num = 0;
 
@@ -1455,17 +1455,17 @@ static void	DCsync_trends(void)
 
 	LOCK_TRENDS;
 
-	zbx_hashset_iter_reset(&cache->trends, &iter);
+	trx_hashset_iter_reset(&cache->trends, &iter);
 
-	while (NULL != (trend = (TRX_DC_TREND *)zbx_hashset_iter_next(&iter)))
+	while (NULL != (trend = (TRX_DC_TREND *)trx_hashset_iter_next(&iter)))
 	{
-		if (SUCCEED == zbx_history_requires_trends(trend->value_type))
+		if (SUCCEED == trx_history_requires_trends(trend->value_type))
 			DCflush_trend(trend, &trends, &trends_alloc, &trends_num);
 	}
 
 	UNLOCK_TRENDS;
 
-	if (SUCCEED == zbx_is_export_enabled() && 0 != trends_num)
+	if (SUCCEED == trx_is_export_enabled() && 0 != trends_num)
 		DCexport_all_trends(trends, trends_num);
 
 	DBbegin();
@@ -1475,7 +1475,7 @@ static void	DCsync_trends(void)
 
 	DBcommit();
 
-	zbx_free(trends);
+	trx_free(trends);
 
 	treegix_log(LOG_LEVEL_WARNING, "syncing trend data done");
 
@@ -1496,21 +1496,21 @@ static void	DCsync_trends(void)
  *                                                                            *
  ******************************************************************************/
 static void	recalculate_triggers(const TRX_DC_HISTORY *history, int history_num,
-		const zbx_vector_uint64_t *timer_triggerids, zbx_vector_ptr_t *trigger_diff)
+		const trx_vector_uint64_t *timer_triggerids, trx_vector_ptr_t *trigger_diff)
 {
 	int			i, item_num = 0;
-	zbx_uint64_t		*itemids = NULL;
-	zbx_timespec_t		*timespecs = NULL;
-	zbx_hashset_t		trigger_info;
-	zbx_vector_ptr_t	trigger_order;
-	zbx_vector_ptr_t	trigger_items;
+	trx_uint64_t		*itemids = NULL;
+	trx_timespec_t		*timespecs = NULL;
+	trx_hashset_t		trigger_info;
+	trx_vector_ptr_t	trigger_order;
+	trx_vector_ptr_t	trigger_items;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (0 != history_num)
 	{
-		itemids = (zbx_uint64_t *)zbx_malloc(itemids, sizeof(zbx_uint64_t) * (size_t)history_num);
-		timespecs = (zbx_timespec_t *)zbx_malloc(timespecs, sizeof(zbx_timespec_t) * (size_t)history_num);
+		itemids = (trx_uint64_t *)trx_malloc(itemids, sizeof(trx_uint64_t) * (size_t)history_num);
+		timespecs = (trx_timespec_t *)trx_malloc(timespecs, sizeof(trx_timespec_t) * (size_t)history_num);
 
 		for (i = 0; i < history_num; i++)
 		{
@@ -1528,50 +1528,50 @@ static void	recalculate_triggers(const TRX_DC_HISTORY *history, int history_num,
 	if (0 == item_num && 0 == timer_triggerids->values_num)
 		goto out;
 
-	zbx_hashset_create(&trigger_info, MAX(100, 2 * item_num + timer_triggerids->values_num),
+	trx_hashset_create(&trigger_info, MAX(100, 2 * item_num + timer_triggerids->values_num),
 			TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
-	zbx_vector_ptr_create(&trigger_order);
-	zbx_vector_ptr_reserve(&trigger_order, trigger_info.num_slots);
+	trx_vector_ptr_create(&trigger_order);
+	trx_vector_ptr_reserve(&trigger_order, trigger_info.num_slots);
 
-	zbx_vector_ptr_create(&trigger_items);
+	trx_vector_ptr_create(&trigger_items);
 
 	if (0 != item_num)
 	{
 		DCconfig_get_triggers_by_itemids(&trigger_info, &trigger_order, itemids, timespecs, item_num);
-		zbx_determine_items_in_expressions(&trigger_order, itemids, item_num);
+		trx_determine_items_in_expressions(&trigger_order, itemids, item_num);
 	}
 
 	if (0 != timer_triggerids->values_num)
 	{
-		zbx_timespec_t	ts;
+		trx_timespec_t	ts;
 
-		zbx_timespec(&ts);
-		zbx_dc_get_timer_triggers_by_triggerids(&trigger_info, &trigger_order, timer_triggerids, &ts);
+		trx_timespec(&ts);
+		trx_dc_get_timer_triggers_by_triggerids(&trigger_info, &trigger_order, timer_triggerids, &ts);
 	}
 
-	zbx_vector_ptr_sort(&trigger_order, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	trx_vector_ptr_sort(&trigger_order, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 	evaluate_expressions(&trigger_order);
-	zbx_process_triggers(&trigger_order, trigger_diff);
+	trx_process_triggers(&trigger_order, trigger_diff);
 
 	DCfree_triggers(&trigger_order);
 
-	zbx_vector_ptr_destroy(&trigger_items);
+	trx_vector_ptr_destroy(&trigger_items);
 
-	zbx_hashset_destroy(&trigger_info);
-	zbx_vector_ptr_destroy(&trigger_order);
+	trx_hashset_destroy(&trigger_info);
+	trx_vector_ptr_destroy(&trigger_order);
 out:
-	zbx_free(timespecs);
-	zbx_free(itemids);
+	trx_free(timespecs);
+	trx_free(itemids);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
-static void	DCinventory_value_add(zbx_vector_ptr_t *inventory_values, const DC_ITEM *item, TRX_DC_HISTORY *h)
+static void	DCinventory_value_add(trx_vector_ptr_t *inventory_values, const DC_ITEM *item, TRX_DC_HISTORY *h)
 {
 	char			value[MAX_BUFFER_LEN];
 	const char		*inventory_field;
-	zbx_inventory_value_t	*inventory_value;
+	trx_inventory_value_t	*inventory_value;
 
 	if (ITEM_STATE_NOTSUPPORTED == h->state)
 		return;
@@ -1588,10 +1588,10 @@ static void	DCinventory_value_add(zbx_vector_ptr_t *inventory_values, const DC_I
 	switch (h->value_type)
 	{
 		case ITEM_VALUE_TYPE_FLOAT:
-			zbx_snprintf(value, sizeof(value), TRX_FS_DBL, h->value.dbl);
+			trx_snprintf(value, sizeof(value), TRX_FS_DBL, h->value.dbl);
 			break;
 		case ITEM_VALUE_TYPE_UINT64:
-			zbx_snprintf(value, sizeof(value), TRX_FS_UI64, h->value.ui64);
+			trx_snprintf(value, sizeof(value), TRX_FS_UI64, h->value.ui64);
 			break;
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:
@@ -1601,43 +1601,43 @@ static void	DCinventory_value_add(zbx_vector_ptr_t *inventory_values, const DC_I
 			return;
 	}
 
-	zbx_format_value(value, sizeof(value), item->valuemapid, item->units, h->value_type);
+	trx_format_value(value, sizeof(value), item->valuemapid, item->units, h->value_type);
 
-	inventory_value = (zbx_inventory_value_t *)zbx_malloc(NULL, sizeof(zbx_inventory_value_t));
+	inventory_value = (trx_inventory_value_t *)trx_malloc(NULL, sizeof(trx_inventory_value_t));
 
 	inventory_value->hostid = item->host.hostid;
 	inventory_value->idx = item->inventory_link - 1;
 	inventory_value->field_name = inventory_field;
-	inventory_value->value = zbx_strdup(NULL, value);
+	inventory_value->value = trx_strdup(NULL, value);
 
-	zbx_vector_ptr_append(inventory_values, inventory_value);
+	trx_vector_ptr_append(inventory_values, inventory_value);
 }
 
-static void	DCadd_update_inventory_sql(size_t *sql_offset, const zbx_vector_ptr_t *inventory_values)
+static void	DCadd_update_inventory_sql(size_t *sql_offset, const trx_vector_ptr_t *inventory_values)
 {
 	char	*value_esc;
 	int	i;
 
 	for (i = 0; i < inventory_values->values_num; i++)
 	{
-		const zbx_inventory_value_t	*inventory_value = (zbx_inventory_value_t *)inventory_values->values[i];
+		const trx_inventory_value_t	*inventory_value = (trx_inventory_value_t *)inventory_values->values[i];
 
 		value_esc = DBdyn_escape_field("host_inventory", inventory_value->field_name, inventory_value->value);
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, sql_offset,
+		trx_snprintf_alloc(&sql, &sql_alloc, sql_offset,
 				"update host_inventory set %s='%s' where hostid=" TRX_FS_UI64 ";\n",
 				inventory_value->field_name, value_esc, inventory_value->hostid);
 
 		DBexecute_overflowed_sql(&sql, &sql_alloc, sql_offset);
 
-		zbx_free(value_esc);
+		trx_free(value_esc);
 	}
 }
 
-static void	DCinventory_value_free(zbx_inventory_value_t *inventory_value)
+static void	DCinventory_value_free(trx_inventory_value_t *inventory_value)
 {
-	zbx_free(inventory_value->value);
-	zbx_free(inventory_value);
+	trx_free(inventory_value->value);
+	trx_free(inventory_value);
 }
 
 /******************************************************************************
@@ -1654,7 +1654,7 @@ static void	dc_history_clean_value(TRX_DC_HISTORY *history)
 {
 	if (ITEM_STATE_NOTSUPPORTED == history->state)
 	{
-		zbx_free(history->value.err);
+		trx_free(history->value.err);
 		return;
 	}
 
@@ -1664,13 +1664,13 @@ static void	dc_history_clean_value(TRX_DC_HISTORY *history)
 	switch (history->value_type)
 	{
 		case ITEM_VALUE_TYPE_LOG:
-			zbx_free(history->value.log->value);
-			zbx_free(history->value.log->source);
-			zbx_free(history->value.log);
+			trx_free(history->value.log->value);
+			trx_free(history->value.log->source);
+			trx_free(history->value.log);
 			break;
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:
-			zbx_free(history->value.str);
+			trx_free(history->value.str);
 			break;
 	}
 }
@@ -1725,11 +1725,11 @@ static void	dc_history_set_error(TRX_DC_HISTORY *hdata, char *errmsg)
  *             value      - [IN] the value to set                             *
  *                                                                            *
  ******************************************************************************/
-static void	dc_history_set_value(TRX_DC_HISTORY *hdata, unsigned char value_type, zbx_variant_t *value)
+static void	dc_history_set_value(TRX_DC_HISTORY *hdata, unsigned char value_type, trx_variant_t *value)
 {
 	char	*errmsg = NULL;
 
-	if (FAIL == zbx_variant_to_value_type(value, value_type, &errmsg))
+	if (FAIL == trx_variant_to_value_type(value, value_type, &errmsg))
 	{
 		dc_history_set_error(hdata, errmsg);
 		return;
@@ -1748,26 +1748,26 @@ static void	dc_history_set_value(TRX_DC_HISTORY *hdata, unsigned char value_type
 		case ITEM_VALUE_TYPE_STR:
 			dc_history_clean_value(hdata);
 			hdata->value.str = value->data.str;
-			hdata->value.str[zbx_db_strlen_n(hdata->value.str, HISTORY_STR_VALUE_LEN)] = '\0';
+			hdata->value.str[trx_db_strlen_n(hdata->value.str, HISTORY_STR_VALUE_LEN)] = '\0';
 			break;
 		case ITEM_VALUE_TYPE_TEXT:
 			dc_history_clean_value(hdata);
 			hdata->value.str = value->data.str;
-			hdata->value.str[zbx_db_strlen_n(hdata->value.str, HISTORY_TEXT_VALUE_LEN)] = '\0';
+			hdata->value.str[trx_db_strlen_n(hdata->value.str, HISTORY_TEXT_VALUE_LEN)] = '\0';
 			break;
 		case ITEM_VALUE_TYPE_LOG:
 			if (ITEM_VALUE_TYPE_LOG != hdata->value_type)
 			{
 				dc_history_clean_value(hdata);
-				hdata->value.log = (zbx_log_value_t *)zbx_malloc(NULL, sizeof(zbx_log_value_t));
-				memset(hdata->value.log, 0, sizeof(zbx_log_value_t));
+				hdata->value.log = (trx_log_value_t *)trx_malloc(NULL, sizeof(trx_log_value_t));
+				memset(hdata->value.log, 0, sizeof(trx_log_value_t));
 			}
 			hdata->value.log->value = value->data.str;
-			hdata->value.str[zbx_db_strlen_n(hdata->value.str, HISTORY_LOG_VALUE_LEN)] = '\0';
+			hdata->value.str[trx_db_strlen_n(hdata->value.str, HISTORY_LOG_VALUE_LEN)] = '\0';
 	}
 
 	hdata->value_type = value_type;
-	zbx_variant_set_none(value);
+	trx_variant_set_none(value);
 }
 
 /******************************************************************************
@@ -1784,7 +1784,7 @@ static void	dc_history_set_value(TRX_DC_HISTORY *hdata, unsigned char value_type
 static void	normalize_item_value(const DC_ITEM *item, TRX_DC_HISTORY *hdata)
 {
 	char		*logvalue;
-	zbx_variant_t	value_var;
+	trx_variant_t	value_var;
 
 	if (0 != (hdata->flags & TRX_DC_FLAG_NOVALUE))
 		return;
@@ -1801,19 +1801,19 @@ static void	normalize_item_value(const DC_ITEM *item, TRX_DC_HISTORY *hdata)
 		switch (hdata->value_type)
 		{
 			case ITEM_VALUE_TYPE_STR:
-				hdata->value.str[zbx_db_strlen_n(hdata->value.str, HISTORY_STR_VALUE_LEN)] = '\0';
+				hdata->value.str[trx_db_strlen_n(hdata->value.str, HISTORY_STR_VALUE_LEN)] = '\0';
 				break;
 			case ITEM_VALUE_TYPE_TEXT:
-				hdata->value.str[zbx_db_strlen_n(hdata->value.str, HISTORY_TEXT_VALUE_LEN)] = '\0';
+				hdata->value.str[trx_db_strlen_n(hdata->value.str, HISTORY_TEXT_VALUE_LEN)] = '\0';
 				break;
 			case ITEM_VALUE_TYPE_LOG:
 				logvalue = hdata->value.log->value;
-				logvalue[zbx_db_strlen_n(logvalue, HISTORY_LOG_VALUE_LEN)] = '\0';
+				logvalue[trx_db_strlen_n(logvalue, HISTORY_LOG_VALUE_LEN)] = '\0';
 				break;
 			case ITEM_VALUE_TYPE_FLOAT:
-				if (FAIL == zbx_validate_value_dbl(hdata->value.dbl))
+				if (FAIL == trx_validate_value_dbl(hdata->value.dbl))
 				{
-					dc_history_set_error(hdata, zbx_dsprintf(NULL, "Value " TRX_FS_DBL
+					dc_history_set_error(hdata, trx_dsprintf(NULL, "Value " TRX_FS_DBL
 							" is too small or too large.", hdata->value.dbl));
 				}
 				break;
@@ -1824,24 +1824,24 @@ static void	normalize_item_value(const DC_ITEM *item, TRX_DC_HISTORY *hdata)
 	switch (hdata->value_type)
 	{
 		case ITEM_VALUE_TYPE_FLOAT:
-			zbx_variant_set_dbl(&value_var, hdata->value.dbl);
+			trx_variant_set_dbl(&value_var, hdata->value.dbl);
 			break;
 		case ITEM_VALUE_TYPE_UINT64:
-			zbx_variant_set_ui64(&value_var, hdata->value.ui64);
+			trx_variant_set_ui64(&value_var, hdata->value.ui64);
 			break;
 		case ITEM_VALUE_TYPE_STR:
 		case ITEM_VALUE_TYPE_TEXT:
-			zbx_variant_set_str(&value_var, hdata->value.str);
+			trx_variant_set_str(&value_var, hdata->value.str);
 			hdata->value.str = NULL;
 			break;
 		case ITEM_VALUE_TYPE_LOG:
-			zbx_variant_set_str(&value_var, hdata->value.log->value);
+			trx_variant_set_str(&value_var, hdata->value.log->value);
 			hdata->value.log->value = NULL;
 			break;
 	}
 
 	dc_history_set_value(hdata, item->value_type, &value_var);
-	zbx_variant_clear(&value_var);
+	trx_variant_clear(&value_var);
 }
 
 /******************************************************************************
@@ -1858,11 +1858,11 @@ static void	normalize_item_value(const DC_ITEM *item, TRX_DC_HISTORY *hdata)
  * Comments: Will generate internal events when item state switches.          *
  *                                                                            *
  ******************************************************************************/
-static zbx_item_diff_t	*calculate_item_update(const DC_ITEM *item, const TRX_DC_HISTORY *h)
+static trx_item_diff_t	*calculate_item_update(const DC_ITEM *item, const TRX_DC_HISTORY *h)
 {
-	zbx_uint64_t	flags = TRX_FLAGS_ITEM_DIFF_UPDATE_LASTCLOCK;
+	trx_uint64_t	flags = TRX_FLAGS_ITEM_DIFF_UPDATE_LASTCLOCK;
 	const char	*item_error = NULL;
-	zbx_item_diff_t	*diff;
+	trx_item_diff_t	*diff;
 
 	if (0 != (TRX_DC_FLAG_META & h->flags))
 	{
@@ -1882,7 +1882,7 @@ static zbx_item_diff_t	*calculate_item_update(const DC_ITEM *item, const TRX_DC_
 			treegix_log(LOG_LEVEL_WARNING, "item \"%s:%s\" became not supported: %s",
 					item->host.host, item->key_orig, h->value.str);
 
-			zbx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_ITEM, item->itemid, &h->ts, h->state, NULL,
+			trx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_ITEM, item->itemid, &h->ts, h->state, NULL,
 					NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL, h->value.err);
 
 			if (0 != strcmp(item->error, h->value.err))
@@ -1895,7 +1895,7 @@ static zbx_item_diff_t	*calculate_item_update(const DC_ITEM *item, const TRX_DC_
 
 			/* we know it's EVENT_OBJECT_ITEM because LLDRULE that becomes */
 			/* supported is handled in lld_process_discovery_rule()        */
-			zbx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_ITEM, item->itemid, &h->ts, h->state,
+			trx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_ITEM, item->itemid, &h->ts, h->state,
 					NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL, NULL);
 
 			item_error = "";
@@ -1912,7 +1912,7 @@ static zbx_item_diff_t	*calculate_item_update(const DC_ITEM *item, const TRX_DC_
 	if (NULL != item_error)
 		flags |= TRX_FLAGS_ITEM_DIFF_UPDATE_ERROR;
 
-	diff = (zbx_item_diff_t *)zbx_malloc(NULL, sizeof(zbx_item_diff_t));
+	diff = (trx_item_diff_t *)trx_malloc(NULL, sizeof(trx_item_diff_t));
 	diff->itemid = item->itemid;
 	diff->lastclock = h->ts.sec;
 	diff->flags = flags;
@@ -1942,7 +1942,7 @@ static zbx_item_diff_t	*calculate_item_update(const DC_ITEM *item, const TRX_DC_
  *             inventory_values - inventory values                            *
  *                                                                            *
  ******************************************************************************/
-static void	DBmass_update_items(const zbx_vector_ptr_t *item_diff, const zbx_vector_ptr_t *inventory_values)
+static void	DBmass_update_items(const trx_vector_ptr_t *item_diff, const trx_vector_ptr_t *inventory_values)
 {
 	size_t	sql_offset = 0;
 	int	i;
@@ -1951,9 +1951,9 @@ static void	DBmass_update_items(const zbx_vector_ptr_t *item_diff, const zbx_vec
 
 	for (i = 0; i < item_diff->values_num; i++)
 	{
-		zbx_item_diff_t	*diff;
+		trx_item_diff_t	*diff;
 
-		diff = (zbx_item_diff_t *)item_diff->values[i];
+		diff = (trx_item_diff_t *)item_diff->values[i];
 		if (0 != (TRX_FLAGS_ITEM_DIFF_UPDATE_DB & diff->flags))
 			break;
 	}
@@ -1963,7 +1963,7 @@ static void	DBmass_update_items(const zbx_vector_ptr_t *item_diff, const zbx_vec
 		DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 
 		if (i != item_diff->values_num)
-			zbx_db_save_item_changes(&sql, &sql_alloc, &sql_offset, item_diff);
+			trx_db_save_item_changes(&sql, &sql_alloc, &sql_offset, item_diff);
 
 		if (0 != inventory_values->values_num)
 			DCadd_update_inventory_sql(&sql_offset, inventory_values);
@@ -1995,22 +1995,22 @@ static void	DCmass_proxy_update_items(TRX_DC_HISTORY *history, int history_num)
 {
 	size_t			sql_offset = 0;
 	int			i;
-	zbx_vector_ptr_t	item_diff;
-	zbx_item_diff_t		*diffs;
+	trx_vector_ptr_t	item_diff;
+	trx_item_diff_t		*diffs;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&item_diff);
-	zbx_vector_ptr_reserve(&item_diff, history_num);
+	trx_vector_ptr_create(&item_diff);
+	trx_vector_ptr_reserve(&item_diff, history_num);
 
-	/* preallocate zbx_item_diff_t structures for item_diff vector */
-	diffs = (zbx_item_diff_t *)zbx_malloc(NULL, sizeof(zbx_item_diff_t) * history_num);
+	/* preallocate trx_item_diff_t structures for item_diff vector */
+	diffs = (trx_item_diff_t *)trx_malloc(NULL, sizeof(trx_item_diff_t) * history_num);
 
 	DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 
 	for (i = 0; i < history_num; i++)
 	{
-		zbx_item_diff_t	*diff = &diffs[i];
+		trx_item_diff_t	*diff = &diffs[i];
 
 		diff->itemid = history[i].itemid;
 		diff->state = history[i].state;
@@ -2024,7 +2024,7 @@ static void	DCmass_proxy_update_items(TRX_DC_HISTORY *history, int history_num)
 			diff->flags |= TRX_FLAGS_ITEM_DIFF_UPDATE_LASTLOGSIZE | TRX_FLAGS_ITEM_DIFF_UPDATE_MTIME;
 		}
 
-		zbx_vector_ptr_append(&item_diff, diff);
+		trx_vector_ptr_append(&item_diff, diff);
 
 		if (ITEM_STATE_NOTSUPPORTED == history[i].state)
 			continue;
@@ -2032,7 +2032,7 @@ static void	DCmass_proxy_update_items(TRX_DC_HISTORY *history, int history_num)
 		if (0 == (TRX_DC_FLAG_META & history[i].flags))
 			continue;
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 				"update item_rtdata"
 				" set lastlogsize=" TRX_FS_UI64
 					",mtime=%d"
@@ -2050,8 +2050,8 @@ static void	DCmass_proxy_update_items(TRX_DC_HISTORY *history, int history_num)
 	if (0 != item_diff.values_num)
 		DCconfig_items_apply_changes(&item_diff);
 
-	zbx_vector_ptr_destroy(&item_diff);
-	zbx_free(diffs);
+	trx_vector_ptr_destroy(&item_diff);
+	trx_free(diffs);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -2069,12 +2069,12 @@ static void	DCmass_proxy_update_items(TRX_DC_HISTORY *history, int history_num)
 static int	DBmass_add_history(TRX_DC_HISTORY *history, int history_num)
 {
 	int			i, ret = SUCCEED;
-	zbx_vector_ptr_t	history_values;
+	trx_vector_ptr_t	history_values;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&history_values);
-	zbx_vector_ptr_reserve(&history_values, history_num);
+	trx_vector_ptr_create(&history_values);
+	trx_vector_ptr_reserve(&history_values, history_num);
 
 	for (i = 0; i < history_num; i++)
 	{
@@ -2083,13 +2083,13 @@ static int	DBmass_add_history(TRX_DC_HISTORY *history, int history_num)
 		if (0 != (TRX_DC_FLAGS_NOT_FOR_HISTORY & h->flags))
 			continue;
 
-		zbx_vector_ptr_append(&history_values, h);
+		trx_vector_ptr_append(&history_values, h);
 	}
 
 	if (0 != history_values.values_num)
-		ret = zbx_vc_add_values(&history_values);
+		ret = trx_vc_add_values(&history_values);
 
-	zbx_vector_ptr_destroy(&history_values);
+	trx_vector_ptr_destroy(&history_values);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -2111,9 +2111,9 @@ static void	dc_add_proxy_history(TRX_DC_HISTORY *history, int history_num)
 	int		i;
 	unsigned int	flags;
 	char		buffer[64], *pvalue;
-	zbx_db_insert_t	db_insert;
+	trx_db_insert_t	db_insert;
 
-	zbx_db_insert_prepare(&db_insert, "proxy_history", "itemid", "clock", "ns", "value", "flags", NULL);
+	trx_db_insert_prepare(&db_insert, "proxy_history", "itemid", "clock", "ns", "value", "flags", NULL);
 
 	for (i = 0; i < history_num; i++)
 	{
@@ -2133,10 +2133,10 @@ static void	dc_add_proxy_history(TRX_DC_HISTORY *history, int history_num)
 			switch (h->value_type)
 			{
 				case ITEM_VALUE_TYPE_FLOAT:
-					zbx_snprintf(pvalue = buffer, sizeof(buffer), TRX_FS_DBL, h->value.dbl);
+					trx_snprintf(pvalue = buffer, sizeof(buffer), TRX_FS_DBL, h->value.dbl);
 					break;
 				case ITEM_VALUE_TYPE_UINT64:
-					zbx_snprintf(pvalue = buffer, sizeof(buffer), TRX_FS_UI64, h->value.ui64);
+					trx_snprintf(pvalue = buffer, sizeof(buffer), TRX_FS_UI64, h->value.ui64);
 					break;
 				case ITEM_VALUE_TYPE_STR:
 				case ITEM_VALUE_TYPE_TEXT:
@@ -2156,11 +2156,11 @@ static void	dc_add_proxy_history(TRX_DC_HISTORY *history, int history_num)
 			pvalue = (char *)"";
 		}
 
-		zbx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, pvalue, flags);
+		trx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, pvalue, flags);
 	}
 
-	zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 }
 
 /******************************************************************************
@@ -2177,9 +2177,9 @@ static void	dc_add_proxy_history_meta(TRX_DC_HISTORY *history, int history_num)
 {
 	int		i;
 	char		buffer[64], *pvalue;
-	zbx_db_insert_t	db_insert;
+	trx_db_insert_t	db_insert;
 
-	zbx_db_insert_prepare(&db_insert, "proxy_history", "itemid", "clock", "ns", "value", "lastlogsize", "mtime",
+	trx_db_insert_prepare(&db_insert, "proxy_history", "itemid", "clock", "ns", "value", "lastlogsize", "mtime",
 			"flags", NULL);
 
 	for (i = 0; i < history_num; i++)
@@ -2204,10 +2204,10 @@ static void	dc_add_proxy_history_meta(TRX_DC_HISTORY *history, int history_num)
 			switch (h->value_type)
 			{
 				case ITEM_VALUE_TYPE_FLOAT:
-					zbx_snprintf(pvalue = buffer, sizeof(buffer), TRX_FS_DBL, h->value.dbl);
+					trx_snprintf(pvalue = buffer, sizeof(buffer), TRX_FS_DBL, h->value.dbl);
 					break;
 				case ITEM_VALUE_TYPE_UINT64:
-					zbx_snprintf(pvalue = buffer, sizeof(buffer), TRX_FS_UI64, h->value.ui64);
+					trx_snprintf(pvalue = buffer, sizeof(buffer), TRX_FS_UI64, h->value.ui64);
 					break;
 				case ITEM_VALUE_TYPE_STR:
 				case ITEM_VALUE_TYPE_TEXT:
@@ -2224,12 +2224,12 @@ static void	dc_add_proxy_history_meta(TRX_DC_HISTORY *history, int history_num)
 			pvalue = (char *)"";
 		}
 
-		zbx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, pvalue, h->lastlogsize, h->mtime,
+		trx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, pvalue, h->lastlogsize, h->mtime,
 				flags);
 	}
 
-	zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 }
 
 /******************************************************************************
@@ -2245,16 +2245,16 @@ static void	dc_add_proxy_history_meta(TRX_DC_HISTORY *history, int history_num)
 static void	dc_add_proxy_history_log(TRX_DC_HISTORY *history, int history_num)
 {
 	int		i;
-	zbx_db_insert_t	db_insert;
+	trx_db_insert_t	db_insert;
 
 	/* see hc_copy_history_data() for fields that might be uninitialized and need special handling here */
-	zbx_db_insert_prepare(&db_insert, "proxy_history", "itemid", "clock", "ns", "timestamp", "source", "severity",
+	trx_db_insert_prepare(&db_insert, "proxy_history", "itemid", "clock", "ns", "timestamp", "source", "severity",
 			"value", "logeventid", "lastlogsize", "mtime", "flags",  NULL);
 
 	for (i = 0; i < history_num; i++)
 	{
 		unsigned int		flags;
-		zbx_uint64_t		lastlogsize;
+		trx_uint64_t		lastlogsize;
 		int			mtime;
 		const TRX_DC_HISTORY	*h = &history[i];
 
@@ -2266,7 +2266,7 @@ static void	dc_add_proxy_history_log(TRX_DC_HISTORY *history, int history_num)
 
 		if (0 == (h->flags & TRX_DC_FLAG_NOVALUE))
 		{
-			zbx_log_value_t *log = h->value.log;
+			trx_log_value_t *log = h->value.log;
 
 			if (0 != (h->flags & TRX_DC_FLAG_META))
 			{
@@ -2281,7 +2281,7 @@ static void	dc_add_proxy_history_log(TRX_DC_HISTORY *history, int history_num)
 				mtime = 0;
 			}
 
-			zbx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, log->timestamp,
+			trx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, log->timestamp,
 					TRX_NULL2EMPTY_STR(log->source), log->severity, log->value, log->logeventid,
 					lastlogsize, mtime, flags);
 		}
@@ -2292,13 +2292,13 @@ static void	dc_add_proxy_history_log(TRX_DC_HISTORY *history, int history_num)
 
 			flags = PROXY_HISTORY_FLAG_META | PROXY_HISTORY_FLAG_NOVALUE;
 
-			zbx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, unset_if_novalue, "",
+			trx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, unset_if_novalue, "",
 					unset_if_novalue, "", unset_if_novalue, h->lastlogsize, h->mtime, flags);
 		}
 	}
 
-	zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 }
 
 /******************************************************************************
@@ -2311,9 +2311,9 @@ static void	dc_add_proxy_history_log(TRX_DC_HISTORY *history, int history_num)
 static void	dc_add_proxy_history_notsupported(TRX_DC_HISTORY *history, int history_num)
 {
 	int		i;
-	zbx_db_insert_t	db_insert;
+	trx_db_insert_t	db_insert;
 
-	zbx_db_insert_prepare(&db_insert, "proxy_history", "itemid", "clock", "ns", "value", "state", NULL);
+	trx_db_insert_prepare(&db_insert, "proxy_history", "itemid", "clock", "ns", "value", "state", NULL);
 
 	for (i = 0; i < history_num; i++)
 	{
@@ -2322,12 +2322,12 @@ static void	dc_add_proxy_history_notsupported(TRX_DC_HISTORY *history, int histo
 		if (ITEM_STATE_NOTSUPPORTED != h->state)
 			continue;
 
-		zbx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, TRX_NULL2EMPTY_STR(h->value.err),
+		trx_db_insert_add_values(&db_insert, h->itemid, h->ts.sec, h->ts.ns, TRX_NULL2EMPTY_STR(h->value.err),
 				(int)h->state);
 	}
 
-	zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 }
 
 /******************************************************************************
@@ -2413,9 +2413,9 @@ static void	DCmass_proxy_add_history(TRX_DC_HISTORY *history, int history_num)
  *             inventory_values - [OUT] the inventory values to add           *
  *                                                                            *
  ******************************************************************************/
-static void	DCmass_prepare_history(TRX_DC_HISTORY *history, const zbx_vector_uint64_t *itemids,
-		const DC_ITEM *items, const int *errcodes, int history_num, zbx_vector_ptr_t *item_diff,
-		zbx_vector_ptr_t *inventory_values)
+static void	DCmass_prepare_history(TRX_DC_HISTORY *history, const trx_vector_uint64_t *itemids,
+		const DC_ITEM *items, const int *errcodes, int history_num, trx_vector_ptr_t *item_diff,
+		trx_vector_ptr_t *inventory_values)
 {
 	int	i;
 
@@ -2425,10 +2425,10 @@ static void	DCmass_prepare_history(TRX_DC_HISTORY *history, const zbx_vector_uin
 	{
 		TRX_DC_HISTORY	*h = &history[i];
 		const DC_ITEM	*item;
-		zbx_item_diff_t	*diff;
+		trx_item_diff_t	*diff;
 		int		index;
 
-		if (FAIL == (index = zbx_vector_uint64_bsearch(itemids, h->itemid, TRX_DEFAULT_UINT64_COMPARE_FUNC)))
+		if (FAIL == (index = trx_vector_uint64_bsearch(itemids, h->itemid, TRX_DEFAULT_UINT64_COMPARE_FUNC)))
 		{
 			THIS_SHOULD_NEVER_HAPPEN;
 			h->flags |= TRX_DC_FLAG_UNDEF;
@@ -2461,11 +2461,11 @@ static void	DCmass_prepare_history(TRX_DC_HISTORY *history, const zbx_vector_uin
 		normalize_item_value(item, h);
 
 		diff = calculate_item_update(item, h);
-		zbx_vector_ptr_append(item_diff, diff);
+		trx_vector_ptr_append(item_diff, diff);
 		DCinventory_value_add(inventory_values, item, h);
 	}
 
-	zbx_vector_ptr_sort(inventory_values, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	trx_vector_ptr_sort(inventory_values, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -2498,7 +2498,7 @@ static void	DCmodule_prepare_history(TRX_DC_HISTORY *history, int history_num, T
 	TRX_HISTORY_TEXT	*h_text;
 	TRX_HISTORY_LOG		*h_log;
 	int			i;
-	const zbx_log_value_t	*log;
+	const trx_log_value_t	*log;
 
 	*history_float_num = 0;
 	*history_integer_num = 0;
@@ -2661,11 +2661,11 @@ static void	sync_proxy_history(int *total_num, int *more)
 {
 	int			history_num;
 	time_t			sync_start;
-	zbx_vector_ptr_t	history_items;
+	trx_vector_ptr_t	history_items;
 	TRX_DC_HISTORY		history[TRX_HC_SYNC_MAX];
 
-	zbx_vector_ptr_create(&history_items);
-	zbx_vector_ptr_reserve(&history_items, TRX_HC_SYNC_MAX);
+	trx_vector_ptr_create(&history_items);
+	trx_vector_ptr_reserve(&history_items, TRX_HC_SYNC_MAX);
 
 	sync_start = time(NULL);
 
@@ -2706,7 +2706,7 @@ static void	sync_proxy_history(int *total_num, int *more)
 
 		*total_num += history_num;
 
-		zbx_vector_ptr_clear(&history_items);
+		trx_vector_ptr_clear(&history_items);
 		hc_free_item_values(history, history_num);
 
 		/* Exit from sync loop if we have spent too much time here */
@@ -2715,7 +2715,7 @@ static void	sync_proxy_history(int *total_num, int *more)
 	}
 	while (TRX_SYNC_MORE == *more && TRX_HC_SYNC_TIME_MAX >= time(NULL) - sync_start);
 
-	zbx_vector_ptr_destroy(&history_items);
+	trx_vector_ptr_destroy(&history_items);
 }
 
 /******************************************************************************
@@ -2752,54 +2752,54 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 	int				i, history_num, history_float_num, history_integer_num, history_string_num,
 					history_text_num, history_log_num, txn_error;
 	time_t				sync_start;
-	zbx_vector_uint64_t		triggerids, timer_triggerids;
-	zbx_vector_ptr_t		history_items, trigger_diff, item_diff, inventory_values;
-	zbx_vector_uint64_pair_t	trends_diff;
+	trx_vector_uint64_t		triggerids, timer_triggerids;
+	trx_vector_ptr_t		history_items, trigger_diff, item_diff, inventory_values;
+	trx_vector_uint64_pair_t	trends_diff;
 	TRX_DC_HISTORY			history[TRX_HC_SYNC_MAX];
 
 	if (NULL == history_float && NULL != history_float_cbs)
 	{
-		history_float = (TRX_HISTORY_FLOAT *)zbx_malloc(history_float,
+		history_float = (TRX_HISTORY_FLOAT *)trx_malloc(history_float,
 				TRX_HC_SYNC_MAX * sizeof(TRX_HISTORY_FLOAT));
 	}
 
 	if (NULL == history_integer && NULL != history_integer_cbs)
 	{
-		history_integer = (TRX_HISTORY_INTEGER *)zbx_malloc(history_integer,
+		history_integer = (TRX_HISTORY_INTEGER *)trx_malloc(history_integer,
 				TRX_HC_SYNC_MAX * sizeof(TRX_HISTORY_INTEGER));
 	}
 
 	if (NULL == history_string && NULL != history_string_cbs)
 	{
-		history_string = (TRX_HISTORY_STRING *)zbx_malloc(history_string,
+		history_string = (TRX_HISTORY_STRING *)trx_malloc(history_string,
 				TRX_HC_SYNC_MAX * sizeof(TRX_HISTORY_STRING));
 	}
 
 	if (NULL == history_text && NULL != history_text_cbs)
 	{
-		history_text = (TRX_HISTORY_TEXT *)zbx_malloc(history_text,
+		history_text = (TRX_HISTORY_TEXT *)trx_malloc(history_text,
 				TRX_HC_SYNC_MAX * sizeof(TRX_HISTORY_TEXT));
 	}
 
 	if (NULL == history_log && NULL != history_log_cbs)
 	{
-		history_log = (TRX_HISTORY_LOG *)zbx_malloc(history_log,
+		history_log = (TRX_HISTORY_LOG *)trx_malloc(history_log,
 				TRX_HC_SYNC_MAX * sizeof(TRX_HISTORY_LOG));
 	}
 
-	zbx_vector_ptr_create(&inventory_values);
-	zbx_vector_ptr_create(&item_diff);
-	zbx_vector_ptr_create(&trigger_diff);
-	zbx_vector_uint64_pair_create(&trends_diff);
+	trx_vector_ptr_create(&inventory_values);
+	trx_vector_ptr_create(&item_diff);
+	trx_vector_ptr_create(&trigger_diff);
+	trx_vector_uint64_pair_create(&trends_diff);
 
-	zbx_vector_uint64_create(&triggerids);
-	zbx_vector_uint64_reserve(&triggerids, TRX_HC_SYNC_MAX);
+	trx_vector_uint64_create(&triggerids);
+	trx_vector_uint64_reserve(&triggerids, TRX_HC_SYNC_MAX);
 
-	zbx_vector_uint64_create(&timer_triggerids);
-	zbx_vector_uint64_reserve(&timer_triggerids, TRX_HC_TIMER_MAX);
+	trx_vector_uint64_create(&timer_triggerids);
+	trx_vector_uint64_reserve(&timer_triggerids, TRX_HC_TIMER_MAX);
 
-	zbx_vector_ptr_create(&history_items);
-	zbx_vector_ptr_reserve(&history_items, TRX_HC_SYNC_MAX);
+	trx_vector_ptr_create(&history_items);
+	trx_vector_ptr_reserve(&history_items, TRX_HC_SYNC_MAX);
 
 	sync_start = time(NULL);
 
@@ -2807,7 +2807,7 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 	{
 		DC_ITEM			*items;
 		int			*errcodes, trends_num = 0, timers_num = 0, ret = SUCCEED;
-		zbx_vector_uint64_t	itemids;
+		trx_vector_uint64_t	itemids;
 		TRX_DC_TREND		*trends = NULL;
 
 		*more = TRX_SYNC_DONE;
@@ -2823,7 +2823,7 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 				LOCK_CACHE;
 				hc_push_items(&history_items);
 				UNLOCK_CACHE;
-				zbx_vector_ptr_clear(&history_items);
+				trx_vector_ptr_clear(&history_items);
 			}
 		}
 		else
@@ -2833,16 +2833,16 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 		{
 			hc_get_item_values(history, &history_items);	/* copy item data from history cache */
 
-			items = (DC_ITEM *)zbx_malloc(NULL, sizeof(DC_ITEM) * (size_t)history_num);
-			errcodes = (int *)zbx_malloc(NULL, sizeof(int) * (size_t)history_num);
+			items = (DC_ITEM *)trx_malloc(NULL, sizeof(DC_ITEM) * (size_t)history_num);
+			errcodes = (int *)trx_malloc(NULL, sizeof(int) * (size_t)history_num);
 
-			zbx_vector_uint64_create(&itemids);
-			zbx_vector_uint64_reserve(&itemids, history_num);
+			trx_vector_uint64_create(&itemids);
+			trx_vector_uint64_reserve(&itemids, history_num);
 
 			for (i = 0; i < history_num; i++)
-				zbx_vector_uint64_append(&itemids, history[i].itemid);
+				trx_vector_uint64_append(&itemids, history[i].itemid);
 
-			zbx_vector_uint64_sort(&itemids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+			trx_vector_uint64_sort(&itemids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 			DCconfig_get_items_by_itemids(items, itemids.values, errcodes, history_num);
 
@@ -2862,27 +2862,27 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 					DBmass_update_trends(trends, trends_num, &trends_diff);
 
 					/* process internal events generated by DCmass_prepare_history() */
-					zbx_process_events(NULL, NULL);
+					trx_process_events(NULL, NULL);
 
 					if (TRX_DB_OK == (txn_error = DBcommit()))
 						DCupdate_trends(&trends_diff);
 					else
-						zbx_reset_event_recovery();
+						trx_reset_event_recovery();
 
-					zbx_vector_uint64_pair_clear(&trends_diff);
+					trx_vector_uint64_pair_clear(&trends_diff);
 				}
 				while (TRX_DB_DOWN == txn_error);
 			}
 
-			zbx_clean_events();
+			trx_clean_events();
 
-			zbx_vector_ptr_clear_ext(&inventory_values, (zbx_clean_func_t)DCinventory_value_free);
-			zbx_vector_ptr_clear_ext(&item_diff, (zbx_clean_func_t)zbx_ptr_free);
+			trx_vector_ptr_clear_ext(&inventory_values, (trx_clean_func_t)DCinventory_value_free);
+			trx_vector_ptr_clear_ext(&item_diff, (trx_clean_func_t)trx_ptr_free);
 		}
 
 		if (FAIL != ret)
 		{
-			zbx_dc_get_timer_triggerids(&timer_triggerids, time(NULL), TRX_HC_TIMER_MAX);
+			trx_dc_get_timer_triggerids(&timer_triggerids, time(NULL), TRX_HC_TIMER_MAX);
 			timers_num = timer_triggerids.values_num;
 
 			if (TRX_HC_TIMER_MAX == timers_num)
@@ -2892,7 +2892,7 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 			{
 				/* timer triggers do not intersect with item triggers because item triggers */
 				/* where already locked and skipped when retrieving timer triggers          */
-				zbx_vector_uint64_append_array(&triggerids, timer_triggerids.values,
+				trx_vector_uint64_append_array(&triggerids, timer_triggerids.values,
 						timer_triggerids.values_num);
 				do
 				{
@@ -2901,8 +2901,8 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 					recalculate_triggers(history, history_num, &timer_triggerids, &trigger_diff);
 
 					/* process trigger events generated by recalculate_triggers() */
-					if (0 != zbx_process_events(&trigger_diff, &triggerids))
-						zbx_db_save_trigger_changes(&trigger_diff);
+					if (0 != trx_process_events(&trigger_diff, &triggerids))
+						trx_db_save_trigger_changes(&trigger_diff);
 
 					if (TRX_DB_OK == (txn_error = DBcommit()))
 					{
@@ -2910,21 +2910,21 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 						DBupdate_itservices(&trigger_diff);
 					}
 					else
-						zbx_clean_events();
+						trx_clean_events();
 
-					zbx_vector_ptr_clear_ext(&trigger_diff, (zbx_clean_func_t)zbx_trigger_diff_free);
+					trx_vector_ptr_clear_ext(&trigger_diff, (trx_clean_func_t)trx_trigger_diff_free);
 				}
 				while (TRX_DB_DOWN == txn_error);
 			}
 
-			zbx_vector_uint64_clear(&timer_triggerids);
+			trx_vector_uint64_clear(&timer_triggerids);
 		}
 
 		if (0 != triggerids.values_num)
 		{
 			*triggers_num += triggerids.values_num;
 			DCconfig_unlock_triggers(&triggerids);
-			zbx_vector_uint64_clear(&triggerids);
+			trx_vector_uint64_clear(&triggerids);
 		}
 
 		if (0 != history_num)
@@ -2963,7 +2963,7 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 						history_string, history_text, history_log);
 			}
 
-			if (SUCCEED == zbx_is_export_enabled())
+			if (SUCCEED == trx_is_export_enabled())
 			{
 				if (0 != history_num)
 				{
@@ -2971,22 +2971,22 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 							trends, trends_num);
 				}
 
-				zbx_export_events();
+				trx_export_events();
 			}
 		}
 
 		if (0 != history_num || 0 != timers_num)
-			zbx_clean_events();
+			trx_clean_events();
 
 		if (0 != history_num)
 		{
-			zbx_free(trends);
-			zbx_vector_uint64_destroy(&itemids);
+			trx_free(trends);
+			trx_vector_uint64_destroy(&itemids);
 			DCconfig_clean_items(items, errcodes, history_num);
-			zbx_free(errcodes);
-			zbx_free(items);
+			trx_free(errcodes);
+			trx_free(items);
 
-			zbx_vector_ptr_clear(&history_items);
+			trx_vector_ptr_clear(&history_items);
 			hc_free_item_values(history, history_num);
 		}
 
@@ -2995,14 +2995,14 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 	}
 	while (TRX_SYNC_MORE == *more && TRX_HC_SYNC_TIME_MAX >= time(NULL) - sync_start);
 
-	zbx_vector_ptr_destroy(&history_items);
-	zbx_vector_ptr_destroy(&inventory_values);
-	zbx_vector_ptr_destroy(&item_diff);
-	zbx_vector_ptr_destroy(&trigger_diff);
-	zbx_vector_uint64_pair_destroy(&trends_diff);
+	trx_vector_ptr_destroy(&history_items);
+	trx_vector_ptr_destroy(&inventory_values);
+	trx_vector_ptr_destroy(&item_diff);
+	trx_vector_ptr_destroy(&trigger_diff);
+	trx_vector_uint64_pair_destroy(&trends_diff);
 
-	zbx_vector_uint64_destroy(&timer_triggerids);
-	zbx_vector_uint64_destroy(&triggerids);
+	trx_vector_uint64_destroy(&timer_triggerids);
+	trx_vector_uint64_destroy(&triggerids);
 }
 
 /******************************************************************************
@@ -3020,9 +3020,9 @@ static void	sync_server_history(int *values_num, int *triggers_num, int *more)
 static void	sync_history_cache_full(void)
 {
 	int			values_num = 0, triggers_num = 0, more;
-	zbx_hashset_iter_t	iter;
-	zbx_hc_item_t		*item;
-	zbx_binary_heap_t	tmp_history_queue;
+	trx_hashset_iter_t	iter;
+	trx_hc_item_t		*item;
+	trx_binary_heap_t	tmp_history_queue;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d", __func__, cache->history_num);
 
@@ -3043,16 +3043,16 @@ static void	sync_history_cache_full(void)
 		DCconfig_unlock_all_triggers();
 
 		/* clear timer trigger queue to avoid processing time triggers at exit */
-		zbx_dc_clear_timer_queue();
+		trx_dc_clear_timer_queue();
 	}
 
 	tmp_history_queue = cache->history_queue;
 
-	zbx_binary_heap_create(&cache->history_queue, hc_queue_elem_compare_func, TRX_BINARY_HEAP_OPTION_EMPTY);
-	zbx_hashset_iter_reset(&cache->history_items, &iter);
+	trx_binary_heap_create(&cache->history_queue, hc_queue_elem_compare_func, TRX_BINARY_HEAP_OPTION_EMPTY);
+	trx_hashset_iter_reset(&cache->history_items, &iter);
 
 	/* add all items from history index to the new history queue */
-	while (NULL != (item = (zbx_hc_item_t *)zbx_hashset_iter_next(&iter)))
+	while (NULL != (item = (trx_hc_item_t *)trx_hashset_iter_next(&iter)))
 	{
 		if (NULL != item->tail)
 		{
@@ -3080,7 +3080,7 @@ static void	sync_history_cache_full(void)
 		treegix_log(LOG_LEVEL_WARNING, "syncing history data done");
 	}
 
-	zbx_binary_heap_destroy(&cache->history_queue);
+	trx_binary_heap_destroy(&cache->history_queue);
 	cache->history_queue = tmp_history_queue;
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -3088,12 +3088,12 @@ static void	sync_history_cache_full(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_log_sync_history_cache_progress                              *
+ * Function: trx_log_sync_history_cache_progress                              *
  *                                                                            *
  * Purpose: log progress of syncing history data                              *
  *                                                                            *
  ******************************************************************************/
-void	zbx_log_sync_history_cache_progress(void)
+void	trx_log_sync_history_cache_progress(void)
 {
 	double		pcnt = -1.0;
 	int		ts_last, ts_next, sec;
@@ -3139,7 +3139,7 @@ void	zbx_log_sync_history_cache_progress(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_sync_history_cache                                           *
+ * Function: trx_sync_history_cache                                           *
  *                                                                            *
  * Purpose: writes updates and new data from history cache to database        *
  *                                                                            *
@@ -3149,7 +3149,7 @@ void	zbx_log_sync_history_cache_progress(void)
  *                                TRX_SYNC_MORE - more data to sync           *
  *                                                                            *
  ******************************************************************************/
-void	zbx_sync_history_cache(int *values_num, int *triggers_num, int *more)
+void	trx_sync_history_cache(int *values_num, int *triggers_num, int *more)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() history_num:%d", __func__, cache->history_num);
 
@@ -3178,7 +3178,7 @@ static void	dc_string_buffer_realloc(size_t len)
 	}
 	while (string_values_alloc < string_values_offset + len);
 
-	string_values = (char *)zbx_realloc(string_values, string_values_alloc);
+	string_values = (char *)trx_realloc(string_values, string_values_alloc);
 }
 
 static dc_item_value_t	*dc_local_get_history_slot(void)
@@ -3189,14 +3189,14 @@ static dc_item_value_t	*dc_local_get_history_slot(void)
 	if (item_values_alloc == item_values_num)
 	{
 		item_values_alloc += TRX_STRUCT_REALLOC_STEP;
-		item_values = (dc_item_value_t *)zbx_realloc(item_values, item_values_alloc * sizeof(dc_item_value_t));
+		item_values = (dc_item_value_t *)trx_realloc(item_values, item_values_alloc * sizeof(dc_item_value_t));
 	}
 
 	return &item_values[item_values_num++];
 }
 
-static void	dc_local_add_history_dbl(zbx_uint64_t itemid, unsigned char item_value_type, const zbx_timespec_t *ts,
-		double value_orig, zbx_uint64_t lastlogsize, int mtime, unsigned char flags)
+static void	dc_local_add_history_dbl(trx_uint64_t itemid, unsigned char item_value_type, const trx_timespec_t *ts,
+		double value_orig, trx_uint64_t lastlogsize, int mtime, unsigned char flags)
 {
 	dc_item_value_t	*item_value;
 
@@ -3219,8 +3219,8 @@ static void	dc_local_add_history_dbl(zbx_uint64_t itemid, unsigned char item_val
 		item_value->value.value_dbl = value_orig;
 }
 
-static void	dc_local_add_history_uint(zbx_uint64_t itemid, unsigned char item_value_type, const zbx_timespec_t *ts,
-		zbx_uint64_t value_orig, zbx_uint64_t lastlogsize, int mtime, unsigned char flags)
+static void	dc_local_add_history_uint(trx_uint64_t itemid, unsigned char item_value_type, const trx_timespec_t *ts,
+		trx_uint64_t value_orig, trx_uint64_t lastlogsize, int mtime, unsigned char flags)
 {
 	dc_item_value_t	*item_value;
 
@@ -3243,8 +3243,8 @@ static void	dc_local_add_history_uint(zbx_uint64_t itemid, unsigned char item_va
 		item_value->value.value_uint = value_orig;
 }
 
-static void	dc_local_add_history_text(zbx_uint64_t itemid, unsigned char item_value_type, const zbx_timespec_t *ts,
-		const char *value_orig, zbx_uint64_t lastlogsize, int mtime, unsigned char flags)
+static void	dc_local_add_history_text(trx_uint64_t itemid, unsigned char item_value_type, const trx_timespec_t *ts,
+		const char *value_orig, trx_uint64_t lastlogsize, int mtime, unsigned char flags)
 {
 	dc_item_value_t	*item_value;
 
@@ -3265,7 +3265,7 @@ static void	dc_local_add_history_text(zbx_uint64_t itemid, unsigned char item_va
 
 	if (0 == (item_value->flags & TRX_DC_FLAG_NOVALUE))
 	{
-		item_value->value.value_str.len = zbx_db_strlen_n(value_orig, TRX_HISTORY_VALUE_LEN) + 1;
+		item_value->value.value_str.len = trx_db_strlen_n(value_orig, TRX_HISTORY_VALUE_LEN) + 1;
 		dc_string_buffer_realloc(item_value->value.value_str.len);
 
 		item_value->value.value_str.pvalue = string_values_offset;
@@ -3276,8 +3276,8 @@ static void	dc_local_add_history_text(zbx_uint64_t itemid, unsigned char item_va
 		item_value->value.value_str.len = 0;
 }
 
-static void	dc_local_add_history_log(zbx_uint64_t itemid, unsigned char item_value_type, const zbx_timespec_t *ts,
-		const zbx_log_t *log, zbx_uint64_t lastlogsize, int mtime, unsigned char flags)
+static void	dc_local_add_history_log(trx_uint64_t itemid, unsigned char item_value_type, const trx_timespec_t *ts,
+		const trx_log_t *log, trx_uint64_t lastlogsize, int mtime, unsigned char flags)
 {
 	dc_item_value_t	*item_value;
 
@@ -3303,10 +3303,10 @@ static void	dc_local_add_history_log(zbx_uint64_t itemid, unsigned char item_val
 		item_value->logeventid = log->logeventid;
 		item_value->timestamp = log->timestamp;
 
-		item_value->value.value_str.len = zbx_db_strlen_n(log->value, TRX_HISTORY_VALUE_LEN) + 1;
+		item_value->value.value_str.len = trx_db_strlen_n(log->value, TRX_HISTORY_VALUE_LEN) + 1;
 
 		if (NULL != log->source && '\0' != *log->source)
-			item_value->source.len = zbx_db_strlen_n(log->source, HISTORY_LOG_SOURCE_LEN) + 1;
+			item_value->source.len = trx_db_strlen_n(log->source, HISTORY_LOG_SOURCE_LEN) + 1;
 		else
 			item_value->source.len = 0;
 	}
@@ -3336,8 +3336,8 @@ static void	dc_local_add_history_log(zbx_uint64_t itemid, unsigned char item_val
 	}
 }
 
-static void	dc_local_add_history_notsupported(zbx_uint64_t itemid, const zbx_timespec_t *ts, const char *error,
-		zbx_uint64_t lastlogsize, int mtime, unsigned char flags)
+static void	dc_local_add_history_notsupported(trx_uint64_t itemid, const trx_timespec_t *ts, const char *error,
+		trx_uint64_t lastlogsize, int mtime, unsigned char flags)
 {
 	dc_item_value_t	*item_value;
 
@@ -3354,14 +3354,14 @@ static void	dc_local_add_history_notsupported(zbx_uint64_t itemid, const zbx_tim
 		item_value->mtime = mtime;
 	}
 
-	item_value->value.value_str.len = zbx_db_strlen_n(error, ITEM_ERROR_LEN) + 1;
+	item_value->value.value_str.len = trx_db_strlen_n(error, ITEM_ERROR_LEN) + 1;
 	dc_string_buffer_realloc(item_value->value.value_str.len);
 	item_value->value.value_str.pvalue = string_values_offset;
 	memcpy(&string_values[string_values_offset], error, item_value->value.value_str.len);
 	string_values_offset += item_value->value.value_str.len;
 }
 
-static void	dc_local_add_history_lld(zbx_uint64_t itemid, const zbx_timespec_t *ts, const char *value_orig)
+static void	dc_local_add_history_lld(trx_uint64_t itemid, const trx_timespec_t *ts, const char *value_orig)
 {
 	dc_item_value_t	*item_value;
 
@@ -3379,7 +3379,7 @@ static void	dc_local_add_history_lld(zbx_uint64_t itemid, const zbx_timespec_t *
 	string_values_offset += item_value->value.value_str.len;
 }
 
-static void	dc_local_add_history_empty(zbx_uint64_t itemid, unsigned char item_value_type, const zbx_timespec_t *ts,
+static void	dc_local_add_history_empty(trx_uint64_t itemid, unsigned char item_value_type, const trx_timespec_t *ts,
 		unsigned char flags)
 {
 	dc_item_value_t	*item_value;
@@ -3411,14 +3411,14 @@ static void	dc_local_add_history_empty(zbx_uint64_t itemid, unsigned char item_v
  *                                is ITEM_STATE_NOTSUPPORTED                  *
  *                                                                            *
  ******************************************************************************/
-void	dc_add_history(zbx_uint64_t itemid, unsigned char item_value_type, unsigned char item_flags,
-		AGENT_RESULT *result, const zbx_timespec_t *ts, unsigned char state, const char *error)
+void	dc_add_history(trx_uint64_t itemid, unsigned char item_value_type, unsigned char item_flags,
+		AGENT_RESULT *result, const trx_timespec_t *ts, unsigned char state, const char *error)
 {
 	unsigned char	value_flags;
 
 	if (ITEM_STATE_NOTSUPPORTED == state)
 	{
-		zbx_uint64_t	lastlogsize;
+		trx_uint64_t	lastlogsize;
 		int		mtime;
 
 		if (NULL != result && 0 != ISSET_META(result))
@@ -3543,14 +3543,14 @@ TRX_MEM_FUNC_IMPL(__hc, hc_mem)
  ******************************************************************************/
 static int	hc_queue_elem_compare_func(const void *d1, const void *d2)
 {
-	const zbx_binary_heap_elem_t	*e1 = (const zbx_binary_heap_elem_t *)d1;
-	const zbx_binary_heap_elem_t	*e2 = (const zbx_binary_heap_elem_t *)d2;
+	const trx_binary_heap_elem_t	*e1 = (const trx_binary_heap_elem_t *)d1;
+	const trx_binary_heap_elem_t	*e2 = (const trx_binary_heap_elem_t *)d2;
 
-	const zbx_hc_item_t	*item1 = (const zbx_hc_item_t *)e1->data;
-	const zbx_hc_item_t	*item2 = (const zbx_hc_item_t *)e2->data;
+	const trx_hc_item_t	*item1 = (const trx_hc_item_t *)e1->data;
+	const trx_hc_item_t	*item2 = (const trx_hc_item_t *)e2->data;
 
 	/* compare by timestamp of the oldest value */
-	return zbx_timespec_compare(&item1->tail->ts, &item2->tail->ts);
+	return trx_timespec_compare(&item1->tail->ts, &item2->tail->ts);
 }
 
 /******************************************************************************
@@ -3562,7 +3562,7 @@ static int	hc_queue_elem_compare_func(const void *d1, const void *d2)
  * Parameters: data - [IN] history item data                                  *
  *                                                                            *
  ******************************************************************************/
-static void	hc_free_data(zbx_hc_data_t *data)
+static void	hc_free_data(trx_hc_data_t *data)
 {
 	if (ITEM_STATE_NOTSUPPORTED == data->state)
 	{
@@ -3602,11 +3602,11 @@ static void	hc_free_data(zbx_hc_data_t *data)
  * Parameters: data - [IN] history item data                                  *
  *                                                                            *
  ******************************************************************************/
-static void	hc_queue_item(zbx_hc_item_t *item)
+static void	hc_queue_item(trx_hc_item_t *item)
 {
-	zbx_binary_heap_elem_t	elem = {item->itemid, (const void *)item};
+	trx_binary_heap_elem_t	elem = {item->itemid, (const void *)item};
 
-	zbx_binary_heap_insert(&cache->history_queue, &elem);
+	trx_binary_heap_insert(&cache->history_queue, &elem);
 }
 
 /******************************************************************************
@@ -3621,9 +3621,9 @@ static void	hc_queue_item(zbx_hc_item_t *item)
  *               history cache                                                *
  *                                                                            *
  ******************************************************************************/
-static zbx_hc_item_t	*hc_get_item(zbx_uint64_t itemid)
+static trx_hc_item_t	*hc_get_item(trx_uint64_t itemid)
 {
-	return (zbx_hc_item_t *)zbx_hashset_search(&cache->history_items, &itemid);
+	return (trx_hc_item_t *)trx_hashset_search(&cache->history_items, &itemid);
 }
 
 /******************************************************************************
@@ -3638,11 +3638,11 @@ static zbx_hc_item_t	*hc_get_item(zbx_uint64_t itemid)
  * Return value: the added history item                                       *
  *                                                                            *
  ******************************************************************************/
-static zbx_hc_item_t	*hc_add_item(zbx_uint64_t itemid, zbx_hc_data_t *data)
+static trx_hc_item_t	*hc_add_item(trx_uint64_t itemid, trx_hc_data_t *data)
 {
-	zbx_hc_item_t	item_local = {itemid, TRX_HC_ITEM_STATUS_NORMAL, data, data};
+	trx_hc_item_t	item_local = {itemid, TRX_HC_ITEM_STATUS_NORMAL, data, data};
 
-	return (zbx_hc_item_t *)zbx_hashset_insert(&cache->history_items, &item_local, sizeof(item_local));
+	return (trx_hc_item_t *)trx_hashset_insert(&cache->history_items, &item_local, sizeof(item_local));
 }
 
 /******************************************************************************
@@ -3717,15 +3717,15 @@ static int	hc_clone_history_str_data(char **dst, const dc_value_str_t *str)
  *           until it finishes cloning log value.                             *
  *                                                                            *
  ******************************************************************************/
-static int	hc_clone_history_log_data(zbx_log_value_t **dst, const dc_item_value_t *item_value)
+static int	hc_clone_history_log_data(trx_log_value_t **dst, const dc_item_value_t *item_value)
 {
 	if (NULL == *dst)
 	{
 		/* using realloc instead of malloc just to suppress 'not used' warning for realloc */
-		if (NULL == (*dst = (zbx_log_value_t *)__hc_mem_realloc_func(NULL, sizeof(zbx_log_value_t))))
+		if (NULL == (*dst = (trx_log_value_t *)__hc_mem_realloc_func(NULL, sizeof(trx_log_value_t))))
 			return FAIL;
 
-		memset(*dst, 0, sizeof(zbx_log_value_t));
+		memset(*dst, 0, sizeof(trx_log_value_t));
 	}
 
 	if (SUCCEED != hc_clone_history_str_data(&(*dst)->value, &item_value->value.value_str))
@@ -3757,14 +3757,14 @@ static int	hc_clone_history_log_data(zbx_log_value_t **dst, const dc_item_value_
  *           until it finishes cloning item value.                            *
  *                                                                            *
  ******************************************************************************/
-static int	hc_clone_history_data(zbx_hc_data_t **data, const dc_item_value_t *item_value)
+static int	hc_clone_history_data(trx_hc_data_t **data, const dc_item_value_t *item_value)
 {
 	if (NULL == *data)
 	{
-		if (NULL == (*data = (zbx_hc_data_t *)__hc_mem_malloc_func(NULL, sizeof(zbx_hc_data_t))))
+		if (NULL == (*data = (trx_hc_data_t *)__hc_mem_malloc_func(NULL, sizeof(trx_hc_data_t))))
 			return FAIL;
 
-		memset(*data, 0, sizeof(zbx_hc_data_t));
+		memset(*data, 0, sizeof(trx_hc_data_t));
 
 		(*data)->state = item_value->state;
 		(*data)->ts = item_value->ts;
@@ -3876,11 +3876,11 @@ static void	hc_add_item_values(dc_item_value_t *values, int values_num)
 {
 	dc_item_value_t	*item_value;
 	int		i;
-	zbx_hc_item_t	*item;
+	trx_hc_item_t	*item;
 
 	for (i = 0; i < values_num; i++)
 	{
-		zbx_hc_data_t	*data = NULL;
+		trx_hc_data_t	*data = NULL;
 
 		item_value = &values[i];
 
@@ -3921,7 +3921,7 @@ static void	hc_add_item_values(dc_item_value_t *values, int values_num)
  * Comments: handling of uninitialized fields in dc_add_proxy_history_log()   *
  *                                                                            *
  ******************************************************************************/
-static void	hc_copy_history_data(TRX_DC_HISTORY *history, zbx_uint64_t itemid, zbx_hc_data_t *data)
+static void	hc_copy_history_data(TRX_DC_HISTORY *history, trx_uint64_t itemid, trx_hc_data_t *data)
 {
 	history->itemid = itemid;
 	history->ts = data->ts;
@@ -3932,7 +3932,7 @@ static void	hc_copy_history_data(TRX_DC_HISTORY *history, zbx_uint64_t itemid, z
 
 	if (ITEM_STATE_NOTSUPPORTED == data->state)
 	{
-		history->value.err = zbx_strdup(NULL, data->value.str);
+		history->value.err = trx_strdup(NULL, data->value.str);
 		history->flags |= TRX_DC_FLAG_UNDEF;
 		return;
 	}
@@ -3951,14 +3951,14 @@ static void	hc_copy_history_data(TRX_DC_HISTORY *history, zbx_uint64_t itemid, z
 				break;
 			case ITEM_VALUE_TYPE_STR:
 			case ITEM_VALUE_TYPE_TEXT:
-				history->value.str = zbx_strdup(NULL, data->value.str);
+				history->value.str = trx_strdup(NULL, data->value.str);
 				break;
 			case ITEM_VALUE_TYPE_LOG:
-				history->value.log = (zbx_log_value_t *)zbx_malloc(NULL, sizeof(zbx_log_value_t));
-				history->value.log->value = zbx_strdup(NULL, data->value.log->value);
+				history->value.log = (trx_log_value_t *)trx_malloc(NULL, sizeof(trx_log_value_t));
+				history->value.log->value = trx_strdup(NULL, data->value.log->value);
 
 				if (NULL != data->value.log->source)
-					history->value.log->source = zbx_strdup(NULL, data->value.log->source);
+					history->value.log->source = trx_strdup(NULL, data->value.log->source);
 				else
 					history->value.log->source = NULL;
 
@@ -3983,18 +3983,18 @@ static void	hc_copy_history_data(TRX_DC_HISTORY *history, zbx_uint64_t itemid, z
  *           hc_push_items() function after they have been processed.         *
  *                                                                            *
  ******************************************************************************/
-static void	hc_pop_items(zbx_vector_ptr_t *history_items)
+static void	hc_pop_items(trx_vector_ptr_t *history_items)
 {
-	zbx_binary_heap_elem_t	*elem;
-	zbx_hc_item_t		*item;
+	trx_binary_heap_elem_t	*elem;
+	trx_hc_item_t		*item;
 
-	while (TRX_HC_SYNC_MAX > history_items->values_num && FAIL == zbx_binary_heap_empty(&cache->history_queue))
+	while (TRX_HC_SYNC_MAX > history_items->values_num && FAIL == trx_binary_heap_empty(&cache->history_queue))
 	{
-		elem = zbx_binary_heap_find_min(&cache->history_queue);
-		item = (zbx_hc_item_t *)elem->data;
-		zbx_vector_ptr_append(history_items, item);
+		elem = trx_binary_heap_find_min(&cache->history_queue);
+		item = (trx_hc_item_t *)elem->data;
+		trx_vector_ptr_append(history_items, item);
 
-		zbx_binary_heap_remove_min(&cache->history_queue);
+		trx_binary_heap_remove_min(&cache->history_queue);
 	}
 }
 
@@ -4008,16 +4008,16 @@ static void	hc_pop_items(zbx_vector_ptr_t *history_items)
  *             history_items - [IN] the history items                         *
  *                                                                            *
  ******************************************************************************/
-static void	hc_get_item_values(TRX_DC_HISTORY *history, zbx_vector_ptr_t *history_items)
+static void	hc_get_item_values(TRX_DC_HISTORY *history, trx_vector_ptr_t *history_items)
 {
 	int		i, history_num = 0;
-	zbx_hc_item_t	*item;
+	trx_hc_item_t	*item;
 
 	/* we don't need to lock history cache because no other processes can  */
 	/* change item's history data until it is pushed back to history queue */
 	for (i = 0; i < history_items->values_num; i++)
 	{
-		item = (zbx_hc_item_t *)history_items->values[i];
+		item = (trx_hc_item_t *)history_items->values[i];
 
 		if (TRX_HC_ITEM_STATUS_BUSY == item->status)
 			continue;
@@ -4040,15 +4040,15 @@ static void	hc_get_item_values(TRX_DC_HISTORY *history, zbx_vector_ptr_t *histor
  *           removed from history index.                                      *
  *                                                                            *
  ******************************************************************************/
-void	hc_push_items(zbx_vector_ptr_t *history_items)
+void	hc_push_items(trx_vector_ptr_t *history_items)
 {
 	int		i;
-	zbx_hc_item_t	*item;
-	zbx_hc_data_t	*data_free;
+	trx_hc_item_t	*item;
+	trx_hc_data_t	*data_free;
 
 	for (i = 0; i < history_items->values_num; i++)
 	{
-		item = (zbx_hc_item_t *)history_items->values[i];
+		item = (trx_hc_item_t *)history_items->values[i];
 
 		switch (item->status)
 		{
@@ -4062,7 +4062,7 @@ void	hc_push_items(zbx_vector_ptr_t *history_items)
 				item->tail = item->tail->next;
 				hc_free_data(data_free);
 				if (NULL == item->tail)
-					zbx_hashset_remove(&cache->history_items, item);
+					trx_hashset_remove(&cache->history_items, item);
 				else
 					hc_queue_item(item);
 				break;
@@ -4103,11 +4103,11 @@ static int	init_trend_cache(char **error)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != (ret = zbx_mutex_create(&trends_lock, TRX_MUTEX_TRENDS, error)))
+	if (SUCCEED != (ret = trx_mutex_create(&trends_lock, TRX_MUTEX_TRENDS, error)))
 		goto out;
 
-	sz = zbx_mem_required_size(1, "trend cache", "TrendCacheSize");
-	if (SUCCEED != (ret = zbx_mem_create(&trend_mem, CONFIG_TRENDS_CACHE_SIZE, "trend cache", "TrendCacheSize", 0,
+	sz = trx_mem_required_size(1, "trend cache", "TrendCacheSize");
+	if (SUCCEED != (ret = trx_mem_create(&trend_mem, CONFIG_TRENDS_CACHE_SIZE, "trend cache", "TrendCacheSize", 0,
 			error)))
 	{
 		goto out;
@@ -4122,7 +4122,7 @@ static int	init_trend_cache(char **error)
 					/* Still does not make sense to have it more than initial */
 					/* item hashset size in configuration cache.              */
 
-	zbx_hashset_create_ext(&cache->trends, INIT_HASHSET_SIZE,
+	trx_hashset_create_ext(&cache->trends, INIT_HASHSET_SIZE,
 			TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC, NULL,
 			__trend_mem_malloc_func, __trend_mem_realloc_func, __trend_mem_free_func);
 
@@ -4148,19 +4148,19 @@ int	init_database_cache(char **error)
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (SUCCEED != (ret = zbx_mutex_create(&cache_lock, TRX_MUTEX_CACHE, error)))
+	if (SUCCEED != (ret = trx_mutex_create(&cache_lock, TRX_MUTEX_CACHE, error)))
 		goto out;
 
-	if (SUCCEED != (ret = zbx_mutex_create(&cache_ids_lock, TRX_MUTEX_CACHE_IDS, error)))
+	if (SUCCEED != (ret = trx_mutex_create(&cache_ids_lock, TRX_MUTEX_CACHE_IDS, error)))
 		goto out;
 
-	if (SUCCEED != (ret = zbx_mem_create(&hc_mem, CONFIG_HISTORY_CACHE_SIZE, "history cache",
+	if (SUCCEED != (ret = trx_mem_create(&hc_mem, CONFIG_HISTORY_CACHE_SIZE, "history cache",
 			"HistoryCacheSize", 1, error)))
 	{
 		goto out;
 	}
 
-	if (SUCCEED != (ret = zbx_mem_create(&hc_index_mem, CONFIG_HISTORY_INDEX_CACHE_SIZE, "history index cache",
+	if (SUCCEED != (ret = trx_mem_create(&hc_index_mem, CONFIG_HISTORY_INDEX_CACHE_SIZE, "history index cache",
 			"HistoryIndexCacheSize", 0, error)))
 	{
 		goto out;
@@ -4172,11 +4172,11 @@ int	init_database_cache(char **error)
 	ids = (TRX_DC_IDS *)__hc_index_mem_malloc_func(NULL, sizeof(TRX_DC_IDS));
 	memset(ids, 0, sizeof(TRX_DC_IDS));
 
-	zbx_hashset_create_ext(&cache->history_items, TRX_HC_ITEMS_INIT_SIZE,
+	trx_hashset_create_ext(&cache->history_items, TRX_HC_ITEMS_INIT_SIZE,
 			TRX_DEFAULT_UINT64_HASH_FUNC, TRX_DEFAULT_UINT64_COMPARE_FUNC, NULL,
 			__hc_index_mem_malloc_func, __hc_index_mem_realloc_func, __hc_index_mem_free_func);
 
-	zbx_binary_heap_create_ext(&cache->history_queue, hc_queue_elem_compare_func, TRX_BINARY_HEAP_OPTION_EMPTY,
+	trx_binary_heap_create_ext(&cache->history_queue, hc_queue_elem_compare_func, TRX_BINARY_HEAP_OPTION_EMPTY,
 			__hc_index_mem_malloc_func, __hc_index_mem_realloc_func, __hc_index_mem_free_func);
 
 	if (0 != (program_type & TRX_PROGRAM_TYPE_SERVER))
@@ -4189,7 +4189,7 @@ int	init_database_cache(char **error)
 	cache->history_progress_ts = 0;
 
 	if (NULL == sql)
-		sql = (char *)zbx_malloc(sql, sql_alloc);
+		sql = (char *)trx_malloc(sql, sql_alloc);
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -4233,11 +4233,11 @@ void	free_database_cache(void)
 
 	cache = NULL;
 
-	zbx_mutex_destroy(&cache_lock);
-	zbx_mutex_destroy(&cache_ids_lock);
+	trx_mutex_destroy(&cache_lock);
+	trx_mutex_destroy(&cache_ids_lock);
 
 	if (0 != (program_type & TRX_PROGRAM_TYPE_SERVER))
-		zbx_mutex_destroy(&trends_lock);
+		trx_mutex_destroy(&trends_lock);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -4251,14 +4251,14 @@ void	free_database_cache(void)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-zbx_uint64_t	DCget_nextid(const char *table_name, int num)
+trx_uint64_t	DCget_nextid(const char *table_name, int num)
 {
 	int		i;
 	DB_RESULT	result;
 	DB_ROW		row;
 	const TRX_TABLE	*table;
 	TRX_DC_ID	*id;
-	zbx_uint64_t	min = 0, max = TRX_DB_MAX_ID, nextid, lastid;
+	trx_uint64_t	min = 0, max = TRX_DB_MAX_ID, nextid, lastid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() table:'%s' num:%d", __func__, table_name, num);
 
@@ -4298,7 +4298,7 @@ zbx_uint64_t	DCget_nextid(const char *table_name, int num)
 
 	if (NULL != result)
 	{
-		zbx_strlcpy(id->table_name, table_name, sizeof(id->table_name));
+		trx_strlcpy(id->table_name, table_name, sizeof(id->table_name));
 
 		if (NULL == (row = DBfetch(result)) || SUCCEED == DBis_null(row[0]))
 			id->lastid = min;
@@ -4332,14 +4332,14 @@ zbx_uint64_t	DCget_nextid(const char *table_name, int num)
  ******************************************************************************/
 void	DCupdate_hosts_availability(void)
 {
-	zbx_vector_ptr_t	hosts;
+	trx_vector_ptr_t	hosts;
 	char			*sql_buf = NULL;
 	size_t			sql_buf_alloc = 0, sql_buf_offset = 0;
 	int			i;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&hosts);
+	trx_vector_ptr_create(&hosts);
 
 	if (SUCCEED != DCreset_hosts_availability(&hosts))
 		goto out;
@@ -4349,13 +4349,13 @@ void	DCupdate_hosts_availability(void)
 
 	for (i = 0; i < hosts.values_num; i++)
 	{
-		if (SUCCEED != zbx_sql_add_host_availability(&sql_buf, &sql_buf_alloc, &sql_buf_offset,
-				(zbx_host_availability_t *)hosts.values[i]))
+		if (SUCCEED != trx_sql_add_host_availability(&sql_buf, &sql_buf_alloc, &sql_buf_offset,
+				(trx_host_availability_t *)hosts.values[i]))
 		{
 			continue;
 		}
 
-		zbx_strcpy_alloc(&sql_buf, &sql_buf_alloc, &sql_buf_offset, ";\n");
+		trx_strcpy_alloc(&sql_buf, &sql_buf_alloc, &sql_buf_offset, ";\n");
 		DBexecute_overflowed_sql(&sql_buf, &sql_buf_alloc, &sql_buf_offset);
 	}
 
@@ -4366,10 +4366,10 @@ void	DCupdate_hosts_availability(void)
 
 	DBcommit();
 
-	zbx_free(sql_buf);
+	trx_free(sql_buf);
 out:
-	zbx_vector_ptr_clear_ext(&hosts, (zbx_mem_free_func_t)zbx_host_availability_free);
-	zbx_vector_ptr_destroy(&hosts);
+	trx_vector_ptr_clear_ext(&hosts, (trx_mem_free_func_t)trx_host_availability_free);
+	trx_vector_ptr_destroy(&hosts);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }

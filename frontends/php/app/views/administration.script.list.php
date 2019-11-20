@@ -80,7 +80,7 @@ foreach ($data['scripts'] as $script) {
 		$scriptType,
 		$scriptExecuteOn,
 		(new CCol(
-			zbx_nl2br(htmlspecialchars($script['command'], ENT_COMPAT, 'UTF-8'))
+			trx_nl2br(htmlspecialchars($script['command'], ENT_COMPAT, 'UTF-8'))
 		))->addClass(TRX_STYLE_MONOSPACE_FONT),
 		($script['userGroupName'] === null) ? _('All') : $script['userGroupName'],
 		($script['hostGroupName'] === null) ? _('All') : $script['hostGroupName'],

@@ -12,17 +12,17 @@
 
 typedef struct
 {
-	zbx_perf_counter_data_t	*pPerfCounterList;
+	trx_perf_counter_data_t	*pPerfCounterList;
 	PDH_HQUERY		pdh_query;
 	time_t			nextcheck;	/* refresh time of not supported counters */
 }
 TRX_PERF_STAT_DATA;
 
 static TRX_PERF_STAT_DATA	ppsd;
-static zbx_mutex_t		perfstat_access = TRX_MUTEX_NULL;
+static trx_mutex_t		perfstat_access = TRX_MUTEX_NULL;
 
-#define LOCK_PERFCOUNTERS	zbx_mutex_lock(perfstat_access)
-#define UNLOCK_PERFCOUNTERS	zbx_mutex_unlock(perfstat_access)
+#define LOCK_PERFCOUNTERS	trx_mutex_lock(perfstat_access)
+#define UNLOCK_PERFCOUNTERS	trx_mutex_unlock(perfstat_access)
 
 static int	perf_collector_started(void)
 {
@@ -34,7 +34,7 @@ static int	perf_collector_started(void)
  * Comments: counter failed or disappeared, dismiss all previous values       *
  *                                                                            *
  ******************************************************************************/
-static void	deactivate_perf_counter(zbx_perf_counter_data_t *counter)
+static void	deactivate_perf_counter(trx_perf_counter_data_t *counter)
 {
 	treegix_log(LOG_LEVEL_DEBUG, "deactivate_perf_counter() counterpath:'%s'", counter->counterpath);
 
@@ -51,10 +51,10 @@ static void	deactivate_perf_counter(zbx_perf_counter_data_t *counter)
  *           added, a pointer to that counter is returned, NULL otherwise     *
  *                                                                            *
  ******************************************************************************/
-zbx_perf_counter_data_t	*add_perf_counter(const char *name, const char *counterpath, int interval,
-		zbx_perf_counter_lang_t lang, char **error)
+trx_perf_counter_data_t	*add_perf_counter(const char *name, const char *counterpath, int interval,
+		trx_perf_counter_lang_t lang, char **error)
 {
-	zbx_perf_counter_data_t	*cptr = NULL;
+	trx_perf_counter_data_t	*cptr = NULL;
 	PDH_STATUS		pdh_status;
 	int			added = FAIL;
 
@@ -64,7 +64,7 @@ zbx_perf_counter_data_t	*add_perf_counter(const char *name, const char *counterp
 
 	if (SUCCEED != perf_collector_started())
 	{
-		*error = zbx_strdup(*error, "Performance collector is not started.");
+		*error = trx_strdup(*error, "Performance collector is not started.");
 		goto out;
 	}
 
@@ -73,20 +73,20 @@ zbx_perf_counter_data_t	*add_perf_counter(const char *name, const char *counterp
 		/* add new parameters */
 		if (NULL == cptr)
 		{
-			cptr = (zbx_perf_counter_data_t *)zbx_malloc(cptr, sizeof(zbx_perf_counter_data_t));
+			cptr = (trx_perf_counter_data_t *)trx_malloc(cptr, sizeof(trx_perf_counter_data_t));
 
 			/* initialize the counter */
-			memset(cptr, 0, sizeof(zbx_perf_counter_data_t));
+			memset(cptr, 0, sizeof(trx_perf_counter_data_t));
 			if (NULL != name)
-				cptr->name = zbx_strdup(NULL, name);
-			cptr->counterpath = zbx_strdup(NULL, counterpath);
+				cptr->name = trx_strdup(NULL, name);
+			cptr->counterpath = trx_strdup(NULL, counterpath);
 			cptr->interval = interval;
 			cptr->lang = lang;
 			cptr->value_current = -1;
-			cptr->value_array = (double *)zbx_malloc(cptr->value_array, sizeof(double) * interval);
+			cptr->value_array = (double *)trx_malloc(cptr->value_array, sizeof(double) * interval);
 
 			/* add the counter to the query */
-			pdh_status = zbx_PdhAddCounter(__func__, cptr, ppsd.pdh_query, counterpath,
+			pdh_status = trx_PdhAddCounter(__func__, cptr, ppsd.pdh_query, counterpath,
 					lang, &cptr->handle);
 
 			cptr->next = ppsd.pPerfCounterList;
@@ -94,7 +94,7 @@ zbx_perf_counter_data_t	*add_perf_counter(const char *name, const char *counterp
 
 			if (ERROR_SUCCESS != pdh_status && PDH_CSTATUS_NO_INSTANCE != pdh_status)
 			{
-				*error = zbx_dsprintf(*error, "Invalid performance counter format.");
+				*error = trx_dsprintf(*error, "Invalid performance counter format.");
 				cptr = NULL;	/* indicate a failure */
 			}
 
@@ -122,9 +122,9 @@ zbx_perf_counter_data_t	*add_perf_counter(const char *name, const char *counterp
 	{
 		char	*alias_name;
 
-		alias_name = zbx_dsprintf(NULL, "__UserPerfCounter[%s]", name);
+		alias_name = trx_dsprintf(NULL, "__UserPerfCounter[%s]", name);
 		add_alias(name, alias_name);
-		zbx_free(alias_name);
+		trx_free(alias_name);
 	}
 out:
 	UNLOCK_PERFCOUNTERS;
@@ -145,12 +145,12 @@ out:
  *             interval  - [IN] the new data collection interval in seconds   *
  *                                                                            *
  ******************************************************************************/
-static void	extend_perf_counter_interval(zbx_perf_counter_data_t *counter, int interval)
+static void	extend_perf_counter_interval(trx_perf_counter_data_t *counter, int interval)
 {
 	if (interval <= counter->interval)
 		return;
 
-	counter->value_array = (double *)zbx_realloc(counter->value_array, sizeof(double) * interval);
+	counter->value_array = (double *)trx_realloc(counter->value_array, sizeof(double) * interval);
 
 	/* move the data to the end to keep the ring buffer intact */
 	if (counter->value_current < counter->value_count)
@@ -174,9 +174,9 @@ static void	extend_perf_counter_interval(zbx_perf_counter_data_t *counter, int i
  *           the memory is freed - do not use it again                        *
  *                                                                            *
  ******************************************************************************/
-void	remove_perf_counter(zbx_perf_counter_data_t *counter)
+void	remove_perf_counter(trx_perf_counter_data_t *counter)
 {
-	zbx_perf_counter_data_t	*cptr;
+	trx_perf_counter_data_t	*cptr;
 
 	LOCK_PERFCOUNTERS;
 
@@ -200,10 +200,10 @@ void	remove_perf_counter(zbx_perf_counter_data_t *counter)
 	}
 
 	PdhRemoveCounter(counter->handle);
-	zbx_free(counter->name);
-	zbx_free(counter->counterpath);
-	zbx_free(counter->value_array);
-	zbx_free(counter);
+	trx_free(counter->name);
+	trx_free(counter->counterpath);
+	trx_free(counter->value_array);
+	trx_free(counter);
 out:
 	UNLOCK_PERFCOUNTERS;
 
@@ -211,7 +211,7 @@ out:
 
 static void	free_perf_counter_list(void)
 {
-	zbx_perf_counter_data_t	*cptr;
+	trx_perf_counter_data_t	*cptr;
 
 	LOCK_PERFCOUNTERS;
 
@@ -220,10 +220,10 @@ static void	free_perf_counter_list(void)
 		cptr = ppsd.pPerfCounterList;
 		ppsd.pPerfCounterList = cptr->next;
 
-		zbx_free(cptr->name);
-		zbx_free(cptr->counterpath);
-		zbx_free(cptr->value_array);
-		zbx_free(cptr);
+		trx_free(cptr->name);
+		trx_free(cptr->counterpath);
+		trx_free(cptr->value_array);
+		trx_free(cptr);
 	}
 
 	UNLOCK_PERFCOUNTERS;
@@ -235,7 +235,7 @@ static void	free_perf_counter_list(void)
  *           interval must be less than or equal to counter->interval         *
  *                                                                            *
  ******************************************************************************/
-static double	compute_average_value(zbx_perf_counter_data_t *counter, int interval)
+static double	compute_average_value(trx_perf_counter_data_t *counter, int interval)
 {
 	double	sum = 0;
 	int	i, j, count;
@@ -257,7 +257,7 @@ static double	compute_average_value(zbx_perf_counter_data_t *counter, int interv
 	return sum / (double)count;
 }
 
-int	init_perf_collector(zbx_threadedness_t threadedness, char **error)
+int	init_perf_collector(trx_threadedness_t threadedness, char **error)
 {
 	int	ret = FAIL;
 
@@ -268,18 +268,18 @@ int	init_perf_collector(zbx_threadedness_t threadedness, char **error)
 		case TRX_SINGLE_THREADED:
 			break;
 		case TRX_MULTI_THREADED:
-			if (SUCCEED != zbx_mutex_create(&perfstat_access, TRX_MUTEX_PERFSTAT, error))
+			if (SUCCEED != trx_mutex_create(&perfstat_access, TRX_MUTEX_PERFSTAT, error))
 				goto out;
 			break;
 		default:
 			THIS_SHOULD_NEVER_HAPPEN;
-			*error = zbx_strdup(*error, "internal error");
+			*error = trx_strdup(*error, "internal error");
 			goto out;
 	}
 
-	if (ERROR_SUCCESS != zbx_PdhOpenQuery(__func__, &ppsd.pdh_query))
+	if (ERROR_SUCCESS != trx_PdhOpenQuery(__func__, &ppsd.pdh_query))
 	{
-		*error = zbx_strdup(*error, "cannot open performance data query");
+		*error = trx_strdup(*error, "cannot open performance data query");
 		goto out;
 	}
 
@@ -287,20 +287,20 @@ int	init_perf_collector(zbx_threadedness_t threadedness, char **error)
 
 	if (SUCCEED != init_builtin_counter_indexes())
 	{
-		*error = zbx_strdup(*error, "cannot initialize built-in counter indexes");
+		*error = trx_strdup(*error, "cannot initialize built-in counter indexes");
 		goto out;
 	}
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 void	free_perf_collector(void)
 {
-	zbx_perf_counter_data_t	*cptr;
+	trx_perf_counter_data_t	*cptr;
 
 	if (SUCCEED != perf_collector_started())
 		return;
@@ -319,12 +319,12 @@ void	free_perf_collector(void)
 
 	free_perf_counter_list();
 
-	zbx_mutex_destroy(&perfstat_access);
+	trx_mutex_destroy(&perfstat_access);
 }
 
 void	collect_perfstat(void)
 {
-	zbx_perf_counter_data_t	*cptr;
+	trx_perf_counter_data_t	*cptr;
 	PDH_STATUS		pdh_status;
 	time_t			now;
 	PDH_FMT_COUNTERVALUE	value;
@@ -349,7 +349,7 @@ void	collect_perfstat(void)
 			if (PERF_COUNTER_NOTSUPPORTED != cptr->status)
 				continue;
 
-			zbx_PdhAddCounter(__func__, cptr, ppsd.pdh_query, cptr->counterpath,
+			trx_PdhAddCounter(__func__, cptr, ppsd.pdh_query, cptr->counterpath,
 					cptr->lang, &cptr->handle);
 		}
 
@@ -377,7 +377,7 @@ void	collect_perfstat(void)
 		if (PERF_COUNTER_NOTSUPPORTED == cptr->status)
 			continue;
 
-		if (ERROR_SUCCESS != zbx_PdhGetRawCounterValue(__func__, cptr->counterpath,
+		if (ERROR_SUCCESS != trx_PdhGetRawCounterValue(__func__, cptr->counterpath,
 				cptr->handle, &cptr->rawValues[cptr->olderRawValue]))
 		{
 			deactivate_perf_counter(cptr);
@@ -475,7 +475,7 @@ out:
 int	get_perf_counter_value_by_name(const char *name, double *value, char **error)
 {
 	int			ret = FAIL;
-	zbx_perf_counter_data_t	*perfs = NULL;
+	trx_perf_counter_data_t	*perfs = NULL;
 	char			*counterpath = NULL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() name:%s", __func__, name);
@@ -484,7 +484,7 @@ int	get_perf_counter_value_by_name(const char *name, double *value, char **error
 
 	if (SUCCEED != perf_collector_started())
 	{
-		*error = zbx_strdup(*error, "Performance collector is not started.");
+		*error = trx_strdup(*error, "Performance collector is not started.");
 		goto out;
 	}
 
@@ -505,11 +505,11 @@ int	get_perf_counter_value_by_name(const char *name, double *value, char **error
 	/* we can retrieve named counter data only if it has been registered before */
 	if (NULL == perfs)
 	{
-		*error = zbx_dsprintf(*error, "Unknown performance counter name: %s.", name);
+		*error = trx_dsprintf(*error, "Unknown performance counter name: %s.", name);
 		goto out;
 	}
 
-	counterpath = zbx_strdup(counterpath, perfs->counterpath);
+	counterpath = trx_strdup(counterpath, perfs->counterpath);
 out:
 	UNLOCK_PERFCOUNTERS;
 
@@ -519,14 +519,14 @@ out:
 		PDH_STATUS pdh_status = calculate_counter_value(__func__, counterpath, perfs->lang, value);
 
 		if (PDH_NOT_IMPLEMENTED == pdh_status)
-			*error = zbx_strdup(*error, "Counter is not supported for this Microsoft Windows version");
+			*error = trx_strdup(*error, "Counter is not supported for this Microsoft Windows version");
 		else if (ERROR_SUCCESS == pdh_status)
 			ret = SUCCEED;
 
-		zbx_free(counterpath);
+		trx_free(counterpath);
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -551,11 +551,11 @@ out:
  *           possible.                                                        *
  *                                                                            *
  ******************************************************************************/
-int	get_perf_counter_value_by_path(const char *counterpath, int interval, zbx_perf_counter_lang_t lang,
+int	get_perf_counter_value_by_path(const char *counterpath, int interval, trx_perf_counter_lang_t lang,
 		double *value, char **error)
 {
 	int			ret = FAIL;
-	zbx_perf_counter_data_t	*perfs = NULL;
+	trx_perf_counter_data_t	*perfs = NULL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() path:%s interval:%d lang:%d", __func__, counterpath,
 			interval, lang);
@@ -564,7 +564,7 @@ int	get_perf_counter_value_by_path(const char *counterpath, int interval, zbx_pe
 
 	if (SUCCEED != perf_collector_started())
 	{
-		*error = zbx_strdup(*error, "Performance collector is not started.");
+		*error = trx_strdup(*error, "Performance collector is not started.");
 		goto out;
 	}
 
@@ -598,7 +598,7 @@ out:
 			ret = SUCCEED;
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -618,7 +618,7 @@ out:
  *           FAIL    - otherwise                                              *
  *                                                                            *
  ******************************************************************************/
-int	get_perf_counter_value(zbx_perf_counter_data_t *counter, int interval, double *value, char **error)
+int	get_perf_counter_value(trx_perf_counter_data_t *counter, int interval, double *value, char **error)
 {
 	int	ret = FAIL;
 
@@ -628,13 +628,13 @@ int	get_perf_counter_value(zbx_perf_counter_data_t *counter, int interval, doubl
 
 	if (SUCCEED != perf_collector_started())
 	{
-		*error = zbx_strdup(*error, "Performance collector is not started.");
+		*error = trx_strdup(*error, "Performance collector is not started.");
 		goto out;
 	}
 
 	if (PERF_COUNTER_ACTIVE != counter->status)
 	{
-		*error = zbx_strdup(*error, "Performance counter is not ready.");
+		*error = trx_strdup(*error, "Performance counter is not ready.");
 		goto out;
 	}
 
@@ -643,7 +643,7 @@ int	get_perf_counter_value(zbx_perf_counter_data_t *counter, int interval, doubl
 out:
 	UNLOCK_PERFCOUNTERS;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

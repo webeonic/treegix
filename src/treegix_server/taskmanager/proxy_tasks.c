@@ -6,12 +6,12 @@
 #include "log.h"
 
 #include "db.h"
-#include "zbxjson.h"
-#include "zbxtasks.h"
+#include "trxjson.h"
+#include "trxtasks.h"
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_tm_get_remote_tasks                                          *
+ * Function: trx_tm_get_remote_tasks                                          *
  *                                                                            *
  * Purpose: get tasks scheduled to be executed on a proxy                     *
  *                                                                            *
@@ -23,7 +23,7 @@
  *           server task manager.                                             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_tm_get_remote_tasks(zbx_vector_ptr_t *tasks, zbx_uint64_t proxy_hostid)
+void	trx_tm_get_remote_tasks(trx_vector_ptr_t *tasks, trx_uint64_t proxy_hostid)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
@@ -43,46 +43,46 @@ void	zbx_tm_get_remote_tasks(zbx_vector_ptr_t *tasks, zbx_uint64_t proxy_hostid)
 				" and t.proxy_hostid=" TRX_FS_UI64
 				" and (t.ttl=0 or t.clock+t.ttl>" TRX_FS_TIME_T ")"
 			" order by t.taskid",
-			TRX_TM_STATUS_NEW, proxy_hostid, (zbx_fs_time_t)time(NULL));
+			TRX_TM_STATUS_NEW, proxy_hostid, (trx_fs_time_t)time(NULL));
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_uint64_t	taskid, alertid, parent_taskid, hostid, itemid;
-		zbx_tm_task_t	*task;
+		trx_uint64_t	taskid, alertid, parent_taskid, hostid, itemid;
+		trx_tm_task_t	*task;
 
 		TRX_STR2UINT64(taskid, row[0]);
 
-		task = zbx_tm_task_create(taskid, atoi(row[1]), TRX_TM_STATUS_NEW, atoi(row[2]), atoi(row[3]), 0);
+		task = trx_tm_task_create(taskid, atoi(row[1]), TRX_TM_STATUS_NEW, atoi(row[2]), atoi(row[3]), 0);
 
 		switch (task->type)
 		{
 			case TRX_TM_TASK_REMOTE_COMMAND:
 				if (SUCCEED == DBis_null(row[4]))
 				{
-					zbx_free(task);
+					trx_free(task);
 					continue;
 				}
 
 				TRX_DBROW2UINT64(alertid, row[13]);
 				TRX_DBROW2UINT64(parent_taskid, row[14]);
 				TRX_DBROW2UINT64(hostid, row[15]);
-				task->data = (void *)zbx_tm_remote_command_create(atoi(row[4]), row[12], atoi(row[5]),
+				task->data = (void *)trx_tm_remote_command_create(atoi(row[4]), row[12], atoi(row[5]),
 						atoi(row[6]), atoi(row[7]), row[8], row[9], row[10], row[11],
 						parent_taskid, hostid, alertid);
 				break;
 			case TRX_TM_TASK_CHECK_NOW:
 				if (SUCCEED == DBis_null(row[16]))
 				{
-					zbx_free(task);
+					trx_free(task);
 					continue;
 				}
 
 				TRX_STR2UINT64(itemid, row[16]);
-				task->data = (void *)zbx_tm_check_now_create(itemid);
+				task->data = (void *)trx_tm_check_now_create(itemid);
 				break;
 		}
 
-		zbx_vector_ptr_append(tasks, task);
+		trx_vector_ptr_append(tasks, task);
 	}
 	DBfree_result(result);
 }

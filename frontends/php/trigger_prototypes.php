@@ -182,7 +182,7 @@ if (hasRequest('clone') && hasRequest('triggerid')) {
 	$_REQUEST['form'] = 'clone';
 }
 elseif (hasRequest('add') || hasRequest('update')) {
-	$dependencies = zbx_toObject(getRequest('dependencies', []), 'triggerid');
+	$dependencies = trx_toObject(getRequest('dependencies', []), 'triggerid');
 	$description = getRequest('description', '');
 	$opdata = getRequest('opdata', '');
 	$expression = getRequest('expression', '');
@@ -393,7 +393,7 @@ elseif (hasRequest('action') && getRequest('action') === 'triggerprototype.massu
 					}
 
 					if (array_key_exists('dependencies', $visible)) {
-						$trigger['dependencies'] = zbx_toObject(getRequest('dependencies', []), 'triggerid');
+						$trigger['dependencies'] = trx_toObject(getRequest('dependencies', []), 'triggerid');
 					}
 
 					if (array_key_exists('tags', $visible)) {
@@ -499,7 +499,7 @@ if (hasRequest('action') && getRequest('action') !== 'triggerprototype.massupdat
 			'editable' => true
 		]);
 
-	uncheckTableRows(getRequest('parent_discoveryid'), zbx_objectValues($triggerPrototypes, 'triggerid'));
+	uncheckTableRows(getRequest('parent_discoveryid'), trx_objectValues($triggerPrototypes, 'triggerid'));
 }
 
 $config = select_config();
@@ -600,7 +600,7 @@ else {
 		'selectHosts' => ['hostid', 'host'],
 		'selectDependencies' => ['triggerid', 'description'],
 		'selectTags' => ['tag', 'value'],
-		'triggerids' => zbx_objectValues($data['triggers'], 'triggerid')
+		'triggerids' => trx_objectValues($data['triggers'], 'triggerid')
 	]);
 	order_result($data['triggers'], $sortField, $sortOrder);
 

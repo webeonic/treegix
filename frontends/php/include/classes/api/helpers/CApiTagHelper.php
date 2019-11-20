@@ -29,13 +29,13 @@ class CApiTagHelper {
 
 			if (!array_key_exists($tag['tag'], $values_by_tag) || is_array($values_by_tag[$tag['tag']])) {
 				if ($operator == TAG_OPERATOR_EQUAL) {
-					$values_by_tag[$tag['tag']][] = $table.'.value='.zbx_dbstr($value);
+					$values_by_tag[$tag['tag']][] = $table.'.value='.trx_dbstr($value);
 				}
 				elseif ($value !== '') {
 					$value = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $value);
 					$value = '%'.mb_strtoupper($value).'%';
 
-					$values_by_tag[$tag['tag']][] = 'UPPER('.$table.'.value) LIKE '.zbx_dbstr($value)." ESCAPE '!'";
+					$values_by_tag[$tag['tag']][] = 'UPPER('.$table.'.value) LIKE '.trx_dbstr($value)." ESCAPE '!'";
 				}
 				// ($value === '') - all other conditions can be omitted
 				else {
@@ -61,7 +61,7 @@ class CApiTagHelper {
 				'SELECT NULL'.
 				' FROM '.$table.
 				' WHERE '.$parent_alias.'.'.$field.'='.$table.'.'.$field.
-					' AND '.$table.'.tag='.zbx_dbstr($tag).$values.
+					' AND '.$table.'.tag='.trx_dbstr($tag).$values.
 			')';
 		}
 

@@ -73,7 +73,7 @@ class CDHost extends CApiService {
 			'limit'						=> null,
 			'limitSelects'				=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
 			return [];
@@ -81,13 +81,13 @@ class CDHost extends CApiService {
 
 // dhostids
 		if (!is_null($options['dhostids'])) {
-			zbx_value2array($options['dhostids']);
+			trx_value2array($options['dhostids']);
 			$sqlParts['where']['dhostid'] = dbConditionInt('dh.dhostid', $options['dhostids']);
 		}
 
 // druleids
 		if (!is_null($options['druleids'])) {
-			zbx_value2array($options['druleids']);
+			trx_value2array($options['druleids']);
 
 			$sqlParts['where']['druleid'] = dbConditionInt('dh.druleid', $options['druleids']);
 
@@ -98,7 +98,7 @@ class CDHost extends CApiService {
 
 // dserviceids
 		if (!is_null($options['dserviceids'])) {
-			zbx_value2array($options['dserviceids']);
+			trx_value2array($options['dserviceids']);
 
 			$sqlParts['from']['dservices'] = 'dservices ds';
 			$sqlParts['where'][] = dbConditionInt('ds.dserviceid', $options['dserviceids']);
@@ -116,11 +116,11 @@ class CDHost extends CApiService {
 
 // search
 		if (is_array($options['search'])) {
-			zbx_db_search('dhosts dh', $options, $sqlParts);
+			trx_db_search('dhosts dh', $options, $sqlParts);
 		}
 
 // limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 //-------
@@ -153,7 +153,7 @@ class CDHost extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -215,7 +215,7 @@ class CDHost extends CApiService {
 					'countOutput' => true,
 					'groupCount' => true
 				]);
-				$dservices = zbx_toHash($dservices, 'dhostid');
+				$dservices = trx_toHash($dservices, 'dhostid');
 				foreach ($result as $dhostid => $dhost) {
 					$result[$dhostid]['dservices'] = array_key_exists($dhostid, $dservices)
 						? $dservices[$dhostid]['rowscount']

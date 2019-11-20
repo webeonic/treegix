@@ -3,12 +3,12 @@
 #include "common.h"
 #include "daemon.h"
 #include "log.h"
-#include "zbxjson.h"
-#include "zbxself.h"
+#include "trxjson.h"
+#include "trxself.h"
 
 #include "heart.h"
 #include "../servercomms.h"
-#include "../../libs/zbxcrypto/tls.h"
+#include "../../libs/trxcrypto/tls.h"
 
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
@@ -20,17 +20,17 @@ extern int		server_num, process_num;
  ******************************************************************************/
 static int	send_heartbeat(void)
 {
-	zbx_socket_t	sock;
-	struct zbx_json	j;
+	trx_socket_t	sock;
+	struct trx_json	j;
 	int		ret = SUCCEED;
 	char		*error = NULL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In send_heartbeat()");
 
-	zbx_json_init(&j, 128);
-	zbx_json_addstring(&j, "request", TRX_PROTO_VALUE_PROXY_HEARTBEAT, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, "host", CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
+	trx_json_init(&j, 128);
+	trx_json_addstring(&j, "request", TRX_PROTO_VALUE_PROXY_HEARTBEAT, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&j, "host", CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
 
 	if (FAIL == connect_to_server(&sock, CONFIG_HEARTBEAT_FREQUENCY, 0)) /* do not retry */
 		return FAIL;
@@ -42,7 +42,7 @@ static int	send_heartbeat(void)
 		ret = FAIL;
 	}
 
-	zbx_free(error);
+	trx_free(error);
 	disconnect_server(&sock);
 
 	return ret;
@@ -64,28 +64,28 @@ TRX_THREAD_ENTRY(heart_thread, args)
 #define STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_child();
+	trx_tls_init_child();
 #endif
 	last_stat_time = time(NULL);
 
-	zbx_setproctitle("%s [sending heartbeat message]", get_process_type_string(process_type));
+	trx_setproctitle("%s [sending heartbeat message]", get_process_type_string(process_type));
 
 	while (TRX_IS_RUNNING())
 	{
-		sec = zbx_time();
-		zbx_update_env(sec);
+		sec = trx_time();
+		trx_update_env(sec);
 
 		if (0 != sleeptime)
 		{
-			zbx_setproctitle("%s [sending heartbeat message %s in " TRX_FS_DBL " sec, "
+			trx_setproctitle("%s [sending heartbeat message %s in " TRX_FS_DBL " sec, "
 					"sending heartbeat message]",
 					get_process_type_string(process_type),
 					SUCCEED == res ? "success" : "failed", old_total_sec);
@@ -93,7 +93,7 @@ TRX_THREAD_ENTRY(heart_thread, args)
 
 		start = time(NULL);
 		res = send_heartbeat();
-		total_sec += zbx_time() - sec;
+		total_sec += trx_time() - sec;
 
 		sleeptime = CONFIG_HEARTBEAT_FREQUENCY - (time(NULL) - start);
 
@@ -101,7 +101,7 @@ TRX_THREAD_ENTRY(heart_thread, args)
 		{
 			if (0 == sleeptime)
 			{
-				zbx_setproctitle("%s [sending heartbeat message %s in " TRX_FS_DBL " sec, "
+				trx_setproctitle("%s [sending heartbeat message %s in " TRX_FS_DBL " sec, "
 						"sending heartbeat message]",
 						get_process_type_string(process_type),
 						SUCCEED == res ? "success" : "failed", total_sec);
@@ -109,7 +109,7 @@ TRX_THREAD_ENTRY(heart_thread, args)
 			}
 			else
 			{
-				zbx_setproctitle("%s [sending heartbeat message %s in " TRX_FS_DBL " sec, "
+				trx_setproctitle("%s [sending heartbeat message %s in " TRX_FS_DBL " sec, "
 						"idle %d sec]",
 						get_process_type_string(process_type),
 						SUCCEED == res ? "success" : "failed", total_sec, sleeptime);
@@ -120,12 +120,12 @@ TRX_THREAD_ENTRY(heart_thread, args)
 			last_stat_time = time(NULL);
 		}
 
-		zbx_sleep_loop(sleeptime);
+		trx_sleep_loop(sleeptime);
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 #undef STAT_INTERVAL
 }

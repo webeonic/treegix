@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxlld.a
+noinst_LIBRARIES = libtrxlld.a
 
-libzbxlld_a_SOURCES = \
+libtrxlld_a_SOURCES = \
 	lld_manager.c lld_manager.h \
 	lld_worker.c lld_worker.h \
 	lld_protocol.c lld_protocol.h \

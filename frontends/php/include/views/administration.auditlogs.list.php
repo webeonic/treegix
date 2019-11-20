@@ -17,7 +17,7 @@ $filterColumn->addRow(_('User'), [
 			CJs::encodeJson([
 				'srctbl' => 'users',
 				'srcfld1' => 'alias',
-				'dstfrm' => 'zbx_filter',
+				'dstfrm' => 'trx_filter',
 				'dstfld1' => 'alias'
 			]).', null, this);'
 		)
@@ -71,7 +71,7 @@ foreach ($this->data['actions'] as $action) {
 	}
 
 	$auditTable->addRow([
-		zbx_date2str(DATE_TIME_FORMAT_SECONDS, $action['clock']),
+		trx_date2str(DATE_TIME_FORMAT_SECONDS, $action['clock']),
 		$action['alias'],
 		$action['ip'],
 		$action['resourcetype'],
@@ -94,8 +94,8 @@ $objData = [
 	'dynamic' => 0,
 	'mainObject' => 1
 ];
-zbx_add_post_js('timeControl.addObject("events", '.zbx_jsvalue($this->data['timeline']).', '.zbx_jsvalue($objData).');');
-zbx_add_post_js('timeControl.processObjects();');
+trx_add_post_js('timeControl.addObject("events", '.trx_jsvalue($this->data['timeline']).', '.trx_jsvalue($objData).');');
+trx_add_post_js('timeControl.processObjects();');
 
 // append form to widget
 $auditWidget->addItem($auditForm);

@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxsysinfo
+subdir = src/libs/trxsysinfo
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,21 +117,21 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxagentsysinfo_a_AR = $(AR) $(ARFLAGS)
-libzbxagentsysinfo_a_LIBADD =
-am_libzbxagentsysinfo_a_OBJECTS =  \
-	libzbxagentsysinfo_a-sysinfo.$(OBJEXT)
-libzbxagentsysinfo_a_OBJECTS = $(am_libzbxagentsysinfo_a_OBJECTS)
-libzbxproxysysinfo_a_AR = $(AR) $(ARFLAGS)
-libzbxproxysysinfo_a_LIBADD =
-am_libzbxproxysysinfo_a_OBJECTS =  \
-	libzbxproxysysinfo_a-sysinfo.$(OBJEXT)
-libzbxproxysysinfo_a_OBJECTS = $(am_libzbxproxysysinfo_a_OBJECTS)
-libzbxserversysinfo_a_AR = $(AR) $(ARFLAGS)
-libzbxserversysinfo_a_LIBADD =
-am_libzbxserversysinfo_a_OBJECTS =  \
-	libzbxserversysinfo_a-sysinfo.$(OBJEXT)
-libzbxserversysinfo_a_OBJECTS = $(am_libzbxserversysinfo_a_OBJECTS)
+libtrxagentsysinfo_a_AR = $(AR) $(ARFLAGS)
+libtrxagentsysinfo_a_LIBADD =
+am_libtrxagentsysinfo_a_OBJECTS =  \
+	libtrxagentsysinfo_a-sysinfo.$(OBJEXT)
+libtrxagentsysinfo_a_OBJECTS = $(am_libtrxagentsysinfo_a_OBJECTS)
+libtrxproxysysinfo_a_AR = $(AR) $(ARFLAGS)
+libtrxproxysysinfo_a_LIBADD =
+am_libtrxproxysysinfo_a_OBJECTS =  \
+	libtrxproxysysinfo_a-sysinfo.$(OBJEXT)
+libtrxproxysysinfo_a_OBJECTS = $(am_libtrxproxysysinfo_a_OBJECTS)
+libtrxserversysinfo_a_AR = $(AR) $(ARFLAGS)
+libtrxserversysinfo_a_LIBADD =
+am_libtrxserversysinfo_a_OBJECTS =  \
+	libtrxserversysinfo_a-sysinfo.$(OBJEXT)
+libtrxserversysinfo_a_OBJECTS = $(am_libtrxserversysinfo_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -164,12 +164,12 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxagentsysinfo_a_SOURCES) \
-	$(libzbxproxysysinfo_a_SOURCES) \
-	$(libzbxserversysinfo_a_SOURCES)
-DIST_SOURCES = $(libzbxagentsysinfo_a_SOURCES) \
-	$(libzbxproxysysinfo_a_SOURCES) \
-	$(libzbxserversysinfo_a_SOURCES)
+SOURCES = $(libtrxagentsysinfo_a_SOURCES) \
+	$(libtrxproxysysinfo_a_SOURCES) \
+	$(libtrxserversysinfo_a_SOURCES)
+DIST_SOURCES = $(libtrxagentsysinfo_a_SOURCES) \
+	$(libtrxproxysysinfo_a_SOURCES) \
+	$(libtrxserversysinfo_a_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -469,40 +469,40 @@ EXTRA_DIST = \
 	win32
 
 noinst_LIBRARIES = \
-	libzbxagentsysinfo.a \
-	libzbxproxysysinfo.a \
-	libzbxserversysinfo.a
+	libtrxagentsysinfo.a \
+	libtrxproxysysinfo.a \
+	libtrxserversysinfo.a
 
 
 # AGENT version of sysinfo library
-libzbxagentsysinfo_a_CFLAGS = \
+libtrxagentsysinfo_a_CFLAGS = \
 	-DWITH_AGENT_METRICS \
 	-DWITH_COMMON_METRICS \
 	-DWITH_SIMPLE_METRICS \
 	-DWITH_SPECIFIC_METRICS \
 	-DWITH_HOSTNAME_METRIC
 
-libzbxagentsysinfo_a_SOURCES = \
+libtrxagentsysinfo_a_SOURCES = \
 	specsysinfo.h \
 	sysinfo.c
 
 
 # SERVER version of sysinfo library
-libzbxserversysinfo_a_CFLAGS = \
+libtrxserversysinfo_a_CFLAGS = \
 	-DWITH_COMMON_METRICS \
 	-DWITH_SIMPLE_METRICS
 
-libzbxserversysinfo_a_SOURCES = \
+libtrxserversysinfo_a_SOURCES = \
 	sysinfo.c
 
 
 # PROXY version of sysinfo library
-libzbxproxysysinfo_a_CFLAGS = \
+libtrxproxysysinfo_a_CFLAGS = \
 	-DWITH_COMMON_METRICS \
 	-DWITH_SIMPLE_METRICS \
 	-DWITH_HOSTNAME_METRIC
 
-libzbxproxysysinfo_a_SOURCES = \
+libtrxproxysysinfo_a_SOURCES = \
 	sysinfo.c
 
 all: all-recursive
@@ -518,9 +518,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxsysinfo/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxsysinfo/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxsysinfo/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxsysinfo/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -542,20 +542,20 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxagentsysinfo.a: $(libzbxagentsysinfo_a_OBJECTS) $(libzbxagentsysinfo_a_DEPENDENCIES) $(EXTRA_libzbxagentsysinfo_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxagentsysinfo.a
-	$(AM_V_AR)$(libzbxagentsysinfo_a_AR) libzbxagentsysinfo.a $(libzbxagentsysinfo_a_OBJECTS) $(libzbxagentsysinfo_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxagentsysinfo.a
+libtrxagentsysinfo.a: $(libtrxagentsysinfo_a_OBJECTS) $(libtrxagentsysinfo_a_DEPENDENCIES) $(EXTRA_libtrxagentsysinfo_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxagentsysinfo.a
+	$(AM_V_AR)$(libtrxagentsysinfo_a_AR) libtrxagentsysinfo.a $(libtrxagentsysinfo_a_OBJECTS) $(libtrxagentsysinfo_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxagentsysinfo.a
 
-libzbxproxysysinfo.a: $(libzbxproxysysinfo_a_OBJECTS) $(libzbxproxysysinfo_a_DEPENDENCIES) $(EXTRA_libzbxproxysysinfo_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxproxysysinfo.a
-	$(AM_V_AR)$(libzbxproxysysinfo_a_AR) libzbxproxysysinfo.a $(libzbxproxysysinfo_a_OBJECTS) $(libzbxproxysysinfo_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxproxysysinfo.a
+libtrxproxysysinfo.a: $(libtrxproxysysinfo_a_OBJECTS) $(libtrxproxysysinfo_a_DEPENDENCIES) $(EXTRA_libtrxproxysysinfo_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxproxysysinfo.a
+	$(AM_V_AR)$(libtrxproxysysinfo_a_AR) libtrxproxysysinfo.a $(libtrxproxysysinfo_a_OBJECTS) $(libtrxproxysysinfo_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxproxysysinfo.a
 
-libzbxserversysinfo.a: $(libzbxserversysinfo_a_OBJECTS) $(libzbxserversysinfo_a_DEPENDENCIES) $(EXTRA_libzbxserversysinfo_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxserversysinfo.a
-	$(AM_V_AR)$(libzbxserversysinfo_a_AR) libzbxserversysinfo.a $(libzbxserversysinfo_a_OBJECTS) $(libzbxserversysinfo_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxserversysinfo.a
+libtrxserversysinfo.a: $(libtrxserversysinfo_a_OBJECTS) $(libtrxserversysinfo_a_DEPENDENCIES) $(EXTRA_libtrxserversysinfo_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxserversysinfo.a
+	$(AM_V_AR)$(libtrxserversysinfo_a_AR) libtrxserversysinfo.a $(libtrxserversysinfo_a_OBJECTS) $(libtrxserversysinfo_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxserversysinfo.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -563,9 +563,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxagentsysinfo_a-sysinfo.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxproxysysinfo_a-sysinfo.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxserversysinfo_a-sysinfo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxagentsysinfo_a-sysinfo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxproxysysinfo_a-sysinfo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxserversysinfo_a-sysinfo.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -583,47 +583,47 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxagentsysinfo_a-sysinfo.o: sysinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagentsysinfo_a_CFLAGS) $(CFLAGS) -MT libzbxagentsysinfo_a-sysinfo.o -MD -MP -MF $(DEPDIR)/libzbxagentsysinfo_a-sysinfo.Tpo -c -o libzbxagentsysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagentsysinfo_a-sysinfo.Tpo $(DEPDIR)/libzbxagentsysinfo_a-sysinfo.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libzbxagentsysinfo_a-sysinfo.o' libtool=no @AMDEPBACKSLASH@
+libtrxagentsysinfo_a-sysinfo.o: sysinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagentsysinfo_a_CFLAGS) $(CFLAGS) -MT libtrxagentsysinfo_a-sysinfo.o -MD -MP -MF $(DEPDIR)/libtrxagentsysinfo_a-sysinfo.Tpo -c -o libtrxagentsysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagentsysinfo_a-sysinfo.Tpo $(DEPDIR)/libtrxagentsysinfo_a-sysinfo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libtrxagentsysinfo_a-sysinfo.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagentsysinfo_a_CFLAGS) $(CFLAGS) -c -o libzbxagentsysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagentsysinfo_a_CFLAGS) $(CFLAGS) -c -o libtrxagentsysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
 
-libzbxagentsysinfo_a-sysinfo.obj: sysinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagentsysinfo_a_CFLAGS) $(CFLAGS) -MT libzbxagentsysinfo_a-sysinfo.obj -MD -MP -MF $(DEPDIR)/libzbxagentsysinfo_a-sysinfo.Tpo -c -o libzbxagentsysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxagentsysinfo_a-sysinfo.Tpo $(DEPDIR)/libzbxagentsysinfo_a-sysinfo.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libzbxagentsysinfo_a-sysinfo.obj' libtool=no @AMDEPBACKSLASH@
+libtrxagentsysinfo_a-sysinfo.obj: sysinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagentsysinfo_a_CFLAGS) $(CFLAGS) -MT libtrxagentsysinfo_a-sysinfo.obj -MD -MP -MF $(DEPDIR)/libtrxagentsysinfo_a-sysinfo.Tpo -c -o libtrxagentsysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxagentsysinfo_a-sysinfo.Tpo $(DEPDIR)/libtrxagentsysinfo_a-sysinfo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libtrxagentsysinfo_a-sysinfo.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxagentsysinfo_a_CFLAGS) $(CFLAGS) -c -o libzbxagentsysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxagentsysinfo_a_CFLAGS) $(CFLAGS) -c -o libtrxagentsysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
 
-libzbxproxysysinfo_a-sysinfo.o: sysinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxysysinfo_a_CFLAGS) $(CFLAGS) -MT libzbxproxysysinfo_a-sysinfo.o -MD -MP -MF $(DEPDIR)/libzbxproxysysinfo_a-sysinfo.Tpo -c -o libzbxproxysysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxysysinfo_a-sysinfo.Tpo $(DEPDIR)/libzbxproxysysinfo_a-sysinfo.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libzbxproxysysinfo_a-sysinfo.o' libtool=no @AMDEPBACKSLASH@
+libtrxproxysysinfo_a-sysinfo.o: sysinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxysysinfo_a_CFLAGS) $(CFLAGS) -MT libtrxproxysysinfo_a-sysinfo.o -MD -MP -MF $(DEPDIR)/libtrxproxysysinfo_a-sysinfo.Tpo -c -o libtrxproxysysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxysysinfo_a-sysinfo.Tpo $(DEPDIR)/libtrxproxysysinfo_a-sysinfo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libtrxproxysysinfo_a-sysinfo.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxysysinfo_a_CFLAGS) $(CFLAGS) -c -o libzbxproxysysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxysysinfo_a_CFLAGS) $(CFLAGS) -c -o libtrxproxysysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
 
-libzbxproxysysinfo_a-sysinfo.obj: sysinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxysysinfo_a_CFLAGS) $(CFLAGS) -MT libzbxproxysysinfo_a-sysinfo.obj -MD -MP -MF $(DEPDIR)/libzbxproxysysinfo_a-sysinfo.Tpo -c -o libzbxproxysysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxproxysysinfo_a-sysinfo.Tpo $(DEPDIR)/libzbxproxysysinfo_a-sysinfo.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libzbxproxysysinfo_a-sysinfo.obj' libtool=no @AMDEPBACKSLASH@
+libtrxproxysysinfo_a-sysinfo.obj: sysinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxysysinfo_a_CFLAGS) $(CFLAGS) -MT libtrxproxysysinfo_a-sysinfo.obj -MD -MP -MF $(DEPDIR)/libtrxproxysysinfo_a-sysinfo.Tpo -c -o libtrxproxysysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxproxysysinfo_a-sysinfo.Tpo $(DEPDIR)/libtrxproxysysinfo_a-sysinfo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libtrxproxysysinfo_a-sysinfo.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxproxysysinfo_a_CFLAGS) $(CFLAGS) -c -o libzbxproxysysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxproxysysinfo_a_CFLAGS) $(CFLAGS) -c -o libtrxproxysysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
 
-libzbxserversysinfo_a-sysinfo.o: sysinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserversysinfo_a_CFLAGS) $(CFLAGS) -MT libzbxserversysinfo_a-sysinfo.o -MD -MP -MF $(DEPDIR)/libzbxserversysinfo_a-sysinfo.Tpo -c -o libzbxserversysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserversysinfo_a-sysinfo.Tpo $(DEPDIR)/libzbxserversysinfo_a-sysinfo.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libzbxserversysinfo_a-sysinfo.o' libtool=no @AMDEPBACKSLASH@
+libtrxserversysinfo_a-sysinfo.o: sysinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserversysinfo_a_CFLAGS) $(CFLAGS) -MT libtrxserversysinfo_a-sysinfo.o -MD -MP -MF $(DEPDIR)/libtrxserversysinfo_a-sysinfo.Tpo -c -o libtrxserversysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserversysinfo_a-sysinfo.Tpo $(DEPDIR)/libtrxserversysinfo_a-sysinfo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libtrxserversysinfo_a-sysinfo.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserversysinfo_a_CFLAGS) $(CFLAGS) -c -o libzbxserversysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserversysinfo_a_CFLAGS) $(CFLAGS) -c -o libtrxserversysinfo_a-sysinfo.o `test -f 'sysinfo.c' || echo '$(srcdir)/'`sysinfo.c
 
-libzbxserversysinfo_a-sysinfo.obj: sysinfo.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserversysinfo_a_CFLAGS) $(CFLAGS) -MT libzbxserversysinfo_a-sysinfo.obj -MD -MP -MF $(DEPDIR)/libzbxserversysinfo_a-sysinfo.Tpo -c -o libzbxserversysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxserversysinfo_a-sysinfo.Tpo $(DEPDIR)/libzbxserversysinfo_a-sysinfo.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libzbxserversysinfo_a-sysinfo.obj' libtool=no @AMDEPBACKSLASH@
+libtrxserversysinfo_a-sysinfo.obj: sysinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserversysinfo_a_CFLAGS) $(CFLAGS) -MT libtrxserversysinfo_a-sysinfo.obj -MD -MP -MF $(DEPDIR)/libtrxserversysinfo_a-sysinfo.Tpo -c -o libtrxserversysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxserversysinfo_a-sysinfo.Tpo $(DEPDIR)/libtrxserversysinfo_a-sysinfo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysinfo.c' object='libtrxserversysinfo_a-sysinfo.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxserversysinfo_a_CFLAGS) $(CFLAGS) -c -o libzbxserversysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxserversysinfo_a_CFLAGS) $(CFLAGS) -c -o libtrxserversysinfo_a-sysinfo.obj `if test -f 'sysinfo.c'; then $(CYGPATH_W) 'sysinfo.c'; else $(CYGPATH_W) '$(srcdir)/sysinfo.c'; fi`
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.

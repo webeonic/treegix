@@ -9,7 +9,7 @@
 
 typedef struct
 {
-	zbx_uint64_t		triggerid;
+	trx_uint64_t		triggerid;
 	const char		*description;
 	const char		*expression;
 	const char		*recovery_expression;
@@ -31,24 +31,24 @@ typedef struct
 	unsigned char		correlation_mode;	/* see TRX_TRIGGER_CORRELATION_* defines */
 	unsigned char		timer;			/* see TRX_TRIGGER_TIMER_* defines       */
 
-	zbx_vector_ptr_t	tags;
+	trx_vector_ptr_t	tags;
 }
 TRX_DC_TRIGGER;
 
-typedef struct zbx_dc_trigger_deplist
+typedef struct trx_dc_trigger_deplist
 {
-	zbx_uint64_t		triggerid;
+	trx_uint64_t		triggerid;
 	int			refcount;
 	TRX_DC_TRIGGER		*trigger;
-	zbx_vector_ptr_t	dependencies;
+	trx_vector_ptr_t	dependencies;
 }
 TRX_DC_TRIGGER_DEPLIST;
 
 typedef struct
 {
-	zbx_uint64_t	functionid;
-	zbx_uint64_t	triggerid;
-	zbx_uint64_t	itemid;
+	trx_uint64_t	functionid;
+	trx_uint64_t	triggerid;
+	trx_uint64_t	itemid;
 	const char	*function;
 	const char	*parameter;
 	unsigned char	timer;
@@ -57,11 +57,11 @@ TRX_DC_FUNCTION;
 
 typedef struct
 {
-	zbx_uint64_t		itemid;
-	zbx_uint64_t		hostid;
-	zbx_uint64_t		interfaceid;
-	zbx_uint64_t		lastlogsize;
-	zbx_uint64_t		valuemapid;
+	trx_uint64_t		itemid;
+	trx_uint64_t		hostid;
+	trx_uint64_t		interfaceid;
+	trx_uint64_t		lastlogsize;
+	trx_uint64_t		valuemapid;
 	const char		*key;
 	const char		*port;
 	const char		*error;
@@ -85,30 +85,30 @@ typedef struct
 	unsigned char		queue_priority;
 	unsigned char		schedulable;
 	unsigned char		update_triggers;
-	zbx_uint64_t		templateid;
-	zbx_uint64_t		parent_itemid; /* from joined item_discovery table */
+	trx_uint64_t		templateid;
+	trx_uint64_t		parent_itemid; /* from joined item_discovery table */
 }
 TRX_DC_ITEM;
 
 typedef struct
 {
-	zbx_uint64_t		itemid;
-	zbx_uint64_t		hostid;
-	zbx_uint64_t		templateid;
+	trx_uint64_t		itemid;
+	trx_uint64_t		hostid;
+	trx_uint64_t		templateid;
 }
 TRX_DC_TEMPLATE_ITEM;
 
 typedef struct
 {
-	zbx_uint64_t		itemid;
-	zbx_uint64_t		hostid;
-	zbx_uint64_t		templateid;
+	trx_uint64_t		itemid;
+	trx_uint64_t		hostid;
+	trx_uint64_t		templateid;
 }
 TRX_DC_PROTOTYPE_ITEM;
 
 typedef struct
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 	const char	*key;
 	TRX_DC_ITEM	*item_ptr;
 }
@@ -116,7 +116,7 @@ TRX_DC_ITEM_HK;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*units;
 	unsigned char	trends;
 }
@@ -124,7 +124,7 @@ TRX_DC_NUMITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*snmp_oid;
 	const char	*snmp_community;
 	const char	*snmpv3_securityname;
@@ -140,37 +140,37 @@ TRX_DC_SNMPITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*ipmi_sensor;
 }
 TRX_DC_IPMIITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*trapper_hosts;
 }
 TRX_DC_TRAPITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
-	zbx_uint64_t	master_itemid;
-	zbx_uint64_t	last_master_itemid;
+	trx_uint64_t	itemid;
+	trx_uint64_t	master_itemid;
+	trx_uint64_t	last_master_itemid;
 	unsigned char	flags;
 }
 TRX_DC_DEPENDENTITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*logtimefmt;
 }
 TRX_DC_LOGITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*params;
 	const char	*username;
 	const char	*password;
@@ -179,7 +179,7 @@ TRX_DC_DBITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*username;
 	const char	*publickey;
 	const char	*privatekey;
@@ -191,7 +191,7 @@ TRX_DC_SSHITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*username;
 	const char	*password;
 	const char	*params;
@@ -200,7 +200,7 @@ TRX_DC_TELNETITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*username;
 	const char	*password;
 }
@@ -208,7 +208,7 @@ TRX_DC_SIMPLEITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*username;
 	const char	*password;
 	const char	*jmx_endpoint;
@@ -217,29 +217,29 @@ TRX_DC_JMXITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*params;
 }
 TRX_DC_CALCITEM;
 
 typedef struct
 {
-	zbx_uint64_t			itemid;
-	zbx_vector_uint64_pair_t	dep_itemids;
+	trx_uint64_t			itemid;
+	trx_vector_uint64_pair_t	dep_itemids;
 }
 TRX_DC_MASTERITEM;
 
 typedef struct
 {
-	zbx_uint64_t		itemid;
+	trx_uint64_t		itemid;
 	int			update_time;
-	zbx_vector_ptr_t	preproc_ops;
+	trx_vector_ptr_t	preproc_ops;
 }
 TRX_DC_PREPROCITEM;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	const char	*timeout;
 	const char	*url;
 	const char	*query_fields;
@@ -277,15 +277,15 @@ TRX_DC_PSK;
 
 typedef struct
 {
-	zbx_uint64_t	hostid;
-	zbx_uint64_t	proxy_hostid;
-	zbx_uint64_t	items_active_normal;		/* On enabled hosts these two fields store number of enabled */
-	zbx_uint64_t	items_active_notsupported;	/* and supported items and enabled and not supported items.  */
-	zbx_uint64_t	items_disabled;			/* On "hosts" corresponding to proxies this and two fields   */
+	trx_uint64_t	hostid;
+	trx_uint64_t	proxy_hostid;
+	trx_uint64_t	items_active_normal;		/* On enabled hosts these two fields store number of enabled */
+	trx_uint64_t	items_active_notsupported;	/* and supported items and enabled and not supported items.  */
+	trx_uint64_t	items_disabled;			/* On "hosts" corresponding to proxies this and two fields   */
 							/* above store cumulative statistics for all hosts monitored */
 							/* by a particular proxy. */
 							/* NOTE: On disabled hosts all items are counted as disabled. */
-	zbx_uint64_t	maintenanceid;
+	trx_uint64_t	maintenanceid;
 
 	const char	*host;
 	const char	*name;
@@ -336,14 +336,14 @@ typedef struct
 	const char	*ipmi_error;
 	const char	*jmx_error;
 
-	zbx_vector_ptr_t	interfaces_v;	/* for quick finding of all host interfaces in */
+	trx_vector_ptr_t	interfaces_v;	/* for quick finding of all host interfaces in */
 						/* 'config->interfaces' hashset */
 }
 TRX_DC_HOST;
 
 typedef struct
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 	unsigned char	inventory_mode;
 	const char	*values[HOST_INVENTORY_FIELD_COUNT];
 }
@@ -358,9 +358,9 @@ TRX_DC_HOST_H;
 
 typedef struct
 {
-	zbx_uint64_t	hostid;
-	zbx_uint64_t	hosts_monitored;	/* number of enabled hosts assigned to proxy */
-	zbx_uint64_t	hosts_not_monitored;	/* number of disabled hosts assigned to proxy */
+	trx_uint64_t	hostid;
+	trx_uint64_t	hosts_monitored;	/* number of enabled hosts assigned to proxy */
+	trx_uint64_t	hosts_not_monitored;	/* number of disabled hosts assigned to proxy */
 	double		required_performance;
 	int		proxy_config_nextcheck;
 	int		proxy_data_nextcheck;
@@ -379,7 +379,7 @@ TRX_DC_PROXY;
 
 typedef struct
 {
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostid;
 	const char	*ipmi_username;
 	const char	*ipmi_password;
 	signed char	ipmi_authtype;
@@ -389,14 +389,14 @@ TRX_DC_IPMIHOST;
 
 typedef struct
 {
-	zbx_uint64_t		hostid;
-	zbx_vector_uint64_t	templateids;
+	trx_uint64_t		hostid;
+	trx_vector_uint64_t	templateids;
 }
 TRX_DC_HTMPL;
 
 typedef struct
 {
-	zbx_uint64_t	globalmacroid;
+	trx_uint64_t	globalmacroid;
 	const char	*macro;
 	const char	*context;
 	const char	*value;
@@ -406,14 +406,14 @@ TRX_DC_GMACRO;
 typedef struct
 {
 	const char		*macro;
-	zbx_vector_ptr_t	gmacros;
+	trx_vector_ptr_t	gmacros;
 }
 TRX_DC_GMACRO_M;
 
 typedef struct
 {
-	zbx_uint64_t	hostmacroid;
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hostmacroid;
+	trx_uint64_t	hostid;
 	const char	*macro;
 	const char	*context;
 	const char	*value;
@@ -422,16 +422,16 @@ TRX_DC_HMACRO;
 
 typedef struct
 {
-	zbx_uint64_t		hostid;
+	trx_uint64_t		hostid;
 	const char		*macro;
-	zbx_vector_ptr_t	hmacros;
+	trx_vector_ptr_t	hmacros;
 }
 TRX_DC_HMACRO_HM;
 
 typedef struct
 {
-	zbx_uint64_t	interfaceid;
-	zbx_uint64_t	hostid;
+	trx_uint64_t	interfaceid;
+	trx_uint64_t	hostid;
 	const char	*ip;
 	const char	*dns;
 	const char	*port;
@@ -446,7 +446,7 @@ TRX_DC_INTERFACE;
 
 typedef struct
 {
-	zbx_uint64_t		hostid;
+	trx_uint64_t		hostid;
 	TRX_DC_INTERFACE	*interface_ptr;
 	unsigned char		type;
 }
@@ -455,27 +455,27 @@ TRX_DC_INTERFACE_HT;
 typedef struct
 {
 	const char		*addr;
-	zbx_vector_uint64_t	interfaceids;
+	trx_vector_uint64_t	interfaceids;
 }
 TRX_DC_INTERFACE_ADDR;
 
 typedef struct
 {
-	zbx_uint64_t		interfaceid;
-	zbx_vector_uint64_t	itemids;
+	trx_uint64_t		interfaceid;
+	trx_vector_uint64_t	itemids;
 }
 TRX_DC_INTERFACE_ITEM;
 
 typedef struct
 {
 	const char		*name;
-	zbx_vector_uint64_t	expressionids;
+	trx_vector_uint64_t	expressionids;
 }
 TRX_DC_REGEXP;
 
 typedef struct
 {
-	zbx_uint64_t	expressionid;
+	trx_uint64_t	expressionid;
 	const char	*expression;
 	const char	*regexp;
 	char		delimiter;
@@ -487,28 +487,28 @@ TRX_DC_EXPRESSION;
 typedef struct
 {
 	const char	*severity_name[TRIGGER_SEVERITY_COUNT];
-	zbx_uint64_t	discovery_groupid;
+	trx_uint64_t	discovery_groupid;
 	int		default_inventory_mode;
 	int		refresh_unsupported;
 	unsigned char	snmptrap_logging;
 	unsigned char	autoreg_tls_accept;
 	const char	*db_extension;
 	/* housekeeping related configuration data */
-	zbx_config_hk_t	hk;
+	trx_config_hk_t	hk;
 }
 TRX_DC_CONFIG_TABLE;
 
 typedef struct
 {
-	zbx_uint64_t	hosts_monitored;		/* total number of enabled hosts */
-	zbx_uint64_t	hosts_not_monitored;		/* total number of disabled hosts */
-	zbx_uint64_t	items_active_normal;		/* total number of enabled and supported items */
-	zbx_uint64_t	items_active_notsupported;	/* total number of enabled and not supported items */
-	zbx_uint64_t	items_disabled;			/* total number of disabled items */
+	trx_uint64_t	hosts_monitored;		/* total number of enabled hosts */
+	trx_uint64_t	hosts_not_monitored;		/* total number of disabled hosts */
+	trx_uint64_t	items_active_normal;		/* total number of enabled and supported items */
+	trx_uint64_t	items_active_notsupported;	/* total number of enabled and not supported items */
+	trx_uint64_t	items_disabled;			/* total number of disabled items */
 							/* (all items of disabled host are counted as disabled) */
-	zbx_uint64_t	triggers_enabled_ok;		/* total number of enabled triggers with value OK */
-	zbx_uint64_t	triggers_enabled_problem;	/* total number of enabled triggers with value PROBLEM */
-	zbx_uint64_t	triggers_disabled;		/* total number of disabled triggers */
+	trx_uint64_t	triggers_enabled_ok;		/* total number of enabled triggers with value OK */
+	trx_uint64_t	triggers_enabled_problem;	/* total number of enabled triggers with value PROBLEM */
+	trx_uint64_t	triggers_disabled;		/* total number of disabled triggers */
 							/* (if at least one item or host involved in trigger is */
 							/* disabled then trigger is counted as disabled) */
 	double		required_performance;		/* required performance of server (values per second) */
@@ -518,57 +518,57 @@ TRX_DC_STATUS;
 
 typedef struct
 {
-	zbx_uint64_t	conditionid;
-	zbx_uint64_t	actionid;
+	trx_uint64_t	conditionid;
+	trx_uint64_t	actionid;
 	unsigned char	conditiontype;
 	unsigned char	op;
 	const char	*value;
 	const char	*value2;
 }
-zbx_dc_action_condition_t;
+trx_dc_action_condition_t;
 
 typedef struct
 {
-	zbx_uint64_t		actionid;
+	trx_uint64_t		actionid;
 	const char		*formula;
 	unsigned char		eventsource;
 	unsigned char		evaltype;
 	unsigned char		opflags;
-	zbx_vector_ptr_t	conditions;
+	trx_vector_ptr_t	conditions;
 }
-zbx_dc_action_t;
+trx_dc_action_t;
 
 typedef struct
 {
-	zbx_uint64_t	triggertagid;
-	zbx_uint64_t	triggerid;
+	trx_uint64_t	triggertagid;
+	trx_uint64_t	triggerid;
 	const char	*tag;
 	const char	*value;
 }
-zbx_dc_trigger_tag_t;
+trx_dc_trigger_tag_t;
 
 typedef struct
 {
-	zbx_uint64_t	hosttagid;
-	zbx_uint64_t	hostid;
+	trx_uint64_t	hosttagid;
+	trx_uint64_t	hostid;
 	const char	*tag;
 	const char	*value;
 }
-zbx_dc_host_tag_t;
+trx_dc_host_tag_t;
 
 typedef struct
 {
-	zbx_uint64_t		hostid;
-	zbx_vector_ptr_t	tags;
-		/* references to zbx_dc_host_tag_t records cached in config-> host_tags hashset */
+	trx_uint64_t		hostid;
+	trx_vector_ptr_t	tags;
+		/* references to trx_dc_host_tag_t records cached in config-> host_tags hashset */
 }
-zbx_dc_host_tag_index_t;
+trx_dc_host_tag_index_t;
 
 typedef struct
 {
 	const char	*tag;
 }
-zbx_dc_corr_condition_tag_t;
+trx_dc_corr_condition_tag_t;
 
 typedef struct
 {
@@ -576,90 +576,90 @@ typedef struct
 	const char	*value;
 	unsigned char	op;
 }
-zbx_dc_corr_condition_tag_value_t;
+trx_dc_corr_condition_tag_value_t;
 
 typedef struct
 {
-	zbx_uint64_t	groupid;
+	trx_uint64_t	groupid;
 	unsigned char	op;
 }
-zbx_dc_corr_condition_group_t;
+trx_dc_corr_condition_group_t;
 
 typedef struct
 {
 	const char	*oldtag;
 	const char	*newtag;
 }
-zbx_dc_corr_condition_tag_pair_t;
+trx_dc_corr_condition_tag_pair_t;
 
 typedef union
 {
-	zbx_dc_corr_condition_tag_t		tag;
-	zbx_dc_corr_condition_tag_value_t	tag_value;
-	zbx_dc_corr_condition_group_t		group;
-	zbx_dc_corr_condition_tag_pair_t	tag_pair;
+	trx_dc_corr_condition_tag_t		tag;
+	trx_dc_corr_condition_tag_value_t	tag_value;
+	trx_dc_corr_condition_group_t		group;
+	trx_dc_corr_condition_tag_pair_t	tag_pair;
 }
-zbx_dc_corr_condition_data_t;
+trx_dc_corr_condition_data_t;
 
 typedef struct
 {
-	zbx_uint64_t			corr_conditionid;
-	zbx_uint64_t			correlationid;
+	trx_uint64_t			corr_conditionid;
+	trx_uint64_t			correlationid;
 	int				type;
 
-	zbx_dc_corr_condition_data_t	data;
+	trx_dc_corr_condition_data_t	data;
 }
-zbx_dc_corr_condition_t;
+trx_dc_corr_condition_t;
 
 typedef struct
 {
-	zbx_uint64_t	corr_operationid;
-	zbx_uint64_t	correlationid;
+	trx_uint64_t	corr_operationid;
+	trx_uint64_t	correlationid;
 	unsigned char	type;
 }
-zbx_dc_corr_operation_t;
+trx_dc_corr_operation_t;
 
 typedef struct
 {
-	zbx_uint64_t		correlationid;
+	trx_uint64_t		correlationid;
 	const char		*name;
 	const char		*formula;
 	unsigned char		evaltype;
 
-	zbx_vector_ptr_t	conditions;
-	zbx_vector_ptr_t	operations;
+	trx_vector_ptr_t	conditions;
+	trx_vector_ptr_t	operations;
 }
-zbx_dc_correlation_t;
+trx_dc_correlation_t;
 
 #define TRX_DC_HOSTGROUP_FLAGS_NONE		0
 #define TRX_DC_HOSTGROUP_FLAGS_NESTED_GROUPIDS	1
 
 typedef struct
 {
-	zbx_uint64_t		groupid;
+	trx_uint64_t		groupid;
 	const char		*name;
 
-	zbx_vector_uint64_t	nested_groupids;
-	zbx_hashset_t		hostids;
+	trx_vector_uint64_t	nested_groupids;
+	trx_hashset_t		hostids;
 	unsigned char		flags;
 }
-zbx_dc_hostgroup_t;
+trx_dc_hostgroup_t;
 
 typedef struct
 {
-	zbx_uint64_t	item_preprocid;
-	zbx_uint64_t	itemid;
+	trx_uint64_t	item_preprocid;
+	trx_uint64_t	itemid;
 	int		step;
 	int		error_handler;
 	unsigned char	type;
 	const char	*params;
 	const char	*error_handler_params;
 }
-zbx_dc_preproc_op_t;
+trx_dc_preproc_op_t;
 
 typedef struct
 {
-	zbx_uint64_t		maintenanceid;
+	trx_uint64_t		maintenanceid;
 	unsigned char		type;
 	unsigned char		tags_evaltype;
 	unsigned char		state;
@@ -667,27 +667,27 @@ typedef struct
 	int			active_until;
 	int			running_since;
 	int			running_until;
-	zbx_vector_uint64_t	groupids;
-	zbx_vector_uint64_t	hostids;
-	zbx_vector_ptr_t	tags;
-	zbx_vector_ptr_t	periods;
+	trx_vector_uint64_t	groupids;
+	trx_vector_uint64_t	hostids;
+	trx_vector_ptr_t	tags;
+	trx_vector_ptr_t	periods;
 }
-zbx_dc_maintenance_t;
+trx_dc_maintenance_t;
 
 typedef struct
 {
-	zbx_uint64_t	maintenancetagid;
-	zbx_uint64_t	maintenanceid;
+	trx_uint64_t	maintenancetagid;
+	trx_uint64_t	maintenanceid;
 	unsigned char	op;		/* condition operator */
 	const char	*tag;
 	const char	*value;
 }
-zbx_dc_maintenance_tag_t;
+trx_dc_maintenance_tag_t;
 
 typedef struct
 {
-	zbx_uint64_t	timeperiodid;
-	zbx_uint64_t	maintenanceid;
+	trx_uint64_t	timeperiodid;
+	trx_uint64_t	maintenanceid;
 	unsigned char	type;
 	int		every;
 	int		month;
@@ -697,14 +697,14 @@ typedef struct
 	int		period;
 	int		start_date;
 }
-zbx_dc_maintenance_period_t;
+trx_dc_maintenance_period_t;
 
 typedef struct
 {
-	zbx_uint64_t	triggerid;
+	trx_uint64_t	triggerid;
 	int		nextcheck;
 }
-zbx_dc_timer_trigger_t;
+trx_dc_timer_trigger_t;
 
 typedef struct
 {
@@ -716,80 +716,80 @@ typedef struct
 
 	/* maintenance processing management */
 	unsigned char		maintenance_update;		/* flag to trigger maintenance update by timers  */
-	zbx_uint64_t		*maintenance_update_flags;	/* Array of flags to manage timer maintenance updates.*/
+	trx_uint64_t		*maintenance_update_flags;	/* Array of flags to manage timer maintenance updates.*/
 								/* Each array member contains 0/1 flag for 64 timers  */
 								/* indicating if the timer must process maintenance.  */
 
 	char			*session_token;
 
-	zbx_hashset_t		items;
-	zbx_hashset_t		items_hk;		/* hostid, key */
-	zbx_hashset_t		template_items;		/* template items selected from items table */
-	zbx_hashset_t		prototype_items;	/* item prototypes selected from items table */
-	zbx_hashset_t		numitems;
-	zbx_hashset_t		snmpitems;
-	zbx_hashset_t		ipmiitems;
-	zbx_hashset_t		trapitems;
-	zbx_hashset_t		dependentitems;
-	zbx_hashset_t		logitems;
-	zbx_hashset_t		dbitems;
-	zbx_hashset_t		sshitems;
-	zbx_hashset_t		telnetitems;
-	zbx_hashset_t		simpleitems;
-	zbx_hashset_t		jmxitems;
-	zbx_hashset_t		calcitems;
-	zbx_hashset_t		masteritems;
-	zbx_hashset_t		preprocitems;
-	zbx_hashset_t		httpitems;
-	zbx_hashset_t		functions;
-	zbx_hashset_t		triggers;
-	zbx_hashset_t		trigdeps;
-	zbx_hashset_t		hosts;
-	zbx_hashset_t		hosts_h;		/* for searching hosts by 'host' name */
-	zbx_hashset_t		hosts_p;		/* for searching proxies by 'host' name */
-	zbx_hashset_t		proxies;
-	zbx_hashset_t		host_inventories;
-	zbx_hashset_t		host_inventories_auto;	/* For caching of automatically populated host inventories. */
+	trx_hashset_t		items;
+	trx_hashset_t		items_hk;		/* hostid, key */
+	trx_hashset_t		template_items;		/* template items selected from items table */
+	trx_hashset_t		prototype_items;	/* item prototypes selected from items table */
+	trx_hashset_t		numitems;
+	trx_hashset_t		snmpitems;
+	trx_hashset_t		ipmiitems;
+	trx_hashset_t		trapitems;
+	trx_hashset_t		dependentitems;
+	trx_hashset_t		logitems;
+	trx_hashset_t		dbitems;
+	trx_hashset_t		sshitems;
+	trx_hashset_t		telnetitems;
+	trx_hashset_t		simpleitems;
+	trx_hashset_t		jmxitems;
+	trx_hashset_t		calcitems;
+	trx_hashset_t		masteritems;
+	trx_hashset_t		preprocitems;
+	trx_hashset_t		httpitems;
+	trx_hashset_t		functions;
+	trx_hashset_t		triggers;
+	trx_hashset_t		trigdeps;
+	trx_hashset_t		hosts;
+	trx_hashset_t		hosts_h;		/* for searching hosts by 'host' name */
+	trx_hashset_t		hosts_p;		/* for searching proxies by 'host' name */
+	trx_hashset_t		proxies;
+	trx_hashset_t		host_inventories;
+	trx_hashset_t		host_inventories_auto;	/* For caching of automatically populated host inventories. */
 	 	 	 	 	 	 	/* Configuration syncer will read host_inventories without  */
 							/* locking cache and therefore it cannot be updated by      */
 							/* by history syncers when new data is received.	    */
-	zbx_hashset_t		ipmihosts;
-	zbx_hashset_t		htmpls;
-	zbx_hashset_t		gmacros;
-	zbx_hashset_t		gmacros_m;		/* macro */
-	zbx_hashset_t		hmacros;
-	zbx_hashset_t		hmacros_hm;		/* hostid, macro */
-	zbx_hashset_t		interfaces;
-	zbx_hashset_t		interfaces_ht;		/* hostid, type */
-	zbx_hashset_t		interface_snmpaddrs;	/* addr, interfaceids for SNMP interfaces */
-	zbx_hashset_t		interface_snmpitems;	/* interfaceid, itemids for SNMP trap items */
-	zbx_hashset_t		regexps;
-	zbx_hashset_t		expressions;
-	zbx_hashset_t		actions;
-	zbx_hashset_t		action_conditions;
-	zbx_hashset_t		trigger_tags;
-	zbx_hashset_t		host_tags;
-	zbx_hashset_t		host_tags_index;		/* host tag index by hostid */
-	zbx_hashset_t		correlations;
-	zbx_hashset_t		corr_conditions;
-	zbx_hashset_t		corr_operations;
-	zbx_hashset_t		hostgroups;
-	zbx_vector_ptr_t	hostgroups_name; 	/* host groups sorted by name */
-	zbx_hashset_t		preprocops;
-	zbx_hashset_t		maintenances;
-	zbx_hashset_t		maintenance_periods;
-	zbx_hashset_t		maintenance_tags;
+	trx_hashset_t		ipmihosts;
+	trx_hashset_t		htmpls;
+	trx_hashset_t		gmacros;
+	trx_hashset_t		gmacros_m;		/* macro */
+	trx_hashset_t		hmacros;
+	trx_hashset_t		hmacros_hm;		/* hostid, macro */
+	trx_hashset_t		interfaces;
+	trx_hashset_t		interfaces_ht;		/* hostid, type */
+	trx_hashset_t		interface_snmpaddrs;	/* addr, interfaceids for SNMP interfaces */
+	trx_hashset_t		interface_snmpitems;	/* interfaceid, itemids for SNMP trap items */
+	trx_hashset_t		regexps;
+	trx_hashset_t		expressions;
+	trx_hashset_t		actions;
+	trx_hashset_t		action_conditions;
+	trx_hashset_t		trigger_tags;
+	trx_hashset_t		host_tags;
+	trx_hashset_t		host_tags_index;		/* host tag index by hostid */
+	trx_hashset_t		correlations;
+	trx_hashset_t		corr_conditions;
+	trx_hashset_t		corr_operations;
+	trx_hashset_t		hostgroups;
+	trx_vector_ptr_t	hostgroups_name; 	/* host groups sorted by name */
+	trx_hashset_t		preprocops;
+	trx_hashset_t		maintenances;
+	trx_hashset_t		maintenance_periods;
+	trx_hashset_t		maintenance_tags;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_hashset_t		psks;			/* for keeping PSK-identity and PSK pairs and for searching */
+	trx_hashset_t		psks;			/* for keeping PSK-identity and PSK pairs and for searching */
 							/* by PSK identity */
 #endif
-	zbx_hashset_t		data_sessions;
-	zbx_binary_heap_t	queues[TRX_POLLER_TYPE_COUNT];
-	zbx_binary_heap_t	pqueue;
-	zbx_binary_heap_t	timer_queue;
+	trx_hashset_t		data_sessions;
+	trx_binary_heap_t	queues[TRX_POLLER_TYPE_COUNT];
+	trx_binary_heap_t	pqueue;
+	trx_binary_heap_t	timer_queue;
 	TRX_DC_CONFIG_TABLE	*config;
 	TRX_DC_STATUS		*status;
-	zbx_hashset_t		strpool;
+	trx_hashset_t		strpool;
 	char			autoreg_psk_identity[HOST_TLS_PSK_IDENTITY_LEN_MAX];	/* autoregistration PSK */
 	char			autoreg_psk[HOST_TLS_PSK_LEN_MAX];
 }
@@ -797,11 +797,11 @@ TRX_DC_CONFIG;
 
 extern int	sync_in_progress;
 extern TRX_DC_CONFIG	*config;
-extern zbx_rwlock_t	config_lock;
+extern trx_rwlock_t	config_lock;
 
-#define	RDLOCK_CACHE	if (0 == sync_in_progress) zbx_rwlock_rdlock(config_lock)
-#define	WRLOCK_CACHE	if (0 == sync_in_progress) zbx_rwlock_wrlock(config_lock)
-#define	UNLOCK_CACHE	if (0 == sync_in_progress) zbx_rwlock_unlock(config_lock)
+#define	RDLOCK_CACHE	if (0 == sync_in_progress) trx_rwlock_rdlock(config_lock)
+#define	WRLOCK_CACHE	if (0 == sync_in_progress) trx_rwlock_wrlock(config_lock)
+#define	UNLOCK_CACHE	if (0 == sync_in_progress) trx_rwlock_unlock(config_lock)
 
 #define TRX_IPMI_DEFAULT_AUTHTYPE	-1
 #define TRX_IPMI_DEFAULT_PRIVILEGE	2
@@ -810,7 +810,7 @@ extern zbx_rwlock_t	config_lock;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_macro_value_validator_func_t                                 *
+ * Function: trx_macro_value_validator_func_t                                 *
  *                                                                            *
  * Purpose: validate macro value when expanding user macros                   *
  *                                                                            *
@@ -820,35 +820,35 @@ extern zbx_rwlock_t	config_lock;
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-typedef int (*zbx_macro_value_validator_func_t)(const char *value);
+typedef int (*trx_macro_value_validator_func_t)(const char *value);
 
-char	*zbx_dc_expand_user_macros(const char *text, zbx_uint64_t *hostids, int hostids_num,
-		zbx_macro_value_validator_func_t validator_func);
+char	*trx_dc_expand_user_macros(const char *text, trx_uint64_t *hostids, int hostids_num,
+		trx_macro_value_validator_func_t validator_func);
 
-void	zbx_dc_get_hostids_by_functionids(const zbx_uint64_t *functionids, int functionids_num,
-		zbx_vector_uint64_t *hostids);
+void	trx_dc_get_hostids_by_functionids(const trx_uint64_t *functionids, int functionids_num,
+		trx_vector_uint64_t *hostids);
 
 void	DCdump_configuration(void);
 
 /* utility functions */
-void	*DCfind_id(zbx_hashset_t *hashset, zbx_uint64_t id, size_t size, int *found);
+void	*DCfind_id(trx_hashset_t *hashset, trx_uint64_t id, size_t size, int *found);
 
 /* string pool */
-void	zbx_strpool_release(const char *str);
+void	trx_strpool_release(const char *str);
 int	DCstrpool_replace(int found, const char **curr, const char *new_str);
 
 /* host groups */
-void	dc_get_nested_hostgroupids(zbx_uint64_t groupid, zbx_vector_uint64_t *nested_groupids);
-void	dc_hostgroup_cache_nested_groupids(zbx_dc_hostgroup_t *parent_group);
+void	dc_get_nested_hostgroupids(trx_uint64_t groupid, trx_vector_uint64_t *nested_groupids);
+void	dc_hostgroup_cache_nested_groupids(trx_dc_hostgroup_t *parent_group);
 
 /* synchronization */
-typedef struct zbx_dbsync zbx_dbsync_t;
+typedef struct trx_dbsync trx_dbsync_t;
 
-void	DCsync_maintenances(zbx_dbsync_t *sync);
-void	DCsync_maintenance_tags(zbx_dbsync_t *sync);
-void	DCsync_maintenance_periods(zbx_dbsync_t *sync);
-void	DCsync_maintenance_groups(zbx_dbsync_t *sync);
-void	DCsync_maintenance_hosts(zbx_dbsync_t *sync);
+void	DCsync_maintenances(trx_dbsync_t *sync);
+void	DCsync_maintenance_tags(trx_dbsync_t *sync);
+void	DCsync_maintenance_periods(trx_dbsync_t *sync);
+void	DCsync_maintenance_groups(trx_dbsync_t *sync);
+void	DCsync_maintenance_hosts(trx_dbsync_t *sync);
 
 /* maintenance support */
 

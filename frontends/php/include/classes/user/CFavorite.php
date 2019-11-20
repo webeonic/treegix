@@ -34,7 +34,7 @@ class CFavorite {
 			'SELECT p.value_id,p.source'.
 			' FROM profiles p'.
 			' WHERE p.userid='.CWebUser::$data['userid'].
-				' AND p.idx='.zbx_dbstr($idx).
+				' AND p.idx='.trx_dbstr($idx).
 			' ORDER BY p.profileid'
 		);
 		while ($profile = DBfetch($db_profiles)) {
@@ -72,12 +72,12 @@ class CFavorite {
 		$values = [
 			'profileid' => get_dbid('profiles', 'profileid'),
 			'userid' => CWebUser::$data['userid'],
-			'idx' => zbx_dbstr($idx),
-			'value_id' => zbx_dbstr($favid),
+			'idx' => trx_dbstr($idx),
+			'value_id' => trx_dbstr($favid),
 			'type' => PROFILE_TYPE_ID
 		];
 		if (!is_null($favobj)) {
-			$values['source'] = zbx_dbstr($favobj);
+			$values['source'] = trx_dbstr($favobj);
 		}
 
 		return DBexecute(
@@ -108,9 +108,9 @@ class CFavorite {
 		return DBexecute(
 			'DELETE FROM profiles'.
 			' WHERE userid='.CWebUser::$data['userid'].
-				' AND idx='.zbx_dbstr($idx).
-				($favid > 0 ? ' AND value_id='.zbx_dbstr($favid) : '').
-				(is_null($favobj) ? '' : ' AND source='.zbx_dbstr($favobj))
+				' AND idx='.trx_dbstr($idx).
+				($favid > 0 ? ' AND value_id='.trx_dbstr($favid) : '').
+				(is_null($favobj) ? '' : ' AND source='.trx_dbstr($favobj))
 		);
 	}
 

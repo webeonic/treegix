@@ -10,16 +10,16 @@
 
 #include "odbc.h"
 #include "log.h"
-#include "zbxjson.h"
-#include "zbxalgo.h"
+#include "trxjson.h"
+#include "trxalgo.h"
 
-struct zbx_odbc_data_source
+struct trx_odbc_data_source
 {
 	SQLHENV	henv;
 	SQLHDBC	hdbc;
 };
 
-struct zbx_odbc_query_result
+struct trx_odbc_query_result
 {
 	SQLHSTMT	hstmt;
 	SQLSMALLINT	col_num;
@@ -31,7 +31,7 @@ struct zbx_odbc_query_result
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_rc_str                                                  *
+ * Function: trx_odbc_rc_str                                                  *
  *                                                                            *
  * Purpose: get human readable representation of ODBC return code             *
  *                                                                            *
@@ -41,7 +41,7 @@ struct zbx_odbc_query_result
  *               given code is unknown                                        *
  *                                                                            *
  ******************************************************************************/
-static const char	*zbx_odbc_rc_str(SQLRETURN rc)
+static const char	*trx_odbc_rc_str(SQLRETURN rc)
 {
 	switch (rc)
 	{
@@ -66,7 +66,7 @@ static const char	*zbx_odbc_rc_str(SQLRETURN rc)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_diag                                                    *
+ * Function: trx_odbc_diag                                                    *
  *                                                                            *
  * Purpose: diagnose result of ODBC function call                             *
  *                                                                            *
@@ -82,7 +82,7 @@ static const char	*zbx_odbc_rc_str(SQLRETURN rc)
  *           returns FAIL!                                                    *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_odbc_diag(SQLSMALLINT h_type, SQLHANDLE h, SQLRETURN rc, char **diag)
+static int	trx_odbc_diag(SQLSMALLINT h_type, SQLHANDLE h, SQLRETURN rc, char **diag)
 {
 	const char	*rc_str = NULL;
 	char		*buffer = NULL;
@@ -97,14 +97,14 @@ static int	zbx_odbc_diag(SQLSMALLINT h_type, SQLHANDLE h, SQLRETURN rc, char **d
 		while (0 != SQL_SUCCEEDED(SQLGetDiagRec(h_type, h, rec_nr++, sql_state, &err_code, err_msg,
 				sizeof(err_msg), NULL)))
 		{
-			zbx_chrcpy_alloc(&buffer, &alloc, &offset, (NULL == buffer ? ':' : '|'));
-			zbx_snprintf_alloc(&buffer, &alloc, &offset, "[%s][%ld][%s]", sql_state, (long)err_code, err_msg);
+			trx_chrcpy_alloc(&buffer, &alloc, &offset, (NULL == buffer ? ':' : '|'));
+			trx_snprintf_alloc(&buffer, &alloc, &offset, "[%s][%ld][%s]", sql_state, (long)err_code, err_msg);
 		}
 	}
 
 	if (0 != SQL_SUCCEEDED(rc))
 	{
-		if (NULL == (rc_str = zbx_odbc_rc_str(rc)))
+		if (NULL == (rc_str = trx_odbc_rc_str(rc)))
 		{
 			treegix_log(LOG_LEVEL_TRACE, "%s(): [%d (unknown SQLRETURN code)]%s", __func__,
 					(int)rc, TRX_NULL2EMPTY_STR(buffer));
@@ -114,25 +114,25 @@ static int	zbx_odbc_diag(SQLSMALLINT h_type, SQLHANDLE h, SQLRETURN rc, char **d
 	}
 	else
 	{
-		if (NULL == (rc_str = zbx_odbc_rc_str(rc)))
+		if (NULL == (rc_str = trx_odbc_rc_str(rc)))
 		{
-			*diag = zbx_dsprintf(*diag, "[%d (unknown SQLRETURN code)]%s",
+			*diag = trx_dsprintf(*diag, "[%d (unknown SQLRETURN code)]%s",
 					(int)rc, TRX_NULL2EMPTY_STR(buffer));
 		}
 		else
-			*diag = zbx_dsprintf(*diag, "[%s]%s", rc_str, TRX_NULL2EMPTY_STR(buffer));
+			*diag = trx_dsprintf(*diag, "[%s]%s", rc_str, TRX_NULL2EMPTY_STR(buffer));
 
 		treegix_log(LOG_LEVEL_TRACE, "%s(): %s", __func__, *diag);
 	}
 
-	zbx_free(buffer);
+	trx_free(buffer);
 
 	return 0 != SQL_SUCCEEDED(rc) ? SUCCEED : FAIL;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_log_odbc_connection_info                                     *
+ * Function: trx_log_odbc_connection_info                                     *
  *                                                                            *
  * Purpose: log details upon successful connection on behalf of caller        *
  *                                                                            *
@@ -140,7 +140,7 @@ static int	zbx_odbc_diag(SQLSMALLINT h_type, SQLHANDLE h, SQLRETURN rc, char **d
  *             hdbc     - [IN] ODBC connection handle                         *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_log_odbc_connection_info(const char *function, SQLHDBC hdbc)
+static void	trx_log_odbc_connection_info(const char *function, SQLHDBC hdbc)
 {
 	if (SUCCEED == TRX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
 	{
@@ -150,45 +150,45 @@ static void	zbx_log_odbc_connection_info(const char *function, SQLHDBC hdbc)
 
 		rc = SQLGetInfo(hdbc, SQL_DRIVER_NAME, driver_name, MAX_STRING_LEN, NULL);
 
-		if (SUCCEED != zbx_odbc_diag(SQL_HANDLE_DBC, hdbc, rc, &diag))
+		if (SUCCEED != trx_odbc_diag(SQL_HANDLE_DBC, hdbc, rc, &diag))
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "Cannot obtain driver name: %s", diag);
-			zbx_strlcpy(driver_name, "unknown", sizeof(driver_name));
+			trx_strlcpy(driver_name, "unknown", sizeof(driver_name));
 		}
 
 		rc = SQLGetInfo(hdbc, SQL_DRIVER_VER, driver_ver, MAX_STRING_LEN, NULL);
 
-		if (SUCCEED != zbx_odbc_diag(SQL_HANDLE_DBC, hdbc, rc, &diag))
+		if (SUCCEED != trx_odbc_diag(SQL_HANDLE_DBC, hdbc, rc, &diag))
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "Cannot obtain driver version: %s", diag);
-			zbx_strlcpy(driver_ver, "unknown", sizeof(driver_ver));
+			trx_strlcpy(driver_ver, "unknown", sizeof(driver_ver));
 		}
 
 		rc = SQLGetInfo(hdbc, SQL_DBMS_NAME, db_name, MAX_STRING_LEN, NULL);
 
-		if (SUCCEED != zbx_odbc_diag(SQL_HANDLE_DBC, hdbc, rc, &diag))
+		if (SUCCEED != trx_odbc_diag(SQL_HANDLE_DBC, hdbc, rc, &diag))
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "Cannot obtain database name: %s", diag);
-			zbx_strlcpy(db_name, "unknown", sizeof(db_name));
+			trx_strlcpy(db_name, "unknown", sizeof(db_name));
 		}
 
 		rc = SQLGetInfo(hdbc, SQL_DBMS_VER, db_ver, MAX_STRING_LEN, NULL);
 
-		if (SUCCEED != zbx_odbc_diag(SQL_HANDLE_DBC, hdbc, rc, &diag))
+		if (SUCCEED != trx_odbc_diag(SQL_HANDLE_DBC, hdbc, rc, &diag))
 		{
 			treegix_log(LOG_LEVEL_DEBUG, "Cannot obtain database version: %s", diag);
-			zbx_strlcpy(db_ver, "unknown", sizeof(db_ver));
+			trx_strlcpy(db_ver, "unknown", sizeof(db_ver));
 		}
 
 		treegix_log(LOG_LEVEL_DEBUG, "%s() connected to %s(%s) using %s(%s)", function,
 				db_name, db_ver, driver_name, driver_ver);
-		zbx_free(diag);
+		trx_free(diag);
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_connect                                                 *
+ * Function: trx_odbc_connect                                                 *
  *                                                                            *
  * Purpose: connect to ODBC data source                                       *
  *                                                                            *
@@ -204,30 +204,30 @@ static void	zbx_log_odbc_connection_info(const char *function, SQLHDBC hdbc)
  * Comments: It is caller's responsibility to free error buffer!              *
  *                                                                            *
  ******************************************************************************/
-zbx_odbc_data_source_t	*zbx_odbc_connect(const char *dsn, const char *user, const char *pass, int timeout, char **error)
+trx_odbc_data_source_t	*trx_odbc_connect(const char *dsn, const char *user, const char *pass, int timeout, char **error)
 {
 	char			*diag = NULL;
-	zbx_odbc_data_source_t	*data_source = NULL;
+	trx_odbc_data_source_t	*data_source = NULL;
 	SQLRETURN		rc;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() dsn:'%s' user:'%s'", __func__, dsn, user);
 
-	data_source = (zbx_odbc_data_source_t *)zbx_malloc(data_source, sizeof(zbx_odbc_data_source_t));
+	data_source = (trx_odbc_data_source_t *)trx_malloc(data_source, sizeof(trx_odbc_data_source_t));
 
 	if (0 != SQL_SUCCEEDED(SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &data_source->henv)))
 	{
 		rc = SQLSetEnvAttr(data_source->henv, SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3, 0);
 
-		if (SUCCEED == zbx_odbc_diag(SQL_HANDLE_ENV, data_source->henv, rc, &diag))
+		if (SUCCEED == trx_odbc_diag(SQL_HANDLE_ENV, data_source->henv, rc, &diag))
 		{
 			rc = SQLAllocHandle(SQL_HANDLE_DBC, data_source->henv, &data_source->hdbc);
 
-			if(SUCCEED == zbx_odbc_diag(SQL_HANDLE_ENV, data_source->henv, rc, &diag))
+			if(SUCCEED == trx_odbc_diag(SQL_HANDLE_ENV, data_source->henv, rc, &diag))
 			{
 				rc = SQLSetConnectAttr(data_source->hdbc, (SQLINTEGER)SQL_LOGIN_TIMEOUT,
 						(SQLPOINTER)(intptr_t)timeout, (SQLINTEGER)0);
 
-				if (SUCCEED == zbx_odbc_diag(SQL_HANDLE_DBC, data_source->hdbc, rc, &diag))
+				if (SUCCEED == trx_odbc_diag(SQL_HANDLE_DBC, data_source->hdbc, rc, &diag))
 				{
 					/* look for user in data source instead of no user */
 					if ('\0' == *user)
@@ -240,33 +240,33 @@ zbx_odbc_data_source_t	*zbx_odbc_connect(const char *dsn, const char *user, cons
 					rc = SQLConnect(data_source->hdbc, (SQLCHAR *)dsn, SQL_NTS, (SQLCHAR *)user,
 							SQL_NTS, (SQLCHAR *)pass, SQL_NTS);
 
-					if (SUCCEED == zbx_odbc_diag(SQL_HANDLE_DBC, data_source->hdbc, rc, &diag))
+					if (SUCCEED == trx_odbc_diag(SQL_HANDLE_DBC, data_source->hdbc, rc, &diag))
 					{
-						zbx_log_odbc_connection_info(__func__, data_source->hdbc);
+						trx_log_odbc_connection_info(__func__, data_source->hdbc);
 						goto out;
 					}
 
-					*error = zbx_dsprintf(*error, "Cannot connect to ODBC DSN: %s", diag);
+					*error = trx_dsprintf(*error, "Cannot connect to ODBC DSN: %s", diag);
 				}
 				else
-					*error = zbx_dsprintf(*error, "Cannot set ODBC login timeout: %s", diag);
+					*error = trx_dsprintf(*error, "Cannot set ODBC login timeout: %s", diag);
 
 				SQLFreeHandle(SQL_HANDLE_DBC, data_source->hdbc);
 			}
 			else
-				*error = zbx_dsprintf(*error, "Cannot create ODBC connection handle: %s", diag);
+				*error = trx_dsprintf(*error, "Cannot create ODBC connection handle: %s", diag);
 		}
 		else
-			*error = zbx_dsprintf(*error, "Cannot set ODBC version: %s", diag);
+			*error = trx_dsprintf(*error, "Cannot set ODBC version: %s", diag);
 
 		SQLFreeHandle(SQL_HANDLE_ENV, data_source->henv);
 	}
 	else
-		*error = zbx_strdup(*error, "Cannot create ODBC environment handle.");
+		*error = trx_strdup(*error, "Cannot create ODBC environment handle.");
 
-	zbx_free(data_source);
+	trx_free(data_source);
 out:
-	zbx_free(diag);
+	trx_free(diag);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -275,27 +275,27 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_data_source_free                                        *
+ * Function: trx_odbc_data_source_free                                        *
  *                                                                            *
- * Purpose: free resources allocated by successful zbx_odbc_connect() call    *
+ * Purpose: free resources allocated by successful trx_odbc_connect() call    *
  *                                                                            *
  * Parameters: data_source - [IN] pointer to data source structure            *
  *                                                                            *
  * Comments: Input parameter data_source must be obtained using               *
- *           zbx_odbc_connect() and must not be NULL.                         *
+ *           trx_odbc_connect() and must not be NULL.                         *
  *                                                                            *
  ******************************************************************************/
-void	zbx_odbc_data_source_free(zbx_odbc_data_source_t *data_source)
+void	trx_odbc_data_source_free(trx_odbc_data_source_t *data_source)
 {
 	SQLDisconnect(data_source->hdbc);
 	SQLFreeHandle(SQL_HANDLE_DBC, data_source->hdbc);
 	SQLFreeHandle(SQL_HANDLE_ENV, data_source->henv);
-	zbx_free(data_source);
+	trx_free(data_source);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_select                                                  *
+ * Function: trx_odbc_select                                                  *
  *                                                                            *
  * Purpose: execute a query to ODBC data source                               *
  *                                                                            *
@@ -309,31 +309,31 @@ void	zbx_odbc_data_source_free(zbx_odbc_data_source_t *data_source)
  * Comments: It is caller's responsibility to free error buffer!              *
  *                                                                            *
  ******************************************************************************/
-zbx_odbc_query_result_t	*zbx_odbc_select(const zbx_odbc_data_source_t *data_source, const char *query, char **error)
+trx_odbc_query_result_t	*trx_odbc_select(const trx_odbc_data_source_t *data_source, const char *query, char **error)
 {
 	char			*diag = NULL;
-	zbx_odbc_query_result_t	*query_result = NULL;
+	trx_odbc_query_result_t	*query_result = NULL;
 	SQLRETURN		rc;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() query:'%s'", __func__, query);
 
-	query_result = (zbx_odbc_query_result_t *)zbx_malloc(query_result, sizeof(zbx_odbc_query_result_t));
+	query_result = (trx_odbc_query_result_t *)trx_malloc(query_result, sizeof(trx_odbc_query_result_t));
 
 	rc = SQLAllocHandle(SQL_HANDLE_STMT, data_source->hdbc, &query_result->hstmt);
 
-	if (SUCCEED == zbx_odbc_diag(SQL_HANDLE_DBC, data_source->hdbc, rc, &diag))
+	if (SUCCEED == trx_odbc_diag(SQL_HANDLE_DBC, data_source->hdbc, rc, &diag))
 	{
 		rc = SQLExecDirect(query_result->hstmt, (SQLCHAR *)query, SQL_NTS);
 
-		if (SUCCEED == zbx_odbc_diag(SQL_HANDLE_STMT, query_result->hstmt, rc, &diag))
+		if (SUCCEED == trx_odbc_diag(SQL_HANDLE_STMT, query_result->hstmt, rc, &diag))
 		{
 			rc = SQLNumResultCols(query_result->hstmt, &query_result->col_num);
 
-			if (SUCCEED == zbx_odbc_diag(SQL_HANDLE_STMT, query_result->hstmt, rc, &diag))
+			if (SUCCEED == trx_odbc_diag(SQL_HANDLE_STMT, query_result->hstmt, rc, &diag))
 			{
 				SQLSMALLINT	i;
 
-				query_result->row = (char **)zbx_malloc(NULL, sizeof(char *) * (size_t)query_result->col_num);
+				query_result->row = (char **)trx_malloc(NULL, sizeof(char *) * (size_t)query_result->col_num);
 
 				for (i = 0; ; i++)
 				{
@@ -348,19 +348,19 @@ zbx_odbc_query_result_t	*zbx_odbc_select(const zbx_odbc_data_source_t *data_sour
 				}
 			}
 			else
-				*error = zbx_dsprintf(*error, "Cannot get number of columns in ODBC result: %s", diag);
+				*error = trx_dsprintf(*error, "Cannot get number of columns in ODBC result: %s", diag);
 		}
 		else
-			*error = zbx_dsprintf(*error, "Cannot execute ODBC query: %s", diag);
+			*error = trx_dsprintf(*error, "Cannot execute ODBC query: %s", diag);
 
 		SQLFreeHandle(SQL_HANDLE_STMT, query_result->hstmt);
 	}
 	else
-		*error = zbx_dsprintf(*error, "Cannot create ODBC statement handle: %s", diag);
+		*error = trx_dsprintf(*error, "Cannot create ODBC statement handle: %s", diag);
 
-	zbx_free(query_result);
+	trx_free(query_result);
 out:
-	zbx_free(diag);
+	trx_free(diag);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -369,32 +369,32 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_query_result_free                                       *
+ * Function: trx_odbc_query_result_free                                       *
  *                                                                            *
- * Purpose: free resources allocated by successful zbx_odbc_select() call     *
+ * Purpose: free resources allocated by successful trx_odbc_select() call     *
  *                                                                            *
  * Parameters: query_result - [IN] pointer to query result structure          *
  *                                                                            *
  * Comments: Input parameter query_result must be obtained using              *
- *           zbx_odbc_select() and must not be NULL.                          *
+ *           trx_odbc_select() and must not be NULL.                          *
  *                                                                            *
  ******************************************************************************/
-void	zbx_odbc_query_result_free(zbx_odbc_query_result_t *query_result)
+void	trx_odbc_query_result_free(trx_odbc_query_result_t *query_result)
 {
 	SQLSMALLINT	i;
 
 	SQLFreeHandle(SQL_HANDLE_STMT, query_result->hstmt);
 
 	for (i = 0; i < query_result->col_num; i++)
-		zbx_free(query_result->row[i]);
+		trx_free(query_result->row[i]);
 
-	zbx_free(query_result->row);
-	zbx_free(query_result);
+	trx_free(query_result->row);
+	trx_free(query_result);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_fetch                                                   *
+ * Function: trx_odbc_fetch                                                   *
  *                                                                            *
  * Purpose: fetch single row of ODBC query result                             *
  *                                                                            *
@@ -405,12 +405,12 @@ void	zbx_odbc_query_result_free(zbx_odbc_query_result_t *query_result)
  * Comments: NULL result can signify both end of rows (which is normal) and   *
  *           failure. There is currently no way to distinguish these cases.   *
  *           There is no need to free strings returned by this function.      *
- *           Lifetime of strings is limited to next call of zbx_odbc_fetch()  *
- *           or zbx_odbc_query_result_free(), caller needs to make a copy if  *
+ *           Lifetime of strings is limited to next call of trx_odbc_fetch()  *
+ *           or trx_odbc_query_result_free(), caller needs to make a copy if  *
  *           result is needed for longer.                                     *
  *                                                                            *
  ******************************************************************************/
-static const char	*const *zbx_odbc_fetch(zbx_odbc_query_result_t *query_result)
+static const char	*const *trx_odbc_fetch(trx_odbc_query_result_t *query_result)
 {
 	char		*diag = NULL;
 	SQLRETURN	rc;
@@ -425,7 +425,7 @@ static const char	*const *zbx_odbc_fetch(zbx_odbc_query_result_t *query_result)
 		goto out;
 	}
 
-	if (SUCCEED != zbx_odbc_diag(SQL_HANDLE_STMT, query_result->hstmt, rc, &diag))
+	if (SUCCEED != trx_odbc_diag(SQL_HANDLE_STMT, query_result->hstmt, rc, &diag))
 	{
 		treegix_log(LOG_LEVEL_DEBUG, "Cannot fetch row: %s", diag);
 		goto out;
@@ -437,14 +437,14 @@ static const char	*const *zbx_odbc_fetch(zbx_odbc_query_result_t *query_result)
 		char		buffer[MAX_STRING_LEN + 1];
 		SQLLEN		len;
 
-		zbx_free(query_result->row[i]);
+		trx_free(query_result->row[i]);
 
 		/* force len to integer value for DB2 compatibility */
 		do
 		{
 			rc = SQLGetData(query_result->hstmt, i + 1, SQL_C_CHAR, buffer, MAX_STRING_LEN, &len);
 
-			if (SUCCEED != zbx_odbc_diag(SQL_HANDLE_STMT, query_result->hstmt, rc, &diag))
+			if (SUCCEED != trx_odbc_diag(SQL_HANDLE_STMT, query_result->hstmt, rc, &diag))
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "Cannot get column data: %s", diag);
 				goto out;
@@ -453,19 +453,19 @@ static const char	*const *zbx_odbc_fetch(zbx_odbc_query_result_t *query_result)
 			if (SQL_NULL_DATA == (int)len)
 				break;
 
-			zbx_strcpy_alloc(&query_result->row[i], &alloc, &offset, buffer);
+			trx_strcpy_alloc(&query_result->row[i], &alloc, &offset, buffer);
 		}
 		while (SQL_SUCCESS != rc);
 
 		if (NULL != query_result->row[i])
-			zbx_rtrim(query_result->row[i], " ");
+			trx_rtrim(query_result->row[i], " ");
 
 		treegix_log(LOG_LEVEL_DEBUG, "column #%d value:'%s'", (int)i + 1, TRX_NULL2STR(query_result->row[i]));
 	}
 
 	row = (const char *const *)query_result->row;
 out:
-	zbx_free(diag);
+	trx_free(diag);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -474,7 +474,7 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_query_result_to_string                                  *
+ * Function: trx_odbc_query_result_to_string                                  *
  *                                                                            *
  * Purpose: extract the first column of the first row of ODBC SQL query       *
  *                                                                            *
@@ -491,28 +491,28 @@ out:
  * Comments: It is caller's responsibility to free allocated buffers!         *
  *                                                                            *
  ******************************************************************************/
-int	zbx_odbc_query_result_to_string(zbx_odbc_query_result_t *query_result, char **string, char **error)
+int	trx_odbc_query_result_to_string(trx_odbc_query_result_t *query_result, char **string, char **error)
 {
 	const char	*const *row;
 	int		ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	if (NULL != (row = zbx_odbc_fetch(query_result)))
+	if (NULL != (row = trx_odbc_fetch(query_result)))
 	{
 		if (NULL != row[0])
 		{
-			*string = zbx_strdup(*string, row[0]);
-			zbx_replace_invalid_utf8(*string);
+			*string = trx_strdup(*string, row[0]);
+			trx_replace_invalid_utf8(*string);
 			ret = SUCCEED;
 		}
 		else
-			*error = zbx_strdup(*error, "SQL query returned NULL value.");
+			*error = trx_strdup(*error, "SQL query returned NULL value.");
 	}
 	else
-		*error = zbx_strdup(*error, "SQL query returned empty result.");
+		*error = trx_strdup(*error, "SQL query returned empty result.");
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -538,18 +538,18 @@ int	zbx_odbc_query_result_to_string(zbx_odbc_query_result_t *query_result, char 
  * Comments: It is caller's responsibility to free allocated buffers!         *
  *                                                                            *
  ******************************************************************************/
-static int	odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, int flags, char **out_json,
+static int	odbc_query_result_to_json(trx_odbc_query_result_t *query_result, int flags, char **out_json,
 		char **error)
 {
 	const char		*const *row;
-	struct zbx_json		json;
-	zbx_vector_str_t	names;
+	struct trx_json		json;
+	trx_vector_str_t	names;
 	int			ret = FAIL, i, j;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_str_create(&names);
-	zbx_vector_str_reserve(&names, query_result->col_num);
+	trx_vector_str_create(&names);
+	trx_vector_str_reserve(&names, query_result->col_num);
 
 	for (i = 0; i < query_result->col_num; i++)
 	{
@@ -561,7 +561,7 @@ static int	odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, int 
 
 		if (SQL_SUCCESS != rc || sizeof(str) <= (size_t)len || '\0' == *str)
 		{
-			*error = zbx_dsprintf(*error, "Cannot obtain column #%d name.", i + 1);
+			*error = trx_dsprintf(*error, "Cannot obtain column #%d name.", i + 1);
 			goto out;
 		}
 
@@ -576,18 +576,18 @@ static int	odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, int 
 
 				if (SUCCEED != is_macro_char(*p))
 				{
-					*error = zbx_dsprintf(*error, "Cannot convert column #%d name to macro.", i + 1);
+					*error = trx_dsprintf(*error, "Cannot convert column #%d name to macro.", i + 1);
 					goto out;
 				}
 			}
 
-			zbx_vector_str_append(&names, zbx_dsprintf(NULL, "{#%s}", str));
+			trx_vector_str_append(&names, trx_dsprintf(NULL, "{#%s}", str));
 
 			for (j = 0; j < i; j++)
 			{
 				if (0 == strcmp(names.values[i], names.values[j]))
 				{
-					*error = zbx_dsprintf(*error, "Duplicate macro name: %s.", names.values[i]);
+					*error = trx_dsprintf(*error, "Duplicate macro name: %s.", names.values[i]);
 					goto out;
 				}
 			}
@@ -596,16 +596,16 @@ static int	odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, int 
 		{
 			char	*name;
 
-			zbx_replace_invalid_utf8((name = zbx_strdup(NULL, str)));
-			zbx_vector_str_append(&names, name);
+			trx_replace_invalid_utf8((name = trx_strdup(NULL, str)));
+			trx_vector_str_append(&names, name);
 		}
 	}
 
-	zbx_json_initarray(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&json, TRX_JSON_STAT_BUF_LEN);
 
-	while (NULL != (row = zbx_odbc_fetch(query_result)))
+	while (NULL != (row = trx_odbc_fetch(query_result)))
 	{
-		zbx_json_addobject(&json, NULL);
+		trx_json_addobject(&json, NULL);
 
 		for (i = 0; i < query_result->col_num; i++)
 		{
@@ -613,53 +613,53 @@ static int	odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, int 
 
 			if (NULL != row[i])
 			{
-				value = zbx_strdup(value, row[i]);
-				zbx_replace_invalid_utf8(value);
+				value = trx_strdup(value, row[i]);
+				trx_replace_invalid_utf8(value);
 			}
 
-			zbx_json_addstring(&json, names.values[i], value, TRX_JSON_TYPE_STRING);
-			zbx_free(value);
+			trx_json_addstring(&json, names.values[i], value, TRX_JSON_TYPE_STRING);
+			trx_free(value);
 		}
 
-		zbx_json_close(&json);
+		trx_json_close(&json);
 	}
 
-	zbx_json_close(&json);
+	trx_json_close(&json);
 
-	*out_json = zbx_strdup(*out_json, json.buffer);
+	*out_json = trx_strdup(*out_json, json.buffer);
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
 	ret = SUCCEED;
 out:
-	zbx_vector_str_clear_ext(&names, zbx_str_free);
-	zbx_vector_str_destroy(&names);
+	trx_vector_str_clear_ext(&names, trx_str_free);
+	trx_vector_str_destroy(&names);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_query_result_to_lld_json                                *
+ * Function: trx_odbc_query_result_to_lld_json                                *
  *                                                                            *
  * Purpose: public wrapper for odbc_query_result_to_json                      *
  *                                                                            *
  *****************************************************************************/
-int	zbx_odbc_query_result_to_lld_json(zbx_odbc_query_result_t *query_result, char **lld_json, char **error)
+int	trx_odbc_query_result_to_lld_json(trx_odbc_query_result_t *query_result, char **lld_json, char **error)
 {
 	return odbc_query_result_to_json(query_result, TRX_FLAG_ODBC_LLD, lld_json, error);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_odbc_query_result_to_json                                    *
+ * Function: trx_odbc_query_result_to_json                                    *
  *                                                                            *
  * Purpose: public wrapper for odbc_query_result_to_json                      *
  *                                                                            *
  *****************************************************************************/
-int	zbx_odbc_query_result_to_json(zbx_odbc_query_result_t *query_result, char **out_json, char **error)
+int	trx_odbc_query_result_to_json(trx_odbc_query_result_t *query_result, char **out_json, char **error)
 {
 	return odbc_query_result_to_json(query_result, TRX_FLAG_ODBC_NONE, out_json, error);
 }

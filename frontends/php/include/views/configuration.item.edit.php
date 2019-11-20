@@ -400,7 +400,7 @@ $form_list
 if ($data['interfaces']) {
 	if ($discovered_item) {
 		if ($data['interfaceid'] != 0) {
-			$data['interfaces'] = zbx_toHash($data['interfaces'], 'interfaceid');
+			$data['interfaces'] = trx_toHash($data['interfaces'], 'interfaceid');
 			$interface = $data['interfaces'][$data['interfaceid']];
 
 			$form_list->addRow((new CLabel(_('Host interface'), 'interface'))->setAsteriskMark(),
@@ -419,7 +419,7 @@ if ($data['interfaces']) {
 			->setAriaRequired();
 
 		// Set up interface groups sorted by priority.
-		$interface_types = zbx_objectValues($this->data['interfaces'], 'type');
+		$interface_types = trx_objectValues($this->data['interfaces'], 'type');
 		$interface_groups = [];
 		foreach ([INTERFACE_TYPE_AGENT, INTERFACE_TYPE_SNMP, INTERFACE_TYPE_JMX, INTERFACE_TYPE_IPMI] as $interface_type) {
 			if (in_array($interface_type, $interface_types)) {

@@ -1,9 +1,9 @@
 
 
 #include "common.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
-#define UINT64_BIT_COUNT	(sizeof(zbx_uint64_t) << 3)
+#define UINT64_BIT_COUNT	(sizeof(trx_uint64_t) << 3)
 #define UINT32_BIT_COUNT	(UINT64_BIT_COUNT >> 1)
 #define UINT32_BIT_MASK		(~((~__UINT64_C(0)) << UINT32_BIT_COUNT))
 
@@ -19,9 +19,9 @@
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-static void	udec128_128(zbx_uint128_t *base, const zbx_uint128_t *value)
+static void	udec128_128(trx_uint128_t *base, const trx_uint128_t *value)
 {
-	zbx_uint64_t	lo = base->lo;
+	trx_uint64_t	lo = base->lo;
 
 	base->lo -= value->lo;
 	if (lo < base->lo)
@@ -41,7 +41,7 @@ static void	udec128_128(zbx_uint128_t *base, const zbx_uint128_t *value)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-static void	ushiftr128(zbx_uint128_t *base, unsigned int bits)
+static void	ushiftr128(trx_uint128_t *base, unsigned int bits)
 {
 	if (0 == bits)
 		return;
@@ -72,7 +72,7 @@ static void	ushiftr128(zbx_uint128_t *base, unsigned int bits)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-static void	ushiftl128(zbx_uint128_t *base, unsigned int bits)
+static void	ushiftl128(trx_uint128_t *base, unsigned int bits)
 {
 	if (0 == bits)
 		return;
@@ -106,7 +106,7 @@ static void	ushiftl128(zbx_uint128_t *base, unsigned int bits)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-static int	ucmp128_128(const zbx_uint128_t *value1, const zbx_uint128_t *value2)
+static int	ucmp128_128(const trx_uint128_t *value1, const trx_uint128_t *value2)
 {
 	if (value1->hi != value2->hi)
 		return value1->hi < value2->hi ? -1 : 1;
@@ -133,9 +133,9 @@ static int	ucmp128_128(const zbx_uint128_t *value1, const zbx_uint128_t *value2)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-static void	umul64_32_shift(zbx_uint128_t *base, zbx_uint64_t value, zbx_uint64_t factor, int shift)
+static void	umul64_32_shift(trx_uint128_t *base, trx_uint64_t value, trx_uint64_t factor, int shift)
 {
-	zbx_uint128_t	buffer;
+	trx_uint128_t	buffer;
 
 	uset128(&buffer, 0, (value & UINT32_BIT_MASK) * factor);
 	ushiftl128(&buffer, shift);
@@ -159,9 +159,9 @@ static void	umul64_32_shift(zbx_uint128_t *base, zbx_uint64_t value, zbx_uint64_
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-void	uinc128_64(zbx_uint128_t *base, zbx_uint64_t value)
+void	uinc128_64(trx_uint128_t *base, trx_uint64_t value)
 {
-	zbx_uint64_t	low = base->lo;
+	trx_uint64_t	low = base->lo;
 
 	base->lo += value;
 	/* handle wraparound */
@@ -182,9 +182,9 @@ void	uinc128_64(zbx_uint128_t *base, zbx_uint64_t value)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-void	uinc128_128(zbx_uint128_t *base, const zbx_uint128_t *value)
+void	uinc128_128(trx_uint128_t *base, const trx_uint128_t *value)
 {
-	zbx_uint64_t	low = base->lo;
+	trx_uint64_t	low = base->lo;
 
 	base->lo += value->lo;
 	/* handle wraparound */
@@ -206,7 +206,7 @@ void	uinc128_128(zbx_uint128_t *base, const zbx_uint128_t *value)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-void	umul64_64(zbx_uint128_t *result, zbx_uint64_t value, zbx_uint64_t factor)
+void	umul64_64(trx_uint128_t *result, trx_uint64_t value, trx_uint64_t factor)
 {
 	uset128(result, 0, 0);
 	/* multiply the value with lower double word of factor and add the result */
@@ -229,10 +229,10 @@ void	umul64_64(zbx_uint128_t *result, zbx_uint64_t value, zbx_uint64_t factor)
  * Author: Andris Zeila                                                       *
  *                                                                            *
  ******************************************************************************/
-void	udiv128_64(zbx_uint128_t *result, const zbx_uint128_t *dividend, zbx_uint64_t value)
+void	udiv128_64(trx_uint128_t *result, const trx_uint128_t *dividend, trx_uint64_t value)
 {
-	zbx_uint128_t	reminder, divisor;
-	zbx_uint64_t	result_mask = __UINT64_C(1) << (UINT64_BIT_COUNT - 1);
+	trx_uint128_t	reminder, divisor;
+	trx_uint64_t	result_mask = __UINT64_C(1) << (UINT64_BIT_COUNT - 1);
 
 	/* first handle the simple 64bit/64bit case */
 	if (0 == dividend->hi)

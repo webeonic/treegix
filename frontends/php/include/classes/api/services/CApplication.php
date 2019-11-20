@@ -71,7 +71,7 @@ class CApplication extends CApiService {
 			'sortorder'						=> '',
 			'limit'							=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -87,13 +87,13 @@ class CApplication extends CApiService {
 					' WHERE a.hostid=hgg.hostid'.
 					' GROUP BY hgg.hostid'.
 					' HAVING MIN(r.permission)>'.PERM_DENY.
-						' AND MAX(r.permission)>='.zbx_dbstr($permission).
+						' AND MAX(r.permission)>='.trx_dbstr($permission).
 					')';
 		}
 
 		// groupids
 		if (!is_null($options['groupids'])) {
-			zbx_value2array($options['groupids']);
+			trx_value2array($options['groupids']);
 
 			$sqlParts['from']['hosts_groups'] = 'hosts_groups hg';
 			$sqlParts['where']['ahg'] = 'a.hostid=hg.hostid';
@@ -106,10 +106,10 @@ class CApplication extends CApiService {
 
 		// templateids
 		if (!is_null($options['templateids'])) {
-			zbx_value2array($options['templateids']);
+			trx_value2array($options['templateids']);
 
 			if (!is_null($options['hostids'])) {
-				zbx_value2array($options['hostids']);
+				trx_value2array($options['hostids']);
 				$options['hostids'] = array_merge($options['hostids'], $options['templateids']);
 			}
 			else {
@@ -119,7 +119,7 @@ class CApplication extends CApiService {
 
 		// hostids
 		if (!is_null($options['hostids'])) {
-			zbx_value2array($options['hostids']);
+			trx_value2array($options['hostids']);
 
 			$sqlParts['where']['hostid'] = dbConditionInt('a.hostid', $options['hostids']);
 
@@ -130,7 +130,7 @@ class CApplication extends CApiService {
 
 		// itemids
 		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
+			trx_value2array($options['itemids']);
 
 			$sqlParts['from']['items_applications'] = 'items_applications ia';
 			$sqlParts['where'][] = dbConditionInt('ia.itemid', $options['itemids']);
@@ -139,7 +139,7 @@ class CApplication extends CApiService {
 
 		// applicationids
 		if (!is_null($options['applicationids'])) {
-			zbx_value2array($options['applicationids']);
+			trx_value2array($options['applicationids']);
 
 			$sqlParts['where'][] = dbConditionInt('a.applicationid', $options['applicationids']);
 		}
@@ -168,7 +168,7 @@ class CApplication extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('applications a', $options, $sqlParts);
+			trx_db_search('applications a', $options, $sqlParts);
 		}
 
 		// filter
@@ -177,7 +177,7 @@ class CApplication extends CApiService {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -210,7 +210,7 @@ class CApplication extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -312,7 +312,7 @@ class CApplication extends CApiService {
 		// permissions
 		$db_applications = $this->get([
 			'output' => ['applicationid', 'hostid', 'name', 'flags'],
-			'applicationids' => zbx_objectValues($applications, 'applicationid'),
+			'applicationids' => trx_objectValues($applications, 'applicationid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
@@ -325,7 +325,7 @@ class CApplication extends CApiService {
 			}
 		}
 
-		if ($this->hasTemplatedApplications(zbx_objectValues($applications, 'applicationid'))) {
+		if ($this->hasTemplatedApplications(trx_objectValues($applications, 'applicationid'))) {
 			self::exception(TRX_API_ERROR_PARAMETERS, _('Cannot update templated applications.'));
 		}
 
@@ -406,7 +406,7 @@ class CApplication extends CApiService {
 
 		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_APPLICATION, $applications, $db_applications);
 
-		return ['applicationids' => zbx_objectValues($applications, 'applicationid')];
+		return ['applicationids' => trx_objectValues($applications, 'applicationid')];
 	}
 
 	/**
@@ -492,10 +492,10 @@ class CApplication extends CApiService {
 			self::exception(TRX_API_ERROR_PARAMETERS, _('Empty input parameters.'));
 		}
 
-		$applications = zbx_toArray($data['applications']);
-		$applicationIds = zbx_objectValues($applications, 'applicationid');
-		$items = zbx_toArray($data['items']);
-		$itemIds = zbx_objectValues($items, 'itemid');
+		$applications = trx_toArray($data['applications']);
+		$applicationIds = trx_objectValues($applications, 'applicationid');
+		$items = trx_toArray($data['items']);
+		$itemIds = trx_objectValues($items, 'itemid');
 
 		// validate permissions
 		$allowedApplications = $this->get([
@@ -575,14 +575,14 @@ class CApplication extends CApiService {
 
 		// mass add applications for children
 		foreach ($itemIds as $itemId) {
-			$dbChildren = DBselect('SELECT i.itemid,i.hostid FROM items i WHERE i.templateid='.zbx_dbstr($itemId));
+			$dbChildren = DBselect('SELECT i.itemid,i.hostid FROM items i WHERE i.templateid='.trx_dbstr($itemId));
 
 			while ($child = DBfetch($dbChildren)) {
 				$dbApplications = DBselect(
 					'SELECT a1.applicationid'.
 					' FROM applications a1,applications a2'.
 					' WHERE a1.name=a2.name'.
-						' AND a1.hostid='.zbx_dbstr($child['hostid']).
+						' AND a1.hostid='.trx_dbstr($child['hostid']).
 						' AND '.dbConditionInt('a2.applicationid', $applicationIds)
 				);
 

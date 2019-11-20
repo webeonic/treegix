@@ -57,8 +57,8 @@ if ($parentHost['status'] != HOST_STATUS_TEMPLATE) {
 		$existingInterfaceTypes[$interface['type']] = true;
 	}
 
-	zbx_add_post_js('hostInterfacesManager.add('.CJs::encodeJson(array_values($parentHost['interfaces'])).');');
-	zbx_add_post_js('hostInterfacesManager.disable();');
+	trx_add_post_js('hostInterfacesManager.add('.CJs::encodeJson(array_values($parentHost['interfaces'])).');');
+	trx_add_post_js('hostInterfacesManager.disable();');
 
 	// Treegix agent interfaces
 	$ifTab = (new CTable())
@@ -316,7 +316,7 @@ if ($parentHost['status'] != HOST_STATUS_TEMPLATE) {
 	$macros = $parentHost['macros'];
 	if ($data['show_inherited_macros']) {
 		$macros = mergeInheritedMacros($macros,
-			getInheritedMacros(zbx_objectValues($hostPrototype['templates'], 'templateid'))
+			getInheritedMacros(trx_objectValues($hostPrototype['templates'], 'templateid'))
 		);
 	}
 	$macros = array_values(order_macros($macros, 'macro'));

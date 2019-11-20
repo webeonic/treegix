@@ -11,12 +11,12 @@ typedef struct
 	char		issuer[HOST_TLS_ISSUER_LEN_MAX];
 	char		subject[HOST_TLS_SUBJECT_LEN_MAX];
 }
-zbx_tls_conn_attr_t;
+trx_tls_conn_attr_t;
 
-int		zbx_tls_get_attr_cert(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr);
-int		zbx_tls_get_attr_psk(const zbx_socket_t *s, zbx_tls_conn_attr_t *attr);
-int		zbx_check_server_issuer_subject(zbx_socket_t *sock, char **error);
-unsigned int	zbx_tls_get_psk_usage(void);
+int		trx_tls_get_attr_cert(const trx_socket_t *s, trx_tls_conn_attr_t *attr);
+int		trx_tls_get_attr_psk(const trx_socket_t *s, trx_tls_conn_attr_t *attr);
+int		trx_check_server_issuer_subject(trx_socket_t *sock, char **error);
+unsigned int	trx_tls_get_psk_usage(void);
 #endif
 
 #endif	/* TREEGIX_TLS_TCP_ACTIVE_H */

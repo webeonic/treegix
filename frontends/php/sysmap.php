@@ -100,7 +100,7 @@ if (isset($_REQUEST['favobj'])) {
 
 				ob_clean();
 
-				echo 'alert('.zbx_jsvalue(implode("\r\n", $msg)).');';
+				echo 'alert('.trx_jsvalue(implode("\r\n", $msg)).');';
 			}
 
 			@ob_flush();
@@ -209,9 +209,9 @@ foreach ($data['sysmap']['lines'] as $line) {
 }
 unset($data['sysmap']['lines']);
 
-$data['sysmap']['selements'] = zbx_toHash($data['sysmap']['selements'], 'selementid');
-$data['sysmap']['shapes'] = zbx_toHash($data['sysmap']['shapes'], 'sysmap_shapeid');
-$data['sysmap']['links'] = zbx_toHash($data['sysmap']['links'], 'linkid');
+$data['sysmap']['selements'] = trx_toHash($data['sysmap']['selements'], 'selementid');
+$data['sysmap']['shapes'] = trx_toHash($data['sysmap']['shapes'], 'sysmap_shapeid');
+$data['sysmap']['links'] = trx_toHash($data['sysmap']['links'], 'linkid');
 
 // Extend $selement adding resolved label as property named 'expanded'.
 $resolve_opt = ['resolve_element_label' => true];

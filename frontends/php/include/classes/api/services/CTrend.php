@@ -34,7 +34,7 @@ class CTrend extends CApiService {
 			'limit'			=> null
 		];
 
-		$options = zbx_array_merge($default_options, $options);
+		$options = trx_array_merge($default_options, $options);
 
 		$storage_items = [];
 		$result = ($options['countOutput']) ? 0 : [];
@@ -88,15 +88,15 @@ class CTrend extends CApiService {
 		$sql_where = [];
 
 		if ($options['time_from'] !== null) {
-			$sql_where['clock_from'] = 't.clock>='.zbx_dbstr($options['time_from']);
+			$sql_where['clock_from'] = 't.clock>='.trx_dbstr($options['time_from']);
 		}
 
 		if ($options['time_till'] !== null) {
-			$sql_where['clock_till'] = 't.clock<='.zbx_dbstr($options['time_till']);
+			$sql_where['clock_till'] = 't.clock<='.trx_dbstr($options['time_till']);
 		}
 
 		if (!$options['countOutput']) {
-			$sql_limit = ($options['limit'] && zbx_ctype_digit($options['limit'])) ? $options['limit'] : null;
+			$sql_limit = ($options['limit'] && trx_ctype_digit($options['limit'])) ? $options['limit'] : null;
 
 			$sql_fields = [];
 
@@ -237,7 +237,7 @@ class CTrend extends CApiService {
 			];
 		}
 
-		$limit = ($options['limit'] && zbx_ctype_digit($options['limit'])) ? $options['limit'] : null;
+		$limit = ($options['limit'] && trx_ctype_digit($options['limit'])) ? $options['limit'] : null;
 		$result = [];
 
 		if ($options['countOutput']) {

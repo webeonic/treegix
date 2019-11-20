@@ -11,11 +11,11 @@ static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 
 	if (0 != sysinfo(&info))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)info.totalram * info.mem_unit);
+	SET_UI64_RESULT(result, (trx_uint64_t)info.totalram * info.mem_unit);
 
 	return SYSINFO_RET_OK;
 }
@@ -26,11 +26,11 @@ static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 
 	if (0 != sysinfo(&info))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)info.freeram * info.mem_unit);
+	SET_UI64_RESULT(result, (trx_uint64_t)info.freeram * info.mem_unit);
 
 	return SYSINFO_RET_OK;
 }
@@ -41,11 +41,11 @@ static int	VM_MEMORY_BUFFERS(AGENT_RESULT *result)
 
 	if (0 != sysinfo(&info))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)info.bufferram * info.mem_unit);
+	SET_UI64_RESULT(result, (trx_uint64_t)info.bufferram * info.mem_unit);
 
 	return SYSINFO_RET_OK;
 }
@@ -56,11 +56,11 @@ static int	VM_MEMORY_USED(AGENT_RESULT *result)
 
 	if (0 != sysinfo(&info))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)(info.totalram - info.freeram) * info.mem_unit);
+	SET_UI64_RESULT(result, (trx_uint64_t)(info.totalram - info.freeram) * info.mem_unit);
 
 	return SYSINFO_RET_OK;
 }
@@ -71,13 +71,13 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 
 	if (0 != sysinfo(&info))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (0 == info.totalram)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -89,7 +89,7 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 {
 	FILE		*f;
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	struct sysinfo	info;
 	int		res, ret = SYSINFO_RET_FAIL;
 
@@ -97,13 +97,13 @@ static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 
 	if (NULL == (f = fopen("/proc/meminfo", "r")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc/meminfo: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc/meminfo: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (FAIL == (res = byte_value_from_proc_file(f, "MemAvailable:", "Cached:", &value)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain the value of MemAvailable from /proc/meminfo."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain the value of MemAvailable from /proc/meminfo."));
 		goto close;
 	}
 
@@ -116,7 +116,7 @@ static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 
 	if (FAIL == (res = byte_value_from_proc_file(f, "Cached:", NULL, &value)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain the value of Cached from /proc/meminfo."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain the value of Cached from /proc/meminfo."));
 		goto close;
 	}
 
@@ -125,14 +125,14 @@ static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 
 	if (0 != sysinfo(&info))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		goto close;
 	}
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)(info.freeram + info.bufferram) * info.mem_unit + value);
+	SET_UI64_RESULT(result, (trx_uint64_t)(info.freeram + info.bufferram) * info.mem_unit + value);
 	ret = SYSINFO_RET_OK;
 close:
-	zbx_fclose(f);
+	trx_fclose(f);
 
 	return ret;
 }
@@ -141,12 +141,12 @@ static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 {
 	struct sysinfo	info;
 	AGENT_RESULT	result_tmp;
-	zbx_uint64_t	available, total;
+	trx_uint64_t	available, total;
 	int		ret = SYSINFO_RET_FAIL;
 
 	if (0 != sysinfo(&info))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -156,16 +156,16 @@ static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 
 	if (SYSINFO_RET_FAIL == ret)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, result_tmp.msg));
+		SET_MSG_RESULT(result, trx_strdup(NULL, result_tmp.msg));
 		goto clean;
 	}
 
 	available = result_tmp.ui64;
-	total = (zbx_uint64_t)info.totalram * info.mem_unit;
+	total = (trx_uint64_t)info.totalram * info.mem_unit;
 
 	if (0 == total)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		ret = SYSINFO_RET_FAIL;
 		goto clean;
 	}
@@ -184,15 +184,15 @@ static int	VM_MEMORY_SHARED(AGENT_RESULT *result)
 
 	if (0 != sysinfo(&info))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)info.sharedram * info.mem_unit);
+	SET_UI64_RESULT(result, (trx_uint64_t)info.sharedram * info.mem_unit);
 
 	return SYSINFO_RET_OK;
 #else
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Supported for Linux 2.4 only."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Supported for Linux 2.4 only."));
 	return SYSINFO_RET_FAIL;
 #endif
 }
@@ -200,12 +200,12 @@ static int	VM_MEMORY_SHARED(AGENT_RESULT *result)
 static int	VM_MEMORY_PROC_MEMINFO(const char *meminfo_entry, AGENT_RESULT *result)
 {
 	FILE		*f;
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 	int		ret = SYSINFO_RET_FAIL;
 
 	if (NULL == (f = fopen("/proc/meminfo", "r")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc/meminfo: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc/meminfo: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -215,9 +215,9 @@ static int	VM_MEMORY_PROC_MEMINFO(const char *meminfo_entry, AGENT_RESULT *resul
 		ret = SYSINFO_RET_OK;
 	}
 	else
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain value from /proc/meminfo."));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain value from /proc/meminfo."));
 
-	zbx_fclose(f);
+	trx_fclose(f);
 
 	return ret;
 }
@@ -229,7 +229,7 @@ int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -263,7 +263,7 @@ int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VM_MEMORY_PROC_MEMINFO("Slab:", result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		ret = SYSINFO_RET_FAIL;
 	}
 

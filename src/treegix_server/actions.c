@@ -3,12 +3,12 @@
 #include "common.h"
 #include "db.h"
 #include "log.h"
-#include "zbxserver.h"
+#include "trxserver.h"
 
 #include "actions.h"
 #include "operations.h"
 #include "events.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 
 /******************************************************************************
  *                                                                            *
@@ -35,9 +35,9 @@ static int	check_condition_event_tag(const DB_EVENT *event, const DB_CONDITION *
 
 	for (i = 0; i < event->tags.values_num && ret == ret_continue; i++)
 	{
-		zbx_tag_t	*tag = (zbx_tag_t *)event->tags.values[i];
+		trx_tag_t	*tag = (trx_tag_t *)event->tags.values[i];
 
-		ret = zbx_strmatch_condition(tag->tag, condition->value, condition->op);
+		ret = trx_strmatch_condition(tag->tag, condition->value, condition->op);
 	}
 
 	return ret;
@@ -68,10 +68,10 @@ static int	check_condition_event_tag_value(const DB_EVENT *event, DB_CONDITION *
 
 	for (i = 0; i < event->tags.values_num && ret == ret_continue; i++)
 	{
-		zbx_tag_t	*tag = (zbx_tag_t *)event->tags.values[i];
+		trx_tag_t	*tag = (trx_tag_t *)event->tags.values[i];
 
 		if (0 == strcmp(condition->value2, tag->tag))
-			ret = zbx_strmatch_condition(tag->value, condition->value, condition->op);
+			ret = trx_strmatch_condition(tag->value, condition->value, condition->op);
 	}
 
 	return ret;
@@ -96,7 +96,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 {
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	condition_value;
+	trx_uint64_t	condition_value;
 	char		*tmp_str = NULL;
 	int		ret = FAIL;
 
@@ -104,16 +104,16 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 
 	if (CONDITION_TYPE_HOST_GROUP == condition->conditiontype)
 	{
-		zbx_vector_uint64_t	groupids;
+		trx_vector_uint64_t	groupids;
 		char			*sql = NULL;
 		size_t			sql_alloc = 0, sql_offset = 0;
 
 		TRX_STR2UINT64(condition_value, condition->value);
 
-		zbx_vector_uint64_create(&groupids);
-		zbx_dc_get_nested_hostgroupids(&condition_value, 1, &groupids);
+		trx_vector_uint64_create(&groupids);
+		trx_dc_get_nested_hostgroupids(&condition_value, 1, &groupids);
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 				"select distinct hg.groupid"
 				" from hosts_groups hg,hosts h,items i,functions f,triggers t"
 				" where hg.hostid=h.hostid"
@@ -128,8 +128,8 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 				groupids.values_num);
 
 		result = DBselect("%s", sql);
-		zbx_free(sql);
-		zbx_vector_uint64_destroy(&groupids);
+		trx_free(sql);
+		trx_vector_uint64_destroy(&groupids);
 
 		switch (condition->op)
 		{
@@ -148,7 +148,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 	}
 	else if (CONDITION_TYPE_HOST_TEMPLATE == condition->conditiontype)
 	{
-		zbx_uint64_t	hostid, triggerid;
+		trx_uint64_t	hostid, triggerid;
 
 		TRX_STR2UINT64(condition_value, condition->value);
 
@@ -240,7 +240,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 	}
 	else if (CONDITION_TYPE_TRIGGER == condition->conditiontype)
 	{
-		zbx_uint64_t	triggerid;
+		trx_uint64_t	triggerid;
 
 		TRX_STR2UINT64(condition_value, condition->value);
 
@@ -285,7 +285,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 	}
 	else if (CONDITION_TYPE_TRIGGER_NAME == condition->conditiontype)
 	{
-		tmp_str = zbx_strdup(tmp_str, event->trigger.description);
+		tmp_str = trx_strdup(tmp_str, event->trigger.description);
 
 		substitute_simple_macros(NULL, event, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 				&tmp_str, MACRO_TYPE_TRIGGER_DESCRIPTION, NULL, 0);
@@ -303,7 +303,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 			default:
 				ret = NOTSUPPORTED;
 		}
-		zbx_free(tmp_str);
+		trx_free(tmp_str);
 	}
 	else if (CONDITION_TYPE_TRIGGER_SEVERITY == condition->conditiontype)
 	{
@@ -336,11 +336,11 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 		char	*period;
 		int	res;
 
-		period = zbx_strdup(NULL, condition->value);
+		period = trx_strdup(NULL, condition->value);
 		substitute_simple_macros(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &period,
 				MACRO_TYPE_COMMON, NULL, 0);
 
-		if (SUCCEED == zbx_check_time_period(period, (time_t)event->clock, &res))
+		if (SUCCEED == trx_check_time_period(period, (time_t)event->clock, &res))
 		{
 			switch (condition->op)
 			{
@@ -362,7 +362,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 					period, condition->conditionid);
 		}
 
-		zbx_free(period);
+		trx_free(period);
 	}
 	else if (CONDITION_TYPE_SUPPRESSED == condition->conditiontype)
 	{
@@ -471,7 +471,7 @@ static int	check_trigger_condition(const DB_EVENT *event, DB_CONDITION *conditio
 		ret = FAIL;
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -495,7 +495,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 {
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	condition_value;
+	trx_uint64_t	condition_value;
 	int		tmp_int, ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
@@ -848,7 +848,7 @@ static int	check_discovery_condition(const DB_EVENT *event, DB_CONDITION *condit
 		ret = FAIL;
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -872,7 +872,7 @@ static int	check_auto_registration_condition(const DB_EVENT *event, DB_CONDITION
 {
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	condition_value, id;
+	trx_uint64_t	condition_value, id;
 	int		ret = FAIL;
 	const char	*condition_field;
 
@@ -906,11 +906,11 @@ static int	check_auto_registration_condition(const DB_EVENT *event, DB_CONDITION
 							ret = SUCCEED;
 						break;
 					case CONDITION_OPERATOR_REGEXP:
-						if (NULL != zbx_regexp_match(row[0], condition->value, NULL))
+						if (NULL != trx_regexp_match(row[0], condition->value, NULL))
 							ret = SUCCEED;
 						break;
 					case CONDITION_OPERATOR_NOT_REGEXP:
-						if (NULL == zbx_regexp_match(row[0], condition->value, NULL))
+						if (NULL == trx_regexp_match(row[0], condition->value, NULL))
 							ret = SUCCEED;
 						break;
 					default:
@@ -962,7 +962,7 @@ static int	check_auto_registration_condition(const DB_EVENT *event, DB_CONDITION
 		ret = FAIL;
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -983,7 +983,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 {
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	condition_value;
+	trx_uint64_t	condition_value;
 	int		ret = FAIL;
 	char		sql[256];
 
@@ -1021,19 +1021,19 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 	}
 	else if (CONDITION_TYPE_HOST_GROUP == condition->conditiontype)
 	{
-		zbx_vector_uint64_t	groupids;
+		trx_vector_uint64_t	groupids;
 		char			*sqlcond = NULL;
 		size_t			sqlcond_alloc = 0, sqlcond_offset = 0;
 
 		TRX_STR2UINT64(condition_value, condition->value);
 
-		zbx_vector_uint64_create(&groupids);
-		zbx_dc_get_nested_hostgroupids(&condition_value, 1, &groupids);
+		trx_vector_uint64_create(&groupids);
+		trx_dc_get_nested_hostgroupids(&condition_value, 1, &groupids);
 
 		switch (event->object)
 		{
 			case EVENT_OBJECT_TRIGGER:
-				zbx_snprintf_alloc(&sqlcond, &sqlcond_alloc, &sqlcond_offset,
+				trx_snprintf_alloc(&sqlcond, &sqlcond_alloc, &sqlcond_offset,
 						"select null"
 						" from hosts_groups hg,hosts h,items i,functions f,triggers t"
 						" where hg.hostid=h.hostid"
@@ -1045,7 +1045,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 						event->objectid);
 				break;
 			default:
-				zbx_snprintf_alloc(&sqlcond, &sqlcond_alloc, &sqlcond_offset,
+				trx_snprintf_alloc(&sqlcond, &sqlcond_alloc, &sqlcond_offset,
 						"select null"
 						" from hosts_groups hg,hosts h,items i"
 						" where hg.hostid=h.hostid"
@@ -1060,8 +1060,8 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 
 		result = DBselectN(sqlcond, 1);
 
-		zbx_free(sqlcond);
-		zbx_vector_uint64_destroy(&groupids);
+		trx_free(sqlcond);
+		trx_vector_uint64_destroy(&groupids);
 
 		switch (condition->op)
 		{
@@ -1080,7 +1080,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 	}
 	else if (CONDITION_TYPE_HOST_TEMPLATE == condition->conditiontype)
 	{
-		zbx_uint64_t	hostid, objectid;
+		trx_uint64_t	hostid, objectid;
 
 		TRX_STR2UINT64(condition_value, condition->value);
 
@@ -1172,7 +1172,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 		switch (event->object)
 		{
 			case EVENT_OBJECT_TRIGGER:
-				zbx_snprintf(sql, sizeof(sql),
+				trx_snprintf(sql, sizeof(sql),
 						"select null"
 						" from items i,functions f,triggers t"
 						" where i.itemid=f.itemid"
@@ -1182,7 +1182,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 						event->objectid, condition_value);
 				break;
 			default:
-				zbx_snprintf(sql, sizeof(sql),
+				trx_snprintf(sql, sizeof(sql),
 						"select null"
 						" from items"
 						" where itemid=" TRX_FS_UI64
@@ -1281,7 +1281,7 @@ static int	check_internal_condition(const DB_EVENT *event, DB_CONDITION *conditi
 		ret = FAIL;
 	}
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -1327,7 +1327,7 @@ int	check_action_condition(const DB_EVENT *event, DB_CONDITION *condition)
 					event->source, condition->conditionid);
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -1346,7 +1346,7 @@ int	check_action_condition(const DB_EVENT *event, DB_CONDITION *condition)
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
  ******************************************************************************/
-static int	check_action_conditions(zbx_action_eval_t *action)
+static int	check_action_conditions(trx_action_eval_t *action)
 {
 	DB_CONDITION	*condition;
 	int		condition_result, ret = SUCCEED, id_len, i;
@@ -1357,7 +1357,7 @@ static int	check_action_conditions(zbx_action_eval_t *action)
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() actionid:" TRX_FS_UI64, __func__, action->actionid);
 
 	if (CONDITION_EVAL_TYPE_EXPRESSION == action->evaltype)
-		expression = zbx_strdup(expression, action->formula);
+		expression = trx_strdup(expression, action->formula);
 
 	for (i = 0; i < action->conditions.values_num; i++)
 	{
@@ -1407,7 +1407,7 @@ static int	check_action_conditions(zbx_action_eval_t *action)
 
 				break;
 			case CONDITION_EVAL_TYPE_EXPRESSION:
-				zbx_snprintf(tmp, sizeof(tmp), "{" TRX_FS_UI64 "}", condition->conditionid);
+				trx_snprintf(tmp, sizeof(tmp), "{" TRX_FS_UI64 "}", condition->conditionid);
 				id_len = strlen(tmp);
 
 				for (ptr = expression; NULL != (ptr = strstr(ptr, tmp)); ptr += id_len)
@@ -1426,13 +1426,13 @@ static int	check_action_conditions(zbx_action_eval_t *action)
 	if (CONDITION_EVAL_TYPE_EXPRESSION == action->evaltype)
 	{
 		if (SUCCEED == evaluate(&eval_result, expression, error, sizeof(error), NULL))
-			ret = (SUCCEED != zbx_double_compare(eval_result, 0) ? SUCCEED : FAIL);
+			ret = (SUCCEED != trx_double_compare(eval_result, 0) ? SUCCEED : FAIL);
 
-		zbx_free(expression);
+		trx_free(expression);
 	}
 clean:
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -1452,20 +1452,20 @@ clean:
  *           escalation_execute_recovery_operations().                        *
  *                                                                            *
  ******************************************************************************/
-static void	execute_operations(const DB_EVENT *event, zbx_uint64_t actionid)
+static void	execute_operations(const DB_EVENT *event, trx_uint64_t actionid)
 {
 	DB_RESULT		result;
 	DB_ROW			row;
-	zbx_uint64_t		groupid, templateid;
-	zbx_vector_uint64_t	lnk_templateids, del_templateids,
+	trx_uint64_t		groupid, templateid;
+	trx_vector_uint64_t	lnk_templateids, del_templateids,
 				new_groupids, del_groupids;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() actionid:" TRX_FS_UI64, __func__, actionid);
 
-	zbx_vector_uint64_create(&lnk_templateids);
-	zbx_vector_uint64_create(&del_templateids);
-	zbx_vector_uint64_create(&new_groupids);
-	zbx_vector_uint64_create(&del_groupids);
+	trx_vector_uint64_create(&lnk_templateids);
+	trx_vector_uint64_create(&del_templateids);
+	trx_vector_uint64_create(&new_groupids);
+	trx_vector_uint64_create(&del_groupids);
 
 	result = DBselect(
 			"select o.operationtype,g.groupid,t.templateid,oi.inventory_mode"
@@ -1502,19 +1502,19 @@ static void	execute_operations(const DB_EVENT *event, zbx_uint64_t actionid)
 				break;
 			case OPERATION_TYPE_GROUP_ADD:
 				if (0 != groupid)
-					zbx_vector_uint64_append(&new_groupids, groupid);
+					trx_vector_uint64_append(&new_groupids, groupid);
 				break;
 			case OPERATION_TYPE_GROUP_REMOVE:
 				if (0 != groupid)
-					zbx_vector_uint64_append(&del_groupids, groupid);
+					trx_vector_uint64_append(&del_groupids, groupid);
 				break;
 			case OPERATION_TYPE_TEMPLATE_ADD:
 				if (0 != templateid)
-					zbx_vector_uint64_append(&lnk_templateids, templateid);
+					trx_vector_uint64_append(&lnk_templateids, templateid);
 				break;
 			case OPERATION_TYPE_TEMPLATE_REMOVE:
 				if (0 != templateid)
-					zbx_vector_uint64_append(&del_templateids, templateid);
+					trx_vector_uint64_append(&del_templateids, templateid);
 				break;
 			case OPERATION_TYPE_HOST_INVENTORY:
 				op_host_inventory_mode(event, inventory_mode);
@@ -1527,36 +1527,36 @@ static void	execute_operations(const DB_EVENT *event, zbx_uint64_t actionid)
 
 	if (0 != lnk_templateids.values_num)
 	{
-		zbx_vector_uint64_sort(&lnk_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&lnk_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_sort(&lnk_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_uniq(&lnk_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		op_template_add(event, &lnk_templateids);
 	}
 
 	if (0 != del_templateids.values_num)
 	{
-		zbx_vector_uint64_sort(&del_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&del_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_sort(&del_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_uniq(&del_templateids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		op_template_del(event, &del_templateids);
 	}
 
 	if (0 != new_groupids.values_num)
 	{
-		zbx_vector_uint64_sort(&new_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&new_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_sort(&new_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_uniq(&new_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		op_groups_add(event, &new_groupids);
 	}
 
 	if (0 != del_groupids.values_num)
 	{
-		zbx_vector_uint64_sort(&del_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&del_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_sort(&del_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_uniq(&del_groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 		op_groups_del(event, &del_groupids);
 	}
 
-	zbx_vector_uint64_destroy(&del_groupids);
-	zbx_vector_uint64_destroy(&new_groupids);
-	zbx_vector_uint64_destroy(&del_templateids);
-	zbx_vector_uint64_destroy(&lnk_templateids);
+	trx_vector_uint64_destroy(&del_groupids);
+	trx_vector_uint64_destroy(&new_groupids);
+	trx_vector_uint64_destroy(&del_templateids);
+	trx_vector_uint64_destroy(&lnk_templateids);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -1565,10 +1565,10 @@ static void	execute_operations(const DB_EVENT *event, zbx_uint64_t actionid)
 
 typedef struct
 {
-	zbx_uint64_t	actionid;
+	trx_uint64_t	actionid;
 	const DB_EVENT	*event;
 }
-zbx_escalation_new_t;
+trx_escalation_new_t;
 
 /******************************************************************************
  *                                                                            *
@@ -1653,10 +1653,10 @@ static int	uniq_conditions_compare_func(const void *d1, const void *d2)
  * Return value: hash is generated                                            *
  *                                                                            *
  ******************************************************************************/
-static zbx_hash_t	uniq_conditions_hash_func(const void *data)
+static trx_hash_t	uniq_conditions_hash_func(const void *data)
 {
 	const DB_CONDITION	*condition = (const DB_CONDITION *)data;
-	zbx_hash_t		hash;
+	trx_hash_t		hash;
 
 	hash = TRX_DEFAULT_STRING_HASH_ALGO(condition->value, strlen(condition->value), TRX_DEFAULT_HASH_SEED);
 	hash = TRX_DEFAULT_STRING_HASH_ALGO(condition->value2, strlen(condition->value2), hash);
@@ -1679,17 +1679,17 @@ static zbx_hash_t	uniq_conditions_hash_func(const void *data)
  * Return value: SICCESS if valid event source, otherwise FAIL                *
  *                                                                            *
  ******************************************************************************/
-static int	check_event_conditions(const DB_EVENT *event, zbx_hashset_t *uniq_conditions)
+static int	check_event_conditions(const DB_EVENT *event, trx_hashset_t *uniq_conditions)
 {
-	zbx_hashset_iter_t	iter;
+	trx_hashset_iter_t	iter;
 	DB_CONDITION		*condition;
 
 	if (EVENT_SOURCE_COUNT <= (unsigned char)event->source)
 		return FAIL;
 
-	zbx_hashset_iter_reset(&uniq_conditions[event->source], &iter);
+	trx_hashset_iter_reset(&uniq_conditions[event->source], &iter);
 
-	while (NULL != (condition = (DB_CONDITION *)zbx_hashset_iter_next(&iter)))
+	while (NULL != (condition = (DB_CONDITION *)trx_hashset_iter_next(&iter)))
 		condition->condition_result = check_action_condition(event, condition);
 
 	return SUCCEED;
@@ -1706,24 +1706,24 @@ static int	check_event_conditions(const DB_EVENT *event, zbx_hashset_t *uniq_con
  *                                  (PROBLEM eventid, OK eventid) pairs.      *
  *                                                                            *
  ******************************************************************************/
-void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pair_t *closed_events)
+void	process_actions(const trx_vector_ptr_t *events, const trx_vector_uint64_pair_t *closed_events)
 {
 	int				i;
-	zbx_vector_ptr_t		actions;
-	zbx_vector_ptr_t 		new_escalations;
-	zbx_vector_uint64_pair_t	rec_escalations;
-	zbx_hashset_t			uniq_conditions[EVENT_SOURCE_COUNT];
+	trx_vector_ptr_t		actions;
+	trx_vector_ptr_t 		new_escalations;
+	trx_vector_uint64_pair_t	rec_escalations;
+	trx_hashset_t			uniq_conditions[EVENT_SOURCE_COUNT];
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() events_num:" TRX_FS_SIZE_T, __func__, (zbx_fs_size_t)events->values_num);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() events_num:" TRX_FS_SIZE_T, __func__, (trx_fs_size_t)events->values_num);
 
-	zbx_vector_ptr_create(&new_escalations);
-	zbx_vector_uint64_pair_create(&rec_escalations);
+	trx_vector_ptr_create(&new_escalations);
+	trx_vector_uint64_pair_create(&rec_escalations);
 
 	for (i = 0; i < EVENT_SOURCE_COUNT; i++)
-		zbx_hashset_create(&uniq_conditions[i], 0, uniq_conditions_hash_func, uniq_conditions_compare_func);
+		trx_hashset_create(&uniq_conditions[i], 0, uniq_conditions_hash_func, uniq_conditions_compare_func);
 
-	zbx_vector_ptr_create(&actions);
-	zbx_dc_get_actions_eval(&actions, uniq_conditions, TRX_ACTION_OPCLASS_NORMAL | TRX_ACTION_OPCLASS_RECOVERY);
+	trx_vector_ptr_create(&actions);
+	trx_dc_get_actions_eval(&actions, uniq_conditions, TRX_ACTION_OPCLASS_NORMAL | TRX_ACTION_OPCLASS_RECOVERY);
 
 	/* 1. All event sources: match PROBLEM events to action conditions, add them to 'new_escalations' list.      */
 	/* 2. EVENT_SOURCE_DISCOVERY, EVENT_SOURCE_AUTO_REGISTRATION: execute operations (except command and message */
@@ -1749,21 +1749,21 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 		{
 			for (j = 0; j < actions.values_num; j++)
 			{
-				zbx_action_eval_t	*action = (zbx_action_eval_t *)actions.values[j];
+				trx_action_eval_t	*action = (trx_action_eval_t *)actions.values[j];
 
 				if (action->eventsource != event->source)
 					continue;
 
 				if (SUCCEED == check_action_conditions(action))
 				{
-					zbx_escalation_new_t	*new_escalation;
+					trx_escalation_new_t	*new_escalation;
 
 					/* command and message operations handled by escalators even for    */
 					/* EVENT_SOURCE_DISCOVERY and EVENT_SOURCE_AUTO_REGISTRATION events */
-					new_escalation = (zbx_escalation_new_t *)zbx_malloc(NULL, sizeof(zbx_escalation_new_t));
+					new_escalation = (trx_escalation_new_t *)trx_malloc(NULL, sizeof(trx_escalation_new_t));
 					new_escalation->actionid = action->actionid;
 					new_escalation->event = event;
-					zbx_vector_ptr_append(&new_escalations, new_escalation);
+					trx_vector_ptr_append(&new_escalations, new_escalation);
 
 					if (EVENT_SOURCE_DISCOVERY == event->source ||
 							EVENT_SOURCE_AUTO_REGISTRATION == event->source)
@@ -1777,32 +1777,32 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 
 	for (i = 0; i < EVENT_SOURCE_COUNT; i++)
 	{
-		zbx_conditions_eval_clean(&uniq_conditions[i]);
-		zbx_hashset_destroy(&uniq_conditions[i]);
+		trx_conditions_eval_clean(&uniq_conditions[i]);
+		trx_hashset_destroy(&uniq_conditions[i]);
 	}
 
-	zbx_vector_ptr_clear_ext(&actions, (zbx_clean_func_t)zbx_action_eval_free);
-	zbx_vector_ptr_destroy(&actions);
+	trx_vector_ptr_clear_ext(&actions, (trx_clean_func_t)trx_action_eval_free);
+	trx_vector_ptr_destroy(&actions);
 
 	/* 3. Find recovered escalations and store escalationids in 'rec_escalation' by OK eventids. */
 	if (0 != closed_events->values_num)
 	{
 		char			*sql = NULL;
 		size_t			sql_alloc = 0, sql_offset = 0;
-		zbx_vector_uint64_t	eventids;
+		trx_vector_uint64_t	eventids;
 		DB_ROW			row;
 		DB_RESULT		result;
 		int			j, index;
 
-		zbx_vector_uint64_create(&eventids);
+		trx_vector_uint64_create(&eventids);
 
 		/* 3.1. Store PROBLEM eventids of recovered events in 'eventids'. */
 		for (j = 0; j < closed_events->values_num; j++)
-			zbx_vector_uint64_append(&eventids, closed_events->values[j].first);
+			trx_vector_uint64_append(&eventids, closed_events->values[j].first);
 
 		/* 3.2. Select escalations that must be recovered. */
-		zbx_vector_uint64_sort(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
+		trx_vector_uint64_sort(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset,
 				"select eventid,escalationid"
 				" from escalations"
 				" where");
@@ -1810,16 +1810,16 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 		DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "eventid", eventids.values, eventids.values_num);
 		result = DBselect("%s", sql);
 
-		zbx_vector_uint64_pair_reserve(&rec_escalations, eventids.values_num);
+		trx_vector_uint64_pair_reserve(&rec_escalations, eventids.values_num);
 
 		/* 3.3. Store the escalationids corresponding to the OK events in 'rec_escalations'. */
 		while (NULL != (row = DBfetch(result)))
 		{
-			zbx_uint64_pair_t	pair;
+			trx_uint64_pair_t	pair;
 
 			TRX_STR2UINT64(pair.first, row[0]);
 
-			if (FAIL == (index = zbx_vector_uint64_pair_bsearch(closed_events, pair,
+			if (FAIL == (index = trx_vector_uint64_pair_bsearch(closed_events, pair,
 					TRX_DEFAULT_UINT64_COMPARE_FUNC)))
 			{
 				THIS_SHOULD_NEVER_HAPPEN;
@@ -1828,29 +1828,29 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 
 			pair.second = closed_events->values[index].second;
 			TRX_DBROW2UINT64(pair.first, row[1]);
-			zbx_vector_uint64_pair_append(&rec_escalations, pair);
+			trx_vector_uint64_pair_append(&rec_escalations, pair);
 		}
 
 		DBfree_result(result);
-		zbx_free(sql);
-		zbx_vector_uint64_destroy(&eventids);
+		trx_free(sql);
+		trx_vector_uint64_destroy(&eventids);
 	}
 
 	/* 4. Create new escalations in DB. */
 	if (0 != new_escalations.values_num)
 	{
-		zbx_db_insert_t	db_insert;
+		trx_db_insert_t	db_insert;
 		int		j;
 
-		zbx_db_insert_prepare(&db_insert, "escalations", "escalationid", "actionid", "status", "triggerid",
+		trx_db_insert_prepare(&db_insert, "escalations", "escalationid", "actionid", "status", "triggerid",
 					"itemid", "eventid", "r_eventid", "acknowledgeid", NULL);
 
 		for (j = 0; j < new_escalations.values_num; j++)
 		{
-			zbx_uint64_t		triggerid = 0, itemid = 0;
-			zbx_escalation_new_t	*new_escalation;
+			trx_uint64_t		triggerid = 0, itemid = 0;
+			trx_escalation_new_t	*new_escalation;
 
-			new_escalation = (zbx_escalation_new_t *)new_escalations.values[j];
+			new_escalation = (trx_escalation_new_t *)new_escalations.values[j];
 
 			switch (new_escalation->event->object)
 			{
@@ -1863,16 +1863,16 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 					break;
 			}
 
-			zbx_db_insert_add_values(&db_insert, __UINT64_C(0), new_escalation->actionid,
+			trx_db_insert_add_values(&db_insert, __UINT64_C(0), new_escalation->actionid,
 					(int)ESCALATION_STATUS_ACTIVE, triggerid, itemid,
 					new_escalation->event->eventid, __UINT64_C(0), __UINT64_C(0));
 
-			zbx_free(new_escalation);
+			trx_free(new_escalation);
 		}
 
-		zbx_db_insert_autoincrement(&db_insert, "escalationid");
-		zbx_db_insert_execute(&db_insert);
-		zbx_db_insert_clean(&db_insert);
+		trx_db_insert_autoincrement(&db_insert, "escalationid");
+		trx_db_insert_execute(&db_insert);
+		trx_db_insert_clean(&db_insert);
 	}
 
 	/* 5. Modify recovered escalations in DB. */
@@ -1882,13 +1882,13 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 		size_t	sql_alloc = 0, sql_offset = 0;
 		int	j;
 
-		zbx_vector_uint64_pair_sort(&rec_escalations, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_pair_sort(&rec_escalations, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 
 		for (j = 0; j < rec_escalations.values_num; j++)
 		{
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 					"update escalations set r_eventid=" TRX_FS_UI64 ",nextcheck=0"
 					" where escalationid=" TRX_FS_UI64 ";\n",
 					rec_escalations.values[j].second, rec_escalations.values[j].first);
@@ -1901,11 +1901,11 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
 		if (16 < sql_offset)	/* in ORACLE always present begin..end; */
 			DBexecute("%s", sql);
 
-		zbx_free(sql);
+		trx_free(sql);
 	}
 
-	zbx_vector_uint64_pair_destroy(&rec_escalations);
-	zbx_vector_ptr_destroy(&new_escalations);
+	trx_vector_uint64_pair_destroy(&rec_escalations);
+	trx_vector_ptr_destroy(&new_escalations);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -1919,43 +1919,43 @@ void	process_actions(const zbx_vector_ptr_t *events, const zbx_vector_uint64_pai
  * Parameters: event_ack        - [IN] vector for eventid/ackid pairs         *
  *                                                                            *
  ******************************************************************************/
-int	process_actions_by_acknowledgements(const zbx_vector_ptr_t *ack_tasks)
+int	process_actions_by_acknowledgements(const trx_vector_ptr_t *ack_tasks)
 {
-	zbx_vector_ptr_t	actions;
-	zbx_hashset_t		uniq_conditions[EVENT_SOURCE_COUNT];
+	trx_vector_ptr_t	actions;
+	trx_hashset_t		uniq_conditions[EVENT_SOURCE_COUNT];
 	int			i, j, k, processed_num = 0, knext = 0;
-	zbx_vector_uint64_t	eventids;
-	zbx_ack_task_t		*ack_task;
-	zbx_vector_ptr_t	ack_escalations, events;
-	zbx_ack_escalation_t	*ack_escalation;
+	trx_vector_uint64_t	eventids;
+	trx_ack_task_t		*ack_task;
+	trx_vector_ptr_t	ack_escalations, events;
+	trx_ack_escalation_t	*ack_escalation;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&ack_escalations);
+	trx_vector_ptr_create(&ack_escalations);
 
 	for (i = 0; i < EVENT_SOURCE_COUNT; i++)
-		zbx_hashset_create(&uniq_conditions[i], 0, uniq_conditions_hash_func, uniq_conditions_compare_func);
+		trx_hashset_create(&uniq_conditions[i], 0, uniq_conditions_hash_func, uniq_conditions_compare_func);
 
-	zbx_vector_ptr_create(&actions);
-	zbx_dc_get_actions_eval(&actions, uniq_conditions, TRX_ACTION_OPCLASS_ACKNOWLEDGE);
+	trx_vector_ptr_create(&actions);
+	trx_dc_get_actions_eval(&actions, uniq_conditions, TRX_ACTION_OPCLASS_ACKNOWLEDGE);
 
 	if (0 == actions.values_num)
 		goto out;
 
-	zbx_vector_uint64_create(&eventids);
+	trx_vector_uint64_create(&eventids);
 
 	for (i = 0; i < ack_tasks->values_num; i++)
 	{
-		ack_task = (zbx_ack_task_t *)ack_tasks->values[i];
-		zbx_vector_uint64_append(&eventids, ack_task->eventid);
+		ack_task = (trx_ack_task_t *)ack_tasks->values[i];
+		trx_vector_uint64_append(&eventids, ack_task->eventid);
 	}
 
-	zbx_vector_uint64_sort(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_uniq(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
-	zbx_vector_ptr_create(&events);
+	trx_vector_ptr_create(&events);
 
-	zbx_db_get_events_by_eventids(&eventids, &events);
+	trx_db_get_events_by_eventids(&eventids, &events);
 
 	for (i = 0; i < eventids.values_num; i++)
 	{
@@ -1964,7 +1964,7 @@ int	process_actions_by_acknowledgements(const zbx_vector_ptr_t *ack_tasks)
 
 		while (knext < ack_tasks->values_num)
 		{
-			ack_task = (zbx_ack_task_t *)ack_tasks->values[knext];
+			ack_task = (trx_ack_task_t *)ack_tasks->values[knext];
 			if (ack_task->eventid != event->eventid)
 				break;
 			knext++;
@@ -1978,7 +1978,7 @@ int	process_actions_by_acknowledgements(const zbx_vector_ptr_t *ack_tasks)
 
 		for (j = 0; j < actions.values_num; j++)
 		{
-			zbx_action_eval_t	*action = (zbx_action_eval_t *)actions.values[j];
+			trx_action_eval_t	*action = (trx_action_eval_t *)actions.values[j];
 
 			if (action->eventsource != event->source)
 				continue;
@@ -1988,60 +1988,60 @@ int	process_actions_by_acknowledgements(const zbx_vector_ptr_t *ack_tasks)
 
 			for (k = kcurr; k < knext; k++)
 			{
-				ack_task = (zbx_ack_task_t *)ack_tasks->values[k];
+				ack_task = (trx_ack_task_t *)ack_tasks->values[k];
 
-				ack_escalation = (zbx_ack_escalation_t *)zbx_malloc(NULL, sizeof(zbx_ack_escalation_t));
+				ack_escalation = (trx_ack_escalation_t *)trx_malloc(NULL, sizeof(trx_ack_escalation_t));
 				ack_escalation->taskid = ack_task->taskid;
 				ack_escalation->acknowledgeid = ack_task->acknowledgeid;
 				ack_escalation->actionid = action->actionid;
 				ack_escalation->eventid = event->eventid;
 				ack_escalation->triggerid = event->trigger.triggerid;
-				zbx_vector_ptr_append(&ack_escalations, ack_escalation);
+				trx_vector_ptr_append(&ack_escalations, ack_escalation);
 			}
 		}
 	}
 
 	if (0 != ack_escalations.values_num)
 	{
-		zbx_db_insert_t	db_insert;
+		trx_db_insert_t	db_insert;
 
-		zbx_db_insert_prepare(&db_insert, "escalations", "escalationid", "actionid", "status", "triggerid",
+		trx_db_insert_prepare(&db_insert, "escalations", "escalationid", "actionid", "status", "triggerid",
 						"itemid", "eventid", "r_eventid", "acknowledgeid", NULL);
 
-		zbx_vector_ptr_sort(&ack_escalations, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+		trx_vector_ptr_sort(&ack_escalations, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 		for (i = 0; i < ack_escalations.values_num; i++)
 		{
-			ack_escalation = (zbx_ack_escalation_t *)ack_escalations.values[i];
+			ack_escalation = (trx_ack_escalation_t *)ack_escalations.values[i];
 
-			zbx_db_insert_add_values(&db_insert, __UINT64_C(0), ack_escalation->actionid,
+			trx_db_insert_add_values(&db_insert, __UINT64_C(0), ack_escalation->actionid,
 				(int)ESCALATION_STATUS_ACTIVE, ack_escalation->triggerid, __UINT64_C(0),
 				ack_escalation->eventid, __UINT64_C(0), ack_escalation->acknowledgeid);
 		}
 
-		zbx_db_insert_autoincrement(&db_insert, "escalationid");
-		zbx_db_insert_execute(&db_insert);
-		zbx_db_insert_clean(&db_insert);
+		trx_db_insert_autoincrement(&db_insert, "escalationid");
+		trx_db_insert_execute(&db_insert);
+		trx_db_insert_clean(&db_insert);
 
 		processed_num = ack_escalations.values_num;
 	}
 
-	zbx_vector_ptr_clear_ext(&events, (zbx_clean_func_t)zbx_db_free_event);
-	zbx_vector_ptr_destroy(&events);
+	trx_vector_ptr_clear_ext(&events, (trx_clean_func_t)trx_db_free_event);
+	trx_vector_ptr_destroy(&events);
 
-	zbx_vector_uint64_destroy(&eventids);
+	trx_vector_uint64_destroy(&eventids);
 out:
 	for (i = 0; i < EVENT_SOURCE_COUNT; i++)
 	{
-		zbx_conditions_eval_clean(&uniq_conditions[i]);
-		zbx_hashset_destroy(&uniq_conditions[i]);
+		trx_conditions_eval_clean(&uniq_conditions[i]);
+		trx_hashset_destroy(&uniq_conditions[i]);
 	}
 
-	zbx_vector_ptr_clear_ext(&actions, (zbx_clean_func_t)zbx_action_eval_free);
-	zbx_vector_ptr_destroy(&actions);
+	trx_vector_ptr_clear_ext(&actions, (trx_clean_func_t)trx_action_eval_free);
+	trx_vector_ptr_destroy(&actions);
 
-	zbx_vector_ptr_clear_ext(&ack_escalations, zbx_ptr_free);
-	zbx_vector_ptr_destroy(&ack_escalations);
+	trx_vector_ptr_clear_ext(&ack_escalations, trx_ptr_free);
+	trx_vector_ptr_destroy(&ack_escalations);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s() processed_num:%d", __func__, processed_num);
 
@@ -2060,7 +2060,7 @@ out:
  * Comments: use 'free_db_action' function to release allocated memory        *
  *                                                                            *
  ******************************************************************************/
-void	get_db_actions_info(zbx_vector_uint64_t *actionids, zbx_vector_ptr_t *actions)
+void	get_db_actions_info(trx_vector_uint64_t *actionids, trx_vector_ptr_t *actions)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
@@ -2068,8 +2068,8 @@ void	get_db_actions_info(zbx_vector_uint64_t *actionids, zbx_vector_ptr_t *actio
 	size_t		filter_alloc = 0, filter_offset = 0;
 	DB_ACTION	*action;
 
-	zbx_vector_uint64_sort(actionids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-	zbx_vector_uint64_uniq(actionids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(actionids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_uniq(actionids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	DBadd_condition_alloc(&filter, &filter_alloc, &filter_offset, "actionid", actionids->values,
 			actionids->values_num);
@@ -2083,12 +2083,12 @@ void	get_db_actions_info(zbx_vector_uint64_t *actionids, zbx_vector_ptr_t *actio
 	{
 		char	*tmp;
 
-		action = (DB_ACTION *)zbx_malloc(NULL, sizeof(DB_ACTION));
+		action = (DB_ACTION *)trx_malloc(NULL, sizeof(DB_ACTION));
 		TRX_STR2UINT64(action->actionid, row[0]);
 		TRX_STR2UCHAR(action->status, row[2]);
 		TRX_STR2UCHAR(action->eventsource, row[3]);
 
-		tmp = zbx_strdup(NULL, row[4]);
+		tmp = trx_strdup(NULL, row[4]);
 		substitute_simple_macros(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &tmp, MACRO_TYPE_COMMON,
 				NULL, 0);
 		if (SUCCEED != is_time_suffix(tmp, &action->esc_period, TRX_LENGTH_UNLIMITED))
@@ -2097,19 +2097,19 @@ void	get_db_actions_info(zbx_vector_uint64_t *actionids, zbx_vector_ptr_t *actio
 					" \"%s\", using default value of 1 hour", tmp, row[1]);
 			action->esc_period = SEC_PER_HOUR;
 		}
-		zbx_free(tmp);
+		trx_free(tmp);
 
-		action->shortdata = zbx_strdup(NULL, row[5]);
-		action->longdata = zbx_strdup(NULL, row[6]);
-		action->r_shortdata = zbx_strdup(NULL, row[7]);
-		action->r_longdata = zbx_strdup(NULL, row[8]);
+		action->shortdata = trx_strdup(NULL, row[5]);
+		action->longdata = trx_strdup(NULL, row[6]);
+		action->r_shortdata = trx_strdup(NULL, row[7]);
+		action->r_longdata = trx_strdup(NULL, row[8]);
 		TRX_STR2UCHAR(action->pause_suppressed, row[9]);
-		action->ack_shortdata = zbx_strdup(NULL, row[10]);
-		action->ack_longdata = zbx_strdup(NULL, row[11]);
-		action->name = zbx_strdup(NULL, row[1]);
+		action->ack_shortdata = trx_strdup(NULL, row[10]);
+		action->ack_longdata = trx_strdup(NULL, row[11]);
+		action->name = trx_strdup(NULL, row[1]);
 		action->recovery = TRX_ACTION_RECOVERY_NONE;
 
-		zbx_vector_ptr_append(actions, action);
+		trx_vector_ptr_append(actions, action);
 	}
 	DBfree_result(result);
 
@@ -2118,11 +2118,11 @@ void	get_db_actions_info(zbx_vector_uint64_t *actionids, zbx_vector_ptr_t *actio
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_uint64_t	actionid;
+		trx_uint64_t	actionid;
 		int		index;
 
 		TRX_STR2UINT64(actionid, row[0]);
-		if (FAIL != (index = zbx_vector_ptr_bsearch(actions, &actionid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
+		if (FAIL != (index = trx_vector_ptr_bsearch(actions, &actionid, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC)))
 		{
 			action = (DB_ACTION *)actions->values[index];
 			action->recovery = TRX_ACTION_RECOVERY_OPERATIONS;
@@ -2130,18 +2130,18 @@ void	get_db_actions_info(zbx_vector_uint64_t *actionids, zbx_vector_ptr_t *actio
 	}
 	DBfree_result(result);
 
-	zbx_free(filter);
+	trx_free(filter);
 }
 
 void	free_db_action(DB_ACTION *action)
 {
-	zbx_free(action->shortdata);
-	zbx_free(action->longdata);
-	zbx_free(action->r_shortdata);
-	zbx_free(action->r_longdata);
-	zbx_free(action->ack_shortdata);
-	zbx_free(action->ack_longdata);
-	zbx_free(action->name);
+	trx_free(action->shortdata);
+	trx_free(action->longdata);
+	trx_free(action->r_shortdata);
+	trx_free(action->r_longdata);
+	trx_free(action->ack_shortdata);
+	trx_free(action->ack_longdata);
+	trx_free(action->name);
 
-	zbx_free(action);
+	trx_free(action);
 }

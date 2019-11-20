@@ -77,11 +77,11 @@ static void	*ALIGN4(void *ptr);
 static void	*ALIGN8(void *ptr);
 static void	*ALIGNPTR(void *ptr);
 
-static zbx_uint64_t	mem_proper_alloc_size(zbx_uint64_t size);
-static int	mem_bucket_by_size(zbx_uint64_t size);
+static trx_uint64_t	mem_proper_alloc_size(trx_uint64_t size);
+static int	mem_bucket_by_size(trx_uint64_t size);
 
-static void	mem_set_chunk_size(void *chunk, zbx_uint64_t size);
-static void	mem_set_used_chunk_size(void *chunk, zbx_uint64_t size);
+static void	mem_set_chunk_size(void *chunk, trx_uint64_t size);
+static void	mem_set_used_chunk_size(void *chunk, trx_uint64_t size);
 
 static void	*mem_get_prev_chunk(void *chunk);
 static void	mem_set_prev_chunk(void *chunk, void *prev);
@@ -90,19 +90,19 @@ static void	mem_set_next_chunk(void *chunk, void *next);
 static void	**mem_ptr_to_prev_field(void *chunk);
 static void	**mem_ptr_to_next_field(void *chunk, void **first_chunk);
 
-static void	mem_link_chunk(zbx_mem_info_t *info, void *chunk);
-static void	mem_unlink_chunk(zbx_mem_info_t *info, void *chunk);
+static void	mem_link_chunk(trx_mem_info_t *info, void *chunk);
+static void	mem_unlink_chunk(trx_mem_info_t *info, void *chunk);
 
-static void	*__mem_malloc(zbx_mem_info_t *info, zbx_uint64_t size);
-static void	*__mem_realloc(zbx_mem_info_t *info, void *old, zbx_uint64_t size);
-static void	__mem_free(zbx_mem_info_t *info, void *ptr);
+static void	*__mem_malloc(trx_mem_info_t *info, trx_uint64_t size);
+static void	*__mem_realloc(trx_mem_info_t *info, void *old, trx_uint64_t size);
+static void	__mem_free(trx_mem_info_t *info, void *ptr);
 
-#define MEM_SIZE_FIELD		sizeof(zbx_uint64_t)
+#define MEM_SIZE_FIELD		sizeof(trx_uint64_t)
 
 #define MEM_FLG_USED		((__UINT64_C(1))<<63)
 
-#define FREE_CHUNK(ptr)		(((*(zbx_uint64_t *)(ptr)) & MEM_FLG_USED) == 0)
-#define CHUNK_SIZE(ptr)		((*(zbx_uint64_t *)(ptr)) & ~MEM_FLG_USED)
+#define FREE_CHUNK(ptr)		(((*(trx_uint64_t *)(ptr)) & MEM_FLG_USED) == 0)
+#define CHUNK_SIZE(ptr)		((*(trx_uint64_t *)(ptr)) & ~MEM_FLG_USED)
 
 #define MEM_MIN_SIZE		__UINT64_C(128)
 #define MEM_MAX_SIZE		__UINT64_C(0x1000000000)	/* 64 GB */
@@ -134,7 +134,7 @@ static void	*ALIGNPTR(void *ptr)
 	assert(0);
 }
 
-static zbx_uint64_t	mem_proper_alloc_size(zbx_uint64_t size)
+static trx_uint64_t	mem_proper_alloc_size(trx_uint64_t size)
 {
 	if (size >= MEM_MIN_ALLOC)
 		return size + ((8 - (size & 7)) & 7);	/* allocate in multiples of 8... */
@@ -142,7 +142,7 @@ static zbx_uint64_t	mem_proper_alloc_size(zbx_uint64_t size)
 		return MEM_MIN_ALLOC;			/* ...and at least MEM_MIN_ALLOC */
 }
 
-static int	mem_bucket_by_size(zbx_uint64_t size)
+static int	mem_bucket_by_size(trx_uint64_t size)
 {
 	if (size < MEM_MIN_BUCKET_SIZE)
 		return 0;
@@ -151,16 +151,16 @@ static int	mem_bucket_by_size(zbx_uint64_t size)
 	return MEM_BUCKET_COUNT - 1;
 }
 
-static void	mem_set_chunk_size(void *chunk, zbx_uint64_t size)
+static void	mem_set_chunk_size(void *chunk, trx_uint64_t size)
 {
-	*(zbx_uint64_t *)chunk = size;
-	*(zbx_uint64_t *)((char *)chunk + MEM_SIZE_FIELD + size) = size;
+	*(trx_uint64_t *)chunk = size;
+	*(trx_uint64_t *)((char *)chunk + MEM_SIZE_FIELD + size) = size;
 }
 
-static void	mem_set_used_chunk_size(void *chunk, zbx_uint64_t size)
+static void	mem_set_used_chunk_size(void *chunk, trx_uint64_t size)
 {
-	*(zbx_uint64_t *)chunk = MEM_FLG_USED | size;
-	*(zbx_uint64_t *)((char *)chunk + MEM_SIZE_FIELD + size) = MEM_FLG_USED | size;
+	*(trx_uint64_t *)chunk = MEM_FLG_USED | size;
+	*(trx_uint64_t *)((char *)chunk + MEM_SIZE_FIELD + size) = MEM_FLG_USED | size;
 }
 
 static void	*mem_get_prev_chunk(void *chunk)
@@ -193,7 +193,7 @@ static void	**mem_ptr_to_next_field(void *chunk, void **first_chunk)
 	return (NULL != chunk ? (void **)((char *)chunk + MEM_SIZE_FIELD + TRX_PTR_SIZE) : first_chunk);
 }
 
-static void	mem_link_chunk(zbx_mem_info_t *info, void *chunk)
+static void	mem_link_chunk(trx_mem_info_t *info, void *chunk)
 {
 	int	index;
 
@@ -208,7 +208,7 @@ static void	mem_link_chunk(zbx_mem_info_t *info, void *chunk)
 	info->buckets[index] = chunk;
 }
 
-static void	mem_unlink_chunk(zbx_mem_info_t *info, void *chunk)
+static void	mem_unlink_chunk(trx_mem_info_t *info, void *chunk)
 {
 	int	index;
 	void	*prev_chunk, *next_chunk;
@@ -229,11 +229,11 @@ static void	mem_unlink_chunk(zbx_mem_info_t *info, void *chunk)
 
 /* private memory functions */
 
-static void	*__mem_malloc(zbx_mem_info_t *info, zbx_uint64_t size)
+static void	*__mem_malloc(trx_mem_info_t *info, trx_uint64_t size)
 {
 	int		index;
 	void		*chunk;
-	zbx_uint64_t	chunk_size;
+	trx_uint64_t	chunk_size;
 
 	size = mem_proper_alloc_size(size);
 
@@ -251,7 +251,7 @@ static void	*__mem_malloc(zbx_mem_info_t *info, zbx_uint64_t size)
 		/* otherwise, find a chunk big enough according to first-fit strategy */
 
 		int		counter = 0;
-		zbx_uint64_t	skip_min = __UINT64_C(0xffffffffffffffff), skip_max = __UINT64_C(0);
+		trx_uint64_t	skip_min = __UINT64_C(0xffffffffffffffff), skip_max = __UINT64_C(0);
 
 		while (NULL != chunk && CHUNK_SIZE(chunk) < size)
 		{
@@ -297,7 +297,7 @@ static void	*__mem_malloc(zbx_mem_info_t *info, zbx_uint64_t size)
 	else
 	{
 		void		*new_chunk;
-		zbx_uint64_t	new_chunk_size;
+		trx_uint64_t	new_chunk_size;
 
 		new_chunk = (void *)((char *)chunk + MEM_SIZE_FIELD + size + MEM_SIZE_FIELD);
 		new_chunk_size = chunk_size - size - 2 * MEM_SIZE_FIELD;
@@ -314,10 +314,10 @@ static void	*__mem_malloc(zbx_mem_info_t *info, zbx_uint64_t size)
 	return chunk;
 }
 
-static void	*__mem_realloc(zbx_mem_info_t *info, void *old, zbx_uint64_t size)
+static void	*__mem_realloc(trx_mem_info_t *info, void *old, trx_uint64_t size)
 {
 	void		*chunk, *new_chunk, *next_chunk;
-	zbx_uint64_t	chunk_size, new_chunk_size;
+	trx_uint64_t	chunk_size, new_chunk_size;
 	int		next_free;
 
 	size = mem_proper_alloc_size(size);
@@ -430,7 +430,7 @@ static void	*__mem_realloc(zbx_mem_info_t *info, void *old, zbx_uint64_t size)
 		if (size > new_chunk_size)
 			return NULL;
 
-		tmp = zbx_malloc(tmp, chunk_size);
+		tmp = trx_malloc(tmp, chunk_size);
 
 		memcpy(tmp, (char *)chunk + MEM_SIZE_FIELD, chunk_size);
 
@@ -444,17 +444,17 @@ static void	*__mem_realloc(zbx_mem_info_t *info, void *old, zbx_uint64_t size)
 
 		memcpy((char *)new_chunk + MEM_SIZE_FIELD, tmp, chunk_size);
 
-		zbx_free(tmp);
+		trx_free(tmp);
 
 		return new_chunk;
 	}
 }
 
-static void	__mem_free(zbx_mem_info_t *info, void *ptr)
+static void	__mem_free(trx_mem_info_t *info, void *ptr)
 {
 	void		*chunk;
 	void		*prev_chunk, *next_chunk;
-	zbx_uint64_t	chunk_size;
+	trx_uint64_t	chunk_size;
 	int		prev_free, next_free;
 
 	chunk = (void *)((char *)ptr - MEM_SIZE_FIELD);
@@ -521,7 +521,7 @@ static void	__mem_free(zbx_mem_info_t *info, void *ptr)
 
 /* public memory interface */
 
-int	zbx_mem_create(zbx_mem_info_t **info, zbx_uint64_t size, const char *descr, const char *param, int allow_oom,
+int	trx_mem_create(trx_mem_info_t **info, trx_uint64_t size, const char *descr, const char *param, int allow_oom,
 		char **error)
 {
 	int	shm_id, index, ret = FAIL;
@@ -530,45 +530,45 @@ int	zbx_mem_create(zbx_mem_info_t **info, zbx_uint64_t size, const char *descr, 
 	descr = TRX_NULL2STR(descr);
 	param = TRX_NULL2STR(param);
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() param:'%s' size:" TRX_FS_SIZE_T, __func__, param, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() param:'%s' size:" TRX_FS_SIZE_T, __func__, param, (trx_fs_size_t)size);
 
 	/* allocate shared memory */
 
 	if (4 != TRX_PTR_SIZE && 8 != TRX_PTR_SIZE)
 	{
-		*error = zbx_dsprintf(*error, "failed assumption about pointer size (" TRX_FS_SIZE_T " not in {4, 8})",
-				(zbx_fs_size_t)TRX_PTR_SIZE);
+		*error = trx_dsprintf(*error, "failed assumption about pointer size (" TRX_FS_SIZE_T " not in {4, 8})",
+				(trx_fs_size_t)TRX_PTR_SIZE);
 		goto out;
 	}
 
 	if (!(MEM_MIN_SIZE <= size && size <= MEM_MAX_SIZE))
 	{
-		*error = zbx_dsprintf(*error, "requested size " TRX_FS_SIZE_T " not within bounds [" TRX_FS_UI64
-				" <= size <= " TRX_FS_UI64 "]", (zbx_fs_size_t)size, MEM_MIN_SIZE, MEM_MAX_SIZE);
+		*error = trx_dsprintf(*error, "requested size " TRX_FS_SIZE_T " not within bounds [" TRX_FS_UI64
+				" <= size <= " TRX_FS_UI64 "]", (trx_fs_size_t)size, MEM_MIN_SIZE, MEM_MAX_SIZE);
 		goto out;
 	}
 
 	if (-1 == (shm_id = shmget(IPC_PRIVATE, size, 0600)))
 	{
-		*error = zbx_dsprintf(*error, "cannot get private shared memory of size " TRX_FS_SIZE_T " for %s: %s",
-				(zbx_fs_size_t)size, descr, zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot get private shared memory of size " TRX_FS_SIZE_T " for %s: %s",
+				(trx_fs_size_t)size, descr, trx_strerror(errno));
 		goto out;
 	}
 
 	if ((void *)(-1) == (base = shmat(shm_id, NULL, 0)))
 	{
-		*error = zbx_dsprintf(*error, "cannot attach shared memory for %s: %s", descr, zbx_strerror(errno));
+		*error = trx_dsprintf(*error, "cannot attach shared memory for %s: %s", descr, trx_strerror(errno));
 		goto out;
 	}
 
 	if (-1 == shmctl(shm_id, IPC_RMID, NULL))
-		zbx_error("cannot mark shared memory %d for destruction: %s", shm_id, zbx_strerror(errno));
+		trx_error("cannot mark shared memory %d for destruction: %s", shm_id, trx_strerror(errno));
 
 	ret = SUCCEED;
 
-	/* allocate zbx_mem_info_t structure, its buckets, and description inside shared memory */
+	/* allocate trx_mem_info_t structure, its buckets, and description inside shared memory */
 
-	*info = (zbx_mem_info_t *)ALIGN8(base);
+	*info = (trx_mem_info_t *)ALIGN8(base);
 	(*info)->shm_id = shm_id;
 	(*info)->orig_size = size;
 	size -= (char *)(*info + 1) - (char *)base;
@@ -580,12 +580,12 @@ int	zbx_mem_create(zbx_mem_info_t **info, zbx_uint64_t size, const char *descr, 
 	size -= (char *)((*info)->buckets + MEM_BUCKET_COUNT) - (char *)base;
 	base = (void *)((*info)->buckets + MEM_BUCKET_COUNT);
 
-	zbx_strlcpy((char *)base, descr, size);
+	trx_strlcpy((char *)base, descr, size);
 	(*info)->mem_descr = (char *)base;
 	size -= strlen(descr) + 1;
 	base = (void *)((char *)base + strlen(descr) + 1);
 
-	zbx_strlcpy((char *)base, param, size);
+	trx_strlcpy((char *)base, param, size);
 	(*info)->mem_param = (char *)base;
 	size -= strlen(param) + 1;
 	base = (void *)((char *)base + strlen(param) + 1);
@@ -596,7 +596,7 @@ int	zbx_mem_create(zbx_mem_info_t **info, zbx_uint64_t size, const char *descr, 
 	(*info)->lo_bound = ALIGN8(base);
 	(*info)->hi_bound = ALIGN8((char *)base + size - 8);
 
-	(*info)->total_size = (zbx_uint64_t)((char *)((*info)->hi_bound) - (char *)((*info)->lo_bound) -
+	(*info)->total_size = (trx_uint64_t)((char *)((*info)->hi_bound) - (char *)((*info)->lo_bound) -
 			2 * MEM_SIZE_FIELD);
 
 	index = mem_bucket_by_size((*info)->total_size);
@@ -611,14 +611,14 @@ int	zbx_mem_create(zbx_mem_info_t **info, zbx_uint64_t size, const char *descr, 
 	treegix_log(LOG_LEVEL_DEBUG, "valid user addresses: [%p, %p] total size: " TRX_FS_SIZE_T,
 			(void *)((char *)(*info)->lo_bound + MEM_SIZE_FIELD),
 			(void *)((char *)(*info)->hi_bound - MEM_SIZE_FIELD),
-			(zbx_fs_size_t)(*info)->total_size);
+			(trx_fs_size_t)(*info)->total_size);
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;
 }
 
-void	*__zbx_mem_malloc(const char *file, int line, zbx_mem_info_t *info, const void *old, size_t size)
+void	*__trx_mem_malloc(const char *file, int line, trx_mem_info_t *info, const void *old, size_t size)
 {
 	void	*chunk;
 
@@ -632,7 +632,7 @@ void	*__zbx_mem_malloc(const char *file, int line, zbx_mem_info_t *info, const v
 	if (0 == size || size > MEM_MAX_SIZE)
 	{
 		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): asking for a bad number of bytes (" TRX_FS_SIZE_T
-				")", file, line, __func__, (zbx_fs_size_t)size);
+				")", file, line, __func__, (trx_fs_size_t)size);
 		exit(EXIT_FAILURE);
 	}
 
@@ -644,25 +644,25 @@ void	*__zbx_mem_malloc(const char *file, int line, zbx_mem_info_t *info, const v
 			return NULL;
 
 		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): out of memory (requested " TRX_FS_SIZE_T " bytes)",
-				file, line, __func__, (zbx_fs_size_t)size);
+				file, line, __func__, (trx_fs_size_t)size);
 		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): please increase %s configuration parameter",
 				file, line, __func__, info->mem_param);
-		zbx_mem_dump_stats(LOG_LEVEL_CRIT, info);
-		zbx_backtrace();
+		trx_mem_dump_stats(LOG_LEVEL_CRIT, info);
+		trx_backtrace();
 		exit(EXIT_FAILURE);
 	}
 
 	return (void *)((char *)chunk + MEM_SIZE_FIELD);
 }
 
-void	*__zbx_mem_realloc(const char *file, int line, zbx_mem_info_t *info, void *old, size_t size)
+void	*__trx_mem_realloc(const char *file, int line, trx_mem_info_t *info, void *old, size_t size)
 {
 	void	*chunk;
 
 	if (0 == size || size > MEM_MAX_SIZE)
 	{
 		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): asking for a bad number of bytes (" TRX_FS_SIZE_T
-				")", file, line, __func__, (zbx_fs_size_t)size);
+				")", file, line, __func__, (trx_fs_size_t)size);
 		exit(EXIT_FAILURE);
 	}
 
@@ -677,18 +677,18 @@ void	*__zbx_mem_realloc(const char *file, int line, zbx_mem_info_t *info, void *
 			return NULL;
 
 		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): out of memory (requested " TRX_FS_SIZE_T " bytes)",
-				file, line, __func__, (zbx_fs_size_t)size);
+				file, line, __func__, (trx_fs_size_t)size);
 		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] %s(): please increase %s configuration parameter",
 				file, line, __func__, info->mem_param);
-		zbx_mem_dump_stats(LOG_LEVEL_CRIT, info);
-		zbx_backtrace();
+		trx_mem_dump_stats(LOG_LEVEL_CRIT, info);
+		trx_backtrace();
 		exit(EXIT_FAILURE);
 	}
 
 	return (void *)((char *)chunk + MEM_SIZE_FIELD);
 }
 
-void	__zbx_mem_free(const char *file, int line, zbx_mem_info_t *info, void *ptr)
+void	__trx_mem_free(const char *file, int line, trx_mem_info_t *info, void *ptr)
 {
 	if (NULL == ptr)
 	{
@@ -699,7 +699,7 @@ void	__zbx_mem_free(const char *file, int line, zbx_mem_info_t *info, void *ptr)
 	__mem_free(info, ptr);
 }
 
-void	zbx_mem_clear(zbx_mem_info_t *info)
+void	trx_mem_clear(trx_mem_info_t *info)
 {
 	int	index;
 
@@ -717,12 +717,12 @@ void	zbx_mem_clear(zbx_mem_info_t *info)
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
-void	zbx_mem_dump_stats(int level, zbx_mem_info_t *info)
+void	trx_mem_dump_stats(int level, trx_mem_info_t *info)
 {
 	void		*chunk;
 	int		index;
-	zbx_uint64_t	counter, total, total_free = 0;
-	zbx_uint64_t	min_size = __UINT64_C(0xffffffffffffffff), max_size = __UINT64_C(0);
+	trx_uint64_t	counter, total, total_free = 0;
+	trx_uint64_t	min_size = __UINT64_C(0xffffffffffffffff), max_size = __UINT64_C(0);
 
 	treegix_log(level, "=== memory statistics for %s ===", info->mem_descr);
 
@@ -762,19 +762,19 @@ void	zbx_mem_dump_stats(int level, zbx_mem_info_t *info)
 	treegix_log(level, "================================");
 }
 
-size_t	zbx_mem_required_size(int chunks_num, const char *descr, const char *param)
+size_t	trx_mem_required_size(int chunks_num, const char *descr, const char *param)
 {
 	size_t	size = 0;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() size:" TRX_FS_SIZE_T " chunks_num:%d descr:'%s' param:'%s'",
-			__func__, (zbx_fs_size_t)size, chunks_num, descr, param);
+			__func__, (trx_fs_size_t)size, chunks_num, descr, param);
 
 	/* shared memory of what size should we allocate so that there is a guarantee */
 	/* that we will be able to get ourselves 'chunks_num' pieces of memory with a */
 	/* total size of 'size', given that we also have to store 'descr' and 'param'? */
 
-	size += 7;					/* ensure we allocate enough to 8-align zbx_mem_info_t */
-	size += sizeof(zbx_mem_info_t);
+	size += 7;					/* ensure we allocate enough to 8-align trx_mem_info_t */
+	size += sizeof(trx_mem_info_t);
 	size += TRX_PTR_SIZE - 1;			/* ensure we allocate enough to align bucket pointers */
 	size += TRX_PTR_SIZE * MEM_BUCKET_COUNT;
 	size += strlen(descr) + 1;
@@ -785,7 +785,7 @@ size_t	zbx_mem_required_size(int chunks_num, const char *descr, const char *para
 	size += (chunks_num - 1) * MEM_SIZE_FIELD * 2;	/* each additional chunk requires 16 bytes of overhead */
 	size += chunks_num * (MEM_MIN_ALLOC - 1);	/* each chunk has size of at least MEM_MIN_ALLOC bytes */
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s() size:" TRX_FS_SIZE_T, __func__, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s() size:" TRX_FS_SIZE_T, __func__, (trx_fs_size_t)size);
 
 	return size;
 }

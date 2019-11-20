@@ -18,7 +18,7 @@ int	SYSTEM_BOOTTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (-1 == sysctl(mib, 2, &boottime, &len, NULL, 0))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain system information: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain system information: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -26,7 +26,7 @@ int	SYSTEM_BOOTTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	return SYSINFO_RET_OK;
 #else
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Agent was compiled without support for \"kern.boottime\" system"
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Agent was compiled without support for \"kern.boottime\" system"
 			" parameter."));
 	return SYSINFO_RET_FAIL;
 #endif

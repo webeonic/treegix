@@ -2,11 +2,11 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "log.h"
 
-static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *free,
-		zbx_uint64_t *used, double *pfree, double *pused, char **error)
+static int	get_fs_size_stat(const char *fs, trx_uint64_t *total, trx_uint64_t *free,
+		trx_uint64_t *used, double *pfree, double *pused, char **error)
 {
 #ifdef HAVE_SYS_STATVFS_H
 #	define TRX_STATFS	statvfs
@@ -19,13 +19,13 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 
 	if (NULL == fs || '\0' == *fs)
 	{
-		*error = zbx_strdup(NULL, "Filesystem name cannot be empty.");
+		*error = trx_strdup(NULL, "Filesystem name cannot be empty.");
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (0 != TRX_STATFS(fs, &s))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot obtain filesystem information: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain filesystem information: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -35,13 +35,13 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 		s.f_bavail = 0;
 
 	if (NULL != total)
-		*total = (zbx_uint64_t)s.f_blocks * s.TRX_BSIZE;
+		*total = (trx_uint64_t)s.f_blocks * s.TRX_BSIZE;
 
 	if (NULL != free)
-		*free = (zbx_uint64_t)s.f_bavail * s.TRX_BSIZE;
+		*free = (trx_uint64_t)s.f_bavail * s.TRX_BSIZE;
 
 	if (NULL != used)
-		*used = (zbx_uint64_t)(s.f_blocks - s.f_bfree) * s.TRX_BSIZE;
+		*used = (trx_uint64_t)(s.f_blocks - s.f_bfree) * s.TRX_BSIZE;
 
 	if (NULL != pfree)
 	{
@@ -65,12 +65,12 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *f
 static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		*fsname, *mode, *error;
-	zbx_uint64_t	total, free, used;
+	trx_uint64_t	total, free, used;
 	double		pfree, pused;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -95,7 +95,7 @@ static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_DBL_RESULT(result, pused);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -104,24 +104,24 @@ static int	vfs_fs_size(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 int	VFS_FS_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	return zbx_execute_threaded_metric(vfs_fs_size, request, result);
+	return trx_execute_threaded_metric(vfs_fs_size, request, result);
 }
 
 int	VFS_FS_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	char		line[MAX_STRING_LEN], *p, *mpoint, *mtype;
 	FILE		*f;
-	struct zbx_json	j;
+	struct trx_json	j;
 
 	TRX_UNUSED(request);
 
 	if (NULL == (f = fopen("/proc/mounts", "r")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc/mounts: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc/mounts: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	while (NULL != fgets(line, sizeof(line), f))
 	{
@@ -142,19 +142,19 @@ int	VFS_FS_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		*p = '\0';
 
-		zbx_json_addobject(&j, NULL);
-		zbx_json_addstring(&j, "{#FSNAME}", mpoint, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&j, "{#FSTYPE}", mtype, TRX_JSON_TYPE_STRING);
-		zbx_json_close(&j);
+		trx_json_addobject(&j, NULL);
+		trx_json_addstring(&j, "{#FSNAME}", mpoint, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&j, "{#FSTYPE}", mtype, TRX_JSON_TYPE_STRING);
+		trx_json_close(&j);
 	}
 
-	zbx_fclose(f);
+	trx_fclose(f);
 
-	zbx_json_close(&j);
+	trx_json_close(&j);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, j.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, j.buffer));
 
-	zbx_json_free(&j);
+	trx_json_free(&j);
 
 	return SYSINFO_RET_OK;
 }

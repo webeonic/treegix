@@ -70,7 +70,7 @@ class CStringValidator extends CValidator {
 			return false;
 		}
 
-		if (zbx_empty($value)) {
+		if (trx_empty($value)) {
 			if ($this->empty) {
 				return true;
 			}
@@ -87,7 +87,7 @@ class CStringValidator extends CValidator {
 			return false;
 		}
 
-		if ($this->regex && !zbx_empty($value) && !preg_match($this->regex, $value)) {
+		if ($this->regex && !trx_empty($value) && !preg_match($this->regex, $value)) {
 			$this->error($this->messageRegex, $value);
 
 			return false;

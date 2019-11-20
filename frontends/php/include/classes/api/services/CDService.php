@@ -77,7 +77,7 @@ class CDService extends CApiService {
 			'limit'						=> null,
 			'limitSelects'				=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
 			return [];
@@ -85,13 +85,13 @@ class CDService extends CApiService {
 
 // dserviceids
 		if (!is_null($options['dserviceids'])) {
-			zbx_value2array($options['dserviceids']);
+			trx_value2array($options['dserviceids']);
 			$sqlParts['where']['dserviceid'] = dbConditionInt('ds.dserviceid', $options['dserviceids']);
 		}
 
 // dhostids
 		if (!is_null($options['dhostids'])) {
-			zbx_value2array($options['dhostids']);
+			trx_value2array($options['dhostids']);
 
 			$sqlParts['where'][] = dbConditionInt('ds.dhostid', $options['dhostids']);
 
@@ -102,7 +102,7 @@ class CDService extends CApiService {
 
 // dcheckids
 		if (!is_null($options['dcheckids'])) {
-			zbx_value2array($options['dcheckids']);
+			trx_value2array($options['dcheckids']);
 
 			$sqlParts['where'][] = dbConditionInt('ds.dcheckid', $options['dcheckids']);
 
@@ -113,7 +113,7 @@ class CDService extends CApiService {
 
 // druleids
 		if (!is_null($options['druleids'])) {
-			zbx_value2array($options['druleids']);
+			trx_value2array($options['druleids']);
 
 			$sqlParts['from']['dhosts'] = 'dhosts dh';
 
@@ -132,11 +132,11 @@ class CDService extends CApiService {
 
 // search
 		if (is_array($options['search'])) {
-			zbx_db_search('dservices ds', $options, $sqlParts);
+			trx_db_search('dservices ds', $options, $sqlParts);
 		}
 
 // limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 //-------
@@ -169,7 +169,7 @@ class CDService extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;

@@ -186,7 +186,7 @@ class CHostImporter extends CImporter {
 	 */
 	protected function addInterfaceIds(array $xmlHosts) {
 		$dbInterfaces = API::HostInterface()->get([
-			'hostids' => zbx_objectValues($xmlHosts, 'hostid'),
+			'hostids' => trx_objectValues($xmlHosts, 'hostid'),
 			'output' => API_OUTPUT_EXTEND,
 			'preservekeys' => true
 		]);

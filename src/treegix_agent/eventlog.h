@@ -7,7 +7,7 @@
 #	error "This module is only available for Windows OS"
 #endif
 
-#include "zbxalgo.h"
+#include "trxalgo.h"
 #include "active.h"
 #include "metrics.h"
 
@@ -164,23 +164,23 @@ typedef enum	_EVT_VARIANT_TYPE
 EVT_VARIANT_TYPE;
 
 
-typedef int 		(*zbx_process_value_t)(const char *server, unsigned short port, const char *host,
-			const char *key, const char *value, unsigned char state, zbx_uint64_t *lastlogsize, int *mtime,
+typedef int 		(*trx_process_value_t)(const char *server, unsigned short port, const char *host,
+			const char *key, const char *value, unsigned char state, trx_uint64_t *lastlogsize, int *mtime,
 			unsigned long *timestamp, const char *source, unsigned short *severity,
 			unsigned long *logeventid, unsigned char flags);
 int			process_eventslog(const char *server, unsigned short port, const char *eventlog_name,
-			zbx_vector_ptr_t *regexps, const char *pattern, const char *key_severity,
+			trx_vector_ptr_t *regexps, const char *pattern, const char *key_severity,
 			const char *key_source, const char *key_logeventid, int rate,
-			zbx_process_value_t cb_process_value, TRX_ACTIVE_METRIC *metric,
-			zbx_uint64_t *lastlogsize_sent, char **error);
+			trx_process_value_t cb_process_value, TRX_ACTIVE_METRIC *metric,
+			trx_uint64_t *lastlogsize_sent, char **error);
 int			process_eventslog6(const char *server, unsigned short port, const char *fl_source,
-			EVT_HANDLE *render_context, EVT_HANDLE *query, zbx_uint64_t lastlogsize, zbx_uint64_t FirstID,
-			zbx_uint64_t LastID, zbx_vector_ptr_t *regexps, const char *pattern, const char *key_severity,
+			EVT_HANDLE *render_context, EVT_HANDLE *query, trx_uint64_t lastlogsize, trx_uint64_t FirstID,
+			trx_uint64_t LastID, trx_vector_ptr_t *regexps, const char *pattern, const char *key_severity,
 			const char *key_source, const char *key_logeventid, int rate,
-			zbx_process_value_t cb_process_value, TRX_ACTIVE_METRIC *metric,
-			zbx_uint64_t *lastlogsize_sent, char **error);
-int			initialize_eventlog6(const char *source, zbx_uint64_t *lastlogsize, zbx_uint64_t *FirstID,
-			zbx_uint64_t *LastID, EVT_HANDLE *render_context, EVT_HANDLE *query, char **error);
+			trx_process_value_t cb_process_value, TRX_ACTIVE_METRIC *metric,
+			trx_uint64_t *lastlogsize_sent, char **error);
+int			initialize_eventlog6(const char *source, trx_uint64_t *lastlogsize, trx_uint64_t *FirstID,
+			trx_uint64_t *LastID, EVT_HANDLE *render_context, EVT_HANDLE *query, char **error);
 int			finalize_eventlog6(EVT_HANDLE *render_context, EVT_HANDLE *query);
 
 EVT_HANDLE WINAPI	EvtOpenLog(EVT_HANDLE Session, const wchar_t *Path, DWORD Flags);

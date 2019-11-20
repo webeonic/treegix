@@ -16,11 +16,11 @@ int	xml_get_data_dyn(const char *xml, const char *tag, char **data)
 
 	sz = sizeof(data_static);
 
-	len = zbx_snprintf(data_static, sz, "<%s>", tag);
+	len = trx_snprintf(data_static, sz, "<%s>", tag);
 	if (NULL == (start = strstr(xml, data_static)))
 		return FAIL;
 
-	zbx_snprintf(data_static, sz, "</%s>", tag);
+	trx_snprintf(data_static, sz, "</%s>", tag);
 	if (NULL == (end = strstr(xml, data_static)))
 		return FAIL;
 
@@ -31,11 +31,11 @@ int	xml_get_data_dyn(const char *xml, const char *tag, char **data)
 	len = end - start;
 
 	if (len > sz - 1)
-		*data = (char *)zbx_malloc(*data, len + 1);
+		*data = (char *)trx_malloc(*data, len + 1);
 	else
 		*data = data_static;
 
-	zbx_strlcpy(*data, start, len + 1);
+	trx_strlcpy(*data, start, len + 1);
 
 	return SUCCEED;
 }
@@ -45,7 +45,7 @@ void	xml_free_data_dyn(char **data)
 	if (*data == data_static)
 		*data = NULL;
 	else
-		zbx_free(*data);
+		trx_free(*data);
 }
 
 /******************************************************************************
@@ -69,7 +69,7 @@ char	*xml_escape_dyn(const char *data)
 	int		size = 0;
 
 	if (NULL == data)
-		return zbx_strdup(NULL, "");
+		return trx_strdup(NULL, "");
 
 	for (ptr_in = data; '\0' != *ptr_in; ptr_in++)
 	{
@@ -92,7 +92,7 @@ char	*xml_escape_dyn(const char *data)
 	}
 	size++;
 
-	out = (char *)zbx_malloc(NULL, size);
+	out = (char *)trx_malloc(NULL, size);
 
 	for (ptr_out = out, ptr_in = data; '\0' != *ptr_in; ptr_in++)
 	{
@@ -207,9 +207,9 @@ void xml_escape_xpath(char **data)
 	if (0 == (size = xml_escape_xpath_stringsize(*data)))
 		return;
 
-	buffer = zbx_malloc(NULL, size + 1);
+	buffer = trx_malloc(NULL, size + 1);
 	buffer[size] = '\0';
 	xml_escape_xpath_string(buffer, *data);
-	zbx_free(*data);
+	trx_free(*data);
 	*data = buffer;
 }

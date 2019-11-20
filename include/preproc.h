@@ -9,24 +9,24 @@
 /* preprocessing step execution result */
 typedef struct
 {
-	zbx_variant_t	value;
+	trx_variant_t	value;
 	unsigned char	action;
 	char		*error;
 }
-zbx_preproc_result_t;
+trx_preproc_result_t;
 
 /* the following functions are implemented differently for server and proxy */
 
-void	zbx_preprocess_item_value(zbx_uint64_t itemid, unsigned char item_value_type, unsigned char item_flags,
-		AGENT_RESULT *result, zbx_timespec_t *ts, unsigned char state, char *error);
-void	zbx_preprocessor_flush(void);
-zbx_uint64_t	zbx_preprocessor_get_queue_size(void);
+void	trx_preprocess_item_value(trx_uint64_t itemid, unsigned char item_value_type, unsigned char item_flags,
+		AGENT_RESULT *result, trx_timespec_t *ts, unsigned char state, char *error);
+void	trx_preprocessor_flush(void);
+trx_uint64_t	trx_preprocessor_get_queue_size(void);
 
-void	zbx_preproc_op_free(zbx_preproc_op_t *op);
-void	zbx_preproc_result_free(zbx_preproc_result_t *result);
+void	trx_preproc_op_free(trx_preproc_op_t *op);
+void	trx_preproc_result_free(trx_preproc_result_t *result);
 
-int	zbx_preprocessor_test(unsigned char value_type, const char *value, const zbx_timespec_t *ts,
-		const zbx_vector_ptr_t *steps, zbx_vector_ptr_t *results, zbx_vector_ptr_t *history,
+int	trx_preprocessor_test(unsigned char value_type, const char *value, const trx_timespec_t *ts,
+		const trx_vector_ptr_t *steps, trx_vector_ptr_t *results, trx_vector_ptr_t *history,
 		char **preproc_error, char **error);
 
 #endif /* TREEGIX_PREPROC_H */

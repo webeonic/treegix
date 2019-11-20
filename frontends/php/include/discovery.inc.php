@@ -136,5 +136,5 @@ function discovery_object_status2str($status = null) {
 }
 
 function get_discovery_rule_by_druleid($druleid) {
-	return DBfetch(DBselect('SELECT d.* FROM drules d WHERE d.druleid='.zbx_dbstr($druleid)));
+	return DBfetch(DBselect('SELECT d.* FROM drules d WHERE d.druleid='.trx_dbstr($druleid)));
 }

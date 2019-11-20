@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxdbcache.a
+noinst_LIBRARIES = libtrxdbcache.a
 
-libzbxdbcache_a_SOURCES = \
+libtrxdbcache_a_SOURCES = \
 	dbcache.c \
 	dbconfig.c \
 	dbconfig.h \
@@ -13,7 +13,7 @@ libzbxdbcache_a_SOURCES = \
 	dbconfig_dump.c \
 	dbconfig_maintenance.c
 
-libzbxdbcache_a_CFLAGS = \
+libtrxdbcache_a_CFLAGS = \
 	-I@top_srcdir@/src/treegix_server/ \
-	-I@top_srcdir@/src/libs/zbxalgo \
+	-I@top_srcdir@/src/libs/trxalgo \
 	$(TEST_FLAGS)

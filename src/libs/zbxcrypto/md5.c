@@ -311,7 +311,7 @@ md5_process(md5_state_t *pms, const md5_byte_t *data /*[64]*/)
 }
 
 void
-zbx_md5_init(md5_state_t *pms)
+trx_md5_init(md5_state_t *pms)
 {
     pms->count[0] = pms->count[1] = 0;
     pms->abcd[0] = 0x67452301;
@@ -321,7 +321,7 @@ zbx_md5_init(md5_state_t *pms)
 }
 
 void
-zbx_md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes)
+trx_md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes)
 {
     const md5_byte_t *p = data;
     int left = nbytes;
@@ -359,7 +359,7 @@ zbx_md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes)
 }
 
 void
-zbx_md5_finish(md5_state_t *pms, md5_byte_t digest[16])
+trx_md5_finish(md5_state_t *pms, md5_byte_t digest[16])
 {
     static const md5_byte_t pad[64] = {
 	0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -374,9 +374,9 @@ zbx_md5_finish(md5_state_t *pms, md5_byte_t digest[16])
     for (i = 0; i < 8; ++i)
 	data[i] = (md5_byte_t)(pms->count[i >> 2] >> ((i & 3) << 3));
     /* Pad to 56 bytes mod 64. */
-    zbx_md5_append(pms, pad, ((55 - (pms->count[0] >> 3)) & 63) + 1);
+    trx_md5_append(pms, pad, ((55 - (pms->count[0] >> 3)) & 63) + 1);
     /* Append the length. */
-    zbx_md5_append(pms, data, 8);
+    trx_md5_append(pms, data, 8);
     for (i = 0; i < 16; ++i)
 	digest[i] = (md5_byte_t)(pms->abcd[i >> 2] >> ((i & 3) << 3));
 }

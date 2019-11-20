@@ -6,7 +6,7 @@
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_value_internal_ext                                       *
+ * Function: trx_get_value_internal_ext                                       *
  *                                                                            *
  * Purpose: processes program type (proxy) specific internal checks           *
  *                                                                            *
@@ -22,13 +22,13 @@
  *           before generic internal checks are processed.                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request, AGENT_RESULT *result)
+int	trx_get_value_internal_ext(const char *param1, const AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	if (0 == strcmp(param1, "proxy_history"))
 	{
 		if (1 != get_rparams_num(request))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			return NOTSUPPORTED;
 		}
 

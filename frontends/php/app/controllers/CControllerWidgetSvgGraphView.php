@@ -124,7 +124,7 @@ class CControllerWidgetSvgGraphView extends CControllerWidget {
 		}
 
 		if (!$preview) {
-			$graph_options = zbx_array_merge($svg_data['data'], [
+			$graph_options = trx_array_merge($svg_data['data'], [
 				'sbox' => ($graph_data['dashboard_time'] && !$edit_mode),
 				'show_problems' => ($fields['show_problems'] == SVG_GRAPH_PROBLEMS_SHOW),
 				'time_from' => $graph_data['time_period']['time_from'],
@@ -141,7 +141,7 @@ class CControllerWidgetSvgGraphView extends CControllerWidget {
 			// Register widget auto-refresh when resizing widget.
 			$script_inline .=
 				'jQuery(".dashbrd-grid-container").dashboardGrid("addAction", "onResizeEnd",'.
-					'"zbx_svggraph_widget_trigger", "'.$uniqueid.'", {'.
+					'"trx_svggraph_widget_trigger", "'.$uniqueid.'", {'.
 						'parameters: ["onResizeEnd"],'.
 						'grid: {widget: 1},'.
 						'trigger_name: "svggraph_widget_resize_end_'.$uniqueid.'"'.
@@ -150,7 +150,7 @@ class CControllerWidgetSvgGraphView extends CControllerWidget {
 			// Disable SBox when switch to edit mode.
 			$script_inline .=
 				'jQuery(".dashbrd-grid-container").dashboardGrid("addAction", "onEditStart",'.
-					'"zbx_svggraph_widget_trigger", "'.$uniqueid.'", {'.
+					'"trx_svggraph_widget_trigger", "'.$uniqueid.'", {'.
 						'parameters: ["onEditStart"],'.
 						'grid: {widget: 1},'.
 						'trigger_name: "svggraph_widget_edit_start_'.$uniqueid.'"'.

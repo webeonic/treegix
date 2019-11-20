@@ -60,15 +60,15 @@ if ($httptestid = getRequest('httptestid', false)) {
 	];
 	$color = false;
 	$items = [];
-	$hosts = zbx_toHash($httptests[0]['hosts'], 'hostid');
+	$hosts = trx_toHash($httptests[0]['hosts'], 'hostid');
 
 	$dbItems = DBselect(
 		'SELECT i.itemid,i.type,i.name,i.delay,i.units,i.hostid,i.history,i.trends,i.value_type,i.key_'.
 		' FROM httpstepitem hi,items i,httpstep hs'.
 		' WHERE i.itemid=hi.itemid'.
-			' AND hs.httptestid='.zbx_dbstr($httptestid).
+			' AND hs.httptestid='.trx_dbstr($httptestid).
 			' AND hs.httpstepid=hi.httpstepid'.
-			' AND hi.type='.zbx_dbstr(getRequest('http_item_type', HTTPSTEP_ITEM_TYPE_TIME)).
+			' AND hi.type='.trx_dbstr(getRequest('http_item_type', HTTPSTEP_ITEM_TYPE_TIME)).
 		' ORDER BY hs.no DESC'
 	);
 	while ($item = DBfetch($dbItems)) {
@@ -86,7 +86,7 @@ elseif ($items = getRequest('items', [])) {
 	CArrayHelper::sort($items, ['sortorder']);
 
 	$dbItems = API::Item()->get([
-		'itemids' => zbx_objectValues($items, 'itemid'),
+		'itemids' => trx_objectValues($items, 'itemid'),
 		'output' => ['itemid', 'type', 'master_itemid', 'name', 'delay', 'units', 'hostid', 'history', 'trends',
 			'value_type', 'key_'
 		],

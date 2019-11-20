@@ -42,7 +42,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 
 		if ($ret) {
 			$steps = $this->getInput('steps');
-			$prepr_types = zbx_objectValues($steps, 'type');
+			$prepr_types = trx_objectValues($steps, 'type');
 			$this->preproc_item = self::getPreprocessingItemType($this->getInput('test_type'));
 			$this->use_prev_value = (count(array_intersect($prepr_types, self::$preproc_steps_using_prev_value)) > 0);
 			$this->show_final_result = ($this->getInput('show_final_result') == 1);
@@ -162,7 +162,7 @@ class CControllerPopupPreprocTestSend extends CControllerPopupPreprocTest {
 
 		// Send test details to Treegix server.
 		$server = new CTreegixServer($TRX_SERVER, $TRX_SERVER_PORT, TRX_SOCKET_TIMEOUT, TRX_SOCKET_BYTES_LIMIT);
-		$result = $server->testPreprocessingSteps($data, get_cookie('zbx_sessionid'));
+		$result = $server->testPreprocessingSteps($data, get_cookie('trx_sessionid'));
 
 		if ($result === false) {
 			error($server->getError());

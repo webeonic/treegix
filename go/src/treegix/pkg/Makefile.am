@@ -8,5 +8,5 @@ SUBDIRS = \
 	tls \
 	version \
 	watch \
-	zbxcomms \
-	zbxlib
+	trxcomms \
+	trxlib

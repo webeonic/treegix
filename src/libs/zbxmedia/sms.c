@@ -3,7 +3,7 @@
 #include "common.h"
 #include "log.h"
 
-#include "zbxmedia.h"
+#include "trxmedia.h"
 
 #include <termios.h>
 
@@ -24,16 +24,16 @@ static int	write_gsm(int fd, const char *str, char *error, int max_error_len)
 			if (EAGAIN == errno)
 				continue;
 
-			treegix_log(LOG_LEVEL_DEBUG, "error writing to GSM modem: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_DEBUG, "error writing to GSM modem: %s", trx_strerror(errno));
 			if (NULL != error)
-				zbx_snprintf(error, max_error_len, "error writing to GSM modem: %s", zbx_strerror(errno));
+				trx_snprintf(error, max_error_len, "error writing to GSM modem: %s", trx_strerror(errno));
 
 			ret = FAIL;
 			break;
 		}
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -46,7 +46,7 @@ static int	check_modem_result(char *buffer, char **ebuf, char **sbuf, const char
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_strlcpy(rcv, *sbuf, sizeof(rcv));
+	trx_strlcpy(rcv, *sbuf, sizeof(rcv));
 
 	do
 	{
@@ -71,9 +71,9 @@ static int	check_modem_result(char *buffer, char **ebuf, char **sbuf, const char
 	while (*sbuf < *ebuf && FAIL == ret);
 
 	if (FAIL == ret && NULL != error)
-		zbx_snprintf(error, max_error_len, "Expected [%s] received [%s]", expect, rcv);
+		trx_snprintf(error, max_error_len, "Expected [%s] received [%s]", expect, rcv);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -117,12 +117,12 @@ static int	read_gsm(int fd, const char *expect, char *error, int max_error_len, 
 				if (EINTR == errno)
 					continue;
 
-				treegix_log(LOG_LEVEL_DEBUG, "error select() for GSM modem: %s", zbx_strerror(errno));
+				treegix_log(LOG_LEVEL_DEBUG, "error select() for GSM modem: %s", trx_strerror(errno));
 
 				if (NULL != error)
 				{
-					zbx_snprintf(error, max_error_len, "error select() for GSM modem: %s",
-							zbx_strerror(errno));
+					trx_snprintf(error, max_error_len, "error select() for GSM modem: %s",
+							trx_strerror(errno));
 				}
 
 				ret = FAIL;
@@ -134,7 +134,7 @@ static int	read_gsm(int fd, const char *expect, char *error, int max_error_len, 
 
 				treegix_log(LOG_LEVEL_DEBUG, "error during wait for GSM modem");
 				if (NULL != error)
-					zbx_snprintf(error, max_error_len, "error during wait for GSM modem");
+					trx_snprintf(error, max_error_len, "error during wait for GSM modem");
 
 				goto check_result;
 			}
@@ -180,7 +180,7 @@ check_result:
 
 	ret = check_modem_result(buffer, &ebuf, &sbuf, expect, error, max_error_len);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -191,14 +191,14 @@ typedef struct
 	const char	*result;
 	int		timeout_sec;
 }
-zbx_sms_scenario;
+trx_sms_scenario;
 
 int	send_sms(const char *device, const char *number, const char *message, char *error, int max_error_len)
 {
 #define	TRX_AT_ESC	"\x1B"
 #define TRX_AT_CTRL_Z	"\x1A"
 
-	zbx_sms_scenario scenario[] =
+	trx_sms_scenario scenario[] =
 	{
 		{TRX_AT_ESC	, NULL		, 0},	/* Send <ESC> */
 		{"AT+CMEE=2\r"	, ""/*"OK"*/	, 5},	/* verbose error values */
@@ -214,7 +214,7 @@ int	send_sms(const char *device, const char *number, const char *message, char *
 		{NULL		, NULL		, 0}
 	};
 
-	zbx_sms_scenario	*step;
+	trx_sms_scenario	*step;
 	struct termios		options, old_options;
 	int			f, ret = SUCCEED;
 
@@ -222,9 +222,9 @@ int	send_sms(const char *device, const char *number, const char *message, char *
 
 	if (-1 == (f = open(device, O_RDWR | O_NOCTTY | O_NDELAY)))
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "error in open(%s): %s", device, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_DEBUG, "error in open(%s): %s", device, trx_strerror(errno));
 		if (NULL != error)
-			zbx_snprintf(error, max_error_len, "error in open(%s): %s", device, zbx_strerror(errno));
+			trx_snprintf(error, max_error_len, "error in open(%s): %s", device, trx_strerror(errno));
 		return FAIL;
 	}
 	fcntl(f, F_SETFL, 0);	/* set the status flag to 0 */
@@ -253,12 +253,12 @@ int	send_sms(const char *device, const char *number, const char *message, char *
 			{
 				char	*tmp;
 
-				tmp = zbx_strdup(NULL, message);
-				zbx_remove_chars(tmp, "\r");
+				tmp = trx_strdup(NULL, message);
+				trx_remove_chars(tmp, "\r");
 
 				ret = write_gsm(f, tmp, error, max_error_len);
 
-				zbx_free(tmp);
+				trx_free(tmp);
 			}
 			else
 				ret = write_gsm(f, step->message, error, max_error_len);
@@ -283,7 +283,7 @@ int	send_sms(const char *device, const char *number, const char *message, char *
 	tcsetattr(f, TCSANOW, &old_options);
 	close(f);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

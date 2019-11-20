@@ -197,7 +197,7 @@ elseif (hasRequest('action')) {
 			'output' => []
 		]);
 
-		uncheckTableRows(null, zbx_objectValues($groups, 'groupid'));
+		uncheckTableRows(null, trx_objectValues($groups, 'groupid'));
 	}
 }
 
@@ -282,7 +282,7 @@ else {
 	order_result($groups, $sortField, $sortOrder);
 
 	$data['paging'] = getPagingLine($groups, $sortOrder, new CUrl('hostgroups.php'));
-	$groupIds = zbx_objectValues($groups, 'groupid');
+	$groupIds = trx_objectValues($groups, 'groupid');
 
 	// get hosts and templates count
 	$data['groupCounts'] = API::HostGroup()->get([

@@ -5,8 +5,8 @@
 
 #include "cfg.h"
 #include "log.h"
-#include "zbxconf.h"
-#include "zbxgetopt.h"
+#include "trxconf.h"
+#include "trxgetopt.h"
 #include "comms.h"
 
 char	*CONFIG_HOSTS_ALLOWED		= NULL;
@@ -64,8 +64,8 @@ char	*CONFIG_TLS_PSK_IDENTITY	= NULL;
 char	*CONFIG_TLS_PSK_FILE		= NULL;
 
 #ifndef _WINDOWS
-#	include "../libs/zbxnix/control.h"
-#	include "zbxmodules.h"
+#	include "../libs/trxnix/control.h"
+#	include "trxmodules.h"
 #endif
 
 #include "comms.h"
@@ -75,7 +75,7 @@ char	*CONFIG_TLS_PSK_FILE		= NULL;
 #ifdef _WINDOWS
 #	include "perfstat.h"
 #else
-#	include "zbxnix.h"
+#	include "trxnix.h"
 #	include "sighandler.h"
 #endif
 #include "active.h"
@@ -90,7 +90,7 @@ char	*CONFIG_TLS_PSK_FILE		= NULL;
 #endif
 
 #include "setproctitle.h"
-#include "../libs/zbxcrypto/tls.h"
+#include "../libs/trxcrypto/tls.h"
 
 const char	*progname = NULL;
 
@@ -186,7 +186,7 @@ const char	*help_message[] = {
 /* end of application HELP message */
 
 /* COMMAND LINE OPTIONS */
-static struct zbx_option	longopts[] =
+static struct trx_option	longopts[] =
 {
 	{"config",		1,	NULL,	'c'},
 	{"foreground",		0,	NULL,	'f'},
@@ -266,11 +266,11 @@ int	CONFIG_ALERTDB_FORKS		= 0;
 char	*opt = NULL;
 
 #ifdef _WINDOWS
-void	zbx_co_uninitialize();
+void	trx_co_uninitialize();
 #endif
 
 int	get_process_info_by_thread(int local_server_num, unsigned char *local_process_type, int *local_process_num);
-void	zbx_free_service_resources(int ret);
+void	trx_free_service_resources(int ret);
 
 int	get_process_info_by_thread(int local_server_num, unsigned char *local_process_type, int *local_process_num)
 {
@@ -315,7 +315,7 @@ static int	parse_commandline(int argc, char **argv, TRX_TASK_EX *t)
 	t->task = TRX_TASK_START;
 
 	/* parse the command-line */
-	while ((char)EOF != (ch = (char)zbx_getopt_long(argc, argv, shortopts, longopts, NULL)))
+	while ((char)EOF != (ch = (char)trx_getopt_long(argc, argv, shortopts, longopts, NULL)))
 	{
 		opt_count[(unsigned char)ch]++;
 
@@ -323,11 +323,11 @@ static int	parse_commandline(int argc, char **argv, TRX_TASK_EX *t)
 		{
 			case 'c':
 				if (NULL == CONFIG_FILE)
-					CONFIG_FILE = strdup(zbx_optarg);
+					CONFIG_FILE = strdup(trx_optarg);
 				break;
 #ifndef _WINDOWS
 			case 'R':
-				if (SUCCEED != parse_rtc_options(zbx_optarg, program_type, &t->data))
+				if (SUCCEED != parse_rtc_options(trx_optarg, program_type, &t->data))
 					exit(EXIT_FAILURE);
 
 				t->task = TRX_TASK_RUNTIME_CONTROL;
@@ -347,7 +347,7 @@ static int	parse_commandline(int argc, char **argv, TRX_TASK_EX *t)
 				if (TRX_TASK_START == t->task)
 				{
 					t->task = TRX_TASK_TEST_METRIC;
-					TEST_METRIC = strdup(zbx_optarg);
+					TEST_METRIC = strdup(trx_optarg);
 				}
 				break;
 			case 'f':
@@ -387,7 +387,7 @@ static int	parse_commandline(int argc, char **argv, TRX_TASK_EX *t)
 		case TRX_TASK_STOP_SERVICE:
 			if (0 != (t->flags & TRX_TASK_FLAG_FOREGROUND))
 			{
-				zbx_error("foreground option cannot be used with Treegix agent services");
+				trx_error("foreground option cannot be used with Treegix agent services");
 				ret = FAIL;
 				goto out;
 			}
@@ -395,7 +395,7 @@ static int	parse_commandline(int argc, char **argv, TRX_TASK_EX *t)
 		default:
 			if (0 != (t->flags & TRX_TASK_FLAG_MULTIPLE_AGENTS))
 			{
-				zbx_error("multiple agents option can be used only with Treegix agent services");
+				trx_error("multiple agents option can be used only with Treegix agent services");
 				ret = FAIL;
 				goto out;
 			}
@@ -414,9 +414,9 @@ static int	parse_commandline(int argc, char **argv, TRX_TASK_EX *t)
 		if (1 < opt_count[(unsigned char)ch])
 		{
 			if (NULL == strchr(shortopts, ch))
-				zbx_error("option \"--%s\" specified multiple times", longopts[i].name);
+				trx_error("option \"--%s\" specified multiple times", longopts[i].name);
 			else
-				zbx_error("option \"-%c\" or \"--%s\" specified multiple times", ch, longopts[i].name);
+				trx_error("option \"-%c\" or \"--%s\" specified multiple times", ch, longopts[i].name);
 
 			ret = FAIL;
 		}
@@ -475,7 +475,7 @@ static int	parse_commandline(int argc, char **argv, TRX_TASK_EX *t)
 		case 0x40:
 			break;
 		default:
-			zbx_error("mutually exclusive options used");
+			trx_error("mutually exclusive options used");
 			usage();
 			ret = FAIL;
 			goto out;
@@ -484,30 +484,30 @@ static int	parse_commandline(int argc, char **argv, TRX_TASK_EX *t)
 	/* check for mutually exclusive options */
 	if (1 < opt_count['p'] + opt_count['t'] + opt_count['R'])
 	{
-		zbx_error("only one of options \"-p\" or \"--print\", \"-t\" or \"--test\","
+		trx_error("only one of options \"-p\" or \"--print\", \"-t\" or \"--test\","
 				" \"-R\" or \"--runtime-control\" can be used");
 		ret = FAIL;
 		goto out;
 	}
 #endif
-	/* Parameters which are not option values are invalid. The check relies on zbx_getopt_internal() which */
+	/* Parameters which are not option values are invalid. The check relies on trx_getopt_internal() which */
 	/* always permutes command line arguments regardless of POSIXLY_CORRECT environment variable. */
-	if (argc > zbx_optind)
+	if (argc > trx_optind)
 	{
-		for (i = zbx_optind; i < argc; i++)
-			zbx_error("invalid parameter \"%s\"", argv[i]);
+		for (i = trx_optind; i < argc; i++)
+			trx_error("invalid parameter \"%s\"", argv[i]);
 
 		ret = FAIL;
 		goto out;
 	}
 
 	if (NULL == CONFIG_FILE)
-		CONFIG_FILE = zbx_strdup(NULL, DEFAULT_CONFIG_FILE);
+		CONFIG_FILE = trx_strdup(NULL, DEFAULT_CONFIG_FILE);
 out:
 	if (FAIL == ret)
 	{
-		zbx_free(TEST_METRIC);
-		zbx_free(CONFIG_FILE);
+		trx_free(TEST_METRIC);
+		trx_free(CONFIG_FILE);
 	}
 
 	return ret;
@@ -530,7 +530,7 @@ static void	set_defaults(void)
 	if (NULL == CONFIG_HOSTNAME)
 	{
 		if (NULL == CONFIG_HOSTNAME_ITEM)
-			CONFIG_HOSTNAME_ITEM = zbx_strdup(CONFIG_HOSTNAME_ITEM, "system.hostname");
+			CONFIG_HOSTNAME_ITEM = trx_strdup(CONFIG_HOSTNAME_ITEM, "system.hostname");
 
 		init_result(&result);
 
@@ -545,7 +545,7 @@ static void	set_defaults(void)
 				treegix_log(LOG_LEVEL_WARNING, "hostname truncated to [%s])", *value);
 			}
 
-			CONFIG_HOSTNAME = zbx_strdup(CONFIG_HOSTNAME, *value);
+			CONFIG_HOSTNAME = trx_strdup(CONFIG_HOSTNAME, *value);
 		}
 		else
 			treegix_log(LOG_LEVEL_WARNING, "failed to get system hostname from [%s])", CONFIG_HOSTNAME_ITEM);
@@ -569,25 +569,25 @@ static void	set_defaults(void)
 
 #ifndef _WINDOWS
 	if (NULL == CONFIG_LOAD_MODULE_PATH)
-		CONFIG_LOAD_MODULE_PATH = zbx_strdup(CONFIG_LOAD_MODULE_PATH, DEFAULT_LOAD_MODULE_PATH);
+		CONFIG_LOAD_MODULE_PATH = trx_strdup(CONFIG_LOAD_MODULE_PATH, DEFAULT_LOAD_MODULE_PATH);
 
 	if (NULL == CONFIG_PID_FILE)
 		CONFIG_PID_FILE = (char *)"/tmp/treegix_agentd.pid";
 #endif
 	if (NULL == CONFIG_LOG_TYPE_STR)
-		CONFIG_LOG_TYPE_STR = zbx_strdup(CONFIG_LOG_TYPE_STR, TRX_OPTION_LOGTYPE_FILE);
+		CONFIG_LOG_TYPE_STR = trx_strdup(CONFIG_LOG_TYPE_STR, TRX_OPTION_LOGTYPE_FILE);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_validate_config                                              *
+ * Function: trx_validate_config                                              *
  *                                                                            *
  * Purpose: validate configuration parameters                                 *
  *                                                                            *
  * Author: Vladimir Levijev                                                   *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_validate_config(TRX_TASK_EX *task)
+static void	trx_validate_config(TRX_TASK_EX *task)
 {
 	char	*ch_error;
 	int	err = 0;
@@ -599,10 +599,10 @@ static void	zbx_validate_config(TRX_TASK_EX *task)
 			treegix_log(LOG_LEVEL_CRIT, "StartAgents is not 0, parameter \"Server\" must be defined");
 			err = 1;
 		}
-		else if (SUCCEED != zbx_validate_peer_list(CONFIG_HOSTS_ALLOWED, &ch_error))
+		else if (SUCCEED != trx_validate_peer_list(CONFIG_HOSTS_ALLOWED, &ch_error))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "invalid entry in \"Server\" configuration parameter: %s", ch_error);
-			zbx_free(ch_error);
+			trx_free(ch_error);
 			err = 1;
 		}
 	}
@@ -611,22 +611,22 @@ static void	zbx_validate_config(TRX_TASK_EX *task)
 		treegix_log(LOG_LEVEL_CRIT, "\"Hostname\" configuration parameter is not defined");
 		err = 1;
 	}
-	else if (FAIL == zbx_check_hostname(CONFIG_HOSTNAME, &ch_error))
+	else if (FAIL == trx_check_hostname(CONFIG_HOSTNAME, &ch_error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "invalid \"Hostname\" configuration parameter: '%s': %s", CONFIG_HOSTNAME,
 				ch_error);
-		zbx_free(ch_error);
+		trx_free(ch_error);
 		err = 1;
 	}
 
-	if (NULL != CONFIG_HOST_METADATA && HOST_METADATA_LEN < zbx_strlen_utf8(CONFIG_HOST_METADATA))
+	if (NULL != CONFIG_HOST_METADATA && HOST_METADATA_LEN < trx_strlen_utf8(CONFIG_HOST_METADATA))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "the value of \"HostMetadata\" configuration parameter cannot be longer than"
 				" %d characters", HOST_METADATA_LEN);
 		err = 1;
 	}
 
-	if (NULL != CONFIG_HOST_INTERFACE && HOST_INTERFACE_LEN < zbx_strlen_utf8(CONFIG_HOST_INTERFACE))
+	if (NULL != CONFIG_HOST_INTERFACE && HOST_INTERFACE_LEN < trx_strlen_utf8(CONFIG_HOST_INTERFACE))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "the value of \"HostInterface\" configuration parameter cannot be longer than"
 				" %d characters", HOST_INTERFACE_LEN);
@@ -646,7 +646,7 @@ static void	zbx_validate_config(TRX_TASK_EX *task)
 		err = 1;
 	}
 
-	if (SUCCEED != zbx_validate_log_parameters(task))
+	if (SUCCEED != trx_validate_log_parameters(task))
 		err = 1;
 
 #if !(defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
@@ -676,10 +676,10 @@ static int	add_serveractive_host_cb(const char *host, unsigned short port)
 	}
 
 	CONFIG_ACTIVE_FORKS++;
-	CONFIG_ACTIVE_ARGS = (TRX_THREAD_ACTIVECHK_ARGS *)zbx_realloc(CONFIG_ACTIVE_ARGS,
+	CONFIG_ACTIVE_ARGS = (TRX_THREAD_ACTIVECHK_ARGS *)trx_realloc(CONFIG_ACTIVE_ARGS,
 			sizeof(TRX_THREAD_ACTIVECHK_ARGS) * CONFIG_ACTIVE_FORKS);
 
-	CONFIG_ACTIVE_ARGS[CONFIG_ACTIVE_FORKS - 1].host = zbx_strdup(NULL, host);
+	CONFIG_ACTIVE_ARGS[CONFIG_ACTIVE_FORKS - 1].host = trx_strdup(NULL, host);
 	CONFIG_ACTIVE_ARGS[CONFIG_ACTIVE_FORKS - 1].port = port;
 
 	return SUCCEED;
@@ -687,14 +687,14 @@ static int	add_serveractive_host_cb(const char *host, unsigned short port)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_load_config                                                  *
+ * Function: trx_load_config                                                  *
  *                                                                            *
  * Purpose: load configuration from config file                               *
  *                                                                            *
  * Parameters: requirement - produce error if config file missing or not      *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_load_config(int requirement, TRX_TASK_EX *task)
+static void	trx_load_config(int requirement, TRX_TASK_EX *task)
 {
 	static char	*active_hosts;
 
@@ -798,59 +798,59 @@ static void	zbx_load_config(int requirement, TRX_TASK_EX *task)
 	};
 
 	/* initialize multistrings */
-	zbx_strarr_init(&CONFIG_ALIASES);
-	zbx_strarr_init(&CONFIG_USER_PARAMETERS);
+	trx_strarr_init(&CONFIG_ALIASES);
+	trx_strarr_init(&CONFIG_USER_PARAMETERS);
 #ifndef _WINDOWS
-	zbx_strarr_init(&CONFIG_LOAD_MODULE);
+	trx_strarr_init(&CONFIG_LOAD_MODULE);
 #endif
 #ifdef _WINDOWS
-	zbx_strarr_init(&CONFIG_PERF_COUNTERS);
-	zbx_strarr_init(&CONFIG_PERF_COUNTERS_EN);
+	trx_strarr_init(&CONFIG_PERF_COUNTERS);
+	trx_strarr_init(&CONFIG_PERF_COUNTERS_EN);
 #endif
 	parse_cfg_file(CONFIG_FILE, cfg, requirement, TRX_CFG_STRICT);
 
 	set_defaults();
 
-	CONFIG_LOG_TYPE = zbx_get_log_type(CONFIG_LOG_TYPE_STR);
+	CONFIG_LOG_TYPE = trx_get_log_type(CONFIG_LOG_TYPE_STR);
 
 	if (NULL != active_hosts && '\0' != *active_hosts)
-		zbx_set_data_destination_hosts(active_hosts, add_serveractive_host_cb);
+		trx_set_data_destination_hosts(active_hosts, add_serveractive_host_cb);
 
-	zbx_free(active_hosts);
+	trx_free(active_hosts);
 
 	if (TRX_CFG_FILE_REQUIRED == requirement)
 	{
-		zbx_validate_config(task);
+		trx_validate_config(task);
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		zbx_tls_validate_config();
+		trx_tls_validate_config();
 #endif
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_free_config                                                  *
+ * Function: trx_free_config                                                  *
  *                                                                            *
  * Purpose: free configuration memory                                         *
  *                                                                            *
  * Author: Vladimir Levijev                                                   *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_free_config(void)
+static void	trx_free_config(void)
 {
-	zbx_strarr_free(CONFIG_ALIASES);
-	zbx_strarr_free(CONFIG_USER_PARAMETERS);
+	trx_strarr_free(CONFIG_ALIASES);
+	trx_strarr_free(CONFIG_USER_PARAMETERS);
 #ifndef _WINDOWS
-	zbx_strarr_free(CONFIG_LOAD_MODULE);
+	trx_strarr_free(CONFIG_LOAD_MODULE);
 #endif
 #ifdef _WINDOWS
-	zbx_strarr_free(CONFIG_PERF_COUNTERS);
-	zbx_strarr_free(CONFIG_PERF_COUNTERS_EN);
+	trx_strarr_free(CONFIG_PERF_COUNTERS);
+	trx_strarr_free(CONFIG_PERF_COUNTERS_EN);
 #endif
 }
 
 #ifdef _WINDOWS
-static int	zbx_exec_service_task(const char *name, const TRX_TASK_EX *t)
+static int	trx_exec_service_task(const char *name, const TRX_TASK_EX *t)
 {
 	int	ret;
 
@@ -879,7 +879,7 @@ static int	zbx_exec_service_task(const char *name, const TRX_TASK_EX *t)
 
 int	MAIN_TREEGIX_ENTRY(int flags)
 {
-	zbx_socket_t	listen_sock;
+	trx_socket_t	listen_sock;
 	char		*error = NULL;
 	int		i, j = 0;
 #ifdef _WINDOWS
@@ -892,17 +892,17 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 				CONFIG_HOSTNAME, TREEGIX_VERSION, TREEGIX_REVISION);
 	}
 #ifndef _WINDOWS
-	if (SUCCEED != zbx_locks_create(&error))
+	if (SUCCEED != trx_locks_create(&error))
 	{
-		zbx_error("cannot create locks: %s", error);
-		zbx_free(error);
+		trx_error("cannot create locks: %s", error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 #endif
 	if (SUCCEED != treegix_open_log(CONFIG_LOG_TYPE, CONFIG_LOG_LEVEL, CONFIG_LOG_FILE, &error))
 	{
-		zbx_error("cannot open log: %s", error);
-		zbx_free(error);
+		trx_error("cannot open log: %s", error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
@@ -928,27 +928,27 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	treegix_log(LOG_LEVEL_INFORMATION, "using configuration file: %s", CONFIG_FILE);
 
 #if !defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
-	if (SUCCEED != zbx_coredump_disable())
+	if (SUCCEED != trx_coredump_disable())
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot disable core dump, exiting...");
-		zbx_free_service_resources(FAIL);
+		trx_free_service_resources(FAIL);
 		exit(EXIT_FAILURE);
 	}
 #endif
 #ifndef _WINDOWS
-	if (FAIL == zbx_load_modules(CONFIG_LOAD_MODULE_PATH, CONFIG_LOAD_MODULE, CONFIG_TIMEOUT, 1))
+	if (FAIL == trx_load_modules(CONFIG_LOAD_MODULE_PATH, CONFIG_LOAD_MODULE, CONFIG_TIMEOUT, 1))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "loading modules failed, exiting...");
-		zbx_free_service_resources(FAIL);
+		trx_free_service_resources(FAIL);
 		exit(EXIT_FAILURE);
 	}
 #endif
 	if (0 != CONFIG_PASSIVE_FORKS)
 	{
-		if (FAIL == zbx_tcp_listen(&listen_sock, CONFIG_LISTEN_IP, (unsigned short)CONFIG_LISTEN_PORT))
+		if (FAIL == trx_tcp_listen(&listen_sock, CONFIG_LISTEN_IP, (unsigned short)CONFIG_LISTEN_PORT))
 		{
-			treegix_log(LOG_LEVEL_CRIT, "listener failed: %s", zbx_socket_strerror());
-			zbx_free_service_resources(FAIL);
+			treegix_log(LOG_LEVEL_CRIT, "listener failed: %s", trx_socket_strerror());
+			trx_free_service_resources(FAIL);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -956,8 +956,8 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	if (SUCCEED != init_collector_data(&error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize collector: %s", error);
-		zbx_free(error);
-		zbx_free_service_resources(FAIL);
+		trx_free(error);
+		trx_free_service_resources(FAIL);
 		exit(EXIT_FAILURE);
 	}
 
@@ -965,17 +965,17 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	if (SUCCEED != init_perf_collector(TRX_MULTI_THREADED, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot initialize performance counter collector: %s", error);
-		zbx_free(error);
-		zbx_free_service_resources(FAIL);
+		trx_free(error);
+		trx_free_service_resources(FAIL);
 		exit(EXIT_FAILURE);
 	}
 
 	load_perf_counters(CONFIG_PERF_COUNTERS, CONFIG_PERF_COUNTERS_EN);
 #endif
-	zbx_free_config();
+	trx_free_config();
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_parent();
+	trx_tls_init_parent();
 #endif
 	/* --- START THREADS ---*/
 
@@ -987,20 +987,20 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	{
 		treegix_log(LOG_LEVEL_CRIT, "Too many agent threads. Please reduce the StartAgents configuration"
 				" parameter or the number of active servers in ServerActive configuration parameter.");
-		zbx_free_service_resources(FAIL);
+		trx_free_service_resources(FAIL);
 		exit(EXIT_FAILURE);
 	}
 #endif
-	threads = (TRX_THREAD_HANDLE *)zbx_calloc(threads, threads_num, sizeof(TRX_THREAD_HANDLE));
-	threads_flags = (int *)zbx_calloc(threads_flags, threads_num, sizeof(int));
+	threads = (TRX_THREAD_HANDLE *)trx_calloc(threads, threads_num, sizeof(TRX_THREAD_HANDLE));
+	threads_flags = (int *)trx_calloc(threads_flags, threads_num, sizeof(int));
 
 	treegix_log(LOG_LEVEL_INFORMATION, "agent #0 started [main process]");
 
 	for (i = 0; i < threads_num; i++)
 	{
-		zbx_thread_args_t	*thread_args;
+		trx_thread_args_t	*thread_args;
 
-		thread_args = (zbx_thread_args_t *)zbx_malloc(NULL, sizeof(zbx_thread_args_t));
+		thread_args = (trx_thread_args_t *)trx_malloc(NULL, sizeof(trx_thread_args_t));
 
 		if (FAIL == get_process_info_by_thread(i + 1, &thread_args->process_type, &thread_args->process_num))
 		{
@@ -1014,19 +1014,19 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 		switch (thread_args->process_type)
 		{
 			case TRX_PROCESS_TYPE_COLLECTOR:
-				zbx_thread_start(collector_thread, thread_args, &threads[i]);
+				trx_thread_start(collector_thread, thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_LISTENER:
 				thread_args->args = &listen_sock;
-				zbx_thread_start(listener_thread, thread_args, &threads[i]);
+				trx_thread_start(listener_thread, thread_args, &threads[i]);
 				break;
 			case TRX_PROCESS_TYPE_ACTIVE_CHECKS:
 				thread_args->args = &CONFIG_ACTIVE_ARGS[j++];
-				zbx_thread_start(active_checks_thread, thread_args, &threads[i]);
+				trx_thread_start(active_checks_thread, thread_args, &threads[i]);
 				break;
 		}
 #ifndef _WINDOWS
-		zbx_free(thread_args);
+		trx_free(thread_args);
 #endif
 	}
 
@@ -1046,15 +1046,15 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 
 		/* notify other threads and allow them to terminate */
 		TRX_DO_EXIT();
-		zbx_sleep(1);
+		trx_sleep(1);
 	}
 	else
 	{
-		zbx_tcp_close(&listen_sock);
+		trx_tcp_close(&listen_sock);
 
 		/* Wait for the service worker thread to terminate us. Listener threads may not exit up to */
 		/* CONFIG_TIMEOUT seconds if they're waiting for external processes to finish / timeout */
-		zbx_sleep(CONFIG_TIMEOUT);
+		trx_sleep(CONFIG_TIMEOUT);
 
 		THIS_SHOULD_NEVER_HAPPEN;
 	}
@@ -1063,7 +1063,7 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	{
 		if (EINTR != errno)
 		{
-			treegix_log(LOG_LEVEL_ERR, "failed to wait on child processes: %s", zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_ERR, "failed to wait on child processes: %s", trx_strerror(errno));
 			break;
 		}
 	}
@@ -1071,38 +1071,38 @@ int	MAIN_TREEGIX_ENTRY(int flags)
 	/* all exiting child processes should be caught by signal handlers */
 	THIS_SHOULD_NEVER_HAPPEN;
 #endif
-	zbx_on_exit(SUCCEED);
+	trx_on_exit(SUCCEED);
 
 	return SUCCEED;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_free_service_resources                                       *
+ * Function: trx_free_service_resources                                       *
  *                                                                            *
  * Purpose: free service resources allocated by main thread                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_free_service_resources(int ret)
+void	trx_free_service_resources(int ret)
 {
 	if (NULL != threads)
 	{
-		zbx_threads_wait(threads, threads_flags, threads_num, ret);	/* wait for all child processes to exit */
-		zbx_free(threads);
-		zbx_free(threads_flags);
+		trx_threads_wait(threads, threads_flags, threads_num, ret);	/* wait for all child processes to exit */
+		trx_free(threads);
+		trx_free(threads_flags);
 	}
 #ifdef HAVE_PTHREAD_PROCESS_SHARED
-	zbx_locks_disable();
+	trx_locks_disable();
 #endif
 	free_metrics();
 	alias_list_free();
 	free_collector_data();
 #ifdef _WINDOWS
 	free_perf_collector();
-	zbx_co_uninitialize();
+	trx_co_uninitialize();
 #endif
 #ifndef _WINDOWS
-	zbx_unload_modules();
+	trx_unload_modules();
 #endif
 	treegix_log(LOG_LEVEL_INFORMATION, "Treegix Agent stopped. Treegix %s (revision %s).",
 			TREEGIX_VERSION, TREEGIX_REVISION);
@@ -1110,15 +1110,15 @@ void	zbx_free_service_resources(int ret)
 	treegix_close_log();
 }
 
-void	zbx_on_exit(int ret)
+void	trx_on_exit(int ret)
 {
-	treegix_log(LOG_LEVEL_DEBUG, "zbx_on_exit() called");
+	treegix_log(LOG_LEVEL_DEBUG, "trx_on_exit() called");
 
-	zbx_free_service_resources(ret);
+	trx_free_service_resources(ret);
 
 #if defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
-	zbx_tls_free();
-	zbx_tls_library_deinit();	/* deinitialize crypto library from parent thread */
+	trx_tls_free();
+	trx_tls_library_deinit();	/* deinitialize crypto library from parent thread */
 #endif
 #if defined(PS_OVERWRITE_ARGV)
 	setproctitle_free_env();
@@ -1156,15 +1156,15 @@ int	main(int argc, char **argv)
 
 #ifdef _WINDOWS
 	if (TRX_TASK_SHOW_USAGE != t.task && TRX_TASK_SHOW_VERSION != t.task && TRX_TASK_SHOW_HELP != t.task &&
-			SUCCEED != zbx_socket_start(&error))
+			SUCCEED != trx_socket_start(&error))
 	{
-		zbx_error(error);
-		zbx_free(error);
+		trx_error(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 #endif
 
-	/* this is needed to set default hostname in zbx_load_config() */
+	/* this is needed to set default hostname in trx_load_config() */
 	init_metrics();
 
 	switch (t.task)
@@ -1175,8 +1175,8 @@ int	main(int argc, char **argv)
 			break;
 #ifndef _WINDOWS
 		case TRX_TASK_RUNTIME_CONTROL:
-			zbx_load_config(TRX_CFG_FILE_REQUIRED, &t);
-			exit(SUCCEED == zbx_sigusr_send(t.data) ? EXIT_SUCCESS : EXIT_FAILURE);
+			trx_load_config(TRX_CFG_FILE_REQUIRED, &t);
+			exit(SUCCEED == trx_sigusr_send(t.data) ? EXIT_SUCCESS : EXIT_FAILURE);
 			break;
 #else
 		case TRX_TASK_INSTALL_SERVICE:
@@ -1185,19 +1185,19 @@ int	main(int argc, char **argv)
 		case TRX_TASK_STOP_SERVICE:
 			if (t.flags & TRX_TASK_FLAG_MULTIPLE_AGENTS)
 			{
-				zbx_load_config(TRX_CFG_FILE_REQUIRED, &t);
+				trx_load_config(TRX_CFG_FILE_REQUIRED, &t);
 
-				zbx_snprintf(TREEGIX_SERVICE_NAME, sizeof(TREEGIX_SERVICE_NAME), "%s [%s]",
+				trx_snprintf(TREEGIX_SERVICE_NAME, sizeof(TREEGIX_SERVICE_NAME), "%s [%s]",
 						APPLICATION_NAME, CONFIG_HOSTNAME);
-				zbx_snprintf(TREEGIX_EVENT_SOURCE, sizeof(TREEGIX_EVENT_SOURCE), "%s [%s]",
+				trx_snprintf(TREEGIX_EVENT_SOURCE, sizeof(TREEGIX_EVENT_SOURCE), "%s [%s]",
 						APPLICATION_NAME, CONFIG_HOSTNAME);
 			}
 			else
-				zbx_load_config(TRX_CFG_FILE_OPTIONAL, &t);
+				trx_load_config(TRX_CFG_FILE_OPTIONAL, &t);
 
-			zbx_free_config();
+			trx_free_config();
 
-			ret = zbx_exec_service_task(argv[0], &t);
+			ret = trx_exec_service_task(argv[0], &t);
 
 			while (0 == WSACleanup())
 				;
@@ -1208,21 +1208,21 @@ int	main(int argc, char **argv)
 #endif
 		case TRX_TASK_TEST_METRIC:
 		case TRX_TASK_PRINT_SUPPORTED:
-			zbx_load_config(TRX_CFG_FILE_OPTIONAL, &t);
+			trx_load_config(TRX_CFG_FILE_OPTIONAL, &t);
 #ifdef _WINDOWS
 			if (SUCCEED != init_perf_collector(TRX_SINGLE_THREADED, &error))
 			{
-				zbx_error("cannot initialize performance counter collector: %s", error);
-				zbx_free(error);
+				trx_error("cannot initialize performance counter collector: %s", error);
+				trx_free(error);
 				exit(EXIT_FAILURE);
 			}
 
 			load_perf_counters(CONFIG_PERF_COUNTERS, CONFIG_PERF_COUNTERS_EN);
 #else
-			zbx_set_common_signal_handlers();
+			trx_set_common_signal_handlers();
 #endif
 #ifndef _WINDOWS
-			if (FAIL == zbx_load_modules(CONFIG_LOAD_MODULE_PATH, CONFIG_LOAD_MODULE, CONFIG_TIMEOUT, 0))
+			if (FAIL == trx_load_modules(CONFIG_LOAD_MODULE_PATH, CONFIG_LOAD_MODULE, CONFIG_TIMEOUT, 0))
 			{
 				treegix_log(LOG_LEVEL_CRIT, "loading modules failed, exiting...");
 				exit(EXIT_FAILURE);
@@ -1230,7 +1230,7 @@ int	main(int argc, char **argv)
 #endif
 			load_user_parameters(CONFIG_USER_PARAMETERS);
 			load_aliases(CONFIG_ALIASES);
-			zbx_free_config();
+			trx_free_config();
 			if (TRX_TASK_TEST_METRIC == t.task)
 				test_parameter(TEST_METRIC);
 			else
@@ -1241,10 +1241,10 @@ int	main(int argc, char **argv)
 			while (0 == WSACleanup())
 				;
 
-			zbx_co_uninitialize();
+			trx_co_uninitialize();
 #endif
 #ifndef _WINDOWS
-			zbx_unload_modules();
+			trx_unload_modules();
 #endif
 			free_metrics();
 			alias_list_free();
@@ -1263,7 +1263,7 @@ int	main(int argc, char **argv)
 			exit(EXIT_SUCCESS);
 			break;
 		default:
-			zbx_load_config(TRX_CFG_FILE_REQUIRED, &t);
+			trx_load_config(TRX_CFG_FILE_REQUIRED, &t);
 			load_user_parameters(CONFIG_USER_PARAMETERS);
 			load_aliases(CONFIG_ALIASES);
 			break;

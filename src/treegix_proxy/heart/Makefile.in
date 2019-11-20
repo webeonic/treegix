@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxheart_a_AR = $(AR) $(ARFLAGS)
-libzbxheart_a_LIBADD =
-am_libzbxheart_a_OBJECTS = heart.$(OBJEXT)
-libzbxheart_a_OBJECTS = $(am_libzbxheart_a_OBJECTS)
+libtrxheart_a_AR = $(AR) $(ARFLAGS)
+libtrxheart_a_LIBADD =
+am_libtrxheart_a_OBJECTS = heart.$(OBJEXT)
+libtrxheart_a_OBJECTS = $(am_libtrxheart_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxheart_a_SOURCES)
-DIST_SOURCES = $(libzbxheart_a_SOURCES)
+SOURCES = $(libtrxheart_a_SOURCES)
+DIST_SOURCES = $(libtrxheart_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxheart.a
-libzbxheart_a_SOURCES = heart.c heart.h
+noinst_LIBRARIES = libtrxheart.a
+libtrxheart_a_SOURCES = heart.c heart.h
 all: all-am
 
 .SUFFIXES:
@@ -413,10 +413,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxheart.a: $(libzbxheart_a_OBJECTS) $(libzbxheart_a_DEPENDENCIES) $(EXTRA_libzbxheart_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxheart.a
-	$(AM_V_AR)$(libzbxheart_a_AR) libzbxheart.a $(libzbxheart_a_OBJECTS) $(libzbxheart_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxheart.a
+libtrxheart.a: $(libtrxheart_a_OBJECTS) $(libtrxheart_a_DEPENDENCIES) $(EXTRA_libtrxheart_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxheart.a
+	$(AM_V_AR)$(libtrxheart_a_AR) libtrxheart.a $(libtrxheart_a_OBJECTS) $(libtrxheart_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxheart.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

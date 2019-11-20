@@ -9,12 +9,12 @@
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-void	lld_field_str_rollback(char **field, char **field_orig, zbx_uint64_t *flags, zbx_uint64_t flag)
+void	lld_field_str_rollback(char **field, char **field_orig, trx_uint64_t *flags, trx_uint64_t flag)
 {
 	if (0 == (*flags & flag))
 		return;
 
-	zbx_free(*field);
+	trx_free(*field);
 	*field = *field_orig;
 	*field_orig = NULL;
 	*flags &= ~flag;
@@ -27,7 +27,7 @@ void	lld_field_str_rollback(char **field, char **field_orig, zbx_uint64_t *flags
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-void	lld_field_uint64_rollback(zbx_uint64_t *field, zbx_uint64_t *field_orig, zbx_uint64_t *flags, zbx_uint64_t flag)
+void	lld_field_uint64_rollback(trx_uint64_t *field, trx_uint64_t *field_orig, trx_uint64_t *flags, trx_uint64_t flag)
 {
 	if (0 == (*flags & flag))
 		return;

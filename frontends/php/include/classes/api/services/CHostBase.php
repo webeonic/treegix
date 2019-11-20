@@ -33,8 +33,8 @@ abstract class CHostBase extends CApiService {
 		}
 
 		// check if someone passed duplicate templates in the same query
-		$templateIdDuplicates = zbx_arrayFindDuplicates($templateIds);
-		if (!zbx_empty($templateIdDuplicates)) {
+		$templateIdDuplicates = trx_arrayFindDuplicates($templateIds);
+		if (!trx_empty($templateIdDuplicates)) {
 			$duplicatesFound = [];
 			foreach ($templateIdDuplicates as $value => $count) {
 				$duplicatesFound[] = _s('template ID "%1$s" is passed %2$s times', $value, $count);
@@ -215,8 +215,8 @@ abstract class CHostBase extends CApiService {
 				'nopermissions' => true,
 			]);
 
-			$hosts = implode(', ', zbx_objectValues($hosts, 'host'));
-			$templates = implode(', ', zbx_objectValues($templates, 'host'));
+			$hosts = implode(', ', trx_objectValues($hosts, 'host'));
+			$templates = implode(', ', trx_objectValues($templates, 'host'));
 
 			info(_s('Templates "%1$s" unlinked from hosts "%2$s".', $templates, $hosts));
 		}

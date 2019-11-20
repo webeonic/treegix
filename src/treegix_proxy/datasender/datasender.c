@@ -5,16 +5,16 @@
 #include "db.h"
 #include "log.h"
 #include "daemon.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 #include "proxy.h"
-#include "zbxself.h"
+#include "trxself.h"
 #include "dbcache.h"
-#include "zbxtasks.h"
+#include "trxtasks.h"
 #include "dbcache.h"
 
 #include "datasender.h"
 #include "../servercomms.h"
-#include "../../libs/zbxcrypto/tls.h"
+#include "../../libs/trxcrypto/tls.h"
 
 extern unsigned char	process_type, program_type;
 extern int		server_num, process_num;
@@ -43,24 +43,24 @@ static int	proxy_data_sender(int *more, int now)
 {
 	static int		data_timestamp = 0, task_timestamp = 0, upload_state = SUCCEED;
 
-	zbx_socket_t		sock;
-	struct zbx_json		j;
-	struct zbx_json_parse	jp, jp_tasks;
+	trx_socket_t		sock;
+	struct trx_json		j;
+	struct trx_json_parse	jp, jp_tasks;
 	int			availability_ts, history_records = 0, discovery_records = 0,
 				areg_records = 0, more_history = 0, more_discovery = 0, more_areg = 0;
-	zbx_uint64_t		history_lastid = 0, discovery_lastid = 0, areg_lastid = 0, flags = 0;
-	zbx_timespec_t		ts;
+	trx_uint64_t		history_lastid = 0, discovery_lastid = 0, areg_lastid = 0, flags = 0;
+	trx_timespec_t		ts;
 	char			*error = NULL;
-	zbx_vector_ptr_t	tasks;
+	trx_vector_ptr_t	tasks;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	*more = TRX_PROXY_DATA_DONE;
-	zbx_json_init(&j, 16 * TRX_KIBIBYTE);
+	trx_json_init(&j, 16 * TRX_KIBIBYTE);
 
-	zbx_json_addstring(&j, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_PROXY_DATA, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, TRX_PROTO_TAG_HOST, CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, TRX_PROTO_TAG_SESSION, zbx_dc_get_session_token(), TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&j, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_PROXY_DATA, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&j, TRX_PROTO_TAG_HOST, CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&j, TRX_PROTO_TAG_SESSION, trx_dc_get_session_token(), TRX_JSON_TYPE_STRING);
 
 	if (SUCCEED == upload_state && CONFIG_PROXYDATA_FREQUENCY <= now - data_timestamp)
 	{
@@ -86,17 +86,17 @@ static int	proxy_data_sender(int *more, int now)
 		}
 	}
 
-	zbx_vector_ptr_create(&tasks);
+	trx_vector_ptr_create(&tasks);
 
 	if (SUCCEED == upload_state && TRX_TASK_UPDATE_FREQUENCY <= now - task_timestamp)
 	{
 		task_timestamp = now;
 
-		zbx_tm_get_remote_tasks(&tasks, 0);
+		trx_tm_get_remote_tasks(&tasks, 0);
 
 		if (0 != tasks.values_num)
 		{
-			zbx_tm_json_serialize_tasks(&j, &tasks);
+			trx_tm_json_serialize_tasks(&j, &tasks);
 			flags |= TRX_DATASENDER_TASKS;
 		}
 
@@ -111,35 +111,35 @@ static int	proxy_data_sender(int *more, int now)
 		if (TRX_PROXY_DATA_MORE == more_history || TRX_PROXY_DATA_MORE == more_discovery ||
 				TRX_PROXY_DATA_MORE == more_areg)
 		{
-			zbx_json_adduint64(&j, TRX_PROTO_TAG_MORE, TRX_PROXY_DATA_MORE);
+			trx_json_adduint64(&j, TRX_PROTO_TAG_MORE, TRX_PROXY_DATA_MORE);
 			*more = TRX_PROXY_DATA_MORE;
 		}
 
-		zbx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
 
 		/* retry till have a connection */
 		if (FAIL == connect_to_server(&sock, 600, CONFIG_PROXYDATA_FREQUENCY))
 			goto clean;
 
-		zbx_timespec(&ts);
-		zbx_json_adduint64(&j, TRX_PROTO_TAG_CLOCK, ts.sec);
-		zbx_json_adduint64(&j, TRX_PROTO_TAG_NS, ts.ns);
+		trx_timespec(&ts);
+		trx_json_adduint64(&j, TRX_PROTO_TAG_CLOCK, ts.sec);
+		trx_json_adduint64(&j, TRX_PROTO_TAG_NS, ts.ns);
 
 		if (SUCCEED != (upload_state = put_data_to_server(&sock, &j, &error)))
 		{
 			*more = TRX_PROXY_DATA_DONE;
 			treegix_log(LOG_LEVEL_WARNING, "cannot send proxy data to server at \"%s\": %s",
 					sock.peer, error);
-			zbx_free(error);
+			trx_free(error);
 		}
 		else
 		{
 			if (0 != (flags & TRX_DATASENDER_AVAILABILITY))
-				zbx_set_availability_diff_ts(availability_ts);
+				trx_set_availability_diff_ts(availability_ts);
 
-			if (SUCCEED == zbx_json_open(sock.buffer, &jp))
+			if (SUCCEED == trx_json_open(sock.buffer, &jp))
 			{
-				if (SUCCEED == zbx_json_brackets_by_name(&jp, TRX_PROTO_TAG_TASKS, &jp_tasks))
+				if (SUCCEED == trx_json_brackets_by_name(&jp, TRX_PROTO_TAG_TASKS, &jp_tasks))
 					flags |= TRX_DATASENDER_TASKS_RECV;
 			}
 
@@ -149,14 +149,14 @@ static int	proxy_data_sender(int *more, int now)
 
 				if (0 != (flags & TRX_DATASENDER_TASKS))
 				{
-					zbx_tm_update_task_status(&tasks, TRX_TM_STATUS_DONE);
-					zbx_vector_ptr_clear_ext(&tasks, (zbx_clean_func_t)zbx_tm_task_free);
+					trx_tm_update_task_status(&tasks, TRX_TM_STATUS_DONE);
+					trx_vector_ptr_clear_ext(&tasks, (trx_clean_func_t)trx_tm_task_free);
 				}
 
 				if (0 != (flags & TRX_DATASENDER_TASKS_RECV))
 				{
-					zbx_tm_json_deserialize_tasks(&jp_tasks, &tasks);
-					zbx_tm_save_tasks(&tasks);
+					trx_tm_json_deserialize_tasks(&jp_tasks, &tasks);
+					trx_tm_save_tasks(&tasks);
 				}
 
 				if (0 != (flags & TRX_DATASENDER_HISTORY))
@@ -175,13 +175,13 @@ static int	proxy_data_sender(int *more, int now)
 		disconnect_server(&sock);
 	}
 clean:
-	zbx_vector_ptr_clear_ext(&tasks, (zbx_clean_func_t)zbx_tm_task_free);
-	zbx_vector_ptr_destroy(&tasks);
+	trx_vector_ptr_clear_ext(&tasks, (trx_clean_func_t)trx_tm_task_free);
+	trx_vector_ptr_destroy(&tasks);
 
-	zbx_json_free(&j);
+	trx_json_free(&j);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s more:%d flags:0x" TRX_FS_UX64, __func__,
-			zbx_result_string(upload_state), *more, flags);
+			trx_result_string(upload_state), *more, flags);
 
 	return history_records + discovery_records + areg_records;
 }
@@ -198,26 +198,26 @@ TRX_THREAD_ENTRY(datasender_thread, args)
 	int		records = 0, more;
 	double		time_start, time_diff = 0.0, time_now;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_child();
+	trx_tls_init_child();
 #endif
-	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
+	trx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	while (TRX_IS_RUNNING())
 	{
-		time_now = zbx_time();
-		zbx_update_env(time_now);
+		time_now = trx_time();
+		trx_update_env(time_now);
 
-		zbx_setproctitle("%s [sent %d values in " TRX_FS_DBL " sec, sending data]",
+		trx_setproctitle("%s [sent %d values in " TRX_FS_DBL " sec, sending data]",
 				get_process_type_string(process_type), records, time_diff);
 
 		records = 0;
@@ -227,21 +227,21 @@ TRX_THREAD_ENTRY(datasender_thread, args)
 		{
 			records += proxy_data_sender(&more, (int)time_now);
 
-			time_now = zbx_time();
+			time_now = trx_time();
 			time_diff = time_now - time_start;
 		}
 		while (TRX_PROXY_DATA_MORE == more && time_diff < SEC_PER_MIN && TRX_IS_RUNNING());
 
-		zbx_setproctitle("%s [sent %d values in " TRX_FS_DBL " sec, idle %d sec]",
+		trx_setproctitle("%s [sent %d values in " TRX_FS_DBL " sec, idle %d sec]",
 				get_process_type_string(process_type), records, time_diff,
 				TRX_PROXY_DATA_MORE != more ? TRX_TASK_UPDATE_FREQUENCY : 0);
 
 		if (TRX_PROXY_DATA_MORE != more)
-			zbx_sleep_loop(TRX_TASK_UPDATE_FREQUENCY);
+			trx_sleep_loop(TRX_TASK_UPDATE_FREQUENCY);
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 }

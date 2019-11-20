@@ -2,12 +2,12 @@
 #ifndef TREEGIX_MODULE_H
 #define TREEGIX_MODULE_H
 
-#include "zbxtypes.h"
+#include "trxtypes.h"
 
 #define TRX_MODULE_OK	0
 #define TRX_MODULE_FAIL	-1
 
-/* zbx_module_api_version() MUST return this constant */
+/* trx_module_api_version() MUST return this constant */
 #define TRX_MODULE_API_VERSION	2
 
 /* old name alias is kept for source compatibility only, SHOULD NOT be used */
@@ -33,7 +33,7 @@ typedef struct
 	char		*key;
 	int		nparam;
 	char		**params;
-	zbx_uint64_t	lastlogsize;
+	trx_uint64_t	lastlogsize;
 	int		mtime;
 }
 AGENT_REQUEST;
@@ -46,7 +46,7 @@ typedef struct
 	int		severity;
 	int		logeventid;
 }
-zbx_log_t;
+trx_log_t;
 
 /* agent result types */
 #define AR_UINT64	0x01
@@ -60,13 +60,13 @@ zbx_log_t;
 /* agent return structure */
 typedef struct
 {
-	zbx_uint64_t	lastlogsize;	/* meta information */
-	zbx_uint64_t	ui64;
+	trx_uint64_t	lastlogsize;	/* meta information */
+	trx_uint64_t	ui64;
 	double		dbl;
 	char		*str;
 	char		*text;
 	char		*msg;		/* possible error message */
-	zbx_log_t	*log;
+	trx_log_t	*log;
 	int	 	type;		/* flags: see AR_* above */
 	int		mtime;		/* meta information */
 }
@@ -86,7 +86,7 @@ TRX_METRIC;
 #define SET_UI64_RESULT(res, val)		\
 (						\
 	(res)->type |= AR_UINT64,		\
-	(res)->ui64 = (zbx_uint64_t)(val)	\
+	(res)->ui64 = (trx_uint64_t)(val)	\
 )
 
 #define SET_DBL_RESULT(res, val)		\
@@ -113,7 +113,7 @@ TRX_METRIC;
 #define SET_LOG_RESULT(res, val)		\
 (						\
 	(res)->type |= AR_LOG,			\
-	(res)->log = (zbx_log_t *)(val)		\
+	(res)->log = (trx_log_t *)(val)		\
 )
 
 /* NOTE: always allocate new memory for val! DON'T USE STATIC OR STACK MEMORY!!! */
@@ -128,7 +128,7 @@ TRX_METRIC;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	int		clock;
 	int		ns;
 	double		value;
@@ -137,16 +137,16 @@ TRX_HISTORY_FLOAT;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	int		clock;
 	int		ns;
-	zbx_uint64_t	value;
+	trx_uint64_t	value;
 }
 TRX_HISTORY_INTEGER;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	int		clock;
 	int		ns;
 	const char	*value;
@@ -155,7 +155,7 @@ TRX_HISTORY_STRING;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	int		clock;
 	int		ns;
 	const char	*value;
@@ -164,7 +164,7 @@ TRX_HISTORY_TEXT;
 
 typedef struct
 {
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 	int		clock;
 	int		ns;
 	const char	*value;
@@ -185,11 +185,11 @@ typedef struct
 }
 TRX_HISTORY_WRITE_CBS;
 
-int	zbx_module_api_version(void);
-int	zbx_module_init(void);
-int	zbx_module_uninit(void);
-void	zbx_module_item_timeout(int timeout);
-TRX_METRIC	*zbx_module_item_list(void);
-TRX_HISTORY_WRITE_CBS	zbx_module_history_write_cbs(void);
+int	trx_module_api_version(void);
+int	trx_module_init(void);
+int	trx_module_uninit(void);
+void	trx_module_item_timeout(int timeout);
+TRX_METRIC	*trx_module_item_list(void);
+TRX_HISTORY_WRITE_CBS	trx_module_history_write_cbs(void);
 
 #endif

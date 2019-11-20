@@ -8,11 +8,11 @@
 #include "log.h"
 #include "mutexs.h"
 
-extern zbx_mutex_t		diskstats_lock;
-#define LOCK_DISKSTATS		zbx_mutex_lock(diskstats_lock)
-#define UNLOCK_DISKSTATS	zbx_mutex_unlock(diskstats_lock)
+extern trx_mutex_t		diskstats_lock;
+#define LOCK_DISKSTATS		trx_mutex_lock(diskstats_lock)
+#define UNLOCK_DISKSTATS	trx_mutex_unlock(diskstats_lock)
 
-static void	apply_diskstat(TRX_SINGLE_DISKDEVICE_DATA *device, time_t now, zbx_uint64_t *dstat)
+static void	apply_diskstat(TRX_SINGLE_DISKDEVICE_DATA *device, time_t now, trx_uint64_t *dstat)
 {
 	register int	i;
 	time_t		clock[TRX_AVG_COUNT], sec;
@@ -82,7 +82,7 @@ static void	apply_diskstat(TRX_SINGLE_DISKDEVICE_DATA *device, time_t now, zbx_u
 static void	process_diskstat(TRX_SINGLE_DISKDEVICE_DATA *device)
 {
 	time_t		now;
-	zbx_uint64_t	dstat[TRX_DSTAT_MAX];
+	trx_uint64_t	dstat[TRX_DSTAT_MAX];
 
 	now = time(NULL);
 	if (FAIL == get_diskstat(device->name, dstat))
@@ -178,7 +178,7 @@ TRX_SINGLE_DISKDEVICE_DATA	*collector_diskdevice_add(const char *devname)
 
 	device = &(diskdevices->device[diskdevices->count]);
 	memset(device, 0, sizeof(TRX_SINGLE_DISKDEVICE_DATA));
-	zbx_strlcpy(device->name, devname, sizeof(device->name));
+	trx_strlcpy(device->name, devname, sizeof(device->name));
 	device->index = -1;
 	device->ticks_since_polled = 0;
 	(diskdevices->count)++;

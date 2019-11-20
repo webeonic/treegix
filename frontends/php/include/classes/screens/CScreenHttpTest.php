@@ -56,7 +56,7 @@ class CScreenHttpTest extends CScreenBase {
 				$options['hostids'] = [$this->hostid];
 			}
 			elseif ($this->groupid) {
-				$options['groupids'] = zbx_toArray($this->groupid);
+				$options['groupids'] = trx_toArray($this->groupid);
 			}
 
 			$httptests = API::HttpTest()->get($options);
@@ -104,7 +104,7 @@ class CScreenHttpTest extends CScreenBase {
 
 		foreach ($httptests as $httptest) {
 			if (array_key_exists('lastfailedstep', $httptest) && $httptest['lastfailedstep'] !== null) {
-				$lastcheck = zbx_date2str(DATE_TIME_FORMAT_SECONDS, $httptest['lastcheck']);
+				$lastcheck = trx_date2str(DATE_TIME_FORMAT_SECONDS, $httptest['lastcheck']);
 
 				if ($httptest['lastfailedstep'] != 0) {
 					$httpstep = get_httpstep_by_no($httptest['httptestid'], $httptest['lastfailedstep']);

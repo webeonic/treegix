@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxdiscoverer_a_AR = $(AR) $(ARFLAGS)
-libzbxdiscoverer_a_LIBADD =
-am_libzbxdiscoverer_a_OBJECTS = discoverer.$(OBJEXT)
-libzbxdiscoverer_a_OBJECTS = $(am_libzbxdiscoverer_a_OBJECTS)
+libtrxdiscoverer_a_AR = $(AR) $(ARFLAGS)
+libtrxdiscoverer_a_LIBADD =
+am_libtrxdiscoverer_a_OBJECTS = discoverer.$(OBJEXT)
+libtrxdiscoverer_a_OBJECTS = $(am_libtrxdiscoverer_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxdiscoverer_a_SOURCES)
-DIST_SOURCES = $(libzbxdiscoverer_a_SOURCES)
+SOURCES = $(libtrxdiscoverer_a_SOURCES)
+DIST_SOURCES = $(libtrxdiscoverer_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxdiscoverer.a
-libzbxdiscoverer_a_SOURCES = discoverer.c discoverer.h
+noinst_LIBRARIES = libtrxdiscoverer.a
+libtrxdiscoverer_a_SOURCES = discoverer.c discoverer.h
 all: all-am
 
 .SUFFIXES:
@@ -413,10 +413,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxdiscoverer.a: $(libzbxdiscoverer_a_OBJECTS) $(libzbxdiscoverer_a_DEPENDENCIES) $(EXTRA_libzbxdiscoverer_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxdiscoverer.a
-	$(AM_V_AR)$(libzbxdiscoverer_a_AR) libzbxdiscoverer.a $(libzbxdiscoverer_a_OBJECTS) $(libzbxdiscoverer_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxdiscoverer.a
+libtrxdiscoverer.a: $(libtrxdiscoverer_a_OBJECTS) $(libtrxdiscoverer_a_DEPENDENCIES) $(EXTRA_libtrxdiscoverer_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxdiscoverer.a
+	$(AM_V_AR)$(libtrxdiscoverer_a_AR) libtrxdiscoverer.a $(libtrxdiscoverer_a_OBJECTS) $(libtrxdiscoverer_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxdiscoverer.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

@@ -48,7 +48,7 @@ class CScreenHttpTestDetails extends CScreenBase {
 			' FROM items i,httpstepitem hi,httpstep hs'.
 			' WHERE hi.itemid=i.itemid'.
 				' AND hi.httpstepid=hs.httpstepid'.
-				' AND hs.httptestid='.zbx_dbstr($httptest['httptestid'])
+				' AND hs.httptestid='.trx_dbstr($httptest['httptestid'])
 		));
 
 		$step_items = [];

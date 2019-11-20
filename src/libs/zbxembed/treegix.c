@@ -1,8 +1,8 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxjson.h"
-#include "zbxembed.h"
+#include "trxjson.h"
+#include "trxembed.h"
 #include "embed.h"
 #include "duktape.h"
 #include "treegix.h"
@@ -73,17 +73,17 @@ static int	es_treegix_create_object(duk_context *ctx)
 	return SUCCEED;
 }
 
-int	zbx_es_init_treegix(zbx_es_t *es, char **error)
+int	trx_es_init_treegix(trx_es_t *es, char **error)
 {
 	if (0 != setjmp(es->env->loc))
 	{
-		*error = zbx_strdup(*error, es->env->error);
+		*error = trx_strdup(*error, es->env->error);
 		return FAIL;
 	}
 
 	if (FAIL == es_treegix_create_object(es->env->ctx))
 	{
-		*error = zbx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
+		*error = trx_strdup(*error, duk_safe_to_string(es->env->ctx, -1));
 		duk_pop(es->env->ctx);
 		return FAIL;
 	}

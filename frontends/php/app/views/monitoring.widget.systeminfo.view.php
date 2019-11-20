@@ -4,7 +4,7 @@
 
 $output = [
 	'header' => $data['name'],
-	'body' => make_status_of_zbx()->toString()
+	'body' => make_status_of_trx()->toString()
 ];
 
 if (($messages = getMessages()) !== null) {

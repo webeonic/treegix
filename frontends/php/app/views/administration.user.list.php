@@ -89,9 +89,9 @@ foreach ($data['users'] as $user) {
 
 		$online = ($session['status'] == TRX_SESSION_ACTIVE && $user['users_status'] == GROUP_STATUS_ENABLED
 				&& ($session['lastaccess'] + $online_time) >= time())
-			? (new CCol(_('Yes').' ('.zbx_date2str(DATE_TIME_FORMAT_SECONDS, $session['lastaccess']).')'))
+			? (new CCol(_('Yes').' ('.trx_date2str(DATE_TIME_FORMAT_SECONDS, $session['lastaccess']).')'))
 				->addClass(TRX_STYLE_GREEN)
-			: (new CCol(_('No').' ('.zbx_date2str(DATE_TIME_FORMAT_SECONDS, $session['lastaccess']).')'))
+			: (new CCol(_('No').' ('.trx_date2str(DATE_TIME_FORMAT_SECONDS, $session['lastaccess']).')'))
 				->addClass(TRX_STYLE_RED);
 	}
 	else {

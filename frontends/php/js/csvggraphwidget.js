@@ -6,7 +6,7 @@
  *
  * @param {string} hook_name - trigger name.
  */
-function zbx_svggraph_widget_trigger(hook_name) {
+function trx_svggraph_widget_trigger(hook_name) {
 	var grid = Array.prototype.slice.call(arguments, -1),
 		grid = grid.length ? grid[0] : null;
 

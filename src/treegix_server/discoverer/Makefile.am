@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxdiscoverer.a
+noinst_LIBRARIES = libtrxdiscoverer.a
 
-libzbxdiscoverer_a_SOURCES = discoverer.c discoverer.h
+libtrxdiscoverer_a_SOURCES = discoverer.c discoverer.h

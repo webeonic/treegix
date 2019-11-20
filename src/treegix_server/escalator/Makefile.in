@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxescalator_a_AR = $(AR) $(ARFLAGS)
-libzbxescalator_a_LIBADD =
-am_libzbxescalator_a_OBJECTS = escalator.$(OBJEXT)
-libzbxescalator_a_OBJECTS = $(am_libzbxescalator_a_OBJECTS)
+libtrxescalator_a_AR = $(AR) $(ARFLAGS)
+libtrxescalator_a_LIBADD =
+am_libtrxescalator_a_OBJECTS = escalator.$(OBJEXT)
+libtrxescalator_a_OBJECTS = $(am_libtrxescalator_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxescalator_a_SOURCES)
-DIST_SOURCES = $(libzbxescalator_a_SOURCES)
+SOURCES = $(libtrxescalator_a_SOURCES)
+DIST_SOURCES = $(libtrxescalator_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxescalator.a
-libzbxescalator_a_SOURCES = escalator.c escalator.h
+noinst_LIBRARIES = libtrxescalator.a
+libtrxescalator_a_SOURCES = escalator.c escalator.h
 all: all-am
 
 .SUFFIXES:
@@ -413,10 +413,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxescalator.a: $(libzbxescalator_a_OBJECTS) $(libzbxescalator_a_DEPENDENCIES) $(EXTRA_libzbxescalator_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxescalator.a
-	$(AM_V_AR)$(libzbxescalator_a_AR) libzbxescalator.a $(libzbxescalator_a_OBJECTS) $(libzbxescalator_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxescalator.a
+libtrxescalator.a: $(libtrxescalator_a_OBJECTS) $(libtrxescalator_a_DEPENDENCIES) $(EXTRA_libtrxescalator_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxescalator.a
+	$(AM_V_AR)$(libtrxescalator_a_AR) libtrxescalator.a $(libtrxescalator_a_OBJECTS) $(libtrxescalator_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxescalator.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxdbcache
+subdir = src/libs/trxdbcache
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,15 +117,15 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxdbcache_a_AR = $(AR) $(ARFLAGS)
-libzbxdbcache_a_LIBADD =
-am_libzbxdbcache_a_OBJECTS = libzbxdbcache_a-dbcache.$(OBJEXT) \
-	libzbxdbcache_a-dbconfig.$(OBJEXT) \
-	libzbxdbcache_a-dbsync.$(OBJEXT) \
-	libzbxdbcache_a-valuecache.$(OBJEXT) \
-	libzbxdbcache_a-dbconfig_dump.$(OBJEXT) \
-	libzbxdbcache_a-dbconfig_maintenance.$(OBJEXT)
-libzbxdbcache_a_OBJECTS = $(am_libzbxdbcache_a_OBJECTS)
+libtrxdbcache_a_AR = $(AR) $(ARFLAGS)
+libtrxdbcache_a_LIBADD =
+am_libtrxdbcache_a_OBJECTS = libtrxdbcache_a-dbcache.$(OBJEXT) \
+	libtrxdbcache_a-dbconfig.$(OBJEXT) \
+	libtrxdbcache_a-dbsync.$(OBJEXT) \
+	libtrxdbcache_a-valuecache.$(OBJEXT) \
+	libtrxdbcache_a-dbconfig_dump.$(OBJEXT) \
+	libtrxdbcache_a-dbconfig_maintenance.$(OBJEXT)
+libtrxdbcache_a_OBJECTS = $(am_libtrxdbcache_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -158,8 +158,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxdbcache_a_SOURCES)
-DIST_SOURCES = $(libzbxdbcache_a_SOURCES)
+SOURCES = $(libtrxdbcache_a_SOURCES)
+DIST_SOURCES = $(libtrxdbcache_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -383,8 +383,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxdbcache.a
-libzbxdbcache_a_SOURCES = \
+noinst_LIBRARIES = libtrxdbcache.a
+libtrxdbcache_a_SOURCES = \
 	dbcache.c \
 	dbconfig.c \
 	dbconfig.h \
@@ -395,9 +395,9 @@ libzbxdbcache_a_SOURCES = \
 	dbconfig_dump.c \
 	dbconfig_maintenance.c
 
-libzbxdbcache_a_CFLAGS = \
+libtrxdbcache_a_CFLAGS = \
 	-I@top_srcdir@/src/treegix_server/ \
-	-I@top_srcdir@/src/libs/zbxalgo \
+	-I@top_srcdir@/src/libs/trxalgo \
 	$(TEST_FLAGS)
 
 all: all-am
@@ -413,9 +413,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxdbcache/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxdbcache/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxdbcache/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxdbcache/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -437,10 +437,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxdbcache.a: $(libzbxdbcache_a_OBJECTS) $(libzbxdbcache_a_DEPENDENCIES) $(EXTRA_libzbxdbcache_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxdbcache.a
-	$(AM_V_AR)$(libzbxdbcache_a_AR) libzbxdbcache.a $(libzbxdbcache_a_OBJECTS) $(libzbxdbcache_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxdbcache.a
+libtrxdbcache.a: $(libtrxdbcache_a_OBJECTS) $(libtrxdbcache_a_DEPENDENCIES) $(EXTRA_libtrxdbcache_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxdbcache.a
+	$(AM_V_AR)$(libtrxdbcache_a_AR) libtrxdbcache.a $(libtrxdbcache_a_OBJECTS) $(libtrxdbcache_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxdbcache.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -448,12 +448,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbcache_a-dbcache.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbcache_a-dbconfig.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbcache_a-dbconfig_dump.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbcache_a-dbconfig_maintenance.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbcache_a-dbsync.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbcache_a-valuecache.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbcache_a-dbcache.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbcache_a-dbconfig.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbcache_a-dbconfig_dump.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbcache_a-dbconfig_maintenance.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbcache_a-dbsync.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbcache_a-valuecache.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -471,89 +471,89 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxdbcache_a-dbcache.o: dbcache.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbcache.o -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbcache.Tpo -c -o libzbxdbcache_a-dbcache.o `test -f 'dbcache.c' || echo '$(srcdir)/'`dbcache.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbcache.Tpo $(DEPDIR)/libzbxdbcache_a-dbcache.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbcache.c' object='libzbxdbcache_a-dbcache.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbcache.o: dbcache.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbcache.o -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbcache.Tpo -c -o libtrxdbcache_a-dbcache.o `test -f 'dbcache.c' || echo '$(srcdir)/'`dbcache.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbcache.Tpo $(DEPDIR)/libtrxdbcache_a-dbcache.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbcache.c' object='libtrxdbcache_a-dbcache.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbcache.o `test -f 'dbcache.c' || echo '$(srcdir)/'`dbcache.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbcache.o `test -f 'dbcache.c' || echo '$(srcdir)/'`dbcache.c
 
-libzbxdbcache_a-dbcache.obj: dbcache.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbcache.obj -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbcache.Tpo -c -o libzbxdbcache_a-dbcache.obj `if test -f 'dbcache.c'; then $(CYGPATH_W) 'dbcache.c'; else $(CYGPATH_W) '$(srcdir)/dbcache.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbcache.Tpo $(DEPDIR)/libzbxdbcache_a-dbcache.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbcache.c' object='libzbxdbcache_a-dbcache.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbcache.obj: dbcache.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbcache.obj -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbcache.Tpo -c -o libtrxdbcache_a-dbcache.obj `if test -f 'dbcache.c'; then $(CYGPATH_W) 'dbcache.c'; else $(CYGPATH_W) '$(srcdir)/dbcache.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbcache.Tpo $(DEPDIR)/libtrxdbcache_a-dbcache.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbcache.c' object='libtrxdbcache_a-dbcache.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbcache.obj `if test -f 'dbcache.c'; then $(CYGPATH_W) 'dbcache.c'; else $(CYGPATH_W) '$(srcdir)/dbcache.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbcache.obj `if test -f 'dbcache.c'; then $(CYGPATH_W) 'dbcache.c'; else $(CYGPATH_W) '$(srcdir)/dbcache.c'; fi`
 
-libzbxdbcache_a-dbconfig.o: dbconfig.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbconfig.o -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbconfig.Tpo -c -o libzbxdbcache_a-dbconfig.o `test -f 'dbconfig.c' || echo '$(srcdir)/'`dbconfig.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbconfig.Tpo $(DEPDIR)/libzbxdbcache_a-dbconfig.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig.c' object='libzbxdbcache_a-dbconfig.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbconfig.o: dbconfig.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbconfig.o -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbconfig.Tpo -c -o libtrxdbcache_a-dbconfig.o `test -f 'dbconfig.c' || echo '$(srcdir)/'`dbconfig.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbconfig.Tpo $(DEPDIR)/libtrxdbcache_a-dbconfig.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig.c' object='libtrxdbcache_a-dbconfig.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbconfig.o `test -f 'dbconfig.c' || echo '$(srcdir)/'`dbconfig.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbconfig.o `test -f 'dbconfig.c' || echo '$(srcdir)/'`dbconfig.c
 
-libzbxdbcache_a-dbconfig.obj: dbconfig.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbconfig.obj -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbconfig.Tpo -c -o libzbxdbcache_a-dbconfig.obj `if test -f 'dbconfig.c'; then $(CYGPATH_W) 'dbconfig.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbconfig.Tpo $(DEPDIR)/libzbxdbcache_a-dbconfig.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig.c' object='libzbxdbcache_a-dbconfig.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbconfig.obj: dbconfig.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbconfig.obj -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbconfig.Tpo -c -o libtrxdbcache_a-dbconfig.obj `if test -f 'dbconfig.c'; then $(CYGPATH_W) 'dbconfig.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbconfig.Tpo $(DEPDIR)/libtrxdbcache_a-dbconfig.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig.c' object='libtrxdbcache_a-dbconfig.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbconfig.obj `if test -f 'dbconfig.c'; then $(CYGPATH_W) 'dbconfig.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbconfig.obj `if test -f 'dbconfig.c'; then $(CYGPATH_W) 'dbconfig.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig.c'; fi`
 
-libzbxdbcache_a-dbsync.o: dbsync.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbsync.o -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbsync.Tpo -c -o libzbxdbcache_a-dbsync.o `test -f 'dbsync.c' || echo '$(srcdir)/'`dbsync.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbsync.Tpo $(DEPDIR)/libzbxdbcache_a-dbsync.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbsync.c' object='libzbxdbcache_a-dbsync.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbsync.o: dbsync.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbsync.o -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbsync.Tpo -c -o libtrxdbcache_a-dbsync.o `test -f 'dbsync.c' || echo '$(srcdir)/'`dbsync.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbsync.Tpo $(DEPDIR)/libtrxdbcache_a-dbsync.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbsync.c' object='libtrxdbcache_a-dbsync.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbsync.o `test -f 'dbsync.c' || echo '$(srcdir)/'`dbsync.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbsync.o `test -f 'dbsync.c' || echo '$(srcdir)/'`dbsync.c
 
-libzbxdbcache_a-dbsync.obj: dbsync.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbsync.obj -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbsync.Tpo -c -o libzbxdbcache_a-dbsync.obj `if test -f 'dbsync.c'; then $(CYGPATH_W) 'dbsync.c'; else $(CYGPATH_W) '$(srcdir)/dbsync.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbsync.Tpo $(DEPDIR)/libzbxdbcache_a-dbsync.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbsync.c' object='libzbxdbcache_a-dbsync.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbsync.obj: dbsync.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbsync.obj -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbsync.Tpo -c -o libtrxdbcache_a-dbsync.obj `if test -f 'dbsync.c'; then $(CYGPATH_W) 'dbsync.c'; else $(CYGPATH_W) '$(srcdir)/dbsync.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbsync.Tpo $(DEPDIR)/libtrxdbcache_a-dbsync.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbsync.c' object='libtrxdbcache_a-dbsync.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbsync.obj `if test -f 'dbsync.c'; then $(CYGPATH_W) 'dbsync.c'; else $(CYGPATH_W) '$(srcdir)/dbsync.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbsync.obj `if test -f 'dbsync.c'; then $(CYGPATH_W) 'dbsync.c'; else $(CYGPATH_W) '$(srcdir)/dbsync.c'; fi`
 
-libzbxdbcache_a-valuecache.o: valuecache.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-valuecache.o -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-valuecache.Tpo -c -o libzbxdbcache_a-valuecache.o `test -f 'valuecache.c' || echo '$(srcdir)/'`valuecache.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-valuecache.Tpo $(DEPDIR)/libzbxdbcache_a-valuecache.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='valuecache.c' object='libzbxdbcache_a-valuecache.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-valuecache.o: valuecache.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-valuecache.o -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-valuecache.Tpo -c -o libtrxdbcache_a-valuecache.o `test -f 'valuecache.c' || echo '$(srcdir)/'`valuecache.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-valuecache.Tpo $(DEPDIR)/libtrxdbcache_a-valuecache.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='valuecache.c' object='libtrxdbcache_a-valuecache.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-valuecache.o `test -f 'valuecache.c' || echo '$(srcdir)/'`valuecache.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-valuecache.o `test -f 'valuecache.c' || echo '$(srcdir)/'`valuecache.c
 
-libzbxdbcache_a-valuecache.obj: valuecache.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-valuecache.obj -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-valuecache.Tpo -c -o libzbxdbcache_a-valuecache.obj `if test -f 'valuecache.c'; then $(CYGPATH_W) 'valuecache.c'; else $(CYGPATH_W) '$(srcdir)/valuecache.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-valuecache.Tpo $(DEPDIR)/libzbxdbcache_a-valuecache.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='valuecache.c' object='libzbxdbcache_a-valuecache.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-valuecache.obj: valuecache.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-valuecache.obj -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-valuecache.Tpo -c -o libtrxdbcache_a-valuecache.obj `if test -f 'valuecache.c'; then $(CYGPATH_W) 'valuecache.c'; else $(CYGPATH_W) '$(srcdir)/valuecache.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-valuecache.Tpo $(DEPDIR)/libtrxdbcache_a-valuecache.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='valuecache.c' object='libtrxdbcache_a-valuecache.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-valuecache.obj `if test -f 'valuecache.c'; then $(CYGPATH_W) 'valuecache.c'; else $(CYGPATH_W) '$(srcdir)/valuecache.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-valuecache.obj `if test -f 'valuecache.c'; then $(CYGPATH_W) 'valuecache.c'; else $(CYGPATH_W) '$(srcdir)/valuecache.c'; fi`
 
-libzbxdbcache_a-dbconfig_dump.o: dbconfig_dump.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbconfig_dump.o -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbconfig_dump.Tpo -c -o libzbxdbcache_a-dbconfig_dump.o `test -f 'dbconfig_dump.c' || echo '$(srcdir)/'`dbconfig_dump.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbconfig_dump.Tpo $(DEPDIR)/libzbxdbcache_a-dbconfig_dump.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig_dump.c' object='libzbxdbcache_a-dbconfig_dump.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbconfig_dump.o: dbconfig_dump.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbconfig_dump.o -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbconfig_dump.Tpo -c -o libtrxdbcache_a-dbconfig_dump.o `test -f 'dbconfig_dump.c' || echo '$(srcdir)/'`dbconfig_dump.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbconfig_dump.Tpo $(DEPDIR)/libtrxdbcache_a-dbconfig_dump.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig_dump.c' object='libtrxdbcache_a-dbconfig_dump.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbconfig_dump.o `test -f 'dbconfig_dump.c' || echo '$(srcdir)/'`dbconfig_dump.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbconfig_dump.o `test -f 'dbconfig_dump.c' || echo '$(srcdir)/'`dbconfig_dump.c
 
-libzbxdbcache_a-dbconfig_dump.obj: dbconfig_dump.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbconfig_dump.obj -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbconfig_dump.Tpo -c -o libzbxdbcache_a-dbconfig_dump.obj `if test -f 'dbconfig_dump.c'; then $(CYGPATH_W) 'dbconfig_dump.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig_dump.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbconfig_dump.Tpo $(DEPDIR)/libzbxdbcache_a-dbconfig_dump.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig_dump.c' object='libzbxdbcache_a-dbconfig_dump.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbconfig_dump.obj: dbconfig_dump.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbconfig_dump.obj -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbconfig_dump.Tpo -c -o libtrxdbcache_a-dbconfig_dump.obj `if test -f 'dbconfig_dump.c'; then $(CYGPATH_W) 'dbconfig_dump.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig_dump.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbconfig_dump.Tpo $(DEPDIR)/libtrxdbcache_a-dbconfig_dump.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig_dump.c' object='libtrxdbcache_a-dbconfig_dump.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbconfig_dump.obj `if test -f 'dbconfig_dump.c'; then $(CYGPATH_W) 'dbconfig_dump.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig_dump.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbconfig_dump.obj `if test -f 'dbconfig_dump.c'; then $(CYGPATH_W) 'dbconfig_dump.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig_dump.c'; fi`
 
-libzbxdbcache_a-dbconfig_maintenance.o: dbconfig_maintenance.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbconfig_maintenance.o -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbconfig_maintenance.Tpo -c -o libzbxdbcache_a-dbconfig_maintenance.o `test -f 'dbconfig_maintenance.c' || echo '$(srcdir)/'`dbconfig_maintenance.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbconfig_maintenance.Tpo $(DEPDIR)/libzbxdbcache_a-dbconfig_maintenance.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig_maintenance.c' object='libzbxdbcache_a-dbconfig_maintenance.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbconfig_maintenance.o: dbconfig_maintenance.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbconfig_maintenance.o -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbconfig_maintenance.Tpo -c -o libtrxdbcache_a-dbconfig_maintenance.o `test -f 'dbconfig_maintenance.c' || echo '$(srcdir)/'`dbconfig_maintenance.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbconfig_maintenance.Tpo $(DEPDIR)/libtrxdbcache_a-dbconfig_maintenance.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig_maintenance.c' object='libtrxdbcache_a-dbconfig_maintenance.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbconfig_maintenance.o `test -f 'dbconfig_maintenance.c' || echo '$(srcdir)/'`dbconfig_maintenance.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbconfig_maintenance.o `test -f 'dbconfig_maintenance.c' || echo '$(srcdir)/'`dbconfig_maintenance.c
 
-libzbxdbcache_a-dbconfig_maintenance.obj: dbconfig_maintenance.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -MT libzbxdbcache_a-dbconfig_maintenance.obj -MD -MP -MF $(DEPDIR)/libzbxdbcache_a-dbconfig_maintenance.Tpo -c -o libzbxdbcache_a-dbconfig_maintenance.obj `if test -f 'dbconfig_maintenance.c'; then $(CYGPATH_W) 'dbconfig_maintenance.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig_maintenance.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbcache_a-dbconfig_maintenance.Tpo $(DEPDIR)/libzbxdbcache_a-dbconfig_maintenance.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig_maintenance.c' object='libzbxdbcache_a-dbconfig_maintenance.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbcache_a-dbconfig_maintenance.obj: dbconfig_maintenance.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -MT libtrxdbcache_a-dbconfig_maintenance.obj -MD -MP -MF $(DEPDIR)/libtrxdbcache_a-dbconfig_maintenance.Tpo -c -o libtrxdbcache_a-dbconfig_maintenance.obj `if test -f 'dbconfig_maintenance.c'; then $(CYGPATH_W) 'dbconfig_maintenance.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig_maintenance.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbcache_a-dbconfig_maintenance.Tpo $(DEPDIR)/libtrxdbcache_a-dbconfig_maintenance.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbconfig_maintenance.c' object='libtrxdbcache_a-dbconfig_maintenance.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbcache_a_CFLAGS) $(CFLAGS) -c -o libzbxdbcache_a-dbconfig_maintenance.obj `if test -f 'dbconfig_maintenance.c'; then $(CYGPATH_W) 'dbconfig_maintenance.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig_maintenance.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbcache_a_CFLAGS) $(CFLAGS) -c -o libtrxdbcache_a-dbconfig_maintenance.obj `if test -f 'dbconfig_maintenance.c'; then $(CYGPATH_W) 'dbconfig_maintenance.c'; else $(CYGPATH_W) '$(srcdir)/dbconfig_maintenance.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

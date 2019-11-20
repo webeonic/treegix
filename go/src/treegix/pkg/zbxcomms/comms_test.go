@@ -1,6 +1,6 @@
 
 
-package zbxcomms
+package trxcomms
 
 import (
 	"bytes"

@@ -12,7 +12,7 @@ $page['type'] = PAGE_TYPE_JSON;
 require_once dirname(__FILE__).'/include/page_header.php';
 
 $severity_min = getRequest('severity_min');
-if (!zbx_ctype_digit($severity_min)) {
+if (!trx_ctype_digit($severity_min)) {
 	$severity_min = null;
 }
 $map_data = CMapHelper::get(getRequest('sysmapid'), ['severity_min' => $severity_min]);

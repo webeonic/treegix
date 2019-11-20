@@ -40,9 +40,9 @@ if (array_key_exists('db_pservices', $data)) {
 	else {
 		$description = (new CLink(_('root'), '#'))
 			->onClick('javascript:
-				jQuery(\'#parent_name\', window.document).val('.zbx_jsvalue(_('root')).');
-				jQuery(\'#parentname\', window.document).val('.zbx_jsvalue(_('root')).');
-				jQuery(\'#parentid\', window.document).val('.zbx_jsvalue(0).');'.
+				jQuery(\'#parent_name\', window.document).val('.trx_jsvalue(_('root')).');
+				jQuery(\'#parentname\', window.document).val('.trx_jsvalue(_('root')).');
+				jQuery(\'#parentid\', window.document).val('.trx_jsvalue(0).');'.
 				$js_action_onclick
 			);
 	}
@@ -57,9 +57,9 @@ if (array_key_exists('db_pservices', $data)) {
 			$description = (new CLink($db_service['name'], '#'))
 				->addClass('link')
 				->onClick('javascript:
-					jQuery(\'#parent_name\', window.document).val('.zbx_jsvalue($db_service['name']).');
-					jQuery(\'#parentname\', window.document).val('.zbx_jsvalue($db_service['name']).');
-					jQuery(\'#parentid\', window.document).val('.zbx_jsvalue($db_service['serviceid']).');'.
+					jQuery(\'#parent_name\', window.document).val('.trx_jsvalue($db_service['name']).');
+					jQuery(\'#parentname\', window.document).val('.trx_jsvalue($db_service['name']).');
+					jQuery(\'#parentid\', window.document).val('.trx_jsvalue($db_service['serviceid']).');'.
 					$js_action_onclick
 				);
 		}

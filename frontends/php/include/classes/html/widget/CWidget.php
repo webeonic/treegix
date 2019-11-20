@@ -28,7 +28,7 @@ class CWidget {
 	}
 
 	public function setControls($controls) {
-		zbx_value2array($controls);
+		trx_value2array($controls);
 		$this->controls = $controls;
 
 		return $this;

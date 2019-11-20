@@ -16,7 +16,7 @@ $filterColumn->addRow(_('Recipient'), [
 			CJs::encodeJson([
 				'srctbl' => 'users',
 				'srcfld1' => 'alias',
-				'dstfrm' => 'zbx_filter',
+				'dstfrm' => 'trx_filter',
 				'dstfld1' => 'alias'
 			]).', null, this);'
 		)
@@ -73,12 +73,12 @@ foreach ($this->data['alerts'] as $alert) {
 			BR(),
 			bold(_('Message').':'),
 			BR(),
-			zbx_nl2br($alert['message'])
+			trx_nl2br($alert['message'])
 		]
 		: [
 			bold(_('Command').':'),
 			BR(),
-			zbx_nl2br($alert['message'])
+			trx_nl2br($alert['message'])
 		];
 
 	$info_icons = [];
@@ -88,10 +88,10 @@ foreach ($this->data['alerts'] as $alert) {
 
 	$recipient = (isset($alert['userid']) && $alert['userid'])
 		? makeEventDetailsTableUser($alert + ['action_type' => TRX_EVENT_HISTORY_ALERT], $data['users'])
-		: zbx_nl2br($alert['sendto']);
+		: trx_nl2br($alert['sendto']);
 
 	$auditTable->addRow([
-		zbx_date2str(DATE_TIME_FORMAT_SECONDS, $alert['clock']),
+		trx_date2str(DATE_TIME_FORMAT_SECONDS, $alert['clock']),
 		$this->data['actions'][$alert['actionid']]['name'],
 		($mediatype) ? $mediatype['name'] : '',
 		$recipient,
@@ -113,8 +113,8 @@ $objData = [
 	'dynamic' => 0,
 	'mainObject' => 1
 ];
-zbx_add_post_js('timeControl.addObject("events", '.zbx_jsvalue($data['timeline']).', '.zbx_jsvalue($objData).');');
-zbx_add_post_js('timeControl.processObjects();');
+trx_add_post_js('timeControl.addObject("events", '.trx_jsvalue($data['timeline']).', '.trx_jsvalue($objData).');');
+trx_add_post_js('timeControl.processObjects();');
 
 // append form to widget
 $auditWidget->addItem($auditForm);

@@ -71,7 +71,7 @@ class CWebUser {
 			}
 
 			// remove guest session after successful login
-			$result &= DBexecute('DELETE FROM sessions WHERE sessionid='.zbx_dbstr(get_cookie(TRX_SESSION_NAME)));
+			$result &= DBexecute('DELETE FROM sessions WHERE sessionid='.trx_dbstr(get_cookie(TRX_SESSION_NAME)));
 
 			if ($result) {
 				self::setSessionCookie(self::$data['sessionid']);
@@ -94,7 +94,7 @@ class CWebUser {
 		if (API::User()->logout([])) {
 			self::$data = null;
 			CSession::destroy();
-			zbx_unsetcookie(TRX_SESSION_NAME);
+			trx_unsetcookie(TRX_SESSION_NAME);
 		}
 	}
 
@@ -149,7 +149,7 @@ class CWebUser {
 	public static function setSessionCookie($sessionId) {
 		$autoLogin = self::isGuest() ? false : (bool) self::$data['autologin'];
 
-		zbx_setcookie(TRX_SESSION_NAME, $sessionId,  $autoLogin ? strtotime('+1 month') : 0);
+		trx_setcookie(TRX_SESSION_NAME, $sessionId,  $autoLogin ? strtotime('+1 month') : 0);
 	}
 
 	/**

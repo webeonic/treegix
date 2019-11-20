@@ -11,8 +11,8 @@ struct pst_dynamic	pdy;
 														\
 	if (-1 == pstat_getstatic(&pst, sizeof(pst), 1, 0))							\
 	{													\
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain static system information: %s",	\
-				zbx_strerror(errno)));								\
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain static system information: %s",	\
+				trx_strerror(errno)));								\
 		return SYSINFO_RET_FAIL;									\
 	}
 
@@ -20,8 +20,8 @@ struct pst_dynamic	pdy;
 														\
 	if (-1 == pstat_getdynamic(&pdy, sizeof(pdy), 1, 0))							\
 	{													\
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain dynamic system information: %s",	\
-				zbx_strerror(errno)));								\
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain dynamic system information: %s",	\
+				trx_strerror(errno)));								\
 		return SYSINFO_RET_FAIL;									\
 	}
 
@@ -29,7 +29,7 @@ static int	VM_MEMORY_TOTAL(AGENT_RESULT *result)
 {
 	TRX_PSTAT_GETSTATIC();
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)pst.physical_memory * pst.page_size);
+	SET_UI64_RESULT(result, (trx_uint64_t)pst.physical_memory * pst.page_size);
 
 	return SYSINFO_RET_OK;
 }
@@ -39,7 +39,7 @@ static int	VM_MEMORY_FREE(AGENT_RESULT *result)
 	TRX_PSTAT_GETSTATIC();
 	TRX_PSTAT_GETDYNAMIC();
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)pdy.psd_free * pst.page_size);
+	SET_UI64_RESULT(result, (trx_uint64_t)pdy.psd_free * pst.page_size);
 
 	return SYSINFO_RET_OK;
 }
@@ -49,7 +49,7 @@ static int	VM_MEMORY_ACTIVE(AGENT_RESULT *result)
 	TRX_PSTAT_GETSTATIC();
 	TRX_PSTAT_GETDYNAMIC();
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)pdy.psd_arm * pst.page_size);
+	SET_UI64_RESULT(result, (trx_uint64_t)pdy.psd_arm * pst.page_size);
 
 	return SYSINFO_RET_OK;
 }
@@ -59,7 +59,7 @@ static int	VM_MEMORY_USED(AGENT_RESULT *result)
 	TRX_PSTAT_GETSTATIC();
 	TRX_PSTAT_GETDYNAMIC();
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)(pst.physical_memory - pdy.psd_free) * pst.page_size);
+	SET_UI64_RESULT(result, (trx_uint64_t)(pst.physical_memory - pdy.psd_free) * pst.page_size);
 
 	return SYSINFO_RET_OK;
 }
@@ -71,7 +71,7 @@ static int	VM_MEMORY_PUSED(AGENT_RESULT *result)
 
 	if (0 == pst.physical_memory)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -85,7 +85,7 @@ static int	VM_MEMORY_AVAILABLE(AGENT_RESULT *result)
 	TRX_PSTAT_GETSTATIC();
 	TRX_PSTAT_GETDYNAMIC();
 
-	SET_UI64_RESULT(result, (zbx_uint64_t)pdy.psd_free * pst.page_size);
+	SET_UI64_RESULT(result, (trx_uint64_t)pdy.psd_free * pst.page_size);
 
 	return SYSINFO_RET_OK;
 }
@@ -97,7 +97,7 @@ static int	VM_MEMORY_PAVAILABLE(AGENT_RESULT *result)
 
 	if (0 == pst.physical_memory)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot calculate percentage because total is zero."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot calculate percentage because total is zero."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -113,7 +113,7 @@ int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -135,7 +135,7 @@ int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = VM_MEMORY_PAVAILABLE(result);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		ret = SYSINFO_RET_FAIL;
 	}
 

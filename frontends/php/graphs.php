@@ -65,10 +65,10 @@ if (!isset($percentVisible['percent_left'])) {
 if (!isset($percentVisible['percent_right'])) {
 	unset($_REQUEST['percent_right']);
 }
-if (isset($_REQUEST['yaxismin']) && zbx_empty($_REQUEST['yaxismin'])) {
+if (isset($_REQUEST['yaxismin']) && trx_empty($_REQUEST['yaxismin'])) {
 	unset($_REQUEST['yaxismin']);
 }
-if (isset($_REQUEST['yaxismax']) && zbx_empty($_REQUEST['yaxismax'])) {
+if (isset($_REQUEST['yaxismax']) && trx_empty($_REQUEST['yaxismax'])) {
 	unset($_REQUEST['yaxismax']);
 }
 check_fields($fields);
@@ -289,7 +289,7 @@ elseif (hasRequest('action') && getRequest('action') === 'graph.massdelete' && h
 				'editable' => true
 			]);
 
-			uncheckTableRows(getRequest('parent_discoveryid'), zbx_objectValues($graphs, 'graphid'));
+			uncheckTableRows(getRequest('parent_discoveryid'), trx_objectValues($graphs, 'graphid'));
 		}
 		show_messages($result, _('Graph prototypes deleted'), _('Cannot delete graph prototypes'));
 	}
@@ -306,7 +306,7 @@ elseif (hasRequest('action') && getRequest('action') === 'graph.massdelete' && h
 				'editable' => true
 			]);
 
-			uncheckTableRows($hostId, zbx_objectValues($graphs, 'graphid'));
+			uncheckTableRows($hostId, trx_objectValues($graphs, 'graphid'));
 		}
 		show_messages($result, _('Graphs deleted'), _('Cannot delete graphs'));
 	}
@@ -329,14 +329,14 @@ elseif (hasRequest('action') && getRequest('action') === 'graph.masscopyto' && h
 		// host groups
 		else {
 			$groupids = getRequest('copy_targetids');
-			zbx_value2array($groupids);
+			trx_value2array($groupids);
 
 			$dbGroups = API::HostGroup()->get([
 				'output' => ['groupid'],
 				'groupids' => $groupids,
 				'editable' => true
 			]);
-			$dbGroups = zbx_toHash($dbGroups, 'groupid');
+			$dbGroups = trx_toHash($dbGroups, 'groupid');
 
 			foreach ($groupids as $groupid) {
 				if (!isset($dbGroups[$groupid])) {
@@ -533,7 +533,7 @@ elseif (isset($_REQUEST['form'])) {
 		$items = API::Item()->get([
 			'output' => ['itemid', 'hostid', 'name', 'key_', 'flags'],
 			'selectHosts' => ['hostid', 'name'],
-			'itemids' => zbx_objectValues($data['items'], 'itemid'),
+			'itemids' => trx_objectValues($data['items'], 'itemid'),
 			'filter' => [
 				'flags' => [TRX_FLAG_DISCOVERY_NORMAL, TRX_FLAG_DISCOVERY_PROTOTYPE, TRX_FLAG_DISCOVERY_CREATED]
 			],
@@ -653,7 +653,7 @@ else {
 			'selectDiscoveryRule' => ['itemid', 'name'],
 			'selectHosts' => ($data['hostid'] == 0) ? ['name'] : null,
 			'selectTemplates' => ($data['hostid'] == 0) ? ['name'] : null,
-			'graphids' => zbx_objectValues($data['graphs'], 'graphid')
+			'graphids' => trx_objectValues($data['graphs'], 'graphid')
 		];
 
 		$data['graphs'] = hasRequest('parent_discoveryid')

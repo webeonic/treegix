@@ -6,19 +6,19 @@
 
 typedef struct
 {
-	zbx_uint64_t	nread;
-	zbx_uint64_t	nwritten;
-	zbx_uint64_t	reads;
-	zbx_uint64_t	writes;
+	trx_uint64_t	nread;
+	trx_uint64_t	nwritten;
+	trx_uint64_t	reads;
+	trx_uint64_t	writes;
 }
-zbx_kstat_t;
+trx_kstat_t;
 
-int	get_diskstat(const char *devname, zbx_uint64_t *dstat)
+int	get_diskstat(const char *devname, trx_uint64_t *dstat)
 {
 	return FAIL;
 }
 
-static int	get_kstat_io(const char *name, zbx_kstat_t *zk, char **error)
+static int	get_kstat_io(const char *name, trx_kstat_t *zk, char **error)
 {
 	int		ret = SYSINFO_RET_FAIL;
 	kstat_ctl_t	*kc;
@@ -27,7 +27,7 @@ static int	get_kstat_io(const char *name, zbx_kstat_t *zk, char **error)
 
 	if (NULL == (kc = kstat_open()))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot open kernel statistics facility: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot open kernel statistics facility: %s", trx_strerror(errno));
 		return ret;
 	}
 
@@ -35,22 +35,22 @@ static int	get_kstat_io(const char *name, zbx_kstat_t *zk, char **error)
 	{
 		if (NULL == (kt = kstat_lookup(kc, NULL, -1, (char *)name)))
 		{
-			*error = zbx_dsprintf(NULL, "Cannot look up in kernel statistics facility: %s",
-					zbx_strerror(errno));
+			*error = trx_dsprintf(NULL, "Cannot look up in kernel statistics facility: %s",
+					trx_strerror(errno));
 			goto clean;
 		}
 
 		if (KSTAT_TYPE_IO != kt->ks_type)
 		{
-			*error = zbx_strdup(NULL, "Information looked up in kernel statistics facility"
+			*error = trx_strdup(NULL, "Information looked up in kernel statistics facility"
 					" is of the wrong type.");
 			goto clean;
 		}
 
 		if (-1 == kstat_read(kc, kt, &kio))
 		{
-			*error = zbx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
-					zbx_strerror(errno));
+			*error = trx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
+					trx_strerror(errno));
 			goto clean;
 		}
 
@@ -69,8 +69,8 @@ static int	get_kstat_io(const char *name, zbx_kstat_t *zk, char **error)
 			{
 				if (-1 == kstat_read(kc, kt, &kio))
 				{
-					*error = zbx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
-							zbx_strerror(errno));
+					*error = trx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
+							trx_strerror(errno));
 					goto clean;
 				}
 
@@ -91,7 +91,7 @@ clean:
 
 static int	VFS_DEV_READ_BYTES(const char *devname, AGENT_RESULT *result)
 {
-	zbx_kstat_t	zk;
+	trx_kstat_t	zk;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_kstat_io(devname, &zk, &error))
@@ -107,7 +107,7 @@ static int	VFS_DEV_READ_BYTES(const char *devname, AGENT_RESULT *result)
 
 static int	VFS_DEV_READ_OPERATIONS(const char *devname, AGENT_RESULT *result)
 {
-	zbx_kstat_t	zk;
+	trx_kstat_t	zk;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_kstat_io(devname, &zk, &error))
@@ -123,7 +123,7 @@ static int	VFS_DEV_READ_OPERATIONS(const char *devname, AGENT_RESULT *result)
 
 static int	VFS_DEV_WRITE_BYTES(const char *devname, AGENT_RESULT *result)
 {
-	zbx_kstat_t	zk;
+	trx_kstat_t	zk;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_kstat_io(devname, &zk, &error))
@@ -139,7 +139,7 @@ static int	VFS_DEV_WRITE_BYTES(const char *devname, AGENT_RESULT *result)
 
 static int	VFS_DEV_WRITE_OPERATIONS(const char *devname, AGENT_RESULT *result)
 {
-	zbx_kstat_t	zk;
+	trx_kstat_t	zk;
 	char		*error;
 
 	if (SYSINFO_RET_OK != get_kstat_io(devname, &zk, &error))
@@ -160,7 +160,7 @@ static int	process_mode_function(AGENT_REQUEST *request, AGENT_RESULT *result, c
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -180,7 +180,7 @@ static int	process_mode_function(AGENT_REQUEST *request, AGENT_RESULT *result, c
 			return (fl[i].function)(devname, result);
 	}
 
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 
 	return SYSINFO_RET_FAIL;
 }

@@ -3,7 +3,7 @@
 #include "common.h"
 #include "threads.h"
 #include "log.h"
-#include "zbxexec.h"
+#include "trxexec.h"
 
 /* the size of temporary buffer used to read from output stream */
 #define PIPE_BUFFER_SIZE	4096
@@ -12,7 +12,7 @@
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_timediff_ms                                              *
+ * Function: trx_get_timediff_ms                                              *
  *                                                                            *
  * Purpose: considers a difference between times in milliseconds              *
  *                                                                            *
@@ -24,7 +24,7 @@
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_get_timediff_ms(struct _timeb *time1, struct _timeb *time2)
+static int	trx_get_timediff_ms(struct _timeb *time1, struct _timeb *time2)
 {
 	int	ms;
 
@@ -39,7 +39,7 @@ static int	zbx_get_timediff_ms(struct _timeb *time1, struct _timeb *time2)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_read_from_pipe                                               *
+ * Function: trx_read_from_pipe                                               *
  *                                                                            *
  * Purpose: read data from pipe                                               *
  *                                                                            *
@@ -54,7 +54,7 @@ static int	zbx_get_timediff_ms(struct _timeb *time1, struct _timeb *time2)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_read_from_pipe(HANDLE hRead, char **buf, size_t *buf_size, size_t *offset, int timeout_ms)
+static int	trx_read_from_pipe(HANDLE hRead, char **buf, size_t *buf_size, size_t *offset, int timeout_ms)
 {
 	DWORD		in_buf_size, read_bytes;
 	struct _timeb	start_time, current_time;
@@ -65,7 +65,7 @@ static int	zbx_read_from_pipe(HANDLE hRead, char **buf, size_t *buf_size, size_t
 	while (0 != PeekNamedPipe(hRead, NULL, 0, NULL, &in_buf_size, NULL))
 	{
 		_ftime(&current_time);
-		if (zbx_get_timediff_ms(&start_time, &current_time) >= timeout_ms)
+		if (trx_get_timediff_ms(&start_time, &current_time) >= timeout_ms)
 			return TIMEOUT_ERROR;
 
 		if (MAX_EXECUTE_OUTPUT_LEN <= *offset + in_buf_size)
@@ -87,7 +87,7 @@ static int	zbx_read_from_pipe(HANDLE hRead, char **buf, size_t *buf_size, size_t
 			if (NULL != buf)
 			{
 				tmp_buf[read_bytes] = '\0';
-				zbx_strcpy_alloc(buf, buf_size, offset, tmp_buf);
+				trx_strcpy_alloc(buf, buf_size, offset, tmp_buf);
 			}
 
 			in_buf_size = 0;
@@ -104,7 +104,7 @@ static int	zbx_read_from_pipe(HANDLE hRead, char **buf, size_t *buf_size, size_t
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_popen                                                        *
+ * Function: trx_popen                                                        *
  *                                                                            *
  * Purpose: this function opens a process by creating a pipe, forking,        *
  *          and invoking the shell                                            *
@@ -119,7 +119,7 @@ static int	zbx_read_from_pipe(HANDLE hRead, char **buf, size_t *buf_size, size_t
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_popen(pid_t *pid, const char *command)
+static int	trx_popen(pid_t *pid, const char *command)
 {
 	int	fd[2], stdout_orig, stderr_orig;
 
@@ -128,7 +128,7 @@ static int	zbx_popen(pid_t *pid, const char *command)
 	if (-1 == pipe(fd))
 		return -1;
 
-	if (-1 == (*pid = zbx_fork()))
+	if (-1 == (*pid = trx_fork()))
 	{
 		close(fd[0]);
 		close(fd[1]);
@@ -151,7 +151,7 @@ static int	zbx_popen(pid_t *pid, const char *command)
 	/* set the child as the process group leader, otherwise orphans may be left after timeout */
 	if (-1 == setpgid(0, 0))
 	{
-		treegix_log(LOG_LEVEL_ERR, "%s(): failed to create a process group: %s", __func__, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_ERR, "%s(): failed to create a process group: %s", __func__, trx_strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
@@ -180,7 +180,7 @@ static int	zbx_popen(pid_t *pid, const char *command)
 	close(stderr_orig);
 
 	/* this message may end up in stdout or stderr, that's why we needed to save and restore them */
-	treegix_log(LOG_LEVEL_WARNING, "execl() failed for [%s]: %s", command, zbx_strerror(errno));
+	treegix_log(LOG_LEVEL_WARNING, "execl() failed for [%s]: %s", command, trx_strerror(errno));
 
 	/* execl() returns only when an error occurs, let parent process know about it */
 	exit(EXIT_FAILURE);
@@ -188,7 +188,7 @@ static int	zbx_popen(pid_t *pid, const char *command)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_waitpid                                                      *
+ * Function: trx_waitpid                                                      *
  *                                                                            *
  * Purpose: this function waits for process to change state                   *
  *                                                                            *
@@ -201,7 +201,7 @@ static int	zbx_popen(pid_t *pid, const char *command)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_waitpid(pid_t pid, int *status)
+static int	trx_waitpid(pid_t pid, int *status)
 {
 	int	rc, result;
 
@@ -223,7 +223,7 @@ retry:
 		if (-1 == (rc = waitpid(pid, &result, WUNTRACED)))
 		{
 #endif
-			treegix_log(LOG_LEVEL_DEBUG, "%s() waitpid failure: %s", __func__, zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_DEBUG, "%s() waitpid failure: %s", __func__, trx_strerror(errno));
 			goto exit;
 		}
 
@@ -252,7 +252,7 @@ exit:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_execute                                                      *
+ * Function: trx_execute                                                      *
  *                                                                            *
  * Purpose: this function executes a script and returns result from stdout    *
  *                                                                            *
@@ -269,7 +269,7 @@ exit:
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_execute(const char *command, char **output, char *error, size_t max_error_len, int timeout,
+int	trx_execute(const char *command, char **output, char *error, size_t max_error_len, int timeout,
 		unsigned char flag)
 {
 	size_t			buf_size = PIPE_BUFFER_SIZE, offset = 0;
@@ -292,9 +292,9 @@ int	zbx_execute(const char *command, char **output, char *error, size_t max_erro
 	*error = '\0';
 
 	if (NULL != output)
-		zbx_free(*output);
+		trx_free(*output);
 
-	buffer = (char *)zbx_malloc(buffer, buf_size);
+	buffer = (char *)trx_malloc(buffer, buf_size);
 	*buffer = '\0';
 
 #ifdef _WINDOWS
@@ -307,14 +307,14 @@ int	zbx_execute(const char *command, char **output, char *error, size_t max_erro
 	/* create a pipe for the child process's STDOUT */
 	if (0 == CreatePipe(&hRead, &hWrite, &sa, 0))
 	{
-		zbx_snprintf(error, max_error_len, "unable to create a pipe: %s", strerror_from_system(GetLastError()));
+		trx_snprintf(error, max_error_len, "unable to create a pipe: %s", strerror_from_system(GetLastError()));
 		goto close;
 	}
 
 	/* create a new job where the script will be executed */
 	if (0 == (job = CreateJobObject(&sa, NULL)))
 	{
-		zbx_snprintf(error, max_error_len, "unable to create a job: %s", strerror_from_system(GetLastError()));
+		trx_snprintf(error, max_error_len, "unable to create a job: %s", strerror_from_system(GetLastError()));
 		goto close;
 	}
 
@@ -327,13 +327,13 @@ int	zbx_execute(const char *command, char **output, char *error, size_t max_erro
 	si.hStdError = hWrite;
 
 	/* use cmd command to support scripts */
-	cmd = zbx_dsprintf(cmd, "cmd /C \"%s\"", command);
-	wcmd = zbx_utf8_to_unicode(cmd);
+	cmd = trx_dsprintf(cmd, "cmd /C \"%s\"", command);
+	wcmd = trx_utf8_to_unicode(cmd);
 
 	/* create the new process */
 	if (0 == CreateProcess(NULL, wcmd, NULL, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &si, &pi))
 	{
-		zbx_snprintf(error, max_error_len, "unable to create process [%s]: %s",
+		trx_snprintf(error, max_error_len, "unable to create process [%s]: %s",
 				cmd, strerror_from_system(GetLastError()));
 		goto close;
 	}
@@ -344,7 +344,7 @@ int	zbx_execute(const char *command, char **output, char *error, size_t max_erro
 	/* assign the new process to the created job */
 	if (0 == AssignProcessToJobObject(job, pi.hProcess))
 	{
-		zbx_snprintf(error, max_error_len, "unable to assign process [%s] to a job: %s",
+		trx_snprintf(error, max_error_len, "unable to assign process [%s] to a job: %s",
 				cmd, strerror_from_system(GetLastError()));
 		if (0 == TerminateProcess(pi.hProcess, 0))
 		{
@@ -354,7 +354,7 @@ int	zbx_execute(const char *command, char **output, char *error, size_t max_erro
 	}
 	else if (-1 == ResumeThread(pi.hThread))
 	{
-		zbx_snprintf(error, max_error_len, "unable to assign process [%s] to a job: %s",
+		trx_snprintf(error, max_error_len, "unable to assign process [%s] to a job: %s",
 				cmd, strerror_from_system(GetLastError()));
 	}
 	else
@@ -366,12 +366,12 @@ int	zbx_execute(const char *command, char **output, char *error, size_t max_erro
 	_ftime(&start_time);
 	timeout *= 1000;
 
-	ret = zbx_read_from_pipe(hRead, &buffer, &buf_size, &offset, timeout);
+	ret = trx_read_from_pipe(hRead, &buffer, &buf_size, &offset, timeout);
 
 	if (TIMEOUT_ERROR != ret)
 	{
 		_ftime(&current_time);
-		if (0 < (timeout -= zbx_get_timediff_ms(&start_time, &current_time)) &&
+		if (0 < (timeout -= trx_get_timediff_ms(&start_time, &current_time)) &&
 				WAIT_TIMEOUT == WaitForSingleObject(pi.hProcess, timeout))
 		{
 			ret = TIMEOUT_ERROR;
@@ -380,18 +380,18 @@ int	zbx_execute(const char *command, char **output, char *error, size_t max_erro
 				0 == GetExitCodeProcess(pi.hProcess, &code))
 		{
 			if ('\0' != *buffer)
-				zbx_strlcpy(error, buffer, max_error_len);
+				trx_strlcpy(error, buffer, max_error_len);
 			else
-				zbx_strlcpy(error, "Process terminated unexpectedly.", max_error_len);
+				trx_strlcpy(error, "Process terminated unexpectedly.", max_error_len);
 
 			ret = FAIL;
 		}
 		else if (TRX_EXIT_CODE_CHECKS_ENABLED == flag && 0 != code)
 		{
 			if ('\0' != *buffer)
-				zbx_strlcpy(error, buffer, max_error_len);
+				trx_strlcpy(error, buffer, max_error_len);
 			else
-				zbx_snprintf(error, max_error_len, "Process exited with code: %d.", code);
+				trx_snprintf(error, max_error_len, "Process exited with code: %d.", code);
 
 			ret = FAIL;
 		}
@@ -414,14 +414,14 @@ close:
 	if (NULL != hRead)
 		CloseHandle(hRead);
 
-	zbx_free(cmd);
-	zbx_free(wcmd);
+	trx_free(cmd);
+	trx_free(wcmd);
 
 #else	/* not _WINDOWS */
 
-	zbx_alarm_on(timeout);
+	trx_alarm_on(timeout);
 
-	if (-1 != (fd = zbx_popen(&pid, command)))
+	if (-1 != (fd = trx_popen(&pid, command)))
 	{
 		int	rc, status;
 		char	tmp_buf[PIPE_BUFFER_SIZE];
@@ -429,23 +429,23 @@ close:
 		while (0 < (rc = read(fd, tmp_buf, sizeof(tmp_buf) - 1)) && MAX_EXECUTE_OUTPUT_LEN > offset + rc)
 		{
 			tmp_buf[rc] = '\0';
-			zbx_strcpy_alloc(&buffer, &buf_size, &offset, tmp_buf);
+			trx_strcpy_alloc(&buffer, &buf_size, &offset, tmp_buf);
 		}
 
 		close(fd);
 
-		if (-1 == rc || -1 == zbx_waitpid(pid, &status))
+		if (-1 == rc || -1 == trx_waitpid(pid, &status))
 		{
 			if (EINTR == errno)
 				ret = TIMEOUT_ERROR;
 			else
-				zbx_snprintf(error, max_error_len, "zbx_waitpid() failed: %s", zbx_strerror(errno));
+				trx_snprintf(error, max_error_len, "trx_waitpid() failed: %s", trx_strerror(errno));
 
 			/* kill the whole process group, pid must be the leader */
 			if (-1 == kill(-pid, SIGTERM))
-				treegix_log(LOG_LEVEL_ERR, "failed to kill [%s]: %s", command, zbx_strerror(errno));
+				treegix_log(LOG_LEVEL_ERR, "failed to kill [%s]: %s", command, trx_strerror(errno));
 
-			zbx_waitpid(pid, NULL);
+			trx_waitpid(pid, NULL);
 		}
 		else if (MAX_EXECUTE_OUTPUT_LEN <= offset + rc)
 		{
@@ -458,38 +458,38 @@ close:
 			{
 				if (WIFEXITED(status))
 				{
-					zbx_snprintf(error, max_error_len, "Process exited with code: %d.",
+					trx_snprintf(error, max_error_len, "Process exited with code: %d.",
 							WEXITSTATUS(status));
 				}
 				else if (WIFSIGNALED(status))
 				{
-					zbx_snprintf(error, max_error_len, "Process killed by signal: %d.",
+					trx_snprintf(error, max_error_len, "Process killed by signal: %d.",
 							WTERMSIG(status));
 				}
 				else
-					zbx_strlcpy(error, "Process terminated unexpectedly.", max_error_len);
+					trx_strlcpy(error, "Process terminated unexpectedly.", max_error_len);
 			}
 			else
-				zbx_strlcpy(error, buffer, max_error_len);
+				trx_strlcpy(error, buffer, max_error_len);
 		}
 		else
 			ret = SUCCEED;
 	}
 	else
-		zbx_strlcpy(error, zbx_strerror(errno), max_error_len);
+		trx_strlcpy(error, trx_strerror(errno), max_error_len);
 
-	zbx_alarm_off();
+	trx_alarm_off();
 
 #endif	/* _WINDOWS */
 
 	if (TIMEOUT_ERROR == ret)
-		zbx_strlcpy(error, "Timeout while executing a shell script.", max_error_len);
+		trx_strlcpy(error, "Timeout while executing a shell script.", max_error_len);
 
 	if ('\0' != *error)
 		treegix_log(LOG_LEVEL_WARNING, "Failed to execute command \"%s\": %s", command, error);
 
 	if (SUCCEED != ret || NULL == output)
-		zbx_free(buffer);
+		trx_free(buffer);
 
 	if (NULL != output)
 		*output = buffer;
@@ -499,7 +499,7 @@ close:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_execute_nowait                                               *
+ * Function: trx_execute_nowait                                               *
  *                                                                            *
  * Purpose: this function executes a script in the background and             *
  *          suppresses the std output                                         *
@@ -509,7 +509,7 @@ close:
  * Author: Rudolfs Kreicbergs                                                 *
  *                                                                            *
  ******************************************************************************/
-int	zbx_execute_nowait(const char *command)
+int	trx_execute_nowait(const char *command)
 {
 #ifdef _WINDOWS
 	char			*full_command;
@@ -517,8 +517,8 @@ int	zbx_execute_nowait(const char *command)
 	PROCESS_INFORMATION	pi;
 	wchar_t			*wcommand;
 
-	full_command = zbx_dsprintf(NULL, "cmd /C \"%s\"", command);
-	wcommand = zbx_utf8_to_unicode(full_command);
+	full_command = trx_dsprintf(NULL, "cmd /C \"%s\"", command);
+	wcommand = trx_utf8_to_unicode(full_command);
 
 	/* fill in process startup info structure */
 	memset(&si, 0, sizeof(si));
@@ -547,8 +547,8 @@ int	zbx_execute_nowait(const char *command)
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 
-	zbx_free(wcommand);
-	zbx_free(full_command);
+	trx_free(wcommand);
+	trx_free(full_command);
 
 	return SUCCEED;
 
@@ -556,10 +556,10 @@ int	zbx_execute_nowait(const char *command)
 	pid_t		pid;
 
 	/* use a double fork for running the command in background */
-	if (-1 == (pid = zbx_fork()))
+	if (-1 == (pid = trx_fork()))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "first fork() failed for executing [%s]: %s",
-				command, zbx_strerror(errno));
+				command, trx_strerror(errno));
 		return FAIL;
 	}
 	else if (0 != pid)
@@ -571,26 +571,26 @@ int	zbx_execute_nowait(const char *command)
 	/* This is the child process. Now create a grand child process which */
 	/* will be replaced by execl() with the actual command to be executed. */
 
-	pid = zbx_fork();
+	pid = trx_fork();
 
 	switch (pid)
 	{
 		case -1:
 			treegix_log(LOG_LEVEL_WARNING, "second fork() failed for executing [%s]: %s",
-					command, zbx_strerror(errno));
+					command, trx_strerror(errno));
 			break;
 		case 0:
 			/* this is the grand child process */
 
 			/* suppress the output of the executed script, otherwise */
 			/* the output might get written to a logfile or elsewhere */
-			zbx_redirect_stdio(NULL);
+			trx_redirect_stdio(NULL);
 
 			/* replace the process with actual command to be executed */
 			execl("/bin/sh", "sh", "-c", command, NULL);
 
 			/* execl() returns only when an error occurs */
-			treegix_log(LOG_LEVEL_WARNING, "execl() failed for [%s]: %s", command, zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_WARNING, "execl() failed for [%s]: %s", command, trx_strerror(errno));
 			break;
 		default:
 			/* this is the child process, exit to complete the double fork */

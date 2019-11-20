@@ -1,7 +1,7 @@
 
 
 #include "common.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "macrofunc.h"
 
 /******************************************************************************
@@ -24,13 +24,13 @@ static int	macrofunc_regsub(char **params, size_t nparam, char **out)
 	if (2 != nparam)
 		return FAIL;
 
-	if (FAIL == zbx_regexp_sub(*out, params[0], params[1], &value))
+	if (FAIL == trx_regexp_sub(*out, params[0], params[1], &value))
 		return FAIL;
 
 	if (NULL == value)
-		value = zbx_strdup(NULL, "");
+		value = trx_strdup(NULL, "");
 
-	zbx_free(*out);
+	trx_free(*out);
 	*out = value;
 
 	return SUCCEED;
@@ -56,13 +56,13 @@ static int	macrofunc_iregsub(char **params, size_t nparam, char **out)
 	if (2 != nparam)
 		return FAIL;
 
-	if (FAIL == zbx_iregexp_sub(*out, params[0], params[1], &value))
+	if (FAIL == trx_iregexp_sub(*out, params[0], params[1], &value))
 		return FAIL;
 
 	if (NULL == value)
-		value = zbx_strdup(NULL, "");
+		value = trx_strdup(NULL, "");
 
-	zbx_free(*out);
+	trx_free(*out);
 	*out = value;
 
 	return SUCCEED;
@@ -70,7 +70,7 @@ static int	macrofunc_iregsub(char **params, size_t nparam, char **out)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_calculate_macro_function                                     *
+ * Function: trx_calculate_macro_function                                     *
  *                                                                            *
  * Purpose: calculates macro function value                                   *
  *                                                                            *
@@ -82,7 +82,7 @@ static int	macrofunc_iregsub(char **params, size_t nparam, char **out)
  *               FAIL    - the function calculation failed.                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_calculate_macro_function(const char *expression, const zbx_token_func_macro_t *func_macro, char **out)
+int	trx_calculate_macro_function(const char *expression, const trx_token_func_macro_t *func_macro, char **out)
 {
 	char			**params, *buf = NULL;
 	const char		*ptr;
@@ -99,9 +99,9 @@ int	zbx_calculate_macro_function(const char *expression, const zbx_token_func_ma
 	else
 		return FAIL;
 
-	zbx_strncpy_alloc(&buf, &buf_alloc, &buf_offset, expression + func_macro->func_param.l + 1,
+	trx_strncpy_alloc(&buf, &buf_alloc, &buf_offset, expression + func_macro->func_param.l + 1,
 			func_macro->func_param.r - func_macro->func_param.l - 1);
-	params = (char **)zbx_malloc(NULL, sizeof(char *) * param_alloc);
+	params = (char **)trx_malloc(NULL, sizeof(char *) * param_alloc);
 
 	for (ptr = buf; ptr < buf + buf_offset; ptr += sep_pos + 1)
 	{
@@ -111,20 +111,20 @@ int	zbx_calculate_macro_function(const char *expression, const zbx_token_func_ma
 		if (nparam == param_alloc)
 		{
 			param_alloc *= 2;
-			params = (char **)zbx_realloc(params, sizeof(char *) * param_alloc);
+			params = (char **)trx_realloc(params, sizeof(char *) * param_alloc);
 		}
 
-		zbx_function_param_parse(ptr, &param_pos, &param_len, &sep_pos);
-		params[nparam++] = zbx_function_param_unquote_dyn(ptr + param_pos, param_len, &quoted);
+		trx_function_param_parse(ptr, &param_pos, &param_len, &sep_pos);
+		params[nparam++] = trx_function_param_unquote_dyn(ptr + param_pos, param_len, &quoted);
 	}
 
 	ret = macrofunc(params, nparam, out);
 
 	while (0 < nparam--)
-		zbx_free(params[nparam]);
+		trx_free(params[nparam]);
 
-	zbx_free(params);
-	zbx_free(buf);
+	trx_free(params);
+	trx_free(buf);
 
 	return ret;
 }

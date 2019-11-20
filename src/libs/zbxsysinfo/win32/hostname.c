@@ -16,7 +16,7 @@ int	SYSTEM_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -28,7 +28,7 @@ int	SYSTEM_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 		netbios = 0;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -40,24 +40,24 @@ int	SYSTEM_HOSTNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (0 == GetComputerName(computerName, &dwSize))
 		{
 			treegix_log(LOG_LEVEL_ERR, "GetComputerName() failed: %s", strerror_from_system(GetLastError()));
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain computer name: %s",
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain computer name: %s",
 					strerror_from_system(GetLastError())));
 			return SYSINFO_RET_FAIL;
 		}
 
-		SET_STR_RESULT(result, zbx_unicode_to_utf8(computerName));
+		SET_STR_RESULT(result, trx_unicode_to_utf8(computerName));
 	}
 	else
 	{
 		if (SUCCEED != gethostname(buffer, sizeof(buffer)))
 		{
 			treegix_log(LOG_LEVEL_ERR, "gethostname() failed: %s", strerror_from_system(WSAGetLastError()));
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain host name: %s",
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain host name: %s",
 					strerror_from_system(WSAGetLastError())));
 			return SYSINFO_RET_FAIL;
 		}
 
-		SET_STR_RESULT(result, zbx_strdup(NULL, buffer));
+		SET_STR_RESULT(result, trx_strdup(NULL, buffer));
 	}
 
 	return SYSINFO_RET_OK;

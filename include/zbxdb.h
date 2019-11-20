@@ -26,17 +26,17 @@
 #endif
 
 typedef char	**DB_ROW;
-typedef struct zbx_db_result	*DB_RESULT;
+typedef struct trx_db_result	*DB_RESULT;
 
 /* database field value */
 typedef union
 {
 	int		i32;
-	zbx_uint64_t	ui64;
+	trx_uint64_t	ui64;
 	double		dbl;
 	char		*str;
 }
-zbx_db_value_t;
+trx_db_value_t;
 
 #ifdef HAVE_SQLITE3
 	/* we have to put double % here for sprintf */
@@ -57,19 +57,19 @@ zbx_db_value_t;
 #	define TRX_ROW_DL	";\n"
 #endif
 
-int	zbx_db_init(const char *dbname, const char *const db_schema, char **error);
-void	zbx_db_deinit(void);
+int	trx_db_init(const char *dbname, const char *const db_schema, char **error);
+void	trx_db_deinit(void);
 
-int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *dbschema, char *dbsocket, int port);
-void	zbx_db_close(void);
+int	trx_db_connect(char *host, char *user, char *password, char *dbname, char *dbschema, char *dbsocket, int port);
+void	trx_db_close(void);
 
-int	zbx_db_begin(void);
-int	zbx_db_commit(void);
-int	zbx_db_rollback(void);
-int	zbx_db_txn_level(void);
-int	zbx_db_txn_error(void);
-int	zbx_db_txn_end_error(void);
-const char	*zbx_db_last_strerr(void);
+int	trx_db_begin(void);
+int	trx_db_commit(void);
+int	trx_db_rollback(void);
+int	trx_db_txn_level(void);
+int	trx_db_txn_error(void);
+int	trx_db_txn_end_error(void);
+const char	*trx_db_last_strerr(void);
 
 #ifdef HAVE_ORACLE
 
@@ -83,37 +83,37 @@ typedef struct
 	/* the maximum parameter size */
 	size_t			size_max;
 	/* the data to bind - array of rows, each row being an array of columns */
-	zbx_db_value_t		**rows;
+	trx_db_value_t		**rows;
 	/* custom data, depending on column type */
 	void			*data;
 }
-zbx_db_bind_context_t;
+trx_db_bind_context_t;
 
-int		zbx_db_statement_prepare(const char *sql);
-int		zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsigned char type,
-				zbx_db_value_t **rows, int rows_num);
-void		zbx_db_clean_bind_context(zbx_db_bind_context_t *context);
-int		zbx_db_statement_execute(int iters);
+int		trx_db_statement_prepare(const char *sql);
+int		trx_db_bind_parameter_dyn(trx_db_bind_context_t *context, int position, unsigned char type,
+				trx_db_value_t **rows, int rows_num);
+void		trx_db_clean_bind_context(trx_db_bind_context_t *context);
+int		trx_db_statement_execute(int iters);
 #endif
-int		zbx_db_vexecute(const char *fmt, va_list args);
-DB_RESULT	zbx_db_vselect(const char *fmt, va_list args);
-DB_RESULT	zbx_db_select_n(const char *query, int n);
+int		trx_db_vexecute(const char *fmt, va_list args);
+DB_RESULT	trx_db_vselect(const char *fmt, va_list args);
+DB_RESULT	trx_db_select_n(const char *query, int n);
 
-DB_ROW		zbx_db_fetch(DB_RESULT result);
+DB_ROW		trx_db_fetch(DB_RESULT result);
 void		DBfree_result(DB_RESULT result);
-int		zbx_db_is_null(const char *field);
+int		trx_db_is_null(const char *field);
 
 typedef enum
 {
 	ESCAPE_SEQUENCE_OFF,
 	ESCAPE_SEQUENCE_ON
 }
-zbx_escape_sequence_t;
-char		*zbx_db_dyn_escape_string(const char *src, size_t max_bytes, size_t max_chars,
-		zbx_escape_sequence_t flag);
+trx_escape_sequence_t;
+char		*trx_db_dyn_escape_string(const char *src, size_t max_bytes, size_t max_chars,
+		trx_escape_sequence_t flag);
 #define TRX_SQL_LIKE_ESCAPE_CHAR '!'
-char		*zbx_db_dyn_escape_like_pattern(const char *src);
+char		*trx_db_dyn_escape_like_pattern(const char *src);
 
-int		zbx_db_strlen_n(const char *text, size_t maxlen);
+int		trx_db_strlen_n(const char *text, size_t maxlen);
 
 #endif

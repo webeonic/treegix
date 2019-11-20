@@ -3,7 +3,7 @@
 #ifndef TREEGIX_METRICS_H
 #define TREEGIX_METRICS_H
 
-#include "zbxtypes.h"
+#include "trxtypes.h"
 
 /* define minimal and maximal values of lines to send by agent */
 /* per second for checks `log' and `eventlog', used to parse key parameters */
@@ -25,7 +25,7 @@ typedef struct
 {
 	char			*key;
 	char			*key_orig;
-	zbx_uint64_t		lastlogsize;
+	trx_uint64_t		lastlogsize;
 	int			refresh;
 	int			nextcheck;
 	int			mtime;
@@ -43,7 +43,7 @@ typedef struct
 	struct st_logfile	*logfiles;	/* for handling of logfile rotation for logrt[], logrt.count[] items */
 	double			start_time;	/* Start time of check for log[], log.count[], logrt[], logrt.count[] */
 						/* items. Used for measuring duration of checks. */
-	zbx_uint64_t		processed_bytes;	/* number of processed bytes for log[], log.count[], logrt[], */
+	trx_uint64_t		processed_bytes;	/* number of processed bytes for log[], log.count[], logrt[], */
 							/* logrt.count[] items */
 }
 TRX_ACTIVE_METRIC;

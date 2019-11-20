@@ -14,11 +14,11 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 	int		mib[16], *mib_dev;
 	size_t		sz, mib_sz;
 	struct xswdev	xsw;
-	zbx_uint64_t	total = 0, used = 0;
+	trx_uint64_t	total = 0, used = 0;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -28,8 +28,8 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 	sz = ARRSIZE(mib);
 	if (-1 == sysctlnametomib("vm.swap_info", mib, &sz))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain \"vm.swap_info\" system parameter: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain \"vm.swap_info\" system parameter: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -44,8 +44,8 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL == swapdev || '\0' == *swapdev || 0 == strcmp(swapdev, "all")	/* default parameter */
 				|| 0 == strcmp(swapdev, devname(xsw.xsw_dev, S_IFCHR)))
 		{
-			total += (zbx_uint64_t)xsw.xsw_nblks;
-			used += (zbx_uint64_t)xsw.xsw_used;
+			total += (trx_uint64_t)xsw.xsw_nblks;
+			used += (trx_uint64_t)xsw.xsw_used;
 		}
 		(*mib_dev)++;
 	}
@@ -62,13 +62,13 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_DBL_RESULT(result, total ? ((double)used * 100.0 / (double)total) : 0.0);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	return SYSINFO_RET_OK;
 #else
-	SET_MSG_RESULT(result, zbx_strdup(NULL, "Agent was compiled without support for \"xswdev\" structure."));
+	SET_MSG_RESULT(result, trx_strdup(NULL, "Agent was compiled without support for \"xswdev\" structure."));
 	return SYSINFO_RET_FAIL;
 #endif
 }

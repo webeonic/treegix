@@ -1,6 +1,6 @@
 
 
-package zbxlib
+package trxlib
 
 /* cspell:disable */
 
@@ -10,7 +10,7 @@ package zbxlib
 #include "common.h"
 #include "sysinfo.h"
 #include "module.h"
-typedef int (*zbx_agent_check_t)(AGENT_REQUEST *request, AGENT_RESULT *result);
+typedef int (*trx_agent_check_t)(AGENT_REQUEST *request, AGENT_RESULT *result);
 
 int	SYSTEM_LOCALTIME(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	NET_DNS(AGENT_REQUEST *request, AGENT_RESULT *result);
@@ -49,7 +49,7 @@ int	VFS_FS_INODE(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	VFS_FS_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	VM_MEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result);
 
-static int execute_check(const char *key, zbx_agent_check_t check_func, char **value, char **error)
+static int execute_check(const char *key, trx_agent_check_t check_func, char **value, char **error)
 {
 	int ret = FAIL;
 	char **pvalue;
@@ -60,22 +60,22 @@ static int execute_check(const char *key, zbx_agent_check_t check_func, char **v
 	init_result(&result);
 	if (SUCCEED != parse_item_key(key, &request))
 	{
-		*value = zbx_strdup(NULL, "Invalid item key format.");
+		*value = trx_strdup(NULL, "Invalid item key format.");
 		goto out;
 	}
 	if (SYSINFO_RET_OK != check_func(&request, &result))
 	{
 		if (0 != ISSET_MSG(&result))
 		{
-			*error = zbx_strdup(NULL, result.msg);
+			*error = trx_strdup(NULL, result.msg);
 		}
 		else
-			*error = zbx_strdup(NULL, "Unknown error.");
+			*error = trx_strdup(NULL, "Unknown error.");
 		goto out;
 	}
 
 	if (NULL != (pvalue = GET_TEXT_RESULT(&result)))
-		*value = zbx_strdup(NULL, *pvalue);
+		*value = trx_strdup(NULL, *pvalue);
 
 	ret = SUCCEED;
 out:
@@ -176,7 +176,7 @@ func ExecuteCheck(key string, params []string) (result *string, err error) {
 
 	var cvalue, cerrmsg *C.char
 	ckey := C.CString(itemutil.MakeKey(key, params))
-	if C.execute_check(ckey, C.zbx_agent_check_t(cfunc), &cvalue, &cerrmsg) == Succeed {
+	if C.execute_check(ckey, C.trx_agent_check_t(cfunc), &cvalue, &cerrmsg) == Succeed {
 		if cvalue != nil {
 			value := C.GoString(cvalue)
 			result = &value

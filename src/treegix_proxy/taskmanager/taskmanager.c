@@ -2,12 +2,12 @@
 
 #include "common.h"
 #include "daemon.h"
-#include "zbxself.h"
-#include "zbxtasks.h"
+#include "trxself.h"
+#include "trxtasks.h"
 #include "log.h"
 #include "db.h"
 #include "dbcache.h"
-#include "../../libs/zbxcrypto/tls.h"
+#include "../../libs/trxcrypto/tls.h"
 
 #include "../../treegix_server/scripts/scripts.h"
 #include "taskmanager.h"
@@ -33,14 +33,14 @@ extern int		server_num, process_num;
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	tm_execute_remote_command(zbx_uint64_t taskid, int clock, int ttl, int now)
+static int	tm_execute_remote_command(trx_uint64_t taskid, int clock, int ttl, int now)
 {
 	DB_ROW		row;
 	DB_RESULT	result;
-	zbx_uint64_t	parent_taskid, hostid;
-	zbx_tm_task_t	*task = NULL;
+	trx_uint64_t	parent_taskid, hostid;
+	trx_tm_task_t	*task = NULL;
 	int		ret = FAIL;
-	zbx_script_t	script;
+	trx_script_t	script;
 	char		*info = NULL, error[MAX_STRING_LEN];
 	DC_HOST		host;
 
@@ -53,13 +53,13 @@ static int	tm_execute_remote_command(zbx_uint64_t taskid, int clock, int ttl, in
 	if (NULL == (row = DBfetch(result)))
 		goto finish;
 
-	task = zbx_tm_task_create(0, TRX_TM_TASK_REMOTE_COMMAND_RESULT, TRX_TM_STATUS_NEW, time(NULL), 0, 0);
+	task = trx_tm_task_create(0, TRX_TM_TASK_REMOTE_COMMAND_RESULT, TRX_TM_STATUS_NEW, time(NULL), 0, 0);
 
 	TRX_STR2UINT64(parent_taskid, row[9]);
 
 	if (0 != ttl && clock + ttl < now)
 	{
-		task->data = zbx_tm_remote_command_result_create(parent_taskid, FAIL,
+		task->data = trx_tm_remote_command_result_create(parent_taskid, FAIL,
 				"The remote command has been expired.");
 		goto finish;
 	}
@@ -67,11 +67,11 @@ static int	tm_execute_remote_command(zbx_uint64_t taskid, int clock, int ttl, in
 	TRX_STR2UINT64(hostid, row[10]);
 	if (FAIL == DCget_host_by_hostid(&host, hostid))
 	{
-		task->data = zbx_tm_remote_command_result_create(parent_taskid, FAIL, "Unknown host.");
+		task->data = trx_tm_remote_command_result_create(parent_taskid, FAIL, "Unknown host.");
 		goto finish;
 	}
 
-	zbx_script_init(&script);
+	trx_script_init(&script);
 
 	TRX_STR2UCHAR(script.type, row[0]);
 	TRX_STR2UCHAR(script.execute_on, row[1]);
@@ -87,7 +87,7 @@ static int	tm_execute_remote_command(zbx_uint64_t taskid, int clock, int ttl, in
 	{
 		if (0 == CONFIG_ENABLE_REMOTE_COMMANDS)
 		{
-			task->data = zbx_tm_remote_command_result_create(parent_taskid, FAIL,
+			task->data = trx_tm_remote_command_result_create(parent_taskid, FAIL,
 					"Remote commands are not enabled");
 			goto finish;
 		}
@@ -98,12 +98,12 @@ static int	tm_execute_remote_command(zbx_uint64_t taskid, int clock, int ttl, in
 			treegix_log(LOG_LEVEL_DEBUG, "Executing command '%s'", script.command);
 	}
 
-	if (SUCCEED != (ret = zbx_script_execute(&script, &host, &info, error, sizeof(error))))
-		task->data = zbx_tm_remote_command_result_create(parent_taskid, ret, error);
+	if (SUCCEED != (ret = trx_script_execute(&script, &host, &info, error, sizeof(error))))
+		task->data = trx_tm_remote_command_result_create(parent_taskid, ret, error);
 	else
-		task->data = zbx_tm_remote_command_result_create(parent_taskid, ret, info);
+		task->data = trx_tm_remote_command_result_create(parent_taskid, ret, info);
 
-	zbx_free(info);
+	trx_free(info);
 finish:
 	DBfree_result(result);
 
@@ -111,8 +111,8 @@ finish:
 
 	if (NULL != task)
 	{
-		zbx_tm_save_task(task);
-		zbx_tm_task_free(task);
+		trx_tm_save_task(task);
+		trx_tm_task_free(task);
 	}
 
 	DBexecute("update task set status=%d where taskid=" TRX_FS_UI64, TRX_TM_STATUS_DONE, taskid);
@@ -131,46 +131,46 @@ finish:
  * Return value: The number of successfully processed tasks                   *
  *                                                                            *
  ******************************************************************************/
-static int	tm_process_check_now(zbx_vector_uint64_t *taskids)
+static int	tm_process_check_now(trx_vector_uint64_t *taskids)
 {
 	DB_ROW			row;
 	DB_RESULT		result;
 	int			processed_num;
 	char			*sql = NULL;
 	size_t			sql_alloc = 0, sql_offset = 0;
-	zbx_vector_uint64_t	itemids;
-	zbx_uint64_t		itemid;
+	trx_vector_uint64_t	itemids;
+	trx_uint64_t		itemid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() tasks_num:%d", __func__, taskids->values_num);
 
-	zbx_vector_uint64_create(&itemids);
+	trx_vector_uint64_create(&itemids);
 
-	zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "select itemid from task_check_now where");
+	trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "select itemid from task_check_now where");
 	DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "taskid", taskids->values, taskids->values_num);
 	result = DBselect("%s", sql);
 
 	while (NULL != (row = DBfetch(result)))
 	{
 		TRX_STR2UINT64(itemid, row[0]);
-		zbx_vector_uint64_append(&itemids, itemid);
+		trx_vector_uint64_append(&itemids, itemid);
 	}
 	DBfree_result(result);
 
 	if (0 != (processed_num = itemids.values_num))
-		zbx_dc_reschedule_items(&itemids, time(NULL), NULL);
+		trx_dc_reschedule_items(&itemids, time(NULL), NULL);
 
 	if (0 != taskids->values_num)
 	{
 		sql_offset = 0;
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update task set status=%d where",
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update task set status=%d where",
 				TRX_TM_STATUS_DONE);
 		DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "taskid", taskids->values, taskids->values_num);
 
 		DBexecute("%s", sql);
 	}
 
-	zbx_free(sql);
-	zbx_vector_uint64_destroy(&itemids);
+	trx_free(sql);
+	trx_vector_uint64_destroy(&itemids);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s() processed:%d", __func__, processed_num);
 
@@ -191,11 +191,11 @@ static int	tm_process_tasks(int now)
 	DB_ROW			row;
 	DB_RESULT		result;
 	int			processed_num = 0, clock, ttl;
-	zbx_uint64_t		taskid;
+	trx_uint64_t		taskid;
 	unsigned char		type;
-	zbx_vector_uint64_t	check_now_taskids;
+	trx_vector_uint64_t	check_now_taskids;
 
-	zbx_vector_uint64_create(&check_now_taskids);
+	trx_vector_uint64_create(&check_now_taskids);
 
 	result = DBselect("select taskid,type,clock,ttl"
 				" from task"
@@ -218,7 +218,7 @@ static int	tm_process_tasks(int now)
 					processed_num++;
 				break;
 			case TRX_TM_TASK_CHECK_NOW:
-				zbx_vector_uint64_append(&check_now_taskids, taskid);
+				trx_vector_uint64_append(&check_now_taskids, taskid);
 				break;
 			default:
 				THIS_SHOULD_NEVER_HAPPEN;
@@ -230,7 +230,7 @@ static int	tm_process_tasks(int now)
 	if (0 < check_now_taskids.values_num)
 		processed_num += tm_process_check_now(&check_now_taskids);
 
-	zbx_vector_uint64_destroy(&check_now_taskids);
+	trx_vector_uint64_destroy(&check_now_taskids);
 
 	return processed_num;
 }
@@ -257,33 +257,33 @@ TRX_THREAD_ENTRY(taskmanager_thread, args)
 	double	sec1, sec2;
 	int	tasks_num, sleeptime, nextcheck;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-	zbx_tls_init_child();
+	trx_tls_init_child();
 #endif
-	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
+	trx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	sec1 = zbx_time();
+	sec1 = trx_time();
 
 	sleeptime = TRX_TM_PROCESS_PERIOD - (int)sec1 % TRX_TM_PROCESS_PERIOD;
 
-	zbx_setproctitle("%s [started, idle %d sec]", get_process_type_string(process_type), sleeptime);
+	trx_setproctitle("%s [started, idle %d sec]", get_process_type_string(process_type), sleeptime);
 
 	while (TRX_IS_RUNNING())
 	{
-		zbx_sleep_loop(sleeptime);
+		trx_sleep_loop(sleeptime);
 
-		sec1 = zbx_time();
-		zbx_update_env(sec1);
+		sec1 = trx_time();
+		trx_update_env(sec1);
 
-		zbx_setproctitle("%s [processing tasks]", get_process_type_string(process_type));
+		trx_setproctitle("%s [processing tasks]", get_process_type_string(process_type));
 
 		tasks_num = tm_process_tasks((int)sec1);
 		if (TRX_TM_CLEANUP_PERIOD <= sec1 - cleanup_time)
@@ -292,19 +292,19 @@ TRX_THREAD_ENTRY(taskmanager_thread, args)
 			cleanup_time = sec1;
 		}
 
-		sec2 = zbx_time();
+		sec2 = trx_time();
 
 		nextcheck = (int)sec1 - (int)sec1 % TRX_TM_PROCESS_PERIOD + TRX_TM_PROCESS_PERIOD;
 
 		if (0 > (sleeptime = nextcheck - (int)sec2))
 			sleeptime = 0;
 
-		zbx_setproctitle("%s [processed %d task(s) in " TRX_FS_DBL " sec, idle %d sec]",
+		trx_setproctitle("%s [processed %d task(s) in " TRX_FS_DBL " sec, idle %d sec]",
 				get_process_type_string(process_type), tasks_num, sec2 - sec1, sleeptime);
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 }

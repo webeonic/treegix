@@ -96,23 +96,23 @@ static void	parse_db_monitor_item_params(const char *params, char **dsn, char **
 
 		if (NULL == *var)
 		{
-			*var = (char *)zbx_malloc(*var, pend - pvalue + 1);
+			*var = (char *)trx_malloc(*var, pend - pvalue + 1);
 			memmove(*var, pvalue, pend - pvalue);
 			(*var)[pend - pvalue] = '\0';
 		}
 	}
 
 	if (NULL == *user)
-		*user = zbx_strdup(NULL, "");
+		*user = trx_strdup(NULL, "");
 
 	if (NULL == *password)
-		*password = zbx_strdup(NULL, "");
+		*password = trx_strdup(NULL, "");
 
 	if (NULL == *dsn)
-		*dsn = zbx_strdup(NULL, "");
+		*dsn = trx_strdup(NULL, "");
 
 	if (NULL == *sql)
-		*sql = zbx_strdup(NULL, "");
+		*sql = trx_strdup(NULL, "");
 }
 
 /*
@@ -750,7 +750,7 @@ static int	DBpatch_2010080(void)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	applicationid, templateid, application_templateid = 1;
+	trx_uint64_t	applicationid, templateid, application_templateid = 1;
 	int		ret = FAIL;
 
 	result = DBselect("select applicationid,templateid from applications where templateid is not null");
@@ -907,7 +907,7 @@ static int	DBpatch_2010101(void)
 	while (NULL != (row = DBfetch(result)) && SUCCEED == ret)
 	{
 		char		*user = NULL, *password = NULL, *dsn = NULL, *sql = NULL, *error_message = NULL;
-		zbx_uint64_t	itemid;
+		trx_uint64_t	itemid;
 		size_t		key_len;
 
 		key_len = strlen(row[1]);
@@ -915,43 +915,43 @@ static int	DBpatch_2010101(void)
 		parse_db_monitor_item_params(row[2], &dsn, &user, &password, &sql);
 
 		if (0 != strncmp(row[1], "db.odbc.select[", 15) || ']' != row[1][key_len - 1])
-			error_message = zbx_dsprintf(error_message, "key \"%s\" is invalid", row[1]);
+			error_message = trx_dsprintf(error_message, "key \"%s\" is invalid", row[1]);
 		else if (ITEM_USERNAME_LEN < strlen(user))
-			error_message = zbx_dsprintf(error_message, "ODBC username \"%s\" is too long", user);
+			error_message = trx_dsprintf(error_message, "ODBC username \"%s\" is too long", user);
 		else if (ITEM_PASSWORD_LEN < strlen(password))
-			error_message = zbx_dsprintf(error_message, "ODBC password \"%s\" is too long", password);
+			error_message = trx_dsprintf(error_message, "ODBC password \"%s\" is too long", password);
 		else
 		{
 			char	*param = NULL;
 			size_t	param_alloc = 0, param_offset = 0;
 			int	nparam;
 
-			zbx_strncpy_alloc(&param, &param_alloc, &param_offset, row[1] + 15, key_len - 16);
+			trx_strncpy_alloc(&param, &param_alloc, &param_offset, row[1] + 15, key_len - 16);
 
 			if (1 != (nparam = num_param(param)))
 			{
 				if (FAIL == (ret = quote_key_param(&param, 0)))
-					error_message = zbx_dsprintf(error_message, "unique description"
+					error_message = trx_dsprintf(error_message, "unique description"
 							" \"%s\" contains invalid symbols and cannot be quoted", param);
 			}
 			if (FAIL == (ret = quote_key_param(&dsn, 0)))
 			{
-				error_message = zbx_dsprintf(error_message, "data source name"
+				error_message = trx_dsprintf(error_message, "data source name"
 						" \"%s\" contains invalid symbols and cannot be quoted", dsn);
 			}
 
 			if (SUCCEED == ret)
 			{
 				key_offset = 0;
-				zbx_snprintf_alloc(&key, &key_alloc, &key_offset, "db.odbc.select[%s,%s]", param, dsn);
+				trx_snprintf_alloc(&key, &key_alloc, &key_offset, "db.odbc.select[%s,%s]", param, dsn);
 
-				zbx_free(param);
+				trx_free(param);
 
-				if (255 /* ITEM_KEY_LEN */ < zbx_strlen_utf8(key))
-					error_message = zbx_dsprintf(error_message, "key \"%s\" is too long", row[1]);
+				if (255 /* ITEM_KEY_LEN */ < trx_strlen_utf8(key))
+					error_message = trx_dsprintf(error_message, "key \"%s\" is too long", row[1]);
 			}
 
-			zbx_free(param);
+			trx_free(param);
 		}
 
 		if (NULL == error_message)
@@ -972,10 +972,10 @@ static int	DBpatch_2010101(void)
 				ret = FAIL;
 			}
 
-			zbx_free(username_esc);
-			zbx_free(password_esc);
-			zbx_free(params_esc);
-			zbx_free(key_esc);
+			trx_free(username_esc);
+			trx_free(password_esc);
+			trx_free(params_esc);
+			trx_free(key_esc);
 		}
 		else
 		{
@@ -984,15 +984,15 @@ static int	DBpatch_2010101(void)
 					row[3], error_message);
 		}
 
-		zbx_free(error_message);
-		zbx_free(user);
-		zbx_free(password);
-		zbx_free(dsn);
-		zbx_free(sql);
+		trx_free(error_message);
+		trx_free(user);
+		trx_free(password);
+		trx_free(dsn);
+		trx_free(sql);
 	}
 	DBfree_result(result);
 
-	zbx_free(key);
+	trx_free(key);
 
 	return ret;
 }
@@ -1459,7 +1459,7 @@ static int	DBpatch_2010176(void)
 
 	while (SUCCEED == ret && NULL != (row = DBfetch(result)))
 	{
-		name = zbx_dyn_escape_string(row[1], "/\\");
+		name = trx_dyn_escape_string(row[1], "/\\");
 
 		if (0 != strcmp(name, row[1]))
 		{
@@ -1468,10 +1468,10 @@ static int	DBpatch_2010176(void)
 			if (TRX_DB_OK > DBexecute("update scripts set name='%s' where scriptid=%s", name_esc, row[0]))
 				ret = FAIL;
 
-			zbx_free(name_esc);
+			trx_free(name_esc);
 		}
 
-		zbx_free(name);
+		trx_free(name);
 	}
 	DBfree_result(result);
 
@@ -1480,7 +1480,7 @@ static int	DBpatch_2010176(void)
 
 static int	DBpatch_2010177(void)
 {
-	const char	*rf_rate_strings[] = {"syssum", "hoststat", "stszbx", "lastiss", "webovr", "dscvry", NULL};
+	const char	*rf_rate_strings[] = {"syssum", "hoststat", "ststrx", "lastiss", "webovr", "dscvry", NULL};
 	int		i;
 
 	for (i = 0; NULL != rf_rate_strings[i]; i++)
@@ -1500,7 +1500,7 @@ static int	DBpatch_2010177(void)
 
 static int	DBpatch_2010178(void)
 {
-	const char	*state_strings[] = {"favgrph", "favscr", "favmap", "syssum", "hoststat", "stszbx", "lastiss",
+	const char	*state_strings[] = {"favgrph", "favscr", "favmap", "syssum", "hoststat", "ststrx", "lastiss",
 			"webovr", "dscvry", NULL};
 	int		i;
 
@@ -1667,22 +1667,22 @@ static int	DBpatch_2010195_replace_key_param_cb(const char *data, int key_type, 
 	if (1 != level || 4 != num)	/* the fourth parameter on first level should be updated */
 		return SUCCEED;
 
-	param = zbx_strdup(NULL, data);
+	param = trx_strdup(NULL, data);
 
 	unquote_key_param(param);
 
 	if ('\0' == *param)
 	{
-		zbx_free(param);
+		trx_free(param);
 		return SUCCEED;
 	}
 
-	*new_param = zbx_dsprintf(NULL, "^%s$", param);
+	*new_param = trx_dsprintf(NULL, "^%s$", param);
 
-	zbx_free(param);
+	trx_free(param);
 
 	if (FAIL == (ret = quote_key_param(new_param, quoted)))
-		zbx_free(new_param);
+		trx_free(new_param);
 
 	return ret;
 }
@@ -1698,7 +1698,7 @@ static int	DBpatch_2010195(void)
 
 	while (SUCCEED == ret && NULL != (row = DBfetch(result)))
 	{
-		key = zbx_strdup(key, row[1]);
+		key = trx_strdup(key, row[1]);
 
 		if (SUCCEED != replace_key_params_dyn(&key, TRX_KEY_TYPE_ITEM, DBpatch_2010195_replace_key_param_cb,
 				NULL, error, sizeof(error)))
@@ -1707,7 +1707,7 @@ static int	DBpatch_2010195(void)
 			continue;
 		}
 
-		if (255 /* ITEM_KEY_LEN */ < zbx_strlen_utf8(key))
+		if (255 /* ITEM_KEY_LEN */ < trx_strlen_utf8(key))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot convert item key \"%s\": key is too long", row[1]);
 			continue;
@@ -1720,12 +1720,12 @@ static int	DBpatch_2010195(void)
 			if (TRX_DB_OK > DBexecute("update items set key_='%s' where itemid=%s", key_esc, row[0]))
 				ret = FAIL;
 
-			zbx_free(key_esc);
+			trx_free(key_esc);
 		}
 	}
 	DBfree_result(result);
 
-	zbx_free(key);
+	trx_free(key);
 
 	return ret;
 }

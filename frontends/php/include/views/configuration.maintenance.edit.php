@@ -67,7 +67,7 @@ foreach ($data['timeperiods'] as $id => $timeperiod) {
 		($timeperiod['timeperiod_type'] == TIMEPERIOD_TYPE_ONETIME)
 			? $timeperiod['start_date']
 			: schedule2str($timeperiod),
-		(new CCol(zbx_date2age(0, $timeperiod['period'])))->addClass(TRX_STYLE_NOWRAP),
+		(new CCol(trx_date2age(0, $timeperiod['period'])))->addClass(TRX_STYLE_NOWRAP),
 		(new CCol(
 			new CHorList([
 				(new CSimpleButton(_('Edit')))

@@ -145,7 +145,7 @@ class CLocalApiClient extends CApiClient {
 	 * @throws APIException
 	 */
 	protected function authenticate($auth) {
-		if (zbx_empty($auth)) {
+		if (trx_empty($auth)) {
 			throw new APIException(TRX_API_ERROR_NO_AUTH, _('Not authorised.'));
 		}
 

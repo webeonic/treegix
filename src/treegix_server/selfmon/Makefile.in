@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxselfmon_a_AR = $(AR) $(ARFLAGS)
-libzbxselfmon_a_LIBADD =
-am_libzbxselfmon_a_OBJECTS = selfmon.$(OBJEXT)
-libzbxselfmon_a_OBJECTS = $(am_libzbxselfmon_a_OBJECTS)
+libtrxselfmon_a_AR = $(AR) $(ARFLAGS)
+libtrxselfmon_a_LIBADD =
+am_libtrxselfmon_a_OBJECTS = selfmon.$(OBJEXT)
+libtrxselfmon_a_OBJECTS = $(am_libtrxselfmon_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxselfmon_a_SOURCES)
-DIST_SOURCES = $(libzbxselfmon_a_SOURCES)
+SOURCES = $(libtrxselfmon_a_SOURCES)
+DIST_SOURCES = $(libtrxselfmon_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxselfmon.a
-libzbxselfmon_a_SOURCES = selfmon.c selfmon.h
+noinst_LIBRARIES = libtrxselfmon.a
+libtrxselfmon_a_SOURCES = selfmon.c selfmon.h
 all: all-am
 
 .SUFFIXES:
@@ -413,10 +413,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxselfmon.a: $(libzbxselfmon_a_OBJECTS) $(libzbxselfmon_a_DEPENDENCIES) $(EXTRA_libzbxselfmon_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxselfmon.a
-	$(AM_V_AR)$(libzbxselfmon_a_AR) libzbxselfmon.a $(libzbxselfmon_a_OBJECTS) $(libzbxselfmon_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxselfmon.a
+libtrxselfmon.a: $(libtrxselfmon_a_OBJECTS) $(libtrxselfmon_a_DEPENDENCIES) $(EXTRA_libtrxselfmon_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxselfmon.a
+	$(AM_V_AR)$(libtrxselfmon_a_AR) libtrxselfmon.a $(libtrxselfmon_a_OBJECTS) $(libtrxselfmon_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxselfmon.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

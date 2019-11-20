@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 #include "stats.h"
 #include "proc.h"
@@ -22,22 +22,22 @@ typedef struct
 	/* process command line in format <arg0> <arg1> ... <argN>\0 */
 	char		*cmdline;
 }
-zbx_sysinfo_proc_t;
+trx_sysinfo_proc_t;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_sysinfo_proc_free                                            *
+ * Function: trx_sysinfo_proc_free                                            *
  *                                                                            *
  * Purpose: frees process data structure                                      *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_sysinfo_proc_free(zbx_sysinfo_proc_t *proc)
+static void	trx_sysinfo_proc_free(trx_sysinfo_proc_t *proc)
 {
-	zbx_free(proc->name);
-	zbx_free(proc->name_arg0);
-	zbx_free(proc->cmdline);
+	trx_free(proc->name);
+	trx_free(proc->name_arg0);
+	trx_free(proc->cmdline);
 
-	zbx_free(proc);
+	trx_free(proc);
 }
 
 static int	get_cmdline(FILE *f_cmd, char **line, size_t *line_offset)
@@ -46,7 +46,7 @@ static int	get_cmdline(FILE *f_cmd, char **line, size_t *line_offset)
 
 	rewind(f_cmd);
 
-	*line = (char *)zbx_malloc(*line, line_alloc + 2);
+	*line = (char *)trx_malloc(*line, line_alloc + 2);
 	*line_offset = 0;
 
 	while (0 != (n = fread(*line + *line_offset, 1, line_alloc - *line_offset, f_cmd)))
@@ -57,7 +57,7 @@ static int	get_cmdline(FILE *f_cmd, char **line, size_t *line_offset)
 			break;
 
 		line_alloc *= 2;
-		*line = (char *)zbx_realloc(*line, line_alloc + 2);
+		*line = (char *)trx_realloc(*line, line_alloc + 2);
 	}
 
 	if (0 == ferror(f_cmd))
@@ -70,7 +70,7 @@ static int	get_cmdline(FILE *f_cmd, char **line, size_t *line_offset)
 		return SUCCEED;
 	}
 
-	zbx_free(*line);
+	trx_free(*line);
 
 	return FAIL;
 }
@@ -86,7 +86,7 @@ static int	cmp_status(FILE *f_stat, const char *procname)
 		if (0 != strncmp(tmp, "Name:\t", 6))
 			continue;
 
-		zbx_rtrim(tmp + 6, "\n");
+		trx_rtrim(tmp + 6, "\n");
 		if (0 == strcmp(tmp + 6, procname))
 			return SUCCEED;
 		break;
@@ -121,7 +121,7 @@ static int	check_procname(FILE *f_cmd, FILE *f_stat, const char *procname)
 
 	ret = FAIL;
 clean:
-	zbx_free(tmp);
+	trx_free(tmp);
 
 	return ret;
 }
@@ -171,22 +171,22 @@ static int	check_proccomm(FILE *f_cmd, const char *proccomm)
 			if ('\0' == tmp[i])
 				tmp[i] = ' ';
 
-		if (NULL != zbx_regexp_match(tmp, proccomm, NULL))
+		if (NULL != trx_regexp_match(tmp, proccomm, NULL))
 			goto clean;
 	}
 
 	ret = FAIL;
 clean:
-	zbx_free(tmp);
+	trx_free(tmp);
 
 	return ret;
 }
 
-static int	check_procstate(FILE *f_stat, int zbx_proc_stat)
+static int	check_procstate(FILE *f_stat, int trx_proc_stat)
 {
 	char	tmp[MAX_STRING_LEN], *p;
 
-	if (TRX_PROC_STAT_ALL == zbx_proc_stat)
+	if (TRX_PROC_STAT_ALL == trx_proc_stat)
 		return SUCCEED;
 
 	rewind(f_stat);
@@ -198,7 +198,7 @@ static int	check_procstate(FILE *f_stat, int zbx_proc_stat)
 
 		p = tmp + 7;
 
-		switch (zbx_proc_stat)
+		switch (trx_proc_stat)
 		{
 			case TRX_PROC_STAT_RUN:
 				return ('R' == *p) ? SUCCEED : FAIL;
@@ -239,7 +239,7 @@ static int	check_procstate(FILE *f_stat, int zbx_proc_stat)
  *               FAIL - the search string was found but could not be parsed.  *
  *                                                                            *
  ******************************************************************************/
-int	byte_value_from_proc_file(FILE *f, const char *label, const char *guard, zbx_uint64_t *bytes)
+int	byte_value_from_proc_file(FILE *f, const char *label, const char *guard, trx_uint64_t *bytes)
 {
 	char	buf[MAX_STRING_LEN], *p_value, *p_unit;
 	size_t	label_len, guard_len;
@@ -288,7 +288,7 @@ int	byte_value_from_proc_file(FILE *f, const char *label, const char *guard, zbx
 			break;
 		}
 
-		zbx_rtrim(p_unit, "\n");
+		trx_rtrim(p_unit, "\n");
 
 		if (0 == strcasecmp(p_unit, "kB"))
 			*bytes <<= 10;
@@ -306,7 +306,7 @@ int	byte_value_from_proc_file(FILE *f, const char *label, const char *guard, zbx
 	return ret;
 }
 
-static int	get_total_memory(zbx_uint64_t *total_memory)
+static int	get_total_memory(trx_uint64_t *total_memory)
 {
 	FILE	*f;
 	int	ret = FAIL;
@@ -314,7 +314,7 @@ static int	get_total_memory(zbx_uint64_t *total_memory)
 	if (NULL != (f = fopen("/proc/meminfo", "r")))
 	{
 		ret = byte_value_from_proc_file(f, "MemTotal:", NULL, total_memory);
-		zbx_fclose(f);
+		trx_fclose(f);
 	}
 
 	return ret;
@@ -342,7 +342,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	struct dirent	*entries;
 	struct passwd	*usrinfo;
 	FILE		*f_cmd = NULL, *f_stat = NULL;
-	zbx_uint64_t	mem_size = 0, byte_value = 0, total_memory;
+	trx_uint64_t	mem_size = 0, byte_value = 0, total_memory;
 	double		pct_size = 0.0, pct_value = 0.0;
 	int		do_task, res, proccount = 0, invalid_user = 0, invalid_read = 0;
 	int		mem_type_tried = 0, mem_type_code;
@@ -351,7 +351,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (5 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -366,8 +366,8 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-							zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+							trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -389,7 +389,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		do_task = TRX_DO_MIN;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -471,7 +471,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -482,38 +482,38 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		if (SUCCEED != get_total_memory(&total_memory))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain amount of total memory: %s",
-					zbx_strerror(errno)));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain amount of total memory: %s",
+					trx_strerror(errno)));
 			return SYSINFO_RET_FAIL;
 		}
 
 		if (0 == total_memory)	/* this should never happen but anyway - avoid crash due to dividing by 0 */
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Total memory reported is 0."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Total memory reported is 0."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
 
 	if (NULL == (dir = opendir("/proc")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
 	while (NULL != (entries = readdir(dir)))
 	{
-		zbx_fclose(f_cmd);
-		zbx_fclose(f_stat);
+		trx_fclose(f_cmd);
+		trx_fclose(f_stat);
 
 		if (0 == atoi(entries->d_name))
 			continue;
 
-		zbx_snprintf(tmp, sizeof(tmp), "/proc/%s/cmdline", entries->d_name);
+		trx_snprintf(tmp, sizeof(tmp), "/proc/%s/cmdline", entries->d_name);
 
 		if (NULL == (f_cmd = fopen(tmp, "r")))
 			continue;
 
-		zbx_snprintf(tmp, sizeof(tmp), "/proc/%s/status", entries->d_name);
+		trx_snprintf(tmp, sizeof(tmp), "/proc/%s/status", entries->d_name);
 
 		if (NULL == (f_stat = fopen(tmp, "r")))
 			continue;
@@ -559,7 +559,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 				break;
 			case TRX_SIZE:
 				{
-					zbx_uint64_t	m;
+					trx_uint64_t	m;
 
 					/* VmData, VmStk and VmExe follow in /proc/PID/status file in that order. */
 					/* Therefore we do not rewind f_stat between calls. */
@@ -651,18 +651,18 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		}
 	}
 clean:
-	zbx_fclose(f_cmd);
-	zbx_fclose(f_stat);
+	trx_fclose(f_cmd);
+	trx_fclose(f_stat);
 	closedir(dir);
 
 	if ((0 == proccount && 0 != mem_type_tried) || 0 != invalid_read)
 	{
 		char	*s;
 
-		s = zbx_strdup(NULL, mem_type_search);
-		zbx_rtrim(s, ":\t");
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot get amount of \"%s\" memory.", s));
-		zbx_free(s);
+		s = trx_strdup(NULL, mem_type_search);
+		trx_rtrim(s, ":\t");
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot get amount of \"%s\" memory.", s));
+		trx_free(s);
 		return SYSINFO_RET_FAIL;
 	}
 out:
@@ -706,11 +706,11 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	struct dirent	*entries;
 	struct passwd	*usrinfo;
 	FILE		*f_cmd = NULL, *f_stat = NULL;
-	int		proccount = 0, invalid_user = 0, zbx_proc_stat;
+	int		proccount = 0, invalid_user = 0, trx_proc_stat;
 
 	if (4 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -725,8 +725,8 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-							zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+							trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -739,20 +739,20 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = TRX_PROC_STAT_ALL;
+		trx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = TRX_PROC_STAT_RUN;
+		trx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
+		trx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
+		trx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else if (0 == strcmp(param, "disk"))
-		zbx_proc_stat = TRX_PROC_STAT_DISK;
+		trx_proc_stat = TRX_PROC_STAT_DISK;
 	else if (0 == strcmp(param, "trace"))
-		zbx_proc_stat = TRX_PROC_STAT_TRACE;
+		trx_proc_stat = TRX_PROC_STAT_TRACE;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -763,24 +763,24 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == (dir = opendir("/proc")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
 	while (NULL != (entries = readdir(dir)))
 	{
-		zbx_fclose(f_cmd);
-		zbx_fclose(f_stat);
+		trx_fclose(f_cmd);
+		trx_fclose(f_stat);
 
 		if (0 == atoi(entries->d_name))
 			continue;
 
-		zbx_snprintf(tmp, sizeof(tmp), "/proc/%s/cmdline", entries->d_name);
+		trx_snprintf(tmp, sizeof(tmp), "/proc/%s/cmdline", entries->d_name);
 
 		if (NULL == (f_cmd = fopen(tmp, "r")))
 			continue;
 
-		zbx_snprintf(tmp, sizeof(tmp), "/proc/%s/status", entries->d_name);
+		trx_snprintf(tmp, sizeof(tmp), "/proc/%s/status", entries->d_name);
 
 		if (NULL == (f_stat = fopen(tmp, "r")))
 			continue;
@@ -794,13 +794,13 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (FAIL == check_proccomm(f_cmd, proccomm))
 			continue;
 
-		if (FAIL == check_procstate(f_stat, zbx_proc_stat))
+		if (FAIL == check_procstate(f_stat, trx_proc_stat))
 			continue;
 
 		proccount++;
 	}
-	zbx_fclose(f_cmd);
-	zbx_fclose(f_stat);
+	trx_fclose(f_cmd);
+	trx_fclose(f_stat);
 	closedir(dir);
 out:
 	SET_UI64_RESULT(result, proccount);
@@ -829,7 +829,7 @@ static int	proc_get_process_name(pid_t pid, char **procname)
 	int	n, fd;
 	char	tmp[MAX_STRING_LEN], *pend, *pstart;
 
-	zbx_snprintf(tmp, sizeof(tmp), "/proc/%d/stat", (int)pid);
+	trx_snprintf(tmp, sizeof(tmp), "/proc/%d/stat", (int)pid);
 
 	if (-1 == (fd = open(tmp, O_RDONLY)))
 		return FAIL;
@@ -848,7 +848,7 @@ static int	proc_get_process_name(pid_t pid, char **procname)
 	if (NULL == (pstart = strchr(tmp, '(')))
 		return FAIL;
 
-	*procname = zbx_strdup(NULL, pstart + 1);
+	*procname = trx_strdup(NULL, pstart + 1);
 
 	return SUCCEED;
 }
@@ -877,12 +877,12 @@ static int	proc_get_process_cmdline(pid_t pid, char **cmdline, size_t *cmdline_n
 	size_t	cmdline_alloc = TRX_KIBIBYTE;
 
 	*cmdline_nbytes = 0;
-	zbx_snprintf(tmp, sizeof(tmp), "/proc/%d/cmdline", (int)pid);
+	trx_snprintf(tmp, sizeof(tmp), "/proc/%d/cmdline", (int)pid);
 
 	if (-1 == (fd = open(tmp, O_RDONLY)))
 		return FAIL;
 
-	*cmdline = (char *)zbx_malloc(NULL, cmdline_alloc);
+	*cmdline = (char *)trx_malloc(NULL, cmdline_alloc);
 
 	while (0 < (n = read(fd, *cmdline + *cmdline_nbytes, cmdline_alloc - *cmdline_nbytes)))
 	{
@@ -891,7 +891,7 @@ static int	proc_get_process_cmdline(pid_t pid, char **cmdline, size_t *cmdline_n
 		if (*cmdline_nbytes == cmdline_alloc)
 		{
 			cmdline_alloc *= 2;
-			*cmdline = (char *)zbx_realloc(*cmdline, cmdline_alloc);
+			*cmdline = (char *)trx_realloc(*cmdline, cmdline_alloc);
 		}
 	}
 
@@ -905,7 +905,7 @@ static int	proc_get_process_cmdline(pid_t pid, char **cmdline, size_t *cmdline_n
 			if (*cmdline_nbytes == cmdline_alloc)
 			{
 				cmdline_alloc += 1;
-				*cmdline = (char *)zbx_realloc(*cmdline, cmdline_alloc);
+				*cmdline = (char *)trx_realloc(*cmdline, cmdline_alloc);
 			}
 
 			(*cmdline)[*cmdline_nbytes] = '\0';
@@ -914,7 +914,7 @@ static int	proc_get_process_cmdline(pid_t pid, char **cmdline, size_t *cmdline_n
 	}
 	else
 	{
-		zbx_free(*cmdline);
+		trx_free(*cmdline);
 	}
 
 	return SUCCEED;
@@ -936,11 +936,11 @@ static int	proc_get_process_cmdline(pid_t pid, char **cmdline, size_t *cmdline_n
 static int	proc_get_process_uid(pid_t pid, uid_t *uid)
 {
 	char		tmp[MAX_STRING_LEN];
-	zbx_stat_t	st;
+	trx_stat_t	st;
 
-	zbx_snprintf(tmp, sizeof(tmp), "/proc/%d", (int)pid);
+	trx_snprintf(tmp, sizeof(tmp), "/proc/%d", (int)pid);
 
-	if (0 != zbx_stat(tmp, &st))
+	if (0 != trx_stat(tmp, &st))
 		return FAIL;
 
 	*uid = st.st_uid;
@@ -961,7 +961,7 @@ static int	proc_get_process_uid(pid_t pid, uid_t *uid)
  * Return value: The length of the parsed text or FAIL if parsing failed.     *
  *                                                                            *
  ******************************************************************************/
-static int	proc_read_value(const char *ptr, zbx_uint64_t *value)
+static int	proc_read_value(const char *ptr, trx_uint64_t *value)
 {
 	const char	*start = ptr;
 	int		len;
@@ -990,12 +990,12 @@ static int	proc_read_value(const char *ptr, zbx_uint64_t *value)
  *               <0      - otherwise, -errno code is returned                 *
  *                                                                            *
  ******************************************************************************/
-static int	proc_read_cpu_util(zbx_procstat_util_t *procutil)
+static int	proc_read_cpu_util(trx_procstat_util_t *procutil)
 {
 	int	n, offset, fd, ret = SUCCEED;
 	char	tmp[MAX_STRING_LEN], *ptr;
 
-	zbx_snprintf(tmp, sizeof(tmp), "/proc/%d/stat", (int)procutil->pid);
+	trx_snprintf(tmp, sizeof(tmp), "/proc/%d/stat", (int)procutil->pid);
 
 	if (-1 == (fd = open(tmp, O_RDONLY)))
 		return -errno;
@@ -1067,7 +1067,7 @@ out:
  * Purpose: checks if the process name matches filter                         *
  *                                                                            *
  ******************************************************************************/
-static int	proc_match_name(const zbx_sysinfo_proc_t *proc, const char *procname)
+static int	proc_match_name(const trx_sysinfo_proc_t *proc, const char *procname)
 {
 	if (NULL == procname)
 		return SUCCEED;
@@ -1088,7 +1088,7 @@ static int	proc_match_name(const zbx_sysinfo_proc_t *proc, const char *procname)
  * Purpose: checks if the process user matches filter                         *
  *                                                                            *
  ******************************************************************************/
-static int	proc_match_user(const zbx_sysinfo_proc_t *proc, const struct passwd *usrinfo)
+static int	proc_match_user(const trx_sysinfo_proc_t *proc, const struct passwd *usrinfo)
 {
 	if (NULL == usrinfo)
 		return SUCCEED;
@@ -1106,12 +1106,12 @@ static int	proc_match_user(const zbx_sysinfo_proc_t *proc, const struct passwd *
  * Purpose: checks if the process command line matches filter                 *
  *                                                                            *
  ******************************************************************************/
-static int	proc_match_cmdline(const zbx_sysinfo_proc_t *proc, const char *cmdline)
+static int	proc_match_cmdline(const trx_sysinfo_proc_t *proc, const char *cmdline)
 {
 	if (NULL == cmdline)
 		return SUCCEED;
 
-	if (NULL != proc->cmdline && NULL != zbx_regexp_match(proc->cmdline, cmdline, NULL))
+	if (NULL != proc->cmdline && NULL != trx_regexp_match(proc->cmdline, cmdline, NULL))
 		return SUCCEED;
 
 	return FAIL;
@@ -1119,7 +1119,7 @@ static int	proc_match_cmdline(const zbx_sysinfo_proc_t *proc, const char *cmdlin
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_proc_get_process_stats                                       *
+ * Function: trx_proc_get_process_stats                                       *
  *                                                                            *
  * Purpose: get process cpu utilization data                                  *
  *                                                                            *
@@ -1127,7 +1127,7 @@ static int	proc_match_cmdline(const zbx_sysinfo_proc_t *proc, const char *cmdlin
  *             procs_num - [IN] the number of items in procs array            *
  *                                                                            *
  ******************************************************************************/
-void	zbx_proc_get_process_stats(zbx_procstat_util_t *procs, int procs_num)
+void	trx_proc_get_process_stats(trx_procstat_util_t *procs, int procs_num)
 {
 	int	i;
 
@@ -1152,11 +1152,11 @@ void	zbx_proc_get_process_stats(zbx_procstat_util_t *procs, int procs_num)
  *               failed.                                                      *
  *                                                                            *
  ******************************************************************************/
-static zbx_sysinfo_proc_t	*proc_create(int pid, unsigned int flags)
+static trx_sysinfo_proc_t	*proc_create(int pid, unsigned int flags)
 {
 	char			*procname = NULL, *cmdline = NULL, *name_arg0 = NULL;
 	uid_t			uid = -1;
-	zbx_sysinfo_proc_t	*proc = NULL;
+	trx_sysinfo_proc_t	*proc = NULL;
 	int			ret = FAIL;
 	size_t			cmdline_nbytes;
 
@@ -1180,9 +1180,9 @@ static zbx_sysinfo_proc_t	*proc_create(int pid, unsigned int flags)
 		if (0 != (flags & TRX_SYSINFO_PROC_NAME))
 		{
 			if (NULL == (ptr = strrchr(cmdline, '/')))
-				name_arg0 = zbx_strdup(NULL, cmdline);
+				name_arg0 = trx_strdup(NULL, cmdline);
 			else
-				name_arg0 = zbx_strdup(NULL, ptr + 1);
+				name_arg0 = trx_strdup(NULL, ptr + 1);
 		}
 
 		/* according to proc(5) the arguments are separated by '\0' */
@@ -1195,7 +1195,7 @@ static zbx_sysinfo_proc_t	*proc_create(int pid, unsigned int flags)
 out:
 	if (SUCCEED == ret)
 	{
-		proc = (zbx_sysinfo_proc_t *)zbx_malloc(NULL, sizeof(zbx_sysinfo_proc_t));
+		proc = (trx_sysinfo_proc_t *)trx_malloc(NULL, sizeof(trx_sysinfo_proc_t));
 
 		proc->pid = pid;
 		proc->uid = uid;
@@ -1205,9 +1205,9 @@ out:
 	}
 	else
 	{
-		zbx_free(procname);
-		zbx_free(cmdline);
-		zbx_free(name_arg0);
+		trx_free(procname);
+		trx_free(cmdline);
+		trx_free(name_arg0);
 	}
 
 	return proc;
@@ -1215,7 +1215,7 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_proc_get_processes                                           *
+ * Function: trx_proc_get_processes                                           *
  *                                                                            *
  * Purpose: get system processes                                              *
  *                                                                            *
@@ -1227,12 +1227,12 @@ out:
  *               FAIL    - failed to open /proc directory                     *
  *                                                                            *
  ******************************************************************************/
-int	zbx_proc_get_processes(zbx_vector_ptr_t *processes, unsigned int flags)
+int	trx_proc_get_processes(trx_vector_ptr_t *processes, unsigned int flags)
 {
 	DIR			*dir;
 	struct dirent		*entries;
 	int			ret = FAIL, pid;
-	zbx_sysinfo_proc_t	*proc;
+	trx_sysinfo_proc_t	*proc;
 
 	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
@@ -1248,14 +1248,14 @@ int	zbx_proc_get_processes(zbx_vector_ptr_t *processes, unsigned int flags)
 		if (NULL == (proc = proc_create(pid, flags)))
 			continue;
 
-		zbx_vector_ptr_append(processes, proc);
+		trx_vector_ptr_append(processes, proc);
 	}
 
 	closedir(dir);
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_TRACE, "End of %s(): %s, processes:%d", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_TRACE, "End of %s(): %s, processes:%d", __func__, trx_result_string(ret),
 			processes->values_num);
 
 	return ret;
@@ -1263,21 +1263,21 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_proc_free_processes                                          *
+ * Function: trx_proc_free_processes                                          *
  *                                                                            *
- * Purpose: frees process vector read by zbx_proc_get_processes function      *
+ * Purpose: frees process vector read by trx_proc_get_processes function      *
  *                                                                            *
  * Parameters: processes - [IN/OUT] the process vector to free                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_proc_free_processes(zbx_vector_ptr_t *processes)
+void	trx_proc_free_processes(trx_vector_ptr_t *processes)
 {
-	zbx_vector_ptr_clear_ext(processes, (zbx_mem_free_func_t)zbx_sysinfo_proc_free);
+	trx_vector_ptr_clear_ext(processes, (trx_mem_free_func_t)trx_sysinfo_proc_free);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_proc_get_matching_pids                                       *
+ * Function: trx_proc_get_matching_pids                                       *
  *                                                                            *
  * Purpose: get pids matching the specified process name, user name and       *
  *          command line                                                      *
@@ -1292,12 +1292,12 @@ void	zbx_proc_free_processes(zbx_vector_ptr_t *processes)
  *               -errno    - failed to read pids                              *
  *                                                                            *
  ******************************************************************************/
-void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *procname, const char *username,
-		const char *cmdline, zbx_uint64_t flags, zbx_vector_uint64_t *pids)
+void	trx_proc_get_matching_pids(const trx_vector_ptr_t *processes, const char *procname, const char *username,
+		const char *cmdline, trx_uint64_t flags, trx_vector_uint64_t *pids)
 {
 	struct passwd		*usrinfo;
 	int			i;
-	zbx_sysinfo_proc_t	*proc;
+	trx_sysinfo_proc_t	*proc;
 
 	treegix_log(LOG_LEVEL_TRACE, "In %s() procname:%s username:%s cmdline:%s flags:" TRX_FS_UI64, __func__,
 			TRX_NULL2EMPTY_STR(procname), TRX_NULL2EMPTY_STR(username), TRX_NULL2EMPTY_STR(cmdline), flags);
@@ -1313,7 +1313,7 @@ void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *p
 
 	for (i = 0; i < processes->values_num; i++)
 	{
-		proc = (zbx_sysinfo_proc_t *)processes->values[i];
+		proc = (trx_sysinfo_proc_t *)processes->values[i];
 
 		if (SUCCEED != proc_match_user(proc, usrinfo))
 			continue;
@@ -1324,7 +1324,7 @@ void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *p
 		if (SUCCEED != proc_match_cmdline(proc, cmdline))
 			continue;
 
-		zbx_vector_uint64_append(pids, (zbx_uint64_t)proc->pid);
+		trx_vector_uint64_append(pids, (trx_uint64_t)proc->pid);
 	}
 out:
 	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
@@ -1336,17 +1336,17 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		*errmsg = NULL;
 	int		period, type;
 	double		value;
-	zbx_timespec_t	ts_timeout, ts;
+	trx_timespec_t	ts_timeout, ts;
 
 	/* proc.cpu.util[<procname>,<username>,(user|system),<cmdline>,(avg1|avg5|avg15)] */
 	/*                   0          1           2            3             4          */
 	if (5 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	/* zbx_procstat_get_* functions expect NULL for default values -       */
+	/* trx_procstat_get_* functions expect NULL for default values -       */
 	/* convert empty procname, username and cmdline strings to NULL values */
 	if (NULL != (procname = get_rparam(request, 0)) && '\0' == *procname)
 		procname = NULL;
@@ -1372,7 +1372,7 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -1391,22 +1391,22 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	if (SUCCEED != zbx_procstat_collector_started())
+	if (SUCCEED != trx_procstat_collector_started())
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Collector is not started."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Collector is not started."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_timespec(&ts_timeout);
+	trx_timespec(&ts_timeout);
 	ts_timeout.sec += CONFIG_TIMEOUT;
 
-	while (SUCCEED != zbx_procstat_get_util(procname, username, cmdline, 0, period, type, &value, &errmsg))
+	while (SUCCEED != trx_procstat_get_util(procname, username, cmdline, 0, period, type, &value, &errmsg))
 	{
-		/* zbx_procstat_get_* functions will return FAIL when either a collection   */
+		/* trx_procstat_get_* functions will return FAIL when either a collection   */
 		/* error was registered or if less than 2 data samples were collected.      */
 		/* In the first case the errmsg will contain error message.                 */
 		if (NULL != errmsg)
@@ -1415,11 +1415,11 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 			return SYSINFO_RET_FAIL;
 		}
 
-		zbx_timespec(&ts);
+		trx_timespec(&ts);
 
-		if (0 > zbx_timespec_compare(&ts_timeout, &ts))
+		if (0 > trx_timespec_compare(&ts_timeout, &ts))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while waiting for collector data."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while waiting for collector data."));
 			return SYSINFO_RET_FAIL;
 		}
 

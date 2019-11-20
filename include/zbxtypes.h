@@ -21,8 +21,8 @@
 #if defined(_WINDOWS)
 #	include <strsafe.h>
 
-#	define zbx_stat(path, buf)		__zbx_stat(path, buf)
-#	define zbx_open(pathname, flags)	__zbx_open(pathname, flags | O_BINARY)
+#	define trx_stat(path, buf)		__trx_stat(path, buf)
+#	define trx_open(pathname, flags)	__trx_open(pathname, flags | O_BINARY)
 
 #	ifndef __UINT64_C
 #		define __UINT64_C(x)	x
@@ -32,12 +32,12 @@
 #		define __INT64_C(x)	x
 #	endif
 
-#	define zbx_uint64_t	unsigned __int64
+#	define trx_uint64_t	unsigned __int64
 #	define TRX_FS_UI64	"%I64u"
 #	define TRX_FS_UO64	"%I64o"
 #	define TRX_FS_UX64	"%I64x"
 
-#	define zbx_int64_t	__int64
+#	define trx_int64_t	__int64
 #	define TRX_FS_I64	"%I64d"
 #	define TRX_FS_O64	"%I64o"
 #	define TRX_FS_X64	"%I64x"
@@ -47,9 +47,9 @@
 #	define alloca		_alloca
 
 #	ifndef uint32_t
-typedef unsigned __int32	zbx_uint32_t;
+typedef unsigned __int32	trx_uint32_t;
 #	else
-typedef uint32_t		zbx_uint32_t;
+typedef uint32_t		trx_uint32_t;
 #	endif
 
 #	ifndef PATH_SEPARATOR
@@ -58,13 +58,13 @@ typedef uint32_t		zbx_uint32_t;
 
 #	define strcasecmp	lstrcmpiA
 
-typedef __int64	zbx_offset_t;
-#	define zbx_lseek(fd, offset, whence)	_lseeki64(fd, (zbx_offset_t)(offset), whence)
+typedef __int64	trx_offset_t;
+#	define trx_lseek(fd, offset, whence)	_lseeki64(fd, (trx_offset_t)(offset), whence)
 
 #else	/* _WINDOWS */
 
-#	define zbx_stat(path, buf)		stat(path, buf)
-#	define zbx_open(pathname, flags)	open(pathname, flags)
+#	define trx_stat(path, buf)		stat(path, buf)
+#	define trx_open(pathname, flags)	open(pathname, flags)
 
 #	ifndef __UINT64_C
 #		ifdef UINT64_C
@@ -82,7 +82,7 @@ typedef __int64	zbx_offset_t;
 #		endif
 #	endif
 
-#	define zbx_uint64_t	uint64_t
+#	define trx_uint64_t	uint64_t
 #	if __WORDSIZE == 64
 #		if defined(__APPLE__) && defined(__MACH__)	/* OS X */
 #			define TRX_FS_UI64	"%llu"
@@ -105,7 +105,7 @@ typedef __int64	zbx_offset_t;
 #		endif
 #	endif
 
-#	define zbx_int64_t	int64_t
+#	define trx_int64_t	int64_t
 #	if __WORDSIZE == 64
 #		if defined(__APPLE__) && defined(__MACH__)	/* OS X */
 #			define TRX_FS_I64	"%lld"
@@ -128,23 +128,23 @@ typedef __int64	zbx_offset_t;
 #		endif
 #	endif
 
-typedef uint32_t	zbx_uint32_t;
+typedef uint32_t	trx_uint32_t;
 
 #	ifndef PATH_SEPARATOR
 #		define PATH_SEPARATOR	'/'
 #	endif
 
-typedef off_t	zbx_offset_t;
-#	define zbx_lseek(fd, offset, whence)	lseek(fd, (zbx_offset_t)(offset), whence)
+typedef off_t	trx_offset_t;
+#	define trx_lseek(fd, offset, whence)	lseek(fd, (trx_offset_t)(offset), whence)
 
 #endif	/* _WINDOWS */
 
 #define TRX_FS_SIZE_T		TRX_FS_UI64
 #define TRX_FS_SSIZE_T		TRX_FS_I64
 #define TRX_FS_TIME_T		TRX_FS_I64
-#define zbx_fs_size_t		zbx_uint64_t	/* use this type only in calls to printf() for formatting size_t */
-#define zbx_fs_ssize_t		zbx_int64_t	/* use this type only in calls to printf() for formatting ssize_t */
-#define zbx_fs_time_t		zbx_int64_t	/* use this type only in calls to printf() for formatting time_t */
+#define trx_fs_size_t		trx_uint64_t	/* use this type only in calls to printf() for formatting size_t */
+#define trx_fs_ssize_t		trx_int64_t	/* use this type only in calls to printf() for formatting ssize_t */
+#define trx_fs_time_t		trx_int64_t	/* use this type only in calls to printf() for formatting time_t */
 
 #ifndef S_ISREG
 #	define S_ISREG(x) (((x) & S_IFMT) == S_IFREG)
@@ -165,10 +165,10 @@ typedef off_t	zbx_offset_t;
 
 typedef struct
 {
-	zbx_uint64_t	lo;
-	zbx_uint64_t	hi;
+	trx_uint64_t	lo;
+	trx_uint64_t	hi;
 }
-zbx_uint128_t;
+trx_uint128_t;
 
 #define TRX_SIZE_T_ALIGN8(size)	(((size) + 7) & ~(size_t)7)
 

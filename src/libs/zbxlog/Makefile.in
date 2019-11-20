@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxlog
+subdir = src/libs/trxlog
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxlog_a_AR = $(AR) $(ARFLAGS)
-libzbxlog_a_LIBADD =
-am_libzbxlog_a_OBJECTS = log.$(OBJEXT)
-libzbxlog_a_OBJECTS = $(am_libzbxlog_a_OBJECTS)
+libtrxlog_a_AR = $(AR) $(ARFLAGS)
+libtrxlog_a_LIBADD =
+am_libtrxlog_a_OBJECTS = log.$(OBJEXT)
+libtrxlog_a_OBJECTS = $(am_libtrxlog_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxlog_a_SOURCES)
-DIST_SOURCES = $(libzbxlog_a_SOURCES)
+SOURCES = $(libtrxlog_a_SOURCES)
+DIST_SOURCES = $(libtrxlog_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxlog.a
-libzbxlog_a_SOURCES = log.c
+noinst_LIBRARIES = libtrxlog.a
+libtrxlog_a_SOURCES = log.c
 all: all-am
 
 .SUFFIXES:
@@ -389,9 +389,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxlog/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxlog/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxlog/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxlog/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -413,10 +413,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxlog.a: $(libzbxlog_a_OBJECTS) $(libzbxlog_a_DEPENDENCIES) $(EXTRA_libzbxlog_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxlog.a
-	$(AM_V_AR)$(libzbxlog_a_AR) libzbxlog.a $(libzbxlog_a_OBJECTS) $(libzbxlog_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxlog.a
+libtrxlog.a: $(libtrxlog_a_OBJECTS) $(libtrxlog_a_DEPENDENCIES) $(EXTRA_libtrxlog_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxlog.a
+	$(AM_V_AR)$(libtrxlog_a_AR) libtrxlog.a $(libtrxlog_a_OBJECTS) $(libtrxlog_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxlog.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

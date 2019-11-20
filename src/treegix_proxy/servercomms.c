@@ -5,7 +5,7 @@
 #include "cfg.h"
 #include "db.h"
 #include "log.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 
 #include "comms.h"
 #include "servercomms.h"
@@ -19,7 +19,7 @@ extern char	*CONFIG_TLS_SERVER_CERT_SUBJECT;
 extern char	*CONFIG_TLS_PSK_IDENTITY;
 #endif
 
-int	connect_to_server(zbx_socket_t *sock, int timeout, int retry_interval)
+int	connect_to_server(trx_socket_t *sock, int timeout, int retry_interval)
 {
 	int	res, lastlogtime, now;
 	char	*tls_arg1, *tls_arg2;
@@ -40,7 +40,7 @@ int	connect_to_server(zbx_socket_t *sock, int timeout, int retry_interval)
 			break;
 		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = CONFIG_TLS_PSK_IDENTITY;
-			tls_arg2 = NULL;	/* zbx_tls_connect() will find PSK */
+			tls_arg2 = NULL;	/* trx_tls_connect() will find PSK */
 			break;
 #endif
 		default:
@@ -48,23 +48,23 @@ int	connect_to_server(zbx_socket_t *sock, int timeout, int retry_interval)
 			return FAIL;
 	}
 
-	if (FAIL == (res = zbx_tcp_connect(sock, CONFIG_SOURCE_IP, CONFIG_SERVER, CONFIG_SERVER_PORT, timeout,
+	if (FAIL == (res = trx_tcp_connect(sock, CONFIG_SOURCE_IP, CONFIG_SERVER, CONFIG_SERVER_PORT, timeout,
 			configured_tls_connect_mode, tls_arg1, tls_arg2)))
 	{
 		if (0 == retry_interval)
 		{
 			treegix_log(LOG_LEVEL_WARNING, "Unable to connect to the server [%s]:%d [%s]",
-					CONFIG_SERVER, CONFIG_SERVER_PORT, zbx_socket_strerror());
+					CONFIG_SERVER, CONFIG_SERVER_PORT, trx_socket_strerror());
 		}
 		else
 		{
 			treegix_log(LOG_LEVEL_WARNING, "Unable to connect to the server [%s]:%d [%s]. Will retry every"
-					" %d second(s)", CONFIG_SERVER, CONFIG_SERVER_PORT, zbx_socket_strerror(),
+					" %d second(s)", CONFIG_SERVER, CONFIG_SERVER_PORT, trx_socket_strerror(),
 					retry_interval);
 
 			lastlogtime = (int)time(NULL);
 
-			while (TRX_IS_RUNNING() && FAIL == (res = zbx_tcp_connect(sock, CONFIG_SOURCE_IP,
+			while (TRX_IS_RUNNING() && FAIL == (res = trx_tcp_connect(sock, CONFIG_SOURCE_IP,
 					CONFIG_SERVER, CONFIG_SERVER_PORT, timeout, configured_tls_connect_mode,
 					tls_arg1, tls_arg2)))
 			{
@@ -87,9 +87,9 @@ int	connect_to_server(zbx_socket_t *sock, int timeout, int retry_interval)
 	return res;
 }
 
-void	disconnect_server(zbx_socket_t *sock)
+void	disconnect_server(trx_socket_t *sock)
 {
-	zbx_tcp_close(sock);
+	trx_tcp_close(sock);
 }
 
 /******************************************************************************
@@ -102,27 +102,27 @@ void	disconnect_server(zbx_socket_t *sock)
  *               FAIL - an error occurred                                     *
  *                                                                            *
  ******************************************************************************/
-int	get_data_from_server(zbx_socket_t *sock, const char *request, char **error)
+int	get_data_from_server(trx_socket_t *sock, const char *request, char **error)
 {
 	int		ret = FAIL;
-	struct zbx_json	j;
+	struct trx_json	j;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() request:'%s'", __func__, request);
 
-	zbx_json_init(&j, 128);
-	zbx_json_addstring(&j, "request", request, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, "host", CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
+	trx_json_init(&j, 128);
+	trx_json_addstring(&j, "request", request, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&j, "host", CONFIG_HOSTNAME, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&j, TRX_PROTO_TAG_VERSION, TREEGIX_VERSION, TRX_JSON_TYPE_STRING);
 
-	if (SUCCEED != zbx_tcp_send_ext(sock, j.buffer, strlen(j.buffer), TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS, 0))
+	if (SUCCEED != trx_tcp_send_ext(sock, j.buffer, strlen(j.buffer), TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS, 0))
 	{
-		*error = zbx_strdup(*error, zbx_socket_strerror());
+		*error = trx_strdup(*error, trx_socket_strerror());
 		goto exit;
 	}
 
-	if (SUCCEED != zbx_tcp_recv(sock))
+	if (SUCCEED != trx_tcp_recv(sock))
 	{
-		*error = zbx_strdup(*error, zbx_socket_strerror());
+		*error = trx_strdup(*error, trx_socket_strerror());
 		goto exit;
 	}
 
@@ -130,9 +130,9 @@ int	get_data_from_server(zbx_socket_t *sock, const char *request, char **error)
 
 	ret = SUCCEED;
 exit:
-	zbx_json_free(&j);
+	trx_json_free(&j);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -147,24 +147,24 @@ exit:
  *               FAIL - an error occurred                                     *
  *                                                                            *
  ******************************************************************************/
-int	put_data_to_server(zbx_socket_t *sock, struct zbx_json *j, char **error)
+int	put_data_to_server(trx_socket_t *sock, struct trx_json *j, char **error)
 {
 	int	ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() datalen:" TRX_FS_SIZE_T, __func__, (zbx_fs_size_t)j->buffer_size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() datalen:" TRX_FS_SIZE_T, __func__, (trx_fs_size_t)j->buffer_size);
 
-	if (SUCCEED != zbx_tcp_send_ext(sock, j->buffer, strlen(j->buffer), TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS, 0))
+	if (SUCCEED != trx_tcp_send_ext(sock, j->buffer, strlen(j->buffer), TRX_TCP_PROTOCOL | TRX_TCP_COMPRESS, 0))
 	{
-		*error = zbx_strdup(*error, zbx_socket_strerror());
+		*error = trx_strdup(*error, trx_socket_strerror());
 		goto out;
 	}
 
-	if (SUCCEED != zbx_recv_response(sock, 0, error))
+	if (SUCCEED != trx_recv_response(sock, 0, error))
 		goto out;
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

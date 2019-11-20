@@ -64,7 +64,7 @@ class CUser extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// permission check
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
@@ -84,14 +84,14 @@ class CUser extends CApiService {
 
 		// userids
 		if ($options['userids'] !== null) {
-			zbx_value2array($options['userids']);
+			trx_value2array($options['userids']);
 
 			$sqlParts['where'][] = dbConditionInt('u.userid', $options['userids']);
 		}
 
 		// usrgrpids
 		if ($options['usrgrpids'] !== null) {
-			zbx_value2array($options['usrgrpids']);
+			trx_value2array($options['usrgrpids']);
 
 			$sqlParts['from']['users_groups'] = 'users_groups ug';
 			$sqlParts['where'][] = dbConditionInt('ug.usrgrpid', $options['usrgrpids']);
@@ -100,7 +100,7 @@ class CUser extends CApiService {
 
 		// mediaids
 		if ($options['mediaids'] !== null) {
-			zbx_value2array($options['mediaids']);
+			trx_value2array($options['mediaids']);
 
 			$sqlParts['from']['media'] = 'media m';
 			$sqlParts['where'][] = dbConditionInt('m.mediaid', $options['mediaids']);
@@ -109,7 +109,7 @@ class CUser extends CApiService {
 
 		// mediatypeids
 		if ($options['mediatypeids'] !== null) {
-			zbx_value2array($options['mediatypeids']);
+			trx_value2array($options['mediatypeids']);
 
 			$sqlParts['from']['media'] = 'media m';
 			$sqlParts['where'][] = dbConditionInt('m.mediatypeid', $options['mediatypeids']);
@@ -139,11 +139,11 @@ class CUser extends CApiService {
 				self::exception(TRX_API_ERROR_PARAMETERS, _('It is not possible to search by user password.'));
 			}
 
-			zbx_db_search('users u', $options, $sqlParts);
+			trx_db_search('users u', $options, $sqlParts);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -188,7 +188,7 @@ class CUser extends CApiService {
 			);
 
 			while ($userAccess = DBfetch($access)) {
-				$result[$userAccess['userid']] = zbx_array_merge($result[$userAccess['userid']], $userAccess);
+				$result[$userAccess['userid']] = trx_array_merge($result[$userAccess['userid']], $userAccess);
 			}
 		}
 
@@ -198,7 +198,7 @@ class CUser extends CApiService {
 
 		// removing keys
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -285,8 +285,8 @@ class CUser extends CApiService {
 		}
 		unset($user);
 
-		$this->checkDuplicates(zbx_objectValues($users, 'alias'));
-		$this->checkLanguages(zbx_objectValues($users, 'lang'));
+		$this->checkDuplicates(trx_objectValues($users, 'alias'));
+		$this->checkLanguages(trx_objectValues($users, 'lang'));
 		$this->checkUserGroups($users, []);
 		$db_mediatypes = $this->checkMediaTypes($users);
 		$this->validateMediaRecipients($users, $db_mediatypes);
@@ -339,7 +339,7 @@ class CUser extends CApiService {
 
 		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_USER, $users, $db_users);
 
-		return ['userids' => zbx_objectValues($users, 'userid')];
+		return ['userids' => trx_objectValues($users, 'userid')];
 	}
 
 	/**
@@ -383,7 +383,7 @@ class CUser extends CApiService {
 
 		$db_users = $this->get([
 			'output' => [],
-			'userids' => zbx_objectValues($users, 'userid'),
+			'userids' => trx_objectValues($users, 'userid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
@@ -431,7 +431,7 @@ class CUser extends CApiService {
 		if ($aliases) {
 			$this->checkDuplicates($aliases);
 		}
-		$this->checkLanguages(zbx_objectValues($users, 'lang'));
+		$this->checkLanguages(trx_objectValues($users, 'lang'));
 		$this->checkUserGroups($users, $db_users);
 		$db_mediatypes = $this->checkMediaTypes($users);
 		$this->validateMediaRecipients($users, $db_mediatypes);
@@ -528,7 +528,7 @@ class CUser extends CApiService {
 	 */
 	private function checkLanguages(array $languages) {
 		foreach ($languages as $lang) {
-			if ($lang !== 'en_GB' && !setlocale(LC_MONETARY , zbx_locale_variants($lang))) {
+			if ($lang !== 'en_GB' && !setlocale(LC_MONETARY , trx_locale_variants($lang))) {
 				self::exception(TRX_API_ERROR_PARAMETERS, _s('Language "%1$s" is not supported.', $lang));
 			}
 		}
@@ -705,7 +705,7 @@ class CUser extends CApiService {
 				if (array_key_exists('usrgrps', $user)) {
 					$db_usrgrps = DB::select('usrgrp', [
 						'output' => ['gui_access', 'users_status'],
-						'usrgrpids' => zbx_objectValues($user['usrgrps'], 'usrgrpid')
+						'usrgrpids' => trx_objectValues($user['usrgrps'], 'usrgrpid')
 					]);
 
 					foreach ($db_usrgrps as $db_usrgrp) {
@@ -1373,7 +1373,7 @@ class CUser extends CApiService {
 	protected function addRelatedObjects(array $options, array $result) {
 		$result = parent::addRelatedObjects($options, $result);
 
-		$userIds = zbx_objectValues($result, 'userid');
+		$userIds = trx_objectValues($result, 'userid');
 
 		// adding usergroups
 		if ($options['selectUsrgrps'] !== null && $options['selectUsrgrps'] != API_OUTPUT_COUNT) {
@@ -1402,7 +1402,7 @@ class CUser extends CApiService {
 				$db_email_medias = DB::select('media_type', [
 					'output' => [],
 					'filter' => [
-						'mediatypeid' => zbx_objectValues($db_medias, 'mediatypeid'),
+						'mediatypeid' => trx_objectValues($db_medias, 'mediatypeid'),
 						'type' => MEDIA_TYPE_EMAIL
 					],
 					'preservekeys' => true
@@ -1502,7 +1502,7 @@ class CUser extends CApiService {
 			$db_users_rows = DBfetchArray(DBselect(
 				'SELECT '.implode(',', $fields).
 				' FROM users'.
-					' WHERE LOWER(alias)='.zbx_dbstr(strtolower($alias))
+					' WHERE LOWER(alias)='.trx_dbstr(strtolower($alias))
 			));
 
 			if ($do_group_check) {

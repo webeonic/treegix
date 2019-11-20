@@ -116,14 +116,14 @@ PROGRAMS = $(bin_PROGRAMS)
 am_treegix_get_OBJECTS = treegix_get.$(OBJEXT)
 treegix_get_OBJECTS = $(am_treegix_get_OBJECTS)
 treegix_get_DEPENDENCIES =  \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a
 treegix_get_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(treegix_get_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
@@ -380,14 +380,14 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 treegix_get_SOURCES = treegix_get.c
-treegix_get_LDADD = $(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
+treegix_get_LDADD = $(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
 	@TRXGET_LIBS@ $(am__empty)
 treegix_get_LDFLAGS = @TRXGET_LDFLAGS@
 all: all-am

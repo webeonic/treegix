@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxexec.h"
+#include "trxexec.h"
 
 #include "checks_external.h"
 
@@ -36,16 +36,16 @@ int	get_value_external(DC_ITEM *item, AGENT_RESULT *result)
 
 	if (SUCCEED != parse_item_key(item->key, &request))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid item key format."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid item key format."));
 		goto out;
 	}
 
-	cmd = (char *)zbx_malloc(cmd, cmd_alloc);
-	zbx_snprintf_alloc(&cmd, &cmd_alloc, &cmd_offset, "%s/%s", CONFIG_EXTERNALSCRIPTS, get_rkey(&request));
+	cmd = (char *)trx_malloc(cmd, cmd_alloc);
+	trx_snprintf_alloc(&cmd, &cmd_alloc, &cmd_offset, "%s/%s", CONFIG_EXTERNALSCRIPTS, get_rkey(&request));
 
 	if (-1 == access(cmd, X_OK))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "%s: %s", cmd, zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "%s: %s", cmd, trx_strerror(errno)));
 		goto out;
 	}
 
@@ -56,28 +56,28 @@ int	get_value_external(DC_ITEM *item, AGENT_RESULT *result)
 
 		param = get_rparam(&request, i);
 
-		param_esc = zbx_dyn_escape_shell_single_quote(param);
-		zbx_snprintf_alloc(&cmd, &cmd_alloc, &cmd_offset, " '%s'", param_esc);
-		zbx_free(param_esc);
+		param_esc = trx_dyn_escape_shell_single_quote(param);
+		trx_snprintf_alloc(&cmd, &cmd_alloc, &cmd_offset, " '%s'", param_esc);
+		trx_free(param_esc);
 	}
 
-	if (SUCCEED == zbx_execute(cmd, &buf, error, sizeof(error), CONFIG_TIMEOUT, TRX_EXIT_CODE_CHECKS_DISABLED))
+	if (SUCCEED == trx_execute(cmd, &buf, error, sizeof(error), CONFIG_TIMEOUT, TRX_EXIT_CODE_CHECKS_DISABLED))
 	{
-		zbx_rtrim(buf, TRX_WHITESPACE);
+		trx_rtrim(buf, TRX_WHITESPACE);
 
 		set_result_type(result, ITEM_VALUE_TYPE_TEXT, buf);
-		zbx_free(buf);
+		trx_free(buf);
 
 		ret = SUCCEED;
 	}
 	else
-		SET_MSG_RESULT(result, zbx_strdup(NULL, error));
+		SET_MSG_RESULT(result, trx_strdup(NULL, error));
 out:
-	zbx_free(cmd);
+	trx_free(cmd);
 
 	free_request(&request);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

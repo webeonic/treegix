@@ -59,7 +59,7 @@ class CMediatype extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// permission check
 		if (self::$userData['type'] == USER_TYPE_SUPER_ADMIN) {
@@ -72,13 +72,13 @@ class CMediatype extends CApiService {
 
 		// mediatypeids
 		if (!is_null($options['mediatypeids'])) {
-			zbx_value2array($options['mediatypeids']);
+			trx_value2array($options['mediatypeids']);
 			$sqlParts['where'][] = dbConditionInt('mt.mediatypeid', $options['mediatypeids']);
 		}
 
 		// mediaids
 		if (!is_null($options['mediaids'])) {
-			zbx_value2array($options['mediaids']);
+			trx_value2array($options['mediaids']);
 
 			$sqlParts['from']['media'] = 'media m';
 			$sqlParts['where'][] = dbConditionInt('m.mediaid', $options['mediaids']);
@@ -87,7 +87,7 @@ class CMediatype extends CApiService {
 
 		// userids
 		if (!is_null($options['userids'])) {
-			zbx_value2array($options['userids']);
+			trx_value2array($options['userids']);
 
 			$sqlParts['from']['media'] = 'media m';
 			$sqlParts['where'][] = dbConditionInt('m.userid', $options['userids']);
@@ -101,11 +101,11 @@ class CMediatype extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('media_type mt', $options, $sqlParts);
+			trx_db_search('media_type mt', $options, $sqlParts);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -136,7 +136,7 @@ class CMediatype extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 		return $result;
 	}
@@ -430,7 +430,7 @@ class CMediatype extends CApiService {
 			_('Incorrect media type ID.')
 		);
 
-		$mediatypeids = zbx_objectValues($mediatypes, 'mediatypeid');
+		$mediatypeids = trx_objectValues($mediatypes, 'mediatypeid');
 
 		// Check value map names.
 		$db_mediatypes = API::getApiService()->select('media_type', [
@@ -474,7 +474,7 @@ class CMediatype extends CApiService {
 				'output' => ['mediatypeid', 'name'],
 				'filter' => ['name' => array_keys($check_names)]
 			]);
-			$db_mediatype_names = zbx_toHash($db_mediatype_names, 'name');
+			$db_mediatype_names = trx_toHash($db_mediatype_names, 'name');
 
 			foreach ($mediatypes as $mediatype) {
 				if (array_key_exists('name', $mediatype)
@@ -488,7 +488,7 @@ class CMediatype extends CApiService {
 		}
 
 		// Populate "name" field, if not set. Type field should not be populated at this point.
-		$mediatypes = $this->extendFromObjects(zbx_toHash($mediatypes, 'mediatypeid'), $db_mediatypes, ['name']);
+		$mediatypes = $this->extendFromObjects(trx_toHash($mediatypes, 'mediatypeid'), $db_mediatypes, ['name']);
 
 		$duplicate_name = CArrayHelper::findDuplicate($mediatypes, 'name');
 		if ($duplicate_name) {
@@ -816,7 +816,7 @@ class CMediatype extends CApiService {
 	 * @return array
 	 */
 	public function create($mediatypes) {
-		$mediatypes = zbx_toArray($mediatypes);
+		$mediatypes = trx_toArray($mediatypes);
 
 		$this->validateCreate($mediatypes);
 
@@ -885,7 +885,7 @@ class CMediatype extends CApiService {
 	 * @return array
 	 */
 	public function update($mediatypes) {
-		$mediatypes = zbx_toArray($mediatypes);
+		$mediatypes = trx_toArray($mediatypes);
 
 		$this->validateUpdate($mediatypes);
 
@@ -899,7 +899,7 @@ class CMediatype extends CApiService {
 				'attempt_interval', 'content_type', 'script', 'timeout', 'process_tags', 'show_event_menu',
 				'event_menu_url', 'event_menu_name', 'description'
 			],
-			'filter' => ['mediatypeid' => zbx_objectValues($mediatypes, 'mediatypeid')],
+			'filter' => ['mediatypeid' => trx_objectValues($mediatypes, 'mediatypeid')],
 			'preservekeys' => true
 		]);
 
@@ -961,7 +961,7 @@ class CMediatype extends CApiService {
 		}
 
 		DB::update('media_type', $update);
-		$mediatypeids = zbx_objectValues($mediatypes, 'mediatypeid');
+		$mediatypeids = trx_objectValues($mediatypes, 'mediatypeid');
 
 		if ($webhooks_params) {
 			$ins_media_type_param = [];

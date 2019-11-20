@@ -41,7 +41,7 @@ static int	check_ldap(const char *host, unsigned short port, int timeout, int *v
 	char	**valRes = NULL;
 	int	ldapErr = 0;
 
-	zbx_alarm_on(timeout);
+	trx_alarm_on(timeout);
 
 	*value_int = 0;
 
@@ -73,7 +73,7 @@ static int	check_ldap(const char *host, unsigned short port, int timeout, int *v
 
 	*value_int = 1;
 lbl_ret:
-	zbx_alarm_off();
+	trx_alarm_off();
 
 	if (NULL != valRes)
 		ldap_value_free(valRes);
@@ -93,21 +93,21 @@ lbl_ret:
 static int	check_ssh(const char *host, unsigned short port, int timeout, int *value_int)
 {
 	int		ret, major, minor;
-	zbx_socket_t	s;
+	trx_socket_t	s;
 	char		send_buf[MAX_STRING_LEN];
 	const char	*buf;
 
 	*value_int = 0;
 
-	if (SUCCEED == (ret = zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL,
+	if (SUCCEED == (ret = trx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL,
 			NULL)))
 	{
-		while (NULL != (buf = zbx_tcp_recv_line(&s)))
+		while (NULL != (buf = trx_tcp_recv_line(&s)))
 		{
 			/* parse buf for SSH identification string as per RFC 4253, section 4.2 */
 			if (2 == sscanf(buf, "SSH-%d.%d-%*s", &major, &minor))
 			{
-				zbx_snprintf(send_buf, sizeof(send_buf), "SSH-%d.%d-treegix_agent\r\n", major, minor);
+				trx_snprintf(send_buf, sizeof(send_buf), "SSH-%d.%d-treegix_agent\r\n", major, minor);
 				*value_int = 1;
 				break;
 			}
@@ -116,12 +116,12 @@ static int	check_ssh(const char *host, unsigned short port, int timeout, int *va
 		if (0 == *value_int)
 			strscpy(send_buf, "0\n");
 
-		ret = zbx_tcp_send_raw(&s, send_buf);
-		zbx_tcp_close(&s);
+		ret = trx_tcp_send_raw(&s, send_buf);
+		trx_tcp_close(&s);
 	}
 
 	if (FAIL == ret)
-		treegix_log(LOG_LEVEL_DEBUG, "SSH check error: %s", zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "SSH check error: %s", trx_socket_strerror());
 
 	return SYSINFO_RET_OK;
 }
@@ -143,9 +143,9 @@ static int	check_https(const char *host, unsigned short port, int timeout, int *
 	}
 
 	if (SUCCEED == is_ip6(host))
-		zbx_snprintf(https_host, sizeof(https_host), "%s[%s]", (0 == strncmp(host, "https://", 8) ? "" : "https://"), host);
+		trx_snprintf(https_host, sizeof(https_host), "%s[%s]", (0 == strncmp(host, "https://", 8) ? "" : "https://"), host);
 	else
-		zbx_snprintf(https_host, sizeof(https_host), "%s%s", (0 == strncmp(host, "https://", 8) ? "" : "https://"), host);
+		trx_snprintf(https_host, sizeof(https_host), "%s%s", (0 == strncmp(host, "https://", 8) ? "" : "https://"), host);
 
 	if (CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_USERAGENT, "Treegix " TREEGIX_VERSION)) ||
 		CURLE_OK != (err = curl_easy_setopt(easyhandle, opt = CURLOPT_URL, https_host)) ||
@@ -184,7 +184,7 @@ clean:
 
 static int	check_telnet(const char *host, unsigned short port, int timeout, int *value_int)
 {
-	zbx_socket_t	s;
+	trx_socket_t	s;
 #ifdef _WINDOWS
 	u_long		argp = 1;
 #else
@@ -192,7 +192,7 @@ static int	check_telnet(const char *host, unsigned short port, int timeout, int 
 #endif
 	*value_int = 0;
 
-	if (SUCCEED == zbx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL, NULL))
+	if (SUCCEED == trx_tcp_connect(&s, CONFIG_SOURCE_IP, host, port, timeout, TRX_TCP_SEC_UNENCRYPTED, NULL, NULL))
 	{
 #ifdef _WINDOWS
 		ioctlsocket(s.socket, FIONBIO, &argp);	/* non-zero value sets the socket to non-blocking */
@@ -207,10 +207,10 @@ static int	check_telnet(const char *host, unsigned short port, int timeout, int 
 		else
 			treegix_log(LOG_LEVEL_DEBUG, "Telnet check error: no login prompt");
 
-		zbx_tcp_close(&s);
+		trx_tcp_close(&s);
 	}
 	else
-		treegix_log(LOG_LEVEL_DEBUG, "%s error: %s", __func__, zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "%s error: %s", __func__, trx_socket_strerror());
 
 	return SYSINFO_RET_OK;
 }
@@ -263,11 +263,11 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 	int		value_int, ret = SYSINFO_RET_FAIL;
 	double		check_time;
 
-	check_time = zbx_time();
+	check_time = trx_time();
 
 	if (3 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -277,7 +277,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 
 	if (NULL == service || '\0' == *service)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -288,7 +288,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 
 	if (NULL != port_str && '\0' != *port_str && SUCCEED != is_ushort(port_str, &port))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -307,7 +307,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 				port = TRX_DEFAULT_LDAP_PORT;
 			ret = check_ldap(ip, port, CONFIG_TIMEOUT, &value_int);
 #else
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for LDAP check was not compiled in."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Support for LDAP check was not compiled in."));
 #endif
 		}
 		else if (0 == strcmp(service, "smtp"))
@@ -350,7 +350,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 		{
 			if (NULL == port_str || '\0' == *port_str)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 				return SYSINFO_RET_FAIL;
 			}
 			ret = tcp_expect(ip, port, CONFIG_TIMEOUT, NULL, NULL, NULL, &value_int);
@@ -362,7 +362,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 				port = TRX_DEFAULT_HTTPS_PORT;
 			ret = check_https(ip, port, CONFIG_TIMEOUT, &value_int);
 #else
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for HTTPS check was not compiled in."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Support for HTTPS check was not compiled in."));
 #endif
 		}
 		else if (0 == strcmp(service, "telnet"))
@@ -373,7 +373,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 			return ret;
 		}
 	}
@@ -387,7 +387,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 			return ret;
 		}
 	}
@@ -398,7 +398,7 @@ int	check_service(AGENT_REQUEST *request, const char *default_addr, AGENT_RESULT
 		{
 			if (0 != value_int)
 			{
-				check_time = zbx_time() - check_time;
+				check_time = trx_time() - check_time;
 
 				if (TRX_FLOAT_PRECISION > check_time)
 					check_time = TRX_FLOAT_PRECISION;

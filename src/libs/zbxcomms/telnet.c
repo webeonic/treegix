@@ -30,8 +30,8 @@ static int	telnet_waitsocket(TRX_SOCKET socket_fd, int mode)
 
 	if (TRX_PROTO_ERROR == rc)
 	{
-		treegix_log(LOG_LEVEL_DEBUG, "%s() rc:%d errno:%d error:[%s]", __func__, rc, zbx_socket_last_error(),
-				strerror_from_system(zbx_socket_last_error()));
+		treegix_log(LOG_LEVEL_DEBUG, "%s() rc:%d errno:%d error:[%s]", __func__, rc, trx_socket_last_error(),
+				strerror_from_system(trx_socket_last_error()));
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __func__, rc);
@@ -48,7 +48,7 @@ static ssize_t	telnet_socket_read(TRX_SOCKET socket_fd, void *buf, size_t count)
 
 	while (TRX_PROTO_ERROR == (rc = TRX_TCP_READ(socket_fd, buf, count)))
 	{
-		error = zbx_socket_last_error();	/* treegix_log() resets the error code */
+		error = trx_socket_last_error();	/* treegix_log() resets the error code */
 		treegix_log(LOG_LEVEL_DEBUG, "%s() rc:%ld errno:%d error:[%s]",
 				__func__, (long int)rc, error, strerror_from_system(error));
 #ifdef _WINDOWS
@@ -87,7 +87,7 @@ static ssize_t	telnet_socket_write(TRX_SOCKET socket_fd, const void *buf, size_t
 
 	while (TRX_PROTO_ERROR == (rc = TRX_TCP_WRITE(socket_fd, buf, count)))
 	{
-		error = zbx_socket_last_error();	/* treegix_log() resets the error code */
+		error = trx_socket_last_error();	/* treegix_log() resets the error code */
 		treegix_log(LOG_LEVEL_DEBUG, "%s() rc:%ld errno:%d error:[%s]",
 				__func__, (long int)rc, error, strerror_from_system(error));
 #ifdef _WINDOWS
@@ -310,7 +310,7 @@ int	telnet_test_login(TRX_SOCKET socket_fd)
 	if (TRX_PROTO_ERROR != rc)
 		ret = SUCCEED;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -336,7 +336,7 @@ int	telnet_login(TRX_SOCKET socket_fd, const char *username, const char *passwor
 
 	if (TRX_PROTO_ERROR == rc)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "No login prompt."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "No login prompt."));
 		goto fail;
 	}
 
@@ -356,7 +356,7 @@ int	telnet_login(TRX_SOCKET socket_fd, const char *username, const char *passwor
 
 	if (TRX_PROTO_ERROR == rc)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "No password prompt."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "No password prompt."));
 		goto fail;
 	}
 
@@ -379,13 +379,13 @@ int	telnet_login(TRX_SOCKET socket_fd, const char *username, const char *passwor
 
 	if (TRX_PROTO_ERROR == rc)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Login failed."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Login failed."));
 		goto fail;
 	}
 
 	ret = SUCCEED;
 fail:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -403,12 +403,12 @@ int	telnet_execute(TRX_SOCKET socket_fd, const char *command, AGENT_RESULT *resu
 	/* `command' with multiple lines may contain CR+LF from the browser;	*/
 	/* it should be converted to plain LF to remove echo later on properly	*/
 	offset_lf = strlen(command);
-	command_lf = (char *)zbx_malloc(command_lf, offset_lf + 1);
-	zbx_strlcpy(command_lf, command, offset_lf + 1);
+	command_lf = (char *)trx_malloc(command_lf, offset_lf + 1);
+	trx_strlcpy(command_lf, command, offset_lf + 1);
 	convert_telnet_to_unix_eol(command_lf, &offset_lf);
 
 	/* telnet protocol requires that end-of-line is transferred as CR+LF	*/
-	command_crlf = (char *)zbx_malloc(command_crlf, offset_lf * 2 + 1);
+	command_crlf = (char *)trx_malloc(command_crlf, offset_lf * 2 + 1);
 	convert_unix_to_telnet_eol(command_lf, offset_lf, command_crlf, &offset_crlf);
 
 	telnet_socket_write(socket_fd, command_crlf, offset_crlf);
@@ -427,8 +427,8 @@ int	telnet_execute(TRX_SOCKET socket_fd, const char *command, AGENT_RESULT *resu
 
 	if (TRX_PROTO_ERROR == rc)
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot find prompt after command execution: %s",
-				strerror_from_system(zbx_socket_last_error())));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot find prompt after command execution: %s",
+				strerror_from_system(trx_socket_last_error())));
 		goto fail;
 	}
 
@@ -465,10 +465,10 @@ int	telnet_execute(TRX_SOCKET socket_fd, const char *command, AGENT_RESULT *resu
 	SET_STR_RESULT(result, convert_to_utf8(buf, offset, encoding));
 	ret = SUCCEED;
 fail:
-	zbx_free(command_lf);
-	zbx_free(command_crlf);
+	trx_free(command_lf);
+	trx_free(command_crlf);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

@@ -4,15 +4,15 @@
 #define TREEGIX_CPUSTAT_H
 
 #include "sysinfo.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
 #ifdef _WINDOWS
 #	include "perfmon.h"
 
 typedef struct
 {
-	zbx_perf_counter_data_t	**cpu_counter;
-	zbx_perf_counter_data_t	*queue_counter;
+	trx_perf_counter_data_t	**cpu_counter;
+	trx_perf_counter_data_t	*queue_counter;
 	int			count;
 }
 TRX_CPUS_STAT_DATA;
@@ -25,7 +25,7 @@ int	get_cpu_perf_counter_value(int cpu_num, int interval, double *value, char **
 
 typedef struct
 {
-	zbx_uint64_t	h_counter[TRX_CPU_STATE_COUNT][MAX_COLLECTOR_HISTORY];
+	trx_uint64_t	h_counter[TRX_CPU_STATE_COUNT][MAX_COLLECTOR_HISTORY];
 	unsigned char	h_status[MAX_COLLECTOR_HISTORY];
 #if (MAX_COLLECTOR_HISTORY % 8) > 0
 	unsigned char	padding0[8 - (MAX_COLLECTOR_HISTORY % 8)];	/* for 8-byte alignment */
@@ -61,6 +61,6 @@ void	free_cpu_collector(TRX_CPUS_STAT_DATA *pcpus);
 #define TRX_CPU_STATUS_OFFLINE	1
 #define TRX_CPU_STATUS_UNKNOWN	2
 
-int	get_cpus(zbx_vector_uint64_pair_t *vector);
+int	get_cpus(trx_vector_uint64_pair_t *vector);
 
 #endif

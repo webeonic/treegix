@@ -14,7 +14,7 @@ static int	get_ifmib_general(const char *if_name, char **error)
 
 	if (NULL == if_name || '\0'== *if_name)
 	{
-		*error = zbx_strdup(NULL, "Network interface name cannot be empty.");
+		*error = trx_strdup(NULL, "Network interface name cannot be empty.");
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -28,7 +28,7 @@ static int	get_ifmib_general(const char *if_name, char **error)
 
 	if (-1 == sysctl(mib, 5, &ifcount, &len, NULL, 0))
 	{
-		*error = zbx_dsprintf(NULL, "Cannot obtain number of network interfaces: %s", zbx_strerror(errno));
+		*error = trx_dsprintf(NULL, "Cannot obtain number of network interfaces: %s", trx_strerror(errno));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -44,8 +44,8 @@ static int	get_ifmib_general(const char *if_name, char **error)
 			if (ENOENT == errno)
 				continue;
 
-			*error = zbx_dsprintf(NULL, "Cannot obtain network interface information: %s",
-					zbx_strerror(errno));
+			*error = trx_dsprintf(NULL, "Cannot obtain network interface information: %s",
+					trx_strerror(errno));
 			return SYSINFO_RET_FAIL;
 		}
 
@@ -53,7 +53,7 @@ static int	get_ifmib_general(const char *if_name, char **error)
 			return SYSINFO_RET_OK;
 	}
 
-	*error = zbx_strdup(NULL, "Cannot find information for this network interface.");
+	*error = trx_strdup(NULL, "Cannot find information for this network interface.");
 
 	return SYSINFO_RET_FAIL;
 }
@@ -64,7 +64,7 @@ int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -87,7 +87,7 @@ int	NET_IF_IN(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, ifmd.ifmd_data.ifi_iqdrops);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -100,7 +100,7 @@ int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -121,7 +121,7 @@ int	NET_IF_OUT(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, ifmd.ifmd_data.ifi_oerrors);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -134,7 +134,7 @@ int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -148,14 +148,14 @@ int	NET_IF_TOTAL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	if (NULL == mode || '\0' == *mode || 0 == strcmp(mode, "bytes"))	/* default parameter */
-		SET_UI64_RESULT(result, (zbx_uint64_t)ifmd.ifmd_data.ifi_ibytes + ifmd.ifmd_data.ifi_obytes);
+		SET_UI64_RESULT(result, (trx_uint64_t)ifmd.ifmd_data.ifi_ibytes + ifmd.ifmd_data.ifi_obytes);
 	else if (0 == strcmp(mode, "packets"))
-		SET_UI64_RESULT(result, (zbx_uint64_t)ifmd.ifmd_data.ifi_ipackets + ifmd.ifmd_data.ifi_opackets);
+		SET_UI64_RESULT(result, (trx_uint64_t)ifmd.ifmd_data.ifi_ipackets + ifmd.ifmd_data.ifi_opackets);
 	else if (0 == strcmp(mode, "errors"))
-		SET_UI64_RESULT(result, (zbx_uint64_t)ifmd.ifmd_data.ifi_ierrors + ifmd.ifmd_data.ifi_oerrors);
+		SET_UI64_RESULT(result, (trx_uint64_t)ifmd.ifmd_data.ifi_ierrors + ifmd.ifmd_data.ifi_oerrors);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -170,7 +170,7 @@ int     NET_TCP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -178,11 +178,11 @@ int     NET_TCP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == port_str || SUCCEED != is_ushort(port_str, &port))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_snprintf(command, sizeof(command), "netstat -an | grep '^tcp.*\\.%hu[^.].*LISTEN' | wc -l", port);
+	trx_snprintf(command, sizeof(command), "netstat -an | grep '^tcp.*\\.%hu[^.].*LISTEN' | wc -l", port);
 
 	if (SYSINFO_RET_FAIL == (ret = EXECUTE_INT(command, result)))
 		return ret;
@@ -201,7 +201,7 @@ int     NET_UDP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -209,11 +209,11 @@ int     NET_UDP_LISTEN(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == port_str || SUCCEED != is_ushort(port_str, &port))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_snprintf(command, sizeof(command), "netstat -an | grep '^udp.*\\.%hu[^.].*\\*\\.\\*' | wc -l", port);
+	trx_snprintf(command, sizeof(command), "netstat -an | grep '^udp.*\\.%hu[^.].*\\*\\.\\*' | wc -l", port);
 
 	if (SYSINFO_RET_FAIL == (ret = EXECUTE_INT(command, result)))
 		return ret;
@@ -230,7 +230,7 @@ int     NET_IF_COLLISIONS(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 

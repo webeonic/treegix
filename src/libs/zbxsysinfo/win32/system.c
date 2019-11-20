@@ -19,9 +19,9 @@ static wchar_t	*read_registry_value(HKEY hKey, LPCTSTR name)
 
 	if (ERROR_SUCCESS == RegQueryValueEx(hKey, name, NULL, NULL, NULL, &szData))
 	{
-		value = zbx_malloc(NULL, szData);
+		value = trx_malloc(NULL, szData);
 		if (ERROR_SUCCESS != RegQueryValueEx(hKey, name, NULL, NULL, (LPBYTE)value, &szData))
-			zbx_free(value);
+			trx_free(value);
 	}
 
 	return value;
@@ -29,12 +29,12 @@ static wchar_t	*read_registry_value(HKEY hKey, LPCTSTR name)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_win_getversion                                               *
+ * Function: trx_win_getversion                                               *
  *                                                                            *
  * Purpose: get Windows version information                                   *
  *                                                                            *
  ******************************************************************************/
-const OSVERSIONINFOEX		*zbx_win_getversion(void)
+const OSVERSIONINFOEX		*trx_win_getversion(void)
 {
 #	define TRX_REGKEY_VERSION		"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"
 #	define TRX_REGVALUE_CURRENTVERSION	"CurrentVersion"
@@ -73,7 +73,7 @@ const OSVERSIONINFOEX		*zbx_win_getversion(void)
 
 	vi.dwMajorVersion = _wtoi(key_value);
 
-	zbx_free(key_value);
+	trx_free(key_value);
 
 	if (6 > vi.dwMajorVersion || 2 > vi.dwMinorVersion)
 	{
@@ -85,7 +85,7 @@ const OSVERSIONINFOEX		*zbx_win_getversion(void)
 		{
 			wcscpy_s(vi.szCSDVersion, sizeof(vi.szCSDVersion) / sizeof(*vi.szCSDVersion), key_value);
 
-			zbx_free(key_value);
+			trx_free(key_value);
 		}
 
 		if (NULL == (key_value = read_registry_value(h_key_registry, TEXT(TRX_REGVALUE_CURRENTBUILDNUMBER))))
@@ -96,7 +96,7 @@ const OSVERSIONINFOEX		*zbx_win_getversion(void)
 		}
 
 		vi.dwBuildNumber = _wtoi(key_value);
-		zbx_free(key_value);
+		trx_free(key_value);
 
 		RegCloseKey(h_key_registry);
 		h_key_registry = NULL;
@@ -121,7 +121,7 @@ const OSVERSIONINFOEX		*zbx_win_getversion(void)
 		else if (0 == wcscmp(key_value, L"ServerNT"))
 			vi.wProductType = 3;
 
-		zbx_free(key_value);
+		trx_free(key_value);
 
 		vi.dwPlatformId = VER_PLATFORM_WIN32_NT;
 	}
@@ -153,12 +153,12 @@ int	SYSTEM_UNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	/* It was decided that in context of Windows OS ISA is more useful information than */
 	/* CPU architecture. This is contrary to POSIX and uname(2) in Unix.                */
 
-	zbx_wmi_get(wmi_namespace, "select CSName from Win32_OperatingSystem", &os_csname);
-	zbx_wmi_get(wmi_namespace, "select Version from Win32_OperatingSystem", &os_version);
-	zbx_wmi_get(wmi_namespace, "select Caption from Win32_OperatingSystem", &os_caption);
-	zbx_wmi_get(wmi_namespace, "select CSDVersion from Win32_OperatingSystem", &os_csdversion);
-	zbx_wmi_get(wmi_namespace, "select Architecture from Win32_Processor", &proc_architecture);
-	zbx_wmi_get(wmi_namespace, "select AddressWidth from Win32_Processor", &proc_addresswidth);
+	trx_wmi_get(wmi_namespace, "select CSName from Win32_OperatingSystem", &os_csname);
+	trx_wmi_get(wmi_namespace, "select Version from Win32_OperatingSystem", &os_version);
+	trx_wmi_get(wmi_namespace, "select Caption from Win32_OperatingSystem", &os_caption);
+	trx_wmi_get(wmi_namespace, "select CSDVersion from Win32_OperatingSystem", &os_csdversion);
+	trx_wmi_get(wmi_namespace, "select Architecture from Win32_Processor", &proc_architecture);
+	trx_wmi_get(wmi_namespace, "select AddressWidth from Win32_Processor", &proc_addresswidth);
 
 	if (NULL != proc_architecture)
 	{
@@ -180,7 +180,7 @@ int	SYSTEM_UNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 
 	/* The comments indicate the relevant field in struct utsname (POSIX) that is used in uname(2). */
-	zbx_snprintf_alloc(&os, &os_alloc, &os_offset, "%s %s %s %s%s%s %s",
+	trx_snprintf_alloc(&os, &os_alloc, &os_offset, "%s %s %s %s%s%s %s",
 		sysname,						/* sysname */
 		os_csname ? os_csname : "<unknown nodename>",		/* nodename */
 		os_version ? os_version : "<unknown release>",		/* release */
@@ -189,11 +189,11 @@ int	SYSTEM_UNAME(AGENT_REQUEST *request, AGENT_RESULT *result)
 		os_caption && os_csdversion ? os_csdversion : "",	/* version (cont.) */
 		arch);							/* machine */
 
-	zbx_free(os_csname);
-	zbx_free(os_version);
-	zbx_free(os_caption);
-	zbx_free(os_csdversion);
-	zbx_free(proc_architecture);
+	trx_free(os_csname);
+	trx_free(os_version);
+	trx_free(os_caption);
+	trx_free(os_csdversion);
+	trx_free(proc_architecture);
 
 	SET_STR_RESULT(result, os);
 

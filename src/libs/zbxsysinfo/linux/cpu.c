@@ -13,7 +13,7 @@ int	SYSTEM_CPU_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -25,13 +25,13 @@ int	SYSTEM_CPU_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		name = _SC_NPROCESSORS_CONF;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (-1 == (ncpu = sysconf(name)))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain number of CPUs: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain number of CPUs: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -47,7 +47,7 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (3 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -59,7 +59,7 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else if (SUCCEED != is_uint31_1(tmp, &cpu_num))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -87,7 +87,7 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 		state = TRX_CPU_STATE_GNICE;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -101,7 +101,7 @@ int	SYSTEM_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 		mode = TRX_AVG15;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -116,7 +116,7 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -128,7 +128,7 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else if (0 != strcmp(tmp, "percpu"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -142,13 +142,13 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 		mode = TRX_AVG15;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (mode >= getloadavg(load, 3))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain load average."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain load average."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -158,8 +158,8 @@ int	SYSTEM_CPU_LOAD(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		if (0 >= (cpu_num = sysconf(_SC_NPROCESSORS_ONLN)))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain number of CPUs: %s",
-				zbx_strerror(errno)));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain number of CPUs: %s",
+				trx_strerror(errno)));
 			return SYSINFO_RET_FAIL;
 		}
 		value /= cpu_num;
@@ -174,14 +174,14 @@ int     SYSTEM_CPU_SWITCHES(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int		ret = SYSINFO_RET_FAIL;
 	char		line[MAX_STRING_LEN];
-	zbx_uint64_t	value = 0;
+	trx_uint64_t	value = 0;
 	FILE		*f;
 
 	TRX_UNUSED(request);
 
 	if (NULL == (f = fopen("/proc/stat", "r")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc/stat: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc/stat: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -197,10 +197,10 @@ int     SYSTEM_CPU_SWITCHES(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = SYSINFO_RET_OK;
 		break;
 	}
-	zbx_fclose(f);
+	trx_fclose(f);
 
 	if (SYSINFO_RET_FAIL == ret)
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot find a line with \"ctxt\" in /proc/stat."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot find a line with \"ctxt\" in /proc/stat."));
 
 	return ret;
 }
@@ -209,14 +209,14 @@ int     SYSTEM_CPU_INTR(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	int		ret = SYSINFO_RET_FAIL;
 	char		line[MAX_STRING_LEN];
-	zbx_uint64_t	value = 0;
+	trx_uint64_t	value = 0;
 	FILE		*f;
 
 	TRX_UNUSED(request);
 
 	if (NULL == (f = fopen("/proc/stat", "r")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc/stat: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc/stat: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -232,10 +232,10 @@ int     SYSTEM_CPU_INTR(AGENT_REQUEST *request, AGENT_RESULT *result)
 		ret = SYSINFO_RET_OK;
 		break;
 	}
-	zbx_fclose(f);
+	trx_fclose(f);
 
 	if (SYSINFO_RET_FAIL == ret)
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot find a line with \"intr\" in /proc/stat."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot find a line with \"intr\" in /proc/stat."));
 
 	return ret;
 }

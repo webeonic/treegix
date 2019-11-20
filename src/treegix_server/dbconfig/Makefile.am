@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxdbconfig.a
+noinst_LIBRARIES = libtrxdbconfig.a
 
-libzbxdbconfig_a_SOURCES = dbconfig.c dbconfig.h
+libtrxdbconfig_a_SOURCES = dbconfig.c dbconfig.h

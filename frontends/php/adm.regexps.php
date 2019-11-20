@@ -79,7 +79,7 @@ if (isset($_REQUEST['output']) && $_REQUEST['output'] == 'ajax') {
  * Permissions
  */
 if (isset($_REQUEST['regexpid'])) {
-	$regExp = DBfetch(DBSelect('SELECT re.regexpid FROM regexps re WHERE re.regexpid='.zbx_dbstr(getRequest('regexpid'))));
+	$regExp = DBfetch(DBSelect('SELECT re.regexpid FROM regexps re WHERE re.regexpid='.trx_dbstr(getRequest('regexpid'))));
 	if (empty($regExp)) {
 		access_deny();
 	}
@@ -96,7 +96,7 @@ if (hasRequest('action') && !hasRequest('regexpid')) {
 			'SELECT regexpid FROM regexps re WHERE '.dbConditionInt('re.regexpid', getRequest('regexpids'))
 		));
 		if (count($reg_exps) != count(getRequest('regexpids'))) {
-			uncheckTableRows(null, zbx_objectValues($reg_exps, 'regexpid'));
+			uncheckTableRows(null, trx_objectValues($reg_exps, 'regexpid'));
 			show_error_message(_('No permissions to referred object or it does not exist!'));
 			$mass_skip = true;
 		}
@@ -153,7 +153,7 @@ if (hasRequest('add') || hasRequest('update')) {
 elseif (hasRequest('action') && getRequest('action') == 'regexp.massdelete' && !$mass_skip) {
 	$regExpIds = getRequest('regexpids', getRequest('regexpid', []));
 
-	zbx_value2array($regExpIds);
+	trx_value2array($regExpIds);
 
 	$regExps = [];
 	foreach ($regExpIds as $regExpId) {
@@ -200,7 +200,7 @@ if (isset($_REQUEST['form'])) {
 		$regExp = DBfetch(DBSelect(
 			'SELECT re.name,re.test_string'.
 			' FROM regexps re'.
-			' WHERE re.regexpid='.zbx_dbstr($_REQUEST['regexpid'])
+			' WHERE re.regexpid='.trx_dbstr($_REQUEST['regexpid'])
 		));
 
 		$data['name'] = $regExp['name'];
@@ -208,7 +208,7 @@ if (isset($_REQUEST['form'])) {
 		$data['expressions'] = DBfetchArray(DBselect(
 			'SELECT e.expressionid,e.expression,e.expression_type,e.exp_delimiter,e.case_sensitive'.
 			' FROM expressions e'.
-			' WHERE e.regexpid='.zbx_dbstr($_REQUEST['regexpid']).
+			' WHERE e.regexpid='.trx_dbstr($_REQUEST['regexpid']).
 			' ORDER BY e.expression_type'
 		));
 	}

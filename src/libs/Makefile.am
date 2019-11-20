@@ -1,95 +1,95 @@
 ## Process this file with automake to produce Makefile.in
 
 DIST_SUBDIRS = \
-	zbxdbcache \
-	zbxdbhigh \
-	zbxdb \
-	zbxdbupgrade \
-	zbxmemory \
-	zbxalgo \
-	zbxmedia \
-	zbxcrypto \
-	zbxcommon \
-	zbxcomms \
-	zbxcommshigh \
-	zbxlog \
-	zbxnix \
-	zbxconf \
-	zbxsysinfo \
-	zbxsys \
-	zbxjson \
-	zbxserver \
-	zbxicmpping \
-	zbxexec \
-	zbxself \
-	zbxmodules \
-	zbxregexp \
-	zbxtasks \
-	zbxhttp \
-	zbxipcservice \
-	zbxhistory \
-	zbxcompress \
-	zbxembed \
-	zbxprometheus
+	trxdbcache \
+	trxdbhigh \
+	trxdb \
+	trxdbupgrade \
+	trxmemory \
+	trxalgo \
+	trxmedia \
+	trxcrypto \
+	trxcommon \
+	trxcomms \
+	trxcommshigh \
+	trxlog \
+	trxnix \
+	trxconf \
+	trxsysinfo \
+	trxsys \
+	trxjson \
+	trxserver \
+	trxicmpping \
+	trxexec \
+	trxself \
+	trxmodules \
+	trxregexp \
+	trxtasks \
+	trxhttp \
+	trxipcservice \
+	trxhistory \
+	trxcompress \
+	trxembed \
+	trxprometheus
 
 if SERVER
 SERVER_SUBDIRS = \
-	zbxcommshigh \
-	zbxdb \
-	zbxdbupgrade \
-	zbxdbcache \
-	zbxdbhigh \
-	zbxhttp \
-	zbxmemory \
-	zbxserver \
-	zbxicmpping \
-	zbxmedia \
-	zbxself \
-	zbxtasks \
-	zbxhistory \
-	zbxcompress \
-	zbxembed \
-	zbxprometheus
+	trxcommshigh \
+	trxdb \
+	trxdbupgrade \
+	trxdbcache \
+	trxdbhigh \
+	trxhttp \
+	trxmemory \
+	trxserver \
+	trxicmpping \
+	trxmedia \
+	trxself \
+	trxtasks \
+	trxhistory \
+	trxcompress \
+	trxembed \
+	trxprometheus
 else
 if PROXY
 PROXY_SUBDIRS = \
-	zbxcommshigh \
-	zbxdb \
-	zbxdbupgrade \
-	zbxdbcache \
-	zbxdbhigh \
-	zbxhttp \
-	zbxmemory \
-	zbxserver \
-	zbxicmpping \
-	zbxself \
-	zbxtasks \
-	zbxhistory \
-	zbxcompress \
-	zbxembed \
-	zbxprometheus
+	trxcommshigh \
+	trxdb \
+	trxdbupgrade \
+	trxdbcache \
+	trxdbhigh \
+	trxhttp \
+	trxmemory \
+	trxserver \
+	trxicmpping \
+	trxself \
+	trxtasks \
+	trxhistory \
+	trxcompress \
+	trxembed \
+	trxprometheus
 endif
 endif
 
 SUBDIRS = \
-	zbxcrypto \
-	zbxcommon \
-	zbxlog \
-	zbxalgo \
-	zbxnix \
-	zbxconf \
-	zbxhttp \
-	zbxsysinfo \
-	zbxsys \
-	zbxcomms \
-	zbxjson \
-	zbxexec \
-	zbxmodules \
-	zbxregexp \
-	zbxipcservice \
-	zbxcompress \
+	trxcrypto \
+	trxcommon \
+	trxlog \
+	trxalgo \
+	trxnix \
+	trxconf \
+	trxhttp \
+	trxsysinfo \
+	trxsys \
+	trxcomms \
+	trxjson \
+	trxexec \
+	trxmodules \
+	trxregexp \
+	trxipcservice \
+	trxcompress \
 	$(PROXY_SUBDIRS) \
 	$(SERVER_SUBDIRS) \
 	$(AGENT_SUBDIRS)
 
-EXTRA_DIST = zbxwin32
+EXTRA_DIST = trxwin32

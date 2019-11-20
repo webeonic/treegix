@@ -16,33 +16,33 @@ int	USER_PERF_COUNTER(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 != request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 		goto out;
 	}
 
 	if (NULL == (counter = get_rparam(request, 0)) || '\0' == *counter)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto out;
 	}
 
 	if (SUCCEED != get_perf_counter_value_by_name(counter, &value, &error))
 	{
 		SET_MSG_RESULT(result, error != NULL ? error :
-				zbx_strdup(NULL, "Cannot obtain performance information from collector."));
+				trx_strdup(NULL, "Cannot obtain performance information from collector."));
 		goto out;
 	}
 
 	SET_DBL_RESULT(result, value);
 	ret = SYSINFO_RET_OK;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 static int perf_counter_ex(const char *function, AGENT_REQUEST *request, AGENT_RESULT *result,
-		zbx_perf_counter_lang_t lang)
+		trx_perf_counter_lang_t lang)
 {
 	char	counterpath[PDH_MAX_COUNTER_PATH], *tmp, *error = NULL;
 	int	interval, ret = SYSINFO_RET_FAIL;
@@ -52,7 +52,7 @@ static int perf_counter_ex(const char *function, AGENT_REQUEST *request, AGENT_R
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		goto out;
 	}
 
@@ -60,7 +60,7 @@ static int perf_counter_ex(const char *function, AGENT_REQUEST *request, AGENT_R
 
 	if (NULL == tmp || '\0' == *tmp)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		goto out;
 	}
 
@@ -72,33 +72,33 @@ static int perf_counter_ex(const char *function, AGENT_REQUEST *request, AGENT_R
 	}
 	else if (FAIL == is_uint31(tmp, &interval))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		goto out;
 	}
 
 	if (1 > interval || MAX_COLLECTOR_PERIOD < interval)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Interval out of range."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Interval out of range."));
 		goto out;
 	}
 
 	if (FAIL == check_counter_path(counterpath, PERF_COUNTER_LANG_DEFAULT == lang))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid performance counter path."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid performance counter path."));
 		goto out;
 	}
 
 	if (SUCCEED != get_perf_counter_value_by_path(counterpath, interval, lang, &value, &error))
 	{
 		SET_MSG_RESULT(result, error != NULL ? error :
-				zbx_strdup(NULL, "Cannot obtain performance information from collector."));
+				trx_strdup(NULL, "Cannot obtain performance information from collector."));
 		goto out;
 	}
 
 	ret = SYSINFO_RET_OK;
 	SET_DBL_RESULT(result, value);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", function, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", function, trx_result_string(ret));
 
 	return ret;
 }

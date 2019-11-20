@@ -117,32 +117,32 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxpoller_a_AR = $(AR) $(ARFLAGS)
-libzbxpoller_a_LIBADD =
-am_libzbxpoller_a_OBJECTS = libzbxpoller_a-checks_agent.$(OBJEXT) \
-	libzbxpoller_a-checks_internal.$(OBJEXT) \
-	libzbxpoller_a-checks_simple.$(OBJEXT) \
-	libzbxpoller_a-checks_simple_vmware.$(OBJEXT) \
-	libzbxpoller_a-checks_snmp.$(OBJEXT) \
-	libzbxpoller_a-checks_db.$(OBJEXT) \
-	libzbxpoller_a-checks_aggregate.$(OBJEXT) \
-	libzbxpoller_a-checks_external.$(OBJEXT) \
-	libzbxpoller_a-checks_ssh.$(OBJEXT) \
-	libzbxpoller_a-checks_telnet.$(OBJEXT) \
-	libzbxpoller_a-checks_java.$(OBJEXT) \
-	libzbxpoller_a-checks_calculated.$(OBJEXT) \
-	libzbxpoller_a-checks_http.$(OBJEXT) \
-	libzbxpoller_a-poller.$(OBJEXT)
-libzbxpoller_a_OBJECTS = $(am_libzbxpoller_a_OBJECTS)
-libzbxpoller_proxy_a_AR = $(AR) $(ARFLAGS)
-libzbxpoller_proxy_a_LIBADD =
-am_libzbxpoller_proxy_a_OBJECTS = checks_internal_proxy.$(OBJEXT)
-libzbxpoller_proxy_a_OBJECTS = $(am_libzbxpoller_proxy_a_OBJECTS)
-libzbxpoller_server_a_AR = $(AR) $(ARFLAGS)
-libzbxpoller_server_a_LIBADD =
-am_libzbxpoller_server_a_OBJECTS =  \
-	libzbxpoller_server_a-checks_internal_server.$(OBJEXT)
-libzbxpoller_server_a_OBJECTS = $(am_libzbxpoller_server_a_OBJECTS)
+libtrxpoller_a_AR = $(AR) $(ARFLAGS)
+libtrxpoller_a_LIBADD =
+am_libtrxpoller_a_OBJECTS = libtrxpoller_a-checks_agent.$(OBJEXT) \
+	libtrxpoller_a-checks_internal.$(OBJEXT) \
+	libtrxpoller_a-checks_simple.$(OBJEXT) \
+	libtrxpoller_a-checks_simple_vmware.$(OBJEXT) \
+	libtrxpoller_a-checks_snmp.$(OBJEXT) \
+	libtrxpoller_a-checks_db.$(OBJEXT) \
+	libtrxpoller_a-checks_aggregate.$(OBJEXT) \
+	libtrxpoller_a-checks_external.$(OBJEXT) \
+	libtrxpoller_a-checks_ssh.$(OBJEXT) \
+	libtrxpoller_a-checks_telnet.$(OBJEXT) \
+	libtrxpoller_a-checks_java.$(OBJEXT) \
+	libtrxpoller_a-checks_calculated.$(OBJEXT) \
+	libtrxpoller_a-checks_http.$(OBJEXT) \
+	libtrxpoller_a-poller.$(OBJEXT)
+libtrxpoller_a_OBJECTS = $(am_libtrxpoller_a_OBJECTS)
+libtrxpoller_proxy_a_AR = $(AR) $(ARFLAGS)
+libtrxpoller_proxy_a_LIBADD =
+am_libtrxpoller_proxy_a_OBJECTS = checks_internal_proxy.$(OBJEXT)
+libtrxpoller_proxy_a_OBJECTS = $(am_libtrxpoller_proxy_a_OBJECTS)
+libtrxpoller_server_a_AR = $(AR) $(ARFLAGS)
+libtrxpoller_server_a_LIBADD =
+am_libtrxpoller_server_a_OBJECTS =  \
+	libtrxpoller_server_a-checks_internal_server.$(OBJEXT)
+libtrxpoller_server_a_OBJECTS = $(am_libtrxpoller_server_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -175,11 +175,11 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxpoller_a_SOURCES) $(libzbxpoller_proxy_a_SOURCES) \
-	$(libzbxpoller_server_a_SOURCES)
-DIST_SOURCES = $(libzbxpoller_a_SOURCES) \
-	$(libzbxpoller_proxy_a_SOURCES) \
-	$(libzbxpoller_server_a_SOURCES)
+SOURCES = $(libtrxpoller_a_SOURCES) $(libtrxpoller_proxy_a_SOURCES) \
+	$(libtrxpoller_server_a_SOURCES)
+DIST_SOURCES = $(libtrxpoller_a_SOURCES) \
+	$(libtrxpoller_proxy_a_SOURCES) \
+	$(libtrxpoller_server_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -403,8 +403,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxpoller.a libzbxpoller_server.a libzbxpoller_proxy.a
-libzbxpoller_a_SOURCES = \
+noinst_LIBRARIES = libtrxpoller.a libtrxpoller_server.a libtrxpoller_proxy.a
+libtrxpoller_a_SOURCES = \
 	checks_agent.c checks_agent.h \
 	checks_internal.c checks_internal.h \
 	checks_simple.c checks_simple.h \
@@ -420,14 +420,14 @@ libzbxpoller_a_SOURCES = \
 	checks_http.c checks_http.h \
 	poller.c poller.h
 
-libzbxpoller_server_a_SOURCES = \
+libtrxpoller_server_a_SOURCES = \
 	checks_internal_server.c checks_internal.h
 
-libzbxpoller_proxy_a_SOURCES = \
+libtrxpoller_proxy_a_SOURCES = \
 	checks_internal_proxy.c checks_internal.h
 
-libzbxpoller_a_CFLAGS = -I@top_srcdir@/src/libs/zbxsysinfo/simple -I@top_srcdir@/src/libs/zbxdbcache @SNMP_CFLAGS@ @SSH2_CFLAGS@
-libzbxpoller_server_a_CFLAGS = -I@top_srcdir@/src/libs/zbxdbcache
+libtrxpoller_a_CFLAGS = -I@top_srcdir@/src/libs/trxsysinfo/simple -I@top_srcdir@/src/libs/trxdbcache @SNMP_CFLAGS@ @SSH2_CFLAGS@
+libtrxpoller_server_a_CFLAGS = -I@top_srcdir@/src/libs/trxdbcache
 all: all-am
 
 .SUFFIXES:
@@ -465,20 +465,20 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxpoller.a: $(libzbxpoller_a_OBJECTS) $(libzbxpoller_a_DEPENDENCIES) $(EXTRA_libzbxpoller_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxpoller.a
-	$(AM_V_AR)$(libzbxpoller_a_AR) libzbxpoller.a $(libzbxpoller_a_OBJECTS) $(libzbxpoller_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxpoller.a
+libtrxpoller.a: $(libtrxpoller_a_OBJECTS) $(libtrxpoller_a_DEPENDENCIES) $(EXTRA_libtrxpoller_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxpoller.a
+	$(AM_V_AR)$(libtrxpoller_a_AR) libtrxpoller.a $(libtrxpoller_a_OBJECTS) $(libtrxpoller_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxpoller.a
 
-libzbxpoller_proxy.a: $(libzbxpoller_proxy_a_OBJECTS) $(libzbxpoller_proxy_a_DEPENDENCIES) $(EXTRA_libzbxpoller_proxy_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxpoller_proxy.a
-	$(AM_V_AR)$(libzbxpoller_proxy_a_AR) libzbxpoller_proxy.a $(libzbxpoller_proxy_a_OBJECTS) $(libzbxpoller_proxy_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxpoller_proxy.a
+libtrxpoller_proxy.a: $(libtrxpoller_proxy_a_OBJECTS) $(libtrxpoller_proxy_a_DEPENDENCIES) $(EXTRA_libtrxpoller_proxy_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxpoller_proxy.a
+	$(AM_V_AR)$(libtrxpoller_proxy_a_AR) libtrxpoller_proxy.a $(libtrxpoller_proxy_a_OBJECTS) $(libtrxpoller_proxy_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxpoller_proxy.a
 
-libzbxpoller_server.a: $(libzbxpoller_server_a_OBJECTS) $(libzbxpoller_server_a_DEPENDENCIES) $(EXTRA_libzbxpoller_server_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxpoller_server.a
-	$(AM_V_AR)$(libzbxpoller_server_a_AR) libzbxpoller_server.a $(libzbxpoller_server_a_OBJECTS) $(libzbxpoller_server_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxpoller_server.a
+libtrxpoller_server.a: $(libtrxpoller_server_a_OBJECTS) $(libtrxpoller_server_a_DEPENDENCIES) $(EXTRA_libtrxpoller_server_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxpoller_server.a
+	$(AM_V_AR)$(libtrxpoller_server_a_AR) libtrxpoller_server.a $(libtrxpoller_server_a_OBJECTS) $(libtrxpoller_server_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxpoller_server.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -487,21 +487,21 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/checks_internal_proxy.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_agent.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_aggregate.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_calculated.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_db.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_external.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_http.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_internal.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_java.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_simple.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_simple_vmware.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_snmp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_ssh.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-checks_telnet.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_a-poller.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxpoller_server_a-checks_internal_server.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_agent.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_aggregate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_calculated.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_db.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_external.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_http.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_internal.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_java.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_simple.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_simple_vmware.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_snmp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_ssh.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-checks_telnet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_a-poller.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxpoller_server_a-checks_internal_server.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -519,215 +519,215 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxpoller_a-checks_agent.o: checks_agent.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_agent.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_agent.Tpo -c -o libzbxpoller_a-checks_agent.o `test -f 'checks_agent.c' || echo '$(srcdir)/'`checks_agent.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_agent.Tpo $(DEPDIR)/libzbxpoller_a-checks_agent.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_agent.c' object='libzbxpoller_a-checks_agent.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_agent.o: checks_agent.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_agent.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_agent.Tpo -c -o libtrxpoller_a-checks_agent.o `test -f 'checks_agent.c' || echo '$(srcdir)/'`checks_agent.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_agent.Tpo $(DEPDIR)/libtrxpoller_a-checks_agent.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_agent.c' object='libtrxpoller_a-checks_agent.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_agent.o `test -f 'checks_agent.c' || echo '$(srcdir)/'`checks_agent.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_agent.o `test -f 'checks_agent.c' || echo '$(srcdir)/'`checks_agent.c
 
-libzbxpoller_a-checks_agent.obj: checks_agent.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_agent.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_agent.Tpo -c -o libzbxpoller_a-checks_agent.obj `if test -f 'checks_agent.c'; then $(CYGPATH_W) 'checks_agent.c'; else $(CYGPATH_W) '$(srcdir)/checks_agent.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_agent.Tpo $(DEPDIR)/libzbxpoller_a-checks_agent.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_agent.c' object='libzbxpoller_a-checks_agent.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_agent.obj: checks_agent.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_agent.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_agent.Tpo -c -o libtrxpoller_a-checks_agent.obj `if test -f 'checks_agent.c'; then $(CYGPATH_W) 'checks_agent.c'; else $(CYGPATH_W) '$(srcdir)/checks_agent.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_agent.Tpo $(DEPDIR)/libtrxpoller_a-checks_agent.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_agent.c' object='libtrxpoller_a-checks_agent.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_agent.obj `if test -f 'checks_agent.c'; then $(CYGPATH_W) 'checks_agent.c'; else $(CYGPATH_W) '$(srcdir)/checks_agent.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_agent.obj `if test -f 'checks_agent.c'; then $(CYGPATH_W) 'checks_agent.c'; else $(CYGPATH_W) '$(srcdir)/checks_agent.c'; fi`
 
-libzbxpoller_a-checks_internal.o: checks_internal.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_internal.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_internal.Tpo -c -o libzbxpoller_a-checks_internal.o `test -f 'checks_internal.c' || echo '$(srcdir)/'`checks_internal.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_internal.Tpo $(DEPDIR)/libzbxpoller_a-checks_internal.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_internal.c' object='libzbxpoller_a-checks_internal.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_internal.o: checks_internal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_internal.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_internal.Tpo -c -o libtrxpoller_a-checks_internal.o `test -f 'checks_internal.c' || echo '$(srcdir)/'`checks_internal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_internal.Tpo $(DEPDIR)/libtrxpoller_a-checks_internal.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_internal.c' object='libtrxpoller_a-checks_internal.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_internal.o `test -f 'checks_internal.c' || echo '$(srcdir)/'`checks_internal.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_internal.o `test -f 'checks_internal.c' || echo '$(srcdir)/'`checks_internal.c
 
-libzbxpoller_a-checks_internal.obj: checks_internal.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_internal.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_internal.Tpo -c -o libzbxpoller_a-checks_internal.obj `if test -f 'checks_internal.c'; then $(CYGPATH_W) 'checks_internal.c'; else $(CYGPATH_W) '$(srcdir)/checks_internal.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_internal.Tpo $(DEPDIR)/libzbxpoller_a-checks_internal.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_internal.c' object='libzbxpoller_a-checks_internal.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_internal.obj: checks_internal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_internal.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_internal.Tpo -c -o libtrxpoller_a-checks_internal.obj `if test -f 'checks_internal.c'; then $(CYGPATH_W) 'checks_internal.c'; else $(CYGPATH_W) '$(srcdir)/checks_internal.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_internal.Tpo $(DEPDIR)/libtrxpoller_a-checks_internal.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_internal.c' object='libtrxpoller_a-checks_internal.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_internal.obj `if test -f 'checks_internal.c'; then $(CYGPATH_W) 'checks_internal.c'; else $(CYGPATH_W) '$(srcdir)/checks_internal.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_internal.obj `if test -f 'checks_internal.c'; then $(CYGPATH_W) 'checks_internal.c'; else $(CYGPATH_W) '$(srcdir)/checks_internal.c'; fi`
 
-libzbxpoller_a-checks_simple.o: checks_simple.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_simple.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_simple.Tpo -c -o libzbxpoller_a-checks_simple.o `test -f 'checks_simple.c' || echo '$(srcdir)/'`checks_simple.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_simple.Tpo $(DEPDIR)/libzbxpoller_a-checks_simple.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_simple.c' object='libzbxpoller_a-checks_simple.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_simple.o: checks_simple.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_simple.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_simple.Tpo -c -o libtrxpoller_a-checks_simple.o `test -f 'checks_simple.c' || echo '$(srcdir)/'`checks_simple.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_simple.Tpo $(DEPDIR)/libtrxpoller_a-checks_simple.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_simple.c' object='libtrxpoller_a-checks_simple.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_simple.o `test -f 'checks_simple.c' || echo '$(srcdir)/'`checks_simple.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_simple.o `test -f 'checks_simple.c' || echo '$(srcdir)/'`checks_simple.c
 
-libzbxpoller_a-checks_simple.obj: checks_simple.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_simple.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_simple.Tpo -c -o libzbxpoller_a-checks_simple.obj `if test -f 'checks_simple.c'; then $(CYGPATH_W) 'checks_simple.c'; else $(CYGPATH_W) '$(srcdir)/checks_simple.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_simple.Tpo $(DEPDIR)/libzbxpoller_a-checks_simple.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_simple.c' object='libzbxpoller_a-checks_simple.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_simple.obj: checks_simple.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_simple.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_simple.Tpo -c -o libtrxpoller_a-checks_simple.obj `if test -f 'checks_simple.c'; then $(CYGPATH_W) 'checks_simple.c'; else $(CYGPATH_W) '$(srcdir)/checks_simple.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_simple.Tpo $(DEPDIR)/libtrxpoller_a-checks_simple.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_simple.c' object='libtrxpoller_a-checks_simple.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_simple.obj `if test -f 'checks_simple.c'; then $(CYGPATH_W) 'checks_simple.c'; else $(CYGPATH_W) '$(srcdir)/checks_simple.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_simple.obj `if test -f 'checks_simple.c'; then $(CYGPATH_W) 'checks_simple.c'; else $(CYGPATH_W) '$(srcdir)/checks_simple.c'; fi`
 
-libzbxpoller_a-checks_simple_vmware.o: checks_simple_vmware.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_simple_vmware.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_simple_vmware.Tpo -c -o libzbxpoller_a-checks_simple_vmware.o `test -f 'checks_simple_vmware.c' || echo '$(srcdir)/'`checks_simple_vmware.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_simple_vmware.Tpo $(DEPDIR)/libzbxpoller_a-checks_simple_vmware.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_simple_vmware.c' object='libzbxpoller_a-checks_simple_vmware.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_simple_vmware.o: checks_simple_vmware.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_simple_vmware.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_simple_vmware.Tpo -c -o libtrxpoller_a-checks_simple_vmware.o `test -f 'checks_simple_vmware.c' || echo '$(srcdir)/'`checks_simple_vmware.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_simple_vmware.Tpo $(DEPDIR)/libtrxpoller_a-checks_simple_vmware.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_simple_vmware.c' object='libtrxpoller_a-checks_simple_vmware.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_simple_vmware.o `test -f 'checks_simple_vmware.c' || echo '$(srcdir)/'`checks_simple_vmware.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_simple_vmware.o `test -f 'checks_simple_vmware.c' || echo '$(srcdir)/'`checks_simple_vmware.c
 
-libzbxpoller_a-checks_simple_vmware.obj: checks_simple_vmware.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_simple_vmware.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_simple_vmware.Tpo -c -o libzbxpoller_a-checks_simple_vmware.obj `if test -f 'checks_simple_vmware.c'; then $(CYGPATH_W) 'checks_simple_vmware.c'; else $(CYGPATH_W) '$(srcdir)/checks_simple_vmware.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_simple_vmware.Tpo $(DEPDIR)/libzbxpoller_a-checks_simple_vmware.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_simple_vmware.c' object='libzbxpoller_a-checks_simple_vmware.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_simple_vmware.obj: checks_simple_vmware.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_simple_vmware.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_simple_vmware.Tpo -c -o libtrxpoller_a-checks_simple_vmware.obj `if test -f 'checks_simple_vmware.c'; then $(CYGPATH_W) 'checks_simple_vmware.c'; else $(CYGPATH_W) '$(srcdir)/checks_simple_vmware.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_simple_vmware.Tpo $(DEPDIR)/libtrxpoller_a-checks_simple_vmware.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_simple_vmware.c' object='libtrxpoller_a-checks_simple_vmware.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_simple_vmware.obj `if test -f 'checks_simple_vmware.c'; then $(CYGPATH_W) 'checks_simple_vmware.c'; else $(CYGPATH_W) '$(srcdir)/checks_simple_vmware.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_simple_vmware.obj `if test -f 'checks_simple_vmware.c'; then $(CYGPATH_W) 'checks_simple_vmware.c'; else $(CYGPATH_W) '$(srcdir)/checks_simple_vmware.c'; fi`
 
-libzbxpoller_a-checks_snmp.o: checks_snmp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_snmp.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_snmp.Tpo -c -o libzbxpoller_a-checks_snmp.o `test -f 'checks_snmp.c' || echo '$(srcdir)/'`checks_snmp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_snmp.Tpo $(DEPDIR)/libzbxpoller_a-checks_snmp.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_snmp.c' object='libzbxpoller_a-checks_snmp.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_snmp.o: checks_snmp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_snmp.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_snmp.Tpo -c -o libtrxpoller_a-checks_snmp.o `test -f 'checks_snmp.c' || echo '$(srcdir)/'`checks_snmp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_snmp.Tpo $(DEPDIR)/libtrxpoller_a-checks_snmp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_snmp.c' object='libtrxpoller_a-checks_snmp.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_snmp.o `test -f 'checks_snmp.c' || echo '$(srcdir)/'`checks_snmp.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_snmp.o `test -f 'checks_snmp.c' || echo '$(srcdir)/'`checks_snmp.c
 
-libzbxpoller_a-checks_snmp.obj: checks_snmp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_snmp.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_snmp.Tpo -c -o libzbxpoller_a-checks_snmp.obj `if test -f 'checks_snmp.c'; then $(CYGPATH_W) 'checks_snmp.c'; else $(CYGPATH_W) '$(srcdir)/checks_snmp.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_snmp.Tpo $(DEPDIR)/libzbxpoller_a-checks_snmp.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_snmp.c' object='libzbxpoller_a-checks_snmp.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_snmp.obj: checks_snmp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_snmp.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_snmp.Tpo -c -o libtrxpoller_a-checks_snmp.obj `if test -f 'checks_snmp.c'; then $(CYGPATH_W) 'checks_snmp.c'; else $(CYGPATH_W) '$(srcdir)/checks_snmp.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_snmp.Tpo $(DEPDIR)/libtrxpoller_a-checks_snmp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_snmp.c' object='libtrxpoller_a-checks_snmp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_snmp.obj `if test -f 'checks_snmp.c'; then $(CYGPATH_W) 'checks_snmp.c'; else $(CYGPATH_W) '$(srcdir)/checks_snmp.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_snmp.obj `if test -f 'checks_snmp.c'; then $(CYGPATH_W) 'checks_snmp.c'; else $(CYGPATH_W) '$(srcdir)/checks_snmp.c'; fi`
 
-libzbxpoller_a-checks_db.o: checks_db.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_db.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_db.Tpo -c -o libzbxpoller_a-checks_db.o `test -f 'checks_db.c' || echo '$(srcdir)/'`checks_db.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_db.Tpo $(DEPDIR)/libzbxpoller_a-checks_db.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_db.c' object='libzbxpoller_a-checks_db.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_db.o: checks_db.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_db.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_db.Tpo -c -o libtrxpoller_a-checks_db.o `test -f 'checks_db.c' || echo '$(srcdir)/'`checks_db.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_db.Tpo $(DEPDIR)/libtrxpoller_a-checks_db.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_db.c' object='libtrxpoller_a-checks_db.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_db.o `test -f 'checks_db.c' || echo '$(srcdir)/'`checks_db.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_db.o `test -f 'checks_db.c' || echo '$(srcdir)/'`checks_db.c
 
-libzbxpoller_a-checks_db.obj: checks_db.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_db.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_db.Tpo -c -o libzbxpoller_a-checks_db.obj `if test -f 'checks_db.c'; then $(CYGPATH_W) 'checks_db.c'; else $(CYGPATH_W) '$(srcdir)/checks_db.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_db.Tpo $(DEPDIR)/libzbxpoller_a-checks_db.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_db.c' object='libzbxpoller_a-checks_db.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_db.obj: checks_db.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_db.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_db.Tpo -c -o libtrxpoller_a-checks_db.obj `if test -f 'checks_db.c'; then $(CYGPATH_W) 'checks_db.c'; else $(CYGPATH_W) '$(srcdir)/checks_db.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_db.Tpo $(DEPDIR)/libtrxpoller_a-checks_db.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_db.c' object='libtrxpoller_a-checks_db.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_db.obj `if test -f 'checks_db.c'; then $(CYGPATH_W) 'checks_db.c'; else $(CYGPATH_W) '$(srcdir)/checks_db.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_db.obj `if test -f 'checks_db.c'; then $(CYGPATH_W) 'checks_db.c'; else $(CYGPATH_W) '$(srcdir)/checks_db.c'; fi`
 
-libzbxpoller_a-checks_aggregate.o: checks_aggregate.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_aggregate.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_aggregate.Tpo -c -o libzbxpoller_a-checks_aggregate.o `test -f 'checks_aggregate.c' || echo '$(srcdir)/'`checks_aggregate.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_aggregate.Tpo $(DEPDIR)/libzbxpoller_a-checks_aggregate.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_aggregate.c' object='libzbxpoller_a-checks_aggregate.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_aggregate.o: checks_aggregate.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_aggregate.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_aggregate.Tpo -c -o libtrxpoller_a-checks_aggregate.o `test -f 'checks_aggregate.c' || echo '$(srcdir)/'`checks_aggregate.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_aggregate.Tpo $(DEPDIR)/libtrxpoller_a-checks_aggregate.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_aggregate.c' object='libtrxpoller_a-checks_aggregate.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_aggregate.o `test -f 'checks_aggregate.c' || echo '$(srcdir)/'`checks_aggregate.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_aggregate.o `test -f 'checks_aggregate.c' || echo '$(srcdir)/'`checks_aggregate.c
 
-libzbxpoller_a-checks_aggregate.obj: checks_aggregate.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_aggregate.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_aggregate.Tpo -c -o libzbxpoller_a-checks_aggregate.obj `if test -f 'checks_aggregate.c'; then $(CYGPATH_W) 'checks_aggregate.c'; else $(CYGPATH_W) '$(srcdir)/checks_aggregate.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_aggregate.Tpo $(DEPDIR)/libzbxpoller_a-checks_aggregate.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_aggregate.c' object='libzbxpoller_a-checks_aggregate.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_aggregate.obj: checks_aggregate.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_aggregate.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_aggregate.Tpo -c -o libtrxpoller_a-checks_aggregate.obj `if test -f 'checks_aggregate.c'; then $(CYGPATH_W) 'checks_aggregate.c'; else $(CYGPATH_W) '$(srcdir)/checks_aggregate.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_aggregate.Tpo $(DEPDIR)/libtrxpoller_a-checks_aggregate.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_aggregate.c' object='libtrxpoller_a-checks_aggregate.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_aggregate.obj `if test -f 'checks_aggregate.c'; then $(CYGPATH_W) 'checks_aggregate.c'; else $(CYGPATH_W) '$(srcdir)/checks_aggregate.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_aggregate.obj `if test -f 'checks_aggregate.c'; then $(CYGPATH_W) 'checks_aggregate.c'; else $(CYGPATH_W) '$(srcdir)/checks_aggregate.c'; fi`
 
-libzbxpoller_a-checks_external.o: checks_external.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_external.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_external.Tpo -c -o libzbxpoller_a-checks_external.o `test -f 'checks_external.c' || echo '$(srcdir)/'`checks_external.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_external.Tpo $(DEPDIR)/libzbxpoller_a-checks_external.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_external.c' object='libzbxpoller_a-checks_external.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_external.o: checks_external.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_external.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_external.Tpo -c -o libtrxpoller_a-checks_external.o `test -f 'checks_external.c' || echo '$(srcdir)/'`checks_external.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_external.Tpo $(DEPDIR)/libtrxpoller_a-checks_external.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_external.c' object='libtrxpoller_a-checks_external.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_external.o `test -f 'checks_external.c' || echo '$(srcdir)/'`checks_external.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_external.o `test -f 'checks_external.c' || echo '$(srcdir)/'`checks_external.c
 
-libzbxpoller_a-checks_external.obj: checks_external.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_external.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_external.Tpo -c -o libzbxpoller_a-checks_external.obj `if test -f 'checks_external.c'; then $(CYGPATH_W) 'checks_external.c'; else $(CYGPATH_W) '$(srcdir)/checks_external.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_external.Tpo $(DEPDIR)/libzbxpoller_a-checks_external.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_external.c' object='libzbxpoller_a-checks_external.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_external.obj: checks_external.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_external.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_external.Tpo -c -o libtrxpoller_a-checks_external.obj `if test -f 'checks_external.c'; then $(CYGPATH_W) 'checks_external.c'; else $(CYGPATH_W) '$(srcdir)/checks_external.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_external.Tpo $(DEPDIR)/libtrxpoller_a-checks_external.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_external.c' object='libtrxpoller_a-checks_external.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_external.obj `if test -f 'checks_external.c'; then $(CYGPATH_W) 'checks_external.c'; else $(CYGPATH_W) '$(srcdir)/checks_external.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_external.obj `if test -f 'checks_external.c'; then $(CYGPATH_W) 'checks_external.c'; else $(CYGPATH_W) '$(srcdir)/checks_external.c'; fi`
 
-libzbxpoller_a-checks_ssh.o: checks_ssh.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_ssh.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_ssh.Tpo -c -o libzbxpoller_a-checks_ssh.o `test -f 'checks_ssh.c' || echo '$(srcdir)/'`checks_ssh.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_ssh.Tpo $(DEPDIR)/libzbxpoller_a-checks_ssh.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_ssh.c' object='libzbxpoller_a-checks_ssh.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_ssh.o: checks_ssh.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_ssh.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_ssh.Tpo -c -o libtrxpoller_a-checks_ssh.o `test -f 'checks_ssh.c' || echo '$(srcdir)/'`checks_ssh.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_ssh.Tpo $(DEPDIR)/libtrxpoller_a-checks_ssh.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_ssh.c' object='libtrxpoller_a-checks_ssh.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_ssh.o `test -f 'checks_ssh.c' || echo '$(srcdir)/'`checks_ssh.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_ssh.o `test -f 'checks_ssh.c' || echo '$(srcdir)/'`checks_ssh.c
 
-libzbxpoller_a-checks_ssh.obj: checks_ssh.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_ssh.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_ssh.Tpo -c -o libzbxpoller_a-checks_ssh.obj `if test -f 'checks_ssh.c'; then $(CYGPATH_W) 'checks_ssh.c'; else $(CYGPATH_W) '$(srcdir)/checks_ssh.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_ssh.Tpo $(DEPDIR)/libzbxpoller_a-checks_ssh.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_ssh.c' object='libzbxpoller_a-checks_ssh.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_ssh.obj: checks_ssh.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_ssh.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_ssh.Tpo -c -o libtrxpoller_a-checks_ssh.obj `if test -f 'checks_ssh.c'; then $(CYGPATH_W) 'checks_ssh.c'; else $(CYGPATH_W) '$(srcdir)/checks_ssh.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_ssh.Tpo $(DEPDIR)/libtrxpoller_a-checks_ssh.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_ssh.c' object='libtrxpoller_a-checks_ssh.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_ssh.obj `if test -f 'checks_ssh.c'; then $(CYGPATH_W) 'checks_ssh.c'; else $(CYGPATH_W) '$(srcdir)/checks_ssh.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_ssh.obj `if test -f 'checks_ssh.c'; then $(CYGPATH_W) 'checks_ssh.c'; else $(CYGPATH_W) '$(srcdir)/checks_ssh.c'; fi`
 
-libzbxpoller_a-checks_telnet.o: checks_telnet.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_telnet.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_telnet.Tpo -c -o libzbxpoller_a-checks_telnet.o `test -f 'checks_telnet.c' || echo '$(srcdir)/'`checks_telnet.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_telnet.Tpo $(DEPDIR)/libzbxpoller_a-checks_telnet.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_telnet.c' object='libzbxpoller_a-checks_telnet.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_telnet.o: checks_telnet.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_telnet.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_telnet.Tpo -c -o libtrxpoller_a-checks_telnet.o `test -f 'checks_telnet.c' || echo '$(srcdir)/'`checks_telnet.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_telnet.Tpo $(DEPDIR)/libtrxpoller_a-checks_telnet.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_telnet.c' object='libtrxpoller_a-checks_telnet.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_telnet.o `test -f 'checks_telnet.c' || echo '$(srcdir)/'`checks_telnet.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_telnet.o `test -f 'checks_telnet.c' || echo '$(srcdir)/'`checks_telnet.c
 
-libzbxpoller_a-checks_telnet.obj: checks_telnet.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_telnet.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_telnet.Tpo -c -o libzbxpoller_a-checks_telnet.obj `if test -f 'checks_telnet.c'; then $(CYGPATH_W) 'checks_telnet.c'; else $(CYGPATH_W) '$(srcdir)/checks_telnet.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_telnet.Tpo $(DEPDIR)/libzbxpoller_a-checks_telnet.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_telnet.c' object='libzbxpoller_a-checks_telnet.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_telnet.obj: checks_telnet.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_telnet.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_telnet.Tpo -c -o libtrxpoller_a-checks_telnet.obj `if test -f 'checks_telnet.c'; then $(CYGPATH_W) 'checks_telnet.c'; else $(CYGPATH_W) '$(srcdir)/checks_telnet.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_telnet.Tpo $(DEPDIR)/libtrxpoller_a-checks_telnet.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_telnet.c' object='libtrxpoller_a-checks_telnet.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_telnet.obj `if test -f 'checks_telnet.c'; then $(CYGPATH_W) 'checks_telnet.c'; else $(CYGPATH_W) '$(srcdir)/checks_telnet.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_telnet.obj `if test -f 'checks_telnet.c'; then $(CYGPATH_W) 'checks_telnet.c'; else $(CYGPATH_W) '$(srcdir)/checks_telnet.c'; fi`
 
-libzbxpoller_a-checks_java.o: checks_java.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_java.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_java.Tpo -c -o libzbxpoller_a-checks_java.o `test -f 'checks_java.c' || echo '$(srcdir)/'`checks_java.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_java.Tpo $(DEPDIR)/libzbxpoller_a-checks_java.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_java.c' object='libzbxpoller_a-checks_java.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_java.o: checks_java.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_java.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_java.Tpo -c -o libtrxpoller_a-checks_java.o `test -f 'checks_java.c' || echo '$(srcdir)/'`checks_java.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_java.Tpo $(DEPDIR)/libtrxpoller_a-checks_java.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_java.c' object='libtrxpoller_a-checks_java.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_java.o `test -f 'checks_java.c' || echo '$(srcdir)/'`checks_java.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_java.o `test -f 'checks_java.c' || echo '$(srcdir)/'`checks_java.c
 
-libzbxpoller_a-checks_java.obj: checks_java.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_java.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_java.Tpo -c -o libzbxpoller_a-checks_java.obj `if test -f 'checks_java.c'; then $(CYGPATH_W) 'checks_java.c'; else $(CYGPATH_W) '$(srcdir)/checks_java.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_java.Tpo $(DEPDIR)/libzbxpoller_a-checks_java.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_java.c' object='libzbxpoller_a-checks_java.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_java.obj: checks_java.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_java.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_java.Tpo -c -o libtrxpoller_a-checks_java.obj `if test -f 'checks_java.c'; then $(CYGPATH_W) 'checks_java.c'; else $(CYGPATH_W) '$(srcdir)/checks_java.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_java.Tpo $(DEPDIR)/libtrxpoller_a-checks_java.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_java.c' object='libtrxpoller_a-checks_java.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_java.obj `if test -f 'checks_java.c'; then $(CYGPATH_W) 'checks_java.c'; else $(CYGPATH_W) '$(srcdir)/checks_java.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_java.obj `if test -f 'checks_java.c'; then $(CYGPATH_W) 'checks_java.c'; else $(CYGPATH_W) '$(srcdir)/checks_java.c'; fi`
 
-libzbxpoller_a-checks_calculated.o: checks_calculated.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_calculated.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_calculated.Tpo -c -o libzbxpoller_a-checks_calculated.o `test -f 'checks_calculated.c' || echo '$(srcdir)/'`checks_calculated.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_calculated.Tpo $(DEPDIR)/libzbxpoller_a-checks_calculated.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_calculated.c' object='libzbxpoller_a-checks_calculated.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_calculated.o: checks_calculated.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_calculated.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_calculated.Tpo -c -o libtrxpoller_a-checks_calculated.o `test -f 'checks_calculated.c' || echo '$(srcdir)/'`checks_calculated.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_calculated.Tpo $(DEPDIR)/libtrxpoller_a-checks_calculated.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_calculated.c' object='libtrxpoller_a-checks_calculated.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_calculated.o `test -f 'checks_calculated.c' || echo '$(srcdir)/'`checks_calculated.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_calculated.o `test -f 'checks_calculated.c' || echo '$(srcdir)/'`checks_calculated.c
 
-libzbxpoller_a-checks_calculated.obj: checks_calculated.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_calculated.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_calculated.Tpo -c -o libzbxpoller_a-checks_calculated.obj `if test -f 'checks_calculated.c'; then $(CYGPATH_W) 'checks_calculated.c'; else $(CYGPATH_W) '$(srcdir)/checks_calculated.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_calculated.Tpo $(DEPDIR)/libzbxpoller_a-checks_calculated.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_calculated.c' object='libzbxpoller_a-checks_calculated.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_calculated.obj: checks_calculated.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_calculated.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_calculated.Tpo -c -o libtrxpoller_a-checks_calculated.obj `if test -f 'checks_calculated.c'; then $(CYGPATH_W) 'checks_calculated.c'; else $(CYGPATH_W) '$(srcdir)/checks_calculated.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_calculated.Tpo $(DEPDIR)/libtrxpoller_a-checks_calculated.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_calculated.c' object='libtrxpoller_a-checks_calculated.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_calculated.obj `if test -f 'checks_calculated.c'; then $(CYGPATH_W) 'checks_calculated.c'; else $(CYGPATH_W) '$(srcdir)/checks_calculated.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_calculated.obj `if test -f 'checks_calculated.c'; then $(CYGPATH_W) 'checks_calculated.c'; else $(CYGPATH_W) '$(srcdir)/checks_calculated.c'; fi`
 
-libzbxpoller_a-checks_http.o: checks_http.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_http.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_http.Tpo -c -o libzbxpoller_a-checks_http.o `test -f 'checks_http.c' || echo '$(srcdir)/'`checks_http.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_http.Tpo $(DEPDIR)/libzbxpoller_a-checks_http.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_http.c' object='libzbxpoller_a-checks_http.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_http.o: checks_http.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_http.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_http.Tpo -c -o libtrxpoller_a-checks_http.o `test -f 'checks_http.c' || echo '$(srcdir)/'`checks_http.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_http.Tpo $(DEPDIR)/libtrxpoller_a-checks_http.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_http.c' object='libtrxpoller_a-checks_http.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_http.o `test -f 'checks_http.c' || echo '$(srcdir)/'`checks_http.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_http.o `test -f 'checks_http.c' || echo '$(srcdir)/'`checks_http.c
 
-libzbxpoller_a-checks_http.obj: checks_http.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-checks_http.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-checks_http.Tpo -c -o libzbxpoller_a-checks_http.obj `if test -f 'checks_http.c'; then $(CYGPATH_W) 'checks_http.c'; else $(CYGPATH_W) '$(srcdir)/checks_http.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-checks_http.Tpo $(DEPDIR)/libzbxpoller_a-checks_http.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_http.c' object='libzbxpoller_a-checks_http.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-checks_http.obj: checks_http.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-checks_http.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-checks_http.Tpo -c -o libtrxpoller_a-checks_http.obj `if test -f 'checks_http.c'; then $(CYGPATH_W) 'checks_http.c'; else $(CYGPATH_W) '$(srcdir)/checks_http.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-checks_http.Tpo $(DEPDIR)/libtrxpoller_a-checks_http.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_http.c' object='libtrxpoller_a-checks_http.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-checks_http.obj `if test -f 'checks_http.c'; then $(CYGPATH_W) 'checks_http.c'; else $(CYGPATH_W) '$(srcdir)/checks_http.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-checks_http.obj `if test -f 'checks_http.c'; then $(CYGPATH_W) 'checks_http.c'; else $(CYGPATH_W) '$(srcdir)/checks_http.c'; fi`
 
-libzbxpoller_a-poller.o: poller.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-poller.o -MD -MP -MF $(DEPDIR)/libzbxpoller_a-poller.Tpo -c -o libzbxpoller_a-poller.o `test -f 'poller.c' || echo '$(srcdir)/'`poller.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-poller.Tpo $(DEPDIR)/libzbxpoller_a-poller.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='poller.c' object='libzbxpoller_a-poller.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-poller.o: poller.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-poller.o -MD -MP -MF $(DEPDIR)/libtrxpoller_a-poller.Tpo -c -o libtrxpoller_a-poller.o `test -f 'poller.c' || echo '$(srcdir)/'`poller.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-poller.Tpo $(DEPDIR)/libtrxpoller_a-poller.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='poller.c' object='libtrxpoller_a-poller.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-poller.o `test -f 'poller.c' || echo '$(srcdir)/'`poller.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-poller.o `test -f 'poller.c' || echo '$(srcdir)/'`poller.c
 
-libzbxpoller_a-poller.obj: poller.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_a-poller.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_a-poller.Tpo -c -o libzbxpoller_a-poller.obj `if test -f 'poller.c'; then $(CYGPATH_W) 'poller.c'; else $(CYGPATH_W) '$(srcdir)/poller.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_a-poller.Tpo $(DEPDIR)/libzbxpoller_a-poller.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='poller.c' object='libzbxpoller_a-poller.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_a-poller.obj: poller.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_a-poller.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_a-poller.Tpo -c -o libtrxpoller_a-poller.obj `if test -f 'poller.c'; then $(CYGPATH_W) 'poller.c'; else $(CYGPATH_W) '$(srcdir)/poller.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_a-poller.Tpo $(DEPDIR)/libtrxpoller_a-poller.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='poller.c' object='libtrxpoller_a-poller.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_a-poller.obj `if test -f 'poller.c'; then $(CYGPATH_W) 'poller.c'; else $(CYGPATH_W) '$(srcdir)/poller.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_a-poller.obj `if test -f 'poller.c'; then $(CYGPATH_W) 'poller.c'; else $(CYGPATH_W) '$(srcdir)/poller.c'; fi`
 
-libzbxpoller_server_a-checks_internal_server.o: checks_internal_server.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_server_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_server_a-checks_internal_server.o -MD -MP -MF $(DEPDIR)/libzbxpoller_server_a-checks_internal_server.Tpo -c -o libzbxpoller_server_a-checks_internal_server.o `test -f 'checks_internal_server.c' || echo '$(srcdir)/'`checks_internal_server.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_server_a-checks_internal_server.Tpo $(DEPDIR)/libzbxpoller_server_a-checks_internal_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_internal_server.c' object='libzbxpoller_server_a-checks_internal_server.o' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_server_a-checks_internal_server.o: checks_internal_server.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_server_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_server_a-checks_internal_server.o -MD -MP -MF $(DEPDIR)/libtrxpoller_server_a-checks_internal_server.Tpo -c -o libtrxpoller_server_a-checks_internal_server.o `test -f 'checks_internal_server.c' || echo '$(srcdir)/'`checks_internal_server.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_server_a-checks_internal_server.Tpo $(DEPDIR)/libtrxpoller_server_a-checks_internal_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_internal_server.c' object='libtrxpoller_server_a-checks_internal_server.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_server_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_server_a-checks_internal_server.o `test -f 'checks_internal_server.c' || echo '$(srcdir)/'`checks_internal_server.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_server_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_server_a-checks_internal_server.o `test -f 'checks_internal_server.c' || echo '$(srcdir)/'`checks_internal_server.c
 
-libzbxpoller_server_a-checks_internal_server.obj: checks_internal_server.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_server_a_CFLAGS) $(CFLAGS) -MT libzbxpoller_server_a-checks_internal_server.obj -MD -MP -MF $(DEPDIR)/libzbxpoller_server_a-checks_internal_server.Tpo -c -o libzbxpoller_server_a-checks_internal_server.obj `if test -f 'checks_internal_server.c'; then $(CYGPATH_W) 'checks_internal_server.c'; else $(CYGPATH_W) '$(srcdir)/checks_internal_server.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxpoller_server_a-checks_internal_server.Tpo $(DEPDIR)/libzbxpoller_server_a-checks_internal_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_internal_server.c' object='libzbxpoller_server_a-checks_internal_server.obj' libtool=no @AMDEPBACKSLASH@
+libtrxpoller_server_a-checks_internal_server.obj: checks_internal_server.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_server_a_CFLAGS) $(CFLAGS) -MT libtrxpoller_server_a-checks_internal_server.obj -MD -MP -MF $(DEPDIR)/libtrxpoller_server_a-checks_internal_server.Tpo -c -o libtrxpoller_server_a-checks_internal_server.obj `if test -f 'checks_internal_server.c'; then $(CYGPATH_W) 'checks_internal_server.c'; else $(CYGPATH_W) '$(srcdir)/checks_internal_server.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxpoller_server_a-checks_internal_server.Tpo $(DEPDIR)/libtrxpoller_server_a-checks_internal_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='checks_internal_server.c' object='libtrxpoller_server_a-checks_internal_server.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxpoller_server_a_CFLAGS) $(CFLAGS) -c -o libzbxpoller_server_a-checks_internal_server.obj `if test -f 'checks_internal_server.c'; then $(CYGPATH_W) 'checks_internal_server.c'; else $(CYGPATH_W) '$(srcdir)/checks_internal_server.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxpoller_server_a_CFLAGS) $(CFLAGS) -c -o libtrxpoller_server_a-checks_internal_server.obj `if test -f 'checks_internal_server.c'; then $(CYGPATH_W) 'checks_internal_server.c'; else $(CYGPATH_W) '$(srcdir)/checks_internal_server.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

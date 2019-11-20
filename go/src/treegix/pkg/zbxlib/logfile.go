@@ -1,6 +1,6 @@
 
 
-package zbxlib
+package trxlib
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../../../../include
@@ -13,16 +13,16 @@ package zbxlib
 extern int CONFIG_MAX_LINES_PER_SECOND;
 
 typedef TRX_ACTIVE_METRIC* TRX_ACTIVE_METRIC_LP;
-typedef zbx_vector_ptr_t * zbx_vector_ptr_lp_t;
+typedef trx_vector_ptr_t * trx_vector_ptr_lp_t;
 typedef char * char_lp_t;
 
-TRX_ACTIVE_METRIC *new_metric(char *key, zbx_uint64_t lastlogsize, int mtime, int flags)
+TRX_ACTIVE_METRIC *new_metric(char *key, trx_uint64_t lastlogsize, int mtime, int flags)
 {
 	TRX_ACTIVE_METRIC *metric = malloc(sizeof(TRX_ACTIVE_METRIC));
 	memset(metric, 0, sizeof(TRX_ACTIVE_METRIC));
 	metric->key = key;
 	// key_orig is used in error messages, consider using "itemid: <itemid>" instead of the key
-	metric->key_orig = zbx_strdup(NULL, key);
+	metric->key_orig = trx_strdup(NULL, key);
 	metric->lastlogsize = lastlogsize;
 	metric->mtime = mtime;
 	metric->flags = flags;
@@ -35,7 +35,7 @@ void metric_set_refresh(TRX_ACTIVE_METRIC *metric, int refresh)
 	metric->refresh = refresh;
 }
 
-void metric_get_meta(TRX_ACTIVE_METRIC *metric, zbx_uint64_t *lastlogsize, int *mtime)
+void metric_get_meta(TRX_ACTIVE_METRIC *metric, trx_uint64_t *lastlogsize, int *mtime)
 {
 	*lastlogsize = metric->lastlogsize;
 	*mtime = metric->mtime;
@@ -50,8 +50,8 @@ void metric_set_unsupported(TRX_ACTIVE_METRIC *metric)
 	metric->processed_bytes = 0;
 }
 
-int metric_set_supported(TRX_ACTIVE_METRIC *metric, zbx_uint64_t lastlogsize_sent, int mtime_sent,
-		zbx_uint64_t lastlogsize_last, int mtime_last)
+int metric_set_supported(TRX_ACTIVE_METRIC *metric, trx_uint64_t lastlogsize_sent, int mtime_sent,
+		trx_uint64_t lastlogsize_last, int mtime_last)
 {
 	int	ret = FAIL;
 
@@ -79,28 +79,28 @@ void	metric_free(TRX_ACTIVE_METRIC *metric)
 {
 	int	i;
 
-	zbx_free(metric->key);
-	zbx_free(metric->key_orig);
+	trx_free(metric->key);
+	trx_free(metric->key_orig);
 
 	for (i = 0; i < metric->logfiles_num; i++)
-		zbx_free(metric->logfiles[i].filename);
+		trx_free(metric->logfiles[i].filename);
 
-	zbx_free(metric->logfiles);
-	zbx_free(metric);
+	trx_free(metric->logfiles);
+	trx_free(metric);
 }
 
 typedef struct
 {
 	char *value;
 	int state;
-	zbx_uint64_t lastlogsize;
+	trx_uint64_t lastlogsize;
 	int mtime;
 }
 log_value_t;
 
 typedef struct
 {
-	zbx_vector_ptr_t values;
+	trx_vector_ptr_t values;
 	int slots;
 }
 log_result_t, *log_result_lp_t;
@@ -109,24 +109,24 @@ static log_result_t *new_log_result(int slots)
 {
 	log_result_t *result;
 
-	result = (log_result_t *)zbx_malloc(NULL, sizeof(log_result_t));
-	zbx_vector_ptr_create(&result->values);
+	result = (log_result_t *)trx_malloc(NULL, sizeof(log_result_t));
+	trx_vector_ptr_create(&result->values);
 	result->slots = slots;
 	return result;
 }
 
-static void add_log_value(log_result_t *result, const char *value, int state, zbx_uint64_t lastlogsize, int mtime)
+static void add_log_value(log_result_t *result, const char *value, int state, trx_uint64_t lastlogsize, int mtime)
 {
 	log_value_t *log;
-	log = (log_value_t *)zbx_malloc(NULL, sizeof(log_value_t));
-	log->value = zbx_strdup(NULL, value);
+	log = (log_value_t *)trx_malloc(NULL, sizeof(log_value_t));
+	log->value = trx_strdup(NULL, value);
 	log->state = state;
 	log->lastlogsize = lastlogsize;
 	log->mtime = mtime;
-	zbx_vector_ptr_append(&result->values, log);
+	trx_vector_ptr_append(&result->values, log);
 }
 
-static int get_log_value(log_result_t *result, int index, char **value, int *state, zbx_uint64_t *lastlogsize, int *mtime)
+static int get_log_value(log_result_t *result, int index, char **value, int *state, trx_uint64_t *lastlogsize, int *mtime)
 {
 	log_value_t *log;
 
@@ -143,21 +143,21 @@ static int get_log_value(log_result_t *result, int index, char **value, int *sta
 
 static void free_log_value(log_value_t *log)
 {
-	zbx_free(log->value);
-	zbx_free(log);
+	trx_free(log->value);
+	trx_free(log);
 }
 
 static void free_log_result(log_result_t *result)
 {
-	zbx_vector_ptr_clear_ext(&result->values, (zbx_clean_func_t)free_log_value);
-	zbx_vector_ptr_destroy(&result->values);
-	zbx_free(result);
+	trx_vector_ptr_clear_ext(&result->values, (trx_clean_func_t)free_log_value);
+	trx_vector_ptr_destroy(&result->values);
+	trx_free(result);
 }
 
-int processValue(void *server, const char *value, int state, zbx_uint64_t lastlogsize, int mtime);
+int processValue(void *server, const char *value, int state, trx_uint64_t lastlogsize, int mtime);
 
 int	process_value_cb(const char *server, unsigned short port, const char *host, const char *key,
-		const char *value, unsigned char state, zbx_uint64_t *lastlogsize, const int *mtime,
+		const char *value, unsigned char state, trx_uint64_t *lastlogsize, const int *mtime,
 		unsigned long *timestamp, const char *source, unsigned short *severity, unsigned long *logeventid,
 		unsigned char flags)
 {
@@ -240,8 +240,8 @@ func ProcessLogCheck(data unsafe.Pointer, item *LogItem, refresh int, cblob unsa
 	result := C.new_log_result(C.int(item.Output.PersistSlotsAvailable()))
 
 	var cerrmsg *C.char
-	ret := C.process_log_check(C.char_lp_t(unsafe.Pointer(result)), 0, C.zbx_vector_ptr_lp_t(cblob),
-		C.TRX_ACTIVE_METRIC_LP(data), C.zbx_process_value_func_t(C.process_value_cb), &clastLogsizeSent, &cmtimeSent,
+	ret := C.process_log_check(C.char_lp_t(unsafe.Pointer(result)), 0, C.trx_vector_ptr_lp_t(cblob),
+		C.TRX_ACTIVE_METRIC_LP(data), C.trx_process_value_func_t(C.process_value_cb), &clastLogsizeSent, &cmtimeSent,
 		&cerrmsg)
 
 	// add cached results

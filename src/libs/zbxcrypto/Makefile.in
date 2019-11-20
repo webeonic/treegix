@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxcrypto
+subdir = src/libs/trxcrypto
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,11 +117,11 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxcrypto_a_AR = $(AR) $(ARFLAGS)
-libzbxcrypto_a_LIBADD =
-am_libzbxcrypto_a_OBJECTS = libzbxcrypto_a-md5.$(OBJEXT) \
-	libzbxcrypto_a-base64.$(OBJEXT) libzbxcrypto_a-tls.$(OBJEXT)
-libzbxcrypto_a_OBJECTS = $(am_libzbxcrypto_a_OBJECTS)
+libtrxcrypto_a_AR = $(AR) $(ARFLAGS)
+libtrxcrypto_a_LIBADD =
+am_libtrxcrypto_a_OBJECTS = libtrxcrypto_a-md5.$(OBJEXT) \
+	libtrxcrypto_a-base64.$(OBJEXT) libtrxcrypto_a-tls.$(OBJEXT)
+libtrxcrypto_a_OBJECTS = $(am_libtrxcrypto_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -154,8 +154,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxcrypto_a_SOURCES)
-DIST_SOURCES = $(libzbxcrypto_a_SOURCES)
+SOURCES = $(libtrxcrypto_a_SOURCES)
+DIST_SOURCES = $(libtrxcrypto_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -379,8 +379,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxcrypto.a
-libzbxcrypto_a_SOURCES = \
+noinst_LIBRARIES = libtrxcrypto.a
+libtrxcrypto_a_SOURCES = \
 	md5.c \
 	base64.c \
 	tls.c \
@@ -388,7 +388,7 @@ libzbxcrypto_a_SOURCES = \
 	tls_tcp.h \
 	tls_tcp_active.h
 
-libzbxcrypto_a_CFLAGS = @TLS_CFLAGS@
+libtrxcrypto_a_CFLAGS = @TLS_CFLAGS@
 all: all-am
 
 .SUFFIXES:
@@ -402,9 +402,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxcrypto/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxcrypto/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxcrypto/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxcrypto/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -426,10 +426,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxcrypto.a: $(libzbxcrypto_a_OBJECTS) $(libzbxcrypto_a_DEPENDENCIES) $(EXTRA_libzbxcrypto_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxcrypto.a
-	$(AM_V_AR)$(libzbxcrypto_a_AR) libzbxcrypto.a $(libzbxcrypto_a_OBJECTS) $(libzbxcrypto_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxcrypto.a
+libtrxcrypto.a: $(libtrxcrypto_a_OBJECTS) $(libtrxcrypto_a_DEPENDENCIES) $(EXTRA_libtrxcrypto_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxcrypto.a
+	$(AM_V_AR)$(libtrxcrypto_a_AR) libtrxcrypto.a $(libtrxcrypto_a_OBJECTS) $(libtrxcrypto_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxcrypto.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -437,9 +437,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcrypto_a-base64.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcrypto_a-md5.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcrypto_a-tls.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcrypto_a-base64.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcrypto_a-md5.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcrypto_a-tls.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -457,47 +457,47 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxcrypto_a-md5.o: md5.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -MT libzbxcrypto_a-md5.o -MD -MP -MF $(DEPDIR)/libzbxcrypto_a-md5.Tpo -c -o libzbxcrypto_a-md5.o `test -f 'md5.c' || echo '$(srcdir)/'`md5.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcrypto_a-md5.Tpo $(DEPDIR)/libzbxcrypto_a-md5.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='md5.c' object='libzbxcrypto_a-md5.o' libtool=no @AMDEPBACKSLASH@
+libtrxcrypto_a-md5.o: md5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -MT libtrxcrypto_a-md5.o -MD -MP -MF $(DEPDIR)/libtrxcrypto_a-md5.Tpo -c -o libtrxcrypto_a-md5.o `test -f 'md5.c' || echo '$(srcdir)/'`md5.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcrypto_a-md5.Tpo $(DEPDIR)/libtrxcrypto_a-md5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='md5.c' object='libtrxcrypto_a-md5.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -c -o libzbxcrypto_a-md5.o `test -f 'md5.c' || echo '$(srcdir)/'`md5.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -c -o libtrxcrypto_a-md5.o `test -f 'md5.c' || echo '$(srcdir)/'`md5.c
 
-libzbxcrypto_a-md5.obj: md5.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -MT libzbxcrypto_a-md5.obj -MD -MP -MF $(DEPDIR)/libzbxcrypto_a-md5.Tpo -c -o libzbxcrypto_a-md5.obj `if test -f 'md5.c'; then $(CYGPATH_W) 'md5.c'; else $(CYGPATH_W) '$(srcdir)/md5.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcrypto_a-md5.Tpo $(DEPDIR)/libzbxcrypto_a-md5.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='md5.c' object='libzbxcrypto_a-md5.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcrypto_a-md5.obj: md5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -MT libtrxcrypto_a-md5.obj -MD -MP -MF $(DEPDIR)/libtrxcrypto_a-md5.Tpo -c -o libtrxcrypto_a-md5.obj `if test -f 'md5.c'; then $(CYGPATH_W) 'md5.c'; else $(CYGPATH_W) '$(srcdir)/md5.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcrypto_a-md5.Tpo $(DEPDIR)/libtrxcrypto_a-md5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='md5.c' object='libtrxcrypto_a-md5.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -c -o libzbxcrypto_a-md5.obj `if test -f 'md5.c'; then $(CYGPATH_W) 'md5.c'; else $(CYGPATH_W) '$(srcdir)/md5.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -c -o libtrxcrypto_a-md5.obj `if test -f 'md5.c'; then $(CYGPATH_W) 'md5.c'; else $(CYGPATH_W) '$(srcdir)/md5.c'; fi`
 
-libzbxcrypto_a-base64.o: base64.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -MT libzbxcrypto_a-base64.o -MD -MP -MF $(DEPDIR)/libzbxcrypto_a-base64.Tpo -c -o libzbxcrypto_a-base64.o `test -f 'base64.c' || echo '$(srcdir)/'`base64.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcrypto_a-base64.Tpo $(DEPDIR)/libzbxcrypto_a-base64.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='base64.c' object='libzbxcrypto_a-base64.o' libtool=no @AMDEPBACKSLASH@
+libtrxcrypto_a-base64.o: base64.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -MT libtrxcrypto_a-base64.o -MD -MP -MF $(DEPDIR)/libtrxcrypto_a-base64.Tpo -c -o libtrxcrypto_a-base64.o `test -f 'base64.c' || echo '$(srcdir)/'`base64.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcrypto_a-base64.Tpo $(DEPDIR)/libtrxcrypto_a-base64.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='base64.c' object='libtrxcrypto_a-base64.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -c -o libzbxcrypto_a-base64.o `test -f 'base64.c' || echo '$(srcdir)/'`base64.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -c -o libtrxcrypto_a-base64.o `test -f 'base64.c' || echo '$(srcdir)/'`base64.c
 
-libzbxcrypto_a-base64.obj: base64.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -MT libzbxcrypto_a-base64.obj -MD -MP -MF $(DEPDIR)/libzbxcrypto_a-base64.Tpo -c -o libzbxcrypto_a-base64.obj `if test -f 'base64.c'; then $(CYGPATH_W) 'base64.c'; else $(CYGPATH_W) '$(srcdir)/base64.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcrypto_a-base64.Tpo $(DEPDIR)/libzbxcrypto_a-base64.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='base64.c' object='libzbxcrypto_a-base64.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcrypto_a-base64.obj: base64.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -MT libtrxcrypto_a-base64.obj -MD -MP -MF $(DEPDIR)/libtrxcrypto_a-base64.Tpo -c -o libtrxcrypto_a-base64.obj `if test -f 'base64.c'; then $(CYGPATH_W) 'base64.c'; else $(CYGPATH_W) '$(srcdir)/base64.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcrypto_a-base64.Tpo $(DEPDIR)/libtrxcrypto_a-base64.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='base64.c' object='libtrxcrypto_a-base64.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -c -o libzbxcrypto_a-base64.obj `if test -f 'base64.c'; then $(CYGPATH_W) 'base64.c'; else $(CYGPATH_W) '$(srcdir)/base64.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -c -o libtrxcrypto_a-base64.obj `if test -f 'base64.c'; then $(CYGPATH_W) 'base64.c'; else $(CYGPATH_W) '$(srcdir)/base64.c'; fi`
 
-libzbxcrypto_a-tls.o: tls.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -MT libzbxcrypto_a-tls.o -MD -MP -MF $(DEPDIR)/libzbxcrypto_a-tls.Tpo -c -o libzbxcrypto_a-tls.o `test -f 'tls.c' || echo '$(srcdir)/'`tls.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcrypto_a-tls.Tpo $(DEPDIR)/libzbxcrypto_a-tls.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tls.c' object='libzbxcrypto_a-tls.o' libtool=no @AMDEPBACKSLASH@
+libtrxcrypto_a-tls.o: tls.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -MT libtrxcrypto_a-tls.o -MD -MP -MF $(DEPDIR)/libtrxcrypto_a-tls.Tpo -c -o libtrxcrypto_a-tls.o `test -f 'tls.c' || echo '$(srcdir)/'`tls.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcrypto_a-tls.Tpo $(DEPDIR)/libtrxcrypto_a-tls.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tls.c' object='libtrxcrypto_a-tls.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -c -o libzbxcrypto_a-tls.o `test -f 'tls.c' || echo '$(srcdir)/'`tls.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -c -o libtrxcrypto_a-tls.o `test -f 'tls.c' || echo '$(srcdir)/'`tls.c
 
-libzbxcrypto_a-tls.obj: tls.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -MT libzbxcrypto_a-tls.obj -MD -MP -MF $(DEPDIR)/libzbxcrypto_a-tls.Tpo -c -o libzbxcrypto_a-tls.obj `if test -f 'tls.c'; then $(CYGPATH_W) 'tls.c'; else $(CYGPATH_W) '$(srcdir)/tls.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcrypto_a-tls.Tpo $(DEPDIR)/libzbxcrypto_a-tls.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tls.c' object='libzbxcrypto_a-tls.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcrypto_a-tls.obj: tls.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -MT libtrxcrypto_a-tls.obj -MD -MP -MF $(DEPDIR)/libtrxcrypto_a-tls.Tpo -c -o libtrxcrypto_a-tls.obj `if test -f 'tls.c'; then $(CYGPATH_W) 'tls.c'; else $(CYGPATH_W) '$(srcdir)/tls.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcrypto_a-tls.Tpo $(DEPDIR)/libtrxcrypto_a-tls.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tls.c' object='libtrxcrypto_a-tls.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcrypto_a_CFLAGS) $(CFLAGS) -c -o libzbxcrypto_a-tls.obj `if test -f 'tls.c'; then $(CYGPATH_W) 'tls.c'; else $(CYGPATH_W) '$(srcdir)/tls.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcrypto_a_CFLAGS) $(CFLAGS) -c -o libtrxcrypto_a-tls.obj `if test -f 'tls.c'; then $(CYGPATH_W) 'tls.c'; else $(CYGPATH_W) '$(srcdir)/tls.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

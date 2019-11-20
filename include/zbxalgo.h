@@ -6,62 +6,62 @@
 
 /* generic */
 
-typedef zbx_uint32_t zbx_hash_t;
+typedef trx_uint32_t trx_hash_t;
 
-zbx_hash_t	zbx_hash_lookup2(const void *data, size_t len, zbx_hash_t seed);
-zbx_hash_t	zbx_hash_modfnv(const void *data, size_t len, zbx_hash_t seed);
-zbx_hash_t	zbx_hash_murmur2(const void *data, size_t len, zbx_hash_t seed);
-zbx_hash_t	zbx_hash_sdbm(const void *data, size_t len, zbx_hash_t seed);
-zbx_hash_t	zbx_hash_djb2(const void *data, size_t len, zbx_hash_t seed);
+trx_hash_t	trx_hash_lookup2(const void *data, size_t len, trx_hash_t seed);
+trx_hash_t	trx_hash_modfnv(const void *data, size_t len, trx_hash_t seed);
+trx_hash_t	trx_hash_murmur2(const void *data, size_t len, trx_hash_t seed);
+trx_hash_t	trx_hash_sdbm(const void *data, size_t len, trx_hash_t seed);
+trx_hash_t	trx_hash_djb2(const void *data, size_t len, trx_hash_t seed);
 
-#define TRX_DEFAULT_HASH_ALGO		zbx_hash_modfnv
-#define TRX_DEFAULT_PTR_HASH_ALGO	zbx_hash_modfnv
-#define TRX_DEFAULT_UINT64_HASH_ALGO	zbx_hash_modfnv
-#define TRX_DEFAULT_STRING_HASH_ALGO	zbx_hash_modfnv
+#define TRX_DEFAULT_HASH_ALGO		trx_hash_modfnv
+#define TRX_DEFAULT_PTR_HASH_ALGO	trx_hash_modfnv
+#define TRX_DEFAULT_UINT64_HASH_ALGO	trx_hash_modfnv
+#define TRX_DEFAULT_STRING_HASH_ALGO	trx_hash_modfnv
 
-typedef zbx_hash_t (*zbx_hash_func_t)(const void *data);
+typedef trx_hash_t (*trx_hash_func_t)(const void *data);
 
-zbx_hash_t	zbx_default_ptr_hash_func(const void *data);
-zbx_hash_t	zbx_default_uint64_hash_func(const void *data);
-zbx_hash_t	zbx_default_string_hash_func(const void *data);
-zbx_hash_t	zbx_default_uint64_pair_hash_func(const void *data);
+trx_hash_t	trx_default_ptr_hash_func(const void *data);
+trx_hash_t	trx_default_uint64_hash_func(const void *data);
+trx_hash_t	trx_default_string_hash_func(const void *data);
+trx_hash_t	trx_default_uint64_pair_hash_func(const void *data);
 
 #define TRX_DEFAULT_HASH_SEED		0
 
-#define TRX_DEFAULT_PTR_HASH_FUNC		zbx_default_ptr_hash_func
-#define TRX_DEFAULT_UINT64_HASH_FUNC		zbx_default_uint64_hash_func
-#define TRX_DEFAULT_STRING_HASH_FUNC		zbx_default_string_hash_func
-#define TRX_DEFAULT_UINT64_PAIR_HASH_FUNC	zbx_default_uint64_pair_hash_func
+#define TRX_DEFAULT_PTR_HASH_FUNC		trx_default_ptr_hash_func
+#define TRX_DEFAULT_UINT64_HASH_FUNC		trx_default_uint64_hash_func
+#define TRX_DEFAULT_STRING_HASH_FUNC		trx_default_string_hash_func
+#define TRX_DEFAULT_UINT64_PAIR_HASH_FUNC	trx_default_uint64_pair_hash_func
 
-typedef int (*zbx_compare_func_t)(const void *d1, const void *d2);
+typedef int (*trx_compare_func_t)(const void *d1, const void *d2);
 
-int	zbx_default_int_compare_func(const void *d1, const void *d2);
-int	zbx_default_uint64_compare_func(const void *d1, const void *d2);
-int	zbx_default_uint64_ptr_compare_func(const void *d1, const void *d2);
-int	zbx_default_str_compare_func(const void *d1, const void *d2);
-int	zbx_default_ptr_compare_func(const void *d1, const void *d2);
-int	zbx_default_uint64_pair_compare_func(const void *d1, const void *d2);
+int	trx_default_int_compare_func(const void *d1, const void *d2);
+int	trx_default_uint64_compare_func(const void *d1, const void *d2);
+int	trx_default_uint64_ptr_compare_func(const void *d1, const void *d2);
+int	trx_default_str_compare_func(const void *d1, const void *d2);
+int	trx_default_ptr_compare_func(const void *d1, const void *d2);
+int	trx_default_uint64_pair_compare_func(const void *d1, const void *d2);
 
-#define TRX_DEFAULT_INT_COMPARE_FUNC		zbx_default_int_compare_func
-#define TRX_DEFAULT_UINT64_COMPARE_FUNC		zbx_default_uint64_compare_func
-#define TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC	zbx_default_uint64_ptr_compare_func
-#define TRX_DEFAULT_STR_COMPARE_FUNC		zbx_default_str_compare_func
-#define TRX_DEFAULT_PTR_COMPARE_FUNC		zbx_default_ptr_compare_func
-#define TRX_DEFAULT_UINT64_PAIR_COMPARE_FUNC	zbx_default_uint64_pair_compare_func
+#define TRX_DEFAULT_INT_COMPARE_FUNC		trx_default_int_compare_func
+#define TRX_DEFAULT_UINT64_COMPARE_FUNC		trx_default_uint64_compare_func
+#define TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC	trx_default_uint64_ptr_compare_func
+#define TRX_DEFAULT_STR_COMPARE_FUNC		trx_default_str_compare_func
+#define TRX_DEFAULT_PTR_COMPARE_FUNC		trx_default_ptr_compare_func
+#define TRX_DEFAULT_UINT64_PAIR_COMPARE_FUNC	trx_default_uint64_pair_compare_func
 
-typedef void *(*zbx_mem_malloc_func_t)(void *old, size_t size);
-typedef void *(*zbx_mem_realloc_func_t)(void *old, size_t size);
-typedef void (*zbx_mem_free_func_t)(void *ptr);
+typedef void *(*trx_mem_malloc_func_t)(void *old, size_t size);
+typedef void *(*trx_mem_realloc_func_t)(void *old, size_t size);
+typedef void (*trx_mem_free_func_t)(void *ptr);
 
-void	*zbx_default_mem_malloc_func(void *old, size_t size);
-void	*zbx_default_mem_realloc_func(void *old, size_t size);
-void	zbx_default_mem_free_func(void *ptr);
+void	*trx_default_mem_malloc_func(void *old, size_t size);
+void	*trx_default_mem_realloc_func(void *old, size_t size);
+void	trx_default_mem_free_func(void *ptr);
 
-#define TRX_DEFAULT_MEM_MALLOC_FUNC	zbx_default_mem_malloc_func
-#define TRX_DEFAULT_MEM_REALLOC_FUNC	zbx_default_mem_realloc_func
-#define TRX_DEFAULT_MEM_FREE_FUNC	zbx_default_mem_free_func
+#define TRX_DEFAULT_MEM_MALLOC_FUNC	trx_default_mem_malloc_func
+#define TRX_DEFAULT_MEM_REALLOC_FUNC	trx_default_mem_realloc_func
+#define TRX_DEFAULT_MEM_FREE_FUNC	trx_default_mem_free_func
 
-typedef void (*zbx_clean_func_t)(void *data);
+typedef void (*trx_clean_func_t)(void *data);
 
 #define TRX_RETURN_IF_NOT_EQUAL(a, b)	\
 					\
@@ -80,26 +80,26 @@ typedef struct
 	void	*first;
 	void	*second;
 }
-zbx_ptr_pair_t;
+trx_ptr_pair_t;
 
 typedef struct
 {
-	zbx_uint64_t	first;
-	zbx_uint64_t	second;
+	trx_uint64_t	first;
+	trx_uint64_t	second;
 }
-zbx_uint64_pair_t;
+trx_uint64_pair_t;
 
 /* hashset */
 
-#define TRX_HASHSET_ENTRY_T	struct zbx_hashset_entry_s
+#define TRX_HASHSET_ENTRY_T	struct trx_hashset_entry_s
 
 TRX_HASHSET_ENTRY_T
 {
 	TRX_HASHSET_ENTRY_T	*next;
-	zbx_hash_t		hash;
+	trx_hash_t		hash;
 #if SIZEOF_VOID_P > 4
 	/* the data member must be properly aligned on 64-bit architectures that require aligned memory access */
-	char			padding[sizeof(void *) - sizeof(zbx_hash_t)];
+	char			padding[sizeof(void *) - sizeof(trx_hash_t)];
 #endif
 	char			data[1];
 };
@@ -109,59 +109,59 @@ typedef struct
 	TRX_HASHSET_ENTRY_T	**slots;
 	int			num_slots;
 	int			num_data;
-	zbx_hash_func_t		hash_func;
-	zbx_compare_func_t	compare_func;
-	zbx_clean_func_t	clean_func;
-	zbx_mem_malloc_func_t	mem_malloc_func;
-	zbx_mem_realloc_func_t	mem_realloc_func;
-	zbx_mem_free_func_t	mem_free_func;
+	trx_hash_func_t		hash_func;
+	trx_compare_func_t	compare_func;
+	trx_clean_func_t	clean_func;
+	trx_mem_malloc_func_t	mem_malloc_func;
+	trx_mem_realloc_func_t	mem_realloc_func;
+	trx_mem_free_func_t	mem_free_func;
 }
-zbx_hashset_t;
+trx_hashset_t;
 
-void	zbx_hashset_create(zbx_hashset_t *hs, size_t init_size,
-				zbx_hash_func_t hash_func,
-				zbx_compare_func_t compare_func);
-void	zbx_hashset_create_ext(zbx_hashset_t *hs, size_t init_size,
-				zbx_hash_func_t hash_func,
-				zbx_compare_func_t compare_func,
-				zbx_clean_func_t clean_func,
-				zbx_mem_malloc_func_t mem_malloc_func,
-				zbx_mem_realloc_func_t mem_realloc_func,
-				zbx_mem_free_func_t mem_free_func);
-void	zbx_hashset_destroy(zbx_hashset_t *hs);
+void	trx_hashset_create(trx_hashset_t *hs, size_t init_size,
+				trx_hash_func_t hash_func,
+				trx_compare_func_t compare_func);
+void	trx_hashset_create_ext(trx_hashset_t *hs, size_t init_size,
+				trx_hash_func_t hash_func,
+				trx_compare_func_t compare_func,
+				trx_clean_func_t clean_func,
+				trx_mem_malloc_func_t mem_malloc_func,
+				trx_mem_realloc_func_t mem_realloc_func,
+				trx_mem_free_func_t mem_free_func);
+void	trx_hashset_destroy(trx_hashset_t *hs);
 
-int	zbx_hashset_reserve(zbx_hashset_t *hs, int num_slots_req);
-void	*zbx_hashset_insert(zbx_hashset_t *hs, const void *data, size_t size);
-void	*zbx_hashset_insert_ext(zbx_hashset_t *hs, const void *data, size_t size, size_t offset);
-void	*zbx_hashset_search(zbx_hashset_t *hs, const void *data);
-void	zbx_hashset_remove(zbx_hashset_t *hs, const void *data);
-void	zbx_hashset_remove_direct(zbx_hashset_t *hs, const void *data);
+int	trx_hashset_reserve(trx_hashset_t *hs, int num_slots_req);
+void	*trx_hashset_insert(trx_hashset_t *hs, const void *data, size_t size);
+void	*trx_hashset_insert_ext(trx_hashset_t *hs, const void *data, size_t size, size_t offset);
+void	*trx_hashset_search(trx_hashset_t *hs, const void *data);
+void	trx_hashset_remove(trx_hashset_t *hs, const void *data);
+void	trx_hashset_remove_direct(trx_hashset_t *hs, const void *data);
 
-void	zbx_hashset_clear(zbx_hashset_t *hs);
+void	trx_hashset_clear(trx_hashset_t *hs);
 
 typedef struct
 {
-	zbx_hashset_t		*hashset;
+	trx_hashset_t		*hashset;
 	int			slot;
 	TRX_HASHSET_ENTRY_T	*entry;
 }
-zbx_hashset_iter_t;
+trx_hashset_iter_t;
 
-void	zbx_hashset_iter_reset(zbx_hashset_t *hs, zbx_hashset_iter_t *iter);
-void	*zbx_hashset_iter_next(zbx_hashset_iter_t *iter);
-void	zbx_hashset_iter_remove(zbx_hashset_iter_t *iter);
+void	trx_hashset_iter_reset(trx_hashset_t *hs, trx_hashset_iter_t *iter);
+void	*trx_hashset_iter_next(trx_hashset_iter_t *iter);
+void	trx_hashset_iter_remove(trx_hashset_iter_t *iter);
 
 /* hashmap */
 
 /* currently, we only have a very specialized hashmap */
-/* that maps zbx_uint64_t keys into non-negative ints */
+/* that maps trx_uint64_t keys into non-negative ints */
 
-#define TRX_HASHMAP_ENTRY_T	struct zbx_hashmap_entry_s
-#define TRX_HASHMAP_SLOT_T	struct zbx_hashmap_slot_s
+#define TRX_HASHMAP_ENTRY_T	struct trx_hashmap_entry_s
+#define TRX_HASHMAP_SLOT_T	struct trx_hashmap_slot_s
 
 TRX_HASHMAP_ENTRY_T
 {
-	zbx_uint64_t	key;
+	trx_uint64_t	key;
 	int		value;
 };
 
@@ -177,79 +177,79 @@ typedef struct
 	TRX_HASHMAP_SLOT_T	*slots;
 	int			num_slots;
 	int			num_data;
-	zbx_hash_func_t		hash_func;
-	zbx_compare_func_t	compare_func;
-	zbx_mem_malloc_func_t	mem_malloc_func;
-	zbx_mem_realloc_func_t	mem_realloc_func;
-	zbx_mem_free_func_t	mem_free_func;
+	trx_hash_func_t		hash_func;
+	trx_compare_func_t	compare_func;
+	trx_mem_malloc_func_t	mem_malloc_func;
+	trx_mem_realloc_func_t	mem_realloc_func;
+	trx_mem_free_func_t	mem_free_func;
 }
-zbx_hashmap_t;
+trx_hashmap_t;
 
-void	zbx_hashmap_create(zbx_hashmap_t *hm, size_t init_size);
-void	zbx_hashmap_create_ext(zbx_hashmap_t *hm, size_t init_size,
-				zbx_hash_func_t hash_func,
-				zbx_compare_func_t compare_func,
-				zbx_mem_malloc_func_t mem_malloc_func,
-				zbx_mem_realloc_func_t mem_realloc_func,
-				zbx_mem_free_func_t mem_free_func);
-void	zbx_hashmap_destroy(zbx_hashmap_t *hm);
+void	trx_hashmap_create(trx_hashmap_t *hm, size_t init_size);
+void	trx_hashmap_create_ext(trx_hashmap_t *hm, size_t init_size,
+				trx_hash_func_t hash_func,
+				trx_compare_func_t compare_func,
+				trx_mem_malloc_func_t mem_malloc_func,
+				trx_mem_realloc_func_t mem_realloc_func,
+				trx_mem_free_func_t mem_free_func);
+void	trx_hashmap_destroy(trx_hashmap_t *hm);
 
-int	zbx_hashmap_get(zbx_hashmap_t *hm, zbx_uint64_t key);
-void	zbx_hashmap_set(zbx_hashmap_t *hm, zbx_uint64_t key, int value);
-void	zbx_hashmap_remove(zbx_hashmap_t *hm, zbx_uint64_t key);
+int	trx_hashmap_get(trx_hashmap_t *hm, trx_uint64_t key);
+void	trx_hashmap_set(trx_hashmap_t *hm, trx_uint64_t key, int value);
+void	trx_hashmap_remove(trx_hashmap_t *hm, trx_uint64_t key);
 
-void	zbx_hashmap_clear(zbx_hashmap_t *hm);
+void	trx_hashmap_clear(trx_hashmap_t *hm);
 
 /* binary heap (min-heap) */
 
 /* currently, we only have a very specialized binary heap that can */
-/* store zbx_uint64_t keys with arbitrary auxiliary information */
+/* store trx_uint64_t keys with arbitrary auxiliary information */
 
 #define TRX_BINARY_HEAP_OPTION_EMPTY	0
 #define TRX_BINARY_HEAP_OPTION_DIRECT	(1<<0)	/* support for direct update() and remove() operations */
 
 typedef struct
 {
-	zbx_uint64_t		key;
+	trx_uint64_t		key;
 	const void		*data;
 }
-zbx_binary_heap_elem_t;
+trx_binary_heap_elem_t;
 
 typedef struct
 {
-	zbx_binary_heap_elem_t	*elems;
+	trx_binary_heap_elem_t	*elems;
 	int			elems_num;
 	int			elems_alloc;
 	int			options;
-	zbx_compare_func_t	compare_func;
-	zbx_hashmap_t		*key_index;
+	trx_compare_func_t	compare_func;
+	trx_hashmap_t		*key_index;
 
 	/* The binary heap is designed to work correctly only with memory allocation functions */
 	/* that return pointer to the allocated memory or quit. Functions that can return NULL */
 	/* are not supported (process will exit() if NULL return value is encountered). If     */
-	/* using zbx_mem_info_t and the associated memory functions then ensure that allow_oom */
+	/* using trx_mem_info_t and the associated memory functions then ensure that allow_oom */
 	/* is always set to 0.                                                                 */
-	zbx_mem_malloc_func_t	mem_malloc_func;
-	zbx_mem_realloc_func_t	mem_realloc_func;
-	zbx_mem_free_func_t	mem_free_func;
+	trx_mem_malloc_func_t	mem_malloc_func;
+	trx_mem_realloc_func_t	mem_realloc_func;
+	trx_mem_free_func_t	mem_free_func;
 }
-zbx_binary_heap_t;
+trx_binary_heap_t;
 
-void			zbx_binary_heap_create(zbx_binary_heap_t *heap, zbx_compare_func_t compare_func, int options);
-void			zbx_binary_heap_create_ext(zbx_binary_heap_t *heap, zbx_compare_func_t compare_func, int options,
-							zbx_mem_malloc_func_t mem_malloc_func,
-							zbx_mem_realloc_func_t mem_realloc_func,
-							zbx_mem_free_func_t mem_free_func);
-void			zbx_binary_heap_destroy(zbx_binary_heap_t *heap);
+void			trx_binary_heap_create(trx_binary_heap_t *heap, trx_compare_func_t compare_func, int options);
+void			trx_binary_heap_create_ext(trx_binary_heap_t *heap, trx_compare_func_t compare_func, int options,
+							trx_mem_malloc_func_t mem_malloc_func,
+							trx_mem_realloc_func_t mem_realloc_func,
+							trx_mem_free_func_t mem_free_func);
+void			trx_binary_heap_destroy(trx_binary_heap_t *heap);
 
-int			zbx_binary_heap_empty(zbx_binary_heap_t *heap);
-zbx_binary_heap_elem_t	*zbx_binary_heap_find_min(zbx_binary_heap_t *heap);
-void			zbx_binary_heap_insert(zbx_binary_heap_t *heap, zbx_binary_heap_elem_t *elem);
-void			zbx_binary_heap_update_direct(zbx_binary_heap_t *heap, zbx_binary_heap_elem_t *elem);
-void			zbx_binary_heap_remove_min(zbx_binary_heap_t *heap);
-void			zbx_binary_heap_remove_direct(zbx_binary_heap_t *heap, zbx_uint64_t key);
+int			trx_binary_heap_empty(trx_binary_heap_t *heap);
+trx_binary_heap_elem_t	*trx_binary_heap_find_min(trx_binary_heap_t *heap);
+void			trx_binary_heap_insert(trx_binary_heap_t *heap, trx_binary_heap_elem_t *elem);
+void			trx_binary_heap_update_direct(trx_binary_heap_t *heap, trx_binary_heap_elem_t *elem);
+void			trx_binary_heap_remove_min(trx_binary_heap_t *heap);
+void			trx_binary_heap_remove_direct(trx_binary_heap_t *heap, trx_uint64_t key);
 
-void			zbx_binary_heap_clear(zbx_binary_heap_t *heap);
+void			trx_binary_heap_clear(trx_binary_heap_t *heap);
 
 /* vector */
 
@@ -260,71 +260,71 @@ typedef struct													\
 	__type			*values;									\
 	int			values_num;									\
 	int			values_alloc;									\
-	zbx_mem_malloc_func_t	mem_malloc_func;								\
-	zbx_mem_realloc_func_t	mem_realloc_func;								\
-	zbx_mem_free_func_t	mem_free_func;									\
+	trx_mem_malloc_func_t	mem_malloc_func;								\
+	trx_mem_realloc_func_t	mem_realloc_func;								\
+	trx_mem_free_func_t	mem_free_func;									\
 }														\
-zbx_vector_ ## __id ## _t;											\
+trx_vector_ ## __id ## _t;											\
 														\
-void	zbx_vector_ ## __id ## _create(zbx_vector_ ## __id ## _t *vector);					\
-void	zbx_vector_ ## __id ## _create_ext(zbx_vector_ ## __id ## _t *vector,					\
-						zbx_mem_malloc_func_t mem_malloc_func,				\
-						zbx_mem_realloc_func_t mem_realloc_func,			\
-						zbx_mem_free_func_t mem_free_func);				\
-void	zbx_vector_ ## __id ## _destroy(zbx_vector_ ## __id ## _t *vector);					\
+void	trx_vector_ ## __id ## _create(trx_vector_ ## __id ## _t *vector);					\
+void	trx_vector_ ## __id ## _create_ext(trx_vector_ ## __id ## _t *vector,					\
+						trx_mem_malloc_func_t mem_malloc_func,				\
+						trx_mem_realloc_func_t mem_realloc_func,			\
+						trx_mem_free_func_t mem_free_func);				\
+void	trx_vector_ ## __id ## _destroy(trx_vector_ ## __id ## _t *vector);					\
 														\
-void	zbx_vector_ ## __id ## _append(zbx_vector_ ## __id ## _t *vector, __type value);			\
-void	zbx_vector_ ## __id ## _append_ptr(zbx_vector_ ## __id ## _t *vector, __type *value);			\
-void	zbx_vector_ ## __id ## _append_array(zbx_vector_ ## __id ## _t *vector, __type const *values,		\
+void	trx_vector_ ## __id ## _append(trx_vector_ ## __id ## _t *vector, __type value);			\
+void	trx_vector_ ## __id ## _append_ptr(trx_vector_ ## __id ## _t *vector, __type *value);			\
+void	trx_vector_ ## __id ## _append_array(trx_vector_ ## __id ## _t *vector, __type const *values,		\
 									int values_num);			\
-void	zbx_vector_ ## __id ## _remove_noorder(zbx_vector_ ## __id ## _t *vector, int index);			\
-void	zbx_vector_ ## __id ## _remove(zbx_vector_ ## __id ## _t *vector, int index);				\
+void	trx_vector_ ## __id ## _remove_noorder(trx_vector_ ## __id ## _t *vector, int index);			\
+void	trx_vector_ ## __id ## _remove(trx_vector_ ## __id ## _t *vector, int index);				\
 														\
-void	zbx_vector_ ## __id ## _sort(zbx_vector_ ## __id ## _t *vector, zbx_compare_func_t compare_func);	\
-void	zbx_vector_ ## __id ## _uniq(zbx_vector_ ## __id ## _t *vector, zbx_compare_func_t compare_func);	\
+void	trx_vector_ ## __id ## _sort(trx_vector_ ## __id ## _t *vector, trx_compare_func_t compare_func);	\
+void	trx_vector_ ## __id ## _uniq(trx_vector_ ## __id ## _t *vector, trx_compare_func_t compare_func);	\
 														\
-int	zbx_vector_ ## __id ## _nearestindex(const zbx_vector_ ## __id ## _t *vector, const __type value,	\
-									zbx_compare_func_t compare_func);	\
-int	zbx_vector_ ## __id ## _bsearch(const zbx_vector_ ## __id ## _t *vector, const __type value,		\
-									zbx_compare_func_t compare_func);	\
-int	zbx_vector_ ## __id ## _lsearch(const zbx_vector_ ## __id ## _t *vector, const __type value, int *index,\
-									zbx_compare_func_t compare_func);	\
-int	zbx_vector_ ## __id ## _search(const zbx_vector_ ## __id ## _t *vector, const __type value,		\
-									zbx_compare_func_t compare_func);	\
-void	zbx_vector_ ## __id ## _setdiff(zbx_vector_ ## __id ## _t *left, const zbx_vector_ ## __id ## _t *right,\
-									zbx_compare_func_t compare_func);	\
+int	trx_vector_ ## __id ## _nearestindex(const trx_vector_ ## __id ## _t *vector, const __type value,	\
+									trx_compare_func_t compare_func);	\
+int	trx_vector_ ## __id ## _bsearch(const trx_vector_ ## __id ## _t *vector, const __type value,		\
+									trx_compare_func_t compare_func);	\
+int	trx_vector_ ## __id ## _lsearch(const trx_vector_ ## __id ## _t *vector, const __type value, int *index,\
+									trx_compare_func_t compare_func);	\
+int	trx_vector_ ## __id ## _search(const trx_vector_ ## __id ## _t *vector, const __type value,		\
+									trx_compare_func_t compare_func);	\
+void	trx_vector_ ## __id ## _setdiff(trx_vector_ ## __id ## _t *left, const trx_vector_ ## __id ## _t *right,\
+									trx_compare_func_t compare_func);	\
 														\
-void	zbx_vector_ ## __id ## _reserve(zbx_vector_ ## __id ## _t *vector, size_t size);			\
-void	zbx_vector_ ## __id ## _clear(zbx_vector_ ## __id ## _t *vector);
+void	trx_vector_ ## __id ## _reserve(trx_vector_ ## __id ## _t *vector, size_t size);			\
+void	trx_vector_ ## __id ## _clear(trx_vector_ ## __id ## _t *vector);
 
 #define TRX_PTR_VECTOR_DECL(__id, __type)									\
 														\
 TRX_VECTOR_DECL(__id, __type)											\
 														\
-typedef void (*zbx_ ## __id ## _free_func_t)(__type data);							\
+typedef void (*trx_ ## __id ## _free_func_t)(__type data);							\
 														\
-void	zbx_vector_ ## __id ## _clear_ext(zbx_vector_ ## __id ## _t *vector, zbx_ ## __id ## _free_func_t free_func);
+void	trx_vector_ ## __id ## _clear_ext(trx_vector_ ## __id ## _t *vector, trx_ ## __id ## _free_func_t free_func);
 
-TRX_VECTOR_DECL(uint64, zbx_uint64_t)
+TRX_VECTOR_DECL(uint64, trx_uint64_t)
 TRX_PTR_VECTOR_DECL(str, char *)
 TRX_PTR_VECTOR_DECL(ptr, void *)
-TRX_VECTOR_DECL(ptr_pair, zbx_ptr_pair_t)
-TRX_VECTOR_DECL(uint64_pair, zbx_uint64_pair_t)
+TRX_VECTOR_DECL(ptr_pair, trx_ptr_pair_t)
+TRX_VECTOR_DECL(uint64_pair, trx_uint64_pair_t)
 
-/* this function is only for use with zbx_vector_XXX_clear_ext() */
+/* this function is only for use with trx_vector_XXX_clear_ext() */
 /* and only if the vector does not contain nested allocations */
-void	zbx_ptr_free(void *data);
-void	zbx_str_free(char *data);
+void	trx_ptr_free(void *data);
+void	trx_str_free(char *data);
 
 /* 128 bit unsigned integer handling */
 #define uset128(base, hi64, lo64)	(base)->hi = hi64; (base)->lo = lo64
 
-void	uinc128_64(zbx_uint128_t *base, zbx_uint64_t value);
-void	uinc128_128(zbx_uint128_t *base, const zbx_uint128_t *value);
-void	udiv128_64(zbx_uint128_t *result, const zbx_uint128_t *base, zbx_uint64_t value);
-void	umul64_64(zbx_uint128_t *result, zbx_uint64_t value, zbx_uint64_t factor);
+void	uinc128_64(trx_uint128_t *base, trx_uint64_t value);
+void	uinc128_128(trx_uint128_t *base, const trx_uint128_t *value);
+void	udiv128_64(trx_uint128_t *result, const trx_uint128_t *base, trx_uint64_t value);
+void	umul64_64(trx_uint128_t *result, trx_uint64_t value, trx_uint64_t factor);
 
-unsigned int	zbx_isqrt32(unsigned int value);
+unsigned int	trx_isqrt32(unsigned int value);
 
 /* expression evaluation */
 
@@ -332,7 +332,7 @@ unsigned int	zbx_isqrt32(unsigned int value);
 #define TRX_UNKNOWN_STR_LEN	TRX_CONST_STRLEN(TRX_UNKNOWN_STR)
 
 int	evaluate(double *value, const char *expression, char *error, size_t max_error_len,
-		zbx_vector_ptr_t *unknown_msgs);
+		trx_vector_ptr_t *unknown_msgs);
 
 /* forecasting */
 
@@ -347,7 +347,7 @@ typedef enum
 	FIT_POWER,
 	FIT_INVALID
 }
-zbx_fit_t;
+trx_fit_t;
 
 typedef enum
 {
@@ -358,12 +358,12 @@ typedef enum
 	MODE_AVG,
 	MODE_INVALID
 }
-zbx_mode_t;
+trx_mode_t;
 
-int	zbx_fit_code(char *fit_str, zbx_fit_t *fit, unsigned *k, char **error);
-int	zbx_mode_code(char *mode_str, zbx_mode_t *mode, char **error);
-double	zbx_forecast(double *t, double *x, int n, double now, double time, zbx_fit_t fit, unsigned k, zbx_mode_t mode);
-double	zbx_timeleft(double *t, double *x, int n, double now, double threshold, zbx_fit_t fit, unsigned k);
+int	trx_fit_code(char *fit_str, trx_fit_t *fit, unsigned *k, char **error);
+int	trx_mode_code(char *mode_str, trx_mode_t *mode, char **error);
+double	trx_forecast(double *t, double *x, int n, double now, double time, trx_fit_t fit, unsigned k, trx_mode_t mode);
+double	trx_timeleft(double *t, double *x, int n, double now, double threshold, trx_fit_t fit, unsigned k);
 
 
 /* fifo queue of pointers */
@@ -375,18 +375,18 @@ typedef struct
 	int	head_pos;
 	int	tail_pos;
 }
-zbx_queue_ptr_t;
+trx_queue_ptr_t;
 
-#define zbx_queue_ptr_empty(queue)	((queue)->head_pos == (queue)->tail_pos ? SUCCEED : FAIL)
+#define trx_queue_ptr_empty(queue)	((queue)->head_pos == (queue)->tail_pos ? SUCCEED : FAIL)
 
-int	zbx_queue_ptr_values_num(zbx_queue_ptr_t *queue);
-void	zbx_queue_ptr_reserve(zbx_queue_ptr_t *queue, int num);
-void	zbx_queue_ptr_compact(zbx_queue_ptr_t *queue);
-void	zbx_queue_ptr_create(zbx_queue_ptr_t *queue);
-void	zbx_queue_ptr_destroy(zbx_queue_ptr_t *queue);
-void	zbx_queue_ptr_push(zbx_queue_ptr_t *queue, void *value);
-void	*zbx_queue_ptr_pop(zbx_queue_ptr_t *queue);
-void	zbx_queue_ptr_remove_value(zbx_queue_ptr_t *queue, const void *value);
+int	trx_queue_ptr_values_num(trx_queue_ptr_t *queue);
+void	trx_queue_ptr_reserve(trx_queue_ptr_t *queue, int num);
+void	trx_queue_ptr_compact(trx_queue_ptr_t *queue);
+void	trx_queue_ptr_create(trx_queue_ptr_t *queue);
+void	trx_queue_ptr_destroy(trx_queue_ptr_t *queue);
+void	trx_queue_ptr_push(trx_queue_ptr_t *queue, void *value);
+void	*trx_queue_ptr_pop(trx_queue_ptr_t *queue);
+void	trx_queue_ptr_remove_value(trx_queue_ptr_t *queue, const void *value);
 
 
 

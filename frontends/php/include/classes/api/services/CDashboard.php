@@ -94,7 +94,7 @@ class CDashboard extends CApiService {
 
 		// dashboardids
 		if ($options['dashboardids'] !== null) {
-			zbx_value2array($options['dashboardids']);
+			trx_value2array($options['dashboardids']);
 			$sql_parts['where'][] = dbConditionInt('d.dashboardid', $options['dashboardids']);
 		}
 
@@ -105,7 +105,7 @@ class CDashboard extends CApiService {
 
 		// search
 		if ($options['search'] !== null) {
-			zbx_db_search('dashboard d', $options, $sql_parts);
+			trx_db_search('dashboard d', $options, $sql_parts);
 		}
 
 		$db_dashboards = [];
@@ -216,7 +216,7 @@ class CDashboard extends CApiService {
 			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
-		$this->checkDuplicates(zbx_objectValues($dashboards, 'name'));
+		$this->checkDuplicates(trx_objectValues($dashboards, 'name'));
 		$this->checkUsers($dashboards);
 		$this->checkUserGroups($dashboards);
 		$this->checkWidgets($dashboards);
@@ -271,7 +271,7 @@ class CDashboard extends CApiService {
 
 		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_DASHBOARD, $dashboards, $db_dashboards);
 
-		return ['dashboardids' => zbx_objectValues($dashboards, 'dashboardid')];
+		return ['dashboardids' => trx_objectValues($dashboards, 'dashboardid')];
 	}
 
 	/**
@@ -329,7 +329,7 @@ class CDashboard extends CApiService {
 		// Check dashboard names.
 		$db_dashboards = $this->get([
 			'output' => ['dashboardid', 'name', 'userid', 'private'],
-			'dashboardids' => zbx_objectValues($dashboards, 'dashboardid'),
+			'dashboardids' => trx_objectValues($dashboards, 'dashboardid'),
 			'selectWidgets' => ['widgetid', 'type', 'name', 'view_mode', 'x', 'y', 'width', 'height'],
 			'editable' => true,
 			'preservekeys' => true
@@ -363,7 +363,7 @@ class CDashboard extends CApiService {
 			}
 
 			if (array_key_exists('widgets', $dashboard)) {
-				$db_widgets = zbx_toHash($db_dashboard['widgets'], 'widgetid');
+				$db_widgets = trx_toHash($db_dashboard['widgets'], 'widgetid');
 
 				foreach ($dashboard['widgets'] as &$widget) {
 					if (!array_key_exists('widgetid', $widget)) {
@@ -982,7 +982,7 @@ class CDashboard extends CApiService {
 		if ($db_dashboards !== null) {
 			foreach ($dashboards as $dashboard) {
 				if (array_key_exists('widgets', $dashboard)) {
-					$db_widgets += zbx_toHash($db_dashboards[$dashboard['dashboardid']]['widgets'], 'widgetid');
+					$db_widgets += trx_toHash($db_dashboards[$dashboard['dashboardid']]['widgets'], 'widgetid');
 				}
 			}
 		}
@@ -1221,7 +1221,7 @@ class CDashboard extends CApiService {
 				);
 			}
 
-			$widgetids = array_merge($widgetids, zbx_objectValues($db_dashboards[$dashboardid]['widgets'], 'widgetid'));
+			$widgetids = array_merge($widgetids, trx_objectValues($db_dashboards[$dashboardid]['widgets'], 'widgetid'));
 		}
 
 		if ($widgetids) {

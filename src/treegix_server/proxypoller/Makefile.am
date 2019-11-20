@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxproxypoller.a
+noinst_LIBRARIES = libtrxproxypoller.a
 
-libzbxproxypoller_a_SOURCES = \
+libtrxproxypoller_a_SOURCES = \
 	proxypoller.c proxypoller.h
 

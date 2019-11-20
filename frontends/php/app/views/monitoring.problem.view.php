@@ -85,7 +85,7 @@ if ($data['action'] == 'problem.view') {
 					'parameters' => [
 						'srctbl' => 'host_groups',
 						'srcfld1' => 'groupid',
-						'dstfrm' => 'zbx_filter',
+						'dstfrm' => 'trx_filter',
 						'dstfld1' => 'filter_groupids_',
 						'real_hosts' => true,
 						'enrich_parent_groups' => true
@@ -102,7 +102,7 @@ if ($data['action'] == 'problem.view') {
 					'parameters' => [
 						'srctbl' => 'hosts',
 						'srcfld1' => 'hostid',
-						'dstfrm' => 'zbx_filter',
+						'dstfrm' => 'trx_filter',
 						'dstfld1' => 'filter_hostids_'
 					]
 				]
@@ -117,7 +117,7 @@ if ($data['action'] == 'problem.view') {
 					CJs::encodeJson([
 						'srctbl' => 'applications',
 						'srcfld1' => 'name',
-						'dstfrm' => 'zbx_filter',
+						'dstfrm' => 'trx_filter',
 						'dstfld1' => 'filter_application',
 						'with_applications' => '1',
 						'real_hosts' => '1'
@@ -134,7 +134,7 @@ if ($data['action'] == 'problem.view') {
 					'parameters' => [
 						'srctbl' => 'triggers',
 						'srcfld1' => 'triggerid',
-						'dstfrm' => 'zbx_filter',
+						'dstfrm' => 'trx_filter',
 						'dstfld1' => 'filter_triggerids_',
 						'monitored_hosts' => true,
 						'with_monitored_triggers' => true,
@@ -366,7 +366,7 @@ if ($data['action'] == 'problem.view') {
 			'mainObject' => 1
 		];
 
-		$this->addPostJS('timeControl.addObject("scroll_events_id", '.zbx_jsvalue($screen->timeline).', '.zbx_jsvalue($objData).');');
+		$this->addPostJS('timeControl.addObject("scroll_events_id", '.trx_jsvalue($screen->timeline).', '.trx_jsvalue($objData).');');
 		$this->addPostJS('timeControl.processObjects();');
 	}
 }

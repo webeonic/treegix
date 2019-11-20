@@ -250,8 +250,8 @@ static int	DBpatch_2030024(void)
 				" values (%s,%s,'%s','%s')",
 				row[0], row[0],  macro_esc, value_esc);
 
-		zbx_free(value_esc);
-		zbx_free(macro_esc);
+		trx_free(value_esc);
+		trx_free(macro_esc);
 
 		if (TRX_DB_OK > rc)
 			goto out;
@@ -475,7 +475,7 @@ static int	dm_rename_slave_data(const char *table_name, const char *key_name, co
 	DB_RESULT	result;
 	DB_ROW		row;
 	int		local_nodeid = 0, nodeid, globalmacro;
-	zbx_uint64_t	id, min, max;
+	trx_uint64_t	id, min, max;
 	char		*name = NULL, *name_esc;
 	size_t		name_alloc = 0, name_offset;
 
@@ -513,9 +513,9 @@ static int	dm_rename_slave_data(const char *table_name, const char *key_name, co
 		name_offset = 0;
 
 		if (0 == globalmacro)
-			zbx_snprintf_alloc(&name, &name_alloc, &name_offset, "N%d_%s", nodeid, row[1]);
+			trx_snprintf_alloc(&name, &name_alloc, &name_offset, "N%d_%s", nodeid, row[1]);
 		else
-			zbx_snprintf_alloc(&name, &name_alloc, &name_offset, "{$N%d_%s", nodeid, row[1] + 2);
+			trx_snprintf_alloc(&name, &name_alloc, &name_offset, "{$N%d_%s", nodeid, row[1] + 2);
 
 		name_esc = DBdyn_escape_string_len(name, field_length);
 
@@ -523,15 +523,15 @@ static int	dm_rename_slave_data(const char *table_name, const char *key_name, co
 				" where " TRX_FS_SQL_NAME "=" TRX_FS_UI64,
 				table_name, field_name, name_esc, key_name, id))
 		{
-			zbx_free(name_esc);
+			trx_free(name_esc);
 			break;
 		}
 
-		zbx_free(name_esc);
+		trx_free(name_esc);
 	}
 	DBfree_result(result);
 
-	zbx_free(name);
+	trx_free(name);
 
 	return SUCCEED;
 }
@@ -659,7 +659,7 @@ static int	DBpatch_2030065(void)
 	DB_RESULT	result;
 	DB_ROW		row;
 	int		local_nodeid = 0;
-	zbx_uint64_t	min, max;
+	trx_uint64_t	min, max;
 
 	/* 1 - TRX_NODE_LOCAL */
 	if (NULL == (result = DBselect("select nodeid from nodes where nodetype=1")))
@@ -889,45 +889,45 @@ static int	DBpatch_2030094(void)
 	while (SUCCEED == ret && NULL != (row = DBfetch(result)))
 	{
 		expr_offset = 0;
-		zbx_strcpy_alloc(&expr, &expr_alloc, &expr_offset, "");
+		trx_strcpy_alloc(&expr, &expr_alloc, &expr_offset, "");
 
 		for (p = row[1]; '\0' != *p; p++)
 		{
 			if (NULL == strchr("#&|", *p))
 			{
 				if (' ' != *p || (0 != expr_offset && ' ' != expr[expr_offset - 1]))
-					zbx_chrcpy_alloc(&expr, &expr_alloc, &expr_offset, *p);
+					trx_chrcpy_alloc(&expr, &expr_alloc, &expr_offset, *p);
 
 				continue;
 			}
 
 			if ('#' == *p && 0 != expr_offset && '{' == expr[expr_offset - 1])
 			{
-				zbx_chrcpy_alloc(&expr, &expr_alloc, &expr_offset, *p);
+				trx_chrcpy_alloc(&expr, &expr_alloc, &expr_offset, *p);
 				continue;
 			}
 
 			if (('&' == *p || '|' == *p) && 0 != expr_offset && ' ' != expr[expr_offset - 1])
-				zbx_chrcpy_alloc(&expr, &expr_alloc, &expr_offset, ' ');
+				trx_chrcpy_alloc(&expr, &expr_alloc, &expr_offset, ' ');
 
 			switch (*p)
 			{
 				case '#':
-					zbx_strcpy_alloc(&expr, &expr_alloc, &expr_offset, "<>");
+					trx_strcpy_alloc(&expr, &expr_alloc, &expr_offset, "<>");
 					break;
 				case '&':
-					zbx_strcpy_alloc(&expr, &expr_alloc, &expr_offset, "and");
+					trx_strcpy_alloc(&expr, &expr_alloc, &expr_offset, "and");
 					break;
 				case '|':
-					zbx_strcpy_alloc(&expr, &expr_alloc, &expr_offset, "or");
+					trx_strcpy_alloc(&expr, &expr_alloc, &expr_offset, "or");
 					break;
 			}
 
 			if (('&' == *p || '|' == *p) && ' ' != *(p + 1))
-				zbx_chrcpy_alloc(&expr, &expr_alloc, &expr_offset, ' ');
+				trx_chrcpy_alloc(&expr, &expr_alloc, &expr_offset, ' ');
 		}
 
-		if (2048 < expr_offset && 2048 /* TRIGGER_EXPRESSION_LEN */ < zbx_strlen_utf8(expr))
+		if (2048 < expr_offset && 2048 /* TRIGGER_EXPRESSION_LEN */ < trx_strlen_utf8(expr))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot convert trigger expression \"%s\":"
 					" resulting expression is too long", row[1]);
@@ -942,12 +942,12 @@ static int	DBpatch_2030094(void)
 				ret = FAIL;
 			}
 
-			zbx_free(expr_esc);
+			trx_free(expr_esc);
 		}
 	}
 	DBfree_result(result);
 
-	zbx_free(expr);
+	trx_free(expr);
 
 	return ret;
 }
@@ -972,8 +972,8 @@ static int	DBpatch_2030094(void)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  * Comments: This function is outdated and should be used in this upgrade     *
- *           only. For other applications consider zbx_function_find() or     *
- *           zbx_function_validate().                                         *
+ *           only. For other applications consider trx_function_find() or     *
+ *           trx_function_validate().                                         *
  *                                                                            *
  ******************************************************************************/
 static int	parse_function(char **exp, char **func, char **params)
@@ -1011,7 +1011,7 @@ static int	parse_function(char **exp, char **func, char **params)
 			if (NULL != func)
 			{
 				*p = '\0';
-				*func = zbx_strdup(NULL, s);
+				*func = trx_strdup(NULL, s);
 				*p++ = '(';
 			}
 			flags |= 0x01;
@@ -1060,7 +1060,7 @@ static int	parse_function(char **exp, char **func, char **params)
 				if (NULL != params)
 				{
 					*p = '\0';
-					*params = zbx_strdup(NULL, s);
+					*params = trx_strdup(NULL, s);
 					*p = ')';
 				}
 				flags |= 0x02;
@@ -1082,9 +1082,9 @@ static int	parse_function(char **exp, char **func, char **params)
 	return SUCCEED;
 error:
 	if (NULL != func)
-		zbx_free(*func);
+		trx_free(*func);
 	if (NULL != params)
-		zbx_free(*params);
+		trx_free(*params);
 
 	*exp = p;
 
@@ -1112,7 +1112,7 @@ static int	DBpatch_2030095(void)
 				if (' ' != *p || (0 != params_offset &&
 						NULL == strchr(TRX_WHITESPACE, params[params_offset - 1])))
 				{
-					zbx_chrcpy_alloc(&params, &params_alloc, &params_offset, *p);
+					trx_chrcpy_alloc(&params, &params_alloc, &params_offset, *p);
 				}
 
 				continue;
@@ -1122,31 +1122,31 @@ static int	DBpatch_2030095(void)
 			{
 				if ('#' == *p && 0 != params_offset && '{' == params[params_offset - 1])
 				{
-					zbx_chrcpy_alloc(&params, &params_alloc, &params_offset, *p);
+					trx_chrcpy_alloc(&params, &params_alloc, &params_offset, *p);
 					continue;
 				}
 
 				if (('&' == *p || '|' == *p) && 0 != params_offset &&
 						NULL == strchr(TRX_WHITESPACE, params[params_offset - 1]))
 				{
-					zbx_chrcpy_alloc(&params, &params_alloc, &params_offset, ' ');
+					trx_chrcpy_alloc(&params, &params_alloc, &params_offset, ' ');
 				}
 
 				switch (*p)
 				{
 					case '#':
-						zbx_strcpy_alloc(&params, &params_alloc, &params_offset, "<>");
+						trx_strcpy_alloc(&params, &params_alloc, &params_offset, "<>");
 						break;
 					case '&':
-						zbx_strcpy_alloc(&params, &params_alloc, &params_offset, "and");
+						trx_strcpy_alloc(&params, &params_alloc, &params_offset, "and");
 						break;
 					case '|':
-						zbx_strcpy_alloc(&params, &params_alloc, &params_offset, "or");
+						trx_strcpy_alloc(&params, &params_alloc, &params_offset, "or");
 						break;
 				}
 
 				if (('&' == *p || '|' == *p) && NULL == strchr(TRX_WHITESPACE, *(p + 1)))
-					zbx_chrcpy_alloc(&params, &params_alloc, &params_offset, ' ');
+					trx_chrcpy_alloc(&params, &params_alloc, &params_offset, ' ');
 
 				continue;
 			}
@@ -1155,19 +1155,19 @@ static int	DBpatch_2030095(void)
 
 			if (SUCCEED == parse_function(&q, NULL, NULL))
 			{
-				zbx_strncpy_alloc(&params, &params_alloc, &params_offset, p, q - p);
+				trx_strncpy_alloc(&params, &params_alloc, &params_offset, p, q - p);
 				p = q - 1;
 				continue;
 			}
 
-			zbx_chrcpy_alloc(&params, &params_alloc, &params_offset, *p);
+			trx_chrcpy_alloc(&params, &params_alloc, &params_offset, *p);
 		}
 
 #if defined(HAVE_IBM_DB2) || defined(HAVE_ORACLE)
-		if (0 == params_offset || (2048 < params_offset && 2048 /* ITEM_PARAM_LEN */ < zbx_strlen_utf8(params)))
+		if (0 == params_offset || (2048 < params_offset && 2048 /* ITEM_PARAM_LEN */ < trx_strlen_utf8(params)))
 #else
 		if (0 == params_offset ||
-				(65535 < params_offset && 65535 /* ITEM_PARAM_LEN */ < zbx_strlen_utf8(params)))
+				(65535 < params_offset && 65535 /* ITEM_PARAM_LEN */ < trx_strlen_utf8(params)))
 #endif
 		{
 			treegix_log(LOG_LEVEL_WARNING, "cannot convert calculated item expression \"%s\": resulting"
@@ -1180,12 +1180,12 @@ static int	DBpatch_2030095(void)
 			if (TRX_DB_OK > DBexecute("update items set params='%s' where itemid=%s", params_esc, row[0]))
 				ret = FAIL;
 
-			zbx_free(params_esc);
+			trx_free(params_esc);
 		}
 	}
 	DBfree_result(result);
 
-	zbx_free(params);
+	trx_free(params);
 
 	return ret;
 }

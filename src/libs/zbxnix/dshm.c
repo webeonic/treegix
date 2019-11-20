@@ -8,7 +8,7 @@ extern char	*CONFIG_FILE;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dshm_create                                                  *
+ * Function: trx_dshm_create                                                  *
  *                                                                            *
  * Purpose: creates dynamic shared memory segment                             *
  *                                                                            *
@@ -26,21 +26,21 @@ extern char	*CONFIG_FILE;
  *                         must be freed by the caller.                       *
  *                                                                            *
  ******************************************************************************/
-int	zbx_dshm_create(zbx_dshm_t *shm, size_t shm_size, zbx_mutex_name_t mutex,
-		zbx_shm_copy_func_t copy_func, char **errmsg)
+int	trx_dshm_create(trx_dshm_t *shm, size_t shm_size, trx_mutex_name_t mutex,
+		trx_shm_copy_func_t copy_func, char **errmsg)
 {
 	int	ret = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() size:" TRX_FS_SIZE_T, __func__, (zbx_fs_size_t)shm_size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() size:" TRX_FS_SIZE_T, __func__, (trx_fs_size_t)shm_size);
 
-	if (SUCCEED != zbx_mutex_create(&shm->lock, mutex, errmsg))
+	if (SUCCEED != trx_mutex_create(&shm->lock, mutex, errmsg))
 		goto out;
 
 	if (0 < shm_size)
 	{
-		if (-1 == (shm->shmid = zbx_shm_create(shm_size)))
+		if (-1 == (shm->shmid = trx_shm_create(shm_size)))
 		{
-			*errmsg = zbx_strdup(*errmsg, "cannot allocate shared memory");
+			*errmsg = trx_strdup(*errmsg, "cannot allocate shared memory");
 			goto out;
 		}
 	}
@@ -52,14 +52,14 @@ int	zbx_dshm_create(zbx_dshm_t *shm, size_t shm_size, zbx_mutex_name_t mutex,
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s shmid:%d", __func__, zbx_result_string(ret), shm->shmid);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s shmid:%d", __func__, trx_result_string(ret), shm->shmid);
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dshm_destroy                                                 *
+ * Function: trx_dshm_destroy                                                 *
  *                                                                            *
  * Purpose: destroys dynamic shared memory segment                            *
  *                                                                            *
@@ -72,19 +72,19 @@ out:
  *                         must be freed by the caller.                       *
  *                                                                            *
  ******************************************************************************/
-int	zbx_dshm_destroy(zbx_dshm_t *shm, char **errmsg)
+int	trx_dshm_destroy(trx_dshm_t *shm, char **errmsg)
 {
 	int	ret = FAIL;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() shmid:%d", __func__, shm->shmid);
 
-	zbx_mutex_destroy(&shm->lock);
+	trx_mutex_destroy(&shm->lock);
 
 	if (TRX_NONEXISTENT_SHMID != shm->shmid)
 	{
 		if (-1 == shmctl(shm->shmid, IPC_RMID, NULL))
 		{
-			*errmsg = zbx_dsprintf(*errmsg, "cannot remove shared memory: %s", zbx_strerror(errno));
+			*errmsg = trx_dsprintf(*errmsg, "cannot remove shared memory: %s", trx_strerror(errno));
 			goto out;
 		}
 		shm->shmid = TRX_NONEXISTENT_SHMID;
@@ -92,34 +92,34 @@ int	zbx_dshm_destroy(zbx_dshm_t *shm, char **errmsg)
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dshm_lock                                                    *
+ * Function: trx_dshm_lock                                                    *
  *                                                                            *
  ******************************************************************************/
-void	zbx_dshm_lock(zbx_dshm_t *shm)
+void	trx_dshm_lock(trx_dshm_t *shm)
 {
-	zbx_mutex_lock(shm->lock);
+	trx_mutex_lock(shm->lock);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dshm_unlock                                                  *
+ * Function: trx_dshm_unlock                                                  *
  *                                                                            *
  ******************************************************************************/
-void	zbx_dshm_unlock(zbx_dshm_t *shm)
+void	trx_dshm_unlock(trx_dshm_t *shm)
 {
-	zbx_mutex_unlock(shm->lock);
+	trx_mutex_unlock(shm->lock);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dshm_validate_ref                                            *
+ * Function: trx_dshm_validate_ref                                            *
  *                                                                            *
  * Purpose: validates local reference to dynamic shared memory segment        *
  *                                                                            *
@@ -139,7 +139,7 @@ void	zbx_dshm_unlock(zbx_dshm_t *shm)
  *           address after shared memory allocation/reallocation.             *
  *                                                                            *
  ******************************************************************************/
-int	zbx_dshm_validate_ref(const zbx_dshm_t *shm, zbx_dshm_ref_t *shm_ref, char **errmsg)
+int	trx_dshm_validate_ref(const trx_dshm_t *shm, trx_dshm_ref_t *shm_ref, char **errmsg)
 {
 	int	ret = FAIL;
 
@@ -151,7 +151,7 @@ int	zbx_dshm_validate_ref(const zbx_dshm_t *shm, zbx_dshm_ref_t *shm_ref, char *
 		{
 			if (-1 == shmdt((void *)shm_ref->addr))
 			{
-				*errmsg = zbx_dsprintf(*errmsg, "cannot detach shared memory: %s", zbx_strerror(errno));
+				*errmsg = trx_dsprintf(*errmsg, "cannot detach shared memory: %s", trx_strerror(errno));
 				goto out;
 			}
 			shm_ref->addr = NULL;
@@ -160,7 +160,7 @@ int	zbx_dshm_validate_ref(const zbx_dshm_t *shm, zbx_dshm_ref_t *shm_ref, char *
 
 		if ((void *)(-1) == (shm_ref->addr = shmat(shm->shmid, NULL, 0)))
 		{
-			*errmsg = zbx_dsprintf(*errmsg, "cannot attach shared memory: %s", zbx_strerror(errno));
+			*errmsg = trx_dsprintf(*errmsg, "cannot attach shared memory: %s", trx_strerror(errno));
 			shm_ref->addr = NULL;
 			goto out;
 		}
@@ -170,14 +170,14 @@ int	zbx_dshm_validate_ref(const zbx_dshm_t *shm, zbx_dshm_ref_t *shm_ref, char *
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_TRACE, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_TRACE, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dshm_realloc                                                 *
+ * Function: trx_dshm_realloc                                                 *
  *                                                                            *
  * Purpose: reallocates dynamic shared memory segment                         *
  *                                                                            *
@@ -195,26 +195,26 @@ out:
  *           the copy_data callback function.                                 *
  *                                                                            *
  ******************************************************************************/
-int	zbx_dshm_realloc(zbx_dshm_t *shm, size_t size, char **errmsg)
+int	trx_dshm_realloc(trx_dshm_t *shm, size_t size, char **errmsg)
 {
 	int	shmid, ret = FAIL;
 	void	*addr, *addr_old = NULL;
 	size_t	shm_size;
 
-	treegix_log(LOG_LEVEL_DEBUG, "In %s() shmid:%d size:" TRX_FS_SIZE_T, __func__, shm->shmid, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_DEBUG, "In %s() shmid:%d size:" TRX_FS_SIZE_T, __func__, shm->shmid, (trx_fs_size_t)size);
 
 	shm_size = TRX_SIZE_T_ALIGN8(size);
 
 	/* attach to the old segment if possible */
 	if (TRX_NONEXISTENT_SHMID != shm->shmid && (void *)(-1) == (addr_old = shmat(shm->shmid, NULL, 0)))
 	{
-		*errmsg = zbx_dsprintf(*errmsg, "cannot attach current shared memory: %s", zbx_strerror(errno));
+		*errmsg = trx_dsprintf(*errmsg, "cannot attach current shared memory: %s", trx_strerror(errno));
 		goto out;
 	}
 
-	if (-1 == (shmid = zbx_shm_create(shm_size)))
+	if (-1 == (shmid = trx_shm_create(shm_size)))
 	{
-		*errmsg = zbx_strdup(NULL, "cannot allocate shared memory");
+		*errmsg = trx_strdup(NULL, "cannot allocate shared memory");
 		goto out;
 	}
 
@@ -223,7 +223,7 @@ int	zbx_dshm_realloc(zbx_dshm_t *shm, size_t size, char **errmsg)
 		if (NULL != addr_old)
 			(void)shmdt(addr_old);
 
-		*errmsg = zbx_dsprintf(*errmsg, "cannot attach new shared memory: %s", zbx_strerror(errno));
+		*errmsg = trx_dsprintf(*errmsg, "cannot attach new shared memory: %s", trx_strerror(errno));
 		goto out;
 	}
 
@@ -232,14 +232,14 @@ int	zbx_dshm_realloc(zbx_dshm_t *shm, size_t size, char **errmsg)
 
 	if (-1 == shmdt((void *)addr))
 	{
-		*errmsg = zbx_strdup(*errmsg, "cannot detach from new shared memory");
+		*errmsg = trx_strdup(*errmsg, "cannot detach from new shared memory");
 		goto out;
 	}
 
 	/* delete the old segment */
-	if (NULL != addr_old && -1 == zbx_shm_destroy(shm->shmid))
+	if (NULL != addr_old && -1 == trx_shm_destroy(shm->shmid))
 	{
-		*errmsg = zbx_strdup(*errmsg, "cannot detach from old shared memory");
+		*errmsg = trx_strdup(*errmsg, "cannot detach from old shared memory");
 		goto out;
 	}
 
@@ -248,7 +248,7 @@ int	zbx_dshm_realloc(zbx_dshm_t *shm, size_t size, char **errmsg)
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s shmid:%d", __func__, zbx_result_string(ret), shm->shmid);
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s shmid:%d", __func__, trx_result_string(ret), shm->shmid);
 
 	return ret;
 }

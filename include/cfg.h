@@ -36,8 +36,8 @@ struct cfg_line
 	void		*variable;
 	int		type;
 	int		mandatory;
-	zbx_uint64_t	min;
-	zbx_uint64_t	max;
+	trx_uint64_t	min;
+	trx_uint64_t	max;
 };
 
 int	parse_cfg_file(const char *cfg_file, struct cfg_line *cfg, int optional, int strict);
@@ -46,6 +46,6 @@ int	check_cfg_feature_int(const char *parameter, int value, const char *feature)
 int	check_cfg_feature_str(const char *parameter, const char *value, const char *feature);
 
 typedef int	(*add_serveractive_host_f)(const char *host, unsigned short port);
-void	zbx_set_data_destination_hosts(char *active_hosts, add_serveractive_host_f cb);
+void	trx_set_data_destination_hosts(char *active_hosts, add_serveractive_host_f cb);
 
 #endif

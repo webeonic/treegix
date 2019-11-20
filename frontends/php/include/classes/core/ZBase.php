@@ -103,7 +103,7 @@ class ZBase {
 		$this->init();
 
 		$this->setMaintenanceMode();
-		set_error_handler('zbx_err_handler');
+		set_error_handler('trx_err_handler');
 
 		switch ($mode) {
 			case self::EXEC_MODE_DEFAULT:
@@ -307,7 +307,7 @@ class ZBase {
 
 		if (function_exists('bindtextdomain')) {
 			// initializing gettext translations depending on language selected by user
-			$locales = zbx_locale_variants($user_data['lang']);
+			$locales = trx_locale_variants($user_data['lang']);
 			$locale_found = false;
 			foreach ($locales as $locale) {
 				// since LC_MESSAGES may be unavailable on some systems, try to set all of the locales

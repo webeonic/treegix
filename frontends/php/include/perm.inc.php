@@ -51,7 +51,7 @@ function authentication2str($type) {
 function check_perm2system($userid) {
 	$sql = 'SELECT g.usrgrpid'.
 			' FROM usrgrp g,users_groups ug'.
-			' WHERE ug.userid='.zbx_dbstr($userid).
+			' WHERE ug.userid='.trx_dbstr($userid).
 				' AND g.usrgrpid=ug.usrgrpid'.
 				' AND g.users_status='.GROUP_STATUS_DISABLED;
 	if ($res = DBfetch(DBselect($sql, 1))) {
@@ -87,7 +87,7 @@ function getUserGuiAccess($userid) {
 		'SELECT MAX(g.gui_access) AS gui_access'.
 		' FROM usrgrp g,users_groups ug'.
 		' WHERE g.usrgrpid=ug.usrgrpid'.
-			' AND ug.userid='.zbx_dbstr($userid)
+			' AND ug.userid='.trx_dbstr($userid)
 	));
 
 	return $gui_access ? $gui_access['gui_access'] : GROUP_GUI_ACCESS_SYSTEM;
@@ -241,7 +241,7 @@ function getUserGroupsByUserId($userId) {
 	if (!isset($userGroups[$userId])) {
 		$userGroups[$userId] = [];
 
-		$result = DBselect('SELECT usrgrpid FROM users_groups WHERE userid='.zbx_dbstr($userId));
+		$result = DBselect('SELECT usrgrpid FROM users_groups WHERE userid='.trx_dbstr($userId));
 		while ($row = DBfetch($result)) {
 			$userGroups[$userId][] = $row['usrgrpid'];
 		}

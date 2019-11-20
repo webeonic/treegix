@@ -4,7 +4,7 @@
 #include "db.h"
 #include "log.h"
 #include "daemon.h"
-#include "zbxself.h"
+#include "trxself.h"
 #include "dbcache.h"
 
 #include "housekeeper.h"
@@ -17,14 +17,14 @@ static int	hk_period;
 /* the maximum number of housekeeping periods to be removed per single housekeeping cycle */
 #define HK_MAX_DELETE_PERIODS	4
 
-static void	zbx_housekeeper_sigusr_handler(int flags)
+static void	trx_housekeeper_sigusr_handler(int flags)
 {
 	if (TRX_RTC_HOUSEKEEPER_EXECUTE == TRX_RTC_GET_MSG(flags))
 	{
-		if (0 < zbx_sleep_get_remainder())
+		if (0 < trx_sleep_get_remainder())
 		{
 			treegix_log(LOG_LEVEL_WARNING, "forced execution of the housekeeper");
-			zbx_wakeup();
+			trx_wakeup();
 		}
 		else
 			treegix_log(LOG_LEVEL_WARNING, "housekeeping procedure is already in progress");
@@ -51,7 +51,7 @@ static int	delete_history(const char *table, const char *fieldname, int now)
 	DB_RESULT       result;
 	DB_ROW          row;
 	int             minclock, records = 0;
-	zbx_uint64_t	lastid, maxid;
+	trx_uint64_t	lastid, maxid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() table:'%s' now:%d", __func__, table, now);
 
@@ -155,43 +155,43 @@ TRX_THREAD_ENTRY(housekeeper_thread, args)
 	double	sec, time_slept, time_now;
 	char	sleeptext[25];
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
 	if (0 == CONFIG_HOUSEKEEPING_FREQUENCY)
 	{
-		zbx_setproctitle("%s [waiting for user command]", get_process_type_string(process_type));
-		zbx_snprintf(sleeptext, sizeof(sleeptext), "waiting for user command");
+		trx_setproctitle("%s [waiting for user command]", get_process_type_string(process_type));
+		trx_snprintf(sleeptext, sizeof(sleeptext), "waiting for user command");
 	}
 	else
 	{
 		sleeptime = HOUSEKEEPER_STARTUP_DELAY * SEC_PER_MIN;
-		zbx_setproctitle("%s [startup idle for %d minutes]", get_process_type_string(process_type),
+		trx_setproctitle("%s [startup idle for %d minutes]", get_process_type_string(process_type),
 				HOUSEKEEPER_STARTUP_DELAY);
-		zbx_snprintf(sleeptext, sizeof(sleeptext), "idle for %d hour(s)", CONFIG_HOUSEKEEPING_FREQUENCY);
+		trx_snprintf(sleeptext, sizeof(sleeptext), "idle for %d hour(s)", CONFIG_HOUSEKEEPING_FREQUENCY);
 	}
 
-	zbx_set_sigusr_handler(zbx_housekeeper_sigusr_handler);
+	trx_set_sigusr_handler(trx_housekeeper_sigusr_handler);
 
 	while (TRX_IS_RUNNING())
 	{
-		sec = zbx_time();
+		sec = trx_time();
 
 		if (0 == CONFIG_HOUSEKEEPING_FREQUENCY)
-			zbx_sleep_forever();
+			trx_sleep_forever();
 		else
-			zbx_sleep_loop(sleeptime);
+			trx_sleep_loop(sleeptime);
 
 		if (!TRX_IS_RUNNING())
 			break;
 
-		time_now = zbx_time();
+		time_now = trx_time();
 		time_slept = time_now - sec;
-		zbx_update_env(time_now);
+		trx_update_env(time_now);
 
 		hk_period = get_housekeeper_period(time_slept);
 
@@ -199,32 +199,32 @@ TRX_THREAD_ENTRY(housekeeper_thread, args)
 
 		treegix_log(LOG_LEVEL_WARNING, "executing housekeeper");
 
-		zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
+		trx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
 		DBconnect(TRX_DB_CONNECT_NORMAL);
 
-		zbx_setproctitle("%s [removing old history]", get_process_type_string(process_type));
+		trx_setproctitle("%s [removing old history]", get_process_type_string(process_type));
 
-		sec = zbx_time();
+		sec = trx_time();
 		records = housekeeping_history(start);
-		sec = zbx_time() - sec;
+		sec = trx_time() - sec;
 
 		DBclose();
 
-		zbx_dc_cleanup_data_sessions();
+		trx_dc_cleanup_data_sessions();
 
 		treegix_log(LOG_LEVEL_WARNING, "%s [deleted %d records in " TRX_FS_DBL " sec, %s]",
 				get_process_type_string(process_type), records, sec, sleeptext);
 
-		zbx_setproctitle("%s [deleted %d records in " TRX_FS_DBL " sec, %s]",
+		trx_setproctitle("%s [deleted %d records in " TRX_FS_DBL " sec, %s]",
 				get_process_type_string(process_type), records, sec, sleeptext);
 
 		if (0 != CONFIG_HOUSEKEEPING_FREQUENCY)
 			sleeptime = CONFIG_HOUSEKEEPING_FREQUENCY * SEC_PER_HOUR;
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 }

@@ -5,7 +5,7 @@
 #include "db.h"
 #include "log.h"
 #include "dbcache.h"
-#include "zbxserver.h"
+#include "trxserver.h"
 #include "template.h"
 #include "events.h"
 
@@ -18,7 +18,7 @@
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_process_trigger                                              *
+ * Function: trx_process_trigger                                              *
  *                                                                            *
  * Purpose: 1) calculate changeset of trigger fields to be updated            *
  *          2) generate events                                                *
@@ -50,11 +50,11 @@
  *        '-' - should never happen                                           *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_process_trigger(struct _DC_TRIGGER *trigger, zbx_vector_ptr_t *diffs)
+static int	trx_process_trigger(struct _DC_TRIGGER *trigger, trx_vector_ptr_t *diffs)
 {
 	const char		*new_error;
 	int			new_state, new_value, ret = FAIL;
-	zbx_uint64_t		flags = TRX_FLAGS_TRIGGER_DIFF_UNSET, event_flags = TRX_FLAGS_TRIGGER_CREATE_NOTHING;
+	trx_uint64_t		flags = TRX_FLAGS_TRIGGER_DIFF_UNSET, event_flags = TRX_FLAGS_TRIGGER_CREATE_NOTHING;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() triggerid:" TRX_FS_UI64 " value:%d(%d) new_value:%d",
 			__func__, trigger->triggerid, trigger->value, trigger->state, trigger->new_value);
@@ -100,7 +100,7 @@ static int	zbx_process_trigger(struct _DC_TRIGGER *trigger, zbx_vector_ptr_t *di
 
 	if (0 != (event_flags & TRX_FLAGS_TRIGGER_CREATE_TRIGGER_EVENT))
 	{
-		zbx_add_event(EVENT_SOURCE_TRIGGERS, EVENT_OBJECT_TRIGGER, trigger->triggerid,
+		trx_add_event(EVENT_SOURCE_TRIGGERS, EVENT_OBJECT_TRIGGER, trigger->triggerid,
 				&trigger->timespec, new_value, trigger->description,
 				trigger->expression_orig, trigger->recovery_expression_orig,
 				trigger->priority, trigger->type, &trigger->tags,
@@ -110,17 +110,17 @@ static int	zbx_process_trigger(struct _DC_TRIGGER *trigger, zbx_vector_ptr_t *di
 
 	if (0 != (event_flags & TRX_FLAGS_TRIGGER_CREATE_INTERNAL_EVENT))
 	{
-		zbx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_TRIGGER, trigger->triggerid,
+		trx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_TRIGGER, trigger->triggerid,
 				&trigger->timespec, new_state, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL,
 				new_error);
 	}
 
-	zbx_append_trigger_diff(diffs, trigger->triggerid, trigger->priority, flags, trigger->value, new_state,
+	trx_append_trigger_diff(diffs, trigger->triggerid, trigger->priority, flags, trigger->value, new_state,
 			trigger->timespec.sec, new_error);
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s flags:" TRX_FS_UI64, __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s flags:" TRX_FS_UI64, __func__, trx_result_string(ret),
 			flags);
 
 	return ret;
@@ -128,19 +128,19 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_save_trigger_changes                                      *
+ * Function: trx_db_save_trigger_changes                                      *
  *                                                                            *
  * Purpose: save the trigger changes to database                              *
  *                                                                            *
  * Parameters:trigger_diff - [IN] the trigger changeset                       *
  *                                                                            *
  ******************************************************************************/
-void	zbx_db_save_trigger_changes(const zbx_vector_ptr_t *trigger_diff)
+void	trx_db_save_trigger_changes(const trx_vector_ptr_t *trigger_diff)
 {
 	int				i;
 	char				*sql = NULL;
 	size_t				sql_alloc = 0, sql_offset = 0;
-	const zbx_trigger_diff_t	*diff;
+	const trx_trigger_diff_t	*diff;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -149,28 +149,28 @@ void	zbx_db_save_trigger_changes(const zbx_vector_ptr_t *trigger_diff)
 	for (i = 0; i < trigger_diff->values_num; i++)
 	{
 		char	delim = ' ';
-		diff = (const zbx_trigger_diff_t *)trigger_diff->values[i];
+		diff = (const trx_trigger_diff_t *)trigger_diff->values[i];
 
 		if (0 == (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE))
 			continue;
 
-		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update triggers set");
+		trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update triggers set");
 
 		if (0 != (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE_LASTCHANGE))
 		{
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%clastchange=%d", delim, diff->lastchange);
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%clastchange=%d", delim, diff->lastchange);
 			delim = ',';
 		}
 
 		if (0 != (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE_VALUE))
 		{
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cvalue=%d", delim, diff->value);
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cvalue=%d", delim, diff->value);
 			delim = ',';
 		}
 
 		if (0 != (diff->flags & TRX_FLAGS_TRIGGER_DIFF_UPDATE_STATE))
 		{
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cstate=%d", delim, diff->state);
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cstate=%d", delim, diff->state);
 			delim = ',';
 		}
 
@@ -179,11 +179,11 @@ void	zbx_db_save_trigger_changes(const zbx_vector_ptr_t *trigger_diff)
 			char	*error_esc;
 
 			error_esc = DBdyn_escape_field("triggers", "error", diff->error);
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cerror='%s'", delim, error_esc);
-			zbx_free(error_esc);
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "%cerror='%s'", delim, error_esc);
+			trx_free(error_esc);
 		}
 
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where triggerid=" TRX_FS_UI64 ";\n",
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, " where triggerid=" TRX_FS_UI64 ";\n",
 				diff->triggerid);
 
 		DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset);
@@ -194,30 +194,30 @@ void	zbx_db_save_trigger_changes(const zbx_vector_ptr_t *trigger_diff)
 	if (sql_offset > 16)	/* in ORACLE always present begin..end; */
 		DBexecute("%s", sql);
 
-	zbx_free(sql);
+	trx_free(sql);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_trigger_diff_free                                            *
+ * Function: trx_trigger_diff_free                                            *
  *                                                                            *
  * Purpose: frees trigger changeset                                           *
  *                                                                            *
  ******************************************************************************/
-void	zbx_trigger_diff_free(zbx_trigger_diff_t *diff)
+void	trx_trigger_diff_free(trx_trigger_diff_t *diff)
 {
-	zbx_free(diff->error);
-	zbx_free(diff);
+	trx_free(diff->error);
+	trx_free(diff);
 }
 
 /******************************************************************************
  *                                                                            *
- * Comments: helper function for zbx_process_triggers()                       *
+ * Comments: helper function for trx_process_triggers()                       *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_trigger_topoindex_compare(const void *d1, const void *d2)
+static int	trx_trigger_topoindex_compare(const void *d1, const void *d2)
 {
 	const DC_TRIGGER	*t1 = *(const DC_TRIGGER **)d1;
 	const DC_TRIGGER	*t2 = *(const DC_TRIGGER **)d2;
@@ -229,7 +229,7 @@ static int	zbx_trigger_topoindex_compare(const void *d1, const void *d2)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_process_triggers                                             *
+ * Function: trx_process_triggers                                             *
  *                                                                            *
  * Purpose: process triggers - calculates property changeset and generates    *
  *          events                                                            *
@@ -238,11 +238,11 @@ static int	zbx_trigger_topoindex_compare(const void *d1, const void *d2)
  *             trigger_diff - [OUT] the trigger changeset                     *
  *                                                                            *
  * Comments: The trigger_diff changeset must be cleaned by the caller:        *
- *                zbx_vector_ptr_clear_ext(trigger_diff,                      *
- *                              (zbx_clean_func_t)zbx_trigger_diff_free);     *
+ *                trx_vector_ptr_clear_ext(trigger_diff,                      *
+ *                              (trx_clean_func_t)trx_trigger_diff_free);     *
  *                                                                            *
  ******************************************************************************/
-void	zbx_process_triggers(zbx_vector_ptr_t *triggers, zbx_vector_ptr_t *trigger_diff)
+void	trx_process_triggers(trx_vector_ptr_t *triggers, trx_vector_ptr_t *trigger_diff)
 {
 	int	i;
 
@@ -251,38 +251,38 @@ void	zbx_process_triggers(zbx_vector_ptr_t *triggers, zbx_vector_ptr_t *trigger_
 	if (0 == triggers->values_num)
 		goto out;
 
-	zbx_vector_ptr_sort(triggers, zbx_trigger_topoindex_compare);
+	trx_vector_ptr_sort(triggers, trx_trigger_topoindex_compare);
 
 	for (i = 0; i < triggers->values_num; i++)
-		zbx_process_trigger((struct _DC_TRIGGER *)triggers->values[i], trigger_diff);
+		trx_process_trigger((struct _DC_TRIGGER *)triggers->values[i], trigger_diff);
 
-	zbx_vector_ptr_sort(trigger_diff, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	trx_vector_ptr_sort(trigger_diff, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 out:
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_append_trigger_diff                                          *
+ * Function: trx_append_trigger_diff                                          *
  *                                                                            *
  * Purpose: Adds a new trigger diff to trigger changeset vector               *
  *                                                                            *
  ******************************************************************************/
-void	zbx_append_trigger_diff(zbx_vector_ptr_t *trigger_diff, zbx_uint64_t triggerid, unsigned char priority,
-		zbx_uint64_t flags, unsigned char value, unsigned char state, int lastchange, const char *error)
+void	trx_append_trigger_diff(trx_vector_ptr_t *trigger_diff, trx_uint64_t triggerid, unsigned char priority,
+		trx_uint64_t flags, unsigned char value, unsigned char state, int lastchange, const char *error)
 {
-	zbx_trigger_diff_t	*diff;
+	trx_trigger_diff_t	*diff;
 
-	diff = (zbx_trigger_diff_t *)zbx_malloc(NULL, sizeof(zbx_trigger_diff_t));
+	diff = (trx_trigger_diff_t *)trx_malloc(NULL, sizeof(trx_trigger_diff_t));
 	diff->triggerid = triggerid;
 	diff->priority = priority;
 	diff->flags = flags;
 	diff->value = value;
 	diff->state = state;
 	diff->lastchange = lastchange;
-	diff->error = (NULL != error ? zbx_strdup(NULL, error) : NULL);
+	diff->error = (NULL != error ? trx_strdup(NULL, error) : NULL);
 
 	diff->problem_count = 0;
 
-	zbx_vector_ptr_append(trigger_diff, diff);
+	trx_vector_ptr_append(trigger_diff, diff);
 }

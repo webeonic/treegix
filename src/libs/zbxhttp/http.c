@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxhttp.h"
+#include "trxhttp.h"
 
 #ifdef HAVE_LIBCURL
 
@@ -12,7 +12,7 @@ extern char	*CONFIG_SSL_CA_LOCATION;
 extern char	*CONFIG_SSL_CERT_LOCATION;
 extern char	*CONFIG_SSL_KEY_LOCATION;
 
-int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char *ssl_key_file,
+int	trx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char *ssl_key_file,
 		const char *ssl_key_password, unsigned char verify_peer, unsigned char verify_host,
 		char **error)
 {
@@ -20,14 +20,14 @@ int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char
 
 	if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_SSL_VERIFYPEER, 0 == verify_peer ? 0L : 1L)))
 	{
-		*error = zbx_dsprintf(*error, "Cannot set verify the peer's SSL certificate: %s",
+		*error = trx_dsprintf(*error, "Cannot set verify the peer's SSL certificate: %s",
 				curl_easy_strerror(err));
 		return FAIL;
 	}
 
 	if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_SSL_VERIFYHOST, 0 == verify_host ? 0L : 2L)))
 	{
-		*error = zbx_dsprintf(*error, "Cannot set verify the certificate's name against host: %s",
+		*error = trx_dsprintf(*error, "Cannot set verify the certificate's name against host: %s",
 				curl_easy_strerror(err));
 		return FAIL;
 	}
@@ -36,7 +36,7 @@ int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char
 	{
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_INTERFACE, CONFIG_SOURCE_IP)))
 		{
-			*error = zbx_dsprintf(*error, "Cannot specify source interface for outgoing traffic: %s",
+			*error = trx_dsprintf(*error, "Cannot specify source interface for outgoing traffic: %s",
 					curl_easy_strerror(err));
 			return FAIL;
 		}
@@ -46,7 +46,7 @@ int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char
 	{
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_CAPATH, CONFIG_SSL_CA_LOCATION)))
 		{
-			*error = zbx_dsprintf(*error, "Cannot specify directory holding CA certificates: %s",
+			*error = trx_dsprintf(*error, "Cannot specify directory holding CA certificates: %s",
 					curl_easy_strerror(err));
 			return FAIL;
 		}
@@ -56,21 +56,21 @@ int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char
 	{
 		char	*file_name;
 
-		file_name = zbx_dsprintf(NULL, "%s/%s", CONFIG_SSL_CERT_LOCATION, ssl_cert_file);
+		file_name = trx_dsprintf(NULL, "%s/%s", CONFIG_SSL_CERT_LOCATION, ssl_cert_file);
 		treegix_log(LOG_LEVEL_DEBUG, "using SSL certificate file: '%s'", file_name);
 
 		err = curl_easy_setopt(easyhandle, CURLOPT_SSLCERT, file_name);
-		zbx_free(file_name);
+		trx_free(file_name);
 
 		if (CURLE_OK != err)
 		{
-			*error = zbx_dsprintf(*error, "Cannot set SSL client certificate: %s", curl_easy_strerror(err));
+			*error = trx_dsprintf(*error, "Cannot set SSL client certificate: %s", curl_easy_strerror(err));
 			return FAIL;
 		}
 
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_SSLCERTTYPE, "PEM")))
 		{
-			*error = zbx_dsprintf(NULL, "Cannot specify type of the client SSL certificate: %s",
+			*error = trx_dsprintf(NULL, "Cannot specify type of the client SSL certificate: %s",
 					curl_easy_strerror(err));
 			return FAIL;
 		}
@@ -80,22 +80,22 @@ int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char
 	{
 		char	*file_name;
 
-		file_name = zbx_dsprintf(NULL, "%s/%s", CONFIG_SSL_KEY_LOCATION, ssl_key_file);
+		file_name = trx_dsprintf(NULL, "%s/%s", CONFIG_SSL_KEY_LOCATION, ssl_key_file);
 		treegix_log(LOG_LEVEL_DEBUG, "using SSL private key file: '%s'", file_name);
 
 		err = curl_easy_setopt(easyhandle, CURLOPT_SSLKEY, file_name);
-		zbx_free(file_name);
+		trx_free(file_name);
 
 		if (CURLE_OK != err)
 		{
-			*error = zbx_dsprintf(NULL, "Cannot specify private keyfile for TLS and SSL client cert: %s",
+			*error = trx_dsprintf(NULL, "Cannot specify private keyfile for TLS and SSL client cert: %s",
 					curl_easy_strerror(err));
 			return FAIL;
 		}
 
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_SSLKEYTYPE, "PEM")))
 		{
-			*error = zbx_dsprintf(NULL, "Cannot set type of the private key file: %s",
+			*error = trx_dsprintf(NULL, "Cannot set type of the private key file: %s",
 					curl_easy_strerror(err));
 			return FAIL;
 		}
@@ -105,7 +105,7 @@ int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char
 	{
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_KEYPASSWD, ssl_key_password)))
 		{
-			*error = zbx_dsprintf(NULL, "Cannot set passphrase to private key: %s",
+			*error = trx_dsprintf(NULL, "Cannot set passphrase to private key: %s",
 					curl_easy_strerror(err));
 			return FAIL;
 		}
@@ -114,7 +114,7 @@ int	zbx_http_prepare_ssl(CURL *easyhandle, const char *ssl_cert_file, const char
 	return SUCCEED;
 }
 
-int	zbx_http_prepare_auth(CURL *easyhandle, unsigned char authtype, const char *username, const char *password,
+int	trx_http_prepare_auth(CURL *easyhandle, unsigned char authtype, const char *username, const char *password,
 		char **error)
 {
 	if (HTTPTEST_AUTH_NONE != authtype)
@@ -147,15 +147,15 @@ int	zbx_http_prepare_auth(CURL *easyhandle, unsigned char authtype, const char *
 
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_HTTPAUTH, curlauth)))
 		{
-			*error = zbx_dsprintf(*error, "Cannot set HTTP server authentication method: %s",
+			*error = trx_dsprintf(*error, "Cannot set HTTP server authentication method: %s",
 					curl_easy_strerror(err));
 			return FAIL;
 		}
 
-		zbx_snprintf(auth, sizeof(auth), "%s:%s", username, password);
+		trx_snprintf(auth, sizeof(auth), "%s:%s", username, password);
 		if (CURLE_OK != (err = curl_easy_setopt(easyhandle, CURLOPT_USERPWD, auth)))
 		{
-			*error = zbx_dsprintf(*error, "Cannot set user name and password: %s",
+			*error = trx_dsprintf(*error, "Cannot set user name and password: %s",
 					curl_easy_strerror(err));
 			return FAIL;
 		}
@@ -164,7 +164,7 @@ int	zbx_http_prepare_auth(CURL *easyhandle, unsigned char authtype, const char *
 	return SUCCEED;
 }
 
-char	*zbx_http_get_header(char **headers)
+char	*trx_http_get_header(char **headers)
 {
 	while ('\0' != **headers)
 	{
@@ -183,15 +183,15 @@ char	*zbx_http_get_header(char **headers)
 
 		if ('\0' != (c = *p_end))
 			*p_end = '\0';
-		line = zbx_strdup(NULL, *headers);
+		line = trx_strdup(NULL, *headers);
 		if ('\0' != c)
 			*p_end = c;
 
 		*headers = p_end;
 
-		zbx_lrtrim(line, " \t");
+		trx_lrtrim(line, " \t");
 		if ('\0' == *line)
-			zbx_free(line);
+			trx_free(line);
 		else
 			return line;
 	}

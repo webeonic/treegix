@@ -870,7 +870,7 @@ function getActionOperationHints(array $operations, array $defaultMessage) {
 				}
 
 				if (trim($message)) {
-					$result_hint[] = zbx_nl2br($message);
+					$result_hint[] = trx_nl2br($message);
 				}
 
 				if ($result_hint) {
@@ -882,36 +882,36 @@ function getActionOperationHints(array $operations, array $defaultMessage) {
 				switch ($operation['opcommand']['type']) {
 					case TRX_SCRIPT_TYPE_IPMI:
 						$result[$key][] = [bold(_('Run IPMI command').': '), BR(),
-							italic(zbx_nl2br($operation['opcommand']['command']))
+							italic(trx_nl2br($operation['opcommand']['command']))
 						];
 						break;
 
 					case TRX_SCRIPT_TYPE_SSH:
 						$result[$key][] = [bold(_('Run SSH commands').': '), BR(),
-							italic(zbx_nl2br($operation['opcommand']['command']))
+							italic(trx_nl2br($operation['opcommand']['command']))
 						];
 						break;
 
 					case TRX_SCRIPT_TYPE_TELNET:
 						$result[$key][] = [bold(_('Run TELNET commands').': '), BR(),
-							italic(zbx_nl2br($operation['opcommand']['command']))
+							italic(trx_nl2br($operation['opcommand']['command']))
 						];
 						break;
 
 					case TRX_SCRIPT_TYPE_CUSTOM_SCRIPT:
 						if ($operation['opcommand']['execute_on'] == TRX_SCRIPT_EXECUTE_ON_AGENT) {
 							$result[$key][] = [bold(_s('Run custom commands on %1$s', _('Treegix agent')).': '),
-								BR(), italic(zbx_nl2br($operation['opcommand']['command']))
+								BR(), italic(trx_nl2br($operation['opcommand']['command']))
 							];
 						}
 						elseif ($operation['opcommand']['execute_on'] == TRX_SCRIPT_EXECUTE_ON_PROXY) {
 							$result[$key][] = [bold(_s('Run custom commands on %1$s', _('Treegix server (proxy)')).': '),
-								BR(), italic(zbx_nl2br($operation['opcommand']['command']))
+								BR(), italic(trx_nl2br($operation['opcommand']['command']))
 							];
 						}
 						else {
 							$result[$key][] = [bold(_s('Run custom commands on %1$s', _('Treegix server')).': '),
-								BR(), italic(zbx_nl2br($operation['opcommand']['command']))
+								BR(), italic(trx_nl2br($operation['opcommand']['command']))
 							];
 						}
 						break;
@@ -928,7 +928,7 @@ function getActionOperationHints(array $operations, array $defaultMessage) {
 
 					default:
 						$result[$key][] = [bold(_('Run commands').': '), BR(),
-							italic(zbx_nl2br($operation['opcommand']['command']))
+							italic(trx_nl2br($operation['opcommand']['command']))
 						];
 				}
 				break;
@@ -946,7 +946,7 @@ function getActionOperationHints(array $operations, array $defaultMessage) {
 				}
 
 				if (trim($message['message'])) {
-					$result_hint[] = zbx_nl2br($message['message']);
+					$result_hint[] = trx_nl2br($message['message']);
 				}
 
 				if ($result_hint) {
@@ -1764,9 +1764,9 @@ function makeEventMessagesIcon(array $data, array $users) {
 		$message['action_type'] = TRX_EVENT_HISTORY_MANUAL_UPDATE;
 
 		$table->addRow([
-			zbx_date2str(DATE_TIME_FORMAT_SECONDS, $message['clock']),
+			trx_date2str(DATE_TIME_FORMAT_SECONDS, $message['clock']),
 			makeActionTableUser($message, $users),
-			zbx_nl2br($message['message'])
+			trx_nl2br($message['message'])
 		]);
 	}
 
@@ -1822,7 +1822,7 @@ function makeEventSeverityChangesIcon(array $data, array $users, array $config) 
 		$new_severity_name = getSeverityName($severity['new_severity'], $config);
 
 		$table->addRow([
-			zbx_date2str(DATE_TIME_FORMAT_SECONDS, $severity['clock']),
+			trx_date2str(DATE_TIME_FORMAT_SECONDS, $severity['clock']),
 			makeActionTableUser($severity, $users),
 			$old_severity_name.'&nbsp;&rArr;&nbsp;'.$new_severity_name
 		]);
@@ -1899,7 +1899,7 @@ function makeEventActionsIcon(array $data, array $users, array $mediatypes, arra
 		$message = '';
 		if ($action['action_type'] == TRX_EVENT_HISTORY_MANUAL_UPDATE
 				&& ($action['action'] & TRX_PROBLEM_UPDATE_MESSAGE) == TRX_PROBLEM_UPDATE_MESSAGE) {
-			$message = zbx_nl2br($action['message']);
+			$message = trx_nl2br($action['message']);
 		}
 		elseif ($action['action_type'] == TRX_EVENT_HISTORY_ALERT) {
 			if ($action['alerttype'] == ALERT_TYPE_COMMAND) {
@@ -1913,7 +1913,7 @@ function makeEventActionsIcon(array $data, array $users, array $mediatypes, arra
 		}
 
 		$table->addRow([
-			zbx_date2str(DATE_TIME_FORMAT_SECONDS, $action['clock']),
+			trx_date2str(DATE_TIME_FORMAT_SECONDS, $action['clock']),
 			makeActionTableUser($action, $users),
 			makeActionTableIcon($action, $config),
 			$message,
@@ -1991,16 +1991,16 @@ function makeEventDetailsActionsTable(array $data, array $users, array $mediatyp
 
 		$message = '';
 		if ($action['action_type'] == TRX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_MESSAGE) {
-			$message = [bold($action['subject']), BR(), BR(), zbx_nl2br($action['message'])];
+			$message = [bold($action['subject']), BR(), BR(), trx_nl2br($action['message'])];
 		}
 		elseif (($action['action_type'] == TRX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_COMMAND)
 				|| $action['action_type'] == TRX_EVENT_HISTORY_MANUAL_UPDATE) {
-			$message = zbx_nl2br($action['message']);
+			$message = trx_nl2br($action['message']);
 		}
 
 		$table->addRow([
 			$esc_step,
-			zbx_date2str(DATE_TIME_FORMAT_SECONDS, $action['clock']),
+			trx_date2str(DATE_TIME_FORMAT_SECONDS, $action['clock']),
 			makeEventDetailsTableUser($action, $users),
 			makeActionTableIcon($action, $config),
 			$message,
@@ -2031,10 +2031,10 @@ function makeEventHistoryTable(array $actions, array $users, array $config) {
 		$action['action_type'] = TRX_EVENT_HISTORY_MANUAL_UPDATE;
 
 		$table->addRow([
-			zbx_date2str(DATE_TIME_FORMAT_SECONDS, $action['clock']),
+			trx_date2str(DATE_TIME_FORMAT_SECONDS, $action['clock']),
 			makeActionTableUser($action, $users),
 			makeActionTableIcon($action, $config),
-			zbx_nl2br($action['message'])
+			trx_nl2br($action['message'])
 		]);
 	}
 
@@ -2079,7 +2079,7 @@ function makeActionTableUser(array $action, array $users) {
 function makeEventDetailsTableUser(array $action, array $users) {
 	if ($action['action_type'] == TRX_EVENT_HISTORY_ALERT && $action['alerttype'] == ALERT_TYPE_MESSAGE) {
 		return array_key_exists($action['userid'], $users)
-			? [getUserFullname($users[$action['userid']]), BR(), italic(zbx_nl2br($action['sendto']))]
+			? [getUserFullname($users[$action['userid']]), BR(), italic(trx_nl2br($action['sendto']))]
 			: _('Inaccessible user');
 	}
 	elseif ($action['action_type'] == TRX_EVENT_HISTORY_MANUAL_UPDATE) {

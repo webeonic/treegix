@@ -103,8 +103,8 @@ $sql = 'SELECT e.objectid,count(distinct e.eventid) AS cnt_event'.
 		' WHERE t.triggerid=e.objectid'.
 			' AND e.source='.EVENT_SOURCE_TRIGGERS.
 			' AND e.object='.EVENT_OBJECT_TRIGGER.
-			' AND e.clock>='.zbx_dbstr($data['filter']['timeline']['from_ts']).
-			' AND e.clock<='.zbx_dbstr($data['filter']['timeline']['to_ts']).
+			' AND e.clock>='.trx_dbstr($data['filter']['timeline']['from_ts']).
+			' AND e.clock<='.trx_dbstr($data['filter']['timeline']['to_ts']).
 			' AND '.dbConditionInt('t.priority', $data['filter']['severities']);
 
 if ($hostids) {

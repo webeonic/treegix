@@ -121,7 +121,7 @@ switch ($page['type']) {
 $main_menu = [];
 $sub_menus = [];
 
-$denied_page_requested = zbx_construct_menu($main_menu, $sub_menus, $page);
+$denied_page_requested = trx_construct_menu($main_menu, $sub_menus, $page);
 
 // render the "Deny access" page
 if ($denied_page_requested) {
@@ -267,8 +267,8 @@ if ($failedAttempts = CProfile::get('web.login.attempt.failed', 0)) {
 	$error_msg = _n('%4$s failed login attempt logged. Last failed attempt was from %1$s on %2$s at %3$s.',
 		'%4$s failed login attempts logged. Last failed attempt was from %1$s on %2$s at %3$s.',
 		$attempip,
-		zbx_date2str(DATE_FORMAT, $attempdate),
-		zbx_date2str(TIME_FORMAT, $attempdate),
+		trx_date2str(DATE_FORMAT, $attempdate),
+		trx_date2str(TIME_FORMAT, $attempdate),
 		$failedAttempts
 	);
 	error($error_msg);

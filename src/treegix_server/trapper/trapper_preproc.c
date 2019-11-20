@@ -2,8 +2,8 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxjson.h"
-#include "zbxalgo.h"
+#include "trxjson.h"
+#include "trxalgo.h"
 #include "preproc.h"
 #include "trapper_preproc.h"
 #include "../preprocessor/preproc_history.h"
@@ -27,62 +27,62 @@
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	trapper_parse_preproc_test(const struct zbx_json_parse *jp, char **values, zbx_timespec_t *ts,
-		int *values_num, unsigned char *value_type, zbx_vector_ptr_t *steps, int *single, char **error)
+static int	trapper_parse_preproc_test(const struct trx_json_parse *jp, char **values, trx_timespec_t *ts,
+		int *values_num, unsigned char *value_type, trx_vector_ptr_t *steps, int *single, char **error)
 {
 	char			buffer[MAX_STRING_LEN], *step_params = NULL, *error_handler_params = NULL;
 	const char		*ptr;
-	zbx_user_t		user;
+	trx_user_t		user;
 	int			ret = FAIL;
-	struct zbx_json_parse	jp_data, jp_history, jp_steps, jp_step;
+	struct trx_json_parse	jp_data, jp_history, jp_steps, jp_step;
 	size_t			size;
-	zbx_timespec_t		ts_now;
+	trx_timespec_t		ts_now;
 
-	if (FAIL == zbx_json_value_by_name(jp, TRX_PROTO_TAG_SID, buffer, sizeof(buffer)) ||
+	if (FAIL == trx_json_value_by_name(jp, TRX_PROTO_TAG_SID, buffer, sizeof(buffer)) ||
 			SUCCEED != DBget_user_by_active_session(buffer, &user) || USER_TYPE_TREEGIX_ADMIN > user.type)
 	{
-		*error = zbx_strdup(NULL, "Permission denied.");
+		*error = trx_strdup(NULL, "Permission denied.");
 		goto out;
 	}
 
-	if (FAIL == zbx_json_brackets_by_name(jp, TRX_PROTO_TAG_DATA, &jp_data))
+	if (FAIL == trx_json_brackets_by_name(jp, TRX_PROTO_TAG_DATA, &jp_data))
 	{
-		*error = zbx_strdup(NULL, "Missing data field.");
+		*error = trx_strdup(NULL, "Missing data field.");
 		goto out;
 	}
 
-	if (FAIL == zbx_json_value_by_name(&jp_data, TRX_PROTO_TAG_VALUE_TYPE, buffer, sizeof(buffer)))
+	if (FAIL == trx_json_value_by_name(&jp_data, TRX_PROTO_TAG_VALUE_TYPE, buffer, sizeof(buffer)))
 	{
-		*error = zbx_strdup(NULL, "Missing value type field.");
+		*error = trx_strdup(NULL, "Missing value type field.");
 		goto out;
 	}
 	*value_type = atoi(buffer);
 
-	if (FAIL == zbx_json_value_by_name(&jp_data, TRX_PROTO_TAG_SINGLE, buffer, sizeof(buffer)))
+	if (FAIL == trx_json_value_by_name(&jp_data, TRX_PROTO_TAG_SINGLE, buffer, sizeof(buffer)))
 		*single = 0;
 	else
 		*single = (0 == strcmp(buffer, "true") ? 1 : 0);
 
-	zbx_timespec(&ts_now);
-	if (SUCCEED == zbx_json_brackets_by_name(&jp_data, TRX_PROTO_TAG_HISTORY, &jp_history))
+	trx_timespec(&ts_now);
+	if (SUCCEED == trx_json_brackets_by_name(&jp_data, TRX_PROTO_TAG_HISTORY, &jp_history))
 	{
 		size = 0;
-		if (FAIL == zbx_json_value_by_name_dyn(&jp_history, TRX_PROTO_TAG_VALUE, values, &size))
+		if (FAIL == trx_json_value_by_name_dyn(&jp_history, TRX_PROTO_TAG_VALUE, values, &size))
 		{
-			*error = zbx_strdup(NULL, "Missing history value field.");
+			*error = trx_strdup(NULL, "Missing history value field.");
 			goto out;
 		}
 		(*values_num)++;
 
-		if (FAIL == zbx_json_value_by_name(&jp_history, TRX_PROTO_TAG_TIMESTAMP, buffer, sizeof(buffer)))
+		if (FAIL == trx_json_value_by_name(&jp_history, TRX_PROTO_TAG_TIMESTAMP, buffer, sizeof(buffer)))
 		{
-			*error = zbx_strdup(NULL, "Missing history timestamp field.");
+			*error = trx_strdup(NULL, "Missing history timestamp field.");
 			goto out;
 		}
 
 		if (0 != strncmp(buffer, "now", TRX_CONST_STRLEN("now")))
 		{
-			*error = zbx_dsprintf(NULL, "invalid history value timestamp: %s", buffer);
+			*error = trx_dsprintf(NULL, "invalid history value timestamp: %s", buffer);
 			goto out;
 		}
 
@@ -95,7 +95,7 @@ static int	trapper_parse_preproc_test(const struct zbx_json_parse *jp, char **va
 
 			if ('-' != *ptr || FAIL == is_time_suffix(ptr + 1, &delay, strlen(ptr + 1)))
 			{
-				*error = zbx_dsprintf(NULL, "invalid history value timestamp: %s", buffer);
+				*error = trx_dsprintf(NULL, "invalid history value timestamp: %s", buffer);
 				goto out;
 			}
 
@@ -104,65 +104,65 @@ static int	trapper_parse_preproc_test(const struct zbx_json_parse *jp, char **va
 	}
 
 	size = 0;
-	if (FAIL == zbx_json_value_by_name_dyn(&jp_data, TRX_PROTO_TAG_VALUE, &values[*values_num], &size))
+	if (FAIL == trx_json_value_by_name_dyn(&jp_data, TRX_PROTO_TAG_VALUE, &values[*values_num], &size))
 	{
-		*error = zbx_strdup(NULL, "Missing value field.");
+		*error = trx_strdup(NULL, "Missing value field.");
 		goto out;
 	}
 	ts[(*values_num)++] = ts_now;
 
-	if (FAIL == zbx_json_brackets_by_name(&jp_data, TRX_PROTO_TAG_STEPS, &jp_steps))
+	if (FAIL == trx_json_brackets_by_name(&jp_data, TRX_PROTO_TAG_STEPS, &jp_steps))
 	{
-		*error = zbx_strdup(NULL, "Missing preprocessing steps field.");
+		*error = trx_strdup(NULL, "Missing preprocessing steps field.");
 		goto out;
 	}
 
-	for (ptr = NULL; NULL != (ptr = zbx_json_next(&jp_steps, ptr));)
+	for (ptr = NULL; NULL != (ptr = trx_json_next(&jp_steps, ptr));)
 	{
-		zbx_preproc_op_t	*step;
+		trx_preproc_op_t	*step;
 		unsigned char		step_type, error_handler;
 
-		if (FAIL == zbx_json_brackets_open(ptr, &jp_step))
+		if (FAIL == trx_json_brackets_open(ptr, &jp_step))
 		{
-			*error = zbx_strdup(NULL, "Cannot parse preprocessing step.");
+			*error = trx_strdup(NULL, "Cannot parse preprocessing step.");
 			goto out;
 		}
 
-		if (FAIL == zbx_json_value_by_name(&jp_step, TRX_PROTO_TAG_TYPE, buffer, sizeof(buffer)))
+		if (FAIL == trx_json_value_by_name(&jp_step, TRX_PROTO_TAG_TYPE, buffer, sizeof(buffer)))
 		{
-			*error = zbx_strdup(NULL, "Missing preprocessing step type field.");
+			*error = trx_strdup(NULL, "Missing preprocessing step type field.");
 			goto out;
 		}
 		step_type = atoi(buffer);
 
-		if (FAIL == zbx_json_value_by_name(&jp_step, TRX_PROTO_TAG_ERROR_HANDLER, buffer, sizeof(buffer)))
+		if (FAIL == trx_json_value_by_name(&jp_step, TRX_PROTO_TAG_ERROR_HANDLER, buffer, sizeof(buffer)))
 		{
-			*error = zbx_strdup(NULL, "Missing preprocessing step type error handler field.");
+			*error = trx_strdup(NULL, "Missing preprocessing step type error handler field.");
 			goto out;
 		}
 		error_handler = atoi(buffer);
 
 		size = 0;
-		if (FAIL == zbx_json_value_by_name_dyn(&jp_step, TRX_PROTO_TAG_PARAMS, &step_params, &size))
+		if (FAIL == trx_json_value_by_name_dyn(&jp_step, TRX_PROTO_TAG_PARAMS, &step_params, &size))
 		{
-			*error = zbx_strdup(NULL, "Missing preprocessing step type params field.");
+			*error = trx_strdup(NULL, "Missing preprocessing step type params field.");
 			goto out;
 		}
 
 		size = 0;
-		if (FAIL == zbx_json_value_by_name_dyn(&jp_step, TRX_PROTO_TAG_ERROR_HANDLER_PARAMS,
+		if (FAIL == trx_json_value_by_name_dyn(&jp_step, TRX_PROTO_TAG_ERROR_HANDLER_PARAMS,
 				&error_handler_params, &size))
 		{
-			*error = zbx_strdup(NULL, "Missing preprocessing step type error handler params field.");
+			*error = trx_strdup(NULL, "Missing preprocessing step type error handler params field.");
 			goto out;
 		}
 
-		step = (zbx_preproc_op_t *)zbx_malloc(NULL, sizeof(zbx_preproc_op_t));
+		step = (trx_preproc_op_t *)trx_malloc(NULL, sizeof(trx_preproc_op_t));
 		step->type = step_type;
 		step->params = step_params;
 		step->error_handler = error_handler;
 		step->error_handler_params = error_handler_params;
-		zbx_vector_ptr_append(steps, step);
+		trx_vector_ptr_append(steps, step);
 
 		step_params = NULL;
 		error_handler_params = NULL;
@@ -172,13 +172,13 @@ static int	trapper_parse_preproc_test(const struct zbx_json_parse *jp, char **va
 out:
 	if (FAIL == ret)
 	{
-		zbx_vector_ptr_clear_ext(steps, (zbx_clean_func_t)zbx_preproc_op_free);
-		zbx_free(values[0]);
-		zbx_free(values[1]);
+		trx_vector_ptr_clear_ext(steps, (trx_clean_func_t)trx_preproc_op_free);
+		trx_free(values[0]);
+		trx_free(values[1]);
 	}
 
-	zbx_free(step_params);
-	zbx_free(error_handler_params);
+	trx_free(step_params);
+	trx_free(error_handler_params);
 
 	return ret;
 }
@@ -202,26 +202,26 @@ out:
  *           json and success is returned.                                    *
  *                                                                            *
  ******************************************************************************/
-static int	trapper_preproc_test_run(const struct zbx_json_parse *jp, struct zbx_json *json, char **error)
+static int	trapper_preproc_test_run(const struct trx_json_parse *jp, struct trx_json *json, char **error)
 {
 	char			*values[2] = {NULL, NULL}, *preproc_error = NULL;
 	int			ret = FAIL, i, values_num = 0, single;
 	unsigned char		value_type;
-	zbx_vector_ptr_t	steps, results, history;
-	zbx_timespec_t		ts[2];
-	zbx_preproc_result_t	*result;
+	trx_vector_ptr_t	steps, results, history;
+	trx_timespec_t		ts[2];
+	trx_preproc_result_t	*result;
 
-	zbx_vector_ptr_create(&steps);
-	zbx_vector_ptr_create(&results);
-	zbx_vector_ptr_create(&history);
+	trx_vector_ptr_create(&steps);
+	trx_vector_ptr_create(&results);
+	trx_vector_ptr_create(&history);
 
 	if (FAIL == trapper_parse_preproc_test(jp, values, ts, &values_num, &value_type, &steps, &single, error))
 		goto out;
 
 	for (i = 0; i < values_num; i++)
 	{
-		zbx_vector_ptr_clear_ext(&results, (zbx_clean_func_t)zbx_preproc_result_free);
-		if (FAIL == zbx_preprocessor_test(value_type, values[i], &ts[i], &steps, &results, &history,
+		trx_vector_ptr_clear_ext(&results, (trx_clean_func_t)trx_preproc_result_free);
+		if (FAIL == trx_preprocessor_test(value_type, values[i], &ts[i], &steps, &results, &history,
 				&preproc_error, error))
 		{
 			goto out;
@@ -232,87 +232,87 @@ static int	trapper_preproc_test_run(const struct zbx_json_parse *jp, struct zbx_
 
 		if (0 == single)
 		{
-			result = (zbx_preproc_result_t *)results.values[results.values_num - 1];
+			result = (trx_preproc_result_t *)results.values[results.values_num - 1];
 			if (TRX_VARIANT_NONE != result->value.type &&
-					FAIL == zbx_variant_to_value_type(&result->value, value_type, &preproc_error))
+					FAIL == trx_variant_to_value_type(&result->value, value_type, &preproc_error))
 			{
 				break;
 			}
 		}
 	}
 
-	zbx_json_addstring(json, TRX_PROTO_TAG_RESPONSE, "success", TRX_JSON_TYPE_STRING);
-	zbx_json_addobject(json, TRX_PROTO_TAG_DATA);
+	trx_json_addstring(json, TRX_PROTO_TAG_RESPONSE, "success", TRX_JSON_TYPE_STRING);
+	trx_json_addobject(json, TRX_PROTO_TAG_DATA);
 
 	if (i + 1 < values_num)
-		zbx_json_addstring(json, TRX_PROTO_TAG_PREVIOUS, "true", TRX_JSON_TYPE_INT);
+		trx_json_addstring(json, TRX_PROTO_TAG_PREVIOUS, "true", TRX_JSON_TYPE_INT);
 
-	zbx_json_addarray(json, TRX_PROTO_TAG_STEPS);
+	trx_json_addarray(json, TRX_PROTO_TAG_STEPS);
 	for (i = 0; i < results.values_num; i++)
 	{
-		result = (zbx_preproc_result_t *)results.values[i];
+		result = (trx_preproc_result_t *)results.values[i];
 
-		zbx_json_addobject(json, NULL);
+		trx_json_addobject(json, NULL);
 
 		if (NULL != result->error)
-			zbx_json_addstring(json, TRX_PROTO_TAG_ERROR, result->error, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(json, TRX_PROTO_TAG_ERROR, result->error, TRX_JSON_TYPE_STRING);
 
 		if (TRX_PREPROC_FAIL_DEFAULT != result->action)
-			zbx_json_adduint64(json, TRX_PROTO_TAG_ACTION, result->action);
+			trx_json_adduint64(json, TRX_PROTO_TAG_ACTION, result->action);
 
 		if (i == results.values_num - 1 && NULL != result->error)
 		{
 			if (TRX_PREPROC_FAIL_SET_ERROR == result->action)
-				zbx_json_addstring(json, TRX_PROTO_TAG_FAILED, preproc_error, TRX_JSON_TYPE_STRING);
+				trx_json_addstring(json, TRX_PROTO_TAG_FAILED, preproc_error, TRX_JSON_TYPE_STRING);
 		}
 
 		if (TRX_VARIANT_NONE != result->value.type)
 		{
-			zbx_json_addstring(json, TRX_PROTO_TAG_RESULT, zbx_variant_value_desc(&result->value),
+			trx_json_addstring(json, TRX_PROTO_TAG_RESULT, trx_variant_value_desc(&result->value),
 					TRX_JSON_TYPE_STRING);
 		}
 		else if (NULL == result->error || TRX_PREPROC_FAIL_DISCARD_VALUE == result->action)
-			zbx_json_addstring(json, TRX_PROTO_TAG_RESULT, NULL, TRX_JSON_TYPE_NULL);
+			trx_json_addstring(json, TRX_PROTO_TAG_RESULT, NULL, TRX_JSON_TYPE_NULL);
 
-		zbx_json_close(json);
+		trx_json_close(json);
 	}
-	zbx_json_close(json);
+	trx_json_close(json);
 
 	if (NULL == preproc_error)
 	{
-		result = (zbx_preproc_result_t *)results.values[results.values_num - 1];
+		result = (trx_preproc_result_t *)results.values[results.values_num - 1];
 
 		if (TRX_VARIANT_NONE != result->value.type)
 		{
-			zbx_json_addstring(json, TRX_PROTO_TAG_RESULT, zbx_variant_value_desc(&result->value),
+			trx_json_addstring(json, TRX_PROTO_TAG_RESULT, trx_variant_value_desc(&result->value),
 					TRX_JSON_TYPE_STRING);
 		}
 		else
-			zbx_json_addstring(json, TRX_PROTO_TAG_RESULT, NULL, TRX_JSON_TYPE_NULL);
+			trx_json_addstring(json, TRX_PROTO_TAG_RESULT, NULL, TRX_JSON_TYPE_NULL);
 	}
 	else
-		zbx_json_addstring(json, TRX_PROTO_TAG_ERROR, preproc_error, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(json, TRX_PROTO_TAG_ERROR, preproc_error, TRX_JSON_TYPE_STRING);
 
 	ret = SUCCEED;
 out:
 	for (i = 0; i < values_num; i++)
-		zbx_free(values[i]);
+		trx_free(values[i]);
 
-	zbx_free(preproc_error);
+	trx_free(preproc_error);
 
-	zbx_vector_ptr_clear_ext(&history, (zbx_clean_func_t)zbx_preproc_op_history_free);
-	zbx_vector_ptr_destroy(&history);
-	zbx_vector_ptr_clear_ext(&results, (zbx_clean_func_t)zbx_preproc_result_free);
-	zbx_vector_ptr_destroy(&results);
-	zbx_vector_ptr_clear_ext(&steps, (zbx_clean_func_t)zbx_preproc_op_free);
-	zbx_vector_ptr_destroy(&steps);
+	trx_vector_ptr_clear_ext(&history, (trx_clean_func_t)trx_preproc_op_history_free);
+	trx_vector_ptr_destroy(&history);
+	trx_vector_ptr_clear_ext(&results, (trx_clean_func_t)trx_preproc_result_free);
+	trx_vector_ptr_destroy(&results);
+	trx_vector_ptr_clear_ext(&steps, (trx_clean_func_t)trx_preproc_op_free);
+	trx_vector_ptr_destroy(&steps);
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_trapper_preproc_test                                         *
+ * Function: trx_trapper_preproc_test                                         *
  *                                                                            *
  * Purpose: processes preprocessing test request                              *
  *                                                                            *
@@ -328,25 +328,25 @@ out:
  *           is counted as successful test and will return success response.  *
  *                                                                            *
  ******************************************************************************/
-int	zbx_trapper_preproc_test(zbx_socket_t *sock, const struct zbx_json_parse *jp)
+int	trx_trapper_preproc_test(trx_socket_t *sock, const struct trx_json_parse *jp)
 {
 	char		*error = NULL;
 	int		ret;
-	struct zbx_json	json;
+	struct trx_json	json;
 
-	zbx_json_init(&json, 1024);
+	trx_json_init(&json, 1024);
 
 	if (SUCCEED == (ret = trapper_preproc_test_run(jp, &json, &error)))
 	{
-		zbx_tcp_send_bytes_to(sock, json.buffer, json.buffer_size, CONFIG_TIMEOUT);
+		trx_tcp_send_bytes_to(sock, json.buffer, json.buffer_size, CONFIG_TIMEOUT);
 	}
 	else
 	{
-		zbx_send_response(sock, ret, error, CONFIG_TIMEOUT);
-		zbx_free(error);
+		trx_send_response(sock, ret, error, CONFIG_TIMEOUT);
+		trx_free(error);
 	}
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
 	return ret;
 }

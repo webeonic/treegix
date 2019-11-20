@@ -18,7 +18,7 @@ class CJsonRpc {
 	private $_error;
 	private $_response;
 	private $_error_list;
-	private $_zbx2jsonErrors;
+	private $_trx2jsonErrors;
 	private $_jsonDecoded;
 
 	/**
@@ -54,7 +54,7 @@ class CJsonRpc {
 			return $this->json->encode($this->_response[0], [], false, false);
 		}
 
-		foreach (zbx_toArray($this->_jsonDecoded) as $call) {
+		foreach (trx_toArray($this->_jsonDecoded) as $call) {
 			$call = is_array($call) ? $call : [$call];
 
 			// notification
@@ -109,7 +109,7 @@ class CJsonRpc {
 
 	public function processResult($call, CApiClientResponse $response) {
 		if ($response->errorCode) {
-			$errno = $this->_zbx2jsonErrors[$response->errorCode];
+			$errno = $this->_trx2jsonErrors[$response->errorCode];
 
 			$this->jsonError($call['id'], $errno, $response->errorMessage, $response->debug);
 		}
@@ -205,7 +205,7 @@ class CJsonRpc {
 			]
 		];
 
-		$this->_zbx2jsonErrors = [
+		$this->_trx2jsonErrors = [
 			TRX_API_ERROR_NO_METHOD => '-32601',
 			TRX_API_ERROR_PARAMETERS => '-32602',
 			TRX_API_ERROR_NO_AUTH => '-32602',

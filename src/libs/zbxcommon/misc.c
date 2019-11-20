@@ -18,60 +18,60 @@ typedef struct
 	int	start_time;	/* number of seconds from the beginning of the day when period starts */
 	int	end_time;	/* number of seconds from the beginning of the day when period ends, not included */
 }
-zbx_time_period_t;
+trx_time_period_t;
 
-typedef struct zbx_flexible_interval
+typedef struct trx_flexible_interval
 {
-	zbx_time_period_t		period;
+	trx_time_period_t		period;
 	int				delay;
 
-	struct zbx_flexible_interval	*next;
+	struct trx_flexible_interval	*next;
 }
-zbx_flexible_interval_t;
+trx_flexible_interval_t;
 
-typedef struct zbx_scheduler_filter
+typedef struct trx_scheduler_filter
 {
 	int				start;
 	int				end;
 	int				step;
 
-	struct zbx_scheduler_filter	*next;
+	struct trx_scheduler_filter	*next;
 }
-zbx_scheduler_filter_t;
+trx_scheduler_filter_t;
 
-typedef struct zbx_scheduler_interval
+typedef struct trx_scheduler_interval
 {
-	zbx_scheduler_filter_t		*mdays;
-	zbx_scheduler_filter_t		*wdays;
-	zbx_scheduler_filter_t		*hours;
-	zbx_scheduler_filter_t		*minutes;
-	zbx_scheduler_filter_t		*seconds;
+	trx_scheduler_filter_t		*mdays;
+	trx_scheduler_filter_t		*wdays;
+	trx_scheduler_filter_t		*hours;
+	trx_scheduler_filter_t		*minutes;
+	trx_scheduler_filter_t		*seconds;
 
 	int				filter_level;
 
-	struct zbx_scheduler_interval	*next;
+	struct trx_scheduler_interval	*next;
 }
-zbx_scheduler_interval_t;
+trx_scheduler_interval_t;
 
-struct zbx_custom_interval
+struct trx_custom_interval
 {
-	zbx_flexible_interval_t		*flexible;
-	zbx_scheduler_interval_t	*scheduling;
+	trx_flexible_interval_t		*flexible;
+	trx_scheduler_interval_t	*scheduling;
 };
 
-static TRX_THREAD_LOCAL volatile sig_atomic_t	zbx_timed_out;	/* 0 - no timeout occurred, 1 - SIGALRM took place */
+static TRX_THREAD_LOCAL volatile sig_atomic_t	trx_timed_out;	/* 0 - no timeout occurred, 1 - SIGALRM took place */
 
 #ifdef _WINDOWS
 
 char	TREEGIX_SERVICE_NAME[TRX_SERVICE_NAME_LEN] = APPLICATION_NAME;
 char	TREEGIX_EVENT_SOURCE[TRX_SERVICE_NAME_LEN] = APPLICATION_NAME;
 
-int	__zbx_stat(const char *path, zbx_stat_t *buf)
+int	__trx_stat(const char *path, trx_stat_t *buf)
 {
 	int	ret, fd;
 	wchar_t	*wpath;
 
-	wpath = zbx_utf8_to_unicode(path);
+	wpath = trx_utf8_to_unicode(path);
 
 	if (-1 == (ret = _wstat64(wpath, buf)))
 		goto out;
@@ -90,7 +90,7 @@ int	__zbx_stat(const char *path, zbx_stat_t *buf)
 		_close(fd);
 	}
 out:
-	zbx_free(wpath);
+	trx_free(wpath);
 
 	return ret;
 }
@@ -125,7 +125,7 @@ const char	*get_program_name(const char *path)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_timespec                                                     *
+ * Function: trx_timespec                                                     *
  *                                                                            *
  * Purpose: Gets the current time.                                            *
  *                                                                            *
@@ -135,9 +135,9 @@ const char	*get_program_name(const char *path)
  *           January 1, 1970, coordinated universal time (UTC).               *
  *                                                                            *
  ******************************************************************************/
-void	zbx_timespec(zbx_timespec_t *ts)
+void	trx_timespec(trx_timespec_t *ts)
 {
-	static TRX_THREAD_LOCAL zbx_timespec_t	last_ts = {0, 0};
+	static TRX_THREAD_LOCAL trx_timespec_t	last_ts = {0, 0};
 	static TRX_THREAD_LOCAL int		corr = 0;
 #ifdef _WINDOWS
 	static TRX_THREAD_LOCAL LARGE_INTEGER	tickPerSecond = {0};
@@ -248,7 +248,7 @@ void	zbx_timespec(zbx_timespec_t *ts)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_time                                                         *
+ * Function: trx_time                                                         *
  *                                                                            *
  * Purpose: Gets the current time.                                            *
  *                                                                            *
@@ -260,18 +260,18 @@ void	zbx_timespec(zbx_timespec_t *ts)
  *           January 1, 1970, coordinated universal time (UTC).               *
  *                                                                            *
  ******************************************************************************/
-double	zbx_time(void)
+double	trx_time(void)
 {
-	zbx_timespec_t	ts;
+	trx_timespec_t	ts;
 
-	zbx_timespec(&ts);
+	trx_timespec(&ts);
 
 	return (double)ts.sec + 1.0e-9 * (double)ts.ns;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_current_time                                                 *
+ * Function: trx_current_time                                                 *
  *                                                                            *
  * Purpose: Gets the current time including UTC offset                        *
  *                                                                            *
@@ -280,9 +280,9 @@ double	zbx_time(void)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-double	zbx_current_time(void)
+double	trx_current_time(void)
 {
-	return zbx_time() + TRX_JAN_1970_IN_SEC;
+	return trx_time() + TRX_JAN_1970_IN_SEC;
 }
 
 /******************************************************************************
@@ -300,7 +300,7 @@ static int	is_leap_year(int year)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_time                                                     *
+ * Function: trx_get_time                                                     *
  *                                                                            *
  * Purpose:                                                                   *
  *     get current time and store it in memory locations provided by caller   *
@@ -319,7 +319,7 @@ static int	is_leap_year(int year)
  *     this we use localtime_r() and gmtime_r().                              *
  *                                                                            *
  ******************************************************************************/
-void	zbx_get_time(struct tm *tm, long *milliseconds, zbx_timezone_t *tz)
+void	trx_get_time(struct tm *tm, long *milliseconds, trx_timezone_t *tz)
 {
 #ifdef _WINDOWS
 	struct _timeb	current_time;
@@ -366,7 +366,7 @@ void	zbx_get_time(struct tm *tm, long *milliseconds, zbx_timezone_t *tz)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_utc_time                                                     *
+ * Function: trx_utc_time                                                     *
  *                                                                            *
  * Purpose: get UTC time from time from broken down time elements             *
  *                                                                            *
@@ -383,7 +383,7 @@ void	zbx_get_time(struct tm *tm, long *milliseconds, zbx_timezone_t *tz)
  *                FAIL - otherwise                                            *
  *                                                                            *
  ******************************************************************************/
-int	zbx_utc_time(int year, int mon, int mday, int hour, int min, int sec, int *t)
+int	trx_utc_time(int year, int mon, int mday, int hour, int min, int sec, int *t)
 {
 /* number of leap years before but not including year */
 #define TRX_LEAP_YEARS(year)	(((year) - 1) / 4 - ((year) - 1) / 100 + ((year) - 1) / 400)
@@ -392,7 +392,7 @@ int	zbx_utc_time(int year, int mon, int mday, int hour, int min, int sec, int *t
 	static const int	month_day[12] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
 	static const int	epoch_year = 1970;
 
-	if (epoch_year <= year && 1 <= mon && mon <= 12 && 1 <= mday && mday <= zbx_day_in_month(year, mon) &&
+	if (epoch_year <= year && 1 <= mon && mon <= 12 && 1 <= mday && mday <= trx_day_in_month(year, mon) &&
 			0 <= hour && hour <= 23 && 0 <= min && min <= 59 && 0 <= sec && sec <= 61 &&
 			0 <= (*t = (year - epoch_year) * SEC_PER_YEAR +
 			(TRX_LEAP_YEARS(2 < mon ? year + 1 : year) - TRX_LEAP_YEARS(epoch_year)) * SEC_PER_DAY +
@@ -407,7 +407,7 @@ int	zbx_utc_time(int year, int mon, int mday, int hour, int min, int sec, int *t
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_day_in_month                                                 *
+ * Function: trx_day_in_month                                                 *
  *                                                                            *
  * Purpose: returns number of days in a month                                 *
  *                                                                            *
@@ -421,7 +421,7 @@ int	zbx_utc_time(int year, int mon, int mday, int hour, int min, int sec, int *t
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	zbx_day_in_month(int year, int mon)
+int	trx_day_in_month(int year, int mon)
 {
 	/* number of days in the month of a non-leap year */
 	static const unsigned char	month[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -434,7 +434,7 @@ int	zbx_day_in_month(int year, int mon)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_calloc2                                                      *
+ * Function: trx_calloc2                                                      *
  *                                                                            *
  * Purpose: allocates nmemb * size bytes of memory and fills it with zeros    *
  *                                                                            *
@@ -443,7 +443,7 @@ int	zbx_day_in_month(int year, int mon)
  * Author: Eugene Grigorjev, Rudolfs Kreicbergs                               *
  *                                                                            *
  ******************************************************************************/
-void	*zbx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_t size)
+void	*trx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_t size)
 {
 	int	max_attempts;
 	void	*ptr = NULL;
@@ -451,7 +451,7 @@ void	*zbx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_
 	/* old pointer must be NULL */
 	if (NULL != old)
 	{
-		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_calloc: allocating already allocated memory. "
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] trx_calloc: allocating already allocated memory. "
 				"Please report this to Treegix developers.",
 				filename, line);
 	}
@@ -465,15 +465,15 @@ void	*zbx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_
 	if (NULL != ptr)
 		return ptr;
 
-	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_calloc: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
-			filename, line, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] trx_calloc: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
+			filename, line, (trx_fs_size_t)size);
 
 	exit(EXIT_FAILURE);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_malloc2                                                      *
+ * Function: trx_malloc2                                                      *
  *                                                                            *
  * Purpose: allocates size bytes of memory                                    *
  *                                                                            *
@@ -482,7 +482,7 @@ void	*zbx_calloc2(const char *filename, int line, void *old, size_t nmemb, size_
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	*zbx_malloc2(const char *filename, int line, void *old, size_t size)
+void	*trx_malloc2(const char *filename, int line, void *old, size_t size)
 {
 	int	max_attempts;
 	void	*ptr = NULL;
@@ -490,7 +490,7 @@ void	*zbx_malloc2(const char *filename, int line, void *old, size_t size)
 	/* old pointer must be NULL */
 	if (NULL != old)
 	{
-		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_malloc: allocating already allocated memory. "
+		treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] trx_malloc: allocating already allocated memory. "
 				"Please report this to Treegix developers.",
 				filename, line);
 	}
@@ -504,15 +504,15 @@ void	*zbx_malloc2(const char *filename, int line, void *old, size_t size)
 	if (NULL != ptr)
 		return ptr;
 
-	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_malloc: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
-			filename, line, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] trx_malloc: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
+			filename, line, (trx_fs_size_t)size);
 
 	exit(EXIT_FAILURE);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_realloc2                                                     *
+ * Function: trx_realloc2                                                     *
  *                                                                            *
  * Purpose: changes the size of the memory block pointed to by old            *
  *          to size bytes                                                     *
@@ -522,7 +522,7 @@ void	*zbx_malloc2(const char *filename, int line, void *old, size_t size)
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	*zbx_realloc2(const char *filename, int line, void *old, size_t size)
+void	*trx_realloc2(const char *filename, int line, void *old, size_t size)
 {
 	int	max_attempts;
 	void	*ptr = NULL;
@@ -536,18 +536,18 @@ void	*zbx_realloc2(const char *filename, int line, void *old, size_t size)
 	if (NULL != ptr)
 		return ptr;
 
-	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_realloc: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
-			filename, line, (zbx_fs_size_t)size);
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] trx_realloc: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
+			filename, line, (trx_fs_size_t)size);
 
 	exit(EXIT_FAILURE);
 }
 
-char	*zbx_strdup2(const char *filename, int line, char *old, const char *str)
+char	*trx_strdup2(const char *filename, int line, char *old, const char *str)
 {
 	int	retry;
 	char	*ptr = NULL;
 
-	zbx_free(old);
+	trx_free(old);
 
 	for (retry = 10; 0 < retry && NULL == ptr; ptr = strdup(str), retry--)
 		;
@@ -555,15 +555,15 @@ char	*zbx_strdup2(const char *filename, int line, char *old, const char *str)
 	if (NULL != ptr)
 		return ptr;
 
-	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] zbx_strdup: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
-			filename, line, (zbx_fs_size_t)(strlen(str) + 1));
+	treegix_log(LOG_LEVEL_CRIT, "[file:%s,line:%d] trx_strdup: out of memory. Requested " TRX_FS_SIZE_T " bytes.",
+			filename, line, (trx_fs_size_t)(strlen(str) + 1));
 
 	exit(EXIT_FAILURE);
 }
 
 /****************************************************************************************
  *                                                                                      *
- * Function: zbx_guaranteed_memset                                                      *
+ * Function: trx_guaranteed_memset                                                      *
  *                                                                                      *
  * Purpose: For overwriting sensitive data in memory.                                   *
  *          Similar to memset() but should not be optimized out by a compiler.          *
@@ -574,7 +574,7 @@ char	*zbx_strdup2(const char *filename, int line, char *old, const char *str)
  *   http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1381.pdf on secure_memset()       *
  *                                                                                      *
  ****************************************************************************************/
-void	*zbx_guaranteed_memset(void *v, int c, size_t n)
+void	*trx_guaranteed_memset(void *v, int c, size_t n)
 {
 	volatile signed char	*p = (volatile signed char *)v;
 
@@ -586,21 +586,21 @@ void	*zbx_guaranteed_memset(void *v, int c, size_t n)
 
 /******************************************************************************
  *                                                                            *
- * Function: __zbx_zbx_setproctitle                                           *
+ * Function: __trx_trx_setproctitle                                           *
  *                                                                            *
  * Purpose: set process title                                                 *
  *                                                                            *
  * Author: Eugene Grigorjev                                                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_setproctitle(const char *fmt, ...)
+void	trx_setproctitle(const char *fmt, ...)
 {
 #if defined(HAVE_FUNCTION_SETPROCTITLE) || defined(PS_OVERWRITE_ARGV) || defined(PS_PSTAT_ARGV)
 	char	title[MAX_STRING_LEN];
 	va_list	args;
 
 	va_start(args, fmt);
-	zbx_vsnprintf(title, sizeof(title), fmt, args);
+	trx_vsnprintf(title, sizeof(title), fmt, args);
 	va_end(args);
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() title:'%s'", __func__, title);
@@ -627,7 +627,7 @@ void	zbx_setproctitle(const char *fmt, ...)
  * Author: Alexei Vladishev                                                   *
  *                                                                            *
  ******************************************************************************/
-static int	check_time_period(const zbx_time_period_t period, struct tm *tm)
+static int	check_time_period(const trx_time_period_t period, struct tm *tm)
 {
 	int		day, time;
 
@@ -654,7 +654,7 @@ static int	check_time_period(const zbx_time_period_t period, struct tm *tm)
  * Author: Alexei Vladishev, Alexander Vladishev, Aleksandrs Saveljevs        *
  *                                                                            *
  ******************************************************************************/
-static int	get_current_delay(int default_delay, const zbx_flexible_interval_t *flex_intervals, time_t now)
+static int	get_current_delay(int default_delay, const trx_flexible_interval_t *flex_intervals, time_t now)
 {
 	int		current_delay = -1;
 
@@ -688,7 +688,7 @@ static int	get_current_delay(int default_delay, const zbx_flexible_interval_t *f
  * Author: Alexei Vladishev, Alexander Vladishev, Aleksandrs Saveljevs        *
  *                                                                            *
  ******************************************************************************/
-static int	get_next_delay_interval(const zbx_flexible_interval_t *flex_intervals, time_t now, time_t *next_interval)
+static int	get_next_delay_interval(const trx_flexible_interval_t *flex_intervals, time_t now, time_t *next_interval)
 {
 	int		day, time, next = 0, candidate;
 	struct tm	*tm;
@@ -702,7 +702,7 @@ static int	get_next_delay_interval(const zbx_flexible_interval_t *flex_intervals
 
 	for (; NULL != flex_intervals; flex_intervals = flex_intervals->next)
 	{
-		const zbx_time_period_t	*p = &flex_intervals->period;
+		const trx_time_period_t	*p = &flex_intervals->period;
 
 		if (p->start_day <= day && day <= p->end_day && time < p->end_time)	/* will be active today */
 		{
@@ -801,7 +801,7 @@ static int	time_parse(int *time, const char *text, int len, int *parsed_len)
  *           Supported format is d[-d],time-time where 1 <= d <= 7            *
  *                                                                            *
  ******************************************************************************/
-static int	time_period_parse(zbx_time_period_t *period, const char *text, int len)
+static int	time_period_parse(trx_time_period_t *period, const char *text, int len)
 {
 	int	parsed_len;
 
@@ -855,7 +855,7 @@ static int	time_period_parse(zbx_time_period_t *period, const char *text, int le
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_check_time_period                                            *
+ * Function: trx_check_time_period                                            *
  *                                                                            *
  * Purpose: validate time period and check if specified time is within it     *
  *                                                                            *
@@ -873,12 +873,12 @@ static int	time_period_parse(zbx_time_period_t *period, const char *text, int le
  * Comments:   !!! Don't forget to sync code with PHP !!!                     *
  *                                                                            *
  ******************************************************************************/
-int	zbx_check_time_period(const char *period, time_t time, int *res)
+int	trx_check_time_period(const char *period, time_t time, int *res)
 {
 	int			res_total = FAIL;
 	const char		*next;
 	struct tm		*tm;
-	zbx_time_period_t	tp;
+	trx_time_period_t	tp;
 
 	tm = localtime(&time);
 
@@ -910,14 +910,14 @@ int	zbx_check_time_period(const char *period, time_t time, int *res)
  * Parameters: interval - [IN] flexible interval                              *
  *                                                                            *
  ******************************************************************************/
-static void	flexible_interval_free(zbx_flexible_interval_t *interval)
+static void	flexible_interval_free(trx_flexible_interval_t *interval)
 {
-	zbx_flexible_interval_t	*interval_next;
+	trx_flexible_interval_t	*interval_next;
 
 	for (; NULL != interval; interval = interval_next)
 	{
 		interval_next = interval->next;
-		zbx_free(interval);
+		trx_free(interval);
 	}
 }
 
@@ -938,7 +938,7 @@ static void	flexible_interval_free(zbx_flexible_interval_t *interval)
  *           Supported format is delay/period                                 *
  *                                                                            *
  ******************************************************************************/
-static int	flexible_interval_parse(zbx_flexible_interval_t *interval, const char *text, int len)
+static int	flexible_interval_parse(trx_flexible_interval_t *interval, const char *text, int len)
 {
 	const char	*ptr;
 
@@ -986,14 +986,14 @@ static int	calculate_dayofweek(int year, int mon, int mday)
  * Parameters: filter - [IN] scheduler interval filter                        *
  *                                                                            *
  ******************************************************************************/
-static void	scheduler_filter_free(zbx_scheduler_filter_t *filter)
+static void	scheduler_filter_free(trx_scheduler_filter_t *filter)
 {
-	zbx_scheduler_filter_t	*filter_next;
+	trx_scheduler_filter_t	*filter_next;
 
 	for (; NULL != filter; filter = filter_next)
 	{
 		filter_next = filter->next;
-		zbx_free(filter);
+		trx_free(filter);
 	}
 }
 
@@ -1006,9 +1006,9 @@ static void	scheduler_filter_free(zbx_scheduler_filter_t *filter)
  * Parameters: interval - [IN] scheduler interval                             *
  *                                                                            *
  ******************************************************************************/
-static void	scheduler_interval_free(zbx_scheduler_interval_t *interval)
+static void	scheduler_interval_free(trx_scheduler_interval_t *interval)
 {
-	zbx_scheduler_interval_t	*interval_next;
+	trx_scheduler_interval_t	*interval_next;
 
 	for (; NULL != interval; interval = interval_next)
 	{
@@ -1020,7 +1020,7 @@ static void	scheduler_interval_free(zbx_scheduler_interval_t *interval)
 		scheduler_filter_free(interval->minutes);
 		scheduler_filter_free(interval->seconds);
 
-		zbx_free(interval);
+		trx_free(interval);
 	}
 }
 
@@ -1044,12 +1044,12 @@ static void	scheduler_interval_free(zbx_scheduler_interval_t *interval)
  * Comments: This function recursively calls itself for each filter fragment. *
  *                                                                            *
  ******************************************************************************/
-static int	scheduler_parse_filter_r(zbx_scheduler_filter_t **filter, const char *text, int *len, int min, int max,
+static int	scheduler_parse_filter_r(trx_scheduler_filter_t **filter, const char *text, int *len, int min, int max,
 		int var_len)
 {
 	int			start = 0, end = 0, step = 1;
 	const char		*pstart, *pend;
-	zbx_scheduler_filter_t	*filter_new;
+	trx_scheduler_filter_t	*filter_new;
 
 	pstart = pend = text;
 	while (0 != isdigit(*pend) && 0 < *len)
@@ -1138,7 +1138,7 @@ static int	scheduler_parse_filter_r(zbx_scheduler_filter_t **filter, const char 
 			return FAIL;
 	}
 
-	filter_new = (zbx_scheduler_filter_t *)zbx_malloc(NULL, sizeof(zbx_scheduler_filter_t));
+	filter_new = (trx_scheduler_filter_t *)trx_malloc(NULL, sizeof(trx_scheduler_filter_t));
 	filter_new->start = start;
 	filter_new->end = end;
 	filter_new->step = step;
@@ -1171,7 +1171,7 @@ static int	scheduler_parse_filter_r(zbx_scheduler_filter_t **filter, const char 
  *           parsing must fail.                                               *
  *                                                                            *
  ******************************************************************************/
-static int	scheduler_parse_filter(zbx_scheduler_filter_t **filter, const char *text, int *len, int min, int max,
+static int	scheduler_parse_filter(trx_scheduler_filter_t **filter, const char *text, int *len, int min, int max,
 		int var_len)
 {
 	if (NULL != *filter)
@@ -1194,7 +1194,7 @@ static int	scheduler_parse_filter(zbx_scheduler_filter_t **filter, const char *t
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	scheduler_interval_parse(zbx_scheduler_interval_t *interval, const char *text, int len)
+static int	scheduler_interval_parse(trx_scheduler_interval_t *interval, const char *text, int len)
 {
 	int	ret = SUCCEED;
 
@@ -1284,9 +1284,9 @@ static int	scheduler_interval_parse(zbx_scheduler_interval_t *interval, const ch
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	scheduler_get_nearest_filter_value(const zbx_scheduler_filter_t *filter, int *value)
+static int	scheduler_get_nearest_filter_value(const trx_scheduler_filter_t *filter, int *value)
 {
-	const zbx_scheduler_filter_t	*filter_next = NULL;
+	const trx_scheduler_filter_t	*filter_next = NULL;
 
 	for (; NULL != filter; filter = filter->next)
 	{
@@ -1337,7 +1337,7 @@ static int	scheduler_get_nearest_filter_value(const zbx_scheduler_filter_t *filt
  *                         found in the current month                         *
  *                                                                            *
  ******************************************************************************/
-static int	scheduler_get_wday_nextcheck(const zbx_scheduler_interval_t *interval, struct tm *tm)
+static int	scheduler_get_wday_nextcheck(const trx_scheduler_interval_t *interval, struct tm *tm)
 {
 	int	value_now, value_next;
 
@@ -1365,7 +1365,7 @@ static int	scheduler_get_wday_nextcheck(const zbx_scheduler_interval_t *interval
 	tm->tm_mday += value_next - value_now;
 
 	/* check if the resulting month day is valid */
-	return (tm->tm_mday <= zbx_day_in_month(tm->tm_year + 1970, tm->tm_mon + 1) ? SUCCEED : FAIL);
+	return (tm->tm_mday <= trx_day_in_month(tm->tm_year + 1970, tm->tm_mon + 1) ? SUCCEED : FAIL);
 }
 
 /******************************************************************************
@@ -1381,9 +1381,9 @@ static int	scheduler_get_wday_nextcheck(const zbx_scheduler_interval_t *interval
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	scheduler_validate_wday_filter(const zbx_scheduler_interval_t *interval, struct tm *tm)
+static int	scheduler_validate_wday_filter(const trx_scheduler_interval_t *interval, struct tm *tm)
 {
-	const zbx_scheduler_filter_t	*filter;
+	const trx_scheduler_filter_t	*filter;
 	int				value;
 
 	if (NULL == interval->wdays)
@@ -1426,12 +1426,12 @@ static int	scheduler_validate_wday_filter(const zbx_scheduler_interval_t *interv
  *                         found in the current month                         *
  *                                                                            *
  ******************************************************************************/
-static int	scheduler_get_day_nextcheck(const zbx_scheduler_interval_t *interval, struct tm *tm)
+static int	scheduler_get_day_nextcheck(const trx_scheduler_interval_t *interval, struct tm *tm)
 {
 	int	tmp;
 
 	/* first check if the provided tm structure has valid date format */
-	if (FAIL == zbx_utc_time(tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec,
+	if (FAIL == trx_utc_time(tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec,
 			&tmp))
 	{
 		return FAIL;
@@ -1444,7 +1444,7 @@ static int	scheduler_get_day_nextcheck(const zbx_scheduler_interval_t *interval,
 	while (SUCCEED == scheduler_get_nearest_filter_value(interval->mdays, &tm->tm_mday))
 	{
 		/* check if the date is still valid - we haven't ran out of month days */
-		if (tm->tm_mday > zbx_day_in_month(tm->tm_year + 1970, tm->tm_mon + 1))
+		if (tm->tm_mday > trx_day_in_month(tm->tm_year + 1970, tm->tm_mon + 1))
 			break;
 
 		if (SUCCEED == scheduler_validate_wday_filter(interval, tm))
@@ -1453,7 +1453,7 @@ static int	scheduler_get_day_nextcheck(const zbx_scheduler_interval_t *interval,
 		tm->tm_mday++;
 
 		/* check if the date is still valid - we haven't ran out of month days */
-		if (tm->tm_mday > zbx_day_in_month(tm->tm_year + 1970, tm->tm_mon + 1))
+		if (tm->tm_mday > trx_day_in_month(tm->tm_year + 1970, tm->tm_mon + 1))
 			break;
 	}
 
@@ -1476,9 +1476,9 @@ static int	scheduler_get_day_nextcheck(const zbx_scheduler_interval_t *interval,
  *                         filter level                                       *
  *                                                                            *
  ******************************************************************************/
-static int	scheduler_get_filter_nextcheck(const zbx_scheduler_interval_t *interval, int level, struct tm *tm)
+static int	scheduler_get_filter_nextcheck(const trx_scheduler_interval_t *interval, int level, struct tm *tm)
 {
-	const zbx_scheduler_filter_t	*filter;
+	const trx_scheduler_filter_t	*filter;
 	int				max, *value;
 
 	/* initialize data depending on filter level */
@@ -1538,7 +1538,7 @@ static int	scheduler_get_filter_nextcheck(const zbx_scheduler_interval_t *interv
  *             tm       - [IN/OUT] the input/output date & time               *
  *                                                                            *
  ******************************************************************************/
-static void	scheduler_apply_day_filter(zbx_scheduler_interval_t *interval, struct tm *tm)
+static void	scheduler_apply_day_filter(trx_scheduler_interval_t *interval, struct tm *tm)
 {
 	int	day = tm->tm_mday, mon = tm->tm_mon, year = tm->tm_year;
 
@@ -1573,7 +1573,7 @@ static void	scheduler_apply_day_filter(zbx_scheduler_interval_t *interval, struc
  *             tm       - [IN/OUT] the input/output date & time               *
  *                                                                            *
  ******************************************************************************/
-static void	scheduler_apply_hour_filter(zbx_scheduler_interval_t *interval, struct tm *tm)
+static void	scheduler_apply_hour_filter(trx_scheduler_interval_t *interval, struct tm *tm)
 {
 	int	hour = tm->tm_hour;
 
@@ -1605,7 +1605,7 @@ static void	scheduler_apply_hour_filter(zbx_scheduler_interval_t *interval, stru
  *             tm       - [IN/OUT] the input/output date & time               *
  *                                                                            *
  ******************************************************************************/
-static void	scheduler_apply_minute_filter(zbx_scheduler_interval_t *interval, struct tm *tm)
+static void	scheduler_apply_minute_filter(trx_scheduler_interval_t *interval, struct tm *tm)
 {
 	int	min = tm->tm_min;
 
@@ -1634,7 +1634,7 @@ static void	scheduler_apply_minute_filter(zbx_scheduler_interval_t *interval, st
  *             tm       - [IN/OUT] the input/output date & time               *
  *                                                                            *
  ******************************************************************************/
-static void	scheduler_apply_second_filter(zbx_scheduler_interval_t *interval, struct tm *tm)
+static void	scheduler_apply_second_filter(trx_scheduler_interval_t *interval, struct tm *tm)
 {
 	while (SUCCEED != scheduler_get_filter_nextcheck(interval, TRX_SCHEDULER_FILTER_SECOND, tm))
 	{
@@ -1719,7 +1719,7 @@ static void	scheduler_tm_inc(struct tm *tm)
 		return;
 
 	tm->tm_hour = 0;
-	if (zbx_day_in_month(tm->tm_year + 1900, tm->tm_mon + 1) >= ++tm->tm_mday)
+	if (trx_day_in_month(tm->tm_year + 1900, tm->tm_mon + 1) >= ++tm->tm_mday)
 		return;
 
 	tm->tm_mday = 1;
@@ -1743,7 +1743,7 @@ static void	scheduler_tm_inc(struct tm *tm)
  * Return Value: Timestamp when the next check must be scheduled.             *
  *                                                                            *
  ******************************************************************************/
-static time_t	scheduler_get_nextcheck(zbx_scheduler_interval_t *interval, time_t now)
+static time_t	scheduler_get_nextcheck(trx_scheduler_interval_t *interval, time_t now)
 {
 	struct tm	tm_start, tm, tm_dst;
 	time_t		nextcheck = 0, current_nextcheck;
@@ -1810,7 +1810,7 @@ static int	parse_user_macro(const char *str, int *len)
 {
 	int	macro_r, context_l, context_r;
 
-	if ('{' != *str || '$' != *(str + 1) || SUCCEED != zbx_user_macro_parse(str, &macro_r, &context_l, &context_r))
+	if ('{' != *str || '$' != *(str + 1) || SUCCEED != trx_user_macro_parse(str, &macro_r, &context_l, &context_r))
 		return FAIL;
 
 	*len = macro_r + 1;
@@ -1852,7 +1852,7 @@ static int	parse_simple_interval(const char *str, int *len, char sep, int *value
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_validate_interval                                            *
+ * Function: trx_validate_interval                                            *
  *                                                                            *
  * Purpose: validate update interval, flexible and scheduling intervals       *
  *                                                                            *
@@ -1864,7 +1864,7 @@ static int	parse_simple_interval(const char *str, int *len, char sep, int *value
  *     FAIL    - parsing failed.                                              *
  *                                                                            *
  ******************************************************************************/
-int	zbx_validate_interval(const char *str, char **error)
+int	trx_validate_interval(const char *str, char **error)
 {
 	int		simple_interval, interval, len, custom = 0, macro;
 	const char	*delim;
@@ -1883,7 +1883,7 @@ int	zbx_validate_interval(const char *str, char **error)
 	}
 	else
 	{
-		*error = zbx_dsprintf(*error, "Invalid update interval \"%.*s\".",
+		*error = trx_dsprintf(*error, "Invalid update interval \"%.*s\".",
 				NULL == (delim = strchr(str, ';')) ? (int)strlen(str) : (int)(delim - str), str);
 		return FAIL;
 	}
@@ -1896,7 +1896,7 @@ int	zbx_validate_interval(const char *str, char **error)
 				SUCCEED == parse_simple_interval(str, &len, '/', &interval)) &&
 				'/' == *(delim = str + len))
 		{
-			zbx_time_period_t period;
+			trx_time_period_t period;
 
 			custom = 1;
 
@@ -1905,7 +1905,7 @@ int	zbx_validate_interval(const char *str, char **error)
 
 			if (0 == interval && 0 == simple_interval)
 			{
-				*error = zbx_dsprintf(*error, "Invalid flexible interval \"%.*s\".", (int)(delim - str),
+				*error = trx_dsprintf(*error, "Invalid flexible interval \"%.*s\".", (int)(delim - str),
 						str);
 				return FAIL;
 			}
@@ -1926,13 +1926,13 @@ int	zbx_validate_interval(const char *str, char **error)
 				continue;
 			}
 
-			*error = zbx_dsprintf(*error, "Invalid flexible period \"%.*s\".",
+			*error = trx_dsprintf(*error, "Invalid flexible period \"%.*s\".",
 					NULL == delim ? (int)strlen(str) : (int)(delim - str), str);
 			return FAIL;
 		}
 		else
 		{
-			zbx_scheduler_interval_t	*new_interval;
+			trx_scheduler_interval_t	*new_interval;
 
 			custom = 1;
 
@@ -1944,8 +1944,8 @@ int	zbx_validate_interval(const char *str, char **error)
 				continue;
 			}
 
-			new_interval = (zbx_scheduler_interval_t *)zbx_malloc(NULL, sizeof(zbx_scheduler_interval_t));
-			memset(new_interval, 0, sizeof(zbx_scheduler_interval_t));
+			new_interval = (trx_scheduler_interval_t *)trx_malloc(NULL, sizeof(trx_scheduler_interval_t));
+			memset(new_interval, 0, sizeof(trx_scheduler_interval_t));
 
 			if (SUCCEED == scheduler_interval_parse(new_interval, str,
 					NULL == (delim = strchr(str, ';')) ? (int)strlen(str) : (int)(delim - str)))
@@ -1955,7 +1955,7 @@ int	zbx_validate_interval(const char *str, char **error)
 			}
 			scheduler_interval_free(new_interval);
 
-			*error = zbx_dsprintf(*error, "Invalid custom interval \"%.*s\".",
+			*error = trx_dsprintf(*error, "Invalid custom interval \"%.*s\".",
 					NULL == delim ? (int)strlen(str) : (int)(delim - str), str);
 
 			return FAIL;
@@ -1964,7 +1964,7 @@ int	zbx_validate_interval(const char *str, char **error)
 
 	if ((0 == custom && 0 == simple_interval) || SEC_PER_DAY < simple_interval)
 	{
-		*error = zbx_dsprintf(*error, "Invalid update interval \"%d\"", simple_interval);
+		*error = trx_dsprintf(*error, "Invalid update interval \"%d\"", simple_interval);
 		return FAIL;
 	}
 
@@ -1973,7 +1973,7 @@ int	zbx_validate_interval(const char *str, char **error)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_interval_preproc                                             *
+ * Function: trx_interval_preproc                                             *
  *                                                                            *
  * Purpose: parses item and low-level discovery rule update intervals         *
  *                                                                            *
@@ -1990,11 +1990,11 @@ int	zbx_validate_interval(const char *str, char **error)
  *             SimpleInterval, {";", FlexibleInterval | SchedulingInterval};  *
  *                                                                            *
  ******************************************************************************/
-int	zbx_interval_preproc(const char *interval_str, int *simple_interval, zbx_custom_interval_t **custom_intervals,
+int	trx_interval_preproc(const char *interval_str, int *simple_interval, trx_custom_interval_t **custom_intervals,
 		char **error)
 {
-	zbx_flexible_interval_t		*flexible = NULL;
-	zbx_scheduler_interval_t	*scheduling = NULL;
+	trx_flexible_interval_t		*flexible = NULL;
+	trx_scheduler_interval_t	*scheduling = NULL;
 	const char			*delim, *interval_type;
 
 	if (SUCCEED != is_time_suffix(interval_str, simple_interval,
@@ -2014,15 +2014,15 @@ int	zbx_interval_preproc(const char *interval_str, int *simple_interval, zbx_cus
 
 		if (0 != isdigit(*interval_str))
 		{
-			zbx_flexible_interval_t	*new_interval;
+			trx_flexible_interval_t	*new_interval;
 
-			new_interval = (zbx_flexible_interval_t *)zbx_malloc(NULL, sizeof(zbx_flexible_interval_t));
+			new_interval = (trx_flexible_interval_t *)trx_malloc(NULL, sizeof(trx_flexible_interval_t));
 
 			if (SUCCEED != flexible_interval_parse(new_interval, interval_str,
 					(NULL == delim ? (int)strlen(interval_str) : (int)(delim - interval_str))) ||
 					(0 == *simple_interval && 0 == new_interval->delay))
 			{
-				zbx_free(new_interval);
+				trx_free(new_interval);
 				interval_type = "flexible";
 				goto fail;
 			}
@@ -2032,10 +2032,10 @@ int	zbx_interval_preproc(const char *interval_str, int *simple_interval, zbx_cus
 		}
 		else
 		{
-			zbx_scheduler_interval_t	*new_interval;
+			trx_scheduler_interval_t	*new_interval;
 
-			new_interval = (zbx_scheduler_interval_t *)zbx_malloc(NULL, sizeof(zbx_scheduler_interval_t));
-			memset(new_interval, 0, sizeof(zbx_scheduler_interval_t));
+			new_interval = (trx_scheduler_interval_t *)trx_malloc(NULL, sizeof(trx_scheduler_interval_t));
+			memset(new_interval, 0, sizeof(trx_scheduler_interval_t));
 
 			if (SUCCEED != scheduler_interval_parse(new_interval, interval_str,
 					(NULL == delim ? (int)strlen(interval_str) : (int)(delim - interval_str))))
@@ -2056,7 +2056,7 @@ int	zbx_interval_preproc(const char *interval_str, int *simple_interval, zbx_cus
 		goto fail;
 	}
 
-	*custom_intervals = (zbx_custom_interval_t *)zbx_malloc(NULL, sizeof(zbx_custom_interval_t));
+	*custom_intervals = (trx_custom_interval_t *)trx_malloc(NULL, sizeof(trx_custom_interval_t));
 	(*custom_intervals)->flexible = flexible;
 	(*custom_intervals)->scheduling = scheduling;
 
@@ -2064,7 +2064,7 @@ int	zbx_interval_preproc(const char *interval_str, int *simple_interval, zbx_cus
 fail:
 	if (NULL != error)
 	{
-		*error = zbx_dsprintf(*error, "Invalid %s interval \"%.*s\".", interval_type,
+		*error = trx_dsprintf(*error, "Invalid %s interval \"%.*s\".", interval_type,
 				(NULL == delim ? (int)strlen(interval_str) : (int)(delim - interval_str)),
 				interval_str);
 	}
@@ -2077,18 +2077,18 @@ fail:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_custom_interval_free                                         *
+ * Function: trx_custom_interval_free                                         *
  *                                                                            *
  * Purpose: frees custom update intervals                                     *
  *                                                                            *
  * Parameters: custom_intervals - [IN] custom intervals                       *
  *                                                                            *
  ******************************************************************************/
-void	zbx_custom_interval_free(zbx_custom_interval_t *custom_intervals)
+void	trx_custom_interval_free(trx_custom_interval_t *custom_intervals)
 {
 	flexible_interval_free(custom_intervals->flexible);
 	scheduler_interval_free(custom_intervals->scheduling);
-	zbx_free(custom_intervals);
+	trx_free(custom_intervals);
 }
 
 /******************************************************************************
@@ -2116,8 +2116,8 @@ void	zbx_custom_interval_free(zbx_custom_interval_t *custom_intervals)
  *           New one: preserve period, if delay==5, nextcheck = 0,5,10,15,... *
  *                                                                            *
  ******************************************************************************/
-int	calculate_item_nextcheck(zbx_uint64_t seed, int item_type, int simple_interval,
-		const zbx_custom_interval_t *custom_intervals, time_t now)
+int	calculate_item_nextcheck(trx_uint64_t seed, int item_type, int simple_interval,
+		const trx_custom_interval_t *custom_intervals, time_t now)
 {
 	int	nextcheck = 0;
 
@@ -2156,7 +2156,7 @@ int	calculate_item_nextcheck(zbx_uint64_t seed, int item_type, int simple_interv
 			if (0 != current_delay)
 			{
 				nextcheck = current_delay * (int)(t / (time_t)current_delay) +
-						(int)(seed % (zbx_uint64_t)current_delay);
+						(int)(seed % (trx_uint64_t)current_delay);
 
 				if (0 == attempt)
 				{
@@ -2207,7 +2207,7 @@ int	calculate_item_nextcheck(zbx_uint64_t seed, int item_type, int simple_interv
  * Return value: nextcheck value                                              *
  *                                                                            *
  ******************************************************************************/
-int	calculate_item_nextcheck_unreachable(int simple_interval, const zbx_custom_interval_t *custom_intervals,
+int	calculate_item_nextcheck_unreachable(int simple_interval, const trx_custom_interval_t *custom_intervals,
 		time_t disable_until)
 {
 	int	nextcheck = 0;
@@ -2261,7 +2261,7 @@ int	calculate_item_nextcheck_unreachable(int simple_interval, const zbx_custom_i
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-time_t	calculate_proxy_nextcheck(zbx_uint64_t hostid, unsigned int delay, time_t now)
+time_t	calculate_proxy_nextcheck(trx_uint64_t hostid, unsigned int delay, time_t now)
 {
 	time_t	nextcheck;
 
@@ -2321,7 +2321,7 @@ int	is_ip4(const char *ip)
 	if (3 == dots && 1 <= digits && 3 >= digits && 255 >= octet)
 		res = SUCCEED;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(res));
 
 	return res;
 }
@@ -2387,7 +2387,7 @@ int	is_ip6(const char *ip)
 	else
 		res = FAIL;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(res));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(res));
 
 	return res;
 }
@@ -2438,7 +2438,7 @@ int	is_ip(const char *ip)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_validate_hostname                                            *
+ * Function: trx_validate_hostname                                            *
  *                                                                            *
  * Purpose: check if string is a valid internet hostname                      *
  *                                                                            *
@@ -2453,7 +2453,7 @@ int	is_ip(const char *ip)
  *         - underscores ('_') allowed in domain name, but not in hostname.   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_validate_hostname(const char *hostname)
+int	trx_validate_hostname(const char *hostname)
 {
 	int		component;	/* periods ('.') are only allowed when they serve to delimit components */
 	int		len = MAX_TRX_DNSNAME_LEN;
@@ -2497,7 +2497,7 @@ int	zbx_validate_hostname(const char *hostname)
 int	ip_in_list(const char *list, const char *ip)
 {
 	int		ipaddress[8];
-	zbx_iprange_t	iprange;
+	trx_iprange_t	iprange;
 	char		*address = NULL;
 	size_t		address_alloc = 0, address_offset;
 	const char	*ptr;
@@ -2519,7 +2519,7 @@ int	ip_in_list(const char *list, const char *ip)
 			ptr = list + strlen(list);
 
 		address_offset = 0;
-		zbx_strncpy_alloc(&address, &address_alloc, &address_offset, list, ptr - list);
+		trx_strncpy_alloc(&address, &address_alloc, &address_offset, list, ptr - list);
 
 		if (SUCCEED != iprange_parse(&iprange, address))
 			continue;
@@ -2534,9 +2534,9 @@ int	ip_in_list(const char *list, const char *ip)
 		}
 	}
 
-	zbx_free(address);
+	trx_free(address);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
@@ -2599,12 +2599,12 @@ int	int_in_list(char *list, int value)
 	if (NULL != end)
 		*end = c;
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-int	zbx_double_compare(double a, double b)
+int	trx_double_compare(double a, double b)
 {
 	return fabs(a - b) <= TRX_DOUBLE_EPSILON ? SUCCEED : FAIL;
 }
@@ -2635,7 +2635,7 @@ int	is_double_suffix(const char *str, unsigned char flags)
 	if ('-' == *str)	/* check leading sign */
 		str++;
 
-	if (FAIL == zbx_number_parse(str, &len))
+	if (FAIL == trx_number_parse(str, &len))
 		return FAIL;
 
 	if ('\0' != *(str += len) && 0 != (flags & TRX_FLAG_DOUBLE_SUFFIX) && NULL != strchr(TRX_UNIT_SYMBOLS, *str))
@@ -2665,7 +2665,7 @@ int	is_double(const char *str)
 	if ('-' == *str || '+' == *str)		/* check leading sign */
 		str++;
 
-	if (FAIL == zbx_number_parse(str, &len))
+	if (FAIL == trx_number_parse(str, &len))
 		return FAIL;
 
 	str += len;
@@ -2811,12 +2811,12 @@ int	_wis_uint(const wchar_t *wide_string)
  * Author: Alexander Vladishev, Andris Zeila                                  *
  *                                                                            *
  ******************************************************************************/
-int	is_uint_n_range(const char *str, size_t n, void *value, size_t size, zbx_uint64_t min, zbx_uint64_t max)
+int	is_uint_n_range(const char *str, size_t n, void *value, size_t size, trx_uint64_t min, trx_uint64_t max)
 {
-	zbx_uint64_t		value_uint64 = 0, c;
-	const zbx_uint64_t	max_uint64 = ~(zbx_uint64_t)__UINT64_C(0);
+	trx_uint64_t		value_uint64 = 0, c;
+	const trx_uint64_t	max_uint64 = ~(trx_uint64_t)__UINT64_C(0);
 
-	if ('\0' == *str || 0 == n || sizeof(zbx_uint64_t) < size || (0 == size && NULL != value))
+	if ('\0' == *str || 0 == n || sizeof(trx_uint64_t) < size || (0 == size && NULL != value))
 		return FAIL;
 
 	while ('\0' != *str && 0 < n--)
@@ -2824,7 +2824,7 @@ int	is_uint_n_range(const char *str, size_t n, void *value, size_t size, zbx_uin
 		if (0 == isdigit(*str))
 			return FAIL;	/* not a digit */
 
-		c = (zbx_uint64_t)(unsigned char)(*str - '0');
+		c = (trx_uint64_t)(unsigned char)(*str - '0');
 
 		if ((max_uint64 - c) / 10 < value_uint64)
 			return FAIL;	/* maximum value exceeded */
@@ -2843,7 +2843,7 @@ int	is_uint_n_range(const char *str, size_t n, void *value, size_t size, zbx_uin
 		/* of 'value' buffer while on big endian architecture it will be stored starting from the last */
 		/* bytes. We handle it by storing the offset in the most significant byte of short value and   */
 		/* then use the first byte as source offset.                                                   */
-		unsigned short	value_offset = (unsigned short)((sizeof(zbx_uint64_t) - size) << 8);
+		unsigned short	value_offset = (unsigned short)((sizeof(trx_uint64_t) - size) << 8);
 
 		memcpy(value, (unsigned char *)&value_uint64 + *((unsigned char *)&value_offset), size);
 	}
@@ -2871,13 +2871,13 @@ int	is_uint_n_range(const char *str, size_t n, void *value, size_t size, zbx_uin
  *                       is outside the specified range                       *
  *                                                                            *
  ******************************************************************************/
-int	is_hex_n_range(const char *str, size_t n, void *value, size_t size, zbx_uint64_t min, zbx_uint64_t max)
+int	is_hex_n_range(const char *str, size_t n, void *value, size_t size, trx_uint64_t min, trx_uint64_t max)
 {
-	zbx_uint64_t		value_uint64 = 0, c;
-	const zbx_uint64_t	max_uint64 = ~(zbx_uint64_t)__UINT64_C(0);
+	trx_uint64_t		value_uint64 = 0, c;
+	const trx_uint64_t	max_uint64 = ~(trx_uint64_t)__UINT64_C(0);
 	int			len = 0;
 
-	if ('\0' == *str || 0 == n || sizeof(zbx_uint64_t) < size || (0 == size && NULL != value))
+	if ('\0' == *str || 0 == n || sizeof(trx_uint64_t) < size || (0 == size && NULL != value))
 		return FAIL;
 
 	while ('\0' != *str && 0 < n--)
@@ -2907,7 +2907,7 @@ int	is_hex_n_range(const char *str, size_t n, void *value, size_t size, zbx_uint
 		/* of 'value' buffer while on big endian architecture it will be stored starting from the last */
 		/* bytes. We handle it by storing the offset in the most significant byte of short value and   */
 		/* then use the first byte as source offset.                                                   */
-		unsigned short	value_offset = (unsigned short)((sizeof(zbx_uint64_t) - size) << 8);
+		unsigned short	value_offset = (unsigned short)((sizeof(trx_uint64_t) - size) << 8);
 
 		memcpy(value, (unsigned char *)&value_uint64 + *((unsigned char *)&value_offset), size);
 	}
@@ -2931,7 +2931,7 @@ int	is_hex_n_range(const char *str, size_t n, void *value, size_t size, zbx_uint
  * Comments:                                                                  *
  *                                                                            *
  ******************************************************************************/
-int	is_boolean(const char *str, zbx_uint64_t *value)
+int	is_boolean(const char *str, trx_uint64_t *value)
 {
 	int	res;
 
@@ -2942,7 +2942,7 @@ int	is_boolean(const char *str, zbx_uint64_t *value)
 		char	tmp[16];
 
 		strscpy(tmp, str);
-		zbx_strlower(tmp);
+		trx_strlower(tmp);
 
 		if (SUCCEED == (res = str_in_list("true,t,yes,y,on,up,running,enabled,available,ok,master", tmp, ',')))
 		{
@@ -3090,10 +3090,10 @@ int	is_hex_string(const char *str)
  *               that the array is still sorted                               *
  *                                                                            *
  ******************************************************************************/
-int	get_nearestindex(const void *p, size_t sz, int num, zbx_uint64_t id)
+int	get_nearestindex(const void *p, size_t sz, int num, trx_uint64_t id)
 {
 	int		first_index, last_index, index;
-	zbx_uint64_t	element_id;
+	trx_uint64_t	element_id;
 
 	if (0 == num)
 		return 0;
@@ -3105,7 +3105,7 @@ int	get_nearestindex(const void *p, size_t sz, int num, zbx_uint64_t id)
 	{
 		index = first_index + (last_index - first_index) / 2;
 
-		if (id == (element_id = *(const zbx_uint64_t *)((const char *)p + index * sz)))
+		if (id == (element_id = *(const trx_uint64_t *)((const char *)p + index * sz)))
 			return index;
 
 		if (last_index == first_index)
@@ -3131,11 +3131,11 @@ int	get_nearestindex(const void *p, size_t sz, int num, zbx_uint64_t id)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	uint64_array_add(zbx_uint64_t **values, int *alloc, int *num, zbx_uint64_t value, int alloc_step)
+int	uint64_array_add(trx_uint64_t **values, int *alloc, int *num, trx_uint64_t value, int alloc_step)
 {
 	int	index;
 
-	index = get_nearestindex(*values, sizeof(zbx_uint64_t), *num, value);
+	index = get_nearestindex(*values, sizeof(trx_uint64_t), *num, value);
 	if (index < (*num) && (*values)[index] == value)
 		return index;
 
@@ -3143,15 +3143,15 @@ int	uint64_array_add(zbx_uint64_t **values, int *alloc, int *num, zbx_uint64_t v
 	{
 		if (0 == alloc_step)
 		{
-			zbx_error("Unable to reallocate buffer");
+			trx_error("Unable to reallocate buffer");
 			assert(0);
 		}
 
 		*alloc += alloc_step;
-		*values = (zbx_uint64_t *)zbx_realloc(*values, *alloc * sizeof(zbx_uint64_t));
+		*values = (trx_uint64_t *)trx_realloc(*values, *alloc * sizeof(trx_uint64_t));
 	}
 
-	memmove(&(*values)[index + 1], &(*values)[index], sizeof(zbx_uint64_t) * (*num - index));
+	memmove(&(*values)[index + 1], &(*values)[index], sizeof(trx_uint64_t) * (*num - index));
 
 	(*values)[index] = value;
 	(*num)++;
@@ -3166,11 +3166,11 @@ int	uint64_array_add(zbx_uint64_t **values, int *alloc, int *num, zbx_uint64_t v
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-int	uint64_array_exists(const zbx_uint64_t *values, int num, zbx_uint64_t value)
+int	uint64_array_exists(const trx_uint64_t *values, int num, trx_uint64_t value)
 {
 	int	index;
 
-	index = get_nearestindex(values, sizeof(zbx_uint64_t), num, value);
+	index = get_nearestindex(values, sizeof(trx_uint64_t), num, value);
 	if (index < num && values[index] == value)
 		return SUCCEED;
 
@@ -3186,22 +3186,22 @@ int	uint64_array_exists(const zbx_uint64_t *values, int num, zbx_uint64_t value)
  * Author: Alexander Vladishev                                                *
  *                                                                            *
  ******************************************************************************/
-void	uint64_array_remove(zbx_uint64_t *values, int *num, const zbx_uint64_t *rm_values, int rm_num)
+void	uint64_array_remove(trx_uint64_t *values, int *num, const trx_uint64_t *rm_values, int rm_num)
 {
 	int	rindex, index;
 
 	for (rindex = 0; rindex < rm_num; rindex++)
 	{
-		index = get_nearestindex(values, sizeof(zbx_uint64_t), *num, rm_values[rindex]);
+		index = get_nearestindex(values, sizeof(trx_uint64_t), *num, rm_values[rindex]);
 		if (index == *num || values[index] != rm_values[rindex])
 			continue;
 
-		memmove(&values[index], &values[index + 1], sizeof(zbx_uint64_t) * ((*num) - index - 1));
+		memmove(&values[index], &values[index + 1], sizeof(trx_uint64_t) * ((*num) - index - 1));
 		(*num)--;
 	}
 }
 
-zbx_uint64_t	suffix2factor(char c)
+trx_uint64_t	suffix2factor(char c)
 {
 	switch (c)
 	{
@@ -3245,12 +3245,12 @@ zbx_uint64_t	suffix2factor(char c)
  * Comments: the function automatically processes suffixes K, M, G, T         *
  *                                                                            *
  ******************************************************************************/
-int	str2uint64(const char *str, const char *suffixes, zbx_uint64_t *value)
+int	str2uint64(const char *str, const char *suffixes, trx_uint64_t *value)
 {
 	size_t		sz;
 	const char	*p;
 	int		ret;
-	zbx_uint64_t	factor = 1;
+	trx_uint64_t	factor = 1;
 
 	sz = strlen(str);
 	p = str + sz - 1;
@@ -3582,11 +3582,11 @@ int	parse_serveractive_element(char *str, char **host, unsigned short *port, uns
 		if (SUCCEED != is_ip6(str))
 			goto fail;
 
-		*host = zbx_strdup(*host, str);
+		*host = trx_strdup(*host, str);
 	}
 	else if (SUCCEED == is_ip6(str))
 	{
-		*host = zbx_strdup(*host, str);
+		*host = trx_strdup(*host, str);
 	}
 	else
 	{
@@ -3599,7 +3599,7 @@ int	parse_serveractive_element(char *str, char **host, unsigned short *port, uns
 			*r2 = '\0';
 		}
 
-		*host = zbx_strdup(NULL, str);
+		*host = trx_strdup(NULL, str);
 #ifdef HAVE_IPV6
 	}
 #endif
@@ -3616,42 +3616,42 @@ fail:
 	return res;
 }
 
-void	zbx_alarm_flag_set(void)
+void	trx_alarm_flag_set(void)
 {
-	zbx_timed_out = 1;
+	trx_timed_out = 1;
 }
 
-void	zbx_alarm_flag_clear(void)
+void	trx_alarm_flag_clear(void)
 {
-	zbx_timed_out = 0;
+	trx_timed_out = 0;
 }
 
 #if !defined(_WINDOWS)
-unsigned int	zbx_alarm_on(unsigned int seconds)
+unsigned int	trx_alarm_on(unsigned int seconds)
 {
-	zbx_alarm_flag_clear();
+	trx_alarm_flag_clear();
 
 	return alarm(seconds);
 }
 
-unsigned int	zbx_alarm_off(void)
+unsigned int	trx_alarm_off(void)
 {
 	unsigned int	ret;
 
 	ret = alarm(0);
-	zbx_alarm_flag_clear();
+	trx_alarm_flag_clear();
 	return ret;
 }
 #endif
 
-int	zbx_alarm_timed_out(void)
+int	trx_alarm_timed_out(void)
 {
-	return (0 == zbx_timed_out ? FAIL : SUCCEED);
+	return (0 == trx_timed_out ? FAIL : SUCCEED);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_create_token                                                 *
+ * Function: trx_create_token                                                 *
  *                                                                            *
  * Purpose: creates semi-unique token based on the seed and current timestamp *
  *                                                                            *
@@ -3663,23 +3663,23 @@ int	zbx_alarm_timed_out(void)
  *           TRX_DATA_SESSION_TOKEN_SIZE definition                           *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_create_token(zbx_uint64_t seed)
+char	*trx_create_token(trx_uint64_t seed)
 {
 	const char	*hex = "0123456789abcdef";
-	zbx_timespec_t	ts;
+	trx_timespec_t	ts;
 	md5_state_t	state;
 	md5_byte_t	hash[MD5_DIGEST_SIZE];
 	int		i;
 	char		*token, *ptr;
 
-	ptr = token = (char *)zbx_malloc(NULL, TRX_DATA_SESSION_TOKEN_SIZE + 1);
+	ptr = token = (char *)trx_malloc(NULL, TRX_DATA_SESSION_TOKEN_SIZE + 1);
 
-	zbx_timespec(&ts);
+	trx_timespec(&ts);
 
-	zbx_md5_init(&state);
-	zbx_md5_append(&state, (const md5_byte_t *)&seed, (int)sizeof(seed));
-	zbx_md5_append(&state, (const md5_byte_t *)&ts, (int)sizeof(ts));
-	zbx_md5_finish(&state, hash);
+	trx_md5_init(&state);
+	trx_md5_append(&state, (const md5_byte_t *)&seed, (int)sizeof(seed));
+	trx_md5_append(&state, (const md5_byte_t *)&ts, (int)sizeof(ts));
+	trx_md5_finish(&state, hash);
 
 	for (i = 0; i < MD5_DIGEST_SIZE; i++)
 	{
@@ -3694,7 +3694,7 @@ char	*zbx_create_token(zbx_uint64_t seed)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_update_env                                                   *
+ * Function: trx_update_env                                                   *
  *                                                                            *
  * Purpose: throttling of update "/etc/resolv.conf" and "stdio" to the new    *
  *          log file after rotation                                           *
@@ -3702,7 +3702,7 @@ char	*zbx_create_token(zbx_uint64_t seed)
  * Parameters: time_now - [IN] the time for compare in seconds                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_update_env(double time_now)
+void	trx_update_env(double time_now)
 {
 	static double	time_update = 0;
 
@@ -3710,36 +3710,36 @@ void	zbx_update_env(double time_now)
 	if (1.0 < time_now - time_update)
 	{
 		time_update = time_now;
-		zbx_handle_log();
+		trx_handle_log();
 #if !defined(_WINDOWS) && defined(HAVE_RESOLV_H)
-		zbx_update_resolver_conf();
+		trx_update_resolver_conf();
 #endif
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_get_agent_item_nextcheck                                  *
+ * Function: trx_dc_get_agent_item_nextcheck                                  *
  *                                                                            *
  * Purpose: calculate item nextcheck for zabix agent type items               *
  *                                                                            *
  ******************************************************************************/
-int	zbx_get_agent_item_nextcheck(zbx_uint64_t itemid, const char *delay, unsigned char state, int now,
+int	trx_get_agent_item_nextcheck(trx_uint64_t itemid, const char *delay, unsigned char state, int now,
 		int refresh_unsupported, int *nextcheck, char **error)
 {
 	if (ITEM_STATE_NORMAL == state)
 	{
 		int			simple_interval;
-		zbx_custom_interval_t	*custom_intervals;
+		trx_custom_interval_t	*custom_intervals;
 
-		if (SUCCEED != zbx_interval_preproc(delay, &simple_interval, &custom_intervals, error))
+		if (SUCCEED != trx_interval_preproc(delay, &simple_interval, &custom_intervals, error))
 		{
 			*nextcheck = TRX_JAN_2038;
 			return FAIL;
 		}
 
 		*nextcheck = calculate_item_nextcheck(itemid, ITEM_TYPE_TREEGIX, simple_interval, custom_intervals, now);
-		zbx_custom_interval_free(custom_intervals);
+		trx_custom_interval_free(custom_intervals);
 	}
 	else	/* for items notsupported for other reasons use refresh_unsupported interval */
 	{

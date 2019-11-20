@@ -18,29 +18,29 @@ int	SYSTEM_BOOTTIME(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		if (NULL == (kc = kstat_open()))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open kernel statistics facility: %s",
-					zbx_strerror(errno)));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open kernel statistics facility: %s",
+					trx_strerror(errno)));
 			return ret;
 		}
 
 		if (NULL == (kp = kstat_lookup(kc, "unix", 0, "system_misc")))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot look up in kernel statistics facility: %s",
-					zbx_strerror(errno)));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot look up in kernel statistics facility: %s",
+					trx_strerror(errno)));
 			goto clean;
 		}
 
 		if (-1 == kstat_read(kc, kp, 0))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
-					zbx_strerror(errno)));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
+					trx_strerror(errno)));
 			goto clean;
 		}
 
 		if (NULL == (kn = (kstat_named_t *)kstat_data_lookup(kp, "boot_time")))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot look up data in kernel statistics facility:"
-					" %s", zbx_strerror(errno)));
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot look up data in kernel statistics facility:"
+					" %s", trx_strerror(errno)));
 			goto clean;
 		}
 
@@ -64,7 +64,7 @@ clean:
 			ret = SYSINFO_RET_OK;
 		}
 		else
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system boot time."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system boot time."));
 
 		endutxent();
 	}

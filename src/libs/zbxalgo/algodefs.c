@@ -2,18 +2,18 @@
 
 #include "common.h"
 
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
 typedef unsigned char uchar;
 
 /*
  * Bob Jenkins hash function (see http://burtleburtle.net/bob/hash/evahash.html)
  */
-zbx_hash_t	zbx_hash_lookup2(const void *data, size_t len, zbx_hash_t seed)
+trx_hash_t	trx_hash_lookup2(const void *data, size_t len, trx_hash_t seed)
 {
 	const uchar	*p = (const uchar *)data;
 
-	zbx_hash_t	a, b, c;
+	trx_hash_t	a, b, c;
 
 #define	mix(a, b, c)						\
 {								\
@@ -33,9 +33,9 @@ zbx_hash_t	zbx_hash_lookup2(const void *data, size_t len, zbx_hash_t seed)
 
 	while (len >= 12)
 	{
-		a = a + (p[0] + ((zbx_hash_t)p[1] << 8) + ((zbx_hash_t)p[2]  << 16) + ((zbx_hash_t)p[3]  << 24));
-		b = b + (p[4] + ((zbx_hash_t)p[5] << 8) + ((zbx_hash_t)p[6]  << 16) + ((zbx_hash_t)p[7]  << 24));
-		c = c + (p[8] + ((zbx_hash_t)p[9] << 8) + ((zbx_hash_t)p[10] << 16) + ((zbx_hash_t)p[11] << 24));
+		a = a + (p[0] + ((trx_hash_t)p[1] << 8) + ((trx_hash_t)p[2]  << 16) + ((trx_hash_t)p[3]  << 24));
+		b = b + (p[4] + ((trx_hash_t)p[5] << 8) + ((trx_hash_t)p[6]  << 16) + ((trx_hash_t)p[7]  << 24));
+		c = c + (p[8] + ((trx_hash_t)p[9] << 8) + ((trx_hash_t)p[10] << 16) + ((trx_hash_t)p[11] << 24));
 
 		mix(a, b, c);
 
@@ -43,29 +43,29 @@ zbx_hash_t	zbx_hash_lookup2(const void *data, size_t len, zbx_hash_t seed)
 		len -= 12;
 	}
 
-	c = c + (zbx_hash_t)len;
+	c = c + (trx_hash_t)len;
 
 	switch (len)
 	{
-		case 11:	c = c + ((zbx_hash_t)p[10] << 24);
+		case 11:	c = c + ((trx_hash_t)p[10] << 24);
 			TRX_FALLTHROUGH;
-		case 10:	c = c + ((zbx_hash_t)p[9] << 16);
+		case 10:	c = c + ((trx_hash_t)p[9] << 16);
 			TRX_FALLTHROUGH;
-		case 9:		c = c + ((zbx_hash_t)p[8] << 8);
+		case 9:		c = c + ((trx_hash_t)p[8] << 8);
 			TRX_FALLTHROUGH;
-		case 8:		b = b + ((zbx_hash_t)p[7] << 24);
+		case 8:		b = b + ((trx_hash_t)p[7] << 24);
 			TRX_FALLTHROUGH;
-		case 7:		b = b + ((zbx_hash_t)p[6] << 16);
+		case 7:		b = b + ((trx_hash_t)p[6] << 16);
 			TRX_FALLTHROUGH;
-		case 6:		b = b + ((zbx_hash_t)p[5] << 8);
+		case 6:		b = b + ((trx_hash_t)p[5] << 8);
 			TRX_FALLTHROUGH;
 		case 5:		b = b + p[4];
 			TRX_FALLTHROUGH;
-		case 4:		a = a + ((zbx_hash_t)p[3] << 24);
+		case 4:		a = a + ((trx_hash_t)p[3] << 24);
 			TRX_FALLTHROUGH;
-		case 3:		a = a + ((zbx_hash_t)p[2] << 16);
+		case 3:		a = a + ((trx_hash_t)p[2] << 16);
 			TRX_FALLTHROUGH;
-		case 2:		a = a + ((zbx_hash_t)p[1] << 8);
+		case 2:		a = a + ((trx_hash_t)p[1] << 8);
 			TRX_FALLTHROUGH;
 		case 1:		a = a + p[0];
 	}
@@ -78,11 +78,11 @@ zbx_hash_t	zbx_hash_lookup2(const void *data, size_t len, zbx_hash_t seed)
 /*
  * modified FNV hash function (see http://www.isthe.com/chongo/tech/comp/fnv/)
  */
-zbx_hash_t	zbx_hash_modfnv(const void *data, size_t len, zbx_hash_t seed)
+trx_hash_t	trx_hash_modfnv(const void *data, size_t len, trx_hash_t seed)
 {
 	const uchar	*p = (const uchar *)data;
 
-	zbx_hash_t	hash;
+	trx_hash_t	hash;
 
 	hash = 2166136261u ^ seed;
 
@@ -103,20 +103,20 @@ zbx_hash_t	zbx_hash_modfnv(const void *data, size_t len, zbx_hash_t seed)
 /*
  * Murmur (see http://sites.google.com/site/murmurhash/)
  */
-zbx_hash_t	zbx_hash_murmur2(const void *data, size_t len, zbx_hash_t seed)
+trx_hash_t	trx_hash_murmur2(const void *data, size_t len, trx_hash_t seed)
 {
 	const uchar	*p = (const uchar *)data;
 
-	zbx_hash_t	hash;
+	trx_hash_t	hash;
 
-	const zbx_hash_t	m = 0x5bd1e995u;
-	const zbx_hash_t	r = 24;
+	const trx_hash_t	m = 0x5bd1e995u;
+	const trx_hash_t	r = 24;
 
-	hash = seed ^ (zbx_hash_t)len;
+	hash = seed ^ (trx_hash_t)len;
 
 	while (len >= 4)
 	{
-		zbx_hash_t	k;
+		trx_hash_t	k;
 
 		k = p[0];
 		k |= p[1] << 8;
@@ -151,11 +151,11 @@ zbx_hash_t	zbx_hash_murmur2(const void *data, size_t len, zbx_hash_t seed)
 	return hash;
 }
 
-zbx_hash_t	zbx_hash_sdbm(const void *data, size_t len, zbx_hash_t seed)
+trx_hash_t	trx_hash_sdbm(const void *data, size_t len, trx_hash_t seed)
 {
 	const uchar	*p = (const uchar *)data;
 
-	zbx_hash_t	hash = seed;
+	trx_hash_t	hash = seed;
 
 #if	1
 
@@ -193,11 +193,11 @@ zbx_hash_t	zbx_hash_sdbm(const void *data, size_t len, zbx_hash_t seed)
 	return hash;
 }
 
-zbx_hash_t	zbx_hash_djb2(const void *data, size_t len, zbx_hash_t seed)
+trx_hash_t	trx_hash_djb2(const void *data, size_t len, trx_hash_t seed)
 {
 	const uchar	*p = (const uchar *)data;
 
-	zbx_hash_t	hash;
+	trx_hash_t	hash;
 
 	hash = 5381u ^ seed;
 
@@ -213,26 +213,26 @@ zbx_hash_t	zbx_hash_djb2(const void *data, size_t len, zbx_hash_t seed)
 
 /* default hash functions */
 
-zbx_hash_t	zbx_default_ptr_hash_func(const void *data)
+trx_hash_t	trx_default_ptr_hash_func(const void *data)
 {
 	return TRX_DEFAULT_PTR_HASH_ALGO(data, TRX_PTR_SIZE, TRX_DEFAULT_HASH_SEED);
 }
 
-zbx_hash_t	zbx_default_uint64_hash_func(const void *data)
+trx_hash_t	trx_default_uint64_hash_func(const void *data)
 {
-	return TRX_DEFAULT_UINT64_HASH_ALGO(data, sizeof(zbx_uint64_t), TRX_DEFAULT_HASH_SEED);
+	return TRX_DEFAULT_UINT64_HASH_ALGO(data, sizeof(trx_uint64_t), TRX_DEFAULT_HASH_SEED);
 }
 
-zbx_hash_t	zbx_default_string_hash_func(const void *data)
+trx_hash_t	trx_default_string_hash_func(const void *data)
 {
 	return TRX_DEFAULT_STRING_HASH_ALGO(data, strlen((const char *)data), TRX_DEFAULT_HASH_SEED);
 }
 
-zbx_hash_t	zbx_default_uint64_pair_hash_func(const void *data)
+trx_hash_t	trx_default_uint64_pair_hash_func(const void *data)
 {
-	const zbx_uint64_pair_t	*pair = (const zbx_uint64_pair_t *)data;
+	const trx_uint64_pair_t	*pair = (const trx_uint64_pair_t *)data;
 
-	zbx_hash_t		hash;
+	trx_hash_t		hash;
 
 	hash = TRX_DEFAULT_UINT64_HASH_FUNC(&pair->first);
 	hash = TRX_DEFAULT_UINT64_HASH_ALGO(&pair->second, sizeof(pair->second), hash);
@@ -242,7 +242,7 @@ zbx_hash_t	zbx_default_uint64_pair_hash_func(const void *data)
 
 /* default comparison functions */
 
-int	zbx_default_int_compare_func(const void *d1, const void *d2)
+int	trx_default_int_compare_func(const void *d1, const void *d2)
 {
 	const int	*i1 = (const int *)d1;
 	const int	*i2 = (const int *)d2;
@@ -252,30 +252,30 @@ int	zbx_default_int_compare_func(const void *d1, const void *d2)
 	return 0;
 }
 
-int	zbx_default_uint64_compare_func(const void *d1, const void *d2)
+int	trx_default_uint64_compare_func(const void *d1, const void *d2)
 {
-	const zbx_uint64_t	*i1 = (const zbx_uint64_t *)d1;
-	const zbx_uint64_t	*i2 = (const zbx_uint64_t *)d2;
+	const trx_uint64_t	*i1 = (const trx_uint64_t *)d1;
+	const trx_uint64_t	*i2 = (const trx_uint64_t *)d2;
 
 	TRX_RETURN_IF_NOT_EQUAL(*i1, *i2);
 
 	return 0;
 }
 
-int	zbx_default_uint64_ptr_compare_func(const void *d1, const void *d2)
+int	trx_default_uint64_ptr_compare_func(const void *d1, const void *d2)
 {
-	const zbx_uint64_t	*p1 = *(const zbx_uint64_t **)d1;
-	const zbx_uint64_t	*p2 = *(const zbx_uint64_t **)d2;
+	const trx_uint64_t	*p1 = *(const trx_uint64_t **)d1;
+	const trx_uint64_t	*p2 = *(const trx_uint64_t **)d2;
 
-	return zbx_default_uint64_compare_func(p1, p2);
+	return trx_default_uint64_compare_func(p1, p2);
 }
 
-int	zbx_default_str_compare_func(const void *d1, const void *d2)
+int	trx_default_str_compare_func(const void *d1, const void *d2)
 {
 	return strcmp(*(const char **)d1, *(const char **)d2);
 }
 
-int	zbx_default_ptr_compare_func(const void *d1, const void *d2)
+int	trx_default_ptr_compare_func(const void *d1, const void *d2)
 {
 	const void	*p1 = *(const void **)d1;
 	const void	*p2 = *(const void **)d2;
@@ -285,10 +285,10 @@ int	zbx_default_ptr_compare_func(const void *d1, const void *d2)
 	return 0;
 }
 
-int	zbx_default_uint64_pair_compare_func(const void *d1, const void *d2)
+int	trx_default_uint64_pair_compare_func(const void *d1, const void *d2)
 {
-	const zbx_uint64_pair_t	*p1 = (const zbx_uint64_pair_t *)d1;
-	const zbx_uint64_pair_t	*p2 = (const zbx_uint64_pair_t *)d2;
+	const trx_uint64_pair_t	*p1 = (const trx_uint64_pair_t *)d1;
+	const trx_uint64_pair_t	*p2 = (const trx_uint64_pair_t *)d2;
 
 	TRX_RETURN_IF_NOT_EQUAL(p1->first, p2->first);
 	TRX_RETURN_IF_NOT_EQUAL(p1->second, p2->second);
@@ -298,19 +298,19 @@ int	zbx_default_uint64_pair_compare_func(const void *d1, const void *d2)
 
 /* default memory management functions */
 
-void	*zbx_default_mem_malloc_func(void *old, size_t size)
+void	*trx_default_mem_malloc_func(void *old, size_t size)
 {
-	return zbx_malloc(old, size);
+	return trx_malloc(old, size);
 }
 
-void	*zbx_default_mem_realloc_func(void *old, size_t size)
+void	*trx_default_mem_realloc_func(void *old, size_t size)
 {
-	return zbx_realloc(old, size);
+	return trx_realloc(old, size);
 }
 
-void	zbx_default_mem_free_func(void *ptr)
+void	trx_default_mem_free_func(void *ptr)
 {
-	zbx_free(ptr);
+	trx_free(ptr);
 }
 
 /* numeric functions */
@@ -343,7 +343,7 @@ int	next_prime(int n)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_isqrt32                                                      *
+ * Function: trx_isqrt32                                                      *
  *                                                                            *
  * Purpose: calculate integer part of square root of a 32 bit integer value   *
  *                                                                            *
@@ -355,7 +355,7 @@ int	next_prime(int n)
  *           binary base.                                                     *
  *                                                                            *
  ******************************************************************************/
-unsigned int	zbx_isqrt32(unsigned int value)
+unsigned int	trx_isqrt32(unsigned int value)
 {
 	unsigned int	i, remainder = 0, result = 0, p;
 

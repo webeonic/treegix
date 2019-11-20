@@ -4,11 +4,11 @@
 #include "db.h"
 #include "dbcache.h"
 #include "log.h"
-#include "zbxserver.h"
-#include "zbxregexp.h"
+#include "trxserver.h"
+#include "trxregexp.h"
 
 #include "active.h"
-#include "../../libs/zbxcrypto/tls_tcp_active.h"
+#include "../../libs/trxcrypto/tls_tcp_active.h"
 
 extern unsigned char	program_type;
 
@@ -31,7 +31,7 @@ extern unsigned char	program_type;
  *                                                                            *
  ******************************************************************************/
 static void	db_register_host(const char *host, const char *ip, unsigned short port, unsigned int connection_type,
-		const char *host_metadata, zbx_conn_flags_t flag, const char *interface)
+		const char *host_metadata, trx_conn_flags_t flag, const char *interface)
 {
 	char		dns[INTERFACE_DNS_LEN_MAX];
 	char		ip_addr[INTERFACE_IP_LEN_MAX];
@@ -46,21 +46,21 @@ static void	db_register_host(const char *host, const char *ip, unsigned short po
 	else if (TRX_CONN_IP  == flag)
 		p_ip = p = interface;
 
-	zbx_alarm_on(CONFIG_TIMEOUT);
+	trx_alarm_on(CONFIG_TIMEOUT);
 	if (TRX_CONN_DEFAULT == flag || TRX_CONN_IP == flag)
 	{
 		if (0 == strncmp("::ffff:", p, 7) && SUCCEED == is_ip4(p + 7))
 			p += 7;
 
-		zbx_gethost_by_ip(p, dns, sizeof(dns));
+		trx_gethost_by_ip(p, dns, sizeof(dns));
 	}
 	else if (TRX_CONN_DNS == flag)
 	{
-		zbx_getip_by_host(interface, ip_addr, sizeof(ip_addr));
+		trx_getip_by_host(interface, ip_addr, sizeof(ip_addr));
 		p_ip = ip_addr;
 		p_dns = interface;
 	}
-	zbx_alarm_off();
+	trx_alarm_off();
 
 	DBbegin();
 
@@ -75,26 +75,26 @@ static void	db_register_host(const char *host, const char *ip, unsigned short po
 	DBcommit();
 }
 
-static int	zbx_autoreg_check_permissions(const char *host, const char *ip, unsigned short port,
-		const zbx_socket_t *sock)
+static int	trx_autoreg_check_permissions(const char *host, const char *ip, unsigned short port,
+		const trx_socket_t *sock)
 {
-	zbx_config_t	cfg;
+	trx_config_t	cfg;
 	int		ret = FAIL;
 
-	zbx_config_get(&cfg, TRX_CONFIG_FLAGS_AUTOREG_TLS_ACCEPT);
+	trx_config_get(&cfg, TRX_CONFIG_FLAGS_AUTOREG_TLS_ACCEPT);
 
 	if (0 == (cfg.autoreg_tls_accept & sock->connection_type))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "autoregistration from \"%s\" denied (host:\"%s\" ip:\"%s\""
 				" port:%hu): connection type \"%s\" is not allowed for autoregistration",
-				sock->peer, host, ip, port, zbx_tcp_connection_type_name(sock->connection_type));
+				sock->peer, host, ip, port, trx_tcp_connection_type_name(sock->connection_type));
 		goto out;
 	}
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || (defined(HAVE_OPENSSL) && defined(HAVE_OPENSSL_WITH_PSK))
 	if (TRX_TCP_SEC_TLS_PSK == sock->connection_type)
 	{
-		if (0 == (TRX_PSK_FOR_AUTOREG & zbx_tls_get_psk_usage()))
+		if (0 == (TRX_PSK_FOR_AUTOREG & trx_tls_get_psk_usage()))
 		{
 			treegix_log(LOG_LEVEL_WARNING, "autoregistration from \"%s\" denied (host:\"%s\" ip:\"%s\""
 					" port:%hu): connection used PSK which is not configured for autoregistration",
@@ -114,7 +114,7 @@ static int	zbx_autoreg_check_permissions(const char *host, const char *ip, unsig
 	ret = SUCCEED;
 #endif
 out:
-	zbx_config_clean(&cfg);
+	trx_config_clean(&cfg);
 
 	return ret;
 }
@@ -136,8 +136,8 @@ out:
  *           exists but metadata has changed                                  *
  *                                                                            *
  ******************************************************************************/
-static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const char *ip, unsigned short port,
-		const char *host_metadata, zbx_conn_flags_t flag, const char *interface, zbx_uint64_t *hostid,
+static int	get_hostid_by_host(const trx_socket_t *sock, const char *host, const char *ip, unsigned short port,
+		const char *host_metadata, trx_conn_flags_t flag, const char *interface, trx_uint64_t *hostid,
 		char *error)
 {
 	char		*host_esc, *ch_error, *old_metadata, *old_ip, *old_dns, *old_flag, *old_port;
@@ -146,14 +146,14 @@ static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const 
 	int		ret = FAIL;
 	unsigned short	old_port_v;
 	int		tls_offset = 0;
-	zbx_conn_flags_t	old_flag_v;
+	trx_conn_flags_t	old_flag_v;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() host:'%s' metadata:'%s'", __func__, host, host_metadata);
 
-	if (FAIL == zbx_check_hostname(host, &ch_error))
+	if (FAIL == trx_check_hostname(host, &ch_error))
 	{
-		zbx_snprintf(error, MAX_STRING_LEN, "invalid host name [%s]: %s", host, ch_error);
-		zbx_free(ch_error);
+		trx_snprintf(error, MAX_STRING_LEN, "invalid host name [%s]: %s", host, ch_error);
+		trx_free(ch_error);
 		goto out;
 	}
 
@@ -189,21 +189,21 @@ static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const 
 	{
 		if (0 == ((unsigned int)atoi(row[2]) & sock->connection_type))
 		{
-			zbx_snprintf(error, MAX_STRING_LEN, "connection of type \"%s\" is not allowed for host"
-					" \"%s\"", zbx_tcp_connection_type_name(sock->connection_type), host);
+			trx_snprintf(error, MAX_STRING_LEN, "connection of type \"%s\" is not allowed for host"
+					" \"%s\"", trx_tcp_connection_type_name(sock->connection_type), host);
 			goto done;
 		}
 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 		if (TRX_TCP_SEC_TLS_CERT == sock->connection_type)
 		{
-			zbx_tls_conn_attr_t	attr;
+			trx_tls_conn_attr_t	attr;
 
-			if (SUCCEED != zbx_tls_get_attr_cert(sock, &attr))
+			if (SUCCEED != trx_tls_get_attr_cert(sock, &attr))
 			{
 				THIS_SHOULD_NEVER_HAPPEN;
 
-				zbx_snprintf(error, MAX_STRING_LEN, "cannot get connection attributes for host"
+				trx_snprintf(error, MAX_STRING_LEN, "cannot get connection attributes for host"
 						" \"%s\"", host);
 				goto done;
 			}
@@ -211,7 +211,7 @@ static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const 
 			/* simplified match, not compliant with RFC 4517, 4518 */
 			if ('\0' != *row[3] && 0 != strcmp(row[3], attr.issuer))
 			{
-				zbx_snprintf(error, MAX_STRING_LEN, "certificate issuer does not match for"
+				trx_snprintf(error, MAX_STRING_LEN, "certificate issuer does not match for"
 						" host \"%s\"", host);
 				goto done;
 			}
@@ -219,7 +219,7 @@ static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const 
 			/* simplified match, not compliant with RFC 4517, 4518 */
 			if ('\0' != *row[4] && 0 != strcmp(row[4], attr.subject))
 			{
-				zbx_snprintf(error, MAX_STRING_LEN, "certificate subject does not match for"
+				trx_snprintf(error, MAX_STRING_LEN, "certificate subject does not match for"
 						" host \"%s\"", host);
 				goto done;
 			}
@@ -227,13 +227,13 @@ static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const 
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || (defined(HAVE_OPENSSL) && defined(HAVE_OPENSSL_WITH_PSK))
 		else if (TRX_TCP_SEC_TLS_PSK == sock->connection_type)
 		{
-			zbx_tls_conn_attr_t	attr;
+			trx_tls_conn_attr_t	attr;
 
-			if (SUCCEED != zbx_tls_get_attr_psk(sock, &attr))
+			if (SUCCEED != trx_tls_get_attr_psk(sock, &attr))
 			{
 				THIS_SHOULD_NEVER_HAPPEN;
 
-				zbx_snprintf(error, MAX_STRING_LEN, "cannot get connection attributes for host"
+				trx_snprintf(error, MAX_STRING_LEN, "cannot get connection attributes for host"
 						" \"%s\"", host);
 				goto done;
 			}
@@ -241,7 +241,7 @@ static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const 
 			if (strlen(row[5]) != attr.psk_identity_len ||
 					0 != memcmp(row[5], attr.psk_identity, attr.psk_identity_len))
 			{
-				zbx_snprintf(error, MAX_STRING_LEN, "false PSK identity for host \"%s\"", host);
+				trx_snprintf(error, MAX_STRING_LEN, "false PSK identity for host \"%s\"", host);
 				goto done;
 			}
 		}
@@ -254,7 +254,7 @@ static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const 
 		old_port = row[6 + tls_offset];
 		old_flag = row[7 + tls_offset];
 		old_port_v = (unsigned short)(SUCCEED == DBis_null(old_port)) ? 0 : atoi(old_port);
-		old_flag_v = (zbx_conn_flags_t)(SUCCEED == DBis_null(old_flag)) ? TRX_CONN_DEFAULT : atoi(old_flag);
+		old_flag_v = (trx_conn_flags_t)(SUCCEED == DBis_null(old_flag)) ? TRX_CONN_DEFAULT : atoi(old_flag);
 		/* metadata is available only on Treegix server */
 		if (SUCCEED == DBis_null(old_metadata) || 0 != strcmp(old_metadata, host_metadata) ||
 				(TRX_CONN_IP  == flag && ( 0 != strcmp(old_ip, interface)  || old_port_v != port)) ||
@@ -266,7 +266,7 @@ static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const 
 
 		if (HOST_STATUS_MONITORED != atoi(row[1]))
 		{
-			zbx_snprintf(error, MAX_STRING_LEN, "host [%s] not monitored", host);
+			trx_snprintf(error, MAX_STRING_LEN, "host [%s] not monitored", host);
 			goto done;
 		}
 
@@ -275,26 +275,26 @@ static int	get_hostid_by_host(const zbx_socket_t *sock, const char *host, const 
 	}
 	else
 	{
-		zbx_snprintf(error, MAX_STRING_LEN, "host [%s] not found", host);
+		trx_snprintf(error, MAX_STRING_LEN, "host [%s] not found", host);
 
-		if (SUCCEED == zbx_autoreg_check_permissions(host, ip, port, sock))
+		if (SUCCEED == trx_autoreg_check_permissions(host, ip, port, sock))
 			db_register_host(host, ip, port, sock->connection_type, host_metadata, flag, interface);
 	}
 done:
 	DBfree_result(result);
 
-	zbx_free(host_esc);
+	trx_free(host_esc);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
-static void	get_list_of_active_checks(zbx_uint64_t hostid, zbx_vector_uint64_t *itemids)
+static void	get_list_of_active_checks(trx_uint64_t hostid, trx_vector_uint64_t *itemids)
 {
 	DB_RESULT	result;
 	DB_ROW		row;
-	zbx_uint64_t	itemid;
+	trx_uint64_t	itemid;
 
 	result = DBselect(
 			"select itemid"
@@ -307,7 +307,7 @@ static void	get_list_of_active_checks(zbx_uint64_t hostid, zbx_vector_uint64_t *
 	while (NULL != (row = DBfetch(result)))
 	{
 		TRX_STR2UINT64(itemid, row[0]);
-		zbx_vector_uint64_append(itemids, itemid);
+		trx_vector_uint64_append(itemids, itemid);
 	}
 	DBfree_result(result);
 }
@@ -328,13 +328,13 @@ static void	get_list_of_active_checks(zbx_uint64_t hostid, zbx_vector_uint64_t *
  *           format of the list: key:delay:last_log_size                      *
  *                                                                            *
  ******************************************************************************/
-int	send_list_of_active_checks(zbx_socket_t *sock, char *request)
+int	send_list_of_active_checks(trx_socket_t *sock, char *request)
 {
 	char			*host = NULL, *p, *buffer = NULL, error[MAX_STRING_LEN];
 	size_t			buffer_alloc = 8 * TRX_KIBIBYTE, buffer_offset = 0;
 	int			ret = FAIL, i;
-	zbx_uint64_t		hostid;
-	zbx_vector_uint64_t	itemids;
+	trx_uint64_t		hostid;
+	trx_vector_uint64_t	itemids;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -346,7 +346,7 @@ int	send_list_of_active_checks(zbx_socket_t *sock, char *request)
 	}
 	else
 	{
-		zbx_snprintf(error, sizeof(error), "host is null");
+		trx_snprintf(error, sizeof(error), "host is null");
 		goto out;
 	}
 
@@ -354,23 +354,23 @@ int	send_list_of_active_checks(zbx_socket_t *sock, char *request)
 	if (FAIL == get_hostid_by_host(sock, host, sock->peer, TRX_DEFAULT_AGENT_PORT, "", 0, "",  &hostid, error))
 		goto out;
 
-	zbx_vector_uint64_create(&itemids);
+	trx_vector_uint64_create(&itemids);
 
 	get_list_of_active_checks(hostid, &itemids);
 
-	buffer = (char *)zbx_malloc(buffer, buffer_alloc);
+	buffer = (char *)trx_malloc(buffer, buffer_alloc);
 
 	if (0 != itemids.values_num)
 	{
 		DC_ITEM		*dc_items;
 		int		*errcodes, now;
-		zbx_config_t	cfg;
+		trx_config_t	cfg;
 
-		dc_items = (DC_ITEM *)zbx_malloc(NULL, sizeof(DC_ITEM) * itemids.values_num);
-		errcodes = (int *)zbx_malloc(NULL, sizeof(int) * itemids.values_num);
+		dc_items = (DC_ITEM *)trx_malloc(NULL, sizeof(DC_ITEM) * itemids.values_num);
+		errcodes = (int *)trx_malloc(NULL, sizeof(int) * itemids.values_num);
 
 		DCconfig_get_items_by_itemids(dc_items, itemids.values, errcodes, itemids.values_num);
-		zbx_config_get(&cfg, TRX_CONFIG_FLAGS_REFRESH_UNSUPPORTED);
+		trx_config_get(&cfg, TRX_CONFIG_FLAGS_REFRESH_UNSUPPORTED);
 
 		now = time(NULL);
 
@@ -400,47 +400,47 @@ int	send_list_of_active_checks(zbx_socket_t *sock, char *request)
 					continue;
 			}
 
-			if (SUCCEED != zbx_interval_preproc(dc_items[i].delay, &delay, NULL, NULL))
+			if (SUCCEED != trx_interval_preproc(dc_items[i].delay, &delay, NULL, NULL))
 				continue;
 
-			zbx_snprintf_alloc(&buffer, &buffer_alloc, &buffer_offset, "%s:%d:" TRX_FS_UI64 "\n",
+			trx_snprintf_alloc(&buffer, &buffer_alloc, &buffer_offset, "%s:%d:" TRX_FS_UI64 "\n",
 					dc_items[i].key_orig, delay, dc_items[i].lastlogsize);
 		}
 
-		zbx_config_clean(&cfg);
+		trx_config_clean(&cfg);
 
 		DCconfig_clean_items(dc_items, errcodes, itemids.values_num);
 
-		zbx_free(errcodes);
-		zbx_free(dc_items);
+		trx_free(errcodes);
+		trx_free(dc_items);
 	}
 
-	zbx_vector_uint64_destroy(&itemids);
+	trx_vector_uint64_destroy(&itemids);
 
-	zbx_strcpy_alloc(&buffer, &buffer_alloc, &buffer_offset, "TRX_EOF\n");
+	trx_strcpy_alloc(&buffer, &buffer_alloc, &buffer_offset, "TRX_EOF\n");
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() sending [%s]", __func__, buffer);
 
-	zbx_alarm_on(CONFIG_TIMEOUT);
-	if (SUCCEED != zbx_tcp_send_raw(sock, buffer))
-		zbx_strlcpy(error, zbx_socket_strerror(), MAX_STRING_LEN);
+	trx_alarm_on(CONFIG_TIMEOUT);
+	if (SUCCEED != trx_tcp_send_raw(sock, buffer))
+		trx_strlcpy(error, trx_socket_strerror(), MAX_STRING_LEN);
 	else
 		ret = SUCCEED;
-	zbx_alarm_off();
+	trx_alarm_off();
 
-	zbx_free(buffer);
+	trx_free(buffer);
 out:
 	if (FAIL == ret)
 		treegix_log(LOG_LEVEL_WARNING, "cannot send list of active checks to \"%s\": %s", sock->peer, error);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_vector_str_append_uniq                                       *
+ * Function: trx_vector_str_append_uniq                                       *
  *                                                                            *
  * Purpose: append non duplicate string to the string vector                  *
  *                                                                            *
@@ -448,15 +448,15 @@ out:
  *             str    - [IN] the string to append                             *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_vector_str_append_uniq(zbx_vector_str_t *vector, const char *str)
+static void	trx_vector_str_append_uniq(trx_vector_str_t *vector, const char *str)
 {
-	if (FAIL == zbx_vector_str_search(vector, str, TRX_DEFAULT_STR_COMPARE_FUNC))
-		zbx_vector_str_append(vector, zbx_strdup(NULL, str));
+	if (FAIL == trx_vector_str_search(vector, str, TRX_DEFAULT_STR_COMPARE_FUNC))
+		trx_vector_str_append(vector, trx_strdup(NULL, str));
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_itemkey_extract_global_regexps                               *
+ * Function: trx_itemkey_extract_global_regexps                               *
  *                                                                            *
  * Purpose: extract global regular expression names from item key             *
  *                                                                            *
@@ -464,7 +464,7 @@ static void	zbx_vector_str_append_uniq(zbx_vector_str_t *vector, const char *str
  *             regexps - [OUT] the extracted regular expression names         *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_itemkey_extract_global_regexps(const char *key, zbx_vector_str_t *regexps)
+static void	trx_itemkey_extract_global_regexps(const char *key, trx_vector_str_t *regexps)
 {
 #define TRX_KEY_LOG		1
 #define TRX_KEY_EVENTLOG	2
@@ -488,21 +488,21 @@ static void	zbx_itemkey_extract_global_regexps(const char *key, zbx_vector_str_t
 
 	/* "params" parameter */
 	if (NULL != (param = get_rparam(&request, 1)) && '@' == *param)
-		zbx_vector_str_append_uniq(regexps, param + 1);
+		trx_vector_str_append_uniq(regexps, param + 1);
 
 	if (TRX_KEY_EVENTLOG == item_key)
 	{
 		/* "severity" parameter */
 		if (NULL != (param = get_rparam(&request, 2)) && '@' == *param)
-			zbx_vector_str_append_uniq(regexps, param + 1);
+			trx_vector_str_append_uniq(regexps, param + 1);
 
 		/* "source" parameter */
 		if (NULL != (param = get_rparam(&request, 3)) && '@' == *param)
-			zbx_vector_str_append_uniq(regexps, param + 1);
+			trx_vector_str_append_uniq(regexps, param + 1);
 
 		/* "logeventid" parameter */
 		if (NULL != (param = get_rparam(&request, 4)) && '@' == *param)
-			zbx_vector_str_append_uniq(regexps, param + 1);
+			trx_vector_str_append_uniq(regexps, param + 1);
 	}
 out:
 	free_request(&request);
@@ -525,45 +525,45 @@ out:
  * Comments:                                                                  *
  *                                                                            *
  ******************************************************************************/
-int	send_list_of_active_checks_json(zbx_socket_t *sock, struct zbx_json_parse *jp)
+int	send_list_of_active_checks_json(trx_socket_t *sock, struct trx_json_parse *jp)
 {
 	char			host[HOST_HOST_LEN_MAX], tmp[MAX_STRING_LEN], ip[INTERFACE_IP_LEN_MAX],
 				error[MAX_STRING_LEN], *host_metadata = NULL, *interface = NULL;
-	struct zbx_json		json;
+	struct trx_json		json;
 	int			ret = FAIL, i, version;
-	zbx_uint64_t		hostid;
+	trx_uint64_t		hostid;
 	size_t			host_metadata_alloc = 1;	/* for at least NUL-termination char */
 	size_t			interface_alloc = 1;		/* for at least NUL-termination char */
 	unsigned short		port;
-	zbx_vector_uint64_t	itemids;
-	zbx_conn_flags_t	flag = TRX_CONN_DEFAULT;
-	zbx_config_t		cfg;
+	trx_vector_uint64_t	itemids;
+	trx_conn_flags_t	flag = TRX_CONN_DEFAULT;
+	trx_config_t		cfg;
 
-	zbx_vector_ptr_t	regexps;
-	zbx_vector_str_t	names;
+	trx_vector_ptr_t	regexps;
+	trx_vector_str_t	names;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&regexps);
-	zbx_vector_str_create(&names);
+	trx_vector_ptr_create(&regexps);
+	trx_vector_str_create(&names);
 
-	if (FAIL == zbx_json_value_by_name(jp, TRX_PROTO_TAG_HOST, host, sizeof(host)))
+	if (FAIL == trx_json_value_by_name(jp, TRX_PROTO_TAG_HOST, host, sizeof(host)))
 	{
-		zbx_snprintf(error, MAX_STRING_LEN, "%s", zbx_json_strerror());
+		trx_snprintf(error, MAX_STRING_LEN, "%s", trx_json_strerror());
 		goto error;
 	}
 
-	host_metadata = (char *)zbx_malloc(host_metadata, host_metadata_alloc);
+	host_metadata = (char *)trx_malloc(host_metadata, host_metadata_alloc);
 
-	if (FAIL == zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_HOST_METADATA,
+	if (FAIL == trx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_HOST_METADATA,
 			&host_metadata, &host_metadata_alloc))
 	{
 		*host_metadata = '\0';
 	}
 
-	interface = (char *)zbx_malloc(interface, interface_alloc);
+	interface = (char *)trx_malloc(interface, interface_alloc);
 
-	if (FAIL == zbx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_INTERFACE, &interface, &interface_alloc))
+	if (FAIL == trx_json_value_by_name_dyn(jp, TRX_PROTO_TAG_INTERFACE, &interface, &interface_alloc))
 	{
 		*interface = '\0';
 	}
@@ -571,60 +571,60 @@ int	send_list_of_active_checks_json(zbx_socket_t *sock, struct zbx_json_parse *j
 	{
 		flag = TRX_CONN_IP;
 	}
-	else if (SUCCEED == zbx_validate_hostname(interface))
+	else if (SUCCEED == trx_validate_hostname(interface))
 	{
 		flag = TRX_CONN_DNS;
 	}
 	else
 	{
-		zbx_snprintf(error, MAX_STRING_LEN, "\"%s\" is not a valid IP or DNS", interface);
+		trx_snprintf(error, MAX_STRING_LEN, "\"%s\" is not a valid IP or DNS", interface);
 		goto error;
 	}
 
-	if (FAIL == zbx_json_value_by_name(jp, TRX_PROTO_TAG_IP, ip, sizeof(ip)))
+	if (FAIL == trx_json_value_by_name(jp, TRX_PROTO_TAG_IP, ip, sizeof(ip)))
 		strscpy(ip, sock->peer);
 
 	if (FAIL == is_ip(ip))	/* check even if 'ip' came from get_ip_by_socket() - it can return not a valid IP */
 	{
-		zbx_snprintf(error, MAX_STRING_LEN, "\"%s\" is not a valid IP address", ip);
+		trx_snprintf(error, MAX_STRING_LEN, "\"%s\" is not a valid IP address", ip);
 		goto error;
 	}
 
-	if (FAIL == zbx_json_value_by_name(jp, TRX_PROTO_TAG_PORT, tmp, sizeof(tmp)))
+	if (FAIL == trx_json_value_by_name(jp, TRX_PROTO_TAG_PORT, tmp, sizeof(tmp)))
 	{
 		port = TRX_DEFAULT_AGENT_PORT;
 	}
 	else if (FAIL == is_ushort(tmp, &port))
 	{
-		zbx_snprintf(error, MAX_STRING_LEN, "\"%s\" is not a valid port", tmp);
+		trx_snprintf(error, MAX_STRING_LEN, "\"%s\" is not a valid port", tmp);
 		goto error;
 	}
 
 	if (FAIL == get_hostid_by_host(sock, host, ip, port, host_metadata, flag, interface, &hostid, error))
 		goto error;
 
-	if (SUCCEED != zbx_json_value_by_name(jp, TRX_PROTO_TAG_VERSION, tmp, sizeof(tmp)) ||
-			FAIL == (version = zbx_get_component_version(tmp)))
+	if (SUCCEED != trx_json_value_by_name(jp, TRX_PROTO_TAG_VERSION, tmp, sizeof(tmp)) ||
+			FAIL == (version = trx_get_component_version(tmp)))
 	{
 		version = TRX_COMPONENT_VERSION(4, 2);
 	}
 
-	zbx_vector_uint64_create(&itemids);
-	zbx_config_get(&cfg, TRX_CONFIG_FLAGS_REFRESH_UNSUPPORTED);
+	trx_vector_uint64_create(&itemids);
+	trx_config_get(&cfg, TRX_CONFIG_FLAGS_REFRESH_UNSUPPORTED);
 
 	get_list_of_active_checks(hostid, &itemids);
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
-	zbx_json_addarray(&json, TRX_PROTO_TAG_DATA);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_SUCCESS, TRX_JSON_TYPE_STRING);
+	trx_json_addarray(&json, TRX_PROTO_TAG_DATA);
 
 	if (0 != itemids.values_num)
 	{
 		DC_ITEM		*dc_items;
 		int		*errcodes, now, delay;
 
-		dc_items = (DC_ITEM *)zbx_malloc(NULL, sizeof(DC_ITEM) * itemids.values_num);
-		errcodes = (int *)zbx_malloc(NULL, sizeof(int) * itemids.values_num);
+		dc_items = (DC_ITEM *)trx_malloc(NULL, sizeof(DC_ITEM) * itemids.values_num);
+		errcodes = (int *)trx_malloc(NULL, sizeof(int) * itemids.values_num);
 
 		DCconfig_get_items_by_itemids(dc_items, itemids.values, errcodes, itemids.values_num);
 
@@ -654,56 +654,56 @@ int	send_list_of_active_checks_json(zbx_socket_t *sock, struct zbx_json_parse *j
 					continue;
 			}
 
-			if (SUCCEED != zbx_interval_preproc(dc_items[i].delay, &delay, NULL, NULL))
+			if (SUCCEED != trx_interval_preproc(dc_items[i].delay, &delay, NULL, NULL))
 				continue;
 
 
-			dc_items[i].key = zbx_strdup(dc_items[i].key, dc_items[i].key_orig);
+			dc_items[i].key = trx_strdup(dc_items[i].key, dc_items[i].key_orig);
 			substitute_key_macros(&dc_items[i].key, NULL, &dc_items[i], NULL, NULL, MACRO_TYPE_ITEM_KEY, NULL, 0);
 
-			zbx_json_addobject(&json, NULL);
-			zbx_json_addstring(&json, TRX_PROTO_TAG_KEY, dc_items[i].key, TRX_JSON_TYPE_STRING);
+			trx_json_addobject(&json, NULL);
+			trx_json_addstring(&json, TRX_PROTO_TAG_KEY, dc_items[i].key, TRX_JSON_TYPE_STRING);
 
 			if (TRX_COMPONENT_VERSION(4,4) > version)
 			{
 				if (0 != strcmp(dc_items[i].key, dc_items[i].key_orig))
 				{
-					zbx_json_addstring(&json, TRX_PROTO_TAG_KEY_ORIG,
+					trx_json_addstring(&json, TRX_PROTO_TAG_KEY_ORIG,
 							dc_items[i].key_orig, TRX_JSON_TYPE_STRING);
 				}
 
-				zbx_json_adduint64(&json, TRX_PROTO_TAG_DELAY, delay);
+				trx_json_adduint64(&json, TRX_PROTO_TAG_DELAY, delay);
 			}
 			else
 			{
-				zbx_json_adduint64(&json, TRX_PROTO_TAG_ITEMID, dc_items[i].itemid);
-				zbx_json_addstring(&json, TRX_PROTO_TAG_DELAY, dc_items[i].delay, TRX_JSON_TYPE_STRING);
+				trx_json_adduint64(&json, TRX_PROTO_TAG_ITEMID, dc_items[i].itemid);
+				trx_json_addstring(&json, TRX_PROTO_TAG_DELAY, dc_items[i].delay, TRX_JSON_TYPE_STRING);
 			}
 
 			/* The agent expects ALWAYS to have lastlogsize and mtime tags. */
 			/* Removing those would cause older agents to fail. */
-			zbx_json_adduint64(&json, TRX_PROTO_TAG_LASTLOGSIZE, dc_items[i].lastlogsize);
-			zbx_json_adduint64(&json, TRX_PROTO_TAG_MTIME, dc_items[i].mtime);
-			zbx_json_close(&json);
+			trx_json_adduint64(&json, TRX_PROTO_TAG_LASTLOGSIZE, dc_items[i].lastlogsize);
+			trx_json_adduint64(&json, TRX_PROTO_TAG_MTIME, dc_items[i].mtime);
+			trx_json_close(&json);
 
-			zbx_itemkey_extract_global_regexps(dc_items[i].key, &names);
+			trx_itemkey_extract_global_regexps(dc_items[i].key, &names);
 
-			zbx_free(dc_items[i].key);
+			trx_free(dc_items[i].key);
 		}
 
 		DCconfig_clean_items(dc_items, errcodes, itemids.values_num);
 
-		zbx_free(errcodes);
-		zbx_free(dc_items);
+		trx_free(errcodes);
+		trx_free(dc_items);
 	}
 
-	zbx_json_close(&json);
+	trx_json_close(&json);
 
 	if (TRX_COMPONENT_VERSION(4,4) <= version)
-		zbx_json_adduint64(&json, TRX_PROTO_TAG_REFRESH_UNSUPPORTED, cfg.refresh_unsupported);
+		trx_json_adduint64(&json, TRX_PROTO_TAG_REFRESH_UNSUPPORTED, cfg.refresh_unsupported);
 
-	zbx_config_clean(&cfg);
-	zbx_vector_uint64_destroy(&itemids);
+	trx_config_clean(&cfg);
+	trx_vector_uint64_destroy(&itemids);
 
 	DCget_expressions_by_names(&regexps, (const char * const *)names.values, names.values_num);
 
@@ -711,68 +711,68 @@ int	send_list_of_active_checks_json(zbx_socket_t *sock, struct zbx_json_parse *j
 	{
 		char	buffer[32];
 
-		zbx_json_addarray(&json, TRX_PROTO_TAG_REGEXP);
+		trx_json_addarray(&json, TRX_PROTO_TAG_REGEXP);
 
 		for (i = 0; i < regexps.values_num; i++)
 		{
-			zbx_expression_t	*regexp = (zbx_expression_t *)regexps.values[i];
+			trx_expression_t	*regexp = (trx_expression_t *)regexps.values[i];
 
-			zbx_json_addobject(&json, NULL);
-			zbx_json_addstring(&json, "name", regexp->name, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&json, "expression", regexp->expression, TRX_JSON_TYPE_STRING);
+			trx_json_addobject(&json, NULL);
+			trx_json_addstring(&json, "name", regexp->name, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, "expression", regexp->expression, TRX_JSON_TYPE_STRING);
 
-			zbx_snprintf(buffer, sizeof(buffer), "%d", regexp->expression_type);
-			zbx_json_addstring(&json, "expression_type", buffer, TRX_JSON_TYPE_INT);
+			trx_snprintf(buffer, sizeof(buffer), "%d", regexp->expression_type);
+			trx_json_addstring(&json, "expression_type", buffer, TRX_JSON_TYPE_INT);
 
-			zbx_snprintf(buffer, sizeof(buffer), "%c", regexp->exp_delimiter);
-			zbx_json_addstring(&json, "exp_delimiter", buffer, TRX_JSON_TYPE_STRING);
+			trx_snprintf(buffer, sizeof(buffer), "%c", regexp->exp_delimiter);
+			trx_json_addstring(&json, "exp_delimiter", buffer, TRX_JSON_TYPE_STRING);
 
-			zbx_snprintf(buffer, sizeof(buffer), "%d", regexp->case_sensitive);
-			zbx_json_addstring(&json, "case_sensitive", buffer, TRX_JSON_TYPE_INT);
+			trx_snprintf(buffer, sizeof(buffer), "%d", regexp->case_sensitive);
+			trx_json_addstring(&json, "case_sensitive", buffer, TRX_JSON_TYPE_INT);
 
-			zbx_json_close(&json);
+			trx_json_close(&json);
 		}
 
-		zbx_json_close(&json);
+		trx_json_close(&json);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() sending [%s]", __func__, json.buffer);
 
-	zbx_alarm_on(CONFIG_TIMEOUT);
-	if (SUCCEED != zbx_tcp_send(sock, json.buffer))
-		strscpy(error, zbx_socket_strerror());
+	trx_alarm_on(CONFIG_TIMEOUT);
+	if (SUCCEED != trx_tcp_send(sock, json.buffer))
+		strscpy(error, trx_socket_strerror());
 	else
 		ret = SUCCEED;
-	zbx_alarm_off();
+	trx_alarm_off();
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 
 	goto out;
 error:
 	treegix_log(LOG_LEVEL_WARNING, "cannot send list of active checks to \"%s\": %s", sock->peer, error);
 
-	zbx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_FAILED, TRX_JSON_TYPE_STRING);
-	zbx_json_addstring(&json, TRX_PROTO_TAG_INFO, error, TRX_JSON_TYPE_STRING);
+	trx_json_init(&json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_addstring(&json, TRX_PROTO_TAG_RESPONSE, TRX_PROTO_VALUE_FAILED, TRX_JSON_TYPE_STRING);
+	trx_json_addstring(&json, TRX_PROTO_TAG_INFO, error, TRX_JSON_TYPE_STRING);
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s() sending [%s]", __func__, json.buffer);
 
-	ret = zbx_tcp_send(sock, json.buffer);
+	ret = trx_tcp_send(sock, json.buffer);
 
-	zbx_json_free(&json);
+	trx_json_free(&json);
 out:
 	for (i = 0; i < names.values_num; i++)
-		zbx_free(names.values[i]);
+		trx_free(names.values[i]);
 
-	zbx_vector_str_destroy(&names);
+	trx_vector_str_destroy(&names);
 
-	zbx_regexp_clean_expressions(&regexps);
-	zbx_vector_ptr_destroy(&regexps);
+	trx_regexp_clean_expressions(&regexps);
+	trx_vector_ptr_destroy(&regexps);
 
-	zbx_free(host_metadata);
-	zbx_free(interface);
+	trx_free(host_metadata);
+	trx_free(interface);
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 
 	return ret;
 }

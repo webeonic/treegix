@@ -112,7 +112,7 @@ function get_events_unacknowledged($db_element, $value_trigger = null, $value_ev
 		'source' => EVENT_SOURCE_TRIGGERS,
 		'object' => EVENT_OBJECT_TRIGGER,
 		'countOutput' => true,
-		'objectids' => zbx_objectValues($triggerids, 'triggerid'),
+		'objectids' => trx_objectValues($triggerids, 'triggerid'),
 		'filter' => [
 			'value' => $value_event,
 			'acknowledged' => $ack ? 1 : 0
@@ -159,7 +159,7 @@ function make_event_details($event, $backurl) {
 		])
 		->addRow([
 			_('Time'),
-			zbx_date2str(DATE_TIME_FORMAT_SECONDS, $event['clock'])
+			trx_date2str(DATE_TIME_FORMAT_SECONDS, $event['clock'])
 		])
 		->addRow([
 			_('Acknowledged'),
@@ -224,7 +224,7 @@ function make_event_details($event, $backurl) {
 
 	$table
 		->addRow([_('Tags'), $tags[$event['eventid']]])
-		->addRow([_('Description'), zbx_str2links($event['comments'])]);
+		->addRow([_('Description'), trx_str2links($event['comments'])]);
 
 	return $table;
 }
@@ -315,8 +315,8 @@ function make_small_eventlist($startEvent, $backurl) {
 
 	foreach ($events as $event) {
 		$duration = ($event['r_eventid'] != 0)
-			? zbx_date2age($event['clock'], $event['r_clock'])
-			: zbx_date2age($event['clock']);
+			? trx_date2age($event['clock'], $event['r_clock'])
+			: trx_date2age($event['clock']);
 
 		if ($event['r_eventid'] == 0) {
 			$in_closing = false;
@@ -354,16 +354,16 @@ function make_small_eventlist($startEvent, $backurl) {
 			->getUrl();
 
 		$table->addRow([
-			(new CLink(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $event['clock']),
+			(new CLink(trx_date2str(DATE_TIME_FORMAT_SECONDS, $event['clock']),
 				'tr_events.php?triggerid='.$event['objectid'].'&eventid='.$event['eventid']
 			))->addClass('action'),
 			($event['r_eventid'] == 0)
 				? ''
-				: (new CLink(zbx_date2str(DATE_TIME_FORMAT_SECONDS, $event['r_clock']),
+				: (new CLink(trx_date2str(DATE_TIME_FORMAT_SECONDS, $event['r_clock']),
 						'tr_events.php?triggerid='.$event['objectid'].'&eventid='.$event['eventid']
 				))->addClass('action'),
 			$cell_status,
-			zbx_date2age($event['clock']),
+			trx_date2age($event['clock']),
 			$duration,
 			(new CLink($event['acknowledged'] == EVENT_ACKNOWLEDGED ? _('Yes') : _('No'), $problem_update_url))
 				->addClass($event['acknowledged'] == EVENT_ACKNOWLEDGED ? TRX_STYLE_GREEN : TRX_STYLE_RED)
@@ -411,7 +411,7 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 	if ($trigger['comments'] !== '') {
 		$div->addItem(
 			(new CDiv())
-				->addItem(zbx_str2links($trigger['comments']))
+				->addItem(trx_str2links($trigger['comments']))
 				->addClass(TRX_STYLE_OVERLAY_DESCR)
 				->addStyle('max-width: 500px')
 		);
@@ -420,7 +420,7 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 	if ($trigger['url'] !== '') {
 		$trigger_url = CHtmlUrlValidator::validate($trigger['url'])
 			? $trigger['url']
-			: 'javascript: alert(\''._s('Provided URL "%1$s" is invalid.', zbx_jsvalue($trigger['url'], false, false)).
+			: 'javascript: alert(\''._s('Provided URL "%1$s" is invalid.', trx_jsvalue($trigger['url'], false, false)).
 				'\');';
 
 		$div->addItem(
@@ -540,13 +540,13 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 				->setArgument('eventid', $problem['eventid']);
 
 			$cell_clock = ($problem['clock'] >= $today)
-				? zbx_date2str(TIME_FORMAT_SECONDS, $problem['clock'])
-				: zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']);
+				? trx_date2str(TIME_FORMAT_SECONDS, $problem['clock'])
+				: trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['clock']);
 			$cell_clock = new CCol(new CLink($cell_clock, $url_details));
 			if ($problem['r_eventid'] != 0) {
 				$cell_r_clock = ($problem['r_clock'] >= $today)
-					? zbx_date2str(TIME_FORMAT_SECONDS, $problem['r_clock'])
-					: zbx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock']);
+					? trx_date2str(TIME_FORMAT_SECONDS, $problem['r_clock'])
+					: trx_date2str(DATE_TIME_FORMAT_SECONDS, $problem['r_clock']);
 				$cell_r_clock = (new CCol(new CLink($cell_r_clock, $url_details)))
 					->addClass(TRX_STYLE_NOWRAP)
 					->addClass(TRX_STYLE_RIGHT);
@@ -599,8 +599,8 @@ function make_popup_eventlist($trigger, $eventid_till, $backurl, $show_timeline 
 				$cell_status,
 				(new CCol(
 					($problem['r_eventid'] != 0)
-						? zbx_date2age($problem['clock'], $problem['r_clock'])
-						: zbx_date2age($problem['clock'])
+						? trx_date2age($problem['clock'], $problem['r_clock'])
+						: trx_date2age($problem['clock'])
 				))
 					->addClass(TRX_STYLE_NOWRAP),
 				$problem_update_link,

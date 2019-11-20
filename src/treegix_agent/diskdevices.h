@@ -25,12 +25,12 @@ typedef struct c_single_diskdevice_data
 	/* example, value 3600 means that approximately 1 hour statistics was not polled for this disk. */
 	int 		ticks_since_polled;
 	time_t		clock[MAX_COLLECTOR_HISTORY];
-	zbx_uint64_t	r_sect[MAX_COLLECTOR_HISTORY];
-	zbx_uint64_t	r_oper[MAX_COLLECTOR_HISTORY];
-	zbx_uint64_t	r_byte[MAX_COLLECTOR_HISTORY];
-	zbx_uint64_t	w_sect[MAX_COLLECTOR_HISTORY];
-	zbx_uint64_t	w_oper[MAX_COLLECTOR_HISTORY];
-	zbx_uint64_t	w_byte[MAX_COLLECTOR_HISTORY];
+	trx_uint64_t	r_sect[MAX_COLLECTOR_HISTORY];
+	trx_uint64_t	r_oper[MAX_COLLECTOR_HISTORY];
+	trx_uint64_t	r_byte[MAX_COLLECTOR_HISTORY];
+	trx_uint64_t	w_sect[MAX_COLLECTOR_HISTORY];
+	trx_uint64_t	w_oper[MAX_COLLECTOR_HISTORY];
+	trx_uint64_t	w_byte[MAX_COLLECTOR_HISTORY];
 	double		r_sps[TRX_AVG_COUNT];
 	double		r_ops[TRX_AVG_COUNT];
 	double		r_bps[TRX_AVG_COUNT];

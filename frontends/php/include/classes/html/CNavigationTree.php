@@ -24,7 +24,7 @@ class CNavigationTree extends CDiv {
 	public function getScriptRun() {
 		return ($this->error === null)
 			? 'jQuery(function($) {'.
-				'$("#'.$this->getId().'").zbx_navtree({'.
+				'$("#'.$this->getId().'").trx_navtree({'.
 					'problems: '.CJs::encodeJson($this->data['problems']).','.
 					'severity_levels: '.CJs::encodeJson($this->data['severity_config']).','.
 					'navtree_items_opened: "'.implode(',', $this->data['navtree_items_opened']).'",'.

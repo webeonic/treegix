@@ -9,7 +9,7 @@ define('TREEGIX_DB_VERSION',		4040000);
 define('TRX_LOGIN_ATTEMPTS',	5);
 define('TRX_LOGIN_BLOCK',		30); // sec
 
-define('TRX_SESSION_NAME', 'zbx_sessionid'); // Session cookie name for Treegix front-end.
+define('TRX_SESSION_NAME', 'trx_sessionid'); // Session cookie name for Treegix front-end.
 
 define('TRX_KIBIBYTE',	'1024');
 define('TRX_MEBIBYTE',	'1048576');
@@ -1795,13 +1795,13 @@ define('TRX_PROPERTY_BOTH',			0x03);	// TRX_PROPERTY_INHERITED | TRX_PROPERTY_OW
 
 // if magic quotes on, then get rid of them
 if (get_magic_quotes_gpc()) {
-	function zbx_stripslashes($value) {
-		$value = is_array($value) ? array_map('zbx_stripslashes', $value) : stripslashes($value);
+	function trx_stripslashes($value) {
+		$value = is_array($value) ? array_map('trx_stripslashes', $value) : stripslashes($value);
 		return $value;
 	}
-	$_GET = zbx_stripslashes($_GET);
-	$_POST = zbx_stripslashes($_POST);
-	$_COOKIE = zbx_stripslashes($_COOKIE);
+	$_GET = trx_stripslashes($_GET);
+	$_POST = trx_stripslashes($_POST);
+	$_COOKIE = trx_stripslashes($_COOKIE);
 }
 
 // init $_REQUEST

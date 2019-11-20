@@ -6,30 +6,30 @@
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_create                                                  *
+ * Function: trx_list_create                                                  *
  *                                                                            *
  * Purpose: create singly linked list                                         *
  *                                                                            *
  * Parameters: list - [IN] the list                                           *
  *                                                                            *
  ******************************************************************************/
-void	zbx_list_create(zbx_list_t *queue)
+void	trx_list_create(trx_list_t *queue)
 {
 	memset(queue, 0, sizeof(*queue));
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_destroy                                                 *
+ * Function: trx_list_destroy                                                 *
  *                                                                            *
  * Purpose: destroy list                                                      *
  *                                                                            *
  * Parameters: list - [IN] the list                                           *
  *                                                                            *
  ******************************************************************************/
-void	zbx_list_destroy(zbx_list_t *list)
+void	trx_list_destroy(trx_list_t *list)
 {
-	while (FAIL != zbx_list_pop(list, NULL))
+	while (FAIL != trx_list_pop(list, NULL))
 		;
 }
 
@@ -44,13 +44,13 @@ void	zbx_list_destroy(zbx_list_t *list)
  *             created  - [OUT] pointer to the created list item              *
  *                                                                            *
  ******************************************************************************/
-static void	list_create_item(zbx_list_t *list, void *value, zbx_list_item_t **created)
+static void	list_create_item(trx_list_t *list, void *value, trx_list_item_t **created)
 {
-	zbx_list_item_t *item;
+	trx_list_item_t *item;
 
 	TRX_UNUSED(list);
 
-	item = (zbx_list_item_t *)zbx_malloc(NULL, sizeof(zbx_list_item_t));
+	item = (trx_list_item_t *)trx_malloc(NULL, sizeof(trx_list_item_t));
 	item->next = NULL;
 	item->data = value;
 
@@ -59,7 +59,7 @@ static void	list_create_item(zbx_list_t *list, void *value, zbx_list_item_t **cr
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_insert_after                                            *
+ * Function: trx_list_insert_after                                            *
  *                                                                            *
  * Purpose: insert value after specified position in the list                 *
  *                                                                            *
@@ -70,9 +70,9 @@ static void	list_create_item(zbx_list_t *list, void *value, zbx_list_item_t **cr
  *             inserted - [OUT] pointer to the inserted list item             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_list_insert_after(zbx_list_t *list, zbx_list_item_t *after, void *value, zbx_list_item_t **inserted)
+void	trx_list_insert_after(trx_list_t *list, trx_list_item_t *after, void *value, trx_list_item_t **inserted)
 {
-	zbx_list_item_t *item;
+	trx_list_item_t *item;
 
 	list_create_item(list, value, &item);
 
@@ -96,7 +96,7 @@ void	zbx_list_insert_after(zbx_list_t *list, zbx_list_item_t *after, void *value
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_append                                                  *
+ * Function: trx_list_append                                                  *
  *                                                                            *
  * Purpose: append value to the end of the list                               *
  *                                                                            *
@@ -105,14 +105,14 @@ void	zbx_list_insert_after(zbx_list_t *list, zbx_list_item_t *after, void *value
  *             inserted - [OUT] pointer to the inserted list item             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_list_append(zbx_list_t *list, void *value, zbx_list_item_t **inserted)
+void	trx_list_append(trx_list_t *list, void *value, trx_list_item_t **inserted)
 {
-	zbx_list_insert_after(list, NULL, value, inserted);
+	trx_list_insert_after(list, NULL, value, inserted);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_prepend                                                 *
+ * Function: trx_list_prepend                                                 *
  *                                                                            *
  * Purpose: prepend value to the beginning of the list                        *
  *                                                                            *
@@ -121,9 +121,9 @@ void	zbx_list_append(zbx_list_t *list, void *value, zbx_list_item_t **inserted)
  *             inserted - [OUT] pointer to the inserted list item             *
  *                                                                            *
  ******************************************************************************/
-void	zbx_list_prepend(zbx_list_t *list, void *value, zbx_list_item_t **inserted)
+void	trx_list_prepend(trx_list_t *list, void *value, trx_list_item_t **inserted)
 {
-	zbx_list_item_t *item;
+	trx_list_item_t *item;
 
 	list_create_item(list, value, &item);
 	item->next = list->head;
@@ -138,7 +138,7 @@ void	zbx_list_prepend(zbx_list_t *list, void *value, zbx_list_item_t **inserted)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_pop                                                     *
+ * Function: trx_list_pop                                                     *
  *                                                                            *
  * Purpose: removes a value from the beginning of the list                    *
  *                                                                            *
@@ -149,9 +149,9 @@ void	zbx_list_prepend(zbx_list_t *list, void *value, zbx_list_item_t **inserted)
  *               returned.                                                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_list_pop(zbx_list_t *list, void **value)
+int	trx_list_pop(trx_list_t *list, void **value)
 {
-	zbx_list_item_t	*head;
+	trx_list_item_t	*head;
 
 	if (NULL == list->head)
 		return FAIL;
@@ -162,7 +162,7 @@ int	zbx_list_pop(zbx_list_t *list, void **value)
 		*value = head->data;
 
 	list->head = list->head->next;
-	zbx_free(head);
+	trx_free(head);
 
 	if (NULL == list->head)
 		list->tail = NULL;
@@ -172,7 +172,7 @@ int	zbx_list_pop(zbx_list_t *list, void **value)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_peek                                                    *
+ * Function: trx_list_peek                                                    *
  *                                                                            *
  * Purpose: get value from the queue without dequeuing                        *
  *                                                                            *
@@ -183,7 +183,7 @@ int	zbx_list_pop(zbx_list_t *list, void **value)
  *               returned.                                                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_list_peek(const zbx_list_t *list, void **value)
+int	trx_list_peek(const trx_list_t *list, void **value)
 {
 	if (NULL != list->head)
 	{
@@ -196,7 +196,7 @@ int	zbx_list_peek(const zbx_list_t *list, void **value)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_iterator_init                                           *
+ * Function: trx_list_iterator_init                                           *
  *                                                                            *
  * Purpose: initialize list iterator                                          *
  *                                                                            *
@@ -204,7 +204,7 @@ int	zbx_list_peek(const zbx_list_t *list, void **value)
  *             iterator - [OUT] the iterator to be initialized                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_list_iterator_init(zbx_list_t *list, zbx_list_iterator_t *iterator)
+void	trx_list_iterator_init(trx_list_t *list, trx_list_iterator_t *iterator)
 {
 	iterator->list = list;
 	iterator->next = list->head;
@@ -213,7 +213,7 @@ void	zbx_list_iterator_init(zbx_list_t *list, zbx_list_iterator_t *iterator)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_iterator_next                                           *
+ * Function: trx_list_iterator_next                                           *
  *                                                                            *
  * Purpose: advance list iterator                                             *
  *                                                                            *
@@ -223,7 +223,7 @@ void	zbx_list_iterator_init(zbx_list_t *list, zbx_list_iterator_t *iterator)
  *               FAIL is returned.                                            *
  *                                                                            *
  ******************************************************************************/
-int	zbx_list_iterator_next(zbx_list_iterator_t *iterator)
+int	trx_list_iterator_next(trx_list_iterator_t *iterator)
 {
 	if (NULL != iterator->next)
 	{
@@ -238,7 +238,7 @@ int	zbx_list_iterator_next(zbx_list_iterator_t *iterator)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_iterator_peek                                           *
+ * Function: trx_list_iterator_peek                                           *
  *                                                                            *
  * Purpose: get value without removing it from list                           *
  *                                                                            *
@@ -249,7 +249,7 @@ int	zbx_list_iterator_next(zbx_list_iterator_t *iterator)
  *               returned.                                                    *
  *                                                                            *
  ******************************************************************************/
-int	zbx_list_iterator_peek(const zbx_list_iterator_t *iterator, void **value)
+int	trx_list_iterator_peek(const trx_list_iterator_t *iterator, void **value)
 {
 	if (NULL != iterator->current)
 	{
@@ -262,21 +262,21 @@ int	zbx_list_iterator_peek(const zbx_list_iterator_t *iterator, void **value)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_iterator_clear                                          *
+ * Function: trx_list_iterator_clear                                          *
  *                                                                            *
  * Purpose: clears iterator leaving it in uninitialized state                 *
  *                                                                            *
  * Parameters: iterator - [IN]  list iterator                                 *
  *                                                                            *
  ******************************************************************************/
-void	zbx_list_iterator_clear(zbx_list_iterator_t *iterator)
+void	trx_list_iterator_clear(trx_list_iterator_t *iterator)
 {
-	memset(iterator, 0, sizeof(zbx_list_iterator_t));
+	memset(iterator, 0, sizeof(trx_list_iterator_t));
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_iterator_equal                                          *
+ * Function: trx_list_iterator_equal                                          *
  *                                                                            *
  * Purpose: tests if two iterators points at the same list item               *
  *                                                                            *
@@ -287,7 +287,7 @@ void	zbx_list_iterator_clear(zbx_list_iterator_t *iterator)
  *               FAIL otherwise.                                              *
  *                                                                            *
  ******************************************************************************/
-int	zbx_list_iterator_equal(const zbx_list_iterator_t *iterator1, const zbx_list_iterator_t *iterator2)
+int	trx_list_iterator_equal(const trx_list_iterator_t *iterator1, const trx_list_iterator_t *iterator2)
 {
 	if (iterator1->list == iterator2->list && iterator1->current == iterator2->current)
 		return SUCCEED;
@@ -297,7 +297,7 @@ int	zbx_list_iterator_equal(const zbx_list_iterator_t *iterator1, const zbx_list
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_iterator_isset                                          *
+ * Function: trx_list_iterator_isset                                          *
  *                                                                            *
  * Purpose: checks if the iterator points at some list item                   *
  *                                                                            *
@@ -306,14 +306,14 @@ int	zbx_list_iterator_equal(const zbx_list_iterator_t *iterator1, const zbx_list
  * Return value: SUCCEED is returned if iterator is set, FAIL otherwise.      *
  *                                                                            *
  ******************************************************************************/
-int	zbx_list_iterator_isset(const zbx_list_iterator_t *iterator)
+int	trx_list_iterator_isset(const trx_list_iterator_t *iterator)
 {
 	return (NULL == iterator->list ? FAIL : SUCCEED);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_list_iterator_update                                         *
+ * Function: trx_list_iterator_update                                         *
  *                                                                            *
  * Purpose: updates iterator                                                  *
  *                                                                            *
@@ -323,7 +323,7 @@ int	zbx_list_iterator_isset(const zbx_list_iterator_t *iterator)
  *           list during iteration process.                                   *
  *                                                                            *
  ******************************************************************************/
-void	zbx_list_iterator_update(zbx_list_iterator_t *iterator)
+void	trx_list_iterator_update(trx_list_iterator_t *iterator)
 {
 	if (NULL != iterator->current)
 		iterator->next = iterator->current->next;

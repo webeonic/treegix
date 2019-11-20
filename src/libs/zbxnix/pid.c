@@ -10,7 +10,7 @@ static int	fdpid = -1;
 int	create_pid_file(const char *pidfile)
 {
 	int		fd;
-	zbx_stat_t	buf;
+	trx_stat_t	buf;
 	struct flock	fl;
 
 	fl.l_type = F_WRLCK;
@@ -20,19 +20,19 @@ int	create_pid_file(const char *pidfile)
 	fl.l_pid = getpid();
 
 	/* check if pid file already exists */
-	if (0 == zbx_stat(pidfile, &buf))
+	if (0 == trx_stat(pidfile, &buf))
 	{
 		if (-1 == (fd = open(pidfile, O_WRONLY | O_APPEND)))
 		{
-			zbx_error("cannot open PID file [%s]: %s", pidfile, zbx_strerror(errno));
+			trx_error("cannot open PID file [%s]: %s", pidfile, trx_strerror(errno));
 			return FAIL;
 		}
 
 		if (-1 == fcntl(fd, F_SETLK, &fl))
 		{
 			close(fd);
-			zbx_error("Is this process already running? Could not lock PID file [%s]: %s",
-					pidfile, zbx_strerror(errno));
+			trx_error("Is this process already running? Could not lock PID file [%s]: %s",
+					pidfile, trx_strerror(errno));
 			return FAIL;
 		}
 
@@ -42,7 +42,7 @@ int	create_pid_file(const char *pidfile)
 	/* open pid file */
 	if (NULL == (fpid = fopen(pidfile, "w")))
 	{
-		zbx_error("cannot create PID file [%s]: %s", pidfile, zbx_strerror(errno));
+		trx_error("cannot create PID file [%s]: %s", pidfile, trx_strerror(errno));
 		return FAIL;
 	}
 
@@ -67,16 +67,16 @@ int	read_pid_file(const char *pidfile, pid_t *pid, char *error, size_t max_error
 
 	if (NULL == (f_pid = fopen(pidfile, "r")))
 	{
-		zbx_snprintf(error, max_error_len, "cannot open PID file [%s]: %s", pidfile, zbx_strerror(errno));
+		trx_snprintf(error, max_error_len, "cannot open PID file [%s]: %s", pidfile, trx_strerror(errno));
 		return ret;
 	}
 
 	if (1 == fscanf(f_pid, "%d", (int *)pid))
 		ret = SUCCEED;
 	else
-		zbx_snprintf(error, max_error_len, "cannot retrieve PID from file [%s]", pidfile);
+		trx_snprintf(error, max_error_len, "cannot retrieve PID from file [%s]", pidfile);
 
-	zbx_fclose(f_pid);
+	trx_fclose(f_pid);
 
 	return ret;
 }
@@ -89,14 +89,14 @@ void	drop_pid_file(const char *pidfile)
 	fl.l_whence = SEEK_SET;
 	fl.l_start = 0;
 	fl.l_len = 0;
-	fl.l_pid = zbx_get_thread_id();
+	fl.l_pid = trx_get_thread_id();
 
 	/* unlock file */
 	if (-1 != fdpid)
 		fcntl(fdpid, F_SETLK, &fl);
 
 	/* close pid file */
-	zbx_fclose(fpid);
+	trx_fclose(fpid);
 
 	unlink(pidfile);
 }

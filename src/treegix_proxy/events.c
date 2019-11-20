@@ -1,24 +1,24 @@
 
 
 #include "common.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 #include "db.h"
 #include "../treegix_server/events.h"
 
-void	zbx_initialize_events(void)
+void	trx_initialize_events(void)
 {
 	THIS_SHOULD_NEVER_HAPPEN;
 }
 
-void	zbx_uninitialize_events(void)
+void	trx_uninitialize_events(void)
 {
 	THIS_SHOULD_NEVER_HAPPEN;
 }
 
-DB_EVENT	*zbx_add_event(unsigned char source, unsigned char object, zbx_uint64_t objectid,
-		const zbx_timespec_t *timespec, int value, const char *trigger_description,
+DB_EVENT	*trx_add_event(unsigned char source, unsigned char object, trx_uint64_t objectid,
+		const trx_timespec_t *timespec, int value, const char *trigger_description,
 		const char *trigger_expression, const char *trigger_recovery_expression, unsigned char trigger_priority,
-		unsigned char trigger_type, const zbx_vector_ptr_t *trigger_tags,
+		unsigned char trigger_type, const trx_vector_ptr_t *trigger_tags,
 		unsigned char trigger_correlation_mode, const char *trigger_correlation_tag,
 		unsigned char trigger_value, const char *trigger_opdata, const char *error)
 {
@@ -44,7 +44,7 @@ DB_EVENT	*zbx_add_event(unsigned char source, unsigned char object, zbx_uint64_t
 	return NULL;
 }
 
-int	zbx_close_problem(zbx_uint64_t triggerid, zbx_uint64_t eventid, zbx_uint64_t userid)
+int	trx_close_problem(trx_uint64_t triggerid, trx_uint64_t eventid, trx_uint64_t userid)
 {
 	TRX_UNUSED(triggerid);
 	TRX_UNUSED(eventid);
@@ -54,7 +54,7 @@ int	zbx_close_problem(zbx_uint64_t triggerid, zbx_uint64_t eventid, zbx_uint64_t
 	return 0;
 }
 
-int	zbx_process_events(zbx_vector_ptr_t *trigger_diff, zbx_vector_uint64_t *triggerids_lock)
+int	trx_process_events(trx_vector_ptr_t *trigger_diff, trx_vector_uint64_t *triggerids_lock)
 {
 	TRX_UNUSED(trigger_diff);
 	TRX_UNUSED(triggerids_lock);
@@ -63,17 +63,17 @@ int	zbx_process_events(zbx_vector_ptr_t *trigger_diff, zbx_vector_uint64_t *trig
 	return 0;
 }
 
-void	zbx_clean_events(void)
+void	trx_clean_events(void)
 {
 	THIS_SHOULD_NEVER_HAPPEN;
 }
 
-void	zbx_reset_event_recovery(void)
+void	trx_reset_event_recovery(void)
 {
 	THIS_SHOULD_NEVER_HAPPEN;
 }
 
-void	zbx_export_events(void)
+void	trx_export_events(void)
 {
 	THIS_SHOULD_NEVER_HAPPEN;
 }

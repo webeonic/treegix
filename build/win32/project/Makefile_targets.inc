@@ -16,61 +16,61 @@ $(MESSAGES_H): messages.mc
 $(RESOURCE_RES): $(RESOURCE_RC) $(RESOURCE_H) $(DESC_H)
 	$(RC) $(RFLAGS) /d "NDEBUG" /d "_VC80_UPGRADE=0x0600" /l 0x419 /fo"$(RESOURCE_RES)" $(RESOURCE_RC)
 
-{..\..\..\src\libs\zbxalgo}.c{..\..\..\src\libs\zbxalgo}.o:
+{..\..\..\src\libs\trxalgo}.c{..\..\..\src\libs\trxalgo}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxcommon}.c{..\..\..\src\libs\zbxcommon}.o:
+{..\..\..\src\libs\trxcommon}.c{..\..\..\src\libs\trxcommon}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxcomms}.c{..\..\..\src\libs\zbxcomms}.o:
+{..\..\..\src\libs\trxcomms}.c{..\..\..\src\libs\trxcomms}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxcompress}.c{..\..\..\src\libs\zbxcompress}.o:
+{..\..\..\src\libs\trxcompress}.c{..\..\..\src\libs\trxcompress}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxconf}.c{..\..\..\src\libs\zbxconf}.o:
+{..\..\..\src\libs\trxconf}.c{..\..\..\src\libs\trxconf}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxcrypto}.c{..\..\..\src\libs\zbxcrypto}.o:
+{..\..\..\src\libs\trxcrypto}.c{..\..\..\src\libs\trxcrypto}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxjson}.c{..\..\..\src\libs\zbxjson}.o:
+{..\..\..\src\libs\trxjson}.c{..\..\..\src\libs\trxjson}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxlog}.c{..\..\..\src\libs\zbxlog}.o:
+{..\..\..\src\libs\trxlog}.c{..\..\..\src\libs\trxlog}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxregexp}.c{..\..\..\src\libs\zbxregexp}.o:
+{..\..\..\src\libs\trxregexp}.c{..\..\..\src\libs\trxregexp}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxsys}.c{..\..\..\src\libs\zbxsys}.o:
+{..\..\..\src\libs\trxsys}.c{..\..\..\src\libs\trxsys}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxexec}.c{..\..\..\src\libs\zbxexec}.o:
+{..\..\..\src\libs\trxexec}.c{..\..\..\src\libs\trxexec}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxhttp}.c{..\..\..\src\libs\zbxhttp}.o:
+{..\..\..\src\libs\trxhttp}.c{..\..\..\src\libs\trxhttp}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxsysinfo}.c{..\..\..\src\libs\zbxsysinfo}.o:
+{..\..\..\src\libs\trxsysinfo}.c{..\..\..\src\libs\trxsysinfo}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxsysinfo\agent}.c{..\..\..\src\libs\zbxsysinfo\agent}.o:
+{..\..\..\src\libs\trxsysinfo\agent}.c{..\..\..\src\libs\trxsysinfo\agent}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxsysinfo\simple}.c{..\..\..\src\libs\zbxsysinfo\simple}.o:
+{..\..\..\src\libs\trxsysinfo\simple}.c{..\..\..\src\libs\trxsysinfo\simple}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxsysinfo\common}.c{..\..\..\src\libs\zbxsysinfo\common}.o:
+{..\..\..\src\libs\trxsysinfo\common}.c{..\..\..\src\libs\trxsysinfo\common}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxsysinfo\win32}.c{..\..\..\src\libs\zbxsysinfo\win32}.o:
+{..\..\..\src\libs\trxsysinfo\win32}.c{..\..\..\src\libs\trxsysinfo\win32}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
-{..\..\..\src\libs\zbxsysinfo\win32}.cpp{..\..\..\src\libs\zbxsysinfo\win32}.o:
+{..\..\..\src\libs\trxsysinfo\win32}.cpp{..\..\..\src\libs\trxsysinfo\win32}.o:
 	$(CC) $? /Fo"$@" $(CPPFLAGS)
 
-{..\..\..\src\libs\zbxwin32}.c{..\..\..\src\libs\zbxwin32}.o:
+{..\..\..\src\libs\trxwin32}.c{..\..\..\src\libs\trxwin32}.o:
 	$(CC) $? /Fo"$@" $(CFLAGS)
 
 {..\..\..\src\treegix_agent\logfiles}.c{..\..\..\src\treegix_agent\logfiles}.o:

@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxcommshigh
+subdir = src/libs/trxcommshigh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxcommshigh_a_AR = $(AR) $(ARFLAGS)
-libzbxcommshigh_a_LIBADD =
-am_libzbxcommshigh_a_OBJECTS = comms.$(OBJEXT)
-libzbxcommshigh_a_OBJECTS = $(am_libzbxcommshigh_a_OBJECTS)
+libtrxcommshigh_a_AR = $(AR) $(ARFLAGS)
+libtrxcommshigh_a_LIBADD =
+am_libtrxcommshigh_a_OBJECTS = comms.$(OBJEXT)
+libtrxcommshigh_a_OBJECTS = $(am_libtrxcommshigh_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxcommshigh_a_SOURCES)
-DIST_SOURCES = $(libzbxcommshigh_a_SOURCES)
+SOURCES = $(libtrxcommshigh_a_SOURCES)
+DIST_SOURCES = $(libtrxcommshigh_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,8 +374,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxcommshigh.a
-libzbxcommshigh_a_SOURCES = comms.c
+noinst_LIBRARIES = libtrxcommshigh.a
+libtrxcommshigh_a_SOURCES = comms.c
 all: all-am
 
 .SUFFIXES:
@@ -389,9 +389,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxcommshigh/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxcommshigh/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxcommshigh/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxcommshigh/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -413,10 +413,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxcommshigh.a: $(libzbxcommshigh_a_OBJECTS) $(libzbxcommshigh_a_DEPENDENCIES) $(EXTRA_libzbxcommshigh_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxcommshigh.a
-	$(AM_V_AR)$(libzbxcommshigh_a_AR) libzbxcommshigh.a $(libzbxcommshigh_a_OBJECTS) $(libzbxcommshigh_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxcommshigh.a
+libtrxcommshigh.a: $(libtrxcommshigh_a_OBJECTS) $(libtrxcommshigh_a_DEPENDENCIES) $(EXTRA_libtrxcommshigh_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxcommshigh.a
+	$(AM_V_AR)$(libtrxcommshigh_a_AR) libtrxcommshigh.a $(libtrxcommshigh_a_OBJECTS) $(libtrxcommshigh_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxcommshigh.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

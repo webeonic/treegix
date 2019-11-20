@@ -31,7 +31,7 @@
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dbsync_preproc_row_func_t                                    *
+ * Function: trx_dbsync_preproc_row_func_t                                    *
  *                                                                            *
  * Purpose: applies necessary preprocessing before row is compared/used       *
  *                                                                            *
@@ -44,7 +44,7 @@
  *                                                                            *
  *                                                                            *
  ******************************************************************************/
-typedef char **(*zbx_dbsync_preproc_row_func_t)(char **row);
+typedef char **(*trx_dbsync_preproc_row_func_t)(char **row);
 
 typedef struct
 {
@@ -52,14 +52,14 @@ typedef struct
 	unsigned char	tag;
 
 	/* the identifier of the object represented by the row */
-	zbx_uint64_t	rowid;
+	trx_uint64_t	rowid;
 
 	/* the column values, NULL if the tag is TRX_DBSYNC_ROW_REMOVE */
 	char		**row;
 }
-zbx_dbsync_row_t;
+trx_dbsync_row_t;
 
-struct zbx_dbsync
+struct trx_dbsync
 {
 	/* the synchronization mode (see TRX_DBSYNC_* defines) */
 	unsigned char			mode;
@@ -71,63 +71,63 @@ struct zbx_dbsync
 	int				row_index;
 
 	/* the changed rows */
-	zbx_vector_ptr_t		rows;
+	trx_vector_ptr_t		rows;
 
 	/* the database result set for TRX_DBSYNC_ALL mode */
 	DB_RESULT			dbresult;
 
 	/* the row preprocessing function */
-	zbx_dbsync_preproc_row_func_t	preproc_row_func;
+	trx_dbsync_preproc_row_func_t	preproc_row_func;
 
 	/* the pre-processed row */
 	char				**row;
 
 	/* the preprocessed columns  */
-	zbx_vector_ptr_t		columns;
+	trx_vector_ptr_t		columns;
 
 	/* statistics */
-	zbx_uint64_t	add_num;
-	zbx_uint64_t	update_num;
-	zbx_uint64_t	remove_num;
+	trx_uint64_t	add_num;
+	trx_uint64_t	update_num;
+	trx_uint64_t	remove_num;
 };
 
-void	zbx_dbsync_init_env(TRX_DC_CONFIG *cache);
-void	zbx_dbsync_free_env(void);
+void	trx_dbsync_init_env(TRX_DC_CONFIG *cache);
+void	trx_dbsync_free_env(void);
 
-void	zbx_dbsync_init(zbx_dbsync_t *sync, unsigned char mode);
-void	zbx_dbsync_clear(zbx_dbsync_t *sync);
-int	zbx_dbsync_next(zbx_dbsync_t *sync, zbx_uint64_t *rowid, char ***rows, unsigned char *tag);
+void	trx_dbsync_init(trx_dbsync_t *sync, unsigned char mode);
+void	trx_dbsync_clear(trx_dbsync_t *sync);
+int	trx_dbsync_next(trx_dbsync_t *sync, trx_uint64_t *rowid, char ***rows, unsigned char *tag);
 
-int	zbx_dbsync_compare_config(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_autoreg_psk(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_hosts(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_host_inventory(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_host_templates(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_global_macros(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_host_macros(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_interfaces(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_items(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_template_items(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_prototype_items(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_triggers(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_trigger_dependency(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_functions(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_expressions(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_actions(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_action_ops(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_action_conditions(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_trigger_tags(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_host_tags(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_correlations(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_corr_conditions(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_corr_operations(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_host_groups(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_item_preprocs(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_maintenances(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_maintenance_tags(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_maintenance_periods(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_maintenance_groups(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_maintenance_hosts(zbx_dbsync_t *sync);
-int	zbx_dbsync_compare_host_group_hosts(zbx_dbsync_t *sync);
+int	trx_dbsync_compare_config(trx_dbsync_t *sync);
+int	trx_dbsync_compare_autoreg_psk(trx_dbsync_t *sync);
+int	trx_dbsync_compare_hosts(trx_dbsync_t *sync);
+int	trx_dbsync_compare_host_inventory(trx_dbsync_t *sync);
+int	trx_dbsync_compare_host_templates(trx_dbsync_t *sync);
+int	trx_dbsync_compare_global_macros(trx_dbsync_t *sync);
+int	trx_dbsync_compare_host_macros(trx_dbsync_t *sync);
+int	trx_dbsync_compare_interfaces(trx_dbsync_t *sync);
+int	trx_dbsync_compare_items(trx_dbsync_t *sync);
+int	trx_dbsync_compare_template_items(trx_dbsync_t *sync);
+int	trx_dbsync_compare_prototype_items(trx_dbsync_t *sync);
+int	trx_dbsync_compare_triggers(trx_dbsync_t *sync);
+int	trx_dbsync_compare_trigger_dependency(trx_dbsync_t *sync);
+int	trx_dbsync_compare_functions(trx_dbsync_t *sync);
+int	trx_dbsync_compare_expressions(trx_dbsync_t *sync);
+int	trx_dbsync_compare_actions(trx_dbsync_t *sync);
+int	trx_dbsync_compare_action_ops(trx_dbsync_t *sync);
+int	trx_dbsync_compare_action_conditions(trx_dbsync_t *sync);
+int	trx_dbsync_compare_trigger_tags(trx_dbsync_t *sync);
+int	trx_dbsync_compare_host_tags(trx_dbsync_t *sync);
+int	trx_dbsync_compare_correlations(trx_dbsync_t *sync);
+int	trx_dbsync_compare_corr_conditions(trx_dbsync_t *sync);
+int	trx_dbsync_compare_corr_operations(trx_dbsync_t *sync);
+int	trx_dbsync_compare_host_groups(trx_dbsync_t *sync);
+int	trx_dbsync_compare_item_preprocs(trx_dbsync_t *sync);
+int	trx_dbsync_compare_maintenances(trx_dbsync_t *sync);
+int	trx_dbsync_compare_maintenance_tags(trx_dbsync_t *sync);
+int	trx_dbsync_compare_maintenance_periods(trx_dbsync_t *sync);
+int	trx_dbsync_compare_maintenance_groups(trx_dbsync_t *sync);
+int	trx_dbsync_compare_maintenance_hosts(trx_dbsync_t *sync);
+int	trx_dbsync_compare_host_group_hosts(trx_dbsync_t *sync);
 
 #endif /* BUILD_SRC_LIBS_TRXDBCACHE_DBSYNC_H_ */

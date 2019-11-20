@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxexec.a
+noinst_LIBRARIES = libtrxexec.a
 
-libzbxexec_a_SOURCES = execute.c
+libtrxexec_a_SOURCES = execute.c

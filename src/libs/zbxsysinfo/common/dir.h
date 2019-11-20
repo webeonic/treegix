@@ -16,13 +16,13 @@ typedef struct
 {
 	int depth;
 	char *path;
-} zbx_directory_item_t;
+} trx_directory_item_t;
 
 typedef struct
 {
-	zbx_uint64_t st_dev;			/* device */
-	zbx_uint64_t st_ino;			/* file serial number */
-} zbx_file_descriptor_t;
+	trx_uint64_t st_dev;			/* device */
+	trx_uint64_t st_ino;			/* file serial number */
+} trx_file_descriptor_t;
 
 int	VFS_DIR_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	VFS_DIR_COUNT(AGENT_REQUEST *request, AGENT_RESULT *result);

@@ -111,8 +111,8 @@ class CScreenEvents extends CScreenBase {
 			addTriggerValueStyle($statusSpan, $value, $event['clock'], $event['acknowledged'] == EVENT_ACKNOWLEDGED);
 
 			$table->addRow([
-				zbx_date2str(DATE_TIME_FORMAT_SECONDS, $event['clock']),
-				($event['r_eventid'] == 0) ? '' : zbx_date2str(DATE_TIME_FORMAT_SECONDS, $event['r_clock']),
+				trx_date2str(DATE_TIME_FORMAT_SECONDS, $event['clock']),
+				($event['r_eventid'] == 0) ? '' : trx_date2str(DATE_TIME_FORMAT_SECONDS, $event['r_clock']),
 				$host['name'],
 				new CLink(
 					$event['name'],
@@ -124,7 +124,7 @@ class CScreenEvents extends CScreenBase {
 		}
 
 		$footer = (new CList())
-			->addItem(_s('Updated: %s', zbx_date2str(TIME_FORMAT_SECONDS)))
+			->addItem(_s('Updated: %s', trx_date2str(TIME_FORMAT_SECONDS)))
 			->addClass(TRX_STYLE_DASHBRD_WIDGET_FOOT);
 
 		return $this->getOutput((new CUiWidget(uniqid(), [$table, $footer]))->setHeader(_('History of events')));

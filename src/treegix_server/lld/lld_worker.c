@@ -4,8 +4,8 @@
 #include "daemon.h"
 #include "db.h"
 #include "log.h"
-#include "zbxipcservice.h"
-#include "zbxself.h"
+#include "trxipcservice.h"
+#include "trxself.h"
 #include "dbcache.h"
 #include "proxy.h"
 #include "../events.h"
@@ -25,13 +25,13 @@ extern int		server_num, process_num;
  * Parameters: socket - [IN] the connections socket                           *
  *                                                                            *
  ******************************************************************************/
-static void	lld_register_worker(zbx_ipc_socket_t *socket)
+static void	lld_register_worker(trx_ipc_socket_t *socket)
 {
 	pid_t	ppid;
 
 	ppid = getppid();
 
-	zbx_ipc_socket_write(socket, TRX_IPC_LLD_REGISTER, (unsigned char *)&ppid, sizeof(ppid));
+	trx_ipc_socket_write(socket, TRX_IPC_LLD_REGISTER, (unsigned char *)&ppid, sizeof(ppid));
 }
 
 /******************************************************************************
@@ -44,19 +44,19 @@ static void	lld_register_worker(zbx_ipc_socket_t *socket)
  * Parameters: message - [IN] the message with LLD request                    *
  *                                                                            *
  ******************************************************************************/
-static void	lld_process_task(zbx_ipc_message_t *message)
+static void	lld_process_task(trx_ipc_message_t *message)
 {
-	zbx_uint64_t		itemid, lastlogsize;
+	trx_uint64_t		itemid, lastlogsize;
 	char			*value, *error;
-	zbx_timespec_t		ts;
-	zbx_item_diff_t		diff;
+	trx_timespec_t		ts;
+	trx_item_diff_t		diff;
 	DC_ITEM			item;
 	int			errcode, mtime;
 	unsigned char		state, meta;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_lld_deserialize_item_value(message->data, &itemid, &value, &ts, &meta, &lastlogsize, &mtime, &error);
+	trx_lld_deserialize_item_value(message->data, &itemid, &value, &ts, &meta, &lastlogsize, &mtime, &error);
 
 	DCconfig_get_items_by_itemids(&item, &itemid, &errcode, 1);
 	if (SUCCEED != errcode)
@@ -83,7 +83,7 @@ static void	lld_process_task(zbx_ipc_message_t *message)
 				treegix_log(LOG_LEVEL_WARNING, "discovery rule \"%s:%s\" became supported",
 						item.host.host, item.key_orig);
 
-				zbx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_LLDRULE, itemid, &ts,
+				trx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_LLDRULE, itemid, &ts,
 						ITEM_STATE_NORMAL, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0, NULL,
 						NULL);
 			}
@@ -92,13 +92,13 @@ static void	lld_process_task(zbx_ipc_message_t *message)
 				treegix_log(LOG_LEVEL_WARNING, "discovery rule \"%s:%s\" became not supported: %s",
 						item.host.host, item.key_orig, error);
 
-				zbx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_LLDRULE, itemid, &ts,
+				trx_add_event(EVENT_SOURCE_INTERNAL, EVENT_OBJECT_LLDRULE, itemid, &ts,
 						ITEM_STATE_NOTSUPPORTED, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, 0,
 						NULL, error);
 			}
 
-			zbx_process_events(NULL, NULL);
-			zbx_clean_events();
+			trx_process_events(NULL, NULL);
+			trx_clean_events();
 		}
 
 		/* with successful LLD processing LLD error will be set to empty string */
@@ -125,30 +125,30 @@ static void	lld_process_task(zbx_ipc_message_t *message)
 
 	if (TRX_FLAGS_ITEM_DIFF_UNSET != diff.flags)
 	{
-		zbx_vector_ptr_t	diffs;
+		trx_vector_ptr_t	diffs;
 		char			*sql = NULL;
 		size_t			sql_alloc = 0, sql_offset = 0;
 
-		zbx_vector_ptr_create(&diffs);
+		trx_vector_ptr_create(&diffs);
 		diff.itemid = itemid;
-		zbx_vector_ptr_append(&diffs, &diff);
+		trx_vector_ptr_append(&diffs, &diff);
 
 		DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
-		zbx_db_save_item_changes(&sql, &sql_alloc, &sql_offset, &diffs);
+		trx_db_save_item_changes(&sql, &sql_alloc, &sql_offset, &diffs);
 		DBend_multiple_update(&sql, &sql_alloc, &sql_offset);
 		if (16 < sql_offset)
 			DBexecute("%s", sql);
 
 		DCconfig_items_apply_changes(&diffs);
 
-		zbx_vector_ptr_destroy(&diffs);
-		zbx_free(sql);
+		trx_vector_ptr_destroy(&diffs);
+		trx_free(sql);
 	}
 
 	DCconfig_clean_items(&item, &errcode, 1);
 out:
-	zbx_free(value);
-	zbx_free(error);
+	trx_free(value);
+	trx_free(error);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -160,47 +160,47 @@ TRX_THREAD_ENTRY(lld_worker_thread, args)
 				/* once in STAT_INTERVAL seconds */
 
 	char			*error = NULL;
-	zbx_ipc_socket_t	lld_socket;
-	zbx_ipc_message_t	message;
+	trx_ipc_socket_t	lld_socket;
+	trx_ipc_message_t	message;
 	double			time_stat, time_idle = 0, time_now, time_read;
-	zbx_uint64_t		processed_num = 0;
+	trx_uint64_t		processed_num = 0;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
-	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
+	trx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
-	zbx_ipc_message_init(&message);
+	trx_ipc_message_init(&message);
 
-	if (FAIL == zbx_ipc_socket_open(&lld_socket, TRX_IPC_SERVICE_LLD, SEC_PER_MIN, &error))
+	if (FAIL == trx_ipc_socket_open(&lld_socket, TRX_IPC_SERVICE_LLD, SEC_PER_MIN, &error))
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot connect to lld manager service: %s", error);
-		zbx_free(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 
 	lld_register_worker(&lld_socket);
 
-	time_stat = zbx_time();
+	time_stat = trx_time();
 
 
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 
-	zbx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d started", get_process_type_string(process_type), process_num);
 
 	update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
 	while (TRX_IS_RUNNING())
 	{
-		time_now = zbx_time();
+		time_now = trx_time();
 
 		if (STAT_INTERVAL < time_now - time_stat)
 		{
-			zbx_setproctitle("%s #%d [processed " TRX_FS_UI64 " LLD rules, idle " TRX_FS_DBL " sec during "
+			trx_setproctitle("%s #%d [processed " TRX_FS_UI64 " LLD rules, idle " TRX_FS_DBL " sec during "
 					TRX_FS_DBL " sec]", get_process_type_string(process_type), process_num,
 					processed_num, time_idle, time_now - time_stat);
 
@@ -210,35 +210,35 @@ TRX_THREAD_ENTRY(lld_worker_thread, args)
 		}
 
 		update_selfmon_counter(TRX_PROCESS_STATE_IDLE);
-		if (SUCCEED != zbx_ipc_socket_read(&lld_socket, &message))
+		if (SUCCEED != trx_ipc_socket_read(&lld_socket, &message))
 		{
 			treegix_log(LOG_LEVEL_CRIT, "cannot read LLD manager service request");
 			exit(EXIT_FAILURE);
 		}
 		update_selfmon_counter(TRX_PROCESS_STATE_BUSY);
 
-		time_read = zbx_time();
+		time_read = trx_time();
 		time_idle += time_read - time_now;
-		zbx_update_env(time_read);
+		trx_update_env(time_read);
 
 		switch (message.code)
 		{
 			case TRX_IPC_LLD_TASK:
 				lld_process_task(&message);
-				zbx_ipc_socket_write(&lld_socket, TRX_IPC_LLD_DONE, NULL, 0);
+				trx_ipc_socket_write(&lld_socket, TRX_IPC_LLD_DONE, NULL, 0);
 				processed_num++;
 				break;
 		}
 
-		zbx_ipc_message_clean(&message);
+		trx_ipc_message_clean(&message);
 	}
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 
 	DBclose();
 
-	zbx_ipc_socket_close(&lld_socket);
+	trx_ipc_socket_close(&lld_socket);
 }

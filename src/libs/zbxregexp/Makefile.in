@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxregexp
+subdir = src/libs/trxregexp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxregexp_a_AR = $(AR) $(ARFLAGS)
-libzbxregexp_a_LIBADD =
-am_libzbxregexp_a_OBJECTS = zbxregexp.$(OBJEXT)
-libzbxregexp_a_OBJECTS = $(am_libzbxregexp_a_OBJECTS)
+libtrxregexp_a_AR = $(AR) $(ARFLAGS)
+libtrxregexp_a_LIBADD =
+am_libtrxregexp_a_OBJECTS = trxregexp.$(OBJEXT)
+libtrxregexp_a_OBJECTS = $(am_libtrxregexp_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -149,8 +149,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxregexp_a_SOURCES)
-DIST_SOURCES = $(libzbxregexp_a_SOURCES)
+SOURCES = $(libtrxregexp_a_SOURCES)
+DIST_SOURCES = $(libtrxregexp_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -374,9 +374,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxregexp.a
-libzbxregexp_a_SOURCES = \
-	zbxregexp.c
+noinst_LIBRARIES = libtrxregexp.a
+libtrxregexp_a_SOURCES = \
+	trxregexp.c
 
 all: all-am
 
@@ -391,9 +391,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxregexp/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxregexp/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxregexp/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxregexp/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -415,10 +415,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxregexp.a: $(libzbxregexp_a_OBJECTS) $(libzbxregexp_a_DEPENDENCIES) $(EXTRA_libzbxregexp_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxregexp.a
-	$(AM_V_AR)$(libzbxregexp_a_AR) libzbxregexp.a $(libzbxregexp_a_OBJECTS) $(libzbxregexp_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxregexp.a
+libtrxregexp.a: $(libtrxregexp_a_OBJECTS) $(libtrxregexp_a_DEPENDENCIES) $(EXTRA_libtrxregexp_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxregexp.a
+	$(AM_V_AR)$(libtrxregexp_a_AR) libtrxregexp.a $(libtrxregexp_a_OBJECTS) $(libtrxregexp_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxregexp.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -426,7 +426,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/zbxregexp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trxregexp.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

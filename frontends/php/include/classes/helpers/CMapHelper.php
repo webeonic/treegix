@@ -100,7 +100,7 @@ class CMapHelper {
 			'links' => array_values($map['links']),
 			'shapes' => array_values($map['shapes']),
 			'aria_label' => $map['aria_label'],
-			'timestamp' => zbx_date2str(DATE_TIME_FORMAT_SECONDS)
+			'timestamp' => trx_date2str(DATE_TIME_FORMAT_SECONDS)
 		];
 	}
 
@@ -330,7 +330,7 @@ class CMapHelper {
 						continue;
 					}
 
-					$trigger = zbx_array_merge($link_trigger, $linktrigger_info[$link_trigger['triggerid']]);
+					$trigger = trx_array_merge($link_trigger, $linktrigger_info[$link_trigger['triggerid']]);
 
 					if ($trigger['status'] == TRIGGER_STATUS_ENABLED
 							&& $trigger['value'] == TRIGGER_VALUE_TRUE
@@ -577,7 +577,7 @@ class CMapHelper {
 			]);
 
 			$new_selementid = (count($sysmap['selements']) > 0)
-				? (int) max(zbx_objectValues($sysmap['selements'], 'selementid'))
+				? (int) max(trx_objectValues($sysmap['selements'], 'selementid'))
 				: 0;
 
 			$new_linkid = (count($sysmap['links']) > 0) ? (int) max(array_keys($sysmap['links'])) : 0;
@@ -652,7 +652,7 @@ class CMapHelper {
 				$areas[] = $area;
 
 				// Make links.
-				$selements = zbx_toHash($sysmap['selements'], 'selementid');
+				$selements = trx_toHash($sysmap['selements'], 'selementid');
 
 				foreach ($sysmap['links'] as $link) {
 					// Do not multiply links between two areas.

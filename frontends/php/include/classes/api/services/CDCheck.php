@@ -47,7 +47,7 @@ class CDCheck extends CApiService {
 			'limit'						=> null,
 			'limitSelects'				=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		if (self::$userData['type'] < USER_TYPE_TREEGIX_ADMIN) {
 			return [];
@@ -55,13 +55,13 @@ class CDCheck extends CApiService {
 
 // dcheckids
 		if (!is_null($options['dcheckids'])) {
-			zbx_value2array($options['dcheckids']);
+			trx_value2array($options['dcheckids']);
 			$sqlParts['where']['dcheckid'] = dbConditionInt('dc.dcheckid', $options['dcheckids']);
 		}
 
 // druleids
 		if (!is_null($options['druleids'])) {
-			zbx_value2array($options['druleids']);
+			trx_value2array($options['druleids']);
 
 			$sqlParts['where'][] = dbConditionInt('dc.druleid', $options['druleids']);
 
@@ -72,7 +72,7 @@ class CDCheck extends CApiService {
 
 // dserviceids
 		if (!is_null($options['dserviceids'])) {
-			zbx_value2array($options['dserviceids']);
+			trx_value2array($options['dserviceids']);
 
 			$sqlParts['from']['dhosts'] = 'dhosts dh';
 			$sqlParts['from']['dservices'] = 'dservices ds';
@@ -93,11 +93,11 @@ class CDCheck extends CApiService {
 
 // search
 		if (is_array($options['search'])) {
-			zbx_db_search('dchecks dc', $options, $sqlParts);
+			trx_db_search('dchecks dc', $options, $sqlParts);
 		}
 
 // limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 //-------
@@ -130,7 +130,7 @@ class CDCheck extends CApiService {
 
 // removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;

@@ -199,7 +199,7 @@ class C32ImportConverter extends CConverter {
 	 */
 	protected function convertMapElements(array $selements) {
 		foreach ($selements as &$selement) {
-			if (zbx_is_int($selement['elementtype'])) {
+			if (trx_is_int($selement['elementtype'])) {
 				switch ($selement['elementtype']) {
 					case SYSMAP_ELEMENT_TYPE_HOST:
 					case SYSMAP_ELEMENT_TYPE_MAP:

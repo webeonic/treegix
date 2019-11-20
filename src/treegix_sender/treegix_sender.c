@@ -6,13 +6,13 @@
 #include "comms.h"
 #include "cfg.h"
 #include "log.h"
-#include "zbxgetopt.h"
-#include "zbxjson.h"
+#include "trxgetopt.h"
+#include "trxjson.h"
 #include "mutexs.h"
-#include "../libs/zbxcrypto/tls.h"
+#include "../libs/trxcrypto/tls.h"
 
 #ifndef _WINDOWS
-#	include "zbxnix.h"
+#	include "trxnix.h"
 #endif
 
 const char	*progname = NULL;
@@ -185,7 +185,7 @@ int	CONFIG_ACTIVE_FORKS		= 0;	/* not used in treegix_sender, just for linking wi
 /* COMMAND LINE OPTIONS */
 
 /* long options */
-static struct zbx_option	longopts[] =
+static struct trx_option	longopts[] =
 {
 	{"config",			1,	NULL,	'c'},
 	{"treegix-server",		1,	NULL,	'z'},
@@ -236,9 +236,9 @@ typedef struct
 	unsigned short		port;
 	TRX_THREAD_HANDLE	*thread;
 }
-zbx_send_destinations_t;
+trx_send_destinations_t;
 
-static zbx_send_destinations_t	*destinations = NULL;		/* list of servers to send data to */
+static trx_send_destinations_t	*destinations = NULL;		/* list of servers to send data to */
 static int			destinations_count = 0;
 
 #if !defined(_WINDOWS)
@@ -273,7 +273,7 @@ typedef struct
 {
 	char		*server;
 	unsigned short	port;
-	struct zbx_json	json;
+	struct trx_json	json;
 #if defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
 	TRX_THREAD_SENDVAL_TLS_ARGS	tls_vars;
 #endif
@@ -316,7 +316,7 @@ static int	sender_threads_wait(TRX_THREAD_HANDLE *threads, int threads_num, cons
 	{
 		int	new_status;
 
-		if (SUCCEED_PARTIAL == (new_status = zbx_thread_wait(threads[i])))
+		if (SUCCEED_PARTIAL == (new_status = trx_thread_wait(threads[i])))
 				sp_count++;
 
 		if (SUCCEED != new_status && SUCCEED_PARTIAL != new_status)
@@ -327,7 +327,7 @@ static int	sender_threads_wait(TRX_THREAD_HANDLE *threads, int threads_num, cons
 			{
 				if (destinations[j].thread == &threads[i])
 				{
-					zbx_free(destinations[j].host);
+					trx_free(destinations[j].host);
 					destinations[j] = destinations[--destinations_count];
 					break;
 				}
@@ -465,20 +465,20 @@ static const char	*get_string(const char *p, char *buf, size_t bufsize)
  ******************************************************************************/
 static int	check_response(char *response, const char *server, unsigned short port)
 {
-	struct zbx_json_parse	jp;
+	struct trx_json_parse	jp;
 	char			value[MAX_STRING_LEN];
 	char			info[MAX_STRING_LEN];
 	int			ret;
 
-	ret = zbx_json_open(response, &jp);
+	ret = trx_json_open(response, &jp);
 
 	if (SUCCEED == ret)
-		ret = zbx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value));
+		ret = trx_json_value_by_name(&jp, TRX_PROTO_TAG_RESPONSE, value, sizeof(value));
 
 	if (SUCCEED == ret && 0 != strcmp(value, TRX_PROTO_VALUE_SUCCESS))
 		ret = FAIL;
 
-	if (SUCCEED == ret && SUCCEED == zbx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, info, sizeof(info)))
+	if (SUCCEED == ret && SUCCEED == trx_json_value_by_name(&jp, TRX_PROTO_TAG_INFO, info, sizeof(info)))
 	{
 		int	failed;
 
@@ -494,16 +494,16 @@ static int	check_response(char *response, const char *server, unsigned short por
 
 static	TRX_THREAD_ENTRY(send_value, args)
 {
-	TRX_THREAD_SENDVAL_ARGS	*sendval_args = (TRX_THREAD_SENDVAL_ARGS *)((zbx_thread_args_t *)args)->args;
+	TRX_THREAD_SENDVAL_ARGS	*sendval_args = (TRX_THREAD_SENDVAL_ARGS *)((trx_thread_args_t *)args)->args;
 	int			tcp_ret, ret = FAIL;
 	char			*tls_arg1, *tls_arg2;
-	zbx_socket_t		sock;
+	trx_socket_t		sock;
 
 #if defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
 	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 	{
 		/* take TLS data passed from 'main' thread */
-		zbx_tls_take_vars(&sendval_args->tls_vars);
+		trx_tls_take_vars(&sendval_args->tls_vars);
 	}
 #endif
 
@@ -528,7 +528,7 @@ static	TRX_THREAD_ENTRY(send_value, args)
 			break;
 		case TRX_TCP_SEC_TLS_PSK:
 			tls_arg1 = CONFIG_TLS_PSK_IDENTITY;
-			tls_arg2 = NULL;	/* zbx_tls_connect() will find PSK */
+			tls_arg2 = NULL;	/* trx_tls_connect() will find PSK */
 			break;
 #endif
 		default:
@@ -536,22 +536,22 @@ static	TRX_THREAD_ENTRY(send_value, args)
 			goto out;
 	}
 
-	if (SUCCEED == (tcp_ret = zbx_tcp_connect(&sock, CONFIG_SOURCE_IP, sendval_args->server, sendval_args->port,
+	if (SUCCEED == (tcp_ret = trx_tcp_connect(&sock, CONFIG_SOURCE_IP, sendval_args->server, sendval_args->port,
 			GET_SENDER_TIMEOUT, configured_tls_connect_mode, tls_arg1, tls_arg2)))
 	{
 		if (1 == sendval_args->sync_timestamp)
 		{
-			zbx_timespec_t	ts;
+			trx_timespec_t	ts;
 
-			zbx_timespec(&ts);
+			trx_timespec(&ts);
 
-			zbx_json_adduint64(&sendval_args->json, TRX_PROTO_TAG_CLOCK, ts.sec);
-			zbx_json_adduint64(&sendval_args->json, TRX_PROTO_TAG_NS, ts.ns);
+			trx_json_adduint64(&sendval_args->json, TRX_PROTO_TAG_CLOCK, ts.sec);
+			trx_json_adduint64(&sendval_args->json, TRX_PROTO_TAG_NS, ts.ns);
 		}
 
-		if (SUCCEED == (tcp_ret = zbx_tcp_send(&sock, sendval_args->json.buffer)))
+		if (SUCCEED == (tcp_ret = trx_tcp_send(&sock, sendval_args->json.buffer)))
 		{
-			if (SUCCEED == (tcp_ret = zbx_tcp_recv(&sock)))
+			if (SUCCEED == (tcp_ret = trx_tcp_recv(&sock)))
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "answer [%s]", sock.buffer);
 
@@ -564,13 +564,13 @@ static	TRX_THREAD_ENTRY(send_value, args)
 			}
 		}
 
-		zbx_tcp_close(&sock);
+		trx_tcp_close(&sock);
 	}
 
 	if (FAIL == tcp_ret)
-		treegix_log(LOG_LEVEL_DEBUG, "send value error: %s", zbx_socket_strerror());
+		treegix_log(LOG_LEVEL_DEBUG, "send value error: %s", trx_socket_strerror());
 out:
-	zbx_thread_exit(ret);
+	trx_thread_exit(ret);
 }
 
 /******************************************************************************
@@ -596,13 +596,13 @@ static int	perform_data_sending(TRX_THREAD_SENDVAL_ARGS *sendval_args, int old_s
 	int			i, ret;
 	TRX_THREAD_HANDLE	*threads = NULL;
 
-	threads = (TRX_THREAD_HANDLE *)zbx_calloc(threads, destinations_count, sizeof(TRX_THREAD_HANDLE));
+	threads = (TRX_THREAD_HANDLE *)trx_calloc(threads, destinations_count, sizeof(TRX_THREAD_HANDLE));
 
 	for (i = 0; i < destinations_count; i++)
 	{
-		zbx_thread_args_t	*thread_args;
+		trx_thread_args_t	*thread_args;
 
-		thread_args = (zbx_thread_args_t *)zbx_malloc(NULL, sizeof(zbx_thread_args_t));
+		thread_args = (trx_thread_args_t *)trx_malloc(NULL, sizeof(trx_thread_args_t));
 
 		thread_args->args = &sendval_args[i];
 
@@ -620,15 +620,15 @@ static int	perform_data_sending(TRX_THREAD_SENDVAL_ARGS *sendval_args, int old_s
 
 		destinations[i].thread = &threads[i];
 
-		zbx_thread_start(send_value, thread_args, &threads[i]);
+		trx_thread_start(send_value, thread_args, &threads[i]);
 #ifndef _WINDOWS
-		zbx_free(thread_args);
+		trx_free(thread_args);
 #endif
 	}
 
 	ret = sender_threads_wait(threads, destinations_count, old_status);
 
-	zbx_free(threads);
+	trx_free(threads);
 
 	return ret;
 }
@@ -661,34 +661,34 @@ static int	sender_add_serveractive_host_cb(const char *host, unsigned short port
 #if defined(_WINDOWS)
 	if (MAXIMUM_WAIT_OBJECTS < destinations_count)
 	{
-		zbx_error("error parsing the \"ServerActive\" parameter: maximum destination limit of %d has been"
+		trx_error("error parsing the \"ServerActive\" parameter: maximum destination limit of %d has been"
 				" exceeded", MAXIMUM_WAIT_OBJECTS);
 		exit(EXIT_FAILURE);
 	}
 #endif
-	destinations = (zbx_send_destinations_t *)zbx_realloc(destinations,
-			sizeof(zbx_send_destinations_t) * destinations_count);
+	destinations = (trx_send_destinations_t *)trx_realloc(destinations,
+			sizeof(trx_send_destinations_t) * destinations_count);
 
-	destinations[destinations_count - 1].host = zbx_strdup(NULL, host);
+	destinations[destinations_count - 1].host = trx_strdup(NULL, host);
 	destinations[destinations_count - 1].port = port;
 
 	return SUCCEED;
 }
 
-static void	zbx_fill_from_config_file(char **dst, char *src)
+static void	trx_fill_from_config_file(char **dst, char *src)
 {
 	/* helper function, only for TYPE_STRING configuration parameters */
 
 	if (NULL != src)
 	{
 		if (NULL == *dst)
-			*dst = zbx_strdup(*dst, src);
+			*dst = trx_strdup(*dst, src);
 
-		zbx_free(src);
+		trx_free(src);
 	}
 }
 
-static void	zbx_load_config(const char *config_file)
+static void	trx_load_config(const char *config_file)
 {
 	char	*cfg_source_ip = NULL, *cfg_active_hosts = NULL, *cfg_hostname = NULL, *cfg_tls_connect = NULL,
 		*cfg_tls_ca_file = NULL, *cfg_tls_crl_file = NULL, *cfg_tls_server_cert_issuer = NULL,
@@ -729,26 +729,26 @@ static void	zbx_load_config(const char *config_file)
 	/* do not complain about unknown parameters in agent configuration file */
 	parse_cfg_file(config_file, cfg, TRX_CFG_FILE_REQUIRED, TRX_CFG_NOT_STRICT);
 
-	zbx_fill_from_config_file(&CONFIG_SOURCE_IP, cfg_source_ip);
+	trx_fill_from_config_file(&CONFIG_SOURCE_IP, cfg_source_ip);
 
 	if (NULL == TREEGIX_SERVER)
 	{
 		if (NULL != cfg_active_hosts && '\0' != *cfg_active_hosts)
-			zbx_set_data_destination_hosts(cfg_active_hosts, sender_add_serveractive_host_cb);
+			trx_set_data_destination_hosts(cfg_active_hosts, sender_add_serveractive_host_cb);
 	}
-	zbx_free(cfg_active_hosts);
+	trx_free(cfg_active_hosts);
 
-	zbx_fill_from_config_file(&TREEGIX_HOSTNAME, cfg_hostname);
+	trx_fill_from_config_file(&TREEGIX_HOSTNAME, cfg_hostname);
 
-	zbx_fill_from_config_file(&CONFIG_TLS_CONNECT, cfg_tls_connect);
-	zbx_fill_from_config_file(&CONFIG_TLS_CA_FILE, cfg_tls_ca_file);
-	zbx_fill_from_config_file(&CONFIG_TLS_CRL_FILE, cfg_tls_crl_file);
-	zbx_fill_from_config_file(&CONFIG_TLS_SERVER_CERT_ISSUER, cfg_tls_server_cert_issuer);
-	zbx_fill_from_config_file(&CONFIG_TLS_SERVER_CERT_SUBJECT, cfg_tls_server_cert_subject);
-	zbx_fill_from_config_file(&CONFIG_TLS_CERT_FILE, cfg_tls_cert_file);
-	zbx_fill_from_config_file(&CONFIG_TLS_KEY_FILE, cfg_tls_key_file);
-	zbx_fill_from_config_file(&CONFIG_TLS_PSK_IDENTITY, cfg_tls_psk_identity);
-	zbx_fill_from_config_file(&CONFIG_TLS_PSK_FILE, cfg_tls_psk_file);
+	trx_fill_from_config_file(&CONFIG_TLS_CONNECT, cfg_tls_connect);
+	trx_fill_from_config_file(&CONFIG_TLS_CA_FILE, cfg_tls_ca_file);
+	trx_fill_from_config_file(&CONFIG_TLS_CRL_FILE, cfg_tls_crl_file);
+	trx_fill_from_config_file(&CONFIG_TLS_SERVER_CERT_ISSUER, cfg_tls_server_cert_issuer);
+	trx_fill_from_config_file(&CONFIG_TLS_SERVER_CERT_SUBJECT, cfg_tls_server_cert_subject);
+	trx_fill_from_config_file(&CONFIG_TLS_CERT_FILE, cfg_tls_cert_file);
+	trx_fill_from_config_file(&CONFIG_TLS_KEY_FILE, cfg_tls_key_file);
+	trx_fill_from_config_file(&CONFIG_TLS_PSK_IDENTITY, cfg_tls_psk_identity);
+	trx_fill_from_config_file(&CONFIG_TLS_PSK_FILE, cfg_tls_psk_file);
 }
 
 static void	parse_commandline(int argc, char **argv)
@@ -764,7 +764,7 @@ static void	parse_commandline(int argc, char **argv)
 	unsigned short	opt_count[256] = {0};
 
 	/* parse the command-line */
-	while ((char)EOF != (ch = (char)zbx_getopt_long(argc, argv, shortopts, longopts, NULL)))
+	while ((char)EOF != (ch = (char)trx_getopt_long(argc, argv, shortopts, longopts, NULL)))
 	{
 		opt_count[(unsigned char)ch]++;
 
@@ -772,7 +772,7 @@ static void	parse_commandline(int argc, char **argv)
 		{
 			case 'c':
 				if (NULL == CONFIG_FILE)
-					CONFIG_FILE = zbx_strdup(CONFIG_FILE, zbx_optarg);
+					CONFIG_FILE = trx_strdup(CONFIG_FILE, trx_optarg);
 				break;
 			case 'h':
 				help();
@@ -784,31 +784,31 @@ static void	parse_commandline(int argc, char **argv)
 				break;
 			case 'I':
 				if (NULL == CONFIG_SOURCE_IP)
-					CONFIG_SOURCE_IP = zbx_strdup(CONFIG_SOURCE_IP, zbx_optarg);
+					CONFIG_SOURCE_IP = trx_strdup(CONFIG_SOURCE_IP, trx_optarg);
 				break;
 			case 'z':
 				if (NULL == TREEGIX_SERVER)
-					TREEGIX_SERVER = zbx_strdup(TREEGIX_SERVER, zbx_optarg);
+					TREEGIX_SERVER = trx_strdup(TREEGIX_SERVER, trx_optarg);
 				break;
 			case 'p':
 				if (NULL == TREEGIX_SERVER_PORT)
-					TREEGIX_SERVER_PORT = zbx_strdup(TREEGIX_SERVER_PORT, zbx_optarg);
+					TREEGIX_SERVER_PORT = trx_strdup(TREEGIX_SERVER_PORT, trx_optarg);
 				break;
 			case 's':
 				if (NULL == TREEGIX_HOSTNAME)
-					TREEGIX_HOSTNAME = zbx_strdup(TREEGIX_HOSTNAME, zbx_optarg);
+					TREEGIX_HOSTNAME = trx_strdup(TREEGIX_HOSTNAME, trx_optarg);
 				break;
 			case 'k':
 				if (NULL == TREEGIX_KEY)
-					TREEGIX_KEY = zbx_strdup(TREEGIX_KEY, zbx_optarg);
+					TREEGIX_KEY = trx_strdup(TREEGIX_KEY, trx_optarg);
 				break;
 			case 'o':
 				if (NULL == TREEGIX_KEY_VALUE)
-					TREEGIX_KEY_VALUE = zbx_strdup(TREEGIX_KEY_VALUE, zbx_optarg);
+					TREEGIX_KEY_VALUE = trx_strdup(TREEGIX_KEY_VALUE, trx_optarg);
 				break;
 			case 'i':
 				if (NULL == INPUT_FILE)
-					INPUT_FILE = zbx_strdup(INPUT_FILE, zbx_optarg);
+					INPUT_FILE = trx_strdup(INPUT_FILE, trx_optarg);
 				break;
 			case 'T':
 				WITH_TIMESTAMPS = 1;
@@ -824,31 +824,31 @@ static void	parse_commandline(int argc, char **argv)
 				break;
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 			case '1':
-				CONFIG_TLS_CONNECT = zbx_strdup(CONFIG_TLS_CONNECT, zbx_optarg);
+				CONFIG_TLS_CONNECT = trx_strdup(CONFIG_TLS_CONNECT, trx_optarg);
 				break;
 			case '2':
-				CONFIG_TLS_CA_FILE = zbx_strdup(CONFIG_TLS_CA_FILE, zbx_optarg);
+				CONFIG_TLS_CA_FILE = trx_strdup(CONFIG_TLS_CA_FILE, trx_optarg);
 				break;
 			case '3':
-				CONFIG_TLS_CRL_FILE = zbx_strdup(CONFIG_TLS_CRL_FILE, zbx_optarg);
+				CONFIG_TLS_CRL_FILE = trx_strdup(CONFIG_TLS_CRL_FILE, trx_optarg);
 				break;
 			case '4':
-				CONFIG_TLS_SERVER_CERT_ISSUER = zbx_strdup(CONFIG_TLS_SERVER_CERT_ISSUER, zbx_optarg);
+				CONFIG_TLS_SERVER_CERT_ISSUER = trx_strdup(CONFIG_TLS_SERVER_CERT_ISSUER, trx_optarg);
 				break;
 			case '5':
-				CONFIG_TLS_SERVER_CERT_SUBJECT = zbx_strdup(CONFIG_TLS_SERVER_CERT_SUBJECT, zbx_optarg);
+				CONFIG_TLS_SERVER_CERT_SUBJECT = trx_strdup(CONFIG_TLS_SERVER_CERT_SUBJECT, trx_optarg);
 				break;
 			case '6':
-				CONFIG_TLS_CERT_FILE = zbx_strdup(CONFIG_TLS_CERT_FILE, zbx_optarg);
+				CONFIG_TLS_CERT_FILE = trx_strdup(CONFIG_TLS_CERT_FILE, trx_optarg);
 				break;
 			case '7':
-				CONFIG_TLS_KEY_FILE = zbx_strdup(CONFIG_TLS_KEY_FILE, zbx_optarg);
+				CONFIG_TLS_KEY_FILE = trx_strdup(CONFIG_TLS_KEY_FILE, trx_optarg);
 				break;
 			case '8':
-				CONFIG_TLS_PSK_IDENTITY = zbx_strdup(CONFIG_TLS_PSK_IDENTITY, zbx_optarg);
+				CONFIG_TLS_PSK_IDENTITY = trx_strdup(CONFIG_TLS_PSK_IDENTITY, trx_optarg);
 				break;
 			case '9':
-				CONFIG_TLS_PSK_FILE = zbx_strdup(CONFIG_TLS_PSK_FILE, zbx_optarg);
+				CONFIG_TLS_PSK_FILE = trx_strdup(CONFIG_TLS_PSK_FILE, trx_optarg);
 				break;
 #else
 			case '1':
@@ -860,7 +860,7 @@ static void	parse_commandline(int argc, char **argv)
 			case '7':
 			case '8':
 			case '9':
-				zbx_error("TLS parameters cannot be used: Treegix sender was compiled without TLS"
+				trx_error("TLS parameters cannot be used: Treegix sender was compiled without TLS"
 						" support");
 				exit(EXIT_FAILURE);
 				break;
@@ -880,7 +880,7 @@ static void	parse_commandline(int argc, char **argv)
 		{
 			if (SUCCEED != is_ushort(TREEGIX_SERVER_PORT, &port) || MIN_TREEGIX_PORT > port)
 			{
-				zbx_error("option \"-p\" used with invalid port number \"%s\", valid port numbers are"
+				trx_error("option \"-p\" used with invalid port number \"%s\", valid port numbers are"
 						" %d-%d", TREEGIX_SERVER_PORT, (int)MIN_TREEGIX_PORT,
 						(int)MAX_TREEGIX_PORT);
 				exit(EXIT_FAILURE);
@@ -900,7 +900,7 @@ static void	parse_commandline(int argc, char **argv)
 
 		if ('v' == ch && 2 < opt_count[(unsigned char)ch])	/* '-v' or '-vv' can be specified */
 		{
-			zbx_error("option \"-v\" or \"--verbose\" specified more than 2 times");
+			trx_error("option \"-v\" or \"--verbose\" specified more than 2 times");
 
 			fatal = 1;
 			continue;
@@ -909,9 +909,9 @@ static void	parse_commandline(int argc, char **argv)
 		if ('v' != ch && 1 < opt_count[(unsigned char)ch])
 		{
 			if (NULL == strchr(shortopts, ch))
-				zbx_error("option \"--%s\" specified multiple times", longopts[i].name);
+				trx_error("option \"--%s\" specified multiple times", longopts[i].name);
 			else
-				zbx_error("option \"-%c\" or \"--%s\" specified multiple times", ch, longopts[i].name);
+				trx_error("option \"-%c\" or \"--%s\" specified multiple times", ch, longopts[i].name);
 
 			fatal = 1;
 		}
@@ -1050,7 +1050,7 @@ static void	parse_commandline(int argc, char **argv)
 
 	if (0 == opt_count['c'] + opt_count['z'])
 	{
-		zbx_error("either '-c' or '-z' option must be specified");
+		trx_error("either '-c' or '-z' option must be specified");
 		usage();
 		printf("Try '%s --help' for more information.\n", progname);
 		exit(EXIT_FAILURE);
@@ -1094,17 +1094,17 @@ static void	parse_commandline(int argc, char **argv)
 					(0x360 <= opt_mask && opt_mask <= 0x363) ||
 					(0x3e0 <= opt_mask && opt_mask <= 0x3e3))))
 	{
-		zbx_error("too few or mutually exclusive options used");
+		trx_error("too few or mutually exclusive options used");
 		usage();
 		exit(EXIT_FAILURE);
 	}
 
-	/* Parameters which are not option values are invalid. The check relies on zbx_getopt_internal() which */
+	/* Parameters which are not option values are invalid. The check relies on trx_getopt_internal() which */
 	/* always permutes command line arguments regardless of POSIXLY_CORRECT environment variable. */
-	if (argc > zbx_optind)
+	if (argc > trx_optind)
 	{
-		for (i = zbx_optind; i < argc; i++)
-			zbx_error("invalid parameter \"%s\"", argv[i]);
+		for (i = trx_optind; i < argc; i++)
+			trx_error("invalid parameter \"%s\"", argv[i]);
 
 		exit(EXIT_FAILURE);
 	}
@@ -1112,7 +1112,7 @@ static void	parse_commandline(int argc, char **argv)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_fgets_alloc                                                  *
+ * Function: trx_fgets_alloc                                                  *
  *                                                                            *
  * Purpose: reads a line from file                                            *
  *                                                                            *
@@ -1126,7 +1126,7 @@ static void	parse_commandline(int argc, char **argv)
  *           buffer.                                                          *
  *                                                                            *
  ******************************************************************************/
-static char	*zbx_fgets_alloc(char **buffer, size_t *buffer_alloc, FILE *fp)
+static char	*trx_fgets_alloc(char **buffer, size_t *buffer_alloc, FILE *fp)
 {
 	char	tmp[MAX_BUFFER_LEN];
 	size_t	buffer_offset = 0, len;
@@ -1141,7 +1141,7 @@ static char	*zbx_fgets_alloc(char **buffer, size_t *buffer_alloc, FILE *fp)
 		if (*buffer_alloc - buffer_offset < len + 1)
 		{
 			*buffer_alloc = (buffer_offset + len + 1) * 3 / 2;
-			*buffer = (char *)zbx_realloc(*buffer, *buffer_alloc);
+			*buffer = (char *)trx_realloc(*buffer, *buffer_alloc);
 		}
 
 		memcpy(*buffer + buffer_offset, tmp, len);
@@ -1168,32 +1168,32 @@ int	main(int argc, char **argv)
 	parse_commandline(argc, argv);
 
 	if (NULL != CONFIG_FILE)
-		zbx_load_config(CONFIG_FILE);
+		trx_load_config(CONFIG_FILE);
 
 #ifndef _WINDOWS
-	if (SUCCEED != zbx_locks_create(&error))
+	if (SUCCEED != trx_locks_create(&error))
 	{
-		zbx_error("cannot create locks: %s", error);
-		zbx_free(error);
+		trx_error("cannot create locks: %s", error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 #endif
 	if (SUCCEED != treegix_open_log(LOG_TYPE_UNDEFINED, CONFIG_LOG_LEVEL, NULL, &error))
 	{
-		zbx_error("cannot open log: %s", error);
-		zbx_free(error);
+		trx_error("cannot open log: %s", error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 #if defined(_WINDOWS)
-	if (SUCCEED != zbx_socket_start(&error))
+	if (SUCCEED != trx_socket_start(&error))
 	{
-		zbx_error(error);
-		zbx_free(error);
+		trx_error(error);
+		trx_free(error);
 		exit(EXIT_FAILURE);
 	}
 #endif
 #if !defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
-	if (SUCCEED != zbx_coredump_disable())
+	if (SUCCEED != trx_coredump_disable())
 	{
 		treegix_log(LOG_LEVEL_CRIT, "cannot disable core dump, exiting...");
 		goto exit;
@@ -1211,14 +1211,14 @@ int	main(int argc, char **argv)
 			NULL != CONFIG_TLS_PSK_IDENTITY || NULL != CONFIG_TLS_PSK_FILE)
 	{
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
-		zbx_tls_validate_config();
+		trx_tls_validate_config();
 
 		if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 		{
 #if defined(_WINDOWS)
-			zbx_tls_init_parent();
+			trx_tls_init_parent();
 #endif
-			zbx_tls_init_child();
+			trx_tls_init_child();
 		}
 #else
 		treegix_log(LOG_LEVEL_CRIT, "TLS parameters cannot be used: Treegix sender was compiled without TLS"
@@ -1227,19 +1227,19 @@ int	main(int argc, char **argv)
 #endif
 	}
 
-	sendval_args = (TRX_THREAD_SENDVAL_ARGS *)zbx_calloc(sendval_args, destinations_count,
+	sendval_args = (TRX_THREAD_SENDVAL_ARGS *)trx_calloc(sendval_args, destinations_count,
 			sizeof(TRX_THREAD_SENDVAL_ARGS));
 
 #if defined(_WINDOWS) && (defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL))
 	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 	{
 		/* prepare to pass necessary TLS data to 'send_value' thread (to be started soon) */
-		zbx_tls_pass_vars(&sendval_args->tls_vars);
+		trx_tls_pass_vars(&sendval_args->tls_vars);
 	}
 #endif
-	zbx_json_init(&sendval_args->json, TRX_JSON_STAT_BUF_LEN);
-	zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_SENDER_DATA, TRX_JSON_TYPE_STRING);
-	zbx_json_addarray(&sendval_args->json, TRX_PROTO_TAG_DATA);
+	trx_json_init(&sendval_args->json, TRX_JSON_STAT_BUF_LEN);
+	trx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_REQUEST, TRX_PROTO_VALUE_SENDER_DATA, TRX_JSON_TYPE_STRING);
+	trx_json_addarray(&sendval_args->json, TRX_PROTO_TAG_DATA);
 
 	if (INPUT_FILE)
 	{
@@ -1260,17 +1260,17 @@ int	main(int argc, char **argv)
 		}
 		else if (NULL == (in = fopen(INPUT_FILE, "r")))
 		{
-			treegix_log(LOG_LEVEL_CRIT, "cannot open [%s]: %s", INPUT_FILE, zbx_strerror(errno));
+			treegix_log(LOG_LEVEL_CRIT, "cannot open [%s]: %s", INPUT_FILE, trx_strerror(errno));
 			goto free;
 		}
 
 		sendval_args->sync_timestamp = WITH_TIMESTAMPS;
-		in_line = (char *)zbx_malloc(NULL, in_line_alloc);
+		in_line = (char *)trx_malloc(NULL, in_line_alloc);
 
 		ret = SUCCEED;
 
 		while ((SUCCEED == ret || SUCCEED_PARTIAL == ret) &&
-				NULL != zbx_fgets_alloc(&in_line, &in_line_alloc, in))
+				NULL != trx_fgets_alloc(&in_line, &in_line_alloc, in))
 		{
 			char		hostname[MAX_STRING_LEN], key[MAX_STRING_LEN], clock[32];
 			int		read_more = 0;
@@ -1281,7 +1281,7 @@ int	main(int argc, char **argv)
 
 			total_count++; /* also used as inputline */
 
-			zbx_rtrim(in_line, "\r\n");
+			trx_rtrim(in_line, "\r\n");
 
 			p = in_line;
 
@@ -1302,7 +1302,7 @@ int	main(int argc, char **argv)
 					break;
 				}
 				else
-					zbx_strlcpy(hostname, TREEGIX_HOSTNAME, sizeof(hostname));
+					trx_strlcpy(hostname, TREEGIX_HOSTNAME, sizeof(hostname));
 			}
 
 			if ('\0' == *p || NULL == (p = get_string(p, key, sizeof(key))) || '\0' == *key)
@@ -1333,12 +1333,12 @@ int	main(int argc, char **argv)
 			if (key_value_alloc != in_line_alloc)
 			{
 				key_value_alloc = in_line_alloc;
-				key_value = (char *)zbx_realloc(key_value, key_value_alloc);
+				key_value = (char *)trx_realloc(key_value, key_value_alloc);
 			}
 
 			if ('\0' != *p && '"' != *p)
 			{
-				zbx_strlcpy(key_value, p, key_value_alloc);
+				trx_strlcpy(key_value, p, key_value_alloc);
 			}
 			else if ('\0' == *p || NULL == (p = get_string(p, key_value, key_value_alloc)))
 			{
@@ -1353,13 +1353,13 @@ int	main(int argc, char **argv)
 				break;
 			}
 
-			zbx_json_addobject(&sendval_args->json, NULL);
-			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_HOST, hostname, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_KEY, key, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_VALUE, key_value, TRX_JSON_TYPE_STRING);
+			trx_json_addobject(&sendval_args->json, NULL);
+			trx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_HOST, hostname, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_KEY, key, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_VALUE, key_value, TRX_JSON_TYPE_STRING);
 			if (1 == WITH_TIMESTAMPS)
-				zbx_json_adduint64(&sendval_args->json, TRX_PROTO_TAG_CLOCK, timestamp);
-			zbx_json_close(&sendval_args->json);
+				trx_json_adduint64(&sendval_args->json, TRX_PROTO_TAG_CLOCK, timestamp);
+			trx_json_close(&sendval_args->json);
 
 			succeed_count++;
 			buffer_count++;
@@ -1380,44 +1380,44 @@ int	main(int argc, char **argv)
 
 				if (-1 == (read_more = select(1, &read_set, NULL, NULL, &tv)))
 				{
-					treegix_log(LOG_LEVEL_WARNING, "select() failed: %s", zbx_strerror(errno));
+					treegix_log(LOG_LEVEL_WARNING, "select() failed: %s", trx_strerror(errno));
 				}
 				else if (1 <= read_more)
 				{
 					if (0 == last_send)
-						last_send = zbx_time();
-					else if (zbx_time() - last_send >= 1)
+						last_send = trx_time();
+					else if (trx_time() - last_send >= 1)
 						read_more = 0;
 				}
 			}
 
 			if (VALUES_MAX == buffer_count || (stdin == in && 1 == REAL_TIME && 0 >= read_more))
 			{
-				zbx_json_close(&sendval_args->json);
+				trx_json_close(&sendval_args->json);
 
-				last_send = zbx_time();
+				last_send = trx_time();
 
 				ret = perform_data_sending(sendval_args, ret);
 
 				buffer_count = 0;
-				zbx_json_clean(&sendval_args->json);
-				zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_REQUEST,
+				trx_json_clean(&sendval_args->json);
+				trx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_REQUEST,
 						TRX_PROTO_VALUE_SENDER_DATA, TRX_JSON_TYPE_STRING);
-				zbx_json_addarray(&sendval_args->json, TRX_PROTO_TAG_DATA);
+				trx_json_addarray(&sendval_args->json, TRX_PROTO_TAG_DATA);
 			}
 		}
 
 		if (FAIL != ret && 0 != buffer_count)
 		{
-			zbx_json_close(&sendval_args->json);
+			trx_json_close(&sendval_args->json);
 			ret = perform_data_sending(sendval_args, ret);
 		}
 
 		if (in != stdin)
 			fclose(in);
 
-		zbx_free(key_value);
-		zbx_free(in_line);
+		trx_free(key_value);
+		trx_free(in_line);
 	}
 	else
 	{
@@ -1444,11 +1444,11 @@ int	main(int argc, char **argv)
 
 			ret = SUCCEED;
 
-			zbx_json_addobject(&sendval_args->json, NULL);
-			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_HOST, TREEGIX_HOSTNAME, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_KEY, TREEGIX_KEY, TRX_JSON_TYPE_STRING);
-			zbx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_VALUE, TREEGIX_KEY_VALUE, TRX_JSON_TYPE_STRING);
-			zbx_json_close(&sendval_args->json);
+			trx_json_addobject(&sendval_args->json, NULL);
+			trx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_HOST, TREEGIX_HOSTNAME, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_KEY, TREEGIX_KEY, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&sendval_args->json, TRX_PROTO_TAG_VALUE, TREEGIX_KEY_VALUE, TRX_JSON_TYPE_STRING);
+			trx_json_close(&sendval_args->json);
 
 			succeed_count++;
 
@@ -1457,8 +1457,8 @@ int	main(int argc, char **argv)
 		while (0); /* try block simulation */
 	}
 free:
-	zbx_json_free(&sendval_args->json);
-	zbx_free(sendval_args);
+	trx_json_free(&sendval_args->json);
+	trx_free(sendval_args);
 exit:
 	if (FAIL != ret)
 	{
@@ -1473,9 +1473,9 @@ exit:
 #if defined(HAVE_POLARSSL) || defined(HAVE_GNUTLS) || defined(HAVE_OPENSSL)
 	if (TRX_TCP_SEC_UNENCRYPTED != configured_tls_connect_mode)
 	{
-		zbx_tls_free();
+		trx_tls_free();
 #if defined(_WINDOWS)
-		zbx_tls_library_deinit();
+		trx_tls_library_deinit();
 #endif
 	}
 #endif
@@ -1485,7 +1485,7 @@ exit:
 		;
 #endif
 #if !defined(_WINDOWS) && defined(HAVE_PTHREAD_PROCESS_SHARED)
-	zbx_locks_disable();
+	trx_locks_disable();
 #endif
 	if (FAIL == ret)
 		ret = EXIT_FAILURE;

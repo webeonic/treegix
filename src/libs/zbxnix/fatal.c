@@ -192,7 +192,7 @@ static const char	*get_register_name(int reg)
 
 #endif	/* defined(HAVE_SYS_UCONTEXT_H) && (defined(REG_EIP) || defined(REG_RIP)) */
 
-void	zbx_backtrace(void)
+void	trx_backtrace(void)
 {
 #	define	TRX_BACKTRACE_SIZE	60
 #ifdef	HAVE_EXECINFO_H
@@ -207,7 +207,7 @@ void	zbx_backtrace(void)
 
 	if (NULL == bcktrc_syms)
 	{
-		treegix_log(LOG_LEVEL_CRIT, "error in backtrace_symbols(): %s", zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_CRIT, "error in backtrace_symbols(): %s", trx_strerror(errno));
 
 		for (i = 0; i < bcktrc_sz; i++)
 			treegix_log(LOG_LEVEL_CRIT, "%d: %p", bcktrc_sz - i - 1, bcktrc[i]);
@@ -217,14 +217,14 @@ void	zbx_backtrace(void)
 		for (i = 0; i < bcktrc_sz; i++)
 			treegix_log(LOG_LEVEL_CRIT, "%d: %s", bcktrc_sz - i - 1, bcktrc_syms[i]);
 
-		zbx_free(bcktrc_syms);
+		trx_free(bcktrc_syms);
 	}
 #else
 	treegix_log(LOG_LEVEL_CRIT, "backtrace is not available for this platform");
 #endif	/* HAVE_EXECINFO_H */
 }
 
-void	zbx_log_fatal_info(void *context, unsigned int flags)
+void	trx_log_fatal_info(void *context, unsigned int flags)
 {
 #ifdef	HAVE_SYS_UCONTEXT_H
 
@@ -314,7 +314,7 @@ void	zbx_log_fatal_info(void *context, unsigned int flags)
 	}
 
 	if (0 != (flags & TRX_FATAL_LOG_BACKTRACE))
-		zbx_backtrace();
+		trx_backtrace();
 
 	if (0 != (flags & TRX_FATAL_LOG_MEM_MAP))
 	{
@@ -332,7 +332,7 @@ void	zbx_log_fatal_info(void *context, unsigned int flags)
 				treegix_log(LOG_LEVEL_CRIT, "%s", line);
 			}
 
-			zbx_fclose(fd);
+			trx_fclose(fd);
 		}
 		else
 			treegix_log(LOG_LEVEL_CRIT, "memory map not available for this platform");

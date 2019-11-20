@@ -1,28 +1,28 @@
 
 
-package zbxlib
+package trxlib
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../../../../include
 
 #include "common.h"
-#include "zbxalgo.h"
-#include "zbxregexp.h"
+#include "trxalgo.h"
+#include "trxregexp.h"
 
-typedef zbx_vector_ptr_t * zbx_vector_ptr_lp_t;
+typedef trx_vector_ptr_t * trx_vector_ptr_lp_t;
 
 static void *new_global_regexp()
 {
-	zbx_vector_ptr_t *regexps;
-	regexps = malloc(sizeof(zbx_vector_ptr_t));
-	zbx_vector_ptr_create(regexps);
+	trx_vector_ptr_t *regexps;
+	regexps = malloc(sizeof(trx_vector_ptr_t));
+	trx_vector_ptr_create(regexps);
 	return (void *)regexps;
 }
 
-static void	free_global_regexp(zbx_vector_ptr_t *regexps)
+static void	free_global_regexp(trx_vector_ptr_t *regexps)
 {
-	zbx_regexp_clean_expressions(regexps);
-	zbx_vector_ptr_destroy(regexps);
+	trx_regexp_clean_expressions(regexps);
+	trx_vector_ptr_destroy(regexps);
 	free(regexps);
 }
 
@@ -38,13 +38,13 @@ func NewGlobalRegexp() (grxp unsafe.Pointer) {
 }
 
 func DestroyGlobalRegexp(grxp unsafe.Pointer) {
-	C.free_global_regexp(C.zbx_vector_ptr_lp_t(grxp))
+	C.free_global_regexp(C.trx_vector_ptr_lp_t(grxp))
 }
 
 func AddGlobalRegexp(grxp unsafe.Pointer, name, body string, expr_type int, delim byte, mode int) {
 	cname := C.CString(name)
 	cbody := C.CString(body)
-	C.add_regexp_ex(C.zbx_vector_ptr_lp_t(grxp), cname, cbody, C.int(expr_type), C.char(delim), C.int(mode))
+	C.add_regexp_ex(C.trx_vector_ptr_lp_t(grxp), cname, cbody, C.int(expr_type), C.char(delim), C.int(mode))
 	C.free(unsafe.Pointer(cname))
 	C.free(unsafe.Pointer(cbody))
 }
@@ -63,7 +63,7 @@ func MatchGlobalRegexp(
 		defer C.free(unsafe.Pointer(ctemplate))
 	}
 
-	ret := C.regexp_sub_ex(C.zbx_vector_ptr_lp_t(grxp), cvalue, cpattern, C.int(mode), ctemplate, &coutput)
+	ret := C.regexp_sub_ex(C.trx_vector_ptr_lp_t(grxp), cvalue, cpattern, C.int(mode), ctemplate, &coutput)
 	switch ret {
 	case C.TRX_REGEXP_MATCH:
 		match = true

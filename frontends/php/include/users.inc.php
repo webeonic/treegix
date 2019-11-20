@@ -70,7 +70,7 @@ function user_auth_type2str($authType)
  */
 function unblock_user_login($userIds)
 {
-    zbx_value2array($userIds);
+    trx_value2array($userIds);
 
     return DBexecute('UPDATE users SET attempt_failed=0 WHERE ' . dbConditionInt('userid', $userIds));
 }
@@ -84,7 +84,7 @@ function unblock_user_login($userIds)
  */
 function get_userid_by_usrgrpid($userGroupIds)
 {
-    zbx_value2array($userGroupIds);
+    trx_value2array($userGroupIds);
 
     $userIds = [];
 
@@ -110,7 +110,7 @@ function get_userid_by_usrgrpid($userGroupIds)
  */
 function granted2update_group($userGroupIds)
 {
-    zbx_value2array($userGroupIds);
+    trx_value2array($userGroupIds);
 
     $users = get_userid_by_usrgrpid($userGroupIds);
 
@@ -129,17 +129,17 @@ function granted2update_group($userGroupIds)
  */
 function getUserFullname($userData)
 {
-    if (!zbx_empty($userData['surname'])) {
-        if (!zbx_empty($userData['name'])) {
+    if (!trx_empty($userData['surname'])) {
+        if (!trx_empty($userData['name'])) {
             return $userData['alias'] . ' ' . _xs('(%1$s %2$s)', 'user fullname', $userData['name'], $userData['surname']);
         }
 
         $fullname = $userData['surname'];
     } else {
-        $fullname = zbx_empty($userData['name']) ? '' : $userData['name'];
+        $fullname = trx_empty($userData['name']) ? '' : $userData['name'];
     }
 
-    return zbx_empty($fullname) ? $userData['alias'] : $userData['alias'] . ' (' . $fullname . ')';
+    return trx_empty($fullname) ? $userData['alias'] : $userData['alias'] . ' (' . $fullname . ')';
 }
 
 /**

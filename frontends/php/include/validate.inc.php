@@ -120,7 +120,7 @@ function check_type(&$field, $flags, &$var, $type, $caption = null) {
 	$message = '';
 
 	if ($type == T_TRX_INT) {
-		if (!zbx_is_int($var)) {
+		if (!trx_is_int($var)) {
 			$error = true;
 			$message = _s('Field "%1$s" is not integer.', $caption);
 		}
@@ -385,7 +385,7 @@ function check_fields_raw(&$fields) {
 		'page' =>			[T_TRX_INT, O_OPT, P_SYS, null,		null], // paging
 		'ddreset' =>		[T_TRX_INT, O_OPT, P_SYS, null,		null]
 	];
-	$fields = zbx_array_merge($system_fields, $fields);
+	$fields = trx_array_merge($system_fields, $fields);
 
 	$err = TRX_VALID_OK;
 	foreach ($fields as $field => $checks) {
@@ -472,7 +472,7 @@ function validatePortNumber($port) {
 }
 
 function validateNumber($value, $min = null, $max = null) {
-	if (!zbx_is_int($value)) {
+	if (!trx_is_int($value)) {
 		return false;
 	}
 

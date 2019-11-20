@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "punycode.h"
-#include "zbxhttp.h"
+#include "trxhttp.h"
 
 /******************************************************************************
  *                                                                            *
@@ -20,9 +20,9 @@
  * Return value: adapted bias                                                 *
  *                                                                            *
  ******************************************************************************/
-static zbx_uint32_t	punycode_adapt(zbx_uint32_t delta, int count, int divisor)
+static trx_uint32_t	punycode_adapt(trx_uint32_t delta, int count, int divisor)
 {
-	zbx_uint32_t	i;
+	trx_uint32_t	i;
 
 	delta /= divisor;
 	delta += delta / count;
@@ -69,10 +69,10 @@ static char	punycode_encode_digit(int digit)
  * Return value: SUCCEED if encoding was successful. FAIL on error.           *
  *                                                                            *
  ******************************************************************************/
-static int	punycode_encode_codepoints(zbx_uint32_t *codepoints, size_t count, char *output, size_t length)
+static int	punycode_encode_codepoints(trx_uint32_t *codepoints, size_t count, char *output, size_t length)
 {
 	int		ret = FAIL;
-	zbx_uint32_t	n, delta = 0, bias, max_codepoint, q, k, t;
+	trx_uint32_t	n, delta = 0, bias, max_codepoint, q, k, t;
 	size_t		h = 0, out = 0, offset, j;
 
 	n = PUNYCODE_INITIAL_N;
@@ -179,11 +179,11 @@ out:
  * Return value: SUCCEED if encoding was successful. FAIL on error.           *
  *                                                                            *
  ******************************************************************************/
-static int	punycode_encode_part(zbx_uint32_t *codepoints, zbx_uint32_t count, char **output, size_t *size,
+static int	punycode_encode_part(trx_uint32_t *codepoints, trx_uint32_t count, char **output, size_t *size,
 		size_t *offset)
 {
 	char		buffer[MAX_STRING_LEN];
-	zbx_uint32_t	i, ansi = 1;
+	trx_uint32_t	i, ansi = 1;
 
 	if (0 == count)
 		return SUCCEED;
@@ -201,21 +201,21 @@ static int	punycode_encode_part(zbx_uint32_t *codepoints, zbx_uint32_t count, ch
 
 	if (0 == ansi)
 	{
-		zbx_strcpy_alloc(output, size, offset, "xn--");
+		trx_strcpy_alloc(output, size, offset, "xn--");
 		if (SUCCEED != punycode_encode_codepoints(codepoints, count, buffer, MAX_STRING_LEN))
 			return FAIL;
 	}
 	else
 		buffer[count] = '\0';
 
-	zbx_strcpy_alloc(output, size, offset, buffer);
+	trx_strcpy_alloc(output, size, offset, buffer);
 
 	return SUCCEED;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_http_punycode_encode                                         *
+ * Function: trx_http_punycode_encode                                         *
  *                                                                            *
  * Purpose: encodes unicode domain names into punycode (RFC 3492)             *
  *                                                                            *
@@ -225,14 +225,14 @@ static int	punycode_encode_part(zbx_uint32_t *codepoints, zbx_uint32_t count, ch
  * Return value: SUCCEED if encoding was successful. FAIL on error.           *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_http_punycode_encode(const char *text, char **output)
+static int	trx_http_punycode_encode(const char *text, char **output)
 {
 	int		ret = FAIL;
 	size_t		offset = 0, size = 0;
-	zbx_uint32_t	n, tmp, count = 0, *codepoints;
+	trx_uint32_t	n, tmp, count = 0, *codepoints;
 
-	zbx_free(*output);
-	codepoints = (zbx_uint32_t *)zbx_malloc(NULL, strlen(text) * sizeof(zbx_uint32_t));
+	trx_free(*output);
+	codepoints = (trx_uint32_t *)trx_malloc(NULL, strlen(text) * sizeof(trx_uint32_t));
 
 	while ('\0' != *text)
 	{
@@ -249,7 +249,7 @@ static int	zbx_http_punycode_encode(const char *text, char **output)
 
 		if (0 != n)
 		{
-			tmp = ((zbx_uint32_t)((*text) & (0x3f >> n))) << 6 * n;
+			tmp = ((trx_uint32_t)((*text) & (0x3f >> n))) << 6 * n;
 			text++;
 
 			while (0 < n)
@@ -258,7 +258,7 @@ static int	zbx_http_punycode_encode(const char *text, char **output)
 				if ('\0' == *text || 0x80 != ((*text) & 0xc0))
 					goto out;
 
-				tmp |= ((zbx_uint32_t)((*text) & 0x3f)) << 6 * n;
+				tmp |= ((trx_uint32_t)((*text) & 0x3f)) << 6 * n;
 				text++;
 			}
 
@@ -271,7 +271,7 @@ static int	zbx_http_punycode_encode(const char *text, char **output)
 				if (SUCCEED != punycode_encode_part(codepoints, count, output, &size, &offset))
 					goto out;
 
-				zbx_chrcpy_alloc(output, &size, &offset, *text++);
+				trx_chrcpy_alloc(output, &size, &offset, *text++);
 				count = 0;
 			}
 			else
@@ -282,16 +282,16 @@ static int	zbx_http_punycode_encode(const char *text, char **output)
 	ret = punycode_encode_part(codepoints, count, output, &size, &offset);
 out:
 	if (SUCCEED != ret)
-		zbx_free(*output);
+		trx_free(*output);
 
-	zbx_free(codepoints);
+	trx_free(codepoints);
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_http_punycode_encode_url                                     *
+ * Function: trx_http_punycode_encode_url                                     *
  *                                                                            *
  * Purpose: encodes unicode domain name in URL into punycode                  *
  *                                                                            *
@@ -300,7 +300,7 @@ out:
  * Return value: SUCCEED if encoding was successful. FAIL on error.           *
  *                                                                            *
  ******************************************************************************/
-int	zbx_http_punycode_encode_url(char **url)
+int	trx_http_punycode_encode_url(char **url)
 {
 	char	*domain, *ptr, ascii = 1, delimiter, *iri = NULL;
 	size_t	url_alloc, url_len;
@@ -330,7 +330,7 @@ int	zbx_http_punycode_encode_url(char **url)
 	if ('\0' != (delimiter = *ptr))
 		*ptr = '\0';
 
-	if (FAIL == zbx_http_punycode_encode(domain, &iri))
+	if (FAIL == trx_http_punycode_encode(domain, &iri))
 	{
 		*ptr = delimiter;
 		return FAIL;
@@ -340,9 +340,9 @@ int	zbx_http_punycode_encode_url(char **url)
 
 	url_alloc = url_len = strlen(*url) + 1;
 
-	zbx_replace_mem_dyn(url, &url_alloc, &url_len, domain - *url, ptr - domain, iri, strlen(iri));
+	trx_replace_mem_dyn(url, &url_alloc, &url_len, domain - *url, ptr - domain, iri, strlen(iri));
 
-	zbx_free(iri);
+	trx_free(iri);
 
 	return SUCCEED;
 }

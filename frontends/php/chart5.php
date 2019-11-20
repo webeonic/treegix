@@ -68,7 +68,7 @@ $y = imagesy($im);
 
 imagefilledrectangle($im, 0, 0, $x, $y, $backgroundcolor);
 
-$d = zbx_date2str(_x('Y', DATE_FORMAT_CONTEXT));
+$d = trx_date2str(_x('Y', DATE_FORMAT_CONTEXT));
 $str = _s('%1$s (year %2$s)', $service['name'], $d);
 $x = imagesx($im) / 2 - imagefontwidth(4) * mb_strlen($str) / 2;
 imageText($im, 10, 0, $x, 14, $textcolor, $str);
@@ -123,7 +123,7 @@ for ($i = 0; $i <= $sizeY; $i += $sizeY / 10) {
 
 for ($i = 0, $period_start = $start; $i <= $sizeX; $i += $sizeX / 52) {
 	dashedLine($im, $i + $shiftX, $shiftYup, $i + $shiftX, $sizeY + $shiftYup, $gridcolor);
-	imageText($im, 6, 90, $i + $shiftX + 4, $sizeY + $shiftYup + 35, $textcolor, zbx_date2str(_('d.M'), $period_start));
+	imageText($im, 6, 90, $i + $shiftX + 4, $sizeY + $shiftYup + 35, $textcolor, trx_date2str(_('d.M'), $period_start));
 	$period_start += 7 * 24 * 3600;
 }
 

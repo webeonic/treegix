@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxcompress
+subdir = src/libs/trxcompress
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,10 +117,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxcompress_a_AR = $(AR) $(ARFLAGS)
-libzbxcompress_a_LIBADD =
-am_libzbxcompress_a_OBJECTS = libzbxcompress_a-compress.$(OBJEXT)
-libzbxcompress_a_OBJECTS = $(am_libzbxcompress_a_OBJECTS)
+libtrxcompress_a_AR = $(AR) $(ARFLAGS)
+libtrxcompress_a_LIBADD =
+am_libtrxcompress_a_OBJECTS = libtrxcompress_a-compress.$(OBJEXT)
+libtrxcompress_a_OBJECTS = $(am_libtrxcompress_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -153,8 +153,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxcompress_a_SOURCES)
-DIST_SOURCES = $(libzbxcompress_a_SOURCES)
+SOURCES = $(libtrxcompress_a_SOURCES)
+DIST_SOURCES = $(libtrxcompress_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -378,11 +378,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxcompress.a
-libzbxcompress_a_SOURCES = \
+noinst_LIBRARIES = libtrxcompress.a
+libtrxcompress_a_SOURCES = \
 	compress.c
 
-libzbxcompress_a_CFLAGS = @ZLIB_CFLAGS@
+libtrxcompress_a_CFLAGS = @ZLIB_CFLAGS@
 all: all-am
 
 .SUFFIXES:
@@ -396,9 +396,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxcompress/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxcompress/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxcompress/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxcompress/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -420,10 +420,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxcompress.a: $(libzbxcompress_a_OBJECTS) $(libzbxcompress_a_DEPENDENCIES) $(EXTRA_libzbxcompress_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxcompress.a
-	$(AM_V_AR)$(libzbxcompress_a_AR) libzbxcompress.a $(libzbxcompress_a_OBJECTS) $(libzbxcompress_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxcompress.a
+libtrxcompress.a: $(libtrxcompress_a_OBJECTS) $(libtrxcompress_a_DEPENDENCIES) $(EXTRA_libtrxcompress_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxcompress.a
+	$(AM_V_AR)$(libtrxcompress_a_AR) libtrxcompress.a $(libtrxcompress_a_OBJECTS) $(libtrxcompress_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxcompress.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -431,7 +431,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxcompress_a-compress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxcompress_a-compress.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -449,19 +449,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxcompress_a-compress.o: compress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcompress_a_CFLAGS) $(CFLAGS) -MT libzbxcompress_a-compress.o -MD -MP -MF $(DEPDIR)/libzbxcompress_a-compress.Tpo -c -o libzbxcompress_a-compress.o `test -f 'compress.c' || echo '$(srcdir)/'`compress.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcompress_a-compress.Tpo $(DEPDIR)/libzbxcompress_a-compress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='compress.c' object='libzbxcompress_a-compress.o' libtool=no @AMDEPBACKSLASH@
+libtrxcompress_a-compress.o: compress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcompress_a_CFLAGS) $(CFLAGS) -MT libtrxcompress_a-compress.o -MD -MP -MF $(DEPDIR)/libtrxcompress_a-compress.Tpo -c -o libtrxcompress_a-compress.o `test -f 'compress.c' || echo '$(srcdir)/'`compress.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcompress_a-compress.Tpo $(DEPDIR)/libtrxcompress_a-compress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='compress.c' object='libtrxcompress_a-compress.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcompress_a_CFLAGS) $(CFLAGS) -c -o libzbxcompress_a-compress.o `test -f 'compress.c' || echo '$(srcdir)/'`compress.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcompress_a_CFLAGS) $(CFLAGS) -c -o libtrxcompress_a-compress.o `test -f 'compress.c' || echo '$(srcdir)/'`compress.c
 
-libzbxcompress_a-compress.obj: compress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcompress_a_CFLAGS) $(CFLAGS) -MT libzbxcompress_a-compress.obj -MD -MP -MF $(DEPDIR)/libzbxcompress_a-compress.Tpo -c -o libzbxcompress_a-compress.obj `if test -f 'compress.c'; then $(CYGPATH_W) 'compress.c'; else $(CYGPATH_W) '$(srcdir)/compress.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxcompress_a-compress.Tpo $(DEPDIR)/libzbxcompress_a-compress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='compress.c' object='libzbxcompress_a-compress.obj' libtool=no @AMDEPBACKSLASH@
+libtrxcompress_a-compress.obj: compress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcompress_a_CFLAGS) $(CFLAGS) -MT libtrxcompress_a-compress.obj -MD -MP -MF $(DEPDIR)/libtrxcompress_a-compress.Tpo -c -o libtrxcompress_a-compress.obj `if test -f 'compress.c'; then $(CYGPATH_W) 'compress.c'; else $(CYGPATH_W) '$(srcdir)/compress.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxcompress_a-compress.Tpo $(DEPDIR)/libtrxcompress_a-compress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='compress.c' object='libtrxcompress_a-compress.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxcompress_a_CFLAGS) $(CFLAGS) -c -o libzbxcompress_a-compress.obj `if test -f 'compress.c'; then $(CYGPATH_W) 'compress.c'; else $(CYGPATH_W) '$(srcdir)/compress.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxcompress_a_CFLAGS) $(CFLAGS) -c -o libtrxcompress_a-compress.obj `if test -f 'compress.c'; then $(CYGPATH_W) 'compress.c'; else $(CYGPATH_W) '$(srcdir)/compress.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

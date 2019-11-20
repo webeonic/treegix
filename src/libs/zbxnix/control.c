@@ -16,7 +16,7 @@ static int	parse_log_level_options(const char *opt, size_t len, unsigned int *sc
 	}
 	else if ('=' != *rtc_options)
 	{
-		zbx_error("invalid runtime control option: %s", opt);
+		trx_error("invalid runtime control option: %s", opt);
 		return FAIL;
 	}
 	else if (0 != isdigit(*(++rtc_options)))
@@ -24,7 +24,7 @@ static int	parse_log_level_options(const char *opt, size_t len, unsigned int *sc
 		/* convert PID */
 		if (FAIL == is_ushort(rtc_options, &num) || 0 == num)
 		{
-			zbx_error("invalid log level control target: invalid or unsupported process identifier");
+			trx_error("invalid log level control target: invalid or unsupported process identifier");
 			return FAIL;
 		}
 
@@ -38,26 +38,26 @@ static int	parse_log_level_options(const char *opt, size_t len, unsigned int *sc
 
 		if ('\0' == *rtc_options)
 		{
-			zbx_error("invalid log level control target: unspecified process identifier or type");
+			trx_error("invalid log level control target: unspecified process identifier or type");
 			return FAIL;
 		}
 
-		proc_name = zbx_strdup(proc_name, rtc_options);
+		proc_name = trx_strdup(proc_name, rtc_options);
 
 		if (NULL != (proc_num = strchr(proc_name, ',')))
 			*proc_num++ = '\0';
 
 		if ('\0' == *proc_name)
 		{
-			zbx_error("invalid log level control target: unspecified process type");
-			zbx_free(proc_name);
+			trx_error("invalid log level control target: unspecified process type");
+			trx_free(proc_name);
 			return FAIL;
 		}
 
 		if (TRX_PROCESS_TYPE_UNKNOWN == (proc_type = get_process_type_by_name(proc_name)))
 		{
-			zbx_error("invalid log level control target: unknown process type \"%s\"", proc_name);
-			zbx_free(proc_name);
+			trx_error("invalid log level control target: unknown process type \"%s\"", proc_name);
+			trx_free(proc_name);
 			return FAIL;
 		}
 
@@ -65,22 +65,22 @@ static int	parse_log_level_options(const char *opt, size_t len, unsigned int *sc
 		{
 			if ('\0' == *proc_num)
 			{
-				zbx_error("invalid log level control target: unspecified process number");
-				zbx_free(proc_name);
+				trx_error("invalid log level control target: unspecified process number");
+				trx_free(proc_name);
 				return FAIL;
 			}
 
 			/* convert Treegix process number (e.g. "2" in "poller,2") */
 			if (FAIL == is_ushort(proc_num, &num) || 0 == num)
 			{
-				zbx_error("invalid log level control target: invalid or unsupported process number"
+				trx_error("invalid log level control target: invalid or unsupported process number"
 						" \"%s\"", proc_num);
-				zbx_free(proc_name);
+				trx_free(proc_name);
 				return FAIL;
 			}
 		}
 
-		zbx_free(proc_name);
+		trx_free(proc_name);
 
 		*scope = TRX_RTC_LOG_SCOPE_PROC | (unsigned int)proc_type;
 		*data = num;
@@ -139,7 +139,7 @@ int	parse_rtc_options(const char *opt, unsigned char program_type, int *message)
 	}
 	else
 	{
-		zbx_error("invalid runtime control option: %s", opt);
+		trx_error("invalid runtime control option: %s", opt);
 		return FAIL;
 	}
 

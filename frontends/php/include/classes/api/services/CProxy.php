@@ -57,7 +57,7 @@ class CProxy extends CApiService {
 			'sortorder'					=> '',
 			'limit'						=> null
 		];
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// editable + PERMISSION CHECK
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN && !$options['nopermissions']) {
@@ -69,7 +69,7 @@ class CProxy extends CApiService {
 
 		// proxyids
 		if (!is_null($options['proxyids'])) {
-			zbx_value2array($options['proxyids']);
+			trx_value2array($options['proxyids']);
 			$sqlParts['where'][] = dbConditionInt('h.hostid', $options['proxyids']);
 		}
 
@@ -80,7 +80,7 @@ class CProxy extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('hosts h', $options, $sqlParts);
+			trx_db_search('hosts h', $options, $sqlParts);
 		}
 
 		// output
@@ -98,7 +98,7 @@ class CProxy extends CApiService {
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -128,7 +128,7 @@ class CProxy extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -146,7 +146,7 @@ class CProxy extends CApiService {
 			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
-		$proxies = zbx_toArray($proxies);
+		$proxies = trx_toArray($proxies);
 
 		$this->validateCreate($proxies);
 
@@ -205,7 +205,7 @@ class CProxy extends CApiService {
 			if (!empty($proxy['hosts'])) {
 				$hostUpdate[] = [
 					'values' => ['proxy_hostid' => $proxyids[$key]],
-					'where' => ['hostid' => zbx_objectValues($proxy['hosts'], 'hostid')]
+					'where' => ['hostid' => trx_objectValues($proxy['hosts'], 'hostid')]
 				];
 			}
 
@@ -236,9 +236,9 @@ class CProxy extends CApiService {
 			self::exception(TRX_API_ERROR_PERMISSIONS, _('No permissions to referred object or it does not exist!'));
 		}
 
-		$proxies = zbx_toArray($proxies);
+		$proxies = trx_toArray($proxies);
 
-		$proxyids = zbx_objectValues($proxies, 'proxyid');
+		$proxyids = trx_objectValues($proxies, 'proxyid');
 
 		foreach ($proxies as &$proxy) {
 			if (array_key_exists('proxyid', $proxy)) {
@@ -319,7 +319,7 @@ class CProxy extends CApiService {
 
 				$hostUpdate[] = [
 					'values' => ['proxy_hostid' => $proxy['proxyid']],
-					'where' => ['hostid' => zbx_objectValues($proxy['hosts'], 'hostid')]
+					'where' => ['hostid' => trx_objectValues($proxy['hosts'], 'hostid')]
 				];
 			}
 
@@ -330,7 +330,7 @@ class CProxy extends CApiService {
 					'hostids' => $proxy['hostid'],
 					'output' => ['interfaceid']
 				]);
-				$interfaceIds = zbx_objectValues($interfaces, 'interfaceid');
+				$interfaceIds = trx_objectValues($interfaces, 'interfaceid');
 
 				if ($interfaceIds) {
 					API::HostInterface()->delete($interfaceIds);
@@ -556,13 +556,13 @@ class CProxy extends CApiService {
 						|| (array_key_exists('tls_accept', $proxy)
 							&& ($proxy['tls_accept'] & HOST_ENCRYPTION_PSK) == HOST_ENCRYPTION_PSK
 							&& $proxy['status'] == HOST_STATUS_PROXY_ACTIVE)) {
-				if (!array_key_exists('tls_psk_identity', $proxy) || zbx_empty($proxy['tls_psk_identity'])) {
+				if (!array_key_exists('tls_psk_identity', $proxy) || trx_empty($proxy['tls_psk_identity'])) {
 					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_psk_identity', _('cannot be empty'))
 					);
 				}
 
-				if (!array_key_exists('tls_psk', $proxy) || zbx_empty($proxy['tls_psk'])) {
+				if (!array_key_exists('tls_psk', $proxy) || trx_empty($proxy['tls_psk'])) {
 					self::exception(TRX_API_ERROR_PARAMETERS,
 						_s('Incorrect value for field "%1$s": %2$s.', 'tls_psk', _('cannot be empty'))
 					);
@@ -658,7 +658,7 @@ class CProxy extends CApiService {
 			}
 
 			if (array_key_exists('hosts', $proxy) && $proxy['hosts']) {
-				$hostids = array_merge($hostids, zbx_objectValues($proxy['hosts'], 'hostid'));
+				$hostids = array_merge($hostids, trx_objectValues($proxy['hosts'], 'hostid'));
 			}
 
 			// Propery 'auto_compress' is read-only.
@@ -782,7 +782,7 @@ class CProxy extends CApiService {
 			}
 
 			if (array_key_exists('hosts', $proxy) && $proxy['hosts']) {
-				$hostids = array_merge($hostids, zbx_objectValues($proxy['hosts'], 'hostid'));
+				$hostids = array_merge($hostids, trx_objectValues($proxy['hosts'], 'hostid'));
 			}
 		}
 
@@ -816,7 +816,7 @@ class CProxy extends CApiService {
 			);
 		}
 
-		$proxies = $this->extendFromObjects(zbx_toHash($proxies, 'proxyid'), $db_proxies, [
+		$proxies = $this->extendFromObjects(trx_toHash($proxies, 'proxyid'), $db_proxies, [
 			'status', 'tls_connect', 'tls_accept', 'tls_psk_identity', 'tls_psk'
 		]);
 

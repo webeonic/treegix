@@ -62,7 +62,7 @@ if ($hostId > 0) {
 
 	// inventory info
 	$data['tableTitles'] = getHostInventories();
-	$data['tableTitles'] = zbx_toHash($data['tableTitles'], 'db_field');
+	$data['tableTitles'] = trx_toHash($data['tableTitles'], 'db_field');
 	$inventoryFields = array_keys($data['tableTitles']);
 
 	// overview tab
@@ -168,7 +168,7 @@ else {
 
 		// checking if correct inventory field is specified for filter
 		$possibleInventoryFields = getHostInventories();
-		$possibleInventoryFields = zbx_toHash($possibleInventoryFields, 'db_field');
+		$possibleInventoryFields = trx_toHash($possibleInventoryFields, 'db_field');
 		if ($data['filterField'] !== '' && $data['filterFieldValue'] !== ''
 				&& !isset($possibleInventoryFields[$data['filterField']])) {
 			error(_s('Impossible to filter by inventory field "%s", which does not exist.', $data['filterField']));

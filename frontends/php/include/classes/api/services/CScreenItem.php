@@ -44,7 +44,7 @@ class CScreenItem extends CApiService {
 	public function __construct() {
 		parent::__construct();
 
-		$this->getOptions = zbx_array_merge($this->getOptions, [
+		$this->getOptions = trx_array_merge($this->getOptions, [
 			'screenitemids'	=> null,
 			'screenids'		=> null,
 			'editable'		=> false,
@@ -67,7 +67,7 @@ class CScreenItem extends CApiService {
 	 * @return array
 	 */
 	public function get(array $options = []) {
-		$options = zbx_array_merge($this->getOptions, $options);
+		$options = trx_array_merge($this->getOptions, $options);
 
 		// build and execute query
 		$sql = $this->createSelectQuery($this->tableName(), $options);
@@ -102,7 +102,7 @@ class CScreenItem extends CApiService {
 	 * @return array
 	 */
 	public function create(array $screenItems) {
-		$screenItems = zbx_toArray($screenItems);
+		$screenItems = trx_toArray($screenItems);
 
 		$this->validateCreate($screenItems);
 
@@ -143,7 +143,7 @@ class CScreenItem extends CApiService {
 
 		$this->validateItemsURL($screenItems);
 
-		$screenIds = array_keys(array_flip(zbx_objectValues($screenItems, 'screenid')));
+		$screenIds = array_keys(array_flip(trx_objectValues($screenItems, 'screenid')));
 
 		$dbScreens = API::Screen()->get([
 			'output' => ['screenid', 'hsize', 'vsize', 'name'],
@@ -161,7 +161,7 @@ class CScreenItem extends CApiService {
 			]);
 
 			if ($dbTemplateScreens) {
-				$dbScreens = zbx_array_merge($dbScreens, $dbTemplateScreens);
+				$dbScreens = trx_array_merge($dbScreens, $dbTemplateScreens);
 			}
 		}
 
@@ -189,11 +189,11 @@ class CScreenItem extends CApiService {
 	 * @return array
 	 */
 	public function update(array $screenItems) {
-		$screenItems = zbx_toArray($screenItems);
+		$screenItems = trx_toArray($screenItems);
 
 		$this->validateUpdate($screenItems);
 
-		$screenItems = zbx_toHash($screenItems, 'screenitemid');
+		$screenItems = trx_toHash($screenItems, 'screenitemid');
 
 		$update = [];
 		$screenItemIds = [];
@@ -256,7 +256,7 @@ class CScreenItem extends CApiService {
 
 		$this->validateItemsURL($screenItems);
 
-		$screenItems = zbx_toHash($screenItems, 'screenitemid');
+		$screenItems = trx_toHash($screenItems, 'screenitemid');
 		$screenItemIds = array_keys($screenItems);
 
 		$dbScreens = API::Screen()->get([
@@ -274,7 +274,7 @@ class CScreenItem extends CApiService {
 		]);
 
 		if ($dbTemplateScreens) {
-			$dbScreens = zbx_array_merge($dbScreens, $dbTemplateScreens);
+			$dbScreens = trx_array_merge($dbScreens, $dbTemplateScreens);
 		}
 
 		$dbScreenItems = API::getApiService()->select($this->tableName(), [
@@ -322,7 +322,7 @@ class CScreenItem extends CApiService {
 
 		$dbScreenItems = $this->get([
 			'output' => ['screenitemid', 'screenid', 'x', 'y'],
-			'screenids' => zbx_objectValues($screenItems, 'screenid'),
+			'screenids' => trx_objectValues($screenItems, 'screenid'),
 			'editable' => true,
 			'preservekeys' => true
 		]);
@@ -532,7 +532,7 @@ class CScreenItem extends CApiService {
 
 			// check url
 			if ($screenItem['resourcetype'] == SCREEN_RESOURCE_URL) {
-				if (!isset($screenItem['url']) || zbx_empty($screenItem['url'])) {
+				if (!isset($screenItem['url']) || trx_empty($screenItem['url'])) {
 					self::exception(TRX_API_ERROR_PARAMETERS, _('No URL provided for screen element.'));
 				}
 			}
@@ -712,7 +712,7 @@ class CScreenItem extends CApiService {
 				]);
 
 				if ($dbTemplateScreens) {
-					$dbScreens = zbx_array_merge($dbScreens, $dbTemplateScreens);
+					$dbScreens = trx_array_merge($dbScreens, $dbTemplateScreens);
 				}
 			}
 
@@ -747,7 +747,7 @@ class CScreenItem extends CApiService {
 	 */
 	protected function checkSpans(array $screenItem, array $screen) {
 		if (isset($screenItem['rowspan'])) {
-			if (!zbx_is_int($screenItem['rowspan']) || $screenItem['rowspan'] < 1) {
+			if (!trx_is_int($screenItem['rowspan']) || $screenItem['rowspan'] < 1) {
 				self::exception(
 					TRX_API_ERROR_PARAMETERS,
 					_s(
@@ -761,7 +761,7 @@ class CScreenItem extends CApiService {
 		}
 
 		if (isset($screenItem['colspan'])) {
-			if (!zbx_is_int($screenItem['colspan']) || $screenItem['colspan'] < 1) {
+			if (!trx_is_int($screenItem['colspan']) || $screenItem['colspan'] < 1) {
 				self::exception(
 					TRX_API_ERROR_PARAMETERS,
 					_s(
@@ -908,7 +908,7 @@ class CScreenItem extends CApiService {
 
 		// screens
 		if ($options['screenids'] !== null) {
-			zbx_value2array($options['screenids']);
+			trx_value2array($options['screenids']);
 			$sqlParts['where'][] = dbConditionInt($this->fieldId('screenid'), $options['screenids']);
 		}
 

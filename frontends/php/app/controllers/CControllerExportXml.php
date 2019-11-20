@@ -119,7 +119,7 @@ class CControllerExportXml extends CController {
 		else {
 			$response = new CControllerResponseData([
 				'main_block' => $export_data,
-				'page' => ['file' => 'zbx_export_' . substr($action, 7)]
+				'page' => ['file' => 'trx_export_' . substr($action, 7)]
 			]);
 		}
 

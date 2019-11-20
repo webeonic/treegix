@@ -5,7 +5,7 @@
 #include "db.h"
 #include "log.h"
 #include "daemon.h"
-#include "zbxself.h"
+#include "trxself.h"
 
 #include "dbcache.h"
 #include "dbsyncer.h"
@@ -71,9 +71,9 @@ TRX_THREAD_ENTRY(dbsyncer_thread, args)
 	const char	*process_name;
 	size_t		stats_alloc = 0, stats_offset = 0;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type), server_num,
 			(process_name = get_process_type_string(process_type)), process_num);
@@ -81,65 +81,65 @@ TRX_THREAD_ENTRY(dbsyncer_thread, args)
 #define STAT_INTERVAL	5	/* if a process is busy and does not sleep then update status not faster than */
 				/* once in STAT_INTERVAL seconds */
 
-	zbx_setproctitle("%s #%d [connecting to the database]", process_name, process_num);
+	trx_setproctitle("%s #%d [connecting to the database]", process_name, process_num);
 	last_stat_time = time(NULL);
 
-	zbx_strcpy_alloc(&stats, &stats_alloc, &stats_offset, "started");
+	trx_strcpy_alloc(&stats, &stats_alloc, &stats_offset, "started");
 
 	/* database APIs might not handle signals correctly and hang, block signals to avoid hanging */
 	block_signals();
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 	unblock_signals();
 
-	if (SUCCEED == zbx_is_export_enabled())
+	if (SUCCEED == trx_is_export_enabled())
 	{
-		zbx_history_export_init("history-syncer", process_num);
-		zbx_problems_export_init("history-syncer", process_num);
+		trx_history_export_init("history-syncer", process_num);
+		trx_problems_export_init("history-syncer", process_num);
 	}
 
 	for (;;)
 	{
-		sec = zbx_time();
-		zbx_update_env(sec);
+		sec = trx_time();
+		trx_update_env(sec);
 
 		if (0 != sleeptime)
-			zbx_setproctitle("%s #%d [%s, syncing history]", process_name, process_num, stats);
+			trx_setproctitle("%s #%d [%s, syncing history]", process_name, process_num, stats);
 
 		/* clear timer trigger queue to avoid processing time triggers at exit */
 		if (!TRX_IS_RUNNING())
 		{
-			zbx_dc_clear_timer_queue();
-			zbx_log_sync_history_cache_progress();
+			trx_dc_clear_timer_queue();
+			trx_log_sync_history_cache_progress();
 		}
 
 		/* database APIs might not handle signals correctly and hang, block signals to avoid hanging */
 		block_signals();
-		zbx_sync_history_cache(&values_num, &triggers_num, &more);
+		trx_sync_history_cache(&values_num, &triggers_num, &more);
 		unblock_signals();
 
 		total_values_num += values_num;
 		total_triggers_num += triggers_num;
-		total_sec += zbx_time() - sec;
+		total_sec += trx_time() - sec;
 
 		sleeptime = (TRX_SYNC_MORE == more ? 0 : CONFIG_HISTSYNCER_FREQUENCY);
 
 		if (0 != sleeptime || STAT_INTERVAL <= time(NULL) - last_stat_time)
 		{
 			stats_offset = 0;
-			zbx_snprintf_alloc(&stats, &stats_alloc, &stats_offset, "processed %d values", total_values_num);
+			trx_snprintf_alloc(&stats, &stats_alloc, &stats_offset, "processed %d values", total_values_num);
 
 			if (0 != (program_type & TRX_PROGRAM_TYPE_SERVER))
 			{
-				zbx_snprintf_alloc(&stats, &stats_alloc, &stats_offset, ", %d triggers",
+				trx_snprintf_alloc(&stats, &stats_alloc, &stats_offset, ", %d triggers",
 						total_triggers_num);
 			}
 
-			zbx_snprintf_alloc(&stats, &stats_alloc, &stats_offset, " in " TRX_FS_DBL " sec", total_sec);
+			trx_snprintf_alloc(&stats, &stats_alloc, &stats_offset, " in " TRX_FS_DBL " sec", total_sec);
 
 			if (0 == sleeptime)
-				zbx_setproctitle("%s #%d [%s, syncing history]", process_name, process_num, stats);
+				trx_setproctitle("%s #%d [%s, syncing history]", process_name, process_num, stats);
 			else
-				zbx_setproctitle("%s #%d [%s, idle %d sec]", process_name, process_num, stats, sleeptime);
+				trx_setproctitle("%s #%d [%s, idle %d sec]", process_name, process_num, stats, sleeptime);
 
 			total_values_num = 0;
 			total_triggers_num = 0;
@@ -153,12 +153,12 @@ TRX_THREAD_ENTRY(dbsyncer_thread, args)
 		if (!TRX_IS_RUNNING())
 			break;
 
-		zbx_sleep_loop(sleeptime);
+		trx_sleep_loop(sleeptime);
 	}
 
-	zbx_log_sync_history_cache_progress();
+	trx_log_sync_history_cache_progress();
 
-	zbx_free(stats);
+	trx_free(stats);
 	DBclose();
 	exit(EXIT_SUCCESS);
 #undef STAT_INTERVAL

@@ -4,7 +4,7 @@
 require_once 'include/menu.inc.php';
 
 function local_generateHeader($data) {
-	// only needed for zbx_construct_menu
+	// only needed for trx_construct_menu
 	global $page;
 
 	header('Content-Type: text/html; charset=UTF-8');
@@ -40,7 +40,7 @@ function local_generateHeader($data) {
 	$main_menu = [];
 	$sub_menus = [];
 
-	zbx_construct_menu($main_menu, $sub_menus, $page, $data['controller']['action']);
+	trx_construct_menu($main_menu, $sub_menus, $page, $data['controller']['action']);
 
 	$pageHeader = new CView('layout.htmlpage.header', [
 		'javascript' => [
@@ -87,8 +87,8 @@ function local_generateHeader($data) {
 		$error_msg = _n('%4$s failed login attempt logged. Last failed attempt was from %1$s on %2$s at %3$s.',
 			'%4$s failed login attempts logged. Last failed attempt was from %1$s on %2$s at %3$s.',
 			$attempt_ip,
-			zbx_date2str(DATE_FORMAT, $attempt_date),
-			zbx_date2str(TIME_FORMAT, $attempt_date),
+			trx_date2str(DATE_FORMAT, $attempt_date),
+			trx_date2str(TIME_FORMAT, $attempt_date),
 			$failedAttempts
 		);
 		error($error_msg);

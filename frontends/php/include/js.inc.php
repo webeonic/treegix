@@ -14,7 +14,7 @@
  *
  * @return string
  */
-function zbx_jsvalue($value, $as_object = false, $addQuotes = true) {
+function trx_jsvalue($value, $as_object = false, $addQuotes = true) {
 	if (!is_array($value)) {
 		if (is_object($value)) {
 			return unpack_object($value);
@@ -49,8 +49,8 @@ function zbx_jsvalue($value, $as_object = false, $addQuotes = true) {
 
 	foreach ($value as $key => &$v) {
 		$is_object |= is_string($key);
-		$escaped_key = $is_object ? '"'.zbx_jsvalue($key, false, false).'":' : '';
-		$v = $escaped_key.zbx_jsvalue($v, $as_object, $addQuotes);
+		$escaped_key = $is_object ? '"'.trx_jsvalue($key, false, false).'":' : '';
+		$v = $escaped_key.trx_jsvalue($v, $as_object, $addQuotes);
 	}
 	unset($v);
 
@@ -130,7 +130,7 @@ function get_js($script, $jQueryDocumentReady = false) {
 }
 
 // add JavaScript for calling after page loading
-function zbx_add_post_js($script) {
+function trx_add_post_js($script) {
 	global $TRX_PAGE_POST_JS;
 
 	if ($TRX_PAGE_POST_JS === null) {

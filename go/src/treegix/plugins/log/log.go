@@ -10,7 +10,7 @@ import (
 	"treegix/pkg/glexpr"
 	"treegix/pkg/itemutil"
 	"treegix/pkg/plugin"
-	"treegix/pkg/zbxlib"
+	"treegix/pkg/trxlib"
 )
 
 // Plugin -
@@ -19,7 +19,7 @@ type Plugin struct {
 }
 
 func (p *Plugin) Configure(options map[string]string) {
-	zbxlib.SetMaxLinesPerSecond(agent.Options.MaxLinesPerSecond)
+	trxlib.SetMaxLinesPerSecond(agent.Options.MaxLinesPerSecond)
 }
 
 type metadata struct {
@@ -38,19 +38,19 @@ func (p *Plugin) Export(key string, params []string, ctx plugin.ContextProvider)
 	if meta.Data == nil {
 		data = &metadata{key: key, params: params}
 		meta.Data = data
-		runtime.SetFinalizer(data, func(d *metadata) { zbxlib.FreeActiveMetric(d.blob) })
-		if data.blob, err = zbxlib.NewActiveMetric(key, params, meta.LastLogsize(), meta.Mtime()); err != nil {
+		runtime.SetFinalizer(data, func(d *metadata) { trxlib.FreeActiveMetric(d.blob) })
+		if data.blob, err = trxlib.NewActiveMetric(key, params, meta.LastLogsize(), meta.Mtime()); err != nil {
 			return nil, err
 		}
 	} else {
 		data = meta.Data.(*metadata)
 		if !itemutil.CompareKeysParams(key, params, data.key, data.params) {
 			p.Debugf("item %d key has been changed, resetting log metadata", ctx.ItemID())
-			zbxlib.FreeActiveMetric(data.blob)
+			trxlib.FreeActiveMetric(data.blob)
 			data.key = key
 			data.params = params
 			// reset lastlogsize/mtime if item key has been changed
-			if data.blob, err = zbxlib.NewActiveMetric(key, params, 0, 0); err != nil {
+			if data.blob, err = trxlib.NewActiveMetric(key, params, 0, 0); err != nil {
 				return nil, err
 			}
 		}
@@ -70,9 +70,9 @@ func (p *Plugin) Export(key string, params []string, ctx plugin.ContextProvider)
 	} else {
 		refresh = int((now.Sub(data.lastcheck) + time.Second/2) / time.Second)
 	}
-	logitem := zbxlib.LogItem{Results: make([]*zbxlib.LogResult, 0), Output: ctx.Output()}
+	logitem := trxlib.LogItem{Results: make([]*trxlib.LogResult, 0), Output: ctx.Output()}
 	grxp := ctx.GlobalRegexp().(*glexpr.Bundle)
-	zbxlib.ProcessLogCheck(data.blob, &logitem, refresh, grxp.Cblob)
+	trxlib.ProcessLogCheck(data.blob, &logitem, refresh, grxp.Cblob)
 	data.lastcheck = now
 
 	if len(logitem.Results) != 0 {

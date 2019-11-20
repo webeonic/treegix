@@ -18,7 +18,7 @@ if ($data['screen']['templateid'] != 0) {
 
 if (hasRequest('screenitemid')) {
 	$form->addVar('screenitemid', getRequest('screenitemid'));
-	$screenItems = zbx_toHash($this->data['screen']['screenitems'], 'screenitemid');
+	$screenItems = trx_toHash($this->data['screen']['screenitems'], 'screenitemid');
 }
 else {
 	$form

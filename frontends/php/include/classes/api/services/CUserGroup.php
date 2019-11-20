@@ -63,7 +63,7 @@ class CUserGroup extends CApiService {
 			'limit'						=> null
 		];
 
-		$options = zbx_array_merge($defOptions, $options);
+		$options = trx_array_merge($defOptions, $options);
 
 		// permissions
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
@@ -81,14 +81,14 @@ class CUserGroup extends CApiService {
 
 		// usrgrpids
 		if (!is_null($options['usrgrpids'])) {
-			zbx_value2array($options['usrgrpids']);
+			trx_value2array($options['usrgrpids']);
 
 			$sqlParts['where'][] = dbConditionInt('g.usrgrpid', $options['usrgrpids']);
 		}
 
 		// userids
 		if (!is_null($options['userids'])) {
-			zbx_value2array($options['userids']);
+			trx_value2array($options['userids']);
 
 			$sqlParts['from']['users_groups'] = 'users_groups ug';
 			$sqlParts['where'][] = dbConditionInt('ug.userid', $options['userids']);
@@ -97,7 +97,7 @@ class CUserGroup extends CApiService {
 
 		// status
 		if (!is_null($options['status'])) {
-			$sqlParts['where'][] = 'g.users_status='.zbx_dbstr($options['status']);
+			$sqlParts['where'][] = 'g.users_status='.trx_dbstr($options['status']);
 		}
 
 		// with_gui_access
@@ -112,11 +112,11 @@ class CUserGroup extends CApiService {
 
 		// search
 		if (is_array($options['search'])) {
-			zbx_db_search('usrgrp g', $options, $sqlParts);
+			trx_db_search('usrgrp g', $options, $sqlParts);
 		}
 
 		// limit
-		if (zbx_ctype_digit($options['limit']) && $options['limit']) {
+		if (trx_ctype_digit($options['limit']) && $options['limit']) {
 			$sqlParts['limit'] = $options['limit'];
 		}
 
@@ -142,7 +142,7 @@ class CUserGroup extends CApiService {
 
 		// removing keys (hash -> array)
 		if (!$options['preservekeys']) {
-			$result = zbx_cleanHashes($result);
+			$result = trx_cleanHashes($result);
 		}
 
 		return $result;
@@ -208,7 +208,7 @@ class CUserGroup extends CApiService {
 			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
-		$this->checkDuplicates(zbx_objectValues($usrgrps, 'name'));
+		$this->checkDuplicates(trx_objectValues($usrgrps, 'name'));
 		$this->checkUsers($usrgrps);
 		$this->checkHimself($usrgrps, __FUNCTION__);
 		$this->checkHostGroups($usrgrps);
@@ -261,7 +261,7 @@ class CUserGroup extends CApiService {
 
 		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_USER_GROUP, $usrgrps, $db_usrgrps);
 
-		return ['usrgrpids'=> zbx_objectValues($usrgrps, 'usrgrpid')];
+		return ['usrgrpids'=> trx_objectValues($usrgrps, 'usrgrpid')];
 	}
 
 	/**
@@ -299,7 +299,7 @@ class CUserGroup extends CApiService {
 		// Check user group names.
 		$db_usrgrps = DB::select('usrgrp', [
 			'output' => ['usrgrpid', 'name', 'debug_mode', 'gui_access', 'users_status'],
-			'usrgrpids' => zbx_objectValues($usrgrps, 'usrgrpid'),
+			'usrgrpids' => trx_objectValues($usrgrps, 'usrgrpid'),
 			'preservekeys' => true
 		]);
 
@@ -954,7 +954,7 @@ class CUserGroup extends CApiService {
 				' WHERE '.dbConditionInt('r.rightid', $relationMap->getRelatedIds()).
 					((self::$userData['type'] == USER_TYPE_SUPER_ADMIN) ? '' : ' AND r.permission>'.PERM_DENY)
 			));
-			$db_rights = zbx_toHash($db_rights, 'rightid');
+			$db_rights = trx_toHash($db_rights, 'rightid');
 
 			foreach ($db_rights as &$db_right) {
 				unset($db_right['rightid'], $db_right['groupid']);

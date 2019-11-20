@@ -1958,7 +1958,7 @@
 		widget['content_body'].append(response.body);
 
 		if (typeof response.debug !== 'undefined') {
-			var debug_visible = $('[name="zbx_debug_info"]', widget['content_body']).is(':visible');
+			var debug_visible = $('[name="trx_debug_info"]', widget['content_body']).is(':visible');
 
 			$(response.debug).appendTo(widget['content_body'])[debug_visible ? 'show' : 'hide']();
 		}

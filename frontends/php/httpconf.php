@@ -161,7 +161,7 @@ elseif (hasRequest('del_history') && hasRequest('httptestid')) {
 		DBstart();
 
 		$result = deleteHistoryByHttpTestIds([$httpTestId]);
-		$result = ($result && DBexecute('UPDATE httptest SET nextcheck=0 WHERE httptestid='.zbx_dbstr($httpTestId)));
+		$result = ($result && DBexecute('UPDATE httptest SET nextcheck=0 WHERE httptestid='.trx_dbstr($httpTestId)));
 
 		if ($result) {
 			$httpTest = reset($httpTests);
@@ -319,7 +319,7 @@ elseif (hasRequest('add') || hasRequest('update')) {
 				'selectSteps' => API_OUTPUT_EXTEND
 			]);
 			$dbHttpTest = reset($dbHttpTest);
-			$dbHttpSteps = zbx_toHash($dbHttpTest['steps'], 'httpstepid');
+			$dbHttpSteps = trx_toHash($dbHttpTest['steps'], 'httpstepid');
 
 			$httpTest = CArrayHelper::unsetEqualValues($httpTest, $dbHttpTest, ['applicationid']);
 			foreach (['headers', 'variables'] as $field_name) {
@@ -508,7 +508,7 @@ if (hasRequest('action') && hasRequest('group_httptestid') && !$result) {
 		'editable' => true
 	]);
 
-	uncheckTableRows(getRequest('hostid'), zbx_objectValues($httptests, 'httptestid'));
+	uncheckTableRows(getRequest('hostid'), trx_objectValues($httptests, 'httptestid'));
 }
 
 show_messages();
@@ -790,7 +790,7 @@ else {
 				' FROM httptest ht'.
 				' INNER JOIN hosts h ON h.hostid=ht.hostid'.
 				' LEFT JOIN applications a ON a.applicationid=ht.applicationid'.
-				' WHERE '.dbConditionInt('ht.httptestid', zbx_objectValues($httpTests, 'httptestid'))
+				' WHERE '.dbConditionInt('ht.httptestid', trx_objectValues($httpTests, 'httptestid'))
 		);
 		$httpTests = [];
 		while ($dbHttpTest = DBfetch($dbHttpTests)) {
@@ -822,7 +822,7 @@ else {
 		$dbHttpSteps = DBselect(
 			'SELECT hs.httptestid,COUNT(*) AS stepscnt'.
 				' FROM httpstep hs'.
-				' WHERE '.dbConditionInt('hs.httptestid', zbx_objectValues($httpTests, 'httptestid')).
+				' WHERE '.dbConditionInt('hs.httptestid', trx_objectValues($httpTests, 'httptestid')).
 				' GROUP BY hs.httptestid'
 		);
 		while ($dbHttpStep = DBfetch($dbHttpSteps)) {

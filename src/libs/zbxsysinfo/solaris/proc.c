@@ -3,7 +3,7 @@
 #include <procfs.h>
 #include "common.h"
 #include "sysinfo.h"
-#include "zbxregexp.h"
+#include "trxregexp.h"
 #include "log.h"
 #include "stats.h"
 
@@ -27,7 +27,7 @@ typedef struct
 	zoneid_t	zoneid;
 #endif
 }
-zbx_sysinfo_proc_t;
+trx_sysinfo_proc_t;
 
 #ifndef HAVE_ZONE_H
 /* helper functions for case if agent is compiled on Solaris 9 or earlier where zones are not supported */
@@ -35,7 +35,7 @@ zbx_sysinfo_proc_t;
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_solaris_version_get                                          *
+ * Function: trx_solaris_version_get                                          *
  *                                                                            *
  * Purpose: get Solaris version at runtime                                    *
  *                                                                            *
@@ -47,14 +47,14 @@ zbx_sysinfo_proc_t;
  *     SUCCEED - no errors, FAIL - an error occurred                          *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_solaris_version_get(unsigned int *major_version, unsigned int *minor_version)
+static int	trx_solaris_version_get(unsigned int *major_version, unsigned int *minor_version)
 {
 	int		res;
 	struct utsname	name;
 
 	if (-1 == (res = uname(&name)))
 	{
-		treegix_log(LOG_LEVEL_WARNING, "%s(): uname() failed: %s", __func__, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_WARNING, "%s(): uname() failed: %s", __func__, trx_strerror(errno));
 
 		return FAIL;
 	}
@@ -74,7 +74,7 @@ static int	zbx_solaris_version_get(unsigned int *major_version, unsigned int *mi
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_detect_zone_support                                          *
+ * Function: trx_detect_zone_support                                          *
  *                                                                            *
  * Purpose: find if zones are supported                                       *
  *                                                                            *
@@ -84,7 +84,7 @@ static int	zbx_solaris_version_get(unsigned int *major_version, unsigned int *mi
  *            counts as no support for zones.                                 *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_detect_zone_support(void)
+static int	trx_detect_zone_support(void)
 {
 #define TRX_ZONE_SUPPORT_UNKNOWN	0
 #define TRX_ZONE_SUPPORT_YES		1
@@ -102,7 +102,7 @@ static int	zbx_detect_zone_support(void)
 		default:
 			/* zones are supported in Solaris 10 and later (minimum version is "5.10") */
 
-			if (SUCCEED == zbx_solaris_version_get(&major, &minor) &&
+			if (SUCCEED == trx_solaris_version_get(&major, &minor) &&
 					((5 == major && 10 <= minor) || 5 < major))
 			{
 				zone_support = TRX_ZONE_SUPPORT_YES;
@@ -119,25 +119,25 @@ static int	zbx_detect_zone_support(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_sysinfo_proc_free                                            *
+ * Function: trx_sysinfo_proc_free                                            *
  *                                                                            *
  * Purpose: frees process data structure                                      *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_sysinfo_proc_free(zbx_sysinfo_proc_t *proc)
+static void	trx_sysinfo_proc_free(trx_sysinfo_proc_t *proc)
 {
-	zbx_free(proc->name);
-	zbx_free(proc->cmdline);
+	trx_free(proc->name);
+	trx_free(proc->cmdline);
 
-	zbx_free(proc);
+	trx_free(proc);
 }
 
-static int	check_procstate(psinfo_t *psinfo, int zbx_proc_stat)
+static int	check_procstate(psinfo_t *psinfo, int trx_proc_stat)
 {
-	if (zbx_proc_stat == TRX_PROC_STAT_ALL)
+	if (trx_proc_stat == TRX_PROC_STAT_ALL)
 		return SUCCEED;
 
-	switch (zbx_proc_stat)
+	switch (trx_proc_stat)
 	{
 		case TRX_PROC_STAT_RUN:
 			return (psinfo->pr_lwp.pr_state == SRUN || psinfo->pr_lwp.pr_state == SONPROC) ? SUCCEED : FAIL;
@@ -158,13 +158,13 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	struct passwd	*usrinfo;
 	psinfo_t	psinfo;	/* In the correct procfs.h, the structure name is psinfo_t */
 	int		fd = -1, do_task, proccount = 0, invalid_user = 0;
-	zbx_uint64_t	mem_size = 0, byte_value = 0;
+	trx_uint64_t	mem_size = 0, byte_value = 0;
 	double		pct_size = 0.0, pct_value = 0.0;
 	size_t		*p_value;
 
 	if (5 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -179,8 +179,8 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-						zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+						trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -202,7 +202,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		do_task = TRX_DO_MIN;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -223,7 +223,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -232,7 +232,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == (dir = opendir("/proc")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -244,7 +244,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			fd = -1;
 		}
 
-		zbx_snprintf(tmp, sizeof(tmp), "/proc/%s/psinfo", entries->d_name);
+		trx_snprintf(tmp, sizeof(tmp), "/proc/%s/psinfo", entries->d_name);
 
 		if (-1 == (fd = open(tmp, O_RDONLY)))
 			continue;
@@ -258,7 +258,7 @@ int	PROC_MEM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL != usrinfo && usrinfo->pw_uid != psinfo.pr_uid)
 			continue;
 
-		if (NULL != proccomm && '\0' != *proccomm && NULL == zbx_regexp_match(psinfo.pr_psargs, proccomm, NULL))
+		if (NULL != proccomm && '\0' != *proccomm && NULL == trx_regexp_match(psinfo.pr_psargs, proccomm, NULL))
 			continue;
 
 		if (NULL != p_value)
@@ -325,10 +325,10 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		tmp[MAX_STRING_LEN], *procname, *proccomm, *param, *zone_parameter;
 	DIR		*dir;
 	struct dirent	*entries;
-	zbx_stat_t	buf;
+	trx_stat_t	buf;
 	struct passwd	*usrinfo;
 	psinfo_t	psinfo;	/* In the correct procfs.h, the structure name is psinfo_t */
-	int		fd = -1, proccount = 0, invalid_user = 0, zbx_proc_stat;
+	int		fd = -1, proccount = 0, invalid_user = 0, trx_proc_stat;
 #ifdef HAVE_ZONE_H
 	zoneid_t	zoneid;
 	int		zoneflag;
@@ -336,7 +336,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (5 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -351,8 +351,8 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 != errno)
 			{
-				SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain user information: %s",
-						zbx_strerror(errno)));
+				SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain user information: %s",
+						trx_strerror(errno)));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -365,16 +365,16 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	param = get_rparam(request, 2);
 
 	if (NULL == param || '\0' == *param || 0 == strcmp(param, "all"))
-		zbx_proc_stat = TRX_PROC_STAT_ALL;
+		trx_proc_stat = TRX_PROC_STAT_ALL;
 	else if (0 == strcmp(param, "run"))
-		zbx_proc_stat = TRX_PROC_STAT_RUN;
+		trx_proc_stat = TRX_PROC_STAT_RUN;
 	else if (0 == strcmp(param, "sleep"))
-		zbx_proc_stat = TRX_PROC_STAT_SLEEP;
+		trx_proc_stat = TRX_PROC_STAT_SLEEP;
 	else if (0 == strcmp(param, "zomb"))
-		zbx_proc_stat = TRX_PROC_STAT_ZOMB;
+		trx_proc_stat = TRX_PROC_STAT_ZOMB;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -386,13 +386,13 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 #ifdef HAVE_ZONE_H
 		zoneflag = TRX_PROCSTAT_FLAGS_ZONE_CURRENT;
 #else
-		if (SUCCEED == zbx_detect_zone_support())
+		if (SUCCEED == trx_detect_zone_support())
 		{
 			/* Agent has been compiled on Solaris 9 or earlier where zones are not supported */
 			/* but now it is running on a system with zone support. This agent cannot limit */
 			/* results to only current zone. */
 
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "The fifth parameter value \"current\" cannot be used"
+			SET_MSG_RESULT(result, trx_strdup(NULL, "The fifth parameter value \"current\" cannot be used"
 					" with agent running on a Solaris version with zone support, but compiled on"
 					" a Solaris version without zone support. Consider using \"all\" or install"
 					" agent with Solaris zone support."));
@@ -408,7 +408,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 #ifdef HAVE_ZONE_H
@@ -420,7 +420,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == (dir = opendir("/proc")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open /proc: %s", zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open /proc: %s", trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -432,9 +432,9 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 			fd = -1;
 		}
 
-		zbx_snprintf(tmp, sizeof(tmp), "/proc/%s/psinfo", entries->d_name);
+		trx_snprintf(tmp, sizeof(tmp), "/proc/%s/psinfo", entries->d_name);
 
-		if (0 != zbx_stat(tmp, &buf))
+		if (0 != trx_stat(tmp, &buf))
 			continue;
 
 		if (-1 == (fd = open(tmp, O_RDONLY)))
@@ -449,10 +449,10 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL != usrinfo && usrinfo->pw_uid != psinfo.pr_uid)
 			continue;
 
-		if (FAIL == check_procstate(&psinfo, zbx_proc_stat))
+		if (FAIL == check_procstate(&psinfo, trx_proc_stat))
 			continue;
 
-		if (NULL != proccomm && '\0' != *proccomm && NULL == zbx_regexp_match(psinfo.pr_psargs, proccomm, NULL))
+		if (NULL != proccomm && '\0' != *proccomm && NULL == trx_regexp_match(psinfo.pr_psargs, proccomm, NULL))
 			continue;
 
 #ifdef HAVE_ZONE_H
@@ -478,7 +478,7 @@ out:
  * Purpose: checks if the process name matches filter                         *
  *                                                                            *
  ******************************************************************************/
-static int	proc_match_name(const zbx_sysinfo_proc_t *proc, const char *procname)
+static int	proc_match_name(const trx_sysinfo_proc_t *proc, const char *procname)
 {
 	if (NULL == procname)
 		return SUCCEED;
@@ -496,7 +496,7 @@ static int	proc_match_name(const zbx_sysinfo_proc_t *proc, const char *procname)
  * Purpose: checks if the process user matches filter                         *
  *                                                                            *
  ******************************************************************************/
-static int	proc_match_user(const zbx_sysinfo_proc_t *proc, const struct passwd *usrinfo)
+static int	proc_match_user(const trx_sysinfo_proc_t *proc, const struct passwd *usrinfo)
 {
 	if (NULL == usrinfo)
 		return SUCCEED;
@@ -514,12 +514,12 @@ static int	proc_match_user(const zbx_sysinfo_proc_t *proc, const struct passwd *
  * Purpose: checks if the process command line matches filter                 *
  *                                                                            *
  ******************************************************************************/
-static int	proc_match_cmdline(const zbx_sysinfo_proc_t *proc, const char *cmdline)
+static int	proc_match_cmdline(const trx_sysinfo_proc_t *proc, const char *cmdline)
 {
 	if (NULL == cmdline)
 		return SUCCEED;
 
-	if (NULL != proc->cmdline && NULL != zbx_regexp_match(proc->cmdline, cmdline, NULL))
+	if (NULL != proc->cmdline && NULL != trx_regexp_match(proc->cmdline, cmdline, NULL))
 		return SUCCEED;
 
 	return FAIL;
@@ -533,7 +533,7 @@ static int	proc_match_cmdline(const zbx_sysinfo_proc_t *proc, const char *cmdlin
  * Purpose: checks if the process zone matches filter                         *
  *                                                                            *
  ******************************************************************************/
-static int	proc_match_zone(const zbx_sysinfo_proc_t *proc, zbx_uint64_t flags, zoneid_t zoneid)
+static int	proc_match_zone(const trx_sysinfo_proc_t *proc, trx_uint64_t flags, zoneid_t zoneid)
 {
 	if (0 != (TRX_PROCSTAT_FLAGS_ZONE_ALL & flags))
 		return SUCCEED;
@@ -569,14 +569,14 @@ static int	proc_match_zone(const zbx_sysinfo_proc_t *proc, zbx_uint64_t flags, z
  *           however we take them into account.                               *
  *                                                                            *
  ******************************************************************************/
-static int	proc_read_cpu_util(zbx_procstat_util_t *procutil)
+static int	proc_read_cpu_util(trx_procstat_util_t *procutil)
 {
 	int		fd, n;
 	char		tmp[MAX_STRING_LEN];
 	psinfo_t	psinfo;
 	prusage_t	prusage;
 
-	zbx_snprintf(tmp, sizeof(tmp), "/proc/%d/psinfo", (int)procutil->pid);
+	trx_snprintf(tmp, sizeof(tmp), "/proc/%d/psinfo", (int)procutil->pid);
 
 	if (-1 == (fd = open(tmp, O_RDONLY)))
 		return -errno;
@@ -589,7 +589,7 @@ static int	proc_read_cpu_util(zbx_procstat_util_t *procutil)
 
 	procutil->starttime = psinfo.pr_start.tv_sec;
 
-	zbx_snprintf(tmp, sizeof(tmp), "/proc/%d/usage", (int)procutil->pid);
+	trx_snprintf(tmp, sizeof(tmp), "/proc/%d/usage", (int)procutil->pid);
 
 	if (-1 == (fd = open(tmp, O_RDONLY)))
 		return -errno;
@@ -601,10 +601,10 @@ static int	proc_read_cpu_util(zbx_procstat_util_t *procutil)
 		return -errno;
 
 	/* convert cpu utilization time to clock ticks */
-	procutil->utime = ((zbx_uint64_t)prusage.pr_utime.tv_sec * 1e9 + prusage.pr_utime.tv_nsec) *
+	procutil->utime = ((trx_uint64_t)prusage.pr_utime.tv_sec * 1e9 + prusage.pr_utime.tv_nsec) *
 			sysconf(_SC_CLK_TCK) / 1e9;
 
-	procutil->stime = ((zbx_uint64_t)prusage.pr_stime.tv_sec * 1e9 + prusage.pr_stime.tv_nsec) *
+	procutil->stime = ((trx_uint64_t)prusage.pr_stime.tv_sec * 1e9 + prusage.pr_stime.tv_nsec) *
 			sysconf(_SC_CLK_TCK) / 1e9;
 
 	return SUCCEED;
@@ -612,7 +612,7 @@ static int	proc_read_cpu_util(zbx_procstat_util_t *procutil)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_proc_get_process_stats                                       *
+ * Function: trx_proc_get_process_stats                                       *
  *                                                                            *
  * Purpose: get process cpu utilization data                                  *
  *                                                                            *
@@ -620,7 +620,7 @@ static int	proc_read_cpu_util(zbx_procstat_util_t *procutil)
  *             procs_num - [IN] the number of items in procs array            *
  *                                                                            *
  ******************************************************************************/
-void	zbx_proc_get_process_stats(zbx_procstat_util_t *procs, int procs_num)
+void	trx_proc_get_process_stats(trx_procstat_util_t *procs, int procs_num)
 {
 	int	i;
 
@@ -634,7 +634,7 @@ void	zbx_proc_get_process_stats(zbx_procstat_util_t *procs, int procs_num)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_proc_get_processes                                           *
+ * Function: trx_proc_get_processes                                           *
  *                                                                            *
  * Purpose: get system processes                                              *
  *                                                                            *
@@ -646,14 +646,14 @@ void	zbx_proc_get_process_stats(zbx_procstat_util_t *procs, int procs_num)
  *               FAIL    - failed to open /proc directory                     *
  *                                                                            *
  ******************************************************************************/
-int	zbx_proc_get_processes(zbx_vector_ptr_t *processes, unsigned int flags)
+int	trx_proc_get_processes(trx_vector_ptr_t *processes, unsigned int flags)
 {
 	DIR			*dir;
 	struct dirent		*entries;
 	char			tmp[MAX_STRING_LEN];
 	int			pid, ret = FAIL, fd = -1, n;
 	psinfo_t		psinfo;	/* In the correct procfs.h, the structure name is psinfo_t */
-	zbx_sysinfo_proc_t	*proc;
+	trx_sysinfo_proc_t	*proc;
 
 	treegix_log(LOG_LEVEL_TRACE, "In %s()", __func__);
 
@@ -666,7 +666,7 @@ int	zbx_proc_get_processes(zbx_vector_ptr_t *processes, unsigned int flags)
 		if (FAIL == is_uint32(entries->d_name, &pid))
 			continue;
 
-		zbx_snprintf(tmp, sizeof(tmp), "/proc/%s/psinfo", entries->d_name);
+		trx_snprintf(tmp, sizeof(tmp), "/proc/%s/psinfo", entries->d_name);
 
 		if (-1 == (fd = open(tmp, O_RDONLY)))
 			continue;
@@ -677,53 +677,53 @@ int	zbx_proc_get_processes(zbx_vector_ptr_t *processes, unsigned int flags)
 		if (-1 == n)
 			continue;
 
-		proc = (zbx_sysinfo_proc_t *)zbx_malloc(NULL, sizeof(zbx_sysinfo_proc_t));
-		memset(proc, 0, sizeof(zbx_sysinfo_proc_t));
+		proc = (trx_sysinfo_proc_t *)trx_malloc(NULL, sizeof(trx_sysinfo_proc_t));
+		memset(proc, 0, sizeof(trx_sysinfo_proc_t));
 
 		proc->pid = pid;
 
 		if (0 != (flags & TRX_SYSINFO_PROC_NAME))
-			proc->name = zbx_strdup(NULL, psinfo.pr_fname);
+			proc->name = trx_strdup(NULL, psinfo.pr_fname);
 
 		if (0 != (flags & TRX_SYSINFO_PROC_USER))
 			proc->uid = psinfo.pr_uid;
 
 		if (0 != (flags & TRX_SYSINFO_PROC_CMDLINE))
-			proc->cmdline = zbx_strdup(NULL, psinfo.pr_psargs);
+			proc->cmdline = trx_strdup(NULL, psinfo.pr_psargs);
 
 #ifdef HAVE_ZONE_H
 		proc->zoneid = psinfo.pr_zoneid;
 #endif
 
-		zbx_vector_ptr_append(processes, proc);
+		trx_vector_ptr_append(processes, proc);
 	}
 
 	closedir(dir);
 
 	ret = SUCCEED;
 out:
-	treegix_log(LOG_LEVEL_TRACE, "End of %s(): %s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_TRACE, "End of %s(): %s", __func__, trx_result_string(ret));
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_proc_free_processes                                          *
+ * Function: trx_proc_free_processes                                          *
  *                                                                            *
- * Purpose: frees process vector read by zbx_proc_get_processes function      *
+ * Purpose: frees process vector read by trx_proc_get_processes function      *
  *                                                                            *
  * Parameters: processes - [IN/OUT] the process vector to free                *
  *                                                                            *
  ******************************************************************************/
-void	zbx_proc_free_processes(zbx_vector_ptr_t *processes)
+void	trx_proc_free_processes(trx_vector_ptr_t *processes)
 {
-	zbx_vector_ptr_clear_ext(processes, (zbx_mem_free_func_t)zbx_sysinfo_proc_free);
+	trx_vector_ptr_clear_ext(processes, (trx_mem_free_func_t)trx_sysinfo_proc_free);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_proc_get_matching_pids                                       *
+ * Function: trx_proc_get_matching_pids                                       *
  *                                                                            *
  * Purpose: get pids matching the specified process name, user name and       *
  *          command line                                                      *
@@ -737,12 +737,12 @@ void	zbx_proc_free_processes(zbx_vector_ptr_t *processes)
  *               -errno    - failed to read pids                              *
  *                                                                            *
  ******************************************************************************/
-void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *procname, const char *username,
-		const char *cmdline, zbx_uint64_t flags, zbx_vector_uint64_t *pids)
+void	trx_proc_get_matching_pids(const trx_vector_ptr_t *processes, const char *procname, const char *username,
+		const char *cmdline, trx_uint64_t flags, trx_vector_uint64_t *pids)
 {
 	struct passwd		*usrinfo;
 	int			i;
-	zbx_sysinfo_proc_t	*proc;
+	trx_sysinfo_proc_t	*proc;
 #ifdef HAVE_ZONE_H
 	zoneid_t		zoneid;
 #endif
@@ -765,7 +765,7 @@ void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *p
 
 	for (i = 0; i < processes->values_num; i++)
 	{
-		proc = (zbx_sysinfo_proc_t *)processes->values[i];
+		proc = (trx_sysinfo_proc_t *)processes->values[i];
 
 		if (SUCCEED != proc_match_user(proc, usrinfo))
 			continue;
@@ -781,7 +781,7 @@ void	zbx_proc_get_matching_pids(const zbx_vector_ptr_t *processes, const char *p
 			continue;
 #endif
 
-		zbx_vector_uint64_append(pids, (zbx_uint64_t)proc->pid);
+		trx_vector_uint64_append(pids, (trx_uint64_t)proc->pid);
 	}
 out:
 	treegix_log(LOG_LEVEL_TRACE, "End of %s()", __func__);
@@ -793,17 +793,17 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	char		*errmsg = NULL;
 	int		period, type;
 	double		value;
-	zbx_uint64_t	zoneflag;
-	zbx_timespec_t	ts_timeout, ts;
+	trx_uint64_t	zoneflag;
+	trx_timespec_t	ts_timeout, ts;
 
 	/* proc.cpu.util[<procname>,<username>,(user|system),<cmdline>,(avg1|avg5|avg15),(current|all)] */
 	if (6 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	/* zbx_procstat_get_* functions expect NULL for default values -       */
+	/* trx_procstat_get_* functions expect NULL for default values -       */
 	/* convert empty procname, username and cmdline strings to NULL values */
 	if (NULL != (procname = get_rparam(request, 0)) && '\0' == *procname)
 		procname = NULL;
@@ -829,7 +829,7 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -848,20 +848,20 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid fifth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid fifth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == (flags = get_rparam(request, 5)) || '\0' == *flags || 0 == strcmp(flags, "current"))
 	{
 #ifndef HAVE_ZONE_H
-		if (SUCCEED == zbx_detect_zone_support())
+		if (SUCCEED == trx_detect_zone_support())
 		{
 			/* Agent has been compiled on Solaris 9 or earlier where zones are not supported */
 			/* but now it is running on a system with zone support. This agent cannot limit */
 			/* results to only current zone. */
 
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "The sixth parameter value \"current\" cannot be used"
+			SET_MSG_RESULT(result, trx_strdup(NULL, "The sixth parameter value \"current\" cannot be used"
 					" with agent running on a Solaris version with zone support, but compiled on"
 					" a Solaris version without zone support. Consider using \"all\" or install"
 					" agent with Solaris zone support."));
@@ -878,22 +878,22 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid sixth parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid sixth parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	if (SUCCEED != zbx_procstat_collector_started())
+	if (SUCCEED != trx_procstat_collector_started())
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Collector is not started."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Collector is not started."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_timespec(&ts_timeout);
+	trx_timespec(&ts_timeout);
 	ts_timeout.sec += CONFIG_TIMEOUT;
 
-	while (SUCCEED != zbx_procstat_get_util(procname, username, cmdline, zoneflag, period, type, &value, &errmsg))
+	while (SUCCEED != trx_procstat_get_util(procname, username, cmdline, zoneflag, period, type, &value, &errmsg))
 	{
-		/* zbx_procstat_get_* functions will return FAIL when either a collection   */
+		/* trx_procstat_get_* functions will return FAIL when either a collection   */
 		/* error was registered or if less than 2 data samples were collected.      */
 		/* In the first case the errmsg will contain error message.                 */
 		if (NULL != errmsg)
@@ -902,11 +902,11 @@ int	PROC_CPU_UTIL(AGENT_REQUEST *request, AGENT_RESULT *result)
 			return SYSINFO_RET_FAIL;
 		}
 
-		zbx_timespec(&ts);
+		trx_timespec(&ts);
 
-		if (0 > zbx_timespec_compare(&ts_timeout, &ts))
+		if (0 > trx_timespec_compare(&ts_timeout, &ts))
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Timeout while waiting for collector data."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Timeout while waiting for collector data."));
 			return SYSINFO_RET_FAIL;
 		}
 

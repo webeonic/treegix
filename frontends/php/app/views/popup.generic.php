@@ -158,8 +158,8 @@ switch ($data['popup_type']) {
 				unset($data['table_records'][$item['id']]);
 			}
 			else {
-				$js_action = 'javascript: addValue('.zbx_jsvalue($options['reference']).', '.
-						zbx_jsvalue($item['id']).', '.$options['parentid'].');';
+				$js_action = 'javascript: addValue('.trx_jsvalue($options['reference']).', '.
+						trx_jsvalue($item['id']).', '.$options['parentid'].');';
 
 				$name = (new CLink($item['name'], 'javascript:void(0);'))
 					->setId('spanid'.$item['id'])
@@ -176,8 +176,8 @@ switch ($data['popup_type']) {
 				? new CCheckBox('item['.$user['userid'].']', $user['userid'])
 				: null;
 
-			$js_action = 'javascript: addValue('.zbx_jsvalue($options['reference']).', '.
-					zbx_jsvalue($user['userid']).', '.$options['parentid'].');';
+			$js_action = 'javascript: addValue('.trx_jsvalue($options['reference']).', '.
+					trx_jsvalue($user['userid']).', '.$options['parentid'].');';
 
 			$alias = (new CLink($user['alias'], 'javascript:void(0);'))
 				->setId('spanid'.$user['userid'])
@@ -214,16 +214,16 @@ switch ($data['popup_type']) {
 				: null;
 
 			if ($data['multiselect']) {
-				$js_action = "javascript: addValue(".zbx_jsvalue($options['reference']).', '.
-						zbx_jsvalue($item['usrgrpid']).', '.$options['parentid'].');';
+				$js_action = "javascript: addValue(".trx_jsvalue($options['reference']).', '.
+						trx_jsvalue($item['usrgrpid']).', '.$options['parentid'].');';
 			}
 			else {
 				$values = [
 					$options['dstfld1'] => $item[$options['srcfld1']],
 					$options['dstfld2'] => $item[$options['srcfld2']]
 				];
-				$js_action = 'javascript: addValues('.zbx_jsvalue($options['dstfrm']).', '.
-						zbx_jsvalue($values).', '.$options['parentid'].');';
+				$js_action = 'javascript: addValues('.trx_jsvalue($options['dstfrm']).', '.
+						trx_jsvalue($values).', '.$options['parentid'].');';
 			}
 
 			$name = (new CLink($item['name'], 'javascript: void(0);'))
@@ -247,12 +247,12 @@ switch ($data['popup_type']) {
 			$trigger['description'] = $trigger['hostname'].NAME_DELIMITER.$trigger['description'];
 
 			$check_box = $data['multiselect']
-				? new CCheckBox('item['.zbx_jsValue($trigger[$options['srcfld1']]).']', $trigger['triggerid'])
+				? new CCheckBox('item['.trx_jsValue($trigger[$options['srcfld1']]).']', $trigger['triggerid'])
 				: null;
 
 			if ($data['multiselect']) {
-				$js_action = 'javascript: addValue('.zbx_jsvalue($options['reference']).', '.
-					zbx_jsvalue($trigger['triggerid']).', '.$options['parentid'].');';
+				$js_action = 'javascript: addValue('.trx_jsvalue($options['reference']).', '.
+					trx_jsvalue($trigger['triggerid']).', '.$options['parentid'].');';
 			}
 			else {
 				$values = [
@@ -262,7 +262,7 @@ switch ($data['popup_type']) {
 				if (array_key_exists('dstfld3', $options)) {
 					$values[$options['dstfld3']] = $trigger[$trigger[$options['srcfld3']]];
 				}
-				$js_action = 'javascript: addValues('.zbx_jsvalue($options['dstfrm']).','.zbx_jsvalue($values).');';
+				$js_action = 'javascript: addValues('.trx_jsvalue($options['dstfrm']).','.trx_jsvalue($values).');';
 			}
 
 			$description->onClick($js_action.$js_action_onclick);
@@ -271,7 +271,7 @@ switch ($data['popup_type']) {
 				$description = [$description, BR(), bold(_('Depends on')), BR()];
 
 				$dependencies = CMacrosResolverHelper::resolveTriggerNames(
-					zbx_toHash($trigger['dependencies'], 'triggerid')
+					trx_toHash($trigger['dependencies'], 'triggerid')
 				);
 
 				foreach ($dependencies as $dependency) {
@@ -312,16 +312,16 @@ switch ($data['popup_type']) {
 			}
 
 			if ($data['multiselect']) {
-				$js_action = "javascript: addValue(".zbx_jsvalue($options['reference']).', '.
-						zbx_jsvalue($sysmap['sysmapid']).', '.$options['parentid'].');';
+				$js_action = "javascript: addValue(".trx_jsvalue($options['reference']).', '.
+						trx_jsvalue($sysmap['sysmapid']).', '.$options['parentid'].');';
 			}
 			else {
 				$values = [
 					$options['dstfld1'] => $sysmap[$options['srcfld1']],
 					$options['dstfld2'] => $sysmap[$options['srcfld2']]
 				];
-				$js_action = 'javascript: addValues('.zbx_jsvalue($options['dstfrm']).', '.
-						zbx_jsvalue($values).');';
+				$js_action = 'javascript: addValues('.trx_jsvalue($options['dstfrm']).', '.
+						trx_jsvalue($values).');';
 			}
 
 			$name = (new CLink($sysmap['name'], 'javascript:void(0);'))
@@ -377,11 +377,11 @@ switch ($data['popup_type']) {
 
 				$checkbox_key = is_numeric($item[$options['srcfld1']])
 					? $item[$options['srcfld1']]
-					: zbx_jsValue($item[$options['srcfld1']]);
+					: trx_jsValue($item[$options['srcfld1']]);
 
 				if ($data['multiselect']) {
-					$js_action = 'javascript: addValue('.zbx_jsvalue($options['reference']).', '.
-						zbx_jsvalue($item['itemid']).', '.$options['parentid'].');';
+					$js_action = 'javascript: addValue('.trx_jsvalue($options['reference']).', '.
+						trx_jsvalue($item['itemid']).', '.$options['parentid'].');';
 				}
 				else {
 					$values = [];
@@ -396,8 +396,8 @@ switch ($data['popup_type']) {
 					}
 
 					$submit_parent = array_key_exists('submit_parent', $options) ? 'true' : 'false';
-					$js_action = 'javascript: addValues('.zbx_jsvalue($options['dstfrm']).', '.
-						zbx_jsvalue($values).', '.$submit_parent.');';
+					$js_action = 'javascript: addValues('.trx_jsvalue($options['dstfrm']).', '.
+						trx_jsvalue($values).', '.$submit_parent.');';
 				}
 
 				$description->onClick($js_action.$js_action_onclick);
@@ -522,7 +522,7 @@ switch ($data['popup_type']) {
 		foreach ($data['table_records'] as $screen) {
 			$checkbox_key = is_numeric($screen[$options['srcfld1']])
 				? $screen[$options['srcfld1']]
-				: zbx_jsValue($screen[$options['srcfld1']]);
+				: trx_jsValue($screen[$options['srcfld1']]);
 
 			$check_box = $data['multiselect']
 				? new CCheckBox('item['.$checkbox_key.']', $screen['screenid'])
@@ -531,15 +531,15 @@ switch ($data['popup_type']) {
 			$name = new CLink($screen['name'], 'javascript:void(0);');
 
 			if ($data['multiselect']) {
-				$js_action = 'javascript: addValue('.zbx_jsvalue($options['reference']).', '.
-					zbx_jsvalue($screen['screenid']).');';
+				$js_action = 'javascript: addValue('.trx_jsvalue($options['reference']).', '.
+					trx_jsvalue($screen['screenid']).');';
 			}
 			else {
 				$values = [
 					$options['dstfld1'] => $screen[$options['srcfld1']],
 					$options['dstfld2'] => $screen[$options['srcfld2']]
 				];
-				$js_action = 'javascript: addValues('.zbx_jsvalue($options['dstfrm']).', '.zbx_jsvalue($values).');';
+				$js_action = 'javascript: addValues('.trx_jsvalue($options['dstfrm']).', '.trx_jsvalue($values).');';
 			}
 			$name->onClick($js_action.$js_action_onclick);
 
@@ -552,20 +552,20 @@ switch ($data['popup_type']) {
 			$description = new CLink($script['name'], 'javascript:void(0);');
 
 			$check_box = $data['multiselect']
-				? new CCheckBox('scripts['.zbx_jsValue($script[$options['srcfld1']]).']', $script['scriptid'])
+				? new CCheckBox('scripts['.trx_jsValue($script[$options['srcfld1']]).']', $script['scriptid'])
 				: null;
 
 			if ($data['multiselect']) {
-				$js_action = 'javascript: addValue('.zbx_jsvalue($options['reference']).', '.
-					zbx_jsvalue($script['scriptid']).');';
+				$js_action = 'javascript: addValue('.trx_jsvalue($options['reference']).', '.
+					trx_jsvalue($script['scriptid']).');';
 			}
 			else {
 				$values = [
 					$options['dstfld1'] => $script[$options['srcfld1']],
 					$options['dstfld2'] => $script[$options['srcfld2']]
 				];
-				$js_action = 'javascript: addValues('.zbx_jsvalue($options['dstfrm']).', '.
-					zbx_jsvalue($values).');';
+				$js_action = 'javascript: addValues('.trx_jsvalue($options['dstfrm']).', '.
+					trx_jsvalue($values).');';
 			}
 			$description->onClick($js_action.$js_action_onclick);
 
@@ -589,7 +589,7 @@ switch ($data['popup_type']) {
 				$check_box,
 				$description,
 				$script_execute_on,
-				zbx_nl2br(htmlspecialchars($script['command'], ENT_COMPAT, 'UTF-8')),
+				trx_nl2br(htmlspecialchars($script['command'], ENT_COMPAT, 'UTF-8')),
 			]);
 		}
 		unset($data['table_records']);
@@ -603,8 +603,8 @@ if ($data['multiselect'] && $form !== null) {
 			'title' => _('Select'),
 			'class' => '',
 			'isSubmit' => true,
-			'action' => 'return addSelectedValues('.zbx_jsvalue($form->getId()).', '.
-						zbx_jsvalue($options['reference']).', '.$options['parentid'].'); '.
+			'action' => 'return addSelectedValues('.trx_jsvalue($form->getId()).', '.
+						trx_jsvalue($options['reference']).', '.$options['parentid'].'); '.
 						'overlayDialogueDestroy(jQuery(this).closest("[data-dialogueid]").attr("data-dialogueid"));'
 		]
 	];
@@ -614,7 +614,7 @@ $types = ['users', 'templates', 'hosts', 'host_templates', 'host_groups', 'appli
 	'proxies', 'items', 'item_prototypes', 'graphs', 'graph_prototypes'
 ];
 if (array_key_exists('table_records', $data) && (in_array($data['popup_type'], $types) || $data['multiselect'])) {
-	$output['script_inline'] .= 'var popup_reference = '.zbx_jsvalue($data['table_records'], true).';';
+	$output['script_inline'] .= 'var popup_reference = '.trx_jsvalue($data['table_records'], true).';';
 }
 
 $output['script_inline'] .= '

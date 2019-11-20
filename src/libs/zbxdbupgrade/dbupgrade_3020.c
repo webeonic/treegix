@@ -20,13 +20,13 @@ static int	DBpatch_3020000(void)
 int	DBpatch_3020001(void)
 {
 	DB_RESULT		result;
-	zbx_vector_uint64_t	eventids;
+	trx_vector_uint64_t	eventids;
 	DB_ROW			row;
-	zbx_uint64_t		eventid;
+	trx_uint64_t		eventid;
 	int			sources[] = {EVENT_SOURCE_TRIGGERS, EVENT_SOURCE_INTERNAL};
 	int			objects[] = {EVENT_OBJECT_ITEM, EVENT_OBJECT_LLDRULE}, i;
 
-	zbx_vector_uint64_create(&eventids);
+	trx_vector_uint64_create(&eventids);
 
 	for (i = 0; i < (int)ARRSIZE(sources); i++)
 	{
@@ -43,7 +43,7 @@ int	DBpatch_3020001(void)
 		while (NULL != (row = DBfetch(result)))
 		{
 			TRX_STR2UINT64(eventid, row[0]);
-			zbx_vector_uint64_append(&eventids, eventid);
+			trx_vector_uint64_append(&eventids, eventid);
 		}
 		DBfree_result(result);
 	}
@@ -63,17 +63,17 @@ int	DBpatch_3020001(void)
 		while (NULL != (row = DBfetch(result)))
 		{
 			TRX_STR2UINT64(eventid, row[0]);
-			zbx_vector_uint64_append(&eventids, eventid);
+			trx_vector_uint64_append(&eventids, eventid);
 		}
 		DBfree_result(result);
 	}
 
-	zbx_vector_uint64_sort(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+	trx_vector_uint64_sort(&eventids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 	if (0 != eventids.values_num)
 		DBexecute_multiple_query("delete from problem where", "eventid", &eventids);
 
-	zbx_vector_uint64_destroy(&eventids);
+	trx_vector_uint64_destroy(&eventids);
 
 	return SUCCEED;
 }

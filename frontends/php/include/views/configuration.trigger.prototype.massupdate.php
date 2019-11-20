@@ -82,7 +82,7 @@ foreach ($data['dependencies'] as $dependency) {
 	$dependencies_form_list->addVar('dependencies[]', $dependency['triggerid'], 'dependencies_'.$dependency['triggerid']);
 
 	$dependency_description = CHtml::encode(
-		implode(', ', zbx_objectValues($dependency['hosts'], 'name')).NAME_DELIMITER.$dependency['description']
+		implode(', ', trx_objectValues($dependency['hosts'], 'name')).NAME_DELIMITER.$dependency['description']
 	);
 
 	if ($dependency['flags'] == TRX_FLAG_DISCOVERY_PROTOTYPE) {

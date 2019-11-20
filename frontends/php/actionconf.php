@@ -266,12 +266,12 @@ elseif (hasRequest('add_condition') && hasRequest('new_condition')) {
 			}
 		}
 
-		$usedFormulaIds = zbx_objectValues($conditions, 'formulaid');
+		$usedFormulaIds = trx_objectValues($conditions, 'formulaid');
 
 		$validateConditions = $conditions;
 
 		if (isset($newCondition['value'])) {
-			$newConditionValues = zbx_toArray($newCondition['value']);
+			$newConditionValues = trx_toArray($newCondition['value']);
 			foreach ($newConditionValues as $newValue) {
 				$condition = $newCondition;
 				$condition['value'] = $newValue;
@@ -508,7 +508,7 @@ if (hasRequest('action') && hasRequest('g_actionid') && !$result) {
 		'output' => [],
 		'editable' => true
 	]);
-	uncheckTableRows(null, zbx_objectValues($actions, 'actionid'));
+	uncheckTableRows(null, trx_objectValues($actions, 'actionid'));
 }
 
 /*
@@ -556,7 +556,7 @@ if (hasRequest('form')) {
 					'actionid' => $operation['actionid'],
 					'operationid' => $operation['operationid'],
 					'operationtype' => $operation['operationtype'],
-					'groupids' => zbx_objectValues($operation['opgroup'], 'groupid')
+					'groupids' => trx_objectValues($operation['opgroup'], 'groupid')
 				];
 			}
 			elseif ($operation['operationtype'] == OPERATION_TYPE_TEMPLATE_ADD
@@ -565,7 +565,7 @@ if (hasRequest('form')) {
 					'actionid' => $operation['actionid'],
 					'operationid' => $operation['operationid'],
 					'operationtype' => $operation['operationtype'],
-					'templateids' => zbx_objectValues($operation['optemplate'], 'templateid')
+					'templateids' => trx_objectValues($operation['optemplate'], 'templateid')
 				];
 			}
 		}
@@ -813,7 +813,7 @@ else {
 				case OPERATION_TYPE_GROUP_REMOVE:
 					$operation = [
 						'operationtype' => $operation['operationtype'],
-						'groupids' => zbx_objectValues($operation['opgroup'], 'groupid')
+						'groupids' => trx_objectValues($operation['opgroup'], 'groupid')
 					];
 					break;
 
@@ -821,7 +821,7 @@ else {
 				case OPERATION_TYPE_TEMPLATE_REMOVE:
 					$operation = [
 						'operationtype' => $operation['operationtype'],
-						'templateids' => zbx_objectValues($operation['optemplate'], 'templateid')
+						'templateids' => trx_objectValues($operation['optemplate'], 'templateid')
 					];
 					break;
 			}

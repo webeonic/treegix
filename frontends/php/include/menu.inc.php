@@ -14,9 +14,9 @@
  *    'label' =  submenu title, if missing, menu skipped, but remembered as last visited page.
  *    'sub_pages' = collection of pages for displaying but not remembered as last visited.
  */
-function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null)
+function trx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null)
 {
-    $zbx_menu = [
+    $trx_menu = [
         'view' => [
             'label' => _('Overview'),//Monitoring
             'user_type' => USER_TYPE_TREEGIX_USER,
@@ -293,7 +293,7 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null)
     $page_exists = false;
     $deny = true;
 
-    foreach ($zbx_menu as $label => $menu) {
+    foreach ($trx_menu as $label => $menu) {
         $show_menu = true;
 
         if (isset($menu['user_type'])) {

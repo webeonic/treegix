@@ -81,7 +81,7 @@ elseif (getRequest('action') === 'valuemap.delete' && hasRequest('valuemapids'))
 			'output' => ['valuemapid'],
 			'valuemapids' => getRequest('valuemapids')
 		]);
-		uncheckTableRows(null, zbx_objectValues($valuemaps, 'valuemapid'));
+		uncheckTableRows(null, trx_objectValues($valuemaps, 'valuemapid'));
 	}
 
 	$deleted = count($valuemapids);
@@ -111,7 +111,7 @@ if (hasRequest('form')) {
 		]);
 		$valuemap = reset($valuemaps);
 
-		$data = zbx_array_merge($data, $valuemap);
+		$data = trx_array_merge($data, $valuemap);
 		order_result($data['mappings'], 'value');
 	}
 	else {

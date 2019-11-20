@@ -9,73 +9,73 @@ SUBDIRS = \
 
 sbin_PROGRAMS = treegix_proxy
 
-noinst_LIBRARIES = libzbxproxy.a
+noinst_LIBRARIES = libtrxproxy.a
 
-libzbxproxy_a_SOURCES = \
+libtrxproxy_a_SOURCES = \
 	servercomms.c servercomms.h \
 	events.c \
 	proxy_lld.c \
 	proxy_alerter_protocol.c
 
-libzbxproxy_a_CFLAGS = \
+libtrxproxy_a_CFLAGS = \
 	-DTREEGIX_DAEMON
 
 treegix_proxy_SOURCES = proxy.c
 
 treegix_proxy_LDADD = \
-	heart/libzbxheart.a \
-	$(top_srcdir)/src/treegix_server/dbsyncer/libzbxdbsyncer.a \
-	$(top_srcdir)/src/treegix_server/discoverer/libzbxdiscoverer.a \
-	housekeeper/libzbxhousekeeper.a \
-	$(top_srcdir)/src/treegix_server/httppoller/libzbxhttppoller.a \
-	proxyconfig/libzbxproxyconfig.a \
-	$(top_srcdir)/src/treegix_server/pinger/libzbxpinger.a \
-	$(top_srcdir)/src/treegix_server/poller/libzbxpoller.a \
-	$(top_srcdir)/src/treegix_server/poller/libzbxpoller_proxy.a \
-	$(top_srcdir)/src/treegix_server/trapper/libzbxtrapper.a \
-	$(top_srcdir)/src/treegix_server/snmptrapper/libzbxsnmptrapper.a \
-	$(top_srcdir)/src/treegix_server/odbc/libzbxodbc.a \
-	datasender/libzbxdatasender.a \
-	taskmanager/libzbxtaskmanager.a \
-	$(top_srcdir)/src/treegix_server/selfmon/libzbxselfmon.a \
-	$(top_srcdir)/src/treegix_server/vmware/libzbxvmware.a \
-	$(top_srcdir)/src/treegix_server/scripts/libzbxscripts.a \
+	heart/libtrxheart.a \
+	$(top_srcdir)/src/treegix_server/dbsyncer/libtrxdbsyncer.a \
+	$(top_srcdir)/src/treegix_server/discoverer/libtrxdiscoverer.a \
+	housekeeper/libtrxhousekeeper.a \
+	$(top_srcdir)/src/treegix_server/httppoller/libtrxhttppoller.a \
+	proxyconfig/libtrxproxyconfig.a \
+	$(top_srcdir)/src/treegix_server/pinger/libtrxpinger.a \
+	$(top_srcdir)/src/treegix_server/poller/libtrxpoller.a \
+	$(top_srcdir)/src/treegix_server/poller/libtrxpoller_proxy.a \
+	$(top_srcdir)/src/treegix_server/trapper/libtrxtrapper.a \
+	$(top_srcdir)/src/treegix_server/snmptrapper/libtrxsnmptrapper.a \
+	$(top_srcdir)/src/treegix_server/odbc/libtrxodbc.a \
+	datasender/libtrxdatasender.a \
+	taskmanager/libtrxtaskmanager.a \
+	$(top_srcdir)/src/treegix_server/selfmon/libtrxselfmon.a \
+	$(top_srcdir)/src/treegix_server/vmware/libtrxvmware.a \
+	$(top_srcdir)/src/treegix_server/scripts/libtrxscripts.a \
 	$(top_srcdir)/src/treegix_server/preprocessor/libpreprocessor.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/libzbxproxysysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	$(top_srcdir)/src/libs/zbxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
-	$(top_srcdir)/src/libs/zbxlog/libzbxlog.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver.a \
-	$(top_srcdir)/src/libs/zbxserver/libzbxserver_proxy.a \
-	$(top_srcdir)/src/libs/zbxdbcache/libzbxdbcache.a \
-	$(top_srcdir)/src/libs/zbxhistory/libzbxhistory.a \
-	$(top_srcdir)/src/libs/zbxmemory/libzbxmemory.a \
-	$(top_srcdir)/src/libs/zbxregexp/libzbxregexp.a \
-	$(top_srcdir)/src/libs/zbxself/libzbxself.a \
-	$(top_srcdir)/src/libs/zbxnix/libzbxnix.a \
-	$(top_srcdir)/src/libs/zbxipcservice/libzbxipcservice.a \
-	$(top_srcdir)/src/libs/zbxsys/libzbxsys.a \
-	$(top_srcdir)/src/libs/zbxconf/libzbxconf.a \
-	$(top_srcdir)/src/libs/zbxcommon/libzbxcommon.a \
-	$(top_srcdir)/src/libs/zbxcrypto/libzbxcrypto.a \
-	$(top_srcdir)/src/libs/zbxcomms/libzbxcomms.a \
-	$(top_srcdir)/src/libs/zbxcommshigh/libzbxcommshigh.a \
-	$(top_srcdir)/src/libs/zbxjson/libzbxjson.a \
-	$(top_srcdir)/src/libs/zbxhttp/libzbxhttp.a \
-	$(top_srcdir)/src/libs/zbxexec/libzbxexec.a \
-	$(top_srcdir)/src/libs/zbxicmpping/libzbxicmpping.a \
-	$(top_srcdir)/src/libs/zbxdbupgrade/libzbxdbupgrade.a \
-	$(top_srcdir)/src/libs/zbxdbhigh/libzbxdbhigh.a \
-	$(top_srcdir)/src/libs/zbxdb/libzbxdb.a \
-	$(top_srcdir)/src/libs/zbxmodules/libzbxmodules.a \
-	$(top_srcdir)/src/libs/zbxtasks/libzbxtasks.a \
-	$(top_srcdir)/src/libs/zbxcompress/libzbxcompress.a \
-	$(top_srcdir)/src/libs/zbxembed/libzbxembed.a \
-	$(top_srcdir)/src/libs/zbxprometheus/libzbxprometheus.a \
-	libzbxproxy.a
+	$(top_srcdir)/src/libs/trxsysinfo/libtrxproxysysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	$(top_srcdir)/src/libs/trxsysinfo/$(ARCH)/libspechostnamesysinfo.a \
+	$(top_srcdir)/src/libs/trxlog/libtrxlog.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver.a \
+	$(top_srcdir)/src/libs/trxserver/libtrxserver_proxy.a \
+	$(top_srcdir)/src/libs/trxdbcache/libtrxdbcache.a \
+	$(top_srcdir)/src/libs/trxhistory/libtrxhistory.a \
+	$(top_srcdir)/src/libs/trxmemory/libtrxmemory.a \
+	$(top_srcdir)/src/libs/trxregexp/libtrxregexp.a \
+	$(top_srcdir)/src/libs/trxself/libtrxself.a \
+	$(top_srcdir)/src/libs/trxnix/libtrxnix.a \
+	$(top_srcdir)/src/libs/trxipcservice/libtrxipcservice.a \
+	$(top_srcdir)/src/libs/trxsys/libtrxsys.a \
+	$(top_srcdir)/src/libs/trxconf/libtrxconf.a \
+	$(top_srcdir)/src/libs/trxcommon/libtrxcommon.a \
+	$(top_srcdir)/src/libs/trxcrypto/libtrxcrypto.a \
+	$(top_srcdir)/src/libs/trxcomms/libtrxcomms.a \
+	$(top_srcdir)/src/libs/trxcommshigh/libtrxcommshigh.a \
+	$(top_srcdir)/src/libs/trxjson/libtrxjson.a \
+	$(top_srcdir)/src/libs/trxhttp/libtrxhttp.a \
+	$(top_srcdir)/src/libs/trxexec/libtrxexec.a \
+	$(top_srcdir)/src/libs/trxicmpping/libtrxicmpping.a \
+	$(top_srcdir)/src/libs/trxdbupgrade/libtrxdbupgrade.a \
+	$(top_srcdir)/src/libs/trxdbhigh/libtrxdbhigh.a \
+	$(top_srcdir)/src/libs/trxdb/libtrxdb.a \
+	$(top_srcdir)/src/libs/trxmodules/libtrxmodules.a \
+	$(top_srcdir)/src/libs/trxtasks/libtrxtasks.a \
+	$(top_srcdir)/src/libs/trxcompress/libtrxcompress.a \
+	$(top_srcdir)/src/libs/trxembed/libtrxembed.a \
+	$(top_srcdir)/src/libs/trxprometheus/libtrxprometheus.a \
+	libtrxproxy.a
 
-treegix_proxy_LDADD += $(top_srcdir)/src/libs/zbxalgo/libzbxalgo.a
+treegix_proxy_LDADD += $(top_srcdir)/src/libs/trxalgo/libtrxalgo.a
 
 if HAVE_IPMI
 treegix_proxy_LDADD += $(top_srcdir)/src/treegix_server/ipmi/libipmi.a

@@ -2,32 +2,32 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxalgo.h"
-#include "zbxregexp.h"
-#include "zbxjson.h"
+#include "trxalgo.h"
+#include "trxregexp.h"
+#include "trxjson.h"
 #include "json.h"
 #include "json_parser.h"
 #include "jsonpath.h"
 
-#include "../zbxalgo/vectorimpl.h"
+#include "../trxalgo/vectorimpl.h"
 
-TRX_VECTOR_DECL(var, zbx_variant_t)
-TRX_VECTOR_IMPL(var, zbx_variant_t)
+TRX_VECTOR_DECL(var, trx_variant_t)
+TRX_VECTOR_IMPL(var, trx_variant_t)
 
-static int	jsonpath_query_object(const struct zbx_json_parse *jp_root, const struct zbx_json_parse *jp,
-		const zbx_jsonpath_t *jsonpath, int path_depth, zbx_vector_str_t *objects);
-static int	jsonpath_query_array(const struct zbx_json_parse *jp_root, const struct zbx_json_parse *jp,
-		const zbx_jsonpath_t *jsonpath, int path_depth, zbx_vector_str_t *objects);
+static int	jsonpath_query_object(const struct trx_json_parse *jp_root, const struct trx_json_parse *jp,
+		const trx_jsonpath_t *jsonpath, int path_depth, trx_vector_str_t *objects);
+static int	jsonpath_query_array(const struct trx_json_parse *jp_root, const struct trx_json_parse *jp,
+		const trx_jsonpath_t *jsonpath, int path_depth, trx_vector_str_t *objects);
 
 typedef struct
 {
-	zbx_jsonpath_token_group_t	group;
+	trx_jsonpath_token_group_t	group;
 	int				precedence;
 }
-zbx_jsonpath_token_def_t;
+trx_jsonpath_token_def_t;
 
 /* define token groups and precedence */
-static zbx_jsonpath_token_def_t	jsonpath_tokens[] = {
+static trx_jsonpath_token_def_t	jsonpath_tokens[] = {
 	{0, 0},
 	{TRX_JSONPATH_TOKEN_GROUP_OPERAND, 0},		/* TRX_JSONPATH_TOKEN_PATH_ABSOLUTE */
 	{TRX_JSONPATH_TOKEN_GROUP_OPERAND, 0},		/* TRX_JSONPATH_TOKEN_PATH_RELATIVE */
@@ -63,7 +63,7 @@ static int	jsonpath_token_group(int type)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_jsonpath_error                                               *
+ * Function: trx_jsonpath_error                                               *
  *                                                                            *
  * Purpose: set json error message and return FAIL                            *
  *                                                                            *
@@ -71,12 +71,12 @@ static int	jsonpath_token_group(int type)
  *           in the case of failure.                                          *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_jsonpath_error(const char *path)
+static int	trx_jsonpath_error(const char *path)
 {
 	if ('\0' != *path)
-		zbx_set_json_strerror("unsupported construct in jsonpath starting with: \"%s\"", path);
+		trx_set_json_strerror("unsupported construct in jsonpath starting with: \"%s\"", path);
 	else
-		zbx_set_json_strerror("jsonpath was unexpectedly terminated");
+		trx_set_json_strerror("jsonpath was unexpectedly terminated");
 
 	return FAIL;
 }
@@ -90,7 +90,7 @@ static char	*jsonpath_strndup(const char *source, size_t len)
 {
 	char	*str;
 
-	str = (char *)zbx_malloc(NULL, len + 1);
+	str = (char *)trx_malloc(NULL, len + 1);
 	memcpy(str, source, len);
 	str[len] = '\0';
 
@@ -142,7 +142,7 @@ static char	*jsonpath_unquote_dyn(const char *start, size_t len)
 {
 	char	*value;
 
-	value = (char *)zbx_malloc(NULL, len + 1);
+	value = (char *)trx_malloc(NULL, len + 1);
 	jsonpath_unquote(value, start, len);
 
 	return value;
@@ -155,9 +155,9 @@ static char	*jsonpath_unquote_dyn(const char *start, size_t len)
  * Purpose: create jsonpath list item of the specified size                   *
  *                                                                            *
  ******************************************************************************/
-static zbx_jsonpath_list_node_t	*jsonpath_list_create_node(size_t size)
+static trx_jsonpath_list_node_t	*jsonpath_list_create_node(size_t size)
 {
-	return (zbx_jsonpath_list_node_t *)zbx_malloc(NULL, offsetof(zbx_jsonpath_list_node_t, data) + size);
+	return (trx_jsonpath_list_node_t *)trx_malloc(NULL, offsetof(trx_jsonpath_list_node_t, data) + size);
 }
 
 /******************************************************************************
@@ -167,15 +167,15 @@ static zbx_jsonpath_list_node_t	*jsonpath_list_create_node(size_t size)
  * Purpose: free jsonpath list                                                *
  *                                                                            *
  ******************************************************************************/
-static void	jsonpath_list_free(zbx_jsonpath_list_node_t *list)
+static void	jsonpath_list_free(trx_jsonpath_list_node_t *list)
 {
-	zbx_jsonpath_list_node_t	*item = list;
+	trx_jsonpath_list_node_t	*item = list;
 
 	while (NULL != list)
 	{
 		item = list;
 		list = list->next;
-		zbx_free(item);
+		trx_free(item);
 	}
 }
 
@@ -192,11 +192,11 @@ static void	jsonpath_list_free(zbx_jsonpath_list_node_t *list)
  * Return value: The created token (must be freed by the caller).             *
  *                                                                            *
  ******************************************************************************/
-static zbx_jsonpath_token_t	*jsonpath_create_token(int type, const char *expression, const zbx_strloc_t *loc)
+static trx_jsonpath_token_t	*jsonpath_create_token(int type, const char *expression, const trx_strloc_t *loc)
 {
-	zbx_jsonpath_token_t	*token;
+	trx_jsonpath_token_t	*token;
 
-	token = (zbx_jsonpath_token_t *)zbx_malloc(NULL, sizeof(zbx_jsonpath_token_t));
+	token = (trx_jsonpath_token_t *)trx_malloc(NULL, sizeof(trx_jsonpath_token_t));
 	token->type = type;
 
 	switch (token->type)
@@ -221,10 +221,10 @@ static zbx_jsonpath_token_t	*jsonpath_create_token(int type, const char *express
  * Function: jsonpath_token_free                                              *
  *                                                                            *
  ******************************************************************************/
-static void	jsonpath_token_free(zbx_jsonpath_token_t *token)
+static void	jsonpath_token_free(trx_jsonpath_token_t *token)
 {
-	zbx_free(token->data);
-	zbx_free(token);
+	trx_free(token->data);
+	trx_free(token);
 }
 
 /******************************************************************************
@@ -237,7 +237,7 @@ static void	jsonpath_token_free(zbx_jsonpath_token_t *token)
  *             num      - [IN] the number of segments to reserve              *
  *                                                                            *
  ******************************************************************************/
-static void	jsonpath_reserve(zbx_jsonpath_t *jsonpath, int num)
+static void	jsonpath_reserve(trx_jsonpath_t *jsonpath, int num)
 {
 	if (jsonpath->segments_num + num > jsonpath->segments_alloc)
 	{
@@ -248,14 +248,14 @@ static void	jsonpath_reserve(zbx_jsonpath_t *jsonpath, int num)
 		else
 			jsonpath->segments_alloc *= 2;
 
-		jsonpath->segments = (zbx_jsonpath_segment_t *)zbx_realloc(jsonpath->segments,
-				sizeof(zbx_jsonpath_segment_t) * jsonpath->segments_alloc);
+		jsonpath->segments = (trx_jsonpath_segment_t *)trx_realloc(jsonpath->segments,
+				sizeof(trx_jsonpath_segment_t) * jsonpath->segments_alloc);
 
 		/* Initialize the memory allocated for new segments, as parser can set     */
 		/* detached flag for the next segment, so the memory cannot be initialized */
 		/* when creating a segment.                                                */
 		memset(jsonpath->segments + old_alloc, 0,
-				(jsonpath->segments_alloc - old_alloc) * sizeof(zbx_jsonpath_segment_t));
+				(jsonpath->segments_alloc - old_alloc) * sizeof(trx_jsonpath_segment_t));
 	}
 }
 
@@ -264,7 +264,7 @@ static void	jsonpath_reserve(zbx_jsonpath_t *jsonpath, int num)
  * Function: jsonpath_segment_clear                                           *
  *                                                                            *
  ******************************************************************************/
-static void	jsonpath_segment_clear(zbx_jsonpath_segment_t *segment)
+static void	jsonpath_segment_clear(trx_jsonpath_segment_t *segment)
 {
 	switch (segment->type)
 	{
@@ -272,9 +272,9 @@ static void	jsonpath_segment_clear(zbx_jsonpath_segment_t *segment)
 			jsonpath_list_free(segment->data.list.values);
 			break;
 		case TRX_JSONPATH_SEGMENT_MATCH_EXPRESSION:
-			zbx_vector_ptr_clear_ext(&segment->data.expression.tokens,
-					(zbx_clean_func_t)jsonpath_token_free);
-			zbx_vector_ptr_destroy(&segment->data.expression.tokens);
+			trx_vector_ptr_clear_ext(&segment->data.expression.tokens,
+					(trx_clean_func_t)jsonpath_token_free);
+			trx_vector_ptr_destroy(&segment->data.expression.tokens);
 			break;
 		default:
 			break;
@@ -301,7 +301,7 @@ static int	jsonpath_next(const char **pnext)
 	if ('.' == *next)
 	{
 		if ('\0' == *(++next))
-			return zbx_jsonpath_error(*pnext);
+			return trx_jsonpath_error(*pnext);
 
 		if ('[' != *next)
 		{
@@ -311,7 +311,7 @@ static int	jsonpath_next(const char **pnext)
 				next++;
 
 			if (start == next)
-				return zbx_jsonpath_error(*pnext);
+				return trx_jsonpath_error(*pnext);
 
 			*pnext = next;
 			return SUCCEED;
@@ -319,7 +319,7 @@ static int	jsonpath_next(const char **pnext)
 	}
 
 	if ('[' != *next)
-		return zbx_jsonpath_error(*pnext);
+		return trx_jsonpath_error(*pnext);
 
 	SKIP_WHITESPACE_NEXT(next);
 
@@ -339,24 +339,24 @@ static int	jsonpath_next(const char **pnext)
 		char	quotes;
 
 		if ('\'' != *next && '"' != *next)
-			return zbx_jsonpath_error(*pnext);
+			return trx_jsonpath_error(*pnext);
 
 		start = next;
 
 		for (quotes = *next++; quotes != *next; next++)
 		{
 			if ('\0' == *next)
-				return zbx_jsonpath_error(*pnext);
+				return trx_jsonpath_error(*pnext);
 		}
 
 		if (start == next)
-			return zbx_jsonpath_error(*pnext);
+			return trx_jsonpath_error(*pnext);
 
 		SKIP_WHITESPACE_NEXT(next);
 	}
 
 	if (']' != *next++)
-		return zbx_jsonpath_error(*pnext);
+		return trx_jsonpath_error(*pnext);
 
 	*pnext = next;
 	return SUCCEED;
@@ -450,7 +450,7 @@ static int	jsonpath_parse_number(const char *start, int *len)
 	if ('-' == *ptr || '+' == *ptr)
 		ptr++;
 
-	if (FAIL == zbx_number_parse(ptr, &size))
+	if (FAIL == trx_number_parse(ptr, &size))
 		return FAIL;
 
 	ptr += size;
@@ -492,7 +492,7 @@ static int	jsonpath_parse_number(const char *start, int *len)
  *                                                                            *
  ******************************************************************************/
 static int	jsonpath_expression_next_token(const char *expression, int pos, int prev_group,
-		zbx_jsonpath_token_type_t *type, zbx_strloc_t *loc)
+		trx_jsonpath_token_type_t *type, trx_strloc_t *loc)
 {
 	int		len;
 	const char	*ptr = expression + pos;
@@ -627,7 +627,7 @@ static int	jsonpath_expression_next_token(const char *expression, int pos, int p
 		}
 	}
 out:
-	return zbx_jsonpath_error(ptr);
+	return trx_jsonpath_error(ptr);
 }
 
 /******************************************************************************
@@ -655,20 +655,20 @@ out:
  *   4) ')' must follow an operand                                            *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_parse_expression(const char *expression, zbx_jsonpath_t *jsonpath, const char **next)
+static int	jsonpath_parse_expression(const char *expression, trx_jsonpath_t *jsonpath, const char **next)
 {
 	int				nesting = 1, ret = FAIL;
-	zbx_jsonpath_token_t		*optoken;
-	zbx_vector_ptr_t		output, operators;
-	zbx_strloc_t			loc = {0, 0};
-	zbx_jsonpath_token_type_t	token_type;
-	zbx_jsonpath_token_group_t	prev_group = TRX_JSONPATH_TOKEN_GROUP_NONE;
+	trx_jsonpath_token_t		*optoken;
+	trx_vector_ptr_t		output, operators;
+	trx_strloc_t			loc = {0, 0};
+	trx_jsonpath_token_type_t	token_type;
+	trx_jsonpath_token_group_t	prev_group = TRX_JSONPATH_TOKEN_GROUP_NONE;
 
 	if ('(' != *expression)
-		return zbx_jsonpath_error(expression);
+		return trx_jsonpath_error(expression);
 
-	zbx_vector_ptr_create(&output);
-	zbx_vector_ptr_create(&operators);
+	trx_vector_ptr_create(&output);
+	trx_vector_ptr_create(&operators);
 
 	while (SUCCEED == jsonpath_expression_next_token(expression, loc.r + 1, prev_group, &token_type, &loc))
 	{
@@ -681,7 +681,7 @@ static int	jsonpath_parse_expression(const char *expression, zbx_jsonpath_t *jso
 			case TRX_JSONPATH_TOKEN_PAREN_RIGHT:
 				if (TRX_JSONPATH_TOKEN_GROUP_OPERAND != prev_group)
 				{
-					zbx_jsonpath_error(expression + loc.l);
+					trx_jsonpath_error(expression + loc.l);
 					goto out;
 				}
 
@@ -701,11 +701,11 @@ static int	jsonpath_parse_expression(const char *expression, zbx_jsonpath_t *jso
 			/* expression cannot have two consequent operands */
 			if (TRX_JSONPATH_TOKEN_GROUP_OPERAND == prev_group)
 			{
-				zbx_jsonpath_error(expression + loc.l);
+				trx_jsonpath_error(expression + loc.l);
 				goto out;
 			}
 
-			zbx_vector_ptr_append(&output, jsonpath_create_token(token_type, expression, &loc));
+			trx_vector_ptr_append(&output, jsonpath_create_token(token_type, expression, &loc));
 			prev_group = jsonpath_token_group(token_type);
 			continue;
 		}
@@ -717,7 +717,7 @@ static int	jsonpath_parse_expression(const char *expression, zbx_jsonpath_t *jso
 			if (TRX_JSONPATH_TOKEN_GROUP_OPERATOR2 == jsonpath_token_group(token_type) &&
 					TRX_JSONPATH_TOKEN_GROUP_OPERAND != prev_group)
 			{
-				zbx_jsonpath_error(expression + loc.l);
+				trx_jsonpath_error(expression + loc.l);
 				goto cleanup;
 			}
 
@@ -725,7 +725,7 @@ static int	jsonpath_parse_expression(const char *expression, zbx_jsonpath_t *jso
 			if (TRX_JSONPATH_TOKEN_OP_NOT == token_type &&
 					TRX_JSONPATH_TOKEN_GROUP_OPERAND == prev_group)
 			{
-				zbx_jsonpath_error(expression + loc.l);
+				trx_jsonpath_error(expression + loc.l);
 				goto cleanup;
 			}
 
@@ -742,17 +742,17 @@ static int	jsonpath_parse_expression(const char *expression, zbx_jsonpath_t *jso
 				if (TRX_JSONPATH_TOKEN_PAREN_LEFT == optoken->type)
 					break;
 
-				zbx_vector_ptr_append(&output, optoken);
+				trx_vector_ptr_append(&output, optoken);
 			}
 
-			zbx_vector_ptr_append(&operators, jsonpath_create_token(token_type, expression, &loc));
+			trx_vector_ptr_append(&operators, jsonpath_create_token(token_type, expression, &loc));
 			prev_group = jsonpath_token_group(token_type);
 			continue;
 		}
 
 		if (TRX_JSONPATH_TOKEN_PAREN_LEFT == token_type)
 		{
-			zbx_vector_ptr_append(&operators, jsonpath_create_token(token_type, expression, &loc));
+			trx_vector_ptr_append(&operators, jsonpath_create_token(token_type, expression, &loc));
 			prev_group = TRX_JSONPATH_TOKEN_GROUP_NONE;
 			continue;
 		}
@@ -762,7 +762,7 @@ static int	jsonpath_parse_expression(const char *expression, zbx_jsonpath_t *jso
 			/* right parenthesis must follow and operand or right parenthesis */
 			if (TRX_JSONPATH_TOKEN_GROUP_OPERAND != prev_group)
 			{
-				zbx_jsonpath_error(expression + loc.l);
+				trx_jsonpath_error(expression + loc.l);
 				goto cleanup;
 			}
 
@@ -776,12 +776,12 @@ static int	jsonpath_parse_expression(const char *expression, zbx_jsonpath_t *jso
 					break;
 				}
 
-				zbx_vector_ptr_append(&output, optoken);
+				trx_vector_ptr_append(&output, optoken);
 			}
 
 			if (NULL == optoken)
 			{
-				zbx_jsonpath_error(expression + loc.l);
+				trx_jsonpath_error(expression + loc.l);
 				goto cleanup;
 			}
 			jsonpath_token_free(optoken);
@@ -793,7 +793,7 @@ static int	jsonpath_parse_expression(const char *expression, zbx_jsonpath_t *jso
 out:
 	if (SUCCEED == ret)
 	{
-		zbx_jsonpath_segment_t	*segment;
+		trx_jsonpath_segment_t	*segment;
 
 		for (optoken = 0; 0 < operators.values_num; operators.values_num--)
 		{
@@ -801,31 +801,31 @@ out:
 
 			if (TRX_JSONPATH_TOKEN_PAREN_LEFT == optoken->type)
 			{
-				zbx_set_json_strerror("mismatched () brackets in expression: %s", expression);
+				trx_set_json_strerror("mismatched () brackets in expression: %s", expression);
 				ret = FAIL;
 				goto cleanup;
 			}
 
-			zbx_vector_ptr_append(&output, optoken);
+			trx_vector_ptr_append(&output, optoken);
 		}
 
 		jsonpath_reserve(jsonpath, 1);
 		segment = &jsonpath->segments[jsonpath->segments_num++];
 		segment->type = TRX_JSONPATH_SEGMENT_MATCH_EXPRESSION;
-		zbx_vector_ptr_create(&segment->data.expression.tokens);
-		zbx_vector_ptr_append_array(&segment->data.expression.tokens, output.values, output.values_num);
+		trx_vector_ptr_create(&segment->data.expression.tokens);
+		trx_vector_ptr_append_array(&segment->data.expression.tokens, output.values, output.values_num);
 
 		jsonpath->definite = 0;
 	}
 cleanup:
 	if (SUCCEED != ret)
 	{
-		zbx_vector_ptr_clear_ext(&operators, (zbx_clean_func_t)jsonpath_token_free);
-		zbx_vector_ptr_clear_ext(&output, (zbx_clean_func_t)jsonpath_token_free);
+		trx_vector_ptr_clear_ext(&operators, (trx_clean_func_t)jsonpath_token_free);
+		trx_vector_ptr_clear_ext(&output, (trx_clean_func_t)jsonpath_token_free);
 	}
 
-	zbx_vector_ptr_destroy(&operators);
-	zbx_vector_ptr_destroy(&output);
+	trx_vector_ptr_destroy(&operators);
+	trx_vector_ptr_destroy(&output);
 
 	return ret;
 }
@@ -846,17 +846,17 @@ cleanup:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  * Comments: In the trivial case (when list contains one name) the name is    *
- *           stored into zbx_jsonpath_list_t:value field and later its        *
- *           address is stored into zbx_jsonpath_list_t:values to reduce      *
+ *           stored into trx_jsonpath_list_t:value field and later its        *
+ *           address is stored into trx_jsonpath_list_t:values to reduce      *
  *           allocations in trivial cases.                                    *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_parse_names(const char *list, zbx_jsonpath_t *jsonpath, const char **next)
+static int	jsonpath_parse_names(const char *list, trx_jsonpath_t *jsonpath, const char **next)
 {
-	zbx_jsonpath_segment_t		*segment;
+	trx_jsonpath_segment_t		*segment;
 	int				ret = FAIL, parsed_name = 0;
 	const char			*end, *start = NULL;
-	zbx_jsonpath_list_node_t	*head = NULL;
+	trx_jsonpath_list_node_t	*head = NULL;
 
 	for (end = list; ']' != *end || NULL != start; end++)
 	{
@@ -870,11 +870,11 @@ static int	jsonpath_parse_names(const char *list, zbx_jsonpath_t *jsonpath, cons
 				}
 				else if (*start == *end)
 				{
-					zbx_jsonpath_list_node_t	*node;
+					trx_jsonpath_list_node_t	*node;
 
 					if (start + 1 == end)
 					{
-						ret = zbx_jsonpath_error(start);
+						ret = trx_jsonpath_error(start);
 						goto out;
 					}
 
@@ -889,7 +889,7 @@ static int	jsonpath_parse_names(const char *list, zbx_jsonpath_t *jsonpath, cons
 			case '\\':
 				if (NULL == start || ('\\' != end[1] && *start != end[1]))
 				{
-					ret = zbx_jsonpath_error(end);
+					ret = trx_jsonpath_error(end);
 					goto out;
 				}
 				end++;
@@ -903,18 +903,18 @@ static int	jsonpath_parse_names(const char *list, zbx_jsonpath_t *jsonpath, cons
 
 				if (0 == parsed_name)
 				{
-					ret = zbx_jsonpath_error(end);
+					ret = trx_jsonpath_error(end);
 					goto out;
 				}
 				parsed_name = 0;
 				break;
 			case '\0':
-				ret = zbx_jsonpath_error(end);
+				ret = trx_jsonpath_error(end);
 				goto out;
 			default:
 				if (NULL == start)
 				{
-					ret = zbx_jsonpath_error(end);
+					ret = trx_jsonpath_error(end);
 					goto out;
 				}
 		}
@@ -922,7 +922,7 @@ static int	jsonpath_parse_names(const char *list, zbx_jsonpath_t *jsonpath, cons
 
 	if (0 == parsed_name)
 	{
-		ret = zbx_jsonpath_error(end);
+		ret = trx_jsonpath_error(end);
 		goto out;
 	}
 
@@ -960,13 +960,13 @@ out:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_parse_indexes(const char *list, zbx_jsonpath_t *jsonpath, const char **next)
+static int	jsonpath_parse_indexes(const char *list, trx_jsonpath_t *jsonpath, const char **next)
 {
-	zbx_jsonpath_segment_t		*segment;
+	trx_jsonpath_segment_t		*segment;
 	const char			*end, *start = NULL;
 	int				ret = FAIL, type = TRX_JSONPATH_SEGMENT_UNKNOWN;
 	unsigned int			flags = 0, parsed_index = 0;
-	zbx_jsonpath_list_node_t	*head = NULL, *node;
+	trx_jsonpath_list_node_t	*head = NULL, *node;
 
 	for (end = list; ; end++)
 	{
@@ -981,7 +981,7 @@ static int	jsonpath_parse_indexes(const char *list, zbx_jsonpath_t *jsonpath, co
 		{
 			if (NULL != start)
 			{
-				ret = zbx_jsonpath_error(end);
+				ret = trx_jsonpath_error(end);
 				goto out;
 			}
 			start = end;
@@ -994,7 +994,7 @@ static int	jsonpath_parse_indexes(const char *list, zbx_jsonpath_t *jsonpath, co
 
 			if ('-' == *start && end == start + 1)
 			{
-				ret = zbx_jsonpath_error(start);
+				ret = trx_jsonpath_error(start);
 				goto out;
 			}
 
@@ -1013,7 +1013,7 @@ static int	jsonpath_parse_indexes(const char *list, zbx_jsonpath_t *jsonpath, co
 			{
 				if (0 == parsed_index)
 				{
-					ret = zbx_jsonpath_error(end);
+					ret = trx_jsonpath_error(end);
 					goto out;
 				}
 			}
@@ -1026,7 +1026,7 @@ static int	jsonpath_parse_indexes(const char *list, zbx_jsonpath_t *jsonpath, co
 		{
 			if (TRX_JSONPATH_SEGMENT_UNKNOWN != type)
 			{
-				ret = zbx_jsonpath_error(end);
+				ret = trx_jsonpath_error(end);
 				goto out;
 			}
 			type = TRX_JSONPATH_SEGMENT_MATCH_RANGE;
@@ -1037,7 +1037,7 @@ static int	jsonpath_parse_indexes(const char *list, zbx_jsonpath_t *jsonpath, co
 		{
 			if (TRX_JSONPATH_SEGMENT_MATCH_RANGE == type || 0 == parsed_index)
 			{
-				ret = zbx_jsonpath_error(end);
+				ret = trx_jsonpath_error(end);
 				goto out;
 			}
 			type = TRX_JSONPATH_SEGMENT_MATCH_LIST;
@@ -1045,7 +1045,7 @@ static int	jsonpath_parse_indexes(const char *list, zbx_jsonpath_t *jsonpath, co
 		}
 		else if (' ' != *end && '\t' != *end)
 		{
-			ret = zbx_jsonpath_error(end);
+			ret = trx_jsonpath_error(end);
 			goto out;
 		}
 	}
@@ -1109,7 +1109,7 @@ out:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_parse_bracket_segment(const char *start, zbx_jsonpath_t *jsonpath, const char **next)
+static int	jsonpath_parse_bracket_segment(const char *start, trx_jsonpath_t *jsonpath, const char **next)
 {
 	const char	*ptr = start;
 	int		ret;
@@ -1136,7 +1136,7 @@ static int	jsonpath_parse_bracket_segment(const char *start, zbx_jsonpath_t *jso
 		ret = jsonpath_parse_indexes(ptr, jsonpath, next);
 	}
 	else
-		ret = zbx_jsonpath_error(ptr);
+		ret = trx_jsonpath_error(ptr);
 
 	if (SUCCEED == ret)
 	{
@@ -1144,7 +1144,7 @@ static int	jsonpath_parse_bracket_segment(const char *start, zbx_jsonpath_t *jso
 		SKIP_WHITESPACE(ptr);
 
 		if (']' != *ptr)
-			return zbx_jsonpath_error(ptr);
+			return trx_jsonpath_error(ptr);
 
 		*next = ptr + 1;
 	}
@@ -1167,9 +1167,9 @@ static int	jsonpath_parse_bracket_segment(const char *start, zbx_jsonpath_t *jso
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_parse_dot_segment(const char *start, zbx_jsonpath_t *jsonpath, const char **next)
+static int	jsonpath_parse_dot_segment(const char *start, trx_jsonpath_t *jsonpath, const char **next)
 {
-	zbx_jsonpath_segment_t	*segment;
+	trx_jsonpath_segment_t	*segment;
 	const char		*ptr;
 	int			len;
 
@@ -1207,7 +1207,7 @@ static int	jsonpath_parse_dot_segment(const char *start, zbx_jsonpath_t *jsonpat
 			else if (TRX_CONST_STRLEN("sum") == ptr - start && 0 == strncmp(start, "sum", ptr - start))
 				segment->data.function.type = TRX_JSONPATH_FUNCTION_SUM;
 			else
-				return zbx_jsonpath_error(start);
+				return trx_jsonpath_error(start);
 
 			segment->type = TRX_JSONPATH_SEGMENT_FUNCTION;
 			*next = end + 1;
@@ -1220,13 +1220,13 @@ static int	jsonpath_parse_dot_segment(const char *start, zbx_jsonpath_t *jsonpat
 		segment->type = TRX_JSONPATH_SEGMENT_MATCH_LIST;
 		segment->data.list.type = TRX_JSONPATH_LIST_NAME;
 		segment->data.list.values = jsonpath_list_create_node(len + 1);
-		zbx_strlcpy(segment->data.list.values->data, start, len + 1);
+		trx_strlcpy(segment->data.list.values->data, start, len + 1);
 		segment->data.list.values->next = NULL;
 		*next = start + len;
 		return SUCCEED;
 	}
 
-	return zbx_jsonpath_error(start);
+	return trx_jsonpath_error(start);
 }
 
 /******************************************************************************
@@ -1243,11 +1243,11 @@ static int	jsonpath_parse_dot_segment(const char *start, zbx_jsonpath_t *jsonpat
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_pointer_to_jp(const char *pnext, struct zbx_json_parse *jp)
+static int	jsonpath_pointer_to_jp(const char *pnext, struct trx_json_parse *jp)
 {
 	if ('[' == *pnext || '{' == *pnext)
 	{
-		return zbx_json_brackets_open(pnext, jp);
+		return trx_json_brackets_open(pnext, jp);
 	}
 	else
 	{
@@ -1274,20 +1274,20 @@ static int	jsonpath_pointer_to_jp(const char *pnext, struct zbx_json_parse *jp)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_query_contents(const struct zbx_json_parse *jp_root, const char *pnext,
-		const zbx_jsonpath_t *jsonpath, int path_depth, zbx_vector_str_t *objects)
+static int	jsonpath_query_contents(const struct trx_json_parse *jp_root, const char *pnext,
+		const trx_jsonpath_t *jsonpath, int path_depth, trx_vector_str_t *objects)
 {
-	struct zbx_json_parse	jp_child;
+	struct trx_json_parse	jp_child;
 
 	switch (*pnext)
 	{
 		case '{':
-			if (FAIL == zbx_json_brackets_open(pnext, &jp_child))
+			if (FAIL == trx_json_brackets_open(pnext, &jp_child))
 				return FAIL;
 
 			return jsonpath_query_object(jp_root, &jp_child, jsonpath, path_depth, objects);
 		case '[':
-			if (FAIL == zbx_json_brackets_open(pnext, &jp_child))
+			if (FAIL == trx_json_brackets_open(pnext, &jp_child))
 				return FAIL;
 
 			return jsonpath_query_array(jp_root, &jp_child, jsonpath, path_depth, objects);
@@ -1312,15 +1312,15 @@ static int	jsonpath_query_contents(const struct zbx_json_parse *jp_root, const c
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_query_next_segment(const struct zbx_json_parse *jp_root, const char *pnext,
-		const zbx_jsonpath_t *jsonpath, int path_depth, zbx_vector_str_t *objects)
+static int	jsonpath_query_next_segment(const struct trx_json_parse *jp_root, const char *pnext,
+		const trx_jsonpath_t *jsonpath, int path_depth, trx_vector_str_t *objects)
 {
 	/* check if jsonpath end has been reached, so we have found matching data */
 	/* (functions are processed afterwards)                                   */
 	if (++path_depth == jsonpath->segments_num ||
 			TRX_JSONPATH_SEGMENT_FUNCTION == jsonpath->segments[path_depth].type)
 	{
-		zbx_vector_str_append(objects, (char *)pnext);
+		trx_vector_str_append(objects, (char *)pnext);
 		return SUCCEED;
 	}
 
@@ -1347,11 +1347,11 @@ static int	jsonpath_query_next_segment(const struct zbx_json_parse *jp_root, con
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_match_name(const struct zbx_json_parse *jp_root, const char *pnext,
-		const zbx_jsonpath_t *jsonpath, int path_depth, const char *name, zbx_vector_str_t *objects)
+static int	jsonpath_match_name(const struct trx_json_parse *jp_root, const char *pnext,
+		const trx_jsonpath_t *jsonpath, int path_depth, const char *name, trx_vector_str_t *objects)
 {
-	zbx_jsonpath_segment_t		*segment;
-	zbx_jsonpath_list_node_t	*node;
+	trx_jsonpath_segment_t		*segment;
+	trx_jsonpath_list_node_t	*node;
 
 	segment = &jsonpath->segments[path_depth];
 
@@ -1387,35 +1387,35 @@ static int	jsonpath_match_name(const struct zbx_json_parse *jp_root, const char 
  *                         extract                                            *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_extract_value(const struct zbx_json_parse *jp, const char *path, zbx_variant_t *value)
+static int	jsonpath_extract_value(const struct trx_json_parse *jp, const char *path, trx_variant_t *value)
 {
-	struct zbx_json_parse	jp_child;
+	struct trx_json_parse	jp_child;
 	char			*data = NULL, *tmp_path = NULL;
 	size_t			data_alloc = 0;
 	int			ret = FAIL;
 
 	if ('@' == *path)
 	{
-		tmp_path = zbx_strdup(NULL, path);
+		tmp_path = trx_strdup(NULL, path);
 		*tmp_path = '$';
 		path = tmp_path;
 	}
 
-	if (FAIL == zbx_json_open_path(jp, path, &jp_child))
+	if (FAIL == trx_json_open_path(jp, path, &jp_child))
 		goto out;
 
-	if (NULL == zbx_json_decodevalue_dyn(jp_child.start, &data, &data_alloc, NULL))
+	if (NULL == trx_json_decodevalue_dyn(jp_child.start, &data, &data_alloc, NULL))
 	{
 		size_t	len = jp_child.end - jp_child.start + 2;
 
-		data = (char *)zbx_malloc(NULL, len);
-		zbx_strlcpy(data, jp_child.start, len);
+		data = (char *)trx_malloc(NULL, len);
+		trx_strlcpy(data, jp_child.start, len);
 	}
 
-	zbx_variant_set_str(value, data);
+	trx_variant_set_str(value, data);
 	ret = SUCCEED;
 out:
-	zbx_free(tmp_path);
+	trx_free(tmp_path);
 
 	return ret;
 }
@@ -1433,7 +1433,7 @@ out:
  * Comments: This function is used to include expression in error message.    *
  *                                                                            *
  ******************************************************************************/
-static char	*jsonpath_expression_to_str(zbx_jsonpath_expression_t *expression)
+static char	*jsonpath_expression_to_str(trx_jsonpath_expression_t *expression)
 {
 	int			i;
 	char			*str = NULL;
@@ -1441,10 +1441,10 @@ static char	*jsonpath_expression_to_str(zbx_jsonpath_expression_t *expression)
 
 	for (i = 0; i < expression->tokens.values_num; i++)
 	{
-		zbx_jsonpath_token_t	*token = (zbx_jsonpath_token_t *)expression->tokens.values[i];
+		trx_jsonpath_token_t	*token = (trx_jsonpath_token_t *)expression->tokens.values[i];
 
 		if (0 != i)
-			zbx_strcpy_alloc(&str, &str_alloc, &str_offset, ",");
+			trx_strcpy_alloc(&str, &str_alloc, &str_offset, ",");
 
 		switch (token->type)
 		{
@@ -1455,58 +1455,58 @@ static char	*jsonpath_expression_to_str(zbx_jsonpath_expression_t *expression)
 			case TRX_JSONPATH_TOKEN_CONST_STR:
 				TRX_FALLTHROUGH;
 			case TRX_JSONPATH_TOKEN_CONST_NUM:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, token->data);
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, token->data);
 				break;
 			case TRX_JSONPATH_TOKEN_PAREN_LEFT:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "(");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "(");
 				break;
 			case TRX_JSONPATH_TOKEN_PAREN_RIGHT:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, ")");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, ")");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_PLUS:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "+");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "+");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_MINUS:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "-");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "-");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_MULT:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "*");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "*");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_DIV:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "/");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "/");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_EQ:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "==");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "==");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_NE:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "!=");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "!=");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_GT:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, ">");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, ">");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_GE:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, ">=");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, ">=");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_LT:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "<");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "<");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_LE:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "<=");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "<=");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_NOT:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "!");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "!");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_AND:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "&&");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "&&");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_OR:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "||");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "||");
 				break;
 			case TRX_JSONPATH_TOKEN_OP_REGEXP:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "=~");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "=~");
 				break;
 			default:
-				zbx_strcpy_alloc(&str, &str_alloc, &str_offset, "?");
+				trx_strcpy_alloc(&str, &str_alloc, &str_offset, "?");
 				break;
 		}
 	}
@@ -1526,13 +1526,13 @@ static char	*jsonpath_expression_to_str(zbx_jsonpath_expression_t *expression)
  *           evaluation fails                                                 *
  *                                                                            *
  ******************************************************************************/
-static void	jsonpath_set_expression_error(zbx_jsonpath_expression_t *expression)
+static void	jsonpath_set_expression_error(trx_jsonpath_expression_t *expression)
 {
 	char	*text;
 
 	text = jsonpath_expression_to_str(expression);
-	zbx_set_json_strerror("invalid compiled expression: %s", text);
-	zbx_free(text);
+	trx_set_json_strerror("invalid compiled expression: %s", text);
+	trx_free(text);
 }
 
 /******************************************************************************
@@ -1547,7 +1547,7 @@ static void	jsonpath_set_expression_error(zbx_jsonpath_expression_t *expression)
  *           boolean functions (and, or, negation).                           *
  *                                                                            *
  ******************************************************************************/
-static void	jsonpath_variant_to_boolean(zbx_variant_t *value)
+static void	jsonpath_variant_to_boolean(trx_variant_t *value)
 {
 	double	res;
 
@@ -1557,7 +1557,7 @@ static void	jsonpath_variant_to_boolean(zbx_variant_t *value)
 			res = (0 != value->data.ui64 ? 1 : 0);
 			break;
 		case TRX_VARIANT_DBL:
-			res = (SUCCEED != zbx_double_compare(value->data.dbl, 0.0) ? 1 : 0);
+			res = (SUCCEED != trx_double_compare(value->data.dbl, 0.0) ? 1 : 0);
 			break;
 		case TRX_VARIANT_STR:
 			res = ('\0' != *value->data.str ? 1 : 0);
@@ -1571,8 +1571,8 @@ static void	jsonpath_variant_to_boolean(zbx_variant_t *value)
 			break;
 	}
 
-	zbx_variant_clear(value);
-	zbx_variant_set_dbl(value, res);
+	trx_variant_clear(value);
+	trx_variant_set_dbl(value, res);
 }
 
 /******************************************************************************
@@ -1591,16 +1591,16 @@ static void	jsonpath_variant_to_boolean(zbx_variant_t *value)
  ******************************************************************************/
 static int	jsonpath_regexp_match(const char *text, const char *pattern, double *result)
 {
-	zbx_regexp_t	*rxp;
+	trx_regexp_t	*rxp;
 	const char	*error = NULL;
 
-	if (FAIL == zbx_regexp_compile(pattern, &rxp, &error))
+	if (FAIL == trx_regexp_compile(pattern, &rxp, &error))
 	{
-		zbx_set_json_strerror("invalid regular expression in JSON path: %s", error);
+		trx_set_json_strerror("invalid regular expression in JSON path: %s", error);
 		return FAIL;
 	}
-	*result = (0 == zbx_regexp_match_precompiled(text, rxp) ? 1.0 : 0.0);
-	zbx_regexp_free(rxp);
+	*result = (0 == trx_regexp_match_precompiled(text, rxp) ? 1.0 : 0.0);
+	trx_regexp_free(rxp);
 
 	return SUCCEED;
 }
@@ -1622,27 +1622,27 @@ static int	jsonpath_regexp_match(const char *text, const char *pattern, double *
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_match_expression(const struct zbx_json_parse *jp_root, const char *pnext,
-		const zbx_jsonpath_t *jsonpath, int path_depth, zbx_vector_str_t *objects)
+static int	jsonpath_match_expression(const struct trx_json_parse *jp_root, const char *pnext,
+		const trx_jsonpath_t *jsonpath, int path_depth, trx_vector_str_t *objects)
 {
-	struct zbx_json_parse	jp;
-	zbx_vector_var_t	stack;
+	struct trx_json_parse	jp;
+	trx_vector_var_t	stack;
 	int			i, ret = SUCCEED;
-	zbx_jsonpath_segment_t	*segment;
-	zbx_variant_t		value, *right;
+	trx_jsonpath_segment_t	*segment;
+	trx_variant_t		value, *right;
 	double			res;
 
 	if (SUCCEED != jsonpath_pointer_to_jp(pnext, &jp))
 		return FAIL;
 
-	zbx_vector_var_create(&stack);
+	trx_vector_var_create(&stack);
 
 	segment = &jsonpath->segments[path_depth];
 
 	for (i = 0; i < segment->data.expression.tokens.values_num; i++)
 	{
-		zbx_variant_t		*left;
-		zbx_jsonpath_token_t	*token = (zbx_jsonpath_token_t *)segment->data.expression.tokens.values[i];
+		trx_variant_t		*left;
+		trx_jsonpath_token_t	*token = (trx_jsonpath_token_t *)segment->data.expression.tokens.values[i];
 
 		if (TRX_JSONPATH_TOKEN_GROUP_OPERATOR2 == jsonpath_token_group(token->type))
 		{
@@ -1659,110 +1659,110 @@ static int	jsonpath_match_expression(const struct zbx_json_parse *jp_root, const
 			switch (token->type)
 			{
 				case TRX_JSONPATH_TOKEN_OP_PLUS:
-					zbx_variant_convert(left, TRX_VARIANT_DBL);
-					zbx_variant_convert(right, TRX_VARIANT_DBL);
+					trx_variant_convert(left, TRX_VARIANT_DBL);
+					trx_variant_convert(right, TRX_VARIANT_DBL);
 					left->data.dbl += right->data.dbl;
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_MINUS:
-					zbx_variant_convert(left, TRX_VARIANT_DBL);
-					zbx_variant_convert(right, TRX_VARIANT_DBL);
+					trx_variant_convert(left, TRX_VARIANT_DBL);
+					trx_variant_convert(right, TRX_VARIANT_DBL);
 					left->data.dbl -= right->data.dbl;
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_MULT:
-					zbx_variant_convert(left, TRX_VARIANT_DBL);
-					zbx_variant_convert(right, TRX_VARIANT_DBL);
+					trx_variant_convert(left, TRX_VARIANT_DBL);
+					trx_variant_convert(right, TRX_VARIANT_DBL);
 					left->data.dbl *= right->data.dbl;
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_DIV:
-					zbx_variant_convert(left, TRX_VARIANT_DBL);
-					zbx_variant_convert(right, TRX_VARIANT_DBL);
+					trx_variant_convert(left, TRX_VARIANT_DBL);
+					trx_variant_convert(right, TRX_VARIANT_DBL);
 					left->data.dbl /= right->data.dbl;
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_EQ:
-					res = (0 == zbx_variant_compare(left, right) ? 1.0 : 0.0);
-					zbx_variant_clear(left);
-					zbx_variant_clear(right);
-					zbx_variant_set_dbl(left, res);
+					res = (0 == trx_variant_compare(left, right) ? 1.0 : 0.0);
+					trx_variant_clear(left);
+					trx_variant_clear(right);
+					trx_variant_set_dbl(left, res);
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_NE:
-					res = (0 != zbx_variant_compare(left, right) ? 1.0 : 0.0);
-					zbx_variant_clear(left);
-					zbx_variant_clear(right);
-					zbx_variant_set_dbl(left, res);
+					res = (0 != trx_variant_compare(left, right) ? 1.0 : 0.0);
+					trx_variant_clear(left);
+					trx_variant_clear(right);
+					trx_variant_set_dbl(left, res);
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_GT:
-					res = (0 < zbx_variant_compare(left, right) ? 1.0 : 0.0);
-					zbx_variant_clear(left);
-					zbx_variant_clear(right);
-					zbx_variant_set_dbl(left, res);
+					res = (0 < trx_variant_compare(left, right) ? 1.0 : 0.0);
+					trx_variant_clear(left);
+					trx_variant_clear(right);
+					trx_variant_set_dbl(left, res);
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_GE:
-					res = (0 <= zbx_variant_compare(left, right) ? 1.0 : 0.0);
-					zbx_variant_clear(left);
-					zbx_variant_clear(right);
-					zbx_variant_set_dbl(left, res);
+					res = (0 <= trx_variant_compare(left, right) ? 1.0 : 0.0);
+					trx_variant_clear(left);
+					trx_variant_clear(right);
+					trx_variant_set_dbl(left, res);
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_LT:
-					res = (0 > zbx_variant_compare(left, right) ? 1.0 : 0.0);
-					zbx_variant_clear(left);
-					zbx_variant_clear(right);
-					zbx_variant_set_dbl(left, res);
+					res = (0 > trx_variant_compare(left, right) ? 1.0 : 0.0);
+					trx_variant_clear(left);
+					trx_variant_clear(right);
+					trx_variant_set_dbl(left, res);
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_LE:
-					res = (0 >= zbx_variant_compare(left, right) ? 1.0 : 0.0);
-					zbx_variant_clear(left);
-					zbx_variant_clear(right);
-					zbx_variant_set_dbl(left, res);
+					res = (0 >= trx_variant_compare(left, right) ? 1.0 : 0.0);
+					trx_variant_clear(left);
+					trx_variant_clear(right);
+					trx_variant_set_dbl(left, res);
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_AND:
 					jsonpath_variant_to_boolean(left);
 					jsonpath_variant_to_boolean(right);
-					if (SUCCEED != zbx_double_compare(left->data.dbl, 0.0) &&
-							SUCCEED != zbx_double_compare(right->data.dbl, 0.0))
+					if (SUCCEED != trx_double_compare(left->data.dbl, 0.0) &&
+							SUCCEED != trx_double_compare(right->data.dbl, 0.0))
 					{
 						res = 1.0;
 					}
 					else
 						res = 0.0;
-					zbx_variant_set_dbl(left, res);
-					zbx_variant_clear(right);
+					trx_variant_set_dbl(left, res);
+					trx_variant_clear(right);
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_OR:
 					jsonpath_variant_to_boolean(left);
 					jsonpath_variant_to_boolean(right);
-					if (SUCCEED != zbx_double_compare(left->data.dbl, 0.0) ||
-							SUCCEED != zbx_double_compare(right->data.dbl, 0.0))
+					if (SUCCEED != trx_double_compare(left->data.dbl, 0.0) ||
+							SUCCEED != trx_double_compare(right->data.dbl, 0.0))
 					{
 						res = 1.0;
 					}
 					else
 						res = 0.0;
-					zbx_variant_set_dbl(left, res);
-					zbx_variant_clear(right);
+					trx_variant_set_dbl(left, res);
+					trx_variant_clear(right);
 					stack.values_num--;
 					break;
 				case TRX_JSONPATH_TOKEN_OP_REGEXP:
-					zbx_variant_convert(left, TRX_VARIANT_STR);
-					zbx_variant_convert(right, TRX_VARIANT_STR);
+					trx_variant_convert(left, TRX_VARIANT_STR);
+					trx_variant_convert(right, TRX_VARIANT_STR);
 					ret = jsonpath_regexp_match(left->data.str, right->data.str, &res);
-					zbx_variant_clear(left);
-					zbx_variant_clear(right);
+					trx_variant_clear(left);
+					trx_variant_clear(right);
 
 					if (FAIL == ret)
 						goto out;
 
-					zbx_variant_set_dbl(left, res);
+					trx_variant_set_dbl(left, res);
 					stack.values_num--;
 					break;
 				default:
@@ -1775,8 +1775,8 @@ static int	jsonpath_match_expression(const struct zbx_json_parse *jp_root, const
 		{
 			case TRX_JSONPATH_TOKEN_PATH_ABSOLUTE:
 				if (FAIL == jsonpath_extract_value(jp_root, token->data, &value))
-					zbx_variant_set_none(&value);
-				zbx_vector_var_append_ptr(&stack, &value);
+					trx_variant_set_none(&value);
+				trx_vector_var_append_ptr(&stack, &value);
 				break;
 			case TRX_JSONPATH_TOKEN_PATH_RELATIVE:
 				/* relative path can be applied only to array or object */
@@ -1784,16 +1784,16 @@ static int	jsonpath_match_expression(const struct zbx_json_parse *jp_root, const
 					goto out;
 
 				if (FAIL == jsonpath_extract_value(&jp, token->data, &value))
-					zbx_variant_set_none(&value);
-				zbx_vector_var_append_ptr(&stack, &value);
+					trx_variant_set_none(&value);
+				trx_vector_var_append_ptr(&stack, &value);
 				break;
 			case TRX_JSONPATH_TOKEN_CONST_STR:
-				zbx_variant_set_str(&value, zbx_strdup(NULL, token->data));
-				zbx_vector_var_append_ptr(&stack, &value);
+				trx_variant_set_str(&value, trx_strdup(NULL, token->data));
+				trx_vector_var_append_ptr(&stack, &value);
 				break;
 			case TRX_JSONPATH_TOKEN_CONST_NUM:
-				zbx_variant_set_dbl(&value, atof(token->data));
-				zbx_vector_var_append_ptr(&stack, &value);
+				trx_variant_set_dbl(&value, atof(token->data));
+				trx_vector_var_append_ptr(&stack, &value);
 				break;
 			case TRX_JSONPATH_TOKEN_OP_NOT:
 				if (1 > stack.values_num)
@@ -1818,12 +1818,12 @@ static int	jsonpath_match_expression(const struct zbx_json_parse *jp_root, const
 	}
 
 	jsonpath_variant_to_boolean(&stack.values[0]);
-	if (SUCCEED != zbx_double_compare(stack.values[0].data.dbl, 0.0))
+	if (SUCCEED != trx_double_compare(stack.values[0].data.dbl, 0.0))
 		ret = jsonpath_query_next_segment(jp_root, pnext, jsonpath, path_depth, objects);
 out:
 	for (i = 0; i < stack.values_num; i++)
-		zbx_variant_clear(&stack.values[i]);
-	zbx_vector_var_destroy(&stack);
+		trx_variant_clear(&stack.values[i]);
+	trx_vector_var_destroy(&stack);
 
 	return ret;
 }
@@ -1845,17 +1845,17 @@ out:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_query_object(const struct zbx_json_parse *jp_root, const struct zbx_json_parse *jp,
-		const zbx_jsonpath_t *jsonpath, int path_depth, zbx_vector_str_t *objects)
+static int	jsonpath_query_object(const struct trx_json_parse *jp_root, const struct trx_json_parse *jp,
+		const trx_jsonpath_t *jsonpath, int path_depth, trx_vector_str_t *objects)
 {
 	const char		*pnext = NULL;
 	char			name[MAX_STRING_LEN];
-	zbx_jsonpath_segment_t	*segment;
+	trx_jsonpath_segment_t	*segment;
 	int			ret = SUCCEED;
 
 	segment = &jsonpath->segments[path_depth];
 
-	while (NULL != (pnext = zbx_json_pair_next(jp, pnext, name, sizeof(name))) && SUCCEED == ret)
+	while (NULL != (pnext = trx_json_pair_next(jp, pnext, name, sizeof(name))) && SUCCEED == ret)
 	{
 		switch (segment->type)
 		{
@@ -1898,11 +1898,11 @@ static int	jsonpath_query_object(const struct zbx_json_parse *jp_root, const str
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_match_index(const struct zbx_json_parse *jp_root, const char *pnext,
-		const zbx_jsonpath_t *jsonpath, int path_depth, int index, int elements_num, zbx_vector_str_t *objects)
+static int	jsonpath_match_index(const struct trx_json_parse *jp_root, const char *pnext,
+		const trx_jsonpath_t *jsonpath, int path_depth, int index, int elements_num, trx_vector_str_t *objects)
 {
-	zbx_jsonpath_segment_t		*segment;
-	zbx_jsonpath_list_node_t	*node;
+	trx_jsonpath_segment_t		*segment;
+	trx_jsonpath_list_node_t	*node;
 
 	segment = &jsonpath->segments[path_depth];
 
@@ -1946,11 +1946,11 @@ static int	jsonpath_match_index(const struct zbx_json_parse *jp_root, const char
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_match_range(const struct zbx_json_parse *jp_root, const char *pnext,
-		const zbx_jsonpath_t *jsonpath, int path_depth, int index, int elements_num, zbx_vector_str_t *objects)
+static int	jsonpath_match_range(const struct trx_json_parse *jp_root, const char *pnext,
+		const trx_jsonpath_t *jsonpath, int path_depth, int index, int elements_num, trx_vector_str_t *objects)
 {
 	int			start_index, end_index;
-	zbx_jsonpath_segment_t	*segment;
+	trx_jsonpath_segment_t	*segment;
 
 	segment = &jsonpath->segments[path_depth];
 
@@ -1988,19 +1988,19 @@ static int	jsonpath_match_range(const struct zbx_json_parse *jp_root, const char
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_query_array(const struct zbx_json_parse *jp_root, const struct zbx_json_parse *jp,
-		const zbx_jsonpath_t *jsonpath, int path_depth, zbx_vector_str_t *objects)
+static int	jsonpath_query_array(const struct trx_json_parse *jp_root, const struct trx_json_parse *jp,
+		const trx_jsonpath_t *jsonpath, int path_depth, trx_vector_str_t *objects)
 {
 	const char		*pnext = NULL;
 	int			index = 0, elements_num = 0, ret = SUCCEED;
-	zbx_jsonpath_segment_t	*segment;
+	trx_jsonpath_segment_t	*segment;
 
 	segment = &jsonpath->segments[path_depth];
 
-	while (NULL != (pnext = zbx_json_next(jp, pnext)))
+	while (NULL != (pnext = trx_json_next(jp, pnext)))
 		elements_num++;
 
-	while (NULL != (pnext = zbx_json_next(jp, pnext)) && SUCCEED == ret)
+	while (NULL != (pnext = trx_json_next(jp, pnext)) && SUCCEED == ret)
 	{
 		switch (segment->type)
 		{
@@ -2051,11 +2051,11 @@ static int	jsonpath_extract_element(const char *ptr, char **element)
 {
 	size_t	element_size = 0;
 
-	if (NULL == zbx_json_decodevalue_dyn(ptr, element, &element_size, NULL))
+	if (NULL == trx_json_decodevalue_dyn(ptr, element, &element_size, NULL))
 	{
-		struct zbx_json_parse	jp;
+		struct trx_json_parse	jp;
 
-		if (SUCCEED != zbx_json_brackets_open(ptr, &jp))
+		if (SUCCEED != trx_json_brackets_open(ptr, &jp))
 			return FAIL;
 
 		*element = jsonpath_strndup(jp.start, jp.end - jp.start + 1);
@@ -2081,10 +2081,10 @@ static int	jsonpath_extract_numeric_value(const char *ptr, double *value)
 {
 	char	buffer[MAX_STRING_LEN];
 
-	if (NULL == zbx_json_decodevalue(ptr, buffer, sizeof(buffer), NULL) ||
+	if (NULL == trx_json_decodevalue(ptr, buffer, sizeof(buffer), NULL) ||
 		SUCCEED != is_double(buffer))
 	{
-		zbx_set_json_strerror("array value is not a number starting with: %s", ptr);
+		trx_set_json_strerror("array value is not a number starting with: %s", ptr);
 		return FAIL;
 	}
 
@@ -2111,41 +2111,41 @@ static int	jsonpath_extract_numeric_value(const char *ptr, double *value)
  *                         json error                                         *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_apply_function(const zbx_vector_str_t *objects, zbx_jsonpath_function_type_t type,
+static int	jsonpath_apply_function(const trx_vector_str_t *objects, trx_jsonpath_function_type_t type,
 		int definite_path, char **output)
 {
 	int			i, ret = FAIL;
-	zbx_vector_str_t	objects_tmp;
+	trx_vector_str_t	objects_tmp;
 	double			result;
 
-	zbx_vector_str_create(&objects_tmp);
+	trx_vector_str_create(&objects_tmp);
 
 	/* convert definite path result to object array if possible */
 	if (0 != definite_path)
 	{
 		const char		*pnext;
-		struct zbx_json_parse	jp;
+		struct trx_json_parse	jp;
 
 		if (0 == objects->values_num || '[' != *objects->values[0])
 		{
 			/* all functions can be applied only to arrays        */
 			/* attempt to apply a function to non-array will fail */
-			zbx_set_json_strerror("cannot apply function to non-array JSON element");
+			trx_set_json_strerror("cannot apply function to non-array JSON element");
 			goto out;
 		}
 
-		if (FAIL == zbx_json_brackets_open(objects->values[0], &jp))
+		if (FAIL == trx_json_brackets_open(objects->values[0], &jp))
 			goto out;
 
-		for (pnext = NULL; NULL != (pnext = zbx_json_next(&jp, pnext));)
-			zbx_vector_str_append(&objects_tmp, (char*)pnext);
+		for (pnext = NULL; NULL != (pnext = trx_json_next(&jp, pnext));)
+			trx_vector_str_append(&objects_tmp, (char*)pnext);
 
 		objects = &objects_tmp;
 	}
 
 	if (TRX_JSONPATH_FUNCTION_LENGTH == type)
 	{
-		*output = zbx_dsprintf(NULL, "%d", objects->values_num);
+		*output = trx_dsprintf(NULL, "%d", objects->values_num);
 		ret = SUCCEED;
 		goto out;
 	}
@@ -2162,7 +2162,7 @@ static int	jsonpath_apply_function(const zbx_vector_str_t *objects, zbx_jsonpath
 
 	if (0 == objects->values_num)
 	{
-		zbx_set_json_strerror("cannot apply aggregation function to empty array");
+		trx_set_json_strerror("cannot apply aggregation function to empty array");
 		goto out;
 	}
 
@@ -2198,16 +2198,16 @@ static int	jsonpath_apply_function(const zbx_vector_str_t *objects, zbx_jsonpath
 	if (TRX_JSONPATH_FUNCTION_AVG == type)
 		result /= objects->values_num;
 
-	*output = zbx_dsprintf(NULL, TRX_FS_DBL, result);
+	*output = trx_dsprintf(NULL, TRX_FS_DBL, result);
 	if (SUCCEED != is_double(*output))
 	{
-		zbx_set_json_strerror("invalid function result: %s", *output);
+		trx_set_json_strerror("invalid function result: %s", *output);
 		goto out;
 	}
 	del_zeros(*output);
 	ret = SUCCEED;
 out:
-	zbx_vector_str_destroy(&objects_tmp);
+	trx_vector_str_destroy(&objects_tmp);
 
 	return ret;
 }
@@ -2230,20 +2230,20 @@ out:
  *                         json error                                         *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_apply_functions(const struct zbx_json_parse *jp_root, const zbx_vector_str_t *objects,
-		const zbx_jsonpath_t *jsonpath, int path_depth, char **output)
+static int	jsonpath_apply_functions(const struct trx_json_parse *jp_root, const trx_vector_str_t *objects,
+		const trx_jsonpath_t *jsonpath, int path_depth, char **output)
 {
 	int			ret, clear_input_contents = 0, definite_path;
-	zbx_vector_str_t	input;
+	trx_vector_str_t	input;
 
-	zbx_vector_str_create(&input);
+	trx_vector_str_create(&input);
 
 	/* when functions are applied directly to the json document (at the start of the jsonpath ) */
 	/* it makes all document as input object                                                    */
 	if (0 == path_depth)
-		zbx_vector_str_append(&input, (char *)jp_root->start);
+		trx_vector_str_append(&input, (char *)jp_root->start);
 	else
-		zbx_vector_str_append_array(&input, objects->values, objects->values_num);
+		trx_vector_str_append_array(&input, objects->values, objects->values_num);
 
 	definite_path = jsonpath->definite;
 
@@ -2254,11 +2254,11 @@ static int	jsonpath_apply_functions(const struct zbx_json_parse *jp_root, const 
 			break;
 
 		if (0 != clear_input_contents)
-			zbx_vector_str_clear_ext(&input, zbx_str_free);
+			trx_vector_str_clear_ext(&input, trx_str_free);
 		else
-			zbx_vector_str_clear(&input);
+			trx_vector_str_clear(&input);
 
-		zbx_vector_str_append(&input, *output);
+		trx_vector_str_append(&input, *output);
 		*output = NULL;
 		clear_input_contents = 1;
 
@@ -2267,8 +2267,8 @@ static int	jsonpath_apply_functions(const struct zbx_json_parse *jp_root, const 
 	}
 
 	if (0 != clear_input_contents)
-		zbx_vector_str_clear_ext(&input, zbx_str_free);
-	zbx_vector_str_destroy(&input);
+		trx_vector_str_clear_ext(&input, trx_str_free);
+	trx_vector_str_destroy(&input);
 
 	return ret;
 }
@@ -2288,7 +2288,7 @@ static int	jsonpath_apply_functions(const struct zbx_json_parse *jp_root, const 
  *               FAIL    - invalid result data (internal json error)          *
  *                                                                            *
  ******************************************************************************/
-static int	jsonpath_format_query_result(const zbx_vector_str_t *objects, zbx_jsonpath_t *jsonpath, char **output)
+static int	jsonpath_format_query_result(const trx_vector_str_t *objects, trx_jsonpath_t *jsonpath, char **output)
 {
 	size_t	output_offset = 0, output_alloc;
 	int	i;
@@ -2303,51 +2303,51 @@ static int	jsonpath_format_query_result(const zbx_vector_str_t *objects, zbx_jso
 
 	/* reserve 32 bytes per returned object plus array start/end [] and terminating zero */
 	output_alloc = objects->values_num * 32 + 3;
-	*output = (char *)zbx_malloc(NULL, output_alloc);
+	*output = (char *)trx_malloc(NULL, output_alloc);
 
-	zbx_chrcpy_alloc(output, &output_alloc, &output_offset, '[');
+	trx_chrcpy_alloc(output, &output_alloc, &output_offset, '[');
 
 	for (i = 0; i < objects->values_num; i++)
 	{
-		struct zbx_json_parse	jp;
+		struct trx_json_parse	jp;
 
 		if (FAIL == jsonpath_pointer_to_jp(objects->values[i], &jp))
 		{
-			zbx_set_json_strerror("cannot format query result, unrecognized json part starting with: %s",
+			trx_set_json_strerror("cannot format query result, unrecognized json part starting with: %s",
 					objects->values[i]);
-			zbx_free(*output);
+			trx_free(*output);
 			return FAIL;
 		}
 
 		if (0 != i)
-			zbx_chrcpy_alloc(output, &output_alloc, &output_offset, ',');
+			trx_chrcpy_alloc(output, &output_alloc, &output_offset, ',');
 
-		zbx_strncpy_alloc(output, &output_alloc, &output_offset, jp.start, jp.end - jp.start + 1);
+		trx_strncpy_alloc(output, &output_alloc, &output_offset, jp.start, jp.end - jp.start + 1);
 	}
 
-	zbx_chrcpy_alloc(output, &output_alloc, &output_offset, ']');
+	trx_chrcpy_alloc(output, &output_alloc, &output_offset, ']');
 
 	return SUCCEED;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_jsonpath_clear                                               *
+ * Function: trx_jsonpath_clear                                               *
  *                                                                            *
  ******************************************************************************/
-void	zbx_jsonpath_clear(zbx_jsonpath_t *jsonpath)
+void	trx_jsonpath_clear(trx_jsonpath_t *jsonpath)
 {
 	int	i;
 
 	for (i = 0; i < jsonpath->segments_num; i++)
 		jsonpath_segment_clear(&jsonpath->segments[i]);
 
-	zbx_free(jsonpath->segments);
+	trx_free(jsonpath->segments);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_jsonpath_compile                                             *
+ * Function: trx_jsonpath_compile                                             *
  *                                                                            *
  * Purpose: compile jsonpath to be used in queries                            *
  *                                                                            *
@@ -2358,20 +2358,20 @@ void	zbx_jsonpath_clear(zbx_jsonpath_t *jsonpath)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_jsonpath_compile(const char *path, zbx_jsonpath_t *jsonpath)
+int	trx_jsonpath_compile(const char *path, trx_jsonpath_t *jsonpath)
 {
 	int				ret = FAIL;
 	const char			*ptr = path, *next;
-	zbx_jsonpath_segment_type_t	segment_type, last_segment_type = TRX_JSONPATH_SEGMENT_UNKNOWN;
-	zbx_jsonpath_t			jpquery;
+	trx_jsonpath_segment_type_t	segment_type, last_segment_type = TRX_JSONPATH_SEGMENT_UNKNOWN;
+	trx_jsonpath_t			jpquery;
 
 	if ('$' != *ptr || '\0' == ptr[1])
 	{
-		zbx_set_json_strerror("JSONPath query must start with the root object/element $.");
+		trx_set_json_strerror("JSONPath query must start with the root object/element $.");
 		return FAIL;
 	}
 
-	memset(&jpquery, 0, sizeof(zbx_jsonpath_t));
+	memset(&jpquery, 0, sizeof(trx_jsonpath_t));
 	jsonpath_reserve(&jpquery, 4);
 	jpquery.definite = 1;
 
@@ -2386,7 +2386,7 @@ int	zbx_jsonpath_compile(const char *path, zbx_jsonpath_t *jsonpath)
 			if ('.' == *(++ptr))
 			{
 				/* mark next segment as detached */
-				zbx_jsonpath_segment_t	*segment = &jpquery.segments[jpquery.segments_num];
+				trx_jsonpath_segment_t	*segment = &jpquery.segments[jpquery.segments_num];
 
 				if (1 != segment->detached)
 				{
@@ -2417,7 +2417,7 @@ int	zbx_jsonpath_compile(const char *path, zbx_jsonpath_t *jsonpath)
 				ret = jsonpath_parse_bracket_segment(ptr + 1, &jpquery, &next);
 				break;
 			default:
-				ret = zbx_jsonpath_error(ptr);
+				ret = trx_jsonpath_error(ptr);
 				break;
 		}
 
@@ -2428,26 +2428,26 @@ int	zbx_jsonpath_compile(const char *path, zbx_jsonpath_t *jsonpath)
 		segment_type = jpquery.segments[jpquery.segments_num - 1].type;
 		if (TRX_JSONPATH_SEGMENT_FUNCTION == last_segment_type && TRX_JSONPATH_SEGMENT_FUNCTION != segment_type)
 		{
-			ret = zbx_jsonpath_error(ptr);
+			ret = trx_jsonpath_error(ptr);
 			break;
 		}
 		last_segment_type = segment_type;
 	}
 
 	if (SUCCEED == ret && 0 == jpquery.segments_num)
-		ret = zbx_jsonpath_error(ptr);
+		ret = trx_jsonpath_error(ptr);
 
 	if (SUCCEED == ret)
 		*jsonpath = jpquery;
 	else
-		zbx_jsonpath_clear(&jpquery);
+		trx_jsonpath_clear(&jpquery);
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_jsonpath_query                                               *
+ * Function: trx_jsonpath_query                                               *
  *                                                                            *
  * Purpose: perform jsonpath query on the specified json data                 *
  *                                                                            *
@@ -2460,16 +2460,16 @@ int	zbx_jsonpath_compile(const char *path, zbx_jsonpath_t *jsonpath)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_jsonpath_query(const struct zbx_json_parse *jp, const char *path, char **output)
+int	trx_jsonpath_query(const struct trx_json_parse *jp, const char *path, char **output)
 {
-	zbx_jsonpath_t		jsonpath;
+	trx_jsonpath_t		jsonpath;
 	int			path_depth = 0, ret = SUCCEED;
-	zbx_vector_str_t	objects;
+	trx_vector_str_t	objects;
 
-	if (FAIL == zbx_jsonpath_compile(path, &jsonpath))
+	if (FAIL == trx_jsonpath_compile(path, &jsonpath))
 		return FAIL;
 
-	zbx_vector_str_create(&objects);
+	trx_vector_str_create(&objects);
 
 	if ('{' == *jp->start)
 		ret = jsonpath_query_object(jp, jp, &jsonpath, path_depth, &objects);
@@ -2488,8 +2488,8 @@ int	zbx_jsonpath_query(const struct zbx_json_parse *jp, const char *path, char *
 			ret = jsonpath_format_query_result(&objects, &jsonpath, output);
 	}
 
-	zbx_vector_str_destroy(&objects);
-	zbx_jsonpath_clear(&jsonpath);
+	trx_vector_str_destroy(&objects);
+	trx_jsonpath_clear(&jsonpath);
 
 	return ret;
 }

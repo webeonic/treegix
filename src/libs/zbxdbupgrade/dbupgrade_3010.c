@@ -192,18 +192,18 @@ typedef struct
 {
 	int			source;
 	int			object;
-	zbx_uint64_t		objectid;
-	zbx_vector_uint64_t	eventids;
+	trx_uint64_t		objectid;
+	trx_vector_uint64_t	eventids;
 }
-zbx_object_events_t;
+trx_object_events_t;
 
 
 /* source events hashset support */
-static zbx_hash_t	DBpatch_3010021_trigger_events_hash_func(const void *data)
+static trx_hash_t	DBpatch_3010021_trigger_events_hash_func(const void *data)
 {
-	const zbx_object_events_t	*oe = (const zbx_object_events_t *)data;
+	const trx_object_events_t	*oe = (const trx_object_events_t *)data;
 
-	zbx_hash_t		hash;
+	trx_hash_t		hash;
 
 	hash = TRX_DEFAULT_UINT64_HASH_FUNC(&oe->objectid);
 	hash = TRX_DEFAULT_UINT64_HASH_ALGO(&oe->source, sizeof(oe->source), hash);
@@ -214,8 +214,8 @@ static zbx_hash_t	DBpatch_3010021_trigger_events_hash_func(const void *data)
 
 static int	DBpatch_3010021_trigger_events_compare_func(const void *d1, const void *d2)
 {
-	const zbx_object_events_t	*oe1 = (const zbx_object_events_t *)d1;
-	const zbx_object_events_t	*oe2 = (const zbx_object_events_t *)d2;
+	const trx_object_events_t	*oe1 = (const trx_object_events_t *)d1;
+	const trx_object_events_t	*oe2 = (const trx_object_events_t *)d2;
 
 	TRX_RETURN_IF_NOT_EQUAL(oe1->source, oe2->source);
 	TRX_RETURN_IF_NOT_EQUAL(oe1->object, oe2->object);
@@ -238,20 +238,20 @@ static int	DBpatch_3010021_trigger_events_compare_func(const void *d1, const voi
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	DBpatch_3010021_update_event_recovery(zbx_hashset_t *events, zbx_uint64_t *eventid)
+static int	DBpatch_3010021_update_event_recovery(trx_hashset_t *events, trx_uint64_t *eventid)
 {
 	DB_ROW			row;
 	DB_RESULT		result;
 	char			*sql = NULL;
 	size_t			sql_alloc = 4096, sql_offset = 0;
 	int			i, value, ret = FAIL;
-	zbx_object_events_t	*object_events, object_events_local;
-	zbx_db_insert_t		db_insert;
+	trx_object_events_t	*object_events, object_events_local;
+	trx_db_insert_t		db_insert;
 
-	sql = (char *)zbx_malloc(NULL, sql_alloc);
+	sql = (char *)trx_malloc(NULL, sql_alloc);
 
 	/* source: 0 - EVENT_SOURCE_TRIGGERS, 3 - EVENT_SOURCE_INTERNAL */
-	zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+	trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 			"select source,object,objectid,eventid,value"
 			" from events"
 			" where eventid>" TRX_FS_UI64
@@ -263,7 +263,7 @@ static int	DBpatch_3010021_update_event_recovery(zbx_hashset_t *events, zbx_uint
 	if (NULL == (result = DBselectN(sql, 10000)))
 		goto out;
 
-	zbx_db_insert_prepare(&db_insert, "event_recovery", "eventid", "r_eventid", NULL);
+	trx_db_insert_prepare(&db_insert, "event_recovery", "eventid", "r_eventid", NULL);
 
 	while (NULL != (row = DBfetch(result)))
 	{
@@ -274,19 +274,19 @@ static int	DBpatch_3010021_update_event_recovery(zbx_hashset_t *events, zbx_uint
 		TRX_STR2UINT64(*eventid, row[3]);
 		value = atoi(row[4]);
 
-		if (NULL == (object_events = (zbx_object_events_t *)zbx_hashset_search(events, &object_events_local)))
+		if (NULL == (object_events = (trx_object_events_t *)trx_hashset_search(events, &object_events_local)))
 		{
-			object_events = (zbx_object_events_t *)zbx_hashset_insert(events, &object_events_local,
+			object_events = (trx_object_events_t *)trx_hashset_insert(events, &object_events_local,
 					sizeof(object_events_local));
 
-			zbx_vector_uint64_create(&object_events->eventids);
+			trx_vector_uint64_create(&object_events->eventids);
 		}
 
 		if (1 == value)
 		{
 			/* 1 - TRIGGER_VALUE_TRUE (PROBLEM state) */
 
-			zbx_vector_uint64_append(&object_events->eventids, *eventid);
+			trx_vector_uint64_append(&object_events->eventids, *eventid);
 
 			if (TRX_OPEN_EVENT_WARNING_NUM == object_events->eventids.values_num)
 			{
@@ -300,17 +300,17 @@ static int	DBpatch_3010021_update_event_recovery(zbx_hashset_t *events, zbx_uint
 			/* 0 - TRIGGER_VALUE_FALSE (OK state) */
 
 			for (i = 0; i < object_events->eventids.values_num; i++)
-				zbx_db_insert_add_values(&db_insert, object_events->eventids.values[i], *eventid);
+				trx_db_insert_add_values(&db_insert, object_events->eventids.values[i], *eventid);
 
-			zbx_vector_uint64_clear(&object_events->eventids);
+			trx_vector_uint64_clear(&object_events->eventids);
 		}
 	}
 	DBfree_result(result);
 
-	ret = zbx_db_insert_execute(&db_insert);
-	zbx_db_insert_clean(&db_insert);
+	ret = trx_db_insert_execute(&db_insert);
+	trx_db_insert_clean(&db_insert);
 out:
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
@@ -318,15 +318,15 @@ out:
 static int	DBpatch_3010021(void)
 {
 	int			i, ret = FAIL;
-	zbx_uint64_t		eventid = 0, old_eventid;
-	zbx_db_insert_t		db_insert;
-	zbx_hashset_t		events;
-	zbx_hashset_iter_t	iter;
-	zbx_object_events_t	*object_events;
+	trx_uint64_t		eventid = 0, old_eventid;
+	trx_db_insert_t		db_insert;
+	trx_hashset_t		events;
+	trx_hashset_iter_t	iter;
+	trx_object_events_t	*object_events;
 
-	zbx_hashset_create(&events, 1024, DBpatch_3010021_trigger_events_hash_func,
+	trx_hashset_create(&events, 1024, DBpatch_3010021_trigger_events_hash_func,
 			DBpatch_3010021_trigger_events_compare_func);
-	zbx_db_insert_prepare(&db_insert, "problem", "eventid", "source", "object", "objectid", NULL);
+	trx_db_insert_prepare(&db_insert, "problem", "eventid", "source", "object", "objectid", NULL);
 
 	do
 	{
@@ -339,34 +339,34 @@ static int	DBpatch_3010021(void)
 
 	/* generate problems from unrecovered events */
 
-	zbx_hashset_iter_reset(&events, &iter);
-	while (NULL != (object_events = (zbx_object_events_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&events, &iter);
+	while (NULL != (object_events = (trx_object_events_t *)trx_hashset_iter_next(&iter)))
 	{
 		for (i = 0; i < object_events->eventids.values_num; i++)
 		{
-			zbx_db_insert_add_values(&db_insert, object_events->eventids.values[i], object_events->source,
+			trx_db_insert_add_values(&db_insert, object_events->eventids.values[i], object_events->source,
 					object_events->object, object_events->objectid);
 		}
 
 		if (1000 < db_insert.rows.values_num)
 		{
-			if (SUCCEED != zbx_db_insert_execute(&db_insert))
+			if (SUCCEED != trx_db_insert_execute(&db_insert))
 				goto out;
 
-			zbx_db_insert_clean(&db_insert);
-			zbx_db_insert_prepare(&db_insert, "problem", "eventid", "source", "object", "objectid", NULL);
+			trx_db_insert_clean(&db_insert);
+			trx_db_insert_prepare(&db_insert, "problem", "eventid", "source", "object", "objectid", NULL);
 		}
 
-		zbx_vector_uint64_destroy(&object_events->eventids);
+		trx_vector_uint64_destroy(&object_events->eventids);
 	}
 
-	if (SUCCEED != zbx_db_insert_execute(&db_insert))
+	if (SUCCEED != trx_db_insert_execute(&db_insert))
 		goto out;
 
 	ret = SUCCEED;
 out:
-	zbx_db_insert_clean(&db_insert);
-	zbx_hashset_destroy(&events);
+	trx_db_insert_clean(&db_insert);
+	trx_hashset_destroy(&events);
 
 	return ret;
 }
@@ -380,11 +380,11 @@ static int	DBpatch_3010022(void)
 
 static int	DBpatch_3010023(void)
 {
-	zbx_db_insert_t	db_insert, db_insert_msg;
+	trx_db_insert_t	db_insert, db_insert_msg;
 	DB_ROW		row;
 	DB_RESULT	result;
 	int		ret, actions_num;
-	zbx_uint64_t	actionid, operationid;
+	trx_uint64_t	actionid, operationid;
 
 	result = DBselect("select count(*) from actions where recovery_msg=1");
 	if (NULL == (row = DBfetch(result)) || 0 == (actions_num = atoi(row[0])))
@@ -395,8 +395,8 @@ static int	DBpatch_3010023(void)
 
 	operationid = DBget_maxid_num("operations", actions_num);
 
-	zbx_db_insert_prepare(&db_insert, "operations", "operationid", "actionid", "operationtype", "recovery", NULL);
-	zbx_db_insert_prepare(&db_insert_msg, "opmessage", "operationid", "default_msg", "subject", "message", NULL);
+	trx_db_insert_prepare(&db_insert, "operations", "operationid", "actionid", "operationtype", "recovery", NULL);
+	trx_db_insert_prepare(&db_insert_msg, "opmessage", "operationid", "default_msg", "subject", "message", NULL);
 
 	DBfree_result(result);
 	result = DBselect("select actionid,r_shortdata,r_longdata from actions where recovery_msg=1");
@@ -405,17 +405,17 @@ static int	DBpatch_3010023(void)
 	{
 		TRX_STR2UINT64(actionid, row[0]);
 		/* operationtype: 11 - OPERATION_TYPE_RECOVERY_MESSAGE */
-		zbx_db_insert_add_values(&db_insert, operationid, actionid, 11, 1);
-		zbx_db_insert_add_values(&db_insert_msg, operationid, 1, row[1], row[2]);
+		trx_db_insert_add_values(&db_insert, operationid, actionid, 11, 1);
+		trx_db_insert_add_values(&db_insert_msg, operationid, 1, row[1], row[2]);
 
 		operationid++;
 	}
 
-	if (SUCCEED == (ret = zbx_db_insert_execute(&db_insert)))
-		ret = zbx_db_insert_execute(&db_insert_msg);
+	if (SUCCEED == (ret = trx_db_insert_execute(&db_insert)))
+		ret = trx_db_insert_execute(&db_insert_msg);
 
-	zbx_db_insert_clean(&db_insert_msg);
-	zbx_db_insert_clean(&db_insert);
+	trx_db_insert_clean(&db_insert_msg);
+	trx_db_insert_clean(&db_insert);
 
 out:
 	DBfree_result(result);
@@ -446,7 +446,7 @@ out:
  *           analysis is not easy to do, so to be safe failure is returned.   *
  *                                                                            *
  ******************************************************************************/
-static int	DBpatch_3010024_validate_action(zbx_uint64_t actionid, int eventsource, int evaltype, int recovery_msg)
+static int	DBpatch_3010024_validate_action(trx_uint64_t actionid, int eventsource, int evaltype, int recovery_msg)
 {
 	DB_ROW		row;
 	DB_RESULT	result;
@@ -556,12 +556,12 @@ static int	DBpatch_3010024(void)
 {
 	DB_ROW			row;
 	DB_RESULT		result;
-	zbx_vector_uint64_t	actionids_disable, actionids_convert;
+	trx_vector_uint64_t	actionids_disable, actionids_convert;
 	int			ret, evaltype, eventsource, recovery_msg;
-	zbx_uint64_t		actionid;
+	trx_uint64_t		actionid;
 
-	zbx_vector_uint64_create(&actionids_disable);
-	zbx_vector_uint64_create(&actionids_convert);
+	trx_vector_uint64_create(&actionids_disable);
+	trx_vector_uint64_create(&actionids_convert);
 
 	/* eventsource: 0 - EVENT_SOURCE_TRIGGERS, 3 - EVENT_SOURCE_INTERNAL */
 	result = DBselect("select actionid,name,eventsource,evaltype,recovery_msg from actions"
@@ -578,14 +578,14 @@ static int	DBpatch_3010024(void)
 
 		if (TRX_3010024_ACTION_DISABLE == ret)
 		{
-			zbx_vector_uint64_append(&actionids_disable, actionid);
+			trx_vector_uint64_append(&actionids_disable, actionid);
 			treegix_log(LOG_LEVEL_WARNING, "Action \"%s\" will be disabled during database upgrade:"
 					" conditions might have matched success event which is not supported anymore.",
 					row[1]);
 		}
 		else if (TRX_3010024_ACTION_CONVERT == ret)
 		{
-			zbx_vector_uint64_append(&actionids_convert, actionid);
+			trx_vector_uint64_append(&actionids_convert, actionid);
 			treegix_log(LOG_LEVEL_WARNING, "Action \"%s\" operations will be converted to recovery"
 					" operations during database upgrade.", row[1]);
 		}
@@ -605,26 +605,26 @@ static int	DBpatch_3010024(void)
 		{
 			/* status: 1 - ACTION_STATUS_DISABLED */
 
-			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update actions set status=1 where");
+			trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update actions set status=1 where");
 			DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "actionid", actionids_disable.values,
 					actionids_disable.values_num);
-			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ";\n");
+			trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ";\n");
 		}
 
 		if (0 != actionids_convert.values_num)
 		{
-			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update actions"
+			trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update actions"
 					" set r_shortdata=def_shortdata,"
 						"r_longdata=def_longdata"
 					" where");
 			DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "actionid", actionids_convert.values,
 					actionids_convert.values_num);
-			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ";\n");
+			trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ";\n");
 
-			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update operations set recovery=1 where");
+			trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update operations set recovery=1 where");
 			DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "actionid", actionids_convert.values,
 					actionids_convert.values_num);
-			zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ";\n");
+			trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, ";\n");
 		}
 
 		DBend_multiple_update(&sql, &sql_alloc, &sql_offset);
@@ -632,11 +632,11 @@ static int	DBpatch_3010024(void)
 		if (TRX_DB_OK > DBexecute("%s", sql))
 			ret = FAIL;
 
-		zbx_free(sql);
+		trx_free(sql);
 	}
 
-	zbx_vector_uint64_destroy(&actionids_convert);
-	zbx_vector_uint64_destroy(&actionids_disable);
+	trx_vector_uint64_destroy(&actionids_convert);
+	trx_vector_uint64_destroy(&actionids_disable);
 
 	return ret;
 }
@@ -671,12 +671,12 @@ static int	DBpatch_3010025(void)
  *             conditionids - [OUT] the success condition identifiers         *
  *                                                                            *
  ******************************************************************************/
-static void	DBpatch_3010026_get_conditionids(zbx_uint64_t actionid, const char *name, int eventsource,
-		zbx_vector_uint64_t *conditionids)
+static void	DBpatch_3010026_get_conditionids(trx_uint64_t actionid, const char *name, int eventsource,
+		trx_vector_uint64_t *conditionids)
 {
 	DB_ROW		row;
 	DB_RESULT	result;
-	zbx_uint64_t	conditionid;
+	trx_uint64_t	conditionid;
 	char		*condition = NULL;
 	size_t		condition_alloc = 0, condition_offset = 0;
 	int		value;
@@ -705,7 +705,7 @@ static void	DBpatch_3010026_get_conditionids(zbx_uint64_t actionid, const char *
 	while (NULL != (row = DBfetch(result)))
 	{
 		TRX_STR2UINT64(conditionid, row[0]);
-		zbx_vector_uint64_append(conditionids, conditionid);
+		trx_vector_uint64_append(conditionids, conditionid);
 
 		value = atoi(row[1]);
 
@@ -714,7 +714,7 @@ static void	DBpatch_3010026_get_conditionids(zbx_uint64_t actionid, const char *
 			/* value: 0 - TRIGGER_VALUE_OK, 1 - TRIGGER_VALUE_PROBLEM */
 			const char	*values[] = {"OK", "PROBLEM"};
 
-			zbx_snprintf_alloc(&condition, &condition_alloc, &condition_offset, "Trigger value = %s",
+			trx_snprintf_alloc(&condition, &condition_alloc, &condition_offset, "Trigger value = %s",
 					values[value]);
 		}
 		else
@@ -726,7 +726,7 @@ static void	DBpatch_3010026_get_conditionids(zbx_uint64_t actionid, const char *
 							NULL, "Low-level discovery rule in 'normal' state",
 							NULL, "Trigger in 'normal' state"};
 
-			zbx_snprintf_alloc(&condition, &condition_alloc, &condition_offset, "Event type = %s",
+			trx_snprintf_alloc(&condition, &condition_alloc, &condition_offset, "Event type = %s",
 					values[value]);
 		}
 
@@ -736,7 +736,7 @@ static void	DBpatch_3010026_get_conditionids(zbx_uint64_t actionid, const char *
 		condition_offset = 0;
 	}
 
-	zbx_free(condition);
+	trx_free(condition);
 	DBfree_result(result);
 }
 
@@ -775,7 +775,7 @@ static size_t	DBpatch_3010026_expression_skip_whitespace(const char *expression,
  * Comments: The recognized tokens are '(', ')', 'and', 'or' and '{<id>}'.    *
  *                                                                            *
  ******************************************************************************/
-static int	DBpatch_3010026_expression_get_token(const char *expression, int offset, zbx_strloc_t *token)
+static int	DBpatch_3010026_expression_get_token(const char *expression, int offset, trx_strloc_t *token)
 {
 	int	ret = TRX_3010026_TOKEN_UNKNOWN;
 
@@ -838,8 +838,8 @@ static int	DBpatch_3010026_expression_get_token(const char *expression, int offs
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	DBpatch_3010026_expression_validate_value(const char *expression, zbx_strloc_t *value,
-		const zbx_vector_str_t *filter)
+static int	DBpatch_3010026_expression_validate_value(const char *expression, trx_strloc_t *value,
+		const trx_vector_str_t *filter)
 {
 	int	i;
 
@@ -862,7 +862,7 @@ static int	DBpatch_3010026_expression_validate_value(const char *expression, zbx
  *             cu         - [IN] the substring location                       *
  *                                                                            *
  ******************************************************************************/
-static void	DBpatch_3010026_expression_cut_substring(char *expression, zbx_strloc_t *cut)
+static void	DBpatch_3010026_expression_cut_substring(char *expression, trx_strloc_t *cut)
 {
 	if (cut->l <= cut->r)
 		memmove(expression + cut->l, expression + cut->r + 1, strlen(expression + cut->r + 1) + 1);
@@ -878,7 +878,7 @@ static void	DBpatch_3010026_expression_cut_substring(char *expression, zbx_strlo
  *             offset    - [IN] the offset                                    *
  *                                                                            *
  ******************************************************************************/
-static void	DBpatch_3010026_expression_move_location(zbx_strloc_t *location, int offset)
+static void	DBpatch_3010026_expression_move_location(trx_strloc_t *location, int offset)
 {
 	location->l += offset;
 	location->r += offset;
@@ -898,10 +898,10 @@ static void	DBpatch_3010026_expression_move_location(zbx_strloc_t *location, int
  *               FAIL    - failed to parse expression                         *
  *                                                                            *
  ******************************************************************************/
-static int	DBpatch_3010026_expression_remove_values_impl(char *expression, zbx_strloc_t *exp_token,
-		const zbx_vector_str_t *filter)
+static int	DBpatch_3010026_expression_remove_values_impl(char *expression, trx_strloc_t *exp_token,
+		const trx_vector_str_t *filter)
 {
-	zbx_strloc_t	token, cut_loc, op_token, value_token;
+	trx_strloc_t	token, cut_loc, op_token, value_token;
 	int		token_type, cut_value = 0, state = TRX_3010026_PARSE_VALUE,
 			prevop_type = TRX_3010026_TOKEN_UNKNOWN;
 
@@ -1010,13 +1010,13 @@ static int	DBpatch_3010026_expression_remove_values_impl(char *expression, zbx_s
  *               FAIL    - failed to parse expression                         *
  *                                                                            *
  ******************************************************************************/
-static int	DBpatch_3010026_expression_remove_values(char *expression, const zbx_vector_str_t *filter)
+static int	DBpatch_3010026_expression_remove_values(char *expression, const trx_vector_str_t *filter)
 {
 	int		ret;
-	zbx_strloc_t	token = {0};
+	trx_strloc_t	token = {0};
 
 	if (SUCCEED == (ret = DBpatch_3010026_expression_remove_values_impl(expression, &token, filter)))
-		zbx_lrtrim(expression, " ");
+		trx_lrtrim(expression, " ");
 
 	return ret;
 }
@@ -1025,16 +1025,16 @@ static int	DBpatch_3010026(void)
 {
 	DB_ROW			row;
 	DB_RESULT		result;
-	zbx_vector_uint64_t	conditionids, actionids;
+	trx_vector_uint64_t	conditionids, actionids;
 	int			ret = FAIL, evaltype, index, i, eventsource;
-	zbx_uint64_t		actionid;
+	trx_uint64_t		actionid;
 	char			*sql = NULL, *formula;
 	size_t			sql_alloc = 0, sql_offset = 0;
-	zbx_vector_str_t	filter;
+	trx_vector_str_t	filter;
 
-	zbx_vector_uint64_create(&conditionids);
-	zbx_vector_uint64_create(&actionids);
-	zbx_vector_str_create(&filter);
+	trx_vector_uint64_create(&conditionids);
+	trx_vector_uint64_create(&actionids);
+	trx_vector_str_create(&filter);
 	DBbegin_multiple_update(&sql, &sql_alloc, &sql_offset);
 
 	result = DBselect("select actionid,eventsource,evaltype,formula,name from actions");
@@ -1056,19 +1056,19 @@ static int	DBpatch_3010026(void)
 		if (index == conditionids.values_num)
 			continue;
 
-		formula = zbx_strdup(NULL, row[3]);
+		formula = trx_strdup(NULL, row[3]);
 
 		for (i = index; i < conditionids.values_num; i++)
-			zbx_vector_str_append(&filter, zbx_dsprintf(NULL, "{" TRX_FS_UI64 "}", conditionids.values[i]));
+			trx_vector_str_append(&filter, trx_dsprintf(NULL, "{" TRX_FS_UI64 "}", conditionids.values[i]));
 
 		if (SUCCEED == DBpatch_3010026_expression_remove_values(formula, &filter))
 		{
-			zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update actions set formula='%s'"
+			trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset, "update actions set formula='%s'"
 					" where actionid=" TRX_FS_UI64 ";\n", formula, actionid);
 		}
 
-		zbx_free(formula);
-		zbx_vector_str_clear_ext(&filter, zbx_str_free);
+		trx_free(formula);
+		trx_vector_str_clear_ext(&filter, trx_str_free);
 
 		if (SUCCEED != DBexecute_overflowed_sql(&sql, &sql_alloc, &sql_offset))
 			goto out;
@@ -1085,7 +1085,7 @@ static int	DBpatch_3010026(void)
 	if (0 != conditionids.values_num)
 	{
 		sql_offset = 0;
-		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "delete from conditions where");
+		trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "delete from conditions where");
 		DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "conditionid", conditionids.values,
 				conditionids.values_num);
 
@@ -1108,7 +1108,7 @@ static int	DBpatch_3010026(void)
 		if (0 == atoi(row[3]) && 0 != atoi(row[2]))
 		{
 			TRX_STR2UINT64(actionid, row[0]);
-			zbx_vector_uint64_append(&actionids, actionid);
+			trx_vector_uint64_append(&actionids, actionid);
 
 			treegix_log(LOG_LEVEL_WARNING, "Action \"%s\" type of calculation will be changed to And/Or"
 					" during database upgrade: no action conditions found", row[1]);
@@ -1118,7 +1118,7 @@ static int	DBpatch_3010026(void)
 	if (0 != actionids.values_num)
 	{
 		sql_offset = 0;
-		zbx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update actions set evaltype=0 where");
+		trx_strcpy_alloc(&sql, &sql_alloc, &sql_offset, "update actions set evaltype=0 where");
 
 		DBadd_condition_alloc(&sql, &sql_alloc, &sql_offset, "actionid", actionids.values,
 				actionids.values_num);
@@ -1131,10 +1131,10 @@ static int	DBpatch_3010026(void)
 
 out:
 	DBfree_result(result);
-	zbx_free(sql);
-	zbx_vector_str_destroy(&filter);
-	zbx_vector_uint64_destroy(&actionids);
-	zbx_vector_uint64_destroy(&conditionids);
+	trx_free(sql);
+	trx_vector_str_destroy(&filter);
+	trx_vector_uint64_destroy(&actionids);
+	trx_vector_uint64_destroy(&conditionids);
 
 	return ret;
 }
@@ -1599,7 +1599,7 @@ static int	DBpatch_3010079(void)
 
 	while (NULL != (row = DBfetch(result)))
 	{
-		zbx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
+		trx_snprintf_alloc(&sql, &sql_alloc, &sql_offset,
 				"update problem set clock=%s,ns=%s where eventid=%s;\n",
 				row[1], row[2], row[0]);
 
@@ -1618,7 +1618,7 @@ static int	DBpatch_3010079(void)
 	ret = SUCCEED;
 out:
 	DBfree_result(result);
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }

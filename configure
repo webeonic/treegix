@@ -6006,7 +6006,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for actual socklen_t parameter type in socket functions" >&5
 $as_echo_n "checking for actual socklen_t parameter type in socket functions... " >&6; }
-zbx_socklen_t=
+trx_socklen_t=
 for arg2 in "struct sockaddr" void; do
   for arg3 in socklen_t size_t int; do
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -6033,19 +6033,19 @@ main ()
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
 
-      zbx_socklen_t="$arg3"
+      trx_socklen_t="$arg3"
       break 2
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
   done
 done
-if test "x$zbx_socklen_t" != "x"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $zbx_socklen_t" >&5
-$as_echo "$zbx_socklen_t" >&6; }
+if test "x$trx_socklen_t" != "x"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $trx_socklen_t" >&5
+$as_echo "$trx_socklen_t" >&6; }
 
 cat >>confdefs.h <<_ACEOF
-#define TRX_SOCKLEN_T $zbx_socklen_t
+#define TRX_SOCKLEN_T $trx_socklen_t
 _ACEOF
 
 else
@@ -6055,7 +6055,7 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for integer field name in union sigval of struct siginfo_t" >&5
 $as_echo_n "checking for integer field name in union sigval of struct siginfo_t... " >&6; }
-zbx_sival_int=
+trx_sival_int=
 for field in sival_int sigval_int; do
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6077,18 +6077,18 @@ main ()
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
 
-    zbx_sival_int="$field"
+    trx_sival_int="$field"
     break
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 done
-if test "x$zbx_sival_int" != "x"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $zbx_sival_int" >&5
-$as_echo "$zbx_sival_int" >&6; }
+if test "x$trx_sival_int" != "x"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $trx_sival_int" >&5
+$as_echo "$trx_sival_int" >&6; }
 
 cat >>confdefs.h <<_ACEOF
-#define TRX_SIVAL_INT $zbx_sival_int
+#define TRX_SIVAL_INT $trx_sival_int
 _ACEOF
 
 else
@@ -12523,24 +12523,24 @@ LOAD_MODULE_PATH="${libdir}/modules"
 
 
 CGO_LDFLAGS="-Wl,--start-group \
-	\${abs_top_builddir}/src/treegix_agent/logfiles/libzbxlogfiles.a \
-	\${abs_top_builddir}/src/libs/zbxcomms/libzbxcomms.a \
-	\${abs_top_builddir}/src/libs/zbxcommon/libzbxcommon.a \
-	\${abs_top_builddir}/src/libs/zbxcrypto/libzbxcrypto.a \
-	\${abs_top_builddir}/src/libs/zbxsys/libzbxsys.a \
-	\${abs_top_builddir}/src/libs/zbxnix/libzbxnix.a \
-	\${abs_top_builddir}/src/libs/zbxconf/libzbxconf.a \
-	\${abs_top_builddir}/src/libs/zbxhttp/libzbxhttp.a \
-	\${abs_top_builddir}/src/libs/zbxcompress/libzbxcompress.a \
-	\${abs_top_builddir}/src/libs/zbxregexp/libzbxregexp.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/libzbxagentsysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/linux/libspechostnamesysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/linux/libspecsysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxexec/libzbxexec.a \
-	\${abs_top_builddir}/src/libs/zbxalgo/libzbxalgo.a \
-	\${abs_top_builddir}/src/libs/zbxjson/libzbxjson.a \
+	\${abs_top_builddir}/src/treegix_agent/logfiles/libtrxlogfiles.a \
+	\${abs_top_builddir}/src/libs/trxcomms/libtrxcomms.a \
+	\${abs_top_builddir}/src/libs/trxcommon/libtrxcommon.a \
+	\${abs_top_builddir}/src/libs/trxcrypto/libtrxcrypto.a \
+	\${abs_top_builddir}/src/libs/trxsys/libtrxsys.a \
+	\${abs_top_builddir}/src/libs/trxnix/libtrxnix.a \
+	\${abs_top_builddir}/src/libs/trxconf/libtrxconf.a \
+	\${abs_top_builddir}/src/libs/trxhttp/libtrxhttp.a \
+	\${abs_top_builddir}/src/libs/trxcompress/libtrxcompress.a \
+	\${abs_top_builddir}/src/libs/trxregexp/libtrxregexp.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/libtrxagentsysinfo.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/linux/libspechostnamesysinfo.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/linux/libspecsysinfo.a \
+	\${abs_top_builddir}/src/libs/trxexec/libtrxexec.a \
+	\${abs_top_builddir}/src/libs/trxalgo/libtrxalgo.a \
+	\${abs_top_builddir}/src/libs/trxjson/libtrxjson.a \
 	$LIBS $AGENT_LIBS \
 	-Wl,--end-group"
 
@@ -12599,7 +12599,7 @@ esac
 
 
 
-ac_config_files="$ac_config_files Makefile database/Makefile database/ibm_db2/Makefile database/mysql/Makefile database/oracle/Makefile database/postgresql/Makefile database/sqlite3/Makefile misc/Makefile src/Makefile src/libs/Makefile src/libs/zbxlog/Makefile src/libs/zbxalgo/Makefile src/libs/zbxmemory/Makefile src/libs/zbxcrypto/Makefile src/libs/zbxconf/Makefile src/libs/zbxdbcache/Makefile src/libs/zbxdbhigh/Makefile src/libs/zbxmedia/Makefile src/libs/zbxsysinfo/Makefile src/libs/zbxcommon/Makefile src/libs/zbxsysinfo/agent/Makefile src/libs/zbxsysinfo/common/Makefile src/libs/zbxsysinfo/simple/Makefile src/libs/zbxsysinfo/linux/Makefile src/libs/zbxsysinfo/aix/Makefile src/libs/zbxsysinfo/freebsd/Makefile src/libs/zbxsysinfo/hpux/Makefile src/libs/zbxsysinfo/openbsd/Makefile src/libs/zbxsysinfo/osx/Makefile src/libs/zbxsysinfo/solaris/Makefile src/libs/zbxsysinfo/osf/Makefile src/libs/zbxsysinfo/netbsd/Makefile src/libs/zbxsysinfo/unknown/Makefile src/libs/zbxnix/Makefile src/libs/zbxsys/Makefile src/libs/zbxcomms/Makefile src/libs/zbxcommshigh/Makefile src/libs/zbxdb/Makefile src/libs/zbxdbupgrade/Makefile src/libs/zbxjson/Makefile src/libs/zbxhttp/Makefile src/libs/zbxserver/Makefile src/libs/zbxicmpping/Makefile src/libs/zbxexec/Makefile src/libs/zbxself/Makefile src/libs/zbxmodules/Makefile src/libs/zbxregexp/Makefile src/libs/zbxtasks/Makefile src/libs/zbxipcservice/Makefile src/libs/zbxhistory/Makefile src/libs/zbxcompress/Makefile src/libs/zbxembed/Makefile src/libs/zbxprometheus/Makefile src/treegix_agent/Makefile src/treegix_agent/logfiles/Makefile src/treegix_get/Makefile src/treegix_sender/Makefile src/treegix_server/Makefile src/treegix_server/alerter/Makefile src/treegix_server/dbsyncer/Makefile src/treegix_server/dbconfig/Makefile src/treegix_server/discoverer/Makefile src/treegix_server/housekeeper/Makefile src/treegix_server/httppoller/Makefile src/treegix_server/pinger/Makefile src/treegix_server/poller/Makefile src/treegix_server/snmptrapper/Makefile src/treegix_server/timer/Makefile src/treegix_server/trapper/Makefile src/treegix_server/escalator/Makefile src/treegix_server/proxypoller/Makefile src/treegix_server/selfmon/Makefile src/treegix_server/vmware/Makefile src/treegix_server/taskmanager/Makefile src/treegix_server/ipmi/Makefile src/treegix_server/odbc/Makefile src/treegix_server/scripts/Makefile src/treegix_server/preprocessor/Makefile src/treegix_server/lld/Makefile src/treegix_proxy/Makefile src/treegix_proxy/heart/Makefile src/treegix_proxy/housekeeper/Makefile src/treegix_proxy/proxyconfig/Makefile src/treegix_proxy/datasender/Makefile src/treegix_proxy/taskmanager/Makefile src/treegix_java/Makefile man/Makefile go/Makefile go/src/Makefile go/src/treegix/Makefile go/src/treegix/cmd/Makefile go/src/treegix/cmd/treegix_agent2/Makefile go/src/treegix/cmd/mock_server/Makefile go/src/treegix/pkg/Makefile go/src/treegix/pkg/conf/Makefile go/src/treegix/pkg/glexpr/Makefile go/src/treegix/pkg/itemutil/Makefile go/src/treegix/pkg/log/Makefile go/src/treegix/pkg/plugin/Makefile go/src/treegix/pkg/std/Makefile go/src/treegix/pkg/tls/Makefile go/src/treegix/pkg/version/Makefile go/src/treegix/pkg/watch/Makefile go/src/treegix/pkg/zbxcomms/Makefile go/src/treegix/pkg/zbxlib/Makefile go/src/treegix/pkg/zbxcmd/Makefile go/src/treegix/internal/Makefile go/src/treegix/internal/agent/Makefile go/src/treegix/internal/agent/remotecontrol/Makefile go/src/treegix/internal/agent/resultcache/Makefile go/src/treegix/internal/agent/scheduler/Makefile go/src/treegix/internal/agent/serverconnector/Makefile go/src/treegix/internal/agent/serverlistener/Makefile go/src/treegix/internal/agent/statuslistener/Makefile go/src/treegix/internal/monitor/Makefile go/src/treegix/plugins/Makefile go/src/treegix/plugins/log/Makefile go/src/treegix/plugins/system/Makefile go/src/treegix/plugins/system/cpucollector/Makefile go/src/treegix/plugins/system/uptime/Makefile go/src/treegix/plugins/system/uname/Makefile go/src/treegix/plugins/systemd/Makefile go/src/treegix/plugins/systemrun/Makefile go/src/treegix/plugins/kernel/Makefile go/src/treegix/plugins/proc/Makefile go/src/treegix/plugins/vfs/Makefile go/src/treegix/plugins/vfs/dev/Makefile go/src/treegix/plugins/vfs/file/Makefile go/src/treegix/plugins/treegix/Makefile go/src/treegix/plugins/treegix/stats/Makefile go/src/treegix/plugins/treegix/sync/Makefile go/src/treegix/plugins/treegix/async/Makefile go/src/treegix/plugins/net/Makefile go/src/treegix/plugins/net/netif/Makefile"
+ac_config_files="$ac_config_files Makefile database/Makefile database/ibm_db2/Makefile database/mysql/Makefile database/oracle/Makefile database/postgresql/Makefile database/sqlite3/Makefile misc/Makefile src/Makefile src/libs/Makefile src/libs/trxlog/Makefile src/libs/trxalgo/Makefile src/libs/trxmemory/Makefile src/libs/trxcrypto/Makefile src/libs/trxconf/Makefile src/libs/trxdbcache/Makefile src/libs/trxdbhigh/Makefile src/libs/trxmedia/Makefile src/libs/trxsysinfo/Makefile src/libs/trxcommon/Makefile src/libs/trxsysinfo/agent/Makefile src/libs/trxsysinfo/common/Makefile src/libs/trxsysinfo/simple/Makefile src/libs/trxsysinfo/linux/Makefile src/libs/trxsysinfo/aix/Makefile src/libs/trxsysinfo/freebsd/Makefile src/libs/trxsysinfo/hpux/Makefile src/libs/trxsysinfo/openbsd/Makefile src/libs/trxsysinfo/osx/Makefile src/libs/trxsysinfo/solaris/Makefile src/libs/trxsysinfo/osf/Makefile src/libs/trxsysinfo/netbsd/Makefile src/libs/trxsysinfo/unknown/Makefile src/libs/trxnix/Makefile src/libs/trxsys/Makefile src/libs/trxcomms/Makefile src/libs/trxcommshigh/Makefile src/libs/trxdb/Makefile src/libs/trxdbupgrade/Makefile src/libs/trxjson/Makefile src/libs/trxhttp/Makefile src/libs/trxserver/Makefile src/libs/trxicmpping/Makefile src/libs/trxexec/Makefile src/libs/trxself/Makefile src/libs/trxmodules/Makefile src/libs/trxregexp/Makefile src/libs/trxtasks/Makefile src/libs/trxipcservice/Makefile src/libs/trxhistory/Makefile src/libs/trxcompress/Makefile src/libs/trxembed/Makefile src/libs/trxprometheus/Makefile src/treegix_agent/Makefile src/treegix_agent/logfiles/Makefile src/treegix_get/Makefile src/treegix_sender/Makefile src/treegix_server/Makefile src/treegix_server/alerter/Makefile src/treegix_server/dbsyncer/Makefile src/treegix_server/dbconfig/Makefile src/treegix_server/discoverer/Makefile src/treegix_server/housekeeper/Makefile src/treegix_server/httppoller/Makefile src/treegix_server/pinger/Makefile src/treegix_server/poller/Makefile src/treegix_server/snmptrapper/Makefile src/treegix_server/timer/Makefile src/treegix_server/trapper/Makefile src/treegix_server/escalator/Makefile src/treegix_server/proxypoller/Makefile src/treegix_server/selfmon/Makefile src/treegix_server/vmware/Makefile src/treegix_server/taskmanager/Makefile src/treegix_server/ipmi/Makefile src/treegix_server/odbc/Makefile src/treegix_server/scripts/Makefile src/treegix_server/preprocessor/Makefile src/treegix_server/lld/Makefile src/treegix_proxy/Makefile src/treegix_proxy/heart/Makefile src/treegix_proxy/housekeeper/Makefile src/treegix_proxy/proxyconfig/Makefile src/treegix_proxy/datasender/Makefile src/treegix_proxy/taskmanager/Makefile src/treegix_java/Makefile man/Makefile go/Makefile go/src/Makefile go/src/treegix/Makefile go/src/treegix/cmd/Makefile go/src/treegix/cmd/treegix_agent2/Makefile go/src/treegix/cmd/mock_server/Makefile go/src/treegix/pkg/Makefile go/src/treegix/pkg/conf/Makefile go/src/treegix/pkg/glexpr/Makefile go/src/treegix/pkg/itemutil/Makefile go/src/treegix/pkg/log/Makefile go/src/treegix/pkg/plugin/Makefile go/src/treegix/pkg/std/Makefile go/src/treegix/pkg/tls/Makefile go/src/treegix/pkg/version/Makefile go/src/treegix/pkg/watch/Makefile go/src/treegix/pkg/trxcomms/Makefile go/src/treegix/pkg/trxlib/Makefile go/src/treegix/pkg/trxcmd/Makefile go/src/treegix/internal/Makefile go/src/treegix/internal/agent/Makefile go/src/treegix/internal/agent/remotecontrol/Makefile go/src/treegix/internal/agent/resultcache/Makefile go/src/treegix/internal/agent/scheduler/Makefile go/src/treegix/internal/agent/serverconnector/Makefile go/src/treegix/internal/agent/serverlistener/Makefile go/src/treegix/internal/agent/statuslistener/Makefile go/src/treegix/internal/monitor/Makefile go/src/treegix/plugins/Makefile go/src/treegix/plugins/log/Makefile go/src/treegix/plugins/system/Makefile go/src/treegix/plugins/system/cpucollector/Makefile go/src/treegix/plugins/system/uptime/Makefile go/src/treegix/plugins/system/uname/Makefile go/src/treegix/plugins/systemd/Makefile go/src/treegix/plugins/systemrun/Makefile go/src/treegix/plugins/kernel/Makefile go/src/treegix/plugins/proc/Makefile go/src/treegix/plugins/vfs/Makefile go/src/treegix/plugins/vfs/dev/Makefile go/src/treegix/plugins/vfs/file/Makefile go/src/treegix/plugins/treegix/Makefile go/src/treegix/plugins/treegix/stats/Makefile go/src/treegix/plugins/treegix/sync/Makefile go/src/treegix/plugins/treegix/async/Makefile go/src/treegix/plugins/net/Makefile go/src/treegix/plugins/net/netif/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -13385,49 +13385,49 @@ do
     "misc/Makefile") CONFIG_FILES="$CONFIG_FILES misc/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/libs/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/Makefile" ;;
-    "src/libs/zbxlog/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxlog/Makefile" ;;
-    "src/libs/zbxalgo/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxalgo/Makefile" ;;
-    "src/libs/zbxmemory/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxmemory/Makefile" ;;
-    "src/libs/zbxcrypto/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxcrypto/Makefile" ;;
-    "src/libs/zbxconf/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxconf/Makefile" ;;
-    "src/libs/zbxdbcache/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxdbcache/Makefile" ;;
-    "src/libs/zbxdbhigh/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxdbhigh/Makefile" ;;
-    "src/libs/zbxmedia/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxmedia/Makefile" ;;
-    "src/libs/zbxsysinfo/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/Makefile" ;;
-    "src/libs/zbxcommon/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxcommon/Makefile" ;;
-    "src/libs/zbxsysinfo/agent/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/agent/Makefile" ;;
-    "src/libs/zbxsysinfo/common/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/common/Makefile" ;;
-    "src/libs/zbxsysinfo/simple/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/simple/Makefile" ;;
-    "src/libs/zbxsysinfo/linux/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/linux/Makefile" ;;
-    "src/libs/zbxsysinfo/aix/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/aix/Makefile" ;;
-    "src/libs/zbxsysinfo/freebsd/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/freebsd/Makefile" ;;
-    "src/libs/zbxsysinfo/hpux/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/hpux/Makefile" ;;
-    "src/libs/zbxsysinfo/openbsd/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/openbsd/Makefile" ;;
-    "src/libs/zbxsysinfo/osx/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/osx/Makefile" ;;
-    "src/libs/zbxsysinfo/solaris/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/solaris/Makefile" ;;
-    "src/libs/zbxsysinfo/osf/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/osf/Makefile" ;;
-    "src/libs/zbxsysinfo/netbsd/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/netbsd/Makefile" ;;
-    "src/libs/zbxsysinfo/unknown/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsysinfo/unknown/Makefile" ;;
-    "src/libs/zbxnix/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxnix/Makefile" ;;
-    "src/libs/zbxsys/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxsys/Makefile" ;;
-    "src/libs/zbxcomms/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxcomms/Makefile" ;;
-    "src/libs/zbxcommshigh/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxcommshigh/Makefile" ;;
-    "src/libs/zbxdb/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxdb/Makefile" ;;
-    "src/libs/zbxdbupgrade/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxdbupgrade/Makefile" ;;
-    "src/libs/zbxjson/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxjson/Makefile" ;;
-    "src/libs/zbxhttp/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxhttp/Makefile" ;;
-    "src/libs/zbxserver/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxserver/Makefile" ;;
-    "src/libs/zbxicmpping/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxicmpping/Makefile" ;;
-    "src/libs/zbxexec/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxexec/Makefile" ;;
-    "src/libs/zbxself/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxself/Makefile" ;;
-    "src/libs/zbxmodules/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxmodules/Makefile" ;;
-    "src/libs/zbxregexp/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxregexp/Makefile" ;;
-    "src/libs/zbxtasks/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxtasks/Makefile" ;;
-    "src/libs/zbxipcservice/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxipcservice/Makefile" ;;
-    "src/libs/zbxhistory/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxhistory/Makefile" ;;
-    "src/libs/zbxcompress/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxcompress/Makefile" ;;
-    "src/libs/zbxembed/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxembed/Makefile" ;;
-    "src/libs/zbxprometheus/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/zbxprometheus/Makefile" ;;
+    "src/libs/trxlog/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxlog/Makefile" ;;
+    "src/libs/trxalgo/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxalgo/Makefile" ;;
+    "src/libs/trxmemory/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxmemory/Makefile" ;;
+    "src/libs/trxcrypto/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxcrypto/Makefile" ;;
+    "src/libs/trxconf/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxconf/Makefile" ;;
+    "src/libs/trxdbcache/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxdbcache/Makefile" ;;
+    "src/libs/trxdbhigh/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxdbhigh/Makefile" ;;
+    "src/libs/trxmedia/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxmedia/Makefile" ;;
+    "src/libs/trxsysinfo/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/Makefile" ;;
+    "src/libs/trxcommon/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxcommon/Makefile" ;;
+    "src/libs/trxsysinfo/agent/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/agent/Makefile" ;;
+    "src/libs/trxsysinfo/common/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/common/Makefile" ;;
+    "src/libs/trxsysinfo/simple/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/simple/Makefile" ;;
+    "src/libs/trxsysinfo/linux/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/linux/Makefile" ;;
+    "src/libs/trxsysinfo/aix/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/aix/Makefile" ;;
+    "src/libs/trxsysinfo/freebsd/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/freebsd/Makefile" ;;
+    "src/libs/trxsysinfo/hpux/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/hpux/Makefile" ;;
+    "src/libs/trxsysinfo/openbsd/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/openbsd/Makefile" ;;
+    "src/libs/trxsysinfo/osx/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/osx/Makefile" ;;
+    "src/libs/trxsysinfo/solaris/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/solaris/Makefile" ;;
+    "src/libs/trxsysinfo/osf/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/osf/Makefile" ;;
+    "src/libs/trxsysinfo/netbsd/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/netbsd/Makefile" ;;
+    "src/libs/trxsysinfo/unknown/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsysinfo/unknown/Makefile" ;;
+    "src/libs/trxnix/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxnix/Makefile" ;;
+    "src/libs/trxsys/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxsys/Makefile" ;;
+    "src/libs/trxcomms/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxcomms/Makefile" ;;
+    "src/libs/trxcommshigh/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxcommshigh/Makefile" ;;
+    "src/libs/trxdb/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxdb/Makefile" ;;
+    "src/libs/trxdbupgrade/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxdbupgrade/Makefile" ;;
+    "src/libs/trxjson/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxjson/Makefile" ;;
+    "src/libs/trxhttp/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxhttp/Makefile" ;;
+    "src/libs/trxserver/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxserver/Makefile" ;;
+    "src/libs/trxicmpping/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxicmpping/Makefile" ;;
+    "src/libs/trxexec/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxexec/Makefile" ;;
+    "src/libs/trxself/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxself/Makefile" ;;
+    "src/libs/trxmodules/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxmodules/Makefile" ;;
+    "src/libs/trxregexp/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxregexp/Makefile" ;;
+    "src/libs/trxtasks/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxtasks/Makefile" ;;
+    "src/libs/trxipcservice/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxipcservice/Makefile" ;;
+    "src/libs/trxhistory/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxhistory/Makefile" ;;
+    "src/libs/trxcompress/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxcompress/Makefile" ;;
+    "src/libs/trxembed/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxembed/Makefile" ;;
+    "src/libs/trxprometheus/Makefile") CONFIG_FILES="$CONFIG_FILES src/libs/trxprometheus/Makefile" ;;
     "src/treegix_agent/Makefile") CONFIG_FILES="$CONFIG_FILES src/treegix_agent/Makefile" ;;
     "src/treegix_agent/logfiles/Makefile") CONFIG_FILES="$CONFIG_FILES src/treegix_agent/logfiles/Makefile" ;;
     "src/treegix_get/Makefile") CONFIG_FILES="$CONFIG_FILES src/treegix_get/Makefile" ;;
@@ -13478,9 +13478,9 @@ do
     "go/src/treegix/pkg/tls/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/pkg/tls/Makefile" ;;
     "go/src/treegix/pkg/version/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/pkg/version/Makefile" ;;
     "go/src/treegix/pkg/watch/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/pkg/watch/Makefile" ;;
-    "go/src/treegix/pkg/zbxcomms/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/pkg/zbxcomms/Makefile" ;;
-    "go/src/treegix/pkg/zbxlib/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/pkg/zbxlib/Makefile" ;;
-    "go/src/treegix/pkg/zbxcmd/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/pkg/zbxcmd/Makefile" ;;
+    "go/src/treegix/pkg/trxcomms/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/pkg/trxcomms/Makefile" ;;
+    "go/src/treegix/pkg/trxlib/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/pkg/trxlib/Makefile" ;;
+    "go/src/treegix/pkg/trxcmd/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/pkg/trxcmd/Makefile" ;;
     "go/src/treegix/internal/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/internal/Makefile" ;;
     "go/src/treegix/internal/agent/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/internal/agent/Makefile" ;;
     "go/src/treegix/internal/agent/remotecontrol/Makefile") CONFIG_FILES="$CONFIG_FILES go/src/treegix/internal/agent/remotecontrol/Makefile" ;;

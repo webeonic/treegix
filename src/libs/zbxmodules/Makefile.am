@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxmodules.a
+noinst_LIBRARIES = libtrxmodules.a
 
-libzbxmodules_a_SOURCES = \
+libtrxmodules_a_SOURCES = \
 	modules.c

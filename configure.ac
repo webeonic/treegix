@@ -201,7 +201,7 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for actual socklen_t parameter type in socket functions)
-zbx_socklen_t=
+trx_socklen_t=
 for arg2 in "struct sockaddr" void; do
   for arg3 in socklen_t size_t int; do
     AC_TRY_COMPILE([
@@ -216,20 +216,20 @@ for arg2 in "struct sockaddr" void; do
       $arg3 addrlen;
       getpeername(0, 0, &addrlen);
     ],[
-      zbx_socklen_t="$arg3"
+      trx_socklen_t="$arg3"
       break 2
     ])
   done
 done
-if test "x$zbx_socklen_t" != "x"; then
-  AC_MSG_RESULT($zbx_socklen_t)
-  AC_DEFINE_UNQUOTED(TRX_SOCKLEN_T, $zbx_socklen_t, [Define actual socklen_t parameter type in socket functions.])
+if test "x$trx_socklen_t" != "x"; then
+  AC_MSG_RESULT($trx_socklen_t)
+  AC_DEFINE_UNQUOTED(TRX_SOCKLEN_T, $trx_socklen_t, [Define actual socklen_t parameter type in socket functions.])
 else
   AC_MSG_RESULT(leaving undefined)
 fi
 
 AC_MSG_CHECKING(for integer field name in union sigval of struct siginfo_t)
-zbx_sival_int=
+trx_sival_int=
 for field in sival_int sigval_int; do
   AC_TRY_COMPILE([
 #ifdef HAVE_SIGNAL_H
@@ -239,13 +239,13 @@ for field in sival_int sigval_int; do
     siginfo_t siginfo;
     siginfo.si_value.$field = 0;
   ],[
-    zbx_sival_int="$field"
+    trx_sival_int="$field"
     break
   ])
 done
-if test "x$zbx_sival_int" != "x"; then
-  AC_MSG_RESULT($zbx_sival_int)
-  AC_DEFINE_UNQUOTED(TRX_SIVAL_INT, $zbx_sival_int, [Define integer field name in union 'sigval' of struct 'siginfo_t'])
+if test "x$trx_sival_int" != "x"; then
+  AC_MSG_RESULT($trx_sival_int)
+  AC_DEFINE_UNQUOTED(TRX_SIVAL_INT, $trx_sival_int, [Define integer field name in union 'sigval' of struct 'siginfo_t'])
 else
   AC_MSG_ERROR(Unable to find integer field name in union sigval of struct siginfo_t)
 fi
@@ -1800,24 +1800,24 @@ AC_SUBST(AGENT_LDFLAGS)
 AC_SUBST(AGENT_LIBS)
 
 CGO_LDFLAGS="-Wl,--start-group \
-	\${abs_top_builddir}/src/treegix_agent/logfiles/libzbxlogfiles.a \
-	\${abs_top_builddir}/src/libs/zbxcomms/libzbxcomms.a \
-	\${abs_top_builddir}/src/libs/zbxcommon/libzbxcommon.a \
-	\${abs_top_builddir}/src/libs/zbxcrypto/libzbxcrypto.a \
-	\${abs_top_builddir}/src/libs/zbxsys/libzbxsys.a \
-	\${abs_top_builddir}/src/libs/zbxnix/libzbxnix.a \
-	\${abs_top_builddir}/src/libs/zbxconf/libzbxconf.a \
-	\${abs_top_builddir}/src/libs/zbxhttp/libzbxhttp.a \
-	\${abs_top_builddir}/src/libs/zbxcompress/libzbxcompress.a \
-	\${abs_top_builddir}/src/libs/zbxregexp/libzbxregexp.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/libzbxagentsysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/common/libcommonsysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/simple/libsimplesysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/linux/libspechostnamesysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxsysinfo/linux/libspecsysinfo.a \
-	\${abs_top_builddir}/src/libs/zbxexec/libzbxexec.a \
-	\${abs_top_builddir}/src/libs/zbxalgo/libzbxalgo.a \
-	\${abs_top_builddir}/src/libs/zbxjson/libzbxjson.a \
+	\${abs_top_builddir}/src/treegix_agent/logfiles/libtrxlogfiles.a \
+	\${abs_top_builddir}/src/libs/trxcomms/libtrxcomms.a \
+	\${abs_top_builddir}/src/libs/trxcommon/libtrxcommon.a \
+	\${abs_top_builddir}/src/libs/trxcrypto/libtrxcrypto.a \
+	\${abs_top_builddir}/src/libs/trxsys/libtrxsys.a \
+	\${abs_top_builddir}/src/libs/trxnix/libtrxnix.a \
+	\${abs_top_builddir}/src/libs/trxconf/libtrxconf.a \
+	\${abs_top_builddir}/src/libs/trxhttp/libtrxhttp.a \
+	\${abs_top_builddir}/src/libs/trxcompress/libtrxcompress.a \
+	\${abs_top_builddir}/src/libs/trxregexp/libtrxregexp.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/libtrxagentsysinfo.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/common/libcommonsysinfo.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/simple/libsimplesysinfo.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/linux/libspechostnamesysinfo.a \
+	\${abs_top_builddir}/src/libs/trxsysinfo/linux/libspecsysinfo.a \
+	\${abs_top_builddir}/src/libs/trxexec/libtrxexec.a \
+	\${abs_top_builddir}/src/libs/trxalgo/libtrxalgo.a \
+	\${abs_top_builddir}/src/libs/trxjson/libtrxjson.a \
 	$LIBS $AGENT_LIBS \
 	-Wl,--end-group"
 AC_SUBST(CGO_LDFLAGS)
@@ -1894,49 +1894,49 @@ AC_OUTPUT([
 	misc/Makefile
 	src/Makefile
 	src/libs/Makefile
-	src/libs/zbxlog/Makefile
-	src/libs/zbxalgo/Makefile
-	src/libs/zbxmemory/Makefile
-	src/libs/zbxcrypto/Makefile
-	src/libs/zbxconf/Makefile
-	src/libs/zbxdbcache/Makefile
-	src/libs/zbxdbhigh/Makefile
-	src/libs/zbxmedia/Makefile
-	src/libs/zbxsysinfo/Makefile
-	src/libs/zbxcommon/Makefile
-	src/libs/zbxsysinfo/agent/Makefile
-	src/libs/zbxsysinfo/common/Makefile
-	src/libs/zbxsysinfo/simple/Makefile
-	src/libs/zbxsysinfo/linux/Makefile
-	src/libs/zbxsysinfo/aix/Makefile
-	src/libs/zbxsysinfo/freebsd/Makefile
-	src/libs/zbxsysinfo/hpux/Makefile
-	src/libs/zbxsysinfo/openbsd/Makefile
-	src/libs/zbxsysinfo/osx/Makefile
-	src/libs/zbxsysinfo/solaris/Makefile
-	src/libs/zbxsysinfo/osf/Makefile
-	src/libs/zbxsysinfo/netbsd/Makefile
-	src/libs/zbxsysinfo/unknown/Makefile
-	src/libs/zbxnix/Makefile
-	src/libs/zbxsys/Makefile
-	src/libs/zbxcomms/Makefile
-	src/libs/zbxcommshigh/Makefile
-	src/libs/zbxdb/Makefile
-	src/libs/zbxdbupgrade/Makefile
-	src/libs/zbxjson/Makefile
-	src/libs/zbxhttp/Makefile
-	src/libs/zbxserver/Makefile
-	src/libs/zbxicmpping/Makefile
-	src/libs/zbxexec/Makefile
-	src/libs/zbxself/Makefile
-	src/libs/zbxmodules/Makefile
-	src/libs/zbxregexp/Makefile
-	src/libs/zbxtasks/Makefile
-	src/libs/zbxipcservice/Makefile
-	src/libs/zbxhistory/Makefile
-	src/libs/zbxcompress/Makefile
-	src/libs/zbxembed/Makefile
-	src/libs/zbxprometheus/Makefile
+	src/libs/trxlog/Makefile
+	src/libs/trxalgo/Makefile
+	src/libs/trxmemory/Makefile
+	src/libs/trxcrypto/Makefile
+	src/libs/trxconf/Makefile
+	src/libs/trxdbcache/Makefile
+	src/libs/trxdbhigh/Makefile
+	src/libs/trxmedia/Makefile
+	src/libs/trxsysinfo/Makefile
+	src/libs/trxcommon/Makefile
+	src/libs/trxsysinfo/agent/Makefile
+	src/libs/trxsysinfo/common/Makefile
+	src/libs/trxsysinfo/simple/Makefile
+	src/libs/trxsysinfo/linux/Makefile
+	src/libs/trxsysinfo/aix/Makefile
+	src/libs/trxsysinfo/freebsd/Makefile
+	src/libs/trxsysinfo/hpux/Makefile
+	src/libs/trxsysinfo/openbsd/Makefile
+	src/libs/trxsysinfo/osx/Makefile
+	src/libs/trxsysinfo/solaris/Makefile
+	src/libs/trxsysinfo/osf/Makefile
+	src/libs/trxsysinfo/netbsd/Makefile
+	src/libs/trxsysinfo/unknown/Makefile
+	src/libs/trxnix/Makefile
+	src/libs/trxsys/Makefile
+	src/libs/trxcomms/Makefile
+	src/libs/trxcommshigh/Makefile
+	src/libs/trxdb/Makefile
+	src/libs/trxdbupgrade/Makefile
+	src/libs/trxjson/Makefile
+	src/libs/trxhttp/Makefile
+	src/libs/trxserver/Makefile
+	src/libs/trxicmpping/Makefile
+	src/libs/trxexec/Makefile
+	src/libs/trxself/Makefile
+	src/libs/trxmodules/Makefile
+	src/libs/trxregexp/Makefile
+	src/libs/trxtasks/Makefile
+	src/libs/trxipcservice/Makefile
+	src/libs/trxhistory/Makefile
+	src/libs/trxcompress/Makefile
+	src/libs/trxembed/Makefile
+	src/libs/trxprometheus/Makefile
 	src/treegix_agent/Makefile
 	src/treegix_agent/logfiles/Makefile
 	src/treegix_get/Makefile
@@ -1987,9 +1987,9 @@ AC_OUTPUT([
 	go/src/treegix/pkg/tls/Makefile
 	go/src/treegix/pkg/version/Makefile
 	go/src/treegix/pkg/watch/Makefile
-	go/src/treegix/pkg/zbxcomms/Makefile
-	go/src/treegix/pkg/zbxlib/Makefile
-	go/src/treegix/pkg/zbxcmd/Makefile
+	go/src/treegix/pkg/trxcomms/Makefile
+	go/src/treegix/pkg/trxlib/Makefile
+	go/src/treegix/pkg/trxcmd/Makefile
 	go/src/treegix/internal/Makefile
 	go/src/treegix/internal/agent/Makefile
 	go/src/treegix/internal/agent/remotecontrol/Makefile

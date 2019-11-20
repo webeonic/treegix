@@ -57,7 +57,7 @@ static int tls_init(void)
 	tls_crypto_init_msg = "OpenSSL library successfully initialized";
 	return 0;
 #elif	// OpenSSL 1.0.1/1.0.2 (before 1.1.0) or LibreSSL - currently not supported
-	zbx_crypto_lib_init_msg = "OpenSSL older than 1.1.0 and LibreSSL currently are not supported";
+	trx_crypto_lib_init_msg = "OpenSSL older than 1.1.0 and LibreSSL currently are not supported";
 	return -1;
 #endif
 }
@@ -162,7 +162,7 @@ static unsigned int tls_psk_server_cb(SSL *ssl, const char *identity, unsigned c
 	return (unsigned int)key_len;
 }
 
-static int	zbx_set_ecdhe_parameters(SSL_CTX *ctx)
+static int	trx_set_ecdhe_parameters(SSL_CTX *ctx)
 {
 	EC_KEY	*ecdh;
 	long	res;
@@ -247,7 +247,7 @@ static void *tls_new_context(const char *ca_file, const char *crl_file, const ch
 	SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF);
 
 	// try to enable ECDH ciphersuites
-	if (0 == zbx_set_ecdhe_parameters(ctx))
+	if (0 == trx_set_ecdhe_parameters(ctx))
 	{
 		if (NULL != ca_file)
 			ciphers = TLS_CIPHER_CERT_ECDHE TLS_CIPHER_CERT ":" TLS_CIPHER_PSK_ECDHE TLS_CIPHER_PSK;

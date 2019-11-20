@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxtrapper.a
+noinst_LIBRARIES = libtrxtrapper.a
 
-libzbxtrapper_a_SOURCES = \
+libtrxtrapper_a_SOURCES = \
 	active.c active.h \
 	trapper.c trapper.h \
 	nodecommand.c nodecommand.h \

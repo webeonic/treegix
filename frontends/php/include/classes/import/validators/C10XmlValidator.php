@@ -371,7 +371,7 @@ class C10XmlValidator {
 	 * @throws Exception			if tag is invalid
 	 */
 	public function validateYMinItem($data, array $parent_data = null, $path) {
-		if (zbx_is_int($parent_data['ymin_type']) && $parent_data['ymin_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
+		if (trx_is_int($parent_data['ymin_type']) && $parent_data['ymin_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 			if (strpos($data, ':') === false) {
 				throw new Exception(_s('Invalid tag "%1$s": %2$s.', $path, _('"host:key" pair is expected')));
 			}
@@ -393,7 +393,7 @@ class C10XmlValidator {
 	 * @throws Exception			if tag is invalid
 	 */
 	public function validateYMaxItem($data, array $parent_data = null, $path) {
-		if (zbx_is_int($parent_data['ymax_type']) && $parent_data['ymax_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
+		if (trx_is_int($parent_data['ymax_type']) && $parent_data['ymax_type'] == GRAPH_YAXIS_TYPE_ITEM_VALUE) {
 			if (strpos($data, ':') === false) {
 				throw new Exception(_s('Invalid tag "%1$s": %2$s.', $path, _('"host:key" pair is expected')));
 			}
@@ -430,7 +430,7 @@ class C10XmlValidator {
 	 * @throws Exception			if the check is failed
 	 */
 	public function requiredMapElement(array $parent_data = null) {
-		if (zbx_is_int($parent_data['elementtype'])) {
+		if (trx_is_int($parent_data['elementtype'])) {
 			switch ($parent_data['elementtype']) {
 				case SYSMAP_ELEMENT_TYPE_HOST:
 				case SYSMAP_ELEMENT_TYPE_MAP:
@@ -453,7 +453,7 @@ class C10XmlValidator {
 	 * @throws Exception			if the map element is invalid
 	 */
 	public function validateMapElement($data, array $parent_data = null, $path) {
-		if (zbx_is_int($parent_data['elementtype'])) {
+		if (trx_is_int($parent_data['elementtype'])) {
 			switch ($parent_data['elementtype']) {
 				case SYSMAP_ELEMENT_TYPE_HOST:
 					$rules = ['type' => XML_ARRAY, 'rules' => [

@@ -17,14 +17,14 @@
  *               On error, 0 is returned.                                     *
  *                                                                            *
  ******************************************************************************/
-zbx_uint64_t	get_cluster_size(const char *path, char **error)
+trx_uint64_t	get_cluster_size(const char *path, char **error)
 {
 	wchar_t 	*disk = NULL, *wpath = NULL;
 	unsigned long	sectors_per_cluster, bytes_per_sector, path_length;
-	zbx_uint64_t	res = 0;
+	trx_uint64_t	res = 0;
 	char		*err_msg = "Cannot obtain file system cluster size:";
 
-	wpath = zbx_utf8_to_unicode(path);
+	wpath = trx_utf8_to_unicode(path);
 
 	/* Here GetFullPathName() is used in multithreaded application. */
 	/* We assume it is safe because: */
@@ -33,31 +33,31 @@ zbx_uint64_t	get_cluster_size(const char *path, char **error)
 
 	if (0 == (path_length = GetFullPathName(wpath, 0, NULL, NULL) + 1))
 	{
-		*error = zbx_dsprintf(*error, "%s GetFullPathName() failed: %s", err_msg,
+		*error = trx_dsprintf(*error, "%s GetFullPathName() failed: %s", err_msg,
 				strerror_from_system(GetLastError()));
 		goto err;
 	}
 
-	disk = (wchar_t *)zbx_malloc(NULL, path_length * sizeof(wchar_t));
+	disk = (wchar_t *)trx_malloc(NULL, path_length * sizeof(wchar_t));
 
 	if (0 == GetVolumePathName(wpath, disk, path_length))
 	{
-		*error = zbx_dsprintf(*error, "%s GetVolumePathName() failed: %s", err_msg,
+		*error = trx_dsprintf(*error, "%s GetVolumePathName() failed: %s", err_msg,
 				strerror_from_system(GetLastError()));
 		goto err;
 	}
 
 	if (0 == GetDiskFreeSpace(disk, &sectors_per_cluster, &bytes_per_sector, NULL, NULL))
 	{
-		*error = zbx_dsprintf(*error, "%s GetDiskFreeSpace() failed: %s", err_msg,
+		*error = trx_dsprintf(*error, "%s GetDiskFreeSpace() failed: %s", err_msg,
 				strerror_from_system(GetLastError()));
 		goto err;
 	}
 
-	res = (zbx_uint64_t)sectors_per_cluster * bytes_per_sector;
+	res = (trx_uint64_t)sectors_per_cluster * bytes_per_sector;
 err:
-	zbx_free(disk);
-	zbx_free(wpath);
+	trx_free(disk);
+	trx_free(wpath);
 
 	return res;
 }

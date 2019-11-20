@@ -70,7 +70,7 @@ class CValueMap extends CApiService {
 			$db_valuemaps = $this->unsetExtraFields($db_valuemaps, ['valuemapid'], $options['output']);
 
 			if (!$options['preservekeys']) {
-				$db_valuemaps = zbx_cleanHashes($db_valuemaps);
+				$db_valuemaps = trx_cleanHashes($db_valuemaps);
 			}
 		}
 
@@ -193,7 +193,7 @@ class CValueMap extends CApiService {
 
 		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_VALUE_MAP, $valuemaps, $db_valuemaps);
 
-		return ['valuemapids' => zbx_objectValues($valuemaps, 'valuemapid')];
+		return ['valuemapids' => trx_objectValues($valuemaps, 'valuemapid')];
 	}
 
 	/**
@@ -281,7 +281,7 @@ class CValueMap extends CApiService {
 			self::exception(TRX_API_ERROR_PARAMETERS, $error);
 		}
 
-		$this->checkDuplicates(zbx_objectValues($valuemaps, 'name'));
+		$this->checkDuplicates(trx_objectValues($valuemaps, 'name'));
 	}
 
 	/**
@@ -310,7 +310,7 @@ class CValueMap extends CApiService {
 		// Check value map names.
 		$db_valuemaps = DB::select('valuemaps', [
 			'output' => ['valuemapid', 'name'],
-			'valuemapids' => zbx_objectValues($valuemaps, 'valuemapid'),
+			'valuemapids' => trx_objectValues($valuemaps, 'valuemapid'),
 			'preservekeys' => true
 		]);
 

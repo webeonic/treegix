@@ -28,7 +28,7 @@ typedef struct
 	int 			diskstat_shmid;
 #endif
 #ifdef TRX_PROCSTAT_COLLECTOR
-	zbx_dshm_t		procstat;
+	trx_dshm_t		procstat;
 #endif
 #ifdef _AIX
 	TRX_VMSTAT_DATA		vmstat;

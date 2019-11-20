@@ -13,29 +13,29 @@ int	KERNEL_MAXPROC(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == (kc = kstat_open()))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot open kernel statistics facility: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot open kernel statistics facility: %s",
+				trx_strerror(errno)));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == (kt = kstat_lookup(kc, "unix", 0, "var")))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot look up in kernel statistics facility: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot look up in kernel statistics facility: %s",
+				trx_strerror(errno)));
 		goto clean;
 	}
 
 	if (KSTAT_TYPE_RAW != kt->ks_type)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Information looked up in kernel statistics facility"
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Information looked up in kernel statistics facility"
 				" is of the wrong type."));
 		goto clean;
 	}
 
 	if (-1 == kstat_read(kc, kt, NULL))
 	{
-		SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
-				zbx_strerror(errno)));
+		SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot read from kernel statistics facility: %s",
+				trx_strerror(errno)));
 		goto clean;
 	}
 

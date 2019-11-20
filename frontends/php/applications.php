@@ -64,7 +64,7 @@ if (hasRequest('action')) {
 			'applicationids' => getRequest('applications')
 		]);
 		if (count($applications) != count(getRequest('applications'))) {
-			uncheckTableRows($pageFilter->hostid, zbx_objectValues($applications, 'applicationid'));
+			uncheckTableRows($pageFilter->hostid, trx_objectValues($applications, 'applicationid'));
 		}
 	}
 }
@@ -238,7 +238,7 @@ else {
 		foreach ($data['applications'] as &$application) {
 			if ($application['applicationDiscovery']) {
 				if (count($application['applicationDiscovery']) > 1) {
-					$ts_delete = zbx_objectValues($application['applicationDiscovery'], 'ts_delete');
+					$ts_delete = trx_objectValues($application['applicationDiscovery'], 'ts_delete');
 
 					if (min($ts_delete) == 0) {
 						// One rule stops discovering application, but other rule continues to discover it.

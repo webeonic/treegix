@@ -28,7 +28,7 @@ extern "C" {
    Also, when `ordering' is RETURN_IN_ORDER,
    each non-option ARGV-element is returned here.  */
 
-extern char *zbx_optarg;
+extern char *trx_optarg;
 
 /* Index in ARGV of the next element to be scanned.
    This is used for communication to and from the caller
@@ -42,16 +42,16 @@ extern char *zbx_optarg;
    Otherwise, `optind' communicates from one call to the next
    how much of ARGV has been scanned so far.  */
 
-extern int zbx_optind;
+extern int trx_optind;
 
 /* Callers store zero here to inhibit the error message `getopt' prints
    for unrecognized options.  */
 
-extern int zbx_opterr;
+extern int trx_opterr;
 
 /* Set to an option character which was unrecognized.  */
 
-extern int zbx_optopt;
+extern int trx_optopt;
 
 /* Describe the long-named options requested by the application.
    The LONG_OPTIONS argument to getopt_long or getopt_long_only is a vector
@@ -74,7 +74,7 @@ extern int zbx_optopt;
    one).  For long options that have a zero `flag' field, `getopt'
    returns the contents of the `val' field.  */
 
-struct zbx_option
+struct trx_option
 {
   const char *name;
   /* has_arg can't be an enum because some compilers complain about
@@ -86,14 +86,14 @@ struct zbx_option
 
 /* Names for the values of the `has_arg' field of `struct option'.  */
 
-#define zbx_no_argument         0
-#define zbx_required_argument   1
-#define zbx_optional_argument   2
-#define zbx_exact_argument      0x10            /* no abbrev. */
+#define trx_no_argument         0
+#define trx_required_argument   1
+#define trx_optional_argument   2
+#define trx_exact_argument      0x10            /* no abbrev. */
 
-int zbx_getopt(int argc, char **argv, const char *optstring);
-int zbx_getopt_long(int argc, char **argv, const char *options,
-                    const struct zbx_option *long_options, int *opt_index);
+int trx_getopt(int argc, char **argv, const char *optstring);
+int trx_getopt_long(int argc, char **argv, const char *options,
+                    const struct trx_option *long_options, int *opt_index);
 
 #ifdef __cplusplus
 }

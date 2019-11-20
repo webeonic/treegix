@@ -395,11 +395,11 @@ $items_table->addRow(
 foreach ($this->data['items'] as $n => $item) {
 	$name = $item['host'].NAME_DELIMITER.$item['name_expanded'];
 
-	if (zbx_empty($item['drawtype'])) {
+	if (trx_empty($item['drawtype'])) {
 		$item['drawtype'] = 0;
 	}
 
-	if (zbx_empty($item['yaxisside'])) {
+	if (trx_empty($item['yaxisside'])) {
 		$item['yaxisside'] = 0;
 	}
 

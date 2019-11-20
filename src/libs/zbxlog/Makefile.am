@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxlog.a
+noinst_LIBRARIES = libtrxlog.a
 
-libzbxlog_a_SOURCES = log.c
+libtrxlog_a_SOURCES = log.c

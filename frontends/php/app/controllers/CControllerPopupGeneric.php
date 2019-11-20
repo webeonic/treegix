@@ -16,7 +16,7 @@ function get_window_opener($frame, $field, $value) {
 
 	return '
 		try {'.
-			"document.getElementById(".zbx_jsvalue($field).").value=".zbx_jsvalue($value)."; ".
+			"document.getElementById(".trx_jsvalue($field).").value=".trx_jsvalue($value)."; ".
 		'} catch(e) {'.
 			'throw("Error: Target not found")'.
 		'}'."\n";
@@ -570,7 +570,7 @@ class CControllerPopupGeneric extends CController {
 		$excludeids = $this->getInput('excludeids', []);
 		$disableids = $this->getInput('disableids', []);
 
-		$page_options['parentid'] = $page_options['dstfld1'] !== '' ? zbx_jsvalue($page_options['dstfld1']) : 'null';
+		$page_options['parentid'] = $page_options['dstfld1'] !== '' ? trx_jsvalue($page_options['dstfld1']) : 'null';
 
 		if ($this->hasInput('only_hostid')) {
 			$hostid = $this->getInput('only_hostid');

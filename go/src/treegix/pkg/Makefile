@@ -207,7 +207,7 @@ AWK = mawk
 CC = cc
 CCDEPMODE = depmode=gcc3
 CFLAGS =  -g -O2 
-CGO_LDFLAGS = -Wl,--start-group 	${abs_top_builddir}/src/treegix_agent/logfiles/libzbxlogfiles.a 	${abs_top_builddir}/src/libs/zbxcomms/libzbxcomms.a 	${abs_top_builddir}/src/libs/zbxcommon/libzbxcommon.a 	${abs_top_builddir}/src/libs/zbxcrypto/libzbxcrypto.a 	${abs_top_builddir}/src/libs/zbxsys/libzbxsys.a 	${abs_top_builddir}/src/libs/zbxnix/libzbxnix.a 	${abs_top_builddir}/src/libs/zbxconf/libzbxconf.a 	${abs_top_builddir}/src/libs/zbxhttp/libzbxhttp.a 	${abs_top_builddir}/src/libs/zbxcompress/libzbxcompress.a 	${abs_top_builddir}/src/libs/zbxregexp/libzbxregexp.a 	${abs_top_builddir}/src/libs/zbxsysinfo/libzbxagentsysinfo.a 	${abs_top_builddir}/src/libs/zbxsysinfo/common/libcommonsysinfo.a 	${abs_top_builddir}/src/libs/zbxsysinfo/simple/libsimplesysinfo.a 	${abs_top_builddir}/src/libs/zbxsysinfo/linux/libspechostnamesysinfo.a 	${abs_top_builddir}/src/libs/zbxsysinfo/linux/libspecsysinfo.a 	${abs_top_builddir}/src/libs/zbxexec/libzbxexec.a 	${abs_top_builddir}/src/libs/zbxalgo/libzbxalgo.a 	${abs_top_builddir}/src/libs/zbxjson/libzbxjson.a 	-lm -ldl  -lresolv -lpcre   -lz -lpthread    	-Wl,--end-group
+CGO_LDFLAGS = -Wl,--start-group 	${abs_top_builddir}/src/treegix_agent/logfiles/libtrxlogfiles.a 	${abs_top_builddir}/src/libs/trxcomms/libtrxcomms.a 	${abs_top_builddir}/src/libs/trxcommon/libtrxcommon.a 	${abs_top_builddir}/src/libs/trxcrypto/libtrxcrypto.a 	${abs_top_builddir}/src/libs/trxsys/libtrxsys.a 	${abs_top_builddir}/src/libs/trxnix/libtrxnix.a 	${abs_top_builddir}/src/libs/trxconf/libtrxconf.a 	${abs_top_builddir}/src/libs/trxhttp/libtrxhttp.a 	${abs_top_builddir}/src/libs/trxcompress/libtrxcompress.a 	${abs_top_builddir}/src/libs/trxregexp/libtrxregexp.a 	${abs_top_builddir}/src/libs/trxsysinfo/libtrxagentsysinfo.a 	${abs_top_builddir}/src/libs/trxsysinfo/common/libcommonsysinfo.a 	${abs_top_builddir}/src/libs/trxsysinfo/simple/libsimplesysinfo.a 	${abs_top_builddir}/src/libs/trxsysinfo/linux/libspechostnamesysinfo.a 	${abs_top_builddir}/src/libs/trxsysinfo/linux/libspecsysinfo.a 	${abs_top_builddir}/src/libs/trxexec/libtrxexec.a 	${abs_top_builddir}/src/libs/trxalgo/libtrxalgo.a 	${abs_top_builddir}/src/libs/trxjson/libtrxjson.a 	-lm -ldl  -lresolv -lpcre   -lz -lpthread    	-Wl,--end-group
 CPP = cc -E
 CPPFLAGS = 
 CURL_SSL_CERT_LOCATION = ${datarootdir}/treegix/ssl/certs
@@ -398,8 +398,8 @@ SUBDIRS = \
 	tls \
 	version \
 	watch \
-	zbxcomms \
-	zbxlib
+	trxcomms \
+	trxlib
 
 all: all-recursive
 

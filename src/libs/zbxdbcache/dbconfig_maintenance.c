@@ -1,7 +1,7 @@
 
 #include "common.h"
 #include "log.h"
-#include "zbxalgo.h"
+#include "trxalgo.h"
 #include "dbcache.h"
 #include "mutexs.h"
 
@@ -28,18 +28,18 @@ extern int		CONFIG_TIMER_FORKS;
  *           4 - tags_evaltype                                                *
  *                                                                            *
  ******************************************************************************/
-void	DCsync_maintenances(zbx_dbsync_t *sync)
+void	DCsync_maintenances(trx_dbsync_t *sync)
 {
 	char			**row;
-	zbx_uint64_t		rowid;
+	trx_uint64_t		rowid;
 	unsigned char		tag;
-	zbx_uint64_t		maintenanceid;
-	zbx_dc_maintenance_t	*maintenance;
+	trx_uint64_t		maintenanceid;
+	trx_dc_maintenance_t	*maintenance;
 	int			found, ret;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
+	while (SUCCEED == (ret = trx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
 		config->maintenance_update = TRX_MAINTENANCE_UPDATE_TRUE;
 
@@ -49,8 +49,8 @@ void	DCsync_maintenances(zbx_dbsync_t *sync)
 
 		TRX_STR2UINT64(maintenanceid, row[0]);
 
-		maintenance = (zbx_dc_maintenance_t *)DCfind_id(&config->maintenances, maintenanceid,
-				sizeof(zbx_dc_maintenance_t), &found);
+		maintenance = (trx_dc_maintenance_t *)DCfind_id(&config->maintenances, maintenanceid,
+				sizeof(trx_dc_maintenance_t), &found);
 
 		if (0 == found)
 		{
@@ -58,13 +58,13 @@ void	DCsync_maintenances(zbx_dbsync_t *sync)
 			maintenance->running_since = 0;
 			maintenance->running_until = 0;
 
-			zbx_vector_uint64_create_ext(&maintenance->groupids, config->maintenances.mem_malloc_func,
+			trx_vector_uint64_create_ext(&maintenance->groupids, config->maintenances.mem_malloc_func,
 					config->maintenances.mem_realloc_func, config->maintenances.mem_free_func);
-			zbx_vector_uint64_create_ext(&maintenance->hostids, config->maintenances.mem_malloc_func,
+			trx_vector_uint64_create_ext(&maintenance->hostids, config->maintenances.mem_malloc_func,
 					config->maintenances.mem_realloc_func, config->maintenances.mem_free_func);
-			zbx_vector_ptr_create_ext(&maintenance->tags, config->maintenances.mem_malloc_func,
+			trx_vector_ptr_create_ext(&maintenance->tags, config->maintenances.mem_malloc_func,
 					config->maintenances.mem_realloc_func, config->maintenances.mem_free_func);
-			zbx_vector_ptr_create_ext(&maintenance->periods, config->maintenances.mem_malloc_func,
+			trx_vector_ptr_create_ext(&maintenance->periods, config->maintenances.mem_malloc_func,
 					config->maintenances.mem_realloc_func, config->maintenances.mem_free_func);
 		}
 
@@ -76,17 +76,17 @@ void	DCsync_maintenances(zbx_dbsync_t *sync)
 
 	/* remove deleted maintenances */
 
-	for (; SUCCEED == ret; ret = zbx_dbsync_next(sync, &rowid, &row, &tag))
+	for (; SUCCEED == ret; ret = trx_dbsync_next(sync, &rowid, &row, &tag))
 	{
-		if (NULL == (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances, &rowid)))
+		if (NULL == (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances, &rowid)))
 			continue;
 
-		zbx_vector_uint64_destroy(&maintenance->groupids);
-		zbx_vector_uint64_destroy(&maintenance->hostids);
-		zbx_vector_ptr_destroy(&maintenance->tags);
-		zbx_vector_ptr_destroy(&maintenance->periods);
+		trx_vector_uint64_destroy(&maintenance->groupids);
+		trx_vector_uint64_destroy(&maintenance->hostids);
+		trx_vector_ptr_destroy(&maintenance->tags);
+		trx_vector_ptr_destroy(&maintenance->periods);
 
-		zbx_hashset_remove_direct(&config->maintenances, maintenance);
+		trx_hashset_remove_direct(&config->maintenances, maintenance);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -101,8 +101,8 @@ void	DCsync_maintenances(zbx_dbsync_t *sync)
  ******************************************************************************/
 static int	dc_compare_maintenance_tags(const void *d1, const void *d2)
 {
-	const zbx_dc_maintenance_tag_t	*tag1 = *(const zbx_dc_maintenance_tag_t **)d1;
-	const zbx_dc_maintenance_tag_t	*tag2 = *(const zbx_dc_maintenance_tag_t **)d2;
+	const trx_dc_maintenance_tag_t	*tag1 = *(const trx_dc_maintenance_tag_t **)d1;
+	const trx_dc_maintenance_tag_t	*tag2 = *(const trx_dc_maintenance_tag_t **)d2;
 
 	return strcmp(tag1->tag, tag2->tag);
 }
@@ -123,22 +123,22 @@ static int	dc_compare_maintenance_tags(const void *d1, const void *d2)
  *           4 - value                                                        *
  *                                                                            *
  ******************************************************************************/
-void	DCsync_maintenance_tags(zbx_dbsync_t *sync)
+void	DCsync_maintenance_tags(trx_dbsync_t *sync)
 {
 	char				**row;
-	zbx_uint64_t			rowid;
+	trx_uint64_t			rowid;
 	unsigned char			tag;
-	zbx_uint64_t			maintenancetagid, maintenanceid;
-	zbx_dc_maintenance_tag_t	*maintenance_tag;
-	zbx_dc_maintenance_t		*maintenance;
-	zbx_vector_ptr_t		maintenances;
+	trx_uint64_t			maintenancetagid, maintenanceid;
+	trx_dc_maintenance_tag_t	*maintenance_tag;
+	trx_dc_maintenance_t		*maintenance;
+	trx_vector_ptr_t		maintenances;
 	int				found, ret, index, i;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&maintenances);
+	trx_vector_ptr_create(&maintenances);
 
-	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
+	while (SUCCEED == (ret = trx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
 		config->maintenance_update = TRX_MAINTENANCE_UPDATE_TRUE;
 
@@ -147,15 +147,15 @@ void	DCsync_maintenance_tags(zbx_dbsync_t *sync)
 			break;
 
 		TRX_STR2UINT64(maintenanceid, row[1]);
-		if (NULL == (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances,
+		if (NULL == (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances,
 				&maintenanceid)))
 		{
 			continue;
 		}
 
 		TRX_STR2UINT64(maintenancetagid, row[0]);
-		maintenance_tag = (zbx_dc_maintenance_tag_t *)DCfind_id(&config->maintenance_tags, maintenancetagid,
-				sizeof(zbx_dc_maintenance_tag_t), &found);
+		maintenance_tag = (trx_dc_maintenance_tag_t *)DCfind_id(&config->maintenance_tags, maintenancetagid,
+				sizeof(trx_dc_maintenance_tag_t), &found);
 
 		maintenance_tag->maintenanceid = maintenanceid;
 		TRX_STR2UCHAR(maintenance_tag->op, row[2]);
@@ -163,51 +163,51 @@ void	DCsync_maintenance_tags(zbx_dbsync_t *sync)
 		DCstrpool_replace(found, &maintenance_tag->value, row[4]);
 
 		if (0 == found)
-			zbx_vector_ptr_append(&maintenance->tags, maintenance_tag);
+			trx_vector_ptr_append(&maintenance->tags, maintenance_tag);
 
-		zbx_vector_ptr_append(&maintenances, maintenance);
+		trx_vector_ptr_append(&maintenances, maintenance);
 	}
 
 	/* remove deleted maintenance tags */
 
-	for (; SUCCEED == ret; ret = zbx_dbsync_next(sync, &rowid, &row, &tag))
+	for (; SUCCEED == ret; ret = trx_dbsync_next(sync, &rowid, &row, &tag))
 	{
-		if (NULL == (maintenance_tag = (zbx_dc_maintenance_tag_t *)zbx_hashset_search(&config->maintenance_tags,
+		if (NULL == (maintenance_tag = (trx_dc_maintenance_tag_t *)trx_hashset_search(&config->maintenance_tags,
 				&rowid)))
 		{
 			continue;
 		}
 
-		if (NULL != (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances,
+		if (NULL != (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances,
 				&maintenance_tag->maintenanceid)))
 		{
-			index = zbx_vector_ptr_search(&maintenance->tags, &maintenance_tag->maintenancetagid,
+			index = trx_vector_ptr_search(&maintenance->tags, &maintenance_tag->maintenancetagid,
 					TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 			if (FAIL != index)
-				zbx_vector_ptr_remove_noorder(&maintenance->tags, index);
+				trx_vector_ptr_remove_noorder(&maintenance->tags, index);
 
-			zbx_vector_ptr_append(&maintenances, maintenance);
+			trx_vector_ptr_append(&maintenances, maintenance);
 		}
 
-		zbx_strpool_release(maintenance_tag->tag);
-		zbx_strpool_release(maintenance_tag->value);
+		trx_strpool_release(maintenance_tag->tag);
+		trx_strpool_release(maintenance_tag->value);
 
-		zbx_hashset_remove_direct(&config->maintenance_tags, maintenance_tag);
+		trx_hashset_remove_direct(&config->maintenance_tags, maintenance_tag);
 	}
 
 	/* sort maintenance tags */
 
-	zbx_vector_ptr_sort(&maintenances, TRX_DEFAULT_PTR_COMPARE_FUNC);
-	zbx_vector_ptr_uniq(&maintenances, TRX_DEFAULT_PTR_COMPARE_FUNC);
+	trx_vector_ptr_sort(&maintenances, TRX_DEFAULT_PTR_COMPARE_FUNC);
+	trx_vector_ptr_uniq(&maintenances, TRX_DEFAULT_PTR_COMPARE_FUNC);
 
 	for (i = 0; i < maintenances.values_num; i++)
 	{
-		maintenance = (zbx_dc_maintenance_t *)maintenances.values[i];
-		zbx_vector_ptr_sort(&maintenance->tags, dc_compare_maintenance_tags);
+		maintenance = (trx_dc_maintenance_t *)maintenances.values[i];
+		trx_vector_ptr_sort(&maintenance->tags, dc_compare_maintenance_tags);
 	}
 
-	zbx_vector_ptr_destroy(&maintenances);
+	trx_vector_ptr_destroy(&maintenances);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -233,19 +233,19 @@ void	DCsync_maintenance_tags(zbx_dbsync_t *sync)
  *           9 - maintenanceid                                                *
  *                                                                            *
  ******************************************************************************/
-void	DCsync_maintenance_periods(zbx_dbsync_t *sync)
+void	DCsync_maintenance_periods(trx_dbsync_t *sync)
 {
 	char				**row;
-	zbx_uint64_t			rowid;
+	trx_uint64_t			rowid;
 	unsigned char			tag;
-	zbx_uint64_t			periodid, maintenanceid;
-	zbx_dc_maintenance_period_t	*period;
-	zbx_dc_maintenance_t		*maintenance;
+	trx_uint64_t			periodid, maintenanceid;
+	trx_dc_maintenance_period_t	*period;
+	trx_dc_maintenance_t		*maintenance;
 	int				found, ret, index;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
+	while (SUCCEED == (ret = trx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
 		config->maintenance_update = TRX_MAINTENANCE_UPDATE_TRUE;
 
@@ -254,15 +254,15 @@ void	DCsync_maintenance_periods(zbx_dbsync_t *sync)
 			break;
 
 		TRX_STR2UINT64(maintenanceid, row[9]);
-		if (NULL == (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances,
+		if (NULL == (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances,
 				&maintenanceid)))
 		{
 			continue;
 		}
 
 		TRX_STR2UINT64(periodid, row[0]);
-		period = (zbx_dc_maintenance_period_t *)DCfind_id(&config->maintenance_periods, periodid,
-				sizeof(zbx_dc_maintenance_period_t), &found);
+		period = (trx_dc_maintenance_period_t *)DCfind_id(&config->maintenance_periods, periodid,
+				sizeof(trx_dc_maintenance_period_t), &found);
 
 		period->maintenanceid = maintenanceid;
 		TRX_STR2UCHAR(period->type, row[1]);
@@ -275,30 +275,30 @@ void	DCsync_maintenance_periods(zbx_dbsync_t *sync)
 		period->start_date = atoi(row[8]);
 
 		if (0 == found)
-			zbx_vector_ptr_append(&maintenance->periods, period);
+			trx_vector_ptr_append(&maintenance->periods, period);
 	}
 
 	/* remove deleted maintenance tags */
 
-	for (; SUCCEED == ret; ret = zbx_dbsync_next(sync, &rowid, &row, &tag))
+	for (; SUCCEED == ret; ret = trx_dbsync_next(sync, &rowid, &row, &tag))
 	{
-		if (NULL == (period = (zbx_dc_maintenance_period_t *)zbx_hashset_search(&config->maintenance_periods,
+		if (NULL == (period = (trx_dc_maintenance_period_t *)trx_hashset_search(&config->maintenance_periods,
 				&rowid)))
 		{
 			continue;
 		}
 
-		if (NULL != (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances,
+		if (NULL != (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances,
 				&period->maintenanceid)))
 		{
-			index = zbx_vector_ptr_search(&maintenance->periods, &period->timeperiodid,
+			index = trx_vector_ptr_search(&maintenance->periods, &period->timeperiodid,
 					TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 			if (FAIL != index)
-				zbx_vector_ptr_remove_noorder(&maintenance->periods, index);
+				trx_vector_ptr_remove_noorder(&maintenance->periods, index);
 		}
 
-		zbx_hashset_remove_direct(&config->maintenance_periods, period);
+		trx_hashset_remove_direct(&config->maintenance_periods, period);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -317,18 +317,18 @@ void	DCsync_maintenance_periods(zbx_dbsync_t *sync)
  *           1 - groupid                                                      *
  *                                                                            *
  ******************************************************************************/
-void	DCsync_maintenance_groups(zbx_dbsync_t *sync)
+void	DCsync_maintenance_groups(trx_dbsync_t *sync)
 {
 	char			**row;
-	zbx_uint64_t		rowid;
+	trx_uint64_t		rowid;
 	unsigned char		tag;
-	zbx_dc_maintenance_t	*maintenance = NULL;
+	trx_dc_maintenance_t	*maintenance = NULL;
 	int			index, ret;
-	zbx_uint64_t		last_maintenanceid = 0, maintenanceid, groupid;
+	trx_uint64_t		last_maintenanceid = 0, maintenanceid, groupid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
+	while (SUCCEED == (ret = trx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
 		config->maintenance_update = TRX_MAINTENANCE_UPDATE_TRUE;
 
@@ -340,7 +340,7 @@ void	DCsync_maintenance_groups(zbx_dbsync_t *sync)
 
 		if (last_maintenanceid != maintenanceid || 0 == last_maintenanceid)
 		{
-			if (NULL == (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances,
+			if (NULL == (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances,
 					&maintenanceid)))
 			{
 				continue;
@@ -350,28 +350,28 @@ void	DCsync_maintenance_groups(zbx_dbsync_t *sync)
 
 		TRX_STR2UINT64(groupid, row[1]);
 
-		zbx_vector_uint64_append(&maintenance->groupids, groupid);
+		trx_vector_uint64_append(&maintenance->groupids, groupid);
 	}
 
 	/* remove deleted maintenance groupids from cache */
-	for (; SUCCEED == ret; ret = zbx_dbsync_next(sync, &rowid, &row, &tag))
+	for (; SUCCEED == ret; ret = trx_dbsync_next(sync, &rowid, &row, &tag))
 	{
 		TRX_STR2UINT64(maintenanceid, row[0]);
 
-		if (NULL == (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances,
+		if (NULL == (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances,
 				&maintenanceid)))
 		{
 			continue;
 		}
 		TRX_STR2UINT64(groupid, row[1]);
 
-		if (FAIL == (index = zbx_vector_uint64_search(&maintenance->groupids, groupid,
+		if (FAIL == (index = trx_vector_uint64_search(&maintenance->groupids, groupid,
 				TRX_DEFAULT_UINT64_COMPARE_FUNC)))
 		{
 			continue;
 		}
 
-		zbx_vector_uint64_remove_noorder(&maintenance->groupids, index);
+		trx_vector_uint64_remove_noorder(&maintenance->groupids, index);
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
@@ -390,21 +390,21 @@ void	DCsync_maintenance_groups(zbx_dbsync_t *sync)
  *           1 - hostid                                                       *
  *                                                                            *
  ******************************************************************************/
-void	DCsync_maintenance_hosts(zbx_dbsync_t *sync)
+void	DCsync_maintenance_hosts(trx_dbsync_t *sync)
 {
 	char			**row;
-	zbx_uint64_t		rowid;
+	trx_uint64_t		rowid;
 	unsigned char		tag;
-	zbx_vector_ptr_t	maintenances;
-	zbx_dc_maintenance_t	*maintenance = NULL;
+	trx_vector_ptr_t	maintenances;
+	trx_dc_maintenance_t	*maintenance = NULL;
 	int			index, ret, i;
-	zbx_uint64_t		last_maintenanceid, maintenanceid, hostid;
+	trx_uint64_t		last_maintenanceid, maintenanceid, hostid;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&maintenances);
+	trx_vector_ptr_create(&maintenances);
 
-	while (SUCCEED == (ret = zbx_dbsync_next(sync, &rowid, &row, &tag)))
+	while (SUCCEED == (ret = trx_dbsync_next(sync, &rowid, &row, &tag)))
 	{
 		config->maintenance_update = TRX_MAINTENANCE_UPDATE_TRUE;
 
@@ -416,7 +416,7 @@ void	DCsync_maintenance_hosts(zbx_dbsync_t *sync)
 
 		if (NULL == maintenance || last_maintenanceid != maintenanceid)
 		{
-			if (NULL == (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances,
+			if (NULL == (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances,
 					&maintenanceid)))
 			{
 				continue;
@@ -426,42 +426,42 @@ void	DCsync_maintenance_hosts(zbx_dbsync_t *sync)
 
 		TRX_STR2UINT64(hostid, row[1]);
 
-		zbx_vector_uint64_append(&maintenance->hostids, hostid);
-		zbx_vector_ptr_append(&maintenances, maintenance);
+		trx_vector_uint64_append(&maintenance->hostids, hostid);
+		trx_vector_ptr_append(&maintenances, maintenance);
 	}
 
 	/* remove deleted maintenance hostids from cache */
-	for (; SUCCEED == ret; ret = zbx_dbsync_next(sync, &rowid, &row, &tag))
+	for (; SUCCEED == ret; ret = trx_dbsync_next(sync, &rowid, &row, &tag))
 	{
 		TRX_STR2UINT64(maintenanceid, row[0]);
 
-		if (NULL == (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances,
+		if (NULL == (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances,
 				&maintenanceid)))
 		{
 			continue;
 		}
 		TRX_STR2UINT64(hostid, row[1]);
 
-		if (FAIL == (index = zbx_vector_uint64_search(&maintenance->hostids, hostid,
+		if (FAIL == (index = trx_vector_uint64_search(&maintenance->hostids, hostid,
 				TRX_DEFAULT_UINT64_COMPARE_FUNC)))
 		{
 			continue;
 		}
 
-		zbx_vector_uint64_remove_noorder(&maintenance->hostids, index);
-		zbx_vector_ptr_append(&maintenances, maintenance);
+		trx_vector_uint64_remove_noorder(&maintenance->hostids, index);
+		trx_vector_ptr_append(&maintenances, maintenance);
 	}
 
-	zbx_vector_ptr_sort(&maintenances, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
-	zbx_vector_ptr_uniq(&maintenances, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	trx_vector_ptr_sort(&maintenances, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
+	trx_vector_ptr_uniq(&maintenances, TRX_DEFAULT_UINT64_PTR_COMPARE_FUNC);
 
 	for (i = 0; i < maintenances.values_num; i++)
 	{
-		maintenance = (zbx_dc_maintenance_t *)maintenances.values[i];
-		zbx_vector_uint64_sort(&maintenance->hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		maintenance = (trx_dc_maintenance_t *)maintenances.values[i];
+		trx_vector_uint64_sort(&maintenance->hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 	}
 
-	zbx_vector_ptr_destroy(&maintenances);
+	trx_vector_ptr_destroy(&maintenances);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 }
@@ -483,8 +483,8 @@ void	DCsync_maintenance_hosts(zbx_dbsync_t *sync)
  *               FAIL    - period started before maintenance activation time  *
  *                                                                            *
  ******************************************************************************/
-static int	dc_calculate_maintenance_period(const zbx_dc_maintenance_t *maintenance,
-		const zbx_dc_maintenance_period_t *period, time_t start_date, time_t *running_since,
+static int	dc_calculate_maintenance_period(const trx_dc_maintenance_t *maintenance,
+		const trx_dc_maintenance_period_t *period, time_t start_date, time_t *running_since,
 		time_t *running_until)
 {
 	int		day, wday, week;
@@ -564,7 +564,7 @@ static int	dc_calculate_maintenance_period(const zbx_dc_maintenance_t *maintenan
 					day = (tm->tm_mday - 1) / 7 + 1;
 					if (5 == period->every && 4 == day)
 					{
-						if (tm->tm_mday + 7 <= zbx_day_in_month(1900 + tm->tm_year,
+						if (tm->tm_mday + 7 <= trx_day_in_month(1900 + tm->tm_year,
 								tm->tm_mon + 1))
 						{
 							continue;
@@ -594,38 +594,38 @@ static int	dc_calculate_maintenance_period(const zbx_dc_maintenance_t *maintenan
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_maintenance_set_update_flags                              *
+ * Function: trx_dc_maintenance_set_update_flags                              *
  *                                                                            *
  * Purpose: sets maintenance update flags for all timers                      *
  *                                                                            *
  ******************************************************************************/
-void	zbx_dc_maintenance_set_update_flags(void)
+void	trx_dc_maintenance_set_update_flags(void)
 {
 	int	slots_num = TRX_MAINTENANCE_UPDATE_FLAGS_NUM(), timers_left;
 
 	WRLOCK_CACHE;
 
-	memset(config->maintenance_update_flags, 0xff, sizeof(zbx_uint64_t) * slots_num);
+	memset(config->maintenance_update_flags, 0xff, sizeof(trx_uint64_t) * slots_num);
 
 	if (0 != (timers_left = (CONFIG_TIMER_FORKS % (sizeof(uint64_t) * 8))))
-		config->maintenance_update_flags[slots_num - 1] >>= (sizeof(zbx_uint64_t) * 8 - timers_left);
+		config->maintenance_update_flags[slots_num - 1] >>= (sizeof(trx_uint64_t) * 8 - timers_left);
 
 	UNLOCK_CACHE;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_maintenance_reset_update_flag                             *
+ * Function: trx_dc_maintenance_reset_update_flag                             *
  *                                                                            *
  * Purpose: resets maintenance update flags for the specified timer           *
  *                                                                            *
  * Parameters: timer - [IN] the timer process number                          *
  *                                                                            *
  ******************************************************************************/
-void	zbx_dc_maintenance_reset_update_flag(int timer)
+void	trx_dc_maintenance_reset_update_flag(int timer)
 {
 	int		slot, bit;
-	zbx_uint64_t	mask;
+	trx_uint64_t	mask;
 
 	timer--;
 	slot = timer / (sizeof(uint64_t) * 8);
@@ -642,7 +642,7 @@ void	zbx_dc_maintenance_reset_update_flag(int timer)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_maintenance_check_update_flag                             *
+ * Function: trx_dc_maintenance_check_update_flag                             *
  *                                                                            *
  * Purpose: checks if the maintenance update flag is set for the specified    *
  *          timer                                                             *
@@ -652,10 +652,10 @@ void	zbx_dc_maintenance_reset_update_flag(int timer)
  * Return value: SUCCEED - maintenance update flag is set                     *
  *               FAIL    - otherwise                                          *
  ******************************************************************************/
-int	zbx_dc_maintenance_check_update_flag(int timer)
+int	trx_dc_maintenance_check_update_flag(int timer)
 {
 	int		slot, bit, ret;
-	zbx_uint64_t	mask;
+	trx_uint64_t	mask;
 
 	timer--;
 	slot = timer / (sizeof(uint64_t) * 8);
@@ -674,7 +674,7 @@ int	zbx_dc_maintenance_check_update_flag(int timer)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_maintenance_check_update_flags                            *
+ * Function: trx_dc_maintenance_check_update_flags                            *
  *                                                                            *
  * Purpose: checks if at least one maintenance update flag is set             *
  *                                                                            *
@@ -682,7 +682,7 @@ int	zbx_dc_maintenance_check_update_flag(int timer)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_dc_maintenance_check_update_flags(void)
+int	trx_dc_maintenance_check_update_flags(void)
 {
 	int	slots_num = TRX_MAINTENANCE_UPDATE_FLAGS_NUM(), ret = SUCCEED;
 
@@ -706,7 +706,7 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_update_maintenances                                       *
+ * Function: trx_dc_update_maintenances                                       *
  *                                                                            *
  * Purpose: update maintenance state depending on maintenance periods         *
  *                                                                            *
@@ -719,11 +719,11 @@ out:
  *           and period start/end time.                                       *
  *                                                                            *
  ******************************************************************************/
-int	zbx_dc_update_maintenances(void)
+int	trx_dc_update_maintenances(void)
 {
-	zbx_dc_maintenance_t		*maintenance;
-	zbx_dc_maintenance_period_t	*period;
-	zbx_hashset_iter_t		iter;
+	trx_dc_maintenance_t		*maintenance;
+	trx_dc_maintenance_period_t	*period;
+	trx_hashset_iter_t		iter;
 	int				i, running_num = 0, seconds, rc, started_num = 0, stopped_num = 0, ret = FAIL;
 	unsigned char			state;
 	struct tm			*tm;
@@ -743,8 +743,8 @@ int	zbx_dc_update_maintenances(void)
 		config->maintenance_update = TRX_MAINTENANCE_UPDATE_FALSE;
 	}
 
-	zbx_hashset_iter_reset(&config->maintenances, &iter);
-	while (NULL != (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&config->maintenances, &iter);
+	while (NULL != (maintenance = (trx_dc_maintenance_t *)trx_hashset_iter_next(&iter)))
 	{
 		state = TRX_MAINTENANCE_IDLE;
 		running_since = 0;
@@ -755,7 +755,7 @@ int	zbx_dc_update_maintenances(void)
 			/* find the longest running maintenance period */
 			for (i = 0; i < maintenance->periods.values_num; i++)
 			{
-				period = (zbx_dc_maintenance_period_t *)maintenance->periods.values[i];
+				period = (trx_dc_maintenance_period_t *)maintenance->periods.values[i];
 
 				period_start = now - seconds + period->start_time;
 				if (seconds < period->start_time)
@@ -789,9 +789,9 @@ int	zbx_dc_update_maintenances(void)
 				/* precached during configuration cache synchronization.   */
 				for (i = 0; i < maintenance->groupids.values_num; i++)
 				{
-					zbx_dc_hostgroup_t	*group;
+					trx_dc_hostgroup_t	*group;
 
-					if (NULL != (group = (zbx_dc_hostgroup_t *)zbx_hashset_search(
+					if (NULL != (group = (trx_dc_hostgroup_t *)trx_hashset_search(
 							&config->hostgroups, &maintenance->groupids.values[i])))
 					{
 						dc_hostgroup_cache_nested_groupids(group);
@@ -835,18 +835,18 @@ int	zbx_dc_update_maintenances(void)
  * Purpose: get maintenances by identifiers                                   *
  *                                                                            *
  ******************************************************************************/
-static void	dc_get_maintenances_by_ids(const zbx_vector_uint64_t *maintenanceids, zbx_vector_ptr_t *maintenances)
+static void	dc_get_maintenances_by_ids(const trx_vector_uint64_t *maintenanceids, trx_vector_ptr_t *maintenances)
 {
-	zbx_dc_maintenance_t	*maintenance;
+	trx_dc_maintenance_t	*maintenance;
 	int			i;
 
 
 	for (i = 0; i < maintenanceids->values_num; i++)
 	{
-		if (NULL != (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_search(&config->maintenances,
+		if (NULL != (maintenance = (trx_dc_maintenance_t *)trx_hashset_search(&config->maintenances,
 				&maintenanceids->values[i])))
 		{
-			zbx_vector_ptr_append(maintenances, maintenance);
+			trx_vector_ptr_append(maintenances, maintenance);
 		}
 
 	}
@@ -865,43 +865,43 @@ static void	dc_get_maintenances_by_ids(const zbx_vector_uint64_t *maintenanceids
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	dc_maintenance_match_host(const zbx_dc_maintenance_t *maintenance, zbx_uint64_t hostid)
+static int	dc_maintenance_match_host(const trx_dc_maintenance_t *maintenance, trx_uint64_t hostid)
 {
 	int	ret = FAIL;
 
-	if (FAIL != zbx_vector_uint64_bsearch(&maintenance->hostids, hostid, TRX_DEFAULT_UINT64_COMPARE_FUNC))
+	if (FAIL != trx_vector_uint64_bsearch(&maintenance->hostids, hostid, TRX_DEFAULT_UINT64_COMPARE_FUNC))
 		return SUCCEED;
 
 	if (0 != maintenance->groupids.values_num)
 	{
 		int			i;
-		zbx_dc_hostgroup_t	*group;
-		zbx_vector_uint64_t	groupids;
+		trx_dc_hostgroup_t	*group;
+		trx_vector_uint64_t	groupids;
 
-		zbx_vector_uint64_create(&groupids);
+		trx_vector_uint64_create(&groupids);
 
 		for (i = 0; i < maintenance->groupids.values_num; i++)
 			dc_get_nested_hostgroupids(maintenance->groupids.values[i], &groupids);
 
-		zbx_vector_uint64_sort(&groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_sort(&groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_uniq(&groupids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		for (i = 0; i < groupids.values_num; i++)
 		{
-			if (NULL == (group = (zbx_dc_hostgroup_t *)zbx_hashset_search(&config->hostgroups,
+			if (NULL == (group = (trx_dc_hostgroup_t *)trx_hashset_search(&config->hostgroups,
 					&groupids.values[i])))
 			{
 				continue;
 			}
 
-			if (NULL != zbx_hashset_search(&group->hostids, &hostid))
+			if (NULL != trx_hashset_search(&group->hostids, &hostid))
 			{
 				ret = SUCCEED;
 				break;
 			}
 		}
 
-		zbx_vector_uint64_destroy(&groupids);
+		trx_vector_uint64_destroy(&groupids);
 	}
 
 	return ret;
@@ -917,19 +917,19 @@ static int	dc_maintenance_match_host(const zbx_dc_maintenance_t *maintenance, zb
  *             updates      - [OUT] updates to be applied                     *
  *                                                                            *
  ******************************************************************************/
-static void	dc_get_host_maintenance_updates(const zbx_vector_ptr_t *maintenances, zbx_vector_ptr_t *updates)
+static void	dc_get_host_maintenance_updates(const trx_vector_ptr_t *maintenances, trx_vector_ptr_t *updates)
 {
-	zbx_hashset_iter_t		iter;
+	trx_hashset_iter_t		iter;
 	TRX_DC_HOST			*host;
-	const zbx_dc_maintenance_t	*maintenance;
+	const trx_dc_maintenance_t	*maintenance;
 	int				i, maintenance_from;
 	unsigned char			maintenance_status, maintenance_type;
-	zbx_uint64_t			maintenanceid;
-	zbx_host_maintenance_diff_t	*diff;
+	trx_uint64_t			maintenanceid;
+	trx_host_maintenance_diff_t	*diff;
 	unsigned int			flags;
 
-	zbx_hashset_iter_reset(&config->hosts, &iter);
-	while (NULL != (host = (TRX_DC_HOST *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&config->hosts, &iter);
+	while (NULL != (host = (TRX_DC_HOST *)trx_hashset_iter_next(&iter)))
 	{
 		if (HOST_STATUS_PROXY_ACTIVE == host->status || HOST_STATUS_PROXY_PASSIVE == host->status)
 			continue;
@@ -942,7 +942,7 @@ static void	dc_get_host_maintenance_updates(const zbx_vector_ptr_t *maintenances
 
 		for (i = 0; i < maintenances->values_num; i++)
 		{
-			maintenance = (const zbx_dc_maintenance_t *)maintenances->values[i];
+			maintenance = (const trx_dc_maintenance_t *)maintenances->values[i];
 
 			if (SUCCEED == dc_maintenance_match_host(maintenance, host->hostid))
 			{
@@ -972,31 +972,31 @@ static void	dc_get_host_maintenance_updates(const zbx_vector_ptr_t *maintenances
 
 		if (0 != flags)
 		{
-			diff = (zbx_host_maintenance_diff_t *)zbx_malloc(0, sizeof(zbx_host_maintenance_diff_t));
+			diff = (trx_host_maintenance_diff_t *)trx_malloc(0, sizeof(trx_host_maintenance_diff_t));
 			diff->flags = flags;
 			diff->hostid = host->hostid;
 			diff->maintenanceid = maintenanceid;
 			diff->maintenance_status = maintenance_status;
 			diff->maintenance_from = maintenance_from;
 			diff->maintenance_type = maintenance_type;
-			zbx_vector_ptr_append(updates, diff);
+			trx_vector_ptr_append(updates, diff);
 		}
 	}
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_flush_host_maintenance_updates                            *
+ * Function: trx_dc_flush_host_maintenance_updates                            *
  *                                                                            *
  * Purpose: flush host maintenance updates to configuration cache             *
  *                                                                            *
  * Parameters: updates - [IN] the updates to flush                            *
  *                                                                            *
  ******************************************************************************/
-void	zbx_dc_flush_host_maintenance_updates(const zbx_vector_ptr_t *updates)
+void	trx_dc_flush_host_maintenance_updates(const trx_vector_ptr_t *updates)
 {
 	int					i;
-	const zbx_host_maintenance_diff_t	*diff;
+	const trx_host_maintenance_diff_t	*diff;
 	TRX_DC_HOST				*host;
 	int					now;
 
@@ -1008,9 +1008,9 @@ void	zbx_dc_flush_host_maintenance_updates(const zbx_vector_ptr_t *updates)
 	{
 		int	maintenance_without_data = 0;
 
-		diff = (zbx_host_maintenance_diff_t *)updates->values[i];
+		diff = (trx_host_maintenance_diff_t *)updates->values[i];
 
-		if (NULL == (host = (TRX_DC_HOST *)zbx_hashset_search(&config->hosts, &diff->hostid)))
+		if (NULL == (host = (TRX_DC_HOST *)trx_hashset_search(&config->hosts, &diff->hostid)))
 			continue;
 
 		if (HOST_MAINTENANCE_STATUS_ON == host->maintenance_status &&
@@ -1046,7 +1046,7 @@ void	zbx_dc_flush_host_maintenance_updates(const zbx_vector_ptr_t *updates)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_get_host_maintenance_updates                              *
+ * Function: trx_dc_get_host_maintenance_updates                              *
  *                                                                            *
  * Purpose: calculates required host maintenance updates based on specified   *
  *          maintenances                                                      *
@@ -1055,21 +1055,21 @@ void	zbx_dc_flush_host_maintenance_updates(const zbx_vector_ptr_t *updates)
  *                                process                                     *
  *             updates          - [OUT] pending updates                       *
  *                                                                            *
- * Comments: This function must be called after zbx_dc_update_maintenances()  *
+ * Comments: This function must be called after trx_dc_update_maintenances()  *
  *           function has updated maintenance state in configuration cache.   *
  *           To be able to work with lazy nested group caching and read locks *
  *           all nested groups used in maintenances must be already precached *
  *           before calling this function.                                    *
  *                                                                            *
  ******************************************************************************/
-void	zbx_dc_get_host_maintenance_updates(const zbx_vector_uint64_t *maintenanceids, zbx_vector_ptr_t *updates)
+void	trx_dc_get_host_maintenance_updates(const trx_vector_uint64_t *maintenanceids, trx_vector_ptr_t *updates)
 {
-	zbx_vector_ptr_t	maintenances;
+	trx_vector_ptr_t	maintenances;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&maintenances);
-	zbx_vector_ptr_reserve(&maintenances, 100);
+	trx_vector_ptr_create(&maintenances);
+	trx_vector_ptr_reserve(&maintenances, 100);
 
 	RDLOCK_CACHE;
 
@@ -1081,7 +1081,7 @@ void	zbx_dc_get_host_maintenance_updates(const zbx_vector_uint64_t *maintenancei
 
 	UNLOCK_CACHE;
 
-	zbx_vector_ptr_destroy(&maintenances);
+	trx_vector_ptr_destroy(&maintenances);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s() updates:%d", __func__, updates->values_num);
 }
@@ -1093,7 +1093,7 @@ void	zbx_dc_get_host_maintenance_updates(const zbx_vector_uint64_t *maintenancei
  * Purpose: perform maintenance tag comparison using maintenance tag operator *
  *                                                                            *
  ******************************************************************************/
-static int	dc_maintenance_tag_value_match(const zbx_dc_maintenance_tag_t *mt, const zbx_tag_t *tag)
+static int	dc_maintenance_tag_value_match(const trx_dc_maintenance_tag_t *mt, const trx_tag_t *tag)
 {
 	switch (mt->op)
 	{
@@ -1122,16 +1122,16 @@ static int	dc_maintenance_tag_value_match(const zbx_dc_maintenance_tag_t *mt, co
  *               FAIL    - no matching tags found                             *
  *                                                                            *
  ******************************************************************************/
-static int	dc_maintenance_match_tag_range(const zbx_vector_ptr_t *mtags, const zbx_vector_ptr_t *etags,
+static int	dc_maintenance_match_tag_range(const trx_vector_ptr_t *mtags, const trx_vector_ptr_t *etags,
 		int *mt_pos, int *et_pos)
 {
-	const zbx_dc_maintenance_tag_t	*mtag;
-	const zbx_tag_t			*etag;
+	const trx_dc_maintenance_tag_t	*mtag;
+	const trx_tag_t			*etag;
 	const char			*name;
 	int				i, j, ret, mt_start, mt_end, et_start, et_end;
 
 	/* get the maintenance tag name */
-	mtag = (const zbx_dc_maintenance_tag_t *)mtags->values[*mt_pos];
+	mtag = (const trx_dc_maintenance_tag_t *)mtags->values[*mt_pos];
 	name = mtag->tag;
 
 	/* find maintenance and event tag ranges matching the first maintenance tag name */
@@ -1144,7 +1144,7 @@ static int	dc_maintenance_match_tag_range(const zbx_vector_ptr_t *mtags, const z
 
 	for (i = mt_start + 1; i < mtags->values_num; i++)
 	{
-		mtag = (const zbx_dc_maintenance_tag_t *)mtags->values[i];
+		mtag = (const trx_dc_maintenance_tag_t *)mtags->values[i];
 		if (0 != strcmp(mtag->tag, name))
 			break;
 	}
@@ -1155,7 +1155,7 @@ static int	dc_maintenance_match_tag_range(const zbx_vector_ptr_t *mtags, const z
 
 	for (i = et_start; i < etags->values_num; i++)
 	{
-		etag = (const zbx_tag_t *)etags->values[i];
+		etag = (const trx_tag_t *)etags->values[i];
 		if (0 < (ret = strcmp(etag->tag, name)))
 		{
 			*et_pos = i;
@@ -1178,7 +1178,7 @@ static int	dc_maintenance_match_tag_range(const zbx_vector_ptr_t *mtags, const z
 
 	for (; i < etags->values_num; i++)
 	{
-		etag = (const zbx_tag_t *)etags->values[i];
+		etag = (const trx_tag_t *)etags->values[i];
 		if (0 != strcmp(etag->tag, name))
 			break;
 	}
@@ -1190,11 +1190,11 @@ static int	dc_maintenance_match_tag_range(const zbx_vector_ptr_t *mtags, const z
 
 	for (i = mt_start; i <= mt_end; i++)
 	{
-		mtag = (const zbx_dc_maintenance_tag_t *)mtags->values[i];
+		mtag = (const trx_dc_maintenance_tag_t *)mtags->values[i];
 
 		for (j = et_start; j <= et_end; j++)
 		{
-			etag = (const zbx_tag_t *)etags->values[j];
+			etag = (const trx_tag_t *)etags->values[j];
 			if (SUCCEED == dc_maintenance_tag_value_match(mtag, etag))
 				return SUCCEED;
 		}
@@ -1216,7 +1216,7 @@ static int	dc_maintenance_match_tag_range(const zbx_vector_ptr_t *mtags, const z
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	dc_maintenance_match_tags_or(const zbx_dc_maintenance_t *maintenance, const zbx_vector_ptr_t *tags)
+static int	dc_maintenance_match_tags_or(const trx_dc_maintenance_t *maintenance, const trx_vector_ptr_t *tags)
 {
 	int	mt_pos = 0, et_pos = 0;
 
@@ -1242,7 +1242,7 @@ static int	dc_maintenance_match_tags_or(const zbx_dc_maintenance_t *maintenance,
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	dc_maintenance_match_tags_andor(const zbx_dc_maintenance_t *maintenance, const zbx_vector_ptr_t *tags)
+static int	dc_maintenance_match_tags_andor(const trx_dc_maintenance_t *maintenance, const trx_vector_ptr_t *tags)
 {
 	int	mt_pos = 0, et_pos = 0;
 
@@ -1271,7 +1271,7 @@ static int	dc_maintenance_match_tags_andor(const zbx_dc_maintenance_t *maintenan
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	dc_maintenance_match_tags(const zbx_dc_maintenance_t *maintenance, const zbx_vector_ptr_t *tags)
+static int	dc_maintenance_match_tags(const trx_dc_maintenance_t *maintenance, const trx_vector_ptr_t *tags)
 {
 	switch (maintenance->tags_evaltype)
 	{
@@ -1304,15 +1304,15 @@ static int	dc_maintenance_match_tags(const zbx_dc_maintenance_t *maintenance, co
  ******************************************************************************/
 static int	dc_compare_tags(const void *d1, const void *d2)
 {
-	const zbx_tag_t	*tag1 = *(const zbx_tag_t **)d1;
-	const zbx_tag_t	*tag2 = *(const zbx_tag_t **)d2;
+	const trx_tag_t	*tag1 = *(const trx_tag_t **)d1;
+	const trx_tag_t	*tag2 = *(const trx_tag_t **)d2;
 
 	return strcmp(tag1->tag, tag2->tag);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_get_event_maintenances                                    *
+ * Function: trx_dc_get_event_maintenances                                    *
  *                                                                            *
  * Purpose: get maintenance data for events                                   *
  *                                                                            *
@@ -1324,30 +1324,30 @@ static int	dc_compare_tags(const void *d1, const void *d2)
  * Return value: SUCCEED - at least one matching maintenance was found        *
  *                                                                            *
  ******************************************************************************/
-int	zbx_dc_get_event_maintenances(zbx_vector_ptr_t *event_queries, const zbx_vector_uint64_t *maintenanceids)
+int	trx_dc_get_event_maintenances(trx_vector_ptr_t *event_queries, const trx_vector_uint64_t *maintenanceids)
 {
-	zbx_vector_ptr_t		maintenances;
+	trx_vector_ptr_t		maintenances;
 	int				i, j, k, ret = FAIL;
-	zbx_dc_maintenance_t		*maintenance;
-	zbx_event_suppress_query_t	*query;
+	trx_dc_maintenance_t		*maintenance;
+	trx_event_suppress_query_t	*query;
 	TRX_DC_ITEM			*item;
 	TRX_DC_FUNCTION			*function;
-	zbx_vector_uint64_t		hostids;
-	zbx_uint64_pair_t		pair;
+	trx_vector_uint64_t		hostids;
+	trx_uint64_pair_t		pair;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	zbx_vector_ptr_create(&maintenances);
-	zbx_vector_ptr_reserve(&maintenances, 100);
-	zbx_vector_uint64_create(&hostids);
+	trx_vector_ptr_create(&maintenances);
+	trx_vector_ptr_reserve(&maintenances, 100);
+	trx_vector_uint64_create(&hostids);
 
 	/* event tags must be sorted by name to perform maintenance tag matching */
 
 	for (i = 0; i < event_queries->values_num; i++)
 	{
-		query = (zbx_event_suppress_query_t *)event_queries->values[i];
+		query = (trx_event_suppress_query_t *)event_queries->values[i];
 		if (0 != query->tags.values_num)
-			zbx_vector_ptr_sort(&query->tags, dc_compare_tags);
+			trx_vector_ptr_sort(&query->tags, dc_compare_tags);
 	}
 
 	RDLOCK_CACHE;
@@ -1359,31 +1359,31 @@ int	zbx_dc_get_event_maintenances(zbx_vector_ptr_t *event_queries, const zbx_vec
 
 	for (i = 0; i < event_queries->values_num; i++)
 	{
-		query = (zbx_event_suppress_query_t *)event_queries->values[i];
+		query = (trx_event_suppress_query_t *)event_queries->values[i];
 
 		/* find hostids of items used in event trigger expressions */
 
 		for (j = 0; j < query->functionids.values_num; j++)
 		{
-			if (NULL == (function = (TRX_DC_FUNCTION *)zbx_hashset_search(&config->functions,
+			if (NULL == (function = (TRX_DC_FUNCTION *)trx_hashset_search(&config->functions,
 					&query->functionids.values[j])))
 			{
 				continue;
 			}
 
-			if (NULL == (item = (TRX_DC_ITEM *)zbx_hashset_search(&config->items, &function->itemid)))
+			if (NULL == (item = (TRX_DC_ITEM *)trx_hashset_search(&config->items, &function->itemid)))
 				continue;
 
-			zbx_vector_uint64_append(&hostids, item->hostid);
+			trx_vector_uint64_append(&hostids, item->hostid);
 		}
 
-		zbx_vector_uint64_sort(&hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
-		zbx_vector_uint64_uniq(&hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_sort(&hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
+		trx_vector_uint64_uniq(&hostids, TRX_DEFAULT_UINT64_COMPARE_FUNC);
 
 		/* find matching maintenances */
 		for (j = 0; j < maintenances.values_num; j++)
 		{
-			maintenance = (zbx_dc_maintenance_t *)maintenances.values[j];
+			maintenance = (trx_dc_maintenance_t *)maintenances.values[j];
 
 			if (TRX_MAINTENANCE_RUNNING != maintenance->state)
 				continue;
@@ -1395,20 +1395,20 @@ int	zbx_dc_get_event_maintenances(zbx_vector_ptr_t *event_queries, const zbx_vec
 				{
 					pair.first = maintenance->maintenanceid;
 					pair.second = maintenance->running_until;
-					zbx_vector_uint64_pair_append(&query->maintenances, pair);
+					trx_vector_uint64_pair_append(&query->maintenances, pair);
 					ret = SUCCEED;
 					break;
 				}
 			}
 		}
 
-		zbx_vector_uint64_clear(&hostids);
+		trx_vector_uint64_clear(&hostids);
 	}
 unlock:
 	UNLOCK_CACHE;
 
-	zbx_vector_uint64_destroy(&hostids);
-	zbx_vector_ptr_destroy(&maintenances);
+	trx_vector_uint64_destroy(&hostids);
+	trx_vector_ptr_destroy(&maintenances);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -1417,23 +1417,23 @@ unlock:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_event_suppress_query_free                                    *
+ * Function: trx_event_suppress_query_free                                    *
  *                                                                            *
  * Purpose: free event suppress query structure                               *
  *                                                                            *
  ******************************************************************************/
-void	zbx_event_suppress_query_free(zbx_event_suppress_query_t *query)
+void	trx_event_suppress_query_free(trx_event_suppress_query_t *query)
 {
-	zbx_vector_uint64_destroy(&query->functionids);
-	zbx_vector_uint64_pair_destroy(&query->maintenances);
-	zbx_vector_ptr_clear_ext(&query->tags, (zbx_clean_func_t)zbx_free_tag);
-	zbx_vector_ptr_destroy(&query->tags);
-	zbx_free(query);
+	trx_vector_uint64_destroy(&query->functionids);
+	trx_vector_uint64_pair_destroy(&query->maintenances);
+	trx_vector_ptr_clear_ext(&query->tags, (trx_clean_func_t)trx_free_tag);
+	trx_vector_ptr_destroy(&query->tags);
+	trx_free(query);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_dc_get_running_maintenanceids                                *
+ * Function: trx_dc_get_running_maintenanceids                                *
  *                                                                            *
  * Purpose: get identifiers of the running maintenances                       *
  *                                                                            *
@@ -1441,18 +1441,18 @@ void	zbx_event_suppress_query_free(zbx_event_suppress_query_t *query)
  *               FAIL    - no running maintenances were found                 *
  *                                                                            *
  ******************************************************************************/
-int	zbx_dc_get_running_maintenanceids(zbx_vector_uint64_t *maintenanceids)
+int	trx_dc_get_running_maintenanceids(trx_vector_uint64_t *maintenanceids)
 {
-	zbx_dc_maintenance_t	*maintenance;
-	zbx_hashset_iter_t	iter;
+	trx_dc_maintenance_t	*maintenance;
+	trx_hashset_iter_t	iter;
 
 	RDLOCK_CACHE;
 
-	zbx_hashset_iter_reset(&config->maintenances, &iter);
-	while (NULL != (maintenance = (zbx_dc_maintenance_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&config->maintenances, &iter);
+	while (NULL != (maintenance = (trx_dc_maintenance_t *)trx_hashset_iter_next(&iter)))
 	{
 		if (TRX_MAINTENANCE_RUNNING == maintenance->state)
-			zbx_vector_uint64_append(maintenanceids, maintenance->maintenanceid);
+			trx_vector_uint64_append(maintenanceids, maintenance->maintenanceid);
 	}
 
 	UNLOCK_CACHE;
@@ -1461,5 +1461,5 @@ int	zbx_dc_get_running_maintenanceids(zbx_vector_uint64_t *maintenanceids)
 }
 
 #ifdef HAVE_TESTS
-#	include "../../../tests/libs/zbxdbcache/dbconfig_maintenance_test.c"
+#	include "../../../tests/libs/trxdbcache/dbconfig_maintenance_test.c"
 #endif

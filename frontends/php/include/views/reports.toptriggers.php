@@ -88,8 +88,8 @@ $obj_data = [
 	'dynamic' => 0,
 	'mainObject' => 1
 ];
-zbx_add_post_js('timeControl.addObject("toptriggers", '.zbx_jsvalue($data['filter']).', '.zbx_jsvalue($obj_data).');');
-zbx_add_post_js('timeControl.processObjects();');
+trx_add_post_js('timeControl.addObject("toptriggers", '.trx_jsvalue($data['filter']).', '.trx_jsvalue($obj_data).');');
+trx_add_post_js('timeControl.processObjects();');
 
 return (new CWidget())
 	->setTitle(_('100 busiest triggers'))

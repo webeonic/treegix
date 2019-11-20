@@ -10,7 +10,7 @@ import (
 	"unicode"
 	"treegix/pkg/itemutil"
 	"treegix/pkg/plugin"
-	"treegix/pkg/zbxcmd"
+	"treegix/pkg/trxcmd"
 )
 
 type parameterInfo struct {
@@ -85,7 +85,7 @@ func (p *UserParameterPlugin) Export(key string, params []string, ctx plugin.Con
 
 	p.Debugf("executing command:'%s'", s)
 
-	stdoutStderr, err := zbxcmd.Execute(s, time.Second*time.Duration(Options.Timeout))
+	stdoutStderr, err := trxcmd.Execute(s, time.Second*time.Duration(Options.Timeout))
 	if err != nil {
 		return nil, err
 	}

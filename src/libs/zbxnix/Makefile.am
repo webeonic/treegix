@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxnix.a
+noinst_LIBRARIES = libtrxnix.a
 
-libzbxnix_a_SOURCES = \
+libtrxnix_a_SOURCES = \
 	daemon.c \
 	pid.c \
 	ipc.c \

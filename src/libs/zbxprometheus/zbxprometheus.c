@@ -1,11 +1,11 @@
 
 
 #include "common.h"
-#include "zbxalgo.h"
-#include "zbxregexp.h"
+#include "trxalgo.h"
+#include "trxregexp.h"
 #include "log.h"
-#include "zbxjson.h"
-#include "zbxprometheus.h"
+#include "trxjson.h"
+#include "trxprometheus.h"
 
 /* Defines maximum row length to be written in error message in the case of parsing failure */
 #define TRX_PROMEHTEUS_ERROR_MAX_ROW_LENGTH	50
@@ -23,7 +23,7 @@ typedef enum
 	TRX_PROMETHEUS_CONDITION_OP_REGEX,
 	TRX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE,
 }
-zbx_prometheus_condition_op_t;
+trx_prometheus_condition_op_t;
 
 /* key-value matching data */
 typedef struct
@@ -33,21 +33,21 @@ typedef struct
 	/* the pattern to match */
 	char				*pattern;
 	/* the condition operations */
-	zbx_prometheus_condition_op_t	op;
+	trx_prometheus_condition_op_t	op;
 }
-zbx_prometheus_condition_t;
+trx_prometheus_condition_t;
 
 /* the prometheus pattern filter */
 typedef struct
 {
 	/* metric filter, optional - can be NULL */
-	zbx_prometheus_condition_t	*metric;
+	trx_prometheus_condition_t	*metric;
 	/* value filter, optional - can be NULL */
-	zbx_prometheus_condition_t	*value;
+	trx_prometheus_condition_t	*value;
 	/* label filters */
-	zbx_vector_ptr_t		labels;
+	trx_vector_ptr_t		labels;
 }
-zbx_prometheus_filter_t;
+trx_prometheus_filter_t;
 
 /* the prometheus label */
 typedef struct
@@ -55,17 +55,17 @@ typedef struct
 	char	*name;
 	char	*value;
 }
-zbx_prometheus_label_t;
+trx_prometheus_label_t;
 
 /* the prometheus data row */
 typedef struct
 {
 	char			*metric;
 	char			*value;
-	zbx_vector_ptr_t	labels;
+	trx_vector_ptr_t	labels;
 	char			*raw;
 }
-zbx_prometheus_row_t;
+trx_prometheus_row_t;
 
 /* the prometheus metric HELP, TYPE hints in comments */
 typedef struct
@@ -74,21 +74,21 @@ typedef struct
 	char	*type;
 	char	*help;
 }
-zbx_prometheus_hint_t;
+trx_prometheus_hint_t;
 
 /* TYPE, HELP hint hashset support */
 
-static zbx_hash_t	prometheus_hint_hash(const void *d)
+static trx_hash_t	prometheus_hint_hash(const void *d)
 {
-	const zbx_prometheus_hint_t	*hint = (zbx_prometheus_hint_t *)d;
+	const trx_prometheus_hint_t	*hint = (trx_prometheus_hint_t *)d;
 
 	return TRX_DEFAULT_STRING_HASH_FUNC(hint->metric);
 }
 
 static int	prometheus_hint_compare(const void *d1, const void *d2)
 {
-	const zbx_prometheus_hint_t	*hint1 = (zbx_prometheus_hint_t *)d1;
-	const zbx_prometheus_hint_t	*hint2 = (zbx_prometheus_hint_t *)d2;
+	const trx_prometheus_hint_t	*hint1 = (trx_prometheus_hint_t *)d1;
+	const trx_prometheus_hint_t	*hint2 = (trx_prometheus_hint_t *)d2;
 
 	return strcmp(hint1->metric, hint2->metric);
 }
@@ -105,13 +105,13 @@ static int	prometheus_hint_compare(const void *d1, const void *d2)
  * Return value: The copied substring.                                        *
  *                                                                            *
  ******************************************************************************/
-static char	*str_loc_dup(const char *src, const zbx_strloc_t *loc)
+static char	*str_loc_dup(const char *src, const trx_strloc_t *loc)
 {
 	char	*str;
 	size_t	len;
 
 	len = loc->r - loc->l + 1;
-	str = zbx_malloc(NULL, len + 1);
+	str = trx_malloc(NULL, len + 1);
 	memcpy(str, src + loc->l, len);
 	str[len] = '\0';
 
@@ -130,13 +130,13 @@ static char	*str_loc_dup(const char *src, const zbx_strloc_t *loc)
  * Return value: The unquoted and copied substring.                           *
  *                                                                            *
  ******************************************************************************/
-static char	*str_loc_unquote_dyn(const char *src, const zbx_strloc_t *loc)
+static char	*str_loc_unquote_dyn(const char *src, const trx_strloc_t *loc)
 {
 	char		*str, *ptr;
 
 	src += loc->l + 1;
 
-	str = ptr = zbx_malloc(NULL, loc->r - loc->l);
+	str = ptr = trx_malloc(NULL, loc->r - loc->l);
 
 	while ('"' != *src)
 	{
@@ -176,14 +176,14 @@ static char	*str_loc_unquote_dyn(const char *src, const zbx_strloc_t *loc)
  * Return value: The unescaped and copied HELP string.                        *
  *                                                                            *
  ******************************************************************************/
-static char	*str_loc_unescape_hint_dyn(const char *src, const zbx_strloc_t *loc)
+static char	*str_loc_unescape_hint_dyn(const char *src, const trx_strloc_t *loc)
 {
 	char		*str, *pout;
 	const char	*pin;
 	size_t		len;
 
 	len = loc->r - loc->l + 1;
-	str = zbx_malloc(NULL, len + 1);
+	str = trx_malloc(NULL, len + 1);
 
 	for (pout = str, pin = src + loc->l; pin <= src + loc->r; pin++)
 	{
@@ -229,7 +229,7 @@ static char	*str_loc_unescape_hint_dyn(const char *src, const zbx_strloc_t *loc)
  *                1 - the substring is greater than the specified text        *
  *                                                                            *
  ******************************************************************************/
-static int	str_loc_cmp(const char *src, const zbx_strloc_t *loc, const char *text, size_t text_len)
+static int	str_loc_cmp(const char *src, const trx_strloc_t *loc, const char *text, size_t text_len)
 {
 	TRX_RETURN_IF_NOT_EQUAL(loc->r - loc->l + 1, text_len);
 	return memcmp(src + loc->l, text, text_len);
@@ -247,7 +247,7 @@ static int	str_loc_cmp(const char *src, const zbx_strloc_t *loc, const char *tex
  * Return value: The condition operation.                                     *
  *                                                                            *
  ******************************************************************************/
-static zbx_prometheus_condition_op_t	str_loc_op(const char *data, const zbx_strloc_t *loc)
+static trx_prometheus_condition_op_t	str_loc_op(const char *data, const trx_strloc_t *loc)
 {
 	/* the operation has been already validated during parsing, */
 	/*so there are only three possibilities:                    */
@@ -320,7 +320,7 @@ static size_t	skip_row(const char *data, size_t pos)
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	parse_metric(const char *data, size_t pos, zbx_strloc_t *loc)
+static int	parse_metric(const char *data, size_t pos, trx_strloc_t *loc)
 {
 	const char	*ptr = data + pos;
 
@@ -353,7 +353,7 @@ static int	parse_metric(const char *data, size_t pos, zbx_strloc_t *loc)
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	parse_label(const char *data, size_t pos, zbx_strloc_t *loc)
+static int	parse_label(const char *data, size_t pos, trx_strloc_t *loc)
 {
 	const char	*ptr = data + pos;
 
@@ -386,7 +386,7 @@ static int	parse_label(const char *data, size_t pos, zbx_strloc_t *loc)
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	parse_label_op(const char *data, size_t pos, zbx_strloc_t *loc)
+static int	parse_label_op(const char *data, size_t pos, trx_strloc_t *loc)
 {
 	const char	*ptr = data + pos;
 
@@ -415,7 +415,7 @@ static int	parse_label_op(const char *data, size_t pos, zbx_strloc_t *loc)
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	parse_label_value(const char *data, size_t pos, zbx_strloc_t *loc)
+static int	parse_label_value(const char *data, size_t pos, trx_strloc_t *loc)
 {
 	const char	*ptr;
 
@@ -459,7 +459,7 @@ static int	parse_label_value(const char *data, size_t pos, zbx_strloc_t *loc)
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	parse_metric_op(const char *data, size_t pos, zbx_strloc_t *loc)
+static int	parse_metric_op(const char *data, size_t pos, trx_strloc_t *loc)
 {
 	const char	*ptr = data + pos;
 
@@ -521,7 +521,7 @@ static int	str_copy_lowercase(char *dst, int size, const char *src, int len)
  *               FAIL - otherwise                                             *
  *                                                                            *
  ******************************************************************************/
-static int	parse_metric_value(const char *data, size_t pos, zbx_strloc_t *loc)
+static int	parse_metric_value(const char *data, size_t pos, trx_strloc_t *loc)
 {
 	const char	*ptr = data + pos;
 	int		len;
@@ -546,7 +546,7 @@ static int	parse_metric_value(const char *data, size_t pos, zbx_strloc_t *loc)
 		return SUCCEED;
 	}
 
-	if (FAIL == zbx_number_parse(ptr, &len))
+	if (FAIL == trx_number_parse(ptr, &len))
 		return FAIL;
 
 	ptr += len;
@@ -575,11 +575,11 @@ static int	parse_metric_value(const char *data, size_t pos, zbx_strloc_t *loc)
  * Function: prometheus_condition_free                                        *
  *                                                                            *
  ******************************************************************************/
-static void	prometheus_condition_free(zbx_prometheus_condition_t *condition)
+static void	prometheus_condition_free(trx_prometheus_condition_t *condition)
 {
-	zbx_free(condition->key);
-	zbx_free(condition->pattern);
-	zbx_free(condition);
+	trx_free(condition->key);
+	trx_free(condition->pattern);
+	trx_free(condition);
 }
 
 /******************************************************************************
@@ -595,12 +595,12 @@ static void	prometheus_condition_free(zbx_prometheus_condition_t *condition)
  * Return value: the created condition object                                 *
  *                                                                            *
  ******************************************************************************/
-static zbx_prometheus_condition_t	*prometheus_condition_create(char *key, char *pattern,
-		zbx_prometheus_condition_op_t op)
+static trx_prometheus_condition_t	*prometheus_condition_create(char *key, char *pattern,
+		trx_prometheus_condition_op_t op)
 {
-	zbx_prometheus_condition_t	*condition;
+	trx_prometheus_condition_t	*condition;
 
-	condition = (zbx_prometheus_condition_t *)zbx_malloc(NULL, sizeof(zbx_prometheus_condition_t));
+	condition = (trx_prometheus_condition_t *)trx_malloc(NULL, sizeof(trx_prometheus_condition_t));
 	condition->key = key;
 	condition->pattern = pattern;
 	condition->op = op;
@@ -617,7 +617,7 @@ static zbx_prometheus_condition_t	*prometheus_condition_create(char *key, char *
  * Parameters: filter - [IN] the filter to clear                              *
  *                                                                            *
  ******************************************************************************/
-static void	prometheus_filter_clear(zbx_prometheus_filter_t *filter)
+static void	prometheus_filter_clear(trx_prometheus_filter_t *filter)
 {
 	if (NULL != filter->metric)
 		prometheus_condition_free(filter->metric);
@@ -625,8 +625,8 @@ static void	prometheus_filter_clear(zbx_prometheus_filter_t *filter)
 	if (NULL != filter->value)
 		prometheus_condition_free(filter->value);
 
-	zbx_vector_ptr_clear_ext(&filter->labels, (zbx_clean_func_t)prometheus_condition_free);
-	zbx_vector_ptr_destroy(&filter->labels);
+	trx_vector_ptr_clear_ext(&filter->labels, (trx_clean_func_t)prometheus_condition_free);
+	trx_vector_ptr_destroy(&filter->labels);
 }
 
 /******************************************************************************
@@ -645,8 +645,8 @@ static void	prometheus_filter_clear(zbx_prometheus_filter_t *filter)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	parse_condition(const char *data, size_t pos, zbx_strloc_t *loc_key, zbx_strloc_t *loc_op,
-		zbx_strloc_t *loc_pattern)
+static int	parse_condition(const char *data, size_t pos, trx_strloc_t *loc_key, trx_strloc_t *loc_op,
+		trx_strloc_t *loc_pattern)
 {
 	if (SUCCEED != parse_label(data, pos, loc_key))
 		return FAIL;
@@ -680,10 +680,10 @@ static int	parse_condition(const char *data, size_t pos, zbx_strloc_t *loc_key, 
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	prometheus_filter_parse_labels(zbx_prometheus_filter_t *filter, const char *data, size_t pos,
-		zbx_strloc_t *loc, char **error)
+static int	prometheus_filter_parse_labels(trx_prometheus_filter_t *filter, const char *data, size_t pos,
+		trx_strloc_t *loc, char **error)
 {
-	zbx_strloc_t	loc_key, loc_value, loc_op;
+	trx_strloc_t	loc_key, loc_value, loc_op;
 
 	loc->l = pos;
 	pos = skip_spaces(data, pos + 1);
@@ -692,7 +692,7 @@ static int	prometheus_filter_parse_labels(zbx_prometheus_filter_t *filter, const
 	{
 		if (FAIL == parse_condition(data, pos, &loc_key, &loc_op, &loc_value))
 		{
-			*error = zbx_dsprintf(*error, "cannot parse label condition at \"%s\"", data + pos);
+			*error = trx_dsprintf(*error, "cannot parse label condition at \"%s\"", data + pos);
 			return FAIL;
 		}
 
@@ -700,7 +700,7 @@ static int	prometheus_filter_parse_labels(zbx_prometheus_filter_t *filter, const
 		{
 			if (NULL != filter->metric)
 			{
-				*error = zbx_strdup(*error, "duplicate metric condition specified");
+				*error = trx_strdup(*error, "duplicate metric condition specified");
 				return FAIL;
 			}
 
@@ -709,11 +709,11 @@ static int	prometheus_filter_parse_labels(zbx_prometheus_filter_t *filter, const
 		}
 		else
 		{
-			zbx_prometheus_condition_t	*condition;
+			trx_prometheus_condition_t	*condition;
 
 			condition = prometheus_condition_create(str_loc_dup(data, &loc_key),
 					str_loc_unquote_dyn(data, &loc_value), str_loc_op(data, &loc_op));
-			zbx_vector_ptr_append(&filter->labels, condition);
+			trx_vector_ptr_append(&filter->labels, condition);
 		}
 
 		pos = skip_spaces(data, loc_value.r + 1);
@@ -723,7 +723,7 @@ static int	prometheus_filter_parse_labels(zbx_prometheus_filter_t *filter, const
 			if ('}' == data[pos])
 				break;
 
-			*error = zbx_strdup(*error, "missing label condition list terminating character \"}\"");
+			*error = trx_strdup(*error, "missing label condition list terminating character \"}\"");
 			return FAIL;
 		}
 
@@ -749,16 +749,16 @@ static int	prometheus_filter_parse_labels(zbx_prometheus_filter_t *filter, const
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	prometheus_filter_init(zbx_prometheus_filter_t *filter, const char *data, char **error)
+static int	prometheus_filter_init(trx_prometheus_filter_t *filter, const char *data, char **error)
 {
 	int		ret = FAIL;
 	size_t		pos = 0;
-	zbx_strloc_t	loc;
+	trx_strloc_t	loc;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
-	memset(filter, 0, sizeof(zbx_prometheus_filter_t));
-	zbx_vector_ptr_create(&filter->labels);
+	memset(filter, 0, sizeof(trx_prometheus_filter_t));
+	trx_vector_ptr_create(&filter->labels);
 
 	pos = skip_spaces(data, pos);
 
@@ -783,11 +783,11 @@ static int	prometheus_filter_init(zbx_prometheus_filter_t *filter, const char *d
 	/* parse metric value condition */
 	if ('\0' != data[pos])
 	{
-		zbx_strloc_t	loc_op, loc_value;
+		trx_strloc_t	loc_op, loc_value;
 
 		if (SUCCEED != parse_metric_op(data, pos, &loc_op))
 		{
-			*error = zbx_dsprintf(*error, "cannot parse metric comparison operator at \"%s\"", data + pos);
+			*error = trx_dsprintf(*error, "cannot parse metric comparison operator at \"%s\"", data + pos);
 			goto out;
 		}
 
@@ -795,21 +795,21 @@ static int	prometheus_filter_init(zbx_prometheus_filter_t *filter, const char *d
 
 		if (SUCCEED != parse_metric_value(data, pos, &loc_value))
 		{
-			*error = zbx_dsprintf(*error, "cannot parse metric comparison value at \"%s\"", data + pos);
+			*error = trx_dsprintf(*error, "cannot parse metric comparison value at \"%s\"", data + pos);
 			goto out;
 		}
 
 		pos = skip_spaces(data, loc_value.r + 1);
 		if ('\0' != data[pos])
 		{
-			*error = zbx_dsprintf(*error, "unexpected data after metric comparison value at \"%s\"",
+			*error = trx_dsprintf(*error, "unexpected data after metric comparison value at \"%s\"",
 					data + pos);
 			goto out;
 		}
 
 		filter->value = prometheus_condition_create(NULL, str_loc_dup(data, &loc_value),
 				TRX_PROMETHEUS_CONDITION_OP_EQUAL_VALUE);
-		zbx_strlower(filter->value->pattern);
+		trx_strlower(filter->value->pattern);
 	}
 
 	ret = SUCCEED;
@@ -830,11 +830,11 @@ out:
  * Function: prometheus_label_free                                            *
  *                                                                            *
  ******************************************************************************/
-static void	prometheus_label_free(zbx_prometheus_label_t *label)
+static void	prometheus_label_free(trx_prometheus_label_t *label)
 {
-	zbx_free(label->name);
-	zbx_free(label->value);
-	zbx_free(label);
+	trx_free(label->name);
+	trx_free(label->value);
+	trx_free(label);
 }
 
 /******************************************************************************
@@ -842,14 +842,14 @@ static void	prometheus_label_free(zbx_prometheus_label_t *label)
  * Function: prometheus_row_free                                              *
  *                                                                            *
  ******************************************************************************/
-static void	prometheus_row_free(zbx_prometheus_row_t *row)
+static void	prometheus_row_free(trx_prometheus_row_t *row)
 {
-	zbx_free(row->metric);
-	zbx_free(row->value);
-	zbx_free(row->raw);
-	zbx_vector_ptr_clear_ext(&row->labels, (zbx_clean_func_t)prometheus_label_free);
-	zbx_vector_ptr_destroy(&row->labels);
-	zbx_free(row);
+	trx_free(row->metric);
+	trx_free(row->value);
+	trx_free(row->raw);
+	trx_vector_ptr_clear_ext(&row->labels, (trx_clean_func_t)prometheus_label_free);
+	trx_vector_ptr_destroy(&row->labels);
+	trx_free(row);
 }
 
 /******************************************************************************
@@ -866,7 +866,7 @@ static void	prometheus_row_free(zbx_prometheus_row_t *row)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	condition_match_key_value(const zbx_prometheus_condition_t *condition, const char *key,
+static int	condition_match_key_value(const trx_prometheus_condition_t *condition, const char *key,
 		const char *value)
 {
 	/* perform key match, succeeds if key is not defined in filter */
@@ -882,7 +882,7 @@ static int	condition_match_key_value(const zbx_prometheus_condition_t *condition
 				return FAIL;
 			break;
 		case TRX_PROMETHEUS_CONDITION_OP_REGEX:
-			if (NULL == zbx_regexp_match(value, condition->pattern, NULL))
+			if (NULL == trx_regexp_match(value, condition->pattern, NULL))
 				return FAIL;
 			break;
 		default:
@@ -918,8 +918,8 @@ static int	condition_match_metric_value(const char *pattern, const char *value)
 		if ('+' == *value)
 			value++;
 
-		zbx_strlcpy(buffer, value, sizeof(buffer));
-		zbx_strlower(buffer);
+		trx_strlcpy(buffer, value, sizeof(buffer));
+		trx_strlower(buffer);
 		return (0 == strcmp(pattern, buffer) ? SUCCEED : FAIL);
 	}
 
@@ -948,36 +948,36 @@ static int	condition_match_metric_value(const char *pattern, const char *value)
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	prometheus_metric_parse_labels(const char *data, size_t pos, zbx_vector_ptr_t *labels,
-		zbx_strloc_t *loc, char **error)
+static int	prometheus_metric_parse_labels(const char *data, size_t pos, trx_vector_ptr_t *labels,
+		trx_strloc_t *loc, char **error)
 {
-	zbx_strloc_t		loc_key, loc_value, loc_op;
-	zbx_prometheus_label_t	*label;
+	trx_strloc_t		loc_key, loc_value, loc_op;
+	trx_prometheus_label_t	*label;
 
 	pos = skip_spaces(data, pos + 1);
 	loc->l = pos;
 
 	while ('}' != data[pos])
 	{
-		zbx_prometheus_condition_op_t	op;
+		trx_prometheus_condition_op_t	op;
 
 		if (FAIL == parse_condition(data, pos, &loc_key, &loc_op, &loc_value))
 		{
-			*error = zbx_strdup(*error, "cannot parse label");
+			*error = trx_strdup(*error, "cannot parse label");
 			return FAIL;
 		}
 
 		op = str_loc_op(data, &loc_op);
 		if (TRX_PROMETHEUS_CONDITION_OP_EQUAL != op)
 		{
-			*error = zbx_strdup(*error, "invalid label assignment operator");
+			*error = trx_strdup(*error, "invalid label assignment operator");
 			return FAIL;
 		}
 
-		label = (zbx_prometheus_label_t *)zbx_malloc(NULL, sizeof(zbx_prometheus_label_t));
+		label = (trx_prometheus_label_t *)trx_malloc(NULL, sizeof(trx_prometheus_label_t));
 		label->name = str_loc_dup(data, &loc_key);
 		label->value = str_loc_unquote_dyn(data, &loc_value);
-		zbx_vector_ptr_append(labels, label);
+		trx_vector_ptr_append(labels, label);
 
 		pos = skip_spaces(data, loc_value.r + 1);
 
@@ -986,7 +986,7 @@ static int	prometheus_metric_parse_labels(const char *data, size_t pos, zbx_vect
 			if ('}' == data[pos])
 				break;
 
-			*error = zbx_strdup(*error, "missing label list terminating character \"}\"");
+			*error = trx_strdup(*error, "missing label list terminating character \"}\"");
 			return FAIL;
 		}
 
@@ -1018,24 +1018,24 @@ static int	prometheus_metric_parse_labels(const char *data, size_t pos, zbx_vect
  *           conditions then success with NULL prow is be returned.           *
  *                                                                            *
  ******************************************************************************/
-static int	prometheus_parse_row(zbx_prometheus_filter_t *filter, const char *data, size_t pos,
-		zbx_prometheus_row_t **prow, zbx_strloc_t *loc_row, char **error)
+static int	prometheus_parse_row(trx_prometheus_filter_t *filter, const char *data, size_t pos,
+		trx_prometheus_row_t **prow, trx_strloc_t *loc_row, char **error)
 {
-	zbx_strloc_t		loc;
-	zbx_prometheus_row_t	*row;
+	trx_strloc_t		loc;
+	trx_prometheus_row_t	*row;
 	int			ret = FAIL, match = SUCCEED, i, j;
 
 	loc_row->l = pos;
 
-	row = (zbx_prometheus_row_t *)zbx_malloc(NULL, sizeof(zbx_prometheus_row_t));
-	memset(row, 0, sizeof(zbx_prometheus_row_t));
-	zbx_vector_ptr_create(&row->labels);
+	row = (trx_prometheus_row_t *)trx_malloc(NULL, sizeof(trx_prometheus_row_t));
+	memset(row, 0, sizeof(trx_prometheus_row_t));
+	trx_vector_ptr_create(&row->labels);
 
 	/* parse metric and check against the filter */
 
 	if (SUCCEED != parse_metric(data, pos, &loc))
 	{
-		*error = zbx_strdup(*error, "cannot parse metric name");
+		*error = trx_strdup(*error, "cannot parse metric name");
 		goto out;
 	}
 
@@ -1058,11 +1058,11 @@ static int	prometheus_parse_row(zbx_prometheus_filter_t *filter, const char *dat
 
 		for (i = 0; i < filter->labels.values_num; i++)
 		{
-			zbx_prometheus_condition_t	*condition = filter->labels.values[i];
+			trx_prometheus_condition_t	*condition = filter->labels.values[i];
 
 			for (j = 0; j < row->labels.values_num; j++)
 			{
-				zbx_prometheus_label_t	*label = row->labels.values[j];
+				trx_prometheus_label_t	*label = row->labels.values[j];
 
 				if (SUCCEED == condition_match_key_value(condition, label->name, label->value))
 					break;
@@ -1090,7 +1090,7 @@ static int	prometheus_parse_row(zbx_prometheus_filter_t *filter, const char *dat
 		else
 			len = ptr - data + pos;
 
-		*error = zbx_dsprintf(*error, "cannot parse text at: %.*s", len, data + pos);
+		*error = trx_dsprintf(*error, "cannot parse text at: %.*s", len, data + pos);
 		goto out;
 	}
 
@@ -1098,7 +1098,7 @@ static int	prometheus_parse_row(zbx_prometheus_filter_t *filter, const char *dat
 
 	if (FAIL == parse_metric_value(data, pos, &loc))
 	{
-		*error = zbx_strdup(*error, "cannot parse metric value");
+		*error = trx_strdup(*error, "cannot parse metric value");
 		goto out;
 	}
 	row->value = str_loc_dup(data, &loc);
@@ -1113,7 +1113,7 @@ static int	prometheus_parse_row(zbx_prometheus_filter_t *filter, const char *dat
 
 	if (' ' != data[pos] && '\t' != data[pos] && '\n' != data[pos] && '\0' != data[pos])
 	{
-		*error = zbx_dsprintf(*error, "invalid character '%c' following metric value", data[pos]);
+		*error = trx_dsprintf(*error, "invalid character '%c' following metric value", data[pos]);
 		goto out;
 	}
 
@@ -1161,7 +1161,7 @@ out:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	parse_help(const char *data, size_t pos, zbx_strloc_t *loc_metric, zbx_strloc_t *loc_help)
+static int	parse_help(const char *data, size_t pos, trx_strloc_t *loc_metric, trx_strloc_t *loc_help)
 {
 	const char	*ptr;
 
@@ -1201,7 +1201,7 @@ static int	parse_help(const char *data, size_t pos, zbx_strloc_t *loc_metric, zb
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	parse_type(const char *data, size_t pos, zbx_strloc_t *loc_metric, zbx_strloc_t *loc_type)
+static int	parse_type(const char *data, size_t pos, trx_strloc_t *loc_metric, trx_strloc_t *loc_type)
 {
 	const char	*ptr;
 
@@ -1240,22 +1240,22 @@ static int	parse_type(const char *data, size_t pos, zbx_strloc_t *loc_metric, zb
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	prometheus_register_hint(zbx_hashset_t *hints, const char *data, char *metric,
-		const zbx_strloc_t *loc_hint, int hint_type, char **error)
+static int	prometheus_register_hint(trx_hashset_t *hints, const char *data, char *metric,
+		const trx_strloc_t *loc_hint, int hint_type, char **error)
 {
-	zbx_prometheus_hint_t	*hint, hint_local;
-	zbx_strloc_t		loc = *loc_hint;
+	trx_prometheus_hint_t	*hint, hint_local;
+	trx_strloc_t		loc = *loc_hint;
 
 	hint_local.metric = metric;
 
-	if (NULL == (hint = (zbx_prometheus_hint_t *)zbx_hashset_search(hints, &hint_local)))
+	if (NULL == (hint = (trx_prometheus_hint_t *)trx_hashset_search(hints, &hint_local)))
 	{
-		hint = zbx_hashset_insert(hints, &hint_local, sizeof(hint_local));
+		hint = trx_hashset_insert(hints, &hint_local, sizeof(hint_local));
 		hint->type = NULL;
 		hint->help = NULL;
 	}
 	else
-		zbx_free(metric);
+		trx_free(metric);
 
 	while ((' ' == data[loc.r] || '\t' == data[loc.r]) && loc.r > loc.l)
 		loc.r--;
@@ -1264,7 +1264,7 @@ static int	prometheus_register_hint(zbx_hashset_t *hints, const char *data, char
 	{
 		if (NULL != hint->help)
 		{
-			*error = zbx_dsprintf(*error, "multiple HELP comments found for metric \"%s\"", hint->metric);
+			*error = trx_dsprintf(*error, "multiple HELP comments found for metric \"%s\"", hint->metric);
 			return FAIL;
 		}
 		hint->help = str_loc_unescape_hint_dyn(data, &loc);
@@ -1273,7 +1273,7 @@ static int	prometheus_register_hint(zbx_hashset_t *hints, const char *data, char
 	{
 		if (NULL != hint->type)
 		{
-			*error = zbx_dsprintf(*error, "multiple TYPE comments found for metric \"%s\"", hint->metric);
+			*error = trx_dsprintf(*error, "multiple TYPE comments found for metric \"%s\"", hint->metric);
 			return FAIL;
 		}
 		hint->type = str_loc_dup(data, &loc);
@@ -1298,11 +1298,11 @@ static int	prometheus_register_hint(zbx_hashset_t *hints, const char *data, char
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	prometheus_parse_hint(zbx_prometheus_filter_t *filter, const char *data, size_t pos,
-		zbx_hashset_t *hints, zbx_strloc_t *loc, char **error)
+static int	prometheus_parse_hint(trx_prometheus_filter_t *filter, const char *data, size_t pos,
+		trx_hashset_t *hints, trx_strloc_t *loc, char **error)
 {
 	int		ret, hint_type;
-	zbx_strloc_t	loc_metric, loc_hint;
+	trx_strloc_t	loc_metric, loc_hint;
 	char		*metric;
 
 	loc->l = pos;
@@ -1341,7 +1341,7 @@ static int	prometheus_parse_hint(zbx_prometheus_filter_t *filter, const char *da
 
 	if (SUCCEED != ret)
 	{
-		*error = zbx_strdup(*error, "cannot parse comment");
+		*error = trx_strdup(*error, "cannot parse comment");
 		return FAIL;
 	}
 
@@ -1351,7 +1351,7 @@ static int	prometheus_parse_hint(zbx_prometheus_filter_t *filter, const char *da
 	/* skip hints of metrics not matching filter */
 	if (NULL != filter->metric && SUCCEED != condition_match_key_value(filter->metric, NULL, metric))
 	{
-		zbx_free(metric);
+		trx_free(metric);
 		return SUCCEED;
 	}
 
@@ -1374,14 +1374,14 @@ static int	prometheus_parse_hint(zbx_prometheus_filter_t *filter, const char *da
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	prometheus_parse_rows(zbx_prometheus_filter_t *filter, const char *data, zbx_vector_ptr_t *rows,
-		zbx_hashset_t *hints, char **error)
+static int	prometheus_parse_rows(trx_prometheus_filter_t *filter, const char *data, trx_vector_ptr_t *rows,
+		trx_hashset_t *hints, char **error)
 {
 	size_t			pos = 0;
 	int			row_num = 1, ret = FAIL;
-	zbx_prometheus_row_t	*row;
+	trx_prometheus_row_t	*row;
 	char			*errmsg = NULL;
-	zbx_strloc_t		loc;
+	trx_strloc_t		loc;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
@@ -1410,7 +1410,7 @@ static int	prometheus_parse_rows(zbx_prometheus_filter_t *filter, const char *da
 		if (NULL != row)
 		{
 			row->raw = str_loc_dup(data, &loc);
-			zbx_vector_ptr_append(rows, row);
+			trx_vector_ptr_append(rows, row);
 		}
 
 		pos = loc.r + 1;
@@ -1433,12 +1433,12 @@ out:
 			len = TRX_PROMEHTEUS_ERROR_MAX_ROW_LENGTH;
 			suffix = "...";
 		}
-		*error = zbx_dsprintf(*error, "data parsing error at row %d \"%.*s%s\": %s", row_num, len, data + pos,
+		*error = trx_dsprintf(*error, "data parsing error at row %d \"%.*s%s\": %s", row_num, len, data + pos,
 				suffix, errmsg);
-		zbx_free(errmsg);
+		trx_free(errmsg);
 	}
 
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s rows:%d hints:%d", __func__, zbx_result_string(ret),
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s rows:%d hints:%d", __func__, trx_result_string(ret),
 			rows->values_num, (NULL == hints ? 0 : hints->num_data));
 	return ret;
 }
@@ -1458,13 +1458,13 @@ out:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-static int	prometheus_extract_value(zbx_vector_ptr_t *rows, const char *output, char **value, char **error)
+static int	prometheus_extract_value(trx_vector_ptr_t *rows, const char *output, char **value, char **error)
 {
-	zbx_prometheus_row_t	*row;
+	trx_prometheus_row_t	*row;
 
 	if (0 == rows->values_num)
 	{
-		*error = zbx_strdup(*error, "no matching metrics found");
+		*error = trx_strdup(*error, "no matching metrics found");
 		return FAIL;
 	}
 
@@ -1475,27 +1475,27 @@ static int	prometheus_extract_value(zbx_vector_ptr_t *rows, const char *output, 
 
 		error_alloc = (NULL == *error ? 0 : strlen(*error) + 1);
 
-		zbx_strcpy_alloc(error, &error_alloc, &error_offset, "multiple matching metrics found:\n\n");
+		trx_strcpy_alloc(error, &error_alloc, &error_offset, "multiple matching metrics found:\n\n");
 
 		if (rows->values_num < rows_num)
 			rows_num = rows->values_num;
 
 		for (i = 0; i < rows_num; i++)
 		{
-			row = (zbx_prometheus_row_t *)rows->values[i];
-			zbx_strcpy_alloc(error, &error_alloc, &error_offset, row->raw);
-			zbx_chrcpy_alloc(error, &error_alloc, &error_offset, '\n');
+			row = (trx_prometheus_row_t *)rows->values[i];
+			trx_strcpy_alloc(error, &error_alloc, &error_offset, row->raw);
+			trx_chrcpy_alloc(error, &error_alloc, &error_offset, '\n');
 		}
 
 		if (rows->values_num > rows_num)
-			zbx_strcpy_alloc(error, &error_alloc, &error_offset, "...");
+			trx_strcpy_alloc(error, &error_alloc, &error_offset, "...");
 		else
 			(*error)[error_offset - 1] = '\0';
 
 		return FAIL;
 	}
 
-	row = (zbx_prometheus_row_t *)rows->values[0];
+	row = (trx_prometheus_row_t *)rows->values[0];
 
 	if ('\0' != *output)
 	{
@@ -1503,30 +1503,30 @@ static int	prometheus_extract_value(zbx_vector_ptr_t *rows, const char *output, 
 
 		for (i = 0; i < row->labels.values_num; i++)
 		{
-			const zbx_prometheus_label_t	*label = (const zbx_prometheus_label_t *)row->labels.values[i];
+			const trx_prometheus_label_t	*label = (const trx_prometheus_label_t *)row->labels.values[i];
 
 			if (0 == strcmp(label->name, output))
 			{
-				*value = zbx_strdup(NULL, label->value);
+				*value = trx_strdup(NULL, label->value);
 				break;
 			}
 		}
 
 		if (i == row->labels.values_num)
 		{
-			*error = zbx_strdup(*error, "no label matches the specified output");
+			*error = trx_strdup(*error, "no label matches the specified output");
 			return FAIL;
 		}
 	}
 	else
-		*value = zbx_strdup(NULL, row->value);
+		*value = trx_strdup(NULL, row->value);
 
 	return SUCCEED;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_prometheus_pattern                                           *
+ * Function: trx_prometheus_pattern                                           *
  *                                                                            *
  * Purpose: extracts value from prometheus data by the specified filter       *
  *                                                                            *
@@ -1540,49 +1540,49 @@ static int	prometheus_extract_value(zbx_vector_ptr_t *rows, const char *output, 
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_prometheus_pattern(const char *data, const char *filter_data, const char *output, char **value,
+int	trx_prometheus_pattern(const char *data, const char *filter_data, const char *output, char **value,
 		char **error)
 {
-	zbx_prometheus_filter_t	filter;
+	trx_prometheus_filter_t	filter;
 	char			*errmsg = NULL;
 	int			ret = FAIL;
-	zbx_vector_ptr_t	rows;
+	trx_vector_ptr_t	rows;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (FAIL == prometheus_filter_init(&filter, filter_data, &errmsg))
 	{
-		*error = zbx_dsprintf(*error, "pattern error: %s", errmsg);
-		zbx_free(errmsg);
+		*error = trx_dsprintf(*error, "pattern error: %s", errmsg);
+		trx_free(errmsg);
 		goto out;
 	}
 
-	zbx_vector_ptr_create(&rows);
+	trx_vector_ptr_create(&rows);
 
 	if (FAIL == prometheus_parse_rows(&filter, data, &rows, NULL, error))
 		goto cleanup;
 
 	if (FAIL == prometheus_extract_value(&rows, output, value, &errmsg))
 	{
-		*error = zbx_dsprintf(*error, "data extraction error: %s", errmsg);
-		zbx_free(errmsg);
+		*error = trx_dsprintf(*error, "data extraction error: %s", errmsg);
+		trx_free(errmsg);
 		goto cleanup;
 	}
 
 	treegix_log(LOG_LEVEL_DEBUG, "%s(): output:%s", __func__, *value);
 	ret = SUCCEED;
 cleanup:
-	zbx_vector_ptr_clear_ext(&rows, (zbx_clean_func_t)prometheus_row_free);
-	zbx_vector_ptr_destroy(&rows);
+	trx_vector_ptr_clear_ext(&rows, (trx_clean_func_t)prometheus_row_free);
+	trx_vector_ptr_destroy(&rows);
 	prometheus_filter_clear(&filter);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_prometheus_to_json                                           *
+ * Function: trx_prometheus_to_json                                           *
  *                                                                            *
  * Purpose: converts filtered prometheus data to json to be used with LLD     *
  *                                                                            *
@@ -1595,94 +1595,94 @@ out:
  *               FAIL    - otherwise                                          *
  *                                                                            *
  ******************************************************************************/
-int	zbx_prometheus_to_json(const char *data, const char *filter_data, char **value, char **error)
+int	trx_prometheus_to_json(const char *data, const char *filter_data, char **value, char **error)
 {
-	zbx_prometheus_filter_t	filter;
+	trx_prometheus_filter_t	filter;
 	char			*errmsg = NULL;
 	int			ret = FAIL, i, j;
-	zbx_vector_ptr_t	rows;
-	zbx_hashset_t		hints;
-	zbx_prometheus_hint_t	*hint, hint_local;
-	zbx_hashset_iter_t	iter;
-	struct zbx_json		json;
+	trx_vector_ptr_t	rows;
+	trx_hashset_t		hints;
+	trx_prometheus_hint_t	*hint, hint_local;
+	trx_hashset_iter_t	iter;
+	struct trx_json		json;
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
 
 	if (FAIL == prometheus_filter_init(&filter, filter_data, &errmsg))
 	{
-		*error = zbx_dsprintf(*error, "pattern error: %s", errmsg);
-		zbx_free(errmsg);
+		*error = trx_dsprintf(*error, "pattern error: %s", errmsg);
+		trx_free(errmsg);
 		goto out;
 	}
 
-	zbx_vector_ptr_create(&rows);
-	zbx_hashset_create(&hints, 100, prometheus_hint_hash, prometheus_hint_compare);
+	trx_vector_ptr_create(&rows);
+	trx_hashset_create(&hints, 100, prometheus_hint_hash, prometheus_hint_compare);
 
 	if (FAIL == prometheus_parse_rows(&filter, data, &rows, &hints, error))
 		goto cleanup;
 
-	zbx_json_initarray(&json, rows.values_num * 100);
+	trx_json_initarray(&json, rows.values_num * 100);
 
 	for (i = 0; i < rows.values_num; i++)
 	{
-		zbx_prometheus_row_t	*row = (zbx_prometheus_row_t *)rows.values[i];
+		trx_prometheus_row_t	*row = (trx_prometheus_row_t *)rows.values[i];
 		char			*hint_type;
 
-		zbx_json_addobject(&json, NULL);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_NAME, row->metric, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_VALUE, row->value, TRX_JSON_TYPE_STRING);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_LINE_RAW, row->raw, TRX_JSON_TYPE_STRING);
+		trx_json_addobject(&json, NULL);
+		trx_json_addstring(&json, TRX_PROTO_TAG_NAME, row->metric, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_VALUE, row->value, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_LINE_RAW, row->raw, TRX_JSON_TYPE_STRING);
 
 		if (0 != row->labels.values_num)
 		{
-			zbx_json_addobject(&json, TRX_PROTO_TAG_LABELS);
+			trx_json_addobject(&json, TRX_PROTO_TAG_LABELS);
 
 			for (j = 0; j < row->labels.values_num; j++)
 			{
-				zbx_prometheus_label_t	*label = (zbx_prometheus_label_t *)row->labels.values[j];
-				zbx_json_addstring(&json, label->name, label->value, TRX_JSON_TYPE_STRING);
+				trx_prometheus_label_t	*label = (trx_prometheus_label_t *)row->labels.values[j];
+				trx_json_addstring(&json, label->name, label->value, TRX_JSON_TYPE_STRING);
 			}
 
-			zbx_json_close(&json);
+			trx_json_close(&json);
 		}
 
 		hint_local.metric = row->metric;
-		hint = (zbx_prometheus_hint_t *)zbx_hashset_search(&hints, &hint_local);
+		hint = (trx_prometheus_hint_t *)trx_hashset_search(&hints, &hint_local);
 
 		hint_type = (NULL != hint && NULL != hint->type ? hint->type : TRX_PROMETHEUS_TYPE_UNTYPED);
-		zbx_json_addstring(&json, TRX_PROTO_TAG_TYPE, hint_type, TRX_JSON_TYPE_STRING);
+		trx_json_addstring(&json, TRX_PROTO_TAG_TYPE, hint_type, TRX_JSON_TYPE_STRING);
 
 		if (NULL != hint && NULL != hint->help)
-			zbx_json_addstring(&json, TRX_PROTO_TAG_HELP, hint->help, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&json, TRX_PROTO_TAG_HELP, hint->help, TRX_JSON_TYPE_STRING);
 
-		zbx_json_close(&json);
+		trx_json_close(&json);
 	}
 
-	*value = zbx_strdup(NULL, json.buffer);
-	zbx_json_free(&json);
+	*value = trx_strdup(NULL, json.buffer);
+	trx_json_free(&json);
 	treegix_log(LOG_LEVEL_DEBUG, "%s(): output:%s", __func__, *value);
 	ret = SUCCEED;
 cleanup:
-	zbx_hashset_iter_reset(&hints, &iter);
-	while (NULL != (hint = (zbx_prometheus_hint_t *)zbx_hashset_iter_next(&iter)))
+	trx_hashset_iter_reset(&hints, &iter);
+	while (NULL != (hint = (trx_prometheus_hint_t *)trx_hashset_iter_next(&iter)))
 	{
-		zbx_free(hint->metric);
-		zbx_free(hint->help);
-		zbx_free(hint->type);
+		trx_free(hint->metric);
+		trx_free(hint->help);
+		trx_free(hint->type);
 	}
-	zbx_hashset_destroy(&hints);
+	trx_hashset_destroy(&hints);
 
-	zbx_vector_ptr_clear_ext(&rows, (zbx_clean_func_t)prometheus_row_free);
-	zbx_vector_ptr_destroy(&rows);
+	trx_vector_ptr_clear_ext(&rows, (trx_clean_func_t)prometheus_row_free);
+	trx_vector_ptr_destroy(&rows);
 	prometheus_filter_clear(&filter);
 out:
-	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, zbx_result_string(ret));
+	treegix_log(LOG_LEVEL_DEBUG, "End of %s():%s", __func__, trx_result_string(ret));
 	return ret;
 }
 
-int	zbx_prometheus_validate_filter(const char *pattern, char **error)
+int	trx_prometheus_validate_filter(const char *pattern, char **error)
 {
-	zbx_prometheus_filter_t	filter;
+	trx_prometheus_filter_t	filter;
 
 	if (FAIL == prometheus_filter_init(&filter, pattern, error))
 		return FAIL;
@@ -1691,9 +1691,9 @@ int	zbx_prometheus_validate_filter(const char *pattern, char **error)
 	return SUCCEED;
 }
 
-int	zbx_prometheus_validate_label(const char *label)
+int	trx_prometheus_validate_label(const char *label)
 {
-	zbx_strloc_t	loc;
+	trx_strloc_t	loc;
 	size_t		pos;
 
 	if ('\0' == *label)
@@ -1711,5 +1711,5 @@ int	zbx_prometheus_validate_label(const char *label)
 
 
 #ifdef HAVE_TESTS
-#	include "../../../tests/libs/zbxprometheus/prometheus_test.c"
+#	include "../../../tests/libs/trxprometheus/prometheus_test.c"
 #endif

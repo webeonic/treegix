@@ -495,7 +495,7 @@ function copyItemsToHosts($src_itemids, $dst_hostids) {
 			unset($item['itemid']);
 			$item['hostid'] = $dstHost['hostid'];
 			$item['applications'] = get_same_applications_for_host(
-				zbx_objectValues($item['applications'], 'applicationid'),
+				trx_objectValues($item['applications'], 'applicationid'),
 				$dstHost['hostid']
 			);
 
@@ -637,7 +637,7 @@ function copyItems($srcHostId, $dstHostId) {
 		unset($srcItem['itemid']);
 		unset($srcItem['templateid']);
 		$srcItem['hostid'] = $dstHostId;
-		$srcItem['applications'] = get_same_applications_for_host(zbx_objectValues($srcItem['applications'], 'applicationid'), $dstHostId);
+		$srcItem['applications'] = get_same_applications_for_host(trx_objectValues($srcItem['applications'], 'applicationid'), $dstHostId);
 
 		if (!$srcItem['preprocessing']) {
 			unset($srcItem['preprocessing']);
@@ -698,7 +698,7 @@ function copyApplications($source_hostid, $destination_hostid) {
 }
 
 function get_item_by_itemid($itemid) {
-	$db_items = DBfetch(DBselect('SELECT i.* FROM items i WHERE i.itemid='.zbx_dbstr($itemid)));
+	$db_items = DBfetch(DBselect('SELECT i.* FROM items i WHERE i.itemid='.trx_dbstr($itemid)));
 	if ($db_items) {
 		return $db_items;
 	}
@@ -715,7 +715,7 @@ function get_item_by_itemid($itemid) {
  */
 function get_same_item_for_host($item, $dest_hostids) {
 	$return_array = is_array($dest_hostids);
-	zbx_value2array($dest_hostids);
+	trx_value2array($dest_hostids);
 
 	if (!is_array($item)) {
 		$itemid = $item;
@@ -731,7 +731,7 @@ function get_same_item_for_host($item, $dest_hostids) {
 		$db_items = DBselect(
 			'SELECT src.*'.
 			' FROM items src,items dest'.
-			' WHERE dest.itemid='.zbx_dbstr($itemid).
+			' WHERE dest.itemid='.trx_dbstr($itemid).
 				' AND src.key_=dest.key_'.
 				' AND '.dbConditionInt('src.hostid', $dest_hostids)
 		);
@@ -1060,7 +1060,7 @@ function getItemsDataOverview(array $groupids, $application, $viewMode,
 	]);
 
 	// fetch latest values
-	$history = Manager::History()->getLastValues(zbx_toHash($db_items, 'itemid'), 1, TRX_HISTORY_PERIOD);
+	$history = Manager::History()->getLastValues(trx_toHash($db_items, 'itemid'), 1, TRX_HISTORY_PERIOD);
 
 	// fetch data for the host JS menu
 	$hosts = API::Host()->get([
@@ -1244,7 +1244,7 @@ function get_same_applications_for_host(array $applicationIds, $hostId) {
 		'SELECT a1.applicationid AS dstappid,a2.applicationid AS srcappid'.
 		' FROM applications a1,applications a2'.
 		' WHERE a1.name=a2.name'.
-			' AND a1.hostid='.zbx_dbstr($hostId).
+			' AND a1.hostid='.trx_dbstr($hostId).
 			' AND '.dbConditionInt('a2.applicationid', $applicationIds)
 	);
 
@@ -1261,7 +1261,7 @@ function get_same_applications_for_host(array $applicationIds, $hostId) {
  *                                                                            *
  ******************************************************************************/
 function get_applications_by_itemid($itemids, $field = 'applicationid') {
-	zbx_value2array($itemids);
+	trx_value2array($itemids);
 	$result = [];
 	$db_applications = DBselect(
 		'SELECT DISTINCT app.'.$field.' AS result'.

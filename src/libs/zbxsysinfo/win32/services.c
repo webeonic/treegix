@@ -3,7 +3,7 @@
 #include "common.h"
 #include "sysinfo.h"
 #include "log.h"
-#include "zbxjson.h"
+#include "trxjson.h"
 
 #define TRX_QSC_BUFSIZE	8192	/* QueryServiceConfig() and QueryServiceConfig2() maximum output buffer size */
 				/* as documented by Microsoft */
@@ -18,7 +18,7 @@ typedef enum
 	STARTUP_TYPE_AUTO_DELAYED_TRIGGER,
 	STARTUP_TYPE_MANUAL_TRIGGER
 }
-zbx_startup_type_t;
+trx_startup_type_t;
 
 /******************************************************************************
  *                                                                            *
@@ -34,7 +34,7 @@ zbx_startup_type_t;
  *               is not recognized by this function                           *
  *                                                                            *
  ******************************************************************************/
-static zbx_uint64_t	get_state_code(DWORD state)
+static trx_uint64_t	get_state_code(DWORD state)
 {
 	/* these are called "Status" in MS Windows "Services" program and */
 	/* "States" in EnumServicesStatusEx() function documentation */
@@ -71,7 +71,7 @@ static const char	*get_state_string(DWORD state)
 	}
 }
 
-static const char	*get_startup_string(zbx_startup_type_t startup_type)
+static const char	*get_startup_string(trx_startup_type_t startup_type)
 {
 	switch (startup_type)
 	{
@@ -102,7 +102,7 @@ static void	log_if_buffer_too_small(const char *function_name, DWORD sz)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_service_config                                           *
+ * Function: trx_get_service_config                                           *
  *                                                                            *
  * Purpose: wrapper function around QueryServiceConfig()                      *
  *                                                                            *
@@ -116,7 +116,7 @@ static void	log_if_buffer_too_small(const char *function_name, DWORD sz)
  *      FAIL    - use strerror_from_system(GetLastError() to see what failed  *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_get_service_config(SC_HANDLE hService, LPQUERY_SERVICE_CONFIG buf)
+static int	trx_get_service_config(SC_HANDLE hService, LPQUERY_SERVICE_CONFIG buf)
 {
 	DWORD	sz = 0;
 
@@ -129,7 +129,7 @@ static int	zbx_get_service_config(SC_HANDLE hService, LPQUERY_SERVICE_CONFIG buf
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_get_service_config2                                          *
+ * Function: trx_get_service_config2                                          *
  *                                                                            *
  * Purpose: wrapper function around QueryServiceConfig2()                     *
  *                                                                            *
@@ -144,7 +144,7 @@ static int	zbx_get_service_config(SC_HANDLE hService, LPQUERY_SERVICE_CONFIG buf
  *      FAIL    - use strerror_from_system(GetLastError() to see what failed  *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_get_service_config2(SC_HANDLE hService, DWORD dwInfoLevel, LPBYTE buf)
+static int	trx_get_service_config2(SC_HANDLE hService, DWORD dwInfoLevel, LPBYTE buf)
 {
 	DWORD	sz = 0;
 
@@ -159,7 +159,7 @@ static int	check_trigger_start(SC_HANDLE h_srv, const char *service_name)
 {
 	BYTE	buf[TRX_QSC_BUFSIZE];
 
-	if (SUCCEED == zbx_get_service_config2(h_srv, SERVICE_CONFIG_TRIGGER_INFO, buf))
+	if (SUCCEED == trx_get_service_config2(h_srv, SERVICE_CONFIG_TRIGGER_INFO, buf))
 	{
 		SERVICE_TRIGGER_INFO	*sti = (SERVICE_TRIGGER_INFO *)&buf;
 
@@ -170,7 +170,7 @@ static int	check_trigger_start(SC_HANDLE h_srv, const char *service_name)
 	{
 		const OSVERSIONINFOEX	*version_info;
 
-		version_info = zbx_win_getversion();
+		version_info = trx_win_getversion();
 
 		/* Windows 7, Server 2008 R2 and later */
 		if((6 <= version_info->dwMajorVersion) && (1 <= version_info->dwMinorVersion))
@@ -187,7 +187,7 @@ static int	check_delayed_start(SC_HANDLE h_srv, const char *service_name)
 {
 	BYTE	buf[TRX_QSC_BUFSIZE];
 
-	if (SUCCEED == zbx_get_service_config2(h_srv, SERVICE_CONFIG_DELAYED_AUTO_START_INFO, buf))
+	if (SUCCEED == trx_get_service_config2(h_srv, SERVICE_CONFIG_DELAYED_AUTO_START_INFO, buf))
 	{
 		SERVICE_DELAYED_AUTO_START_INFO	*sds = (SERVICE_DELAYED_AUTO_START_INFO *)&buf;
 
@@ -203,7 +203,7 @@ static int	check_delayed_start(SC_HANDLE h_srv, const char *service_name)
 	return FAIL;
 }
 
-static zbx_startup_type_t	get_service_startup_type(SC_HANDLE h_srv, QUERY_SERVICE_CONFIG *qsc,
+static trx_startup_type_t	get_service_startup_type(SC_HANDLE h_srv, QUERY_SERVICE_CONFIG *qsc,
 		const char *service_name)
 {
 	int	trigger_start = 0;
@@ -244,15 +244,15 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 	ENUM_SERVICE_STATUS_PROCESS	*ssp = NULL;
 	SC_HANDLE			h_mgr;
 	DWORD				sz = 0, szn, i, services, resume_handle = 0;
-	struct zbx_json			j;
+	struct trx_json			j;
 
 	if (NULL == (h_mgr = OpenSCManager(NULL, NULL, GENERIC_READ)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system information."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	zbx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
+	trx_json_initarray(&j, TRX_JSON_STAT_BUF_LEN);
 
 	while (0 != EnumServicesStatusEx(h_mgr, SC_ENUM_PROCESS_INFO, SERVICE_WIN32, SERVICE_STATE_ALL,
 			(LPBYTE)ssp, sz, &szn, &services, &resume_handle, NULL) || ERROR_MORE_DATA == GetLastError())
@@ -270,9 +270,9 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 			if (NULL == (h_srv = OpenService(h_mgr, ssp[i].lpServiceName, SERVICE_QUERY_CONFIG)))
 				continue;
 
-			service_name_utf8 = zbx_unicode_to_utf8(ssp[i].lpServiceName);
+			service_name_utf8 = trx_unicode_to_utf8(ssp[i].lpServiceName);
 
-			if (SUCCEED != zbx_get_service_config(h_srv, (LPQUERY_SERVICE_CONFIG)buf_qsc))
+			if (SUCCEED != trx_get_service_config(h_srv, (LPQUERY_SERVICE_CONFIG)buf_qsc))
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "cannot obtain configuration of service \"%s\": %s",
 						service_name_utf8, strerror_from_system(GetLastError()));
@@ -281,7 +281,7 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 			qsc = (QUERY_SERVICE_CONFIG *)&buf_qsc;
 
-			if (SUCCEED != zbx_get_service_config2(h_srv, SERVICE_CONFIG_DESCRIPTION, buf_scd))
+			if (SUCCEED != trx_get_service_config2(h_srv, SERVICE_CONFIG_DESCRIPTION, buf_scd))
 			{
 				treegix_log(LOG_LEVEL_DEBUG, "cannot obtain description of service \"%s\": %s",
 						service_name_utf8, strerror_from_system(GetLastError()));
@@ -290,46 +290,46 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 			scd = (SERVICE_DESCRIPTION *)&buf_scd;
 
-			zbx_json_addobject(&j, NULL);
+			trx_json_addobject(&j, NULL);
 
-			zbx_json_addstring(&j, "{#SERVICE.NAME}", service_name_utf8, TRX_JSON_TYPE_STRING);
+			trx_json_addstring(&j, "{#SERVICE.NAME}", service_name_utf8, TRX_JSON_TYPE_STRING);
 
-			utf8 = zbx_unicode_to_utf8(ssp[i].lpDisplayName);
-			zbx_json_addstring(&j, "{#SERVICE.DISPLAYNAME}", utf8, TRX_JSON_TYPE_STRING);
-			zbx_free(utf8);
+			utf8 = trx_unicode_to_utf8(ssp[i].lpDisplayName);
+			trx_json_addstring(&j, "{#SERVICE.DISPLAYNAME}", utf8, TRX_JSON_TYPE_STRING);
+			trx_free(utf8);
 
 			if (NULL != scd->lpDescription)
 			{
-				utf8 = zbx_unicode_to_utf8(scd->lpDescription);
-				zbx_json_addstring(&j, "{#SERVICE.DESCRIPTION}", utf8, TRX_JSON_TYPE_STRING);
-				zbx_free(utf8);
+				utf8 = trx_unicode_to_utf8(scd->lpDescription);
+				trx_json_addstring(&j, "{#SERVICE.DESCRIPTION}", utf8, TRX_JSON_TYPE_STRING);
+				trx_free(utf8);
 			}
 			else
-				zbx_json_addstring(&j, "{#SERVICE.DESCRIPTION}", "", TRX_JSON_TYPE_STRING);
+				trx_json_addstring(&j, "{#SERVICE.DESCRIPTION}", "", TRX_JSON_TYPE_STRING);
 
 			current_state = ssp[i].ServiceStatusProcess.dwCurrentState;
-			zbx_json_adduint64(&j, "{#SERVICE.STATE}", get_state_code(current_state));
-			zbx_json_addstring(&j, "{#SERVICE.STATENAME}", get_state_string(current_state),
+			trx_json_adduint64(&j, "{#SERVICE.STATE}", get_state_code(current_state));
+			trx_json_addstring(&j, "{#SERVICE.STATENAME}", get_state_string(current_state),
 					TRX_JSON_TYPE_STRING);
 
-			utf8 = zbx_unicode_to_utf8(qsc->lpBinaryPathName);
-			zbx_json_addstring(&j, "{#SERVICE.PATH}", utf8, TRX_JSON_TYPE_STRING);
-			zbx_free(utf8);
+			utf8 = trx_unicode_to_utf8(qsc->lpBinaryPathName);
+			trx_json_addstring(&j, "{#SERVICE.PATH}", utf8, TRX_JSON_TYPE_STRING);
+			trx_free(utf8);
 
-			utf8 = zbx_unicode_to_utf8(qsc->lpServiceStartName);
-			zbx_json_addstring(&j, "{#SERVICE.USER}", utf8, TRX_JSON_TYPE_STRING);
-			zbx_free(utf8);
+			utf8 = trx_unicode_to_utf8(qsc->lpServiceStartName);
+			trx_json_addstring(&j, "{#SERVICE.USER}", utf8, TRX_JSON_TYPE_STRING);
+			trx_free(utf8);
 
 			if (SERVICE_DISABLED == qsc->dwStartType)
 			{
-				zbx_json_adduint64(&j, "{#SERVICE.STARTUPTRIGGER}", 0);
-				zbx_json_adduint64(&j, "{#SERVICE.STARTUP}", STARTUP_TYPE_DISABLED);
-				zbx_json_addstring(&j, "{#SERVICE.STARTUPNAME}",
+				trx_json_adduint64(&j, "{#SERVICE.STARTUPTRIGGER}", 0);
+				trx_json_adduint64(&j, "{#SERVICE.STARTUP}", STARTUP_TYPE_DISABLED);
+				trx_json_addstring(&j, "{#SERVICE.STARTUPNAME}",
 						get_startup_string(STARTUP_TYPE_DISABLED), TRX_JSON_TYPE_STRING);
 			}
 			else
 			{
-				zbx_startup_type_t	startup_type;
+				trx_startup_type_t	startup_type;
 
 				startup_type = get_service_startup_type(h_srv, qsc, service_name_utf8);
 
@@ -337,19 +337,19 @@ int	SERVICE_DISCOVERY(AGENT_REQUEST *request, AGENT_RESULT *result)
 				if (STARTUP_TYPE_UNKNOWN < startup_type)
 				{
 					startup_type -= 5;
-					zbx_json_adduint64(&j, "{#SERVICE.STARTUPTRIGGER}", 1);
+					trx_json_adduint64(&j, "{#SERVICE.STARTUPTRIGGER}", 1);
 				}
 				else
-					zbx_json_adduint64(&j, "{#SERVICE.STARTUPTRIGGER}", 0);
+					trx_json_adduint64(&j, "{#SERVICE.STARTUPTRIGGER}", 0);
 
-				zbx_json_adduint64(&j, "{#SERVICE.STARTUP}", startup_type);
-				zbx_json_addstring(&j, "{#SERVICE.STARTUPNAME}", get_startup_string(startup_type),
+				trx_json_adduint64(&j, "{#SERVICE.STARTUP}", startup_type);
+				trx_json_addstring(&j, "{#SERVICE.STARTUPNAME}", get_startup_string(startup_type),
 						TRX_JSON_TYPE_STRING);
 			}
 
-			zbx_json_close(&j);
+			trx_json_close(&j);
 next:
-			zbx_free(service_name_utf8);
+			trx_free(service_name_utf8);
 			CloseServiceHandle(h_srv);
 		}
 
@@ -359,19 +359,19 @@ next:
 		if (NULL == ssp)
 		{
 			sz = szn;
-			ssp = (ENUM_SERVICE_STATUS_PROCESS *)zbx_malloc(ssp, sz);
+			ssp = (ENUM_SERVICE_STATUS_PROCESS *)trx_malloc(ssp, sz);
 		}
 	}
 
-	zbx_free(ssp);
+	trx_free(ssp);
 
 	CloseServiceHandle(h_mgr);
 
-	zbx_json_close(&j);
+	trx_json_close(&j);
 
-	SET_STR_RESULT(result, zbx_strdup(NULL, j.buffer));
+	SET_STR_RESULT(result, trx_strdup(NULL, j.buffer));
 
-	zbx_json_free(&j);
+	trx_json_free(&j);
 
 	return SYSINFO_RET_OK;
 }
@@ -396,7 +396,7 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -405,7 +405,7 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == name || '\0' == *name)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -423,23 +423,23 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 		param_type = TRX_SRV_PARAM_DESCRIPTION;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == (h_mgr = OpenSCManager(NULL, NULL, GENERIC_READ)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system information."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	wname = zbx_utf8_to_unicode(name);
+	wname = trx_utf8_to_unicode(name);
 
 	h_srv = OpenService(h_mgr, wname, SERVICE_QUERY_STATUS | SERVICE_QUERY_CONFIG);
 	if (NULL == h_srv && 0 != GetServiceKeyName(h_mgr, wname, service_name, &max_len_name))
 		h_srv = OpenService(h_mgr, service_name, SERVICE_QUERY_STATUS | SERVICE_QUERY_CONFIG);
 
-	zbx_free(wname);
+	trx_free(wname);
 
 	if (NULL == h_srv)
 	{
@@ -452,7 +452,7 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot find the specified service."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot find the specified service."));
 			ret = SYSINFO_RET_FAIL;
 		}
 
@@ -472,9 +472,9 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SERVICE_DESCRIPTION	*scd;
 		BYTE			buf[TRX_QSC_BUFSIZE];
 
-		if (SUCCEED != zbx_get_service_config2(h_srv, SERVICE_CONFIG_DESCRIPTION, buf))
+		if (SUCCEED != trx_get_service_config2(h_srv, SERVICE_CONFIG_DESCRIPTION, buf))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain service description: %s",
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain service description: %s",
 					strerror_from_system(GetLastError())));
 			CloseServiceHandle(h_srv);
 			CloseServiceHandle(h_mgr);
@@ -484,18 +484,18 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 		scd = (SERVICE_DESCRIPTION *)&buf;
 
 		if (NULL == scd->lpDescription)
-			SET_TEXT_RESULT(result, zbx_strdup(NULL, ""));
+			SET_TEXT_RESULT(result, trx_strdup(NULL, ""));
 		else
-			SET_TEXT_RESULT(result, zbx_unicode_to_utf8(scd->lpDescription));
+			SET_TEXT_RESULT(result, trx_unicode_to_utf8(scd->lpDescription));
 	}
 	else
 	{
 		QUERY_SERVICE_CONFIG	*qsc;
 		BYTE			buf_qsc[TRX_QSC_BUFSIZE];
 
-		if (SUCCEED != zbx_get_service_config(h_srv, (LPQUERY_SERVICE_CONFIG)buf_qsc))
+		if (SUCCEED != trx_get_service_config(h_srv, (LPQUERY_SERVICE_CONFIG)buf_qsc))
 		{
-			SET_MSG_RESULT(result, zbx_dsprintf(NULL, "Cannot obtain service configuration: %s",
+			SET_MSG_RESULT(result, trx_dsprintf(NULL, "Cannot obtain service configuration: %s",
 					strerror_from_system(GetLastError())));
 			CloseServiceHandle(h_srv);
 			CloseServiceHandle(h_mgr);
@@ -507,13 +507,13 @@ int	SERVICE_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 		switch (param_type)
 		{
 			case TRX_SRV_PARAM_DISPLAYNAME:
-				SET_STR_RESULT(result, zbx_unicode_to_utf8(qsc->lpDisplayName));
+				SET_STR_RESULT(result, trx_unicode_to_utf8(qsc->lpDisplayName));
 				break;
 			case TRX_SRV_PARAM_PATH:
-				SET_STR_RESULT(result, zbx_unicode_to_utf8(qsc->lpBinaryPathName));
+				SET_STR_RESULT(result, trx_unicode_to_utf8(qsc->lpBinaryPathName));
 				break;
 			case TRX_SRV_PARAM_USER:
-				SET_STR_RESULT(result, zbx_unicode_to_utf8(qsc->lpServiceStartName));
+				SET_STR_RESULT(result, trx_unicode_to_utf8(qsc->lpServiceStartName));
 				break;
 			case TRX_SRV_PARAM_STARTUP:
 				if (SERVICE_DISABLED == qsc->dwStartType)
@@ -541,7 +541,7 @@ int	SERVICE_STATE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -549,23 +549,23 @@ int	SERVICE_STATE(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == name || '\0' == *name)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == (mgr = OpenSCManager(NULL, NULL, GENERIC_READ)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system information."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	wname = zbx_utf8_to_unicode(name);
+	wname = trx_utf8_to_unicode(name);
 
 	service = OpenService(mgr, wname, SERVICE_QUERY_STATUS);
 	if (NULL == service && 0 != GetServiceKeyName(mgr, wname, service_name, &max_len_name))
 		service = OpenService(mgr, service_name, SERVICE_QUERY_STATUS);
 
-	zbx_free(wname);
+	trx_free(wname);
 
 	if (NULL == service)
 	{
@@ -600,7 +600,7 @@ static int	check_service_starttype(SC_HANDLE h_srv, int start_type)
 	if (TRX_SRV_STARTTYPE_ALL == start_type)
 		return SUCCEED;
 
-	if (SUCCEED != zbx_get_service_config(h_srv, (LPQUERY_SERVICE_CONFIG)buf))
+	if (SUCCEED != trx_get_service_config(h_srv, (LPQUERY_SERVICE_CONFIG)buf))
 		return FAIL;
 
 	qsc = (QUERY_SERVICE_CONFIG *)&buf;
@@ -689,7 +689,7 @@ int	SERVICES(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (3 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -707,7 +707,7 @@ int	SERVICES(AGENT_REQUEST *request, AGENT_RESULT *result)
 		start_type = TRX_SRV_STARTTYPE_DISABLED;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -731,13 +731,13 @@ int	SERVICES(AGENT_REQUEST *request, AGENT_RESULT *result)
 		service_state = TRX_SRV_STATE_PAUSED;
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (NULL == (h_mgr = OpenSCManager(NULL, NULL, GENERIC_READ)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -758,12 +758,12 @@ int	SERVICES(AGENT_REQUEST *request, AGENT_RESULT *result)
 			{
 				if (SUCCEED == check_service_state(h_srv, service_state))
 				{
-					utf8 = zbx_unicode_to_utf8(ssp[i].lpServiceName);
+					utf8 = trx_unicode_to_utf8(ssp[i].lpServiceName);
 
 					if (NULL == exclude || FAIL == str_in_list(exclude, utf8, ','))
-						buf = zbx_strdcatf(buf, "%s\n", utf8);
+						buf = trx_strdcatf(buf, "%s\n", utf8);
 
-					zbx_free(utf8);
+					trx_free(utf8);
 				}
 			}
 
@@ -776,16 +776,16 @@ int	SERVICES(AGENT_REQUEST *request, AGENT_RESULT *result)
 		if (NULL == ssp)
 		{
 			sz = szn;
-			ssp = (ENUM_SERVICE_STATUS_PROCESS *)zbx_malloc(ssp, sz);
+			ssp = (ENUM_SERVICE_STATUS_PROCESS *)trx_malloc(ssp, sz);
 		}
 	}
 
-	zbx_free(ssp);
+	trx_free(ssp);
 
 	CloseServiceHandle(h_mgr);
 
 	if (NULL == buf)
-		buf = zbx_strdup(buf, "0");
+		buf = trx_strdup(buf, "0");
 
 	SET_STR_RESULT(result, buf);
 

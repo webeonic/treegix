@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/libs/zbxdbhigh
+subdir = src/libs/trxdbhigh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_ibm_db2.m4 \
 	$(top_srcdir)/m4/ax_lib_mysql.m4 \
@@ -117,20 +117,20 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libzbxdbhigh_a_AR = $(AR) $(ARFLAGS)
-libzbxdbhigh_a_LIBADD =
-am_libzbxdbhigh_a_OBJECTS = libzbxdbhigh_a-host.$(OBJEXT) \
-	libzbxdbhigh_a-db.$(OBJEXT) libzbxdbhigh_a-dbschema.$(OBJEXT) \
-	libzbxdbhigh_a-proxy.$(OBJEXT) \
-	libzbxdbhigh_a-discovery.$(OBJEXT) \
-	libzbxdbhigh_a-itservices.$(OBJEXT) \
-	libzbxdbhigh_a-template_item.$(OBJEXT) \
-	libzbxdbhigh_a-trigger.$(OBJEXT) \
-	libzbxdbhigh_a-event.$(OBJEXT) libzbxdbhigh_a-export.$(OBJEXT) \
-	libzbxdbhigh_a-maintenance.$(OBJEXT) \
-	libzbxdbhigh_a-item.$(OBJEXT) \
-	libzbxdbhigh_a-lld_macro.$(OBJEXT)
-libzbxdbhigh_a_OBJECTS = $(am_libzbxdbhigh_a_OBJECTS)
+libtrxdbhigh_a_AR = $(AR) $(ARFLAGS)
+libtrxdbhigh_a_LIBADD =
+am_libtrxdbhigh_a_OBJECTS = libtrxdbhigh_a-host.$(OBJEXT) \
+	libtrxdbhigh_a-db.$(OBJEXT) libtrxdbhigh_a-dbschema.$(OBJEXT) \
+	libtrxdbhigh_a-proxy.$(OBJEXT) \
+	libtrxdbhigh_a-discovery.$(OBJEXT) \
+	libtrxdbhigh_a-itservices.$(OBJEXT) \
+	libtrxdbhigh_a-template_item.$(OBJEXT) \
+	libtrxdbhigh_a-trigger.$(OBJEXT) \
+	libtrxdbhigh_a-event.$(OBJEXT) libtrxdbhigh_a-export.$(OBJEXT) \
+	libtrxdbhigh_a-maintenance.$(OBJEXT) \
+	libtrxdbhigh_a-item.$(OBJEXT) \
+	libtrxdbhigh_a-lld_macro.$(OBJEXT)
+libtrxdbhigh_a_OBJECTS = $(am_libtrxdbhigh_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -163,8 +163,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libzbxdbhigh_a_SOURCES)
-DIST_SOURCES = $(libzbxdbhigh_a_SOURCES)
+SOURCES = $(libtrxdbhigh_a_SOURCES)
+DIST_SOURCES = $(libtrxdbhigh_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -388,8 +388,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libzbxdbhigh.a
-libzbxdbhigh_a_SOURCES = \
+noinst_LIBRARIES = libtrxdbhigh.a
+libtrxdbhigh_a_SOURCES = \
 	host.c \
 	db.c \
 	dbschema.c \
@@ -405,7 +405,7 @@ libzbxdbhigh_a_SOURCES = \
 	item.c \
 	lld_macro.c
 
-libzbxdbhigh_a_CFLAGS = -I@top_srcdir@/src/treegix_server/
+libtrxdbhigh_a_CFLAGS = -I@top_srcdir@/src/treegix_server/
 all: all-am
 
 .SUFFIXES:
@@ -419,9 +419,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/zbxdbhigh/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libs/trxdbhigh/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libs/zbxdbhigh/Makefile
+	  $(AUTOMAKE) --gnu src/libs/trxdbhigh/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -443,10 +443,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libzbxdbhigh.a: $(libzbxdbhigh_a_OBJECTS) $(libzbxdbhigh_a_DEPENDENCIES) $(EXTRA_libzbxdbhigh_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libzbxdbhigh.a
-	$(AM_V_AR)$(libzbxdbhigh_a_AR) libzbxdbhigh.a $(libzbxdbhigh_a_OBJECTS) $(libzbxdbhigh_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libzbxdbhigh.a
+libtrxdbhigh.a: $(libtrxdbhigh_a_OBJECTS) $(libtrxdbhigh_a_DEPENDENCIES) $(EXTRA_libtrxdbhigh_a_DEPENDENCIES)
+	$(AM_V_at)-rm -f libtrxdbhigh.a
+	$(AM_V_AR)$(libtrxdbhigh_a_AR) libtrxdbhigh.a $(libtrxdbhigh_a_OBJECTS) $(libtrxdbhigh_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libtrxdbhigh.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -454,19 +454,19 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-db.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-dbschema.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-discovery.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-event.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-export.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-host.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-item.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-itservices.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-lld_macro.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-maintenance.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-proxy.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-template_item.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzbxdbhigh_a-trigger.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-db.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-dbschema.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-discovery.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-event.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-export.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-host.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-itservices.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-lld_macro.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-maintenance.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-proxy.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-template_item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtrxdbhigh_a-trigger.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -484,187 +484,187 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-libzbxdbhigh_a-host.o: host.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-host.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-host.Tpo -c -o libzbxdbhigh_a-host.o `test -f 'host.c' || echo '$(srcdir)/'`host.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-host.Tpo $(DEPDIR)/libzbxdbhigh_a-host.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='host.c' object='libzbxdbhigh_a-host.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-host.o: host.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-host.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-host.Tpo -c -o libtrxdbhigh_a-host.o `test -f 'host.c' || echo '$(srcdir)/'`host.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-host.Tpo $(DEPDIR)/libtrxdbhigh_a-host.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='host.c' object='libtrxdbhigh_a-host.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-host.o `test -f 'host.c' || echo '$(srcdir)/'`host.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-host.o `test -f 'host.c' || echo '$(srcdir)/'`host.c
 
-libzbxdbhigh_a-host.obj: host.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-host.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-host.Tpo -c -o libzbxdbhigh_a-host.obj `if test -f 'host.c'; then $(CYGPATH_W) 'host.c'; else $(CYGPATH_W) '$(srcdir)/host.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-host.Tpo $(DEPDIR)/libzbxdbhigh_a-host.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='host.c' object='libzbxdbhigh_a-host.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-host.obj: host.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-host.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-host.Tpo -c -o libtrxdbhigh_a-host.obj `if test -f 'host.c'; then $(CYGPATH_W) 'host.c'; else $(CYGPATH_W) '$(srcdir)/host.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-host.Tpo $(DEPDIR)/libtrxdbhigh_a-host.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='host.c' object='libtrxdbhigh_a-host.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-host.obj `if test -f 'host.c'; then $(CYGPATH_W) 'host.c'; else $(CYGPATH_W) '$(srcdir)/host.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-host.obj `if test -f 'host.c'; then $(CYGPATH_W) 'host.c'; else $(CYGPATH_W) '$(srcdir)/host.c'; fi`
 
-libzbxdbhigh_a-db.o: db.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-db.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-db.Tpo -c -o libzbxdbhigh_a-db.o `test -f 'db.c' || echo '$(srcdir)/'`db.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-db.Tpo $(DEPDIR)/libzbxdbhigh_a-db.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='db.c' object='libzbxdbhigh_a-db.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-db.o: db.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-db.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-db.Tpo -c -o libtrxdbhigh_a-db.o `test -f 'db.c' || echo '$(srcdir)/'`db.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-db.Tpo $(DEPDIR)/libtrxdbhigh_a-db.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='db.c' object='libtrxdbhigh_a-db.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-db.o `test -f 'db.c' || echo '$(srcdir)/'`db.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-db.o `test -f 'db.c' || echo '$(srcdir)/'`db.c
 
-libzbxdbhigh_a-db.obj: db.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-db.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-db.Tpo -c -o libzbxdbhigh_a-db.obj `if test -f 'db.c'; then $(CYGPATH_W) 'db.c'; else $(CYGPATH_W) '$(srcdir)/db.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-db.Tpo $(DEPDIR)/libzbxdbhigh_a-db.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='db.c' object='libzbxdbhigh_a-db.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-db.obj: db.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-db.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-db.Tpo -c -o libtrxdbhigh_a-db.obj `if test -f 'db.c'; then $(CYGPATH_W) 'db.c'; else $(CYGPATH_W) '$(srcdir)/db.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-db.Tpo $(DEPDIR)/libtrxdbhigh_a-db.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='db.c' object='libtrxdbhigh_a-db.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-db.obj `if test -f 'db.c'; then $(CYGPATH_W) 'db.c'; else $(CYGPATH_W) '$(srcdir)/db.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-db.obj `if test -f 'db.c'; then $(CYGPATH_W) 'db.c'; else $(CYGPATH_W) '$(srcdir)/db.c'; fi`
 
-libzbxdbhigh_a-dbschema.o: dbschema.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-dbschema.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-dbschema.Tpo -c -o libzbxdbhigh_a-dbschema.o `test -f 'dbschema.c' || echo '$(srcdir)/'`dbschema.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-dbschema.Tpo $(DEPDIR)/libzbxdbhigh_a-dbschema.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbschema.c' object='libzbxdbhigh_a-dbschema.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-dbschema.o: dbschema.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-dbschema.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-dbschema.Tpo -c -o libtrxdbhigh_a-dbschema.o `test -f 'dbschema.c' || echo '$(srcdir)/'`dbschema.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-dbschema.Tpo $(DEPDIR)/libtrxdbhigh_a-dbschema.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbschema.c' object='libtrxdbhigh_a-dbschema.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-dbschema.o `test -f 'dbschema.c' || echo '$(srcdir)/'`dbschema.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-dbschema.o `test -f 'dbschema.c' || echo '$(srcdir)/'`dbschema.c
 
-libzbxdbhigh_a-dbschema.obj: dbschema.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-dbschema.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-dbschema.Tpo -c -o libzbxdbhigh_a-dbschema.obj `if test -f 'dbschema.c'; then $(CYGPATH_W) 'dbschema.c'; else $(CYGPATH_W) '$(srcdir)/dbschema.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-dbschema.Tpo $(DEPDIR)/libzbxdbhigh_a-dbschema.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbschema.c' object='libzbxdbhigh_a-dbschema.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-dbschema.obj: dbschema.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-dbschema.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-dbschema.Tpo -c -o libtrxdbhigh_a-dbschema.obj `if test -f 'dbschema.c'; then $(CYGPATH_W) 'dbschema.c'; else $(CYGPATH_W) '$(srcdir)/dbschema.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-dbschema.Tpo $(DEPDIR)/libtrxdbhigh_a-dbschema.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dbschema.c' object='libtrxdbhigh_a-dbschema.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-dbschema.obj `if test -f 'dbschema.c'; then $(CYGPATH_W) 'dbschema.c'; else $(CYGPATH_W) '$(srcdir)/dbschema.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-dbschema.obj `if test -f 'dbschema.c'; then $(CYGPATH_W) 'dbschema.c'; else $(CYGPATH_W) '$(srcdir)/dbschema.c'; fi`
 
-libzbxdbhigh_a-proxy.o: proxy.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-proxy.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-proxy.Tpo -c -o libzbxdbhigh_a-proxy.o `test -f 'proxy.c' || echo '$(srcdir)/'`proxy.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-proxy.Tpo $(DEPDIR)/libzbxdbhigh_a-proxy.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy.c' object='libzbxdbhigh_a-proxy.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-proxy.o: proxy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-proxy.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-proxy.Tpo -c -o libtrxdbhigh_a-proxy.o `test -f 'proxy.c' || echo '$(srcdir)/'`proxy.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-proxy.Tpo $(DEPDIR)/libtrxdbhigh_a-proxy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy.c' object='libtrxdbhigh_a-proxy.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-proxy.o `test -f 'proxy.c' || echo '$(srcdir)/'`proxy.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-proxy.o `test -f 'proxy.c' || echo '$(srcdir)/'`proxy.c
 
-libzbxdbhigh_a-proxy.obj: proxy.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-proxy.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-proxy.Tpo -c -o libzbxdbhigh_a-proxy.obj `if test -f 'proxy.c'; then $(CYGPATH_W) 'proxy.c'; else $(CYGPATH_W) '$(srcdir)/proxy.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-proxy.Tpo $(DEPDIR)/libzbxdbhigh_a-proxy.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy.c' object='libzbxdbhigh_a-proxy.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-proxy.obj: proxy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-proxy.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-proxy.Tpo -c -o libtrxdbhigh_a-proxy.obj `if test -f 'proxy.c'; then $(CYGPATH_W) 'proxy.c'; else $(CYGPATH_W) '$(srcdir)/proxy.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-proxy.Tpo $(DEPDIR)/libtrxdbhigh_a-proxy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='proxy.c' object='libtrxdbhigh_a-proxy.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-proxy.obj `if test -f 'proxy.c'; then $(CYGPATH_W) 'proxy.c'; else $(CYGPATH_W) '$(srcdir)/proxy.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-proxy.obj `if test -f 'proxy.c'; then $(CYGPATH_W) 'proxy.c'; else $(CYGPATH_W) '$(srcdir)/proxy.c'; fi`
 
-libzbxdbhigh_a-discovery.o: discovery.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-discovery.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-discovery.Tpo -c -o libzbxdbhigh_a-discovery.o `test -f 'discovery.c' || echo '$(srcdir)/'`discovery.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-discovery.Tpo $(DEPDIR)/libzbxdbhigh_a-discovery.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='discovery.c' object='libzbxdbhigh_a-discovery.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-discovery.o: discovery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-discovery.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-discovery.Tpo -c -o libtrxdbhigh_a-discovery.o `test -f 'discovery.c' || echo '$(srcdir)/'`discovery.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-discovery.Tpo $(DEPDIR)/libtrxdbhigh_a-discovery.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='discovery.c' object='libtrxdbhigh_a-discovery.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-discovery.o `test -f 'discovery.c' || echo '$(srcdir)/'`discovery.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-discovery.o `test -f 'discovery.c' || echo '$(srcdir)/'`discovery.c
 
-libzbxdbhigh_a-discovery.obj: discovery.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-discovery.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-discovery.Tpo -c -o libzbxdbhigh_a-discovery.obj `if test -f 'discovery.c'; then $(CYGPATH_W) 'discovery.c'; else $(CYGPATH_W) '$(srcdir)/discovery.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-discovery.Tpo $(DEPDIR)/libzbxdbhigh_a-discovery.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='discovery.c' object='libzbxdbhigh_a-discovery.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-discovery.obj: discovery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-discovery.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-discovery.Tpo -c -o libtrxdbhigh_a-discovery.obj `if test -f 'discovery.c'; then $(CYGPATH_W) 'discovery.c'; else $(CYGPATH_W) '$(srcdir)/discovery.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-discovery.Tpo $(DEPDIR)/libtrxdbhigh_a-discovery.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='discovery.c' object='libtrxdbhigh_a-discovery.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-discovery.obj `if test -f 'discovery.c'; then $(CYGPATH_W) 'discovery.c'; else $(CYGPATH_W) '$(srcdir)/discovery.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-discovery.obj `if test -f 'discovery.c'; then $(CYGPATH_W) 'discovery.c'; else $(CYGPATH_W) '$(srcdir)/discovery.c'; fi`
 
-libzbxdbhigh_a-itservices.o: itservices.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-itservices.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-itservices.Tpo -c -o libzbxdbhigh_a-itservices.o `test -f 'itservices.c' || echo '$(srcdir)/'`itservices.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-itservices.Tpo $(DEPDIR)/libzbxdbhigh_a-itservices.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='itservices.c' object='libzbxdbhigh_a-itservices.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-itservices.o: itservices.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-itservices.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-itservices.Tpo -c -o libtrxdbhigh_a-itservices.o `test -f 'itservices.c' || echo '$(srcdir)/'`itservices.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-itservices.Tpo $(DEPDIR)/libtrxdbhigh_a-itservices.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='itservices.c' object='libtrxdbhigh_a-itservices.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-itservices.o `test -f 'itservices.c' || echo '$(srcdir)/'`itservices.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-itservices.o `test -f 'itservices.c' || echo '$(srcdir)/'`itservices.c
 
-libzbxdbhigh_a-itservices.obj: itservices.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-itservices.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-itservices.Tpo -c -o libzbxdbhigh_a-itservices.obj `if test -f 'itservices.c'; then $(CYGPATH_W) 'itservices.c'; else $(CYGPATH_W) '$(srcdir)/itservices.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-itservices.Tpo $(DEPDIR)/libzbxdbhigh_a-itservices.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='itservices.c' object='libzbxdbhigh_a-itservices.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-itservices.obj: itservices.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-itservices.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-itservices.Tpo -c -o libtrxdbhigh_a-itservices.obj `if test -f 'itservices.c'; then $(CYGPATH_W) 'itservices.c'; else $(CYGPATH_W) '$(srcdir)/itservices.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-itservices.Tpo $(DEPDIR)/libtrxdbhigh_a-itservices.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='itservices.c' object='libtrxdbhigh_a-itservices.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-itservices.obj `if test -f 'itservices.c'; then $(CYGPATH_W) 'itservices.c'; else $(CYGPATH_W) '$(srcdir)/itservices.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-itservices.obj `if test -f 'itservices.c'; then $(CYGPATH_W) 'itservices.c'; else $(CYGPATH_W) '$(srcdir)/itservices.c'; fi`
 
-libzbxdbhigh_a-template_item.o: template_item.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-template_item.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-template_item.Tpo -c -o libzbxdbhigh_a-template_item.o `test -f 'template_item.c' || echo '$(srcdir)/'`template_item.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-template_item.Tpo $(DEPDIR)/libzbxdbhigh_a-template_item.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='template_item.c' object='libzbxdbhigh_a-template_item.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-template_item.o: template_item.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-template_item.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-template_item.Tpo -c -o libtrxdbhigh_a-template_item.o `test -f 'template_item.c' || echo '$(srcdir)/'`template_item.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-template_item.Tpo $(DEPDIR)/libtrxdbhigh_a-template_item.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='template_item.c' object='libtrxdbhigh_a-template_item.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-template_item.o `test -f 'template_item.c' || echo '$(srcdir)/'`template_item.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-template_item.o `test -f 'template_item.c' || echo '$(srcdir)/'`template_item.c
 
-libzbxdbhigh_a-template_item.obj: template_item.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-template_item.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-template_item.Tpo -c -o libzbxdbhigh_a-template_item.obj `if test -f 'template_item.c'; then $(CYGPATH_W) 'template_item.c'; else $(CYGPATH_W) '$(srcdir)/template_item.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-template_item.Tpo $(DEPDIR)/libzbxdbhigh_a-template_item.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='template_item.c' object='libzbxdbhigh_a-template_item.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-template_item.obj: template_item.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-template_item.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-template_item.Tpo -c -o libtrxdbhigh_a-template_item.obj `if test -f 'template_item.c'; then $(CYGPATH_W) 'template_item.c'; else $(CYGPATH_W) '$(srcdir)/template_item.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-template_item.Tpo $(DEPDIR)/libtrxdbhigh_a-template_item.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='template_item.c' object='libtrxdbhigh_a-template_item.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-template_item.obj `if test -f 'template_item.c'; then $(CYGPATH_W) 'template_item.c'; else $(CYGPATH_W) '$(srcdir)/template_item.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-template_item.obj `if test -f 'template_item.c'; then $(CYGPATH_W) 'template_item.c'; else $(CYGPATH_W) '$(srcdir)/template_item.c'; fi`
 
-libzbxdbhigh_a-trigger.o: trigger.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-trigger.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-trigger.Tpo -c -o libzbxdbhigh_a-trigger.o `test -f 'trigger.c' || echo '$(srcdir)/'`trigger.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-trigger.Tpo $(DEPDIR)/libzbxdbhigh_a-trigger.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='trigger.c' object='libzbxdbhigh_a-trigger.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-trigger.o: trigger.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-trigger.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-trigger.Tpo -c -o libtrxdbhigh_a-trigger.o `test -f 'trigger.c' || echo '$(srcdir)/'`trigger.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-trigger.Tpo $(DEPDIR)/libtrxdbhigh_a-trigger.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='trigger.c' object='libtrxdbhigh_a-trigger.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-trigger.o `test -f 'trigger.c' || echo '$(srcdir)/'`trigger.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-trigger.o `test -f 'trigger.c' || echo '$(srcdir)/'`trigger.c
 
-libzbxdbhigh_a-trigger.obj: trigger.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-trigger.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-trigger.Tpo -c -o libzbxdbhigh_a-trigger.obj `if test -f 'trigger.c'; then $(CYGPATH_W) 'trigger.c'; else $(CYGPATH_W) '$(srcdir)/trigger.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-trigger.Tpo $(DEPDIR)/libzbxdbhigh_a-trigger.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='trigger.c' object='libzbxdbhigh_a-trigger.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-trigger.obj: trigger.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-trigger.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-trigger.Tpo -c -o libtrxdbhigh_a-trigger.obj `if test -f 'trigger.c'; then $(CYGPATH_W) 'trigger.c'; else $(CYGPATH_W) '$(srcdir)/trigger.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-trigger.Tpo $(DEPDIR)/libtrxdbhigh_a-trigger.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='trigger.c' object='libtrxdbhigh_a-trigger.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-trigger.obj `if test -f 'trigger.c'; then $(CYGPATH_W) 'trigger.c'; else $(CYGPATH_W) '$(srcdir)/trigger.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-trigger.obj `if test -f 'trigger.c'; then $(CYGPATH_W) 'trigger.c'; else $(CYGPATH_W) '$(srcdir)/trigger.c'; fi`
 
-libzbxdbhigh_a-event.o: event.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-event.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-event.Tpo -c -o libzbxdbhigh_a-event.o `test -f 'event.c' || echo '$(srcdir)/'`event.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-event.Tpo $(DEPDIR)/libzbxdbhigh_a-event.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='event.c' object='libzbxdbhigh_a-event.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-event.o: event.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-event.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-event.Tpo -c -o libtrxdbhigh_a-event.o `test -f 'event.c' || echo '$(srcdir)/'`event.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-event.Tpo $(DEPDIR)/libtrxdbhigh_a-event.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='event.c' object='libtrxdbhigh_a-event.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-event.o `test -f 'event.c' || echo '$(srcdir)/'`event.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-event.o `test -f 'event.c' || echo '$(srcdir)/'`event.c
 
-libzbxdbhigh_a-event.obj: event.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-event.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-event.Tpo -c -o libzbxdbhigh_a-event.obj `if test -f 'event.c'; then $(CYGPATH_W) 'event.c'; else $(CYGPATH_W) '$(srcdir)/event.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-event.Tpo $(DEPDIR)/libzbxdbhigh_a-event.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='event.c' object='libzbxdbhigh_a-event.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-event.obj: event.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-event.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-event.Tpo -c -o libtrxdbhigh_a-event.obj `if test -f 'event.c'; then $(CYGPATH_W) 'event.c'; else $(CYGPATH_W) '$(srcdir)/event.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-event.Tpo $(DEPDIR)/libtrxdbhigh_a-event.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='event.c' object='libtrxdbhigh_a-event.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-event.obj `if test -f 'event.c'; then $(CYGPATH_W) 'event.c'; else $(CYGPATH_W) '$(srcdir)/event.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-event.obj `if test -f 'event.c'; then $(CYGPATH_W) 'event.c'; else $(CYGPATH_W) '$(srcdir)/event.c'; fi`
 
-libzbxdbhigh_a-export.o: export.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-export.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-export.Tpo -c -o libzbxdbhigh_a-export.o `test -f 'export.c' || echo '$(srcdir)/'`export.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-export.Tpo $(DEPDIR)/libzbxdbhigh_a-export.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='export.c' object='libzbxdbhigh_a-export.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-export.o: export.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-export.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-export.Tpo -c -o libtrxdbhigh_a-export.o `test -f 'export.c' || echo '$(srcdir)/'`export.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-export.Tpo $(DEPDIR)/libtrxdbhigh_a-export.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='export.c' object='libtrxdbhigh_a-export.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-export.o `test -f 'export.c' || echo '$(srcdir)/'`export.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-export.o `test -f 'export.c' || echo '$(srcdir)/'`export.c
 
-libzbxdbhigh_a-export.obj: export.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-export.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-export.Tpo -c -o libzbxdbhigh_a-export.obj `if test -f 'export.c'; then $(CYGPATH_W) 'export.c'; else $(CYGPATH_W) '$(srcdir)/export.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-export.Tpo $(DEPDIR)/libzbxdbhigh_a-export.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='export.c' object='libzbxdbhigh_a-export.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-export.obj: export.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-export.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-export.Tpo -c -o libtrxdbhigh_a-export.obj `if test -f 'export.c'; then $(CYGPATH_W) 'export.c'; else $(CYGPATH_W) '$(srcdir)/export.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-export.Tpo $(DEPDIR)/libtrxdbhigh_a-export.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='export.c' object='libtrxdbhigh_a-export.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-export.obj `if test -f 'export.c'; then $(CYGPATH_W) 'export.c'; else $(CYGPATH_W) '$(srcdir)/export.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-export.obj `if test -f 'export.c'; then $(CYGPATH_W) 'export.c'; else $(CYGPATH_W) '$(srcdir)/export.c'; fi`
 
-libzbxdbhigh_a-maintenance.o: maintenance.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-maintenance.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-maintenance.Tpo -c -o libzbxdbhigh_a-maintenance.o `test -f 'maintenance.c' || echo '$(srcdir)/'`maintenance.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-maintenance.Tpo $(DEPDIR)/libzbxdbhigh_a-maintenance.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='maintenance.c' object='libzbxdbhigh_a-maintenance.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-maintenance.o: maintenance.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-maintenance.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-maintenance.Tpo -c -o libtrxdbhigh_a-maintenance.o `test -f 'maintenance.c' || echo '$(srcdir)/'`maintenance.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-maintenance.Tpo $(DEPDIR)/libtrxdbhigh_a-maintenance.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='maintenance.c' object='libtrxdbhigh_a-maintenance.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-maintenance.o `test -f 'maintenance.c' || echo '$(srcdir)/'`maintenance.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-maintenance.o `test -f 'maintenance.c' || echo '$(srcdir)/'`maintenance.c
 
-libzbxdbhigh_a-maintenance.obj: maintenance.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-maintenance.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-maintenance.Tpo -c -o libzbxdbhigh_a-maintenance.obj `if test -f 'maintenance.c'; then $(CYGPATH_W) 'maintenance.c'; else $(CYGPATH_W) '$(srcdir)/maintenance.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-maintenance.Tpo $(DEPDIR)/libzbxdbhigh_a-maintenance.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='maintenance.c' object='libzbxdbhigh_a-maintenance.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-maintenance.obj: maintenance.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-maintenance.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-maintenance.Tpo -c -o libtrxdbhigh_a-maintenance.obj `if test -f 'maintenance.c'; then $(CYGPATH_W) 'maintenance.c'; else $(CYGPATH_W) '$(srcdir)/maintenance.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-maintenance.Tpo $(DEPDIR)/libtrxdbhigh_a-maintenance.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='maintenance.c' object='libtrxdbhigh_a-maintenance.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-maintenance.obj `if test -f 'maintenance.c'; then $(CYGPATH_W) 'maintenance.c'; else $(CYGPATH_W) '$(srcdir)/maintenance.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-maintenance.obj `if test -f 'maintenance.c'; then $(CYGPATH_W) 'maintenance.c'; else $(CYGPATH_W) '$(srcdir)/maintenance.c'; fi`
 
-libzbxdbhigh_a-item.o: item.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-item.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-item.Tpo -c -o libzbxdbhigh_a-item.o `test -f 'item.c' || echo '$(srcdir)/'`item.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-item.Tpo $(DEPDIR)/libzbxdbhigh_a-item.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='item.c' object='libzbxdbhigh_a-item.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-item.o: item.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-item.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-item.Tpo -c -o libtrxdbhigh_a-item.o `test -f 'item.c' || echo '$(srcdir)/'`item.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-item.Tpo $(DEPDIR)/libtrxdbhigh_a-item.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='item.c' object='libtrxdbhigh_a-item.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-item.o `test -f 'item.c' || echo '$(srcdir)/'`item.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-item.o `test -f 'item.c' || echo '$(srcdir)/'`item.c
 
-libzbxdbhigh_a-item.obj: item.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-item.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-item.Tpo -c -o libzbxdbhigh_a-item.obj `if test -f 'item.c'; then $(CYGPATH_W) 'item.c'; else $(CYGPATH_W) '$(srcdir)/item.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-item.Tpo $(DEPDIR)/libzbxdbhigh_a-item.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='item.c' object='libzbxdbhigh_a-item.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-item.obj: item.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-item.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-item.Tpo -c -o libtrxdbhigh_a-item.obj `if test -f 'item.c'; then $(CYGPATH_W) 'item.c'; else $(CYGPATH_W) '$(srcdir)/item.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-item.Tpo $(DEPDIR)/libtrxdbhigh_a-item.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='item.c' object='libtrxdbhigh_a-item.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-item.obj `if test -f 'item.c'; then $(CYGPATH_W) 'item.c'; else $(CYGPATH_W) '$(srcdir)/item.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-item.obj `if test -f 'item.c'; then $(CYGPATH_W) 'item.c'; else $(CYGPATH_W) '$(srcdir)/item.c'; fi`
 
-libzbxdbhigh_a-lld_macro.o: lld_macro.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-lld_macro.o -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-lld_macro.Tpo -c -o libzbxdbhigh_a-lld_macro.o `test -f 'lld_macro.c' || echo '$(srcdir)/'`lld_macro.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-lld_macro.Tpo $(DEPDIR)/libzbxdbhigh_a-lld_macro.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lld_macro.c' object='libzbxdbhigh_a-lld_macro.o' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-lld_macro.o: lld_macro.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-lld_macro.o -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-lld_macro.Tpo -c -o libtrxdbhigh_a-lld_macro.o `test -f 'lld_macro.c' || echo '$(srcdir)/'`lld_macro.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-lld_macro.Tpo $(DEPDIR)/libtrxdbhigh_a-lld_macro.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lld_macro.c' object='libtrxdbhigh_a-lld_macro.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-lld_macro.o `test -f 'lld_macro.c' || echo '$(srcdir)/'`lld_macro.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-lld_macro.o `test -f 'lld_macro.c' || echo '$(srcdir)/'`lld_macro.c
 
-libzbxdbhigh_a-lld_macro.obj: lld_macro.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -MT libzbxdbhigh_a-lld_macro.obj -MD -MP -MF $(DEPDIR)/libzbxdbhigh_a-lld_macro.Tpo -c -o libzbxdbhigh_a-lld_macro.obj `if test -f 'lld_macro.c'; then $(CYGPATH_W) 'lld_macro.c'; else $(CYGPATH_W) '$(srcdir)/lld_macro.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libzbxdbhigh_a-lld_macro.Tpo $(DEPDIR)/libzbxdbhigh_a-lld_macro.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lld_macro.c' object='libzbxdbhigh_a-lld_macro.obj' libtool=no @AMDEPBACKSLASH@
+libtrxdbhigh_a-lld_macro.obj: lld_macro.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -MT libtrxdbhigh_a-lld_macro.obj -MD -MP -MF $(DEPDIR)/libtrxdbhigh_a-lld_macro.Tpo -c -o libtrxdbhigh_a-lld_macro.obj `if test -f 'lld_macro.c'; then $(CYGPATH_W) 'lld_macro.c'; else $(CYGPATH_W) '$(srcdir)/lld_macro.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtrxdbhigh_a-lld_macro.Tpo $(DEPDIR)/libtrxdbhigh_a-lld_macro.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lld_macro.c' object='libtrxdbhigh_a-lld_macro.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzbxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libzbxdbhigh_a-lld_macro.obj `if test -f 'lld_macro.c'; then $(CYGPATH_W) 'lld_macro.c'; else $(CYGPATH_W) '$(srcdir)/lld_macro.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtrxdbhigh_a_CFLAGS) $(CFLAGS) -c -o libtrxdbhigh_a-lld_macro.obj `if test -f 'lld_macro.c'; then $(CYGPATH_W) 'lld_macro.c'; else $(CYGPATH_W) '$(srcdir)/lld_macro.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

@@ -2,13 +2,13 @@
 
 #include "common.h"
 #include "dbcache.h"
-#include "zbxself.h"
+#include "trxself.h"
 #include "daemon.h"
 #include "log.h"
 #include "proxy.h"
 #include "snmptrapper.h"
-#include "zbxserver.h"
-#include "zbxregexp.h"
+#include "trxserver.h"
+#include "trxregexp.h"
 #include "preproc.h"
 
 static int	trap_fd = -1;
@@ -62,39 +62,39 @@ static void	DBupdate_lastsize(void)
  * Author: Rudolfs Kreicbergs                                                 *
  *                                                                            *
  ******************************************************************************/
-static int	process_trap_for_interface(zbx_uint64_t interfaceid, char *trap, zbx_timespec_t *ts)
+static int	process_trap_for_interface(trx_uint64_t interfaceid, char *trap, trx_timespec_t *ts)
 {
 	DC_ITEM			*items = NULL;
 	const char		*regex;
 	char			error[ITEM_ERROR_LEN_MAX];
 	size_t			num, i;
 	int			ret = FAIL, fb = -1, *lastclocks = NULL, *errcodes = NULL, value_type, regexp_ret;
-	zbx_uint64_t		*itemids = NULL;
+	trx_uint64_t		*itemids = NULL;
 	unsigned char		*states = NULL;
 	AGENT_RESULT		*results = NULL;
 	AGENT_REQUEST		request;
-	zbx_vector_ptr_t	regexps;
+	trx_vector_ptr_t	regexps;
 
-	zbx_vector_ptr_create(&regexps);
+	trx_vector_ptr_create(&regexps);
 
 	num = DCconfig_get_snmp_items_by_interfaceid(interfaceid, &items);
 
-	itemids = (zbx_uint64_t *)zbx_malloc(itemids, sizeof(zbx_uint64_t) * num);
-	states = (unsigned char *)zbx_malloc(states, sizeof(unsigned char) * num);
-	lastclocks = (int *)zbx_malloc(lastclocks, sizeof(int) * num);
-	errcodes = (int *)zbx_malloc(errcodes, sizeof(int) * num);
-	results = (AGENT_RESULT *)zbx_malloc(results, sizeof(AGENT_RESULT) * num);
+	itemids = (trx_uint64_t *)trx_malloc(itemids, sizeof(trx_uint64_t) * num);
+	states = (unsigned char *)trx_malloc(states, sizeof(unsigned char) * num);
+	lastclocks = (int *)trx_malloc(lastclocks, sizeof(int) * num);
+	errcodes = (int *)trx_malloc(errcodes, sizeof(int) * num);
+	results = (AGENT_RESULT *)trx_malloc(results, sizeof(AGENT_RESULT) * num);
 
 	for (i = 0; i < num; i++)
 	{
 		init_result(&results[i]);
 		errcodes[i] = FAIL;
 
-		items[i].key = zbx_strdup(items[i].key, items[i].key_orig);
+		items[i].key = trx_strdup(items[i].key, items[i].key_orig);
 		if (SUCCEED != substitute_key_macros(&items[i].key, NULL, &items[i], NULL, NULL,
 				MACRO_TYPE_ITEM_KEY, error, sizeof(error)))
 		{
-			SET_MSG_RESULT(&results[i], zbx_strdup(NULL, error));
+			SET_MSG_RESULT(&results[i], trx_strdup(NULL, error));
 			errcodes[i] = NOTSUPPORTED;
 			continue;
 		}
@@ -124,7 +124,7 @@ static int	process_trap_for_interface(zbx_uint64_t interfaceid, char *trap, zbx_
 
 				if (0 == regexps.values_num)
 				{
-					SET_MSG_RESULT(&results[i], zbx_dsprintf(NULL,
+					SET_MSG_RESULT(&results[i], trx_dsprintf(NULL,
 							"Global regular expression \"%s\" does not exist.", regex + 1));
 					errcodes[i] = NOTSUPPORTED;
 					goto next;
@@ -138,7 +138,7 @@ static int	process_trap_for_interface(zbx_uint64_t interfaceid, char *trap, zbx_
 			}
 			else if (FAIL == regexp_ret)
 			{
-				SET_MSG_RESULT(&results[i], zbx_dsprintf(NULL,
+				SET_MSG_RESULT(&results[i], trx_dsprintf(NULL,
 						"Invalid regular expression \"%s\".", regex));
 				errcodes[i] = NOTSUPPORTED;
 				goto next;
@@ -173,7 +173,7 @@ next:
 				}
 
 				items[i].state = ITEM_STATE_NORMAL;
-				zbx_preprocess_item_value(items[i].itemid, items[i].value_type, items[i].flags,
+				trx_preprocess_item_value(items[i].itemid, items[i].value_type, items[i].flags,
 						&results[i], ts, items[i].state, NULL);
 
 				itemids[i] = items[i].itemid;
@@ -182,7 +182,7 @@ next:
 				break;
 			case NOTSUPPORTED:
 				items[i].state = ITEM_STATE_NOTSUPPORTED;
-				zbx_preprocess_item_value(items[i].itemid, items[i].value_type, items[i].flags, NULL,
+				trx_preprocess_item_value(items[i].itemid, items[i].value_type, items[i].flags, NULL,
 						ts, items[i].state, results[i].msg);
 
 				itemids[i] = items[i].itemid;
@@ -191,26 +191,26 @@ next:
 				break;
 		}
 
-		zbx_free(items[i].key);
+		trx_free(items[i].key);
 		free_result(&results[i]);
 	}
 
-	zbx_free(results);
+	trx_free(results);
 
 	DCrequeue_items(itemids, states, lastclocks, errcodes, num);
 
-	zbx_free(errcodes);
-	zbx_free(lastclocks);
-	zbx_free(states);
-	zbx_free(itemids);
+	trx_free(errcodes);
+	trx_free(lastclocks);
+	trx_free(states);
+	trx_free(itemids);
 
 	DCconfig_clean_items(items, NULL, num);
-	zbx_free(items);
+	trx_free(items);
 
-	zbx_regexp_clean_expressions(&regexps);
-	zbx_vector_ptr_destroy(&regexps);
+	trx_regexp_clean_expressions(&regexps);
+	trx_vector_ptr_destroy(&regexps);
 
-	zbx_preprocessor_flush();
+	trx_preprocessor_flush();
 
 	return ret;
 }
@@ -230,13 +230,13 @@ next:
  ******************************************************************************/
 static void	process_trap(const char *addr, char *begin, char *end)
 {
-	zbx_timespec_t	ts;
-	zbx_uint64_t	*interfaceids = NULL;
+	trx_timespec_t	ts;
+	trx_uint64_t	*interfaceids = NULL;
 	int		count, i, ret = FAIL;
 	char		*trap = NULL;
 
-	zbx_timespec(&ts);
-	trap = zbx_dsprintf(trap, "%s%s", begin, end);
+	trx_timespec(&ts);
+	trap = trx_dsprintf(trap, "%s%s", begin, end);
 
 	count = DCconfig_get_snmp_interfaceids_by_addr(addr, &interfaceids);
 
@@ -248,18 +248,18 @@ static void	process_trap(const char *addr, char *begin, char *end)
 
 	if (FAIL == ret)
 	{
-		zbx_config_t	cfg;
+		trx_config_t	cfg;
 
-		zbx_config_get(&cfg, TRX_CONFIG_FLAGS_SNMPTRAP_LOGGING);
+		trx_config_get(&cfg, TRX_CONFIG_FLAGS_SNMPTRAP_LOGGING);
 
 		if (TRX_SNMPTRAP_LOGGING_ENABLED == cfg.snmptrap_logging)
 			treegix_log(LOG_LEVEL_WARNING, "unmatched trap received from \"%s\": %s", addr, trap);
 
-		zbx_config_clean(&cfg);
+		trx_config_clean(&cfg);
 	}
 
-	zbx_free(interfaceids);
-	zbx_free(trap);
+	trx_free(interfaceids);
+	trx_free(trap);
 }
 
 /******************************************************************************
@@ -387,11 +387,11 @@ static void	delay_trap_logs(char *error, int log_level)
 {
 	int			now;
 	static int		lastlogtime = 0;
-	static zbx_hash_t	last_error_hash = 0;
-	zbx_hash_t		error_hash;
+	static trx_hash_t	last_error_hash = 0;
+	trx_hash_t		error_hash;
 
 	now = (int)time(NULL);
-	error_hash = zbx_default_string_hash_func(error);
+	error_hash = trx_default_string_hash_func(error);
 
 	if (LOG_ENTRY_INTERVAL_DELAY <= now - lastlogtime || last_error_hash != error_hash)
 	{
@@ -419,16 +419,16 @@ static int	read_traps(void)
 
 	if (-1 == lseek(trap_fd, trap_lastsize, SEEK_SET))
 	{
-		error = zbx_dsprintf(error, "cannot set position to %lld for \"%s\": %s", (long long int)trap_lastsize,
-				CONFIG_SNMPTRAP_FILE, zbx_strerror(errno));
+		error = trx_dsprintf(error, "cannot set position to %lld for \"%s\": %s", (long long int)trap_lastsize,
+				CONFIG_SNMPTRAP_FILE, trx_strerror(errno));
 		delay_trap_logs(error, LOG_LEVEL_WARNING);
 		goto out;
 	}
 
 	if (-1 == (nbytes = read(trap_fd, buffer + offset, MAX_BUFFER_LEN - offset - 1)))
 	{
-		error = zbx_dsprintf(error, "cannot read from SNMP trapper file \"%s\": %s",
-				CONFIG_SNMPTRAP_FILE, zbx_strerror(errno));
+		error = trx_dsprintf(error, "cannot read from SNMP trapper file \"%s\": %s",
+				CONFIG_SNMPTRAP_FILE, trx_strerror(errno));
 		delay_trap_logs(error, LOG_LEVEL_WARNING);
 		goto out;
 	}
@@ -441,7 +441,7 @@ static int	read_traps(void)
 		parse_traps(0);
 	}
 out:
-	zbx_free(error);
+	trx_free(error);
 
 	treegix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
@@ -482,13 +482,13 @@ static void	close_trap_file(void)
  ******************************************************************************/
 static int	open_trap_file(void)
 {
-	zbx_stat_t	file_buf;
+	trx_stat_t	file_buf;
 	char		*error = NULL;
 
-	if (0 != zbx_stat(CONFIG_SNMPTRAP_FILE, &file_buf))
+	if (0 != trx_stat(CONFIG_SNMPTRAP_FILE, &file_buf))
 	{
-		error = zbx_dsprintf(error, "cannot stat SNMP trapper file \"%s\": %s", CONFIG_SNMPTRAP_FILE,
-				zbx_strerror(errno));
+		error = trx_dsprintf(error, "cannot stat SNMP trapper file \"%s\": %s", CONFIG_SNMPTRAP_FILE,
+				trx_strerror(errno));
 		delay_trap_logs(error, LOG_LEVEL_CRIT);
 		goto out;
 	}
@@ -497,8 +497,8 @@ static int	open_trap_file(void)
 	{
 		if (ENOENT != errno)	/* file exists but cannot be opened */
 		{
-			error = zbx_dsprintf(error, "cannot open SNMP trapper file \"%s\": %s",
-					CONFIG_SNMPTRAP_FILE, zbx_strerror(errno));
+			error = trx_dsprintf(error, "cannot open SNMP trapper file \"%s\": %s",
+					CONFIG_SNMPTRAP_FILE, trx_strerror(errno));
 			delay_trap_logs(error, LOG_LEVEL_CRIT);
 		}
 		goto out;
@@ -506,7 +506,7 @@ static int	open_trap_file(void)
 
 	trap_ino = file_buf.st_ino;	/* a new file was opened */
 out:
-	zbx_free(error);
+	trx_free(error);
 
 	return trap_fd;
 }
@@ -526,18 +526,18 @@ out:
  ******************************************************************************/
 static int	get_latest_data(void)
 {
-	zbx_stat_t	file_buf;
+	trx_stat_t	file_buf;
 
 	if (-1 != trap_fd)	/* a trap file is already open */
 	{
-		if (0 != zbx_stat(CONFIG_SNMPTRAP_FILE, &file_buf))
+		if (0 != trx_stat(CONFIG_SNMPTRAP_FILE, &file_buf))
 		{
 			/* file might have been renamed or deleted, process the current file */
 
 			if (ENOENT != errno)
 			{
 				treegix_log(LOG_LEVEL_CRIT, "cannot stat SNMP trapper file \"%s\": %s",
-						CONFIG_SNMPTRAP_FILE, zbx_strerror(errno));
+						CONFIG_SNMPTRAP_FILE, trx_strerror(errno));
 			}
 
 			while (0 < read_traps())
@@ -603,48 +603,48 @@ TRX_THREAD_ENTRY(snmptrapper_thread, args)
 {
 	double	sec;
 
-	process_type = ((zbx_thread_args_t *)args)->process_type;
-	server_num = ((zbx_thread_args_t *)args)->server_num;
-	process_num = ((zbx_thread_args_t *)args)->process_num;
+	process_type = ((trx_thread_args_t *)args)->process_type;
+	server_num = ((trx_thread_args_t *)args)->server_num;
+	process_num = ((trx_thread_args_t *)args)->process_num;
 
 	treegix_log(LOG_LEVEL_INFORMATION, "%s #%d started [%s #%d]", get_program_type_string(program_type),
 			server_num, get_process_type_string(process_type), process_num);
 
 	treegix_log(LOG_LEVEL_DEBUG, "In %s() trapfile:'%s'", __func__, CONFIG_SNMPTRAP_FILE);
 
-	zbx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
+	trx_setproctitle("%s [connecting to the database]", get_process_type_string(process_type));
 
 	DBconnect(TRX_DB_CONNECT_NORMAL);
 
 	DBget_lastsize();
 
-	buffer = (char *)zbx_malloc(buffer, MAX_BUFFER_LEN);
+	buffer = (char *)trx_malloc(buffer, MAX_BUFFER_LEN);
 	*buffer = '\0';
 
 	while (TRX_IS_RUNNING())
 	{
-		sec = zbx_time();
-		zbx_update_env(sec);
+		sec = trx_time();
+		trx_update_env(sec);
 
-		zbx_setproctitle("%s [processing data]", get_process_type_string(process_type));
+		trx_setproctitle("%s [processing data]", get_process_type_string(process_type));
 
 		while (TRX_IS_RUNNING() && SUCCEED == get_latest_data())
 			read_traps();
-		sec = zbx_time() - sec;
+		sec = trx_time() - sec;
 
-		zbx_setproctitle("%s [processed data in " TRX_FS_DBL " sec, idle 1 sec]",
+		trx_setproctitle("%s [processed data in " TRX_FS_DBL " sec, idle 1 sec]",
 				get_process_type_string(process_type), sec);
 
-		zbx_sleep_loop(1);
+		trx_sleep_loop(1);
 	}
 
-	zbx_free(buffer);
+	trx_free(buffer);
 
 	if (-1 != trap_fd)
 		close(trap_fd);
 
-	zbx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
+	trx_setproctitle("%s #%d [terminated]", get_process_type_string(process_type), process_num);
 
 	while (1)
-		zbx_sleep(SEC_PER_MIN);
+		trx_sleep(SEC_PER_MIN);
 }

@@ -85,7 +85,7 @@ class CActionCondValidator extends CValidator {
 				break;
 
 			case CONDITION_TYPE_DOBJECT:
-				if (zbx_empty($conditionValue)) {
+				if (trx_empty($conditionValue)) {
 					$this->setError(_('Empty action condition.'));
 				}
 				elseif (!$discoveryObjectValidator->validate($conditionValue)) {
@@ -103,7 +103,7 @@ class CActionCondValidator extends CValidator {
 
 			case CONDITION_TYPE_DHOST_IP:
 				$ip_range_parser = new CIPRangeParser(['v6' => TRX_HAVE_IPV6, 'dns' => false, 'max_ipv4_cidr' => 30]);
-				if (zbx_empty($conditionValue)) {
+				if (trx_empty($conditionValue)) {
 					$this->setError(_('Empty action condition.'));
 				}
 				elseif (!$ip_range_parser->parse($conditionValue)) {
@@ -112,7 +112,7 @@ class CActionCondValidator extends CValidator {
 				break;
 
 			case CONDITION_TYPE_DSERVICE_TYPE:
-				if (zbx_empty($conditionValue)) {
+				if (trx_empty($conditionValue)) {
 					$this->setError(_('Empty action condition.'));
 				}
 				elseif (!$discoveryCheckTypeValidator->validate($conditionValue)) {
@@ -121,7 +121,7 @@ class CActionCondValidator extends CValidator {
 				break;
 
 			case CONDITION_TYPE_DSERVICE_PORT:
-				if (zbx_empty($conditionValue)) {
+				if (trx_empty($conditionValue)) {
 					$this->setError(_('Empty action condition.'));
 				}
 				elseif (!validate_port_list($conditionValue)) {
@@ -130,7 +130,7 @@ class CActionCondValidator extends CValidator {
 				break;
 
 			case CONDITION_TYPE_DSTATUS:
-				if (zbx_empty($conditionValue)) {
+				if (trx_empty($conditionValue)) {
 					$this->setError(_('Empty action condition.'));
 				}
 				elseif (!$discoveryObjectStatusValidator->validate($conditionValue)) {
@@ -139,13 +139,13 @@ class CActionCondValidator extends CValidator {
 				break;
 
 			case CONDITION_TYPE_SUPPRESSED:
-				if (!zbx_empty($conditionValue)) {
+				if (!trx_empty($conditionValue)) {
 					$this->setError(_('Action condition value must be empty.'));
 				}
 				break;
 
 			case CONDITION_TYPE_TRIGGER_SEVERITY:
-				if (zbx_empty($conditionValue)) {
+				if (trx_empty($conditionValue)) {
 					$this->setError(_('Empty action condition.'));
 				}
 				elseif (!$triggerSeverityValidator->validate($conditionValue)) {
@@ -154,7 +154,7 @@ class CActionCondValidator extends CValidator {
 				break;
 
 			case CONDITION_TYPE_EVENT_TYPE:
-				if (zbx_empty($conditionValue)) {
+				if (trx_empty($conditionValue)) {
 					$this->setError(_('Empty action condition.'));
 				}
 				elseif (!$eventTypeValidator->validate($conditionValue)) {
@@ -169,7 +169,7 @@ class CActionCondValidator extends CValidator {
 			case CONDITION_TYPE_HOST_NAME:
 			case CONDITION_TYPE_HOST_METADATA:
 			case CONDITION_TYPE_EVENT_TAG:
-				if (zbx_empty($conditionValue)) {
+				if (trx_empty($conditionValue)) {
 					$this->setError(_('Empty action condition.'));
 				}
 				break;

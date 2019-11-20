@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-noinst_LIBRARIES = libzbxself.a
+noinst_LIBRARIES = libtrxself.a
 
-libzbxself_a_SOURCES = selfmon.c
+libtrxself_a_SOURCES = selfmon.c

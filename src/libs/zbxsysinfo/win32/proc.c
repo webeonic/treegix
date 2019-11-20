@@ -11,8 +11,8 @@
 #define MAX_PROCESSES	4096
 #define MAX_NAME	256
 
-/* function 'zbx_get_process_username' require 'userName' with size 'MAX_NAME' */
-static int	zbx_get_process_username(HANDLE hProcess, char *userName)
+/* function 'trx_get_process_username' require 'userName' with size 'MAX_NAME' */
+static int	trx_get_process_username(HANDLE hProcess, char *userName)
 {
 	HANDLE		tok;
 	TOKEN_USER	*ptu = NULL;
@@ -32,7 +32,7 @@ static int	zbx_get_process_username(HANDLE hProcess, char *userName)
 	{
 		if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
 			goto lbl_err;
-		ptu = (PTOKEN_USER)zbx_malloc(ptu, sz);
+		ptu = (PTOKEN_USER)trx_malloc(ptu, sz);
 	}
 
 	/* Get the token user information from the access token. */
@@ -45,11 +45,11 @@ static int	zbx_get_process_username(HANDLE hProcess, char *userName)
 	if (0 == LookupAccountSid(NULL, ptu->User.Sid, name, &nlen, dom, &dlen, (PSID_NAME_USE)&iUse))
 		goto lbl_err;
 
-	zbx_unicode_to_utf8_static(name, userName, MAX_NAME);
+	trx_unicode_to_utf8_static(name, userName, MAX_NAME);
 
 	res = SUCCEED;
 lbl_err:
-	zbx_free(ptu);
+	trx_free(ptu);
 
 	CloseHandle(tok);
 
@@ -67,7 +67,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -76,13 +76,13 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (INVALID_HANDLE_VALUE == (hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system information."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	if (NULL == (vi = zbx_win_getversion()))
+	if (NULL == (vi = trx_win_getversion()))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot retrieve system version."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot retrieve system version."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -99,7 +99,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (FALSE == Process32First(hProcessSnap, &pe32))
 	{
 		CloseHandle(hProcessSnap);
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -111,7 +111,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		if (NULL != procName && '\0' != *procName)
 		{
-			zbx_unicode_to_utf8_static(pe32.szExeFile, baseName, MAX_NAME);
+			trx_unicode_to_utf8_static(pe32.szExeFile, baseName, MAX_NAME);
 
 			if (0 != stricmp(baseName, procName))
 				proc_ok = 0;
@@ -121,7 +121,7 @@ int	PROC_NUM(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			hProcess = OpenProcess(access, FALSE, pe32.th32ProcessID);
 
-			if (NULL == hProcess || SUCCEED != zbx_get_process_username(hProcess, uname) ||
+			if (NULL == hProcess || SUCCEED != trx_get_process_username(hProcess, uname) ||
 					0 != stricmp(uname, userName))
 			{
 				proc_ok = 0;
@@ -188,51 +188,51 @@ static int	GetProcessAttribute(HANDLE hProcess, int attr, int type, int count, d
 			break;
 		case 5:        /* gdiobj */
 		case 6:        /* userobj */
-			if (NULL == zbx_GetGuiResources)
+			if (NULL == trx_GetGuiResources)
 				return SYSINFO_RET_FAIL;
 
-			value = (double)zbx_GetGuiResources(hProcess, 5 == attr ? 0 : 1);
+			value = (double)trx_GetGuiResources(hProcess, 5 == attr ? 0 : 1);
 			break;
 		case 7:        /* io_read_b */
-			if (NULL == zbx_GetProcessIoCounters)
+			if (NULL == trx_GetProcessIoCounters)
 				return SYSINFO_RET_FAIL;
 
-			zbx_GetProcessIoCounters(hProcess, &ioCounters);
+			trx_GetProcessIoCounters(hProcess, &ioCounters);
 			value = (double)((__int64)ioCounters.ReadTransferCount);
 			break;
 		case 8:        /* io_read_op */
-			if (NULL == zbx_GetProcessIoCounters)
+			if (NULL == trx_GetProcessIoCounters)
 				return SYSINFO_RET_FAIL;
 
-			zbx_GetProcessIoCounters(hProcess, &ioCounters);
+			trx_GetProcessIoCounters(hProcess, &ioCounters);
 			value = (double)((__int64)ioCounters.ReadOperationCount);
 			break;
 		case 9:        /* io_write_b */
-			if (NULL == zbx_GetProcessIoCounters)
+			if (NULL == trx_GetProcessIoCounters)
 				return SYSINFO_RET_FAIL;
 
-			zbx_GetProcessIoCounters(hProcess, &ioCounters);
+			trx_GetProcessIoCounters(hProcess, &ioCounters);
 			value = (double)((__int64)ioCounters.WriteTransferCount);
 			break;
 		case 10:       /* io_write_op */
-			if (NULL == zbx_GetProcessIoCounters)
+			if (NULL == trx_GetProcessIoCounters)
 				return SYSINFO_RET_FAIL;
 
-			zbx_GetProcessIoCounters(hProcess, &ioCounters);
+			trx_GetProcessIoCounters(hProcess, &ioCounters);
 			value = (double)((__int64)ioCounters.WriteOperationCount);
 			break;
 		case 11:       /* io_other_b */
-			if (NULL == zbx_GetProcessIoCounters)
+			if (NULL == trx_GetProcessIoCounters)
 				return SYSINFO_RET_FAIL;
 
-			zbx_GetProcessIoCounters(hProcess, &ioCounters);
+			trx_GetProcessIoCounters(hProcess, &ioCounters);
 			value = (double)((__int64)ioCounters.OtherTransferCount);
 			break;
 		case 12:       /* io_other_op */
-			if (NULL == zbx_GetProcessIoCounters)
+			if (NULL == trx_GetProcessIoCounters)
 				return SYSINFO_RET_FAIL;
 
-			zbx_GetProcessIoCounters(hProcess, &ioCounters);
+			trx_GetProcessIoCounters(hProcess, &ioCounters);
 			value = (double)((__int64)ioCounters.OtherOperationCount);
 			break;
 		default:       /* Unknown attribute */
@@ -293,7 +293,7 @@ int	PROC_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (3 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -303,7 +303,7 @@ int	PROC_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == proc_name || '\0' == *proc_name)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -321,7 +321,7 @@ int	PROC_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == attrList[attr_id])     /* Unsupported attribute */
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -339,19 +339,19 @@ int	PROC_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == typeList[type_id])	/* Unsupported type */
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid third parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid third parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	if (INVALID_HANDLE_VALUE == (hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system information."));
 		return SYSINFO_RET_FAIL;
 	}
 
-	if (NULL == (vi = zbx_win_getversion()))
+	if (NULL == (vi = trx_win_getversion()))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot retrieve system version."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot retrieve system version."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -368,7 +368,7 @@ int	PROC_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (FALSE == Process32First(hProcessSnap, &pe32))
 	{
 		CloseHandle(hProcessSnap);
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain system information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain system information."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -377,7 +377,7 @@ int	PROC_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	do
 	{
-		zbx_unicode_to_utf8_static(pe32.szExeFile, baseName, MAX_NAME);
+		trx_unicode_to_utf8_static(pe32.szExeFile, baseName, MAX_NAME);
 
 		if (0 == stricmp(baseName, proc_name))
 		{
@@ -389,7 +389,7 @@ int	PROC_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 				if (SYSINFO_RET_OK != ret)
 				{
-					SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain process information."));
+					SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain process information."));
 					break;
 				}
 			}
@@ -402,7 +402,7 @@ int	PROC_INFO(AGENT_REQUEST *request, AGENT_RESULT *result)
 	if (SYSINFO_RET_OK == ret)
 		SET_DBL_RESULT(result, value);
 	else
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot obtain process information."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Cannot obtain process information."));
 
 	return ret;
 }

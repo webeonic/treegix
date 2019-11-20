@@ -17,7 +17,7 @@ class CTemplateImporter extends CImporter {
 	 * @param array $templates
 	 */
 	public function import(array $templates) {
-		$templates = zbx_toHash($templates, 'host');
+		$templates = trx_toHash($templates, 'host');
 
 		$this->checkCircularTemplateReferences($templates);
 
@@ -202,7 +202,7 @@ class CTemplateImporter extends CImporter {
 			}
 		}
 
-		return zbx_objectValues($templates, 'host');
+		return trx_objectValues($templates, 'host');
 	}
 
 	/**

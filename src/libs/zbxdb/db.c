@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-#include "zbxdb.h"
+#include "trxdb.h"
 
 #if defined(HAVE_IBM_DB2)
 #	include <sqlcli1.h>
@@ -24,7 +24,7 @@
 #	include "mutexs.h"
 #endif
 
-struct zbx_db_result
+struct trx_db_result
 {
 #if defined(HAVE_IBM_DB2)
 	SQLHANDLE	hstmt;
@@ -70,18 +70,18 @@ typedef struct
 	SQLHANDLE	henv;
 	SQLHANDLE	hdbc;
 }
-zbx_ibm_db2_handle_t;
+trx_ibm_db2_handle_t;
 
-static zbx_ibm_db2_handle_t	ibm_db2;
+static trx_ibm_db2_handle_t	ibm_db2;
 
 static int	IBM_DB2server_status(void);
-static int	zbx_ibm_db2_success(SQLRETURN ret);
-static int	zbx_ibm_db2_success_ext(SQLRETURN ret);
-static void	zbx_ibm_db2_log_errors(SQLSMALLINT htype, SQLHANDLE hndl, zbx_err_codes_t err, const char *context);
+static int	trx_ibm_db2_success(SQLRETURN ret);
+static int	trx_ibm_db2_success_ext(SQLRETURN ret);
+static void	trx_ibm_db2_log_errors(SQLSMALLINT htype, SQLHANDLE hndl, trx_err_codes_t err, const char *context);
 #elif defined(HAVE_MYSQL)
 static MYSQL			*conn = NULL;
 #elif defined(HAVE_ORACLE)
-#include "zbxalgo.h"
+#include "trxalgo.h"
 
 typedef struct
 {
@@ -90,11 +90,11 @@ typedef struct
 	OCISvcCtx		*svchp;
 	OCIServer		*srvhp;
 	OCIStmt			*stmthp;	/* the statement handle for execute operations */
-	zbx_vector_ptr_t	db_results;
+	trx_vector_ptr_t	db_results;
 }
-zbx_oracle_db_handle_t;
+trx_oracle_db_handle_t;
 
-static zbx_oracle_db_handle_t	oracle;
+static trx_oracle_db_handle_t	oracle;
 
 static ub4	OCI_DBserver_status(void);
 
@@ -105,59 +105,59 @@ static int			TRX_PG_SVERSION = 0;
 char				TRX_PG_ESCAPE_BACKSLASH = 1;
 #elif defined(HAVE_SQLITE3)
 static sqlite3			*conn = NULL;
-static zbx_mutex_t		sqlite_access = TRX_MUTEX_NULL;
+static trx_mutex_t		sqlite_access = TRX_MUTEX_NULL;
 #endif
 
 #if defined(HAVE_ORACLE)
 static void	OCI_DBclean_result(DB_RESULT result);
 #endif
 
-static void	zbx_db_errlog(zbx_err_codes_t zbx_errno, int db_errno, const char *db_error, const char *context)
+static void	trx_db_errlog(trx_err_codes_t trx_errno, int db_errno, const char *db_error, const char *context)
 {
 	char	*s;
 
 	if (NULL != db_error)
-		last_db_strerror = zbx_strdup(last_db_strerror, db_error);
+		last_db_strerror = trx_strdup(last_db_strerror, db_error);
 	else
-		last_db_strerror = zbx_strdup(last_db_strerror, "");
+		last_db_strerror = trx_strdup(last_db_strerror, "");
 
-	switch (zbx_errno)
+	switch (trx_errno)
 	{
 		case ERR_Z3001:
-			s = zbx_dsprintf(NULL, "connection to database '%s' failed: [%d] %s", context, db_errno,
+			s = trx_dsprintf(NULL, "connection to database '%s' failed: [%d] %s", context, db_errno,
 					last_db_strerror);
 			break;
 		case ERR_Z3002:
-			s = zbx_dsprintf(NULL, "cannot create database '%s': [%d] %s", context, db_errno,
+			s = trx_dsprintf(NULL, "cannot create database '%s': [%d] %s", context, db_errno,
 					last_db_strerror);
 			break;
 		case ERR_Z3003:
-			s = zbx_strdup(NULL, "no connection to the database");
+			s = trx_strdup(NULL, "no connection to the database");
 			break;
 		case ERR_Z3004:
-			s = zbx_dsprintf(NULL, "cannot close database: [%d] %s", db_errno, last_db_strerror);
+			s = trx_dsprintf(NULL, "cannot close database: [%d] %s", db_errno, last_db_strerror);
 			break;
 		case ERR_Z3005:
-			s = zbx_dsprintf(NULL, "query failed: [%d] %s [%s]", db_errno, last_db_strerror, context);
+			s = trx_dsprintf(NULL, "query failed: [%d] %s [%s]", db_errno, last_db_strerror, context);
 			break;
 		case ERR_Z3006:
-			s = zbx_dsprintf(NULL, "fetch failed: [%d] %s", db_errno, last_db_strerror);
+			s = trx_dsprintf(NULL, "fetch failed: [%d] %s", db_errno, last_db_strerror);
 			break;
 		case ERR_Z3007:
-			s = zbx_dsprintf(NULL, "query failed: [%d] %s", db_errno, last_db_strerror);
+			s = trx_dsprintf(NULL, "query failed: [%d] %s", db_errno, last_db_strerror);
 			break;
 		default:
-			s = zbx_strdup(NULL, "unknown error");
+			s = trx_strdup(NULL, "unknown error");
 	}
 
-	treegix_log(LOG_LEVEL_ERR, "[Z%04d] %s", (int)zbx_errno, s);
+	treegix_log(LOG_LEVEL_ERR, "[Z%04d] %s", (int)trx_errno, s);
 
-	zbx_free(s);
+	trx_free(s);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_last_strerr                                               *
+ * Function: trx_db_last_strerr                                               *
  *                                                                            *
  * Purpose: get last error set by database                                    *
  *                                                                            *
@@ -165,13 +165,13 @@ static void	zbx_db_errlog(zbx_err_codes_t zbx_errno, int db_errno, const char *d
  *                                                                            *
  ******************************************************************************/
 
-const char	*zbx_db_last_strerr(void)
+const char	*trx_db_last_strerr(void)
 {
 	return last_db_strerror;
 }
 
 #if defined(HAVE_ORACLE)
-static const char	*zbx_oci_error(sword status, sb4 *err)
+static const char	*trx_oci_error(sword status, sb4 *err)
 {
 	static char	errbuf[512];
 	sb4		errcode, *perrcode;
@@ -188,27 +188,27 @@ static const char	*zbx_oci_error(sword status, sb4 *err)
 					(text *)errbuf, (ub4)sizeof(errbuf), OCI_HTYPE_ERROR);
 			break;
 		case OCI_NEED_DATA:
-			zbx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_NEED_DATA");
+			trx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_NEED_DATA");
 			break;
 		case OCI_NO_DATA:
-			zbx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_NODATA");
+			trx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_NODATA");
 			break;
 		case OCI_ERROR:
 			OCIErrorGet((dvoid *)oracle.errhp, (ub4)1, (text *)NULL, perrcode,
 					(text *)errbuf, (ub4)sizeof(errbuf), OCI_HTYPE_ERROR);
 			break;
 		case OCI_INVALID_HANDLE:
-			zbx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_INVALID_HANDLE");
+			trx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_INVALID_HANDLE");
 			break;
 		case OCI_STILL_EXECUTING:
-			zbx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_STILL_EXECUTING");
+			trx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_STILL_EXECUTING");
 			break;
 		case OCI_CONTINUE:
-			zbx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_CONTINUE");
+			trx_snprintf(errbuf, sizeof(errbuf), "%s", "OCI_CONTINUE");
 			break;
 	}
 
-	zbx_rtrim(errbuf, TRX_WHITESPACE);
+	trx_rtrim(errbuf, TRX_WHITESPACE);
 
 	return errbuf;
 }
@@ -236,7 +236,7 @@ static int	OCI_handle_sql_error(int zerrcode, sword oci_error, const char *sql)
 	sb4	errcode;
 	int	ret = TRX_DB_DOWN;
 
-	zbx_db_errlog(zerrcode, oci_error, zbx_oci_error(oci_error, &errcode), sql);
+	trx_db_errlog(zerrcode, oci_error, trx_oci_error(oci_error, &errcode), sql);
 
 	/* after ORA-02396 (and consequent ORA-01012) errors the OCI_SERVER_NORMAL server status is still returned */
 	switch (errcode)
@@ -255,41 +255,41 @@ out:
 #endif	/* HAVE_ORACLE */
 
 #ifdef HAVE_POSTGRESQL
-static void	zbx_postgresql_error(char **error, const PGresult *pg_result)
+static void	trx_postgresql_error(char **error, const PGresult *pg_result)
 {
 	char	*result_error_msg;
 	size_t	error_alloc = 0, error_offset = 0;
 
-	zbx_snprintf_alloc(error, &error_alloc, &error_offset, "%s", PQresStatus(PQresultStatus(pg_result)));
+	trx_snprintf_alloc(error, &error_alloc, &error_offset, "%s", PQresStatus(PQresultStatus(pg_result)));
 
 	result_error_msg = PQresultErrorMessage(pg_result);
 
 	if ('\0' != *result_error_msg)
-		zbx_snprintf_alloc(error, &error_alloc, &error_offset, ":%s", result_error_msg);
+		trx_snprintf_alloc(error, &error_alloc, &error_offset, ":%s", result_error_msg);
 }
 #endif /*HAVE_POSTGRESQL*/
 
-__zbx_attr_format_printf(1, 2)
-static int	zbx_db_execute(const char *fmt, ...)
+__trx_attr_format_printf(1, 2)
+static int	trx_db_execute(const char *fmt, ...)
 {
 	va_list	args;
 	int	ret;
 
 	va_start(args, fmt);
-	ret = zbx_db_vexecute(fmt, args);
+	ret = trx_db_vexecute(fmt, args);
 	va_end(args);
 
 	return ret;
 }
 
-__zbx_attr_format_printf(1, 2)
-static DB_RESULT	zbx_db_select(const char *fmt, ...)
+__trx_attr_format_printf(1, 2)
+static DB_RESULT	trx_db_select(const char *fmt, ...)
 {
 	va_list		args;
 	DB_RESULT	result;
 
 	va_start(args, fmt);
-	result = zbx_db_vselect(fmt, args);
+	result = trx_db_vselect(fmt, args);
 	va_end(args);
 
 	return result;
@@ -328,7 +328,7 @@ static int	is_recoverable_postgresql_error(const PGconn *pg_conn, const PGresult
 	if (CONNECTION_OK != PQstatus(pg_conn))
 		return SUCCEED;
 
-	if (0 == zbx_strcmp_null(PQresultErrorField(pg_result, PG_DIAG_SQLSTATE), "40P01"))
+	if (0 == trx_strcmp_null(PQresultErrorField(pg_result, PG_DIAG_SQLSTATE), "40P01"))
 		return SUCCEED;
 
 	return FAIL;
@@ -337,7 +337,7 @@ static int	is_recoverable_postgresql_error(const PGconn *pg_conn, const PGresult
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_connect                                                   *
+ * Function: trx_db_connect                                                   *
  *                                                                            *
  * Purpose: connect to the database                                           *
  *                                                                            *
@@ -346,7 +346,7 @@ static int	is_recoverable_postgresql_error(const PGconn *pg_conn, const PGresult
  *               TRX_DB_FAIL - failed to connect                              *
  *                                                                            *
  ******************************************************************************/
-int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *dbschema, char *dbsocket, int port)
+int	trx_db_connect(char *host, char *user, char *password, char *dbname, char *dbschema, char *dbsocket, int port)
 {
 	int		ret = TRX_DB_OK, last_txn_error, last_txn_level;
 #if defined(HAVE_IBM_DB2)
@@ -384,62 +384,62 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	txn_level = 0;
 
 #if defined(HAVE_IBM_DB2)
-	connect = zbx_strdup(connect, "PROTOCOL=TCPIP;");
+	connect = trx_strdup(connect, "PROTOCOL=TCPIP;");
 	if ('\0' != *host)
-		connect = zbx_strdcatf(connect, "HOSTNAME=%s;", host);
+		connect = trx_strdcatf(connect, "HOSTNAME=%s;", host);
 	if (NULL != dbname && '\0' != *dbname)
-		connect = zbx_strdcatf(connect, "DATABASE=%s;", dbname);
+		connect = trx_strdcatf(connect, "DATABASE=%s;", dbname);
 	if (0 != port)
-		connect = zbx_strdcatf(connect, "PORT=%d;", port);
+		connect = trx_strdcatf(connect, "PORT=%d;", port);
 	if (NULL != user && '\0' != *user)
-		connect = zbx_strdcatf(connect, "UID=%s;", user);
+		connect = trx_strdcatf(connect, "UID=%s;", user);
 	if (NULL != password && '\0' != *password)
-		connect = zbx_strdcatf(connect, "PWD=%s;", password);
+		connect = trx_strdcatf(connect, "PWD=%s;", password);
 
 	memset(&ibm_db2, 0, sizeof(ibm_db2));
 
 	/* allocate an environment handle */
-	if (SUCCEED != zbx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &ibm_db2.henv)))
+	if (SUCCEED != trx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &ibm_db2.henv)))
 		ret = TRX_DB_FAIL;
 
 	/* set attribute to enable application to run as ODBC 3.0 application; */
 	/* recommended for pure IBM DB2 CLI, but not required */
-	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetEnvAttr(ibm_db2.henv, SQL_ATTR_ODBC_VERSION,
+	if (TRX_DB_OK == ret && SUCCEED != trx_ibm_db2_success(SQLSetEnvAttr(ibm_db2.henv, SQL_ATTR_ODBC_VERSION,
 			(void *)SQL_OV_ODBC3, 0)))
 	{
 		ret = TRX_DB_FAIL;
 	}
 
 	/* allocate a database connection handle */
-	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_DBC, ibm_db2.henv,
+	if (TRX_DB_OK == ret && SUCCEED != trx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_DBC, ibm_db2.henv,
 			&ibm_db2.hdbc)))
 	{
 		ret = TRX_DB_FAIL;
 	}
 
 	/* set codepage to utf-8 */
-	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_CLIENT_CODEPAGE,
+	if (TRX_DB_OK == ret && SUCCEED != trx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_CLIENT_CODEPAGE,
 			(SQLPOINTER)(SQLUINTEGER)1208, SQL_IS_UINTEGER)))
 	{
 		ret = TRX_DB_FAIL;
 	}
 
 	/* connect to the database */
-	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLDriverConnect(ibm_db2.hdbc, NULL, (SQLCHAR *)connect,
+	if (TRX_DB_OK == ret && SUCCEED != trx_ibm_db2_success(SQLDriverConnect(ibm_db2.hdbc, NULL, (SQLCHAR *)connect,
 			SQL_NTS, NULL, 0, NULL, SQL_DRIVER_NOPROMPT)))
 	{
 		ret = TRX_DB_FAIL;
 	}
 
 	/* set autocommit on */
-	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
+	if (TRX_DB_OK == ret && SUCCEED != trx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
 			(SQLPOINTER)SQL_AUTOCOMMIT_ON, SQL_NTS)))
 	{
 		ret = TRX_DB_DOWN;
 	}
 
 	/* we do not generate vendor escape clause sequences */
-	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_NOSCAN,
+	if (TRX_DB_OK == ret && SUCCEED != trx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_NOSCAN,
 			(SQLPOINTER)SQL_NOSCAN_ON, SQL_NTS)))
 	{
 		ret = TRX_DB_DOWN;
@@ -450,19 +450,19 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	{
 		char	*dbschema_esc;
 
-		dbschema_esc = zbx_db_dyn_escape_string(dbschema, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
-		if (0 < (ret = zbx_db_execute("set current schema='%s'", dbschema_esc)))
+		dbschema_esc = trx_db_dyn_escape_string(dbschema, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
+		if (0 < (ret = trx_db_execute("set current schema='%s'", dbschema_esc)))
 			ret = TRX_DB_OK;
-		zbx_free(dbschema_esc);
+		trx_free(dbschema_esc);
 	}
 
-	zbx_free(connect);
+	trx_free(connect);
 
 	/* output error information */
 	if (TRX_DB_OK != ret)
 	{
-		zbx_ibm_db2_log_errors(SQL_HANDLE_ENV, ibm_db2.henv, ERR_Z3001, dbname);
-		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3001, dbname);
+		trx_ibm_db2_log_errors(SQL_HANDLE_ENV, ibm_db2.henv, ERR_Z3001, dbname);
+		trx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3001, dbname);
 	}
 #elif defined(HAVE_MYSQL)
 	TRX_UNUSED(dbschema);
@@ -475,7 +475,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 
 	if (NULL == mysql_real_connect(conn, host, user, password, dbname, port, dbsocket, CLIENT_MULTI_STATEMENTS))
 	{
-		zbx_db_errlog(ERR_Z3001, mysql_errno(conn), mysql_error(conn), dbname);
+		trx_db_errlog(ERR_Z3001, mysql_errno(conn), mysql_error(conn), dbname);
 		ret = TRX_DB_FAIL;
 	}
 
@@ -494,13 +494,13 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 
 	if (TRX_DB_OK == ret && 0 != mysql_autocommit(conn, 1))
 	{
-		zbx_db_errlog(ERR_Z3001, mysql_errno(conn), mysql_error(conn), dbname);
+		trx_db_errlog(ERR_Z3001, mysql_errno(conn), mysql_error(conn), dbname);
 		ret = TRX_DB_FAIL;
 	}
 
 	if (TRX_DB_OK == ret && 0 != mysql_select_db(conn, dbname))
 	{
-		zbx_db_errlog(ERR_Z3001, mysql_errno(conn), mysql_error(conn), dbname);
+		trx_db_errlog(ERR_Z3001, mysql_errno(conn), mysql_error(conn), dbname);
 		ret = TRX_DB_FAIL;
 	}
 
@@ -512,17 +512,17 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 
 	memset(&oracle, 0, sizeof(oracle));
 
-	zbx_vector_ptr_create(&oracle.db_results);
+	trx_vector_ptr_create(&oracle.db_results);
 
 	/* connection string format: [//]host[:port][/service name] */
 
 	if ('\0' != *host)
 	{
-		connect = zbx_strdcatf(connect, "//%s", host);
+		connect = trx_strdcatf(connect, "//%s", host);
 		if (0 != port)
-			connect = zbx_strdcatf(connect, ":%d", port);
+			connect = trx_strdcatf(connect, ":%d", port);
 		if (NULL != dbname && '\0' != *dbname)
-			connect = zbx_strdcatf(connect, "/%s", dbname);
+			connect = trx_strdcatf(connect, "/%s", dbname);
 	}
 	else
 		ret = TRX_DB_FAIL;
@@ -551,7 +551,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 		}
 		else
 		{
-			zbx_db_errlog(ERR_Z3001, err, zbx_oci_error(err, NULL), connect);
+			trx_db_errlog(ERR_Z3001, err, trx_oci_error(err, NULL), connect);
 			ret = TRX_DB_FAIL;
 		}
 	}
@@ -572,7 +572,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 		switch (err)
 		{
 			case OCI_SUCCESS_WITH_INFO:
-				treegix_log(LOG_LEVEL_WARNING, "%s", zbx_oci_error(err, NULL));
+				treegix_log(LOG_LEVEL_WARNING, "%s", trx_oci_error(err, NULL));
 				/* break; is not missing here */
 			case OCI_SUCCESS:
 				err = OCIAttrGet((void *)oracle.svchp, OCI_HTYPE_SVCCTX, (void *)&oracle.srvhp,
@@ -581,7 +581,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 
 		if (OCI_SUCCESS != err)
 		{
-			zbx_db_errlog(ERR_Z3001, err, zbx_oci_error(err, NULL), connect);
+			trx_db_errlog(ERR_Z3001, err, trx_oci_error(err, NULL), connect);
 			ret = TRX_DB_DOWN;
 		}
 	}
@@ -594,30 +594,30 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 
 		if (OCI_SUCCESS != err)
 		{
-			zbx_db_errlog(ERR_Z3001, err, zbx_oci_error(err, NULL), connect);
+			trx_db_errlog(ERR_Z3001, err, trx_oci_error(err, NULL), connect);
 			ret = TRX_DB_DOWN;
 		}
 	}
 
 	if (TRX_DB_OK == ret)
 	{
-		if (0 < (ret = zbx_db_execute("alter session set nls_numeric_characters='. '")))
+		if (0 < (ret = trx_db_execute("alter session set nls_numeric_characters='. '")))
 			ret = TRX_DB_OK;
 	}
 
-	zbx_free(connect);
+	trx_free(connect);
 #elif defined(HAVE_POSTGRESQL)
 	if (0 != port)
-		cport = zbx_dsprintf(cport, "%d", port);
+		cport = trx_dsprintf(cport, "%d", port);
 
 	conn = PQsetdbLogin(host, cport, NULL, NULL, dbname, user, password);
 
-	zbx_free(cport);
+	trx_free(cport);
 
 	/* check to see that the backend connection was successfully made */
 	if (CONNECTION_OK != PQstatus(conn))
 	{
-		zbx_db_errlog(ERR_Z3001, 0, PQerrorMessage(conn), dbname);
+		trx_db_errlog(ERR_Z3001, 0, PQerrorMessage(conn), dbname);
 		ret = TRX_DB_DOWN;
 		goto out;
 	}
@@ -626,16 +626,16 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	{
 		char	*dbschema_esc;
 
-		dbschema_esc = zbx_db_dyn_escape_string(dbschema, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
-		if (TRX_DB_DOWN == (rc = zbx_db_execute("set schema '%s'", dbschema_esc)) || TRX_DB_FAIL == rc)
+		dbschema_esc = trx_db_dyn_escape_string(dbschema, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON);
+		if (TRX_DB_DOWN == (rc = trx_db_execute("set schema '%s'", dbschema_esc)) || TRX_DB_FAIL == rc)
 			ret = rc;
-		zbx_free(dbschema_esc);
+		trx_free(dbschema_esc);
 	}
 
 	if (TRX_DB_FAIL == ret || TRX_DB_DOWN == ret)
 		goto out;
 
-	result = zbx_db_select("select oid from pg_type where typname='bytea'");
+	result = trx_db_select("select oid from pg_type where typname='bytea'");
 
 	if ((DB_RESULT)TRX_DB_DOWN == result || NULL == result)
 	{
@@ -643,7 +643,7 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 		goto out;
 	}
 
-	if (NULL != (row = zbx_db_fetch(result)))
+	if (NULL != (row = trx_db_fetch(result)))
 		TRX_PG_BYTEAOID = atoi(row[0]);
 	DBfree_result(result);
 
@@ -651,13 +651,13 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 	treegix_log(LOG_LEVEL_DEBUG, "PostgreSQL Server version: %d", TRX_PG_SVERSION);
 
 	/* disable "nonstandard use of \' in a string literal" warning */
-	if (0 < (ret = zbx_db_execute("set escape_string_warning to off")))
+	if (0 < (ret = trx_db_execute("set escape_string_warning to off")))
 		ret = TRX_DB_OK;
 
 	if (TRX_DB_OK != ret)
 		goto out;
 
-	result = zbx_db_select("show standard_conforming_strings");
+	result = trx_db_select("show standard_conforming_strings");
 
 	if ((DB_RESULT)TRX_DB_DOWN == result || NULL == result)
 	{
@@ -665,14 +665,14 @@ int	zbx_db_connect(char *host, char *user, char *password, char *dbname, char *d
 		goto out;
 	}
 
-	if (NULL != (row = zbx_db_fetch(result)))
+	if (NULL != (row = trx_db_fetch(result)))
 		TRX_PG_ESCAPE_BACKSLASH = (0 == strcmp(row[0], "off"));
 	DBfree_result(result);
 
 	if (90000 <= TRX_PG_SVERSION)
 	{
 		/* change the output format for values of type bytea from hex (the default) to escape */
-		if (0 < (ret = zbx_db_execute("set bytea_output=escape")))
+		if (0 < (ret = trx_db_execute("set bytea_output=escape")))
 			ret = TRX_DB_OK;
 	}
 out:
@@ -688,7 +688,7 @@ out:
 	if (SQLITE_OK != sqlite3_open(dbname, &conn))
 #endif
 	{
-		zbx_db_errlog(ERR_Z3001, 0, sqlite3_errmsg(conn), dbname);
+		trx_db_errlog(ERR_Z3001, 0, sqlite3_errmsg(conn), dbname);
 		ret = TRX_DB_DOWN;
 		goto out;
 	}
@@ -696,33 +696,33 @@ out:
 	/* do not return SQLITE_BUSY immediately, wait for N ms */
 	sqlite3_busy_timeout(conn, SEC_PER_MIN * 1000);
 
-	if (0 < (ret = zbx_db_execute("pragma synchronous=0")))
+	if (0 < (ret = trx_db_execute("pragma synchronous=0")))
 		ret = TRX_DB_OK;
 
 	if (TRX_DB_OK != ret)
 		goto out;
 
-	if (0 < (ret = zbx_db_execute("pragma temp_store=2")))
+	if (0 < (ret = trx_db_execute("pragma temp_store=2")))
 		ret = TRX_DB_OK;
 
 	if (TRX_DB_OK != ret)
 		goto out;
 
-	path = zbx_strdup(NULL, dbname);
+	path = trx_strdup(NULL, dbname);
 
 	if (NULL != (p = strrchr(path, '/')))
 		*++p = '\0';
 	else
 		*path = '\0';
 
-	if (0 < (ret = zbx_db_execute("pragma temp_store_directory='%s'", path)))
+	if (0 < (ret = trx_db_execute("pragma temp_store_directory='%s'", path)))
 		ret = TRX_DB_OK;
 
-	zbx_free(path);
+	trx_free(path);
 out:
 #endif	/* HAVE_SQLITE3 */
 	if (TRX_DB_OK != ret)
-		zbx_db_close();
+		trx_db_close();
 
 	txn_error = last_txn_error;
 	txn_level = last_txn_level;
@@ -730,32 +730,32 @@ out:
 	return ret;
 }
 
-int	zbx_db_init(const char *dbname, const char *const dbschema, char **error)
+int	trx_db_init(const char *dbname, const char *const dbschema, char **error)
 {
 #ifdef HAVE_SQLITE3
-	zbx_stat_t	buf;
+	trx_stat_t	buf;
 
-	if (0 != zbx_stat(dbname, &buf))
+	if (0 != trx_stat(dbname, &buf))
 	{
-		treegix_log(LOG_LEVEL_WARNING, "cannot open database file \"%s\": %s", dbname, zbx_strerror(errno));
+		treegix_log(LOG_LEVEL_WARNING, "cannot open database file \"%s\": %s", dbname, trx_strerror(errno));
 		treegix_log(LOG_LEVEL_WARNING, "creating database ...");
 
 		if (SQLITE_OK != sqlite3_open(dbname, &conn))
 		{
-			zbx_db_errlog(ERR_Z3002, 0, sqlite3_errmsg(conn), dbname);
-			*error = zbx_strdup(*error, "cannot open database");
+			trx_db_errlog(ERR_Z3002, 0, sqlite3_errmsg(conn), dbname);
+			*error = trx_strdup(*error, "cannot open database");
 			return FAIL;
 		}
 
-		if (SUCCEED != zbx_mutex_create(&sqlite_access, TRX_MUTEX_SQLITE3, error))
+		if (SUCCEED != trx_mutex_create(&sqlite_access, TRX_MUTEX_SQLITE3, error))
 			return FAIL;
 
-		zbx_db_execute("%s", dbschema);
-		zbx_db_close();
+		trx_db_execute("%s", dbschema);
+		trx_db_close();
 		return SUCCEED;
 	}
 
-	return zbx_mutex_create(&sqlite_access, TRX_MUTEX_SQLITE3, error);
+	return trx_mutex_create(&sqlite_access, TRX_MUTEX_SQLITE3, error);
 #else	/* not HAVE_SQLITE3 */
 	TRX_UNUSED(dbname);
 	TRX_UNUSED(dbschema);
@@ -765,14 +765,14 @@ int	zbx_db_init(const char *dbname, const char *const dbschema, char **error)
 #endif	/* HAVE_SQLITE3 */
 }
 
-void	zbx_db_deinit(void)
+void	trx_db_deinit(void)
 {
 #ifdef HAVE_SQLITE3
-	zbx_mutex_destroy(&sqlite_access);
+	trx_mutex_destroy(&sqlite_access);
 #endif
 }
 
-void	zbx_db_close(void)
+void	trx_db_close(void)
 {
 #if defined(HAVE_IBM_DB2)
 	if (ibm_db2.hdbc)
@@ -837,7 +837,7 @@ void	zbx_db_close(void)
 		oracle.envhp = NULL;
 	}
 
-	zbx_vector_ptr_destroy(&oracle.db_results);
+	trx_vector_ptr_destroy(&oracle.db_results);
 #elif defined(HAVE_POSTGRESQL)
 	if (NULL != conn)
 	{
@@ -855,14 +855,14 @@ void	zbx_db_close(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_begin                                                     *
+ * Function: trx_db_begin                                                     *
  *                                                                            *
  * Purpose: start transaction                                                 *
  *                                                                            *
  * Comments: do nothing if DB does not support transactions                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_db_begin(void)
+int	trx_db_begin(void)
 {
 	int	rc = TRX_DB_OK;
 
@@ -875,7 +875,7 @@ int	zbx_db_begin(void)
 	txn_level++;
 
 #if defined(HAVE_IBM_DB2)
-	if (SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
+	if (SUCCEED != trx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
 			(SQLPOINTER)SQL_AUTOCOMMIT_OFF, SQL_NTS)))
 	{
 		rc = TRX_DB_DOWN;
@@ -884,21 +884,21 @@ int	zbx_db_begin(void)
 	if (TRX_DB_OK == rc)
 	{
 		/* create savepoint for correct rollback on DB2 */
-		if (0 <= (rc = zbx_db_execute("savepoint zbx_begin_savepoint unique on rollback retain cursors;")))
+		if (0 <= (rc = trx_db_execute("savepoint trx_begin_savepoint unique on rollback retain cursors;")))
 			rc = TRX_DB_OK;
 	}
 
 	if (TRX_DB_OK != rc)
 	{
-		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, "<begin>");
+		trx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, "<begin>");
 		rc = (SQL_CD_TRUE == IBM_DB2server_status() ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
 
 #elif defined(HAVE_MYSQL) || defined(HAVE_POSTGRESQL)
-	rc = zbx_db_execute("begin;");
+	rc = trx_db_execute("begin;");
 #elif defined(HAVE_SQLITE3)
-	zbx_mutex_lock(sqlite_access);
-	rc = zbx_db_execute("begin;");
+	trx_mutex_lock(sqlite_access);
+	rc = trx_db_execute("begin;");
 #endif
 
 	if (TRX_DB_DOWN == rc)
@@ -909,14 +909,14 @@ int	zbx_db_begin(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_commit                                                    *
+ * Function: trx_db_commit                                                    *
  *                                                                            *
  * Purpose: commit transaction                                                *
  *                                                                            *
  * Comments: do nothing if DB does not support transactions                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_db_commit(void)
+int	trx_db_commit(void)
 {
 	int	rc = TRX_DB_OK;
 #ifdef HAVE_ORACLE
@@ -934,23 +934,23 @@ int	zbx_db_commit(void)
 		return TRX_DB_FAIL; /* commit called on failed transaction */
 
 #if defined(HAVE_IBM_DB2)
-	if (SUCCEED != zbx_ibm_db2_success(SQLEndTran(SQL_HANDLE_DBC, ibm_db2.hdbc, SQL_COMMIT)))
+	if (SUCCEED != trx_ibm_db2_success(SQLEndTran(SQL_HANDLE_DBC, ibm_db2.hdbc, SQL_COMMIT)))
 		rc = TRX_DB_DOWN;
-	if (SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
+	if (SUCCEED != trx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
 			(SQLPOINTER)SQL_AUTOCOMMIT_ON, SQL_NTS)))
 	{
 		rc = TRX_DB_DOWN;
 	}
 	if (TRX_DB_OK != rc)
 	{
-		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, "<commit>");
+		trx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, "<commit>");
 		rc = (SQL_CD_TRUE == IBM_DB2server_status() ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
 #elif defined(HAVE_ORACLE)
 	if (OCI_SUCCESS != (err = OCITransCommit(oracle.svchp, oracle.errhp, OCI_DEFAULT)))
 		rc = OCI_handle_sql_error(ERR_Z3005, err, "commit failed");
 #elif defined(HAVE_MYSQL) || defined(HAVE_POSTGRESQL) || defined(HAVE_SQLITE3)
-	rc = zbx_db_execute("commit;");
+	rc = trx_db_execute("commit;");
 #endif
 
 	if (TRX_DB_OK > rc) { /* commit failed */
@@ -959,7 +959,7 @@ int	zbx_db_commit(void)
 	}
 
 #ifdef HAVE_SQLITE3
-	zbx_mutex_unlock(sqlite_access);
+	trx_mutex_unlock(sqlite_access);
 #endif
 
 	txn_level--;
@@ -970,14 +970,14 @@ int	zbx_db_commit(void)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_rollback                                                  *
+ * Function: trx_db_rollback                                                  *
  *                                                                            *
  * Purpose: rollback transaction                                              *
  *                                                                            *
  * Comments: do nothing if DB does not support transactions                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_db_rollback(void)
+int	trx_db_rollback(void)
 {
 	int	rc = TRX_DB_OK, last_txn_error;
 #ifdef HAVE_ORACLE
@@ -999,10 +999,10 @@ int	zbx_db_rollback(void)
 #if defined(HAVE_IBM_DB2)
 
 	/* Rollback to begin that is marked with savepoint. This move undo all transactions. */
-	if (0 <= (rc = zbx_db_execute("rollback to savepoint zbx_begin_savepoint;")))
+	if (0 <= (rc = trx_db_execute("rollback to savepoint trx_begin_savepoint;")))
 		rc = TRX_DB_OK;
 
-	if (SUCCEED != zbx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
+	if (SUCCEED != trx_ibm_db2_success(SQLSetConnectAttr(ibm_db2.hdbc, SQL_ATTR_AUTOCOMMIT,
 			(SQLPOINTER)SQL_AUTOCOMMIT_ON, SQL_NTS)))
 	{
 		rc = TRX_DB_DOWN;
@@ -1010,17 +1010,17 @@ int	zbx_db_rollback(void)
 
 	if (TRX_DB_OK != rc)
 	{
-		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, "<rollback>");
+		trx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, "<rollback>");
 		rc = (SQL_CD_TRUE == IBM_DB2server_status() ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
 #elif defined(HAVE_MYSQL) || defined(HAVE_POSTGRESQL)
-	rc = zbx_db_execute("rollback;");
+	rc = trx_db_execute("rollback;");
 #elif defined(HAVE_ORACLE)
 	if (OCI_SUCCESS != (err = OCITransRollback(oracle.svchp, oracle.errhp, OCI_DEFAULT)))
 		rc = OCI_handle_sql_error(ERR_Z3005, err, "rollback failed");
 #elif defined(HAVE_SQLITE3)
-	rc = zbx_db_execute("rollback;");
-	zbx_mutex_unlock(sqlite_access);
+	rc = trx_db_execute("rollback;");
+	trx_mutex_unlock(sqlite_access);
 #endif
 
 	/* There is no way to recover from rollback errors, so there is no need to preserve transaction level / error. */
@@ -1035,29 +1035,29 @@ int	zbx_db_rollback(void)
 	return rc;
 }
 
-int	zbx_db_txn_level(void)
+int	trx_db_txn_level(void)
 {
 	return txn_level;
 }
 
-int	zbx_db_txn_error(void)
+int	trx_db_txn_error(void)
 {
 	return txn_error;
 }
 
-int	zbx_db_txn_end_error(void)
+int	trx_db_txn_end_error(void)
 {
 	return txn_end_error;
 }
 
 #ifdef HAVE_ORACLE
-static sword	zbx_oracle_statement_prepare(const char *sql)
+static sword	trx_oracle_statement_prepare(const char *sql)
 {
 	return OCIStmtPrepare(oracle.stmthp, oracle.errhp, (text *)sql, (ub4)strlen((char *)sql), (ub4)OCI_NTV_SYNTAX,
 			(ub4)OCI_DEFAULT);
 }
 
-static sword	zbx_oracle_statement_execute(ub4 iters, ub4 *nrows)
+static sword	trx_oracle_statement_execute(ub4 iters, ub4 *nrows)
 {
 	sword	err;
 
@@ -1074,7 +1074,7 @@ static sword	zbx_oracle_statement_execute(ub4 iters, ub4 *nrows)
 #endif
 
 #ifdef HAVE_ORACLE
-int	zbx_db_statement_prepare(const char *sql)
+int	trx_db_statement_prepare(const char *sql)
 {
 	sword	err;
 	int	ret = TRX_DB_OK;
@@ -1090,7 +1090,7 @@ int	zbx_db_statement_prepare(const char *sql)
 
 	treegix_log(LOG_LEVEL_DEBUG, "query [txnlev:%d] [%s]", txn_level, sql);
 
-	if (OCI_SUCCESS != (err = zbx_oracle_statement_prepare(sql)))
+	if (OCI_SUCCESS != (err = trx_oracle_statement_prepare(sql)))
 		ret = OCI_handle_sql_error(ERR_Z3005, err, sql);
 
 	if (TRX_DB_FAIL == ret && 0 < txn_level)
@@ -1112,7 +1112,7 @@ int	zbx_db_statement_prepare(const char *sql)
 static sb4 db_bind_dynamic_cb(dvoid *ctxp, OCIBind *bindp, ub4 iter, ub4 index, dvoid **bufpp, ub4 *alenp, ub1 *piecep,
 		dvoid **indpp)
 {
-	zbx_db_bind_context_t	*context = (zbx_db_bind_context_t *)ctxp;
+	trx_db_bind_context_t	*context = (trx_db_bind_context_t *)ctxp;
 
 	TRX_UNUSED(bindp);
 	TRX_UNUSED(index);
@@ -1158,7 +1158,7 @@ static sb4 db_bind_dynamic_cb(dvoid *ctxp, OCIBind *bindp, ub4 iter, ub4 index, 
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_bind_parameter_dyn                                        *
+ * Function: trx_db_bind_parameter_dyn                                        *
  *                                                                            *
  * Purpose: performs dynamic parameter binding, converting value if necessary *
  *                                                                            *
@@ -1170,8 +1170,8 @@ static sb4 db_bind_dynamic_cb(dvoid *ctxp, OCIBind *bindp, ub4 iter, ub4 index, 
  *             rows_num - [IN] the number of rows in the data                 *
  *                                                                            *
  ******************************************************************************/
-int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsigned char type,
-		zbx_db_value_t **rows, int rows_num)
+int	trx_db_bind_parameter_dyn(trx_db_bind_context_t *context, int position, unsigned char type,
+		trx_db_value_t **rows, int rows_num)
 {
 	int		i, ret = TRX_DB_OK;
 	size_t		*sizes;
@@ -1189,11 +1189,11 @@ int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsi
 	{
 		case TRX_TYPE_ID:
 		case TRX_TYPE_UINT:
-			values = (OCINumber *)zbx_malloc(NULL, sizeof(OCINumber) * rows_num);
+			values = (OCINumber *)trx_malloc(NULL, sizeof(OCINumber) * rows_num);
 
 			for (i = 0; i < rows_num; i++)
 			{
-				err = OCINumberFromInt(oracle.errhp, &rows[i][position].ui64, sizeof(zbx_uint64_t),
+				err = OCINumberFromInt(oracle.errhp, &rows[i][position].ui64, sizeof(trx_uint64_t),
 						OCI_NUMBER_UNSIGNED, &values[i]);
 
 				if (OCI_SUCCESS != err)
@@ -1219,7 +1219,7 @@ int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsi
 		case TRX_TYPE_TEXT:
 		case TRX_TYPE_SHORTTEXT:
 		case TRX_TYPE_LONGTEXT:
-			sizes = (size_t *)zbx_malloc(NULL, sizeof(size_t) * rows_num);
+			sizes = (size_t *)trx_malloc(NULL, sizeof(size_t) * rows_num);
 			context->size_max = 0;
 
 			for (i = 0; i < rows_num; i++)
@@ -1270,17 +1270,17 @@ int	zbx_db_bind_parameter_dyn(zbx_db_bind_context_t *context, int position, unsi
 	}
 out:
 	if (ret != TRX_DB_OK)
-		zbx_db_clean_bind_context(context);
+		trx_db_clean_bind_context(context);
 
 	return ret;
 }
 
-void	zbx_db_clean_bind_context(zbx_db_bind_context_t *context)
+void	trx_db_clean_bind_context(trx_db_bind_context_t *context)
 {
-	zbx_free(context->data);
+	trx_free(context->data);
 }
 
-int	zbx_db_statement_execute(int iters)
+int	trx_db_statement_execute(int iters)
 {
 	sword	err;
 	ub4	nrows;
@@ -1293,7 +1293,7 @@ int	zbx_db_statement_execute(int iters)
 		goto out;
 	}
 
-	if (OCI_SUCCESS != (err = zbx_oracle_statement_execute(iters, &nrows)))
+	if (OCI_SUCCESS != (err = trx_oracle_statement_execute(iters, &nrows)))
 		ret = OCI_handle_sql_error(ERR_Z3007, err, NULL);
 	else
 		ret = (int)nrows;
@@ -1312,7 +1312,7 @@ out:
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_vexecute                                                  *
+ * Function: trx_db_vexecute                                                  *
  *                                                                            *
  * Purpose: Execute SQL statement. For non-select statements only.            *
  *                                                                            *
@@ -1320,7 +1320,7 @@ out:
  *               or number of rows affected (on success)                      *
  *                                                                            *
  ******************************************************************************/
-int	zbx_db_vexecute(const char *fmt, va_list args)
+int	trx_db_vexecute(const char *fmt, va_list args)
 {
 	char	*sql = NULL;
 	int	ret = TRX_DB_OK;
@@ -1343,9 +1343,9 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 #endif
 
 	if (0 != CONFIG_LOG_SLOW_QUERIES)
-		sec = zbx_time();
+		sec = trx_time();
 
-	sql = zbx_dvsprintf(sql, fmt, args);
+	sql = trx_dvsprintf(sql, fmt, args);
 
 	if (0 == txn_level)
 		treegix_log(LOG_LEVEL_DEBUG, "query without transaction detected");
@@ -1361,21 +1361,21 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 
 #if defined(HAVE_IBM_DB2)
 	/* allocate a statement handle */
-	if (SUCCEED != zbx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_STMT, ibm_db2.hdbc, &hstmt)))
+	if (SUCCEED != trx_ibm_db2_success(SQLAllocHandle(SQL_HANDLE_STMT, ibm_db2.hdbc, &hstmt)))
 		ret = TRX_DB_DOWN;
 
 	/* directly execute the statement; returns SQL_NO_DATA_FOUND when no rows were affected */
-  	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success_ext(SQLExecDirect(hstmt, (SQLCHAR *)sql, SQL_NTS)))
+  	if (TRX_DB_OK == ret && SUCCEED != trx_ibm_db2_success_ext(SQLExecDirect(hstmt, (SQLCHAR *)sql, SQL_NTS)))
 		ret = TRX_DB_DOWN;
 
 	/* get number of affected rows */
-	if (TRX_DB_OK == ret && SUCCEED != zbx_ibm_db2_success(SQLRowCount(hstmt, &rows)))
+	if (TRX_DB_OK == ret && SUCCEED != trx_ibm_db2_success(SQLRowCount(hstmt, &rows)))
 		ret = TRX_DB_DOWN;
 
 	/* process other SQL statements in the batch */
-	while (TRX_DB_OK == ret && SUCCEED == zbx_ibm_db2_success(ret1 = SQLMoreResults(hstmt)))
+	while (TRX_DB_OK == ret && SUCCEED == trx_ibm_db2_success(ret1 = SQLMoreResults(hstmt)))
 	{
-		if (SUCCEED != zbx_ibm_db2_success(SQLRowCount(hstmt, &row1)))
+		if (SUCCEED != trx_ibm_db2_success(SQLRowCount(hstmt, &row1)))
 			ret = TRX_DB_DOWN;
 		else
 			rows += row1;
@@ -1386,8 +1386,8 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 
 	if (TRX_DB_OK != ret)
 	{
-		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, sql);
-		zbx_ibm_db2_log_errors(SQL_HANDLE_STMT, hstmt, ERR_Z3005, sql);
+		trx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, sql);
+		trx_ibm_db2_log_errors(SQL_HANDLE_STMT, hstmt, ERR_Z3005, sql);
 
 		ret = (SQL_CD_TRUE == IBM_DB2server_status() ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
@@ -1401,14 +1401,14 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 #elif defined(HAVE_MYSQL)
 	if (NULL == conn)
 	{
-		zbx_db_errlog(ERR_Z3003, 0, NULL, NULL);
+		trx_db_errlog(ERR_Z3003, 0, NULL, NULL);
 		ret = TRX_DB_FAIL;
 	}
 	else
 	{
 		if (0 != (status = mysql_query(conn, sql)))
 		{
-			zbx_db_errlog(ERR_Z3005, mysql_errno(conn), mysql_error(conn), sql);
+			trx_db_errlog(ERR_Z3005, mysql_errno(conn), mysql_error(conn), sql);
 
 			ret = (SUCCEED == is_recoverable_mysql_error() ? TRX_DB_DOWN : TRX_DB_FAIL);
 		}
@@ -1427,7 +1427,7 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 				/* more results? 0 = yes (keep looping), -1 = no, >0 = error */
 				if (0 < (status = mysql_next_result(conn)))
 				{
-					zbx_db_errlog(ERR_Z3005, mysql_errno(conn), mysql_error(conn), sql);
+					trx_db_errlog(ERR_Z3005, mysql_errno(conn), mysql_error(conn), sql);
 					ret = (SUCCEED == is_recoverable_mysql_error() ? TRX_DB_DOWN : TRX_DB_FAIL);
 				}
 			}
@@ -1435,11 +1435,11 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 		}
 	}
 #elif defined(HAVE_ORACLE)
-	if (OCI_SUCCESS == (err = zbx_oracle_statement_prepare(sql)))
+	if (OCI_SUCCESS == (err = trx_oracle_statement_prepare(sql)))
 	{
 		ub4	nrows = 0;
 
-		if (OCI_SUCCESS == (err = zbx_oracle_statement_execute(1, &nrows)))
+		if (OCI_SUCCESS == (err = trx_oracle_statement_execute(1, &nrows)))
 			ret = (int)nrows;
 	}
 
@@ -1451,14 +1451,14 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 
 	if (NULL == result)
 	{
-		zbx_db_errlog(ERR_Z3005, 0, "result is NULL", sql);
+		trx_db_errlog(ERR_Z3005, 0, "result is NULL", sql);
 		ret = (CONNECTION_OK == PQstatus(conn) ? TRX_DB_FAIL : TRX_DB_DOWN);
 	}
 	else if (PGRES_COMMAND_OK != PQresultStatus(result))
 	{
-		zbx_postgresql_error(&error, result);
-		zbx_db_errlog(ERR_Z3005, 0, error, sql);
-		zbx_free(error);
+		trx_postgresql_error(&error, result);
+		trx_db_errlog(ERR_Z3005, 0, error, sql);
+		trx_free(error);
 
 		ret = (SUCCEED == is_recoverable_postgresql_error(conn, result) ? TRX_DB_DOWN : TRX_DB_FAIL);
 	}
@@ -1469,7 +1469,7 @@ int	zbx_db_vexecute(const char *fmt, va_list args)
 	PQclear(result);
 #elif defined(HAVE_SQLITE3)
 	if (0 == txn_level)
-		zbx_mutex_lock(sqlite_access);
+		trx_mutex_lock(sqlite_access);
 
 lbl_exec:
 	if (SQLITE_OK != (err = sqlite3_exec(conn, sql, NULL, 0, &error)))
@@ -1477,13 +1477,13 @@ lbl_exec:
 		if (SQLITE_BUSY == err)
 			goto lbl_exec;
 
-		zbx_db_errlog(ERR_Z3005, 0, error, sql);
+		trx_db_errlog(ERR_Z3005, 0, error, sql);
 		sqlite3_free(error);
 
 		switch (err)
 		{
 			case SQLITE_ERROR:	/* SQL error or missing database; assuming SQL error, because if we
-						   are this far into execution, zbx_db_connect() was successful */
+						   are this far into execution, trx_db_connect() was successful */
 			case SQLITE_NOMEM:	/* A malloc() failed */
 			case SQLITE_TOOBIG:	/* String or BLOB exceeds size limit */
 			case SQLITE_CONSTRAINT:	/* Abort due to constraint violation */
@@ -1500,12 +1500,12 @@ lbl_exec:
 		ret = sqlite3_changes(conn);
 
 	if (0 == txn_level)
-		zbx_mutex_unlock(sqlite_access);
+		trx_mutex_unlock(sqlite_access);
 #endif	/* HAVE_SQLITE3 */
 
 	if (0 != CONFIG_LOG_SLOW_QUERIES)
 	{
-		sec = zbx_time() - sec;
+		sec = trx_time() - sec;
 		if (sec > (double)CONFIG_LOG_SLOW_QUERIES / 1000.0)
 			treegix_log(LOG_LEVEL_WARNING, "slow query: " TRX_FS_DBL " sec, \"%s\"", sec, sql);
 	}
@@ -1516,21 +1516,21 @@ lbl_exec:
 		txn_error = TRX_DB_FAIL;
 	}
 clean:
-	zbx_free(sql);
+	trx_free(sql);
 
 	return ret;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_vselect                                                   *
+ * Function: trx_db_vselect                                                   *
  *                                                                            *
  * Purpose: execute a select statement                                        *
  *                                                                            *
  * Return value: data, NULL (on error) or (DB_RESULT)TRX_DB_DOWN              *
  *                                                                            *
  ******************************************************************************/
-DB_RESULT	zbx_db_vselect(const char *fmt, va_list args)
+DB_RESULT	trx_db_vselect(const char *fmt, va_list args)
 {
 	char		*sql = NULL;
 	DB_RESULT	result = NULL;
@@ -1549,9 +1549,9 @@ DB_RESULT	zbx_db_vselect(const char *fmt, va_list args)
 #endif
 
 	if (0 != CONFIG_LOG_SLOW_QUERIES)
-		sec = zbx_time();
+		sec = trx_time();
 
-	sql = zbx_dvsprintf(sql, fmt, args);
+	sql = trx_dvsprintf(sql, fmt, args);
 
 	if (TRX_DB_OK != txn_error)
 	{
@@ -1562,33 +1562,33 @@ DB_RESULT	zbx_db_vselect(const char *fmt, va_list args)
 	treegix_log(LOG_LEVEL_DEBUG, "query [txnlev:%d] [%s]", txn_level, sql);
 
 #if defined(HAVE_IBM_DB2)
-	result = zbx_malloc(result, sizeof(struct zbx_db_result));
-	memset(result, 0, sizeof(struct zbx_db_result));
+	result = trx_malloc(result, sizeof(struct trx_db_result));
+	memset(result, 0, sizeof(struct trx_db_result));
 
 	/* allocate a statement handle */
-	if (SUCCEED != zbx_ibm_db2_success(ret = SQLAllocHandle(SQL_HANDLE_STMT, ibm_db2.hdbc, &result->hstmt)))
+	if (SUCCEED != trx_ibm_db2_success(ret = SQLAllocHandle(SQL_HANDLE_STMT, ibm_db2.hdbc, &result->hstmt)))
 		goto error;
 
 	/* directly execute the statement */
-	if (SUCCEED != zbx_ibm_db2_success(ret = SQLExecDirect(result->hstmt, (SQLCHAR *)sql, SQL_NTS)))
+	if (SUCCEED != trx_ibm_db2_success(ret = SQLExecDirect(result->hstmt, (SQLCHAR *)sql, SQL_NTS)))
 		goto error;
 
 	/* identify the number of output columns */
-	if (SUCCEED != zbx_ibm_db2_success(ret = SQLNumResultCols(result->hstmt, &result->ncolumn)))
+	if (SUCCEED != trx_ibm_db2_success(ret = SQLNumResultCols(result->hstmt, &result->ncolumn)))
 		goto error;
 
 	if (0 == result->ncolumn)
 		goto error;
 
 	result->nalloc = 0;
-	result->values = zbx_malloc(result->values, sizeof(char *) * result->ncolumn);
-	result->values_cli = zbx_malloc(result->values_cli, sizeof(char *) * result->ncolumn);
-	result->values_len = zbx_malloc(result->values_len, sizeof(SQLINTEGER) * result->ncolumn);
+	result->values = trx_malloc(result->values, sizeof(char *) * result->ncolumn);
+	result->values_cli = trx_malloc(result->values_cli, sizeof(char *) * result->ncolumn);
+	result->values_len = trx_malloc(result->values_len, sizeof(SQLINTEGER) * result->ncolumn);
 
 	for (i = 0; i < result->ncolumn; i++)
 	{
 		/* get the display size for a column */
-		if (SUCCEED != zbx_ibm_db2_success(ret = SQLColAttribute(result->hstmt, (SQLSMALLINT)(i + 1),
+		if (SUCCEED != trx_ibm_db2_success(ret = SQLColAttribute(result->hstmt, (SQLSMALLINT)(i + 1),
 				SQL_DESC_DISPLAY_SIZE, NULL, 0, NULL, &result->values_len[i])))
 		{
 			goto error;
@@ -1597,33 +1597,33 @@ DB_RESULT	zbx_db_vselect(const char *fmt, va_list args)
 		result->values_len[i] += 1; /* '\0'; */
 
 		/* allocate memory to bind a column */
-		result->values_cli[i] = zbx_malloc(NULL, result->values_len[i]);
+		result->values_cli[i] = trx_malloc(NULL, result->values_len[i]);
 		result->nalloc++;
 
 		/* bind columns to program variables, converting all types to CHAR */
-		if (SUCCEED != zbx_ibm_db2_success(ret = SQLBindCol(result->hstmt, (SQLSMALLINT)(i + 1),
+		if (SUCCEED != trx_ibm_db2_success(ret = SQLBindCol(result->hstmt, (SQLSMALLINT)(i + 1),
 				SQL_C_CHAR, result->values_cli[i], result->values_len[i], &result->values_len[i])))
 		{
 			goto error;
 		}
 	}
 error:
-	if (SUCCEED != zbx_ibm_db2_success(ret) || 0 == result->ncolumn)
+	if (SUCCEED != trx_ibm_db2_success(ret) || 0 == result->ncolumn)
 	{
-		zbx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, sql);
-		zbx_ibm_db2_log_errors(SQL_HANDLE_STMT, result->hstmt, ERR_Z3005, sql);
+		trx_ibm_db2_log_errors(SQL_HANDLE_DBC, ibm_db2.hdbc, ERR_Z3005, sql);
+		trx_ibm_db2_log_errors(SQL_HANDLE_STMT, result->hstmt, ERR_Z3005, sql);
 
 		DBfree_result(result);
 
 		result = (SQL_CD_TRUE == IBM_DB2server_status() ? NULL : (DB_RESULT)TRX_DB_DOWN);
 	}
 #elif defined(HAVE_MYSQL)
-	result = (DB_RESULT)zbx_malloc(NULL, sizeof(struct zbx_db_result));
+	result = (DB_RESULT)trx_malloc(NULL, sizeof(struct trx_db_result));
 	result->result = NULL;
 
 	if (NULL == conn)
 	{
-		zbx_db_errlog(ERR_Z3003, 0, NULL, NULL);
+		trx_db_errlog(ERR_Z3003, 0, NULL, NULL);
 
 		DBfree_result(result);
 		result = NULL;
@@ -1632,16 +1632,16 @@ error:
 	{
 		if (0 != mysql_query(conn, sql) || NULL == (result->result = mysql_store_result(conn)))
 		{
-			zbx_db_errlog(ERR_Z3005, mysql_errno(conn), mysql_error(conn), sql);
+			trx_db_errlog(ERR_Z3005, mysql_errno(conn), mysql_error(conn), sql);
 
 			DBfree_result(result);
 			result = (SUCCEED == is_recoverable_mysql_error() ? (DB_RESULT)TRX_DB_DOWN : NULL);
 		}
 	}
 #elif defined(HAVE_ORACLE)
-	result = zbx_malloc(NULL, sizeof(struct zbx_db_result));
-	memset(result, 0, sizeof(struct zbx_db_result));
-	zbx_vector_ptr_append(&oracle.db_results, result);
+	result = trx_malloc(NULL, sizeof(struct trx_db_result));
+	memset(result, 0, sizeof(struct trx_db_result));
+	trx_vector_ptr_append(&oracle.db_results, result);
 
 	err = OCIHandleAlloc((dvoid *)oracle.envhp, (dvoid **)&result->stmthp, OCI_HTYPE_STMT, (size_t)0, (dvoid **)0);
 
@@ -1686,9 +1686,9 @@ error:
 
 	assert(0 < result->ncolumn);
 
-	result->values = zbx_malloc(NULL, result->ncolumn * sizeof(char *));
-	result->clobs = zbx_malloc(NULL, result->ncolumn * sizeof(OCILobLocator *));
-	result->values_alloc = zbx_malloc(NULL, result->ncolumn * sizeof(ub4));
+	result->values = trx_malloc(NULL, result->ncolumn * sizeof(char *));
+	result->clobs = trx_malloc(NULL, result->ncolumn * sizeof(OCILobLocator *));
+	result->values_alloc = trx_malloc(NULL, result->ncolumn * sizeof(ub4));
 	memset(result->values, 0, result->ncolumn * sizeof(char *));
 	memset(result->clobs, 0, result->ncolumn * sizeof(OCILobLocator *));
 	memset(result->values_alloc, 0, result->ncolumn * sizeof(ub4));
@@ -1758,7 +1758,7 @@ error:
 			col_width++;	/* add 1 byte for terminating '\0' */
 
 			result->values_alloc[counter - 1] = col_width;
-			result->values[counter - 1] = zbx_malloc(NULL, col_width);
+			result->values[counter - 1] = trx_malloc(NULL, col_width);
 			*result->values[counter - 1] = '\0';
 
 			if (OCI_SUCCESS == err)
@@ -1785,20 +1785,20 @@ error:
 		result = (TRX_DB_DOWN == server_status ? (DB_RESULT)(intptr_t)server_status : NULL);
 	}
 #elif defined(HAVE_POSTGRESQL)
-	result = zbx_malloc(NULL, sizeof(struct zbx_db_result));
+	result = trx_malloc(NULL, sizeof(struct trx_db_result));
 	result->pg_result = PQexec(conn, sql);
 	result->values = NULL;
 	result->cursor = 0;
 	result->row_num = 0;
 
 	if (NULL == result->pg_result)
-		zbx_db_errlog(ERR_Z3005, 0, "result is NULL", sql);
+		trx_db_errlog(ERR_Z3005, 0, "result is NULL", sql);
 
 	if (PGRES_TUPLES_OK != PQresultStatus(result->pg_result))
 	{
-		zbx_postgresql_error(&error, result->pg_result);
-		zbx_db_errlog(ERR_Z3005, 0, error, sql);
-		zbx_free(error);
+		trx_postgresql_error(&error, result->pg_result);
+		trx_db_errlog(ERR_Z3005, 0, error, sql);
+		trx_free(error);
 
 		if (SUCCEED == is_recoverable_postgresql_error(conn, result->pg_result))
 		{
@@ -1815,9 +1815,9 @@ error:
 		result->row_num = PQntuples(result->pg_result);
 #elif defined(HAVE_SQLITE3)
 	if (0 == txn_level)
-		zbx_mutex_lock(sqlite_access);
+		trx_mutex_lock(sqlite_access);
 
-	result = zbx_malloc(NULL, sizeof(struct zbx_db_result));
+	result = trx_malloc(NULL, sizeof(struct trx_db_result));
 	result->curow = 0;
 
 lbl_get_table:
@@ -1826,7 +1826,7 @@ lbl_get_table:
 		if (SQLITE_BUSY == ret)
 			goto lbl_get_table;
 
-		zbx_db_errlog(ERR_Z3005, 0, error, sql);
+		trx_db_errlog(ERR_Z3005, 0, error, sql);
 		sqlite3_free(error);
 
 		DBfree_result(result);
@@ -1834,7 +1834,7 @@ lbl_get_table:
 		switch (ret)
 		{
 			case SQLITE_ERROR:	/* SQL error or missing database; assuming SQL error, because if we
-						   are this far into execution, zbx_db_connect() was successful */
+						   are this far into execution, trx_db_connect() was successful */
 			case SQLITE_NOMEM:	/* a malloc() failed */
 			case SQLITE_MISMATCH:	/* data type mismatch */
 				result = NULL;
@@ -1846,11 +1846,11 @@ lbl_get_table:
 	}
 
 	if (0 == txn_level)
-		zbx_mutex_unlock(sqlite_access);
+		trx_mutex_unlock(sqlite_access);
 #endif	/* HAVE_SQLITE3 */
 	if (0 != CONFIG_LOG_SLOW_QUERIES)
 	{
-		sec = zbx_time() - sec;
+		sec = trx_time() - sec;
 		if (sec > (double)CONFIG_LOG_SLOW_QUERIES / 1000.0)
 			treegix_log(LOG_LEVEL_WARNING, "slow query: " TRX_FS_DBL " sec, \"%s\"", sec, sql);
 	}
@@ -1861,7 +1861,7 @@ lbl_get_table:
 		txn_error = TRX_DB_FAIL;
 	}
 clean:
-	zbx_free(sql);
+	trx_free(sql);
 
 	return result;
 }
@@ -1869,25 +1869,25 @@ clean:
 /*
  * Execute SQL statement. For select statements only.
  */
-DB_RESULT	zbx_db_select_n(const char *query, int n)
+DB_RESULT	trx_db_select_n(const char *query, int n)
 {
 #if defined(HAVE_IBM_DB2)
-	return zbx_db_select("%s fetch first %d rows only", query, n);
+	return trx_db_select("%s fetch first %d rows only", query, n);
 #elif defined(HAVE_MYSQL)
-	return zbx_db_select("%s limit %d", query, n);
+	return trx_db_select("%s limit %d", query, n);
 #elif defined(HAVE_ORACLE)
-	return zbx_db_select("select * from (%s) where rownum<=%d", query, n);
+	return trx_db_select("select * from (%s) where rownum<=%d", query, n);
 #elif defined(HAVE_POSTGRESQL)
-	return zbx_db_select("%s limit %d", query, n);
+	return trx_db_select("%s limit %d", query, n);
 #elif defined(HAVE_SQLITE3)
-	return zbx_db_select("%s limit %d", query, n);
+	return trx_db_select("%s limit %d", query, n);
 #endif
 }
 
 #ifdef HAVE_POSTGRESQL
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_bytea_unescape                                            *
+ * Function: trx_db_bytea_unescape                                            *
  *                                                                            *
  * Purpose: converts the null terminated string into binary buffer            *
  *                                                                            *
@@ -1901,7 +1901,7 @@ DB_RESULT	zbx_db_select_n(const char *query, int n)
  * Return value: length of the binary buffer                                  *
  *                                                                            *
  ******************************************************************************/
-static size_t	zbx_db_bytea_unescape(u_char *io)
+static size_t	trx_db_bytea_unescape(u_char *io)
 {
 	const u_char	*i = io;
 	u_char		*o = io;
@@ -1936,7 +1936,7 @@ static size_t	zbx_db_bytea_unescape(u_char *io)
 }
 #endif
 
-DB_ROW	zbx_db_fetch(DB_RESULT result)
+DB_ROW	trx_db_fetch(DB_RESULT result)
 {
 #if defined(HAVE_IBM_DB2)
 	int		i;
@@ -1951,7 +1951,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 		return NULL;
 
 #if defined(HAVE_IBM_DB2)
-	if (SUCCEED != zbx_ibm_db2_success(SQLFetch(result->hstmt)))	/* e.g., SQL_NO_DATA_FOUND */
+	if (SUCCEED != trx_ibm_db2_success(SQLFetch(result->hstmt)))	/* e.g., SQL_NO_DATA_FOUND */
 		return NULL;
 
 	for (i = 0; i < result->ncolumn; i++)
@@ -1978,7 +1978,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 		if (OCI_SUCCESS != (rc = OCIErrorGet((dvoid *)oracle.errhp, (ub4)1, (text *)NULL,
 				&errcode, (text *)errbuf, (ub4)sizeof(errbuf), OCI_HTYPE_ERROR)))
 		{
-			zbx_db_errlog(ERR_Z3006, rc, zbx_oci_error(rc, NULL), NULL);
+			trx_db_errlog(ERR_Z3006, rc, trx_oci_error(rc, NULL), NULL);
 			return NULL;
 		}
 
@@ -1988,7 +1988,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 			case 2396:	/* ORA-02396: exceeded maximum idle time */
 			case 3113:	/* ORA-03113: end-of-file on communication channel */
 			case 3114:	/* ORA-03114: not connected to ORACLE */
-				zbx_db_errlog(ERR_Z3006, errcode, errbuf, NULL);
+				trx_db_errlog(ERR_Z3006, errcode, errbuf, NULL);
 				return NULL;
 			default:
 				rc = OCIAttrGet((void *)result->stmthp, (ub4)OCI_HTYPE_STMT, (void *)&rows_fetched,
@@ -1996,7 +1996,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 
 				if (OCI_SUCCESS != rc || 1 != rows_fetched)
 				{
-					zbx_db_errlog(ERR_Z3006, errcode, errbuf, NULL);
+					trx_db_errlog(ERR_Z3006, errcode, errbuf, NULL);
 					return NULL;
 				}
 		}
@@ -2017,7 +2017,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 			/* In this case the function returns OCI_INVALID_HANDLE. */
 			if (OCI_INVALID_HANDLE != rc2)
 			{
-				zbx_db_errlog(ERR_Z3006, rc2, zbx_oci_error(rc2, NULL), NULL);
+				trx_db_errlog(ERR_Z3006, rc2, trx_oci_error(rc2, NULL), NULL);
 				return NULL;
 			}
 			else
@@ -2025,14 +2025,14 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 		}
 		else if (OCI_SUCCESS != (rc2 = OCILobCharSetForm(oracle.envhp, oracle.errhp, result->clobs[i], &csfrm)))
 		{
-			zbx_db_errlog(ERR_Z3006, rc2, zbx_oci_error(rc2, NULL), NULL);
+			trx_db_errlog(ERR_Z3006, rc2, trx_oci_error(rc2, NULL), NULL);
 			return NULL;
 		}
 
 		if (result->values_alloc[i] < (alloc = amount * TRX_MAX_BYTES_IN_UTF8_CHAR + 1))
 		{
 			result->values_alloc[i] = alloc;
-			result->values[i] = zbx_realloc(result->values[i], result->values_alloc[i]);
+			result->values[i] = trx_realloc(result->values[i], result->values_alloc[i]);
 		}
 
 		if (OCI_SUCCESS == rc2)
@@ -2041,7 +2041,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 					(ub4)1, (dvoid *)result->values[i], (ub4)(result->values_alloc[i] - 1),
 					(dvoid *)NULL, (OCICallbackLobRead)NULL, (ub2)0, csfrm)))
 			{
-				zbx_db_errlog(ERR_Z3006, rc2, zbx_oci_error(rc2, NULL), NULL);
+				trx_db_errlog(ERR_Z3006, rc2, trx_oci_error(rc2, NULL), NULL);
 				return NULL;
 			}
 		}
@@ -2053,7 +2053,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 #elif defined(HAVE_POSTGRESQL)
 	/* free old data */
 	if (NULL != result->values)
-		zbx_free(result->values);
+		trx_free(result->values);
 
 	/* EOF */
 	if (result->cursor == result->row_num)
@@ -2066,7 +2066,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 	{
 		int	i;
 
-		result->values = zbx_malloc(result->values, sizeof(char *) * result->fld_num);
+		result->values = trx_malloc(result->values, sizeof(char *) * result->fld_num);
 
 		for (i = 0; i < result->fld_num; i++)
 		{
@@ -2078,7 +2078,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 			{
 				result->values[i] = PQgetvalue(result->pg_result, result->cursor, i);
 				if (PQftype(result->pg_result, i) == TRX_PG_BYTEAOID)	/* binary data type BYTEAOID */
-					zbx_db_bytea_unescape((u_char *)result->values[i]);
+					trx_db_bytea_unescape((u_char *)result->values[i]);
 			}
 		}
 	}
@@ -2100,7 +2100,7 @@ DB_ROW	zbx_db_fetch(DB_RESULT result)
 #endif
 }
 
-int	zbx_db_is_null(const char *field)
+int	trx_db_is_null(const char *field)
 {
 	if (NULL == field)
 		return SUCCEED;
@@ -2123,7 +2123,7 @@ static void	OCI_DBclean_result(DB_RESULT result)
 
 		for (i = 0; i < result->ncolumn; i++)
 		{
-			zbx_free(result->values[i]);
+			trx_free(result->values[i]);
 
 			/* deallocate the lob locator variable */
 			if (NULL != result->clobs[i])
@@ -2133,9 +2133,9 @@ static void	OCI_DBclean_result(DB_RESULT result)
 			}
 		}
 
-		zbx_free(result->values);
-		zbx_free(result->clobs);
-		zbx_free(result->values_alloc);
+		trx_free(result->values);
+		trx_free(result->clobs);
+		trx_free(result->values_alloc);
 	}
 
 	if (result->stmthp)
@@ -2158,24 +2158,24 @@ void	DBfree_result(DB_RESULT result)
 
 		for (i = 0; i < result->nalloc; i++)
 		{
-			zbx_free(result->values_cli[i]);
+			trx_free(result->values_cli[i]);
 		}
 
-		zbx_free(result->values);
-		zbx_free(result->values_cli);
-		zbx_free(result->values_len);
+		trx_free(result->values);
+		trx_free(result->values_cli);
+		trx_free(result->values_len);
 	}
 
 	if (result->hstmt)
 		SQLFreeHandle(SQL_HANDLE_STMT, result->hstmt);
 
-	zbx_free(result);
+	trx_free(result);
 #elif defined(HAVE_MYSQL)
 	if (NULL == result)
 		return;
 
 	mysql_free_result(result->result);
-	zbx_free(result);
+	trx_free(result);
 #elif defined(HAVE_ORACLE)
 	int i;
 
@@ -2188,12 +2188,12 @@ void	DBfree_result(DB_RESULT result)
 	{
 		if (oracle.db_results.values[i] == result)
 		{
-			zbx_vector_ptr_remove_noorder(&oracle.db_results, i);
+			trx_vector_ptr_remove_noorder(&oracle.db_results, i);
 			break;
 		}
 	}
 
-	zbx_free(result);
+	trx_free(result);
 #elif defined(HAVE_POSTGRESQL)
 	if (NULL == result)
 		return;
@@ -2201,12 +2201,12 @@ void	DBfree_result(DB_RESULT result)
 	if (NULL != result->values)
 	{
 		result->fld_num = 0;
-		zbx_free(result->values);
+		trx_free(result->values);
 		result->values = NULL;
 	}
 
 	PQclear(result->pg_result);
-	zbx_free(result);
+	trx_free(result);
 #elif defined(HAVE_SQLITE3)
 	if (NULL == result)
 		return;
@@ -2216,7 +2216,7 @@ void	DBfree_result(DB_RESULT result)
 		sqlite3_free_table(result->data);
 	}
 
-	zbx_free(result);
+	trx_free(result);
 #endif	/* HAVE_SQLITE3 */
 }
 
@@ -2226,7 +2226,7 @@ static int	IBM_DB2server_status(void)
 {
 	int	server_status = SQL_CD_TRUE;
 
-	if (SUCCEED != zbx_ibm_db2_success(SQLGetConnectAttr(ibm_db2.hdbc, SQL_ATTR_CONNECTION_DEAD, &server_status,
+	if (SUCCEED != trx_ibm_db2_success(SQLGetConnectAttr(ibm_db2.hdbc, SQL_ATTR_CONNECTION_DEAD, &server_status,
 			SQL_IS_POINTER, NULL)))
 	{
 		treegix_log(LOG_LEVEL_WARNING, "cannot determine IBM DB2 server status, assuming not connected");
@@ -2235,17 +2235,17 @@ static int	IBM_DB2server_status(void)
 	return (SQL_CD_FALSE == server_status ? SQL_CD_TRUE : SQL_CD_FALSE);
 }
 
-static int	zbx_ibm_db2_success(SQLRETURN ret)
+static int	trx_ibm_db2_success(SQLRETURN ret)
 {
 	return (SQL_SUCCESS == ret || SQL_SUCCESS_WITH_INFO == ret ? SUCCEED : FAIL);
 }
 
-static int	zbx_ibm_db2_success_ext(SQLRETURN ret)
+static int	trx_ibm_db2_success_ext(SQLRETURN ret)
 {
 	return (SQL_SUCCESS == ret || SQL_SUCCESS_WITH_INFO == ret || SQL_NO_DATA_FOUND == ret ? SUCCEED : FAIL);
 }
 
-static void	zbx_ibm_db2_log_errors(SQLSMALLINT htype, SQLHANDLE hndl, zbx_err_codes_t err, const char *context)
+static void	trx_ibm_db2_log_errors(SQLSMALLINT htype, SQLHANDLE hndl, trx_err_codes_t err, const char *context)
 {
 	SQLCHAR		tmp_message[SQL_MAX_MESSAGE_LENGTH + 1], sqlstate[SQL_SQLSTATE_SIZE + 1];
 	char		*message = NULL;
@@ -2257,14 +2257,14 @@ static void	zbx_ibm_db2_log_errors(SQLSMALLINT htype, SQLHANDLE hndl, zbx_err_co
 			NULL))
 	{
 		if (NULL != message)
-			zbx_chrcpy_alloc(&message, &message_alloc, &message_offset, '|');
+			trx_chrcpy_alloc(&message, &message_alloc, &message_offset, '|');
 
-		zbx_snprintf_alloc(&message, &message_alloc, &message_offset, "[%s] %s", sqlstate, tmp_message);
+		trx_snprintf_alloc(&message, &message_alloc, &message_offset, "[%s] %s", sqlstate, tmp_message);
 	}
 
-	zbx_db_errlog(err, (int)sqlcode, message, context);
+	trx_db_errlog(err, (int)sqlcode, message, context);
 
-	zbx_free(message);
+	trx_free(message);
 }
 #endif
 
@@ -2285,7 +2285,7 @@ static ub4	OCI_DBserver_status(void)
 }
 #endif	/* HAVE_ORACLE */
 
-static int	zbx_db_is_escape_sequence(char c)
+static int	trx_db_is_escape_sequence(char c)
 {
 #if defined(HAVE_MYSQL)
 	if ('\'' == c || '\\' == c)
@@ -2301,15 +2301,15 @@ static int	zbx_db_is_escape_sequence(char c)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_escape_string                                             *
+ * Function: trx_db_escape_string                                             *
  *                                                                            *
  * Return value: escaped string                                               *
  *                                                                            *
- * Comments: sync changes with 'zbx_db_get_escape_string_len'                 *
- *           and 'zbx_db_dyn_escape_string'                                   *
+ * Comments: sync changes with 'trx_db_get_escape_string_len'                 *
+ *           and 'trx_db_dyn_escape_string'                                   *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_db_escape_string(const char *src, char *dst, size_t len, zbx_escape_sequence_t flag)
+static void	trx_db_escape_string(const char *src, char *dst, size_t len, trx_escape_sequence_t flag)
 {
 	const char	*s;
 	char		*d;
@@ -2320,7 +2320,7 @@ static void	zbx_db_escape_string(const char *src, char *dst, size_t len, zbx_esc
 
 	for (s = src, d = dst; NULL != s && '\0' != *s && 0 < len; s++)
 	{
-		if (ESCAPE_SEQUENCE_ON == flag && SUCCEED == zbx_db_is_escape_sequence(*s))
+		if (ESCAPE_SEQUENCE_ON == flag && SUCCEED == trx_db_is_escape_sequence(*s))
 		{
 			if (2 > len)
 				break;
@@ -2342,7 +2342,7 @@ static void	zbx_db_escape_string(const char *src, char *dst, size_t len, zbx_esc
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_get_escape_string_len                                     *
+ * Function: trx_db_get_escape_string_len                                     *
  *                                                                            *
  * Purpose: to calculate escaped string length limited by bytes or characters *
  *          whichever is reached first.                                       *
@@ -2356,8 +2356,8 @@ static void	zbx_db_escape_string(const char *src, char *dst, size_t len, zbx_esc
  *               with terminating '\0'                                        *
  *                                                                            *
  ******************************************************************************/
-static size_t	zbx_db_get_escape_string_len(const char *s, size_t max_bytes, size_t max_chars,
-		zbx_escape_sequence_t flag)
+static size_t	trx_db_get_escape_string_len(const char *s, size_t max_bytes, size_t max_chars,
+		trx_escape_sequence_t flag)
 {
 	size_t	csize, len = 1;	/* '\0' */
 
@@ -2366,7 +2366,7 @@ static size_t	zbx_db_get_escape_string_len(const char *s, size_t max_bytes, size
 
 	while ('\0' != *s && 0 < max_chars)
 	{
-		csize = zbx_utf8_char_len(s);
+		csize = trx_utf8_char_len(s);
 
 		/* process non-UTF-8 characters as single byte characters */
 		if (0 == csize)
@@ -2375,7 +2375,7 @@ static size_t	zbx_db_get_escape_string_len(const char *s, size_t max_bytes, size
 		if (max_bytes < csize)
 			break;
 
-		if (ESCAPE_SEQUENCE_ON == flag && SUCCEED == zbx_db_is_escape_sequence(*s))
+		if (ESCAPE_SEQUENCE_ON == flag && SUCCEED == trx_db_is_escape_sequence(*s))
 			len++;
 
 		s += csize;
@@ -2389,7 +2389,7 @@ static size_t	zbx_db_get_escape_string_len(const char *s, size_t max_bytes, size
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_dyn_escape_string                                         *
+ * Function: trx_db_dyn_escape_string                                         *
  *                                                                            *
  * Purpose: to escape string limited by bytes or characters, whichever limit  *
  *          is reached first.                                                 *
@@ -2402,35 +2402,35 @@ static size_t	zbx_db_get_escape_string_len(const char *s, size_t max_bytes, size
  * Return value: escaped string                                               *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_db_dyn_escape_string(const char *src, size_t max_bytes, size_t max_chars, zbx_escape_sequence_t flag)
+char	*trx_db_dyn_escape_string(const char *src, size_t max_bytes, size_t max_chars, trx_escape_sequence_t flag)
 {
 	char	*dst = NULL;
 	size_t	len;
 
-	len = zbx_db_get_escape_string_len(src, max_bytes, max_chars, flag);
+	len = trx_db_get_escape_string_len(src, max_bytes, max_chars, flag);
 
-	dst = (char *)zbx_malloc(dst, len);
+	dst = (char *)trx_malloc(dst, len);
 
-	zbx_db_escape_string(src, dst, len, flag);
+	trx_db_escape_string(src, dst, len, flag);
 
 	return dst;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_get_escape_like_pattern_len                               *
+ * Function: trx_db_get_escape_like_pattern_len                               *
  *                                                                            *
  * Return value: return length of escaped LIKE pattern with terminating '\0'  *
  *                                                                            *
- * Comments: sync changes with 'zbx_db_escape_like_pattern'                   *
+ * Comments: sync changes with 'trx_db_escape_like_pattern'                   *
  *                                                                            *
  ******************************************************************************/
-static int	zbx_db_get_escape_like_pattern_len(const char *src)
+static int	trx_db_get_escape_like_pattern_len(const char *src)
 {
 	int		len;
 	const char	*s;
 
-	len = zbx_db_get_escape_string_len(src, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON) - 1; /* minus '\0' */
+	len = trx_db_get_escape_string_len(src, TRX_SIZE_T_MAX, TRX_SIZE_T_MAX, ESCAPE_SEQUENCE_ON) - 1; /* minus '\0' */
 
 	for (s = src; s && *s; s++)
 	{
@@ -2445,11 +2445,11 @@ static int	zbx_db_get_escape_like_pattern_len(const char *src)
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_escape_like_pattern                                       *
+ * Function: trx_db_escape_like_pattern                                       *
  *                                                                            *
  * Return value: escaped string to be used as pattern in LIKE                 *
  *                                                                            *
- * Comments: sync changes with 'zbx_db_get_escape_like_pattern_len'           *
+ * Comments: sync changes with 'trx_db_get_escape_like_pattern_len'           *
  *                                                                            *
  *           For instance, we wish to find string a_b%c\d'e!f in our database *
  *           using '!' as escape character. Our queries then become:          *
@@ -2468,7 +2468,7 @@ static int	zbx_db_get_escape_like_pattern_len(const char *src)
  *           Hence '!' instead of backslash.                                  *
  *                                                                            *
  ******************************************************************************/
-static void	zbx_db_escape_like_pattern(const char *src, char *dst, int len)
+static void	trx_db_escape_like_pattern(const char *src, char *dst, int len)
 {
 	char		*d;
 	char		*tmp = NULL;
@@ -2476,9 +2476,9 @@ static void	zbx_db_escape_like_pattern(const char *src, char *dst, int len)
 
 	assert(dst);
 
-	tmp = (char *)zbx_malloc(tmp, len);
+	tmp = (char *)trx_malloc(tmp, len);
 
-	zbx_db_escape_string(src, tmp, len, ESCAPE_SEQUENCE_ON);
+	trx_db_escape_string(src, tmp, len, ESCAPE_SEQUENCE_ON);
 
 	len--; /* '\0' */
 
@@ -2497,33 +2497,33 @@ static void	zbx_db_escape_like_pattern(const char *src, char *dst, int len)
 
 	*d = '\0';
 
-	zbx_free(tmp);
+	trx_free(tmp);
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_dyn_escape_like_pattern                                   *
+ * Function: trx_db_dyn_escape_like_pattern                                   *
  *                                                                            *
  * Return value: escaped string to be used as pattern in LIKE                 *
  *                                                                            *
  ******************************************************************************/
-char	*zbx_db_dyn_escape_like_pattern(const char *src)
+char	*trx_db_dyn_escape_like_pattern(const char *src)
 {
 	int	len;
 	char	*dst = NULL;
 
-	len = zbx_db_get_escape_like_pattern_len(src);
+	len = trx_db_get_escape_like_pattern_len(src);
 
-	dst = (char *)zbx_malloc(dst, len);
+	dst = (char *)trx_malloc(dst, len);
 
-	zbx_db_escape_like_pattern(src, dst, len);
+	trx_db_escape_like_pattern(src, dst, len);
 
 	return dst;
 }
 
 /******************************************************************************
  *                                                                            *
- * Function: zbx_db_strlen_n                                                  *
+ * Function: trx_db_strlen_n                                                  *
  *                                                                            *
  * Purpose: return the string length to fit into a database field of the      *
  *          specified size                                                    *
@@ -2531,11 +2531,11 @@ char	*zbx_db_dyn_escape_like_pattern(const char *src)
  * Return value: the string length in bytes                                   *
  *                                                                            *
  ******************************************************************************/
-int	zbx_db_strlen_n(const char *text, size_t maxlen)
+int	trx_db_strlen_n(const char *text, size_t maxlen)
 {
 #ifdef HAVE_IBM_DB2
-	return zbx_strlen_utf8_nbytes(text, maxlen);
+	return trx_strlen_utf8_nbytes(text, maxlen);
 #else
-	return zbx_strlen_utf8_nchars(text, maxlen);
+	return trx_strlen_utf8_nchars(text, maxlen);
 #endif
 }

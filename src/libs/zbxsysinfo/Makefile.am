@@ -35,35 +35,35 @@ EXTRA_DIST = \
 	win32
 
 noinst_LIBRARIES = \
-	libzbxagentsysinfo.a \
-	libzbxproxysysinfo.a \
-	libzbxserversysinfo.a
+	libtrxagentsysinfo.a \
+	libtrxproxysysinfo.a \
+	libtrxserversysinfo.a
 
 # AGENT version of sysinfo library
-libzbxagentsysinfo_a_CFLAGS = \
+libtrxagentsysinfo_a_CFLAGS = \
 	-DWITH_AGENT_METRICS \
 	-DWITH_COMMON_METRICS \
 	-DWITH_SIMPLE_METRICS \
 	-DWITH_SPECIFIC_METRICS \
 	-DWITH_HOSTNAME_METRIC
 
-libzbxagentsysinfo_a_SOURCES = \
+libtrxagentsysinfo_a_SOURCES = \
 	specsysinfo.h \
 	sysinfo.c
 
 # SERVER version of sysinfo library
-libzbxserversysinfo_a_CFLAGS = \
+libtrxserversysinfo_a_CFLAGS = \
 	-DWITH_COMMON_METRICS \
 	-DWITH_SIMPLE_METRICS
 
-libzbxserversysinfo_a_SOURCES = \
+libtrxserversysinfo_a_SOURCES = \
 	sysinfo.c
 
 # PROXY version of sysinfo library
-libzbxproxysysinfo_a_CFLAGS = \
+libtrxproxysysinfo_a_CFLAGS = \
 	-DWITH_COMMON_METRICS \
 	-DWITH_SIMPLE_METRICS \
 	-DWITH_HOSTNAME_METRIC
 
-libzbxproxysysinfo_a_SOURCES = \
+libtrxproxysysinfo_a_SOURCES = \
 	sysinfo.c

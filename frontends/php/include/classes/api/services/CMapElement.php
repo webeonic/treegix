@@ -20,8 +20,8 @@ abstract class CMapElement extends CApiService {
 		$elementtype_validator = new CLimitedSetValidator(['values' => $element_types]);
 
 		if ($update) {
-			$db_selements = $this->fetchSelementsByIds(zbx_objectValues($selements, 'selementid'));
-			$selements = $this->extendFromObjects(zbx_toHash($selements, 'selementid'), $db_selements, ['elementtype', 'elements']);
+			$db_selements = $this->fetchSelementsByIds(trx_objectValues($selements, 'selementid'));
+			$selements = $this->extendFromObjects(trx_toHash($selements, 'selementid'), $db_selements, ['elementtype', 'elements']);
 		}
 
 		foreach ($selements as &$selement) {
@@ -275,7 +275,7 @@ abstract class CMapElement extends CApiService {
 			$linkDbFields = ['linkid' => null];
 
 			$dbLinks = API::getApiService()->select('sysmap_element_url', [
-				'filter' => ['selementid' => zbx_objectValues($links, 'linkid')],
+				'filter' => ['selementid' => trx_objectValues($links, 'linkid')],
 				'output' => ['linkid'],
 				'preservekeys' => true
 			]);
@@ -327,7 +327,7 @@ abstract class CMapElement extends CApiService {
 	 * @return array
 	 */
 	protected function createSelements(array $selements) {
-		$selements = zbx_toArray($selements);
+		$selements = trx_toArray($selements);
 
 		$this->checkSelementInput($selements, __FUNCTION__);
 
@@ -419,7 +419,7 @@ abstract class CMapElement extends CApiService {
 	 * @param array $elements[0,...]['label_location']
 	 */
 	protected function updateSelements(array $selements) {
-		$selements = zbx_toArray($selements);
+		$selements = trx_toArray($selements);
 		$selementIds = [];
 
 		$db_selements = $this->checkSelementInput($selements, __FUNCTION__);
@@ -486,7 +486,7 @@ abstract class CMapElement extends CApiService {
 				continue;
 			}
 
-			$diffUrls = zbx_array_diff($selement['urls'], $db_selement['urls'], 'name');
+			$diffUrls = trx_array_diff($selement['urls'], $db_selement['urls'], 'name');
 
 			// add
 			foreach ($diffUrls['first'] as $newUrl) {
@@ -506,7 +506,7 @@ abstract class CMapElement extends CApiService {
 			}
 
 			// delete url
-			$urlsToDelete = array_merge($urlsToDelete, zbx_objectValues($diffUrls['second'], 'sysmapelementurlid'));
+			$urlsToDelete = array_merge($urlsToDelete, trx_objectValues($diffUrls['second'], 'sysmapelementurlid'));
 		}
 		unset($selement);
 
@@ -575,8 +575,8 @@ abstract class CMapElement extends CApiService {
 	 * @param array $selements[0, ...]['selementid']	selementid to delete
 	 */
 	protected function deleteSelements(array $selements) {
-		$selements = zbx_toArray($selements);
-		$selementIds = zbx_objectValues($selements, 'selementid');
+		$selements = trx_toArray($selements);
+		$selementIds = trx_objectValues($selements, 'selementid');
 
 		DB::delete('sysmaps_elements', ['selementid' => $selementIds]);
 
@@ -589,7 +589,7 @@ abstract class CMapElement extends CApiService {
 	 * @param array $shapes							Multidimensional array with shape properties.
 	 */
 	protected function createShapes(array $shapes) {
-		$shapes = zbx_toArray($shapes);
+		$shapes = trx_toArray($shapes);
 
 		$this->checkShapeInput($shapes);
 
@@ -602,7 +602,7 @@ abstract class CMapElement extends CApiService {
 	 * @param array $shapes							Multidimensional array with shape properties.
 	 */
 	protected function updateShapes(array $shapes) {
-		$shapes = zbx_toArray($shapes);
+		$shapes = trx_toArray($shapes);
 
 		$this->checkShapeInput($shapes);
 
@@ -628,8 +628,8 @@ abstract class CMapElement extends CApiService {
 	 * @param array $shapes							Multidimensional array with shape properties.
 	 */
 	protected function deleteShapes(array $shapes) {
-		$shapes = zbx_toArray($shapes);
-		$shapeids = zbx_objectValues($shapes, 'sysmap_shapeid');
+		$shapes = trx_toArray($shapes);
+		$shapeids = trx_objectValues($shapes, 'sysmap_shapeid');
 
 		DB::delete('sysmap_shape', ['sysmap_shapeid' => $shapeids]);
 	}
@@ -647,7 +647,7 @@ abstract class CMapElement extends CApiService {
 	 * @return array
 	 */
 	protected function createLinks(array $links) {
-		$links = zbx_toArray($links);
+		$links = trx_toArray($links);
 
 		$this->checkLinkInput($links, __FUNCTION__);
 
@@ -657,7 +657,7 @@ abstract class CMapElement extends CApiService {
 	}
 
 	protected function updateLinks($links) {
-		$links = zbx_toArray($links);
+		$links = trx_toArray($links);
 
 		$this->checkLinkInput($links, __FUNCTION__);
 
@@ -668,7 +668,7 @@ abstract class CMapElement extends CApiService {
 
 		DB::update('sysmaps_links', $udpateLinks);
 
-		return ['linkids' => zbx_objectValues($links, 'linkid')];
+		return ['linkids' => trx_objectValues($links, 'linkid')];
 	}
 
 	/**
@@ -680,8 +680,8 @@ abstract class CMapElement extends CApiService {
 	 * @return array
 	 */
 	protected function deleteLinks($links) {
-		zbx_value2array($links);
-		$linkIds = zbx_objectValues($links, 'linkid');
+		trx_value2array($links);
+		$linkIds = trx_objectValues($links, 'linkid');
 
 		$this->checkLinkInput($links, __FUNCTION__);
 
@@ -699,7 +699,7 @@ abstract class CMapElement extends CApiService {
 	 * @param array $links[0,...]['color']
 	 */
 	protected function createLinkTriggers($linkTriggers) {
-		$linkTriggers = zbx_toArray($linkTriggers);
+		$linkTriggers = trx_toArray($linkTriggers);
 
 		$this->validateCreateLinkTriggers($linkTriggers);
 
@@ -728,10 +728,10 @@ abstract class CMapElement extends CApiService {
 	}
 
 	protected function updateLinkTriggers($linkTriggers) {
-		$linkTriggers = zbx_toArray($linkTriggers);
+		$linkTriggers = trx_toArray($linkTriggers);
 		$this->validateUpdateLinkTriggers($linkTriggers);
 
-		$linkTriggerIds = zbx_objectValues($linkTriggers, 'linktriggerid');
+		$linkTriggerIds = trx_objectValues($linkTriggers, 'linktriggerid');
 
 		$updateLinkTriggers = [];
 		foreach ($linkTriggers as $linkTrigger) {
@@ -763,10 +763,10 @@ abstract class CMapElement extends CApiService {
 	}
 
 	protected function deleteLinkTriggers($linkTriggers) {
-		$linkTriggers = zbx_toArray($linkTriggers);
+		$linkTriggers = trx_toArray($linkTriggers);
 		$this->validateDeleteLinkTriggers($linkTriggers);
 
-		$linkTriggerIds = zbx_objectValues($linkTriggers, 'linktriggerid');
+		$linkTriggerIds = trx_objectValues($linkTriggers, 'linktriggerid');
 
 		DB::delete('sysmaps_link_triggers', ['linktriggerid' => $linkTriggerIds]);
 

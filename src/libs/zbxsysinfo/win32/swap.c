@@ -8,22 +8,22 @@ int	VM_VMEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	MEMORYSTATUSEX	ms_ex;
 	MEMORYSTATUS	ms;
-	zbx_uint64_t	ullTotalPageFile, ullAvailPageFile;
+	trx_uint64_t	ullTotalPageFile, ullAvailPageFile;
 	char		*mode;
 
 	if (1 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
 	mode = get_rparam(request, 0);
 
-	if (NULL != zbx_GlobalMemoryStatusEx)
+	if (NULL != trx_GlobalMemoryStatusEx)
 	{
 		ms_ex.dwLength = sizeof(MEMORYSTATUSEX);
 
-		zbx_GlobalMemoryStatusEx(&ms_ex);
+		trx_GlobalMemoryStatusEx(&ms_ex);
 
 		ullTotalPageFile = ms_ex.ullTotalPageFile;
 		ullAvailPageFile = ms_ex.ullAvailPageFile;
@@ -48,7 +48,7 @@ int	VM_VMEMORY_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_DBL_RESULT(result, (double)(ullTotalPageFile - ullAvailPageFile) / ullTotalPageFile * 100);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 	return SYSINFO_RET_OK;
@@ -58,12 +58,12 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	MEMORYSTATUSEX	ms_ex;
 	MEMORYSTATUS	ms;
-	zbx_uint64_t	real_swap_total, real_swap_avail;
+	trx_uint64_t	real_swap_total, real_swap_avail;
 	char		*swapdev, *mode;
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -73,7 +73,7 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 	/* only 'all' parameter supported */
 	if (NULL != swapdev && '\0' != *swapdev && 0 != strcmp(swapdev, "all"))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -111,11 +111,11 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 	 *                                                                         *
 	 ***************************************************************************/
 
-	if (NULL != zbx_GlobalMemoryStatusEx)
+	if (NULL != trx_GlobalMemoryStatusEx)
 	{
 		ms_ex.dwLength = sizeof(MEMORYSTATUSEX);
 
-		zbx_GlobalMemoryStatusEx(&ms_ex);
+		trx_GlobalMemoryStatusEx(&ms_ex);
 
 		real_swap_total = ms_ex.ullTotalPageFile > ms_ex.ullTotalPhys ?
 				ms_ex.ullTotalPageFile - ms_ex.ullTotalPhys : 0;
@@ -145,7 +145,7 @@ int	SYSTEM_SWAP_SIZE(AGENT_REQUEST *request, AGENT_RESULT *result)
 		SET_UI64_RESULT(result, real_swap_total - real_swap_avail);
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 

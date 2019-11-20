@@ -119,7 +119,7 @@ foreach (getLocales() as $localeid => $locale) {
 	 * Checking if this locale exists in the system. The only way of doing it is to try and set one
 	 * trying to set only the LC_MONETARY locale to avoid changing LC_NUMERIC.
 	 */
-	$locale_available = ($localeid === 'en_GB' || setlocale(LC_MONETARY, zbx_locale_variants($localeid)));
+	$locale_available = ($localeid === 'en_GB' || setlocale(LC_MONETARY, trx_locale_variants($localeid)));
 
 	$lang->addItem($localeid, $locale['name'], null, $locale_available);
 
@@ -127,7 +127,7 @@ foreach (getLocales() as $localeid => $locale) {
 }
 
 // Restoring original locale.
-setlocale(LC_MONETARY, zbx_locale_variants(CWebUser::$data['lang']));
+setlocale(LC_MONETARY, trx_locale_variants(CWebUser::$data['lang']));
 
 $language_error = '';
 if (!function_exists('bindtextdomain')) {
@@ -351,7 +351,7 @@ if ($data['action'] !== 'user.edit') {
 			'repeat_row'
 		);
 
-	$zbx_sounds = array_flip(getSounds());
+	$trx_sounds = array_flip(getSounds());
 
 	$triggers_table = (new CTable())
 		->addRow([
@@ -360,7 +360,7 @@ if ($data['action'] !== 'user.edit') {
 				->setChecked($data['messages']['triggers.recovery'] == 1)
 				->setUncheckedValue(0),
 			[
-				new CComboBox('messages[sounds.recovery]', $data['messages']['sounds.recovery'], null, $zbx_sounds),
+				new CComboBox('messages[sounds.recovery]', $data['messages']['sounds.recovery'], null, $trx_sounds),
 				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				(new CButton('start', _('Play')))
 					->addClass(TRX_STYLE_BTN_GREY)
@@ -392,7 +392,7 @@ if ($data['action'] !== 'user.edit') {
 				->setChecked(array_key_exists($severity, $data['messages']['triggers.severities']))
 				->setUncheckedValue(0),
 			[
-				new CComboBox('messages[sounds.'.$severity.']', $data['messages']['sounds.'.$severity], null, $zbx_sounds),
+				new CComboBox('messages[sounds.'.$severity.']', $data['messages']['sounds.'.$severity], null, $trx_sounds),
 				(new CDiv())->addClass(TRX_STYLE_FORM_INPUT_MARGIN),
 				(new CButton('start', _('Play')))
 					->addClass(TRX_STYLE_BTN_GREY)
@@ -406,8 +406,8 @@ if ($data['action'] !== 'user.edit') {
 			]
 		]);
 
-		zbx_subarray_push($msg_visibility, 1, 'messages[triggers.severities]['.$severity.']');
-		zbx_subarray_push($msg_visibility, 1, 'messages[sounds.'.$severity.']');
+		trx_subarray_push($msg_visibility, 1, 'messages[triggers.severities]['.$severity.']');
+		trx_subarray_push($msg_visibility, 1, 'messages[sounds.'.$severity.']');
 	}
 
 	$messaging_form_list

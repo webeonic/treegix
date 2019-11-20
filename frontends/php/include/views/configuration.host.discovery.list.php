@@ -87,7 +87,7 @@ foreach ($data['discoveries'] as $discovery) {
 	// info
 	if ($data['showInfoColumn']) {
 		$info_icons = [];
-		if ($discovery['status'] == ITEM_STATUS_ACTIVE && !zbx_empty($discovery['error'])) {
+		if ($discovery['status'] == ITEM_STATUS_ACTIVE && !trx_empty($discovery['error'])) {
 			$info_icons[] = makeErrorIcon($discovery['error']);
 		}
 	}

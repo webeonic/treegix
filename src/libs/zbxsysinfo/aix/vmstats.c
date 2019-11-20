@@ -13,7 +13,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (!VMSTAT_COLLECTOR_STARTED(collector))
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Collector is not started."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Collector is not started."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -24,21 +24,21 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 		while (wait--)
 		{
-			zbx_sleep(1);
+			trx_sleep(1);
 			if (1 == collector->vmstat.data_available)
 				break;
 		}
 
 		if (0 == collector->vmstat.data_available)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "No data available in collector."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "No data available in collector."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
 
 	if (2 < request->nparam)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Too many parameters."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Too many parameters."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -47,7 +47,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 
 	if (NULL == section)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
@@ -55,7 +55,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 	{
 		if (1 != request->nparam)
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid number of parameters."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid number of parameters."));
 			return SYSINFO_RET_FAIL;
 		}
 
@@ -63,7 +63,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 	}
 	else if (NULL == type)
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 	else if (0 == strcmp(section, "kthr"))
@@ -74,7 +74,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 			SET_DBL_RESULT(result, collector->vmstat.kthr_b);
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -94,7 +94,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 			SET_DBL_RESULT(result, collector->vmstat.sr);
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -108,7 +108,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 			SET_DBL_RESULT(result, collector->vmstat.cs);
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -130,7 +130,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 == collector->vmstat.shared_enabled)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "logical partition type is not \"shared\"."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "logical partition type is not \"shared\"."));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -140,13 +140,13 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 		{
 			if (0 == collector->vmstat.shared_enabled)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "logical partition type is not \"shared\"."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "logical partition type is not \"shared\"."));
 				return SYSINFO_RET_FAIL;
 			}
 
 			if (0 == collector->vmstat.pool_util_authority)
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "pool utilization authority not set."));
+				SET_MSG_RESULT(result, trx_strdup(NULL, "pool utilization authority not set."));
 				return SYSINFO_RET_FAIL;
 			}
 
@@ -154,7 +154,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 		}
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -166,7 +166,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 			SET_DBL_RESULT(result, collector->vmstat.disk_tps);
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
@@ -180,7 +180,7 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 			}
 			else
 			{
-				SET_MSG_RESULT(result, zbx_strdup(NULL, "Support for system.stat[memory,avm] was not"
+				SET_MSG_RESULT(result, trx_strdup(NULL, "Support for system.stat[memory,avm] was not"
 						" compiled in."));
 				return SYSINFO_RET_FAIL;
 			}
@@ -189,13 +189,13 @@ int	SYSTEM_STAT(AGENT_REQUEST *request, AGENT_RESULT *result)
 			SET_UI64_RESULT(result, collector->vmstat.mem_fre);
 		else
 		{
-			SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid second parameter."));
+			SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid second parameter."));
 			return SYSINFO_RET_FAIL;
 		}
 	}
 	else
 	{
-		SET_MSG_RESULT(result, zbx_strdup(NULL, "Invalid first parameter."));
+		SET_MSG_RESULT(result, trx_strdup(NULL, "Invalid first parameter."));
 		return SYSINFO_RET_FAIL;
 	}
 
